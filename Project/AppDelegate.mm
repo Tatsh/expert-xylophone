@@ -15,7 +15,9 @@
 
 #import "ApplilinkNetwork.h"
 #import "AudioManager.h"
+#import "Downloader.h"
 #import "NSFileManager+RB.h"
+#import "NetworkUtil.h"
 #import "RBCampaignData.h"
 #import "RBMusicManager.h"
 #import "RBNavigationController.h"
@@ -436,6 +438,45 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // Hexadecimal token string: strip the "<", ">", and spaces from -[NSData description].
+    NSString *token = [[[deviceToken.description stringByReplacingOccurrencesOfString:@"<"
+                                                                           withString:@""]
+        stringByReplacingOccurrencesOfString:@">"
+                                  withString:@""] stringByReplacingOccurrencesOfString:@" "
+                                                                            withString:@""];
+
+    // Upload the token with the region, bundle version, and the two server-data values as a JSON POST.
+    NSArray *serverData = [AppDelegate getServerData];
+    NSDictionary *payload = @{
+        @"target" : GetRegionCode(),
+        @"version" : GetBundleVersionString(),
+        @"p1" : serverData[0],
+        @"p2" : serverData[1],
+        @"p3" : token,
+    };
+    NSData *json = [Downloader dictionaryToJsonData:payload];
+
+    __weak AppDelegate *weakSelf = self;
+    if (self.apnsUploader) {
+        weakSelf.apnsUploader = nil;
+    }
+    weakSelf.apnsUploader = [[Downloader alloc] initWithURL:[NetworkUtil tokenSetURL]
+                                                       post:json
+                                                contentType:@"application/json"];
+    // The uploader is released once the request settles (success or failure); progress is ignored.
+    [weakSelf.apnsUploader
+        startDownloadingWithProceed:^(Downloader *downloader) {
+        }
+        success:^(Downloader *downloader) {
+          weakSelf.apnsUploader = nil;
+        }
+        failure:^(Downloader *downloader) {
+          weakSelf.apnsUploader = nil;
+        }];
 }
 
 - (void)application:(UIApplication *)application
