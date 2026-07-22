@@ -1,11 +1,13 @@
 Ångström
 applilink
 archs
+asbd
 autorelease
 autoreleasepool
 bitcode
 brighness
 bsky
+bzero
 cfurl
 chache
 chksco
@@ -35,6 +37,7 @@ ifdef
 ifndef
 instancetype
 ivar
+ivars
 iwyu
 jinja
 jsonnet
@@ -44,6 +47,8 @@ korsk
 libera
 libsonnet
 longrate
+malloc
+memcpy
 minizip
 mktemp
 modelines
@@ -77,6 +82,7 @@ shellcheck
 shellformat
 snapcraft
 statusline
+stdlib
 subarray
 subentities
 tatsh
