@@ -13,6 +13,7 @@ cfurl
 chache
 chksco
 codesign
+color
 commitizen
 conn
 cooldown
@@ -34,6 +35,7 @@ ghidra
 halfwidth
 handoff
 hinabita
+hira
 ifdef
 ifndef
 instancetype
@@ -72,6 +74,7 @@ pylock
 pyproject
 rbplus
 rdparty
+rect
 reflec
 reflecbeat
 reflow
