@@ -1,5 +1,5 @@
 aaap
-Ångström
+appli
 applilink
 archs
 asbd
@@ -25,11 +25,13 @@ dashcam
 datas
 dcmake
 ddeployment
+decodepoint
 denable
 dios
 docstrings
 dplatform
 esbenp
+exprosion
 extern
 extraout
 foxundermoon
@@ -60,6 +62,7 @@ minizip
 mispacked
 mktemp
 modelines
+mtype
 mypy
 nonatomic
 nshttpurl
@@ -81,6 +84,7 @@ pylock
 pyproject
 rbplus
 rdparty
+recomputation
 rect
 reflec
 reflecbeat
@@ -100,6 +104,7 @@ subarray
 subentities
 tatsh
 thema
+themas
 theos
 udvare
 unarchiver
@@ -120,3 +125,4 @@ yomi
 yomigana
 ziparchive
 zizmor
+Ångström
