@@ -6,6 +6,7 @@ autoreleasepool
 bitcode
 brighness
 bsky
+chache
 codesign
 commitizen
 cooldown
