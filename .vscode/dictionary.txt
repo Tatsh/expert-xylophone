@@ -13,6 +13,7 @@ cfurl
 chache
 chksco
 codesign
+colette
 color
 commitizen
 conn
