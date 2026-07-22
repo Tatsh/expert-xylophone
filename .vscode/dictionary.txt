@@ -77,6 +77,7 @@ modelines
 mtype
 mulist
 mypy
+nolist
 nonatomic
 nonnull
 nshttpurl
@@ -116,8 +117,10 @@ shellformat
 snapcraft
 statusline
 stdlib
+strcmp
 subarray
 subentities
+sysctlbyname
 tatsh
 thema
 themas
