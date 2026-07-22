@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief An archivable singleton of the bonus multipliers awarded during play.
  */
@@ -115,6 +117,8 @@
 - (void)save;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

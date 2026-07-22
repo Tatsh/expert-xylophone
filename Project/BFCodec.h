@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Blowfish-CBC codec that enciphers and deciphers @c NSMutableData buffers in place.
  *
@@ -25,7 +27,7 @@
  * @param key The Blowfish key material.
  * @ghidraAddress 0x153c0
  */
-- (void)cipherInit:(NSData *)key;
+- (void)cipherInit:(nullable NSData *)key;
 
 /**
  * @brief Seed the cipher from a raw key buffer.
@@ -62,6 +64,8 @@
 - (BOOL)decipher:(NSMutableData *)data;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

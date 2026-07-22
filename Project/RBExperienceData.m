@@ -34,6 +34,8 @@ bool CheckLevelThresholdReached(void *pLevelTables, int category, int itemID);
 // Returns the application's bundle version string.
 NSString *GetBundleVersionString(void);
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RBExperienceData ()
 
 /**
@@ -45,7 +47,7 @@ NSString *GetBundleVersionString(void);
  * @brief Decodes a point value from its enciphered on-disk form.
  * @ghidraAddress 0x1bc770
  */
-- (float)decodePoint:(NSData *)data;
+- (float)decodePoint:(nullable NSData *)data;
 /**
  * @brief Encodes the reward mapping into its enciphered on-disk form.
  * @ghidraAddress 0x1bc9f4
@@ -55,7 +57,7 @@ NSString *GetBundleVersionString(void);
  * @brief Decodes the reward mapping from its enciphered on-disk form.
  * @ghidraAddress 0x1bcbd8
  */
-- (NSMutableDictionary *)decodeAppliIds:(NSData *)data;
+- (NSMutableDictionary *)decodeAppliIds:(nullable NSData *)data;
 /**
  * @brief Records a diagnostic message. Compiled to an empty stub in the shipped build.
  * @ghidraAddress 0x1bd0cc
@@ -66,6 +68,8 @@ NSString *GetBundleVersionString(void);
 - (BOOL)themaContainsPremium;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 /// Archive keys for each persisted field. They match the property names bar the abbreviations here.
 static NSString *const kVersionCoderKey = @"kVersionKey";

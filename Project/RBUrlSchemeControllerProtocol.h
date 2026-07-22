@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Adopted by per-host handlers routed to by @c RBUrlSchemeManager.
  */
@@ -20,9 +22,11 @@
  * @param query The URL's query string parsed into a key-value dictionary, or @c nil.
  * @return @c YES when the action was handled; @c NO otherwise.
  */
-- (BOOL)action:(NSString *)action query:(NSDictionary *)query;
+- (BOOL)action:(NSString *)action query:(nullable NSDictionary *)query;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

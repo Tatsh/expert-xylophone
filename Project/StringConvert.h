@@ -11,6 +11,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Katakana reading normalisation helpers.
  */
@@ -29,7 +31,7 @@
  * returns @p string unchanged when it is @c nil or empty.
  * @ghidraAddress 0x2a190
  */
-+ (NSString *)convertYomigana:(NSString *)string;
++ (nullable NSString *)convertYomigana:(nullable NSString *)string;
 
 /**
  * @brief Expand the @c ヴ (vu) katakana digraphs into their @c バ-row equivalents.
@@ -38,7 +40,7 @@
  * returns @p string unchanged when it is @c nil or empty.
  * @ghidraAddress 0x2a640
  */
-+ (NSString *)convertFromVToB:(NSString *)string;
++ (nullable NSString *)convertFromVToB:(nullable NSString *)string;
 
 /**
  * @brief Spell out the "DJ" loanword reading in katakana.
@@ -47,7 +49,7 @@
  * @p string unchanged when it is @c nil or empty.
  * @ghidraAddress 0x2a7b4
  */
-+ (NSString *)convertDJ:(NSString *)string;
++ (nullable NSString *)convertDJ:(nullable NSString *)string;
 
 /**
  * @brief Spell out the "Korsk" loanword reading in katakana.
@@ -56,7 +58,7 @@
  * is @c nil or empty.
  * @ghidraAddress 0x2a88c
  */
-+ (NSString *)convertKorsk:(NSString *)string;
++ (nullable NSString *)convertKorsk:(nullable NSString *)string;
 
 /**
  * @brief Resolve a prolonged-sound mark to the vowel of its preceding character.
@@ -65,7 +67,7 @@
  * table entry.
  * @ghidraAddress 0x2a92c
  */
-+ (NSString *)convertFromMacronToVowel:(NSString *)string;
++ (nullable NSString *)convertFromMacronToVowel:(nullable NSString *)string;
 
 /**
  * @brief Map a small katakana character onto its large base form.
@@ -74,7 +76,7 @@
  * table entry.
  * @ghidraAddress 0x2a9e8
  */
-+ (NSString *)convertFromLowerToUpper:(NSString *)string;
++ (nullable NSString *)convertFromLowerToUpper:(nullable NSString *)string;
 
 /**
  * @brief Map a voiced katakana character onto its voiceless base form.
@@ -83,7 +85,7 @@
  * no table entry.
  * @ghidraAddress 0x2aaa4
  */
-+ (NSString *)convertFromVoiceToVoiceless:(NSString *)string;
++ (nullable NSString *)convertFromVoiceToVoiceless:(nullable NSString *)string;
 
 /**
  * @brief Apply a Core Foundation string transform to a mutable copy of a string.
@@ -99,6 +101,8 @@
                       reverse:(BOOL)reverse;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

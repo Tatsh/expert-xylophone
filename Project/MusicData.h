@@ -18,6 +18,8 @@
 @class UIColor;
 @class UIImage;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A catalogue entry describing one tune and vending its packaged assets.
  */
@@ -131,43 +133,43 @@
  * @ghidraAddress 0x666f4 (getter)
  * @ghidraAddress 0x66704 (setter)
  */
-@property(nonatomic, strong) NSDictionary *optionalDataDict;
+@property(nonatomic, strong, nullable) NSDictionary *optionalDataDict;
 /**
  * @brief The extend (special) note data owner, held without ownership.
  * @ghidraAddress 0x6673c (getter)
  * @ghidraAddress 0x6674c (setter)
  */
-@property(nonatomic, assign) MusicData *spData;
+@property(nonatomic, assign, nullable) MusicData *spData;
 /**
  * @brief The extend audio archive entry loaded for the special chart.
  * @ghidraAddress 0x6675c (getter)
  * @ghidraAddress 0x6676c (setter)
  */
-@property(nonatomic, strong) MusicData *ExtMusicData;
+@property(nonatomic, strong, nullable) MusicData *ExtMusicData;
 /**
  * @brief The cached decoded default artwork image.
  * @ghidraAddress 0x667a4 (getter)
  * @ghidraAddress 0x667b4 (setter)
  */
-@property(strong) UIImage *artworkCache;
+@property(strong, nullable) UIImage *artworkCache;
 /**
  * @brief The cached decoded basic-chart artwork image.
  * @ghidraAddress 0x667c0 (getter)
  * @ghidraAddress 0x667d0 (setter)
  */
-@property(strong) UIImage *artworkCacheBasic;
+@property(strong, nullable) UIImage *artworkCacheBasic;
 /**
  * @brief The cached decoded medium-chart artwork image.
  * @ghidraAddress 0x667dc (getter)
  * @ghidraAddress 0x667ec (setter)
  */
-@property(strong) UIImage *artworkCacheMedium;
+@property(strong, nullable) UIImage *artworkCacheMedium;
 /**
  * @brief The cached decoded hard-chart artwork image.
  * @ghidraAddress 0x667f8 (getter)
  * @ghidraAddress 0x66808 (setter)
  */
-@property(strong) UIImage *artworkCacheHard;
+@property(strong, nullable) UIImage *artworkCacheHard;
 /**
  * @brief The path of the packaged archive backing this tune.
  * @ghidraAddress 0x66814 (getter)
@@ -189,7 +191,7 @@
  *         declares a mismatched identifier or an out-of-range level.
  * @ghidraAddress 0x5ee64
  */
-+ (instancetype)dataWithPath:(NSString *)path ID:(int)musicID;
++ (nullable instancetype)dataWithPath:(NSString *)path ID:(int)musicID;
 
 /**
  * @brief Decrypt @p data in place with a Blowfish key derived from @p key.
@@ -199,7 +201,9 @@
  * @return @p data on success, or @c nil if deciphering fails.
  * @ghidraAddress 0x5eb78
  */
-+ (NSMutableData *)decodeBF:(NSMutableData *)data Key:(const char *)key KeyLength:(int)keyLength;
++ (nullable NSMutableData *)decodeBF:(NSMutableData *)data
+                                 Key:(const char *)key
+                           KeyLength:(int)keyLength;
 
 /**
  * @brief Open the backing archive, read the named member, and decrypt it.
@@ -209,9 +213,9 @@
  * @return The decrypted member data, or @c nil.
  * @ghidraAddress 0x5ecd4
  */
-+ (NSMutableData *)getZipData:(NSString *)entryName
-                         Path:(NSString *)zipPath
-                   DecodeType:(int)decodeType;
++ (nullable NSMutableData *)getZipData:(NSString *)entryName
+                                  Path:(NSString *)zipPath
+                            DecodeType:(int)decodeType;
 
 /**
  * @brief Read the named member from the backing archive using the instance's path and decode type.
@@ -219,7 +223,7 @@
  * @return The decrypted member data, or @c nil.
  * @ghidraAddress 0x600cc
  */
-- (NSMutableData *)getZipData:(NSString *)entryName;
+- (nullable NSMutableData *)getZipData:(NSString *)entryName;
 
 /**
  * @brief Read a member preferring the tune's @c Options override, falling back to the base member.
@@ -227,7 +231,7 @@
  * @return The decrypted member data, or @c nil.
  * @ghidraAddress 0x60190
  */
-- (NSMutableData *)getOptionalZipData:(NSString *)entryName;
+- (nullable NSMutableData *)getOptionalZipData:(NSString *)entryName;
 
 /**
  * @brief Read a member preferring the tune's @c Options override, then @p defaultName.
@@ -236,600 +240,601 @@
  * @return The decrypted member data, or @c nil.
  * @ghidraAddress 0x601b8
  */
-- (NSMutableData *)getOptionalZipData:(NSString *)entryName withDefaultName:(NSString *)defaultName;
+- (nullable NSMutableData *)getOptionalZipData:(NSString *)entryName
+                               withDefaultName:(nullable NSString *)defaultName;
 
 /**
  * @brief The main audio archive member (@c bgm).
  * @ghidraAddress 0x602d8
  */
-- (NSMutableData *)music;
+- (nullable NSMutableData *)music;
 /**
  * @brief The basic-chart audio member (@c bgm_b, falling back to @c bgm).
  * @ghidraAddress 0x602ec
  */
-- (NSMutableData *)musicBasic;
+- (nullable NSMutableData *)musicBasic;
 /**
  * @brief The medium-chart audio member (@c bgm_m, falling back to @c bgm).
  * @ghidraAddress 0x60308
  */
-- (NSMutableData *)musicMedium;
+- (nullable NSMutableData *)musicMedium;
 /**
  * @brief The hard-chart audio member (@c bgm_h, falling back to @c bgm).
  * @ghidraAddress 0x60324
  */
-- (NSMutableData *)musicHard;
+- (nullable NSMutableData *)musicHard;
 /**
  * @brief The preview audio member (@c pre).
  * @ghidraAddress 0x60340
  */
-- (NSMutableData *)musicPre;
+- (nullable NSMutableData *)musicPre;
 
 /**
  * @brief The basic note sheet (@c note_bas).
  * @ghidraAddress 0x60354
  */
-- (NSMutableData *)sheetBasic;
+- (nullable NSMutableData *)sheetBasic;
 /**
  * @brief The basic-light note sheet (@c note_bas2, falling back to @c note_bas).
  * @ghidraAddress 0x60368
  */
-- (NSMutableData *)sheetBasicLight;
+- (nullable NSMutableData *)sheetBasicLight;
 /**
  * @brief The medium note sheet (@c note_med).
  * @ghidraAddress 0x60384
  */
-- (NSMutableData *)sheetMedium;
+- (nullable NSMutableData *)sheetMedium;
 /**
  * @brief The medium-light note sheet (@c note_med2, falling back to @c note_med).
  * @ghidraAddress 0x60398
  */
-- (NSMutableData *)sheetMediumLight;
+- (nullable NSMutableData *)sheetMediumLight;
 /**
  * @brief The hard note sheet (@c note_har).
  * @ghidraAddress 0x603b4
  */
-- (NSMutableData *)sheetHard;
+- (nullable NSMutableData *)sheetHard;
 /**
  * @brief The hard-light note sheet (@c note_har2, falling back to @c note_har).
  * @ghidraAddress 0x603c8
  */
-- (NSMutableData *)sheetHardLight;
+- (nullable NSMutableData *)sheetHardLight;
 /**
  * @brief The special note sheet, sourced from the extend note data owner.
  * @ghidraAddress 0x603e4
  */
-- (NSMutableData *)sheetSpecial;
+- (nullable NSMutableData *)sheetSpecial;
 /**
  * @brief The special-light note sheet, sourced from the extend note data owner.
  * @ghidraAddress 0x60484
  */
-- (NSMutableData *)sheetSpecialLight;
+- (nullable NSMutableData *)sheetSpecialLight;
 
 /**
  * @brief The default artwork member (@c artwork).
  * @ghidraAddress 0x60524
  */
-- (NSMutableData *)artworkData;
+- (nullable NSMutableData *)artworkData;
 /**
  * @brief The basic-chart artwork member (@c artwork_b).
  * @ghidraAddress 0x60538
  */
-- (NSMutableData *)artworkDataBasic;
+- (nullable NSMutableData *)artworkDataBasic;
 /**
  * @brief The medium-chart artwork member (@c artwork_m).
  * @ghidraAddress 0x6054c
  */
-- (NSMutableData *)artworkDataMedium;
+- (nullable NSMutableData *)artworkDataMedium;
 /**
  * @brief The hard-chart artwork member (@c artwork_h).
  * @ghidraAddress 0x60560
  */
-- (NSMutableData *)artworkDataHard;
+- (nullable NSMutableData *)artworkDataHard;
 
 /**
  * @brief The default white title-strip member.
  * @ghidraAddress 0x60574
  */
-- (NSMutableData *)musicNameImageWhiteData;
+- (nullable NSMutableData *)musicNameImageWhiteData;
 /**
  * @brief The basic white title-strip member.
  * @ghidraAddress 0x60588
  */
-- (NSMutableData *)musicNameImageWhiteDataBasic;
+- (nullable NSMutableData *)musicNameImageWhiteDataBasic;
 /**
  * @brief The medium white title-strip member.
  * @ghidraAddress 0x6059c
  */
-- (NSMutableData *)musicNameImageWhiteDataMedium;
+- (nullable NSMutableData *)musicNameImageWhiteDataMedium;
 /**
  * @brief The hard white title-strip member.
  * @ghidraAddress 0x605b0
  */
-- (NSMutableData *)musicNameImageWhiteDataHard;
+- (nullable NSMutableData *)musicNameImageWhiteDataHard;
 /**
  * @brief The default white artist-strip member.
  * @ghidraAddress 0x605c4
  */
-- (NSMutableData *)artistNameImageWhiteData;
+- (nullable NSMutableData *)artistNameImageWhiteData;
 /**
  * @brief The basic white artist-strip member.
  * @ghidraAddress 0x605d8
  */
-- (NSMutableData *)artistNameImageWhiteDataBasic;
+- (nullable NSMutableData *)artistNameImageWhiteDataBasic;
 /**
  * @brief The medium white artist-strip member.
  * @ghidraAddress 0x605ec
  */
-- (NSMutableData *)artistNameImageWhiteDataMedium;
+- (nullable NSMutableData *)artistNameImageWhiteDataMedium;
 /**
  * @brief The hard white artist-strip member.
  * @ghidraAddress 0x60600
  */
-- (NSMutableData *)artistNameImageWhiteDataHard;
+- (nullable NSMutableData *)artistNameImageWhiteDataHard;
 /**
  * @brief The default black title-strip member.
  * @ghidraAddress 0x60614
  */
-- (NSMutableData *)musicNameImageBlackData;
+- (nullable NSMutableData *)musicNameImageBlackData;
 /**
  * @brief The basic black title-strip member.
  * @ghidraAddress 0x60628
  */
-- (NSMutableData *)musicNameImageBlackDataBasic;
+- (nullable NSMutableData *)musicNameImageBlackDataBasic;
 /**
  * @brief The medium black title-strip member.
  * @ghidraAddress 0x6063c
  */
-- (NSMutableData *)musicNameImageBlackDataMedium;
+- (nullable NSMutableData *)musicNameImageBlackDataMedium;
 /**
  * @brief The hard black title-strip member.
  * @ghidraAddress 0x60650
  */
-- (NSMutableData *)musicNameImageBlackDataHard;
+- (nullable NSMutableData *)musicNameImageBlackDataHard;
 /**
  * @brief The default black artist-strip member.
  * @ghidraAddress 0x60664
  */
-- (NSMutableData *)artistNameImageBlackData;
+- (nullable NSMutableData *)artistNameImageBlackData;
 /**
  * @brief The basic black artist-strip member.
  * @ghidraAddress 0x60678
  */
-- (NSMutableData *)artistNameImageBlackDataBasic;
+- (nullable NSMutableData *)artistNameImageBlackDataBasic;
 /**
  * @brief The medium black artist-strip member.
  * @ghidraAddress 0x6068c
  */
-- (NSMutableData *)artistNameImageBlackDataMedium;
+- (nullable NSMutableData *)artistNameImageBlackDataMedium;
 /**
  * @brief The hard black artist-strip member.
  * @ghidraAddress 0x606a0
  */
-- (NSMutableData *)artistNameImageBlackDataHard;
+- (nullable NSMutableData *)artistNameImageBlackDataHard;
 
 /**
  * @brief The default artwork member at double resolution (@c artwork2x).
  * @ghidraAddress 0x606b4
  */
-- (NSMutableData *)artwork2xData;
+- (nullable NSMutableData *)artwork2xData;
 /**
  * @brief The basic double-resolution artwork member.
  * @ghidraAddress 0x606c8
  */
-- (NSMutableData *)artwork2xDataBasic;
+- (nullable NSMutableData *)artwork2xDataBasic;
 /**
  * @brief The medium double-resolution artwork member.
  * @ghidraAddress 0x606dc
  */
-- (NSMutableData *)artwork2xDataMedium;
+- (nullable NSMutableData *)artwork2xDataMedium;
 /**
  * @brief The hard double-resolution artwork member.
  * @ghidraAddress 0x606f0
  */
-- (NSMutableData *)artwork2xDataHard;
+- (nullable NSMutableData *)artwork2xDataHard;
 /**
  * @brief The default double-resolution white title-strip member.
  * @ghidraAddress 0x60704
  */
-- (NSMutableData *)musicNameImageWhite2xData;
+- (nullable NSMutableData *)musicNameImageWhite2xData;
 /**
  * @brief The basic double-resolution white title-strip member.
  * @ghidraAddress 0x60718
  */
-- (NSMutableData *)musicNameImageWhite2xDataBasic;
+- (nullable NSMutableData *)musicNameImageWhite2xDataBasic;
 /**
  * @brief The medium double-resolution white title-strip member.
  * @ghidraAddress 0x6072c
  */
-- (NSMutableData *)musicNameImageWhite2xDataMedium;
+- (nullable NSMutableData *)musicNameImageWhite2xDataMedium;
 /**
  * @brief The hard double-resolution white title-strip member.
  * @ghidraAddress 0x60740
  */
-- (NSMutableData *)musicNameImageWhite2xDataHard;
+- (nullable NSMutableData *)musicNameImageWhite2xDataHard;
 /**
  * @brief The default double-resolution white artist-strip member.
  * @ghidraAddress 0x60754
  */
-- (NSMutableData *)artistNameImageWhite2xData;
+- (nullable NSMutableData *)artistNameImageWhite2xData;
 /**
  * @brief The basic double-resolution white artist-strip member.
  * @ghidraAddress 0x60768
  */
-- (NSMutableData *)artistNameImageWhite2xDataBasic;
+- (nullable NSMutableData *)artistNameImageWhite2xDataBasic;
 /**
  * @brief The medium double-resolution white artist-strip member.
  * @ghidraAddress 0x6077c
  */
-- (NSMutableData *)artistNameImageWhite2xDataMedium;
+- (nullable NSMutableData *)artistNameImageWhite2xDataMedium;
 /**
  * @brief The hard double-resolution white artist-strip member.
  * @ghidraAddress 0x60790
  */
-- (NSMutableData *)artistNameImageWhite2xDataHard;
+- (nullable NSMutableData *)artistNameImageWhite2xDataHard;
 /**
  * @brief The default double-resolution black title-strip member.
  * @ghidraAddress 0x607a4
  */
-- (NSMutableData *)musicNameImageBlack2xData;
+- (nullable NSMutableData *)musicNameImageBlack2xData;
 /**
  * @brief The basic double-resolution black title-strip member.
  * @ghidraAddress 0x607b8
  */
-- (NSMutableData *)musicNameImageBlack2xDataBasic;
+- (nullable NSMutableData *)musicNameImageBlack2xDataBasic;
 /**
  * @brief The medium double-resolution black title-strip member.
  * @ghidraAddress 0x607cc
  */
-- (NSMutableData *)musicNameImageBlack2xDataMedium;
+- (nullable NSMutableData *)musicNameImageBlack2xDataMedium;
 /**
  * @brief The hard double-resolution black title-strip member.
  * @ghidraAddress 0x607e0
  */
-- (NSMutableData *)musicNameImageBlack2xDataHard;
+- (nullable NSMutableData *)musicNameImageBlack2xDataHard;
 /**
  * @brief The default double-resolution black artist-strip member.
  * @ghidraAddress 0x607f4
  */
-- (NSMutableData *)artistNameImageBlack2xData;
+- (nullable NSMutableData *)artistNameImageBlack2xData;
 /**
  * @brief The basic double-resolution black artist-strip member.
  * @ghidraAddress 0x60808
  */
-- (NSMutableData *)artistNameImageBlack2xDataBasic;
+- (nullable NSMutableData *)artistNameImageBlack2xDataBasic;
 /**
  * @brief The medium double-resolution black artist-strip member.
  * @ghidraAddress 0x6081c
  */
-- (NSMutableData *)artistNameImageBlack2xDataMedium;
+- (nullable NSMutableData *)artistNameImageBlack2xDataMedium;
 /**
  * @brief The hard double-resolution black artist-strip member.
  * @ghidraAddress 0x60830
  */
-- (NSMutableData *)artistNameImageBlack2xDataHard;
+- (nullable NSMutableData *)artistNameImageBlack2xDataHard;
 
 /**
  * @brief The default double-resolution brown-tinted title strip, PNG encoded.
  * @ghidraAddress 0x60844
  */
-- (NSData *)musicNameImageBrown2xData;
+- (nullable NSData *)musicNameImageBrown2xData;
 /**
  * @brief The basic double-resolution brown-tinted title strip, PNG encoded.
  * @ghidraAddress 0x60988
  */
-- (NSData *)musicNameImageBrown2xDataBasic;
+- (nullable NSData *)musicNameImageBrown2xDataBasic;
 /**
  * @brief The medium double-resolution brown-tinted title strip, PNG encoded.
  * @ghidraAddress 0x60ad8
  */
-- (NSData *)musicNameImageBrown2xDataMedium;
+- (nullable NSData *)musicNameImageBrown2xDataMedium;
 /**
  * @brief The hard double-resolution brown-tinted title strip, PNG encoded.
  * @ghidraAddress 0x60c28
  */
-- (NSData *)musicNameImageBrown2xDataHard;
+- (nullable NSData *)musicNameImageBrown2xDataHard;
 /**
  * @brief The default double-resolution brown-tinted artist strip, PNG encoded.
  * @ghidraAddress 0x60d78
  */
-- (NSData *)artistNameImageBrown2xData;
+- (nullable NSData *)artistNameImageBrown2xData;
 /**
  * @brief The basic double-resolution brown-tinted artist strip, PNG encoded.
  * @ghidraAddress 0x60ebc
  */
-- (NSData *)artistNameImageBrown2xDataBasic;
+- (nullable NSData *)artistNameImageBrown2xDataBasic;
 /**
  * @brief The medium double-resolution brown-tinted artist strip, PNG encoded.
  * @ghidraAddress 0x6100c
  */
-- (NSData *)artistNameImageBrown2xDataMedium;
+- (nullable NSData *)artistNameImageBrown2xDataMedium;
 /**
  * @brief The hard double-resolution brown-tinted artist strip, PNG encoded.
  * @ghidraAddress 0x6115c
  */
-- (NSData *)artistNameImageBrown2xDataHard;
+- (nullable NSData *)artistNameImageBrown2xDataHard;
 
 /**
  * @brief The default artwork image, decoded and cached.
  * @ghidraAddress 0x612ac
  */
-- (UIImage *)artwork;
+- (nullable UIImage *)artwork;
 /**
  * @brief The basic artwork image, decoded and cached.
  * @ghidraAddress 0x61498
  */
-- (UIImage *)artworkBasic;
+- (nullable UIImage *)artworkBasic;
 /**
  * @brief The medium artwork image, decoded and cached.
  * @ghidraAddress 0x61684
  */
-- (UIImage *)artworkMedium;
+- (nullable UIImage *)artworkMedium;
 /**
  * @brief The hard artwork image, decoded and cached.
  * @ghidraAddress 0x6188c
  */
-- (UIImage *)artworkHard;
+- (nullable UIImage *)artworkHard;
 /**
  * @brief The default white title-strip image.
  * @ghidraAddress 0x61a94
  */
-- (UIImage *)musicNameImageWhite;
+- (nullable UIImage *)musicNameImageWhite;
 /**
  * @brief The basic white title-strip image.
  * @ghidraAddress 0x61ba4
  */
-- (UIImage *)musicNameImageWhiteBasic;
+- (nullable UIImage *)musicNameImageWhiteBasic;
 /**
  * @brief The medium white title-strip image.
  * @ghidraAddress 0x61cb4
  */
-- (UIImage *)musicNameImageWhiteMedium;
+- (nullable UIImage *)musicNameImageWhiteMedium;
 /**
  * @brief The hard white title-strip image.
  * @ghidraAddress 0x61dc4
  */
-- (UIImage *)musicNameImageWhiteHard;
+- (nullable UIImage *)musicNameImageWhiteHard;
 /**
  * @brief The default white artist-strip image.
  * @ghidraAddress 0x61ed4
  */
-- (UIImage *)artistNameImageWhite;
+- (nullable UIImage *)artistNameImageWhite;
 /**
  * @brief The basic white artist-strip image.
  * @ghidraAddress 0x61fe4
  */
-- (UIImage *)artistNameImageWhiteBasic;
+- (nullable UIImage *)artistNameImageWhiteBasic;
 /**
  * @brief The medium white artist-strip image.
  * @ghidraAddress 0x620f4
  */
-- (UIImage *)artistNameImageWhiteMedium;
+- (nullable UIImage *)artistNameImageWhiteMedium;
 /**
  * @brief The hard white artist-strip image.
  * @ghidraAddress 0x62204
  */
-- (UIImage *)artistNameImageWhiteHard;
+- (nullable UIImage *)artistNameImageWhiteHard;
 /**
  * @brief The default black title-strip image.
  * @ghidraAddress 0x62314
  */
-- (UIImage *)musicNameImageBlack;
+- (nullable UIImage *)musicNameImageBlack;
 /**
  * @brief The basic black title-strip image.
  * @ghidraAddress 0x624a0
  */
-- (UIImage *)musicNameImageBlackBasic;
+- (nullable UIImage *)musicNameImageBlackBasic;
 /**
  * @brief The medium black title-strip image.
  * @ghidraAddress 0x62638
  */
-- (UIImage *)musicNameImageBlackMedium;
+- (nullable UIImage *)musicNameImageBlackMedium;
 /**
  * @brief The hard black title-strip image.
  * @ghidraAddress 0x627d0
  */
-- (UIImage *)musicNameImageBlackHard;
+- (nullable UIImage *)musicNameImageBlackHard;
 /**
  * @brief The default black artist-strip image.
  * @ghidraAddress 0x62968
  */
-- (UIImage *)artistNameImageBlack;
+- (nullable UIImage *)artistNameImageBlack;
 /**
  * @brief The basic black artist-strip image.
  * @ghidraAddress 0x62af4
  */
-- (UIImage *)artistNameImageBlackBasic;
+- (nullable UIImage *)artistNameImageBlackBasic;
 /**
  * @brief The medium black artist-strip image.
  * @ghidraAddress 0x62c8c
  */
-- (UIImage *)artistNameImageBlackMedium;
+- (nullable UIImage *)artistNameImageBlackMedium;
 /**
  * @brief The hard black artist-strip image.
  * @ghidraAddress 0x62e24
  */
-- (UIImage *)artistNameImageBlackHard;
+- (nullable UIImage *)artistNameImageBlackHard;
 /**
  * @brief The default brown-tinted title-strip image.
  * @ghidraAddress 0x62fbc
  */
-- (UIImage *)musicNameImageBrown;
+- (nullable UIImage *)musicNameImageBrown;
 /**
  * @brief The basic brown-tinted title-strip image.
  * @ghidraAddress 0x63154
  */
-- (UIImage *)musicNameImageBrownBasic;
+- (nullable UIImage *)musicNameImageBrownBasic;
 /**
  * @brief The medium brown-tinted title-strip image.
  * @ghidraAddress 0x632f8
  */
-- (UIImage *)musicNameImageBrownMedium;
+- (nullable UIImage *)musicNameImageBrownMedium;
 /**
  * @brief The hard brown-tinted title-strip image.
  * @ghidraAddress 0x6349c
  */
-- (UIImage *)musicNameImageBrownHard;
+- (nullable UIImage *)musicNameImageBrownHard;
 /**
  * @brief The default brown-tinted artist-strip image.
  * @ghidraAddress 0x63640
  */
-- (UIImage *)artistNameImageBrown;
+- (nullable UIImage *)artistNameImageBrown;
 /**
  * @brief The basic brown-tinted artist-strip image.
  * @ghidraAddress 0x637d8
  */
-- (UIImage *)artistNameImageBrownBasic;
+- (nullable UIImage *)artistNameImageBrownBasic;
 /**
  * @brief The medium brown-tinted artist-strip image.
  * @ghidraAddress 0x6397c
  */
-- (UIImage *)artistNameImageBrownMedium;
+- (nullable UIImage *)artistNameImageBrownMedium;
 /**
  * @brief The hard brown-tinted artist-strip image.
  * @ghidraAddress 0x63b20
  */
-- (UIImage *)artistNameImageBrownHard;
+- (nullable UIImage *)artistNameImageBrownHard;
 
 /**
  * @brief The default double-resolution artwork image.
  * @ghidraAddress 0x63cc4
  */
-- (UIImage *)artwork2x;
+- (nullable UIImage *)artwork2x;
 /**
  * @brief The basic double-resolution artwork image.
  * @ghidraAddress 0x63dbc
  */
-- (UIImage *)artwork2xBasic;
+- (nullable UIImage *)artwork2xBasic;
 /**
  * @brief The medium double-resolution artwork image.
  * @ghidraAddress 0x63eb4
  */
-- (UIImage *)artwork2xMedium;
+- (nullable UIImage *)artwork2xMedium;
 /**
  * @brief The hard double-resolution artwork image.
  * @ghidraAddress 0x63fac
  */
-- (UIImage *)artwork2xHard;
+- (nullable UIImage *)artwork2xHard;
 /**
  * @brief The default double-resolution white title-strip image.
  * @ghidraAddress 0x640a4
  */
-- (UIImage *)musicNameImageWhite2x;
+- (nullable UIImage *)musicNameImageWhite2x;
 /**
  * @brief The basic double-resolution white title-strip image.
  * @ghidraAddress 0x6419c
  */
-- (UIImage *)musicNameImageWhite2xBasic;
+- (nullable UIImage *)musicNameImageWhite2xBasic;
 /**
  * @brief The medium double-resolution white title-strip image.
  * @ghidraAddress 0x64294
  */
-- (UIImage *)musicNameImageWhite2xMedium;
+- (nullable UIImage *)musicNameImageWhite2xMedium;
 /**
  * @brief The hard double-resolution white title-strip image.
  * @ghidraAddress 0x6438c
  */
-- (UIImage *)musicNameImageWhite2xHard;
+- (nullable UIImage *)musicNameImageWhite2xHard;
 /**
  * @brief The default double-resolution white artist-strip image.
  * @ghidraAddress 0x64484
  */
-- (UIImage *)artistNameImageWhite2x;
+- (nullable UIImage *)artistNameImageWhite2x;
 /**
  * @brief The basic double-resolution white artist-strip image.
  * @ghidraAddress 0x6457c
  */
-- (UIImage *)artistNameImageWhite2xBasic;
+- (nullable UIImage *)artistNameImageWhite2xBasic;
 /**
  * @brief The medium double-resolution white artist-strip image.
  * @ghidraAddress 0x64674
  */
-- (UIImage *)artistNameImageWhite2xMedium;
+- (nullable UIImage *)artistNameImageWhite2xMedium;
 /**
  * @brief The hard double-resolution white artist-strip image.
  * @ghidraAddress 0x6476c
  */
-- (UIImage *)artistNameImageWhite2xHard;
+- (nullable UIImage *)artistNameImageWhite2xHard;
 /**
  * @brief The default double-resolution black title-strip image.
  * @ghidraAddress 0x64864
  */
-- (UIImage *)musicNameImageBlack2x;
+- (nullable UIImage *)musicNameImageBlack2x;
 /**
  * @brief The basic double-resolution black title-strip image.
  * @ghidraAddress 0x6495c
  */
-- (UIImage *)musicNameImageBlack2xBasic;
+- (nullable UIImage *)musicNameImageBlack2xBasic;
 /**
  * @brief The medium double-resolution black title-strip image.
  * @ghidraAddress 0x64a54
  */
-- (UIImage *)musicNameImageBlack2xMedium;
+- (nullable UIImage *)musicNameImageBlack2xMedium;
 /**
  * @brief The hard double-resolution black title-strip image.
  * @ghidraAddress 0x64b4c
  */
-- (UIImage *)musicNameImageBlack2xHard;
+- (nullable UIImage *)musicNameImageBlack2xHard;
 /**
  * @brief The default double-resolution black artist-strip image.
  * @ghidraAddress 0x64c44
  */
-- (UIImage *)artistNameImageBlack2x;
+- (nullable UIImage *)artistNameImageBlack2x;
 /**
  * @brief The basic double-resolution black artist-strip image.
  * @ghidraAddress 0x64d3c
  */
-- (UIImage *)artistNameImageBlack2xBasic;
+- (nullable UIImage *)artistNameImageBlack2xBasic;
 /**
  * @brief The medium double-resolution black artist-strip image.
  * @ghidraAddress 0x64e34
  */
-- (UIImage *)artistNameImageBlack2xMedium;
+- (nullable UIImage *)artistNameImageBlack2xMedium;
 /**
  * @brief The hard double-resolution black artist-strip image.
  * @ghidraAddress 0x64f2c
  */
-- (UIImage *)artistNameImageBlack2xHard;
+- (nullable UIImage *)artistNameImageBlack2xHard;
 /**
  * @brief The default double-resolution brown-tinted title-strip image.
  * @ghidraAddress 0x65024
  */
-- (UIImage *)musicNameImageBrown2x;
+- (nullable UIImage *)musicNameImageBrown2x;
 /**
  * @brief The basic double-resolution brown-tinted title-strip image.
  * @ghidraAddress 0x6511c
  */
-- (UIImage *)musicNameImageBrown2xBasic;
+- (nullable UIImage *)musicNameImageBrown2xBasic;
 /**
  * @brief The medium double-resolution brown-tinted title-strip image.
  * @ghidraAddress 0x65214
  */
-- (UIImage *)musicNameImageBrown2xMedium;
+- (nullable UIImage *)musicNameImageBrown2xMedium;
 /**
  * @brief The hard double-resolution brown-tinted title-strip image.
  * @ghidraAddress 0x6530c
  */
-- (UIImage *)musicNameImageBrown2xHard;
+- (nullable UIImage *)musicNameImageBrown2xHard;
 /**
  * @brief The default double-resolution brown-tinted artist-strip image.
  * @ghidraAddress 0x65404
  */
-- (UIImage *)artistNameImageBrown2x;
+- (nullable UIImage *)artistNameImageBrown2x;
 /**
  * @brief The basic double-resolution brown-tinted artist-strip image.
  * @ghidraAddress 0x654fc
  */
-- (UIImage *)artistNameImageBrown2xBasic;
+- (nullable UIImage *)artistNameImageBrown2xBasic;
 /**
  * @brief The medium double-resolution brown-tinted artist-strip image.
  * @ghidraAddress 0x655f4
  */
-- (UIImage *)artistNameImageBrown2xMedium;
+- (nullable UIImage *)artistNameImageBrown2xMedium;
 /**
  * @brief The hard double-resolution brown-tinted artist-strip image.
  * @ghidraAddress 0x656ec
  */
-- (UIImage *)artistNameImageBrown2xHard;
+- (nullable UIImage *)artistNameImageBrown2xHard;
 
 /**
  * @brief Tint @p image with @p color, preserving its alpha.
@@ -838,7 +843,7 @@
  * @return The tinted image.
  * @ghidraAddress 0x657e4
  */
-- (UIImage *)setColor:(UIImage *)image withColor:(UIColor *)color;
+- (nullable UIImage *)setColor:(UIImage *)image withColor:(UIColor *)color;
 
 /**
  * @brief Decode and cache the default artwork image if it is not cached already.
@@ -928,6 +933,8 @@
 - (NSComparisonResult)compareDifficultySpecial:(MusicData *)other;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

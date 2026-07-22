@@ -21,6 +21,8 @@
 @class MusicData;
 @class StoreMusicInfo;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief The catalogue-manager singleton.
  */
@@ -50,7 +52,7 @@
  * @param musicID The tune identifier.
  * @return The bundle resource path, or @c nil.
  */
-+ (NSString *)getPathFromBundle:(int)musicID;
++ (nullable NSString *)getPathFromBundle:(int)musicID;
 /**
  * @brief The private Documents path a purchased tune's archive is stored at.
  * @ghidraAddress 0x6aad8
@@ -85,13 +87,13 @@
  * @param musicID The tune identifier.
  * @return The matching dictionary, or @c nil.
  */
-- (NSDictionary *)getPurchasedMusicDictionary:(int)musicID;
+- (nullable NSDictionary *)getPurchasedMusicDictionary:(int)musicID;
 /**
  * @brief The full array of purchased-music dictionaries.
  * @ghidraAddress 0x6b7c4
  * @return The purchased-music dictionary array.
  */
-- (NSMutableArray *)getPurchasedMusicDictionaris;
+- (nullable NSMutableArray *)getPurchasedMusicDictionaris;
 /**
  * @brief Record a purchase described by @p storeMusicInfo, updating an existing entry in place or
  *        appending a new one, and mark the catalogue dirty.
@@ -128,7 +130,7 @@
  * @param musicID The tune identifier.
  * @return The matching catalogue entry, or @c nil.
  */
-- (MusicData *)getMusicData:(int)musicID;
+- (nullable MusicData *)getMusicData:(int)musicID;
 /**
  * @brief Release the cached artwork of every catalogue entry.
  * @ghidraAddress 0x6c8b4
@@ -176,7 +178,7 @@
  * @ghidraAddress 0x6d0b8 (getter)
  * @ghidraAddress 0x6d0c8 (setter)
  */
-@property(nonatomic, strong) NSMutableArray *clientMusics;
+@property(nonatomic, strong, nullable) NSMutableArray *clientMusics;
 /**
  * @brief The preinstalled tune identifiers, as @c NSNumber values.
  * @ghidraAddress 0x6d100 (getter)
@@ -188,13 +190,13 @@
  * @ghidraAddress 0x6d148 (getter)
  * @ghidraAddress 0x6d158 (setter)
  */
-@property(nonatomic, strong) NSMutableArray *purchasedMusicDictionaries;
+@property(nonatomic, strong, nullable) NSMutableArray *purchasedMusicDictionaries;
 /**
  * @brief The cached catalogue-entry array.
  * @ghidraAddress 0x6d190 (getter)
  * @ghidraAddress 0x6d1a0 (setter)
  */
-@property(nonatomic, strong) NSMutableArray *musicDataArray;
+@property(nonatomic, strong, nullable) NSMutableArray *musicDataArray;
 /**
  * @brief Whether the cached catalogue-entry array is stale and must be rebuilt.
  * @ghidraAddress 0x6d1d8 (getter)
@@ -203,6 +205,8 @@
 @property(nonatomic, assign) BOOL musicDataArrayDirtyFlag;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

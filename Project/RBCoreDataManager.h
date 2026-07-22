@@ -11,6 +11,8 @@
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief The shared owner of the app's Core Data stacks.
  *
@@ -22,34 +24,34 @@
 /**
  * @brief The managed object context for the score stack, built lazily on first access.
  */
-@property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+@property(nonatomic, strong, nullable) NSManagedObjectContext *managedObjectContext;
 
 /**
  * @brief The managed object model for the score stack, loaded lazily from the bundled model on
  * first access.
  */
-@property(nonatomic, strong) NSManagedObjectModel *managedObjectModel;
+@property(nonatomic, strong, nullable) NSManagedObjectModel *managedObjectModel;
 
 /**
  * @brief The persistent store coordinator for the score stack, built lazily on first access.
  */
-@property(nonatomic, strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property(nonatomic, strong, nullable) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 /**
  * @brief The managed object context for the history stack, built lazily on first access.
  */
-@property(nonatomic, strong) NSManagedObjectContext *historyContext;
+@property(nonatomic, strong, nullable) NSManagedObjectContext *historyContext;
 
 /**
  * @brief The managed object model for the history stack, loaded lazily from the bundled model on
  * first access.
  */
-@property(nonatomic, strong) NSManagedObjectModel *historyModel;
+@property(nonatomic, strong, nullable) NSManagedObjectModel *historyModel;
 
 /**
  * @brief The persistent store coordinator for the history stack, built lazily on first access.
  */
-@property(nonatomic, strong) NSPersistentStoreCoordinator *historyCoordinator;
+@property(nonatomic, strong, nullable) NSPersistentStoreCoordinator *historyCoordinator;
 
 /**
  * @brief The shared manager, created once through @c dispatch_once.
@@ -66,6 +68,8 @@
 - (NSString *)scoreDataFileName;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

@@ -10,6 +10,8 @@
 
 @class RBUnlockPackageItemData;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief An unlock package: its metadata and the item entries it contains.
  */
@@ -32,7 +34,7 @@
  * @ghidraAddress 0x19a9c0 (getter)
  * @ghidraAddress 0x19a9d0 (setter)
  */
-@property(nonatomic, strong) NSString *title;
+@property(nonatomic, strong, nullable) NSString *title;
 /**
  * @brief The package's item entries, ordered by descending point value.
  * @ghidraAddress 0x19a9dc (getter)
@@ -49,6 +51,8 @@
 - (void)parseDictionary:(NSDictionary *)dictionary;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

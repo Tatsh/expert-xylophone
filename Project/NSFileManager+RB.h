@@ -12,6 +12,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Filesystem convenience helpers layered on @c NSFileManager.
  */
@@ -114,6 +116,8 @@
 + (NSString *)resourcePath;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

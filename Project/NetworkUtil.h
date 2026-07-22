@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Builders for secure (HTTPS) API endpoint URLs on the game server.
  */
@@ -19,7 +21,7 @@
  * @return The composed HTTPS URL.
  * @ghidraAddress 0x329d0
  */
-+ (NSURL *)createSecureURL:(NSString *)path;
++ (nullable NSURL *)createSecureURL:(NSString *)path;
 
 /**
  * @brief Build a secure API URL for a CGI endpoint under @c /akx/main/cgi/, optionally appending a
@@ -29,7 +31,7 @@
  * @return The composed HTTPS URL.
  * @ghidraAddress 0x32a6c
  */
-+ (NSURL *)createSecureAPI:(NSString *)api withParam:(NSString *)param;
++ (nullable NSURL *)createSecureAPI:(NSString *)api withParam:(nullable NSString *)param;
 
 /**
  * @brief The APNs device-token registration endpoint
@@ -37,9 +39,11 @@
  * @return The token-registration URL.
  * @ghidraAddress 0x32c90
  */
-+ (NSURL *)tokenSetURL;
++ (nullable NSURL *)tokenSetURL;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

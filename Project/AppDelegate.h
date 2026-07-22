@@ -13,6 +13,8 @@
 
 @class neWindow, RBViewController, RBNavigationController, RBResourceDownloadViewController;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief The application delegate for REFLEC BEAT plus.
  */
@@ -48,19 +50,19 @@
  * @ghidraAddress 0x547a4 (getter)
  * @ghidraAddress 0x547b4 (setter)
  */
-@property(nonatomic, strong) id musicData;
+@property(nonatomic, strong, nullable) id musicData;
 /**
  * @brief The loaded replay/ghost data for the current play.
  * @ghidraAddress 0x547ec (getter)
  * @ghidraAddress 0x547fc (setter)
  */
-@property(nonatomic, strong) id replayData;
+@property(nonatomic, strong, nullable) id replayData;
 /**
  * @brief The active music-list search string.
  * @ghidraAddress 0x54834 (getter)
  * @ghidraAddress 0x54844 (setter)
  */
-@property(nonatomic, strong) NSString *searchString;
+@property(nonatomic, strong, nullable) NSString *searchString;
 /**
  * @brief The unread cross-promotion (Applilink) recommendation count shown on the badge.
  * @ghidraAddress 0x5487c (getter)
@@ -78,13 +80,13 @@
  * @ghidraAddress 0x548c0 (getter)
  * @ghidraAddress 0x548d0 (setter)
  */
-@property(nonatomic, strong) NSArray *earlyBonusList;
+@property(nonatomic, strong, nullable) NSArray *earlyBonusList;
 /**
  * @brief The hot bonus campaign list.
  * @ghidraAddress 0x54908 (getter)
  * @ghidraAddress 0x54918 (setter)
  */
-@property(nonatomic, strong) NSArray *hotBonusList;
+@property(nonatomic, strong, nullable) NSArray *hotBonusList;
 /**
  * @brief Whether the treasure map screen has already been shown this session.
  * @ghidraAddress 0x54950 (getter)
@@ -107,25 +109,26 @@
  * @ghidraAddress 0x549b0 (getter)
  * @ghidraAddress 0x549c0 (setter)
  */
-@property(nonatomic, strong) RBResourceDownloadViewController *resourceDownloadViewController;
+@property(nonatomic, strong, nullable)
+    RBResourceDownloadViewController *resourceDownloadViewController;
 /**
  * @brief A general-purpose URL string used by the update/web flows.
  * @ghidraAddress 0x549f8 (getter)
  * @ghidraAddress 0x54a08 (setter)
  */
-@property(nonatomic, strong) NSString *urlString;
+@property(nonatomic, strong, nullable) NSString *urlString;
 /**
  * @brief The server-reported latest app version string.
  * @ghidraAddress 0x54a14 (getter)
  * @ghidraAddress 0x54a24 (setter)
  */
-@property(nonatomic, strong) NSString *version;
+@property(nonatomic, strong, nullable) NSString *version;
 /**
  * @brief The server time string from the last info fetch.
  * @ghidraAddress 0x54a30 (getter)
  * @ghidraAddress 0x54a40 (setter)
  */
-@property(nonatomic, strong) NSString *serverTime;
+@property(nonatomic, strong, nullable) NSString *serverTime;
 /**
  * @brief Whether the server flagged a mandatory app update.
  * @ghidraAddress 0x54a5c (getter)
@@ -160,22 +163,22 @@
  * @brief The last-update time string for the news info feed.
  * @ghidraAddress 0x54aec (getter)
  */
-@property(nonatomic, strong, readonly) NSString *infoLastUpdateTimeString;
+@property(nonatomic, strong, readonly, nullable) NSString *infoLastUpdateTimeString;
 /**
  * @brief The pack identifier to open in the store on next launch.
  * @ghidraAddress 0x54afc (getter)
  */
-@property(nonatomic, strong) NSString *packIDForOpenStore;
+@property(nonatomic, strong, nullable) NSString *packIDForOpenStore;
 /**
  * @brief The campaign identifier to open in the store on next launch.
  * @ghidraAddress 0x54b0c (getter)
  */
-@property(nonatomic, strong) NSString *campaignIDForOpenStore;
+@property(nonatomic, strong, nullable) NSString *campaignIDForOpenStore;
 /**
  * @brief The extend-note product identifier to open in the store on next launch.
  * @ghidraAddress 0x54b1c (getter)
  */
-@property(nonatomic, strong) NSString *extendNotePIDForOpenStore;
+@property(nonatomic, strong, nullable) NSString *extendNotePIDForOpenStore;
 /**
  * @brief The base terms-of-service endpoint URL.
  * @ghidraAddress 0x54b2c (getter)
@@ -191,12 +194,12 @@
  * @brief The last-update time string for the terms document.
  * @ghidraAddress 0x54b64 (getter)
  */
-@property(nonatomic, strong, readonly) NSString *termLastUpdateTimeString;
+@property(nonatomic, strong, readonly, nullable) NSString *termLastUpdateTimeString;
 /**
  * @brief The latest accepted terms version.
  * @ghidraAddress 0x54b84 (setter)
  */
-@property(nonatomic, strong) NSString *latestTermVer;
+@property(nonatomic, strong, nullable) NSString *latestTermVer;
 /**
  * @brief The pending push-notification payloads captured at launch.
  * @ghidraAddress 0x54b90 (getter)
@@ -208,19 +211,19 @@
  * @ghidraAddress 0x54bd8 (getter)
  * @ghidraAddress 0x54be8 (setter)
  */
-@property(nonatomic, strong) NSURL *outerUrl;
+@property(nonatomic, strong, nullable) NSURL *outerUrl;
 /**
  * @brief The resource downloader driving update fetches.
  * @ghidraAddress 0x54bf4 (getter)
  * @ghidraAddress 0x54c04 (setter)
  */
-@property(nonatomic, strong) id downloader;
+@property(nonatomic, strong, nullable) id downloader;
 /**
  * @brief The APNs device-token uploader.
  * @ghidraAddress 0x54c3c (getter)
  * @ghidraAddress 0x54c4c (setter)
  */
-@property(nonatomic, strong) id apnsUploader;
+@property(nonatomic, strong, nullable) id apnsUploader;
 
 /**
  * @brief The shared app delegate: @c [[UIApplication sharedApplication] delegate].
@@ -233,14 +236,14 @@
  * registration and to build the APNs token-upload payload.
  * @ghidraAddress 0x511cc
  */
-+ (NSArray *)getServerData;
++ (nullable NSArray *)getServerData;
 
 /**
  * @brief The device-unique key string used to encrypt the purchased-music list: a Keychain
  * generic-password value, generated as a fresh @c CFUUID on first run and persisted back.
  * @ghidraAddress 0x50cb8
  */
-+ (NSString *)musicListKey;
++ (nullable NSString *)musicListKey;
 
 /**
  * @brief Exclude a file or directory from iCloud/iTunes backup via the legacy
@@ -273,6 +276,8 @@
 - (void)startRegisterForRemoteNotification;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

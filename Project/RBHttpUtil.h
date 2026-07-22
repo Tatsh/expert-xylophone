@@ -14,6 +14,8 @@
 
 @class RBHttpUtil;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A lifecycle callback block, passed the connection that fired it.
  */
@@ -43,19 +45,19 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @ghidraAddress 0x398a8 (getter)
  * @ghidraAddress 0x398b8 (setter)
  */
-@property(nonatomic, strong) NSMutableURLRequest *request;
+@property(nonatomic, strong, nullable) NSMutableURLRequest *request;
 /**
  * @brief The in-flight data task, or nil once cancelled or reset.
  * @ghidraAddress 0x398f0 (getter)
  * @ghidraAddress 0x39900 (setter)
  */
-@property(nonatomic, strong) NSURLSessionDataTask *dataTask;
+@property(nonatomic, strong, nullable) NSURLSessionDataTask *dataTask;
 /**
  * @brief The in-flight download task, or nil once cancelled or reset.
  * @ghidraAddress 0x39938 (getter)
  * @ghidraAddress 0x39948 (setter)
  */
-@property(nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
+@property(nonatomic, strong, nullable) NSURLSessionDownloadTask *downloadTask;
 /**
  * @brief The expected body length reported by the response, or a non-positive value if unknown.
  * @ghidraAddress 0x39980 (getter)
@@ -67,25 +69,25 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @ghidraAddress 0x399a0 (getter)
  * @ghidraAddress 0x399b0 (setter)
  */
-@property(nonatomic, strong) NSMutableData *downloadedData;
+@property(nonatomic, strong, nullable) NSMutableData *downloadedData;
 /**
  * @brief The response's header fields.
  * @ghidraAddress 0x399e8 (getter)
  * @ghidraAddress 0x399f8 (setter)
  */
-@property(nonatomic, strong) NSDictionary *downloadedHeader;
+@property(nonatomic, strong, nullable) NSDictionary *downloadedHeader;
 /**
  * @brief The delegate that receives lifecycle callbacks when no block is set.
  * @ghidraAddress 0x39a30 (getter)
  * @ghidraAddress 0x39a50 (setter)
  */
-@property(nonatomic, weak) id<RBHttpUtilDelegate> delegate;
+@property(nonatomic, weak, nullable) id<RBHttpUtilDelegate> delegate;
 /**
  * @brief The destination path for a download-to-file request, or nil for an in-memory request.
  * @ghidraAddress 0x39a64 (getter)
  * @ghidraAddress 0x39a74 (setter)
  */
-@property(nonatomic, strong) NSString *filePath;
+@property(nonatomic, strong, nullable) NSString *filePath;
 /**
  * @brief Whether the received body passed its optional integrity hash check.
  * @ghidraAddress 0x39aac (getter)
@@ -97,37 +99,37 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @ghidraAddress 0x39acc (getter)
  * @ghidraAddress 0x39adc (setter)
  */
-@property(nonatomic, copy) RBHttpUtilBlock successBlock;
+@property(nonatomic, copy, nullable) RBHttpUtilBlock successBlock;
 /**
  * @brief Invoked on incremental progress; takes precedence over the delegate's proceed callback.
  * @ghidraAddress 0x39ae8 (getter)
  * @ghidraAddress 0x39af8 (setter)
  */
-@property(nonatomic, copy) RBHttpUtilBlock proceedBlock;
+@property(nonatomic, copy, nullable) RBHttpUtilBlock proceedBlock;
 /**
  * @brief Invoked on failure; takes precedence over the delegate's error callback.
  * @ghidraAddress 0x39b04 (getter)
  * @ghidraAddress 0x39b14 (setter)
  */
-@property(nonatomic, copy) RBHttpUtilBlock failureBlock;
+@property(nonatomic, copy, nullable) RBHttpUtilBlock failureBlock;
 /**
  * @brief Extra object carried alongside the request (caller-defined context).
  * @ghidraAddress 0x397d0 (getter)
  * @ghidraAddress 0x397e0 (setter)
  */
-@property(nonatomic, strong) id addData;
+@property(nonatomic, strong, nullable) id addData;
 /**
  * @brief The underlying system error message, if any.
  * @ghidraAddress 0x39818 (getter)
  * @ghidraAddress 0x39828 (setter)
  */
-@property(nonatomic, strong) NSString *systemErrorMessage;
+@property(nonatomic, strong, nullable) NSString *systemErrorMessage;
 /**
  * @brief A user-facing error message, if any.
  * @ghidraAddress 0x39860 (getter)
  * @ghidraAddress 0x39870 (setter)
  */
-@property(nonatomic, strong) NSString *showErrorMessage;
+@property(nonatomic, strong, nullable) NSString *showErrorMessage;
 /**
  * @brief The request timeout interval, or -1 when unset. Retained for parity; not applied here.
  * @ghidraAddress 0x39790 (getter)
@@ -145,12 +147,12 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @brief Serialise a dictionary to JSON @c NSData for a request body.
  * @ghidraAddress 0x36aa8
  */
-+ (NSData *)dictionaryToJsonData:(NSDictionary *)dictionary;
++ (nullable NSData *)dictionaryToJsonData:(nullable NSDictionary *)dictionary;
 /**
  * @brief Serialise a dictionary to @c application/x-www-form-urlencoded query @c NSData.
  * @ghidraAddress 0x36754
  */
-+ (NSData *)dictionaryToQueryData:(NSDictionary *)dictionary;
++ (nullable NSData *)dictionaryToQueryData:(nullable NSDictionary *)dictionary;
 
 /**
  * @brief Initialise a GET request for @p url with the common headers.
@@ -162,15 +164,15 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @ghidraAddress 0x36e0c
  */
 - (instancetype)initWithPostURL:(NSURL *)url
-                           post:(NSData *)post
-                    contentType:(NSString *)contentType;
+                           post:(nullable NSData *)post
+                    contentType:(nullable NSString *)contentType;
 /**
  * @brief Initialise a POST request with a body, content type, and timeout (seconds).
  * @ghidraAddress 0x36ea4
  */
 - (instancetype)initWithPostURL:(NSURL *)url
-                           post:(NSData *)post
-                    contentType:(NSString *)contentType
+                           post:(nullable NSData *)post
+                    contentType:(nullable NSString *)contentType
                 timeoutInterval:(float)timeoutInterval;
 /**
  * @brief Initialise a GET request that saves the response body to @p filePath.
@@ -184,22 +186,22 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  */
 - (void)updateRequest:(NSURL *)url
            HTTPMethod:(NSString *)HTTPMethod
-          contentType:(NSString *)contentType
-             sendData:(NSData *)sendData
-             filePath:(NSString *)filePath;
+          contentType:(nullable NSString *)contentType
+             sendData:(nullable NSData *)sendData
+             filePath:(nullable NSString *)filePath;
 
 /**
  * @brief Start the request, delivering callbacks to @p delegate.
  * @ghidraAddress 0x376ec
  */
-- (NSURLSessionTask *)startDownloading:(id<RBHttpUtilDelegate>)delegate;
+- (NSURLSessionTask *)startDownloading:(nullable id<RBHttpUtilDelegate>)delegate;
 /**
  * @brief Set the completion blocks and start the request.
  * @ghidraAddress 0x377a8
  */
-- (NSURLSessionTask *)startDownloadingWithProceed:(RBHttpUtilBlock)proceed
-                                          success:(RBHttpUtilBlock)success
-                                          failure:(RBHttpUtilBlock)failure;
+- (NSURLSessionTask *)startDownloadingWithProceed:(nullable RBHttpUtilBlock)proceed
+                                          success:(nullable RBHttpUtilBlock)success
+                                          failure:(nullable RBHttpUtilBlock)failure;
 /**
  * @brief Detach the delegate, cancel any in-flight task, and clear the completion blocks.
  * @ghidraAddress 0x37894
@@ -220,17 +222,17 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  * @brief The received response body.
  * @ghidraAddress 0x39430
  */
-- (NSData *)getData;
+- (nullable NSData *)getData;
 /**
  * @brief The received response body parsed as JSON (allowing fragments).
  * @ghidraAddress 0x3943c
  */
-- (id)getDataInJSON;
+- (nullable id)getDataInJSON;
 /**
  * @brief The response headers.
  * @ghidraAddress 0x39520
  */
-- (NSDictionary *)getHeader;
+- (nullable NSDictionary *)getHeader;
 /**
  * @brief Whether the response passed its integrity hash check.
  * @ghidraAddress 0x3952c
@@ -238,6 +240,8 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
 - (BOOL)hashChecked;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

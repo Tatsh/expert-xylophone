@@ -26,6 +26,8 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
     RBUserSettingDataThemeColette = 2,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief An archivable singleton of every persisted user setting.
  */
@@ -266,7 +268,7 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
  * @ghidraAddress 0x1f8ac8 (getter)
  * @ghidraAddress 0x1f8ad8 (setter)
  */
-@property(nonatomic, strong) NSString *termVersion;
+@property(nonatomic, strong, nullable) NSString *termVersion;
 /**
  * @brief The timestamp string of the last terms update.
  * @ghidraAddress 0x1f8ae4 (getter)
@@ -392,7 +394,7 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
  * @ghidraAddress 0x1f8d18 (getter)
  * @ghidraAddress 0x1f8d28 (setter)
  */
-@property(nonatomic, strong) NSMutableDictionary *tutorialStatuses;
+@property(nonatomic, strong, nullable) NSMutableDictionary *tutorialStatuses;
 
 #pragma mark Singleton and persistence
 
@@ -430,7 +432,7 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
  * @return The theme's resource path in the main bundle.
  * @ghidraAddress 0x1f8048
  */
-- (NSString *)themaPath;
+- (nullable NSString *)themaPath;
 
 /**
  * @brief Returns the resource name for a specific theme identifier.
@@ -521,7 +523,7 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
  * @return @c YES when the terms must be updated (or either version is missing).
  * @ghidraAddress 0x1f8160
  */
-- (BOOL)needUpdateTerms:(NSString *)version;
+- (BOOL)needUpdateTerms:(nullable NSString *)version;
 
 /**
  * @brief Records a tutorial's status and immediately persists the settings.
@@ -547,6 +549,8 @@ typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
 - (NSMutableArray *)getTutorialStatusList;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

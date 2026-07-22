@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief One entry in a player's play history, initialised from a score-like source record.
  */
@@ -20,49 +22,49 @@
  * @ghidraAddress 0x18610 (getter)
  * @ghidraAddress 0x18620 (setter)
  */
-@property(nonatomic, strong) NSData *chksco;
+@property(nonatomic, strong, nullable) NSData *chksco;
 /**
  * @brief The score achieved.
  * @ghidraAddress 0x18658 (getter)
  * @ghidraAddress 0x18668 (setter)
  */
-@property(nonatomic, strong) NSNumber *score;
+@property(nonatomic, strong, nullable) NSNumber *score;
 /**
  * @brief The combo count.
  * @ghidraAddress 0x186a0 (getter)
  * @ghidraAddress 0x186b0 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntCom;
+@property(nonatomic, strong, nullable) NSNumber *cntCom;
 /**
  * @brief The Good count.
  * @ghidraAddress 0x186e8 (getter)
  * @ghidraAddress 0x186f8 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntGood;
+@property(nonatomic, strong, nullable) NSNumber *cntGood;
 /**
  * @brief The Great count.
  * @ghidraAddress 0x18730 (getter)
  * @ghidraAddress 0x18740 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntGreat;
+@property(nonatomic, strong, nullable) NSNumber *cntGreat;
 /**
  * @brief The Just Reflec count.
  * @ghidraAddress 0x18778 (getter)
  * @ghidraAddress 0x18788 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntJR;
+@property(nonatomic, strong, nullable) NSNumber *cntJR;
 /**
  * @brief The Just count.
  * @ghidraAddress 0x187c0 (getter)
  * @ghidraAddress 0x187d0 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntJust;
+@property(nonatomic, strong, nullable) NSNumber *cntJust;
 /**
  * @brief The Miss count.
  * @ghidraAddress 0x18808 (getter)
  * @ghidraAddress 0x18818 (setter)
  */
-@property(nonatomic, strong) NSNumber *cntMiss;
+@property(nonatomic, strong, nullable) NSNumber *cntMiss;
 /**
  * @brief The achievement rate, derived from the source record's judgement tallies by @c History.
  * @ghidraAddress 0x18850 (getter)
@@ -74,25 +76,25 @@
  * @ghidraAddress 0x18870 (getter)
  * @ghidraAddress 0x18880 (setter)
  */
-@property(nonatomic, strong) NSNumber *diff;
+@property(nonatomic, strong, nullable) NSNumber *diff;
 /**
  * @brief The date the tune was played, shifted into the device's local time zone.
  * @ghidraAddress 0x188b8 (getter)
  * @ghidraAddress 0x188c8 (setter)
  */
-@property(nonatomic, strong) NSDate *playDate;
+@property(nonatomic, strong, nullable) NSDate *playDate;
 /**
  * @brief The play count.
  * @ghidraAddress 0x18900 (getter)
  * @ghidraAddress 0x18910 (setter)
  */
-@property(nonatomic, strong) NSNumber *pc;
+@property(nonatomic, strong, nullable) NSNumber *pc;
 /**
  * @brief The tune identifier this history entry belongs to.
  * @ghidraAddress 0x18948 (getter)
  * @ghidraAddress 0x18958 (setter)
  */
-@property(nonatomic, strong) NSNumber *tuneID;
+@property(nonatomic, strong, nullable) NSNumber *tuneID;
 
 /**
  * @brief Initialises a history entry by copying its fields from a score-like source record.
@@ -101,7 +103,7 @@
  * @return The initialised entry, or an entry with unset fields when @p source is @c nil.
  * @ghidraAddress 0x17fcc
  */
-- (instancetype)initWithData:(id)source;
+- (instancetype)initWithData:(nullable id)source;
 
 /**
  * @brief Shifts a date from UTC into the device's local time zone.
@@ -110,9 +112,11 @@
  * @c nil.
  * @ghidraAddress 0x18530
  */
-+ (NSDate *)convertLocalDate:(NSDate *)date;
++ (nullable NSDate *)convertLocalDate:(nullable NSDate *)date;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

@@ -36,6 +36,8 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
     RBExperienceItemTypeThema = 10,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief An archivable singleton of the player's unlocked items, campaign points, and rewards.
  */
@@ -47,7 +49,7 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
  * @ghidraAddress 0x1bd0d0 (getter)
  * @ghidraAddress 0x1bd0e0 (setter)
  */
-@property(nonatomic, assign) NSMutableArray *installedAppliId;
+@property(nonatomic, assign, nullable) NSMutableArray *installedAppliId;
 /**
  * @brief The running campaign point total for the first theme.
  * @ghidraAddress 0x1bd0f0 (getter)
@@ -71,49 +73,49 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
  * @ghidraAddress 0x1bd150 (getter)
  * @ghidraAddress 0x1bd160 (setter)
  */
-@property(nonatomic, copy) NSString *version;
+@property(nonatomic, copy, nullable) NSString *version;
 /**
  * @brief A spare date string.
  * @ghidraAddress 0x1bd16c (getter)
  * @ghidraAddress 0x1bd17c (setter)
  */
-@property(nonatomic, copy) NSString *pointDate;
+@property(nonatomic, copy, nullable) NSString *pointDate;
 /**
  * @brief A spare point string.
  * @ghidraAddress 0x1bd188 (getter)
  * @ghidraAddress 0x1bd198 (setter)
  */
-@property(nonatomic, copy) NSString *pointS;
+@property(nonatomic, copy, nullable) NSString *pointS;
 /**
  * @brief A spare point string.
  * @ghidraAddress 0x1bd1a4 (getter)
  * @ghidraAddress 0x1bd1b4 (setter)
  */
-@property(nonatomic, copy) NSString *pointP;
+@property(nonatomic, copy, nullable) NSString *pointP;
 /**
  * @brief A spare position string.
  * @ghidraAddress 0x1bd1c0 (getter)
  * @ghidraAddress 0x1bd1d0 (setter)
  */
-@property(nonatomic, copy) NSString *pos;
+@property(nonatomic, copy, nullable) NSString *pos;
 /**
  * @brief The enciphered on-disk form of @c point, produced by @c encodePoint:.
  * @ghidraAddress 0x1bd1dc (getter)
  * @ghidraAddress 0x1bd1ec (setter)
  */
-@property(nonatomic, copy) NSMutableData *pointData;
+@property(nonatomic, copy, nullable) NSMutableData *pointData;
 /**
  * @brief The enciphered on-disk form of @c pointB, produced by @c encodePoint:.
  * @ghidraAddress 0x1bd1f8 (getter)
  * @ghidraAddress 0x1bd208 (setter)
  */
-@property(nonatomic, copy) NSMutableData *pointDataB;
+@property(nonatomic, copy, nullable) NSMutableData *pointDataB;
 /**
  * @brief The enciphered on-disk form of @c pointC.
  * @ghidraAddress 0x1bd214 (getter)
  * @ghidraAddress 0x1bd224 (setter)
  */
-@property(nonatomic, copy) NSMutableData *pointDataC;
+@property(nonatomic, copy, nullable) NSMutableData *pointDataC;
 /**
  * @brief The set of unlocked background-music item identifiers.
  * @ghidraAddress 0x1bd230 (getter)
@@ -168,7 +170,7 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
  * @ghidraAddress 0x1bd470 (getter)
  * @ghidraAddress 0x1bd480 (setter)
  */
-@property(nonatomic, strong) NSMutableData *installedAppliIdsData;
+@property(nonatomic, strong, nullable) NSMutableData *installedAppliIdsData;
 
 /**
  * @brief Returns the shared experience-data singleton, unarchiving it from the user defaults or
@@ -307,14 +309,14 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
  * was @c nil.
  * @ghidraAddress 0x1baebc
  */
-- (BOOL)addRewardAppliId:(id)rewardAppliId andAppliId:(id)appliId;
+- (BOOL)addRewardAppliId:(nullable id)rewardAppliId andAppliId:(nullable id)appliId;
 /**
  * @brief Returns the application identifiers granted by a reward application.
  * @param rewardAppliId The reward application identifier to look up.
  * @return The granted application identifiers, or an empty array if none.
  * @ghidraAddress 0x1bb0a0
  */
-- (NSMutableArray *)getRewardAppliId:(id)rewardAppliId;
+- (NSMutableArray *)getRewardAppliId:(nullable id)rewardAppliId;
 
 /**
  * @brief Adds points to the campaign total of the currently active theme.
@@ -355,6 +357,8 @@ typedef NS_ENUM(NSInteger, RBExperienceItemType) {
 - (BOOL)noUnlocked;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

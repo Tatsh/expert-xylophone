@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Singleton router that dispatches deep-link URLs to per-host scheme handlers.
  */
@@ -45,9 +47,11 @@
  * or empty.
  * @ghidraAddress 0x168504
  */
-- (NSDictionary *)dictionaryFromQueryString:(NSString *)queryString;
+- (nullable NSDictionary *)dictionaryFromQueryString:(nullable NSString *)queryString;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

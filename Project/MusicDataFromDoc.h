@@ -16,6 +16,8 @@
 // MusicData class lands (the same approach ScoreData.m and AppDelegate.mm already use).
 #import "MusicData.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A user-supplied tune backed by audio and note-sheet files in the Documents directory.
  */
@@ -84,95 +86,95 @@
  * @brief The hiragana title reading, always nil for a Documents-backed tune.
  * @ghidraAddress 0x67504
  */
-- (NSString *)musicNameHira;
+- (nullable NSString *)musicNameHira;
 /**
  * @brief The romanised title, always nil for a Documents-backed tune.
  * @ghidraAddress 0x6750c
  */
-- (NSString *)musicNameRoman;
+- (nullable NSString *)musicNameRoman;
 /**
  * @brief The artist name, always nil for a Documents-backed tune.
  * @ghidraAddress 0x67514
  */
-- (NSString *)artistName;
+- (nullable NSString *)artistName;
 /**
  * @brief The hiragana artist reading, always nil for a Documents-backed tune.
  * @ghidraAddress 0x6751c
  */
-- (NSString *)artistNameHira;
+- (nullable NSString *)artistNameHira;
 /**
  * @brief The romanised artist name, always nil for a Documents-backed tune.
  * @ghidraAddress 0x67524
  */
-- (NSString *)artistNameRoman;
+- (nullable NSString *)artistNameRoman;
 
 /**
  * @brief The audio file contents loaded from the Documents directory.
  * @ghidraAddress 0x6752c
  */
-- (NSData *)music;
+- (nullable NSData *)music;
 /**
  * @brief The preview audio, always nil for a Documents-backed tune.
  * @ghidraAddress 0x675e4
  */
-- (NSData *)musicPre;
+- (nullable NSData *)musicPre;
 
 /**
  * @brief Load the note-sheet file contents from the Documents directory.
  * @ghidraAddress 0x675ec
  */
-- (NSData *)loadSheet;
+- (nullable NSData *)loadSheet;
 /**
  * @brief The basic note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676a4
  */
-- (NSData *)sheetBasic;
+- (nullable NSData *)sheetBasic;
 /**
  * @brief The basic-light note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676b0
  */
-- (NSData *)sheetBasicLight;
+- (nullable NSData *)sheetBasicLight;
 /**
  * @brief The medium note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676bc
  */
-- (NSData *)sheetMedium;
+- (nullable NSData *)sheetMedium;
 /**
  * @brief The medium-light note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676c8
  */
-- (NSData *)sheetMediumLight;
+- (nullable NSData *)sheetMediumLight;
 /**
  * @brief The hard note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676d4
  */
-- (NSData *)sheetHard;
+- (nullable NSData *)sheetHard;
 /**
  * @brief The hard-light note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676e0
  */
-- (NSData *)sheetHardLight;
+- (nullable NSData *)sheetHardLight;
 /**
  * @brief The special note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676ec
  */
-- (NSData *)sheetSpecial;
+- (nullable NSData *)sheetSpecial;
 /**
  * @brief The special-light note sheet (the single Documents note sheet).
  * @ghidraAddress 0x676f8
  */
-- (NSData *)sheetSpecialLight;
+- (nullable NSData *)sheetSpecialLight;
 
 /**
  * @brief The artwork PNG rendered at double scale.
  * @ghidraAddress 0x67704
  */
-- (NSData *)artwork2xData;
+- (nullable NSData *)artwork2xData;
 /**
  * @brief The artwork PNG rendered at single scale.
  * @ghidraAddress 0x67718
  */
-- (NSData *)artworkData;
+- (nullable NSData *)artworkData;
 /**
  * @brief Render the title into a square artwork PNG.
  * @param scale The image scale factor passed to the graphics context.
@@ -180,28 +182,28 @@
  * @return The PNG-encoded artwork.
  * @ghidraAddress 0x6772c
  */
-- (NSData *)artworkDataWithScale:(float)scale Luminance:(float)luminance;
+- (nullable NSData *)artworkDataWithScale:(float)scale Luminance:(float)luminance;
 
 /**
  * @brief The white title-name image PNG rendered at double scale.
  * @ghidraAddress 0x67944
  */
-- (NSData *)musicNameImageWhite2xData;
+- (nullable NSData *)musicNameImageWhite2xData;
 /**
  * @brief The white title-name image PNG rendered at single scale.
  * @ghidraAddress 0x67958
  */
-- (NSData *)musicNameImageWhiteData;
+- (nullable NSData *)musicNameImageWhiteData;
 /**
  * @brief The black title-name image PNG rendered at double scale.
  * @ghidraAddress 0x6796c
  */
-- (NSData *)musicNameImageBlack2xData;
+- (nullable NSData *)musicNameImageBlack2xData;
 /**
  * @brief The black title-name image PNG rendered at single scale.
  * @ghidraAddress 0x67980
  */
-- (NSData *)musicNameImageBlackData;
+- (nullable NSData *)musicNameImageBlackData;
 /**
  * @brief Render the title text into a name-strip PNG.
  * @param scale The image scale factor passed to the graphics context.
@@ -209,28 +211,28 @@
  * @return The PNG-encoded title image.
  * @ghidraAddress 0x67994
  */
-- (NSData *)musicNameImageDataWithScale:(float)scale Luminance:(float)luminance;
+- (nullable NSData *)musicNameImageDataWithScale:(float)scale Luminance:(float)luminance;
 
 /**
  * @brief The white artist-name image PNG rendered at double scale.
  * @ghidraAddress 0x67c0c
  */
-- (NSData *)artistNameImageWhite2xData;
+- (nullable NSData *)artistNameImageWhite2xData;
 /**
  * @brief The white artist-name image PNG rendered at single scale.
  * @ghidraAddress 0x67c20
  */
-- (NSData *)artistNameImageWhiteData;
+- (nullable NSData *)artistNameImageWhiteData;
 /**
  * @brief The black artist-name image PNG rendered at double scale.
  * @ghidraAddress 0x67c34
  */
-- (NSData *)artistNameImageBlack2xData;
+- (nullable NSData *)artistNameImageBlack2xData;
 /**
  * @brief The black artist-name image PNG rendered at single scale.
  * @ghidraAddress 0x67c48
  */
-- (NSData *)artistNameImageBlackData;
+- (nullable NSData *)artistNameImageBlackData;
 /**
  * @brief Render the artist text into a name-strip PNG.
  * @param scale The image scale factor passed to the graphics context.
@@ -238,9 +240,11 @@
  * @return The PNG-encoded artist image.
  * @ghidraAddress 0x67c5c
  */
-- (NSData *)artistNameImageDataWithScale:(float)scale Luminance:(float)luminance;
+- (nullable NSData *)artistNameImageDataWithScale:(float)scale Luminance:(float)luminance;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief An archivable wrapper around a single push-notification payload dictionary.
  */
@@ -19,9 +21,11 @@
  * @ghidraAddress 0x39db4 (getter)
  * @ghidraAddress 0x39dc4 (setter)
  */
-@property(nonatomic, strong) NSDictionary *notificationDict;
+@property(nonatomic, strong, nullable) NSDictionary *notificationDict;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

@@ -12,6 +12,8 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A decoded (or streamed) audio asset that vends interleaved PCM frames into a caller
  * supplied @c AudioBufferList.
@@ -80,6 +82,8 @@
             Out:(long long *)outNextFrame;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

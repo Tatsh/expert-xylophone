@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A single archivable replay note event.
  */
@@ -18,39 +20,41 @@
  * @ghidraAddress 0x106e4c (getter)
  * @ghidraAddress 0x106e5c (setter)
  */
-@property(nonatomic, strong) NSNumber *index;
+@property(nonatomic, strong, nullable) NSNumber *index;
 /**
  * @brief The note kind.
  * @ghidraAddress 0x106e94 (getter)
  * @ghidraAddress 0x106ea4 (setter)
  */
-@property(nonatomic, strong) NSNumber *type;
+@property(nonatomic, strong, nullable) NSNumber *type;
 /**
  * @brief The judgement result recorded for the note.
  * @ghidraAddress 0x106edc (getter)
  * @ghidraAddress 0x106eec (setter)
  */
-@property(nonatomic, strong) NSNumber *judge;
+@property(nonatomic, strong, nullable) NSNumber *judge;
 /**
  * @brief The Just Reflec sub-result.
  * @ghidraAddress 0x106f24 (getter)
  * @ghidraAddress 0x106f34 (setter)
  */
-@property(nonatomic, strong) NSNumber *jr;
+@property(nonatomic, strong, nullable) NSNumber *jr;
 /**
  * @brief The long-note completion rate.
  * @ghidraAddress 0x106f6c (getter)
  * @ghidraAddress 0x106f7c (setter)
  */
-@property(nonatomic, strong) NSNumber *longrate;
+@property(nonatomic, strong, nullable) NSNumber *longrate;
 /**
  * @brief The slide-note sub-result (optional; omitted from the archive when nil).
  * @ghidraAddress 0x106fb4 (getter)
  * @ghidraAddress 0x106fc4 (setter)
  */
-@property(nonatomic, strong) NSNumber *slide;
+@property(nonatomic, strong, nullable) NSNumber *slide;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

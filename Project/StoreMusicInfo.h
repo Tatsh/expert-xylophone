@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A store metadata model for a single purchasable tune.
  */
@@ -26,37 +28,37 @@
  * @ghidraAddress 0x68528 (getter)
  * @ghidraAddress 0x68538 (setter)
  */
-@property(nonatomic, strong) NSString *name;
+@property(nonatomic, strong, nullable) NSString *name;
 /**
  * @brief The tune artist.
  * @ghidraAddress 0x68570 (getter)
  * @ghidraAddress 0x68580 (setter)
  */
-@property(nonatomic, strong) NSString *artist;
+@property(nonatomic, strong, nullable) NSString *artist;
 /**
  * @brief The store item URL for the tune's archive.
  * @ghidraAddress 0x685b8 (getter)
  * @ghidraAddress 0x685c8 (setter)
  */
-@property(nonatomic, strong) NSString *itemURL;
+@property(nonatomic, strong, nullable) NSString *itemURL;
 /**
  * @brief The tune artwork URL.
  * @ghidraAddress 0x68600 (getter)
  * @ghidraAddress 0x68610 (setter)
  */
-@property(nonatomic, strong) NSString *artworkURL;
+@property(nonatomic, strong, nullable) NSString *artworkURL;
 /**
  * @brief The tune audio sample URL.
  * @ghidraAddress 0x68648 (getter)
  * @ghidraAddress 0x68658 (setter)
  */
-@property(nonatomic, strong) NSString *sampleURL;
+@property(nonatomic, strong, nullable) NSString *sampleURL;
 /**
  * @brief The iTunes store URL, only stored when it passes @c StoreUtil validation.
  * @ghidraAddress 0x68690 (getter)
  * @ghidraAddress 0x686a0 (setter)
  */
-@property(nonatomic, strong) NSString *itunesURL;
+@property(nonatomic, strong, nullable) NSString *itunesURL;
 /**
  * @brief The basic-difficulty level, clamped to the range one to fifteen inclusive.
  * @ghidraAddress 0x686d8 (getter)
@@ -80,7 +82,7 @@
  * @ghidraAddress 0x68738 (getter)
  * @ghidraAddress 0x68748 (setter)
  */
-@property(nonatomic, strong) NSArray *extIDList;
+@property(nonatomic, strong, nullable) NSArray *extIDList;
 
 /**
  * @brief Build a store music info from a catalogue entry dictionary.
@@ -93,7 +95,7 @@
  * @return The initialised instance, or @c nil when the identifier is not positive.
  * @ghidraAddress 0x67e84
  */
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
+- (nullable instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 /**
  * @brief Whether the tune's archive is already present on disk.
@@ -105,6 +107,8 @@
 - (BOOL)fileExist;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

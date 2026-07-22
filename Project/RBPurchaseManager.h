@@ -14,6 +14,8 @@
 
 @class RBPurchaseManager;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Optional callbacks the purchase manager sends to its delegate as a purchase or restore
  * progresses.
@@ -35,7 +37,7 @@
  * @param productID The product identifier that failed, or @c nil when none is known.
  * @param error The failure reason.
  */
-- (void)purchaseFailed:(NSString *)productID error:(NSError *)error;
+- (void)purchaseFailed:(nullable NSString *)productID error:(nullable NSError *)error;
 
 /**
  * @brief Sent when every restored transaction has been verified and granted.
@@ -64,7 +66,7 @@
 /**
  * @brief The delegate that receives purchase and restore progress callbacks.
  */
-@property(nonatomic, weak) id<RBPurchaseManagerDelegate> delegate;
+@property(nonatomic, weak, nullable) id<RBPurchaseManagerDelegate> delegate;
 
 /**
  * @brief The product identifiers the user owns.
@@ -89,7 +91,7 @@
 /**
  * @brief The in-flight receipt-verification request, if any.
  */
-@property(nonatomic, strong) Downloader *downloader;
+@property(nonatomic, strong, nullable) Downloader *downloader;
 
 /**
  * @brief Whether a purchase or restore flow is currently in progress.
@@ -109,7 +111,7 @@
 /**
  * @brief The nonce carried through the current receipt-verification request for replay protection.
  */
-@property(nonatomic, strong) NSString *nonce;
+@property(nonatomic, strong, nullable) NSString *nonce;
 
 /**
  * @brief The shared purchase manager.
@@ -163,7 +165,7 @@
  * @return @c YES when a payment was queued, @c NO when the purchase could not be started.
  * @ghidraAddress 0x6dcc8
  */
-- (BOOL)beginPurchase:(SKProduct *)product;
+- (BOOL)beginPurchase:(nullable SKProduct *)product;
 
 /**
  * @brief Start restoring previously bought products.
@@ -213,7 +215,7 @@
  * @return @c YES when the transaction was queued, @c NO when it was already owned or was @c nil.
  * @ghidraAddress 0x6e370
  */
-- (BOOL)addPurchaseCheckTransaction:(id)transaction;
+- (BOOL)addPurchaseCheckTransaction:(nullable id)transaction;
 
 /**
  * @brief Send the next queued receipt to the server for verification.
@@ -236,7 +238,7 @@
  * @return The Base64 string.
  * @ghidraAddress 0x6f544
  */
-+ (NSString *)encodedStringWithBase64V2:(NSData *)data;
++ (nullable NSString *)encodedStringWithBase64V2:(NSData *)data;
 
 /**
  * @brief Base64-decode the given string.
@@ -247,6 +249,8 @@
 + (NSData *)decodedStringWithBase64:(NSString *)string;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

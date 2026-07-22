@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Digest builders that sign the IAP receipt-verification request sent to the game server.
  */
@@ -40,7 +42,7 @@
  * @return @c YES when @p urlString is a valid @c http or @c https URL.
  * @ghidraAddress 0x85cc0
  */
-+ (BOOL)isValidURL:(NSString *)urlString;
++ (BOOL)isValidURL:(nullable NSString *)urlString;
 
 /**
  * @brief Build a random nonce string of the given length.
@@ -75,9 +77,11 @@
  * @return The product identifier string.
  * @ghidraAddress 0x874a0
  */
-+ (NSString *)pidToProductID:(int)pid;
++ (nullable NSString *)pidToProductID:(int)pid;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

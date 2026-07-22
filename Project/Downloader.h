@@ -12,6 +12,8 @@
 
 @class Downloader, RBHttpUtil;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A lifecycle callback block, passed the downloader that fired it.
  */
@@ -43,31 +45,31 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @ghidraAddress 0x73930 (getter)
  * @ghidraAddress 0x73950 (setter)
  */
-@property(nonatomic, weak) id<DownloaderDelegate> delegate;
+@property(nonatomic, weak, nullable) id<DownloaderDelegate> delegate;
 /**
  * @brief Extra object carried alongside the request (caller-defined context).
  * @ghidraAddress 0x738a0 (getter)
  * @ghidraAddress 0x738b0 (setter)
  */
-@property(nonatomic, strong) id addData;
+@property(nonatomic, strong, nullable) id addData;
 /**
  * @brief Invoked on incremental progress; takes precedence over the delegate's proceed callback.
  * @ghidraAddress 0x73980 (getter)
  * @ghidraAddress 0x73990 (setter)
  */
-@property(nonatomic, copy) DownloaderBlock proceedBlock;
+@property(nonatomic, copy, nullable) DownloaderBlock proceedBlock;
 /**
  * @brief Invoked on successful completion; takes precedence over the delegate's finished callback.
  * @ghidraAddress 0x73964 (getter)
  * @ghidraAddress 0x73974 (setter)
  */
-@property(nonatomic, copy) DownloaderBlock successBlock;
+@property(nonatomic, copy, nullable) DownloaderBlock successBlock;
 /**
  * @brief Invoked on failure; takes precedence over the delegate's error callback.
  * @ghidraAddress 0x7399c (getter)
  * @ghidraAddress 0x739ac (setter)
  */
-@property(nonatomic, copy) DownloaderBlock failureBlock;
+@property(nonatomic, copy, nullable) DownloaderBlock failureBlock;
 
 /**
  * @brief Serialise a dictionary to JSON @c NSData for a request body.
@@ -84,7 +86,7 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @brief Initialise a GET request, or a download-to-file request when @p filePath is non-nil.
  * @ghidraAddress 0x72a38
  */
-- (instancetype)initWithURL:(NSURL *)url save:(NSString *)filePath;
+- (instancetype)initWithURL:(NSURL *)url save:(nullable NSString *)filePath;
 /**
  * @brief Initialise a POST request with a body and content type.
  * @ghidraAddress 0x72b94
@@ -103,14 +105,14 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @brief Start the request, delivering callbacks to @p delegate.
  * @ghidraAddress 0x72e24
  */
-- (void)startDownloadingWithDelegate:(id<DownloaderDelegate>)delegate;
+- (void)startDownloadingWithDelegate:(nullable id<DownloaderDelegate>)delegate;
 /**
  * @brief Start the request, delivering callbacks to the given blocks.
  * @ghidraAddress 0x72ed0
  */
-- (void)startDownloadingWithProceed:(DownloaderBlock)proceed
-                            success:(DownloaderBlock)success
-                            failure:(DownloaderBlock)failure;
+- (void)startDownloadingWithProceed:(nullable DownloaderBlock)proceed
+                            success:(nullable DownloaderBlock)success
+                            failure:(nullable DownloaderBlock)failure;
 /**
  * @brief Detach the delegate and cancel the underlying connection.
  * @ghidraAddress 0x72fa8
@@ -131,27 +133,27 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @brief The received response body.
  * @ghidraAddress 0x73520
  */
-- (NSData *)getData;
+- (nullable NSData *)getData;
 /**
  * @brief The received response body parsed as JSON.
  * @ghidraAddress 0x73588
  */
-- (id)getDataInJSON;
+- (nullable id)getDataInJSON;
 /**
  * @brief The response headers.
  * @ghidraAddress 0x735f0
  */
-- (NSDictionary *)getHeader;
+- (nullable NSDictionary *)getHeader;
 /**
  * @brief The underlying system error message, if any.
  * @ghidraAddress 0x73658
  */
-- (NSString *)systemErrorMessage;
+- (nullable NSString *)systemErrorMessage;
 /**
  * @brief A user-facing error message, if any.
  * @ghidraAddress 0x736c0
  */
-- (NSString *)showErrorMessage;
+- (nullable NSString *)showErrorMessage;
 /**
  * @brief Whether the response passed its integrity hash check.
  * @ghidraAddress 0x73728
@@ -175,6 +177,8 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
 - (void)downloaderError:(Downloader *)downloader;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

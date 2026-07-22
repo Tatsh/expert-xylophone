@@ -11,6 +11,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief The singleton catalogue of unlockable content, parsed from the server response and
  * partitioned by theme.
@@ -22,7 +24,7 @@
  * @ghidraAddress 0x19b710 (getter)
  * @ghidraAddress 0x19b720 (setter)
  */
-@property(nonatomic, copy) NSString *version;
+@property(nonatomic, copy, nullable) NSString *version;
 /**
  * @brief The ordered unlock packages for the default theme, each an @c RBUnlockPackageData.
  * @ghidraAddress 0x19b72c (getter)
@@ -34,7 +36,7 @@
  * @ghidraAddress 0x19b774 (getter)
  * @ghidraAddress 0x19b784 (setter)
  */
-@property(nonatomic, copy) NSString *versionColette;
+@property(nonatomic, copy, nullable) NSString *versionColette;
 /**
  * @brief The ordered unlock packages for the Colette theme, each an @c RBUnlockPackageData.
  * @ghidraAddress 0x19b790 (getter)
@@ -68,7 +70,7 @@
  * @return The default-theme or Colette-theme package list, or @c nil for an unrecognised theme.
  * @ghidraAddress 0x19b28c
  */
-- (NSArray *)getPackage;
+- (nullable NSArray *)getPackage;
 
 /**
  * @brief Seeds the Colette-theme catalogue with its built-in tutorial packages.
@@ -77,6 +79,8 @@
 - (void)setTutorialData;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

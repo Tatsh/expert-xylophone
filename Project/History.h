@@ -24,6 +24,8 @@ typedef NS_ENUM(unsigned int, HistoryDifficulty) {
     HistoryDifficultyHard = 2,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A stateless manager over the @c History Core Data entity that stores a player's per-play
  * results (hit counts, score, achievement rate, play date, play count, and a tamper-detection
@@ -63,8 +65,8 @@ typedef NS_ENUM(unsigned int, HistoryDifficulty) {
  * @return The matching history transfer objects.
  * @ghidraAddress 0x5afec
  */
-+ (NSArray *)getScoreDataWithStartDate:(NSDate *)startDate
-                            andEndDate:(NSDate *)endDate
++ (NSArray *)getScoreDataWithStartDate:(nullable NSDate *)startDate
+                            andEndDate:(nullable NSDate *)endDate
                               andLimit:(unsigned int)limit
                 inManagedObjectContext:(NSManagedObjectContext *)context;
 
@@ -91,9 +93,9 @@ typedef NS_ENUM(unsigned int, HistoryDifficulty) {
  * @return The newly inserted, reset record, or @c nil when the tune identifier is out of range.
  * @ghidraAddress 0x5b7ac
  */
-+ (id)recordWithTuneID:(unsigned int)tuneID
-                Difficulty:(HistoryDifficulty)difficulty
-    inManagedObjectContext:(NSManagedObjectContext *)context;
++ (nullable id)recordWithTuneID:(unsigned int)tuneID
+                     Difficulty:(HistoryDifficulty)difficulty
+         inManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
  * @brief Resets a record's counts, play date, play count, and tamper hash to their defaults.
@@ -154,7 +156,7 @@ typedef NS_ENUM(unsigned int, HistoryDifficulty) {
  * * 3).
  * @ghidraAddress 0x5c0fc
  */
-+ (float)getAR:(id)source;
++ (float)getAR:(nullable id)source;
 
 /**
  * @brief Whether a record represents a full combo, that is, no Miss and every hit accounted for by
@@ -163,9 +165,11 @@ typedef NS_ENUM(unsigned int, HistoryDifficulty) {
  * @return @c YES when the record is a full combo, otherwise @c NO.
  * @ghidraAddress 0x5c290
  */
-+ (BOOL)getFullCombo:(id)source;
++ (BOOL)getFullCombo:(nullable id)source;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief One unlock item entry: its metadata and point cost.
  */
@@ -31,13 +33,13 @@
  * @ghidraAddress 0x19a370 (getter)
  * @ghidraAddress 0x19a380 (setter)
  */
-@property(nonatomic, copy) NSString *name;
+@property(nonatomic, copy, nullable) NSString *name;
 /**
  * @brief The item asset path.
  * @ghidraAddress 0x19a38c (getter)
  * @ghidraAddress 0x19a39c (setter)
  */
-@property(nonatomic, copy) NSString *path;
+@property(nonatomic, copy, nullable) NSString *path;
 /**
  * @brief The item's point cost; packages sort their items by descending point value.
  * @ghidraAddress 0x19a3a8 (getter)
@@ -54,6 +56,8 @@
 - (void)parseDictionary:(NSDictionary *)dictionary;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

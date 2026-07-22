@@ -12,6 +12,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief Property-list deserialisation helpers layered on @c NSData.
  */
@@ -23,7 +25,7 @@
  * an @c NSDictionary.
  * @ghidraAddress 0x1a4470
  */
-- (NSDictionary *)dictionary;
+- (nullable NSDictionary *)dictionary;
 
 /**
  * @brief Deserialise the receiver's XML property-list bytes into a mutable array.
@@ -31,9 +33,11 @@
  * @c NSArray.
  * @ghidraAddress 0x1a45f8
  */
-- (NSMutableArray *)mutableArray;
+- (nullable NSMutableArray *)mutableArray;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;

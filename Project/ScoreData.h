@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
     ScoreDataFrameBonusTypeGold = 2,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * @brief A Core Data record holding one tune's best results across the basic, medium, and hard
  * difficulties, together with a hash that guards the stored values against tampering.
@@ -35,92 +37,92 @@ typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
 /**
  * @brief The tune identifier that this record belongs to.
  */
-@property(nonatomic, retain) NSNumber *tuneID;
+@property(nonatomic, retain, nullable) NSNumber *tuneID;
 
 /**
  * @brief Whether the basic chart has been cleared with a full combo.
  */
-@property(nonatomic, retain) NSNumber *fcBas;
+@property(nonatomic, retain, nullable) NSNumber *fcBas;
 
 /**
  * @brief Whether the medium chart has been cleared with a full combo.
  */
-@property(nonatomic, retain) NSNumber *fcMed;
+@property(nonatomic, retain, nullable) NSNumber *fcMed;
 
 /**
  * @brief Whether the hard chart has been cleared with a full combo.
  */
-@property(nonatomic, retain) NSNumber *fcHar;
+@property(nonatomic, retain, nullable) NSNumber *fcHar;
 
 /**
  * @brief The clear rank for the basic chart.
  */
-@property(nonatomic, retain) NSNumber *raBas;
+@property(nonatomic, retain, nullable) NSNumber *raBas;
 
 /**
  * @brief The clear rank for the medium chart.
  */
-@property(nonatomic, retain) NSNumber *raMed;
+@property(nonatomic, retain, nullable) NSNumber *raMed;
 
 /**
  * @brief The clear rank for the hard chart.
  */
-@property(nonatomic, retain) NSNumber *raHar;
+@property(nonatomic, retain, nullable) NSNumber *raHar;
 
 /**
  * @brief The best score for the basic chart.
  */
-@property(nonatomic, retain) NSNumber *scoBas;
+@property(nonatomic, retain, nullable) NSNumber *scoBas;
 
 /**
  * @brief The best score for the medium chart.
  */
-@property(nonatomic, retain) NSNumber *scoMed;
+@property(nonatomic, retain, nullable) NSNumber *scoMed;
 
 /**
  * @brief The best score for the hard chart.
  */
-@property(nonatomic, retain) NSNumber *scoHar;
+@property(nonatomic, retain, nullable) NSNumber *scoHar;
 
 /**
  * @brief The best achievement rate for the basic chart.
  */
-@property(nonatomic, retain) NSNumber *arBas;
+@property(nonatomic, retain, nullable) NSNumber *arBas;
 
 /**
  * @brief The best achievement rate for the medium chart.
  */
-@property(nonatomic, retain) NSNumber *arMed;
+@property(nonatomic, retain, nullable) NSNumber *arMed;
 
 /**
  * @brief The best achievement rate for the hard chart.
  */
-@property(nonatomic, retain) NSNumber *arHar;
+@property(nonatomic, retain, nullable) NSNumber *arHar;
 
 /**
  * @brief The date the tune was last played.
  */
-@property(nonatomic, retain) NSDate *lastPlayDate;
+@property(nonatomic, retain, nullable) NSDate *lastPlayDate;
 
 /**
  * @brief The play count for the basic chart.
  */
-@property(nonatomic, retain) NSNumber *pcBas;
+@property(nonatomic, retain, nullable) NSNumber *pcBas;
 
 /**
  * @brief The play count for the medium chart.
  */
-@property(nonatomic, retain) NSNumber *pcMed;
+@property(nonatomic, retain, nullable) NSNumber *pcMed;
 
 /**
  * @brief The play count for the hard chart.
  */
-@property(nonatomic, retain) NSNumber *pcHar;
+@property(nonatomic, retain, nullable) NSNumber *pcHar;
 
 /**
  * @brief The tamper-detection hash over the stored score values.
  */
-@property(nonatomic, retain) NSData *chksco;
+@property(nonatomic, retain, nullable) NSData *chksco;
 
 /**
  * @brief Fetches the score record for a tune, creating and persisting a fresh reset record when
@@ -175,7 +177,7 @@ typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
  * @return @c YES when the record's stored hash matches the recomputed hash, otherwise @c NO.
  * @ghidraAddress 0x5d698
  */
-+ (BOOL)checkScore:(ScoreData *)record;
++ (BOOL)checkScore:(nullable ScoreData *)record;
 
 /**
  * @brief The total of the clamped best scores across every valid record for the currently
@@ -209,6 +211,8 @@ typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
 - (BOOL)checkOverScore;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
 // kate: hl Objective-C;
