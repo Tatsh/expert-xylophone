@@ -229,6 +229,13 @@
 + (instancetype)appDelegate;
 
 /**
+ * @brief The two-element server-data pair (@c \@[p1, p2]) used to gate remote-notification
+ * registration and to build the APNs token-upload payload.
+ * @ghidraAddress 0x511cc
+ */
++ (NSArray *)getServerData;
+
+/**
  * @brief Open the App Store page for the game.
  * @ghidraAddress 0x53268
  */

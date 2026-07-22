@@ -10,6 +10,7 @@
 #import <stdlib.h>
 
 #import <AVFoundation/AVFoundation.h>
+#import <Security/Security.h>
 
 #import "ApplilinkNetwork.h"
 #import "AudioManager.h"
@@ -31,30 +32,43 @@ enum { kGameSceneStateMusicSelect = 1 };
 
 // Note-sheet layout geometry, recovered from the launch decompile. Float DAT_ values were read from
 // the binary (0x1002ef180 = 96.0, 0x1002ef184 = 64.0, 0x1003ce930 = 1024).
-static const float kSheetWidth = 70.0f;
-static const float kSheetHeight = 25.0f;
-static const float kSheetMarginX = 24.0f;
-static const float kSheetMarginY = 22.0f;
-static const float kSheetLayerRadius = 96.0f;
-static const float kSheetCameraTargetY = -26.0f;
-static const float kSheetVariantWidth = 640.0f;
-static const float kSheetVariantMargin = 64.0f;
-static const int kVariantScreenHeightPoints = 1024;
-static const int kSheetVariantHeightInset = 44;
+static constexpr float kSheetWidth = 70.0f;
+static constexpr float kSheetHeight = 25.0f;
+static constexpr float kSheetMarginX = 24.0f;
+static constexpr float kSheetMarginY = 22.0f;
+static constexpr float kSheetLayerRadius = 96.0f;
+static constexpr float kSheetCameraTargetY = -26.0f;
+static constexpr float kSheetVariantWidth = 640.0f;
+static constexpr float kSheetVariantMargin = 64.0f;
+static constexpr int kVariantScreenHeightPoints = 1024;
+static constexpr int kSheetVariantHeightInset = 44;
 
 /// The reference (4") screen envelope, in points, that the standard sheet layout is clamped to, and
 /// the 2x-pixel insets applied to the fitted sheet size.
-static const int kReferenceScreenWidthPoints = 320;
-static const int kReferenceScreenHeightPoints = 568;
-static const int kRetinaScale = 2;
-static const int kSheetSizeInsetX = 48;
-static const int kSheetSizeInsetY = 98;
+static constexpr int kReferenceScreenWidthPoints = 320;
+static constexpr int kReferenceScreenHeightPoints = 568;
+static constexpr int kRetinaScale = 2;
+static constexpr int kSheetSizeInsetX = 48;
+static constexpr int kSheetSizeInsetY = 98;
 
 /// Launch miscellany: the render-loop period, the clear-gauge listener priority, and the initial
 /// capacity of the pending-push-notification list.
-static const float kGameLoopTimeMs = 1.0f;
-static const int kClearGaugeListenerPriority = 1;
-static const NSUInteger kPushListInitialCapacity = 3;
+static constexpr float kGameLoopTimeMs = 1.0f;
+static constexpr int kClearGaugeListenerPriority = 1;
+static constexpr NSUInteger kPushListInitialCapacity = 3;
+
+/// The App Store product page for REFLEC BEAT plus, opened by @c -launchAppStore.
+static NSString *const kAppStoreURLString =
+    @"https://itunes.apple.com/jp/app/reflec-beat-plus/id472140433?mt=8";
+
+/// Server-data placeholder strings rejected before remote-notification registration: a usable value
+/// must be neither nil nor either textual form of "null".
+static NSString *const kNullPlaceholder = @"null";
+static NSString *const kNullPlaceholderDescription = @"(null)";
+
+/// The Keychain generic-password account name and the field separator backing @c +getServerData.
+static NSString *const kServerIdKeychainAccount = @"ReflecBeatPlusServerID";
+static NSString *const kServerDataSeparator = @"@@@";
 
 @implementation AppDelegate
 
@@ -62,6 +76,43 @@ static const NSUInteger kPushListInitialCapacity = 3;
 
 + (instancetype)appDelegate {
     return (AppDelegate *)UIApplication.sharedApplication.delegate;
+}
+
++ (NSArray *)getServerData {
+    NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
+
+    // First pass: fetch the generic-password item's attributes for this app's server-ID account.
+    NSDictionary *attributeQuery = @{
+        (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount : kServerIdKeychainAccount,
+        (__bridge id)kSecAttrService : bundleIdentifier,
+        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
+        (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
+    };
+    CFTypeRef attributesResult = nullptr;
+    if (SecItemCopyMatching((__bridge CFDictionaryRef)attributeQuery, &attributesResult) !=
+        errSecSuccess) {
+        return nil;
+    }
+    NSDictionary *attributes = (__bridge_transfer NSDictionary *)attributesResult;
+
+    // Second pass: re-query with those attributes to retrieve the stored password bytes.
+    NSMutableDictionary *dataQuery = [NSMutableDictionary dictionaryWithDictionary:attributes];
+    dataQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    dataQuery[(__bridge id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+    CFTypeRef dataResult = nullptr;
+    if (SecItemCopyMatching((__bridge CFDictionaryRef)dataQuery, &dataResult) != errSecSuccess) {
+        return nil;
+    }
+    NSData *storedData = (__bridge_transfer NSData *)dataResult;
+
+    NSString *joined = [[NSString alloc] initWithBytes:storedData.bytes
+                                                length:storedData.length
+                                              encoding:NSUTF8StringEncoding];
+    if (!joined) {
+        return nil;
+    }
+    return [joined componentsSeparatedByString:kServerDataSeparator];
 }
 
 #pragma mark - Launch
@@ -293,6 +344,126 @@ static const NSUInteger kPushListInitialCapacity = 3;
         [self.resourceDownloadViewController pause];
     }
     [RBUserSettingData.sharedInstance save];
+}
+
+#pragma mark - URL handling
+
+- (BOOL)application:(UIApplication *)application
+              openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation {
+    // A hostless URL is accepted but not routed: there is nothing for the scheme manager to parse.
+    if (url.host == nil) {
+        return YES;
+    }
+    return [RBUrlSchemeManager.sharedManager parseURL:url];
+}
+
+#pragma mark - Remote and local notifications
+
+- (void)startRegisterForRemoteNotification {
+    // Registration is gated on a valid server-data pair; a missing or "null" placeholder aborts it.
+    NSArray *serverData = [AppDelegate getServerData];
+    if (serverData.count != 2) {
+        return;
+    }
+    NSString *first = serverData[0];
+    NSString *second = serverData[1];
+    if (!first || [first isEqualToString:kNullPlaceholderDescription] ||
+        [first isEqualToString:kNullPlaceholder] || !second ||
+        [second isEqualToString:kNullPlaceholderDescription] ||
+        [second isEqualToString:kNullPlaceholder]) {
+        return;
+    }
+
+    UIApplication *application = UIApplication.sharedApplication;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+        [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge |
+                                                        UIRemoteNotificationTypeSound |
+                                                        UIRemoteNotificationTypeAlert];
+    } else {
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings
+            settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound |
+                             UIUserNotificationTypeAlert
+                  categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+}
+
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSDictionary *aps = userInfo[@"aps"];
+    [self.pushList addObject:@{
+        @"body" : aps[@"alert"],
+        @"sound" : aps[@"sound"],
+        @"url" : userInfo[@"url"],
+    }];
+
+    // While the app is active on the music-select (or earlier) screen, surface the queued push view.
+    GameSystem *gameSystem = GetGameSystem();
+    GameScene *scene = gameSystem->GetCurrentScene();
+    if (scene && application.applicationState == UIApplicationStateActive &&
+        scene->GetState() <= kGameSceneStateMusicSelect && self.pushList.count > 0 &&
+        self.viewController && self.viewController.musicMenuView) {
+        [self.viewController.musicMenuView showPushNotificationView];
+    }
+
+    // Route the payload URL only while foreground (active or inactive), never when backgrounded.
+    if (userInfo && application.applicationState <= UIApplicationStateInactive) {
+        id urlString = userInfo[@"url"];
+        if (urlString) {
+            [RBUrlSchemeManager.sharedManager parseURL:[NSURL URLWithString:urlString]];
+        }
+    }
+}
+
+- (void)application:(UIApplication *)application
+    didReceiveLocalNotification:(UILocalNotification *)notification {
+    [self.pushList addObject:@{
+        @"body" : notification.alertBody,
+        @"sound" : notification.soundName,
+        @"url" : notification.userInfo[@"url"],
+    }];
+
+    if (application.applicationState == UIApplicationStateActive && self.viewController &&
+        self.viewController.musicMenuView) {
+        [self.viewController.musicMenuView showPushNotificationView];
+    }
+}
+
+#pragma mark - Status bar (no-op delegate overrides)
+
+- (void)application:(UIApplication *)application
+    willChangeStatusBarOrientation:(UIInterfaceOrientation)newStatusBarOrientation
+                          duration:(NSTimeInterval)duration {
+}
+
+- (void)application:(UIApplication *)application
+    didChangeStatusBarOrientation:(UIInterfaceOrientation)oldStatusBarOrientation {
+}
+
+- (void)application:(UIApplication *)application
+    willChangeStatusBarFrame:(CGRect)newStatusBarFrame {
+}
+
+- (void)application:(UIApplication *)application didChangeStatusBarFrame:(CGRect)oldStatusBarFrame {
+}
+
+#pragma mark - Store
+
+- (void)launchAppStore {
+    // Mark an update as in progress on the shared delegate, then open the store product page.
+    AppDelegate.appDelegate.isUpdate = YES;
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:kAppStoreURLString]];
 }
 
 @end
