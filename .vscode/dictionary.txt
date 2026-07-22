@@ -92,6 +92,7 @@ stdlib
 subarray
 subentities
 tatsh
+thema
 theos
 udvare
 unarchiver
