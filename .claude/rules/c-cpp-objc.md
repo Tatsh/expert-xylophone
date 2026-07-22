@@ -117,9 +117,10 @@ reconstructed code faithful to the original.
   binary keeps a differently-named backing ivar), not spelled-out accessor bodies. Map the compiled
   accessor to its attribute: `assign`, `strong` (retain), or `copy`, and `atomic` or `nonatomic`.
 - Create an enumeration that is **declared in a header** with the macro that matches the
-  enumeration's nature (this requirement is scoped to header declarations; a file-private
-  enumeration or constant group defined only in a `.m`, `.mm`, or `.cpp` may instead use a plain
-  C/C++ `enum`, grouped `static NSString *const`, `static const`, or `static constexpr`):
+  enumeration's nature. This requirement is scoped to header declarations only: an enumeration or
+  constant group defined in an implementation file (`.m`, `.mm`, `.cpp`, `.c`) does **not** use the
+  `NS_*` macros — use a plain C/C++ `enum`, grouped `static NSString *const`, `static const`, or
+  `static constexpr` there instead.
   - `NS_ENUM` for a simple integer-backed enumeration.
   - `NS_CLOSED_ENUM` for a simple enumeration that can never gain new cases.
   - `NS_OPTIONS` for an enumeration whose cases are bit-flag sets combined with `|`.
@@ -178,7 +179,8 @@ reconstructed code faithful to the original.
   C++ code (a `.cpp` file, or the C/C++ portions of a `.mm` or `.h`); use plain `enum`/`enum class`
   and C/C++ types there.
 - Use `@available()` to check for API availability. Prefer runtime checks over compile-time.
-- Headers: always add modelines to the end of the file:
+- Headers only: add modelines to the end of the file. Do **not** add modelines to an
+  implementation file (`.m`, `.mm`, `.cpp`, `.c`); they belong solely in headers.
 
   ```objc
   // code: language=Objective-C
