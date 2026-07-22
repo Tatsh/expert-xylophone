@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #import <stdlib.h>
+#import <sys/xattr.h>
 
 #import <AVFoundation/AVFoundation.h>
 #import <Security/Security.h>
@@ -70,6 +71,11 @@ static NSString *const kNullPlaceholderDescription = @"(null)";
 static NSString *const kServerIdKeychainAccount = @"ReflecBeatPlusServerID";
 static NSString *const kServerDataSeparator = @"@@@";
 
+/// The minimum iOS version supporting the do-not-back-up extended attribute, and the attribute name
+/// itself, used by @c +setNoBackupAttribute:.
+static NSString *const kMinSystemVersionForNoBackup = @"5.0.1";
+static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
+
 @implementation AppDelegate
 
 #pragma mark - Class helpers
@@ -113,6 +119,18 @@ static NSString *const kServerDataSeparator = @"@@@";
         return nil;
     }
     return [joined componentsSeparatedByString:kServerDataSeparator];
+}
+
++ (BOOL)setNoBackupAttribute:(NSString *)path {
+    // The com.apple.MobileBackup exclude-from-backup attribute only exists on iOS 5.0.1 and later.
+    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
+                                              options:NSNumericSearch] == NSOrderedAscending) {
+        return NO;
+    }
+    uint8_t excludeValue = 1;
+    return setxattr(
+               path.UTF8String, kDoNotBackUpXattrName, &excludeValue, sizeof(excludeValue), 0, 0) ==
+           0;
 }
 
 #pragma mark - Launch
@@ -344,6 +362,31 @@ static NSString *const kServerDataSeparator = @"@@@";
         [self.resourceDownloadViewController pause];
     }
     [RBUserSettingData.sharedInstance save];
+}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
+    [RBMusicManager.getInstance releaseChacheMusicData];
+}
+
+- (void)applicationSignificantTimeChange:(UIApplication *)application {
+}
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application {
+}
+
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application {
+}
+
+#pragma mark - Audio session
+
+- (void)audioSessionInterrupted:(NSNotification *)notification {
+    NSUInteger type =
+        [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        [AudioManager.sharedManager systemSuspend];
+    } else if (type == AVAudioSessionInterruptionTypeEnded) {
+        [AudioManager.sharedManager systemResume];
+    }
 }
 
 #pragma mark - URL handling

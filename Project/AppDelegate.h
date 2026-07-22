@@ -236,6 +236,23 @@
 + (NSArray *)getServerData;
 
 /**
+ * @brief Exclude a file or directory from iCloud/iTunes backup via the legacy
+ * @c com.apple.MobileBackup extended attribute.
+ * @param path The filesystem path to mark.
+ * @return @c YES if the attribute was set; @c NO on pre-5.0.1 systems or on @c setxattr failure.
+ * @ghidraAddress 0x50b60
+ */
++ (BOOL)setNoBackupAttribute:(NSString *)path;
+
+/**
+ * @brief Audio-session interruption handler: suspends the audio engine when an interruption begins
+ * and resumes it when one ends.
+ * @param notification The @c AVAudioSessionInterruptionNotification.
+ * @ghidraAddress 0x54550
+ */
+- (void)audioSessionInterrupted:(NSNotification *)notification;
+
+/**
  * @brief Open the App Store page for the game.
  * @ghidraAddress 0x53268
  */
