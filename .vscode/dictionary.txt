@@ -20,6 +20,7 @@ colette
 color
 commitizen
 conn
+constexpr
 cooldown
 coveragerc
 cplusplus
@@ -37,6 +38,7 @@ dios
 directories
 directorys
 docstrings
+downloaders
 dplatform
 esbenp
 exprosion
@@ -49,6 +51,7 @@ halfwidth
 handoff
 hinabita
 hira
+hnbt
 ifdef
 ifndef
 infomation
@@ -75,11 +78,13 @@ mtype
 mulist
 mypy
 nonatomic
+nonnull
 nshttpurl
 nsjson
 nssq
 nsurl
 nsutf
+nullability
 nullptr
 objc
 objcpp
@@ -125,6 +130,7 @@ undraft
 undrafted
 unichar
 unretained
+unuse
 vendored
 venv
 werror
