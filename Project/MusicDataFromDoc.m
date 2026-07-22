@@ -337,7 +337,3 @@ static const CGFloat kCentreFactor = 0.5f;
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

@@ -17,12 +17,12 @@ static NSString *const kVersionDictionaryKey = @"Version";
 static NSString *const kPackageDictionaryKey = @"Package";
 
 /// The player theme identifiers returned by @c -[RBUserSettingData thema].
-typedef NS_ENUM(NSInteger, RBUnlockDataTheme) {
+typedef enum {
     /// The default theme.
     RBUnlockDataThemeDefault = 1,
     /// The Colette theme.
     RBUnlockDataThemeColette = 2,
-};
+} RBUnlockDataTheme;
 
 /// The cached singleton returned by @c sharedInstance.
 /// @ghidraAddress 0x3df348 (g_pRBUnlockDataSharedInstance)
@@ -121,7 +121,3 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

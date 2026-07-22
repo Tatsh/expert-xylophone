@@ -842,7 +842,3 @@ static RBExperienceData *sSharedInstance = nil;
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

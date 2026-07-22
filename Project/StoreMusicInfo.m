@@ -34,7 +34,7 @@ static const int kMinValidMusicID = 1;
 static const NSUInteger kRequiredLevelCount = 3;
 
 /// The indices of the three per-difficulty levels within the @c Level array.
-typedef NS_ENUM(NSUInteger, StoreMusicInfoLevelIndex) {
+enum {
     kStoreMusicInfoLevelIndexBasic = 0,
     kStoreMusicInfoLevelIndexMedium = 1,
     kStoreMusicInfoLevelIndexHard = 2,
@@ -106,7 +106,3 @@ static int ClampLevel(int level) {
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

@@ -33,7 +33,7 @@ static NSString *const kQueryPairSeparator = @"&";
 static NSString *const kQueryKeyValueSeparator = @"=";
 
 /// The indices of the key and value within a split query pair.
-typedef NS_ENUM(NSUInteger, RBUrlSchemeQueryPairIndex) {
+enum {
     kRBUrlSchemeQueryPairIndexKey = 0,
     kRBUrlSchemeQueryPairIndexValue = 1,
 };
@@ -101,7 +101,3 @@ typedef NS_ENUM(NSUInteger, RBUrlSchemeQueryPairIndex) {
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

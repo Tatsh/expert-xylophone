@@ -1297,7 +1297,3 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

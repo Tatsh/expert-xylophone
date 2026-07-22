@@ -283,7 +283,3 @@ static const int kHalfWordShift = 16;
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

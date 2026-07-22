@@ -38,7 +38,3 @@ static NSString *const kTokenSetAPIPath = @"push/token/";
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

@@ -576,7 +576,3 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

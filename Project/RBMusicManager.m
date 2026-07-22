@@ -400,7 +400,3 @@ static const int kClientMusicEntriesPerPage = 20;
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

@@ -390,7 +390,3 @@ static void ScoreDataHashScoreForTune(int tuneID,
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

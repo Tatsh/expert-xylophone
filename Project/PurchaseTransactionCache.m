@@ -35,7 +35,3 @@ static NSString *const kSystemVersionThreshold = @"7.0";
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :

@@ -551,7 +551,3 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 }
 
 @end
-
-// code: language=Objective-C++
-// kate: hl Objective-C++;
-// vim: set ft=objcpp :

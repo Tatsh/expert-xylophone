@@ -265,7 +265,3 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
 }
 
 @end
-
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :
