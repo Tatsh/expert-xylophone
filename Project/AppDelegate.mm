@@ -141,14 +141,15 @@ static const NSUInteger kPushListInitialCapacity = 3;
     if (GetFontVariantFlag() == 0) {
         double shortEdge = MIN(screenBounds.size.width, screenBounds.size.height);
         double longEdge = MAX(screenBounds.size.width, screenBounds.size.height);
-        int height =
-            (int)longEdge <= kReferenceScreenHeightPoints ? (int)longEdge : kReferenceScreenHeightPoints;
-        int width =
-            (int)longEdge <= kReferenceScreenHeightPoints ? (int)shortEdge : kReferenceScreenWidthPoints;
+        int height = (int)longEdge <= kReferenceScreenHeightPoints ? (int)longEdge :
+                                                                     kReferenceScreenHeightPoints;
+        int width = (int)longEdge <= kReferenceScreenHeightPoints ? (int)shortEdge :
+                                                                    kReferenceScreenWidthPoints;
         S_VECTOR2 sheetSize = {(float)(width * kRetinaScale - kSheetSizeInsetX),
                                (float)(height * kRetinaScale - kSheetSizeInsetY)};
         SetSheetLayerPosition(gameSystem, &sheetSize);
-        SetSheetLayerMargins(kSheetMarginX, kSheetMarginY, kSheetMarginX, kSheetMarginY, gameSystem);
+        SetSheetLayerMargins(
+            kSheetMarginX, kSheetMarginY, kSheetMarginX, kSheetMarginY, gameSystem);
         SetSheetLayerRadius(kSheetLayerRadius, gameSystem);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(kSheetCameraTargetY);
@@ -156,8 +157,8 @@ static const NSUInteger kPushListInitialCapacity = 3;
         S_VECTOR2 sheetSize = {kSheetVariantWidth,
                                (float)(kVariantScreenHeightPoints - kSheetVariantHeightInset)};
         SetSheetLayerPosition(gameSystem, &sheetSize);
-        SetSheetLayerMargins(kSheetVariantMargin, kSheetMarginY, kSheetVariantMargin, kSheetMarginY,
-                             gameSystem);
+        SetSheetLayerMargins(
+            kSheetVariantMargin, kSheetMarginY, kSheetVariantMargin, kSheetMarginY, gameSystem);
         SetSheetLayerRadius(kSheetVariantMargin, gameSystem);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(0.0f);
@@ -196,9 +197,9 @@ static const NSUInteger kPushListInitialCapacity = 3;
         URLWithString:[NSString
                           stringWithFormat:@"https://%@/akx/main/news/passed_info.jsp?target=JP",
                                            GetApiHostString()]];
-    self.urlBaseTerm = [NSURL
-        URLWithString:[NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
-                                                 GetApiHostString()]];
+    self.urlBaseTerm =
+        [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
+                                                        GetApiHostString()]];
 
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(audioSessionInterrupted:)
@@ -248,7 +249,8 @@ static const NSUInteger kPushListInitialCapacity = 3;
 
     // If a store deep-link was queued and the music-select menu is active, jump to the store button.
     if (scene && scene->GetState() == kGameSceneStateMusicSelect &&
-        (self.packIDForOpenStore || self.campaignIDForOpenStore || self.extendNotePIDForOpenStore)) {
+        (self.packIDForOpenStore || self.campaignIDForOpenStore ||
+         self.extendNotePIDForOpenStore)) {
         [self.viewController.musicMenuView SelectStoreButton];
     }
 
