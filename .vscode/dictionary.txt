@@ -9,6 +9,7 @@ bsky
 chache
 codesign
 commitizen
+conn
 cooldown
 coveragerc
 cplusplus
@@ -27,6 +28,7 @@ handoff
 hinabita
 ifdef
 ifndef
+instancetype
 ivar
 iwyu
 jinja
