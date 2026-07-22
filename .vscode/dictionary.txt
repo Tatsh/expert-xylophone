@@ -11,6 +11,7 @@ bsky
 bzero
 cfstring
 cfurl
+cfuuid
 chache
 chksco
 codesign
