@@ -116,9 +116,67 @@ reconstructed code faithful to the original.
 - Reconstruct getters and setters as `@property` declarations (add `@synthesize` only when the
   binary keeps a differently-named backing ivar), not spelled-out accessor bodies. Map the compiled
   accessor to its attribute: `assign`, `strong` (retain), or `copy`, and `atomic` or `nonatomic`.
-- Create enumerations with `NS_ENUM` and `NS_OPTIONS` macros.
+- Create an enumeration that is **declared in a header** with the macro that matches the
+  enumeration's nature (this requirement is scoped to header declarations; a file-private
+  enumeration or constant group defined only in a `.m`, `.mm`, or `.cpp` may instead use a plain
+  C/C++ `enum`, grouped `static NSString *const`, `static const`, or `static constexpr`):
+  - `NS_ENUM` for a simple integer-backed enumeration.
+  - `NS_CLOSED_ENUM` for a simple enumeration that can never gain new cases.
+  - `NS_OPTIONS` for an enumeration whose cases are bit-flag sets combined with `|`.
+  - `NS_TYPED_ENUM` for an enumeration whose raw value is a type you specify. The raw type is
+    whatever you name in the `typedef` — commonly `NSString *`, but any type works (for example
+    `typedef long TrafficLightColor NS_TYPED_ENUM;`). A group of related string constants that forms
+    an enumerated set (dictionary keys, archive/coder keys, a set of string-valued modes) is an
+    `NS_TYPED_ENUM`, declared in the header and defined in the `.m`:
+
+    ```objc
+    // .h
+    typedef NSString *RBCoderKey NS_TYPED_ENUM;
+    extern RBCoderKey const RBCoderKeyVersion;
+    extern RBCoderKey const RBCoderKeyScore;
+    // .m
+    RBCoderKey const RBCoderKeyVersion = @"ver";
+    RBCoderKey const RBCoderKeyScore = @"score";
+    ```
+
+    A non-string typed enumeration follows the same shape, e.g.:
+
+    ```objc
+    // .h
+    typedef long TrafficLightColor NS_TYPED_ENUM;
+    extern TrafficLightColor const TrafficLightColorRed;
+    extern TrafficLightColor const TrafficLightColorYellow;
+    extern TrafficLightColor const TrafficLightColorGreen;
+    // .m
+    TrafficLightColor const TrafficLightColorRed = 0;
+    TrafficLightColor const TrafficLightColorYellow = 1;
+    TrafficLightColor const TrafficLightColorGreen = 2;
+    ```
+
+    Name the values `<TypeName><Value>` (no `k` prefix; they are typed extern globals, not file-local
+    `static const`).
+
+  - `NS_TYPED_EXTENSIBLE_ENUM` for such a typed enumeration you expect might gain more cases.
 - Create constants with k-prefixes for global constants and static const for file-level constants.
-  Use `NSString *const` for string constants.
+  A group of related string values **exposed in a header** is an `NS_TYPED_ENUM` (see above), not
+  loose `extern NSString *const` declarations; a file-private group in a `.m` may instead stay as
+  grouped `static NSString *const` declarations. Use a standalone `static NSString *const` for a
+  one-off string constant (a single URL, format, or passphrase).
+- Annotate nullability on every Objective-C API. Mark each object pointer in a public declaration
+  `nullable` or `nonnull` (parameters, return types, and property types), or wrap a header region in
+  `NS_ASSUME_NONNULL_BEGIN` / `NS_ASSUME_NONNULL_END` and annotate only the `nullable` exceptions.
+
+  ```objc
+  @interface MyList : NSObject
+  - (nullable MyListItem *)itemWithName:(nonnull NSString *)name;
+  - (nullable NSString *)nameForItem:(nonnull MyListItem *)item;
+  @property (copy, nonnull) NSArray<MyListItem *> *allItems;
+  @end
+  ```
+
+- The macro-selection and nullability rules above are Objective-C only. They do not apply to C or
+  C++ code (a `.cpp` file, or the C/C++ portions of a `.mm` or `.h`); use plain `enum`/`enum class`
+  and C/C++ types there.
 - Use `@available()` to check for API availability. Prefer runtime checks over compile-time.
 - Headers: always add modelines to the end of the file:
 
