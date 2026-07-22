@@ -32,6 +32,7 @@ iwyu
 jinja
 jsonnet
 jsonschema
+konaminet
 libera
 libsonnet
 minizip
@@ -39,6 +40,7 @@ mktemp
 modelines
 mypy
 nonatomic
+nsurl
 nullptr
 objc
 objcpp
