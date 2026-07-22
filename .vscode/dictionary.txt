@@ -41,6 +41,7 @@ hinabita
 hira
 ifdef
 ifndef
+infomation
 instancetype
 ivar
 ivars
