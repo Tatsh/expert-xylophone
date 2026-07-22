@@ -28,6 +28,7 @@ dcmake
 ddeployment
 decodepoint
 denable
+dictionaris
 dios
 docstrings
 dplatform
@@ -65,6 +66,7 @@ mispacked
 mktemp
 modelines
 mtype
+mulist
 mypy
 nonatomic
 nshttpurl
