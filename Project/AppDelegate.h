@@ -236,6 +236,13 @@
 + (NSArray *)getServerData;
 
 /**
+ * @brief The device-unique key string used to encrypt the purchased-music list: a Keychain
+ * generic-password value, generated as a fresh @c CFUUID on first run and persisted back.
+ * @ghidraAddress 0x50cb8
+ */
++ (NSString *)musicListKey;
+
+/**
  * @brief Exclude a file or directory from iCloud/iTunes backup via the legacy
  * @c com.apple.MobileBackup extended attribute.
  * @param path The filesystem path to mark.
