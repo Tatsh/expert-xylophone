@@ -87,6 +87,7 @@ oneline
 pbxproj
 popn
 preapproved
+prodlist
 purchesed
 pycache
 pyinstaller
@@ -116,6 +117,7 @@ tatsh
 thema
 themas
 theos
+transactioing
 udvare
 unarchiver
 undecryptable
