@@ -37,6 +37,7 @@ jsonschema
 konaminet
 libera
 libsonnet
+longrate
 minizip
 mktemp
 modelines
