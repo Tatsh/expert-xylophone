@@ -1,3 +1,4 @@
+(directors,
 aaap
 appli
 applilink
@@ -33,6 +34,8 @@ deserialise
 deserialises
 dictionaris
 dios
+directories
+directorys
 docstrings
 dplatform
 esbenp
