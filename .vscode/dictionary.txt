@@ -57,12 +57,14 @@ longrate
 malloc
 memcpy
 minizip
+mispacked
 mktemp
 modelines
 mypy
 nonatomic
 nshttpurl
 nsjson
+nssq
 nsurl
 nsutf
 nullptr
