@@ -6,7 +6,9 @@ autoreleasepool
 bitcode
 brighness
 bsky
+cfurl
 chache
+chksco
 codesign
 commitizen
 conn
@@ -14,6 +16,7 @@ cooldown
 coveragerc
 cplusplus
 dashcam
+datas
 dcmake
 ddeployment
 denable
@@ -46,7 +49,10 @@ mktemp
 modelines
 mypy
 nonatomic
+nshttpurl
+nsjson
 nsurl
+nsutf
 nullptr
 objc
 objcpp
@@ -71,6 +77,8 @@ shellcheck
 shellformat
 snapcraft
 statusline
+subarray
+subentities
 tatsh
 theos
 udvare
