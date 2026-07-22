@@ -58,6 +58,7 @@ libsonnet
 longrate
 malloc
 memcpy
+memset
 minizip
 mispacked
 mktemp
