@@ -222,7 +222,7 @@ static const int kClientMusicEntriesPerPage = 20;
 
 - (BOOL)addPurchasedMusic:(StoreMusicInfo *)storeMusicInfo {
     /** @ghidraAddress 0x6b7d0 */
-    unsigned int musicID = [storeMusicInfo.musicID unsignedIntValue];
+    unsigned int musicID = (unsigned int)storeMusicInfo.musicID;
     NSUInteger index = 0;
     while (index < self.purchasedMusicDictionaries.count) {
         NSDictionary *existing = self.purchasedMusicDictionaries[index];
