@@ -42,6 +42,41 @@
  */
 + (BOOL)isValidURL:(NSString *)urlString;
 
+/**
+ * @brief Build a random nonce string of the given length.
+ * @param length The number of random characters to generate.
+ * @return A newly generated nonce, or an empty string when @p length is zero.
+ * @ghidraAddress 0x8665c
+ */
++ (NSString *)createNonce:(unsigned long long)length;
+
+/**
+ * @brief Build the receipt-verification JSON payload for the V2 protocol.
+ * @param receipt The Base64-encoded App Store receipt.
+ * @param productIds The product identifiers being verified.
+ * @param nonce The nonce carried through the request for replay protection.
+ * @return The JSON payload string.
+ * @ghidraAddress 0x85fd4
+ */
++ (NSString *)createReceiptCheckJSONForV2:(NSString *)receipt
+                               productIds:(NSArray *)productIds
+                                    nonce:(NSString *)nonce;
+
+/**
+ * @brief The V3 receipt-verification endpoint URL.
+ * @return The endpoint URL.
+ * @ghidraAddress 0x85980
+ */
++ (NSURL *)receiptV3URL;
+
+/**
+ * @brief Map a numeric pack identifier to its App Store product identifier.
+ * @param pid The numeric pack identifier.
+ * @return The product identifier string.
+ * @ghidraAddress 0x874a0
+ */
++ (NSString *)pidToProductID:(int)pid;
+
 @end
 
 // code: language=Objective-C
