@@ -28,6 +28,9 @@ dcmake
 ddeployment
 decodepoint
 denable
+deserialisation
+deserialise
+deserialises
 dictionaris
 dios
 docstrings
