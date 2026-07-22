@@ -23,7 +23,9 @@ dplatform
 esbenp
 extern
 foxundermoon
+fullwidth
 ghidra
+halfwidth
 handoff
 hinabita
 ifdef
@@ -35,6 +37,7 @@ jinja
 jsonnet
 jsonschema
 konaminet
+korsk
 libera
 libsonnet
 longrate
@@ -82,5 +85,6 @@ wiswa
 wiswa's
 worktree
 yarnrc
+yomigana
 ziparchive
 zizmor
