@@ -31,6 +31,17 @@
  */
 + (NSString *)createReceiptCheckDigestV2:(NSString *)jsonString withNonce:(NSString *)nonce;
 
+/**
+ * @brief Whether a string is a usable @c http or @c https URL.
+ *
+ * Rejects a @c nil string and an @c NSNull placeholder, then requires that it parse into an
+ * @c NSURL whose scheme is @c http or @c https.
+ * @param urlString The candidate URL string.
+ * @return @c YES when @p urlString is a valid @c http or @c https URL.
+ * @ghidraAddress 0x85cc0
+ */
++ (BOOL)isValidURL:(NSString *)urlString;
+
 @end
 
 // code: language=Objective-C
