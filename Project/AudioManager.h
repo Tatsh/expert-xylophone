@@ -139,6 +139,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x405a4
  */
 - (void)popBgm;
+/**
+ * @brief Stop the background-music player and release it, leaving no loaded music.
+ * @ghidraAddress 0x3e868
+ */
+- (void)releaseBgm;
 
 #pragma mark Voice
 
