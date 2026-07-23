@@ -18,6 +18,7 @@
 #import "ApplilinkParameters.h"
 #import "RecommendAdAreaView.h"
 #import "RecommendAdCache.h"
+#import "ShadeView.h"
 
 // The advert-type identifier the interstitial always opens its advert area with (external area).
 static const int kRecommendInterstitialAdType = 5;
@@ -50,15 +51,15 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
 
 // The class metadata declares conformance to the closed-SDK ApplilinkViewDelegate and
-// ShadeViewDelegate protocols. Neither protocol is defined in the reconstructed tree (each is only
-// ever forward-declared), so the callbacks are implemented here and dispatched dynamically rather
-// than adopted formally.
-@interface RecommendFullScreenController ()
+// ShadeViewDelegate protocols. ApplilinkViewDelegate is only forward-declared in the reconstructed
+// tree, so its callbacks are implemented here and dispatched dynamically; ShadeViewDelegate is
+// defined in ShadeView.h and is adopted formally.
+@interface RecommendFullScreenController () <ShadeViewDelegate>
 
 // The advert base view that hosts the advert area, sized for the current orientation.
 @property(nonatomic, strong, nullable) UIView *baseView;
 // The full-screen shade view that dims the screen behind the advert.
-@property(nonatomic, strong, nullable) UIView *shadeView;
+@property(nonatomic, strong, nullable) ShadeView *shadeView;
 // The large loading spinner shown while the advert area loads.
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
 // The advert request parameters the interstitial was opened with.
@@ -245,10 +246,8 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     if (self.shadeView) {
         [self.shadeView setFrame:shadeFrame];
     } else {
-        self.shadeView = [[UIView alloc] initWithFrame:shadeFrame];
-        // ShadeView is a closed-SDK UIView subclass with no reconstructed header; it is messaged
-        // -setDelegate: dynamically so its delegate can drive -closeShadeView.
-        [(id)self.shadeView setDelegate:self];
+        self.shadeView = [[ShadeView alloc] initWithFrame:shadeFrame];
+        self.shadeView.delegate = self;
         self.shadeView.hidden = YES;
         self.shadeView.userInteractionEnabled = NO;
         [self.view addSubview:self.shadeView];
