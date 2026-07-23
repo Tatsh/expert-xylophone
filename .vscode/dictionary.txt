@@ -6,6 +6,7 @@ appli
 applilink
 archs
 asbd
+autocapitalization
 autorelease
 autoreleased
 autoreleasepool
@@ -55,6 +56,7 @@ extern
 extraout
 fabsf
 falied
+favorite
 fmla
 foxundermoon
 fram
@@ -124,11 +126,13 @@ pyinstaller
 pylock
 pyproject
 qrispy
+randam
 rbbgm
 rbmacros
 rbplus
 rbscorehash
 rdparty
+readwrite
 recomputation
 rect
 rects
@@ -184,6 +188,7 @@ valf
 vendored
 venv
 vtable
+warc
 werror
 winget
 wiswa
