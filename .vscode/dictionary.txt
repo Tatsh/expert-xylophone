@@ -61,6 +61,7 @@ handoff
 hinabita
 hira
 hnbt
+howtoplay
 ifdef
 ifndef
 infomation
@@ -78,6 +79,7 @@ libera
 libsonnet
 limepoint
 longrate
+lproj
 malloc
 memcpy
 memset
