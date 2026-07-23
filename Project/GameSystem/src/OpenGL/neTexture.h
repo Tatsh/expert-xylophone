@@ -73,6 +73,7 @@ private:
     unsigned char m_reserved61[7] = {}; // +0x61
 
     friend C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
+    friend void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath);
 };
 
 /**
@@ -108,6 +109,17 @@ extern C_TEXTURE **g_ppTextureCacheHead;
  * @ghidraAddress 0x33c78
  */
 C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
+
+/**
+ * @brief Store a copy of the source asset path in a texture entry.
+ *
+ * Frees any path the entry already holds, then duplicates @p pszPath into a freshly allocated
+ * buffer.
+ * @param pEntry The texture entry to update.
+ * @param pszPath The source asset path to store.
+ * @ghidraAddress 0x31b18
+ */
+void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath);
 
 /**
  * @brief Running total of the bytes held by all live textures, for memory accounting.

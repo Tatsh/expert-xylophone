@@ -36,6 +36,16 @@ C_TEXTURE::~C_TEXTURE() {
     }
 }
 
+/** @ghidraAddress 0x31b18 */
+void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath) {
+    if (pEntry->m_pSourcePath != nullptr) {
+        delete[] pEntry->m_pSourcePath;
+        pEntry->m_pSourcePath = nullptr;
+    }
+    pEntry->m_pSourcePath = new char[std::strlen(pszPath) + 1];
+    std::strcpy(pEntry->m_pSourcePath, pszPath);
+}
+
 /** @ghidraAddress 0x33c78 */
 C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
     C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
