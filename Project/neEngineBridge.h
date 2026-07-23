@@ -64,6 +64,11 @@ NSString *GetRegionCode(void);
  */
 bool GetIsRetinaFlag(void);
 /**
+ * @brief Returns the cached "screen is tall" flag (the main screen is a 4-inch or larger display).
+ * @ghidraAddress 0x1a1248
+ */
+bool GetIsTallScreenFlag(void);
+/**
  * @brief Returns the cached preferred language code (for example @c "ja" or @c "en").
  * @ghidraAddress 0x1a1230
  */
