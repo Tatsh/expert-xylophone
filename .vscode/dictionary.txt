@@ -6,6 +6,7 @@ archs
 asbd
 autorelease
 autoreleasepool
+autoresizing
 baet
 bitcode
 brighness
@@ -25,6 +26,7 @@ constexpr
 cooldown
 coveragerc
 cplusplus
+creater
 dashcam
 datas
 dcmake
@@ -49,6 +51,7 @@ foxundermoon
 fullwidth
 ghidra
 gles
+grage
 halfwidth
 handoff
 hinabita
@@ -66,6 +69,7 @@ jsonnet
 jsonschema
 konaminet
 korsk
+layouted
 libera
 libsonnet
 limepoint
@@ -78,6 +82,7 @@ mispacked
 mktemp
 modelines
 mulist
+musicselect
 mypy
 nolist
 nonatomic
@@ -93,6 +98,7 @@ objc
 objcpp
 oneline
 pbxproj
+plid
 popn
 preapproved
 prodlist
@@ -101,6 +107,7 @@ pycache
 pyinstaller
 pylock
 pyproject
+rbbgm
 rbplus
 rdparty
 recomputation
@@ -109,6 +116,7 @@ reflec
 reflecbeat
 reflow
 regen
+relase
 rhythmin
 ripgreprc
 rtti
@@ -127,6 +135,7 @@ subarray
 subentities
 subview
 subviews
+superview
 sysctlbyname
 tatsh
 thema
@@ -140,6 +149,7 @@ undraft
 undrafted
 unichar
 unretained
+untilted
 vendored
 venv
 werror
