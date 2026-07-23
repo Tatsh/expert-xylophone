@@ -238,9 +238,10 @@ void ScaleVector2(float *pVec, float scale);
 void MakeLookAtMatrix(float *pOutMatrix, float *pTarget, float *pEye, float *pUp);
 /**
  * @brief Builds an x-axis rotation matrix for the given angle, in radians.
+ * @return @p pOutMatrix, so the result can be passed on inline.
  * @ghidraAddress 0x196b4
  */
-void MakeRotationMatrixX(float angle, float *pOutMatrix);
+float *MakeRotationMatrixX(float angle, float *pOutMatrix);
 /**
  * @brief Builds a translation matrix for the given offset.
  * @ghidraAddress 0x19624
