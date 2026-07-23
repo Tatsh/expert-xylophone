@@ -8,18 +8,10 @@
 //  that maps each Applilink error code to a localised message, then builds an NSError whose
 //  userInfo carries that message under NSLocalizedDescriptionKey.
 //
-//  ApplilinkBundle is an SDK-private collaborator that is not itself reconstructed here, so its one
-//  messaged class method is forward-declared below rather than imported from a header.
-//
 
 #import "ApplilinkNetworkError.h"
 
-// The Applilink SDK's private resource bundle. Only +rewardBundle is messaged here; the bundle is
-// used to look up localised strings in its "Error" table. When the bundle is missing the factory
-// falls back to the built-in English messages.
-@interface ApplilinkBundle : NSObject
-+ (nullable NSBundle *)rewardBundle;
-@end
+#import "ApplilinkBundle.h"
 
 /** @ghidraAddress 0x344791 */
 NSErrorDomain const ApplilinkErrorDomain = @"ApplilinkErrorDomain";
@@ -191,7 +183,7 @@ static NSMutableDictionary *gApplilinkErrorMessages = nil;
 }
 
 + (NSError *)localizedApplilinkErrorWithCode:(NSInteger)code
-                                    userInfo:(nullable NSDictionary *)userInfo {
+                                    userInfo:(NSDictionary *)userInfo {
     if (gApplilinkErrorMessages == nil) {
         gApplilinkErrorMessages = [[NSMutableDictionary alloc] init];
         NSBundle *bundle = [ApplilinkBundle rewardBundle];
