@@ -1,3 +1,4 @@
+#import <cmath>
 #import <cstring>
 
 #import "../../../neEngineBridge.h"
@@ -39,4 +40,21 @@ void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z) {
     pOutMatrix[kMatrixTranslateX] = x;
     pOutMatrix[kMatrixTranslateY] = y;
     pOutMatrix[kMatrixTranslateZ] = z;
+}
+
+/** @ghidraAddress 0x196b4 */
+float *MakeRotationMatrixX(float flAngle, float *pOut) {
+    SetMatrixIdentity(pOut);
+    const float flSin = std::sin(flAngle);
+    const float flCos = std::cos(flAngle);
+    // Rotate in the Y-Z plane, leaving the X axis fixed (column-major):
+    //   [ 1    0     0    0 ]
+    //   [ 0   cos  -sin   0 ]
+    //   [ 0   sin   cos   0 ]
+    //   [ 0    0     0    1 ]
+    pOut[5] = flCos;
+    pOut[6] = flSin;
+    pOut[9] = -flSin;
+    pOut[10] = flCos;
+    return pOut;
 }
