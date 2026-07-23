@@ -1,6 +1,7 @@
 #import "Crypto.h"
 
 #import <CommonCrypto/CommonCryptor.h>
+#import <CommonCrypto/CommonDigest.h>
 
 // The AES block size, in bytes. The output buffer is over-allocated by one block so that PKCS#7
 // padding added on encryption always fits.
@@ -34,6 +35,28 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
         return nil;
     }
     return [NSData dataWithBytes:output.bytes length:moved];
+}
+
+/** @ghidraAddress 0x234894 */
++ (NSData *)createHash:(NSData *)inputData {
+    unsigned char digest[CC_SHA1_DIGEST_LENGTH] = {0};
+    CC_SHA1(inputData.bytes, (CC_LONG)inputData.length, digest);
+    return [NSData dataWithBytes:digest length:CC_SHA1_DIGEST_LENGTH];
+}
+
+/** @ghidraAddress 0x23496c */
++ (NSString *)sha1:(NSString *)string {
+    // The digest is taken over the UTF-8 C string, but the byte count passed is the string's
+    // -length (its character count, not the UTF-8 byte count) exactly as the binary does.
+    NSData *data = [NSData dataWithBytes:[string cStringUsingEncoding:NSUTF8StringEncoding]
+                                 length:string.length];
+    unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1(data.bytes, (CC_LONG)data.length, digest);
+    NSMutableString *hex = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
+    for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; ++i) {
+        [hex appendFormat:@"%02x", digest[i]];
+    }
+    return hex;
 }
 
 @end

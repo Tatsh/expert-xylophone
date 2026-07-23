@@ -2,8 +2,9 @@
  * Reconstructed interface for the KONAMI Applilink SDK's @c Crypto helper.
  *
  * @c Crypto encrypts and decrypts the SDK's persisted payloads with AES-128 in ECB mode and PKCS#7
- * padding, using CommonCrypto. The class is stateless: it has no instance state and exposes a single
- * class method. Reconstructed from Ghidra program rb458.
+ * padding, using CommonCrypto, and derives the SHA-1 hashes the SDK keys those payloads by. The
+ * class is stateless: it has no instance state and exposes only class methods. Reconstructed from
+ * Ghidra program rb458.
  */
 
 #import <Foundation/Foundation.h>
@@ -30,6 +31,22 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSData *)cryptorToData:(unsigned int)mode
                              value:(nullable NSData *)value
                                key:(nullable NSData *)key;
+
+/**
+ * @brief The SHA-1 digest of a string's UTF-8 bytes as a 40-character lowercase hexadecimal string.
+ * @param string The string to hash.
+ * @return The 40-character lowercase hexadecimal digest.
+ * @ghidraAddress 0x23496c
+ */
++ (nullable NSString *)sha1:(nullable NSString *)string;
+
+/**
+ * @brief The 20-byte SHA-1 digest of the input data.
+ * @param inputData The data to hash.
+ * @return The 20-byte SHA-1 digest.
+ * @ghidraAddress 0x234894
+ */
++ (nullable NSData *)createHash:(nullable NSData *)inputData;
 
 @end
 
