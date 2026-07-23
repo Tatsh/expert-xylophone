@@ -24,7 +24,7 @@ extern const CGFloat g_dMascotMessageMaxWidthPad;     // @ghidraAddress 0x2ee930
 extern const CGFloat g_dMascotMessageMaxWidthPhone;   // @ghidraAddress 0x2ee938 (200.0)
 extern const CGFloat g_dSliderRowHeightWide;          // @ghidraAddress 0x2ee950 (40.0)
 extern const CGFloat g_dLayoutMetricThirtyTwo;        // @ghidraAddress 0x2ee9b0 (32.0)
-extern const CGFloat g_dRBWebViewGrayViewWhite;       // @ghidraAddress 0x2ec708 (0.62)
+extern const CGFloat g_dRBWebViewGrayViewWhite;       // @ghidraAddress 0x2ec708 (0.6)
 extern const CGFloat g_dTranslucentAlpha;             // @ghidraAddress 0x2ec6a0
 extern const CGFloat g_dAudioManagerResumeFadeInTime; // @ghidraAddress 0x2ec718 (0.3)
 extern const float g_flFlashMinOpacity;               // @ghidraAddress 0x2ec6b4 (0.0)
