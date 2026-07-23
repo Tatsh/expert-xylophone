@@ -155,7 +155,7 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 #pragma mark UDID pasteboard storage
 
 /** @ghidraAddress 0x22b9ac */
-+ (NSString *)writeUDIDForFirstEmptyLocationWithError:(NSError **)error {
++ (NSDictionary *)writeUDIDForFirstEmptyLocationWithError:(NSError **)error {
     ApplilinkUdid *shared = [ApplilinkUdid sharedInstance];
     NSDictionary *storageData = shared.pasteBoard.storageData;
     NSString *udid = storageData[kApplilinkUdidPasteBoardValueKey];
@@ -166,7 +166,7 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
         CFRelease(uuid);
     }
     NSError *writeError = nil;
-    NSString *written = [shared.pasteBoard writeStorageData:udid error:&writeError];
+    NSDictionary *written = [shared.pasteBoard writeStorageData:udid error:&writeError];
     if (written == nil) {
         if (error != NULL) {
             *error = [ApplilinkNetworkError
@@ -179,9 +179,9 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 }
 
 /** @ghidraAddress 0x22bb94 */
-+ (NSString *)writeUDIDForFirstEmptyLocationWithUdid:(NSString *)udid {
++ (NSDictionary *)writeUDIDForFirstEmptyLocationWithUdid:(NSString *)udid {
     ApplilinkUdid *shared = [ApplilinkUdid sharedInstance];
-    NSString *written = [shared.pasteBoard writeStorageData:udid error:NULL];
+    NSDictionary *written = [shared.pasteBoard writeStorageData:udid error:NULL];
     if (written != nil) {
         [ApplilinkUdid sharedInstance].pasteBoard.nonPasteBoardUdidFlag = NO;
     }
@@ -189,7 +189,7 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 }
 
 /** @ghidraAddress 0x22bcc0 */
-+ (NSString *)writeUDIDWithUdid:(NSString *)udid {
++ (NSDictionary *)writeUDIDWithUdid:(NSString *)udid {
     ApplilinkUdid *shared = [ApplilinkUdid sharedInstance];
     NSString *serviceName = [ApplilinkUdid getServiceName];
     NSError *readError = nil;
@@ -199,7 +199,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     if (existing != nil) {
         [shared.pasteBoard deleteWithStorageIndex:0 error:&readError];
     }
-    NSString *written = [shared.pasteBoard writeStorageData:udid storageIndex:0 error:&readError];
+    NSDictionary *written = [shared.pasteBoard writeStorageData:udid storageIndex:0
+                                                         error:&readError];
     if (written != nil) {
         [ApplilinkUdid sharedInstance].pasteBoard.nonPasteBoardUdidFlag = NO;
     }

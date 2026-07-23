@@ -41,26 +41,27 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Write a freshly generated UDID into the first empty pasteboard slot.
  * @param error Set to a localised error when the write fails.
- * @return The UDID that was written, or @c nil on failure.
+ * @return The stored record, or @c nil on failure.
  * @ghidraAddress 0x22b9ac
  */
-+ (nullable NSString *)writeUDIDForFirstEmptyLocationWithError:(NSError *_Nullable *_Nullable)error;
++ (nullable NSDictionary *)writeUDIDForFirstEmptyLocationWithError:
+    (NSError *_Nullable *_Nullable)error;
 
 /**
  * @brief Write the given UDID into the first empty pasteboard slot.
  * @param udid The UDID to store.
- * @return The stored UDID, or @c nil on failure.
+ * @return The stored record, or @c nil on failure.
  * @ghidraAddress 0x22bb94
  */
-+ (nullable NSString *)writeUDIDForFirstEmptyLocationWithUdid:(nullable NSString *)udid;
++ (nullable NSDictionary *)writeUDIDForFirstEmptyLocationWithUdid:(nullable NSString *)udid;
 
 /**
  * @brief Replace the pasteboard's slot 0 UDID with the given value.
  * @param udid The UDID to store.
- * @return The stored UDID, or @c nil on failure.
+ * @return The stored record, or @c nil on failure.
  * @ghidraAddress 0x22bcc0
  */
-+ (nullable NSString *)writeUDIDWithUdid:(nullable NSString *)udid;
++ (nullable NSDictionary *)writeUDIDWithUdid:(nullable NSString *)udid;
 
 /**
  * @brief Read the pasteboard UDID for a service name and storage index.
