@@ -291,6 +291,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)setNoBackupAttribute:(NSString *)path;
 
 /**
+ * @brief The total-score Game Center leaderboard category identifier, selected by the font-variant
+ * flag (the phone-specific identifier when the flag is @c kFontVariantDefault, otherwise the shared
+ * identifier).
+ * @return The leaderboard category identifier string.
+ * @ghidraAddress 0x50c8c
+ */
++ (NSString *)totalScoreLeaderboardCategory;
+
+/**
  * @brief Audio-session interruption handler: suspends the audio engine when an interruption begins
  * and resumes it when one ends.
  * @param notification The @c AVAudioSessionInterruptionNotification.
