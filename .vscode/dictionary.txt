@@ -104,10 +104,12 @@ nullptr
 objc
 objcpp
 oneline
+openurl
 pbxproj
 plid
 popn
 preapproved
+proc
 prodlist
 purchesed
 pycache
@@ -149,6 +151,7 @@ subentities
 subview
 subviews
 superview
+superview's
 sysctlbyname
 tatsh
 thema
@@ -166,6 +169,7 @@ unretained
 untilted
 vendored
 venv
+vtable
 werror
 winget
 wiswa
