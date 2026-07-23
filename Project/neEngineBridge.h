@@ -74,6 +74,12 @@ NSString *GetFormattedVersionString(void);
  */
 NSData *Md5StringToData(const char *pString);
 /**
+ * @brief Computes the MD5 digest of a C string and returns it as a 32-character lowercase
+ *        hexadecimal string.
+ * @ghidraAddress 0x175c8
+ */
+NSString *Md5StringToHex(const char *pString);
+/**
  * @brief Computes the MD5 digest of a buffer into a 16-byte output.
  * @ghidraAddress 0x174dc
  */
@@ -88,6 +94,10 @@ NSString *ComputeSha256HexString(const char *cString);
  * @ghidraAddress 0x1a1200
  */
 unsigned int GetFontVariantFlag(void);
+// The GetFontVariantFlag value that selects the default region glyph-spacing table; any other value
+// selects a font variant. A file-static const (not a C++ constexpr) so pure Objective-C .m callers
+// can use it too.
+static const unsigned int kFontVariantDefault = 0;
 /**
  * @brief Constructs and initialises the AVFoundation sound-effect backend.
  * @ghidraAddress 0x4a5e8
@@ -128,6 +138,52 @@ void LoadAllCachedTextures(void);
  * @ghidraAddress 0x33e1c
  */
 void ReleaseAllCachedTextures(void);
+/**
+ * @brief Renders the whole global scene tree for the current frame.
+ * @ghidraAddress 0x29d58
+ */
+void RenderGlobalSceneTree(void);
+/**
+ * @brief Dispatches the per-frame notification (an opaque frame-elapsed argument) to every live
+ *        node in the engine listener list.
+ * @ghidraAddress 0x36628
+ */
+void DispatchListenerList(void *pFrameArg);
+/**
+ * @brief Returns the elapsed time since the timer was last started, scaled to frames, as a float.
+ * @ghidraAddress 0x3671c
+ */
+float GetElapsedMediaTime(double *pStartTime);
+/**
+ * @brief Records the current media time as a timer start value.
+ * @ghidraAddress 0x366f8
+ */
+void StartMediaTimer(double *pStartTime);
+/**
+ * @brief Scales a two-component vector in place by the screen scale factor.
+ * @ghidraAddress 0x20c08
+ */
+void ScaleVector2(float *pVec, float scale);
+/**
+ * @brief Builds a look-at view matrix from a target, an eye, and an up vector.
+ * @ghidraAddress 0x19844
+ */
+void MakeLookAtMatrix(float *pOutMatrix, float *pTarget, float *pEye, float *pUp);
+/**
+ * @brief Builds an x-axis rotation matrix for the given angle, in radians.
+ * @ghidraAddress 0x196b4
+ */
+void MakeRotationMatrixX(float angle, float *pOutMatrix);
+/**
+ * @brief Builds a translation matrix for the given offset.
+ * @ghidraAddress 0x19624
+ */
+void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
+/**
+ * @brief Post-multiplies the accumulator matrix by the source matrix in place.
+ * @ghidraAddress 0x18f10
+ */
+void ComposeMatrices(float *pAccumulator, float *pSource);
 
 // Shared engine data tables, seeded at startup. They are defined once in the engine layer and read
 // from the Objective-C code, so they are declared here rather than re-declared locally.
@@ -148,6 +204,11 @@ extern NSDictionary *const g_pLowerToUpperTable;
  */
 extern NSDictionary *const g_pVoiceToVoicelessTable;
 /**
+ * @brief The device screen height, in points, used to centre the variant (wide-font) layout.
+ * @ghidraAddress 0x3c8834
+ */
+extern int g_nVariantScreenHeight;
+/**
  * @brief The per-decode-type Blowfish key table shared with the chart loader.
  * @ghidraAddress 0x35b7c8
  */
@@ -164,9 +225,140 @@ extern const int kChartDecodeKeyLengths[];
 
 #ifdef __cplusplus
 
-// The GetFontVariantFlag value that selects the default region glyph-spacing table; any other value
-// selects a font variant.
-constexpr unsigned int kFontVariantDefault = 0;
+/**
+ * A media-time stamp used by the engine timers. Its sole field is the media time in seconds; the
+ * @c GetElapsedMediaTime and @c StartMediaTimer helpers read and write it through a @c double
+ * pointer to its first field.
+ * @ghidraAddress C_TIME (engine struct type)
+ */
+struct C_TIME {
+    double m_flTime = {}; // +0x0
+};
+
+// The engine render, viewport, and camera object types. Their full field layouts are not yet
+// reconstructed; they are modelled as opaque reference-counted engine classes so the render helpers
+// can take and return real typed pointers rather than @c void *.
+class neGLESRenderer;
+
+/**
+ * A reference-counted projection viewport (orthographic or perspective), 0x70 bytes in the binary.
+ * Created by @c CreateOrthoViewport / @c CreatePerspectiveViewport and released through
+ * @c ReleaseViewportCamera.
+ * @ghidraAddress ne_Viewport (engine class, refcount at +0x0)
+ */
+class ne_Viewport;
+
+/**
+ * A reference-counted camera/model node, 0x90 bytes in the binary. Created by
+ * @c CreateLookAtCamera / @c CreateCameraFromMatrix and installed through @c SetCurrentModelNode.
+ * @ghidraAddress ne_CameraNode (engine class, refcount at +0x0)
+ */
+class ne_CameraNode;
+
+/**
+ * @brief Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
+ * @ghidraAddress 0x20f50
+ */
+neGLESRenderer *GetGlRenderer();
+/**
+ * @brief Clears the current GL buffers selected by the GL clear mask (the renderer argument is a
+ *        formal receiver that the trampoline ignores).
+ * @ghidraAddress 0x21400
+ */
+void ClearBuffers(neGLESRenderer *pRenderer, unsigned int dwMask);
+/**
+ * @brief Installs the given viewport as the current projection (retaining it and releasing the
+ *        previous one).
+ * @ghidraAddress 0x29f1c
+ */
+void SetCurrentProjection(ne_Viewport *pViewport);
+/**
+ * @brief Installs the given viewport as the active view camera (retaining it and releasing the
+ *        previous one).
+ * @ghidraAddress 0x29f64
+ */
+void SetActiveViewCamera(ne_Viewport *pViewport);
+/**
+ * @brief Installs the given camera node as the current model/world node (retaining it and releasing
+ *        the previous one).
+ * @ghidraAddress 0x29fac
+ */
+void SetCurrentModelNode(ne_CameraNode *pCamera);
+/**
+ * @brief Releases a viewport created by one of the viewport constructors (decrements its
+ *        reference count and destroys it at zero).
+ * @ghidraAddress 0x29900
+ */
+void ReleaseViewportCamera(ne_Viewport *pViewport);
+/**
+ * @brief Creates an orthographic viewport for the given view rectangle.
+ * @ghidraAddress 0x2991c
+ */
+ne_Viewport *
+CreateOrthoViewport(float width, float height, int x, int y, int viewportWidth, int viewportHeight);
+/**
+ * @brief Creates a perspective viewport for the given field of view and view rectangle.
+ * @ghidraAddress 0x299c4
+ */
+ne_Viewport *CreatePerspectiveViewport(float fovY,
+                                       float aspect,
+                                       float nearZ,
+                                       float farZ,
+                                       int x,
+                                       int y,
+                                       int viewportWidth,
+                                       int viewportHeight);
+/**
+ * @brief Creates a camera node from a 4x4 view matrix.
+ * @ghidraAddress 0x21fe0
+ */
+ne_CameraNode *CreateCameraFromMatrix(float *pMatrix);
+/**
+ * @brief Creates a look-at camera node from an eye, a target, and an up vector.
+ * @ghidraAddress 0x21f74
+ */
+ne_CameraNode *CreateLookAtCamera(float *pEye, float *pTarget, float *pUp);
+
+/**
+ * The global touch manager. The application obtains it through @c FetchSharedSingleton and commits
+ * each frame through @c CompactTouchList; only the operations the Objective-C layer calls are
+ * modelled here.
+ * @ghidraAddress TouchManager (engine class, slot array at +0x0, count at +0x100)
+ */
+class TouchManager {
+public:
+    /**
+     * @brief Returns the global touch-manager singleton, or @c nullptr when not yet created.
+     * @ghidraAddress 0x17c38
+     */
+    static TouchManager *FetchSharedSingleton();
+    /**
+     * @brief Commits the current touch frame and swap-removes the touches that have ended.
+     * @ghidraAddress 0x17f50
+     */
+    void CompactTouchList();
+};
+
+/**
+ * The themed sound-effect manager. It holds three theme banks of twenty slots plus thirty-six
+ * shared slots, keyed by the current theme; the application plays a slot through
+ * @c PlayThemedSoundEffect.
+ * @ghidraAddress SoundEffectManager (engine class, 0x1e8 bytes)
+ */
+class SoundEffectManager {
+public:
+    /**
+     * @brief Returns the shared themed sound-effect manager, constructing it on first use.
+     * @ghidraAddress 0x1cc514
+     */
+    static SoundEffectManager *GetInstance();
+    /**
+     * @brief Plays the sound effect in the given slot for the current theme, returning its play
+     *        handle, or @c 0xffffffff when the slot is not loaded.
+     * @ghidraAddress 0x1cc934
+     */
+    unsigned int PlayThemedSoundEffect(int slotID);
+};
 
 /**
  * A two-component float vector shared with the engine's sheet-layout helpers.
@@ -272,6 +464,74 @@ public:
     /** @brief Stores the screen scale factor. */
     void SetScreenScale(float value) {
         m_flScreenScale = value;
+    }
+    /** @brief Returns the GL viewport width, in pixels. */
+    float GetViewportWidth() const {
+        return m_flViewportWidth;
+    }
+    /** @brief Stores the GL viewport width, in pixels. */
+    void SetViewportWidth(float value) {
+        m_flViewportWidth = value;
+    }
+    /** @brief Returns the GL viewport height, in pixels. */
+    float GetViewportHeight() const {
+        return m_flViewportHeight;
+    }
+    /** @brief Stores the GL viewport height, in pixels. */
+    void SetViewportHeight(float value) {
+        m_flViewportHeight = value;
+    }
+    /** @brief Returns the far-plane x extent of the note sheet. */
+    float GetSheetFarX() const {
+        return m_flSheetFarX;
+    }
+    /** @brief Returns the far-plane y extent of the note sheet. */
+    float GetSheetFarY() const {
+        return m_flSheetFarY;
+    }
+    /** @brief Returns the play-field scale. */
+    float GetPlayfieldScale() const {
+        return m_flPlayfieldScale;
+    }
+    /** @brief Returns the camera pitch reference height used by the tilt projection. */
+    float GetCameraPitchHeight() const {
+        return m_flCameraPitchHeight;
+    }
+    /** @brief Stores the camera pitch reference height used by the tilt projection. */
+    void SetCameraPitchHeight(float value) {
+        m_flCameraPitchHeight = value;
+    }
+    /** @brief Returns the cached target score used by the play screen. */
+    int GetTargetScore() const {
+        return m_nTargetScore;
+    }
+    /** @brief Stores the cached target score used by the play screen. */
+    void SetTargetScore(int value) {
+        m_nTargetScore = value;
+    }
+    /** @brief Returns the cached target achievement rate used by the play screen. */
+    float GetTargetAR() const {
+        return m_flTargetAR;
+    }
+    /** @brief Stores the cached target achievement rate used by the play screen. */
+    void SetTargetAR(float value) {
+        m_flTargetAR = value;
+    }
+    /** @brief Reports whether this is the player's first play of the song. */
+    bool GetIsFirstPlay() const {
+        return m_fIsFirstPlay;
+    }
+    /** @brief Records whether this is the player's first play of the song. */
+    void SetIsFirstPlay(bool value) {
+        m_fIsFirstPlay = value;
+    }
+    /** @brief Returns the random seed used to drive gameplay. */
+    unsigned int GetRandSeed() const {
+        return m_dwRandSeed;
+    }
+    /** @brief Stores the random seed used to drive gameplay. */
+    void SetRandSeed(unsigned int value) {
+        m_dwRandSeed = value;
     }
     /** @brief Returns the note-sheet width. */
     float GetSheetWidth() const {
@@ -458,6 +718,12 @@ public:
      * @ghidraAddress 0x12f33c
      */
     void SetSheetLayerPosition(S_VECTOR2 *pPosition);
+    /**
+     * @brief Recomputes the note-sheet layer position and margins for the current screen and the
+     *        given speed type.
+     * @ghidraAddress 0x8ef60
+     */
+    void ConfigureSheetLayerForScreen(int speedType);
     /** @brief Returns the active game scene, or @c nullptr when none is running. */
     GameScene *GetCurrentScene() const;
     /**
@@ -496,6 +762,7 @@ private:
     float m_flSheetRadiusScaled = {};    // +0x9c
     float m_flSheetWidth = {};           // +0xa0
     float m_flSheetHeight = {};          // +0xa4
+    float m_flCameraPitchHeight = {};    // +0xa8
     bool m_fBgmPlaying = {};             // +0xac
     int m_nGameType = {};                // +0xb0
     int m_nPlayerColor = {};             // +0xb4

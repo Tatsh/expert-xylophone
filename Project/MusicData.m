@@ -805,7 +805,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCache;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         image = ImageFromData([self artworkData]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -828,7 +828,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheBasic;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         image = ImageFromData([self artworkDataBasic]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -851,7 +851,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheMedium;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         image = ImageFromData([self artworkDataMedium]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -874,7 +874,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheHard;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         image = ImageFromData([self artworkDataHard]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -1179,7 +1179,7 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
         return;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         image = ImageFromData([self artworkData]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {

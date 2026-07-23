@@ -51,7 +51,7 @@ static NSString *const kManagedObjectModelType = @"mom";
 
 - (NSString *)scoreDataFileName {
     /** @ghidraAddress 0x1cb2e8 */
-    return GetFontVariantFlag() != 0 ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
+    return GetFontVariantFlag() != kFontVariantDefault ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
 }
 
 #pragma mark - Score stack

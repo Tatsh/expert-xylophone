@@ -200,7 +200,7 @@ static void ScoreDataHashScoreForTune(int tuneID,
     words[2] = medium;
     words[5] = hard + medium;
     words[7] = medium + basic + hard;
-    if (GetFontVariantFlag() != 0) {
+    if (GetFontVariantFlag() != kFontVariantDefault) {
         words[1] = basic;
         words[3] = hard;
         words[4] = medium + basic;
