@@ -37,8 +37,14 @@ static const ExtAudioFilePropertyID kFileLengthFramesProperty =
 
 // The candidate file-name extensions searched, in order, when locating the backing file.
 static NSString *const kSoundDataExtensions[] = {@"mp3", @"wav", @"m4a"};
-static const NSUInteger kSoundDataExtensionCount =
-    ARRAY_SIZE(kSoundDataExtensions);
+static const NSUInteger kSoundDataExtensionCount = ARRAY_SIZE(kSoundDataExtensions);
+
+// The index of each candidate extension within kSoundDataExtensions.
+enum {
+    kSoundExtensionMP3 = 0,
+    kSoundExtensionWAV = 1,
+    kSoundExtensionM4A = 2,
+};
 
 // The format string used to build a candidate path in a search directory: directory, name, and
 // extension.
@@ -86,7 +92,7 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
     NSString *path = [NSString stringWithFormat:kSoundDataPathFormat,
                                                 documentDirectory,
                                                 m_FileName,
-                                                kSoundDataExtensions[0]];
+                                                kSoundDataExtensions[kSoundExtensionMP3]];
     if (![fileManager fileExistsAtPath:path]) {
         NSUInteger extensionIndex = 1;
         do {
