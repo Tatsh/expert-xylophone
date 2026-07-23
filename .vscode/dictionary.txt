@@ -1,5 +1,6 @@
 aaap
 accell
+adid
 advertisable
 Ångström
 anim
@@ -230,6 +231,7 @@ unichar
 unretained
 untilted
 valf
+vartical
 vendored
 venv
 vtable
