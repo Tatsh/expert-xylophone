@@ -15,6 +15,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class MusicDataExtend;
 @class UIColor;
 @class UIImage;
 
@@ -139,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x6673c (getter)
  * @ghidraAddress 0x6674c (setter)
  */
-@property(nonatomic, assign, nullable) MusicData *spData;
+@property(nonatomic, assign, nullable) MusicDataExtend *spData;
 /**
  * @brief The extend audio archive entry loaded for the special chart.
  * @ghidraAddress 0x6675c (getter)

@@ -17,6 +17,7 @@
 // reconstructed in this tree (the same speculative imports ScoreData.m and AppDelegate.mm already
 // use); they resolve once those classes land.
 #import "BFCodec.h"
+#import "MusicDataExtend.h"
 #import "RBExtendNoteManager.h"
 #import "RBMusicManager.h"
 #import "StringConvert.h"
@@ -396,13 +397,14 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
             [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
     }
 
-    NSArray *extendData = [[RBExtendNoteManager getInstance] getExtendNoteDataWithMusicID:musicID];
+    NSArray<MusicDataExtend *> *extendData =
+        [[RBExtendNoteManager getInstance] getExtendNoteDataWithMusicID:musicID];
     if (extendData != nil && extendData.count != 0) {
-        id extend = extendData[0];
+        MusicDataExtend *extend = extendData[0];
         data.spData = extend;
-        data.difficultySpecial = [[extend difficulty] intValue] - kLevelMinimum;
-        NSString *extendPath = [RBMusicManager getPathFromPurchesed:[[extend ExtMusicID] intValue]];
-        data.ExtMusicData = [MusicData dataWithPath:extendPath ID:[[extend ExtMusicID] intValue]];
+        data.difficultySpecial = extend.difficulty - kLevelMinimum;
+        NSString *extendPath = [RBMusicManager getPathFromPurchesed:extend.ExtMusicID];
+        data.ExtMusicData = [MusicData dataWithPath:extendPath ID:extend.ExtMusicID];
     }
 
     NSDictionary *options = info[kInfoKeyOptions];
