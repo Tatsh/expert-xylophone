@@ -2,11 +2,10 @@
  * A purchased-tune row cell for the store manage page. It carries the download or delete action
  * button whose tag encodes the tune's section and row.
  *
- * Minimal stub: only the surface @c RBStoreManageViewController messages is declared here; the
- * full class is reconstructed separately.
- *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBStoreManageCell, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). @ghidraAddress values are offsets relative to the image base. The class adds a
+ * single strong @c button property to @c UITableViewCell; its accessors and ARC destructor are
+ * compiler-synthesised.
  */
 
 #import <UIKit/UIKit.h>
