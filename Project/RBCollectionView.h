@@ -1,10 +1,12 @@
 /** @file
- * A @c UICollectionView subclass that forwards its layout passes to an auxiliary delegate: it tells
- * the delegate just before and just after @c -layoutSubviews so the host view can size its page
- * control from the freshly laid-out content.
+ * A @c UICollectionView subclass that brackets its layout pass with callbacks to an auxiliary
+ * delegate. Just before it lays its subviews out it sends @c -willLayoutSubviews:, then it runs the
+ * inherited @c UICollectionView layout, and finally it sends @c -didLayoutSubviews:. The host views
+ * (@c RBUnlockCollectionView and @c RBCustomSelectCollectionView) use the trailing callback to size
+ * their page control from the freshly laid-out content.
  *
- * Speculative interface: only the members other classes use are declared here. Reconstructed from
- * Ghidra project rb458, program rb458 (class @c RBCollectionView, image base 0x100000000).
+ * Reconstructed from Ghidra project rb458, program rb458 (class @c RBCollectionView, image base
+ * 0x100000000). @ghidraAddress values are offsets relative to the image base.
  */
 
 #import <UIKit/UIKit.h>
@@ -15,20 +17,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Auxiliary delegate notified around an @c RBCollectionView's layout pass.
+ *
+ * Both callbacks are optional; @c RBCollectionView guards each with @c -respondsToSelector: before
+ * sending it.
  */
 @protocol RBCollectionViewDelegate <NSObject>
 
 @optional
 
 /**
- * @brief Sent just before the collection view lays its subviews out.
+ * @brief Sent just before the collection view runs the inherited layout pass.
  * @param collectionView The collection view about to lay out.
  * @ghidraAddress 0x9d5d8
  */
 - (void)willLayoutSubviews:(RBCollectionView *)collectionView;
 
 /**
- * @brief Sent just after the collection view has laid its subviews out.
+ * @brief Sent just after the collection view has run the inherited layout pass.
  * @param collectionView The collection view that finished laying out.
  * @ghidraAddress 0x9d5d8
  */
@@ -37,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @brief A collection view that forwards its layout passes to an auxiliary delegate.
+ * @brief A collection view that brackets its layout pass with delegate callbacks.
  */
 @interface RBCollectionView : UICollectionView
 
