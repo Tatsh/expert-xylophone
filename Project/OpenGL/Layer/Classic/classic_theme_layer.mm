@@ -8,8 +8,8 @@
 // The background texture the Classic-theme batches all draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
-// The sprite-batch kinds for the three Classic-theme background batches.
-static const int g_anClassicThemeBatchKinds[] = {1, 7, 30}; // @ghidraAddress 0x301970
+// The sprite capacities (maximum sprite counts) for the three Classic-theme background batches.
+static const int g_anClassicThemeBatchCapacities[] = {1, 7, 30}; // @ghidraAddress 0x301970
 
 /** @ghidraAddress 0x109f30 */
 void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
@@ -22,7 +22,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
 
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {
         ne::C_SPRITE_INSTANCING *pBatch =
-            ne::CreateWorldSpriteBatch(g_anClassicThemeBatchKinds[nBatchIndex]);
+            ne::CreateWorldSpriteBatch(g_anClassicThemeBatchCapacities[nBatchIndex]);
         ne::AttachSceneNode(pRootNode, pBatch);
         pBatch->SetVisible(true);
         // The first batch is stored without being given the shared texture; only the second and

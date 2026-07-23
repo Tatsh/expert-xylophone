@@ -71,20 +71,31 @@ private:
     int m_aTexParams[4] = {};               // +0x140
     int m_nBlendMode = {};                  // +0x150
     bool m_bBatchFlag = {};                 // +0x154
+    // +0x155: reserved so the object matches the binary's 352-byte allocation; the trailing fields
+    // beyond the batch flag have not yet been recovered.
+    unsigned char m_reserved155[11] = {};
 
     friend void SetRefCountedMember(C_SPRITE_INSTANCING *pBatch, C_TEXTURE *pTexture);
 };
 
 /**
- * @brief Create and register a world-space sprite batch node for the given kind.
+ * @brief Allocate and initialise a world-space sprite batch node.
  *
- * The node is allocated, initialised for the requested sprite kind, and returned ready to be
+ * The node is allocated, initialised to hold up to @p nCapacity sprites, and returned ready to be
  * inserted into the scene graph.
- * @param nKind The sprite-batch kind identifier.
+ * @param nCapacity The maximum number of sprites the batch can draw.
  * @return The new sprite batch node.
  * @ghidraAddress 0x31834
  */
-C_SPRITE_INSTANCING *CreateWorldSpriteBatch(int nKind);
+C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
+
+/**
+ * @brief Initialise a freshly allocated sprite batch to hold up to @p nCapacity sprites.
+ * @param pBatch The newly allocated batch to initialise.
+ * @param nCapacity The maximum number of sprites the batch can draw.
+ * @ghidraAddress 0x3097c
+ */
+void InitWorldSpriteBatch(C_SPRITE_INSTANCING *pBatch, unsigned int nCapacity);
 
 /**
  * @brief Assign the batch's texture, updating reference counts.
