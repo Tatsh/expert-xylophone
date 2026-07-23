@@ -195,16 +195,6 @@ void EnsureTextureCacheSingleton(unsigned char firstByte);
  * @ghidraAddress 0x33e5c
  */
 void LoadAllCachedTextures(void);
-namespace ne {
-class C_TEXTURE;
-} // namespace ne
-/**
- * @brief Finds the cached texture for a key, loading it from its image asset on first request.
- * @param szKey The texture key, an image asset path such as @c "00_texture/gm_parts2".
- * @return The cached texture for @p szKey.
- * @ghidraAddress 0x33c78
- */
-ne::C_TEXTURE *FindOrLoadCachedTexture(const char *szKey);
 /**
  * @brief Releases every texture handle held in the global texture cache.
  * @ghidraAddress 0x33e1c

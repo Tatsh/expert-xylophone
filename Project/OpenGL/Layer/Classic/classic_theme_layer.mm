@@ -1,8 +1,8 @@
 #import "classic_theme_layer.h"
 
+#import "../../../GameSystem/src/OpenGL/neTexture.h"
 #import "../../../GameSystem/src/Render/neRender.h"
 #import "../../../GameSystem/src/Render/neSpriteInstancing.h"
-#import "../../../neEngineBridge.h"
 #import "../Share/bg_layer.h"
 
 // The background texture the Classic-theme batches all draw from.
@@ -18,7 +18,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     }
 
     ne::C_RENDER *pRootNode = GetBackgroundLayer()->GetBackgroundRenderObject();
-    m_pTexture = FindOrLoadCachedTexture(g_szGmParts2TextureKey);
+    m_pTexture = ne::FindOrLoadCachedTexture(g_szGmParts2TextureKey);
 
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {
         ne::C_SPRITE_INSTANCING *pBatch =

@@ -71,6 +71,8 @@ private:
     float m_flScale = {};               // +0x5c
     bool m_fFlag60 = {};                // +0x60
     unsigned char m_reserved61[7] = {}; // +0x61
+
+    friend C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
 };
 
 /**
@@ -84,6 +86,44 @@ private:
  * @ghidraAddress 0x31af4
  */
 void ReleaseRefCountedObject(C_TEXTURE *pObject);
+
+/**
+ * @brief The texture cache's circular list, addressed through its sentinel node.
+ *
+ * Dereferencing it yields the sentinel @c C_TEXTURE whose @c pNext / @c pPrev links thread the live
+ * cache. Created lazily by @c EnsureTextureCacheList.
+ * @ghidraAddress 0x3cff30
+ */
+extern C_TEXTURE **g_ppTextureCacheHead;
+
+/**
+ * @brief Find a cached texture by key, loading and caching it on a miss.
+ *
+ * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's reference
+ * count is incremented and it is returned. On a miss a new entry is allocated, initialised, and
+ * loaded from the named image; on success it is reference-counted, spliced into the list, and
+ * returned, otherwise @c nullptr.
+ * @param pszName The texture key (an image asset path).
+ * @return The cached or newly loaded texture, or @c nullptr when the image could not be loaded.
+ * @ghidraAddress 0x33c78
+ */
+C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
+
+/**
+ * @brief Initialise a freshly allocated texture cache entry to its empty state.
+ * @param pTexture The texture to initialise.
+ * @ghidraAddress 0x319d0
+ */
+void InitializeTextureEntry(C_TEXTURE *pTexture);
+
+/**
+ * @brief Load a texture's pixels from the named UIImage asset.
+ * @param pTexture The texture entry to fill in.
+ * @param pszName The image asset name.
+ * @return Non-zero on success, zero when the image could not be loaded.
+ * @ghidraAddress 0x31b60
+ */
+int LoadTextureFromUIImage(C_TEXTURE *pTexture, const char *pszName);
 
 } // namespace ne
 
