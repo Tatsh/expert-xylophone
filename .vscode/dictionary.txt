@@ -144,6 +144,7 @@ pyinstaller
 pylock
 pyproject
 qrispy
+rainbowanimation
 randam
 rbbgm
 rbmacros
@@ -164,6 +165,7 @@ renderbuffer
 resoure
 rgba
 rhythmin
+ringanimation
 ripgreprc
 rtti
 schemafile
