@@ -59,6 +59,26 @@ NSString *GetApiHostString(void);
  */
 NSString *GetRegionCode(void);
 /**
+ * @brief Returns the cached "screen is Retina" flag (the main screen scale differs from 1.0).
+ * @ghidraAddress 0x1a120c
+ */
+bool GetIsRetinaFlag(void);
+/**
+ * @brief Returns the cached preferred language code (for example @c "ja" or @c "en").
+ * @ghidraAddress 0x1a1230
+ */
+NSString *GetPreferredLanguageCode(void);
+/**
+ * @brief Returns the cached primary localization folder name (for example @c "ja.lproj").
+ * @ghidraAddress 0x1a1284
+ */
+NSString *GetPrimaryLprojName(void);
+/**
+ * @brief Returns the cached fallback localization folder name (the opposite of the primary lproj).
+ * @ghidraAddress 0x1a1290
+ */
+NSString *GetFallbackLprojName(void);
+/**
  * @brief Returns the cached CFBundleVersion string.
  * @ghidraAddress 0x1a160c
  */
