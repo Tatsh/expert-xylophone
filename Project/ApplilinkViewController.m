@@ -20,11 +20,7 @@
 #import "ApplilinkIndicator.h"
 #import "ApplilinkParameters.h"
 #import "ApplilinkStore.h"
-
-// RotateStoreProductViewController is a rotation-forcing SKStoreProductViewController subclass that
-// the SDK instantiates here. It has not yet been reconstructed, so it is only forward-declared;
-// every message the view controller sends it belongs to the SKStoreProductViewController API.
-@class RotateStoreProductViewController;
+#import "RotateStoreProductViewController.h"
 
 @implementation ApplilinkViewController
 
