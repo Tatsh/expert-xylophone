@@ -11,7 +11,7 @@
 
 #import "MusicData.h"
 
-/// Purchased-extend-note dictionary keys read by the factory.
+// Purchased-extend-note dictionary keys read by the factory.
 static NSString *const kExtendKeyExtMusicID = @"ExtID";
 static NSString *const kExtendKeyMusicID = @"ID";
 static NSString *const kExtendKeyDifficulty = @"ExtLevel";

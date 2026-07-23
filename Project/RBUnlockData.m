@@ -11,22 +11,18 @@
 #import "RBUnlockPackageData.h"
 #import "RBUserSettingData.h"
 
-/// The dictionary key under which the catalogue version string is supplied.
+// The dictionary key under which the catalogue version string is supplied.
 static NSString *const kVersionDictionaryKey = @"Version";
-/// The dictionary key under which the catalogue package array is supplied.
+// The dictionary key under which the catalogue package array is supplied.
 static NSString *const kPackageDictionaryKey = @"Package";
 
-/// The player theme identifiers returned by @c -[RBUserSettingData thema].
+// The player theme identifiers returned by @c -[RBUserSettingData thema].
 typedef enum {
-    /// The default theme.
+    // The default theme.
     RBUnlockDataThemeDefault = 1,
-    /// The Colette theme.
+    // The Colette theme.
     RBUnlockDataThemeColette = 2,
 } RBUnlockDataTheme;
-
-/// The cached singleton returned by @c sharedInstance.
-/// @ghidraAddress 0x3df348 (g_pRBUnlockDataSharedInstance)
-static RBUnlockData *sSharedInstance = nil;
 
 /**
  * @brief Builds the ordered package list from a catalogue dictionary's @c Package array.
@@ -61,12 +57,14 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 
 #pragma mark - Singleton and persistence
 
+// @ghidraAddress 0x3df348 (g_pRBUnlockDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x19ab70 */
-    if (sSharedInstance == nil) {
-        sSharedInstance = [[RBUnlockData alloc] init];
+    static RBUnlockData *instance = nil;
+    if (instance == nil) {
+        instance = [[RBUnlockData alloc] init];
     }
-    return sSharedInstance;
+    return instance;
 }
 
 - (void)save {

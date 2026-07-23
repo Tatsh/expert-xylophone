@@ -2,6 +2,17 @@
 
 ## General
 
+- Place a reconstructed source file in the subdirectory of `Project/` that mirrors the binary's
+  embedded `__FILE__` path, with two elisions: drop the
+  `/Users/.../Program/Games/REFLECBEAT/` prefix, and drop the `Classess/` path segment (a typo in
+  the shipped tree — do not create a `Classess` directory). Keep the binary's original file
+  basename verbatim, which is `snake_case` for the C++ engine/layer/model/scene files and the RB
+  CamelCase name for the view/UI files. Examples:
+  `.../Classess/OpenGL/Layer/Classic/full_combo_classic_layer.mm` →
+  `Project/OpenGL/Layer/Classic/full_combo_classic_layer.mm`;
+  `.../Classess/Views/Music/RBMusicView.mm` → `Project/Views/Music/RBMusicView.mm`;
+  `.../GameSystem/src/OpenGL/neGLES.cpp` → `Project/GameSystem/src/OpenGL/neGLES.cpp`. A file with
+  no embedded path stays at the `Project/` root.
 - 4 space indents with no tabs.
 - Avoid magic numbers: create constants and enumerations for all numbers that are not obvious (e.g.,
   `kMaxPlayers` instead of `4`). This includes creating enumerations for array indices and bit
@@ -32,6 +43,21 @@
 - Keep all header groups sorted alphabetically.
 - Use `clang-format` to format source files. Shortcut: `yarn format`.
 - This project uses Doxygen to document members. Always document public members in headers.
+- Use plain `//` comments for internal and file-private commentary (implementation notes, file-scope
+  constants, and other non-public code). Reserve Doxygen — a `/** ... */` block with `@brief`,
+  `@param`, `@return`, `@ghidraAddress`, etc. — for public members declared in headers. Do not use
+  the `///` Doxygen single-line form for internal comments.
+- Document a public enumeration's members with a trailing Doxygen member comment (`/*!< ... */`) on
+  the same line as the member, not a leading comment before it:
+
+  ```objc
+  typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
+      ScoreDataFrameBonusTypeNone = 0,   /*!< No frame bonus. */
+      ScoreDataFrameBonusTypeBronze = 1, /*!< The first (lower) frame-bonus tier. */
+      ScoreDataFrameBonusTypeGold = 2,   /*!< The second (higher) frame-bonus tier. */
+  };
+  ```
+
 - Tie a reconstructed routine to its binary function with the `@ghidraAddress 0x...` Doxygen tag (a
   custom tag in our Doxygen configuration) on its header declaration; the address is relative to the
   PopnRhythmin program's image base. In an implementation file this tag appears only inside a block
@@ -88,13 +114,26 @@ reconstructed code faithful to the original.
 - If a class name is available in the RTTI use it for the name.
 - `delete` is only used when it is what the original did and the same behaviour cannot be achieved
   with smart pointers. Otherwise smart pointers are highly encouraged.
-- Always use C++-style casts.
+- Always use C++-style casts in `.mm` and `.cpp` (and C++ headers): `static_cast`, `reinterpret_cast`
+  (a smell — see above), `const_cast`, `dynamic_cast`. Never a C-style `(type)expr` cast there.
 - `*` and `&` go to the right of the type. `int &a` not `int& a`.
 - Use `__builtin_available()` to check for API availability. Prefer runtime checks over
   compile-time.
 - Use `= {}` to zero initialise class members.
 - Use `m_` prefix to name class members.
 - Prefer to use zero-init constructors whenever possible.
+- Initialise a variable with a braced list using direct-list-initialization, without the `=`:
+  `S_VECTOR2 size{x, y};`, not `S_VECTOR2 size = {x, y};`.
+- A compile-time numeric or size constant is a `constexpr`, not a `static constexpr`: a
+  namespace-scope (or file-scope) `constexpr` already has internal linkage, so the `static` is
+  redundant — and it is especially pointless inside an anonymous `namespace {}`. Use
+  `static NSString *const` for an Objective-C string constant (an `NSString *` is not a `constexpr`
+  literal type).
+- Declare a shared engine function exactly once, in the engine bridge header (`neEngineBridge.h`),
+  and import that header where it is used; never re-declare the same engine prototype locally in
+  several implementation files. A function whose first parameter is the object / `this` pointer
+  (a `pThis`-style argument) is a C++ instance method — declare it as a member of its class (named
+  from the RTTI where available), never as a free function that takes the object pointer.
 
 ## Objective-C
 
@@ -116,12 +155,31 @@ reconstructed code faithful to the original.
 - Reconstruct getters and setters as `@property` declarations (add `@synthesize` only when the
   binary keeps a differently-named backing ivar), not spelled-out accessor bodies. Map the compiled
   accessor to its attribute: `assign`, `strong` (retain), or `copy`, and `atomic` or `nonatomic`.
+- Reconstruct a singleton's shared instance as a method-local `static` inside the
+  `+sharedManager`/`+sharedInstance`/`+getInstance` accessor, not a file-scope global or `static`.
+  Reproduce the binary's own guarding exactly — `@synchronized(self)`, `dispatch_once`, or a plain
+  `if (instance == nil)` nil-check — rather than imposing a different one.
+
+  ```objc
+  + (instancetype)sharedManager {
+      static AudioManager *instance = nil;
+      @synchronized(self) {
+          if (instance == nil) {
+              instance = [[AudioManager alloc] init];
+          }
+      }
+      return instance;
+  }
+  ```
+
 - Create an enumeration that is **declared in a header** with the macro that matches the
   enumeration's nature. This requirement is scoped to header declarations only: an enumeration or
   constant group defined in an implementation file (`.m`, `.mm`, `.cpp`, `.c`) does **not** use the
   `NS_*` macros — use a plain C/C++ `enum`, grouped `static NSString *const`, `static const`, or
   `static constexpr` there instead.
-  - `NS_ENUM` for a simple integer-backed enumeration.
+  - `NS_ENUM` for a simple integer-backed enumeration. Back it with `NSInteger` when the underlying
+    value is signed or `NSUInteger` when it is unsigned (matching the binary field's signedness);
+    never back an `NS_ENUM`/`NS_OPTIONS` with a raw `int` or `unsigned int`.
   - `NS_CLOSED_ENUM` for a simple enumeration that can never gain new cases.
   - `NS_OPTIONS` for an enumeration whose cases are bit-flag sets combined with `|`.
   - `NS_TYPED_ENUM` for an enumeration whose raw value is a type you specify. The raw type is

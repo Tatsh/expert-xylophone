@@ -15,13 +15,10 @@
 /**
  * @brief The chart difficulty a history query is filtered by.
  */
-typedef NS_ENUM(unsigned int, HistoryDifficulty) {
-    /** The basic chart. */
-    HistoryDifficultyBasic = 0,
-    /** The medium chart. */
-    HistoryDifficultyMedium = 1,
-    /** The hard chart. */
-    HistoryDifficultyHard = 2,
+typedef NS_ENUM(NSUInteger, HistoryDifficulty) {
+    HistoryDifficultyBasic = 0,  /*!< The basic chart. */
+    HistoryDifficultyMedium = 1, /*!< The medium chart. */
+    HistoryDifficultyHard = 2,   /*!< The hard chart. */
 };
 
 NS_ASSUME_NONNULL_BEGIN

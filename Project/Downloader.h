@@ -91,14 +91,16 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @brief Initialise a POST request with a body and content type.
  * @ghidraAddress 0x72b94
  */
-- (instancetype)initWithURL:(NSURL *)url post:(NSData *)post contentType:(NSString *)contentType;
+- (instancetype)initWithURL:(NSURL *)url
+                       post:(nullable NSData *)post
+                contentType:(nullable NSString *)contentType;
 /**
  * @brief Initialise a POST request with a body, content type, and timeout (seconds).
  * @ghidraAddress 0x72cd4
  */
 - (instancetype)initWithURL:(NSURL *)url
-                       post:(NSData *)post
-                contentType:(NSString *)contentType
+                       post:(nullable NSData *)post
+                contentType:(nullable NSString *)contentType
                     timeout:(float)timeout;
 
 /**

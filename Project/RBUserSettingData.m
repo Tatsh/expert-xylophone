@@ -9,11 +9,9 @@
 
 #import "RBUserSettingData.h"
 
-/// Returns the running application's short version string. Declared as a free function pending the
-/// reconstruction of the launch-support module that defines it.
-extern NSString *GetBundleVersionString(void);
+#import "neEngineBridge.h"
 
-/// Archive keys for the scalar and object settings. They match the shipped literals verbatim.
+// Archive keys for the scalar and object settings. They match the shipped literals verbatim.
 static NSString *const kVersionCoderKey = @"kVersion";
 static NSString *const kThemaCoderKey = @"kThemaKey";
 static NSString *const kBGMTypeCoderKey = @"kBGMTypeKey";
@@ -68,25 +66,25 @@ static NSString *const kFullJustReflecCoderKey = @"kFullJustReflecKey";
 static NSString *const kVsPastelCoderKey = @"kVsPastel";
 static NSString *const kAlreadyReadTitleCautionCoderKey = @"kAlreadyReadTitleCaution";
 
-/// Resource names for each theme, returned by @c +themaNameWithID:.
+// Resource names for each theme, returned by @c +themaNameWithID:.
 static NSString *const kThemaNameClassic = @"01_Classic";
 static NSString *const kThemaNameLimelight = @"02_Limelight";
 static NSString *const kThemaNameColette = @"03_Colette";
 static NSString *const kThemaNameFallback = @"original";
-/// The resource extension of a theme bundle.
+// The resource extension of a theme bundle.
 static NSString *const kThemaBundleExtension = @"bundle";
 
-/// The seed timestamp for the news and terms bookkeeping on a fresh install.
+// The seed timestamp for the news and terms bookkeeping on a fresh install.
 static NSString *const kDefaultTimeString = @"200001010000";
-/// The seed version for the downloaded resource pack on a fresh install.
+// The seed version for the downloaded resource pack on a fresh install.
 static NSString *const kDefaultResourceDownloadVersion = @"0.0.0";
 
-/// The number of customise entries stored per theme dictionary.
+// The number of customise entries stored per theme dictionary.
 static const NSUInteger kCustomizeItemCount = 9;
-/// The number of themes with their own customise dictionary.
+// The number of themes with their own customise dictionary.
 static const NSUInteger kCustomizeThemaCount = 3;
 
-/// The shipped default settings seeded by @c setDefault.
+// The shipped default settings seeded by @c setDefault.
 static const int kDefaultBgmType = 15;
 static const int kDefaultExplosionType = 12;
 static const int kDefaultFrameType = 14;
@@ -99,27 +97,23 @@ static const float kDefaultBoundsEffectSize = 1.0f;
 static const float kDefaultDamageEffectSize = 1.0f;
 static const int kDefaultCpuLevel = 2;
 static const int kDefaultPlayerColor = 2;
-/// The bounds-effect style selected when a theme has no stored customise dictionary.
+// The bounds-effect style selected when a theme has no stored customise dictionary.
 static const int kBoundsEffectStyleFallback = 1;
 
-/// The classic-theme customise defaults (all effects off, unit volume and brightness).
+// The classic-theme customise defaults (all effects off, unit volume and brightness).
 static const int kClassicBgmType = 0;
-/// The limelight-theme customise defaults.
+// The limelight-theme customise defaults.
 static const int kLimelightBgmType = 1;
 static const int kLimelightExplosionType = 1;
 static const int kLimelightFrameType = 7;
 static const int kLimelightBackgroundType = 6;
-/// The colette-theme customise defaults.
+// The colette-theme customise defaults.
 static const int kColetteBgmType = 15;
 static const int kColetteExplosionType = 12;
 static const int kColetteFrameType = 14;
 static const int kColetteBackgroundType = 13;
 
-/// The cached singleton returned by @c sharedInstance.
-/// @ghidraAddress 0x3df588 (g_pRBUserSettingDataSharedInstance)
-static RBUserSettingData *sSharedInstance = nil;
-
-/// Builds one theme's customise dictionary from the supplied option values.
+// Builds one theme's customise dictionary from the supplied option values.
 static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
                                                 int explosionType,
                                                 int frameType,
@@ -220,20 +214,22 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
 
 #pragma mark - Singleton and persistence
 
+// @ghidraAddress 0x3df588 (g_pRBUserSettingDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x1f7cb4 */
-    if (sSharedInstance == nil) {
+    static RBUserSettingData *instance = nil;
+    if (instance == nil) {
         NSString *key = NSStringFromClass([self class]);
         if ([[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]
                 .allKeys containsObject:key]) {
             NSData *archived = [[NSUserDefaults standardUserDefaults] dataForKey:key];
-            sSharedInstance = [NSKeyedUnarchiver unarchiveObjectWithData:archived];
+            instance = [NSKeyedUnarchiver unarchiveObjectWithData:archived];
         }
-        if (sSharedInstance == nil) {
-            sSharedInstance = [[RBUserSettingData alloc] init];
+        if (instance == nil) {
+            instance = [[RBUserSettingData alloc] init];
         }
     }
-    return sSharedInstance;
+    return instance;
 }
 
 - (void)save {

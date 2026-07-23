@@ -11,55 +11,47 @@
 
 #import "RBHttpUtil.h"
 
-/// The common request headers stamped on every request.
+#import "neEngineBridge.h"
+
+// The common request headers stamped on every request.
 static NSString *const kUserAgentHeaderField = @"User-Agent";
 static NSString *const kAcceptLanguageHeaderField = @"Accept-Language";
 static NSString *const kContentTypeHeaderField = @"Content-Type";
 
-/// The HTTP methods used by the initialisers.
+// The HTTP methods used by the initialisers.
 static NSString *const kHTTPMethodGet = @"GET";
 static NSString *const kHTTPMethodPost = @"POST";
 
-/// The default request timeout, in seconds, for the GET, download, and rebuilt requests.
+// The default request timeout, in seconds, for the GET, download, and rebuilt requests.
 static const NSTimeInterval kDefaultTimeoutInterval = 15.0;
-/// The default request timeout, in seconds, for a POST when the caller gives no explicit value.
+// The default request timeout, in seconds, for a POST when the caller gives no explicit value.
 static const NSTimeInterval kDefaultPostTimeoutInterval = 15.0;
-/// The sentinel stored in the timeout properties when no interval has been set.
+// The sentinel stored in the timeout properties when no interval has been set.
 static const long long kUnsetTimeoutInterval = -1;
 
-/// The cache policy every request is built with.
+// The cache policy every request is built with.
 static const NSURLRequestCachePolicy kRequestCachePolicy =
     NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
 
-/// The HTTP status code treated as success.
+// The HTTP status code treated as success.
 static const NSInteger kHTTPStatusOK = 200;
 
-/// The initial capacity for the in-memory response buffer when the length is unknown.
+// The initial capacity for the in-memory response buffer when the length is unknown.
 static const NSUInteger kDefaultResponseCapacity = 65536;
 
-/// The response header key carrying the expected body hash, and the salt folded into that hash.
+// The response header key carrying the expected body hash, and the salt folded into that hash.
 // cspell:ignore Rhdvru Yvgs
 static NSString *const kResponseCodeHeaderKey = @"code";
 static NSString *const kHashCheckSalt = @"kdRhdvruVoJ1sUan4TJpsXYvgsSNG2yn";
 
-/// The query-string builder: the format for one key-value pair, the pair separator, and the set of
-/// characters escaped out of each key and value.
+// The query-string builder: the format for one key-value pair, the pair separator, and the set of
+// characters escaped out of each key and value.
 static NSString *const kQueryPairFormat = @"%@=%@";
 static NSString *const kQueryPairSeparator = @"&";
 static NSString *const kQueryPercentEscapeCharacters = @"!*'();:@&=+$,/?%#[]";
 
-/// The user-facing message stored when the body fails its hash check.
+// The user-facing message stored when the body fails its hash check.
 static NSString *const kHashCheckErrorMessage = @"hash check error ...";
-
-/// Shared primitive that returns the lowercase SHA-256 hex digest of a NUL-terminated C string.
-/// Ghidra: ComputeSha256HexString @ 0x17b0c (CommonCrypto @c CC_SHA256).
-extern NSString *ComputeSha256HexString(const char *cString);
-/// The cached device description string (device, iOS, and build) stamped as the @c User-Agent.
-/// Ghidra: GetDeviceDescriptionString @ 0x1a129c.
-extern NSString *GetDeviceDescriptionString(void);
-/// The cached region code stamped as the @c Accept-Language header.
-/// Ghidra: GetRegionCode @ 0x1a1278.
-extern NSString *GetRegionCode(void);
 
 @implementation RBHttpUtil
 

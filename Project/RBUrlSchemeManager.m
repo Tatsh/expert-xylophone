@@ -17,22 +17,22 @@
 #import "RBUrlSchemeInfoController.h"
 #import "RBUrlSchemeStoreController.h"
 
-/// The format used to build a per-host handler class name from the URL host (its first letter
-/// capitalised), for example @c RBUrlSchemeInfoController.
-/// @ghidraAddress 0x33e7fb (the format-string literal)
+// The format used to build a per-host handler class name from the URL host (its first letter
+// capitalised), for example @c RBUrlSchemeInfoController.
+// @ghidraAddress 0x33e7fb (the format-string literal)
 static NSString *const kHandlerClassNameFormat = @"RBUrlScheme%@Controller";
 
-/// The number of leading host characters capitalised to form the handler class name.
+// The number of leading host characters capitalised to form the handler class name.
 static const NSUInteger kHandlerHostPrefixLength = 1;
 
-/// The separators used to split a query string: @c & between key-value pairs and @c = within a
-/// pair.
-/// @ghidraAddress 0x32f9fb (the pair separator literal)
-/// @ghidraAddress 0x338511 (the key-value separator literal)
+// The separators used to split a query string: @c & between key-value pairs and @c = within a
+// pair.
+// @ghidraAddress 0x32f9fb (the pair separator literal)
+// @ghidraAddress 0x338511 (the key-value separator literal)
 static NSString *const kQueryPairSeparator = @"&";
 static NSString *const kQueryKeyValueSeparator = @"=";
 
-/// The indices of the key and value within a split query pair.
+// The indices of the key and value within a split query pair.
 enum {
     kRBUrlSchemeQueryPairIndexKey = 0,
     kRBUrlSchemeQueryPairIndexValue = 1,

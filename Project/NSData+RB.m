@@ -13,14 +13,14 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <UIKit/UIKit.h>
 
-/// The iOS version at and above which @c CFPropertyListCreateWithData is available; earlier systems
-/// fall back to @c CFPropertyListCreateFromXMLData.
+// The iOS version at and above which @c CFPropertyListCreateWithData is available; earlier systems
+// fall back to @c CFPropertyListCreateFromXMLData.
 static NSString *const kPropertyListModernAPIVersion = @"4.0";
 
-/// Comparison options used to order two dotted version strings numerically.
+// Comparison options used to order two dotted version strings numerically.
 static const NSStringCompareOptions kVersionCompareOptions = NSNumericSearch;
 
-/// Whether the running system provides @c CFPropertyListCreateWithData (iOS 4.0 or newer).
+// Whether the running system provides @c CFPropertyListCreateWithData (iOS 4.0 or newer).
 static BOOL RBHasModernPropertyListAPI(void) {
     NSComparisonResult order = [[UIDevice currentDevice].systemVersion
         compare:kPropertyListModernAPIVersion
@@ -28,8 +28,8 @@ static BOOL RBHasModernPropertyListAPI(void) {
     return order != NSOrderedAscending;
 }
 
-/// Deserialises XML property-list bytes into an immutable property-list object, selecting the Core
-/// Foundation parser that matches the running iOS version.
+// Deserialises XML property-list bytes into an immutable property-list object, selecting the Core
+// Foundation parser that matches the running iOS version.
 static CFPropertyListRef RBCreatePropertyList(NSData *data) {
     // Both parsers request an immutable tree; the mutable collection returned to the caller is
     // produced afterwards by copying into a fresh mutable container.

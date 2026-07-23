@@ -13,10 +13,10 @@
 #include <string.h>
 #include <sys/sysctl.h>
 
-/// The sysctl name that reports the device's machine model, for example @c iPhone3,1.
+// The sysctl name that reports the device's machine model, for example @c iPhone3,1.
 static const char *const kMachineSysctlName = "hw.machine";
 
-/// The sentinel hardware type stored by @c -init before the model has been resolved.
+// The sentinel hardware type stored by @c -init before the model has been resolved.
 static const int kHardwareTypeUnresolved = 15;
 
 /**
@@ -29,16 +29,16 @@ static const char *const kHardwareModelTable[] = {
     "iPod3,1",   "iPod4,1",   "iPad1,1",   "iPad2,1",   "iPad2,2",   "iPad2,3", "i386",
 };
 
-/// The number of known models in @c kHardwareModelTable.
+// The number of known models in @c kHardwareModelTable.
 static const NSUInteger kHardwareModelCount =
     sizeof(kHardwareModelTable) / sizeof(kHardwareModelTable[0]);
 
 @implementation SystemHardware {
-    /// The resolved hardware type, or @c kHardwareTypeUnresolved until @c -initHardware runs.
+    // The resolved hardware type, or @c kHardwareTypeUnresolved until @c -initHardware runs.
     int m_HardwareType;
 }
 
-/// The shared singleton instance.
+// The shared singleton instance.
 static SystemHardware *g_sharedInstance = nil;
 
 #pragma mark Singleton

@@ -23,10 +23,10 @@ void InitPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
                              double sampleRate,
                              int channelCount);
 
-/// The sample rate the client PCM format is configured for.
+// The sample rate the client PCM format is configured for.
 static const double kSoundDataSampleRate = 44100.0;
 
-/// The @c ExtAudioFileGetProperty selectors used while preparing the asset.
+// The @c ExtAudioFileGetProperty selectors used while preparing the asset.
 static const ExtAudioFilePropertyID kFileDataFormatProperty =
     kExtAudioFileProperty_FileDataFormat;
 static const ExtAudioFilePropertyID kClientDataFormatProperty =
@@ -34,18 +34,18 @@ static const ExtAudioFilePropertyID kClientDataFormatProperty =
 static const ExtAudioFilePropertyID kFileLengthFramesProperty =
     kExtAudioFileProperty_FileLengthFrames;
 
-/// The candidate file-name extensions searched, in order, when locating the backing file.
+// The candidate file-name extensions searched, in order, when locating the backing file.
 static NSString *const kSoundDataExtensions[] = {@"mp3", @"wav", @"m4a"};
 static const NSUInteger kSoundDataExtensionCount =
     sizeof(kSoundDataExtensions) / sizeof(kSoundDataExtensions[0]);
 
-/// The format string used to build a candidate path in a search directory: directory, name, and
-/// extension.
+// The format string used to build a candidate path in a search directory: directory, name, and
+// extension.
 static NSString *const kSoundDataPathFormat = @"%@/%@.%@";
 
-/// The byte stride the buffered wrap-around and silence paths apply to the already-copied frame
-/// count when advancing each destination @c mData pointer. The original build hard-codes four bytes
-/// per frame here rather than reusing @c mBytesPerFrame.
+// The byte stride the buffered wrap-around and silence paths apply to the already-copied frame
+// count when advancing each destination @c mData pointer. The original build hard-codes four bytes
+// per frame here rather than reusing @c mBytesPerFrame.
 static const long long kSoundDataWrapDestinationFrameStride = 4;
 
 @interface SoundData () {

@@ -16,7 +16,7 @@
 #import "RBMusicManager.h"
 #import "StoreUtil.h"
 
-/// The catalogue entry dictionary keys.
+// The catalogue entry dictionary keys.
 static NSString *const kMusicInfoKeyID = @"ID";
 static NSString *const kMusicInfoKeyName = @"Name";
 static NSString *const kMusicInfoKeyArtist = @"Artist";
@@ -27,24 +27,24 @@ static NSString *const kMusicInfoKeyITunesURL = @"iTunesURL";
 static NSString *const kMusicInfoKeyLevel = @"Level";
 static NSString *const kMusicInfoKeyPID = @"PID";
 
-/// The smallest valid tune identifier; a lesser value rejects the entry.
+// The smallest valid tune identifier; a lesser value rejects the entry.
 static const int kMinValidMusicID = 1;
 
-/// The number of @c Level entries required before the per-difficulty levels are read.
+// The number of @c Level entries required before the per-difficulty levels are read.
 static const NSUInteger kRequiredLevelCount = 3;
 
-/// The indices of the three per-difficulty levels within the @c Level array.
+// The indices of the three per-difficulty levels within the @c Level array.
 enum {
     kStoreMusicInfoLevelIndexBasic = 0,
     kStoreMusicInfoLevelIndexMedium = 1,
     kStoreMusicInfoLevelIndexHard = 2,
 };
 
-/// The inclusive range each per-difficulty level is clamped to.
+// The inclusive range each per-difficulty level is clamped to.
 static const int kMinLevel = 1;
 static const int kMaxLevel = 15;
 
-/// Clamp a per-difficulty level to the valid inclusive range.
+// Clamp a per-difficulty level to the valid inclusive range.
 static int ClampLevel(int level) {
     if (level < kMinLevel) {
         return kMinLevel;

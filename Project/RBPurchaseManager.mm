@@ -21,67 +21,59 @@
 #import "NSFileManager+RB.h"
 #import "PurchaseTransactionCache.h"
 #import "StoreUtil.h"
+#import "neEngineBridge.h"
 
-// Plain-C engine helpers shared with the persistence layer. These live in the C++ engine bridge,
-// which is not C-safe, so the prototypes are declared locally rather than by importing it.
-// @ghidraAddress 0x1a1624 (GetApplicationSupportPath)
-// @ghidraAddress 0x17534 (Md5StringToData)
-NSString *GetApplicationSupportPath(void);
-NSData *Md5StringToData(const char *pString);
-
-/// The filename the encrypted owned-product list is written to under Application Support.
-/// @ghidraAddress 0x337b84 (the filename literal)
+// The filename the encrypted owned-product list is written to under Application Support.
+// @ghidraAddress 0x337b84 (the filename literal)
 static NSString *const kProductListFilename = @"prodlist";
 
-/// The random header the saved product list is prefixed with, and the offset that skips it on load.
-static const NSUInteger kProductListSaltLength = 4;
+// The random header the saved product list is prefixed with, and the offset that skips it on load.
+constexpr NSUInteger kProductListSaltLength = 4;
 
-/// The initial capacities the mutable arrays are created with.
-static const NSUInteger kSmallListCapacity = 0;
-static const NSUInteger kProductListCapacity = 32;
-static const NSUInteger kSavedListCapacity = 128;
+// The initial capacities the mutable arrays are created with.
+constexpr NSUInteger kSmallListCapacity = 0;
+constexpr NSUInteger kProductListCapacity = 32;
+constexpr NSUInteger kSavedListCapacity = 128;
 
-/// The length of the receipt-verification nonce, in characters.
-static const NSUInteger kReceiptNonceLength = 32;
+// The length of the receipt-verification nonce, in characters.
+constexpr NSUInteger kReceiptNonceLength = 32;
 
-/// The text encoding the verification response body and its JSON request are (de)serialised with.
-static const NSStringEncoding kResponseEncoding = NSUTF8StringEncoding;
+// The text encoding the verification response body and its JSON request are (de)serialised with.
+constexpr NSStringEncoding kResponseEncoding = NSUTF8StringEncoding;
 
-/// Keys read from the verification response JSON, and the response signature header.
-/// @ghidraAddress 0x337b8d (@c "status"), 0x337b94 (@c "Products"), 0x337b9d (@c "error"),
-/// 0x337ba3 (@c "MsgDev"), 0x337baa (@c "RB-RES-SIG-V2")
+// Keys read from the verification response JSON, and the response signature header.
+// @ghidraAddress 0x337b8d (@c "status"), 0x337b94 (@c "Products"), 0x337b9d (@c "error"),
+// 0x337ba3 (@c "MsgDev"), 0x337baa (@c "RB-RES-SIG-V2")
 static NSString *const kResponseStatusKey = @"status";
 static NSString *const kResponseProductsKey = @"Products";
 static NSString *const kResponseErrorKey = @"error";
 static NSString *const kResponseMessageKey = @"MsgDev";
 static NSString *const kResponseSignatureHeader = @"RB-RES-SIG-V2";
 
-/// The status value that marks a successful verification response.
-static const int kResponseStatusOK = 0;
+// The status value that marks a successful verification response.
+constexpr int kResponseStatusOK = 0;
 
-/// The empty string the failure @c NSError is built from (an empty domain, description, and code).
-/// @ghidraAddress 0x32dca6 (the empty-string literal)
+// The empty string the failure @c NSError is built from (an empty domain, description, and code).
+// @ghidraAddress 0x32dca6 (the empty-string literal)
 static NSString *const kEmptyErrorText = @"";
-static const NSInteger kErrorCode = 0;
+constexpr NSInteger kErrorCode = 0;
 
-/// The Base64 alphabet shared by the encoders and the decoder.
-static const char kBase64Alphabet[] =
+// The Base64 alphabet shared by the encoders and the decoder.
+constexpr char kBase64Alphabet[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static const char kBase64Pad = '=';
+constexpr char kBase64Pad = '=';
 
-/// The number of input bytes and output characters a Base64 group spans.
-static const NSUInteger kBase64InputGroup = 3;
-static const NSUInteger kBase64OutputGroup = 4;
-
-/// The singleton instance backing @c +sharedManager.
-/// @ghidraAddress 0x3dc308
-static RBPurchaseManager *sSharedManager = nil;
+// The number of input bytes and output characters a Base64 group spans.
+constexpr NSUInteger kBase64InputGroup = 3;
+constexpr NSUInteger kBase64OutputGroup = 4;
 
 @implementation RBPurchaseManager
 
 #pragma mark - Singleton
 
 + (instancetype)sharedManager {
+    // @ghidraAddress 0x3dc308 (g_pRBPurchaseManagerSharedManager)
+    static RBPurchaseManager *sSharedManager = nil;
     if (!sSharedManager) {
         sSharedManager = [[RBPurchaseManager alloc] init];
     }
@@ -241,7 +233,8 @@ static RBPurchaseManager *sSharedManager = nil;
 #pragma mark - Receipt verification
 
 - (BOOL)addPurchaseCheckTransaction:(id)transaction {
-    if (transaction && ![self isPurchased:[(PurchaseTransactionCache *)transaction productID]]) {
+    PurchaseTransactionCache *cache = static_cast<PurchaseTransactionCache *>(transaction);
+    if (transaction && ![self isPurchased:[cache productID]]) {
         [self.purchaseCheckTransactions addObject:transaction];
         [self checkNextReceipt];
         return YES;
@@ -364,7 +357,7 @@ static RBPurchaseManager *sSharedManager = nil;
 - (void)downloaderFinished:(Downloader *)downloader {
     NSDictionary *header = downloader.getHeader;
     NSString *body = [[NSString alloc] initWithData:downloader.getData encoding:kResponseEncoding];
-    NSString *productID = [(PurchaseTransactionCache *)downloader.addData productID];
+    NSString *productID = [static_cast<PurchaseTransactionCache *>(downloader.addData) productID];
 
     BOOL verified = NO;
     NSDictionary *json = downloader.getDataInJSON;
@@ -431,7 +424,7 @@ static RBPurchaseManager *sSharedManager = nil;
 }
 
 - (void)downloaderError:(Downloader *)downloader {
-    NSString *productID = [(PurchaseTransactionCache *)downloader.addData productID];
+    NSString *productID = [static_cast<PurchaseTransactionCache *>(downloader.addData) productID];
     if (!self.isRestored) {
         NSError *error = [self errorWithEmptyDescription];
         if ([self.delegate respondsToSelector:@selector(purchaseFailed:error:)]) {
@@ -451,7 +444,7 @@ static RBPurchaseManager *sSharedManager = nil;
 
 #pragma mark - Helpers
 
-/// Build the empty-domain, empty-description failure error the verification callbacks report.
+// Build the empty-domain, empty-description failure error the verification callbacks report.
 - (NSError *)errorWithEmptyDescription {
     NSString *description =
         [NSString stringWithString:[NSString stringWithFormat:@"%@", kEmptyErrorText]];
@@ -487,8 +480,8 @@ static RBPurchaseManager *sSharedManager = nil;
                 padCount = secondIsNul ? 1 : 0;
             }
             cursor[0] = kBase64Alphabet[b1 >> 2];
-            cursor[1] = kBase64Alphabet[(b1 << 4 | (unsigned char)b2 >> 4) & 0x3f];
-            cursor[2] = kBase64Alphabet[(b2 << 2 | (unsigned char)b3 >> 6) & 0x3f];
+            cursor[1] = kBase64Alphabet[(b1 << 4 | static_cast<unsigned char>(b2) >> 4) & 0x3f];
+            cursor[2] = kBase64Alphabet[(b2 << 2 | static_cast<unsigned char>(b3) >> 6) & 0x3f];
             cursor[3] = padCount == 0 ? kBase64Alphabet[b3 & 0x3f] : kBase64Pad;
             if (padCount > 1) {
                 cursor[2] = kBase64Pad;
@@ -563,11 +556,11 @@ static RBPurchaseManager *sSharedManager = nil;
         const char *end = chars + length;
         do {
             unsigned char values[kBase64OutputGroup];
-            for (int slot = 0; slot < (int)kBase64OutputGroup; ++slot) {
+            for (int slot = 0; slot < static_cast<int>(kBase64OutputGroup); ++slot) {
                 unsigned char value = 0xff;
-                for (int index = 0; index < (int)sizeof(kBase64Alphabet); ++index) {
+                for (int index = 0; index < static_cast<int>(sizeof(kBase64Alphabet)); ++index) {
                     if (kBase64Alphabet[index] == chars[slot]) {
-                        value = (unsigned char)index;
+                        value = static_cast<unsigned char>(index);
                         break;
                     }
                 }

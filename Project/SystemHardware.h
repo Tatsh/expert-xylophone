@@ -16,37 +16,22 @@
  * Each case corresponds to one @c hw.machine string; @c SystemHardwareTypeUnknown is stored when no
  * known model matches.
  */
-typedef NS_ENUM(int, SystemHardwareType) {
-    /// iPhone1,1 (original iPhone).
-    SystemHardwareTypeIPhone1_1 = 0,
-    /// iPhone1,2 (iPhone 3G).
-    SystemHardwareTypeIPhone1_2 = 1,
-    /// iPhone2,1 (iPhone 3GS).
-    SystemHardwareTypeIPhone2_1 = 2,
-    /// iPhone3,1 (iPhone 4, GSM).
-    SystemHardwareTypeIPhone3_1 = 3,
-    /// iPhone3,2 (iPhone 4, GSM revised).
-    SystemHardwareTypeIPhone3_2 = 4,
-    /// iPod1,1 (first-generation iPod touch).
-    SystemHardwareTypeIPod1_1 = 5,
-    /// iPod2,1 (second-generation iPod touch).
-    SystemHardwareTypeIPod2_1 = 6,
-    /// iPod3,1 (third-generation iPod touch).
-    SystemHardwareTypeIPod3_1 = 7,
-    /// iPod4,1 (fourth-generation iPod touch).
-    SystemHardwareTypeIPod4_1 = 8,
-    /// iPad1,1 (original iPad).
-    SystemHardwareTypeIPad1_1 = 9,
-    /// iPad2,1 (iPad 2, Wi-Fi).
-    SystemHardwareTypeIPad2_1 = 10,
-    /// iPad2,2 (iPad 2, GSM).
-    SystemHardwareTypeIPad2_2 = 11,
-    /// iPad2,3 (iPad 2, CDMA).
-    SystemHardwareTypeIPad2_3 = 12,
-    /// i386 (the iOS Simulator).
-    SystemHardwareTypeI386 = 13,
-    /// A device whose @c hw.machine string matched no known model.
-    SystemHardwareTypeUnknown = 14,
+typedef NS_ENUM(NSInteger, SystemHardwareType) {
+    SystemHardwareTypeIPhone1_1 = 0, /*!< iPhone1,1 (original iPhone). */
+    SystemHardwareTypeIPhone1_2 = 1, /*!< iPhone1,2 (iPhone 3G). */
+    SystemHardwareTypeIPhone2_1 = 2, /*!< iPhone2,1 (iPhone 3GS). */
+    SystemHardwareTypeIPhone3_1 = 3, /*!< iPhone3,1 (iPhone 4, GSM). */
+    SystemHardwareTypeIPhone3_2 = 4, /*!< iPhone3,2 (iPhone 4, GSM revised). */
+    SystemHardwareTypeIPod1_1 = 5,   /*!< iPod1,1 (first-generation iPod touch). */
+    SystemHardwareTypeIPod2_1 = 6,   /*!< iPod2,1 (second-generation iPod touch). */
+    SystemHardwareTypeIPod3_1 = 7,   /*!< iPod3,1 (third-generation iPod touch). */
+    SystemHardwareTypeIPod4_1 = 8,   /*!< iPod4,1 (fourth-generation iPod touch). */
+    SystemHardwareTypeIPad1_1 = 9,   /*!< iPad1,1 (original iPad). */
+    SystemHardwareTypeIPad2_1 = 10,  /*!< iPad2,1 (iPad 2, Wi-Fi). */
+    SystemHardwareTypeIPad2_2 = 11,  /*!< iPad2,2 (iPad 2, GSM). */
+    SystemHardwareTypeIPad2_3 = 12,  /*!< iPad2,3 (iPad 2, CDMA). */
+    SystemHardwareTypeI386 = 13,     /*!< i386 (the iOS Simulator). */
+    SystemHardwareTypeUnknown = 14,  /*!< No known @c hw.machine model matched. */
 };
 
 NS_ASSUME_NONNULL_BEGIN

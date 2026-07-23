@@ -10,50 +10,45 @@
 
 #import "History.h"
 
-#import <CommonCrypto/CommonDigest.h>
-
 // Collaborator classes reached from the class-level helpers. Their headers are not yet
 // reconstructed in this tree (the same speculative-import style ScoreData.m and HistoryData.m
 // already use); they resolve once those classes land.
 #import "HistoryData.h"
 
-// Plain-C engine helper shared with the scoring layer. It lives in the C++ engine bridge, which is
-// not C-safe, so the prototype is declared locally rather than by importing it.
-// @ghidraAddress 0x174dc (ComputeMd5Digest)
-void ComputeMd5Digest(const void *pData, CC_LONG dwLength, unsigned char *pDigest);
+#import "neEngineBridge.h"
 
-/// The Core Data entity name backing this class.
+// The Core Data entity name backing this class.
 static NSString *const kHistoryEntityName = @"History";
 
-/// The sort key that orders history records by play date.
+// The sort key that orders history records by play date.
 static NSString *const kHistorySortKey = @"playDate";
 
-/// Fetch-predicate format strings.
+// Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDAndDifficulty = @"tuneID == %d AND diff == %d";
 static NSString *const kPredicatePlayDateAfter = @"playDate > %@";
 static NSString *const kPredicatePlayDateInRange = @"%@ <= playDate AND playDate < %@";
 
-/// The play-date window, in seconds, subtracted before the single-date fetch so that records from
-/// the previous day are included.
-/// @ghidraAddress 0x2fcf30 (g_dHistoryFetchWindow)
+// The play-date window, in seconds, subtracted before the single-date fetch so that records from
+// the previous day are included.
+// @ghidraAddress 0x2fcf30 (g_dHistoryFetchWindow)
 static const NSTimeInterval kHistoryFetchWindow = -86400.0;
 
-/// The default fetch limit applied when the caller passes zero.
+// The default fetch limit applied when the caller passes zero.
 static const NSUInteger kDefaultFetchLimit = 100;
 
-/// The fetch limit applied when clearing the most recent records.
+// The fetch limit applied when clearing the most recent records.
 static const NSUInteger kDeleteFetchLimit = 20;
 
-/// The smallest tune identifier a history record may be created for.
+// The smallest tune identifier a history record may be created for.
 static const unsigned int kMinimumTuneID = 100000000;
 
-/// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
-/// digest.
+// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
+// digest.
 static const int kHashWordCount = 8;
 static const int kHashDigestLength = 16;
 
-/// The width, in bits, of the half-words the play date and play count are folded into the score
-/// words by.
+// The width, in bits, of the half-words the play date and play count are folded into the score
+// words by.
 static const int kHalfWordShift = 16;
 
 @implementation History

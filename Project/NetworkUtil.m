@@ -9,12 +9,12 @@
 
 #import "NetworkUtil.h"
 
-/// The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under.
+// The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under.
 static NSString *const kSecureAPIScheme = @"https";
 static NSString *const kSecureAPIHost = @"akx.s.konaminet.jp";
 static NSString *const kSecureAPIBasePath = @"/akx/main/cgi/";
 
-/// The APNs device-token registration endpoint, relative to the CGI base path.
+// The APNs device-token registration endpoint, relative to the CGI base path.
 static NSString *const kTokenSetAPIPath = @"push/token/";
 
 @implementation NetworkUtil

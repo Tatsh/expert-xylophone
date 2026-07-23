@@ -8,7 +8,7 @@
 
 #import "ReplayNote.h"
 
-/// Archive keys for each field; each matches its property name.
+// Archive keys for each field; each matches its property name.
 static NSString *const kIndexCoderKey = @"index";
 static NSString *const kTypeCoderKey = @"type";
 static NSString *const kJudgeCoderKey = @"judge";

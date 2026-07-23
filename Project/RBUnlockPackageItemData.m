@@ -10,14 +10,14 @@
 
 #import "RBUnlockPackageItemData.h"
 
-/// Entry-dictionary keys for a single unlock item.
+// Entry-dictionary keys for a single unlock item.
 static NSString *const kIdentityDictionaryKey = @"ID";
 static NSString *const kNameDictionaryKey = @"Name";
 static NSString *const kPathDictionaryKey = @"Path";
 static NSString *const kPointDictionaryKey = @"Point";
 static NSString *const kTypeDictionaryKey = @"Type";
 
-/// The debug description format: class, address, type, identifier, name, path, and point.
+// The debug description format: class, address, type, identifier, name, path, and point.
 static NSString *const kDescriptionFormat =
     @"<%@: %p type:%zd identity:%zd name:%@ path:%@ point:%zd>";
 

@@ -10,26 +10,26 @@
 
 #import "NSFileManager+RB.h"
 
-/// The minimum free space, in bytes, that @c isFreeSystemSize requires (50 MiB).
+// The minimum free space, in bytes, that @c isFreeSystemSize requires (50 MiB).
 static const unsigned long long kMinimumFreeSystemSize = 50 * 1024 * 1024;
 
-/// The sub-directory of the application-support directory that holds padding files.
+// The sub-directory of the application-support directory that holds padding files.
 static NSString *const kPaddingDirectoryName = @"padding";
 
-/// The caches sub-directory used as the temporary directory when @c NSTemporaryDirectory is
-/// unavailable.
+// The caches sub-directory used as the temporary directory when @c NSTemporaryDirectory is
+// unavailable.
 static NSString *const kTemporaryFilesDirectoryName = @"Temporary Files";
 
-/// Attribute keys applied to each directory level created by @c createDirectorysAtPath:.
+// Attribute keys applied to each directory level created by @c createDirectorysAtPath:.
 static NSString *const kDirectoryOwnerName = @"owner";
 static NSString *const kDirectoryGroupName = @"group";
 
-/// Lazily initialised, owned copies of the resolved standard directory paths.
-/// @ghidraAddress 0x3df510 (g_pDocumentDirectoryPathCache)
-/// @ghidraAddress 0x3df518 (g_pApplicationSupportDirectoryPathCache)
-/// @ghidraAddress 0x3df520 (g_pCachesDirectoryPathCache)
-/// @ghidraAddress 0x3df528 (g_pTemporaryDirectoryPathCache)
-/// @ghidraAddress 0x3df530 (g_pResourcePathCache)
+// Lazily initialised, owned copies of the resolved standard directory paths.
+// @ghidraAddress 0x3df510 (g_pDocumentDirectoryPathCache)
+// @ghidraAddress 0x3df518 (g_pApplicationSupportDirectoryPathCache)
+// @ghidraAddress 0x3df520 (g_pCachesDirectoryPathCache)
+// @ghidraAddress 0x3df528 (g_pTemporaryDirectoryPathCache)
+// @ghidraAddress 0x3df530 (g_pResourcePathCache)
 static NSString *g_pDocumentDirectoryPathCache = nil;
 static NSString *g_pApplicationSupportDirectoryPathCache = nil;
 static NSString *g_pCachesDirectoryPathCache = nil;

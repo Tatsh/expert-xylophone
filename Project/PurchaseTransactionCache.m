@@ -12,9 +12,9 @@
 
 #import <UIKit/UIKit.h>
 
-/// The system-version threshold the initialiser compares the running system version against. The
-/// comparison result is discarded, so it is a vestigial gate that no longer affects the snapshot.
-/// @ghidraAddress 0x36bb00 (the @c "7.0" constant string)
+// The system-version threshold the initialiser compares the running system version against. The
+// comparison result is discarded, so it is a vestigial gate that no longer affects the snapshot.
+// @ghidraAddress 0x36bb00 (the @c "7.0" constant string)
 static NSString *const kSystemVersionThreshold = @"7.0";
 
 @implementation PurchaseTransactionCache

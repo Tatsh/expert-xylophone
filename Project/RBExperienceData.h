@@ -20,20 +20,13 @@
  * not own.
  */
 typedef NS_ENUM(NSInteger, RBExperienceItemType) {
-    /// Background music items, held in @c bgmItems.
-    RBExperienceItemTypeBGM = 0,
-    /// Shot items, held in @c shotItems.
-    RBExperienceItemTypeShot = 1,
-    /// Explosion items, held in @c explosionItems. The binary spells this category "Exprosion".
-    RBExperienceItemTypeExprosion = 2,
-    /// Frame items, held in @c frameItems.
-    RBExperienceItemTypeFrame = 3,
-    /// Background items, held in @c backgroundItems.
-    RBExperienceItemTypeBackground = 4,
-    /// Tune items, held in @c musicItems.
-    RBExperienceItemTypeMusic = 7,
-    /// Theme items, held in @c themaItems.
-    RBExperienceItemTypeThema = 10,
+    RBExperienceItemTypeBGM = 0,        /*!< Background music items, held in @c bgmItems. */
+    RBExperienceItemTypeShot = 1,       /*!< Shot items, held in @c shotItems. */
+    RBExperienceItemTypeExprosion = 2,  /*!< Explosion items in @c explosionItems ("Exprosion"). */
+    RBExperienceItemTypeFrame = 3,      /*!< Frame items, held in @c frameItems. */
+    RBExperienceItemTypeBackground = 4, /*!< Background items, held in @c backgroundItems. */
+    RBExperienceItemTypeMusic = 7,      /*!< Tune items, held in @c musicItems. */
+    RBExperienceItemTypeThema = 10,     /*!< Theme items, held in @c themaItems. */
 };
 
 NS_ASSUME_NONNULL_BEGIN

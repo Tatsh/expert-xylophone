@@ -9,7 +9,7 @@
 
 #import "RBBonusData.h"
 
-/// Archive and user-defaults keys for each bonus multiplier. They match the property names.
+// Archive and user-defaults keys for each bonus multiplier. They match the property names.
 static NSString *const kClearBonusCoderKey = @"kClearBonus";
 static NSString *const kFullComboBonusCoderKey = @"kFullComboBonus";
 static NSString *const kMiss1BonusCoderKey = @"kMiss1Bonus";
@@ -25,7 +25,7 @@ static NSString *const kPastelBonusCoderKey = @"kPastelBonus";
 static NSString *const kEarlyPlayBonusCoderKey = @"kEarlyPlayBonus";
 static NSString *const kHotMusicBonusCoderKey = @"kHotMusicBonus";
 
-/// The default multipliers seeded into a fresh instance by @c init.
+// The default multipliers seeded into a fresh instance by @c init.
 static const float kDefaultClearBonus = 1.0f;
 static const float kDefaultFullComboBonus = 2.0f;
 static const float kDefaultMiss1Bonus = 1.5f;
@@ -40,10 +40,6 @@ static const float kDefaultBlackPastelBonus = 20.0f;
 static const float kDefaultPastelBonus = 10.0f;
 static const float kDefaultEarlyPlayBonus = 5.0f;
 static const float kDefaultHotMusicBonus = 10.0f;
-
-/// The cached singleton returned by @c sharedInstance.
-/// @ghidraAddress 0x3df580 (g_pRBBonusDataSharedInstance)
-static RBBonusData *sSharedInstance = nil;
 
 @implementation RBBonusData
 
@@ -73,18 +69,20 @@ static RBBonusData *sSharedInstance = nil;
 
 #pragma mark - Singleton and persistence
 
+// @ghidraAddress 0x3df580 (g_pRBBonusDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x1f3df8 */
-    if (sSharedInstance == nil) {
+    static RBBonusData *instance = nil;
+    if (instance == nil) {
         NSData *archived = [[NSUserDefaults standardUserDefaults]
             dataForKey:NSStringFromClass([self class])];
         RBBonusData *restored = [NSKeyedUnarchiver unarchiveObjectWithData:archived];
         if (restored == nil) {
             restored = [[RBBonusData alloc] init];
         }
-        sSharedInstance = restored;
+        instance = restored;
     }
-    return sSharedInstance;
+    return instance;
 }
 
 - (void)save {

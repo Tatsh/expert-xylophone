@@ -11,21 +11,16 @@
 
 #import "RBCoreDataManager.h"
 
-// Plain-C engine helpers shared with the rendering and settings layers. They live in the C++ engine
-// bridge, which is not C-safe, so the prototypes are declared locally rather than by importing it.
-// @ghidraAddress 0x1a1200 (GetFontVariantFlag)
-// @ghidraAddress 0x1a1624 (GetApplicationSupportPath)
-unsigned int GetFontVariantFlag(void);
-NSString *GetApplicationSupportPath(void);
+#import "neEngineBridge.h"
 
-/// The score store file name for the tablet and phone variants.
+// The score store file name for the tablet and phone variants.
 static NSString *const kScoreDataStoreFileName = @"ScoreData.sqlite";
 static NSString *const kScoreDataPhoneStoreFileName = @"ScoreDataPhone.sqlite";
 
-/// The history store file name.
+// The history store file name.
 static NSString *const kHistoryStoreFileName = @"History.data";
 
-/// Bundled managed object model resource names and their type.
+// Bundled managed object model resource names and their type.
 static NSString *const kScoreDataModelResource = @"ScoreData";
 static NSString *const kHistoryModelResource = @"History";
 static NSString *const kManagedObjectModelType = @"mom";

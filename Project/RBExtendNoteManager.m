@@ -20,28 +20,18 @@
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
 
-// Plain-C engine helpers shared with the persistence and asset layers. These live in the C++
-// engine bridge, which is not C-safe, so the prototypes are declared locally rather than by
-// importing it.
-// @ghidraAddress 0x1a1624 (GetApplicationSupportPath)
-// @ghidraAddress 0x1a1224 (GetPrivateDocumentsPath)
-// @ghidraAddress 0x1a1218 (GetCachesDirectoryPath)
-// @ghidraAddress 0x17534 (Md5StringToData)
-NSString *GetApplicationSupportPath(void);
-NSString *GetPrivateDocumentsPath(void);
-NSString *GetCachesDirectoryPath(void);
-NSData *Md5StringToData(const char *pString);
+#import "neEngineBridge.h"
 
-/// The archive filename format: a nine-digit zero-padded extend-note identifier with a @c .rb
-/// extension.
-/// @ghidraAddress 0x337a27 (the format-string literal)
+// The archive filename format: a nine-digit zero-padded extend-note identifier with a @c .rb
+// extension.
+// @ghidraAddress 0x337a27 (the format-string literal)
 static NSString *const kExtendNoteDataFilenameFormat = @"%09d.rb";
 
-/// The filename of the enciphered purchased-extend-note list under the Application Support
-/// directory.
+// The filename of the enciphered purchased-extend-note list under the Application Support
+// directory.
 static NSString *const kPurchasedNoteListFilename = @"nolist";
 
-/// The keys of a purchased-extend-note dictionary within the persisted list.
+// The keys of a purchased-extend-note dictionary within the persisted list.
 static NSString *const kPurchasedNoteKeyExtID = @"ExtID";
 static NSString *const kPurchasedNoteKeyID = @"ID";
 static NSString *const kPurchasedNoteKeyPackID = @"PackID";
@@ -50,22 +40,22 @@ static NSString *const kPurchasedNoteKeyComment = @"Comment";
 static NSString *const kPurchasedNoteKeyExtURL = @"ExtURL";
 static NSString *const kPurchasedNoteKeyExtURL2 = @"ExtURL2";
 
-/// The initial capacity reserved for the purchased-extend-note list.
+// The initial capacity reserved for the purchased-extend-note list.
 static const NSUInteger kPurchasedNoteListCapacity = 64;
 
-/// The initial capacity reserved for the extend-note-identifier lists.
+// The initial capacity reserved for the extend-note-identifier lists.
 static const NSUInteger kExtendNoteIDsCapacity = 3;
 
-/// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
-/// dictionary.
+// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
+// dictionary.
 static const NSUInteger kEncipherBufferCapacity = 128;
 static const NSUInteger kPurchaseDictionaryCapacity = 5;
 
-/// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
-/// is stripped after deciphering.
+// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
+// is stripped after deciphering.
 static const NSUInteger kListSaltLength = 4;
 
-/// The number of client extend-note entries reserved per outstanding page.
+// The number of client extend-note entries reserved per outstanding page.
 static const int kClientNoteEntriesPerPage = 20;
 
 @implementation RBExtendNoteManager

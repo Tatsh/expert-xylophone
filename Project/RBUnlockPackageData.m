@@ -12,13 +12,13 @@
 
 #import "RBUnlockPackageItemData.h"
 
-/// Catalogue-dictionary keys for a package.
+// Catalogue-dictionary keys for a package.
 static NSString *const kIdentityDictionaryKey = @"ID";
 static NSString *const kOrderDictionaryKey = @"Order";
 static NSString *const kTitleDictionaryKey = @"Title";
 static NSString *const kDataDictionaryKey = @"Data";
 
-/// The debug description format: class, address, identifier, order, title, and item list.
+// The debug description format: class, address, identifier, order, title, and item list.
 static NSString *const kDescriptionFormat =
     @"<%@: %p identity:%zd order:%zd title:%@ data:%@>";
 

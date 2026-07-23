@@ -41,6 +41,44 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)tokenSetURL;
 
+/**
+ * @brief The device fingerprint parameter: the MD5 hex digest of the device UUID key with a fixed
+ * suffix, computed once and cached.
+ * @ghidraAddress 0x327b0
+ */
++ (nullable NSString *)identifierParams;
+
+/**
+ * @brief The device model name reported alongside play logs.
+ * @ghidraAddress 0x32740
+ */
++ (nullable NSString *)deviceName;
+
+/**
+ * @brief The legacy play-log endpoint. Referenced by
+ * @c +[RBServerAPIManager playedAPIWithMusicID:dif:]; the binary ships no implementation for it (the
+ * version 2 endpoint superseded it).
+ */
++ (nullable NSURL *)playedURL;
+
+/**
+ * @brief The version 2 play-log endpoint (@c .../akx/main/cgi/log/play/).
+ * @ghidraAddress 0x32dac
+ */
++ (nullable NSURL *)playedV2URL;
+
+/**
+ * @brief The unlock-report endpoint (@c .../akx/main/cgi/unlocked/).
+ * @ghidraAddress 0x33168
+ */
++ (nullable NSURL *)unlockedURL;
+
+/**
+ * @brief The tutorial-status endpoint (@c .../akx/main/cgi/tutorial/).
+ * @ghidraAddress 0x32dcc
+ */
++ (nullable NSURL *)tutorialStatusURL;
+
 @end
 
 NS_ASSUME_NONNULL_END

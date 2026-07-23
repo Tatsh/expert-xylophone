@@ -16,13 +16,9 @@
 #import "NSFileManager+RB.h"
 #import "SSZipArchive.h"
 
-// Plain-C engine helper shared with the persistence and product-list layers: computes the MD5 of a
-// C string and returns it as a 16-byte NSData. It lives in the engine bridge, so its prototype is
-// declared locally rather than by importing that bridge.
-// @ghidraAddress 0x17534 (Md5StringToData)
-NSData *Md5StringToData(const char *pString);
+#import "neEngineBridge.h"
 
-/// Archive keys for each field. Several are abbreviations of their property name.
+// Archive keys for each field. Several are abbreviations of their property name.
 static NSString *const kVersionCoderKey = @"ver";
 static NSString *const kTuneIDCoderKey = @"tuneID";
 static NSString *const kDiffCoderKey = @"diff";
@@ -41,33 +37,33 @@ static NSString *const kPlayDateCoderKey = @"playDate";
 static NSString *const kUserCoderKey = @"user";
 static NSString *const kChkscoCoderKey = @"chksco";
 
-/// The documents-directory sub-directory that holds the saved replay files. It doubles as the
-/// @c replay archive key above.
+// The documents-directory sub-directory that holds the saved replay files. It doubles as the
+// @c replay archive key above.
 static NSString *const kReplayDirectoryName = @"replay";
 
-/// Format string for a replay's on-disk ZIP path: the replay directory, the nine-digit tune
-/// identifier, and the difficulty.
+// Format string for a replay's on-disk ZIP path: the replay directory, the nine-digit tune
+// identifier, and the difficulty.
 static NSString *const kReplayPathFormat = @"%@/%09d_%d.rbp";
 
-/// Format string for the temporary archive path unzipped from and zipped into the replay ZIP.
+// Format string for the temporary archive path unzipped from and zipped into the replay ZIP.
 static NSString *const kTempDataPathFormat = @"%@/tmp.data";
 
-/// The passphrase whose MD5 digest keys the Blowfish cipher applied to saved replays.
+// The passphrase whose MD5 digest keys the Blowfish cipher applied to saved replays.
 static NSString *const kReplayCipherPassphrase = @"REFLECBEATplus";
 
-/// The default replay version applied when a loaded or saved replay carries none.
-/// @ghidraAddress 0x3dc9f0 (g_pReplayDataDefaultVersion, boxed on demand)
+// The default replay version applied when a loaded or saved replay carries none.
+// @ghidraAddress 0x3dc9f0 (g_pReplayDataDefaultVersion, boxed on demand)
 static const int kDefaultReplayVersion = 10000;
 
-/// The first difficulty index treated as an advanced chart. Advanced difficulties are folded back
-/// into the basic range by subtracting @c kAdvancedDifficultyOffset before a path is formed.
+// The first difficulty index treated as an advanced chart. Advanced difficulties are folded back
+// into the basic range by subtracting @c kAdvancedDifficultyOffset before a path is formed.
 static const int kFirstAdvancedDifficulty = 3;
 static const int kAdvancedDifficultyOffset = 3;
 
-/// The length in bytes of the random salt word prefixed to enciphered replay data.
+// The length in bytes of the random salt word prefixed to enciphered replay data.
 static const NSUInteger kReplaySaltLength = 4;
 
-/// The initial capacity reserved for the mutable buffer that encode builds.
+// The initial capacity reserved for the mutable buffer that encode builds.
 static const NSUInteger kReplayEncodeCapacity = 128;
 
 @implementation ReplayData

@@ -21,59 +21,49 @@
 #import "NSFileManager+RB.h"
 #import "StoreMusicInfo.h"
 
-// Plain-C engine helpers shared with the persistence and asset layers. These live in the C++
-// engine bridge, which is not C-safe, so the prototypes are declared locally rather than by
-// importing it.
-// @ghidraAddress 0x1a1624 (GetApplicationSupportPath)
-// @ghidraAddress 0x1a1224 (GetPrivateDocumentsPath)
-// @ghidraAddress 0x1a1218 (GetCachesDirectoryPath)
-// @ghidraAddress 0x17534 (Md5StringToData)
-NSString *GetApplicationSupportPath(void);
-NSString *GetPrivateDocumentsPath(void);
-NSString *GetCachesDirectoryPath(void);
-NSData *Md5StringToData(const char *pString);
+#import "neEngineBridge.h"
 
-/// The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
-/// @ghidraAddress 0x337a27 (the format-string literal)
+// The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
+// @ghidraAddress 0x337a27 (the format-string literal)
 static NSString *const kMusicDataFilenameFormat = @"%09d.rb";
 
-/// The archive resource type passed to @c -[NSBundle pathForResource:ofType:] (already carried by
-/// the filename, so the type is empty).
+// The archive resource type passed to @c -[NSBundle pathForResource:ofType:] (already carried by
+// the filename, so the type is empty).
 static NSString *const kEmptyResourceType = @"";
 
-/// The empty replacement stored for a missing name or artist string in a purchase dictionary.
+// The empty replacement stored for a missing name or artist string in a purchase dictionary.
 static NSString *const kEmptyString = @"";
 
-/// The filename of the enciphered purchased-music list under the Application Support directory.
+// The filename of the enciphered purchased-music list under the Application Support directory.
 static NSString *const kPurchasedMusicListFilename = @"mulist";
 
-/// The keys of a purchased-music dictionary within the persisted list.
+// The keys of a purchased-music dictionary within the persisted list.
 static NSString *const kPurchasedMusicKeyID = @"ID";
 static NSString *const kPurchasedMusicKeyName = @"Name";
 static NSString *const kPurchasedMusicKeyArtist = @"Artist";
 static NSString *const kPurchasedMusicKeyItemURL = @"ItemURL";
 static NSString *const kPurchasedMusicKeyITunesURL = @"iTunesURL";
 
-/// The three preinstalled tune identifiers seeded on construction.
-/// @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
+// The three preinstalled tune identifiers seeded on construction.
+// @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
 static const int kPreinstallMusicIDs[] = {99999595, 99999597, 99999907};
 static const NSUInteger kPreinstallMusicIDCount =
     sizeof(kPreinstallMusicIDs) / sizeof(kPreinstallMusicIDs[0]);
 
-/// The initial capacity reserved for the purchased-music and identifier lists.
+// The initial capacity reserved for the purchased-music and identifier lists.
 static const NSUInteger kPurchasedMusicListCapacity = 64;
 static const NSUInteger kMusicIDsCapacity = 3;
 
-/// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
-/// dictionary.
+// The initial capacity reserved for the enciphered-list scratch buffer and a fresh purchase
+// dictionary.
 static const NSUInteger kEncipherBufferCapacity = 128;
 static const NSUInteger kPurchaseDictionaryCapacity = 5;
 
-/// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
-/// is stripped after deciphering.
+// The number of leading salt bytes prepended to the plaintext before enciphering; the same count
+// is stripped after deciphering.
 static const NSUInteger kListSaltLength = 4;
 
-/// The number of client-music entries reserved per outstanding page.
+// The number of client-music entries reserved per outstanding page.
 static const int kClientMusicEntriesPerPage = 20;
 
 @implementation RBMusicManager

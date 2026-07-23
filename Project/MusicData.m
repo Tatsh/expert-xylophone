@@ -22,17 +22,11 @@
 #import "StringConvert.h"
 #import "UnZipArchive.h"
 
-// Plain-C engine helpers shared with the rendering and scoring layers. These live in the C++
-// engine bridge, which is not C-safe, so the prototypes are declared locally rather than by
-// importing it.
-// @ghidraAddress 0x1a1200 (GetFontVariantFlag)
-// @ghidraAddress 0x174dc (ComputeMd5Digest)
-unsigned int GetFontVariantFlag(void);
-void ComputeMd5Digest(const void *pData, CC_LONG dwLength, unsigned char *pDigest);
+#import "neEngineBridge.h"
 
-/// Archive member names. The White image accessors read the @c _b (black-background) members and
-/// the Black image accessors read the @c _w (white-background) members; the binary names its
-/// accessors the opposite way round from its assets, and that inversion is preserved here.
+// Archive member names. The White image accessors read the @c _b (black-background) members and
+// the Black image accessors read the @c _w (white-background) members; the binary names its
+// accessors the opposite way round from its assets, and that inversion is preserved here.
 static NSString *const kEntryMusic = @"bgm";
 static NSString *const kEntryMusicBasic = @"bgm_b";
 static NSString *const kEntryMusicMedium = @"bgm_m";
@@ -85,7 +79,7 @@ static NSString *const kEntryArtistWhite2xBasic = @"artist_w2x_b";
 static NSString *const kEntryArtistWhite2xMedium = @"artist_w2x_m";
 static NSString *const kEntryArtistWhite2xHard = @"artist_w2x_h";
 
-/// Metadata keys read from the archive's info dictionary.
+// Metadata keys read from the archive's info dictionary.
 static NSString *const kInfoDictionaryEntry = @"info";
 static NSString *const kInfoKeyID = @"ID";
 static NSString *const kInfoKeyMusicName = @"MusicName";
@@ -101,56 +95,51 @@ static NSString *const kInfoKeyBpmMin = @"BpmMin";
 static NSString *const kInfoKeyBpmMax = @"BpmMax";
 static NSString *const kInfoKeyOptions = @"Options";
 
-/// The empty initial used when a tune has no sortable reading.
+// The empty initial used when a tune has no sortable reading.
 static NSString *const kEmptyInitial = @"";
 
-/// The number of decode types with a registered decryption key; a larger index selects no key.
+// The number of decode types with a registered decryption key; a larger index selects no key.
 static const int kDecodeTypeCount = 2;
 
-/// The inclusive one-based level range accepted from the archive metadata.
+// The inclusive one-based level range accepted from the archive metadata.
 static const int kLevelMinimum = 1;
 static const int kLevelMaximum = 15;
 
-/// The blowfish key length used for the derived MD5 key.
+// The blowfish key length used for the derived MD5 key.
 static const int kBlowfishKeyLength = 16;
 
-/// The brown tint applied to the brown name-strip artwork.
-/// @ghidraAddress 0x2fcf38 (g_dBrownTintRed)
-/// @ghidraAddress 0x2fcf40 (g_dBrownTintGreen)
-/// @ghidraAddress 0x2fcf48 (g_dBrownTintBlue)
+// The brown tint applied to the brown name-strip artwork.
+// @ghidraAddress 0x2fcf38 (g_dBrownTintRed)
+// @ghidraAddress 0x2fcf40 (g_dBrownTintGreen)
+// @ghidraAddress 0x2fcf48 (g_dBrownTintBlue)
 static const CGFloat kBrownTintRed = 78.0 / 255.0;
 static const CGFloat kBrownTintGreen = 69.0 / 255.0;
 static const CGFloat kBrownTintBlue = 58.0 / 255.0;
 
-/// The greyscale components of the black tint applied to the black name-strip artwork.
+// The greyscale components of the black tint applied to the black name-strip artwork.
 static const CGFloat kBlackTintComponent = 0.0;
 
-/// The opaque alpha component used for every tint colour.
+// The opaque alpha component used for every tint colour.
 static const CGFloat kTintAlpha = 1.0;
 
-/// The scale factor forced onto a double-resolution image.
+// The scale factor forced onto a double-resolution image.
 static const CGFloat kDoubleScale = 2.0;
 
-/// The screen scale above which a double-resolution asset is preferred.
+// The screen scale above which a double-resolution asset is preferred.
 static const CGFloat kRetinaScaleThreshold = 1.0;
 
-/// The per-decode-type Blowfish key table shared with the chart loader.
-/// @ghidraAddress 0x35b7c8 (key pointers) and 0x35b7d0 (key lengths, stride 0x10)
-extern const char *const kChartDecodeKeys[];
-extern const int kChartDecodeKeyLengths[];
-
-/// Registry caches mapping a tune identifier to an overriding sort name.
-/// @ghidraAddress 0x3dc2d8 (g_pMusicSortNameOverrides)
-/// @ghidraAddress 0x3dc2e0 (g_pArtistSortNameOverrides)
+// Registry caches mapping a tune identifier to an overriding sort name.
+// @ghidraAddress 0x3dc2d8 (g_pMusicSortNameOverrides)
+// @ghidraAddress 0x3dc2e0 (g_pArtistSortNameOverrides)
 static NSMutableDictionary *g_pMusicSortNameOverrides;
 static NSMutableDictionary *g_pArtistSortNameOverrides;
 
-/// The katakana rows, in the reading order used to pick a title's index bucket.
+// The katakana rows, in the reading order used to pick a title's index bucket.
 static NSArray *g_yomiGroups;
-/// The hiragana initial labelling each katakana row.
+// The hiragana initial labelling each katakana row.
 static NSArray *g_yomiLabels;
 
-/// Decodes @p data into an image, preferring nil over an empty image.
+// Decodes @p data into an image, preferring nil over an empty image.
 static UIImage *ImageFromData(NSData *data) {
     if (data == nil) {
         return nil;
@@ -158,7 +147,7 @@ static UIImage *ImageFromData(NSData *data) {
     return [UIImage imageWithData:data];
 }
 
-/// Decodes @p data and re-wraps it as a double-resolution image.
+// Decodes @p data and re-wraps it as a double-resolution image.
 static UIImage *DoubleResolutionImageFromData(NSData *data) {
     UIImage *image = ImageFromData(data);
     if (image == nil) {
@@ -169,7 +158,7 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
                         orientation:UIImageOrientationUp];
 }
 
-/// The black tint colour used by the black name-strip images.
+// The black tint colour used by the black name-strip images.
 static UIColor *BlackTintColor(void) {
     return [UIColor colorWithRed:kBlackTintComponent
                            green:kBlackTintComponent
@@ -177,7 +166,7 @@ static UIColor *BlackTintColor(void) {
                            alpha:kTintAlpha];
 }
 
-/// The brown tint colour used by the brown name-strip images.
+// The brown tint colour used by the brown name-strip images.
 static UIColor *BrownTintColor(void) {
     return [UIColor colorWithRed:kBrownTintRed
                            green:kBrownTintGreen
@@ -185,7 +174,7 @@ static UIColor *BrownTintColor(void) {
                            alpha:kTintAlpha];
 }
 
-/// Orders two integer keys, ranking the larger key later, matching the binary's -1/0/1 result.
+// Orders two integer keys, ranking the larger key later, matching the binary's -1/0/1 result.
 static NSComparisonResult OrderByValue(int left, int right) {
     if (right > left) {
         return NSOrderedAscending;
@@ -193,7 +182,7 @@ static NSComparisonResult OrderByValue(int left, int right) {
     return (right < left) ? NSOrderedDescending : NSOrderedSame;
 }
 
-/// Orders two lengths, ranking the longer length later, matching the binary's -1/0/1 result.
+// Orders two lengths, ranking the longer length later, matching the binary's -1/0/1 result.
 static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     if (right > left) {
         return NSOrderedAscending;
@@ -202,12 +191,12 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 }
 
 @interface MusicData ()
-/// Returns the katakana-row bucket of @p text's first character, the last row when no row matches,
-/// or -1 when @p text is empty.
-/// @ghidraAddress 0x5ea48
+// Returns the katakana-row bucket of @p text's first character, the last row when no row matches,
+// or -1 when @p text is empty.
+// @ghidraAddress 0x5ea48
 + (int)GetYomiIndex:(NSString *)text;
-/// Returns the hiragana initial for a katakana-row bucket, or the empty string when out of range.
-/// @ghidraAddress 0x5eb44
+// Returns the hiragana initial for a katakana-row bucket, or the empty string when out of range.
+// @ghidraAddress 0x5eb44
 + (NSString *)GetYomiString:(int)index;
 @end
 
@@ -742,7 +731,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 
 #pragma mark - Brown title-strip member data
 
-/// Tints @p imageData's decoded image brown and PNG-encodes it.
+// Tints @p imageData's decoded image brown and PNG-encodes it.
 static NSData *BrownImageData(MusicData *self, NSData *imageData) {
     if (imageData == nil) {
         return nil;
@@ -904,7 +893,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
 
 #pragma mark - Name-strip images
 
-/// Fetches a white name-strip image, preferring the double-resolution variant on a retina screen.
+// Fetches a white name-strip image, preferring the double-resolution variant on a retina screen.
 static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
     if ([UIScreen mainScreen].scale > kRetinaScaleThreshold && retina2x != nil) {
         return retina2x;

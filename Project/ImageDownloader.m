@@ -14,17 +14,17 @@
 // tree.
 #import "RBHttpUtil.h"
 
-/// The HTTP method used for every image request.
+// The HTTP method used for every image request.
 static NSString *const kImageRequestHTTPMethod = @"GET";
 
-/// The format that inserts the "@2x" Retina marker between an image URL's base and its extension,
-/// producing "<base>@2x.<ext>".
+// The format that inserts the "@2x" Retina marker between an image URL's base and its extension,
+// producing "<base>@2x.<ext>".
 static NSString *const kRetinaImageURLFormat = @"%@@2x.%@";
 
-/// The screen scale at or below which an image is treated as plain (non-Retina) resolution.
+// The screen scale at or below which an image is treated as plain (non-Retina) resolution.
 static const CGFloat kNonRetinaScreenScale = 1.0;
 
-/// The image orientation used when rebuilding a Retina image from its backing @c CGImage.
+// The image orientation used when rebuilding a Retina image from its backing @c CGImage.
 static const UIImageOrientation kRetinaImageOrientation = UIImageOrientationUp;
 
 @interface ImageDownloader ()

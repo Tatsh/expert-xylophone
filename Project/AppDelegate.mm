@@ -29,8 +29,8 @@
 #import "neEngineBridge.h" // GetGameSystem() + the ne:: engine/sheet-layer/texture-cache helpers.
 #import "neWindow.h"
 
-/// GameScene state-machine value referenced at launch. The state enum lives with the GameScene class
-/// (neEngineBridge.h); only the value used here is named.
+// GameScene state-machine value referenced at launch. The state enum lives with the GameScene class
+// (neEngineBridge.h); only the value used here is named.
 enum { kGameSceneStateMusicSelect = 1 };
 
 // Note-sheet layout geometry, recovered from the launch decompile. Float DAT_ values were read from
@@ -46,44 +46,54 @@ static constexpr float kSheetVariantMargin = 64.0f;
 static constexpr int kVariantScreenHeightPoints = 1024;
 static constexpr int kSheetVariantHeightInset = 44;
 
-/// The reference (4") screen envelope, in points, that the standard sheet layout is clamped to, and
-/// the 2x-pixel insets applied to the fitted sheet size.
+// The reference (4") screen envelope, in points, that the standard sheet layout is clamped to, and
+// the 2x-pixel insets applied to the fitted sheet size.
 static constexpr int kReferenceScreenWidthPoints = 320;
 static constexpr int kReferenceScreenHeightPoints = 568;
 static constexpr int kRetinaScale = 2;
 static constexpr int kSheetSizeInsetX = 48;
 static constexpr int kSheetSizeInsetY = 98;
 
-/// Launch miscellany: the render-loop period, the clear-gauge listener priority, and the initial
-/// capacity of the pending-push-notification list.
+// Launch miscellany: the render-loop period, the clear-gauge listener priority, and the initial
+// capacity of the pending-push-notification list.
 static constexpr float kGameLoopTimeMs = 1.0f;
 static constexpr int kClearGaugeListenerPriority = 1;
 static constexpr NSUInteger kPushListInitialCapacity = 3;
 
-/// The App Store product page for REFLEC BEAT plus, opened by @c -launchAppStore.
+// The App Store product page for REFLEC BEAT plus, opened by @c -launchAppStore.
 static NSString *const kAppStoreURLString =
     @"https://itunes.apple.com/jp/app/reflec-beat-plus/id472140433?mt=8";
 
-/// Server-data placeholder strings rejected before remote-notification registration: a usable value
-/// must be neither nil nor either textual form of "null".
+// Server-data placeholder strings rejected before remote-notification registration: a usable value
+// must be neither nil nor either textual form of "null".
 static NSString *const kNullPlaceholder = @"null";
 static NSString *const kNullPlaceholderDescription = @"(null)";
 
-/// The Keychain generic-password account name and the field separator backing @c +getServerData.
+// The Keychain generic-password account name and the field separator backing @c +getServerData.
 static NSString *const kServerIdKeychainAccount = @"ReflecBeatPlusServerID";
 static NSString *const kServerDataSeparator = @"@@@";
 
-/// The minimum iOS version supporting the do-not-back-up extended attribute, and the attribute name
-/// itself, used by @c +setNoBackupAttribute:.
+// The number of @c "@@@"-separated fields a valid server-data value holds: the user identifier and
+// its paired token. Remote-notification registration is skipped unless both are present.
+static constexpr NSUInteger kServerDataFieldCount = 2;
+
+// Indices into the @c "@@@"-separated server-data pair returned by @c +getServerData.
+enum { kServerDataUserIdIndex = 0, kServerDataTokenIndex = 1 };
+
+// The minimum iOS version supporting the do-not-back-up extended attribute, and the attribute name
+// itself, used by @c +setNoBackupAttribute:.
 static NSString *const kMinSystemVersionForNoBackup = @"5.0.1";
 static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
+
+// The value written into the do-not-back-up extended attribute to mark a file as excluded.
+static constexpr uint8_t kDoNotBackUpXattrValue = 1;
 
 @implementation AppDelegate
 
 #pragma mark - Class helpers
 
 + (instancetype)appDelegate {
-    return (AppDelegate *)UIApplication.sharedApplication.delegate;
+    return static_cast<AppDelegate *>(UIApplication.sharedApplication.delegate);
 }
 
 + (NSArray *)getServerData {
@@ -129,7 +139,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
                                               options:NSNumericSearch] == NSOrderedAscending) {
         return NO;
     }
-    uint8_t excludeValue = 1;
+    uint8_t excludeValue = kDoNotBackUpXattrValue;
     return setxattr(
                path.UTF8String, kDoNotBackUpXattrName, &excludeValue, sizeof(excludeValue), 0, 0) ==
            0;
@@ -153,7 +163,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 
     [AudioManager.sharedManager systemStart];
 
-    GameSystem *gameSystem = GetGameSystem();
+    GameSystem *gameSystem = GameSystem::GetGameSystem();
 
     CGRect screenBounds = UIScreen.mainScreen.bounds;
     gameSystem->SetScreenX(screenBounds.origin.x);
@@ -161,7 +171,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     gameSystem->SetScreenWidth(screenBounds.size.width);
     gameSystem->SetScreenHeight(screenBounds.size.height);
     if ([UIScreen.mainScreen respondsToSelector:@selector(scale)]) {
-        gameSystem->SetScreenScale((float)UIScreen.mainScreen.scale);
+        gameSystem->SetScreenScale(static_cast<float>(UIScreen.mainScreen.scale));
     } else {
         gameSystem->SetScreenScale(1.0f);
     }
@@ -176,7 +186,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     self.isSkipUpdate = NO;
     self.isUpdate = NO;
 
-    LoadPlayerLevelData(GetLevelTablesInstance());
+    LevelTables::GetInstance()->LoadPlayerLevelData();
 
     // Seed the GameSystem from the persisted user settings.
     RBUserSettingData *settings = RBUserSettingData.sharedInstance;
@@ -209,28 +219,31 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     gameSystem->SetSheetWidth(kSheetWidth);
     gameSystem->SetSheetHeight(kSheetHeight);
     gameSystem->SetSheetLayerFlags(0);
-    if (GetFontVariantFlag() == 0) {
+    if (GetFontVariantFlag() == kFontVariantDefault) {
         double shortEdge = MIN(screenBounds.size.width, screenBounds.size.height);
         double longEdge = MAX(screenBounds.size.width, screenBounds.size.height);
-        int height = (int)longEdge <= kReferenceScreenHeightPoints ? (int)longEdge :
-                                                                     kReferenceScreenHeightPoints;
-        int width = (int)longEdge <= kReferenceScreenHeightPoints ? (int)shortEdge :
-                                                                    kReferenceScreenWidthPoints;
-        S_VECTOR2 sheetSize = {(float)(width * kRetinaScale - kSheetSizeInsetX),
-                               (float)(height * kRetinaScale - kSheetSizeInsetY)};
-        SetSheetLayerPosition(gameSystem, &sheetSize);
-        SetSheetLayerMargins(
+        int height = static_cast<int>(longEdge) <= kReferenceScreenHeightPoints ?
+                         static_cast<int>(longEdge) :
+                         kReferenceScreenHeightPoints;
+        int width = static_cast<int>(longEdge) <= kReferenceScreenHeightPoints ?
+                        static_cast<int>(shortEdge) :
+                        kReferenceScreenWidthPoints;
+        S_VECTOR2 sheetSize{static_cast<float>(width * kRetinaScale - kSheetSizeInsetX),
+                            static_cast<float>(height * kRetinaScale - kSheetSizeInsetY)};
+        gameSystem->SetSheetLayerPosition(&sheetSize);
+        SheetLayer::SetSheetLayerMargins(
             kSheetMarginX, kSheetMarginY, kSheetMarginX, kSheetMarginY, gameSystem);
-        SetSheetLayerRadius(kSheetLayerRadius, gameSystem);
+        SheetLayer::SetSheetLayerRadius(kSheetLayerRadius, gameSystem);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(kSheetCameraTargetY);
     } else {
-        S_VECTOR2 sheetSize = {kSheetVariantWidth,
-                               (float)(kVariantScreenHeightPoints - kSheetVariantHeightInset)};
-        SetSheetLayerPosition(gameSystem, &sheetSize);
-        SetSheetLayerMargins(
+        S_VECTOR2 sheetSize{
+            kSheetVariantWidth,
+            static_cast<float>(kVariantScreenHeightPoints - kSheetVariantHeightInset)};
+        gameSystem->SetSheetLayerPosition(&sheetSize);
+        SheetLayer::SetSheetLayerMargins(
             kSheetVariantMargin, kSheetMarginY, kSheetVariantMargin, kSheetMarginY, gameSystem);
-        SetSheetLayerRadius(kSheetVariantMargin, gameSystem);
+        SheetLayer::SetSheetLayerRadius(kSheetVariantMargin, gameSystem);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(0.0f);
     }
@@ -251,7 +264,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     EnsureTextureCacheList();
     EnsureTextureCacheSingleton(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
-    InsertSortedListenerNode(clearGauge, kClearGaugeListenerPriority);
+    clearGauge->InsertSortedListenerNode(kClearGaugeListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
 
@@ -305,10 +318,10 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 #pragma mark - Lifecycle
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    GameSystem *gameSystem = GetGameSystem();
+    GameSystem *gameSystem = GameSystem::GetGameSystem();
     GameScene *scene = gameSystem->GetCurrentScene();
     if (scene) {
-        AdvanceGameSceneStateFrom11(scene);
+        scene->AdvanceGameSceneStateFrom11();
     }
     [AudioManager.sharedManager systemResume];
     [self.viewController RestartLoop];
@@ -332,10 +345,10 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    GameSystem *gameSystem = GetGameSystem();
+    GameSystem *gameSystem = GameSystem::GetGameSystem();
     GameScene *scene = gameSystem->GetCurrentScene();
     if (scene) {
-        PausePlayTimerAndBgm(scene);
+        scene->PausePlayTimerAndBgm();
     }
     [AudioManager.sharedManager systemSuspend];
     [self.viewController ResumeLoop];
@@ -409,11 +422,11 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 - (void)startRegisterForRemoteNotification {
     // Registration is gated on a valid server-data pair; a missing or "null" placeholder aborts it.
     NSArray *serverData = [AppDelegate getServerData];
-    if (serverData.count != 2) {
+    if (serverData.count != kServerDataFieldCount) {
         return;
     }
-    NSString *first = serverData[0];
-    NSString *second = serverData[1];
+    NSString *first = serverData[kServerDataUserIdIndex];
+    NSString *second = serverData[kServerDataTokenIndex];
     if (!first || [first isEqualToString:kNullPlaceholderDescription] ||
         [first isEqualToString:kNullPlaceholder] || !second ||
         [second isEqualToString:kNullPlaceholderDescription] ||
@@ -454,8 +467,8 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     NSDictionary *payload = @{
         @"target" : GetRegionCode(),
         @"version" : GetBundleVersionString(),
-        @"p1" : serverData[0],
-        @"p2" : serverData[1],
+        @"p1" : serverData[kServerDataUserIdIndex],
+        @"p2" : serverData[kServerDataTokenIndex],
         @"p3" : token,
     };
     NSData *json = [Downloader dictionaryToJsonData:payload];
@@ -493,7 +506,7 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
     }];
 
     // While the app is active on the music-select (or earlier) screen, surface the queued push view.
-    GameSystem *gameSystem = GetGameSystem();
+    GameSystem *gameSystem = GameSystem::GetGameSystem();
     GameScene *scene = gameSystem->GetCurrentScene();
     if (scene && application.applicationState == UIApplicationStateActive &&
         scene->GetState() <= kGameSceneStateMusicSelect && self.pushList.count > 0 &&

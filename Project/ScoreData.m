@@ -17,52 +17,51 @@
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
 
-// Plain-C engine helpers shared with the rendering and scoring layers. These live in the C++
-// engine bridge, which is not C-safe, so the prototypes are declared locally rather than by
-// importing it.
-// @ghidraAddress 0x1a1200 (GetFontVariantFlag)
-// @ghidraAddress 0x14992c (GetClearRank)
-// @ghidraAddress 0x174dc (ComputeMd5Digest)
-unsigned int GetFontVariantFlag(void);
-int GetClearRank(float achievementRate);
-void ComputeMd5Digest(const void *pData, CC_LONG dwLength, unsigned char *pDigest);
+#import "neEngineBridge.h"
 
-/// The Core Data entity name backing this class.
+// The Core Data entity name backing this class.
 static NSString *const kScoreDataEntityName = @"ScoreData";
 
-/// Fetch-predicate format strings.
+// Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDEquals = @"tuneID == %d";
 static NSString *const kPredicateTuneIDIn = @"tuneID in %@";
 static NSString *const kPredicateRecentInRange =
     @"lastPlayDate > %@ AND 100000000 < tuneID AND tuneID < 900000000";
 
-/// The default clear rank stored for a reset chart.
+// The default clear rank stored for a reset chart.
 static const int kResetClearRank = -1;
 
-/// The default score stored for a reset chart, also used as the low clamp in @c checkOverScore.
+// The default score stored for a reset chart, also used as the low clamp in @c checkOverScore.
 static const int kResetScore = -1;
 
-/// Score bounds enforced by @c checkOverScore.
+// Score bounds enforced by @c checkOverScore.
 static const int kScoreMinimum = -1;
 static const int kScoreMaximum = 9999;
 
-/// Achievement-rate bounds enforced by @c checkOverScore.
+// The lowest score that contributes to @c totalScore: a score is counted only when it lies in the
+// inclusive 1...9999 range.
+static const int kScoreScoringMinimum = 1;
+
+// The lowest tune identifier @c totalScore treats as a real chart; identifiers below it are skipped.
+static const int kMinimumValidTuneID = 1;
+
+// Achievement-rate bounds enforced by @c checkOverScore.
 static const float kAchievementRateMinimum = 0.0f;
 static const float kAchievementRateMaximum = 1.0f;
 
-/// Multiplier applied to each achievement rate before it is folded into the tamper hash.
-/// @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
+// Multiplier applied to each achievement rate before it is folded into the tamper hash.
+// @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
 static const float kAchievementRateHashScale = 1000.0f;
 
-/// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
-/// digest.
+// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
+// digest.
 static const int kHashWordCount = 8;
 static const int kHashDigestLength = 16;
 
-/// The number of tunes processed per fetch batch in @c totalScore.
+// The number of tunes processed per fetch batch in @c totalScore.
 static const NSUInteger kTotalScoreBatchSize = 15;
 
-/// Frame-bonus thresholds used by @c getFrameBonusType.
+// Frame-bonus thresholds used by @c getFrameBonusType.
 static const int kFrameBonusClearRankThreshold = 3;
 static const int kFrameBonusPerfectClearRank = 5;
 static const int kFrameBonusMaxTier = 2;
@@ -187,10 +186,10 @@ static const int kFrameBonusMaxTier = 2;
 
 #pragma mark - Tamper hash
 
-/// Folds a tune's identifier and per-difficulty score and achievement-rate figures into an eight
-/// word buffer and returns its MD5 digest. The pairing of the words depends on the font-variant
-/// flag returned by @c GetFontVariantFlag so that the layout matches the shipped build's region.
-/// @ghidraAddress 0x5d300
+// Folds a tune's identifier and per-difficulty score and achievement-rate figures into an eight
+// word buffer and returns its MD5 digest. The pairing of the words depends on the font-variant
+// flag returned by @c GetFontVariantFlag so that the layout matches the shipped build's region.
+// @ghidraAddress 0x5d300
 static void ScoreDataHashScoreForTune(int tuneID,
                                       int basic,
                                       int medium,
@@ -259,7 +258,7 @@ static void ScoreDataHashScoreForTune(int tuneID,
         NSArray *batch = [musicIDs subarrayWithRange:NSMakeRange(processed, batchLength)];
         NSMutableIndexSet *pendingIDs = [[NSMutableIndexSet alloc] init];
         for (NSNumber *musicID in batch) {
-            if (musicID.intValue >= 1) {
+            if (musicID.intValue >= kMinimumValidTuneID) {
                 [pendingIDs addIndex:(NSUInteger)musicID.intValue];
             }
         }
@@ -278,16 +277,23 @@ static void ScoreDataHashScoreForTune(int tuneID,
                 continue;
             }
             // A score contributes only when it lies in the valid 1...9999 range; the binary tests
-            // (score - 1) as an unsigned value so that non-positive scores fall out as zero.
+            // (score - kScoreScoringMinimum) as an unsigned value so that non-positive scores fall
+            // out as zero.
             int scoreBasic = record.scoBas.intValue;
             long long clampedBasic =
-                ((unsigned int)(scoreBasic - 1) < (unsigned int)kScoreMaximum) ? scoreBasic : 0;
+                ((unsigned int)(scoreBasic - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
+                    ? scoreBasic
+                    : 0;
             int scoreMedium = record.scoMed.intValue;
             long long clampedMedium =
-                ((unsigned int)(scoreMedium - 1) < (unsigned int)kScoreMaximum) ? scoreMedium : 0;
+                ((unsigned int)(scoreMedium - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
+                    ? scoreMedium
+                    : 0;
             int scoreHard = record.scoHar.intValue;
             long long clampedHard =
-                ((unsigned int)(scoreHard - 1) < (unsigned int)kScoreMaximum) ? scoreHard : 0;
+                ((unsigned int)(scoreHard - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
+                    ? scoreHard
+                    : 0;
             [pendingIDs removeIndex:tuneIndex];
             total += clampedBasic + clampedMedium + clampedHard;
         }
@@ -330,7 +336,7 @@ static void ScoreDataHashScoreForTune(int tuneID,
     if (clearRankBasic <= kFrameBonusClearRankThreshold ||
         clearRankMedium <= kFrameBonusClearRankThreshold ||
         clearRankHard <= kFrameBonusClearRankThreshold) {
-        tier = allFullCombo ? 1 : 0;
+        tier = allFullCombo ? ScoreDataFrameBonusTypeBronze : ScoreDataFrameBonusTypeNone;
     }
     if (clearRankBasic == kFrameBonusPerfectClearRank &&
         clearRankMedium == kFrameBonusPerfectClearRank &&
@@ -340,7 +346,8 @@ static void ScoreDataHashScoreForTune(int tuneID,
     if (tier > kFrameBonusMaxTier) {
         return ScoreDataFrameBonusTypeGold;
     }
-    return (tier != 0) ? ScoreDataFrameBonusTypeBronze : ScoreDataFrameBonusTypeNone;
+    return (tier != ScoreDataFrameBonusTypeNone) ? ScoreDataFrameBonusTypeBronze
+                                                 : ScoreDataFrameBonusTypeNone;
 }
 
 - (BOOL)checkOverScore {

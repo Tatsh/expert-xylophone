@@ -16,12 +16,9 @@
  * full-combo flags and clear ranks.
  */
 typedef NS_ENUM(NSInteger, ScoreDataFrameBonusType) {
-    /** No frame bonus. */
-    ScoreDataFrameBonusTypeNone = 0,
-    /** The first (lower) frame-bonus tier. */
-    ScoreDataFrameBonusTypeBronze = 1,
-    /** The second (higher) frame-bonus tier. */
-    ScoreDataFrameBonusTypeGold = 2,
+    ScoreDataFrameBonusTypeNone = 0,   /*!< No frame bonus. */
+    ScoreDataFrameBonusTypeBronze = 1, /*!< The first (lower) frame-bonus tier. */
+    ScoreDataFrameBonusTypeGold = 2,   /*!< The second (higher) frame-bonus tier. */
 };
 
 NS_ASSUME_NONNULL_BEGIN

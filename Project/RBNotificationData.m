@@ -8,7 +8,7 @@
 
 #import "RBNotificationData.h"
 
-/// The archive key under which the payload dictionary is encoded and decoded.
+// The archive key under which the payload dictionary is encoded and decoded.
 static NSString *const kNotificationListCoderKey = @"notificationList";
 
 @implementation RBNotificationData

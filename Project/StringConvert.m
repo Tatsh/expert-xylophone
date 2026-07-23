@@ -9,32 +9,22 @@
 
 #import "StringConvert.h"
 
-/// Prolonged-sound mark (U+30FC, @c ー): when it follows a character it is replaced by that
-/// character's vowel rather than kept verbatim.
+#import "neEngineBridge.h"
+
+// Prolonged-sound mark (U+30FC, @c ー): when it follows a character it is replaced by that
+// character's vowel rather than kept verbatim.
 static NSString *const kProlongedSoundMark = @"ー";
 
-/// Regular-expression pattern that matches a single character in the full katakana range
-/// @c [ァ-ン]; only matching characters are folded and appended to the reading key.
+// Regular-expression pattern that matches a single character in the full katakana range
+// @c [ァ-ン]; only matching characters are folded and appended to the reading key.
 static NSString *const kKatakanaRangePattern = @"[ァ-ン]";
 
-/// Format used to materialise a plain copy of the accumulator on the empty-result path.
+// Format used to materialise a plain copy of the accumulator on the empty-result path.
 static NSString *const kIdentityFormat = @"%@";
 
-/// Number of table lookups to skip at the start of the walk: the first character has no predecessor,
-/// so the prolonged-sound-mark resolution only applies from the second character onward.
+// Number of table lookups to skip at the start of the walk: the first character has no predecessor,
+// so the prolonged-sound-mark resolution only applies from the second character onward.
 static const NSInteger kNoPreviousIndex = -1;
-
-/// The macron-to-vowel katakana lookup table (89 entries), seeded at startup.
-/// Ghidra: g_pMacronToVowelTable @ 0x3dc258.
-extern NSDictionary *const g_pMacronToVowelTable;
-
-/// The small-kana-to-large-kana lookup table (11 entries), seeded at startup.
-/// Ghidra: g_pLowerToUpperTable @ 0x3dc260.
-extern NSDictionary *const g_pLowerToUpperTable;
-
-/// The voiced-kana-to-voiceless-kana lookup table (25 entries), seeded at startup.
-/// Ghidra: g_pVoiceToVoicelessTable @ 0x3dc268.
-extern NSDictionary *const g_pVoiceToVoicelessTable;
 
 @implementation StringConvert
 
