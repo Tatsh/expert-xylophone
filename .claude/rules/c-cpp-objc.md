@@ -149,6 +149,13 @@
   `__unsafe_unretained`.
 - Null literals by language: use `nil` for Objective-C objects and `nullptr` for C and C++ pointers
   in `.mm`, `.cpp`, and `.h` files. Avoid `NULL`.
+- Match an integer's spelling to its Objective-C metadata width encoding. A sub-64-bit integer uses
+  a normal C type — `i` → `int`, `I` → `unsigned int`, `s`/`S` → `short`/`unsigned short`, `c`/`C` →
+  `char`/`unsigned char` — never `NSInteger`/`NSUInteger` for these. A pointer-sized 64-bit integer
+  (`q`/`Q`) uses the Cocoa typedef `NSInteger`/`NSUInteger`, not `long`/`unsigned long` or
+  `long long`/`unsigned long long`. (Read the width from the `method_t` `types` string or the ivar/
+  property encoding: `q`/`Q` are 8-byte, `i`/`I` are 4-byte.) `NS_ENUM`/`NS_OPTIONS` backings keep
+  `NSInteger`/`NSUInteger` per the enumeration rules below. Apply this on any file you touch.
 - Use `#import` for all imports.
 - Use only Objective-C 2.0 constructs including properties, dot syntax, fast enumeration, blocks,
   and boxed literals.
