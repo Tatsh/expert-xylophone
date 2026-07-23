@@ -212,7 +212,10 @@ static NSDate *g_recommendCoreLoginValidUntil = nil;
     }
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
       /** @ghidraAddress 0x237124 */
-      [RecommendWebAPI getAdDetailWithCallback:^(NSError *_Nullable error) {
+      // The recommend API invokes this block with (categoryId, countryCode, error); the binary
+      // ignores the first two arguments here and re-reads them from ApplilinkConsts below, so they
+      // are left unnamed.
+      [RecommendWebAPI getAdDetailWithCallback:^(id, id, NSError *error) {
         /** @ghidraAddress 0x2371bc */
         if (error != nil) {
             if (callback) {
@@ -293,7 +296,10 @@ static NSDate *g_recommendCoreLoginValidUntil = nil;
       }
       if (g_recommendCoreLoginValidUntil == nil || [ApplilinkConsts isNeedRecommendLogin] ||
           [g_recommendCoreLoginValidUntil timeIntervalSinceNow] < 0.0) {
-          [RecommendWebAPI checkLoginWithCallback:^(BOOL loggedIn, NSError *_Nullable checkError) {
+          // The recommend API invokes this block with (loginStatus, userIdPresent, error); the
+          // binary reads only the login status and the error, ignoring userIdPresent.
+          [RecommendWebAPI checkLoginWithCallback:^(BOOL loggedIn, BOOL userIdPresent,
+                                                    NSError *checkError) {
             /** @ghidraAddress 0x237960 */
             if (checkError != nil) {
                 if (callback) {
