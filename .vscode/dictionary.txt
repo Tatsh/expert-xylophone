@@ -7,6 +7,7 @@ applilink
 archs
 asbd
 autorelease
+autoreleased
 autoreleasepool
 autoresizing
 autoreverses
@@ -69,6 +70,7 @@ ifdef
 ifndef
 infomation
 instancetype
+interitem
 ivar
 ivars
 iwyu
@@ -90,6 +92,7 @@ minizip
 mispacked
 mktemp
 modelines
+mtype
 mulist
 musicselect
 mypy
@@ -127,6 +130,7 @@ rbscorehash
 rdparty
 recomputation
 rect
+rects
 reflec
 reflecbeat
 reflow
@@ -154,13 +158,16 @@ subarray
 subentities
 subview
 subviews
+superlayer
 superview
 superview's
 sysctlbyname
 tatsh
+teardown
 thema
 themas
 theos
+thunks
 tomosuke
 transactioing
 udvare
