@@ -192,6 +192,7 @@ rhythmin
 ringanimation
 ripgreprc
 rtti
+rturl
 schemafile
 scorefor
 screenview
