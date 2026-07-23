@@ -163,8 +163,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The last-update time string for the news info feed.
  * @ghidraAddress 0x54aec (getter)
+ * @ghidraAddress 0x4ef6c (setter)
  */
-@property(nonatomic, strong, readonly, nullable) NSString *infoLastUpdateTimeString;
+@property(nonatomic, strong, nullable) NSString *infoLastUpdateTimeString;
 /**
  * @brief The pack identifier to open in the store on next launch.
  * @ghidraAddress 0x54afc (getter)
@@ -231,6 +232,26 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x50af0
  */
 + (instancetype)appDelegate;
+
+/**
+ * @brief Remove and return the oldest pending push-notification payload from @c pushList.
+ * @return The oldest queued notification dictionary, or @c nil when none is queued.
+ * @ghidraAddress 0x4f0fc
+ */
++ (nullable NSDictionary *)popPushNotificationData;
+
+/**
+ * @brief The external URL captured for the next launch-time open.
+ * @ghidraAddress 0x4f3d4
+ */
++ (nullable NSURL *)getOuterURL;
+
+/**
+ * @brief Store the external URL to open on the next launch.
+ * @param url The external URL, or @c nil to clear it.
+ * @ghidraAddress 0x4f444
+ */
++ (void)setOuterURL:(nullable NSURL *)url;
 
 /**
  * @brief Initialise the Applilink companion-application SDK.

@@ -21,10 +21,13 @@
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
 #import "RBNewsHUDView.h"
+#import "RBNotificationPageView.h"
 #import "RBPlaylistManager.h"
+#import "RBPushNotificationView.h"
 #import "RBRankingView.h"
 #import "RBSearchView.h"
 #import "RBSettingView.h"
+#import "RBStoreTabController.h"
 #import "RBTermView.h"
 #import "RBThemaView.h"
 #import "RBTutorialManager.h"
@@ -251,7 +254,6 @@ static BOOL g_bRandamIntSeeded = NO;
 // The not-yet-reconstructed collaborators this hub creates or messages. They are forward-declared
 // so the hub compiles ahead of their own reconstructions; each is a small overlay or controller.
 @class RBMusicSearchExpander;
-@class RBNotificationPageView;
 
 @interface RBMenuView ()
 
