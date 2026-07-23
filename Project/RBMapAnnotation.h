@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The pin's map coordinate.
  * @ghidraAddress 0xdf418 (getter)
- * @ghidraAddress 0xdf15c (setter)
+ * @ghidraAddress 0xdf42c (setter)
  */
 @property(assign, nonatomic) CLLocationCoordinate2D coordinate;
 
@@ -43,14 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0xdf3e0 (getter)
  * @ghidraAddress 0xdf3f0 (setter)
  */
-@property(strong, nonatomic, nullable) NSString *title;
+@property(copy, nonatomic, nullable) NSString *title;
 
 /**
  * @brief The pin's subtitle.
  * @ghidraAddress 0xdf3fc (getter)
  * @ghidraAddress 0xdf40c (setter)
  */
-@property(strong, nonatomic, nullable) NSString *subtitle;
+@property(copy, nonatomic, nullable) NSString *subtitle;
 
 /**
  * @brief The spot's model name, used to look up the pin image.
