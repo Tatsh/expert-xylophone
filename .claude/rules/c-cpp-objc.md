@@ -160,6 +160,11 @@ reconstructed code faithful to the original.
 - New code follows Apple's conventions: a class name gets a two-character prefix and all identifiers
   use `CamelCase` but retain all uppercase letters (`JSON` not `Json`).
 - Private identifiers get a `_` prefix.
+- Type an object as specifically as the binary allows. Prefer a concrete class (`RBMenuView *view`)
+  over `id`, and where a value is only messaged through a protocol (a delegate or target), use a
+  protocol-qualified `id<ProtocolName>` rather than a bare `id` (for example
+  `id<RBMenuPageSliderDelegate> delegate`, not `id delegate`). Reserve a bare `id` for a genuinely
+  untyped value the binary dispatches dynamically with no fixed protocol.
 - This project uses ARC and has no support for Manual Reference Counting (MRC). Do not use `retain`,
   `release`, or `autorelease`. When the binary's MRC transfers ownership into a field (a `-copy` or
   `retain` that a later `release` balances), model it with a `strong` reference, not
