@@ -3,7 +3,7 @@
 #import "../../../GameSystem/src/Render/neRender.h"
 #import "../../../GameSystem/src/Render/neSpriteInstancing.h"
 #import "../../../neEngineBridge.h"
-#import "../bg_layer.h"
+#import "../Share/bg_layer.h"
 
 // The background texture the Classic-theme batches all draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
