@@ -192,6 +192,7 @@ rgba
 rhythmin
 ringanimation
 ripgreprc
+rodata
 rtti
 rturl
 schemafile
@@ -236,6 +237,7 @@ undecryptable
 undraft
 undrafted
 unichar
+unnormalised
 unretained
 untilted
 valf
