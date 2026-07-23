@@ -19,8 +19,11 @@
 #import "RBMenuTutorialView.h"
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
+#import "RBNewsHUDView.h"
 #import "RBPlaylistManager.h"
+#import "RBSearchView.h"
 #import "RBSettingView.h"
+#import "RBThemaView.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
@@ -246,12 +249,9 @@ static BOOL g_bRandamIntSeeded = NO;
 // so the hub compiles ahead of their own reconstructions; each is a small overlay or controller.
 @class RBApplilinkView;
 @class RBMusicSearchExpander;
-@class RBNewsHUDView;
 @class RBNotificationPageView;
 @class RBRankingView;
-@class RBSearchView;
 @class RBTermView;
-@class RBThemaView;
 
 @interface RBMenuView ()
 

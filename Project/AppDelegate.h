@@ -90,8 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Whether the treasure map screen has already been shown this session.
  * @ghidraAddress 0x54950 (getter)
+ * @ghidraAddress 0x54960 (setter)
  */
-@property(nonatomic, assign, readonly) BOOL isShowedMap;
+@property(nonatomic, assign) BOOL isShowedMap;
 /**
  * @brief Whether the first-run resource update is being skipped.
  * @ghidraAddress 0x54970 (getter)
@@ -288,6 +289,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x533c8
  */
 - (void)startRegisterForRemoteNotification;
+
+/**
+ * @brief Reset the game to the music menu, fading the current music menu out.
+ * @ghidraAddress 0x51828
+ */
+- (void)resetGame;
 
 @end
 
