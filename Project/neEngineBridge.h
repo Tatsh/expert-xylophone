@@ -397,6 +397,27 @@ public:
 };
 
 /**
+ * The shot (tap) sound sub-manager. It holds thirty-three shot slots keyed by resource id and a
+ * shared loaded flag; the application preloads the whole bank through @c LoadAll before a picker is
+ * shown.
+ * @ghidraAddress ShotSoundManager (engine class, 0x24c bytes)
+ */
+class ShotSoundManager {
+public:
+    /**
+     * @brief Returns the shared shot-sound manager, constructing and clearing its slots on first
+     *        use.
+     * @ghidraAddress 0x1ccf30
+     */
+    static ShotSoundManager *GetInstance();
+    /**
+     * @brief Loads every shot sound slot from the bundle, no-op once the shared loaded flag is set.
+     * @ghidraAddress 0x1cd190
+     */
+    void LoadAll();
+};
+
+/**
  * A two-component float vector shared with the engine's sheet-layout helpers.
  * @ghidraAddress S_VECTOR2 (engine struct type)
  */

@@ -342,11 +342,11 @@ static NSString *RBLocalizedUIString(NSString *key) {
     return alert;
 }
 
-+ (UIAlertView *)showAddLimepointByApplilink:(NSString *)rewardName
++ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint
                                             :(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf150 */
-    NSString *message = [NSString
-        stringWithFormat:RBLocalizedUIString(kLocalizedKeyHasBeenAddedFormat), rewardName];
+    NSString *message =
+        [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeyHasBeenAddedFormat), limePoint];
     UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyAppInstalledReward)
                                    message:message

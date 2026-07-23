@@ -232,6 +232,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)appDelegate;
 
 /**
+ * @brief Initialise the Applilink companion-application SDK.
+ * @ghidraAddress 0x50698
+ */
++ (void)ApplilinkInitialize;
+
+/**
  * @brief The two-element server-data pair (@c \@[p1, p2]) used to gate remote-notification
  * registration and to build the APNs token-upload payload.
  * @ghidraAddress 0x511cc

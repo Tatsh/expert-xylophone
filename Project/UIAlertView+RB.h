@@ -205,14 +205,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIAlertView *)showAlertNeedResourceUpdate:(nullable id<UIAlertViewDelegate>)delegate;
 
 /**
- * @brief Show an "App Installed Reward: %\@ has been added." alert (OK).
- * @param rewardName The reward name substituted into the message.
+ * @brief Show the "App Installed Reward: %\@ lime points have been added." alert (OK).
+ * @param limePoint The number of lime points substituted into the message.
  * @param delegate The alert delegate.
  * @return The shown alert.
  * @ghidraAddress 0xf150
  */
-+ (UIAlertView *)showAddLimepointByApplilink:(nullable NSString *)
-                                  rewardName:(nullable id<UIAlertViewDelegate>)delegate;
++ (UIAlertView *)showAddLimepointByApplilink:(int)
+                                   limePoint:(nullable id<UIAlertViewDelegate>)delegate;
 
 /**
  * @brief Show the "reordering needs a download" alert (NO/YES) built with a fixed message.

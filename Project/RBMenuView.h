@@ -35,6 +35,44 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setShowView:(nullable UIView *)view;
 
 /**
+ * @brief Begin the pastel highlight for a tutorial step (used by @c RBMenuTutorialView on show).
+ */
+- (void)setPastelForTutorialStart;
+
+/**
+ * @brief End the pastel highlight for a tutorial step (used by @c RBMenuTutorialView on hide).
+ */
+- (void)setPastelForTutorialEnd;
+
+/**
+ * @brief The song grid the music-select tutorial step highlights.
+ * @return The collection view.
+ */
+- (nullable UIView *)getCollectionView;
+
+/**
+ * @brief The tutorial song's cell the music-select tutorial step highlights.
+ * @return The tutorial music cell.
+ */
+- (nullable UIView *)getTutorialMusicCell;
+
+/**
+ * @brief The settings button the settings tutorial step highlights.
+ * @return The settings button.
+ */
+- (nullable UIView *)getSettingButton;
+
+/**
+ * @brief Dismiss the customize popup at the end of the customize tutorial.
+ */
+- (void)closeCustomize;
+
+/**
+ * @brief Reload the menu's music data after the purchased-music catalogue changes.
+ */
+- (void)reloadMusicData;
+
+/**
  * @brief The view currently shown over the menu.
  */
 @property(strong, nonatomic, nullable) UIView *showView;

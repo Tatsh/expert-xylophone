@@ -164,6 +164,15 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  */
 - (void)updateStatus:(RBTutorialStatus)updateStatus;
 
+/**
+ * @brief Record the type and item identifier of an item unlocked during the customise walkthrough,
+ *        allocating the pair store on first use and resetting it on each subsequent call.
+ * @param unlockedItemInfo The unlocked item's type.
+ * @param itemId The unlocked item's identifier.
+ * @ghidraAddress 0x36098
+ */
++ (void)setUnlockedItemInfo:(int)unlockedItemInfo itemId:(int)itemId;
+
 #pragma mark Properties
 
 /**

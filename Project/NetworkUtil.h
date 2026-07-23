@@ -74,6 +74,34 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSURL *)unlockedURL;
 
 /**
+ * @brief The unlock-catalogue list endpoint.
+ * @ghidraAddress 0x32f08
+ */
++ (nullable NSURL *)unlockListURL;
+
+/**
+ * @brief The music-unlock endpoint for a given music id, echoing @p randKey to guard against a
+ * stale response.
+ * @param musicID The music identifier to unlock.
+ * @param randKey The random key echoed back by the response.
+ * @ghidraAddress 0x33058
+ */
++ (nullable NSURL *)unlockMusicURL:(int)musicID randKey:(int)randKey;
+
+/**
+ * @brief The reward-check endpoint.
+ */
++ (nullable NSURL *)rewardCheckURL;
+
+/**
+ * @brief Generate a random alphanumeric nonce of the given length.
+ * @param length The number of characters to generate.
+ * @return The generated nonce string.
+ * @ghidraAddress 0x32610
+ */
++ (nullable NSString *)createNonce:(int)length;
+
+/**
  * @brief The tutorial-status endpoint (@c .../akx/main/cgi/tutorial/).
  * @ghidraAddress 0x32dcc
  */
