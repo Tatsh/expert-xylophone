@@ -117,7 +117,11 @@ reconstructed code faithful to the original.
   global as it is encountered; and create the real `struct`/`class` types so that offset-and-cast
   access (`*(int *)(in_x0 + i * 4 + 0x28)`) becomes a named field access (`p->nSpriteCount`). A
   function whose first argument is a pointer to a structure is almost always an instance method of
-  that structure's class — model it as one.
+  that structure's class — model it as one. This applies even when the cast is taken _adjacent_ to
+  an already-named field: `*(undefined1 *)((long)&x.field + 1) = 1` means a distinct field exists at
+  that offset (or the neighbouring field is modelled wrong — for example a `ushort` that is really
+  two bytes). Create or correct the struct field so the access is a clean named field; never leave
+  such a cast behind.
 - Scrutinise return values as hard as arguments: confirm the real return type and whether the value
   is actually returned/used (a discarded return, a returned `this`, or a bool-in-a-wider-register are
   all common), and fix the Ghidra prototype accordingly.
@@ -125,11 +129,20 @@ reconstructed code faithful to the original.
   shows any hint of NEON / vectorisation (SIMD `v`/`q` registers, `ld1`/`st1`, `fmla`, `tbl`, …), work
   it from the **disassembly only**: no guessing, no "best effort" reconstruction from the garbled
   decompile.
-- Gate for the C/C++ engine phase: do not begin reconstructing an engine function until Ghidra's data
-  structures are set up and everything the function touches is well-typed (signature, locals, return,
-  globals, and the structs it reads/writes). `InitializeBackgroundSceneNodes` is the canonical example
-  of the mess to clean up first — incorrect variable types, casts, `in_*` args, un-renamed `pnVar1`
-  variables, and offset-with-cast field access.
+- The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
+  For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the decompile
+  reads like normal C++ — the full signature, every local, the return, every global, and every struct
+  it reads or writes (per the rules above); (3) if the routine shows any hint of NEON / vectorisation,
+  from that point work the disassembly only; (4) write the reconstruction into `rbplus-src/`; (5)
+  verify the reconstruction against the disassembly. It is slow but accurate, and it is a long task.
+  Do not begin writing the equivalent code until the routine is well-typed. `InitializeBackgroundSceneNodes`
+  is the canonical example of the mess to clean up first (incorrect variable types, casts, `in_*` args,
+  un-renamed `pnVar1` variables, offset-with-cast field access).
+- For a very large function body, save the decompiler output and the disassembler output to files, then
+  break the function into parts by de-inlining the repeated or logically-distinct blocks into helper
+  functions, and reconstruct using those helpers. Mark such helpers `inline` (not
+  `__attribute__((always_inline))`) unless the block is genuinely performance-critical and you are
+  certain the `always_inline` form will compile.
 
 ## C
 
