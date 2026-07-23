@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol StorePackListDelegate <NSObject>
 
-@optional
+@required
 
 /**
  * @brief Sent when a pack list finished loading successfully.

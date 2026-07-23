@@ -90,6 +90,27 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSURL *)musicInfoURL:(int)musicId;
 
 /**
+ * @brief Build the paged pack-list catalogue download URL for a genre.
+ * @param offset The one-based start offset of the page to fetch.
+ * @param limit The maximum number of packs to request.
+ * @param genre The genre identifier to fetch.
+ * @return The pack-list catalogue endpoint URL.
+ * @ghidraAddress 0x85944
+ */
++ (nullable NSURL *)packListURL:(int)offset limit:(int)limit genre:(unsigned int)genre;
+
+/**
+ * @brief Build the pack-detail info download URL for a pack.
+ *
+ * Forwards to @c NetworkUtil to compose the @c v3/packinfo/ endpoint URL for the pack.
+ * @param packID The pack identifier.
+ * @param userOpen Whether the request is on behalf of a user-initiated open.
+ * @return The pack-detail info endpoint URL.
+ * @ghidraAddress 0x85964
+ */
++ (nullable NSURL *)packInfoURL:(int)packID UserOpen:(BOOL)userOpen;
+
+/**
  * @brief Build the manage-screen sort-metadata list download URL.
  * @return The sort-metadata list endpoint URL.
  * @ghidraAddress 0x859d0
@@ -102,6 +123,15 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The numeric extend-note identifier.
  */
 + (int)productIDToPid:(nullable NSString *)productID;
+
+/**
+ * @brief Build the paged extend-note catalogue list download URL.
+ * @param offset The one-based catalogue offset of the first item to fetch.
+ * @param limit The maximum number of items to fetch.
+ * @return The extend-note list endpoint URL.
+ * @ghidraAddress 0x87484
+ */
++ (nullable NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit;
 
 /**
  * @brief Build the user-age and purchase-limit-type check URL.

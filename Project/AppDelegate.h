@@ -228,6 +228,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) id apnsUploader;
 
 /**
+ * @brief The pack identifier a deep link ("open store") queued for the store to open, as a string.
+ * @ghidraAddress 0x4efec (getter)
+ * @ghidraAddress 0x4efb4 (setter)
+ */
+@property(nonatomic, copy, nullable, getter=getPackIDForOpenStore) NSString *packIDForOpenStore;
+
+/**
  * @brief The shared app delegate: @c [[UIApplication sharedApplication] delegate].
  * @ghidraAddress 0x50af0
  */

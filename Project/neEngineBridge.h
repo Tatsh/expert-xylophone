@@ -352,6 +352,12 @@ extern NSString *const g_pLocalizedServerConnectFailed;
  */
 extern NSString *const g_pLocalizedServerNoData;
 /**
+ * @brief The localised "update required" message format shown when the extend-note catalogue
+ * demands a newer app version (positional @c %1$@ feature name and @c %2$@ minimum version).
+ * @ghidraAddress 0x3cfd68
+ */
+extern NSString *const g_pLocalizedUpdateRequiredFormat;
+/**
  * @brief The localised message shown when the shop-master version is older than the app.
  * @ghidraAddress 0x3cfdc8
  */
