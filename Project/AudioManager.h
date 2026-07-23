@@ -179,6 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @return @c YES when the voice player is playing.
  */
 - (BOOL)isPlayingVoice;
+/**
+ * @brief Release the loaded voice line and its player.
+ * @ghidraAddress 0x3e8d4
+ */
+- (void)releaseVoice;
 
 #pragma mark Sound effect loading
 

@@ -10,7 +10,15 @@
 #import "RBCoreDataManager.h"
 #import "RBMenuTutorialView.h"
 #import "RBMenuView.h"
+#import "RBMusicARView.h"
+#import "RBMusicCPUView.h"
+#import "RBMusicColorView.h"
+#import "RBMusicDifficultyView.h"
+#import "RBMusicHistoryView.h"
 #import "RBMusicManager.h"
+#import "RBMusicOtherView.h"
+#import "RBMusicScoreView.h"
+#import "RBMusicSpeedView.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
@@ -1067,7 +1075,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         if (self->m_AR[difficulty] > 0.0f) {
             [self.arView UpdateScore:self->m_AR[difficulty]];
         } else {
-            [self.arView UpdateScore];
+            // ar <= 0; the binary calls UpdateScore: here too without reloading the arg register.
+            [self.arView UpdateScore:self->m_AR[difficulty]];
         }
         self.rankView.hidden = NO;
         int rank = self->m_PlayCount[difficulty] > 0 ? self->m_Rank[difficulty] : -1;
@@ -1727,12 +1736,15 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 // Collaborator sub-views that this hub messages but that are not yet reconstructed (no header
 // exists, so these classes are only @class-forward-declared and the messages to them cannot compile
 // until their headers are created): RBMusicScoreView (initWithFrame:, setGrade:, UpdateScore:),
-// RBMusicARView (initWithFrame:, UpdateScore, UpdateScore:), RBMusicDifficultyView
+// RBMusicDifficultyView
 // (initWithFrame:MusicSelectedBase:, difficulty, setEnableButton:, getDifficultyButton:),
 // RBMusicColorView / RBMusicSpeedView / RBMusicCPUView / RBMusicOtherView
-// (initWithFrame:MusicSelectedBase:, plus color/rivalAlpha, speed, and level respectively), and
-// RBMusicHistoryView (initWithFrame:, isHidden, hideAnimation, showAnimation:difficulty:). The exact
-// selectors are listed in the reviewer report. Two catalogue selectors this file relies on but that
+// (initWithFrame:MusicSelectedBase:, plus color/rivalAlpha, speed, and level respectively).
+// RBMusicHistoryView (initWithFrame:, isHidden, hideAnimation, showAnimation:difficulty:) is now
+// reconstructed at RBMusicHistoryView.{h,m} and imported above. RBMusicARView (initWithFrame:,
+// UpdateScore, UpdateScore:) is now reconstructed at RBMusicARView.{h,m} and imported above. The
+// exact selectors are listed in
+// the reviewer report. Two catalogue selectors this file relies on but that
 // their existing headers may not yet declare are RBMusicManager -getPurchasedMusicDictionary: and
 // ScoreData -getFrameBonusType.
 //

@@ -419,6 +419,26 @@ public:
      * @ghidraAddress 0x1cc934
      */
     unsigned int PlayThemedSoundEffect(int slotID);
+    /**
+     * @brief Loads the themed voice for the given identifier and immediately plays it.
+     *
+     * A thin wrapper that loads the voice data through @c LoadThemedVoiceData and then plays it
+     * through @c PlayThemedVoice.
+     * @param voiceID The themed voice identifier.
+     * @ghidraAddress 0x1ccc18
+     */
+    void LoadAndSetThemedVoice(int voiceID);
+    /**
+     * @brief Reports whether the sound effect with the given play handle is still playing.
+     *
+     * The manager receiver is unused; the query is forwarded to
+     * @c -[AudioManager isPlayingSe:]. It is modelled as a member because the binary passes the
+     * manager pointer as the first argument.
+     * @param playHandle The play handle returned by @c PlayThemedSoundEffect.
+     * @return @c true while the effect is still playing.
+     * @ghidraAddress 0x1ccba8
+     */
+    bool IsPlaying(unsigned int playHandle);
 };
 
 /**
