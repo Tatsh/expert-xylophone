@@ -47,16 +47,16 @@
 #import "neGLView.h"
 
 // The music id the bundle preview song is registered under.
-static const int kPreviewMusicID = 999999999;
+constexpr int kPreviewMusicID = 999999999;
 
 // The HTTP status code (404) that aborts the Twitter reachability probe.
-static const NSInteger kHttpStatusNotFound = 404;
+constexpr NSInteger kHttpStatusNotFound = 404;
 
 // The number of attempts made to start the menu background music.
-static const int kMenuBgmPlayAttempts = 101;
+constexpr int kMenuBgmPlayAttempts = 101;
 
 // The maximum stored speed type that still maps to a shaped sheet layer.
-static const int kMaxShapedSpeedType = 10;
+constexpr int kMaxShapedSpeedType = 10;
 
 // The play difficulties. The public HistoryDifficulty enum covers only Basic, Medium, and Hard;
 // the fourth value is the special extend chart, which routes gameplay through the song's extend
@@ -69,77 +69,77 @@ enum {
 };
 
 // The themed sound-effect identifier played when the playlist button is pushed.
-static const int kSoundEffectDecide = 1;
+constexpr int kSoundEffectDecide = 1;
 
 // The corporate-button web destination.
 static NSString *const kCorporateURLString = @"https://www.konami.com/ja";
 
 // The camera pitch reference height used for the standard (non-variant) font layout, in points.
-static const float kStandardCameraPitchHeight = 25.0f;
+constexpr float kStandardCameraPitchHeight = 25.0f;
 
 // The camera target y offset used for the standard (non-variant) font layout, in points.
-static const float kStandardCameraTargetY = 26.0f;
+constexpr float kStandardCameraTargetY = 26.0f;
 
 // The number of nanoseconds in one second (the preview dispatch delay).
-static const int64_t kOneSecondInNanoseconds = 1000000000LL;
+constexpr int64_t kOneSecondInNanoseconds = 1000000000LL;
 
 // The sheet height used while a preview/gameplay scene is on screen, in points.
-static const float kPreviewSheetHeight = 25.0f;
+constexpr float kPreviewSheetHeight = 25.0f;
 
 // The GL clear masks (GL_COLOR_BUFFER_BIT and GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT).
-static const unsigned int kClearColor = 0x4000;
-static const unsigned int kClearColorAndDepth = 0x4100;
+constexpr unsigned int kClearColor = 0x4000;
+constexpr unsigned int kClearColorAndDepth = 0x4100;
 
 // The render-elapsed cap that gates a Draw pass; the stored threshold is effectively always
 // satisfied.
 // @ghidraAddress 0x2f8540
-static const float kMaxRenderFrameElapsed = 1000.0f;
+constexpr float kMaxRenderFrameElapsed = 1000.0f;
 
 // The corporate-button fade duration, in seconds, shared with the audio resume fade.
 // @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
-static const double kCorporateFadeDuration = 0.3;
+constexpr double kCorporateFadeDuration = 0.3;
 
 // The point height of the variant (wide-font) layout screen used to centre the preview camera.
 // @ghidraAddress 0x3c8834 (g_nVariantScreenHeight)
-static const int kVariantScreenHeightPoints = 1024;
+constexpr int kVariantScreenHeightPoints = 1024;
 
 // The playlist popover content size, in points.
-static const CGFloat kPopoverContentWidth = 320.0;
-static const CGFloat kPopoverContentHeight = 480.0;
+constexpr CGFloat kPopoverContentWidth = 320.0;
+constexpr CGFloat kPopoverContentHeight = 480.0;
 
 // The corporate-button inset from the view's top-right corner, in points.
-static const CGFloat kCorporateButtonMargin = 10.0;
+constexpr CGFloat kCorporateButtonMargin = 10.0;
 
 // The game-start sound-effect identifier played when a song begins.
-static const int kSoundEffectGameStart = 17;
+constexpr int kSoundEffectGameStart = 17;
 
 // The Twitter reachability-probe request timeout, in seconds.
-static const NSTimeInterval kTwitterProbeTimeout = 15.0;
+constexpr NSTimeInterval kTwitterProbeTimeout = 15.0;
 
 // Projection constants used by -UpdateProjection.
 // The sheet field-of-view is (sheetWidth / 180) * pi, converting the sheet's angular width in
 // degrees to radians.
 // @ghidraAddress 0x2fd024
-static const float kSheetFovReferenceWidth = 180.0f;
+constexpr float kSheetFovReferenceWidth = 180.0f;
 // @ghidraAddress 0x2f85a0
-static const double kSheetFovScale = 3.14159265358979323846;
+constexpr double kSheetFovScale = 3.14159265358979323846;
 // The near and far plane distances for the portrait perspective, as multiples of the camera
 // distance.
 // @ghidraAddress 0x2fede0
-static const double kNearPlaneScale = 0.9;
+constexpr double kNearPlaneScale = 0.9;
 // @ghidraAddress 0x2f8588
-static const double kFarPlaneScale = 1.1;
+constexpr double kFarPlaneScale = 1.1;
 // The near and far plane distances, in points, for the landscape tilt perspective.
 // @ghidraAddress 0x2ec6b0
-static const float kTiltNearPlane = 100.0f;
+constexpr float kTiltNearPlane = 100.0f;
 // @ghidraAddress 0x2fedf0
-static const float kTiltFarPlane = 5000.0f;
+constexpr float kTiltFarPlane = 5000.0f;
 // Half of pi, the level (untilted) reference pitch used by the tilt projection.
 // @ghidraAddress 0x2fedd8
-static const double kPiOverTwo = 1.5707963267948966;
+constexpr double kPiOverTwo = 1.5707963267948966;
 // The sheet centre used as the flat-landscape camera focus, in points.
-static const float kSheetCentreX = 384.0f;
-static const float kSheetCentreY = 512.0f;
+constexpr float kSheetCentreX = 384.0f;
+constexpr float kSheetCentreY = 512.0f;
 
 // The component indices of a two-component screen-size vector.
 enum {
@@ -155,10 +155,10 @@ enum {
 };
 
 // The terms-agreement document type shown by -showTermsWithDelegate:.
-static const int kTermTypeAgreement = 1;
+constexpr int kTermTypeAgreement = 1;
 
 // The default play colour that the preview restores before showing the bundled preview song.
-static const int kDefaultPlayColor = 0;
+constexpr int kDefaultPlayColor = 0;
 
 @interface RBViewController () <NSURLConnectionDataDelegate, SKStoreProductViewControllerDelegate>
 

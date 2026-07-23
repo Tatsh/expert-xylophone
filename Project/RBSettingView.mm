@@ -23,46 +23,46 @@
 // Themed sound-effect slots. The panel plays a theme-specific slot when it opens: the Classic theme
 // uses its own slot, and the Limelight and Colette themes share another. Dismissal and every
 // sub-screen selection reuse the shared cancel and decide slots.
-static const int kSoundEffectDecide = 1;
-static const int kSoundEffectCancel = 4;
-static const int kSoundEffectSettingOpenClassic = 3;
-static const int kSoundEffectSettingOpen = 12;
+constexpr int kSoundEffectDecide = 1;
+constexpr int kSoundEffectCancel = 4;
+constexpr int kSoundEffectSettingOpenClassic = 3;
+constexpr int kSoundEffectSettingOpen = 12;
 
 // Autoresizing masks. The overlay itself stays pinned to the whole screen; the panel keeps its width
 // and stays anchored to the top; each button keeps its width and stays anchored to the bottom of the
 // panel so the column grows downward.
-static const UIViewAutoresizing kAutoresizingFull =
+constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
-static const UIViewAutoresizing kAutoresizingPanel = UIViewAutoresizingFlexibleWidth |
-                                                     UIViewAutoresizingFlexibleRightMargin |
-                                                     UIViewAutoresizingFlexibleTopMargin;
-static const UIViewAutoresizing kAutoresizingButton =
+constexpr UIViewAutoresizing kAutoresizingPanel = UIViewAutoresizingFlexibleWidth |
+                                                  UIViewAutoresizingFlexibleRightMargin |
+                                                  UIViewAutoresizingFlexibleTopMargin;
+constexpr UIViewAutoresizing kAutoresizingButton =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 
 // The panel fades and slides over a quarter second.
-static const NSTimeInterval kSettingAnimationDuration = 0.25;
+constexpr NSTimeInterval kSettingAnimationDuration = 0.25;
 
 // Colette-theme (thema == 2) panel background and border colours, and the shared border width used by
 // the Classic and Colette themes. Read from the binary's constant pool at 0x1003016a0 (background
 // RGB), 0x1003016c0 (border RGB), and 0x1003016b8 (border width).
-static const CGFloat kColetteBackgroundRed = 0.945;
-static const CGFloat kColetteBackgroundGreen = 0.9420;
-static const CGFloat kColetteBackgroundBlue = 0.7647;
-static const CGFloat kColetteBorderRed = 0.7962;
-static const CGFloat kColetteBorderGreen = 0.7803;
-static const CGFloat kColetteBorderBlue = 0.6470;
-static const CGFloat kThemedBorderWidth = 1.3;
+constexpr CGFloat kColetteBackgroundRed = 0.945;
+constexpr CGFloat kColetteBackgroundGreen = 0.9420;
+constexpr CGFloat kColetteBackgroundBlue = 0.7647;
+constexpr CGFloat kColetteBorderRed = 0.7962;
+constexpr CGFloat kColetteBorderGreen = 0.7803;
+constexpr CGFloat kColetteBorderBlue = 0.6470;
+constexpr CGFloat kThemedBorderWidth = 1.3;
 
 // The Limelight theme (thema == 1) uses a plain white panel with a fixed corner radius.
-static const CGFloat kLimelightCornerRadius = 10.0;
+constexpr CGFloat kLimelightCornerRadius = 10.0;
 
 // Per-theme panel corner radii, indexed by RBUserSettingData.thema. The default table is used for the
 // wide font variant; the region table (GetFontVariantFlag() == 0) is used otherwise. Values read from
 // the binary's constant pool at 0x1003017d0 and 0x1003017dc.
-static const CGFloat kSettingCornerRadiusDefault[] = {22.0, 22.0, 33.0};
-static const CGFloat kSettingCornerRadiusRegion[] = {14.0, 14.0, 14.0};
+constexpr CGFloat kSettingCornerRadiusDefault[] = {22.0, 22.0, 33.0};
+constexpr CGFloat kSettingCornerRadiusRegion[] = {14.0, 14.0, 14.0};
 
 // The panel button-column origin (x, y of the first button, in panel coordinates) and the vertical
 // gap inserted before each subsequent button, both indexed by theme and font variant. These mirror
@@ -83,10 +83,10 @@ typedef struct SettingMenuEntry {
 } SettingMenuEntry;
 
 // The panel background is fully opaque and the borders are drawn at full alpha.
-static const CGFloat kOpaqueAlpha = 1.0;
+constexpr CGFloat kOpaqueAlpha = 1.0;
 
 // The customise tutorial identifier passed to -startTutorialWithType:withRootView:.
-static const NSInteger kTutorialTypeCustomize = 27;
+constexpr NSInteger kTutorialTypeCustomize = 27;
 
 @implementation RBSettingView {
     // The active theme, cached from RBUserSettingData when the panel is built.

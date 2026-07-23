@@ -17,39 +17,39 @@
 #import "neEngineBridge.h"
 
 // The music-menu popups all fade over a quarter second.
-static const NSTimeInterval kPopupAnimationDuration = 0.25;
+constexpr NSTimeInterval kPopupAnimationDuration = 0.25;
 
 // The themed sound-effect slot played when a popup is dismissed.
-static const int kSoundEffectCancel = 4;
+constexpr int kSoundEffectCancel = 4;
 
 // Autoresizing masks used across the popup chrome. The full mask keeps a subview pinned to its
 // superview's bounds; the centring mask keeps the base panel centred as the popup resizes.
-static const UIViewAutoresizing kAutoresizingFull =
+constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
-static const UIViewAutoresizing kAutoresizingCentred =
+constexpr UIViewAutoresizing kAutoresizingCentred =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
 // Base-panel geometry for the wide font variant. The narrow variant uses a square panel centred on
 // the popup instead.
-static const CGRect kWideBaseFrame = {{112.0, 160.0}, {552.0, 680.0}};
-static const CGFloat kNarrowBaseSize = 320.0;
+constexpr CGRect kWideBaseFrame = {{112.0, 160.0}, {552.0, 680.0}};
+constexpr CGFloat kNarrowBaseSize = 320.0;
 
 // Vertical reference heights used to place the title bar and content view relative to the base
 // panel's frame origin.
-static const CGFloat kWideContentTopReference = 188.0;
-static const CGFloat kNarrowTitleTopReference = 186.0;
-static const CGFloat kTitleTopOffsetWide = 174.0;
+constexpr CGFloat kWideContentTopReference = 188.0;
+constexpr CGFloat kNarrowTitleTopReference = 186.0;
+constexpr CGFloat kTitleTopOffsetWide = 174.0;
 
 // Common inset and corner metrics for the content view and its chrome.
-static const CGFloat kContentInset = 2.0;
-static const CGFloat kContentEdgeShrink = 1.0;
-static const CGFloat kCornerRadiusThemed = 5.0;
-static const CGFloat kCornerRadiusDefault = 10.0;
-static const CGFloat kNarrowTitleTopThemed = 5.0;
-static const CGFloat kNarrowBackgroundTopOffset = 10.0;
+constexpr CGFloat kContentInset = 2.0;
+constexpr CGFloat kContentEdgeShrink = 1.0;
+constexpr CGFloat kCornerRadiusThemed = 5.0;
+constexpr CGFloat kCornerRadiusDefault = 10.0;
+constexpr CGFloat kNarrowTitleTopThemed = 5.0;
+constexpr CGFloat kNarrowBackgroundTopOffset = 10.0;
 
 // The title-bar and background artwork for each popup type. A title-bar name of nil means the type
 // draws no title bar. The tutorial type sizes the base panel to its background image.

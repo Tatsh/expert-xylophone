@@ -28,84 +28,84 @@ static NSString *const kCampaignAssetNameFormat = @"%@/%@";
 static NSString *const kFrameAssetNameFormat = @"%@%02d";
 
 // Sprite-frame loading: frame indices run 1..100 and are grouped into clips of ten frames.
-static const int kMascotFirstFrameIndex = 1;
-static const int kMascotFrameIndexLimit = 101;
-static const int kMascotFramesPerClip = 10;
-static const int kMascotFrameCountPerClip = 9;
+constexpr int kMascotFirstFrameIndex = 1;
+constexpr int kMascotFrameIndexLimit = 101;
+constexpr int kMascotFramesPerClip = 10;
+constexpr int kMascotFrameCountPerClip = 9;
 
 // The tap rarity gate: a random value below this threshold (out of 100) plays a normal clip, at or
 // above it plays a rare clip.
-static const int kMascotRareThreshold = 80;
-static const int kMascotRareModulus = 101;
+constexpr int kMascotRareThreshold = 80;
+constexpr int kMascotRareModulus = 101;
 
 // The message-label origin inside the bubble, and the padding added around the label to size the
 // bubble background.
-static const CGFloat kMessageLabelOrigin = 2.0;
-static const CGFloat kMessageBubblePaddingX = 18.0;
-static const CGFloat kMessageBubblePaddingTop = 10.0;
-static const CGFloat kMessageBubblePaddingBottom = 25.0;
+constexpr CGFloat kMessageLabelOrigin = 2.0;
+constexpr CGFloat kMessageBubblePaddingX = 18.0;
+constexpr CGFloat kMessageBubblePaddingTop = 10.0;
+constexpr CGFloat kMessageBubblePaddingBottom = 25.0;
 
 // The horizontal nudge applied to the message view, as a fraction of the bubble width, chosen by
 // font variant.
-static const CGFloat kMessageViewNudgeFraction = 0.125;
+constexpr CGFloat kMessageViewNudgeFraction = 0.125;
 
 // The horizontal spawn positions: the normal mascot spawns just off the right screen edge (frame
 // width plus this offset) and the rare mascot spawns off the left edge.
-static const CGFloat kMascotNormalSpawnXOffset = 100.0;
-static const CGFloat kMascotRareSpawnX = -100.0;
+constexpr CGFloat kMascotNormalSpawnXOffset = 100.0;
+constexpr CGFloat kMascotRareSpawnX = -100.0;
 
 // The resting-height random-range base offset subtracted from the screen height, chosen by font
 // variant.
-static const float kMascotBaseYOffsetPad = 300.0f;
-static const float kMascotBaseYOffsetPhone = 150.0f;
+constexpr float kMascotBaseYOffsetPad = 300.0f;
+constexpr float kMascotBaseYOffsetPhone = 150.0f;
 
 // The upward launch speed multiplier applied to speedY on a tap (scaled by the mascot scale).
-static const float kMascotTapUpwardSpeed = 50.0f;
+constexpr float kMascotTapUpwardSpeed = 50.0f;
 
 // The message-label constrained max width, chosen by font variant.
-static const CGFloat kMascotMessageMaxWidthPad = 300.0;
-static const CGFloat kMascotMessageMaxWidthPhone = 200.0;
+constexpr CGFloat kMascotMessageMaxWidthPad = 300.0;
+constexpr CGFloat kMascotMessageMaxWidthPhone = 200.0;
 
 // The height the campaign message text is constrained to when measured in -generateCGSize:.
-static const CGFloat kMascotMessageLabelConstraintHeight = 40.0;
+constexpr CGFloat kMascotMessageLabelConstraintHeight = 40.0;
 
 // The per-frame move animation duration on the Colette theme.
-static const NSTimeInterval kMascotMoveAnimDuration = 0.1;
+constexpr NSTimeInterval kMascotMoveAnimDuration = 0.1;
 
 // The message-ticker fade/slide animation duration.
-static const NSTimeInterval kMessageAnimDuration = 0.2;
+constexpr NSTimeInterval kMessageAnimDuration = 0.2;
 
 // The resizable message-bubble background cap insets.
-static const CGFloat kMessageBubbleCapInsetTop = 10.0;
-static const CGFloat kMessageBubbleCapInsetLeft = 47.0;
-static const CGFloat kMessageBubbleCapInsetBottom = 25.0;
-static const CGFloat kMessageBubbleCapInsetRight = 9.0;
+constexpr CGFloat kMessageBubbleCapInsetTop = 10.0;
+constexpr CGFloat kMessageBubbleCapInsetLeft = 47.0;
+constexpr CGFloat kMessageBubbleCapInsetBottom = 25.0;
+constexpr CGFloat kMessageBubbleCapInsetRight = 9.0;
 
 // The sprite-animation frame rate, expressed as the seconds-per-cycle duration UIImageView uses.
-static const NSTimeInterval kMascotAnimationDuration = 0.25;
+constexpr NSTimeInterval kMascotAnimationDuration = 0.25;
 
 // The message-ticker fade-out hold before the label is cleared.
-static const NSTimeInterval kMessageFadeOutDelay = 5.0;
+constexpr NSTimeInterval kMessageFadeOutDelay = 5.0;
 
 // The mascot base font point sizes, chosen by font variant (iPad vs phone).
-static const CGFloat kMascotFontSizePad = 14.0;
-static const CGFloat kMascotFontSizePhone = 11.0;
+constexpr CGFloat kMascotFontSizePad = 14.0;
+constexpr CGFloat kMascotFontSizePhone = 11.0;
 
 // The vertical resting-height random spread, and the base spawn horizontal speed, chosen by font
 // variant.
-static const int kMascotBaseYSpreadPad = 40;
-static const int kMascotBaseYSpreadPhone = 5;
-static const float kMascotSpawnSpeedPad = -10.0f;
-static const float kMascotSpawnSpeedPhone = -5.0f;
+constexpr int kMascotBaseYSpreadPad = 40;
+constexpr int kMascotBaseYSpreadPhone = 5;
+constexpr float kMascotSpawnSpeedPad = -10.0f;
+constexpr float kMascotSpawnSpeedPhone = -5.0f;
 
 // The downward acceleration applied to the mascot after a tap.
-static const float kMascotTapDownwardAcceleration = -10.0f;
+constexpr float kMascotTapDownwardAcceleration = -10.0f;
 
 // The empty-string sentinel that means the campaign ticker is idle; tapping it advances the ticker.
 static NSString *const kEmptyMessageText = @"";
 
 // The Colette theme value that runs the per-frame move animation.
-static const RBUserSettingDataTheme kMascotMoveAnimTheme = RBUserSettingDataThemeColette;
+constexpr RBUserSettingDataTheme kMascotMoveAnimTheme = RBUserSettingDataThemeColette;
 
 // The message-bubble URL key looked up in a campaign message dictionary.
 static NSString *const kMessageURLKey = @"url";
