@@ -78,6 +78,13 @@
 - Always keep `theos/Makefile` synced with the `CMake` files.
 - If a structure member is a bit-field, declare the width (number of bits).
 - Use British spelling in comments and documentation; use American spelling for identifiers.
+- Use the boolean type native to each language and never mix them. Pure C++ (a `.cpp`, or the C++
+  portion of a `.mm` or `.h`) uses `bool` with `true`/`false` — never `BOOL` and never the bare
+  `_Bool`. Pure C uses `bool` from `<stdbool.h>` (include it) with `true`/`false` — again never
+  `BOOL` or a bare `_Bool`. Objective-C uses `BOOL` with `YES`/`NO`. Match the language of the
+  surrounding code, not the language the field is shared with: a `bool` engine field read from
+  Objective-C stays `bool` in the C++ header and is used as a truthy value from the Objective-C
+  side.
 
 ## C
 

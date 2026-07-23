@@ -42,6 +42,11 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
   that offset (or the neighbouring field is modelled wrong — for example a `ushort` that is really
   two bytes). Create or correct the struct field so the access is a clean named field; never leave
   such a cast behind.
+- Flag surprising-but-faithful behaviour with a short comment so a reader does not mistake it for a
+  reconstruction bug: a discarded return value, a call kept only for effect, a deliberate off-by-one,
+  a value that looks wrong but matches the binary. Keep it terse — a trailing same-line comment where
+  it fits, otherwise the line above (for example `(void)GetIsTallScreenFlag(); // Yes, the binary
+discards this call's result.`). Do not write an extensive explanation.
 - Scrutinise return values as hard as arguments: confirm the real return type and whether the value
   is actually returned/used (a discarded return, a returned `this`, or a bool-in-a-wider-register are
   all common), and fix the Ghidra prototype accordingly.
