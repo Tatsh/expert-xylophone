@@ -69,6 +69,11 @@ bool GetIsRetinaFlag(void);
  */
 bool GetIsTallScreenFlag(void);
 /**
+ * @brief Returns the cached "device is the older type 9 hardware" flag.
+ * @ghidraAddress 0x1a123c
+ */
+bool GetIsHardwareType9Flag(void);
+/**
  * @brief Returns the cached preferred language code (for example @c "ja" or @c "en").
  * @ghidraAddress 0x1a1230
  */
