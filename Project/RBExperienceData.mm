@@ -10,6 +10,8 @@
 
 #import "RBExperienceData.h"
 
+#import "RBMacros.h"
+
 // Collaborator classes reached from the persistence, unlock, and takeover paths. Their headers are
 // not yet reconstructed in this tree; the imports resolve once those classes land, matching the
 // speculative-import style already used by AppDelegate.mm, ScoreData.m, and ReplayData.m.
@@ -230,28 +232,23 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
     [self.backgroundItems removeAllObjects];
     [self.musicItems removeAllObjects];
     [self.themaItems removeAllObjects];
-    for (NSUInteger i = 0; i < sizeof(kDefaultThemaIds) / sizeof(kDefaultThemaIds[0]); ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultThemaIds); ++i) {
         [self.themaItems addObject:[NSNumber numberWithInt:kDefaultThemaIds[i]]];
     }
     [self.installedAppliIds removeAllObjects];
-    for (NSUInteger i = 0; i < sizeof(kDefaultBgmItemIds) / sizeof(kDefaultBgmItemIds[0]); ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultBgmItemIds); ++i) {
         [self addBGMType:kDefaultBgmItemIds[i]];
     }
-    for (NSUInteger i = 0; i < sizeof(kDefaultShotItemIds) / sizeof(kDefaultShotItemIds[0]); ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultShotItemIds); ++i) {
         [self addShotType:kDefaultShotItemIds[i]];
     }
-    for (NSUInteger i = 0;
-         i < sizeof(kDefaultExprosionItemIds) / sizeof(kDefaultExprosionItemIds[0]);
-         ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultExprosionItemIds); ++i) {
         [self addExprosionType:kDefaultExprosionItemIds[i]];
     }
-    for (NSUInteger i = 0; i < sizeof(kDefaultFrameItemIds) / sizeof(kDefaultFrameItemIds[0]);
-         ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultFrameItemIds); ++i) {
         [self addFrameType:kDefaultFrameItemIds[i]];
     }
-    for (NSUInteger i = 0;
-         i < sizeof(kDefaultBackgroundItemIds) / sizeof(kDefaultBackgroundItemIds[0]);
-         ++i) {
+    for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultBackgroundItemIds); ++i) {
         [self addBackgroundType:kDefaultBackgroundItemIds[i]];
     }
 }
@@ -321,7 +318,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
         }
         // The theme set is always reseeded to the three defaults rather than decoded.
         NSMutableArray *defaultThemas = [NSMutableArray array];
-        for (NSUInteger i = 0; i < sizeof(kDefaultThemaIds) / sizeof(kDefaultThemaIds[0]); ++i) {
+        for (NSUInteger i = 0; i < ARRAY_SIZE(kDefaultThemaIds); ++i) {
             [defaultThemas addObject:[NSNumber numberWithUnsignedInt:kDefaultThemaIds[i]]];
         }
         self.themaItems = [[NSMutableSet alloc] initWithArray:defaultThemas];
@@ -672,8 +669,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
                 [self addBGMType:kTakeoverPremiumBgmId];
             }
             [self addBGMType:kTakeoverBaseBgmId];
-            for (NSUInteger i = 0; i < sizeof(kTakeoverBgmTypeIds) / sizeof(kTakeoverBgmTypeIds[0]);
-                 ++i) {
+            for (NSUInteger i = 0; i < ARRAY_SIZE(kTakeoverBgmTypeIds); ++i) {
                 if (levelTables->CheckThresholdReached(kLevelCategoryBgm, kTakeoverBgmTypeIds[i])) {
                     [self addBGMType:kTakeoverBgmTypeIds[i]];
                 }
@@ -681,9 +677,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
             break;
         }
         case kLevelCategoryShot: {
-            for (NSUInteger i = 0;
-                 i < sizeof(kTakeoverShotTypeIds) / sizeof(kTakeoverShotTypeIds[0]);
-                 ++i) {
+            for (NSUInteger i = 0; i < ARRAY_SIZE(kTakeoverShotTypeIds); ++i) {
                 if (levelTables->CheckThresholdReached(kLevelCategoryShot,
                                                        kTakeoverShotTypeIds[i])) {
                     [self addShotType:kTakeoverShotTypeIds[i]];
@@ -696,9 +690,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
                 [self addExprosionType:kTakeoverPremiumExprosionId];
             }
             [self addExprosionType:kTakeoverBaseExprosionId];
-            for (NSUInteger i = 0;
-                 i < sizeof(kTakeoverExprosionTypeIds) / sizeof(kTakeoverExprosionTypeIds[0]);
-                 ++i) {
+            for (NSUInteger i = 0; i < ARRAY_SIZE(kTakeoverExprosionTypeIds); ++i) {
                 if (levelTables->CheckThresholdReached(kLevelCategoryExprosion,
                                                        kTakeoverExprosionTypeIds[i])) {
                     [self addExprosionType:kTakeoverExprosionTypeIds[i]];
@@ -711,9 +703,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
                 [self addFrameType:kTakeoverPremiumFrameId];
             }
             [self addFrameType:kTakeoverBaseFrameId];
-            for (NSUInteger i = 0;
-                 i < sizeof(kTakeoverFrameTypeIds) / sizeof(kTakeoverFrameTypeIds[0]);
-                 ++i) {
+            for (NSUInteger i = 0; i < ARRAY_SIZE(kTakeoverFrameTypeIds); ++i) {
                 if (levelTables->CheckThresholdReached(kLevelCategoryFrame,
                                                        kTakeoverFrameTypeIds[i])) {
                     [self addFrameType:kTakeoverFrameTypeIds[i]];
@@ -726,9 +716,7 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
                 [self addBackgroundType:kTakeoverPremiumBackgroundId];
             }
             [self addBackgroundType:kTakeoverBaseBackgroundId];
-            for (NSUInteger i = 0;
-                 i < sizeof(kTakeoverBackgroundTypeIds) / sizeof(kTakeoverBackgroundTypeIds[0]);
-                 ++i) {
+            for (NSUInteger i = 0; i < ARRAY_SIZE(kTakeoverBackgroundTypeIds); ++i) {
                 if (levelTables->CheckThresholdReached(kLevelCategoryBackground,
                                                        kTakeoverBackgroundTypeIds[i])) {
                     [self addBackgroundType:kTakeoverBackgroundTypeIds[i]];

@@ -8,6 +8,7 @@
 //
 
 #import "SystemHardware.h"
+#import "RBMacros.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,7 @@ static const char *const kHardwareModelTable[] = {
 
 // The number of known models in @c kHardwareModelTable.
 static const NSUInteger kHardwareModelCount =
-    sizeof(kHardwareModelTable) / sizeof(kHardwareModelTable[0]);
+    ARRAY_SIZE(kHardwareModelTable);
 
 @implementation SystemHardware {
     // The resolved hardware type, or @c kHardwareTypeUnresolved until @c -initHardware runs.

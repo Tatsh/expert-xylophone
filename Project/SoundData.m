@@ -9,6 +9,7 @@
 //
 
 #import "SoundData.h"
+#import "RBMacros.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +38,7 @@ static const ExtAudioFilePropertyID kFileLengthFramesProperty =
 // The candidate file-name extensions searched, in order, when locating the backing file.
 static NSString *const kSoundDataExtensions[] = {@"mp3", @"wav", @"m4a"};
 static const NSUInteger kSoundDataExtensionCount =
-    sizeof(kSoundDataExtensions) / sizeof(kSoundDataExtensions[0]);
+    ARRAY_SIZE(kSoundDataExtensions);
 
 // The format string used to build a candidate path in a search directory: directory, name, and
 // extension.

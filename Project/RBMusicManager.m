@@ -8,6 +8,7 @@
 //
 
 #import "RBMusicManager.h"
+#import "RBMacros.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 
@@ -48,7 +49,7 @@ static NSString *const kPurchasedMusicKeyITunesURL = @"iTunesURL";
 // @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
 static const int kPreinstallMusicIDs[] = {99999595, 99999597, 99999907};
 static const NSUInteger kPreinstallMusicIDCount =
-    sizeof(kPreinstallMusicIDs) / sizeof(kPreinstallMusicIDs[0]);
+    ARRAY_SIZE(kPreinstallMusicIDs);
 
 // The initial capacity reserved for the purchased-music and identifier lists.
 static const NSUInteger kPurchasedMusicListCapacity = 64;
