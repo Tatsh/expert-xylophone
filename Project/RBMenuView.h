@@ -20,10 +20,7 @@
 #import "RBCollectionView.h"
 #import "RBMenuNewsTickerView.h"
 #import "RBMenuPageSlider.h"
-
-// The binary's class_ro_t adopts RBTermAgreeViewDelegate, whose protocol is not yet reconstructed;
-// forward-declare it so the adopted-protocol list matches the binary verbatim.
-@protocol RBTermAgreeViewDelegate;
+#import "RBTermAgreeView.h"
 
 @class Downloader;
 @class RBCollectionView;

@@ -28,6 +28,7 @@
 #import "RBSearchView.h"
 #import "RBSettingView.h"
 #import "RBStoreTabController.h"
+#import "RBTermAgreeView.h"
 #import "RBTermView.h"
 #import "RBThemaView.h"
 #import "RBTutorialManager.h"

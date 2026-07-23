@@ -338,6 +338,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)resetGame;
 
+/**
+ * @brief Store the latest accepted terms version.
+ *
+ * A thin wrapper that forwards to the @c latestTermVer setter.
+ * @param latestTermsVersion The accepted terms version string.
+ * @ghidraAddress 0x4ef50
+ */
+- (void)setLatestTermsVersion:(nullable NSString *)latestTermsVersion;
+
 @end
 
 NS_ASSUME_NONNULL_END

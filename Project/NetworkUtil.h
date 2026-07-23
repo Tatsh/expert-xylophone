@@ -138,6 +138,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)termFetch;
 
+/**
+ * @brief The terms-of-service acceptance endpoint.
+ * @ghidraAddress 0x3390c
+ */
++ (nullable NSURL *)termAgree;
+
 @end
 
 NS_ASSUME_NONNULL_END
