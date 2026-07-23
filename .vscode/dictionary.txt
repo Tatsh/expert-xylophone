@@ -53,13 +53,13 @@ esbenp
 exprosion
 extern
 extraout
+fabsf
 falied
 fmla
 foxundermoon
 fram
 fullwidth
 ghidra
-ghidra's
 gles
 grage
 halfwidth
@@ -115,7 +115,6 @@ oneline
 openurl
 pbxproj
 plid
-popn
 preapproved
 proc
 prodlist
@@ -152,6 +151,7 @@ signedness
 snapcraft
 sota
 statusline
+stdbool
 stdlib
 stor
 strage
