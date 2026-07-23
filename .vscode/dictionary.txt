@@ -83,6 +83,7 @@ jsonnet
 jsonschema
 konaminet
 korsk
+kuropastelkun
 layouted
 libera
 libsonnet
@@ -115,6 +116,7 @@ objc
 objcpp
 oneline
 openurl
+pastelkun
 pbxproj
 plid
 preapproved
