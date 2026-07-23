@@ -79,6 +79,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)tutorialStatusURL;
 
+/**
+ * @brief The downloadable-resource information endpoint (@c .../akx/main/cgi/v3/ssl_resource/).
+ * @ghidraAddress 0x32c70
+ */
++ (nullable NSURL *)resourceURL;
+
 @end
 
 NS_ASSUME_NONNULL_END

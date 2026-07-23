@@ -39,6 +39,16 @@ NSString *GetPrivateDocumentsPath(void);
  */
 NSString *GetCachesDirectoryPath(void);
 /**
+ * @brief Returns the cached image-asset directory path (PrivateDocuments/Images/<deviceAssetTag>).
+ * @ghidraAddress 0x1a1260
+ */
+NSString *GetImageAssetDirectoryPath(void);
+/**
+ * @brief Returns the cached download directory path (Caches/Download).
+ * @ghidraAddress 0x1a126c
+ */
+NSString *GetDownloadDirectoryPath(void);
+/**
  * @brief Returns the API host name string.
  * @ghidraAddress 0x325e4
  */
@@ -58,6 +68,12 @@ NSString *GetBundleVersionString(void);
  * @ghidraAddress 0x1a129c
  */
 NSString *GetDeviceDescriptionString(void);
+/**
+ * @brief Rebuilds the cached device description string from the current server data and device
+ *        info; a no-op until server data is available.
+ * @ghidraAddress 0x1a12a8
+ */
+void RebuildDeviceDescriptionString(void);
 /**
  * @brief Returns the cached iOS system version string.
  * @ghidraAddress 0x1a1600

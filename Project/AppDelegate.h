@@ -239,6 +239,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSArray *)getServerData;
 
 /**
+ * @brief Persist the two-element server-data pair (user identity and password) to the Keychain.
+ * @param p1 The server-issued user identity.
+ * @param p2 The server-issued password.
+ * @ghidraAddress 0x514c8
+ */
++ (void)setServerData:(nullable NSString *)p1 andB:(nullable NSString *)p2;
+
+/**
  * @brief The device-unique key string used to encrypt the purchased-music list: a Keychain
  * generic-password value, generated as a fresh @c CFUUID on first run and persisted back.
  * @ghidraAddress 0x50cb8
