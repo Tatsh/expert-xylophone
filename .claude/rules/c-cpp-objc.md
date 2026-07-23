@@ -16,9 +16,17 @@
 - 4 space indents with no tabs.
 - Avoid magic numbers: create constants and enumerations for all numbers that are not obvious (e.g.,
   `kMaxPlayers` instead of `4`). This includes creating enumerations for array indices and bit
-  flags.
+  flags that carry meaning (for example `scaledSize[kVectorComponentX]`, not `scaledSize[0]`).
+- A bare `0` or `1` is acceptable only when it is structural rather than meaningful: a first-element
+  access (`items[0]`), an emptiness or length test (`.length == 0`, `.count != 1`), a loop start, or
+  a boolean-like return. When a `0` or `1` instead encodes a domain value (a mode, a type, an index
+  with a name, a sentinel identifier), it must be a named constant or enumeration value.
 - By default use decimal integer literals unless hex is required for bitwise operations or when it
   genuinely aids readability.
+- Declare an array that has an initialiser list without an explicit size, letting the element count
+  be inferred: `int x[] = {1, 2, 3};`, not `int x[3] = {1, 2, 3};`. Give the size only when it
+  clarifies intent (for example a fixed-length buffer whose length matters independently of the
+  initialiser).
 - Use `.h` extension for all headers regardless of language.
 - Include grouping: the file's own header first, then system, first party (Apple, etc), third party,
   and ours (in double quotes). Each group is separated by a single blank line:
@@ -91,7 +99,15 @@ reconstructed code faithful to the original.
   target, so always go through named fields.
 - `reinterpret_cast` is a smell: it usually hides a type or signature bug, especially a
   function-pointer callback ABI. Prefer real types and typed access, and replace such casts at crash
-  sites.
+  sites. `void *` is likewise a major smell: use it only for a genuinely opaque raw byte buffer (for
+  example the `const void *` data argument of an MD5 helper), never for a typed engine object — those
+  get their real class type.
+- Recover the true function signature. A Ghidra decompile that uses `in_*` pseudo-variables (for
+  example `in_w1`, `in_x2`, `in_stack_*`), or lists them under its Parameters, is missing formal
+  parameters: the function takes arguments the decompiler did not bind into the prototype. Never
+  model such a function as taking fewer arguments than the `in_*` usage and the disassembly's
+  register/stack reads prove (in particular, never as no-arg when it clearly is not) — fix the Ghidra
+  prototype, then reconstruct the real signature. Scan for `in_*` whenever a signature looks empty.
 
 ## C
 
@@ -151,6 +167,9 @@ reconstructed code faithful to the original.
 - Use `#import` for all imports.
 - Use only Objective-C 2.0 constructs including properties, dot syntax, fast enumeration, blocks,
   and boxed literals.
+- Prefer subscripting and boxed literals over the older messaging forms: `dict[key]` not
+  `[dict objectForKey:key]`, `dict[key] = value` not `[dict setObject:value forKey:key]`, `arr[i]`
+  not `[arr objectAtIndex:i]`, and `@(x)` not `[NSNumber numberWith…:x]`.
 - Use `#pragma mark` (and `#pragma mark -` for a divider) to group an implementation into sections.
 - Reconstruct getters and setters as `@property` declarations (add `@synthesize` only when the
   binary keeps a differently-named backing ivar), not spelled-out accessor bodies. Map the compiled
@@ -232,6 +251,10 @@ reconstructed code faithful to the original.
   @property (copy, nonnull) NSArray<MyListItem *> *allItems;
   @end
   ```
+
+- Nullability annotations belong on the header declarations only. Do not repeat `nullable`/`nonnull`
+  (or `_Nullable`/`_Nonnull`) on the corresponding method definitions in the implementation file, nor
+  on a block-literal parameter whose type the framework already fixes.
 
 - The macro-selection and nullability rules above are Objective-C only. They do not apply to C or
   C++ code (a `.cpp` file, or the C/C++ portions of a `.mm` or `.h`); use plain `enum`/`enum class`
