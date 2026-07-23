@@ -114,6 +114,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSURL *)resourceURL;
 
 /**
+ * @brief The searchable-spot campaign-master endpoint (@c .../akx/main/cgi/search_master/),
+ * carrying the region code and the device user-info parameters.
+ * @ghidraAddress 0x32dec
+ */
++ (nullable NSURL *)searchMasterURL;
+
+/**
+ * @brief The searchable-spot list endpoint (@c .../akx/main/cgi/gamecenter/).
+ * @ghidraAddress 0x32ee8
+ */
++ (nullable NSURL *)searchURL;
+
+/**
  * @brief The terms-of-service list endpoint.
  * @ghidraAddress 0x338cc
  */

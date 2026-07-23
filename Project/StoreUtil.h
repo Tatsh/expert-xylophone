@@ -129,6 +129,47 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSString *)productIDForPackID:(int)packID;
 
+/**
+ * @brief The campaign unlock-list endpoint URL.
+ * @return The campaign list endpoint URL.
+ */
++ (nullable NSURL *)campaignListURL;
+
+/**
+ * @brief The campaign serial-code verification endpoint URL.
+ * @return The campaign serial-check endpoint URL.
+ */
++ (nullable NSURL *)campaignSerialCheckURL;
+
+/**
+ * @brief The campaign item-info endpoint URL.
+ * @return The campaign item-info endpoint URL.
+ */
++ (nullable NSURL *)campaignItemInfoURL;
+
+/**
+ * @brief Build the campaign unlock-list request JSON payload.
+ * @param offset The list start offset.
+ * @param limit The maximum number of items to request.
+ * @return The JSON payload string.
+ */
++ (nullable NSString *)createCampaignListJSON:(int)offset limit:(int)limit;
+
+/**
+ * @brief Build the campaign serial-code verification request JSON payload.
+ * @param campaignID The campaign identifier.
+ * @param code The entered serial code.
+ * @return The JSON payload string.
+ */
++ (nullable NSString *)createCampaignSerialCheckJSON:(int)campaignID code:(nullable NSString *)code;
+
+/**
+ * @brief Build the campaign item-info request JSON payload.
+ * @param campaignID The campaign identifier.
+ * @return The JSON payload string.
+ */
++ (nullable NSString *)createCampaignItemInfoJSON:(int)campaignID;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -296,6 +296,16 @@ extern const double g_dSliderRowHeightWide;
  */
 extern const double g_dTranslucentAlpha;
 /**
+ * @brief The shared minimum flash opacity, reused as the store BGM push/pop fade duration.
+ * @ghidraAddress 0x2ec6b4
+ */
+extern const float g_flFlashMinOpacity;
+/**
+ * @brief The audio-manager resume fade-in time, reused as the shared short UI fade duration.
+ * @ghidraAddress 0x2ec718
+ */
+extern const double g_dAudioManagerResumeFadeInTime;
+/**
  * @brief The localised "Delete" action-button title (pad layout).
  * @ghidraAddress 0x3cfbb0
  */
@@ -315,6 +325,21 @@ extern NSString *const g_pDownloadingMessageFormat;
  * @ghidraAddress 0x3cfcb8
  */
 extern NSString *const g_pDeleteConfirmFormat;
+/**
+ * @brief The localised "failed to connect to the server" message.
+ * @ghidraAddress 0x3cfcc0
+ */
+extern NSString *const g_pLocalizedServerConnectFailed;
+/**
+ * @brief The localised message shown when the server returns no usable data.
+ * @ghidraAddress 0x3cfd60
+ */
+extern NSString *const g_pLocalizedServerNoData;
+/**
+ * @brief The localised message shown when the shop-master version is older than the app.
+ * @ghidraAddress 0x3cfdc8
+ */
+extern NSString *const g_pLocalizedSearchVersionMismatch;
 
 #ifdef __cplusplus
 }

@@ -254,6 +254,18 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setOuterURL:(nullable NSURL *)url;
 
 /**
+ * @brief The campaign identifier queued for a launch-time open of the campaign store tab.
+ * @return The queued campaign identifier, or @c nil when none is queued.
+ */
+- (nullable NSString *)getCampaignIDForOpenStore;
+
+/**
+ * @brief Store the campaign identifier to open on the next store-tab presentation.
+ * @param campaignID The campaign identifier, or @c nil to clear it.
+ */
+- (void)setCampaignIDForOpenStore:(nullable NSString *)campaignID;
+
+/**
  * @brief Initialise the Applilink companion-application SDK.
  * @ghidraAddress 0x50698
  */
