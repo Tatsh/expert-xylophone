@@ -316,6 +316,22 @@ extern NSString *const g_pLocalizedDelete;
  */
 extern NSString *const g_pLocalizedDownload;
 /**
+ * @brief The localised action-button title format for a purchasable store item (one @c %@ price,
+ * localised from the @c "BUY (%@)" catalogue key).
+ * @ghidraAddress 0x3cfb78
+ */
+extern NSString *const g_pLocalizedBuyFormat;
+/**
+ * @brief The localised "Error" alert title.
+ * @ghidraAddress 0x3cfbc8
+ */
+extern NSString *const g_pLocalizedError;
+/**
+ * @brief The localised "INSTALLED" action-button title shown once a store item is fully downloaded.
+ * @ghidraAddress 0x3cfc08
+ */
+extern NSString *const g_pLocalizedInstalled;
+/**
  * @brief The download-progress modal-dialog message format string (one @c %@ tune name).
  * @ghidraAddress 0x3cfbd8
  */

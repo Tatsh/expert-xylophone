@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class SKProduct;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -128,6 +130,16 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The product identifier string.
  */
 + (nullable NSString *)productIDForPackID:(int)packID;
+
+/**
+ * @brief Format a StoreKit product's localised price string.
+ *
+ * Delegates to @c priceString:useCatalogPrice: with the catalogue-price flag cleared.
+ * @param product The StoreKit product whose price to format.
+ * @return The localised price string.
+ * @ghidraAddress 0x85b4c
+ */
++ (nullable NSString *)priceString:(nullable SKProduct *)product;
 
 /**
  * @brief The campaign unlock-list endpoint URL.
