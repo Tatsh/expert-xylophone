@@ -181,6 +181,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)cancel;
 
+/**
+ * @brief Resize the banner image view to match a new host size.
+ *
+ * An empty stub in the binary: no image-view resize is applied. The hosting
+ * @c StorePromotionTableCell sends this from its @c -layoutSubviews.
+ * @param imageViewSize The new size, in points.
+ * @ghidraAddress 0x1001008c8
+ */
+- (void)setImageViewSize:(CGSize)imageViewSize;
+
 @end
 
 NS_ASSUME_NONNULL_END
