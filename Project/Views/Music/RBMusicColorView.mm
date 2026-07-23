@@ -1,5 +1,6 @@
 #import "RBMusicColorView.h"
 
+#import "RBMusicColorBar.h"
 #import "RBMusicView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
