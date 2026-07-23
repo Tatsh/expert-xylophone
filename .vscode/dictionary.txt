@@ -5,7 +5,9 @@ adid
 advertisable
 Ångström
 anim
+apiurl
 appli
+appliid
 applilink
 applilinkapplist
 applist
@@ -98,6 +100,7 @@ howtoplay
 ifdef
 ifndef
 infomation
+initalize
 initilize
 instancetype
 interitem
