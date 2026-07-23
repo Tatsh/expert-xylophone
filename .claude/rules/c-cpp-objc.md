@@ -17,10 +17,12 @@
 - Avoid magic numbers: create constants and enumerations for all numbers that are not obvious (e.g.,
   `kMaxPlayers` instead of `4`). This includes creating enumerations for array indices and bit
   flags that carry meaning (for example `scaledSize[kVectorComponentX]`, not `scaledSize[0]`).
-- A bare `0` or `1` is acceptable only when it is structural rather than meaningful: a first-element
-  access (`items[0]`), an emptiness or length test (`.length == 0`, `.count != 1`), a loop start, or
-  a boolean-like return. When a `0` or `1` instead encodes a domain value (a mode, a type, an index
-  with a name, a sentinel identifier), it must be a named constant or enumeration value.
+- A bare small integer is acceptable when it is structural rather than meaningful: a trivial array
+  index that carries no domain value (`items[0]`, `pair[1]`, and the `[0]` inside `ARRAY_SIZE`), an
+  emptiness or length test (`.length == 0`, `.count != 1`), a loop start, or a boolean-like `0`/`1`
+  return. Do not replace these — leave existing trivial `[0]`/`[1]`/`[2]`/… index accesses as they
+  are. Only when a literal instead encodes a domain value (a mode, a type, a named index, a sentinel
+  identifier) must it become a named constant or enumeration value.
 - By default use decimal integer literals unless hex is required for bitwise operations or when it
   genuinely aids readability.
 - Declare an array that has an initialiser list without an explicit size, letting the element count
