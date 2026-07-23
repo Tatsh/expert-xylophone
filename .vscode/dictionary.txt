@@ -10,6 +10,7 @@ autocapitalization
 autorelease
 autoreleased
 autoreleasepool
+autoresizes
 autoresizing
 autoreverses
 baet
@@ -120,6 +121,7 @@ objc
 objcpp
 oneline
 openurl
+packlist
 pastelkun
 pbxproj
 plid
