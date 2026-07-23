@@ -25,6 +25,14 @@ public:
     }
 
     /**
+     * @brief Remove a reference from the texture.
+     * @return The reference count after the decrement.
+     */
+    int ReleaseRef() {
+        return --m_nRefCount;
+    }
+
+    /**
      * @brief The texture's current reference count.
      */
     int GetRefCount() const {
