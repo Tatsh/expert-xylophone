@@ -1,0 +1,404 @@
+//
+//  ApplilinkConsts.m
+//  REFLEC BEAT plus
+//
+//  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkConsts). This is a plain
+//  Objective-C file: every collaborator (Crypto, ApplilinkUdid, ApplilinkCore, ApplilinkParameters,
+//  ApplilinkNetworkError, and RecommendCore) is reached through ordinary message sends, with no
+//  C++.
+//
+//  The class has no instance state; every member is a class method. Its mutable state lives in
+//  file-scope statics (the cached user identifier and country code, the appli-country-code lock,
+//  the category identifier, and the advertising identifier) and in NSUserDefaults. The persisted
+//  identifier, application-install list, and template list are encrypted with Crypto before they
+//  are stored.
+//
+
+#import "ApplilinkConsts.h"
+
+#import "ApplilinkCore.h"
+#import "ApplilinkNetworkError.h"
+#import "ApplilinkParameters.h"
+#import "ApplilinkUdid.h"
+#import "Crypto.h"
+#import "RecommendCore.h"
+
+// The server environment name is compared against these string keys, each selecting a base URL.
+static NSString *const kApplilinkEnvProduction = @"0";
+static NSString *const kApplilinkEnvStaging = @"1";
+static NSString *const kApplilinkEnvSandboxAlt = @"2";
+static NSString *const kApplilinkEnvSandbox = @"3";
+static NSString *const kApplilinkEnvDevelopmentAlt = @"4";
+
+// The base URLs keyed by the server environment name above.
+static NSString *const kApplilinkUrlProduction = @"https://www.applilink.jp";
+static NSString *const kApplilinkUrlStaging = @"https://st.es.i-revoinf.jp";
+static NSString *const kApplilinkUrlDevelopment = @"https://dev.es.i-revoinf.jp";
+static NSString *const kApplilinkUrlSandbox = @"https://sandbox.applilink.jp";
+
+// The SDK version string.
+static NSString *const kApplilinkSdkVersion = @"2.2.2";
+
+// The minimum operating-system version, as a float, that the SDK supports.
+static const float kApplilinkMinimumSystemVersion = 6.1f;
+
+// The NSUserDefaults keys for the SDK's persisted state.
+static NSString *const kDefaultsKeyEnv = @"ApplilinkNetwork.env";
+static NSString *const kDefaultsKeyAppliId = @"ApplilinkNetwork.appliId";
+static NSString *const kDefaultsKeyUserId = @"ApplilinkNetwork.userId";
+static NSString *const kDefaultsKeyRewardReLoginFlg = @"ApplilinkReward.reLoginFlg";
+static NSString *const kDefaultsKeyRecommendReLoginFlg = @"ApplilinkRecommend.reLoginFlg";
+static NSString *const kDefaultsKeyAppInstallListExpire =
+    @"ApplilinkRecommend.app.install.list.expire";
+static NSString *const kDefaultsKeyTemplateList = @"ApplilinkRecommend.template.list";
+
+// The Crypto keys under which each persisted payload is encrypted.
+static NSString *const kCryptoKeyUserId = @"applilink.reward.recommend";
+static NSString *const kCryptoKeyAppInstallList = @"applilink.recommend.install.list";
+static NSString *const kCryptoKeyTemplateList = @"applilink.recommend.template.list";
+
+// The application-install list is matched to the app's own URL scheme, then written to a temporary
+// file, keyed by these dictionary keys and file name.
+static NSString *const kBundleUrlTypesKey = @"CFBundleURLTypes";
+static NSString *const kBundleUrlSchemesKey = @"CFBundleURLSchemes";
+static NSString *const kInstallEntryDefaultSchemeKey = @"default_scheme";
+static NSString *const kInstallEntryAdIdKey = @"ad_id";
+static NSString *const kAppListRootKey = @"applist";
+static NSString *const kTemplateListRootKey = @"templateList";
+static NSString *const kAppInstallListFileName = @"applilinkapplist";
+
+// The application-install list stays valid for one hour after it is stored.
+static const NSTimeInterval kAppInstallListLifetime = 3600.0;
+
+// The Crypto direction argument: encrypt plaintext, or decrypt ciphertext.
+enum {
+    kCryptoModeEncrypt = 0,
+    kCryptoModeDecrypt = 1,
+};
+
+// The Applilink error codes reported to the delegate when a request is refused.
+static const NSInteger kApplilinkErrorSdkUnavailable = 0x401;
+static const NSInteger kApplilinkErrorTrackingDisabled = 0x404;
+
+// The cached, decrypted user identifier.
+static NSString *g_userId = nil;
+
+// The country code, and whether the SDK itself supplied it (which locks out later overrides).
+static NSString *g_countryCode = nil;
+static BOOL g_appliCountryCodeSet = NO;
+
+// The advert category identifier.
+static NSString *g_categoryId = nil;
+
+// The advertising identifier.
+static NSString *g_adId = nil;
+
+@implementation ApplilinkConsts
+
+#pragma mark Environment
+
+/** @ghidraAddress 0x2053e8 */
++ (NSString *)envServer {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyEnv];
+}
+
+/** @ghidraAddress 0x205454 */
++ (NSString *)baseUrlSsl {
+    NSString *env = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyEnv];
+    if ([env isEqualToString:kApplilinkEnvProduction]) {
+        return kApplilinkUrlProduction;
+    }
+    if ([env isEqualToString:kApplilinkEnvStaging]) {
+        return kApplilinkUrlStaging;
+    }
+    if ([env isEqualToString:kApplilinkEnvSandboxAlt]) {
+        return kApplilinkUrlDevelopment;
+    }
+    if ([env isEqualToString:kApplilinkEnvSandbox]) {
+        return kApplilinkUrlSandbox;
+    }
+    if ([env isEqualToString:kApplilinkEnvDevelopmentAlt]) {
+        return kApplilinkUrlDevelopment;
+    }
+    return kApplilinkUrlProduction;
+}
+
+/** @ghidraAddress 0x205580 */
++ (NSString *)appliId {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyAppliId];
+}
+
+/** @ghidraAddress 0x2055ec */
++ (BOOL)canUseApplilinkSdk {
+    return [UIDevice currentDevice].systemVersion.floatValue >= kApplilinkMinimumSystemVersion;
+}
+
+/** @ghidraAddress 0x205680 */
++ (NSString *)version {
+    return kApplilinkSdkVersion;
+}
+
+#pragma mark User identifier
+
+/** @ghidraAddress 0x2056ac */
++ (void)setUserId:(NSString *)userId {
+    if (userId == nil) {
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kDefaultsKeyUserId];
+        g_userId = nil;
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyUserId];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kDefaultsKeyRecommendReLoginFlg];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return;
+    }
+    if (![userId isEqualToString:g_userId]) {
+        NSData *value = [userId dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *key = [kCryptoKeyUserId dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *encrypted = [Crypto cryptorToData:kCryptoModeEncrypt value:value key:key];
+        [[NSUserDefaults standardUserDefaults] setObject:encrypted forKey:kDefaultsKeyUserId];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kDefaultsKeyRewardReLoginFlg];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kDefaultsKeyRecommendReLoginFlg];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[RecommendCore sharedInstance] startSessionWithCallback:^{
+            /** @ghidraAddress 0x205a14 */
+            // The binary passes an empty completion block here.
+        }];
+    }
+    g_userId = [NSString stringWithString:userId];
+}
+
+/** @ghidraAddress 0x205a18 */
++ (NSString *)userId {
+    if (g_userId == nil) {
+        NSData *stored = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyUserId];
+        if (stored != nil) {
+            NSData *key = [kCryptoKeyUserId dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *decrypted = [Crypto cryptorToData:kCryptoModeDecrypt value:stored key:key];
+            g_userId = [[NSString alloc] initWithData:decrypted encoding:NSUTF8StringEncoding];
+        }
+    }
+    return g_userId;
+}
+
+#pragma mark Re-login flags
+
+/** @ghidraAddress 0x205b7c */
++ (BOOL)isNeedRewardLogin {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyRewardReLoginFlg] != nil;
+}
+
+/** @ghidraAddress 0x205bf0 */
++ (BOOL)isNeedRecommendLogin {
+    return
+        [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyRecommendReLoginFlg] != nil;
+}
+
+/** @ghidraAddress 0x205c64 */
++ (BOOL)loggedInReward {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyRewardReLoginFlg];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    return NO; // The binary declares a BOOL return but computes no meaningful value.
+}
+
+/** @ghidraAddress 0x205cf8 */
++ (BOOL)loggedInRecommend {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyRecommendReLoginFlg];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    return NO; // The binary declares a BOOL return but computes no meaningful value.
+}
+
+#pragma mark Country and category
+
+/** @ghidraAddress 0x205d8c */
++ (void)setAppliCountryCode:(NSString *)appliCountryCode {
+    g_countryCode = [NSString stringWithString:appliCountryCode];
+    g_appliCountryCodeSet = YES;
+}
+
+/** @ghidraAddress 0x205de4 */
++ (void)setCountryCode:(NSString *)countryCode {
+    if (g_appliCountryCodeSet) {
+        return;
+    }
+    g_countryCode = [NSString stringWithString:countryCode];
+}
+
+/** @ghidraAddress 0x205e44 */
++ (NSString *)countryCode {
+    return g_countryCode;
+}
+
+/** @ghidraAddress 0x205e54 */
++ (void)setCategoryId:(NSString *)categoryId {
+    g_categoryId = categoryId;
+}
+
+/** @ghidraAddress 0x205e80 */
++ (NSString *)categoryId {
+    return g_categoryId;
+}
+
+#pragma mark Advertising identifier
+
+/** @ghidraAddress 0x205e90 */
++ (void)setAdId:(NSString *)adId {
+    g_adId = [NSString stringWithString:adId];
+}
+
+/** @ghidraAddress 0x205ed4 */
++ (NSString *)adId {
+    return g_adId;
+}
+
+#pragma mark Application-install list
+
+/** @ghidraAddress 0x205ee4 */
++ (void)setAppInstallList:(NSArray *)appInstallList {
+    if (appInstallList == nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyAppInstallListExpire];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return;
+    }
+
+    NSString *ownScheme = [[[[NSBundle mainBundle].infoDictionary valueForKey:kBundleUrlTypesKey]
+        objectAtIndex:0] valueForKey:kBundleUrlSchemesKey][0];
+    if (ownScheme != nil) {
+        for (NSDictionary *entry in appInstallList) {
+            if ([ownScheme isEqualToString:entry[kInstallEntryDefaultSchemeKey]]) {
+                [self setAdId:entry[kInstallEntryAdIdKey]];
+                break;
+            }
+        }
+    }
+
+    NSDictionary *wrapped =
+        [NSDictionary dictionaryWithObjectsAndKeys:appInstallList, kAppListRootKey, nil];
+    NSData *plain = [wrapped.description dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *key = [kCryptoKeyAppInstallList dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *encrypted = [Crypto cryptorToData:kCryptoModeEncrypt value:plain key:key];
+    NSString *filePath =
+        [NSTemporaryDirectory() stringByAppendingPathComponent:kAppInstallListFileName];
+    [encrypted writeToFile:filePath atomically:YES];
+
+    NSDate *expiry = [[NSDate date] dateByAddingTimeInterval:kAppInstallListLifetime];
+    NSData *archivedExpiry = [NSKeyedArchiver archivedDataWithRootObject:expiry];
+    [[NSUserDefaults standardUserDefaults] setObject:archivedExpiry
+                                              forKey:kDefaultsKeyAppInstallListExpire];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+/** @ghidraAddress 0x20649c */
++ (id)appInstallList {
+    NSData *archivedExpiry =
+        [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyAppInstallListExpire];
+    if (archivedExpiry == nil) {
+        return nil;
+    }
+    NSDate *expiry = [NSKeyedUnarchiver unarchiveObjectWithData:archivedExpiry];
+    if (expiry == nil) {
+        return nil;
+    }
+
+    NSString *filePath =
+        [NSTemporaryDirectory() stringByAppendingPathComponent:kAppInstallListFileName];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([expiry compare:[NSDate date]] == NSOrderedAscending) {
+        [fileManager removeItemAtPath:filePath error:nil];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyAppInstallListExpire];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return nil;
+    }
+
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:filePath];
+    if (fileHandle == nil) {
+        return nil;
+    }
+
+    NSData *stored = [fileHandle readDataToEndOfFile];
+    NSData *key = [kCryptoKeyAppInstallList dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *decrypted = [Crypto cryptorToData:kCryptoModeDecrypt value:stored key:key];
+    NSString *plainText = [[NSString alloc] initWithData:decrypted encoding:NSUTF8StringEncoding];
+    NSArray *list = plainText.propertyList[kAppListRootKey];
+
+    if ([self adId] == nil) {
+        NSString *ownScheme =
+            [[[[NSBundle mainBundle].infoDictionary valueForKey:kBundleUrlTypesKey] objectAtIndex:0]
+                valueForKey:kBundleUrlSchemesKey][0];
+        if (ownScheme != nil) {
+            for (NSDictionary *entry in list) {
+                if ([ownScheme isEqualToString:entry[kInstallEntryDefaultSchemeKey]]) {
+                    [self setAdId:entry[kInstallEntryAdIdKey]];
+                    break;
+                }
+            }
+        }
+    }
+    // The binary loads and decrypts the list to refresh the advertising identifier, but returns
+    // nil rather than the parsed list.
+    return nil;
+}
+
+#pragma mark Template list
+
+/** @ghidraAddress 0x206b08 */
++ (void)setTemplateList:(NSDictionary *)templateList {
+    if (templateList == nil) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultsKeyTemplateList];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return;
+    }
+    NSDictionary *wrapped =
+        [NSDictionary dictionaryWithObjectsAndKeys:templateList, kTemplateListRootKey, nil];
+    NSData *plain = [wrapped.description dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *key = [kCryptoKeyTemplateList dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *encrypted = [Crypto cryptorToData:kCryptoModeEncrypt value:plain key:key];
+    [[NSUserDefaults standardUserDefaults] setObject:encrypted forKey:kDefaultsKeyTemplateList];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+/** @ghidraAddress 0x206d14 */
++ (id)templateList {
+    NSData *stored = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultsKeyTemplateList];
+    if (stored == nil) {
+        return nil;
+    }
+    NSData *key = [kCryptoKeyTemplateList dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *decrypted = [Crypto cryptorToData:kCryptoModeDecrypt value:stored key:key];
+    NSString *plainText = [[NSString alloc] initWithData:decrypted encoding:NSUTF8StringEncoding];
+    return plainText.propertyList[kTemplateListRootKey];
+}
+
+#pragma mark Reset
+
+/** @ghidraAddress 0x206e9c */
++ (BOOL)clearData {
+    NSString *bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
+    [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:bundleIdentifier];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    return NO; // The binary declares a BOOL return but computes no meaningful value.
+}
+
+#pragma mark Request gating
+
+/** @ghidraAddress 0x206f7c */
++ (BOOL)checkUseSDKWithAdModel:(int)adModel
+                    adLocation:(NSString *)adLocation
+                 verticalAlign:(int)verticalAlign
+                   requestCode:(id)requestCode
+                      delegate:(id)delegate {
+    NSInteger errorCode;
+    if ([ApplilinkConsts canUseApplilinkSdk]) {
+        if ([ApplilinkUdid isAdvertisingTrackingEnabled]) {
+            return YES;
+        }
+        errorCode = kApplilinkErrorTrackingDisabled;
+    } else {
+        errorCode = kApplilinkErrorSdkUnavailable;
+    }
+    ApplilinkParameters *params = [[ApplilinkParameters alloc] init];
+    [params setRequestWithAdModel:adModel adLocation:adLocation requestCode:requestCode];
+    NSError *error = [ApplilinkNetworkError localizedApplilinkErrorWithCode:errorCode];
+    [ApplilinkCore toDelegateFailOpenWithError:error appParam:params delegate:delegate];
+    return NO;
+}
+
+@end
