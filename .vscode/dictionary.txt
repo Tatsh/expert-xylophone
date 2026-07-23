@@ -1,4 +1,5 @@
 aaap
+accell
 Ångström
 anim
 appli
@@ -8,6 +9,7 @@ asbd
 autorelease
 autoreleasepool
 autoresizing
+autoreverses
 baet
 bitcode
 brighness
@@ -168,6 +170,7 @@ undrafted
 unichar
 unretained
 untilted
+valf
 vendored
 venv
 vtable
