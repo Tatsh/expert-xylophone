@@ -19,7 +19,9 @@ concrete repository change, do not edit project files.
 ---
 
 - Do not explain project structure or conventions in comments or docstrings.
-- Use 2 spaces for indentation.
+- Use 2 spaces for indentation. Exception: C-family sources (`.c`, `.h`, `.m`, `.mm`, `.cpp`) use 4
+  spaces per [c-cpp-objc.md](c-cpp-objc.md); the 2-space default is for JSON, YAML, TOML, Markdown,
+  and similar.
 - Files must end with a single newline character.
 - Keep lines shorter than 100 characters.
 - Line endings must be Unix-style (LF).

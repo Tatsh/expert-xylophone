@@ -13,7 +13,10 @@
   `.../Classess/Views/Music/RBMusicView.mm` → `Project/Views/Music/RBMusicView.mm`;
   `.../GameSystem/src/OpenGL/neGLES.cpp` → `Project/GameSystem/src/OpenGL/neGLES.cpp`. A file with
   no embedded path stays at the `Project/` root.
-- 4 space indents with no tabs.
+- 4 space indents with no tabs. This overrides the repository-wide 2-space default in
+  [general.md](general.md): every C, C++, and Objective-C source and header file (`.c`, `.h`, `.m`,
+  `.mm`, `.cpp`) is indented with 4 spaces, never 2. The 2-space default applies only to the
+  non-C-family files (JSON, YAML, TOML, Markdown, and similar).
 - Avoid magic numbers: create constants and enumerations for all numbers that are not obvious (e.g.,
   `kMaxPlayers` instead of `4`). This includes creating enumerations for array indices and bit
   flags that carry meaning (for example `scaledSize[kVectorComponentX]`, not `scaledSize[0]`).
