@@ -17,6 +17,7 @@ baet
 bitcode
 brighness
 bsky
+bunner
 bzero
 cfstring
 cfurl
@@ -152,6 +153,7 @@ reflec
 reflecbeat
 reflow
 regen
+regist
 relase
 renderbuffer
 resoure
