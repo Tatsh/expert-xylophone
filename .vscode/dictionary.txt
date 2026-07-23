@@ -108,6 +108,7 @@ pyinstaller
 pylock
 pyproject
 rbbgm
+rbmacros
 rbplus
 rdparty
 recomputation
