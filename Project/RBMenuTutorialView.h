@@ -65,6 +65,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)hideAnimation;
 
+/**
+ * @brief Prepare the overlay for a device rotation.
+ */
+- (void)willRotate;
+
+/**
+ * @brief Re-lay the overlay after a device rotation.
+ */
+- (void)didRotate;
+
 #pragma mark Tutorial steps
 
 /**

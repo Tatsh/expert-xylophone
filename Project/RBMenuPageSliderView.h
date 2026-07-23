@@ -47,16 +47,33 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showView:(CGRect)frame pageMax:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage;
 
 /**
+ * @brief Prepare the embedded slider for a device rotation.
+ */
+- (void)willRotate;
+
+/**
  * @brief Fade the embedded slider back to full opacity after a device rotation.
  * @ghidraAddress 0x1c05e8
  */
 - (void)didRotate;
 
 /**
+ * @brief Reconfigure the embedded slider's page range and current page.
+ * @param pageMax The highest selectable page.
+ * @param currentPage The page to move the grip to.
+ */
+- (void)reset:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage;
+
+/**
  * @brief The embedded page slider.
  * @ghidraAddress 0x1c0a38
  */
 @property(strong, nonatomic, nullable) RBMenuPageSlider *slider;
+
+/**
+ * @brief The floating index-label text shown while paging.
+ */
+@property(strong, nonatomic, nullable) NSString *indexLabel;
 
 @end
 

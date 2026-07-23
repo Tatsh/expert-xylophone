@@ -644,6 +644,19 @@ public:
     void SetTargetAR(float value) {
         m_flTargetAR = value;
     }
+    /**
+     * @brief Reports whether the music-menu tutorial is suppressing the menu's gameplay input.
+     *
+     * The music-menu hub clears this at the start of its hide animation and sets it again while a
+     * tutorial hide step is playing.
+     */
+    int GetMenuTutorialActive() const {
+        return m_nMenuTutorialActive;
+    }
+    /** @brief Records whether the music-menu tutorial is suppressing the menu's gameplay input. */
+    void SetMenuTutorialActive(int value) {
+        m_nMenuTutorialActive = value;
+    }
     /** @brief Reports whether this is the player's first play of the song. */
     bool GetIsFirstPlay() const {
         return m_fIsFirstPlay;
@@ -914,6 +927,7 @@ private:
     int m_nPlayerLevel = {};             // +0x108
     int m_nPlayerExp = {};               // +0x10c
     int m_nGainedExp = {};               // +0x110
+    int m_nMenuTutorialActive = {};      // +0x12c
     float m_flPlayfieldScale = {};       // +0x134
     bool m_fCpuFullCombo = {};           // +0x138
     bool m_fUserFullCombo = {};          // +0x139
