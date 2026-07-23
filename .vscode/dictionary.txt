@@ -228,6 +228,7 @@ transactioing
 udid
 udids
 udvare
+uesr
 unarchiver
 undecryptable
 undraft
