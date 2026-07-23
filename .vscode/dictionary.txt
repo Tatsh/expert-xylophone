@@ -27,10 +27,12 @@ chksco
 classess
 codesign
 color
+colors
 commitizen
 conn
 constexpr
 cooldown
+copysign
 coveragerc
 cplusplus
 creater
@@ -160,6 +162,7 @@ regist
 relase
 renderbuffer
 resoure
+rgba
 rhythmin
 ripgreprc
 rtti
