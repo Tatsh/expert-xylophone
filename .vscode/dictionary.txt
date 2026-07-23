@@ -23,6 +23,7 @@ bsky
 bunner
 bzero
 caeagl
+calcel
 cfstring
 cfurl
 cfuuid
@@ -129,6 +130,7 @@ nonatomic
 nonnull
 notelist
 nsascii
+nsec
 nshttpurl
 nsjson
 nssq
@@ -202,6 +204,7 @@ subviews
 superlayer
 superview
 superview's
+supportedi
 sysctlbyname
 tatsh
 teardown
