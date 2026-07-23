@@ -1,35 +1,36 @@
 /** @file
- * The animated particle background shown behind the resource-download flow for the wide font
- * variant. @c RBResourceDownloadViewController creates one, calls @c setupView to build its
- * particle layers, and drives it with @c startAnimation and @c stopAnimation.
+ * The animated background-effect view shown behind the resource-download flow for the wide
+ * font variant. @c RBResourceDownloadViewController creates one, calls @c setupView to build its
+ * rainbow and particle layers, and drives it with @c startAnimation and @c stopAnimation (both
+ * inherited from @c RBMenuBGEffectView).
  *
- * Speculative interface: only the members @c RBResourceDownloadViewController uses are declared
- * here. Reconstructed from Ghidra project rb458, program rb458 (class
+ * Reconstructed from Ghidra project rb458, program rb458 (class
  * @c RBResoureDownloadBGEffectView, image base 0x100000000; the "Resoure" misspelling is the
  * binary's own).
  */
 
-#import <UIKit/UIKit.h>
+#import "RBMenuBGEffectView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief Animated particle background for the resource-download screen.
+ * @brief Animated rainbow-and-particle background for the resource-download screen.
+ *
+ * A concrete @c RBMenuBGEffectView that seeds the inherited rainbow and ring image base paths,
+ * then populates the effect with @c RBResourceDownloadBGEffectPartView particle layers.
  */
-@interface RBResoureDownloadBGEffectView : UIView
+@interface RBResoureDownloadBGEffectView : RBMenuBGEffectView
 
 /**
- * @brief Build the particle layers for the current bounds.
+ * @brief Build the rainbow layer and the particle layers for the current bounds.
+ * @ghidraAddress 0x19c40
  */
 - (void)setupView;
 /**
- * @brief Start the particle animation.
+ * @brief Create and attach one @c RBResourceDownloadBGEffectPartView per effect slot.
+ * @ghidraAddress 0x19c90
  */
-- (void)startAnimation;
-/**
- * @brief Stop the particle animation.
- */
-- (void)stopAnimation;
+- (void)setupParticle;
 
 @end
 
