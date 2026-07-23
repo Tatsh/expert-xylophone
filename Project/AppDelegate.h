@@ -198,6 +198,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, readonly, nullable) NSString *termLastUpdateTimeString;
 /**
+ * @brief Convenience accessor for the last-update time string of the terms document.
+ * @return The last-update time string, or @c nil when none has been recorded.
+ * @ghidraAddress 0x4ee40
+ */
+- (nullable NSString *)getTermLastUpdateTimeString;
+/**
  * @brief The latest accepted terms version.
  * @ghidraAddress 0x54b84 (setter)
  */
