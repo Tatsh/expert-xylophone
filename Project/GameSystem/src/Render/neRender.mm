@@ -1,6 +1,25 @@
-#include "neRender.h"
+#import "neRender.h"
+
+#import "../../../neEngineBridge.h"
 
 namespace ne {
+
+/** @ghidraAddress 0x29b3c */
+C_RENDER::C_RENDER() {
+    // The two transforms start at identity. In the binary the matrix members are also pre-filled
+    // inline by their default construction before these calls; the explicit calls set the final
+    // identity value, and every other field is zero or nullptr from the member initialisers.
+    SetMatrixIdentity(m_mLocalMatrix);
+    SetMatrixIdentity(m_mWorldMatrix);
+    m_bVisible = true;
+
+    // Both intrusive rings begin empty (self-linked): the link ring at +0x08/+0x10 and the sibling
+    // ring at +0x30/+0x38.
+    m_pLinkPrev = this;
+    m_pLinkNext = this;
+    m_pSiblingPrev = this;
+    m_pSiblingNext = this;
+}
 
 /** @ghidraAddress 0x29c8c */
 void DetachSceneNode(C_RENDER *pNode) {

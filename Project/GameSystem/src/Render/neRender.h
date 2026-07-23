@@ -16,6 +16,11 @@ namespace ne {
  */
 class C_RENDER {
 public:
+    /**
+     * @brief Constructs an unparented node: identity local and world transforms, visible, with both
+     * intrusive rings empty (self-linked).
+     * @ghidraAddress 0x29b3c
+     */
     C_RENDER();
     virtual ~C_RENDER();
 
@@ -50,7 +55,11 @@ public:
 
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
-    unsigned char m_reserved08[24] = {};  // +0x08: node state not yet recovered.
+    // +0x08/+0x10: this node's slot in a self-linked ring whose owning list is not yet identified;
+    // it is distinct from the parent/child/sibling tree below, which the link helpers manage.
+    C_RENDER *m_pLinkPrev = {};           // +0x08
+    C_RENDER *m_pLinkNext = {};           // +0x10
+    int m_nField18 = {};                  // +0x18: node state not yet recovered.
     C_RENDER *m_pParent = {};             // +0x20
     C_RENDER *m_pChildHead = {};          // +0x28
     C_RENDER *m_pSiblingPrev = {};        // +0x30
