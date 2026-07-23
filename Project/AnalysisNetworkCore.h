@@ -69,6 +69,23 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)postAnalysisDataWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
+/**
+ * @brief Clear the persisted analytics-initialisation marker.
+ *
+ * Removes the @c ApplilinkAnalysis.initialize key from @c NSUserDefaults and synchronises. The
+ * method name preserves the binary's misspelling.
+ * @ghidraAddress 0x20f9f0
+ */
++ (void)clearInitalize;
+
+/**
+ * @brief Clear the persisted daily-active-user measurement date.
+ *
+ * Removes the @c ApplilinkAnalysis.dauMeasurementDate key from @c NSUserDefaults and synchronises.
+ * @ghidraAddress 0x20fa84
+ */
++ (void)clearDAU;
+
 @end
 
 NS_ASSUME_NONNULL_END
