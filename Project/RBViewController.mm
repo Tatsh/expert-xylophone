@@ -266,7 +266,7 @@ constexpr int kDefaultPlayColor = 0;
     float elapsed = GetElapsedMediaTime(reinterpret_cast<double *>(&m_RenderTime));
     if (elapsed < kMaxRenderFrameElapsed) {
         [self.glView BeginRender];
-        ClearBuffers(renderer, kClearColor);
+        renderer->ClearBuffers(kClearColor);
         RenderGlobalSceneTree();
         [self.glView Present];
     }
@@ -420,7 +420,7 @@ constexpr int kDefaultPlayColor = 0;
 
     [self.glView BeginRender];
     [self.glView SetDefaultFrameBuffer];
-    ClearBuffers(renderer, kClearColorAndDepth);
+    renderer->ClearBuffers(kClearColorAndDepth);
     [self.glView SetDefaultColorBuffer];
     [self.glView Present];
 }

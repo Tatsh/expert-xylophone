@@ -40,6 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, weak, nullable) id<neGLViewDelegate> delegate;
 
 /**
+ * @brief Returns the most recently created GL view, or @c nil when none exists.
+ *
+ * The view records itself in a file-scope global as its last initialisation step and clears it in
+ * @c -dealloc, so at most one instance is live at a time.
+ * @ghidraAddress 0x39e10
+ */
++ (nullable instancetype)GetInstance;
+
+/**
  * @brief Returns the current front-buffer width, in pixels.
  * @ghidraAddress 0x3a448
  */

@@ -423,12 +423,6 @@ class ne_CameraNode;
  */
 neGLESRenderer *GetGlRenderer();
 /**
- * @brief Clears the current GL buffers selected by the GL clear mask (the renderer argument is a
- *        formal receiver that the trampoline ignores).
- * @ghidraAddress 0x21400
- */
-void ClearBuffers(neGLESRenderer *pRenderer, unsigned int dwMask);
-/**
  * @brief Installs the given viewport as the current projection (retaining it and releasing the
  *        previous one).
  * @ghidraAddress 0x29f1c
@@ -480,6 +474,96 @@ ne_CameraNode *CreateCameraFromMatrix(float *pMatrix);
  * @ghidraAddress 0x21f74
  */
 ne_CameraNode *CreateLookAtCamera(float *pEye, float *pTarget, float *pUp);
+
+/**
+ * @brief The engine render-kind that selects a GL framebuffer attachment point.
+ *
+ * Passed to @c AttachRenderbufferToFramebuffer; @c neGLES::RenderKindToGLRenderKind maps the kind
+ * to its GL attachment enum (colour, depth, or stencil).
+ * @ghidraAddress neGLES::RenderKind (engine enumeration)
+ */
+enum RenderKind {
+    RENDER_KIND_COLOR = 0,   /*!< The colour attachment (@c GL_COLOR_ATTACHMENT0_OES). */
+    RENDER_KIND_DEPTH = 1,   /*!< The depth attachment (@c GL_DEPTH_ATTACHMENT_OES). */
+    RENDER_KIND_STENCIL = 2, /*!< The stencil attachment (@c GL_STENCIL_ATTACHMENT_OES). */
+};
+
+// The shared ne::neGLES_11 GL ES 1.1 render-state backend. Its buffer and framebuffer-object entry
+// points are C++ instance methods (each is an out-of-line trampoline over a GL / @c
+// GL_OES_framebuffer_object call). Bridge-facing declaration: only the members the application layer
+// calls are declared here — the full class layout is reconstructed in the C++ engine phase. GL
+// object names are @c GLuint and the size-out arguments are @c GLint, spelled as their C-safe
+// equivalents so this header need not import the OpenGL ES headers. The application layer only ever
+// holds a @c neGLESRenderer* obtained from @c GetGlRenderer() / @c EnsureGLRenderStateSingleton().
+class neGLESRenderer {
+public:
+    /**
+     * @brief Clears the current GL buffers selected by the GL clear mask.
+     * @ghidraAddress 0x21400
+     */
+    void ClearBuffers(unsigned int dwMask);
+    /**
+     * @brief Generates one GL framebuffer object name into @p pOutFramebuffer.
+     * @ghidraAddress 0x212ac
+     */
+    void GenFramebuffer(unsigned int *pOutFramebuffer);
+    /**
+     * @brief Deletes the GL framebuffer object @p dwFramebuffer.
+     * @ghidraAddress 0x212b4
+     */
+    void DeleteFramebuffer(unsigned int dwFramebuffer);
+    /**
+     * @brief Binds @p dwFramebuffer as the current @c GL_FRAMEBUFFER_OES draw target.
+     * @ghidraAddress 0x212dc
+     */
+    void BindFramebuffer(unsigned int dwFramebuffer);
+    /**
+     * @brief Generates one GL renderbuffer object name into @p pOutRenderbuffer.
+     * @ghidraAddress 0x212e4
+     */
+    void GenRenderbuffer(unsigned int *pOutRenderbuffer);
+    /**
+     * @brief Deletes the GL renderbuffer object @p dwRenderbuffer.
+     * @ghidraAddress 0x212ec
+     */
+    void DeleteRenderbuffer(unsigned int dwRenderbuffer);
+    /**
+     * @brief Binds @p dwRenderbuffer as the current @c GL_RENDERBUFFER_OES.
+     * @ghidraAddress 0x21314
+     */
+    void BindRenderbuffer(unsigned int dwRenderbuffer);
+    /**
+     * @brief Attaches @p dwRenderbuffer to the bound framebuffer at the @p nRenderKind attachment.
+     * @ghidraAddress 0x21380
+     */
+    void AttachRenderbufferToFramebuffer(RenderKind nRenderKind, unsigned int dwRenderbuffer);
+    /**
+     * @brief Reads the bound renderbuffer's width into @p pOutWidth.
+     * @ghidraAddress 0x213d8
+     */
+    void GetRenderbufferWidth(int *pOutWidth);
+    /**
+     * @brief Reads the bound renderbuffer's height into @p pOutHeight.
+     * @ghidraAddress 0x213ec
+     */
+    void GetRenderbufferHeight(int *pOutHeight);
+};
+
+/**
+ * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
+ * @ghidraAddress 0x20f5c
+ */
+neGLESRenderer *EnsureGLRenderStateSingleton();
+/**
+ * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
+ * @ghidraAddress 0x212a4
+ */
+unsigned int GetGLRenderbufferTarget();
+/**
+ * @brief Returns @c true when the bound framebuffer is complete.
+ * @ghidraAddress 0x213b4
+ */
+bool CheckFramebufferComplete();
 
 /**
  * The global touch manager. The application obtains it through @c FetchSharedSingleton and commits
