@@ -16,6 +16,7 @@ autoresizes
 autoresizing
 autoreverses
 baet
+bewfsujtjoh
 bitcode
 brighness
 bsky
@@ -64,6 +65,7 @@ djyoshitaka
 docstrings
 dplatform
 eagl
+errno
 esbenp
 exprosion
 extern
@@ -95,6 +97,7 @@ interitem
 ivar
 ivars
 iwyu
+jefoujgjfs
 jinja
 jsonnet
 jsonschema
@@ -119,11 +122,13 @@ mtype
 mulist
 musicselect
 mypy
+nbobhfs
 nekomata
 nolist
 nonatomic
 nonnull
 notelist
+nsascii
 nshttpurl
 nsjson
 nssq
@@ -140,6 +145,7 @@ packlist
 pastelkun
 pbxproj
 plid
+popn
 preapproved
 proc
 prodlist
@@ -206,6 +212,7 @@ thunks
 tomosuke
 transactioing
 udid
+udids
 udvare
 unarchiver
 undecryptable
