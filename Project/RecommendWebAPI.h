@@ -31,6 +31,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)getAdDetailWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
 
 /**
+ * @brief Fetch the recommend layout index.
+ * @param callback The completion callback invoked with an error.
+ */
++ (void)layoutIndexWithCallback:(nullable void (^)(NSError *_Nullable error))callback;
+
+/**
+ * @brief Fetch every advert-data record for display.
+ * @param callback The completion callback invoked with the response data and an error.
+ */
++ (void)allAdDataWithCallBack:(nullable void (^)(id _Nullable data,
+                                                 NSError *_Nullable error))callback;
+
+/**
  * @brief Post the application-install record for the current advertising identifier.
  * @param adIdFrom The source advertising identifier.
  * @param categoryId The advert category identifier.
