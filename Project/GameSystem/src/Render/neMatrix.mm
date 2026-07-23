@@ -27,6 +27,43 @@ enum {
     kViewMatrixRowForward = 2,
 };
 
+// Squared-length threshold below which a vector is treated as zero-length and left
+// unnormalised. In the binary this is the rodata float at 0x2eea50 (0x179abe15 == 1e-24f).
+constexpr float kNormalizeLengthSquaredEpsilon = 1e-24f;
+
+/** @ghidraAddress 0x20cf8 */
+float DotProductVector3(float *pA, float *pB) {
+    return pA[kVectorComponentX] * pB[kVectorComponentX] +
+           pA[kVectorComponentY] * pB[kVectorComponentY] +
+           pA[kVectorComponentZ] * pB[kVectorComponentZ];
+}
+
+/** @ghidraAddress 0x20d68 */
+void CrossProductVector3(float *pOut, float *pB) {
+    // Computed in place, so read the original components before overwriting any of them.
+    const float x = pOut[kVectorComponentX];
+    const float y = pOut[kVectorComponentY];
+    const float z = pOut[kVectorComponentZ];
+    pOut[kVectorComponentX] = y * pB[kVectorComponentZ] - z * pB[kVectorComponentY];
+    pOut[kVectorComponentY] = z * pB[kVectorComponentX] - x * pB[kVectorComponentZ];
+    pOut[kVectorComponentZ] = x * pB[kVectorComponentY] - y * pB[kVectorComponentX];
+}
+
+/** @ghidraAddress 0x20d20 */
+void NormalizeVector3(float *pVec) {
+    const float x = pVec[kVectorComponentX];
+    const float y = pVec[kVectorComponentY];
+    const float z = pVec[kVectorComponentZ];
+    const float lengthSquared = x * x + y * y + z * z;
+    // Leave a near-zero-length vector unchanged to avoid dividing by zero.
+    if (lengthSquared > kNormalizeLengthSquaredEpsilon) {
+        const float length = std::sqrt(lengthSquared);
+        pVec[kVectorComponentX] = x / length;
+        pVec[kVectorComponentY] = y / length;
+        pVec[kVectorComponentZ] = z / length;
+    }
+}
+
 /** @ghidraAddress 0x18fac */
 void SetMatrixIdentity(float *pMatrix) {
     static const float kIdentity[] = {
