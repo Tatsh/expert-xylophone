@@ -251,6 +251,11 @@ void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
  * @ghidraAddress 0x18f10
  */
 void ComposeMatrices(float *pAccumulator, float *pSource);
+/**
+ * @brief Sets a 4x4 column-major matrix to the identity matrix.
+ * @ghidraAddress 0x18fac
+ */
+void SetMatrixIdentity(float *pMatrix);
 
 // Shared engine data tables, seeded at startup. They are defined once in the engine layer and read
 // from the Objective-C code, so they are declared here rather than re-declared locally.
