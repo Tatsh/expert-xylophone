@@ -16,6 +16,7 @@
 // classes land.
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
+#import "RBScoreHash.h"
 
 #import "neEngineBridge.h"
 
@@ -52,11 +53,6 @@ static const float kAchievementRateMaximum = 1.0f;
 // Multiplier applied to each achievement rate before it is folded into the tamper hash.
 // @ghidraAddress 0x2f8540 (g_flAchievementRateHashScale)
 static const float kAchievementRateHashScale = 1000.0f;
-
-// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
-// digest.
-static const int kHashWordCount = 8;
-static const int kHashDigestLength = 16;
 
 // The number of tunes processed per fetch batch in @c totalScore.
 static const NSUInteger kTotalScoreBatchSize = 15;
@@ -196,20 +192,20 @@ static void ScoreDataHashScoreForTune(int tuneID,
                                       int hard,
                                       unsigned char *pHash) {
     int words[kHashWordCount];
-    words[0] = tuneID;
-    words[2] = medium;
-    words[5] = hard + medium;
-    words[7] = medium + basic + hard;
+    words[kHashWordTuneID] = tuneID;
+    words[kHashWordSlot2] = medium;
+    words[kHashWordSlot5] = hard + medium;
+    words[kHashWordSlot7] = medium + basic + hard;
     if (GetFontVariantFlag() != kFontVariantDefault) {
-        words[1] = basic;
-        words[3] = hard;
-        words[4] = medium + basic;
-        words[6] = hard + basic;
+        words[kHashWordSlot1] = basic;
+        words[kHashWordSlot3] = hard;
+        words[kHashWordSlot4] = medium + basic;
+        words[kHashWordSlot6] = hard + basic;
     } else {
-        words[1] = hard;
-        words[3] = basic;
-        words[4] = hard + basic;
-        words[6] = medium + basic;
+        words[kHashWordSlot1] = hard;
+        words[kHashWordSlot3] = basic;
+        words[kHashWordSlot4] = hard + basic;
+        words[kHashWordSlot6] = medium + basic;
     }
     ComputeMd5Digest(words, sizeof(words), pHash);
 }

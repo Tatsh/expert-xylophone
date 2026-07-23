@@ -14,6 +14,7 @@
 // reconstructed in this tree (the same speculative-import style ScoreData.m and HistoryData.m
 // already use); they resolve once those classes land.
 #import "HistoryData.h"
+#import "RBScoreHash.h"
 
 #import "neEngineBridge.h"
 
@@ -41,11 +42,6 @@ static const NSUInteger kDeleteFetchLimit = 20;
 
 // The smallest tune identifier a history record may be created for.
 static const unsigned int kMinimumTuneID = 100000000;
-
-// The number of 32-bit words hashed by the tamper-hash helper and the size of the resulting
-// digest.
-static const int kHashWordCount = 8;
-static const int kHashDigestLength = 16;
 
 // The width, in bits, of the half-words the play date and play count are folded into the score
 // words by.
@@ -199,16 +195,18 @@ static const int kHalfWordShift = 16;
     memcpy(&dateBits, &date, sizeof(dateBits));
     uint64_t countBits = (uint64_t)count;
     int words[kHashWordCount];
-    words[0] = tuneID;
-    words[1] = difficulty + (int16_t)dateBits + (int16_t)(countBits >> (kHalfWordShift * 3));
-    words[2] = just + score;
-    words[3] = great;
-    words[4] = good;
-    words[5] = miss + (int16_t)(dateBits >> kHalfWordShift) +
-               (int16_t)(countBits >> (kHalfWordShift * 2));
-    words[6] = jr + (int16_t)(countBits >> kHalfWordShift) +
-               (int16_t)(dateBits >> (kHalfWordShift * 2));
-    words[7] = combo + (int16_t)countBits + (int16_t)(dateBits >> (kHalfWordShift * 3));
+    words[kHashWordTuneID] = tuneID;
+    words[kHashWordSlot1] =
+        difficulty + (int16_t)dateBits + (int16_t)(countBits >> (kHalfWordShift * 3));
+    words[kHashWordSlot2] = just + score;
+    words[kHashWordSlot3] = great;
+    words[kHashWordSlot4] = good;
+    words[kHashWordSlot5] =
+        miss + (int16_t)(dateBits >> kHalfWordShift) + (int16_t)(countBits >> (kHalfWordShift * 2));
+    words[kHashWordSlot6] =
+        jr + (int16_t)(countBits >> kHalfWordShift) + (int16_t)(dateBits >> (kHalfWordShift * 2));
+    words[kHashWordSlot7] =
+        combo + (int16_t)countBits + (int16_t)(dateBits >> (kHalfWordShift * 3));
     ComputeMd5Digest(words, sizeof(words), hash);
 }
 
