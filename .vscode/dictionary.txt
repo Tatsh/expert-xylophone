@@ -27,6 +27,7 @@ bunner
 bzero
 caeagl
 calcel
+cfstr
 cfstring
 cfurl
 cfuuid
