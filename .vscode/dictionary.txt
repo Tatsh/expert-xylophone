@@ -34,6 +34,7 @@ cooldown
 coveragerc
 cplusplus
 creater
+cstring
 dashcam
 datas
 dcmake
@@ -115,6 +116,7 @@ nekomata
 nolist
 nonatomic
 nonnull
+notelist
 nshttpurl
 nsjson
 nssq
@@ -172,6 +174,7 @@ statusline
 stdbool
 stdlib
 stor
+storefront
 strage
 strcmp
 subarray
