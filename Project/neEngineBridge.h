@@ -247,10 +247,18 @@ void MakeRotationMatrixX(float angle, float *pOutMatrix);
  */
 void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
 /**
- * @brief Post-multiplies the accumulator matrix by the source matrix in place.
+ * @brief Composes @p pSource onto @p pAccumulator on the left, in place.
+ *
+ * Computes @c pAccumulator @c = @c pSource @c * @c pAccumulator (column-major), multiplying against
+ * a copy of the accumulator so the in-place result does not alias its own input.
  * @ghidraAddress 0x18f10
  */
 void ComposeMatrices(float *pAccumulator, float *pSource);
+/**
+ * @brief Multiplies two 4x4 column-major matrices: @c pOut @c = @c pLeft @c * @c pRight.
+ * @ghidraAddress 0x18e40
+ */
+void MultiplyMatrix4x4(float *pOut, float *pLeft, float *pRight);
 /**
  * @brief Sets a 4x4 column-major matrix to the identity matrix.
  * @ghidraAddress 0x18fac

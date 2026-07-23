@@ -58,3 +58,11 @@ float *MakeRotationMatrixX(float flAngle, float *pOut) {
     pOut[10] = flCos;
     return pOut;
 }
+
+/** @ghidraAddress 0x18f10 */
+void ComposeMatrices(float *pAccumulator, float *pSource) {
+    // The result aliases the accumulator (the right-hand operand), so multiply against a copy.
+    float matrixCopy[16];
+    std::memcpy(matrixCopy, pAccumulator, sizeof(matrixCopy));
+    MultiplyMatrix4x4(pAccumulator, pSource, matrixCopy);
+}
