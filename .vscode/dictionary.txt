@@ -42,6 +42,7 @@ dios
 directorys
 docstrings
 dplatform
+eagl
 esbenp
 exprosion
 extern
@@ -110,6 +111,7 @@ pyproject
 rbbgm
 rbmacros
 rbplus
+rbscorehash
 rdparty
 recomputation
 rect
@@ -118,6 +120,7 @@ reflecbeat
 reflow
 regen
 relase
+renderbuffer
 rhythmin
 ripgreprc
 rtti
