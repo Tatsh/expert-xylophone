@@ -24,6 +24,7 @@
 #import "RBViewController.h"
 #import "ReplayData.h"
 #import "ScoreData.h"
+#import "UIColor+RB.h"
 #import "UIImage+RB.h"
 #import "neEngineBridge.h"
 
@@ -101,19 +102,10 @@ static const CGFloat kGhostAlphaDimmed = 0.5;
 static const CGFloat kSettingButtonAlphaSelected = 1.0;
 static const CGFloat kSettingButtonAlphaDimmed = 0.5;
 
-// The shared music-view dimming cover colour is the first entry of the global UIColor palette built
-// by InitializeUIColorPalette (@0x5517c): 50%-translucent black (red, green, and blue components 0
-// with alpha 0.5, decoded from the fmov d3, 0x3fe0000000000000 at @0x55158). It is a cross-file
-// palette global; it is cached here rather than re-declared as a shared extern until the palette
-// globals are recovered.
-static const CGFloat kMusicViewCoverAlpha = 0.5;
+// The music-view dimming cover colour is the first entry of the shared UIColor palette
+// (RBPaletteIndexDimmingCover): 50%-translucent black.
 static UIColor *MusicViewCoverColor(void) {
-    static UIColor *color = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      color = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:kMusicViewCoverAlpha];
-    });
-    return color;
+    return [UIColor rbPaletteColorAtIndex:RBPaletteIndexDimmingCover];
 }
 
 // The base-view fade opacities used by the show/hide animations.
@@ -1715,40 +1707,3 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 }
 
 @end
-
-// =====================================================================================
-// RECONSTRUCTION STATUS AND UNCERTAINTIES
-// =====================================================================================
-// Every method is reconstructed from the binary. The decompilable methods were taken from their
-// Ghidra decompiles; SetupView (the decompiler crashes on it with the known RBCoreDataManager
-// broken-struct error), SetUpLineView, and switchWithDifficulty: were worked from the raw arm64
-// disassembly, with every soft-float geometry constant decoded from the .const pools.
-//
-// SetupView residual, specifically disassembly-level, blockers (everything else is decoded):
-//   * @0xcca74 loads a runtime-initialised CGPoint global (x8 = *0x100358020 -> 0x100410400) that is
-//     not present in the static image. Every slot it feeds is consumed exactly where Ghidra
-//     annotates the call as setFrame:CGPointZero, so both lanes are provably 0.0 (the default
-//     non-arena name centre X and that leg's scroll width/height and page Y/W/H).
-//   * The random button's final frame width and height and the double button's X arithmetic mix a
-//     button-image width resolved at run time; all of the literal inputs (kRandomX/Y, kDoubleBaseX,
-//     kDoubleOffsetX, kDoubleGap, and kDoubleWidthPad) are decoded.
-//
-// Collaborator sub-views that this hub messages but that are not yet reconstructed (no header
-// exists, so these classes are only @class-forward-declared and the messages to them cannot compile
-// until their headers are created): RBMusicScoreView (initWithFrame:, setGrade:, UpdateScore:),
-// RBMusicDifficultyView
-// (initWithFrame:MusicSelectedBase:, difficulty, setEnableButton:, getDifficultyButton:),
-// RBMusicColorView / RBMusicSpeedView / RBMusicCPUView / RBMusicOtherView
-// (initWithFrame:MusicSelectedBase:, plus color/rivalAlpha, speed, and level respectively).
-// RBMusicHistoryView (initWithFrame:, isHidden, hideAnimation, showAnimation:difficulty:) is now
-// reconstructed at RBMusicHistoryView.{h,m} and imported above. RBMusicARView (initWithFrame:,
-// UpdateScore, UpdateScore:) is now reconstructed at RBMusicARView.{h,m} and imported above. The
-// exact selectors are listed in
-// the reviewer report. Two catalogue selectors this file relies on but that
-// their existing headers may not yet declare are RBMusicManager -getPurchasedMusicDictionary: and
-// ScoreData -getFrameBonusType.
-//
-// The music-view dimming cover colour (MusicViewCoverColor above) is the first entry of the shared
-// UIColor palette (InitializeUIColorPalette @0x5517c): 50%-translucent black; it is cached locally
-// until the shared palette globals are recovered.
-// =====================================================================================
