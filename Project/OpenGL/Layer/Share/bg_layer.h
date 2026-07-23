@@ -16,8 +16,6 @@ class C_RENDER;
  */
 class BgLayer : public PlayFieldLayerBase {
 public:
-    BgLayer();
-
     /**
      * @brief The root scene-graph node background sprites are attached to, building the layer on
      * first access.
@@ -33,11 +31,17 @@ public:
     void InitializeBackgroundLayer();
 
 private:
+    // The layer-kind identifier the factory stamps into a background layer.
+    static constexpr int kBackgroundLayerKind = 0x1d;
+
     ne::C_RENDER *m_pRootSprite = {};    // +0x08
-    unsigned char m_reserved10[36] = {}; // +0x10: layer state not yet recovered.
+    unsigned char m_reserved10[32] = {}; // +0x10: layer state not yet recovered.
+    int m_nField30 = {};                 // +0x30: initialised to 1 by the factory.
     bool m_fBuilt = {};                  // +0x34
     int m_nLayerKind = {};               // +0x38
     unsigned char m_reserved3c[44] = {}; // +0x3c: layer state not yet recovered.
+
+    friend BgLayer *GetBackgroundLayer();
 };
 
 /**

@@ -9,8 +9,6 @@
  */
 class PlayFieldLayerBase {
 public:
-    PlayFieldLayerBase();
-
     /**
      * @brief The font-variant identifier for the current device.
      */
@@ -36,7 +34,20 @@ private:
     unsigned char m_bFontVariant = {}; // +0x00
     bool m_fIsHardwareType9 = {};      // +0x01
     int m_nThema = {};                 // +0x04
+
+    friend PlayFieldLayerBase *InitBaseLayer(PlayFieldLayerBase *pLayer);
 };
+
+/**
+ * @brief Initialise a play-field layer base from the current device and settings.
+ *
+ * Fills in the font variant, hardware type, and selected theme; this is the base-class initialiser
+ * every layer factory runs before the subclass sets up its own fields.
+ * @param pLayer The layer base to initialise.
+ * @return @p pLayer.
+ * @ghidraAddress 0x109d84
+ */
+PlayFieldLayerBase *InitBaseLayer(PlayFieldLayerBase *pLayer);
 
 // code: language=C++
 // kate: hl C++;
