@@ -154,6 +154,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registSuccess;
 
+/**
+ * @brief The tint colour for a campaign cell's action button in the given button state.
+ * @param buttonType The action-button kind (see the item's @c buttonType).
+ * @return The fill colour for that button state.
+ * @ghidraAddress 0x1099cc
+ */
++ (nullable UIColor *)getButtonColor:(int)buttonType;
+/**
+ * @brief The title text for a campaign cell's action button in the given button state.
+ * @param buttonType The action-button kind (see the item's @c buttonType).
+ * @return The title for that button state.
+ * @ghidraAddress 0x109b10
+ */
++ (nullable NSString *)getButtonName:(int)buttonType;
+
 @end
 
 NS_ASSUME_NONNULL_END

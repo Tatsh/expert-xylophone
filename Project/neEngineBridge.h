@@ -327,10 +327,27 @@ extern NSString *const g_pLocalizedBuyFormat;
  */
 extern NSString *const g_pLocalizedError;
 /**
+ * @brief The localised "INSTALL" action-button title shown for a purchased but not-yet-downloaded
+ * store item.
+ * @ghidraAddress 0x3cfc00
+ */
+extern NSString *const g_pLocalizedInstall;
+/**
  * @brief The localised "INSTALLED" action-button title shown once a store item is fully downloaded.
  * @ghidraAddress 0x3cfc08
  */
 extern NSString *const g_pLocalizedInstalled;
+/**
+ * @brief The localised "INSTALLING" action-button title shown while a store item downloads.
+ * @ghidraAddress 0x3cfc10
+ */
+extern NSString *const g_pLocalizedInstalling;
+/**
+ * @brief The localised "Purchased" disabled-button title shown on the pack detail purchase button
+ * once the pack has been bought.
+ * @ghidraAddress 0x3cfd10
+ */
+extern NSString *const g_pLocalizedPurchased;
 /**
  * @brief The download-progress modal-dialog message format string (one @c %@ tune name).
  * @ghidraAddress 0x3cfbd8

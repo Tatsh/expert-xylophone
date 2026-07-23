@@ -27,6 +27,28 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)packViewSelected:(StorePackView *)packView;
 
+/**
+ * @brief Sent by the pack detail view when it should be dismissed.
+ */
+- (void)detailViewClose;
+
+/**
+ * @brief Sent by the pack detail view to begin buying the given pack.
+ * @param packInfo The pack to buy.
+ */
+- (void)detailViewStartPurchase:(StorePackInfo *)packInfo;
+
+/**
+ * @brief Sent by the pack detail view to re-download an already-purchased pack's tunes.
+ * @param packInfo The pack to re-download.
+ */
+- (void)reDownloadPackMusics:(StorePackInfo *)packInfo;
+
+/**
+ * @brief Sent by the pack detail view to switch to the sequence-extension store for a tune.
+ */
+- (void)switchToSpecialStore;
+
 @end
 
 /**
