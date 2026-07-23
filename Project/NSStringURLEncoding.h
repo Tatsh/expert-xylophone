@@ -23,6 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSString *)URLEncodedString:(nullable NSString *)string;
 
+/**
+ * @brief Percent-decode a URL-encoded string.
+ * @param string The percent-encoded string to decode.
+ * @return The decoded string, or @c nil.
+ * @ghidraAddress 0x20c24c
+ */
++ (nullable NSString *)URLDecodedString:(nullable NSString *)string;
+
 @end
 
 NS_ASSUME_NONNULL_END

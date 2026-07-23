@@ -136,11 +136,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Emit a debug log message.
  *
- * This is an empty stub in the shipped build; the message is discarded.
- * @param text The message that would be logged.
+ * This is an empty stub in the shipped build; the call does nothing.
  * @ghidraAddress 0x20d418
  */
-+ (void)debugLog:(nullable id)text;
++ (void)debugLog;
 
 @end
 

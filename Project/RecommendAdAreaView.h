@@ -16,6 +16,27 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RecommendAdAreaView : UIView
 
 /**
+ * @brief Configure the advert area with its advert model, location, type, request code, and
+ * delegate.
+ * @param adModel The advert-model identifier.
+ * @param adLocation The ad-location identifier.
+ * @param adType The advert-type identifier.
+ * @param requestCode The caller's request code.
+ * @param delegate The advert delegate.
+ */
+- (void)setAdModel:(int)adModel
+        adLocation:(nullable NSString *)adLocation
+            adType:(int)adType
+       requestCode:(nullable id)requestCode
+          delegate:(nullable id)delegate;
+
+/**
+ * @brief Load the advert-area contents from a filesystem path.
+ * @param path The advert-content path.
+ */
+- (void)startPath:(nullable NSString *)path;
+
+/**
  * @brief Tear down the advert area before the view is removed from its superview.
  */
 - (void)closeAdArea;

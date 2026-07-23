@@ -14,6 +14,21 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The Applilink recommend advert web view.
  */
 @interface RecommendWebView : UIView
+
+/**
+ * @brief Load the advert web content for an advert model at an ad location.
+ * @param adModel The advert-model identifier.
+ * @param adLocation The ad-location identifier.
+ * @param verticalAlign The vertical-alignment identifier.
+ * @param requestCode The caller's request code.
+ * @param delegate The advert delegate.
+ */
+- (void)loadRequestWithAdModel:(int)adModel
+                    adLocation:(nullable NSString *)adLocation
+                 verticalAlign:(int)verticalAlign
+                   requestCode:(nullable id)requestCode
+                      delegate:(nullable id)delegate;
+
 @end
 
 NS_ASSUME_NONNULL_END

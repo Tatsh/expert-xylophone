@@ -230,7 +230,7 @@ static NSString *gApplilinkDeviceName = nil; // @ghidraAddress 0x3df610
     return geFileNameFromPath;
 }
 
-+ (void)debugLog:(id)text {
++ (void)debugLog {
 }
 
 @end
