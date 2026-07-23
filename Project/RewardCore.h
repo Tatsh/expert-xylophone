@@ -73,6 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getAppListStatusWithBlock:(nullable void (^)(NSInteger status,
                                                      NSError *_Nullable error))block;
 
+/**
+ * @brief Rotate any open reward-advert screen to a new interface orientation.
+ * @param interfaceOrientation The target @c UIInterfaceOrientation.
+ * @param duration The animation duration.
+ * @ghidraAddress 0x20accc
+ */
+- (void)rotateAdScreenWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+                                      duration:(NSTimeInterval)duration;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -80,6 +80,76 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)clearInitialize;
 
+/**
+ * @brief Initialise the SDK core for an application and server environment.
+ *
+ * On the non-resume path the application and environment are persisted to @c NSUserDefaults; either
+ * path regenerates an authentication session. The callback receives a localised error, or @c nil on
+ * success.
+ * @param appliId The Applilink application identifier.
+ * @param env The server environment name, or @c nil for production.
+ * @param resume @c YES when re-initialising after a foreground resume.
+ * @param callback The completion block invoked with an error, or @c nil on success.
+ * @ghidraAddress 0x214494
+ */
++ (void)initializeWithAppliId:(nullable NSString *)appliId
+                          env:(nullable NSString *)env
+                       resume:(BOOL)resume
+                     callback:(nullable void (^)(NSError *_Nullable error))callback;
+
+/**
+ * @brief Resume the SDK core, closing any open store and re-initialising from persisted state.
+ * @ghidraAddress 0x214b00
+ */
++ (void)resume;
+
+/**
+ * @brief Set whether advert screens use the common navigation-bar appearance.
+ * @param navigationBarCommonAppearance @c YES to use the common appearance.
+ * @ghidraAddress 0x214c00
+ */
++ (void)setNavigationBarCommonAppearance:(BOOL)navigationBarCommonAppearance;
+
+/**
+ * @brief Set whether the SDK localises using the device's preferred languages.
+ * @param priorityDeviceLanguages @c YES to prioritise the device languages.
+ * @ghidraAddress 0x214c20
+ */
++ (void)setPriorityDeviceLanguages:(BOOL)priorityDeviceLanguages;
+
+/**
+ * @brief Set the tint colour of the SDK's loading indicator.
+ * @param indicatorColor The indicator colour.
+ * @ghidraAddress 0x214c40
+ */
++ (void)setIndicatorColor:(nullable UIColor *)indicatorColor;
+
+/**
+ * @brief Flag the SDK as not currently used inside the store.
+ * @ghidraAddress 0x214cb4
+ */
++ (void)unusedInStore;
+
+/**
+ * @brief Flag the SDK as built with the legacy pre-Xcode 6 toolchain.
+ * @ghidraAddress 0x214cd8
+ */
++ (void)buildUnderXcode6;
+
+/**
+ * @brief The Applilink SDK development version string.
+ * @return The SDK development version.
+ * @ghidraAddress 0x215b58
+ */
++ (nullable NSString *)versionDev;
+
+/**
+ * @brief The current device UDID cached by the SDK core.
+ * @return The current UDID, or @c nil.
+ * @ghidraAddress 0x215040
+ */
++ (nullable NSString *)currentUdid;
+
 @end
 
 NS_ASSUME_NONNULL_END

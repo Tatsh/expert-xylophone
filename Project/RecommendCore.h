@@ -153,6 +153,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)closeAdScreen;
 
+/**
+ * @brief Rotate any open recommend-advert screen to a new interface orientation.
+ * @param interfaceOrientation The target @c UIInterfaceOrientation.
+ * @param duration The animation duration.
+ * @ghidraAddress 0x23a5ac
+ */
+- (void)rotateWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+                              duration:(NSTimeInterval)duration;
+
 @end
 
 NS_ASSUME_NONNULL_END
