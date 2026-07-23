@@ -310,9 +310,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)setNoBackupAttribute:(NSString *)path;
 
 /**
- * @brief The total-score Game Center leaderboard category identifier, selected by the font-variant
- * flag (the phone-specific identifier when the flag is @c kFontVariantDefault, otherwise the shared
- * identifier).
+ * @brief The total-score Game Center leaderboard category identifier, selected by the iPad idiom
+ * flag (the phone-specific identifier on a phone, otherwise the shared iPad identifier).
  * @return The leaderboard category identifier string.
  * @ghidraAddress 0x50c8c
  */

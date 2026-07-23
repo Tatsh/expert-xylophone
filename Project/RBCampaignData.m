@@ -150,9 +150,8 @@ static const BOOL kStoreImageUnUseRetina = NO;
         }
         return;
     }
-    ImageDownloader *downloader =
-        [[ImageDownloader alloc] initWithGetURL:startDownloadWithPath
-                                    unUseRetina:kStoreImageUnUseRetina];
+    ImageDownloader *downloader = [[ImageDownloader alloc] initWithGetURL:startDownloadWithPath
+                                                              unUseRetina:kStoreImageUnUseRetina];
     [self.imageDownloaders setObject:downloader forKey:key];
     [downloader
         startDownloadWithProceed:^(ImageDownloader *proceedDownloader) {

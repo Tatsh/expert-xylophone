@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Create the popup with the given frame.
  *
- * Records the font variant as @c isPad, builds the panel through @c setupView, and marks the control
+ * Records the iPad idiom as @c isPad, builds the panel through @c setupView, and marks the control
  * as exclusively touched.
  * @param frame The view's frame rectangle (the whole host view's bounds).
  * @return The initialised view, or @c nil.
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build the popup chrome: the centred base panel, its clear background, the rounded clipped
  * content view, the item artwork and frame image views, the cost label, and the yes/no buttons.
  *
- * The button and label geometry depends on the font variant (@c isPad) and the current player theme.
+ * The button and label geometry depends on the iPad idiom (@c isPad) and the current player theme.
  * @ghidraAddress 0x19bdec
  */
 - (void)setupView;
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) ImageDownloader *imageDownloader;
 
 /**
- * @brief Whether the layout uses the wide (iPad) font variant.
+ * @brief Whether the layout uses the wide (iPad) iPad idiom.
  */
 @property(assign, nonatomic) BOOL isPad;
 

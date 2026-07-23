@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build the popup content: the gradation overlay, the title bar, the scrolling terms text
  * view, the Agree and Cancel buttons, the loading indicator, and the mascot/progress artwork.
  *
- * The geometry depends on the current theme and font variant. The method calls through to @c super
+ * The geometry depends on the current theme and iPad idiom. The method calls through to @c super
  * and then fetches the terms body through @c loadDetail.
  * @ghidraAddress 0x1c3e7c
  */

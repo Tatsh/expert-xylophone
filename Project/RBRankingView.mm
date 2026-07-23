@@ -25,9 +25,9 @@ constexpr int kPlayerScopeTotal = 0;
 constexpr int kPlayerScopeFriend = 1;
 
 // The two ranking boards fill the same frame within the content view. The three layout regimes are
-// selected by the font-variant flag and, within the wide (non-variant) regime, by the theme.
+// selected by the iPad idiom flag and, within the wide (iPad) regime, by the theme.
 
-// Wide (font-variant) table frame. The origin is anchored to the base panel and content view so
+// Wide (iPad idiom) table frame. The origin is anchored to the base panel and content view so
 // the board sits at a fixed screen position regardless of the popup's own offset.
 constexpr CGFloat kTableWideAnchorX = 134.0;
 constexpr CGFloat kTableWideAnchorY = 295.0;
@@ -50,8 +50,8 @@ constexpr CGFloat kTableTallClassicHeight = 246.0;
 constexpr CGFloat kHalf = 0.5;
 
 // The friend tab button positioning.
-constexpr CGFloat kFriendButtonWideAnchorX = 179.0; // Anchored X in the wide (font-variant).
-constexpr CGFloat kFriendButtonWideAnchorY = 235.0; // Anchored Y in the wide (font-variant).
+constexpr CGFloat kFriendButtonWideAnchorX = 179.0; // Anchored X in the wide (iPad).
+constexpr CGFloat kFriendButtonWideAnchorY = 235.0; // Anchored Y in the wide (iPad).
 constexpr CGFloat kFriendButtonTallCenterX = 71.0;  // Centre X in the tall regime.
 constexpr CGFloat kFriendButtonTallThemedX = 18.0;  // Frame X for a tall themed (non-classic).
 
@@ -98,12 +98,12 @@ static NSString *const kAllButtonSelectedImageName = @"08_ranking/rank_all_sel";
 - (void)setupView {
     [super setupView];
 
-    BOOL isFontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     _thema = [RBUserSettingData sharedInstance].thema;
 
     // Compute the shared frame the two ranking boards occupy inside the content view.
     CGRect tableFrame;
-    if (isFontVariant) {
+    if (isPad) {
         CGFloat baseX = self.baseView.frame.origin.x;
         CGFloat contentX = self.contentView.frame.origin.x;
         CGFloat baseY = self.baseView.frame.origin.y;
@@ -153,7 +153,7 @@ static NSString *const kAllButtonSelectedImageName = @"08_ranking/rank_all_sel";
     self.friendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.friendButton setImage:friendImage forState:UIControlStateNormal];
     [self.friendButton setImage:friendImage forState:UIControlStateSelected];
-    if (isFontVariant) {
+    if (isPad) {
         CGFloat baseX = self.baseView.frame.origin.x;
         CGFloat contentX = self.contentView.frame.origin.x;
         CGFloat baseY = self.baseView.frame.origin.y;
@@ -201,7 +201,7 @@ static NSString *const kAllButtonSelectedImageName = @"08_ranking/rank_all_sel";
     [self.allButton setImage:allImage forState:UIControlStateNormal];
     [self.allButton setImage:allImage forState:UIControlStateSelected];
     self.allButton.bounds = CGRectMake(0, 0, allSize.width, allSize.height);
-    if (isFontVariant) {
+    if (isPad) {
         CGFloat baseX = self.baseView.frame.origin.x;
         CGFloat contentX = self.contentView.frame.origin.x;
         CGFloat baseY = self.baseView.frame.origin.y;

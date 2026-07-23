@@ -5,7 +5,7 @@
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomSelectView). Verified
 //  against the arm64 disassembly: -setupView stacks one item grid per customization category inside
 //  a scroll view, and the per-category heights, the start offset, the inter-grid margin, and the
-//  final content size are all font-variant- and theme-dependent soft-float values that the
+//  final content size are all idiom- and theme-dependent soft-float values that the
 //  decompiler folds into pseudo-variables. This is an Objective-C++ file because -setupView and
 //  -prevButtonTap: reach the C++ ShotSoundManager and SoundEffectManager engine singletons.
 //
@@ -33,7 +33,7 @@ constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// The first grid's top offset, chosen by theme then font variant. The Classic theme (0) starts the
+// The first grid's top offset, chosen by theme then iPad idiom. The Classic theme (0) starts the
 // stack higher than the others.
 constexpr CGFloat kStartYWideBgm = 40.0;
 constexpr CGFloat kStartYWideOther = 70.0;
@@ -44,7 +44,7 @@ constexpr CGFloat kStartYNarrowOther = 34.0;
 constexpr CGFloat kMarginWide = 20.0;
 constexpr CGFloat kMarginNarrow = 12.0;
 
-// The per-category grid heights. The wide (non-default) font variant and the narrow (default) font
+// The per-category grid heights. The iPad (wide) layout and the narrow (default) font
 // variant use different heights; the grid width always fills the picker.
 constexpr CGFloat kHeightBgmWide = 144.0;
 constexpr CGFloat kHeightBgmNarrow = 120.0;
@@ -86,14 +86,14 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
 
 - (CGFloat)getCollectionViewStartY:(RBUserSettingDataTheme)thema {
     BOOL isBgm = (thema == RBUserSettingDataThemeClassic);
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         return isBgm ? kStartYWideBgm : kStartYWideOther;
     }
     return isBgm ? kStartYNarrowBgm : kStartYNarrowOther;
 }
 
 - (CGFloat)getCollectionViewMargin {
-    return (GetFontVariantFlag() != kFontVariantDefault) ? kMarginWide : kMarginNarrow;
+    return (IsPad()) ? kMarginWide : kMarginNarrow;
 }
 
 #pragma mark Setup
@@ -102,7 +102,7 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
     [self addSubview:self.scrollView];
 
-    BOOL wideFont = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL wideFont = IsPad();
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
 
     CGFloat width = self.frame.size.width;

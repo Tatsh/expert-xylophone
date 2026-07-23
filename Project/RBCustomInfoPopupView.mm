@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomInfoPopupView). Verified
-//  against the arm64 disassembly: -setupView's and -setItemData:'s font-variant- and
+//  against the arm64 disassembly: -setupView's and -setItemData:'s iPad idiom- and
 //  theme-dependent soft-float geometry was recovered from the register moves the decompiler folds
 //  into pseudo-variables, and the show/hide/frame-download blocks from their invoke thunks. This is
 //  an Objective-C++ file because it plays the C++ themed sound-effect engine singleton.
@@ -46,7 +46,7 @@ constexpr CGFloat kArtworkWideLimelightY = 82.0;
 constexpr CGFloat kArtworkWideColetteX = 100.0;
 constexpr CGFloat kArtworkWideColetteY = 102.0;
 
-// The cost label, balance label, and yes/no button geometry, chosen by font variant and theme. Each
+// The cost label, balance label, and yes/no button geometry, chosen by device idiom and theme. Each
 // name follows <role><Variant><Theme><Field>; the buttons take their downloaded image's size for
 // their width and height, so only their origin is a constant.
 constexpr CGFloat kCostNarrowLimelightX = 83.0;
@@ -93,7 +93,7 @@ constexpr CGFloat kNoButtonWideX = 249.0;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.isPad = (GetFontVariantFlag() != kFontVariantDefault);
+        self.isPad = (IsPad());
         [self setupView];
         self.exclusiveTouch = YES;
     }
@@ -106,7 +106,7 @@ constexpr CGFloat kNoButtonWideX = 249.0;
 #pragma mark Layout
 
 - (void)setupView {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
 
     self.alpha = 0.0;
     self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
@@ -172,8 +172,8 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     self.noButton.exclusiveTouch = YES;
     [self.contentView addSubview:self.noButton];
 
-    // Lay the labels and buttons out by font variant and theme.
-    if (fontVariant == kFontVariantDefault) {
+    // Lay the labels and buttons out by device idiom and theme.
+    if (!isPad) {
         RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
         if (theme == RBUserSettingDataThemeLimelight) {
             self.usePointLabel.frame = CGRectMake(
@@ -284,7 +284,7 @@ constexpr CGFloat kNoButtonWideX = 249.0;
                     setImage:[UIImage imageWithName:GetCustomizeFrameImagePath(itemType)]];
 
                 RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
-                if (GetFontVariantFlag() == kFontVariantDefault) {
+                if (!IsPad()) {
                     constexpr CGFloat kFrameInsetNarrow = 4.0;
                     if (theme == RBUserSettingDataThemeLimelight) {
                         weakSelf.imageView.frame = CGRectMake(

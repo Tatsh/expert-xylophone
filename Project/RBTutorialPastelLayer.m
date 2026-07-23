@@ -15,7 +15,7 @@ enum {
 // The layer's square side length before the display-rate scale is applied.
 static const CGFloat kPastelLayerBaseSize = 200.0;
 
-// Display-rate values selected by the font variant: half on the compact layout, unity otherwise.
+// Display-rate values selected by the iPad idiom: half on the compact layout, unity otherwise.
 static const CGFloat kPastelDisplayRateCompact = 0.5;
 static const CGFloat kPastelDisplayRateFull = 1.0;
 
@@ -31,7 +31,7 @@ static const CGFloat kPastelHeadAnchorX = 100.0;
 static const CGFloat kPastelHeadAnchorY = 76.0;
 
 // The retina clip rectangles cut out of the message artwork atlas, indexed by child. On the compact
-// font variant every field is halved. The runtime seeds an identical table shared with the sibling
+// iPad idiom every field is halved. The runtime seeds an identical table shared with the sibling
 // RBTutorialPastel class at load time (Ghidra 0x1b81d8, backing store 0x1003df3e0).
 static const CGRect kPastelClipRects[] = {
     {{360.0, 274.0}, {136.0, 96.0}}, // head
@@ -62,9 +62,9 @@ static const double kWavePositionXKeyTime2 = 0.1330;
 static const double kWavePositionYKeyTime0 = 0.1;
 static const double kWavePositionYKeyTime1 = 0.1330;
 static const double kWavePositionYKeyTime2 = 0.1660;
-static const CGFloat kWaveRotationTilt = -0.17453;   // -10 degrees, in radians.
-static const CGFloat kWaveRotationSwing = -0.78539;  // -45 degrees, in radians (-pi/4).
-static const CGFloat kWaveRotationReturn = 0.78539;  // +45 degrees, in radians (+pi/4).
+static const CGFloat kWaveRotationTilt = -0.17453;  // -10 degrees, in radians.
+static const CGFloat kWaveRotationSwing = -0.78539; // -45 degrees, in radians (-pi/4).
+static const CGFloat kWaveRotationReturn = 0.78539; // +45 degrees, in radians (+pi/4).
 static const double kWaveRotationKeyTime1 = 0.4;
 static const double kWaveRotationKeyTime2 = 0.6;
 static const double kWaveHeadKeyTime1 = 0.2;
@@ -75,12 +75,12 @@ static const double kWaveHeadKeyTime5 = 0.532;
 static const double kWaveHeadKeyTime6 = 0.6;
 static const double kWaveHeadKeyTime7 = 0.664;
 static const double kWaveHeadKeyTime8 = 0.733;
-static const CGFloat kWaveHeadTilt = -0.087266;  // -5 degrees, in radians.
+static const CGFloat kWaveHeadTilt = -0.087266; // -5 degrees, in radians.
 
 // Jump-animation timing and value constants.
 static const CGFloat kJumpDelayThreshold = 0.001;
 static const CGFloat kJumpRotationRise = -0.26362;
-static const CGFloat kJumpRotationSwing = 0.78539;  // +pi/4.
+static const CGFloat kJumpRotationSwing = 0.78539; // +pi/4.
 static const CGFloat kJumpPositionYDrift = 3.0;
 static const CGFloat kJumpPositionYDip = -6.0;
 static const double kJumpKeyTime1 = 0.125;
@@ -106,7 +106,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 #pragma mark Lifecycle
 
 - (instancetype)init {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.displayRate = kPastelDisplayRateCompact;
     } else {
         self.displayRate = kPastelDisplayRateFull;
@@ -121,15 +121,17 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
 - (CGRect)getClipList:(int)index {
     CGRect rect = kPastelClipRects[index];
-    if ((GetFontVariantFlag() & 1) == 0) {
-        rect = CGRectMake(rect.origin.x * kPastelHalf, rect.origin.y * kPastelHalf,
-                          rect.size.width * kPastelHalf, rect.size.height * kPastelHalf);
+    if (!IsPad()) {
+        rect = CGRectMake(rect.origin.x * kPastelHalf,
+                          rect.origin.y * kPastelHalf,
+                          rect.size.width * kPastelHalf,
+                          rect.size.height * kPastelHalf);
     }
     return rect;
 }
 
 - (CGPoint)getPosition:(int)index {
-    GetFontVariantFlag();
+    IsPad();
     return kPastelPositions[index];
 }
 
@@ -141,7 +143,8 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     CALayer *right = [CALayer layer];
     right.contents = (__bridge id)[image clipImageWithRect:rightClip].CGImage;
     right.frame = CGRectMake(self.displayRate * kPastelRightAnchorX - rightClip.size.width,
-                             self.displayRate * kPastelRightAnchorY, rightClip.size.width,
+                             self.displayRate * kPastelRightAnchorY,
+                             rightClip.size.width,
                              rightClip.size.height);
     right.anchorPoint = CGPointMake(0.0, 0.0);
     right.position = CGPointMake(self.displayRate * kPastelRightPositionX,
@@ -155,7 +158,8 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     left.contents = (__bridge id)[image clipImageWithRect:leftClip].CGImage;
     left.anchorPoint = CGPointMake(1.0, 0.0);
     left.frame = CGRectMake(self.displayRate * kPastelRightAnchorX - leftClip.size.width,
-                            self.displayRate * kPastelRightAnchorY, leftClip.size.width,
+                            self.displayRate * kPastelRightAnchorY,
+                            leftClip.size.width,
                             leftClip.size.height);
     [self addSublayer:left];
     self.leftLayer = left;
@@ -165,9 +169,11 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     CALayer *body = [CALayer layer];
     body.contents = (__bridge id)[image clipImageWithRect:bodyClip].CGImage;
     body.anchorPoint = CGPointMake(kPastelHalf, 1.0);
-    body.frame = CGRectMake(self.displayRate * kPastelBodyAnchorX - bodyClip.size.width * kPastelHalf,
-                            self.displayRate * kPastelBodyAnchorY - bodyClip.size.height,
-                            bodyClip.size.width, bodyClip.size.height);
+    body.frame =
+        CGRectMake(self.displayRate * kPastelBodyAnchorX - bodyClip.size.width * kPastelHalf,
+                   self.displayRate * kPastelBodyAnchorY - bodyClip.size.height,
+                   bodyClip.size.width,
+                   bodyClip.size.height);
     [self addSublayer:body];
     self.bodyLayer = body;
 
@@ -176,9 +182,11 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     CALayer *head = [CALayer layer];
     head.contents = (__bridge id)[image clipImageWithRect:headClip].CGImage;
     head.anchorPoint = CGPointMake(kPastelHalf, 1.0);
-    head.frame = CGRectMake(self.displayRate * kPastelHeadAnchorX - headClip.size.width * kPastelHalf,
-                            self.displayRate * kPastelHeadAnchorY - headClip.size.height * kPastelHalf,
-                            headClip.size.width, headClip.size.height);
+    head.frame =
+        CGRectMake(self.displayRate * kPastelHeadAnchorX - headClip.size.width * kPastelHalf,
+                   self.displayRate * kPastelHeadAnchorY - headClip.size.height * kPastelHalf,
+                   headClip.size.width,
+                   headClip.size.height);
     [self addSublayer:head];
     self.headLayer = head;
 }
@@ -191,7 +199,9 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     CAKeyframeAnimation *positionX = [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionX];
     positionX.repeatCount = 1.0;
     positionX.values = @[
-        @(origin.x), @(origin.x), @(origin.x + self.displayRate * kWavePositionXDrift),
+        @(origin.x),
+        @(origin.x),
+        @(origin.x + self.displayRate * kWavePositionXDrift),
         @(origin.x + self.displayRate * kWavePositionXDrift)
     ];
     positionX.keyTimes = @[ @0.0, @(kWavePositionXKeyTime1), @(kWavePositionXKeyTime2), @1.0 ];
@@ -207,7 +217,9 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     CAKeyframeAnimation *positionY = [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionY];
     positionY.repeatCount = 1.0;
     positionY.values = @[
-        @(origin.y), @(origin.y + self.displayRate * kWavePositionYDrift), @(kWavePositionYHold),
+        @(origin.y),
+        @(origin.y + self.displayRate * kWavePositionYDrift),
+        @(kWavePositionYHold),
         @(kWavePositionYHold)
     ];
     positionY.keyTimes =
@@ -238,8 +250,14 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     headRotation.repeatCount = 1.0;
     headRotation.values = @[ @0, @0, @(kWaveRotationSwing), @0 ];
     headRotation.keyTimes = @[
-        @(kWaveHeadKeyTime1), @(kWaveHeadKeyTime2), @(kWaveHeadKeyTime3), @(kWaveHeadKeyTime4),
-        @(kWaveHeadKeyTime5), @(kWaveHeadKeyTime6), @(kWaveHeadKeyTime7), @(kWaveHeadKeyTime8)
+        @(kWaveHeadKeyTime1),
+        @(kWaveHeadKeyTime2),
+        @(kWaveHeadKeyTime3),
+        @(kWaveHeadKeyTime4),
+        @(kWaveHeadKeyTime5),
+        @(kWaveHeadKeyTime6),
+        @(kWaveHeadKeyTime7),
+        @(kWaveHeadKeyTime8)
     ];
     headRotation.removedOnCompletion = NO;
     headRotation.fillMode = kCAFillModeForwards;
@@ -276,12 +294,24 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     rightRotation.duration = duration;
     rightRotation.repeatCount = 1.0;
     rightRotation.values = @[
-        @0, @0, @(kJumpRotationSwing), @(kJumpRotationRise), @(kJumpRotationRise),
-        @(kJumpRotationSwing), @0, @0
+        @0,
+        @0,
+        @(kJumpRotationSwing),
+        @(kJumpRotationRise),
+        @(kJumpRotationRise),
+        @(kJumpRotationSwing),
+        @0,
+        @0
     ];
     rightRotation.keyTimes = @[
-        @0.0f, @(kJumpKeyTime1), @(kJumpKeyTime2), @(kJumpKeyTime3), @(kJumpKeyTime4),
-        @(kJumpKeyTime5), @(kJumpKeyTime6), @1.0f
+        @0.0f,
+        @(kJumpKeyTime1),
+        @(kJumpKeyTime2),
+        @(kJumpKeyTime3),
+        @(kJumpKeyTime4),
+        @(kJumpKeyTime5),
+        @(kJumpKeyTime6),
+        @1.0f
     ];
     rightRotation.removedOnCompletion = NO;
     rightRotation.fillMode = kCAFillModeForwards;
@@ -290,28 +320,52 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     leftRotation.duration = duration;
     leftRotation.repeatCount = 1.0;
     leftRotation.values = @[
-        @0, @(kJumpRotationSwing), @(kJumpRotationRise), @(kJumpRotationRise), @(kJumpRotationSwing),
-        @0, @0, @0
+        @0,
+        @(kJumpRotationSwing),
+        @(kJumpRotationRise),
+        @(kJumpRotationRise),
+        @(kJumpRotationSwing),
+        @0,
+        @0,
+        @0
     ];
     leftRotation.keyTimes = @[
-        @0.0f, @(kJumpKeyTime1), @(kJumpKeyTime2), @(kJumpKeyTime3), @(kJumpKeyTime4),
-        @(kJumpKeyTime5), @(kJumpKeyTime6), @1.0f
+        @0.0f,
+        @(kJumpKeyTime1),
+        @(kJumpKeyTime2),
+        @(kJumpKeyTime3),
+        @(kJumpKeyTime4),
+        @(kJumpKeyTime5),
+        @(kJumpKeyTime6),
+        @1.0f
     ];
     leftRotation.removedOnCompletion = NO;
     leftRotation.fillMode = kCAFillModeForwards;
 
     CGPoint headOrigin = self.headLayer.position;
-    CAKeyframeAnimation *headPosition = [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionY];
+    CAKeyframeAnimation *headPosition =
+        [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionY];
     headPosition.duration = duration;
     headPosition.repeatCount = 1.0;
     headPosition.values = @[
-        @(headOrigin.y), @(headOrigin.y + self.displayRate * kJumpPositionYDrift), @(headOrigin.y),
-        @(headOrigin.y), @(headOrigin.y + self.displayRate * kJumpPositionYDrift), @(headOrigin.y),
-        @(headOrigin.y), @(headOrigin.y)
+        @(headOrigin.y),
+        @(headOrigin.y + self.displayRate * kJumpPositionYDrift),
+        @(headOrigin.y),
+        @(headOrigin.y),
+        @(headOrigin.y + self.displayRate * kJumpPositionYDrift),
+        @(headOrigin.y),
+        @(headOrigin.y),
+        @(headOrigin.y)
     ];
     headPosition.keyTimes = @[
-        @0.0f, @(kJumpKeyTime1), @(kJumpKeyTime2), @(kJumpKeyTime3), @(kJumpKeyTime4),
-        @(kJumpKeyTime5), @(kJumpKeyTime6), @1.0f
+        @0.0f,
+        @(kJumpKeyTime1),
+        @(kJumpKeyTime2),
+        @(kJumpKeyTime3),
+        @(kJumpKeyTime4),
+        @(kJumpKeyTime5),
+        @(kJumpKeyTime6),
+        @1.0f
     ];
     headPosition.timingFunctions = @[
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
@@ -323,18 +377,29 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     headPosition.fillMode = kCAFillModeForwards;
 
     CGPoint baseOrigin = self.position;
-    CAKeyframeAnimation *basePosition = [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionY];
+    CAKeyframeAnimation *basePosition =
+        [CAKeyframeAnimation animationWithKeyPath:kKeyPathPositionY];
     basePosition.duration = duration;
     basePosition.repeatCount = 1.0;
     basePosition.values = @[
-        @(baseOrigin.y), @(baseOrigin.y), @(baseOrigin.y + self.displayRate * kJumpPositionYDip),
+        @(baseOrigin.y),
+        @(baseOrigin.y),
         @(baseOrigin.y + self.displayRate * kJumpPositionYDip),
-        @(baseOrigin.y + self.displayRate * kJumpPositionYDip), @(baseOrigin.y), @(baseOrigin.y),
+        @(baseOrigin.y + self.displayRate * kJumpPositionYDip),
+        @(baseOrigin.y + self.displayRate * kJumpPositionYDip),
+        @(baseOrigin.y),
+        @(baseOrigin.y),
         @(baseOrigin.y)
     ];
     basePosition.keyTimes = @[
-        @0.0f, @(kJumpKeyTime1), @(kJumpKeyTime2), @(kJumpKeyTime3), @(kJumpKeyTime4),
-        @(kJumpKeyTime5), @(kJumpKeyTime6), @1.0f
+        @0.0f,
+        @(kJumpKeyTime1),
+        @(kJumpKeyTime2),
+        @(kJumpKeyTime3),
+        @(kJumpKeyTime4),
+        @(kJumpKeyTime5),
+        @(kJumpKeyTime6),
+        @1.0f
     ];
     basePosition.timingFunctions = @[
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
@@ -351,20 +416,18 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
         [self.headLayer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
         [self addAnimation:basePosition forKey:kPastelAnimationKeyBase];
     } else {
-        [UIView animateWithDuration:delay
-                              delay:0.0
-                            options:0
-                         animations:^{
-                           /** @ghidraAddress 0x1b76c4 */
-                           [self.rightLayer addAnimation:rightRotation
-                                                  forKey:kPastelAnimationKeyRight];
-                           [self.leftLayer addAnimation:leftRotation
-                                                 forKey:kPastelAnimationKeyLeft];
-                           [self.headLayer addAnimation:headPosition
-                                                 forKey:kPastelAnimationKeyHead];
-                           [self addAnimation:basePosition forKey:kPastelAnimationKeyBase];
-                         }
-                         completion:nil];
+        [UIView
+            animateWithDuration:delay
+                          delay:0.0
+                        options:0
+                     animations:^{
+                       /** @ghidraAddress 0x1b76c4 */
+                       [self.rightLayer addAnimation:rightRotation forKey:kPastelAnimationKeyRight];
+                       [self.leftLayer addAnimation:leftRotation forKey:kPastelAnimationKeyLeft];
+                       [self.headLayer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
+                       [self addAnimation:basePosition forKey:kPastelAnimationKeyBase];
+                     }
+                     completion:nil];
     }
 }
 

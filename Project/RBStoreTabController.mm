@@ -179,7 +179,7 @@ static NSString *const kBackButtonTitle = @"Back";
     self.coverView = cover;
 
     // The modal download dialog is sized (and its message font sized) for the phone or pad layout.
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         CGRect frame = CGRectMake(0, 0, kDialogWidthPhone, kDialogHeightPhone);
         self.modalDialog = [[StoreDialogView alloc] initWithFrame:frame];
         self.modalDialog.labelMessage.font = [UIFont systemFontOfSize:kDialogMessageFontSizePhone];

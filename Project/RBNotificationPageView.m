@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBNotificationPageView). Verified
-//  against the arm64 disassembly: -setupView's theme- and font-variant-dependent web-view inset
+//  against the arm64 disassembly: -setupView's theme- and idiom-dependent web-view inset
 //  was recovered from the soft-float register moves the decompiler folds into pseudo-variables,
 //  and -webView:shouldStartLoadWithRequest:navigationType:'s deep-link routing was read from raw
 //  branch structure. This class reaches only Objective-C collaborators (no C++ engine), so it is a
@@ -22,7 +22,7 @@
 static const NSInteger kMusicMenuPopupViewTypeInformation = 7;
 
 // The web view is inset below the title bar by one title-bar height per satisfied condition: once
-// for any non-Classic theme, and once again for the wide (non-default) font variant.
+// for any non-Classic theme, and once again for the iPad (wide) layout.
 static const CGFloat kWebViewTitleBarInset = 32.0;
 
 // The centre is the midpoint of the inset content region.
@@ -82,9 +82,9 @@ static NSString *const kDisableTouchCalloutScript =
     appDelegate.infoLastUpdateTimeString = nil;
 
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
     CGFloat inset = (thema != RBUserSettingDataThemeClassic ? kWebViewTitleBarInset : 0.0) +
-                    (fontVariant != kFontVariantDefault ? kWebViewTitleBarInset : 0.0);
+                    (isPad ? kWebViewTitleBarInset : 0.0);
 
     CGRect contentBounds = self.contentView.bounds;
     RBWebView *webView = [[RBWebView alloc]

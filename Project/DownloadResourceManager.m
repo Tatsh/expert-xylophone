@@ -67,8 +67,8 @@ static NSString *const kHelpBackgroundImageName = @"how_bg";
 static NSString *const kGradientImageName = @"set_grad";
 static NSString *const kHelpBarImageName = @"how_bar";
 // The six help-page artwork names, indexed by page.
-static NSString *const kHelpPageImageNames[] = {@"how_1", @"how_2", @"how_3",
-                                                @"how_4", @"how_5", @"how_6"};
+static NSString *const kHelpPageImageNames[] = {
+    @"how_1", @"how_2", @"how_3", @"how_4", @"how_5", @"how_6"};
 
 // The tag the update-required alert carries so its button handling can be told apart.
 enum { kUpdateRequiredAlertTag = 3 };
@@ -94,7 +94,7 @@ static const NSTimeInterval kFadeOutDuration = 1.0;
 static const CGFloat kDownloadProgressScale = 0.5;
 static const CGFloat kUnzipProgressScale = 0.5;
 
-// The interface-orientation masks this flow permits, by font variant. The wide font variant is
+// The interface-orientation masks this flow permits, by device idiom. The iPad (wide) layout is
 // locked to the two portrait orientations (mask value 6); every other device allows all four.
 enum {
     kOrientationMaskWideVariant =
@@ -102,7 +102,7 @@ enum {
     kOrientationMaskDefault = UIInterfaceOrientationMaskAll,
 };
 
-// Help-carousel and pastel-container canvas sizes, by font variant, and the inter-container gutter.
+// Help-carousel and pastel-container canvas sizes, by device idiom, and the inter-container gutter.
 static const CGFloat kHelpCanvasSize = 320;
 static const CGFloat kWideHelpCanvasWidth = 670;
 static const CGFloat kWideHelpCanvasHeight = 544;
@@ -121,8 +121,8 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 @interface RBResourceDownloadViewController () {
     // Private ivars with no accessor: the pop-animation guard flag and the help-page count. Their
     // binary names are preserved.
-    BOOL m_Animating;   // +0x8
-    int m_PageNum;      // +0xc
+    BOOL m_Animating; // +0x8
+    int m_PageNum;    // +0xc
 }
 @end
 
@@ -135,8 +135,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return GetFontVariantFlag() == kFontVariantDefault ? kOrientationMaskDefault
-                                                        : kOrientationMaskWideVariant;
+    return !IsPad() ? kOrientationMaskDefault : kOrientationMaskWideVariant;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -157,8 +156,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self setupView];
     [[RBBGMManager getInstance] LoadMusicType:kResourceDownloadBgmType Loop:YES];
     [[RBBGMManager getInstance] PlayMusic:kResourceDownloadBgmVolume];
@@ -172,13 +170,13 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     __weak RBResourceDownloadViewController *weakSelf = self;
     [UIView animateWithDuration:kFadeOutDuration
         animations:^{
-            /** @ghidraAddress 0x1a468 */
-            weakFadeImageView.hidden = YES;
+          /** @ghidraAddress 0x1a468 */
+          weakFadeImageView.hidden = YES;
         }
         completion:^(BOOL finished) {
-            /** @ghidraAddress 0x1a4d8 */
-            [weakSelf animation];
-            [weakSelf download];
+          /** @ghidraAddress 0x1a4d8 */
+          [weakSelf animation];
+          [weakSelf download];
         }];
     [self.bgEffectView startAnimation];
 }
@@ -252,81 +250,82 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                                           contentType:nil];
 
     __weak RBResourceDownloadViewController *weakSelf = self;
-    [self.downloader startDownloadingWithProceed:^(Downloader *downloader){
-                     }
+    [self.downloader
+        startDownloadingWithProceed:^(Downloader *downloader) {
+        }
         success:^(Downloader *downloader) {
-            /** @ghidraAddress 0x1b0c8 */
-            NSDictionary *json = [downloader getDataInJSON];
-            if (json[kResponseKeyError]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    /** @ghidraAddress 0x1b680 */
-                    [UIAlertView showNetworkErrorWithDelegate:weakSelf];
-                });
-                return;
-            }
-            weakSelf.version = json[kResponseKeyVersion];
-            weakSelf.downloadPath = json[kResponseKeyItemURL];
-            [AppDelegate appDelegate].serverTime = json[kResponseKeyTime];
+          /** @ghidraAddress 0x1b0c8 */
+          NSDictionary *json = [downloader getDataInJSON];
+          if (json[kResponseKeyError]) {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x1b680 */
+                [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+              });
+              return;
+          }
+          weakSelf.version = json[kResponseKeyVersion];
+          weakSelf.downloadPath = json[kResponseKeyItemURL];
+          [AppDelegate appDelegate].serverTime = json[kResponseKeyTime];
 
-            // "App" carries the minimum required application version; "UserID"/"Passwd" carry the
-            // refreshed server credentials.
-            NSString *requiredAppVersion = json[kResponseKeyApp];
-            id userID = json[kResponseKeyUserID];
-            id passwd = json[kResponseKeyPasswd];
+          // "App" carries the minimum required application version; "UserID"/"Passwd" carry the
+          // refreshed server credentials.
+          NSString *requiredAppVersion = json[kResponseKeyApp];
+          id userID = json[kResponseKeyUserID];
+          id passwd = json[kResponseKeyPasswd];
 
-            // Show the credential-error alert only when the returned identity is internally
-            // inconsistent. The binary expresses this as a short-circuit followed by an obfuscated
-            // boolean; it is reproduced here branch for branch.
-            BOOL hasPasswd = passwd != nil;
-            BOOL hasUserID = userID != nil;
-            BOOL hasServerData = serverData != nil;
-            BOOL credentialsAccepted = (!hasPasswd && !hasUserID && hasServerData);
-            if (!credentialsAccepted) {
-                BOOL missingServerData = !hasServerData;
-                BOOL bothPresent = hasPasswd ? hasUserID : NO;
-                if (!bothPresent) {
-                    BOOL both = hasPasswd && (hasUserID && missingServerData);
-                    if (missingServerData ^ both) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            /** @ghidraAddress 0x1b6f8 */
-                            [UIAlertView showNetworkErrorWithDelegate:weakSelf];
-                        });
-                        return;
-                    }
-                }
-            }
-            [AppDelegate setServerData:userID andB:passwd];
-            RebuildDeviceDescriptionString();
+          // Show the credential-error alert only when the returned identity is internally
+          // inconsistent. The binary expresses this as a short-circuit followed by an obfuscated
+          // boolean; it is reproduced here branch for branch.
+          BOOL hasPasswd = passwd != nil;
+          BOOL hasUserID = userID != nil;
+          BOOL hasServerData = serverData != nil;
+          BOOL credentialsAccepted = (!hasPasswd && !hasUserID && hasServerData);
+          if (!credentialsAccepted) {
+              BOOL missingServerData = !hasServerData;
+              BOOL bothPresent = hasPasswd ? hasUserID : NO;
+              if (!bothPresent) {
+                  BOOL both = hasPasswd && (hasUserID && missingServerData);
+                  if (missingServerData ^ both) {
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                        /** @ghidraAddress 0x1b6f8 */
+                        [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+                      });
+                      return;
+                  }
+              }
+          }
+          [AppDelegate setServerData:userID andB:passwd];
+          RebuildDeviceDescriptionString();
 
-            id campaign = json[kResponseKeyCol];
-            if (campaign) {
-                [[RBCampaignData sharedInstance] parseDictionary:campaign];
-            }
+          id campaign = json[kResponseKeyCol];
+          if (campaign) {
+              [[RBCampaignData sharedInstance] parseDictionary:campaign];
+          }
 
-            if (![AppDelegate appDelegate].isSkipUpdate &&
-                [GetBundleVersionString() compare:requiredAppVersion
-                                          options:NSNumericSearch] == NSOrderedAscending) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    /** @ghidraAddress 0x1b770 */
-                    [UIAlertView showAlertLatestApplication:weakSelf];
-                });
-                return;
-            }
-            if (weakSelf.downloadPath) {
-                [weakSelf download];
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    /** @ghidraAddress 0x1b7b4 */
-                    [UIAlertView showNetworkErrorWithDelegate:weakSelf];
-                });
-            }
+          if (![AppDelegate appDelegate].isSkipUpdate &&
+              [GetBundleVersionString() compare:requiredAppVersion
+                                        options:NSNumericSearch] == NSOrderedAscending) {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x1b770 */
+                [UIAlertView showAlertLatestApplication:weakSelf];
+              });
+              return;
+          }
+          if (weakSelf.downloadPath) {
+              [weakSelf download];
+          } else {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x1b7b4 */
+                [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+              });
+          }
         }
         failure:^(Downloader *downloader) {
-            /** @ghidraAddress 0x1b890 */
-            dispatch_async(dispatch_get_main_queue(), ^{
-                /** @ghidraAddress 0x1b908 */
-                [UIAlertView showNetworkErrorWithDelegate:weakSelf];
-            });
+          /** @ghidraAddress 0x1b890 */
+          dispatch_async(dispatch_get_main_queue(), ^{
+            /** @ghidraAddress 0x1b908 */
+            [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+          });
         }];
 }
 
@@ -343,8 +342,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 - (void)downloadWithURLString:(NSString *)urlString {
     NSString *fileName = urlString.lastPathComponent;
     NSString *documentPath = GetDownloadDirectoryPath();
-    NSString *targetPath =
-        [GetImageAssetDirectoryPath() stringByDeletingLastPathComponent];
+    NSString *targetPath = [GetImageAssetDirectoryPath() stringByDeletingLastPathComponent];
     NSString *downloadFilePath = [documentPath stringByAppendingPathComponent:fileName];
 
     self.fileInfoDic = @{
@@ -355,8 +353,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
         kFileInfoKeyPassword : kArchivePassword
     };
 
-    NSURLRequest *urlRequest =
-        [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     [NSFileManager createDirectorysAtPath:documentPath];
     [NSFileManager createDirectorysAtPath:targetPath];
     [[NSFileManager defaultManager] removeItemAtPath:downloadFilePath error:nil];
@@ -386,18 +383,17 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 - (void)unzip:(NSDictionary *)info {
     [[NSFileManager defaultManager] removeItemAtPath:GetImageAssetDirectoryPath() error:nil];
-    BOOL unzipped =
-        [SSZipArchive unzipFileAtPath:info[kFileInfoKeyTargetPath]
-                        toDestination:info[kFileInfoKeyDocumentPath]
-                            overwrite:YES
-                             password:info[kFileInfoKeyPassword]
-                                error:nil
-                             delegate:self];
+    BOOL unzipped = [SSZipArchive unzipFileAtPath:info[kFileInfoKeyTargetPath]
+                                    toDestination:info[kFileInfoKeyDocumentPath]
+                                        overwrite:YES
+                                         password:info[kFileInfoKeyPassword]
+                                            error:nil
+                                         delegate:self];
     if (!unzipped) {
         self.popImageView.hidden = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
-            /** @ghidraAddress 0x1c094 */
-            [UIAlertView showDownloadErrorWithDelegate:self];
+          /** @ghidraAddress 0x1c094 */
+          [UIAlertView showDownloadErrorWithDelegate:self];
         });
         self.downloadPath = nil;
     }
@@ -420,8 +416,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 + (BOOL)checkFile {
     NSString *imageAssetPath = GetImageAssetDirectoryPath();
-    NSString *manifestArchivePath =
-        [imageAssetPath stringByAppendingString:kManifestArchiveSuffix];
+    NSString *manifestArchivePath = [imageAssetPath stringByAppendingString:kManifestArchiveSuffix];
     BOOL unzipped = [SSZipArchive unzipFileAtPath:manifestArchivePath
                                     toDestination:GetImageAssetDirectoryPath()
                                         overwrite:YES
@@ -442,9 +437,9 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     }
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    [fileManager removeItemAtPath:[GetImageAssetDirectoryPath()
-                                      stringByAppendingString:kManifestListSuffix]
-                            error:nil];
+    [fileManager
+        removeItemAtPath:[GetImageAssetDirectoryPath() stringByAppendingString:kManifestListSuffix]
+                   error:nil];
     NSArray *entries = [manifest componentsSeparatedByString:kManifestLineSeparator];
     if (entries == nil) {
         return NO;
@@ -452,9 +447,8 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
     BOOL allPresent = YES;
     for (NSUInteger i = 0; i < entries.count; ++i) {
-        NSString *filePath =
-            [[[GetImageAssetDirectoryPath() stringByAppendingString:kPathSeparator]
-                stringByAppendingString:entries[i]] copy];
+        NSString *filePath = [[[GetImageAssetDirectoryPath() stringByAppendingString:kPathSeparator]
+            stringByAppendingString:entries[i]] copy];
         allPresent = allPresent && [fileManager fileExistsAtPath:filePath];
         if (!allPresent) {
             break;
@@ -467,8 +461,8 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 - (void)URLSession:(NSURLSession *)session
                  downloadTask:(NSURLSessionDownloadTask *)downloadTask
-    didWriteData:(int64_t)bytesWritten
-    totalBytesWritten:(int64_t)totalBytesWritten
+                 didWriteData:(int64_t)bytesWritten
+            totalBytesWritten:(int64_t)totalBytesWritten
     totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     float progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
     if (progress < 1.0f) {
@@ -479,7 +473,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 }
 
 - (void)URLSession:(NSURLSession *)session
-      downloadTask:(NSURLSessionDownloadTask *)downloadTask
+          downloadTask:(NSURLSessionDownloadTask *)downloadTask
      didResumeAtOffset:(int64_t)fileOffset
     expectedTotalBytes:(int64_t)expectedTotalBytes {
     [self performSelectorOnMainThread:@selector(updateProgress:)
@@ -491,8 +485,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                  downloadTask:(NSURLSessionDownloadTask *)downloadTask
     didFinishDownloadingToURL:(NSURL *)location {
     NSError *error = nil;
-    NSURL *targetURL =
-        [NSURL fileURLWithPath:self.fileInfoDic[kFileInfoKeyTargetPath]];
+    NSURL *targetURL = [NSURL fileURLWithPath:self.fileInfoDic[kFileInfoKeyTargetPath]];
     [[NSFileManager defaultManager] moveItemAtURL:location toURL:targetURL error:&error];
     if (error == nil) {
         self.progressMode = kProgressModeUnzip;
@@ -568,42 +561,45 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     CGAffineTransform base =
         self.popImageView ? self.popImageView.transform : CGAffineTransformIdentity;
     CGRect popFrame = self.popImageView.frame;
-    CGAffineTransform translate = CGAffineTransformTranslate(
-        base, popFrame.size.width * kPopTranslateXFactor, popFrame.size.height / kPopTranslateYDivisor);
+    CGAffineTransform translate =
+        CGAffineTransformTranslate(base,
+                                   popFrame.size.width * kPopTranslateXFactor,
+                                   popFrame.size.height / kPopTranslateYDivisor);
     self.popImageView.transform = CGAffineTransformConcat(scale, translate);
 
     __weak RBResourceDownloadViewController *weakSelf = self;
     [UIView animateWithDuration:kPopAnimationDuration
         animations:^{
-            /** @ghidraAddress 0x1c628 */
-            weakSelf.popImageView.alpha = 1.0;
-            weakSelf.popImageView.transform = CGAffineTransformIdentity;
+          /** @ghidraAddress 0x1c628 */
+          weakSelf.popImageView.alpha = 1.0;
+          weakSelf.popImageView.transform = CGAffineTransformIdentity;
         }
         completion:^(BOOL finished) {
-            /** @ghidraAddress 0x1c574 */
-            __weak RBResourceDownloadViewController *retryWeakSelf = weakSelf;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kAnimationRetryDelayNanos),
-                           dispatch_get_main_queue(), ^{
-                               /** @ghidraAddress 0x1aa68 */
-                               [retryWeakSelf animation];
-                           });
+          /** @ghidraAddress 0x1c574 */
+          __weak RBResourceDownloadViewController *retryWeakSelf = weakSelf;
+          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kAnimationRetryDelayNanos),
+                         dispatch_get_main_queue(),
+                         ^{
+                           /** @ghidraAddress 0x1aa68 */
+                           [retryWeakSelf animation];
+                         });
         }];
 }
 
 #pragma mark - View construction
 
 // The layout constants below are the sprite-atlas crop rectangles and container sizes baked into
-// the binary as double-precision literals, kept per font variant. The frame arithmetic that the
+// the binary as double-precision literals, kept per device idiom. The frame arithmetic that the
 // decompiler recovered for several of the setFrame: calls is soft-float register-aliased and thus
 // unreliable in its exact operand order; the reconstruction preserves the structure, the atlas
 // crops, and the values that are recoverable, and centres the frames from the container sizes.
 
-// dl_info atlas crop rectangles (standard font variant).
+// dl_info atlas crop rectangles (phone (standard) layout).
 static const CGRect kPastelClipRect = {{0, 0}, {86, 91}};
 static const CGRect kPopClipRect = {{87, 0}, {128, 84}};
 static const CGRect kTrackClipRect = {{0, 92}, {155, 7}};
 static const CGRect kFillClipRect = {{0, 100}, {155, 7}};
-// Progress-meter placement offsets within the pastel container (standard font variant).
+// Progress-meter placement offsets within the pastel container (phone (standard) layout).
 static const CGFloat kPastelImageOriginX = 42;
 static const CGFloat kPastelImageOriginY = 32;
 static const CGFloat kTrackImageOriginX = 5;
@@ -612,7 +608,7 @@ static const CGFloat kTrackImageOriginY = 78;
 static const CGFloat kMeterSpriteScale = 0.5;
 // The resizable cap inset used for the help background (and the wide-variant progress fill).
 static const CGFloat kHelpBackgroundCapInset = 10;
-// The help-carousel container geometry (standard font variant).
+// The help-carousel container geometry (phone (standard) layout).
 static const CGFloat kHelpScrollBackgroundOriginX = 2;
 static const CGFloat kHelpScrollBackgroundWidth = 316;
 static const CGFloat kHelpScrollBackgroundHeight = 320;
@@ -626,20 +622,18 @@ static const CGFloat kPageIndicatorTintWhite = 0.667;
 static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
 
 - (void)setupView {
-    // Wide-font-variant devices show an animated particle background; every other device shows the
+    // iPad devices show an animated particle background; every other device shows the
     // static "dl_bg" artwork stretched to the view bounds.
-    if (GetFontVariantFlag() == kFontVariantDefault) {
-        UIImageView *background =
-            [[UIImageView alloc] initWithImage:[UIImage imageWithName:kBackgroundImageName
-                                                             useCache:NO]];
+    if (!IsPad()) {
+        UIImageView *background = [[UIImageView alloc]
+            initWithImage:[UIImage imageWithName:kBackgroundImageName useCache:NO]];
         background.frame = self.view.bounds;
         background.autoresizingMask =
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         background.contentMode = UIViewContentModeScaleAspectFill;
         [self.view addSubview:background];
     } else {
-        self.bgEffectView =
-            [[RBResoureDownloadBGEffectView alloc] initWithFrame:self.view.bounds];
+        self.bgEffectView = [[RBResoureDownloadBGEffectView alloc] initWithFrame:self.view.bounds];
         [self.bgEffectView setupView];
         [self.view addSubview:self.bgEffectView];
     }
@@ -648,7 +642,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // The wide variant lays the help carousel out over a 670x544 canvas; the standard variant uses
     // a square 320x320 help canvas and a 320-tall pastel container.
     self->m_PageNum = kHelpPageCount;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.helpView =
             [[UIView alloc] initWithFrame:CGRectMake(0, 0, kHelpCanvasSize, kHelpCanvasSize)];
         self.pastelView =
@@ -670,28 +664,31 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
 
     UIImage *pastel = [info clipImageWithRect:kPastelClipRect];
     self.pastelImageView = [[UIImageView alloc] initWithImage:pastel];
-    self.pastelImageView.frame =
-        CGRectMake(kPastelImageOriginX, kPastelImageOriginY, pastel.size.width * kMeterSpriteScale,
-                   pastel.size.height * kMeterSpriteScale);
+    self.pastelImageView.frame = CGRectMake(kPastelImageOriginX,
+                                            kPastelImageOriginY,
+                                            pastel.size.width * kMeterSpriteScale,
+                                            pastel.size.height * kMeterSpriteScale);
     [self.pastelView addSubview:self.pastelImageView];
 
     UIImage *pop = [info clipImageWithRect:kPopClipRect];
     self.popImageView = [[UIImageView alloc] initWithImage:pop];
-    self.popImageView.frame = CGRectMake(0, 0, pop.size.width * kMeterSpriteScale,
-                                         pop.size.height * kMeterSpriteScale);
+    self.popImageView.frame =
+        CGRectMake(0, 0, pop.size.width * kMeterSpriteScale, pop.size.height * kMeterSpriteScale);
     [self.pastelView addSubview:self.popImageView];
 
     UIImage *track = [info clipImageWithRect:kTrackClipRect];
     UIImage *fill = [info clipImageWithRect:kFillClipRect];
-    if (GetFontVariantFlag() != kFontVariantDefault) {
-        fill = [fill resizableImageWithCapInsets:UIEdgeInsetsMake(
-                                                     kHelpBackgroundCapInset, kHelpBackgroundCapInset,
-                                                     kHelpBackgroundCapInset, kHelpBackgroundCapInset)];
+    if (IsPad()) {
+        fill = [fill resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset,
+                                                                  kHelpBackgroundCapInset,
+                                                                  kHelpBackgroundCapInset,
+                                                                  kHelpBackgroundCapInset)];
     }
     self.trackImageView = [[UIImageView alloc] initWithImage:track];
-    self.trackImageView.frame =
-        CGRectMake(kTrackImageOriginX, kTrackImageOriginY, track.size.width * kMeterSpriteScale,
-                   track.size.height * kMeterSpriteScale);
+    self.trackImageView.frame = CGRectMake(kTrackImageOriginX,
+                                           kTrackImageOriginY,
+                                           track.size.width * kMeterSpriteScale,
+                                           track.size.height * kMeterSpriteScale);
     [self.pastelView addSubview:self.trackImageView];
 
     self.progressImageView = [[UIImageView alloc] initWithImage:fill];
@@ -699,18 +696,20 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
         CGRectMake(0, 0, fill.size.width * kMeterSpriteScale, fill.size.height * kMeterSpriteScale);
     self.progressImageView.clipsToBounds = YES;
     [self.trackImageView addSubview:self.progressImageView];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.view addSubview:self.pastelView];
     }
 
     // The help carousel: a resizable background, a paged scroll view, a gradient header carrying the
     // "how_bar" caption, a page control, and one "how_N" page per help page.
     UIImage *helpBackground = [[UIImage imageWithName:kHelpBackgroundImageName useCache:NO]
-        resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset, kHelpBackgroundCapInset,
-                                                     kHelpBackgroundCapInset, kHelpBackgroundCapInset)];
+        resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset,
+                                                     kHelpBackgroundCapInset,
+                                                     kHelpBackgroundCapInset,
+                                                     kHelpBackgroundCapInset)];
     self.scrollBGView = [[UIImageView alloc] initWithImage:helpBackground];
-    self.scrollBGView.frame = CGRectMake(kHelpScrollBackgroundOriginX, 0, kHelpScrollBackgroundWidth,
-                                         kHelpScrollBackgroundHeight);
+    self.scrollBGView.frame = CGRectMake(
+        kHelpScrollBackgroundOriginX, 0, kHelpScrollBackgroundWidth, kHelpScrollBackgroundHeight);
     [self.helpView addSubview:self.scrollBGView];
 
     self.scrollView = [[UIScrollView alloc] initWithFrame:kHelpScrollViewFrame];
@@ -724,13 +723,15 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.helpView addSubview:self.scrollView];
 
-    UIImageView *gradient = [[UIImageView alloc]
-        initWithImage:[UIImage imageWithName:kGradientImageName useCache:NO]];
+    UIImageView *gradient =
+        [[UIImageView alloc] initWithImage:[UIImage imageWithName:kGradientImageName useCache:NO]];
     gradient.frame = kHelpGradientFrame;
     UIImage *helpBarImage = [UIImage imageWithName:kHelpBarImageName useCache:NO];
     UIImageView *helpBar = [[UIImageView alloc] initWithImage:helpBarImage];
     helpBar.frame = CGRectMake((kHelpGradientFrame.size.width - helpBarImage.size.width) * 0.5,
-                               kHelpBarTop, helpBarImage.size.width, helpBarImage.size.height);
+                               kHelpBarTop,
+                               helpBarImage.size.width,
+                               helpBarImage.size.height);
     [gradient addSubview:helpBar];
     [self.helpView addSubview:gradient];
 
@@ -768,10 +769,9 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     UIImage *pageImage = [UIImage imageWithName:kHelpPageImageNames[index] useCache:NO];
     UIImageView *pageView = [[UIImageView alloc] initWithImage:pageImage];
     CGRect scrollFrame = self.scrollView.frame;
-    pageView.frame = CGRectMake((CGFloat)index * scrollFrame.size.width, 0, pageImage.size.width,
-                                pageImage.size.height);
-    pageView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    pageView.frame = CGRectMake(
+        (CGFloat)index * scrollFrame.size.width, 0, pageImage.size.width, pageImage.size.height);
+    pageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.scrollView addSubview:pageView];
 }
 
@@ -782,35 +782,40 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // soft-float mangled, so the reconstruction centres both containers from their fixed sizes and a
     // 20-point gutter.
     CGRect bounds = self.view.bounds;
-    BOOL sideBySide = GetFontVariantFlag() != kFontVariantDefault ||
-                      bounds.size.height <= bounds.size.width;
+    BOOL sideBySide = IsPad() || bounds.size.height <= bounds.size.width;
 
     CGSize helpSize = self.helpView.frame.size;
     CGSize pastelSize = self.pastelView.frame.size;
     if (sideBySide) {
         CGFloat helpX =
-            (CGFloat)(((bounds.size.width - helpSize.width) - pastelSize.width - kLayoutGap) * 0.5f);
-        self.helpView.frame = CGRectMake(helpX, (CGFloat)((bounds.size.height - helpSize.height) * 0.5f),
-                                         helpSize.width, helpSize.height);
+            (CGFloat)(((bounds.size.width - helpSize.width) - pastelSize.width - kLayoutGap) *
+                      0.5f);
+        self.helpView.frame = CGRectMake(helpX,
+                                         (CGFloat)((bounds.size.height - helpSize.height) * 0.5f),
+                                         helpSize.width,
+                                         helpSize.height);
         self.pastelView.frame =
             CGRectMake(helpX + helpSize.width + kLayoutGap,
-                       (CGFloat)((bounds.size.height - pastelSize.height) * 0.5f), pastelSize.width,
+                       (CGFloat)((bounds.size.height - pastelSize.height) * 0.5f),
+                       pastelSize.width,
                        pastelSize.height);
     } else {
-        CGFloat helpY = (CGFloat)(((bounds.size.height - helpSize.height) - pastelSize.height -
-                                   kLayoutGap) *
-                                  0.5f);
-        self.helpView.frame =
-            CGRectMake((bounds.size.width - helpSize.width) * 0.5f, helpY, helpSize.width, helpSize.height);
+        CGFloat helpY =
+            (CGFloat)(((bounds.size.height - helpSize.height) - pastelSize.height - kLayoutGap) *
+                      0.5f);
+        self.helpView.frame = CGRectMake(
+            (bounds.size.width - helpSize.width) * 0.5f, helpY, helpSize.width, helpSize.height);
         self.pastelView.frame = CGRectMake((bounds.size.width - pastelSize.width) * 0.5f,
-                                           helpY + helpSize.height + kLayoutGap, pastelSize.width,
+                                           helpY + helpSize.height + kLayoutGap,
+                                           pastelSize.width,
                                            pastelSize.height);
     }
 }
 
 - (void)layoutScrollView {
     CGRect bounds = self.scrollView.bounds;
-    self.scrollView.contentSize = CGSizeMake(bounds.size.width * self->m_PageNum, bounds.size.height);
+    self.scrollView.contentSize =
+        CGSizeMake(bounds.size.width * self->m_PageNum, bounds.size.height);
 }
 
 #pragma mark - Progress
@@ -820,19 +825,19 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     float fraction = progress.floatValue;
     CGFloat trackWidth = trackFrame.size.width;
     switch (self.progressMode) {
-        case kProgressModeDownload:
-            self.progressImageView.frame =
-                CGRectMake(0, 0, trackWidth * fraction * kDownloadProgressScale, 0);
-            break;
-        case kProgressModeUnzip:
-            self.progressImageView.frame =
-                CGRectMake(0, 0, trackWidth * (fraction + 1.0f) * kUnzipProgressScale, 0);
-            break;
-        case kProgressModeVerify:
-            self.progressImageView.frame = CGRectMake(0, 0, trackWidth * fraction, 0);
-            break;
-        default:
-            break;
+    case kProgressModeDownload:
+        self.progressImageView.frame =
+            CGRectMake(0, 0, trackWidth * fraction * kDownloadProgressScale, 0);
+        break;
+    case kProgressModeUnzip:
+        self.progressImageView.frame =
+            CGRectMake(0, 0, trackWidth * (fraction + 1.0f) * kUnzipProgressScale, 0);
+        break;
+    case kProgressModeVerify:
+        self.progressImageView.frame = CGRectMake(0, 0, trackWidth * fraction, 0);
+        break;
+    default:
+        break;
     }
 }
 
@@ -841,9 +846,10 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGRect frame = self.scrollView.frame;
     if (self.scrollView && !self.scrollView.isTracking && !self.scrollView.isDragging &&
         !self.scrollView.isDecelerating) {
-        [self.scrollView scrollRectToVisible:CGRectMake(page * frame.size.width, 0,
-                                                        frame.size.width, frame.size.height)
-                                    animated:YES];
+        [self.scrollView
+            scrollRectToVisible:CGRectMake(
+                                    page * frame.size.width, 0, frame.size.width, frame.size.height)
+                       animated:YES];
     }
 }
 
@@ -852,7 +858,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGFloat pageWidth = scrollView.bounds.size.width;
     CGFloat fractionalPage = offsetX / pageWidth;
     int page = (int)fractionalPage;
-    float roundedPage = ((float)fractionalPage - (float)page > 0.5f) ? (float)(page + 1) : (float)page;
+    float roundedPage =
+        ((float)fractionalPage - (float)page > 0.5f) ? (float)(page + 1) : (float)page;
     if ((float)self.pageControl.currentPage != roundedPage) {
         self.pageControl.currentPage = (NSInteger)roundedPage;
     }

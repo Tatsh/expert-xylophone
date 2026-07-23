@@ -15,7 +15,6 @@
 #import "BFCodec.h"
 #import "NSFileManager+RB.h"
 #import "SSZipArchive.h"
-
 #import "neEngineBridge.h"
 
 // Archive keys for each field. Several are abbreviations of their property name.
@@ -210,10 +209,10 @@ static const NSUInteger kReplayEncodeCapacity = 128;
     }
     NSError *unzipError = nil;
     if (![SSZipArchive unzipFileAtPath:zipPath
-                        toDestination:directory
-                            overwrite:YES
-                             password:nil
-                                error:&unzipError]) {
+                         toDestination:directory
+                             overwrite:YES
+                              password:nil
+                                 error:&unzipError]) {
         return nil;
     }
     NSData *enciphered = [NSData dataWithContentsOfFile:tempPath];

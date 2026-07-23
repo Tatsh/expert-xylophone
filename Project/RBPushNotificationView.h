@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Build the banner: the clear background, the notification background image view, the
- * two-line message label sized for the current font variant, the tap recogniser, and the initial
+ * two-line message label sized for the current iPad idiom, the tap recogniser, and the initial
  * off-screen layout, and record the delegate.
  * @param delegate The object to message on tap and dismissal.
  * @ghidraAddress 0x18e400

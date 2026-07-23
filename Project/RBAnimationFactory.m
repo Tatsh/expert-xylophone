@@ -56,11 +56,11 @@ static const float kBounceKeyTimeEnd = 1.0f;
     animation.beginTime = delay;
     animation.duration = duration;
     animation.repeatCount = kNoRepeat;
-    animation.values = @[@(fromValue), @(toValue)];
-    animation.keyTimes = @[@(kKeyTimeStart), @(kKeyTimeEnd)];
+    animation.values = @[ @(fromValue), @(toValue) ];
+    animation.keyTimes = @[ @(kKeyTimeStart), @(kKeyTimeEnd) ];
     CAMediaTimingFunction *easeIn =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-    animation.timingFunctions = @[easeIn, easeIn];
+    animation.timingFunctions = @[ easeIn, easeIn ];
     animation.removedOnCompletion = NO;
     animation.fillMode = kCAFillModeForwards;
     return animation;
@@ -74,11 +74,11 @@ static const float kBounceKeyTimeEnd = 1.0f;
     animation.beginTime = delay;
     animation.duration = duration;
     animation.repeatCount = kNoRepeat;
-    animation.values = @[@(fromValue), @(toValue)];
-    animation.keyTimes = @[@((float)kKeyTimeStart), @((float)kKeyTimeEnd)];
+    animation.values = @[ @(fromValue), @(toValue) ];
+    animation.keyTimes = @[ @((float)kKeyTimeStart), @((float)kKeyTimeEnd) ];
     CAMediaTimingFunction *linear =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-    animation.timingFunctions = @[linear, linear];
+    animation.timingFunctions = @[ linear, linear ];
     animation.removedOnCompletion = NO;
     animation.fillMode = kCAFillModeForwards;
     return animation;
@@ -107,9 +107,9 @@ static const float kBounceKeyTimeEnd = 1.0f;
 }
 
 + (CAAnimationGroup *)createPositionAnimWithFromValue:(CGPoint)fromValue
-                                             toValue:(CGPoint)toValue
-                                               delay:(double)delay
-                                            duration:(double)duration {
+                                              toValue:(CGPoint)toValue
+                                                delay:(double)delay
+                                             duration:(double)duration {
     CAKeyframeAnimation *xAnimation = [self createAnimWithKeyPath:kPositionXKeyPath
                                                         fromValue:fromValue.x
                                                           toValue:toValue.x
@@ -121,18 +121,18 @@ static const float kBounceKeyTimeEnd = 1.0f;
                                                             delay:delay
                                                          duration:duration];
     CAAnimationGroup *group = [CAAnimationGroup animation];
-    group.animations = @[xAnimation, yAnimation];
+    group.animations = @[ xAnimation, yAnimation ];
     group.removedOnCompletion = NO;
     group.fillMode = kCAFillModeForwards;
     return group;
 }
 
 + (CAKeyframeAnimation *)createScaleAnimWithFromValue:(double)fromValue
-                                             toValue:(double)toValue
-                                                   X:(BOOL)X
-                                                   Y:(BOOL)Y
-                                               delay:(double)delay
-                                            duration:(double)duration {
+                                              toValue:(double)toValue
+                                                    X:(BOOL)X
+                                                    Y:(BOOL)Y
+                                                delay:(double)delay
+                                             duration:(double)duration {
     NSString *keyPath = nil;
     if (X && Y) {
         keyPath = kTransformScaleKeyPath;
@@ -147,11 +147,11 @@ static const float kBounceKeyTimeEnd = 1.0f;
     animation.beginTime = delay;
     animation.duration = duration;
     animation.repeatCount = kNoRepeat;
-    animation.values = @[@(fromValue), @(toValue)];
-    animation.keyTimes = @[@((float)kKeyTimeStart), @((float)kKeyTimeEnd)];
+    animation.values = @[ @(fromValue), @(toValue) ];
+    animation.keyTimes = @[ @((float)kKeyTimeStart), @((float)kKeyTimeEnd) ];
     CAMediaTimingFunction *linear =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-    animation.timingFunctions = @[linear, linear];
+    animation.timingFunctions = @[ linear, linear ];
     animation.removedOnCompletion = NO;
     animation.fillMode = kCAFillModeForwards;
     return animation;
@@ -163,20 +163,19 @@ static const float kBounceKeyTimeEnd = 1.0f;
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:kPositionYKeyPath];
     animation.duration = duration;
     animation.repeatCount = (float)repeatCount;
-    animation.values = @[@(Y + kBobOvershoot), @(Y), @(Y + kBobOvershoot)];
-    animation.keyTimes = @[@((float)kKeyTimeStart),
-                           @(duration * kBobPeakTimeFraction),
-                           @(duration)];
+    animation.values = @[ @(Y + kBobOvershoot), @(Y), @(Y + kBobOvershoot) ];
+    animation.keyTimes =
+        @[ @((float)kKeyTimeStart), @(duration * kBobPeakTimeFraction), @(duration) ];
     CAMediaTimingFunction *easeOut =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    animation.timingFunctions = @[easeOut, easeOut, easeOut];
+    animation.timingFunctions = @[ easeOut, easeOut, easeOut ];
     return animation;
 }
 
 + (CAKeyframeAnimation *)createBoundAnimWithX:(BOOL)X
-                                           Y:(BOOL)Y
-                                       delay:(double)delay
-                                    duration:(double)duration {
+                                            Y:(BOOL)Y
+                                        delay:(double)delay
+                                     duration:(double)duration {
     NSString *keyPath = nil;
     if (X && Y) {
         keyPath = kTransformScaleKeyPath;
@@ -191,19 +190,23 @@ static const float kBounceKeyTimeEnd = 1.0f;
     animation.beginTime = delay;
     animation.duration = duration;
     animation.repeatCount = kNoRepeat;
-    animation.values = @[@(kBounceRestScale),
-                         @(kBounceOvershootScale),
-                         @(kBounceUndershootScale),
-                         @(kBounceSettleScale),
-                         @(kBounceRestScale)];
-    animation.keyTimes = @[@(kBounceKeyTimeStart),
-                           @(kBounceKeyTimeOvershoot),
-                           @(kBounceKeyTimeUndershoot),
-                           @(kBounceKeyTimeSettle),
-                           @(kBounceKeyTimeEnd)];
+    animation.values = @[
+        @(kBounceRestScale),
+        @(kBounceOvershootScale),
+        @(kBounceUndershootScale),
+        @(kBounceSettleScale),
+        @(kBounceRestScale)
+    ];
+    animation.keyTimes = @[
+        @(kBounceKeyTimeStart),
+        @(kBounceKeyTimeOvershoot),
+        @(kBounceKeyTimeUndershoot),
+        @(kBounceKeyTimeSettle),
+        @(kBounceKeyTimeEnd)
+    ];
     CAMediaTimingFunction *easeIn =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-    animation.timingFunctions = @[easeIn, easeIn, easeIn, easeIn, easeIn];
+    animation.timingFunctions = @[ easeIn, easeIn, easeIn, easeIn, easeIn ];
     animation.removedOnCompletion = NO;
     animation.fillMode = kCAFillModeForwards;
     return animation;

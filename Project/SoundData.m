@@ -9,11 +9,12 @@
 //
 
 #import "SoundData.h"
-#import "RBMacros.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
+#import "RBMacros.h"
 
 // Fills an AudioStreamBasicDescription for signed 16-bit interleaved linear PCM at the given sample
 // rate and channel count. This lives in the plain-C engine layer, which is not C-safe to import, so
@@ -28,8 +29,7 @@ void InitPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
 static const double kSoundDataSampleRate = 44100.0;
 
 // The @c ExtAudioFileGetProperty selectors used while preparing the asset.
-static const ExtAudioFilePropertyID kFileDataFormatProperty =
-    kExtAudioFileProperty_FileDataFormat;
+static const ExtAudioFilePropertyID kFileDataFormatProperty = kExtAudioFileProperty_FileDataFormat;
 static const ExtAudioFilePropertyID kClientDataFormatProperty =
     kExtAudioFileProperty_ClientDataFormat;
 static const ExtAudioFilePropertyID kFileLengthFramesProperty =
@@ -127,15 +127,12 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
 
     UInt32 propertySize = sizeof(AudioStreamBasicDescription);
     AudioStreamBasicDescription fileFormat;
-    ExtAudioFileGetProperty(
-        m_ExtAudioFile, kFileDataFormatProperty, &propertySize, &fileFormat);
+    ExtAudioFileGetProperty(m_ExtAudioFile, kFileDataFormatProperty, &propertySize, &fileFormat);
     m_NumberOfChannels = fileFormat.mChannelsPerFrame;
 
     InitPcmFormatDescriptor(&m_Format, kSoundDataSampleRate, (int)m_NumberOfChannels);
-    ExtAudioFileSetProperty(m_ExtAudioFile,
-                            kClientDataFormatProperty,
-                            sizeof(AudioStreamBasicDescription),
-                            &m_Format);
+    ExtAudioFileSetProperty(
+        m_ExtAudioFile, kClientDataFormatProperty, sizeof(AudioStreamBasicDescription), &m_Format);
 
     propertySize = sizeof(long long);
     ExtAudioFileGetProperty(
@@ -262,8 +259,7 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
     if (m_PlayBuffer) {
         if (m_NumberOfChannels != 0) {
             free(m_PlayBuffer[0]);
-            for (unsigned int channelIndex = 1; channelIndex < m_NumberOfChannels;
-                 ++channelIndex) {
+            for (unsigned int channelIndex = 1; channelIndex < m_NumberOfChannels; ++channelIndex) {
                 free(m_PlayBuffer[channelIndex]);
             }
         }

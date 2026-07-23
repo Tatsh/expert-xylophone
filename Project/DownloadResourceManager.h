@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, nullable) UIImageView *fadeImageView;
 /**
- * @brief The animated particle background shown for the wide font variant.
+ * @brief The animated particle background shown for the iPad (wide) layout.
  * @ghidraAddress 0x207c8 (getter)
  * @ghidraAddress 0x207d8 (setter)
  */

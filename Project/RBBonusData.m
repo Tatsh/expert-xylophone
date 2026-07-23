@@ -74,8 +74,8 @@ static const float kDefaultHotMusicBonus = 10.0f;
     /** @ghidraAddress 0x1f3df8 */
     static RBBonusData *instance = nil;
     if (instance == nil) {
-        NSData *archived = [[NSUserDefaults standardUserDefaults]
-            dataForKey:NSStringFromClass([self class])];
+        NSData *archived =
+            [[NSUserDefaults standardUserDefaults] dataForKey:NSStringFromClass([self class])];
         RBBonusData *restored = [NSKeyedUnarchiver unarchiveObjectWithData:archived];
         if (restored == nil) {
             restored = [[RBBonusData alloc] init];

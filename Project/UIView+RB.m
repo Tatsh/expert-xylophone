@@ -18,11 +18,10 @@
 //  left/top edges alias origin.x/origin.y; the right/bottom edges add the size).
 //
 
-#import "UIView+RB.h"
-
 #import <QuartzCore/QuartzCore.h>
 
 #import "RBMacros.h"
+#import "UIView+RB.h"
 
 // The layer animation keys, and the key paths they animate.
 static NSString *const kFlashAnimationKey = @"FLUSH_ANIM";
@@ -89,11 +88,10 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
         animation.autoreverses = YES;
         animation.fromValue = @(start);
         animation.toValue = @(end);
-        animation.timingFunction =
-            [CAMediaTimingFunction functionWithControlPoints:kFlashTimingControlPoint1X
-                                                            :kFlashTimingControlPoint1Y
-                                                            :kFlashTimingControlPoint2X
-                                                            :kFlashTimingControlPoint2Y];
+        animation.timingFunction = [CAMediaTimingFunction
+             functionWithControlPoints:
+            kFlashTimingControlPoint1X:kFlashTimingControlPoint1Y:kFlashTimingControlPoint2X
+                                      :kFlashTimingControlPoint2Y];
         animation.removedOnCompletion = NO;
         [view.layer addAnimation:animation forKey:kFlashAnimationKey];
         return;
@@ -109,19 +107,17 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
         if ((step & 1) == 0) {
             pulse.fromValue = @(start);
             pulse.toValue = @(end);
-            pulse.timingFunction =
-                [CAMediaTimingFunction functionWithControlPoints:kFlashTimingControlPoint1X
-                                                                :kFlashTimingControlPoint1Y
-                                                                :kFlashTimingControlPoint2X
-                                                                :kFlashTimingControlPoint2Y];
+            pulse.timingFunction = [CAMediaTimingFunction
+                 functionWithControlPoints:
+                kFlashTimingControlPoint1X:kFlashTimingControlPoint1Y:kFlashTimingControlPoint2X
+                                          :kFlashTimingControlPoint2Y];
         } else {
             pulse.fromValue = @(end);
             pulse.toValue = @(start);
-            pulse.timingFunction =
-                [CAMediaTimingFunction functionWithControlPoints:kFlashTimingControlPoint2Y
-                                                                :kFlashTimingControlPoint2X
-                                                                :kFlashTimingControlPoint1Y
-                                                                :kFlashTimingControlPoint1X];
+            pulse.timingFunction = [CAMediaTimingFunction
+                 functionWithControlPoints:
+                kFlashTimingControlPoint2Y:kFlashTimingControlPoint2X:kFlashTimingControlPoint1Y
+                                          :kFlashTimingControlPoint1X];
         }
         [animations addObject:pulse];
     }
@@ -158,7 +154,9 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
 
 - (void)SetFlashEffectFast {
     /** @ghidraAddress 0x1a3710 */
-    [self SetFlashEffectDuration:kFlashDefaultDuration Start:kFlashFullOpacity End:kFlashMinOpacity];
+    [self SetFlashEffectDuration:kFlashDefaultDuration
+                           Start:kFlashFullOpacity
+                             End:kFlashMinOpacity];
 }
 
 - (void)SetFlashEffectFastWithRotate {
@@ -208,11 +206,10 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:kPositionKeyPath];
     animation.path = path;
     animation.duration = kPopBounceDuration;
-    animation.timingFunction =
-        [CAMediaTimingFunction functionWithControlPoints:kPopBounceTimingControlPoint1X
-                                                        :kPopBounceTimingControlPoint1Y
-                                                        :kPopBounceTimingControlPoint2X
-                                                        :kPopBounceTimingControlPoint2Y];
+    animation.timingFunction = [CAMediaTimingFunction
+             functionWithControlPoints:
+        kPopBounceTimingControlPoint1X:kPopBounceTimingControlPoint1Y:kPopBounceTimingControlPoint2X
+                                      :kPopBounceTimingControlPoint2Y];
     animation.repeatCount = kFlashRepeatCountForever;
     animation.removedOnCompletion = NO;
     CGPathRelease(path);

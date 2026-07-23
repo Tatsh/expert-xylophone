@@ -8,11 +8,12 @@
 //
 
 #import "SystemHardware.h"
-#import "RBMacros.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <sys/sysctl.h>
+
+#import "RBMacros.h"
 
 // The sysctl name that reports the device's machine model, for example @c iPhone3,1.
 static const char *const kMachineSysctlName = "hw.machine";
@@ -26,13 +27,24 @@ static const int kHardwareTypeUnresolved = 15;
  * @ghidraAddress 0x358e58
  */
 static const char *const kHardwareModelTable[] = {
-    "iPhone1,1", "iPhone1,2", "iPhone2,1", "iPhone3,1", "iPhone3,2", "iPod1,1", "iPod2,1",
-    "iPod3,1",   "iPod4,1",   "iPad1,1",   "iPad2,1",   "iPad2,2",   "iPad2,3", "i386",
+    "iPhone1,1",
+    "iPhone1,2",
+    "iPhone2,1",
+    "iPhone3,1",
+    "iPhone3,2",
+    "iPod1,1",
+    "iPod2,1",
+    "iPod3,1",
+    "iPod4,1",
+    "iPad1,1",
+    "iPad2,1",
+    "iPad2,2",
+    "iPad2,3",
+    "i386",
 };
 
 // The number of known models in @c kHardwareModelTable.
-static const NSUInteger kHardwareModelCount =
-    ARRAY_SIZE(kHardwareModelTable);
+static const NSUInteger kHardwareModelCount = ARRAY_SIZE(kHardwareModelTable);
 
 @implementation SystemHardware {
     // The resolved hardware type, or @c kHardwareTypeUnresolved until @c -initHardware runs.

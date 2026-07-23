@@ -59,13 +59,13 @@ constexpr CGFloat kThemedBorderWidth = 1.3;
 constexpr CGFloat kLimelightCornerRadius = 10.0;
 
 // Per-theme panel corner radii, indexed by RBUserSettingData.thema. The default table is used for the
-// wide font variant; the region table (GetFontVariantFlag() == 0) is used otherwise. Values read from
+// iPad (wide) layout; the region table (IsPad() == 0) is used otherwise. Values read from
 // the binary's constant pool at 0x1003017d0 and 0x1003017dc.
 constexpr CGFloat kSettingCornerRadiusDefault[] = {22.0, 22.0, 33.0};
 constexpr CGFloat kSettingCornerRadiusRegion[] = {14.0, 14.0, 14.0};
 
 // The panel button-column origin (x, y of the first button, in panel coordinates) and the vertical
-// gap inserted before each subsequent button, both indexed by theme and font variant. These mirror
+// gap inserted before each subsequent button, both indexed by theme and iPad idiom. These mirror
 // the layout tables InitializeSettingLayoutGlobals (0xec450) builds at 0x1003dc8d0/0x1003dc900
 // (origin) and 0x1003dc930/0x1003dc960 (step, whose y component is the gap).
 typedef struct SettingButtonLayout {
@@ -112,7 +112,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 #pragma mark Panel construction
 
 - (void)setupView:(CGRect)buttonFrame {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     _thema = thema;
 
@@ -129,7 +129,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     m_DefaultHeight = (float)CGRectGetHeight(self.baseView.frame);
 
     const CGFloat *cornerRadii =
-        (fontVariant == 0) ? kSettingCornerRadiusRegion : kSettingCornerRadiusDefault;
+        (isPad == 0) ? kSettingCornerRadiusRegion : kSettingCornerRadiusDefault;
     if (thema == RBUserSettingDataThemeColette) {
         self.baseView.backgroundColor = [UIColor colorWithRed:kColetteBackgroundRed
                                                         green:kColetteBackgroundGreen
@@ -154,7 +154,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
     // The button-column origin and step gap, built by InitializeSettingLayoutGlobals (0xec450) into
     // the layout tables at 0x1003dc8d0/0x1003dc900 (origin) and 0x1003dc930/0x1003dc960 (step). The
-    // region tables apply when GetFontVariantFlag() == 0, the default tables otherwise; both are
+    // region tables apply when IsPad() == 0, the default tables otherwise; both are
     // indexed by theme.
     static const SettingButtonLayout defaultLayout[] = {
         {13.0, 30.0, 26.0},
@@ -166,7 +166,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         {5.0, 14.0, 13.0},
         {5.0, 14.0, 13.0},
     };
-    SettingButtonLayout layout = (fontVariant == 0) ? regionLayout[thema] : defaultLayout[thema];
+    SettingButtonLayout layout = (isPad == 0) ? regionLayout[thema] : defaultLayout[thema];
 
     // The menu buttons in column order, each with the artwork index passed to
     // -[RBSettingMenuButton initWithFilename:] and the action its inner control triggers. Artwork

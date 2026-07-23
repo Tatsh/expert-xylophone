@@ -54,8 +54,10 @@ static const CGFloat kNonClassicThemeTopOffset = 32.0;
     [self.contentView addSubview:creditsText];
 
     CGRect frame = creditsText.frame;
-    creditsText.frame = CGRectMake((CGFloat)(int)frame.origin.x, (CGFloat)(int)frame.origin.y,
-                                   frame.size.width, frame.size.height);
+    creditsText.frame = CGRectMake((CGFloat)(int)frame.origin.x,
+                                   (CGFloat)(int)frame.origin.y,
+                                   frame.size.width,
+                                   frame.size.height);
 }
 
 @end

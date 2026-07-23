@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Returns the artwork inset used when the artwork is square (jacket-sized).
- * @param getArtworkMargin The font-variant flag selecting the layout.
+ * @param getArtworkMargin The iPad idiom flag selecting the layout.
  * @return The artwork origin inset.
  * @ghidraAddress 0x2653c
  */
@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Returns the artwork size used when the artwork is not square (banner-sized).
- * @param getItemSize The font-variant flag selecting the layout.
+ * @param getItemSize The iPad idiom flag selecting the layout.
  * @return The artwork size.
  * @ghidraAddress 0x26548
  */

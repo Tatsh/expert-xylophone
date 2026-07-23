@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicSpeedView). Verified
-//  against the arm64 disassembly: -SetupView's per-theme, per-font-variant slider and container
+//  against the arm64 disassembly: -SetupView's per-theme, per-idiom slider and container
 //  geometry was recovered from the soft-float register moves and constant-pool loads that the
 //  decompiler folds into pseudo-variables, and the marker-glide animation was confirmed against the
 //  block literal the decompiler emits. This is an Objective-C++ file because -SelectSpeed: reaches
@@ -46,7 +46,7 @@ constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
 static NSString *const kSliderBarImageName = @"02_music_detail/det_spd_bar_1";
 static NSString *const kSpeedMarkerImageName = @"02_music_detail/det_spd_bar_2";
 
-// The slider bar frame per (theme, font variant). The font-variant bar is centred horizontally
+// The slider bar frame per (theme, idiom). The iPad idiom bar is centred horizontally
 // within the view at a themed top inset and keeps the bar image's natural size; every default
 // combination uses a fixed constant-pool rectangle. Decoded from the constant pool at 0x100301198
 // (274), 0x1002ec6e0 (50), 0x1002eeef0 (54), 0x1002fcfd8 (280), 0x100301158 (36), and 0x1002ee948
@@ -62,7 +62,7 @@ constexpr CGFloat kSliderBarColetteDefaultWidth = 280.0;
 constexpr CGFloat kSliderBarColetteDefaultHeight = 30.0;
 constexpr CGFloat kSliderBarColetteWideTopInset = 60.0;
 
-// The bar-container frame per (theme, font variant). Decoded from the constant pool at 0x1003011b0
+// The bar-container frame per (theme, idiom). Decoded from the constant pool at 0x1003011b0
 // (41), 0x1002eeee8 (43), 0x100302480 (402), 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50),
 // 0x1002eeec0 (38), 0x1003011a0 (261), and 0x1002ef170 (56), plus the 19.0, 27.0, and 9.0
 // inline immediate values.
@@ -86,7 +86,7 @@ constexpr CGFloat kBarBaseDefaultHeight = 56.0;
 // Half a bar, used to centre the marker within the container and to centre the wide slider bar.
 constexpr CGFloat kHalf = 0.5;
 
-// The tap dead-zone at each end of the bar, per (theme, font variant): a tap within this margin of
+// The tap dead-zone at each end of the bar, per (theme, idiom): a tap within this margin of
 // the left edge selects SPEED zero, and one within it of the right edge selects SPEED ten.
 constexpr CGFloat kTapDeadZoneLimelightWide = 30.0;
 constexpr CGFloat kTapDeadZoneLimelightDefault = 20.0;
@@ -129,11 +129,11 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kSliderBarImageName]];
 
     int thema = [RBUserSettingData sharedInstance].thema;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     CGRect sliderFrame;
     if (thema == kThemeColette) {
-        if (fontVariant) {
+        if (isPad) {
             // The Colette wide bar is centred horizontally at a fixed top inset and keeps the bar
             // image's natural size. The binary reads the view's frame and the slider view's frame
             // to derive the centred origin.
@@ -150,7 +150,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
                                      kSliderBarColetteDefaultHeight);
         }
     } else {
-        if (fontVariant) {
+        if (isPad) {
             CGFloat selfWidth = self.frame.size.width;
             CGSize sliderSize = self.sliderView.frame.size;
             sliderFrame = CGRectMake((selfWidth - sliderSize.width) * kHalf,
@@ -174,21 +174,21 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
     [self.sliderView addGestureRecognizer:tap];
 
     int themaAgain = [RBUserSettingData sharedInstance].thema;
-    BOOL fontVariantAgain = GetFontVariantFlag() != kFontVariantDefault;
+    isPad = IsPad(); // Re-read, as the binary does; the value is unchanged.
 
     CGRect barFrame;
     if (themaAgain == kThemeColette) {
-        barFrame = fontVariantAgain ? CGRectMake(kBarBaseColetteWideX,
-                                                 kBarBaseColetteWideY,
-                                                 kBarBaseColetteWideWidth,
-                                                 kBarBaseColetteWideHeight) :
-                                      CGRectMake(kBarBaseColetteX,
-                                                 kBarBaseColetteY,
-                                                 kBarBaseColetteWidth,
-                                                 kBarBaseColetteHeight);
+        barFrame = isPad ? CGRectMake(kBarBaseColetteWideX,
+                                      kBarBaseColetteWideY,
+                                      kBarBaseColetteWideWidth,
+                                      kBarBaseColetteWideHeight) :
+                           CGRectMake(kBarBaseColetteX,
+                                      kBarBaseColetteY,
+                                      kBarBaseColetteWidth,
+                                      kBarBaseColetteHeight);
     } else {
         barFrame =
-            fontVariantAgain ?
+            isPad ?
                 CGRectMake(kBarBaseWideX, kBarBaseWideY, kBarBaseWideWidth, kBarBaseWideHeight) :
                 CGRectMake(kBarBaseDefaultX,
                            kBarBaseDefaultY,
@@ -224,14 +224,11 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
 
     CGFloat deadZone;
     if ([RBUserSettingData sharedInstance].thema == kThemeLimelight) {
-        deadZone = GetFontVariantFlag() != kFontVariantDefault ? kTapDeadZoneLimelightWide :
-                                                                 kTapDeadZoneLimelightDefault;
+        deadZone = IsPad() ? kTapDeadZoneLimelightWide : kTapDeadZoneLimelightDefault;
     } else if ([RBUserSettingData sharedInstance].thema == kThemeColette) {
-        deadZone = GetFontVariantFlag() != kFontVariantDefault ? kTapDeadZoneColetteWide :
-                                                                 kTapDeadZoneColetteDefault;
+        deadZone = IsPad() ? kTapDeadZoneColetteWide : kTapDeadZoneColetteDefault;
     } else {
-        deadZone =
-            GetFontVariantFlag() != kFontVariantDefault ? kTapDeadZoneWide : kTapDeadZoneDefault;
+        deadZone = IsPad() ? kTapDeadZoneWide : kTapDeadZoneDefault;
     }
 
     CGFloat barWidth = tap.view.frame.size.width;

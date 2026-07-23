@@ -6,7 +6,7 @@
 //  Objective-C++ file because the send-agree completion reaches the C++ SoundEffectManager engine
 //  singleton. The frame geometry in -setupView, -layoutSubviews, and -scrollViewDidScroll: was
 //  recovered from the arm64 soft-float register moves that the decompiler folds into pseudo
-//  doubles; the theme and font-variant branches are de-inlined into helpers below.
+//  doubles; the theme and iPad idiom branches are de-inlined into helpers below.
 //
 
 #import "RBTermAgreeView.h"
@@ -60,8 +60,8 @@ static NSString *const kProgressTrackName = @"dl_info";
 // The gradation overlay drawn over the content for the Limelight and Colette themes.
 static NSString *const kGradationImageName = @"23_terms/tos_grad";
 
-// Layout metrics recovered from the disassembly. The wide (default font-variant) and narrow
-// (compact font-variant) layouts use different values, matching the two branches in -setupView.
+// Layout metrics recovered from the disassembly. The wide (default iPad idiom) and narrow
+// (compact iPad idiom) layouts use different values, matching the two branches in -setupView.
 constexpr CGFloat kMascotFrameDuration = 0.5;
 constexpr CGFloat kHalf = 0.5;
 constexpr CGFloat kButtonRowHeightWide = 40.0;
@@ -89,7 +89,7 @@ constexpr CGFloat kFullAlpha = 1.0;
 // The content-view background and popup background whites/alphas.
 constexpr CGFloat kPopupBackgroundAlpha = 0.5;
 
-// The terms text font sizes for the wide and narrow font variants.
+// The terms text font sizes for the wide and narrow iPad idioms.
 constexpr CGFloat kTermsFontSizeWide = 16.0;
 constexpr CGFloat kTermsFontSizeNarrow = 15.0;
 
@@ -97,7 +97,7 @@ constexpr CGFloat kTermsFontSizeNarrow = 15.0;
 constexpr CGFloat kTermsTextInsetVertical = 10.0;
 constexpr CGFloat kTermsTextInsetHorizontal = 5.0;
 
-// The corner radius applied to the gradation overlay for each font variant.
+// The corner radius applied to the gradation overlay for each iPad idiom.
 constexpr CGFloat kGradationCornerRadiusWide = 10.0;
 constexpr CGFloat kGradationCornerRadiusNarrow = 5.0;
 
@@ -155,9 +155,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 - (void)setupGradationOverlay {
     UIImage *gradation = [UIImage imageWithName:kGradationImageName];
     RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
-    CGFloat cornerRadius = GetFontVariantFlag() == kFontVariantDefault ?
-                               kGradationCornerRadiusNarrow :
-                               kGradationCornerRadiusWide;
+    CGFloat cornerRadius = !IsPad() ? kGradationCornerRadiusNarrow : kGradationCornerRadiusWide;
     if (theme == RBUserSettingDataThemeLimelight || theme == RBUserSettingDataThemeColette) {
         self.gradationImageView.image = nil;
         self.gradationImageView.image = gradation;
@@ -174,9 +172,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
             UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.gradationImageView.layer.masksToBounds = YES;
-        CGFloat originY = GetFontVariantFlag() == kFontVariantDefault ?
-                              kTermsTextInsetVertical + kGradationWideOriginYInset :
-                              0.0;
+        CGFloat originY = !IsPad() ? kTermsTextInsetVertical + kGradationWideOriginYInset : 0.0;
         self.gradationImageView.frame =
             CGRectMake(kGradationOriginX, originY, gradation.size.width, gradation.size.height);
         [self.baseView addSubview:self.gradationImageView];
@@ -185,10 +181,10 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 }
 
 // Builds the animated mascot, the scroll-progress track, and the progress fill inside pastelView.
-// The wide and narrow font variants use different frame metrics; extracted from the two branches
+// The wide and narrow iPad idioms use different frame metrics; extracted from the two branches
 // of -setupView.
 - (void)setupPastelArtwork {
-    BOOL narrow = GetFontVariantFlag() == kFontVariantDefault;
+    BOOL narrow = !IsPad();
     CGFloat mascotXOffset = narrow ? kMascotXOffsetNarrow : kMascotXOffsetWide;
     CGFloat mascotWidth = narrow ? kMascotWidthNarrow : kMascotWidthWide;
     CGFloat mascotHeight = narrow ? kMascotHeightNarrow : kMascotHeightWide;
@@ -252,8 +248,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     // taller terms text view fits; the other themes keep the base layout. The exact per-edge frame
     // arithmetic below the offset is a soft-float pattern recovered from the disassembly.
     CGFloat contentTopOffset = 0.0;
-    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic &&
-        GetFontVariantFlag() != kFontVariantDefault) {
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic && IsPad()) {
         contentTopOffset = self.baseView.y - kPopupWideContentOriginYBase;
         self.contentView.frame = CGRectMake(self.contentView.x,
                                             self.contentView.y - contentTopOffset,
@@ -269,7 +264,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 
     // Centre the title bar over the gradation overlay for the wide variant; the narrow variant only
     // nudges it down for the Classic theme.
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         int centerX = static_cast<int>(self.gradationImageView.width - self.titleImageView.width);
         int centerY = static_cast<int>(self.gradationImageView.height - self.titleImageView.height);
         self.titleImageView.frame = CGRectMake(
@@ -318,8 +313,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     [self addSubview:indicator];
     self.indicatorView = indicator;
 
-    CGFloat buttonRowHeight =
-        GetFontVariantFlag() == kFontVariantDefault ? kButtonRowHeightNarrow : kButtonRowHeightWide;
+    CGFloat buttonRowHeight = !IsPad() ? kButtonRowHeightNarrow : kButtonRowHeightWide;
 
     // The Agree and Cancel buttons share a row along the bottom of the content view; the Agree
     // button starts disabled and dimmed until the reader scrolls to the bottom.
@@ -361,8 +355,8 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     self.termTextView = textView;
 
     // The mascot and scroll-progress artwork live in pastelView, laid out only for the narrow
-    // font variant.
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    // iPad idiom.
+    if (!IsPad()) {
         UIView *pastel = [[UIView alloc]
             initWithFrame:CGRectMake((self.contentView.width * kHalf) - self.width * kHalf,
                                      self.height + (self.contentView.height - self.width) * -kHalf +
@@ -391,10 +385,9 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 #pragma mark Layout
 
 - (void)layoutSubviews {
-    // Re-centre pastelView under the content view for the current font variant, then fade it in
+    // Re-centre pastelView under the content view for the current iPad idiom, then fade it in
     // when it fits above the popup bottom and keep the terms text scrolled to its saved offset.
-    CGFloat pastelHeight = GetFontVariantFlag() == kFontVariantDefault ? kPastelViewHeightNarrow :
-                                                                         kPastelViewHeightWide;
+    CGFloat pastelHeight = !IsPad() ? kPastelViewHeightNarrow : kPastelViewHeightWide;
     self.pastelView.frame =
         CGRectMake((self.width - self.contentView.width) * kHalf,
                    self.height + (self.contentView.height - self.width) * -kHalf + kPastelTopInset,
@@ -409,8 +402,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 
 - (void)showTermView {
     __weak RBTermAgreeView *weakSelf = self;
-    CGFloat fontSize =
-        GetFontVariantFlag() == kFontVariantDefault ? kTermsFontSizeNarrow : kTermsFontSizeWide;
+    CGFloat fontSize = !IsPad() ? kTermsFontSizeNarrow : kTermsFontSizeWide;
     weakSelf.termTextView.text = weakSelf.terms[kTermsContentsKey];
     weakSelf.termTextView.font = [UIFont systemFontOfSize:fontSize];
     // The scrollable overflow: the text laid out at unbounded height, minus the visible height.
@@ -605,7 +597,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 
     CGFloat pastelWidth = self.pastelView.width;
     CGFloat mascotX;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         mascotX = ((fraction * kProgressBarSegments + 1.0) / kSixths) * pastelWidth +
                   kMascotXOffsetNarrow;
     } else {

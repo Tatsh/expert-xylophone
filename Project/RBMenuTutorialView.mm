@@ -33,7 +33,7 @@ static NSString *const kCursorAnimationKey = @"here";
 // The layer key path the content-view move animation is built on.
 static NSString *const kContentPositionKeyPath = @"position";
 
-// The message content-view dimensions, chosen by the font variant. The default (narrow) variant
+// The message content-view dimensions, chosen by the iPad idiom. The default (narrow) variant
 // uses a smaller bubble than the wide variant.
 constexpr CGFloat kContentWidthNarrow = 300.0;
 constexpr CGFloat kContentHeightNarrow = 100.0;
@@ -111,7 +111,7 @@ constexpr CGFloat kRotationDimAlpha = 0.5;
 constexpr CGFloat kSpotlightPixelSnap = 0.5;
 constexpr CGFloat kSpotlightPixelGrow = 1.0;
 
-// The message-window layer is inset within the content view by a font-variant-dependent margin.
+// The message-window layer is inset within the content view by a idiom-dependent margin.
 constexpr CGFloat kMessageWindowInsetXWide = 20.0;
 constexpr CGFloat kMessageWindowInsetXNarrow = 26.0;
 constexpr CGFloat kMessageWindowInsetYWide = 16.0;
@@ -138,7 +138,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     self = [super initWithFrame:frame];
     if (self) {
         self.exclusiveTouch = YES;
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             self.contentViewWidth = kContentWidthNarrow;
             self.contentViewHeight = kContentHeightNarrow;
         } else {
@@ -164,7 +164,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     self.backgroundColor = [UIColor clearColor];
     self.autoresizingMask = kAutoresizingMaskFlexibleAll;
 
-    BOOL narrow = GetFontVariantFlag() == kFontVariantDefault;
+    BOOL narrow = !IsPad();
 
     // The dimming base fills the whole overlay at half opacity and hosts the eight grey layers.
     self.baseView = [[UIImageView alloc] initWithFrame:self.frame];
@@ -175,7 +175,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
     self.messageImage = [UIImage imageWithName:kTutorialArtworkImageName useCache:NO];
 
-    // The message content view is centred in the overlay at its font-variant-derived size.
+    // The message content view is centred in the overlay at its idiom-derived size.
     self.contentView =
         [[UIView alloc] initWithFrame:CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5,
                                                  self.height * 0.5 - self.contentViewHeight * 0.5,
@@ -222,7 +222,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     [self.contentView.layer addSublayer:pastel];
     self.pastelLayer = pastel;
 
-    // The message-text layer sits inside the window layer, inset by a font-variant margin.
+    // The message-text layer sits inside the window layer, inset by a iPad idiom margin.
     CALayer *messageLayer = [CALayer layer];
     messageLayer.anchorPoint = CGPointMake(0.5, 0.5);
     CGRect windowFrame = self.messageWindowLayer.frame;
@@ -819,7 +819,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     CGRect messageClip = [self getClipRect:[self getTextureType]];
     CGSize atlasSize = self.messageImage.size;
     CGRect windowFrame = self.messageWindowLayer.frame;
-    BOOL narrow = GetFontVariantFlag() == kFontVariantDefault;
+    BOOL narrow = !IsPad();
     CGRect fullClip = [self getClipRect:kTutorialStepDecideButton];
 
     [CATransaction begin];
@@ -1036,7 +1036,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     CGRect messageClip = [self getClipRect:[self getTextureType]];
     CGSize atlasSize = self.messageImage.size;
     CGRect windowFrame = self.messageWindowLayer.frame;
-    BOOL narrow = GetFontVariantFlag() == kFontVariantDefault;
+    BOOL narrow = !IsPad();
     CGRect fullClip = [self getClipRect:kTutorialStepDecideButton];
 
     [CATransaction begin];
@@ -1100,7 +1100,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 - (unsigned int)getTextureType {
     /** @ghidraAddress 0x14040c */
     // Map the live tutorial step to the message-artwork texture-type index. The decide step splits
-    // by font variant; the rest are a fixed remap.
+    // by device idiom; the rest are a fixed remap.
     switch (self.tutorialStatus) {
     case kTutorialStepMusicSelectA:
     case kTutorialStepMusicSelectB:
@@ -1113,7 +1113,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     case kTutorialStepDoubleButton:
         return static_cast<unsigned int>(self.tutorialStatus);
     case kTutorialStepDecideButton:
-        return GetFontVariantFlag() == kFontVariantDefault ? 10 : 9;
+        return !IsPad() ? 10 : 9;
     case kTutorialStepNoTarget:
         return 0xb;
     case kTutorialStepSettingButton:
@@ -1143,9 +1143,9 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 - (CGRect)getClipRect:(unsigned int)texType {
     /** @ghidraAddress 0x140544 */
     // Look up the artwork rectangle for the texture type in the per-step clip table. On the narrow
-    // font variant every rectangle is halved.
+    // iPad idiom every rectangle is halved.
     CGRect rect = g_pTutorialClipRect[texType];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         rect.origin.x *= 0.5;
         rect.origin.y *= 0.5;
         rect.size.width *= 0.5;
@@ -1217,10 +1217,9 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
     if (!self.clipTargetForTouch) {
         // A spotlight that does not pass touches through: any tap advances the step, skipping the
-        // double-button step on the wide font variant.
+        // double-button step on the iPad (wide) layout.
         self.tutorialStatus = self.tutorialStatus + 1;
-        if (GetFontVariantFlag() != kFontVariantDefault &&
-            self.tutorialStatus == kTutorialStepDoubleButton) {
+        if (IsPad() && self.tutorialStatus == kTutorialStepDoubleButton) {
             self.tutorialStatus = self.tutorialStatus + 1;
         }
         [self startTutorialWithType:self.tutorialStatus withAnimation:YES];

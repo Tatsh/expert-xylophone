@@ -238,11 +238,12 @@ static const CGFloat kCentreFactor = 0.5f;
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
     CGRect textRect = CGRectMake((kArtworkCanvasSize - textSize.width) * kCentreFactor,
                                  (kArtworkCanvasSize - textSize.height) * kCentreFactor,
-                                 textSize.width, textSize.height);
+                                 textSize.width,
+                                 textSize.height);
     [title drawInRect:textRect
-              withFont:font
-         lineBreakMode:NSLineBreakByWordWrapping
-             alignment:NSTextAlignmentCenter];
+             withFont:font
+        lineBreakMode:NSLineBreakByWordWrapping
+            alignment:NSTextAlignmentCenter];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return [[NSData alloc] initWithData:UIImagePNGRepresentation(image)];
@@ -282,13 +283,14 @@ static const CGFloat kCentreFactor = 0.5f;
     UIFont *font = [UIFont systemFontOfSize:kMusicNameFontSize];
     CGSize textSize = [title sizeWithFont:font];
     CGFloat canvasWidth = MIN(textSize.width, kNameImageMaxWidth);
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(canvasWidth, kMusicNameImageHeight), NO,
-                                           scale);
+    UIGraphicsBeginImageContextWithOptions(
+        CGSizeMake(canvasWidth, kMusicNameImageHeight), NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
     CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCentreFactor,
                                  (kMusicNameImageHeight - textSize.height) * kCentreFactor,
-                                 textSize.width, textSize.height);
+                                 textSize.width,
+                                 textSize.height);
     [title drawInRect:textRect withFont:font];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -323,13 +325,14 @@ static const CGFloat kCentreFactor = 0.5f;
     UIFont *font = [UIFont systemFontOfSize:kArtistNameFontSize];
     CGSize textSize = [artist sizeWithFont:font];
     CGFloat canvasWidth = MIN(textSize.width, kNameImageMaxWidth);
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(canvasWidth, kArtistNameImageHeight), NO,
-                                           scale);
+    UIGraphicsBeginImageContextWithOptions(
+        CGSizeMake(canvasWidth, kArtistNameImageHeight), NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
     CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCentreFactor,
                                  (kArtistNameImageHeight - textSize.height) * kCentreFactor,
-                                 textSize.width, textSize.height);
+                                 textSize.width,
+                                 textSize.height);
     [artist drawInRect:textRect withFont:font];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

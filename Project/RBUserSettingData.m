@@ -114,10 +114,8 @@ static const int kColetteFrameType = 14;
 static const int kColetteBackgroundType = 13;
 
 // Builds one theme's customise dictionary from the supplied option values.
-static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
-                                                int explosionType,
-                                                int frameType,
-                                                int backgroundType) {
+static NSMutableDictionary *
+RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroundType) {
     return [@{
         kBGMTypeCoderKey : @((NSUInteger)bgmType),
         kShotTypeCoderKey : @((NSUInteger)0),
@@ -162,14 +160,13 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
     self.rivalAlpha = kDefaultRivalAlpha;
     self.backgroundBrighness = kDefaultBackgroundBrighness;
 
-    NSArray *classic = RBMakeCustomizeItem(
-        kClassicBgmType, kClassicBgmType, kClassicBgmType, kClassicBgmType);
+    NSArray *classic =
+        RBMakeCustomizeItem(kClassicBgmType, kClassicBgmType, kClassicBgmType, kClassicBgmType);
     NSArray *limelight = RBMakeCustomizeItem(
         kLimelightBgmType, kLimelightExplosionType, kLimelightFrameType, kLimelightBackgroundType);
     NSArray *colette = RBMakeCustomizeItem(
         kColetteBgmType, kColetteExplosionType, kColetteFrameType, kColetteBackgroundType);
-    self.customizeItems =
-        [[NSMutableArray alloc] initWithArray:@[ classic, limelight, colette ]];
+    self.customizeItems = [[NSMutableArray alloc] initWithArray:@[ classic, limelight, colette ]];
     self.tutorialStatuses = [[NSMutableDictionary alloc] init];
 
     self.cpuLevel = kDefaultCpuLevel;
@@ -220,8 +217,8 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
     static RBUserSettingData *instance = nil;
     if (instance == nil) {
         NSString *key = NSStringFromClass([self class]);
-        if ([[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]
-                .allKeys containsObject:key]) {
+        if ([[[NSUserDefaults standardUserDefaults] dictionaryRepresentation].allKeys
+                containsObject:key]) {
             NSData *archived = [[NSUserDefaults standardUserDefaults] dataForKey:key];
             instance = [NSKeyedUnarchiver unarchiveObjectWithData:archived];
         }
@@ -424,17 +421,17 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
     // The bounds-effect style tracks the theme index, except an unrecognised theme leaves it
     // untouched.
     switch (thema) {
-        case RBUserSettingDataThemeClassic:
-            self.boundsEffectStyle = RBUserSettingDataThemeClassic;
-            break;
-        case RBUserSettingDataThemeLimelight:
-            self.boundsEffectStyle = RBUserSettingDataThemeLimelight;
-            break;
-        case RBUserSettingDataThemeColette:
-            self.boundsEffectStyle = RBUserSettingDataThemeColette;
-            break;
-        default:
-            break;
+    case RBUserSettingDataThemeClassic:
+        self.boundsEffectStyle = RBUserSettingDataThemeClassic;
+        break;
+    case RBUserSettingDataThemeLimelight:
+        self.boundsEffectStyle = RBUserSettingDataThemeLimelight;
+        break;
+    case RBUserSettingDataThemeColette:
+        self.boundsEffectStyle = RBUserSettingDataThemeColette;
+        break;
+    default:
+        break;
     }
 }
 
@@ -451,14 +448,14 @@ static NSMutableDictionary *RBMakeCustomizeItem(int bgmType,
 + (NSString *)themaNameWithID:(RBUserSettingDataTheme)themaID {
     /** @ghidraAddress 0x1f80fc */
     switch (themaID) {
-        case RBUserSettingDataThemeColette:
-            return kThemaNameColette;
-        case RBUserSettingDataThemeLimelight:
-            return kThemaNameLimelight;
-        case RBUserSettingDataThemeClassic:
-            return kThemaNameClassic;
-        default:
-            return kThemaNameFallback;
+    case RBUserSettingDataThemeColette:
+        return kThemaNameColette;
+    case RBUserSettingDataThemeLimelight:
+        return kThemaNameLimelight;
+    case RBUserSettingDataThemeClassic:
+        return kThemaNameClassic;
+    default:
+        return kThemaNameFallback;
     }
 }
 

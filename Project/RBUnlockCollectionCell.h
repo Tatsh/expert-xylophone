@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The item model backing this cell.
  *
  * Setting a new item stores it, then asynchronously loads its artwork into @c imageView, sizes the
- * artwork and frame views by font variant, and sets @c pointLabel to the item's point cost. For a
+ * artwork and frame views by device idiom, and sets @c pointLabel to the item's point cost. For a
  * music item the placeholder artwork is shown immediately and the cover is downloaded through
  * @c imageDownloader.
  * @ghidraAddress 0x192640 (getter)

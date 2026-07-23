@@ -8,9 +8,10 @@
 //
 
 #import "RBMusicManager.h"
-#import "RBMacros.h"
 
 #import <CoreFoundation/CoreFoundation.h>
+
+#import "RBMacros.h"
 
 // Collaborator classes reached from these methods. Their headers are not all reconstructed in this
 // tree yet (the same speculative-import style AppDelegate.mm and ScoreData.m already use); they
@@ -21,7 +22,6 @@
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
 #import "StoreMusicInfo.h"
-
 #import "neEngineBridge.h"
 
 // The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
@@ -48,8 +48,7 @@ static NSString *const kPurchasedMusicKeyITunesURL = @"iTunesURL";
 // The three preinstalled tune identifiers seeded on construction.
 // @ghidraAddress 0x2fcfe0 (g_nPreinstallMusicIDs)
 static const int kPreinstallMusicIDs[] = {99999595, 99999597, 99999907};
-static const NSUInteger kPreinstallMusicIDCount =
-    ARRAY_SIZE(kPreinstallMusicIDs);
+static const NSUInteger kPreinstallMusicIDCount = ARRAY_SIZE(kPreinstallMusicIDs);
 
 // The initial capacity reserved for the purchased-music and identifier lists.
 static const NSUInteger kPurchasedMusicListCapacity = 64;
@@ -162,8 +161,8 @@ static const int kClientMusicEntriesPerPage = 20;
             BFCodec *codec = [[BFCodec alloc] init];
             [codec cipherInit:Md5StringToData(key.UTF8String)];
             [codec decipher:data];
-            NSData *payload = [data subdataWithRange:NSMakeRange(kListSaltLength,
-                                                                 data.length - kListSaltLength)];
+            NSData *payload =
+                [data subdataWithRange:NSMakeRange(kListSaltLength, data.length - kListSaltLength)];
             self.purchasedMusicDictionaries = [payload mutableArray];
             [self setMusicDataArrayDirty];
         }
@@ -236,8 +235,7 @@ static const int kClientMusicEntriesPerPage = 20;
         if (storeMusicInfo.itunesURL) {
             entry[kPurchasedMusicKeyITunesURL] = storeMusicInfo.itunesURL;
         }
-        [self.purchasedMusicDictionaries
-            addObject:[NSDictionary dictionaryWithDictionary:entry]];
+        [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
         [self setMusicDataArrayDirty];
         return YES;
     }

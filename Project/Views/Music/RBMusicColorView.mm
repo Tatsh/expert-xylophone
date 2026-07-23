@@ -21,7 +21,7 @@ enum {
 // The user theme (RBUserSettingData.thema); the brown theme (2) uses the flash-highlighted layout.
 enum { kThemeBrown = 2 };
 
-// The layout-offset the font-variant Colette layout seeds for the brown theme (8.0, the
+// The layout-offset the iPad idiom Colette layout seeds for the brown theme (8.0, the
 // 0x41000000 single-precision literal written by the initialiser).
 static const float kBrownLayoutOffset = 8.0f;
 
@@ -120,7 +120,7 @@ static const CGFloat kCompactColorBarY = 25.0;
 static const CGFloat kCompactColorBarWidth = 158.0;
 static const CGFloat kCompactColorBarHeight = 38.0;
 
-// The font-variant (Colette) layout is laid out relative to layoutOffset. The colour-button
+// The iPad idiom (Colette) layout is laid out relative to layoutOffset. The colour-button
 // horizontal offsets per slot (added to layoutOffset), decoded from the LAB_1000c34fc arms:
 // slot 0 = g_flCollectionStartYNarrow (34.0), slot 1 = DAT_100301178 (312.0),
 // slot 2 = DAT_100301174 (173.0).
@@ -195,7 +195,7 @@ struct ColorGeometry {
         self.color = [RBUserSettingData sharedInstance].playerColor;
         self.rivalAlpha = [RBUserSettingData sharedInstance].rivalAlpha;
         if ([RBUserSettingData sharedInstance].thema == kThemeBrown) {
-            if (GetFontVariantFlag() != kFontVariantDefault) {
+            if (IsPad()) {
                 self.layoutOffset = kBrownLayoutOffset;
             }
         } else {
@@ -220,11 +220,11 @@ struct ColorGeometry {
     self.alphaChangeImageBases = [NSMutableArray arrayWithCapacity:kColorSlotCount];
 
     int thema = [RBUserSettingData sharedInstance].thema;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     for (int i = 0; i < kColorSlotCount; ++i) {
         ColorGeometry geometry;
-        if (fontVariant) {
+        if (isPad) {
             CGFloat offset = self.layoutOffset;
             geometry.buttonX = offset + kVariantButtonXOffset[i];
             geometry.buttonY = kVariantButtonY;
@@ -301,7 +301,7 @@ struct ColorGeometry {
         selectedView.autoresizingMask = kColorAutoresizingMask;
         [button addSubview:selectedView];
         [self.selectedImages addObject:selectedView];
-        if ([RBUserSettingData sharedInstance].thema == kThemeBrown && !fontVariant) {
+        if ([RBUserSettingData sharedInstance].thema == kThemeBrown && !isPad) {
             // On the compact brown layout the selected overlay starts fully transparent instead of
             // flashing.
             selectedView.alpha = 0.0;

@@ -27,10 +27,10 @@ static const CGFloat kReferenceScreenHeight = 1024.0;
 
 // The normalised grip-texture clip rectangle (x, y, width, height), matching the binary's
 // g_pGripTextureClipRect (0x1002ef738). It is scaled by the reference screen height, and
-// additionally halved for the default (non-wide) font variant.
+// additionally halved for the default (non-wide) iPad idiom.
 static const CGFloat kGripTextureClipRect[] = {0.001953125, 0.08984375, 0.09375, 0.09375};
 
-// The slider row height (grip and track height basis): 20 points for the default font variant, 40
+// The slider row height (grip and track height basis): 20 points for the default iPad idiom, 40
 // for the wide variant. Mirrors the binary's lazily-initialised g_dSliderRowHeight (0x1003df4f8).
 static const CGFloat kSliderRowHeightNarrow = 20.0;
 static const CGFloat kSliderRowHeightWide = 40.0;
@@ -47,7 +47,7 @@ static const CGFloat kSliderGaugeInsetFactor = 1.85;
 // The gauge track's height is the grip height times this factor (0x1003010f8).
 static const CGFloat kSliderGaugeHeightFactor = 0.15;
 
-// The index label's point size by font variant.
+// The index label's point size by device idiom.
 static const CGFloat kSliderIndexFontSizeNarrow = 10.0;
 static const CGFloat kSliderIndexFontSizeWide = 16.0;
 
@@ -68,11 +68,11 @@ enum {
 @implementation RBMenuPageSlider
 
 - (instancetype)initWithFrame:(CGRect)frame delegate:(id<RBMenuPageSliderDelegate>)delegate {
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
-    CGFloat rowHeight = isWideVariant ? kSliderRowHeightWide : kSliderRowHeightNarrow;
+    BOOL isPad = IsPad();
+    CGFloat rowHeight = isPad ? kSliderRowHeightWide : kSliderRowHeightNarrow;
 
     UIImage *gripImage = [UIImage imageWithName:kSliderGripTextureName useCache:NO];
-    CGFloat clipScale = isWideVariant ? kReferenceScreenHeight : (kReferenceScreenHeight * 0.5);
+    CGFloat clipScale = isPad ? kReferenceScreenHeight : (kReferenceScreenHeight * 0.5);
     CGRect gripClip = CGRectMake(kGripTextureClipRect[kClipRectX] * clipScale,
                                  kGripTextureClipRect[kClipRectY] * clipScale,
                                  kGripTextureClipRect[kClipRectWidth] * clipScale,
@@ -80,7 +80,9 @@ enum {
     gripImage = [gripImage clipImageWithRect:gripClip];
 
     UIImageView *grip = [[UIImageView alloc] initWithImage:gripImage];
-    grip.frame = CGRectMake(0.0, 0.0, grip.frame.size.width * kSliderGripScale,
+    grip.frame = CGRectMake(0.0,
+                            0.0,
+                            grip.frame.size.width * kSliderGripScale,
                             grip.frame.size.height * kSliderGripScale);
     CGFloat gripWidth = grip.frame.size.width;
     CGFloat gripHeight = grip.frame.size.height;
@@ -91,28 +93,28 @@ enum {
     }
 
     self.layer.cornerRadius = rowHeight * kSliderControlCornerFactor;
-    self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
-                            UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+                            UIViewAutoresizingFlexibleTopMargin;
 
-    UIView *gauge = [[UIView alloc]
-        initWithFrame:CGRectMake(rowHeight + gripWidth * 0.5,
-                                 gripHeight * kSliderGaugeInsetFactor * 0.5,
-                                 (frame.size.width - gripWidth) - rowHeight * 2.0,
-                                 gripHeight * kSliderGaugeHeightFactor)];
+    UIView *gauge =
+        [[UIView alloc] initWithFrame:CGRectMake(rowHeight + gripWidth * 0.5,
+                                                 gripHeight * kSliderGaugeInsetFactor * 0.5,
+                                                 (frame.size.width - gripWidth) - rowHeight * 2.0,
+                                                 gripHeight * kSliderGaugeHeightFactor)];
     gauge.layer.cornerRadius = gauge.frame.size.height * 0.5;
     gauge.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     gauge.userInteractionEnabled = NO;
     [self addSubview:gauge];
     self.slideGaugeView = gauge;
 
-    grip.frame = CGRectMake(gauge.frame.origin.x - gripWidth * 0.5, gripHeight * 0.5, gripWidth,
-                            gripHeight);
+    grip.frame =
+        CGRectMake(gauge.frame.origin.x - gripWidth * 0.5, gripHeight * 0.5, gripWidth, gripHeight);
     grip.userInteractionEnabled = NO;
     [self addSubview:grip];
     self.gripView = grip;
 
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 10.0, 10.0)];
-    CGFloat fontSize = isWideVariant ? kSliderIndexFontSizeWide : kSliderIndexFontSizeNarrow;
+    CGFloat fontSize = isPad ? kSliderIndexFontSizeWide : kSliderIndexFontSizeNarrow;
     label.font = [UIFont systemFontOfSize:fontSize];
     label.textAlignment = NSTextAlignmentCenter;
     label.text = kSliderIndexLabelSizingText;
@@ -179,17 +181,18 @@ enum {
 
     CGRect gripFrame = self.gripView.frame;
     CGFloat gaugeX = self.slideGaugeView.frame.origin.x;
-    self.gripView.frame = CGRectMake(gaugeX + (CGFloat)(_value - 1.0) * self.step -
-                                         gripFrame.size.width * 0.5,
-                                     gripFrame.origin.y, gripFrame.size.width,
-                                     gripFrame.size.height);
+    self.gripView.frame =
+        CGRectMake(gaugeX + (CGFloat)(_value - 1.0) * self.step - gripFrame.size.width * 0.5,
+                   gripFrame.origin.y,
+                   gripFrame.size.width,
+                   gripFrame.size.height);
 
     CGFloat gripX = self.gripView.frame.origin.x;
     CGFloat gripWidth = self.gripView.frame.size.width;
     CGFloat labelWidth = self.indexLabel.frame.size.width;
     CGFloat labelHeight = self.indexLabel.frame.size.height;
-    self.indexLabel.frame = CGRectMake(gripX + (gripWidth - labelWidth) * 0.5, labelHeight * -0.5,
-                                       gripWidth, labelHeight);
+    self.indexLabel.frame = CGRectMake(
+        gripX + (gripWidth - labelWidth) * 0.5, labelHeight * -0.5, gripWidth, labelHeight);
 }
 
 - (void)sliderChangeWithTouchPoint:(CGPoint)point isEnd:(BOOL)isEnd {

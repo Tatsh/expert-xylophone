@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The instruction pages are laid out side by side inside a paging @c UIScrollView, with a
  * @c UIPageControl mirroring and driving the current page. The page count and page geometry depend
- * on the current theme, the font variant, and whether the device is Retina.
+ * on the current theme, the iPad idiom, and whether the device is Retina.
  */
 @interface RBHowToView : RBMusicMenuPopupView <UIScrollViewDelegate>
 
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build the how-to-play content: the paging scroll view, the page control, and the
  * instruction pages.
  *
- * Calls through to @c super, then reads the theme and font-variant/Retina flags to size the scroll
+ * Calls through to @c super, then reads the theme and idiom/Retina flags to size the scroll
  * view and page control, populates one image page per instruction, and lays out the scroll view's
  * content size.
  * @ghidraAddress 0x9a200

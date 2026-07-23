@@ -43,7 +43,7 @@ static const CGFloat kReadoutWidth = 62.0;
 static const CGFloat kReadoutHeight = 8.0;
 
 // The half-width scale and the base widths used to centre the assembled glyph row: the row is
-// centred within a nominal field whose width is chosen by the font variant.
+// centred within a nominal field whose width is chosen by the iPad idiom.
 // @ghidraAddress 0x2f8578 (default field width)
 // @ghidraAddress 0x30110c (alternate field width)
 static const float kCentringHalf = 0.5f;
@@ -179,8 +179,8 @@ static NSString *const kOtherDecimalImageName = @"02_music_detail/det_ran_ten";
         if (glyph != nil) {
             rowWidth += glyph.size.width;
             if (haveAppended) {
-                // Each glyph after the first is separated by the font-variant advance.
-                rowWidth += (float)GetFontVariantFlag();
+                // Each glyph after the first is separated by the iPad idiom advance.
+                rowWidth += (float)IsPad();
             }
             [imageList addObject:glyph];
             haveAppended = YES;
@@ -188,9 +188,9 @@ static NSString *const kOtherDecimalImageName = @"02_music_detail/det_ran_ten";
         hasStarted = YES;
     }
 
-    // Centre the assembled row within the nominal field for the active font variant.
+    // Centre the assembled row within the nominal field for the active iPad idiom.
     float centringOffset;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         centringOffset = (kFieldWidthDefault - rowWidth) * kCentringHalf;
     } else {
         centringOffset =
@@ -214,7 +214,7 @@ static NSString *const kOtherDecimalImageName = @"02_music_detail/det_ran_ten";
             int yOffset =
                 glyph.size.height == self.numHeightS ? (int)(self.numHeightL - self.numHeightS) : 0;
             glyphView.frame = CGRectMake(cursorX, yOffset, glyph.size.width, glyph.size.height);
-            int advance = GetFontVariantFlag();
+            int advance = IsPad();
             glyphView.hidden = NO;
             cursorX = advance + (int)(cursorX + glyph.size.width);
         }
@@ -238,7 +238,7 @@ static NSString *const kOtherDecimalImageName = @"02_music_detail/det_ran_ten";
                 glyph.size.height == self.numHeightS ? (int)(self.numHeightL - self.numHeightS) : 0;
             int glyphX = (int)(cursorX - (int)glyph.size.width);
             glyphView.frame = CGRectMake(glyphX, yOffset, glyph.size.width, glyph.size.height);
-            int advance = GetFontVariantFlag();
+            int advance = IsPad();
             glyphView.hidden = NO;
             cursorX = glyphX - advance;
         }

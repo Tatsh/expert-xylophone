@@ -34,8 +34,14 @@ static NSString *const kDescriptionFormat =
 
 - (NSString *)description {
     /** @ghidraAddress 0x19a014 */
-    return [NSString stringWithFormat:kDescriptionFormat, NSStringFromClass([self class]), self,
-                                      self.type, self.identity, self.name, self.path, self.point];
+    return [NSString stringWithFormat:kDescriptionFormat,
+                                      NSStringFromClass([self class]),
+                                      self,
+                                      self.type,
+                                      self.identity,
+                                      self.name,
+                                      self.path,
+                                      self.point];
 }
 
 @end

@@ -31,36 +31,57 @@ static const CGFloat kCentreFactor = 0.5;
 
 // The whole-number digit glyphs (cus_unlock_nm_0 … cus_unlock_nm_9).
 static NSString *const kNormalDigitNames[] = {
-    @"04_customize/cus_unlock_nm_0", @"04_customize/cus_unlock_nm_1",
-    @"04_customize/cus_unlock_nm_2", @"04_customize/cus_unlock_nm_3",
-    @"04_customize/cus_unlock_nm_4", @"04_customize/cus_unlock_nm_5",
-    @"04_customize/cus_unlock_nm_6", @"04_customize/cus_unlock_nm_7",
-    @"04_customize/cus_unlock_nm_8", @"04_customize/cus_unlock_nm_9",
+    @"04_customize/cus_unlock_nm_0",
+    @"04_customize/cus_unlock_nm_1",
+    @"04_customize/cus_unlock_nm_2",
+    @"04_customize/cus_unlock_nm_3",
+    @"04_customize/cus_unlock_nm_4",
+    @"04_customize/cus_unlock_nm_5",
+    @"04_customize/cus_unlock_nm_6",
+    @"04_customize/cus_unlock_nm_7",
+    @"04_customize/cus_unlock_nm_8",
+    @"04_customize/cus_unlock_nm_9",
 };
 
 // The big integer-part digit glyphs of the decimal style (cus_unlock_nmb_0 … cus_unlock_nmb_9).
 static NSString *const kBigDigitNames[] = {
-    @"04_customize/cus_unlock_nmb_0", @"04_customize/cus_unlock_nmb_1",
-    @"04_customize/cus_unlock_nmb_2", @"04_customize/cus_unlock_nmb_3",
-    @"04_customize/cus_unlock_nmb_4", @"04_customize/cus_unlock_nmb_5",
-    @"04_customize/cus_unlock_nmb_6", @"04_customize/cus_unlock_nmb_7",
-    @"04_customize/cus_unlock_nmb_8", @"04_customize/cus_unlock_nmb_9",
+    @"04_customize/cus_unlock_nmb_0",
+    @"04_customize/cus_unlock_nmb_1",
+    @"04_customize/cus_unlock_nmb_2",
+    @"04_customize/cus_unlock_nmb_3",
+    @"04_customize/cus_unlock_nmb_4",
+    @"04_customize/cus_unlock_nmb_5",
+    @"04_customize/cus_unlock_nmb_6",
+    @"04_customize/cus_unlock_nmb_7",
+    @"04_customize/cus_unlock_nmb_8",
+    @"04_customize/cus_unlock_nmb_9",
 };
 
 // The small fractional-digit glyphs of the decimal style (cus_unlock_nms_0 … cus_unlock_nms_9).
 static NSString *const kSmallDigitNames[] = {
-    @"04_customize/cus_unlock_nms_0", @"04_customize/cus_unlock_nms_1",
-    @"04_customize/cus_unlock_nms_2", @"04_customize/cus_unlock_nms_3",
-    @"04_customize/cus_unlock_nms_4", @"04_customize/cus_unlock_nms_5",
-    @"04_customize/cus_unlock_nms_6", @"04_customize/cus_unlock_nms_7",
-    @"04_customize/cus_unlock_nms_8", @"04_customize/cus_unlock_nms_9",
+    @"04_customize/cus_unlock_nms_0",
+    @"04_customize/cus_unlock_nms_1",
+    @"04_customize/cus_unlock_nms_2",
+    @"04_customize/cus_unlock_nms_3",
+    @"04_customize/cus_unlock_nms_4",
+    @"04_customize/cus_unlock_nms_5",
+    @"04_customize/cus_unlock_nms_6",
+    @"04_customize/cus_unlock_nms_7",
+    @"04_customize/cus_unlock_nms_8",
+    @"04_customize/cus_unlock_nms_9",
 };
 
 // The lime-badged digit glyphs (cus_unlock_0 … cus_unlock_9).
 static NSString *const kLimeDigitNames[] = {
-    @"04_customize/cus_unlock_0", @"04_customize/cus_unlock_1", @"04_customize/cus_unlock_2",
-    @"04_customize/cus_unlock_3", @"04_customize/cus_unlock_4", @"04_customize/cus_unlock_5",
-    @"04_customize/cus_unlock_6", @"04_customize/cus_unlock_7", @"04_customize/cus_unlock_8",
+    @"04_customize/cus_unlock_0",
+    @"04_customize/cus_unlock_1",
+    @"04_customize/cus_unlock_2",
+    @"04_customize/cus_unlock_3",
+    @"04_customize/cus_unlock_4",
+    @"04_customize/cus_unlock_5",
+    @"04_customize/cus_unlock_6",
+    @"04_customize/cus_unlock_7",
+    @"04_customize/cus_unlock_8",
     @"04_customize/cus_unlock_9",
 };
 
@@ -83,17 +104,18 @@ static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
 
 // Look up the glyph image for a digit under a style, honouring the small/big split of the decimal
 // style's fractional slot.
-static UIImage *RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger slot) {
+static UIImage *
+RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger slot) {
     switch (imageType) {
-        case RBNumberLabelImageTypeNormal:
-            return [UIImage imageWithName:kNormalDigitNames[digit]];
-        case RBNumberLabelImageTypeDecimal:
-            if (slot < 1) {
-                return [UIImage imageWithName:kSmallDigitNames[digit]];
-            }
-            return [UIImage imageWithName:kBigDigitNames[digit]];
-        case RBNumberLabelImageTypeLime:
-            return [UIImage imageWithName:kLimeDigitNames[digit]];
+    case RBNumberLabelImageTypeNormal:
+        return [UIImage imageWithName:kNormalDigitNames[digit]];
+    case RBNumberLabelImageTypeDecimal:
+        if (slot < 1) {
+            return [UIImage imageWithName:kSmallDigitNames[digit]];
+        }
+        return [UIImage imageWithName:kBigDigitNames[digit]];
+    case RBNumberLabelImageTypeLime:
+        return [UIImage imageWithName:kLimeDigitNames[digit]];
     }
     return nil;
 }
@@ -147,22 +169,25 @@ static UIImage *RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int di
             UIImage *prefix = [UIImage imageWithName:kLimePrefixName];
             CGSize prefixSize = prefix.size;
             pen -= prefixSize.width;
-            [prefix drawInRect:CGRectMake(pen, bottom - prefixSize.height, prefixSize.width,
+            [prefix drawInRect:CGRectMake(pen,
+                                          bottom - prefixSize.height,
+                                          prefixSize.width,
                                           prefixSize.height)];
         }
 
         UIImage *glyph = RBNumberLabelGlyphImage(self.imageType, digits[slot], slot);
         CGSize glyphSize = glyph.size;
         pen -= glyphSize.width;
-        [glyph drawInRect:CGRectMake(pen, bottom - glyphSize.height, glyphSize.width,
-                                     glyphSize.height)];
+        [glyph drawInRect:CGRectMake(
+                              pen, bottom - glyphSize.height, glyphSize.width, glyphSize.height)];
 
         if (slot == 0 && self.imageType == RBNumberLabelImageTypeDecimal) {
             UIImage *point = [UIImage imageWithName:kSmallDecimalPointName];
             CGSize pointSize = point.size;
             pen -= pointSize.width;
-            [point drawInRect:CGRectMake(pen, bottom - pointSize.height, pointSize.width,
-                                         pointSize.height)];
+            [point
+                drawInRect:CGRectMake(
+                               pen, bottom - pointSize.height, pointSize.width, pointSize.height)];
         }
     }
 }

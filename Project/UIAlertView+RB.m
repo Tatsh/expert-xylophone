@@ -15,9 +15,8 @@
 //  the binary's "BAET" typo in the spending-limit message.
 //
 
-#import "UIAlertView+RB.h"
-
 #import "StoreCampaignItemInfo.h"
+#import "UIAlertView+RB.h"
 
 // The empty value passed as the @c value: argument of every localized-string lookup, matching the
 // binary's shared string cache.
@@ -68,8 +67,7 @@ static NSString *const kLocalizedKeyLatestGameDataRequired =
 static NSString *const kLocalizedKeyInsufficientPoints = @"Insufficient Points!";
 static NSString *const kLocalizedKeyUpdateToUnlockSong =
     @"This application must be updated to unlock this song.";
-static NSString *const kLocalizedKeyPurchaseAdditionalSequences =
-    @"Purchase Additional Sequences?";
+static NSString *const kLocalizedKeyPurchaseAdditionalSequences = @"Purchase Additional Sequences?";
 static NSString *const kLocalizedKeyHasBeenAddedFormat = @"%@ has been added.";
 static NSString *const kLocalizedKeyLimePointAddedFormat = @"%d LimePoint has been Added.";
 static NSString *const kLocalizedKeySequenceRequirementFormat =
@@ -78,16 +76,18 @@ static NSString *const kLocalizedKeySequenceRequirementFormat =
 // Hard-coded Japanese titles and messages baked into the binary as literal strings.
 static NSString *const kAgeConfirmationTitle = @"年齢確認";
 static NSString *const kAgeConfirmationMessage =
-    @"有料サービスのご利用にあたり、年齢の確認をお願いしております。\n\nご入力頂いた情報は、課金上限設定にのみ使用いたします。";
+    @"有料サービスのご利用にあたり、年齢の確認をお願いしております。\n\nご入力頂いた情報は、課金上"
+    @"限設定にのみ使用いたします。";
 static NSString *const kSpendingLimitExceededTitle = @"制限超過";
 static NSString *const kSpendingLimitExceededMessage =
-    @"1ヶ月の課金上限額を超過したため購入できません。月が変わってから再度REFLEC BAET Storeにお越しくだ"
+    @"1ヶ月の課金上限額を超過したため購入できません。月が変わってから再度REFLEC BAET "
+    @"Storeにお越しくだ"
     @"さい。";
 static NSString *const kColetteWelcomeTitle = @"WELCOME TO colette!!";
-static NSString *const kColetteWelcomeMessageKey = @"設定->テーマで colette が選べるようになりました!!";
+static NSString *const kColetteWelcomeMessageKey =
+    @"設定->テーマで colette が選べるようになりました!!";
 static NSString *const kSerialCodePromptFormat = @"シリアルコードを入力してください";
-static NSString *const kReorderNeedsDownloadFormat =
-    @"並べ替えに必要なデータをダウンロードします";
+static NSString *const kReorderNeedsDownloadFormat = @"並べ替えに必要なデータをダウンロードします";
 static NSString *const kMusicsNotFoundHeader =
     @"並べ替えに必要な情報が見つからなかったため、「＃」に分類しました。\n";
 static NSString *const kErosionMarkHistoryMessage =
@@ -118,9 +118,7 @@ static const NSInteger kAlertTagNetworkError = 0;
 
 // Resolves a fixed UI string from the main bundle the way the shared string cache does.
 static NSString *RBLocalizedUIString(NSString *key) {
-    return [[NSBundle mainBundle] localizedStringForKey:key
-                                                  value:kEmptyLocalizedValue
-                                                  table:nil];
+    return [[NSBundle mainBundle] localizedStringForKey:key value:kEmptyLocalizedValue table:nil];
 }
 
 @implementation UIAlertView (RB)
@@ -234,8 +232,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
     return alert;
 }
 
-+ (UIAlertView *)showMapWithTitle:(NSString *)title
-                         delegate:(id<UIAlertViewDelegate>)delegate {
++ (UIAlertView *)showMapWithTitle:(NSString *)title delegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xe270 */
     UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:title
@@ -250,12 +247,11 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showWithErrorMessage:(NSString *)message
                              delegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xe358 */
-    UIAlertView *alert =
-        [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyError)
-                                   message:message
-                                  delegate:delegate
-                         cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyOK)
-                         otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyError)
+                                                    message:message
+                                                   delegate:delegate
+                                          cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyOK)
+                                          otherButtonTitles:nil];
     [alert show];
     return alert;
 }
@@ -304,12 +300,12 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showSelectPurchaseLimitTypeWithDelegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xe6e8 */
     NSString *cancel = RBLocalizedUIString(kLocalizedKeyCancel);
-    NSString *under16 = [NSString stringWithFormat:kLabelWithAmountFormat,
-                                                   kAgeBracketUnder16, kSpendingLimit5000];
-    NSString *under20 = [NSString stringWithFormat:kLabelWithAmountFormat,
-                                                   kAgeBracketUnder20, kSpendingLimit20000];
-    NSString *over20 = [NSString stringWithFormat:kLabelWithAmountFormat,
-                                                  kAgeBracket20OrOver, kSpendingLimitNone];
+    NSString *under16 =
+        [NSString stringWithFormat:kLabelWithAmountFormat, kAgeBracketUnder16, kSpendingLimit5000];
+    NSString *under20 =
+        [NSString stringWithFormat:kLabelWithAmountFormat, kAgeBracketUnder20, kSpendingLimit20000];
+    NSString *over20 =
+        [NSString stringWithFormat:kLabelWithAmountFormat, kAgeBracket20OrOver, kSpendingLimitNone];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:kAgeConfirmationTitle
                                                     message:kAgeConfirmationMessage
                                                    delegate:delegate
@@ -342,8 +338,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
     return alert;
 }
 
-+ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint
-                                            :(id<UIAlertViewDelegate>)delegate {
++ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf150 */
     NSString *message =
         [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeyHasBeenAddedFormat), limePoint];
@@ -413,12 +408,12 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showAlertNeedDownloadMusicNameList:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf2e0 */
     NSString *message = [NSString stringWithFormat:kReorderNeedsDownloadFormat];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
-                                                    message:message
-                                                   delegate:delegate
-                                          cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyNo)
-                                          otherButtonTitles:RBLocalizedUIString(kLocalizedKeyYes),
-                                                            nil];
+    UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
+                                   message:message
+                                  delegate:delegate
+                         cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyNo)
+                         otherButtonTitles:RBLocalizedUIString(kLocalizedKeyYes), nil];
     [alert show];
     return alert;
 }
@@ -448,9 +443,8 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showPurchasePack:(NSString *)requirement
                          delegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf8cc */
-    NSString *message =
-        [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeySequenceRequirementFormat),
-                                   requirement];
+    NSString *message = [NSString
+        stringWithFormat:RBLocalizedUIString(kLocalizedKeySequenceRequirementFormat), requirement];
     return [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
                                       message:message
                                      delegate:delegate
@@ -461,11 +455,11 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showMovePackDetailToExtendDetail:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf9e0 */
     return [[UIAlertView alloc]
-             initWithTitle:kEmptyLocalizedValue
-                   message:RBLocalizedUIString(kLocalizedKeyPurchaseAdditionalSequences)
-                  delegate:delegate
-         cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyNo)
-         otherButtonTitles:RBLocalizedUIString(kLocalizedKeyYes), nil];
+            initWithTitle:kEmptyLocalizedValue
+                  message:RBLocalizedUIString(kLocalizedKeyPurchaseAdditionalSequences)
+                 delegate:delegate
+        cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyNo)
+        otherButtonTitles:RBLocalizedUIString(kLocalizedKeyYes), nil];
 }
 
 #pragma mark - Campaign terms
@@ -492,20 +486,18 @@ static NSString *RBLocalizedUIString(NSString *key) {
         [message appendString:kMusicsNotFoundSeparator];
         [message appendString:music];
     }
-    UIAlertView *alert =
-        [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
-                                   message:message
-                                  delegate:nil
-                         cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyYes)
-                         otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
+                                                    message:message
+                                                   delegate:nil
+                                          cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyYes)
+                                          otherButtonTitles:nil];
     [alert show];
     return alert;
 }
 
 + (UIAlertView *)showAlertUpdateErosionMark:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xfcb0 */
-    NSMutableString *message =
-        [[NSMutableString alloc] initWithString:kErosionMarkHistoryMessage];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:kErosionMarkHistoryMessage];
     UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
                                    message:message

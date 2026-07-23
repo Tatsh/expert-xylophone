@@ -22,7 +22,6 @@
 #import "RBMusicManager.h"
 #import "StringConvert.h"
 #import "UnZipArchive.h"
-
 #import "neEngineBridge.h"
 
 // Archive member names. The White image accessors read the @c _b (black-background) members and
@@ -155,8 +154,8 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
         return nil;
     }
     return [UIImage imageWithCGImage:image.CGImage
-                              scale:kDoubleScale
-                        orientation:UIImageOrientationUp];
+                               scale:kDoubleScale
+                         orientation:UIImageOrientationUp];
 }
 
 // The black tint colour used by the black name-strip images.
@@ -211,9 +210,16 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     g_pMusicSortNameOverrides = [[NSMutableDictionary alloc] init];
     g_pArtistSortNameOverrides = [[NSMutableDictionary alloc] init];
     g_yomiGroups = @[
-        @"ァアィイゥウェエォオ", @"カガキギクグケゲコゴ", @"サザシジスズセゼソゾ",
-        @"タダチヂッツヅテデトド", @"ナニヌネノ", @"ハバパヒビピフブプヘベペホボポ",
-        @"マミムメモ", @"ャヤュユョヨ", @"ラリルレロ", @"ヮワヰヱヲンヴヵヶ"
+        @"ァアィイゥウェエォオ",
+        @"カガキギクグケゲコゴ",
+        @"サザシジスズセゼソゾ",
+        @"タダチヂッツヅテデトド",
+        @"ナニヌネノ",
+        @"ハバパヒビピフブプヘベペホボポ",
+        @"マミムメモ",
+        @"ャヤュユョヨ",
+        @"ラリルレロ",
+        @"ヮワヰヱヲンヴヵヶ"
     ];
     g_yomiLabels = @[ @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ" ];
 }
@@ -254,9 +260,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 
 #pragma mark - Loading
 
-+ (NSMutableData *)decodeBF:(NSMutableData *)data
-                        Key:(const char *)key
-                  KeyLength:(int)keyLength {
++ (NSMutableData *)decodeBF:(NSMutableData *)data Key:(const char *)key KeyLength:(int)keyLength {
     /** @ghidraAddress 0x5eb78 */
     unsigned char digest[kBlowfishKeyLength];
     char *derived = (char *)malloc((size_t)keyLength);
@@ -290,8 +294,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
         return nil;
     }
     NSMutableData *decoded = [MusicData decodeBF:data
-                                            Key:kChartDecodeKeys[decodeType]
-                                      KeyLength:kChartDecodeKeyLengths[decodeType]];
+                                             Key:kChartDecodeKeys[decodeType]
+                                       KeyLength:kChartDecodeKeyLengths[decodeType]];
     [archive closeFile];
     return decoded;
 }
@@ -302,8 +306,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     int decodeType = 0;
     while (YES) {
         NSMutableData *archiveData = [MusicData getZipData:kInfoDictionaryEntry
-                                                     Path:path
-                                               DecodeType:decodeType];
+                                                      Path:path
+                                                DecodeType:decodeType];
         if (archiveData == nil) {
             return nil;
         }
@@ -386,15 +390,13 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
         data.musicNameInitial = [[NSString alloc] initWithString:kEmptyInitial];
     } else {
         int bucket = [MusicData GetYomiIndex:[data.musicSortName substringToIndex:1]];
-        data.musicNameInitial =
-            [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
+        data.musicNameInitial = [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
     }
     if (data.artistSortName.length == 0) {
         data.artistNameInitial = [[NSString alloc] initWithString:kEmptyInitial];
     } else {
         int bucket = [MusicData GetYomiIndex:[data.artistSortName substringToIndex:1]];
-        data.artistNameInitial =
-            [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
+        data.artistNameInitial = [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
     }
 
     NSArray<MusicDataExtend *> *extendData =
@@ -807,7 +809,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCache;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         image = ImageFromData([self artworkData]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -830,7 +832,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheBasic;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         image = ImageFromData([self artworkDataBasic]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -853,7 +855,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheMedium;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         image = ImageFromData([self artworkDataMedium]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -876,7 +878,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         return self.artworkCacheHard;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         image = ImageFromData([self artworkDataHard]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -911,19 +913,19 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 - (UIImage *)musicNameImageWhiteBasic {
     /** @ghidraAddress 0x61ba4 */
     return WhitePreferringRetina2x([self musicNameImageWhite2xBasic],
-                                  [self musicNameImageWhiteDataBasic]);
+                                   [self musicNameImageWhiteDataBasic]);
 }
 
 - (UIImage *)musicNameImageWhiteMedium {
     /** @ghidraAddress 0x61cb4 */
     return WhitePreferringRetina2x([self musicNameImageWhite2xMedium],
-                                  [self musicNameImageWhiteDataMedium]);
+                                   [self musicNameImageWhiteDataMedium]);
 }
 
 - (UIImage *)musicNameImageWhiteHard {
     /** @ghidraAddress 0x61dc4 */
     return WhitePreferringRetina2x([self musicNameImageWhite2xHard],
-                                  [self musicNameImageWhiteDataHard]);
+                                   [self musicNameImageWhiteDataHard]);
 }
 
 - (UIImage *)artistNameImageWhite {
@@ -934,19 +936,19 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 - (UIImage *)artistNameImageWhiteBasic {
     /** @ghidraAddress 0x61fe4 */
     return WhitePreferringRetina2x([self artistNameImageWhite2xBasic],
-                                  [self artistNameImageWhiteDataBasic]);
+                                   [self artistNameImageWhiteDataBasic]);
 }
 
 - (UIImage *)artistNameImageWhiteMedium {
     /** @ghidraAddress 0x620f4 */
     return WhitePreferringRetina2x([self artistNameImageWhite2xMedium],
-                                  [self artistNameImageWhiteDataMedium]);
+                                   [self artistNameImageWhiteDataMedium]);
 }
 
 - (UIImage *)artistNameImageWhiteHard {
     /** @ghidraAddress 0x62204 */
     return WhitePreferringRetina2x([self artistNameImageWhite2xHard],
-                                  [self artistNameImageWhiteDataHard]);
+                                   [self artistNameImageWhiteDataHard]);
 }
 
 - (UIImage *)musicNameImageBlack {
@@ -981,8 +983,7 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 
 - (UIImage *)artistNameImageBlackMedium {
     /** @ghidraAddress 0x62c8c */
-    return
-        [self setColor:[self artistNameImageWhiteMedium] withColor:BlackTintColor()];
+    return [self setColor:[self artistNameImageWhiteMedium] withColor:BlackTintColor()];
 }
 
 - (UIImage *)artistNameImageBlackHard {
@@ -1022,8 +1023,7 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 
 - (UIImage *)artistNameImageBrownMedium {
     /** @ghidraAddress 0x6397c */
-    return
-        [self setColor:[self artistNameImageWhiteMedium] withColor:BrownTintColor()];
+    return [self setColor:[self artistNameImageWhiteMedium] withColor:BrownTintColor()];
 }
 
 - (UIImage *)artistNameImageBrownHard {
@@ -1181,7 +1181,7 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
         return;
     }
     UIImage *image = nil;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         image = ImageFromData([self artworkData]);
     } else {
         if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
@@ -1238,8 +1238,8 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 
 - (NSComparisonResult)compareArtistNameCustom:(MusicData *)other {
     /** @ghidraAddress 0x65df4 */
-    NSComparisonResult result =
-        [self.artistSortName compare:other.artistSortName options:NSLiteralSearch];
+    NSComparisonResult result = [self.artistSortName compare:other.artistSortName
+                                                     options:NSLiteralSearch];
     if (result == NSOrderedSame) {
         return [self compareMusicNameCustom:other];
     }
@@ -1259,8 +1259,8 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 
 - (NSComparisonResult)compareArtistNameHira:(MusicData *)other {
     /** @ghidraAddress 0x66000 */
-    NSComparisonResult result =
-        [self.artistNameHira compare:other.artistNameHira options:NSLiteralSearch];
+    NSComparisonResult result = [self.artistNameHira compare:other.artistNameHira
+                                                     options:NSLiteralSearch];
     if (result == NSOrderedSame) {
         return [self compareMusicNameHira:other];
     }

@@ -80,11 +80,17 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
             CFStringRef escapeSet = (__bridge CFStringRef)kQueryPercentEscapeCharacters;
             NSString *escapedKey =
                 (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(
-                    kCFAllocatorDefault, (__bridge CFStringRef)key, NULL, escapeSet,
+                    kCFAllocatorDefault,
+                    (__bridge CFStringRef)key,
+                    NULL,
+                    escapeSet,
                     kCFStringEncodingUTF8);
             NSString *escapedValue =
                 (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(
-                    kCFAllocatorDefault, (__bridge CFStringRef)value, NULL, escapeSet,
+                    kCFAllocatorDefault,
+                    (__bridge CFStringRef)value,
+                    NULL,
+                    escapeSet,
                     kCFStringEncodingUTF8);
             [pairs
                 addObject:[NSString stringWithFormat:kQueryPairFormat, escapedKey, escapedValue]];
@@ -108,10 +114,9 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     self = [super init];
     if (self) {
         [self reset];
-        self.request = [[NSMutableURLRequest alloc]
-                initWithURL:url
-                cachePolicy:kRequestCachePolicy
-            timeoutInterval:kDefaultTimeoutInterval];
+        self.request = [[NSMutableURLRequest alloc] initWithURL:url
+                                                    cachePolicy:kRequestCachePolicy
+                                                timeoutInterval:kDefaultTimeoutInterval];
         [self.request setValue:GetDeviceDescriptionString()
             forHTTPHeaderField:kUserAgentHeaderField];
         [self.request setValue:GetRegionCode() forHTTPHeaderField:kAcceptLanguageHeaderField];
@@ -136,10 +141,9 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     self = [super init];
     if (self) {
         [self reset];
-        self.request =
-            [[NSMutableURLRequest alloc] initWithURL:url
-                                         cachePolicy:kRequestCachePolicy
-                                     timeoutInterval:timeoutInterval];
+        self.request = [[NSMutableURLRequest alloc] initWithURL:url
+                                                    cachePolicy:kRequestCachePolicy
+                                                timeoutInterval:timeoutInterval];
         [self.request setValue:GetDeviceDescriptionString()
             forHTTPHeaderField:kUserAgentHeaderField];
         [self.request setValue:GetRegionCode() forHTTPHeaderField:kAcceptLanguageHeaderField];
@@ -158,10 +162,9 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     self = [super init];
     if (self) {
         [self reset];
-        self.request = [[NSMutableURLRequest alloc]
-                initWithURL:url
-                cachePolicy:kRequestCachePolicy
-            timeoutInterval:kDefaultTimeoutInterval];
+        self.request = [[NSMutableURLRequest alloc] initWithURL:url
+                                                    cachePolicy:kRequestCachePolicy
+                                                timeoutInterval:kDefaultTimeoutInterval];
         [self.request setValue:GetDeviceDescriptionString()
             forHTTPHeaderField:kUserAgentHeaderField];
         [self.request setValue:GetRegionCode() forHTTPHeaderField:kAcceptLanguageHeaderField];
@@ -176,10 +179,9 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
           contentType:(NSString *)contentType
              sendData:(NSData *)sendData
              filePath:(NSString *)filePath {
-    self.request = [[NSMutableURLRequest alloc]
-            initWithURL:url
-            cachePolicy:kRequestCachePolicy
-        timeoutInterval:kDefaultTimeoutInterval];
+    self.request = [[NSMutableURLRequest alloc] initWithURL:url
+                                                cachePolicy:kRequestCachePolicy
+                                            timeoutInterval:kDefaultTimeoutInterval];
     [self.request setValue:GetDeviceDescriptionString() forHTTPHeaderField:kUserAgentHeaderField];
     [self.request setValue:GetRegionCode() forHTTPHeaderField:kAcceptLanguageHeaderField];
     [self.request setHTTPMethod:HTTPMethod];
@@ -237,8 +239,8 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     NSURLSessionConfiguration *configuration =
         [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
-                                                         delegate:weakSelf
-                                                    delegateQueue:nil];
+                                                          delegate:weakSelf
+                                                     delegateQueue:nil];
     weakSelf.dataTask = [session dataTaskWithRequest:weakSelf.request];
     [weakSelf.dataTask resume];
     return weakSelf.dataTask;
@@ -253,36 +255,36 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     NSURLSessionConfiguration *configuration =
         [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
-                                                         delegate:weakSelf
-                                                    delegateQueue:nil];
+                                                          delegate:weakSelf
+                                                     delegateQueue:nil];
     weakSelf.downloadTask = [session
         downloadTaskWithRequest:weakSelf.request
               completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-                  /** @ghidraAddress 0x37ec4 */
-                  RBHttpUtil *strongSelf = weakSelf;
-                  NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-                  if (error == nil && statusCode == kHTTPStatusOK) {
-                      [strongSelf.downloadTask cancel];
-                      strongSelf.downloadTask = nil;
-                      if (strongSelf.successBlock) {
-                          strongSelf.successBlock(strongSelf);
-                      } else if ([strongSelf.delegate
-                                     respondsToSelector:@selector(downloaderFinished:)]) {
-                          [strongSelf.delegate performSelector:@selector(downloaderFinished:)
-                                                    withObject:strongSelf];
-                      }
-                  } else {
-                      strongSelf.systemErrorMessage = error.userInfo.description;
-                      [strongSelf.downloadTask cancel];
-                      strongSelf.downloadTask = nil;
-                      if (strongSelf.failureBlock) {
-                          strongSelf.failureBlock(strongSelf);
-                      } else if ([strongSelf.delegate
-                                     respondsToSelector:@selector(downloaderError:)]) {
-                          [strongSelf.delegate performSelector:@selector(downloaderError:)
-                                                    withObject:strongSelf];
-                      }
-                  }
+                /** @ghidraAddress 0x37ec4 */
+                RBHttpUtil *strongSelf = weakSelf;
+                NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+                if (error == nil && statusCode == kHTTPStatusOK) {
+                    [strongSelf.downloadTask cancel];
+                    strongSelf.downloadTask = nil;
+                    if (strongSelf.successBlock) {
+                        strongSelf.successBlock(strongSelf);
+                    } else if ([strongSelf.delegate
+                                   respondsToSelector:@selector(downloaderFinished:)]) {
+                        [strongSelf.delegate performSelector:@selector(downloaderFinished:)
+                                                  withObject:strongSelf];
+                    }
+                } else {
+                    strongSelf.systemErrorMessage = error.userInfo.description;
+                    [strongSelf.downloadTask cancel];
+                    strongSelf.downloadTask = nil;
+                    if (strongSelf.failureBlock) {
+                        strongSelf.failureBlock(strongSelf);
+                    } else if ([strongSelf.delegate
+                                   respondsToSelector:@selector(downloaderError:)]) {
+                        [strongSelf.delegate performSelector:@selector(downloaderError:)
+                                                  withObject:strongSelf];
+                    }
+                }
               }];
     [weakSelf.downloadTask resume];
     return weakSelf.downloadTask;
@@ -305,9 +307,8 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
         }
         completionHandler(NSURLSessionResponseAllow);
     } else {
-        self.systemErrorMessage =
-            [NSString stringWithFormat:@"status code = %zd",
-                                       ((NSHTTPURLResponse *)response).statusCode];
+        self.systemErrorMessage = [NSString
+            stringWithFormat:@"status code = %zd", ((NSHTTPURLResponse *)response).statusCode];
         [self.dataTask cancel];
         [self.downloadTask cancel];
         if (self.failureBlock) {
@@ -447,8 +448,8 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     }
     NSError *error = nil;
     return [NSJSONSerialization JSONObjectWithData:self.downloadedData
-                                          options:NSJSONReadingAllowFragments
-                                            error:&error];
+                                           options:NSJSONReadingAllowFragments
+                                             error:&error];
 }
 
 - (NSDictionary *)getHeader {

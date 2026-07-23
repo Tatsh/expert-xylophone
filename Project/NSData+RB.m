@@ -8,10 +8,10 @@
 //  recovered from the register setup, where x2 through x4 are all zero).
 //
 
-#import "NSData+RB.h"
-
 #import <CoreFoundation/CoreFoundation.h>
 #import <UIKit/UIKit.h>
+
+#import "NSData+RB.h"
 
 // The iOS version at and above which @c CFPropertyListCreateWithData is available; earlier systems
 // fall back to @c CFPropertyListCreateFromXMLData.
@@ -22,9 +22,9 @@ static const NSStringCompareOptions kVersionCompareOptions = NSNumericSearch;
 
 // Whether the running system provides @c CFPropertyListCreateWithData (iOS 4.0 or newer).
 static BOOL RBHasModernPropertyListAPI(void) {
-    NSComparisonResult order = [[UIDevice currentDevice].systemVersion
-        compare:kPropertyListModernAPIVersion
-        options:kVersionCompareOptions];
+    NSComparisonResult order =
+        [[UIDevice currentDevice].systemVersion compare:kPropertyListModernAPIVersion
+                                                options:kVersionCompareOptions];
     return order != NSOrderedAscending;
 }
 
@@ -34,11 +34,11 @@ static CFPropertyListRef RBCreatePropertyList(NSData *data) {
     // Both parsers request an immutable tree; the mutable collection returned to the caller is
     // produced afterwards by copying into a fresh mutable container.
     if (RBHasModernPropertyListAPI()) {
-        return CFPropertyListCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)data,
-                                            kCFPropertyListImmutable, NULL, NULL);
+        return CFPropertyListCreateWithData(
+            kCFAllocatorDefault, (__bridge CFDataRef)data, kCFPropertyListImmutable, NULL, NULL);
     }
-    return CFPropertyListCreateFromXMLData(kCFAllocatorDefault, (__bridge CFDataRef)data,
-                                           kCFPropertyListImmutable, NULL);
+    return CFPropertyListCreateFromXMLData(
+        kCFAllocatorDefault, (__bridge CFDataRef)data, kCFPropertyListImmutable, NULL);
 }
 
 @implementation NSData (RB)

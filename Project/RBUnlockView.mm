@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockView). Verified against the
-//  arm64 disassembly: -setupView's font-variant- and theme-dependent soft-float geometry and
+//  arm64 disassembly: -setupView's idiom- and theme-dependent soft-float geometry and
 //  -reloadData's scroll-content layout were recovered from the register moves the decompiler folds
 //  into pseudo-variables. This is an Objective-C++ file because it preloads the C++ shot-sound and
 //  themed sound-effect engine singletons.
@@ -97,11 +97,11 @@ constexpr NSInteger kTutorialTypeExperience = 0x20;
 constexpr CGFloat kRewardButtonInset = 10.0;
 constexpr CGFloat kRewardButtonMargin = 20.0;
 
-// Each package row, and the reward banner, are laid out at this fixed height, by font variant.
+// Each package row, and the reward banner, are laid out at this fixed height, by device idiom.
 constexpr CGFloat kPackageRowHeightNarrow = 124.0;
 constexpr CGFloat kPackageRowHeightWide = 144.0;
 
-// The gap left above the first package row, by font variant.
+// The gap left above the first package row, by device idiom.
 constexpr CGFloat kPackageRowGapNarrow = 4.0;
 constexpr CGFloat kPackageRowGapWide = 10.0;
 
@@ -109,12 +109,12 @@ constexpr CGFloat kPackageRowGapWide = 10.0;
 // package row.
 constexpr CGFloat kRewardBannerRowFactor = 0.8;
 
-// The lime-point backdrop sits centred horizontally, at a font-variant-dependent vertical offset.
+// The lime-point backdrop sits centred horizontally, at a idiom-dependent vertical offset.
 constexpr CGFloat kPointBackgroundCentreFactor = 0.5;
 constexpr CGFloat kPointBackgroundTopNarrow = 34.0;
 constexpr CGFloat kPointBackgroundTopWide = 70.0;
 
-// The lime-point count label geometry, chosen by font variant and theme.
+// The lime-point count label geometry, chosen by device idiom and theme.
 constexpr CGFloat kPointLabelNarrowX = 112.0;
 constexpr CGFloat kPointLabelNarrowY = 44.0;
 constexpr CGFloat kPointLabelNarrowWidth = 114.0;
@@ -126,11 +126,11 @@ constexpr CGFloat kPointLabelLimelightHeight = 36.0;
 constexpr CGFloat kPointLabelColetteY = 90.0;
 constexpr CGFloat kPointLabelColetteHeight = 40.0;
 
-// The gap between the lime-point backdrop and the package scroll view, by font variant.
+// The gap between the lime-point backdrop and the package scroll view, by device idiom.
 constexpr CGFloat kScrollTopMarginNarrow = 4.0;
 constexpr CGFloat kScrollTopMarginWide = 10.0;
 
-// The extra scroll content height left below the last package row, by font variant.
+// The extra scroll content height left below the last package row, by device idiom.
 constexpr CGFloat kScrollContentPadNarrow = 45.0;
 constexpr CGFloat kScrollContentPadWide = 70.0;
 
@@ -186,7 +186,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 #pragma mark Layout
 
 - (void)setupView {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
 
     self.rewardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.rewardButton addTarget:self
@@ -194,11 +194,10 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                 forControlEvents:UIControlEventTouchUpInside];
     self.rewardButton.exclusiveTouch = YES;
 
-    // The lime-point backdrop, centred horizontally and dropped by a font-variant-dependent offset.
+    // The lime-point backdrop, centred horizontally and dropped by a idiom-dependent offset.
     UIImage *backgroundImage = [UIImage imageWithName:kPointBackgroundImageName];
     self.pointBackgroundView = [[UIImageView alloc] initWithImage:backgroundImage];
-    CGFloat backgroundTop =
-        (fontVariant == kFontVariantDefault) ? kPointBackgroundTopNarrow : kPointBackgroundTopWide;
+    CGFloat backgroundTop = (!isPad) ? kPointBackgroundTopNarrow : kPointBackgroundTopWide;
     self.pointBackgroundView.frame =
         CGRectMake((self.width - self.pointBackgroundView.width) * kPointBackgroundCentreFactor,
                    backgroundTop,
@@ -210,10 +209,10 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.pointLabel.imageType = RBNumberLabelImageTypeDecimal;
     [self.pointBackgroundView addSubview:self.pointLabel];
 
-    // The lime-point count label geometry and the scroll-view top margin are chosen by font variant
+    // The lime-point count label geometry and the scroll-view top margin are chosen by device idiom
     // and, for the wide font, by theme.
     CGFloat scrollTopMargin = kScrollTopMarginWide;
-    if (fontVariant == kFontVariantDefault) {
+    if (!isPad) {
         self.pointLabel.frame = CGRectMake(kPointLabelNarrowX,
                                            kPointLabelNarrowY,
                                            kPointLabelNarrowWidth,
@@ -258,13 +257,11 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 }
 
 - (void)reloadData {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
 
-    // Each package row, the reward banner, and the row spacing are sized by the font variant.
-    CGFloat rowHeight =
-        (fontVariant == kFontVariantDefault) ? kPackageRowHeightNarrow : kPackageRowHeightWide;
-    CGFloat rowGap =
-        (fontVariant == kFontVariantDefault) ? kPackageRowGapNarrow : kPackageRowGapWide;
+    // Each package row, the reward banner, and the row spacing are sized by the iPad idiom.
+    CGFloat rowHeight = (!isPad) ? kPackageRowHeightNarrow : kPackageRowHeightWide;
+    CGFloat rowGap = (!isPad) ? kPackageRowGapNarrow : kPackageRowGapWide;
     CGFloat viewWidth = self.frame.size.width;
 
     self.pointLabel.number = [[RBExperienceData sharedInstance] getPoint];
@@ -293,7 +290,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                    /** @ghidraAddress 0x95390 */
                                    [self.rewardButton setImage:[downloader getImage]
                                                       forState:UIControlStateNormal];
-                                   if (GetFontVariantFlag() == kFontVariantDefault) {
+                                   if (!IsPad()) {
                                        CGFloat width = viewWidth - kRewardButtonMargin;
                                        CGSize imageSize = [downloader getImage].size;
                                        self.rewardButton.frame =
@@ -311,9 +308,8 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                  }
                                  failure:nil];
         }
-        contentTop = (fontVariant == kFontVariantDefault) ?
-                         (rowGap + rowHeight * kRewardBannerRowFactor) :
-                         (rowHeight + rowGap);
+        contentTop =
+            (!isPad) ? (rowGap + rowHeight * kRewardBannerRowFactor) : (rowHeight + rowGap);
     }
 
     // One collection view per package, stacked down the scroll view at the fixed row height.
@@ -328,9 +324,8 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         rowTop += rowHeight;
     }
 
-    // Size the scroll content to fit every row plus a font-variant-dependent bottom pad.
-    CGFloat bottomPad =
-        (fontVariant == kFontVariantDefault) ? kScrollContentPadNarrow : kScrollContentPadWide;
+    // Size the scroll content to fit every row plus a idiom-dependent bottom pad.
+    CGFloat bottomPad = (!isPad) ? kScrollContentPadNarrow : kScrollContentPadWide;
     self.scrollView.contentSize = CGSizeMake(self.frame.size.width, rowTop + bottomPad);
 }
 

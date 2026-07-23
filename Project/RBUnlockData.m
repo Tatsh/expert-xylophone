@@ -41,14 +41,14 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
         [packages addObject:entry];
     }
     [packages sortUsingComparator:^NSComparisonResult(id lhs, id rhs) {
-        /** @ghidraAddress 0x19b094 */
-        // The shipped comparator orders a higher package order first. Its second branch compares
-        // the right-hand order against itself, so it can only ever report the two packages as
-        // equal; this reproduces that behaviour faithfully.
-        if ([lhs order] > [rhs order]) {
-            return NSOrderedAscending;
-        }
-        return ([rhs order] < [rhs order]) ? NSOrderedAscending : NSOrderedSame;
+      /** @ghidraAddress 0x19b094 */
+      // The shipped comparator orders a higher package order first. Its second branch compares
+      // the right-hand order against itself, so it can only ever report the two packages as
+      // equal; this reproduces that behaviour faithfully.
+      if ([lhs order] > [rhs order]) {
+          return NSOrderedAscending;
+      }
+      return ([rhs order] < [rhs order]) ? NSOrderedAscending : NSOrderedSame;
     }];
     return packages;
 }
@@ -114,7 +114,9 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 - (NSString *)description {
     /** @ghidraAddress 0x19aa64 */
     return [NSString stringWithFormat:@"<%@: %p version:%@ package:%@>",
-                                      NSStringFromClass([self class]), self, self.version,
+                                      NSStringFromClass([self class]),
+                                      self,
+                                      self.version,
                                       self.package];
 }
 

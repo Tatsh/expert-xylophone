@@ -41,8 +41,8 @@ static NSString *const kManagedObjectModelType = @"mom";
     static RBCoreDataManager *sSharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        /** @ghidraAddress 0x1cb2a4 */
-        sSharedInstance = [[self alloc] init];
+      /** @ghidraAddress 0x1cb2a4 */
+      sSharedInstance = [[self alloc] init];
     });
     return sSharedInstance;
 }
@@ -51,7 +51,7 @@ static NSString *const kManagedObjectModelType = @"mom";
 
 - (NSString *)scoreDataFileName {
     /** @ghidraAddress 0x1cb2e8 */
-    return GetFontVariantFlag() != kFontVariantDefault ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
+    return IsPad() ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
 }
 
 #pragma mark - Score stack
@@ -86,8 +86,8 @@ static NSString *const kManagedObjectModelType = @"mom";
         NSString *storePath = [directory stringByAppendingPathComponent:self.scoreDataFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{
-            NSMigratePersistentStoresAutomaticallyOption: [NSNumber numberWithBool:YES],
-            NSInferMappingModelAutomaticallyOption: [NSNumber numberWithBool:YES],
+            NSMigratePersistentStoresAutomaticallyOption : [NSNumber numberWithBool:YES],
+            NSInferMappingModelAutomaticallyOption : [NSNumber numberWithBool:YES],
         };
         _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
             initWithManagedObjectModel:self.managedObjectModel];
@@ -133,11 +133,11 @@ static NSString *const kManagedObjectModelType = @"mom";
         NSString *storePath = [directory stringByAppendingPathComponent:kHistoryStoreFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{
-            NSMigratePersistentStoresAutomaticallyOption: [NSNumber numberWithBool:YES],
-            NSInferMappingModelAutomaticallyOption: [NSNumber numberWithBool:YES],
+            NSMigratePersistentStoresAutomaticallyOption : [NSNumber numberWithBool:YES],
+            NSInferMappingModelAutomaticallyOption : [NSNumber numberWithBool:YES],
         };
-        _historyCoordinator = [[NSPersistentStoreCoordinator alloc]
-            initWithManagedObjectModel:self.historyModel];
+        _historyCoordinator =
+            [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.historyModel];
         NSError *error = nil;
         [_historyCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                           configuration:nil

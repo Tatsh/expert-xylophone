@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockCollectionView). The
-//  font-variant- and theme-dependent soft-float geometry of -setupView and -reloadData, and the
+//  idiom- and theme-dependent soft-float geometry of -setupView and -reloadData, and the
 //  page arithmetic of -didLayoutSubviews: and -scrollViewDidScroll:, were recovered from the arm64
 //  disassembly, where the decompiler folds the register moves into pseudo-variables.
 //
@@ -41,14 +41,14 @@ enum {
 };
 
 // The frame image stretches with a fixed vertical cap inset that leaves its horizontal caps at the
-// full image width, chosen by font variant.
+// full image width, chosen by device idiom.
 static const CGFloat kFrameCapInsetNarrow = 20.0;
 static const CGFloat kFrameCapInsetWide = 36.5;
 
 // The framed backdrop is centred horizontally at the top of the view.
 static const CGFloat kBackgroundCentreFactor = 0.5;
 
-// The package title label geometry and font size, chosen by font variant and theme.
+// The package title label geometry and font size, chosen by device idiom and theme.
 static const CGFloat kTitleNarrowLimelightX = 23.0;
 static const CGFloat kTitleNarrowLimelightY = 5.0;
 static const CGFloat kTitleNarrowColetteX = 3.0;
@@ -63,7 +63,7 @@ static const CGFloat kTitleWideWidth = 180.0;
 static const CGFloat kTitleWideHeight = 18.0;
 static const CGFloat kTitleWideFontSize = 18.0;
 
-// The paged collection view's height, and its square cell item size, chosen by font variant.
+// The paged collection view's height, and its square cell item size, chosen by device idiom.
 static const CGFloat kCollectionHeightNarrow = 84.0;
 static const CGFloat kCollectionHeightWide = 100.0;
 static const CGFloat kItemSizeNarrow = 80.0;
@@ -72,7 +72,7 @@ static const CGFloat kItemSizeWide = 90.0;
 // The collection view is inset two points narrower than the frame image and centred horizontally.
 static const CGFloat kCollectionWidthInset = 2.0;
 
-// The per-page content inset, chosen by font variant.
+// The per-page content inset, chosen by device idiom.
 static const CGFloat kPageInsetVerticalNarrow = 2.0;
 static const CGFloat kPageInsetVerticalWide = 5.0;
 static const CGFloat kPageInsetHorizontalNarrow = 3.0;
@@ -130,20 +130,21 @@ enum {
 #pragma mark Layout
 
 - (void)setupView {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
 
     // The framed backdrop: a stretchable frame image with a fixed top cap inset and a bottom cap
     // inset that leaves the image's full width, centred horizontally at the top of the view.
     UIImage *frameImage = [UIImage imageWithName:kUnlockFrameImageName];
-    CGFloat capInset =
-        (fontVariant == kFontVariantDefault) ? kFrameCapInsetNarrow : kFrameCapInsetWide;
+    CGFloat capInset = (!isPad) ? kFrameCapInsetNarrow : kFrameCapInsetWide;
     frameImage = [frameImage
-        resizableImageWithCapInsets:UIEdgeInsetsMake(capInset, 0.0, frameImage.size.width - capInset,
-                                                     0.0)];
+        resizableImageWithCapInsets:UIEdgeInsetsMake(
+                                        capInset, 0.0, frameImage.size.width - capInset, 0.0)];
     self.backgroundView = [[UIImageView alloc] initWithImage:frameImage];
     self.backgroundView.frame =
-        CGRectMake((self.frame.size.width - frameImage.size.width) * kBackgroundCentreFactor, 0.0,
-                   frameImage.size.width, frameImage.size.height);
+        CGRectMake((self.frame.size.width - frameImage.size.width) * kBackgroundCentreFactor,
+                   0.0,
+                   frameImage.size.width,
+                   frameImage.size.height);
     [self addSubview:self.backgroundView];
 
     // The package title label, black and clear-backed, laid over the backdrop.
@@ -153,17 +154,19 @@ enum {
     self.titleLabel.backgroundColor = [UIColor clearColor];
     [self.backgroundView addSubview:self.titleLabel];
 
-    // The title geometry, font, and alignment depend on the font variant and theme.
-    if (fontVariant == kFontVariantDefault) {
+    // The title geometry, font, and alignment depend on the iPad idiom and theme.
+    if (!isPad) {
         NSInteger theme = [RBUserSettingData sharedInstance].thema;
         if (theme == kThemeLimelight) {
-            self.titleLabel.frame = CGRectMake(kTitleNarrowLimelightX, kTitleNarrowLimelightY,
-                                               kTitleNarrowWidth, kTitleNarrowHeight);
+            self.titleLabel.frame = CGRectMake(kTitleNarrowLimelightX,
+                                               kTitleNarrowLimelightY,
+                                               kTitleNarrowWidth,
+                                               kTitleNarrowHeight);
             self.titleLabel.font = [UIFont systemFontOfSize:kTitleNarrowLimelightFontSize];
             self.titleLabel.textAlignment = NSTextAlignmentCenter;
         } else if (theme == kThemeColette) {
-            self.titleLabel.frame = CGRectMake(kTitleNarrowColetteX, kTitleNarrowColetteY,
-                                               kTitleNarrowWidth, kTitleNarrowHeight);
+            self.titleLabel.frame = CGRectMake(
+                kTitleNarrowColetteX, kTitleNarrowColetteY, kTitleNarrowWidth, kTitleNarrowHeight);
             self.titleLabel.font = [UIFont boldSystemFontOfSize:kTitleNarrowColetteFontSize];
             self.titleLabel.textAlignment = NSTextAlignmentLeft;
         }
@@ -181,28 +184,27 @@ enum {
     }
 
     // The paged grid layout: square cells scrolling horizontally, one page of insets per screen.
-    CGFloat collectionHeight =
-        (fontVariant == kFontVariantDefault) ? kCollectionHeightNarrow : kCollectionHeightWide;
+    CGFloat collectionHeight = (!isPad) ? kCollectionHeightNarrow : kCollectionHeightWide;
     RBMusicGridLayout *layout = [RBMusicGridLayout new];
-    CGFloat itemSize = (fontVariant == kFontVariantDefault) ? kItemSizeNarrow : kItemSizeWide;
+    CGFloat itemSize = (!isPad) ? kItemSizeNarrow : kItemSizeWide;
     layout.itemSize = CGSizeMake(itemSize, itemSize);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 0.0;
     layout.minimumInteritemSpacing = 0.0;
-    CGFloat pageInsetVertical =
-        (fontVariant == kFontVariantDefault) ? kPageInsetVerticalNarrow : kPageInsetVerticalWide;
-    CGFloat pageInsetHorizontal = (fontVariant == kFontVariantDefault) ? kPageInsetHorizontalNarrow
-                                                                       : kPageInsetHorizontalWide;
-    layout.pageInset = UIEdgeInsetsMake(pageInsetVertical, pageInsetHorizontal, pageInsetVertical,
-                                        pageInsetHorizontal);
+    CGFloat pageInsetVertical = (!isPad) ? kPageInsetVerticalNarrow : kPageInsetVerticalWide;
+    CGFloat pageInsetHorizontal = (!isPad) ? kPageInsetHorizontalNarrow : kPageInsetHorizontalWide;
+    layout.pageInset = UIEdgeInsetsMake(
+        pageInsetVertical, pageInsetHorizontal, pageInsetVertical, pageInsetHorizontal);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
 
     // The paged collection view, inset two points narrower than the backdrop and centred.
     CGFloat collectionWidth = (float)(frameImage.size.width - kCollectionWidthInset);
     self.collectionView = [[RBCollectionView alloc]
-             initWithFrame:CGRectMake((self.frame.size.width - collectionWidth) *
-                                          kBackgroundCentreFactor,
-                                      capInset, collectionWidth, collectionHeight)
+               initWithFrame:CGRectMake((self.frame.size.width - collectionWidth) *
+                                            kBackgroundCentreFactor,
+                                        capInset,
+                                        collectionWidth,
+                                        collectionHeight)
         collectionViewLayout:layout];
     self.collectionView.backgroundColor = [UIColor clearColor];
     [self.collectionView registerClass:[RBUnlockCollectionCell class]
@@ -216,7 +218,7 @@ enum {
     [self addSubview:self.collectionView];
 
     // The page control is only laid out on the default font.
-    if ((GetFontVariantFlag() & 1) == 0) {
+    if (!IsPad()) {
         NSInteger theme = [RBUserSettingData sharedInstance].thema;
         CGFloat indicatorWhite;
         CGFloat currentIndicatorWhite;
@@ -228,15 +230,19 @@ enum {
             currentIndicatorWhite = kCurrentPageIndicatorWhiteThemed;
         } else {
             indicatorWhite = (theme == kThemeColette) ? kPageIndicatorWhiteThemed : 0.0;
-            currentIndicatorWhite = (theme == kThemeColette) ? kCurrentPageIndicatorWhiteThemed : 0.0;
+            currentIndicatorWhite =
+                (theme == kThemeColette) ? kCurrentPageIndicatorWhiteThemed : 0.0;
         }
 
-        self.pageControl = [[UIPageControl alloc]
-            initWithFrame:CGRectMake(0.0, self.collectionView.bottom, self.frame.size.width,
-                                     kPageControlHeight)];
+        self.pageControl =
+            [[UIPageControl alloc] initWithFrame:CGRectMake(0.0,
+                                                            self.collectionView.bottom,
+                                                            self.frame.size.width,
+                                                            kPageControlHeight)];
         self.pageControl.numberOfPages = 1;
         self.pageControl.currentPage = 0;
-        self.pageControl.transform = CGAffineTransformMakeScale(kPageControlScale, kPageControlScale);
+        self.pageControl.transform =
+            CGAffineTransformMakeScale(kPageControlScale, kPageControlScale);
         self.pageControl.pageIndicatorTintColor = [UIColor colorWithWhite:indicatorWhite alpha:1.0];
         self.pageControl.currentPageIndicatorTintColor =
             [UIColor colorWithWhite:currentIndicatorWhite alpha:1.0];

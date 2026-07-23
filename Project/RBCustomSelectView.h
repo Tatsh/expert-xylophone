@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The picker owns a scroll view holding one @c RBCustomSelectCollectionView per customization
  * category, stacked top to bottom, plus a preview button. The stack layout (each grid's start Y,
- * width, height, and the inter-grid margin) depends on the current font variant: the default-font
+ * width, height, and the inter-grid margin) depends on the current iPad idiom: the default-font
  * layout omits the gauge category, and the two layouts use different metrics.
  */
 @interface RBCustomSelectView : UIView
@@ -40,10 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupView;
 
 /**
- * @brief The vertical origin of the first category grid, chosen by the theme and the font variant.
+ * @brief The vertical origin of the first category grid, chosen by the theme and the iPad idiom.
  *
  * The sole caller passes the current player theme; a Classic theme starts the stack higher than the
- * others, and the two font variants use different offsets.
+ * others, and the two iPad idioms use different offsets.
  * @param thema The current player theme.
  * @return The first grid's top offset within the scroll view.
  * @ghidraAddress 0x68850
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)getCollectionViewStartY:(RBUserSettingDataTheme)thema;
 
 /**
- * @brief The vertical gap left between consecutive category grids, chosen by the font variant.
+ * @brief The vertical gap left between consecutive category grids, chosen by the iPad idiom.
  * @return The inter-grid margin.
  * @ghidraAddress 0x6889c
  */

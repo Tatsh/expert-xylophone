@@ -17,7 +17,6 @@
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
 #import "RBScoreHash.h"
-
 #import "neEngineBridge.h"
 
 // The Core Data entity name backing this class.
@@ -90,7 +89,7 @@ static const int kFrameBonusMaxTier = 2;
     /** @ghidraAddress 0x5c444 */
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:kScoreDataEntityName
-                                             inManagedObjectContext:context];
+                                              inManagedObjectContext:context];
     request.entity = entity;
     request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDEquals, tuneID];
     NSArray *results = [context executeFetchRequest:request error:nil];
@@ -118,7 +117,7 @@ static const int kFrameBonusMaxTier = 2;
     /** @ghidraAddress 0x5c854 */
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:kScoreDataEntityName
-                                             inManagedObjectContext:context];
+                                              inManagedObjectContext:context];
     request.entity = entity;
     request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDIn, tuneIDs];
     NSArray *results = [context executeFetchRequest:request error:nil];
@@ -149,9 +148,8 @@ static const int kFrameBonusMaxTier = 2;
 + (instancetype)recordWithTuneID:(unsigned int)tuneID
           inManagedObjectContext:(NSManagedObjectContext *)context {
     /** @ghidraAddress 0x5cd7c */
-    ScoreData *record =
-        [NSEntityDescription insertNewObjectForEntityForName:kScoreDataEntityName
-                                      inManagedObjectContext:context];
+    ScoreData *record = [NSEntityDescription insertNewObjectForEntityForName:kScoreDataEntityName
+                                                      inManagedObjectContext:context];
     record.tuneID = [NSNumber numberWithInt:(int)tuneID];
     [ScoreData reset:record];
     return record;
@@ -183,20 +181,17 @@ static const int kFrameBonusMaxTier = 2;
 #pragma mark - Tamper hash
 
 // Folds a tune's identifier and per-difficulty score and achievement-rate figures into an eight
-// word buffer and returns its MD5 digest. The pairing of the words depends on the font-variant
-// flag returned by @c GetFontVariantFlag so that the layout matches the shipped build's region.
+// word buffer and returns its MD5 digest. The pairing of the words depends on the iPad idiom
+// flag reported by @c IsPad so that the word layout matches the shipped build.
 // @ghidraAddress 0x5d300
-static void ScoreDataHashScoreForTune(int tuneID,
-                                      int basic,
-                                      int medium,
-                                      int hard,
-                                      unsigned char *pHash) {
+static void
+ScoreDataHashScoreForTune(int tuneID, int basic, int medium, int hard, unsigned char *pHash) {
     int words[kHashWordCount];
     words[kHashWordTuneID] = tuneID;
     words[kHashWordSlot2] = medium;
     words[kHashWordSlot5] = hard + medium;
     words[kHashWordSlot7] = medium + basic + hard;
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         words[kHashWordSlot1] = basic;
         words[kHashWordSlot3] = hard;
         words[kHashWordSlot4] = medium + basic;
@@ -260,7 +255,7 @@ static void ScoreDataHashScoreForTune(int tuneID,
         }
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         NSEntityDescription *entity = [NSEntityDescription entityForName:kScoreDataEntityName
-                                                 inManagedObjectContext:context];
+                                                  inManagedObjectContext:context];
         request.entity = entity;
         request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDIn, batch];
         NSArray *results = [context executeFetchRequest:request error:nil];
@@ -277,19 +272,19 @@ static void ScoreDataHashScoreForTune(int tuneID,
             // out as zero.
             int scoreBasic = record.scoBas.intValue;
             long long clampedBasic =
-                ((unsigned int)(scoreBasic - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
-                    ? scoreBasic
-                    : 0;
+                ((unsigned int)(scoreBasic - kScoreScoringMinimum) < (unsigned int)kScoreMaximum) ?
+                    scoreBasic :
+                    0;
             int scoreMedium = record.scoMed.intValue;
             long long clampedMedium =
-                ((unsigned int)(scoreMedium - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
-                    ? scoreMedium
-                    : 0;
+                ((unsigned int)(scoreMedium - kScoreScoringMinimum) < (unsigned int)kScoreMaximum) ?
+                    scoreMedium :
+                    0;
             int scoreHard = record.scoHar.intValue;
             long long clampedHard =
-                ((unsigned int)(scoreHard - kScoreScoringMinimum) < (unsigned int)kScoreMaximum)
-                    ? scoreHard
-                    : 0;
+                ((unsigned int)(scoreHard - kScoreScoringMinimum) < (unsigned int)kScoreMaximum) ?
+                    scoreHard :
+                    0;
             [pendingIDs removeIndex:tuneIndex];
             total += clampedBasic + clampedMedium + clampedHard;
         }
@@ -304,7 +299,7 @@ static void ScoreDataHashScoreForTune(int tuneID,
     NSManagedObjectContext *context = [RBCoreDataManager sharedInstance].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:kScoreDataEntityName
-                                             inManagedObjectContext:context];
+                                              inManagedObjectContext:context];
     request.entity = entity;
     NSDate *epoch = [NSDate dateWithTimeIntervalSince1970:0];
     request.predicate = [NSPredicate predicateWithFormat:kPredicateRecentInRange, epoch];
@@ -342,8 +337,8 @@ static void ScoreDataHashScoreForTune(int tuneID,
     if (tier > kFrameBonusMaxTier) {
         return ScoreDataFrameBonusTypeGold;
     }
-    return (tier != ScoreDataFrameBonusTypeNone) ? ScoreDataFrameBonusTypeBronze
-                                                 : ScoreDataFrameBonusTypeNone;
+    return (tier != ScoreDataFrameBonusTypeNone) ? ScoreDataFrameBonusTypeBronze :
+                                                   ScoreDataFrameBonusTypeNone;
 }
 
 - (BOOL)checkOverScore {

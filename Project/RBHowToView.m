@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBHowToView). Verified against the
-//  arm64 disassembly: -setupView's theme/font-variant/Retina-dependent frame maths and the
+//  arm64 disassembly: -setupView's theme/idiom/Retina-dependent frame maths and the
 //  page-layout of -createViewSame: were recovered from the soft-float register moves that the
 //  decompiler folds into pseudo-variables.
 //
@@ -21,8 +21,12 @@ static const int kHowToPlayPageCount = 6;
 
 // The how-to-play page artwork, laid out one image per page. Page @c i uses element @c i.
 static NSString *const kHowToPlayPageImageNames[] = {
-    @"03_howtoplay/how_1", @"03_howtoplay/how_2", @"03_howtoplay/how_3",
-    @"03_howtoplay/how_4", @"03_howtoplay/how_5", @"03_howtoplay/how_6",
+    @"03_howtoplay/how_1",
+    @"03_howtoplay/how_2",
+    @"03_howtoplay/how_3",
+    @"03_howtoplay/how_4",
+    @"03_howtoplay/how_5",
+    @"03_howtoplay/how_6",
 };
 
 // The page control's fixed height, in points, common to every layout branch.
@@ -44,22 +48,23 @@ static const CGFloat kClassicCurrentPageIndicatorWhite = 1.0;
 static const CGFloat kThemedPageIndicatorWhite = 0.6669999957084656;
 static const CGFloat kThemedCurrentPageIndicatorWhite = 0.5;
 
-// Scroll view and page control geometry for the Classic theme with the wide font variant.
+// Scroll view and page control geometry for the Classic theme with the iPad (wide) layout.
 static const CGRect kClassicWideScrollFrame = {{kScrollViewOriginX, 4.0}, {536.0, 600.0}};
 static const CGRect kClassicWidePageControlFrame = {{2.0, 615.0}, {540.0, kPageControlHeight}};
 
-// Scroll view and page control geometry for the Classic theme with the narrow font variant.
+// Scroll view and page control geometry for the Classic theme with the narrow iPad idiom.
 static const CGRect kClassicNarrowScrollFrame = {{kScrollViewOriginX, 0.0}, {312.0, 300.0}};
 static const CGRect kClassicNarrowPageControlFrame = {{60.0, 285.0}, {200.0, kPageControlHeight}};
 
-// Scroll view and page control geometry for a non-Classic theme with the wide font variant.
+// Scroll view and page control geometry for a non-Classic theme with the iPad (wide) layout.
 static const CGRect kThemedWideScrollFrame = {{kScrollViewOriginX, 30.0}, {536.0, 600.0}};
 static const CGRect kThemedWidePageControlFrame = {{2.0, 640.0}, {540.0, kPageControlHeight}};
 
-// Scroll view geometry for a non-Classic theme with the narrow font variant. The scroll view's top
+// Scroll view geometry for a non-Classic theme with the narrow iPad idiom. The scroll view's top
 // inset and height differ between Retina and non-Retina; the page control is shared.
 static const CGRect kThemedNarrowRetinaScrollFrame = {{kScrollViewOriginX, 0.0}, {312.0, 300.0}};
-static const CGRect kThemedNarrowNonRetinaScrollFrame = {{kScrollViewOriginX, 10.0}, {312.0, 280.0}};
+static const CGRect kThemedNarrowNonRetinaScrollFrame = {{kScrollViewOriginX, 10.0},
+                                                         {312.0, 280.0}};
 static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPageControlHeight}};
 
 @implementation RBHowToView {
@@ -100,18 +105,18 @@ static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPag
     if ([RBUserSettingData sharedInstance].thema != RBUserSettingDataThemeClassic) {
         pageIndicatorWhite = kThemedPageIndicatorWhite;
         currentPageIndicatorWhite = kThemedCurrentPageIndicatorWhite;
-        if (GetFontVariantFlag() & 1) {
+        if (IsPad()) {
             scrollFrame = kThemedWideScrollFrame;
             pageControlFrame = kThemedWidePageControlFrame;
         } else {
-            scrollFrame =
-                GetIsRetinaFlag() ? kThemedNarrowRetinaScrollFrame : kThemedNarrowNonRetinaScrollFrame;
+            scrollFrame = GetIsRetinaFlag() ? kThemedNarrowRetinaScrollFrame :
+                                              kThemedNarrowNonRetinaScrollFrame;
             pageControlFrame = kThemedNarrowPageControlFrame;
         }
     } else {
         pageIndicatorWhite = kClassicPageIndicatorWhite;
         currentPageIndicatorWhite = kClassicCurrentPageIndicatorWhite;
-        if (GetFontVariantFlag()) {
+        if (IsPad()) {
             scrollFrame = kClassicWideScrollFrame;
             pageControlFrame = kClassicWidePageControlFrame;
         } else {
@@ -123,8 +128,8 @@ static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPag
     m_PageNum = kHowToPlayPageCount;
 
     self.scrollView = [[UIScrollView alloc] initWithFrame:scrollFrame];
-    self.scrollView.contentSize =
-        CGSizeMake(self.scrollView.bounds.size.width * m_PageNum, self.scrollView.bounds.size.height);
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width * m_PageNum,
+                                             self.scrollView.bounds.size.height);
     self.scrollView.delegate = self;
     self.scrollView.pagingEnabled = YES;
     self.scrollView.showsHorizontalScrollIndicator = NO;
@@ -175,8 +180,8 @@ static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPag
 }
 
 - (void)layoutScrollView {
-    self.scrollView.contentSize =
-        CGSizeMake(self.scrollView.bounds.size.width * m_PageNum, self.scrollView.bounds.size.height);
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width * m_PageNum,
+                                             self.scrollView.bounds.size.height);
 }
 
 - (void)pageDidChangeValue:(id)sender {
@@ -184,7 +189,9 @@ static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPag
     CGFloat pageWidth = self.scrollView.frame.size.width;
     if (self.scrollView && !self.scrollView.isTracking && !self.scrollView.isDragging &&
         !self.scrollView.isDecelerating) {
-        [self.scrollView scrollRectToVisible:CGRectMake(page * pageWidth, 0.0, pageWidth,
+        [self.scrollView scrollRectToVisible:CGRectMake(page * pageWidth,
+                                                        0.0,
+                                                        pageWidth,
                                                         self.scrollView.frame.size.height)
                                     animated:YES];
     }

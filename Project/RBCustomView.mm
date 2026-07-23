@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBCustomView). Verified against
-//  the arm64 disassembly: -setupView's theme- and font-variant-dependent button geometry and the
+//  the arm64 disassembly: -setupView's theme- and idiom-dependent button geometry and the
 //  slide-in/out and reveal/hide transitions were recovered from the soft-float register moves that
 //  the decompiler folds into pseudo-variables. This is an Objective-C++ file because the
 //  mode-toggle and reward-list handlers reach the C++ SoundEffectManager engine singleton.
@@ -51,7 +51,7 @@ constexpr CGFloat kSetButtonRightHairline = 0.21875;
 constexpr CGFloat kUnlockButtonLeftInset = 20.0;
 constexpr CGFloat kModeButtonBottomHairline = 0.5;
 
-// The effect overlay is nudged off the toggle it decorates by a font-variant- and theme-dependent
+// The effect overlay is nudged off the toggle it decorates by a idiom- and theme-dependent
 // amount, recovered from the disassembly's soft-float immediate operands. The horizontal nudge is
 // shared by the initial layout and the mode-toggle repositioning; the vertical nudge differs
 // between them.
@@ -85,7 +85,7 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
 - (void)setupView {
     [super setupView];
 
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
 
     // The customize picker always fills the content view.
@@ -156,15 +156,14 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     [self.contentView addSubview:self.experienceUnlockButton];
 
     // The effect overlay flashes under whichever toggle is active. It starts over the set button,
-    // nudged off it by a font-variant- and theme-dependent amount, and pulses continuously.
+    // nudged off it by a idiom- and theme-dependent amount, and pulses continuously.
     UIImage *effectImage = [UIImage imageWithName:kModeButtonEffectImageName];
     self.experienceButtonEffectView = [[UIImageView alloc] initWithImage:effectImage];
     CGRect setButtonFrame = self.experienceSetButton.frame;
-    CGFloat effectHorizontalNudge = (fontVariant == kFontVariantDefault) ?
-                                        kEffectHorizontalNudgeNarrow :
-                                        kEffectHorizontalNudgeWide;
+    CGFloat effectHorizontalNudge =
+        (!isPad) ? kEffectHorizontalNudgeNarrow : kEffectHorizontalNudgeWide;
     CGFloat effectVerticalNudge;
-    if (fontVariant == kFontVariantDefault) {
+    if (!isPad) {
         effectVerticalNudge = kEffectSetupVerticalNudgeNarrow;
     } else if (thema == RBUserSettingDataThemeColette) {
         effectVerticalNudge = kEffectSetupVerticalNudgeWideColette;
@@ -277,15 +276,13 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
 }
 
 // Position the flashing effect overlay over the given mode-toggle button. The mode toggles use a
-// font-variant-dependent nudge that does not vary with the theme, unlike the initial layout.
+// idiom-dependent nudge that does not vary with the theme, unlike the initial layout.
 - (void)placeEffectOverlayOverButton:(UIButton *)button {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
     CGRect buttonFrame = button.frame;
-    CGFloat horizontalNudge = (fontVariant == kFontVariantDefault) ? kEffectHorizontalNudgeNarrow :
-                                                                     kEffectHorizontalNudgeWide;
-    CGFloat verticalNudge = (fontVariant == kFontVariantDefault) ?
-                                kEffectToggleVerticalNudgeNarrow :
-                                kEffectToggleVerticalNudgeWide;
+    CGFloat horizontalNudge = (!isPad) ? kEffectHorizontalNudgeNarrow : kEffectHorizontalNudgeWide;
+    CGFloat verticalNudge =
+        (!isPad) ? kEffectToggleVerticalNudgeNarrow : kEffectToggleVerticalNudgeWide;
     CGRect effectFrame = self.experienceButtonEffectView.frame;
     self.experienceButtonEffectView.frame = CGRectMake(buttonFrame.origin.x - horizontalNudge,
                                                        buttonFrame.origin.y - verticalNudge,

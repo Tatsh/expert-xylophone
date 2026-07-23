@@ -18,12 +18,12 @@
 // The news-ticker banner background image, whose height sets the ticker's overall bounds.
 static NSString *const kNewsTickerBackgroundImageName = @"01_music_select/sel_news";
 
-// The point size of the news text, chosen by the active font variant. The wide variant uses a
+// The point size of the news text, chosen by the active iPad idiom. The wide variant uses a
 // smaller glyph to fit the wider spacing.
 static const CGFloat kNewsTickerFontSizeDefault = 18.0;
 static const CGFloat kNewsTickerFontSizeWide = 12.0;
 
-// The horizontal inset of the clipping text base view within the ticker, chosen by the font variant.
+// The horizontal inset of the clipping text base view within the ticker, chosen by the iPad idiom.
 // It is also the width consumed by the leading news icon.
 static const CGFloat kNewsTickerTextInsetDefault = 100.0;
 static const CGFloat kNewsTickerTextInsetWide = 50.0;
@@ -97,18 +97,18 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
 - (void)SetUpView {
     self.contentScaleFactor = [UIScreen mainScreen].scale;
 
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     NSInteger theme = [RBUserSettingData sharedInstance].thema;
-    CGFloat fontSize = isWideVariant ? kNewsTickerFontSizeWide : kNewsTickerFontSizeDefault;
-    CGFloat textInset = isWideVariant ? kNewsTickerTextInsetWide : kNewsTickerTextInsetDefault;
+    CGFloat fontSize = isPad ? kNewsTickerFontSizeWide : kNewsTickerFontSizeDefault;
+    CGFloat textInset = isPad ? kNewsTickerTextInsetWide : kNewsTickerTextInsetDefault;
 
     UIImage *background = [UIImage imageWithName:kNewsTickerBackgroundImageName];
-    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width,
-                            background.size.height);
+    self.frame = CGRectMake(
+        self.frame.origin.x, self.frame.origin.y, self.frame.size.width, background.size.height);
     [self setExclusiveTouch:YES];
 
-    UILabel *iconLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, textInset,
-                                                                   self.frame.size.height)];
+    UILabel *iconLabel =
+        [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, textInset, self.frame.size.height)];
     iconLabel.font = [UIFont systemFontOfSize:fontSize];
     iconLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     iconLabel.textAlignment = NSTextAlignmentCenter;
@@ -117,9 +117,10 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     iconLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:iconLabel];
 
-    UIView *baseView = [[UIView alloc]
-        initWithFrame:CGRectMake(textInset, 0.0, self.bounds.size.width - textInset,
-                                 self.bounds.size.height)];
+    UIView *baseView = [[UIView alloc] initWithFrame:CGRectMake(textInset,
+                                                                0.0,
+                                                                self.bounds.size.width - textInset,
+                                                                self.bounds.size.height)];
     baseView.clipsToBounds = YES;
     baseView.userInteractionEnabled = NO;
     baseView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -133,11 +134,10 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     if (theme == kNewsTickerThemeDarkTwo || theme == kNewsTickerThemeDarkOne) {
         newsLabel.textColor = [UIColor blackColor];
         iconLabel.textColor = [UIColor blackColor];
-        self.backgroundColor =
-            [UIColor colorWithRed:kNewsTickerDarkThemeBackgroundComponent
-                            green:kNewsTickerDarkThemeBackgroundComponent
-                             blue:kNewsTickerDarkThemeBackgroundComponent
-                            alpha:kNewsTickerDarkThemeBackgroundAlpha];
+        self.backgroundColor = [UIColor colorWithRed:kNewsTickerDarkThemeBackgroundComponent
+                                               green:kNewsTickerDarkThemeBackgroundComponent
+                                                blue:kNewsTickerDarkThemeBackgroundComponent
+                                               alpha:kNewsTickerDarkThemeBackgroundAlpha];
     } else if (theme == kNewsTickerThemeLight) {
         newsLabel.textColor = [UIColor whiteColor];
         iconLabel.textColor = [UIColor whiteColor];
@@ -178,8 +178,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     if (overflow <= 0.0) {
         // The text fits: run a zero-duration marquee that simply parks the layer at the fixed
         // centre position.
-        CAKeyframeAnimation *animation =
-            [CAKeyframeAnimation animationWithKeyPath:@"position"];
+        CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
         animation.duration = self.baseDuration;
         animation.repeatCount = 0.0;
         animation.values = @[
@@ -208,8 +207,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
         float totalDuration = scrollSeconds + self.baseDuration;
         CGFloat scrolledX = -overflow;
 
-        CAKeyframeAnimation *animation =
-            [CAKeyframeAnimation animationWithKeyPath:@"position"];
+        CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
         animation.duration = totalDuration;
         animation.repeatCount = 0.0;
         animation.values = @[

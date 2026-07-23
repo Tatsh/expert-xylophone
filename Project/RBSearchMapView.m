@@ -290,9 +290,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     [self.infomationView addSubview:closeButton];
 
     if (!self.errorLabel) {
-        CGFloat errorWidth = (GetFontVariantFlag() == kFontVariantDefault) ?
-                                 g_dMascotMessageMaxWidthPad :
-                                 kErrorLabelWidthPhone;
+        CGFloat errorWidth = (!IsPad()) ? g_dMascotMessageMaxWidthPad : kErrorLabelWidthPhone;
         UILabel *label =
             [[UILabel alloc] initWithFrame:CGRectMake(0, 0, errorWidth, g_dLayoutMetricSixty)];
         [label setBounds:CGRectMake(0, 0, errorWidth, g_dLayoutMetricSixty)];

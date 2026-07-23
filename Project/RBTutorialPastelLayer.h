@@ -19,14 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The tutorial pastel speech-bubble layer.
  *
- * @c init sizes the layer and picks its display rate from the current font variant, @c setupView:
+ * @c init sizes the layer and picks its display rate from the current iPad idiom, @c setupView:
  * cuts the four child layers from the message artwork and positions them, and @c stopAnimation
  * clears every running animation from the layer and its children.
  */
 @interface RBTutorialPastelLayer : CALayer
 
 /**
- * @brief Create the layer, choosing the display rate from the current font variant and sizing the
+ * @brief Create the layer, choosing the display rate from the current iPad idiom and sizing the
  *        layer's frame from that rate.
  * @return The initialised layer, or @c nil.
  * @ghidraAddress 0x1b35fc
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Return the artwork clip rectangle for the child layer at @p index.
  *
- * The rectangle is halved when the current font variant is the compact (non-retina) layout.
+ * The rectangle is halved when the current iPad idiom is the compact (non-retina) layout.
  * @param index The child-layer index (0 head, 1 body, 2 left tail, 3 right tail).
  * @return The clip rectangle in the artwork atlas.
  * @ghidraAddress 0x1b356c
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Properties
 
 /**
- * @brief The resolution-dependent layout scale: half on the compact font variant, unity otherwise.
+ * @brief The resolution-dependent layout scale: half on the compact iPad idiom, unity otherwise.
  * @ghidraAddress 0x1b8170 (getter)
  * @ghidraAddress 0x1b8160 (setter)
  */

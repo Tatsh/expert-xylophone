@@ -131,14 +131,15 @@ void ComputeMd5Digest(const void *pData, CC_LONG dwLength, unsigned char *pDiges
  */
 NSString *ComputeSha256HexString(const char *cString);
 /**
- * @brief Reports the font-variant selector flag, which chooses the region glyph-spacing table.
+ * @brief Reports whether the device uses the iPad interface idiom.
+ *
+ * Reads the cached idiom flag (@c UIDevice.userInterfaceIdiom @c == @c UIUserInterfaceIdiomPad) that
+ * @c InitializeDeviceEnvironment sets once at startup. It selects the wide (pad) versus narrow
+ * (phone) layout branch throughout the UI, and the score-digit glyph-spacing table.
+ * @return @c true on an iPad-idiom device, @c false otherwise.
  * @ghidraAddress 0x1a1200
  */
-unsigned int GetFontVariantFlag(void);
-// The GetFontVariantFlag value that selects the default region glyph-spacing table; any other value
-// selects a font variant. A file-static const (not a C++ constexpr) so pure Objective-C .m callers
-// can use it too.
-static const unsigned int kFontVariantDefault = 0;
+bool IsPad(void);
 /**
  * @brief Constructs and initialises the AVFoundation sound-effect backend.
  * @ghidraAddress 0x4a5e8

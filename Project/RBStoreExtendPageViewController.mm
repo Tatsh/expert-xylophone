@@ -260,8 +260,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.extendNoteListCtrl setDelegate:self];
         self.artworkDownloaders =
             [[NSMutableDictionary alloc] initWithCapacity:kArtworkDownloaderCapacity];
-        // GetFontVariantFlag() is nonzero on the pad/wide layout, zero on the phone.
-        m_IsPad = GetFontVariantFlag();
+        // IsPad() is nonzero on the pad/wide layout, zero on the phone.
+        m_IsPad = IsPad();
         self.moveToPackID = kNoPendingPackID;
     }
     return self;
@@ -1733,14 +1733,14 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 
     // On the pad, refresh the detail overlay's action button while it is visible.
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         if (!self.extendNoteDetailViewPad.isHidden) {
             [self.extendNoteDetailViewPad selfCheckButtonText];
         }
     }
 
     // On the phone, reset the navigation bar to a plain white bar.
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.navigationController.navigationBar.tintColor = nil;
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
         if ([self.navigationController.navigationBar

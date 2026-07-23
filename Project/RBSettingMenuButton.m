@@ -34,28 +34,44 @@ typedef struct SettingMenuArtwork {
 } SettingMenuArtwork;
 
 static const SettingMenuArtwork kSettingMenuArtwork[] = {
-    {@"01_music_select/sel_set_how_1", @"01_music_select/sel_set_how_2",
-     @"01_music_select/sel_set_how_eff", @"01_music_select/sel_set_how_eff_1"},
-    {@"01_music_select/sel_set_cus_1", @"01_music_select/sel_set_cus_2",
-     @"01_music_select/sel_set_cus_eff", @"01_music_select/sel_set_cus_eff_1"},
-    {@"01_music_select/sel_set_the_1", @"01_music_select/sel_set_the_2",
-     @"01_music_select/sel_set_the_eff", @"01_music_select/sel_set_the_eff_1"},
-    {@"01_music_select/sel_set_sea_1", @"01_music_select/sel_set_sea_2",
-     @"01_music_select/sel_set_sea_eff", @"01_music_select/sel_set_sea_eff_1"},
-    {@"01_music_select/sel_set_cre_1", @"01_music_select/sel_set_cre_2",
-     @"01_music_select/sel_set_cre_eff", @"01_music_select/sel_set_cre_eff_1"},
-    {@"01_music_select/sel_set_info_1", @"01_music_select/sel_set_info_2",
-     @"01_music_select/sel_set_info_eff", @"01_music_select/sel_set_info_eff_1"},
-    {@"01_music_select/sel_set_applilink_1", @"01_music_select/sel_set_applilink_2",
-     @"01_music_select/sel_set_applilink_eff", @"01_music_select/sel_set_applilink_eff_1"},
-    {@"01_music_select/sel_set_tos_1", @"01_music_select/sel_set_tos_2",
-     @"01_music_select/sel_set_tos_eff", @"01_music_select/sel_set_tos_eff_1"},
+    {@"01_music_select/sel_set_how_1",
+     @"01_music_select/sel_set_how_2",
+     @"01_music_select/sel_set_how_eff",
+     @"01_music_select/sel_set_how_eff_1"},
+    {@"01_music_select/sel_set_cus_1",
+     @"01_music_select/sel_set_cus_2",
+     @"01_music_select/sel_set_cus_eff",
+     @"01_music_select/sel_set_cus_eff_1"},
+    {@"01_music_select/sel_set_the_1",
+     @"01_music_select/sel_set_the_2",
+     @"01_music_select/sel_set_the_eff",
+     @"01_music_select/sel_set_the_eff_1"},
+    {@"01_music_select/sel_set_sea_1",
+     @"01_music_select/sel_set_sea_2",
+     @"01_music_select/sel_set_sea_eff",
+     @"01_music_select/sel_set_sea_eff_1"},
+    {@"01_music_select/sel_set_cre_1",
+     @"01_music_select/sel_set_cre_2",
+     @"01_music_select/sel_set_cre_eff",
+     @"01_music_select/sel_set_cre_eff_1"},
+    {@"01_music_select/sel_set_info_1",
+     @"01_music_select/sel_set_info_2",
+     @"01_music_select/sel_set_info_eff",
+     @"01_music_select/sel_set_info_eff_1"},
+    {@"01_music_select/sel_set_applilink_1",
+     @"01_music_select/sel_set_applilink_2",
+     @"01_music_select/sel_set_applilink_eff",
+     @"01_music_select/sel_set_applilink_eff_1"},
+    {@"01_music_select/sel_set_tos_1",
+     @"01_music_select/sel_set_tos_2",
+     @"01_music_select/sel_set_tos_eff",
+     @"01_music_select/sel_set_tos_eff_1"},
 };
 
-// The button bounds sized per theme and font variant. The wide font variant (GetFontVariantFlag()
+// The button bounds sized per theme and iPad idiom. The iPad (wide) layout (IsPad()
 // non-zero) uses a 32-point-tall button for the Classic and Limelight themes and a 60-point-tall
 // button for Colette; its width is 60 points (Classic, Limelight) or 192 points (Colette). The
-// narrow font variant uses a 22-point height and a 40-point width for every theme.
+// narrow iPad idiom uses a 22-point height and a 40-point width for every theme.
 static const CGFloat kButtonHeightClassicLimelightWide = 32.0;
 static const CGFloat kButtonHeightColetteWide = 60.0;
 static const CGFloat kButtonHeightNarrow = 22.0;
@@ -91,19 +107,19 @@ static const UIViewAutoresizing kEffectTextAutoresizing =
 #pragma mark Construction
 
 - (void)setupView:(NSInteger)filename {
-    unsigned int fontVariant = GetFontVariantFlag();
+    BOOL isPad = IsPad();
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
 
     CGFloat width;
     CGFloat height;
     if (thema < RBUserSettingDataThemeColette) {
         height = kButtonHeightClassicLimelightWide;
-        width = (fontVariant == 0) ? kButtonWidthNarrow : kButtonWidthClassicLimelightWide;
+        width = (isPad == 0) ? kButtonWidthNarrow : kButtonWidthClassicLimelightWide;
     } else {
         height = kButtonHeightColetteWide;
-        width = (fontVariant == 0) ? kButtonWidthNarrow : kButtonWidthColetteWide;
+        width = (isPad == 0) ? kButtonWidthNarrow : kButtonWidthColetteWide;
     }
-    if (fontVariant == 0) {
+    if (isPad == 0) {
         height = kButtonHeightNarrow;
     }
     self.bounds = CGRectMake(0.0, 0.0, width, height);
@@ -115,17 +131,17 @@ static const UIViewAutoresizing kEffectTextAutoresizing =
     [self addSubview:self.button];
 
     UIImage *background = [UIImage imageWithName:artwork.backgroundImageName];
-    [self.button setBackgroundImage:[background resizableImageWithCapInsets:CapInsetsForImage(background)]
-                           forState:UIControlStateNormal];
+    [self.button
+        setBackgroundImage:[background resizableImageWithCapInsets:CapInsetsForImage(background)]
+                  forState:UIControlStateNormal];
     self.button.frame = self.bounds;
     self.button.autoresizingMask = kButtonAutoresizing;
     [self.button setImage:[UIImage imageWithName:artwork.foregroundImageName]
                  forState:UIControlStateNormal];
 
     UIImage *effectImage = [UIImage imageWithName:artwork.effectImageName];
-    self.effectImageView =
-        [[UIImageView alloc] initWithImage:[effectImage resizableImageWithCapInsets:
-                                                            CapInsetsForImage(effectImage)]];
+    self.effectImageView = [[UIImageView alloc]
+        initWithImage:[effectImage resizableImageWithCapInsets:CapInsetsForImage(effectImage)]];
     self.effectImageView.hidden = YES;
     self.effectImageView.frame = self.bounds;
     self.effectImageView.autoresizingMask = kButtonAutoresizing;
@@ -164,6 +180,8 @@ static const UIViewAutoresizing kEffectTextAutoresizing =
 // zero so the artwork stretches only horizontally through its centre.
 static UIEdgeInsets CapInsetsForImage(UIImage *image) {
     CGSize size = image.size;
-    return UIEdgeInsetsMake(0.0, size.width * kCapInsetHalf - kCapInsetBorder, 0.0,
+    return UIEdgeInsetsMake(0.0,
+                            size.width * kCapInsetHalf - kCapInsetBorder,
+                            0.0,
                             size.height * kCapInsetHalf - kCapInsetBorder);
 }

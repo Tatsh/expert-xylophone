@@ -46,7 +46,7 @@ constexpr CGFloat kMessageBubblePaddingTop = 10.0;
 constexpr CGFloat kMessageBubblePaddingBottom = 25.0;
 
 // The horizontal nudge applied to the message view, as a fraction of the bubble width, chosen by
-// font variant.
+// iPad idiom.
 constexpr CGFloat kMessageViewNudgeFraction = 0.125;
 
 // The horizontal spawn positions: the normal mascot spawns just off the right screen edge (frame
@@ -62,7 +62,7 @@ constexpr float kMascotBaseYOffsetPhone = 150.0f;
 // The upward launch speed multiplier applied to speedY on a tap (scaled by the mascot scale).
 constexpr float kMascotTapUpwardSpeed = 50.0f;
 
-// The message-label constrained max width, chosen by font variant.
+// The message-label constrained max width, chosen by device idiom.
 constexpr CGFloat kMascotMessageMaxWidthPad = 300.0;
 constexpr CGFloat kMascotMessageMaxWidthPhone = 200.0;
 
@@ -87,7 +87,7 @@ constexpr NSTimeInterval kMascotAnimationDuration = 0.25;
 // The message-ticker fade-out hold before the label is cleared.
 constexpr NSTimeInterval kMessageFadeOutDelay = 5.0;
 
-// The mascot base font point sizes, chosen by font variant (iPad vs phone).
+// The mascot base font point sizes, chosen by device idiom (iPad vs phone).
 constexpr CGFloat kMascotFontSizePad = 14.0;
 constexpr CGFloat kMascotFontSizePhone = 11.0;
 
@@ -140,8 +140,7 @@ static NSString *const kMessageTextKey = @"text";
         self.mascotView = nil;
         self.type = 0;
         self.isAnimation = NO;
-        self.speedX = (GetFontVariantFlag() != kFontVariantDefault) ? kMascotSpawnSpeedPad :
-                                                                      kMascotSpawnSpeedPhone;
+        self.speedX = (IsPad()) ? kMascotSpawnSpeedPad : kMascotSpawnSpeedPhone;
         self.scale = 1.0f;
     }
     return self;
@@ -193,9 +192,8 @@ static NSString *const kMessageTextKey = @"text";
                                                                   kMessageLabelOrigin,
                                                                   labelSize.width,
                                                                   labelSize.height)];
-    self.messageLabel.font = [UIFont
-        systemFontOfSize:(GetFontVariantFlag() != kFontVariantDefault) ? kMascotFontSizePad :
-                                                                         kMascotFontSizePhone];
+    self.messageLabel.font =
+        [UIFont systemFontOfSize:(IsPad()) ? kMascotFontSizePad : kMascotFontSizePhone];
     self.messageLabel.numberOfLines = 0;
     self.messageLabel.text = kEmptyMessageText;
 
@@ -279,10 +277,8 @@ static NSString *const kMessageTextKey = @"text";
     self.mascotView.animationRepeatCount = 0;
 
     UIImage *firstFrame = clips[clipIndex][0];
-    int baseYSpread = (GetFontVariantFlag() != kFontVariantDefault) ? kMascotBaseYSpreadPad :
-                                                                      kMascotBaseYSpreadPhone;
-    float baseYOffset = (GetFontVariantFlag() != kFontVariantDefault) ? kMascotBaseYOffsetPad :
-                                                                        kMascotBaseYOffsetPhone;
+    int baseYSpread = (IsPad()) ? kMascotBaseYSpreadPad : kMascotBaseYSpreadPhone;
+    float baseYOffset = (IsPad()) ? kMascotBaseYOffsetPad : kMascotBaseYOffsetPhone;
     srand((unsigned int)time(NULL));
     int span = (1 - baseYSpread) + (int)(self.m_screenSize.GetY() - baseYOffset);
     int randomBaseY = span != 0 ? (rand() % span) + baseYSpread : baseYSpread;
@@ -296,8 +292,7 @@ static NSString *const kMessageTextKey = @"text";
     self.mascotView.transform = CGAffineTransformMakeScale(-self.scale, self.scale);
     self.isAnimation = YES;
     [self.mascotView startAnimating];
-    self.speedX = (GetFontVariantFlag() != kFontVariantDefault) ? kMascotSpawnSpeedPad :
-                                                                  kMascotSpawnSpeedPhone;
+    self.speedX = (IsPad()) ? kMascotSpawnSpeedPad : kMascotSpawnSpeedPhone;
 
     if (self.isCampaignMode && self.messageList != nil &&
         (NSUInteger)self.nextMessageIndex < self.messageList.count) {
@@ -323,7 +318,7 @@ static NSString *const kMessageTextKey = @"text";
 
     CGFloat minY;
     CGFloat maxY;
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         minY = self.frame.size.height * 0.5;
         maxY = self.limitY - self.frame.size.height;
     } else {
@@ -471,9 +466,7 @@ static NSString *const kMessageTextKey = @"text";
                          strongSelf.messageLabel.frame.size.height + kMessageBubblePaddingTop +
                              kMessageBubblePaddingBottom);
 
-          CGFloat nudge = (GetFontVariantFlag() == kFontVariantDefault) ?
-                              -kMessageViewNudgeFraction :
-                              kMessageViewNudgeFraction;
+          CGFloat nudge = (!IsPad()) ? -kMessageViewNudgeFraction : kMessageViewNudgeFraction;
           strongSelf.messageView.frame =
               CGRectMake(strongSelf.messageBgView.frame.size.width * nudge,
                          -strongSelf.messageBgView.frame.size.height,
@@ -515,10 +508,8 @@ static NSString *const kMessageTextKey = @"text";
 
 - (CGSize)generateCGSize:(NSString *)text {
     /** @ghidraAddress 0x2e5d4 */
-    CGFloat maxWidth = (GetFontVariantFlag() != kFontVariantDefault) ? kMascotMessageMaxWidthPad :
-                                                                       kMascotMessageMaxWidthPhone;
-    CGFloat fontSize =
-        (GetFontVariantFlag() != kFontVariantDefault) ? kMascotFontSizePad : kMascotFontSizePhone;
+    CGFloat maxWidth = (IsPad()) ? kMascotMessageMaxWidthPad : kMascotMessageMaxWidthPhone;
+    CGFloat fontSize = (IsPad()) ? kMascotFontSizePad : kMascotFontSizePhone;
     UIFont *font = [UIFont systemFontOfSize:fontSize];
     return [text sizeWithFont:font
             constrainedToSize:CGSizeMake(maxWidth, kMascotMessageLabelConstraintHeight)

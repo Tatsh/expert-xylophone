@@ -10,12 +10,11 @@
 //  reads.
 //
 
-#import "UIImage+RB.h"
-
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreImage/CoreImage.h>
 
 #import "RBUserSettingData.h"
+#import "UIImage+RB.h"
 #import "neEngineBridge.h"
 
 // The shared image directory tried after the current theme directory.
@@ -31,7 +30,7 @@ static NSString *const kLprojPrefixedNameFormat = @"%@/%@";
 static NSString *const kImageFileExtension = @"png";
 
 // The device-and-scale asset-name suffixes chosen for imageNamedWithoutCache:, selected by the
-// font-variant (iPad) build flag and the Retina flag.
+// iPad idiom (iPad) build flag and the Retina flag.
 static NSString *const kRetinaPadDeviceTag = @"@2x~ipad";
 static NSString *const kNonRetinaPadDeviceTag = @"~ipad";
 static NSString *const kRetinaPhoneDeviceTag = @"@2x~iphone";
@@ -74,15 +73,15 @@ static NSCache *RBThemedImageCache(void) {
 
 // Loads a PNG resource of the given name from the main bundle.
 static UIImage *RBBundleImage(NSString *resourceName) {
-    NSString *path =
-        [[NSBundle mainBundle] pathForResource:resourceName ofType:kImageFileExtension];
+    NSString *path = [[NSBundle mainBundle] pathForResource:resourceName
+                                                     ofType:kImageFileExtension];
     return [UIImage imageWithContentsOfFile:path];
 }
 
 // Chooses the device-and-scale asset-name suffix for the running build: the iPad variant build
 // uses "@2x~ipad" or "~ipad" by Retina, and the iPhone build uses "@2x~iphone".
 static NSString *RBDeviceAssetTag(void) {
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         return GetIsRetinaFlag() ? kRetinaPadDeviceTag : kNonRetinaPadDeviceTag;
     }
     return kRetinaPhoneDeviceTag;
@@ -110,9 +109,9 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
         }
     }
 
-    NSString *regionFormat = [GetRegionCode() isEqualToString:kRegionCodeJapan]
-                                 ? kJapaneseTaggedNameFormat
-                                 : kEnglishTaggedNameFormat;
+    NSString *regionFormat = [GetRegionCode() isEqualToString:kRegionCodeJapan] ?
+                                 kJapaneseTaggedNameFormat :
+                                 kEnglishTaggedNameFormat;
     return RBBundleImage([NSString stringWithFormat:regionFormat, name, deviceTag]);
 }
 
@@ -176,9 +175,9 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
         }
     }
     return [self imageWithName:name
-               imageDirectory:imageDirectory
-               themaDirectory:themaDirectory
-                       retina:NO];
+                imageDirectory:imageDirectory
+                themaDirectory:themaDirectory
+                        retina:NO];
 }
 
 + (UIImage *)imageWithName:(NSString *)name
@@ -279,9 +278,13 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     }
 
     CGColorSpaceRef rgbSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef imageContext = CGBitmapContextCreate(
-        NULL, (size_t)width, (size_t)reflectionHeight, kBitsPerComponent, 0, rgbSpace,
-        kCGImageAlphaPremultipliedLast);
+    CGContextRef imageContext = CGBitmapContextCreate(NULL,
+                                                      (size_t)width,
+                                                      (size_t)reflectionHeight,
+                                                      kBitsPerComponent,
+                                                      0,
+                                                      rgbSpace,
+                                                      kCGImageAlphaPremultipliedLast);
     CGColorSpaceRelease(rgbSpace);
     if (imageContext == NULL) {
         return nil;
@@ -301,10 +304,12 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
         CGFloat components[] = {0.0, 0.0, 1.0, 1.0};
         CGGradientRef gradient = CGGradientCreateWithColorComponents(
             graySpace, components, NULL, kReflectionGradientStopCount);
-        CGContextDrawLinearGradient(gradientContext, gradient, CGPointZero,
-                                    CGPointMake(0, reflectionHeight),
-                                    (kCGGradientDrawsBeforeStartLocation |
-                                     kCGGradientDrawsAfterEndLocation));
+        CGContextDrawLinearGradient(
+            gradientContext,
+            gradient,
+            CGPointZero,
+            CGPointMake(0, reflectionHeight),
+            (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation));
         CGGradientRelease(gradient);
         gradientMask = CGBitmapContextCreateImage(gradientContext);
         CGContextRelease(gradientContext);
@@ -320,8 +325,8 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
         result = [UIImage imageWithCGImage:maskedImage];
     } else {
         result = [UIImage imageWithCGImage:maskedImage
-                                    scale:self.scale
-                              orientation:UIImageOrientationUp];
+                                     scale:self.scale
+                               orientation:UIImageOrientationUp];
     }
     CGImageRelease(maskedImage);
     return result;
@@ -358,8 +363,8 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
 
     CIContext *context = [CIContext contextWithOptions:nil];
     CIImage *outputImage = filter.outputImage;
-    CGImageRef renderedImage =
-        [context createCGImage:outputImage fromRect:filter.outputImage.extent];
+    CGImageRef renderedImage = [context createCGImage:outputImage
+                                             fromRect:filter.outputImage.extent];
     UIImage *result = [UIImage imageWithCGImage:renderedImage
                                           scale:self.scale
                                     orientation:UIImageOrientationUp];

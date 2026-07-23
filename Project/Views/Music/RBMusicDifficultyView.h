@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Create the difficulty selector for the given hosting detail view and build its buttons.
  *
  * Seeds @c difficulty from the shared @c RBUserSettingData, seeds @c layoutOffset from the theme
- * and font variant, then builds the buttons and shows the current selection.
+ * and iPad idiom, then builds the buttons and shows the current selection.
  * @param frame The view's frame rectangle.
  * @param MusicSelectedBase The hosting music-select detail view, held weakly.
  * @return The initialised view, or @c nil.
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** @brief The selected difficulty slot. */
 @property(assign, nonatomic) int difficulty;
-/** @brief The horizontal layout offset applied to the buttons on the font-variant Colette. */
+/** @brief The horizontal layout offset applied to the buttons on the iPad idiom Colette. */
 @property(assign, nonatomic) float layoutOffset;
 /** @brief The hosting music-select detail view, held weakly. */
 @property(weak, nonatomic, nullable) RBMusicView *musicSelectedBase;

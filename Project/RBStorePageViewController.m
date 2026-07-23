@@ -244,7 +244,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 @interface RBStorePageViewController () {
-    // Whether the wide (pad) font variant is active; cached from GetFontVariantFlag().
+    // Whether the wide (pad) iPad idiom is active; cached from IsPad().
     BOOL m_IsPad;
     // Whether a "load more" page fetch is in flight.
     BOOL m_IsLoadingMoreList;
@@ -284,7 +284,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
         self.artworkDownloaders = [[NSMutableDictionary alloc] initWithCapacity:32];
 
-        m_IsPad = (BOOL)GetFontVariantFlag();
+        m_IsPad = IsPad();
     }
     return self;
 }
@@ -658,7 +658,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     [super viewWillAppear:animated];
 
     if (self.promotionView != nil) {
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             self.promotionView.isSamplePlayable = YES;
         } else if (self.packDetailViewPad.isHidden) {
             self.promotionView.isSamplePlayable = YES;
@@ -683,11 +683,11 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         fetching.frame = self.view.bounds;
     }
 
-    if (GetFontVariantFlag() != kFontVariantDefault && !self.packDetailViewPad.isHidden) {
+    if (IsPad() && !self.packDetailViewPad.isHidden) {
         [self.packDetailViewPad selfCheckButtonText];
     }
 
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.navigationController.navigationBar.tintColor = nil;
         self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
         if ([self.navigationController.navigationBar
@@ -804,7 +804,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         NSDictionary *attrs =
             @{NSFontAttributeName : [UIFont systemFontOfSize:kBarButtonTitleFontSize]};
         [self.genreButton setTitleTextAttributes:attrs forState:UIControlStateNormal];
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             self.navigationItem.title = kStoreEmptyTitle;
         }
     }
@@ -884,7 +884,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         self.genreViewCtrl.storeViewCtrl = self;
         self.genreNavCtrl =
             [[UINavigationController alloc] initWithRootViewController:self.genreViewCtrl];
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             self.genrePopoverCtrl =
                 [[UIPopoverController alloc] initWithContentViewController:self.genreNavCtrl];
             self.genrePopoverCtrl.delegate = self;
@@ -958,7 +958,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 /** @ghidraAddress 0x1e9628 */
 - (NSInteger)numPackRows {
     NSInteger packCount = self.currentGenre.packCount;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return packCount;
     }
     // The pad packs two packs per row, so it needs half as many rows (rounded up).
@@ -970,7 +970,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray<NSNumber *> *packIDList = self.currentGenre.packIDList;
 
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         if (indexPath.section == kStoreSectionPromotion) {
             StorePromotionTableCell *cell =
                 [tableView dequeueReusableCellWithIdentifier:kStorePromotionCellID];
@@ -1027,9 +1027,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:kStorePacklistMoreCellID];
-            CGFloat fontSize = (GetFontVariantFlag() == kFontVariantDefault) ?
-                                   kMoreCellFontSizePhone :
-                                   kMoreCellFontSizePad;
+            CGFloat fontSize = (!IsPad()) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
         }
@@ -1081,8 +1079,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:kStorePacklistMoreCellID];
-        CGFloat fontSize = (GetFontVariantFlag() == kFontVariantDefault) ? kMoreCellFontSizePhone :
-                                                                           kMoreCellFontSizePad;
+        CGFloat fontSize = (!IsPad()) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }
@@ -1133,7 +1130,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb708 */
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return kStoreSectionCountPhone;
     }
     return kStoreSectionCountPad;
@@ -1141,7 +1138,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb728 */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         if (section < kStoreSectionPackList) {
             return 1;
         }
@@ -1151,7 +1148,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb838 */
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         if (indexPath.section == kStoreSectionPromotion) {
             return kPromotionSectionHeight;
         }
@@ -1167,7 +1164,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 - (void)tableView:(UITableView *)tableView
       willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         if (indexPath.section == kStoreSectionPromotion ||
             indexPath.section == kStoreSectionSampleLabel) {
             return;
@@ -1204,7 +1201,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (indexPath.row == [self numPackRows]) {
         return;
     }
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         return;
     }
     if (indexPath.section == kStoreSectionSampleLabel) {
@@ -1246,8 +1243,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
 
     // Pin the first floating banner inside the visible region as the user scrolls.
-    CGFloat bannerHeight =
-        (GetFontVariantFlag() == kFontVariantDefault) ? kBannerHeightPhone : kBannerHeightPad;
+    CGFloat bannerHeight = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
     UIView *bannerContainer = [self.view viewWithTag:kTagPackTable];
     UIView *firstBanner = [bannerContainer viewWithTag:kTagFunBanner];
     CGRect bannerFrame = firstBanner.frame;
@@ -1277,8 +1273,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
     UIView *container2 = [self.view viewWithTag:kTagPackTable];
     UIView *secondBanner = [container2 viewWithTag:kTagCampaignBanner];
-    CGFloat bannerHeight2 =
-        (GetFontVariantFlag() == kFontVariantDefault) ? kBannerHeightPhone : kBannerHeightPad;
+    CGFloat bannerHeight2 = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
     CGRect frame2 = secondBanner.frame;
     CGFloat contentBottom2 = container2.contentSize.height;
     CGFloat containerOriginY2 = container2.bounds.origin.y;
@@ -1317,7 +1312,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         [self.packListCtrl optionalProductsRequest];
         return;
     }
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         [self.packDetailViewPad cancelLoading];
         [self.packDetailViewPad stopSample];
         self.coverViewPad.alpha = kDetailAlphaHidden;
@@ -1426,7 +1421,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (packId < 0) {
         return;
     }
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self showDetailViewForPhone:packId];
         return;
     }
@@ -1572,7 +1567,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1ee3ac */
 - (void)presentGenreSelect:(id)sender {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.navigationController pushViewController:self.genreViewCtrl animated:YES];
     } else {
         if (self.genrePopoverCtrl.isPopoverVisible) {
@@ -1590,7 +1585,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1ee610 */
 - (void)hideGenreSelect:(id)sender {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         [self.genrePopoverCtrl dismissPopoverAnimated:YES];
@@ -2401,7 +2396,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         self.downloadManager = nil;
     }
     [self.parent hideModalDialog];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         UIViewController *top = self.navigationController.topViewController;
         if (![top isKindOfClass:[RBStoreDetailViewController class]]) {
             return;

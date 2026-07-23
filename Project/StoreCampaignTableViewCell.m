@@ -167,8 +167,8 @@ static const int kButtonTypePurchased = 1;
 
 - (void)setArtwork:(UIImage *)artwork {
     if (artwork != nil) {
-        // The binary passes the region font-variant flag where an isPad flag is expected.
-        CGSize size = [self getItemSize:GetFontVariantFlag()];
+        // The binary passes the region iPad idiom flag where an isPad flag is expected.
+        CGSize size = [self getItemSize:IsPad()];
         self.artworkView.frame = CGRectMake(0, 0, size.width, size.height);
         [self.artworkView setImage:artwork];
         [UIView animateWithDuration:kArtworkFadeDuration

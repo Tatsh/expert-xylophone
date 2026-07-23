@@ -42,8 +42,8 @@ static const int kBlowfishTrailerLength = 8;
 // The Blowfish context: an 18-word P-array followed by four 256-word S-boxes. The 64-bit build
 // stores each word as a 64-bit entry, so the whole context is 0x2090 bytes.
 typedef struct {
-    uint64_t P[kBlowfishPArrayCount];                    // +0x0000
-    uint64_t S[kBlowfishSBoxCount][kBlowfishSBoxSize];   // +0x0090
+    uint64_t P[kBlowfishPArrayCount];                  // +0x0000
+    uint64_t S[kBlowfishSBoxCount][kBlowfishSBoxSize]; // +0x0090
 } BlowfishContext;
 
 // The canonical Blowfish P-array and S-box initialisation constants (the fractional digits of pi),
@@ -55,8 +55,8 @@ static const unsigned char kBlowfishInitBytes[] = {
 
 // The fixed default CBC IV (Ghidra: g_abBFInitIV @ 0x2ec7e0), copied into the @c _iv ivar by
 // -cipherInit:keyLength:.
-static const uint8_t kBlowfishInitialIV[kBlowfishIVLength] = {0xE3, 0x66, 0x31, 0xDA,
-                                                               0x2C, 0x85, 0xA0, 0x64};
+static const uint8_t kBlowfishInitialIV[kBlowfishIVLength] = {
+    0xE3, 0x66, 0x31, 0xDA, 0x2C, 0x85, 0xA0, 0x64};
 
 #pragma mark - Byte packing
 
@@ -154,8 +154,8 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, int length) {
         const uint8_t b1 = (uint8_t)key[(keyIndex + 1) % length];
         const uint8_t b2 = (uint8_t)key[(keyIndex + 2) % length];
         const uint8_t b3 = (uint8_t)key[(keyIndex + 3) % length];
-        const uint32_t word = ((uint32_t)b0 << 24) | ((uint32_t)b1 << 16) | ((uint32_t)b2 << 8) |
-                              (uint32_t)b3;
+        const uint32_t word =
+            ((uint32_t)b0 << 24) | ((uint32_t)b1 << 16) | ((uint32_t)b2 << 8) | (uint32_t)b3;
         ctx->P[i] ^= word;
         keyIndex = (keyIndex + kBlowfishHalfSize) % length;
     }
@@ -179,8 +179,8 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, int length) {
 #pragma mark - BFCodec
 
 @implementation BFCodec {
-    uint8_t _iv[kBlowfishIVLength];   // +0x08
-    BlowfishContext *_blf;            // +0x10
+    uint8_t _iv[kBlowfishIVLength]; // +0x08
+    BlowfishContext *_blf;          // +0x10
 }
 
 // @ghidraAddress 0x1529c
@@ -277,8 +277,8 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, int length) {
     [data getBytes:trailer range:NSMakeRange(len - kBlowfishHalfSize, kBlowfishHalfSize)];
     const uint32_t cipherLen = blowfishPackBE32(trailer);
 
-    const uint32_t expectedCipherLen = (origLen + (kBlowfishBlockSize - 1)) &
-                                       ~((uint32_t)kBlowfishBlockSize - 1);
+    const uint32_t expectedCipherLen =
+        (origLen + (kBlowfishBlockSize - 1)) & ~((uint32_t)kBlowfishBlockSize - 1);
     if (cipherLen != body || cipherLen != expectedCipherLen) {
         return NO;
     }

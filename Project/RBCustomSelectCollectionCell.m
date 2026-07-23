@@ -39,8 +39,8 @@ static NSString *const kSelectedOverlayImageName = @"04_customize/cus_sel_1";
     CGFloat cellWidth = self.frame.size.width;
     CGFloat buttonWidth = self.itemButton.frame.size.width;
     CGFloat buttonHeight = self.itemButton.frame.size.height;
-    self.itemButton.frame = CGRectMake((int)((cellWidth - buttonWidth) * 0.5), 0.0, buttonWidth,
-                                       buttonHeight);
+    self.itemButton.frame =
+        CGRectMake((int)((cellWidth - buttonWidth) * 0.5), 0.0, buttonWidth, buttonHeight);
 
     self.selectedImageView.center = self.backgroundView.center;
 }

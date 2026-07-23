@@ -152,36 +152,36 @@ enum { kTutorialStatusReportOnly = 0x12 };
     [[RBTutorialManager getInstance] setCurrentStatus:updateStatus];
 
     switch (updateStatus) {
-        case RBTutorialStatusMusicSelectStart:
-            // The music-select walkthrough start (0) enters the tutorial and reports to the server.
-            [[RBTutorialManager getInstance] setIsTutorial:YES];
-            break;
-        case kTutorialStatusReportOnly:
-            // Reports to the server only.
-            break;
-        case RBTutorialStatusCustomizeStart:
-            [[RBTutorialManager getInstance] setIsTutorial:YES];
-            break;
-        case RBTutorialStatusCustomizeSeen:
-            // Reports to the server only.
-            break;
-        case RBTutorialStatusCustomizeEnd:
-            [[RBTutorialManager getInstance] setCurrentStatus:RBTutorialStatusDone];
-            [[RBTutorialManager getInstance] setIsTutorial:NO];
-            break;
-        case RBTutorialStatusStoreStart:
-            [[RBTutorialManager getInstance] setIsTutorial:YES];
-            return;
-        case RBTutorialStatusStoreStart + 1:
-            [[RBTutorialManager getInstance] setIsTutorial:YES];
-            return;
-        case RBTutorialStatusStoreStart + 3:
-            [[RBTutorialManager getInstance] setIsTutorial:NO];
-            return;
-        default:
-            // Every other in-progress step (the customise steps 25-32, and the store "seen" flag 37)
-            // records the status only, with no further side effect and no server report.
-            return;
+    case RBTutorialStatusMusicSelectStart:
+        // The music-select walkthrough start (0) enters the tutorial and reports to the server.
+        [[RBTutorialManager getInstance] setIsTutorial:YES];
+        break;
+    case kTutorialStatusReportOnly:
+        // Reports to the server only.
+        break;
+    case RBTutorialStatusCustomizeStart:
+        [[RBTutorialManager getInstance] setIsTutorial:YES];
+        break;
+    case RBTutorialStatusCustomizeSeen:
+        // Reports to the server only.
+        break;
+    case RBTutorialStatusCustomizeEnd:
+        [[RBTutorialManager getInstance] setCurrentStatus:RBTutorialStatusDone];
+        [[RBTutorialManager getInstance] setIsTutorial:NO];
+        break;
+    case RBTutorialStatusStoreStart:
+        [[RBTutorialManager getInstance] setIsTutorial:YES];
+        return;
+    case RBTutorialStatusStoreStart + 1:
+        [[RBTutorialManager getInstance] setIsTutorial:YES];
+        return;
+    case RBTutorialStatusStoreStart + 3:
+        [[RBTutorialManager getInstance] setIsTutorial:NO];
+        return;
+    default:
+        // Every other in-progress step (the customise steps 25-32, and the store "seen" flag 37)
+        // records the status only, with no further side effect and no server report.
+        return;
     }
     [RBServerAPIManager tutorialAPI];
 }

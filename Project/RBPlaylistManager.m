@@ -12,7 +12,6 @@
 
 // Collaborator category reached from these methods; its header is committed in this tree.
 #import "NSFileManager+RB.h"
-
 #import "neEngineBridge.h"
 
 // The bare filename of the persisted playlist archive under the documents directory.
@@ -52,10 +51,10 @@ static const NSUInteger kInvalidMusicID = 0;
     static RBPlaylistManager *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        /** @ghidraAddress 0x710c4 */
-        NSString *path = [[NSFileManager documentDirectoryPath]
-            stringByAppendingPathComponent:kPlaylistArchiveFilename];
-        instance = [[RBPlaylistManager alloc] initWithFile:path];
+      /** @ghidraAddress 0x710c4 */
+      NSString *path = [[NSFileManager documentDirectoryPath]
+          stringByAppendingPathComponent:kPlaylistArchiveFilename];
+      instance = [[RBPlaylistManager alloc] initWithFile:path];
     });
     return instance;
 }
@@ -172,13 +171,12 @@ static const NSUInteger kInvalidMusicID = 0;
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = kPlaylistIdentifierDateFormat;
     NSString *timestamp = [formatter stringFromDate:[NSDate date]];
-    NSString *seed =
-        [NSString stringWithFormat:kPlaylistIdentifierSeedFormat, name, timestamp];
+    NSString *seed = [NSString stringWithFormat:kPlaylistIdentifierSeedFormat, name, timestamp];
     NSString *identifier = Md5StringToHex(seed.UTF8String);
 
     NSMutableArray *tuneList = [NSMutableArray arrayWithCapacity:kPlaylistTuneListCapacity];
-    NSArray *values = @[identifier, name, tuneList];
-    NSArray *keys = @[kPlaylistKeyIdentifier, kPlaylistKeyName, kPlaylistKeyList];
+    NSArray *values = @[ identifier, name, tuneList ];
+    NSArray *keys = @[ kPlaylistKeyIdentifier, kPlaylistKeyName, kPlaylistKeyList ];
     NSDictionary *playlist = [NSDictionary dictionaryWithObjects:values
                                                          forKeys:keys
                                                            count:kNewPlaylistKeyCount];

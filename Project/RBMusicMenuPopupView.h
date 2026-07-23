@@ -1,7 +1,7 @@
 /** @file
  * The base music-menu popup view. It is a @c UIControl subclass that builds a themed, framed popup
  * (a title bar, a background panel, an optional gradation overlay, and a rounded content view)
- * sized for the current theme and font variant. The concrete popups — the credits, how-to-play,
+ * sized for the current theme and iPad idiom. The concrete popups — the credits, how-to-play,
  * customize, theme, search, ranking, information, and terms popups — subclass it, select a popup
  * type through @c setMusicMenuPopupViewType:, and lay their own content out inside @c contentView.
  *
@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, RBMusicMenuPopupViewType) {
 
 /**
  * @brief Base popup view presented over the music-menu screen, framed and themed for the current
- * theme and font variant.
+ * theme and iPad idiom.
  */
 @interface RBMusicMenuPopupView : UIControl
 
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, RBMusicMenuPopupViewType) {
  * @brief Build the popup chrome: the base panel, the background artwork for the selected popup
  * type, the optional gradation overlay, the rounded content view, and the title bar.
  *
- * The geometry depends on the current theme and font variant; subclasses call through to @c super
+ * The geometry depends on the current theme and iPad idiom; subclasses call through to @c super
  * and then add their own content to @c contentView.
  * @ghidraAddress 0x19ec8c
  */

@@ -290,7 +290,7 @@ static const int kNoExtendNotePid = -1;
     downloader.imageURL = self.packInfo.artworkURL;
     downloader.indexPathInTableView = headerIndexPath;
     downloader.delegate = self;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         downloader.unUseRetina = YES;
     }
     self.artworkDownloaders[headerIndexPath] = downloader;
@@ -493,7 +493,7 @@ static const int kNoExtendNotePid = -1;
                 downloader.imageURL = info.artworkURL;
                 downloader.indexPathInTableView = indexPath;
                 downloader.delegate = self;
-                if (GetFontVariantFlag() == kFontVariantDefault) {
+                if (!IsPad()) {
                     downloader.unUseRetina = YES;
                 }
                 self.artworkDownloaders[indexPath] = downloader;

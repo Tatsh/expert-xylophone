@@ -11,7 +11,7 @@
 #import "RBBaseTabBarController.h"
 
 // GameSystem::GetGameSystem() -> GameSystem* (with the background-music playback flag reported by
-// GetBgmPlaying()) and GetFontVariantFlag(), which reports whether the region uses the wide
+// GetBgmPlaying()) and IsPad(), which reports whether the region uses the wide
 // (variant) font layout that also selects the constrained-rotation behaviour.
 #import "neEngineBridge.h"
 
@@ -36,7 +36,7 @@ static const float kFirstTranslucentTabBarSystemVersion = 7.0f;
 
 - (BOOL)shouldAutorotate {
     /** @ghidraAddress 0x202b00 */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return YES;
     }
     return !GameSystem::GetGameSystem()->GetBgmPlaying();
@@ -44,7 +44,7 @@ static const float kFirstTranslucentTabBarSystemVersion = 7.0f;
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     /** @ghidraAddress 0x202b30 */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return UIInterfaceOrientationMaskAll;
     }
     if (!GameSystem::GetGameSystem()->GetBgmPlaying()) {
@@ -63,7 +63,7 @@ static const float kFirstTranslucentTabBarSystemVersion = 7.0f;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     /** @ghidraAddress 0x202b94 */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return YES;
     }
     if (interfaceOrientation == UIInterfaceOrientationPortrait ||

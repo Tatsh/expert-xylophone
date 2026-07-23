@@ -13,9 +13,9 @@
 //  receiver is self.
 //
 
-#import "UIImageView+RB.h"
-
 #import <QuartzCore/QuartzCore.h>
+
+#import "UIImageView+RB.h"
 
 // The layer animation key under which the flash pulse is installed, and the key path it animates.
 static NSString *const kFlashAnimationKey = @"FLUSH_ANIM";
@@ -60,11 +60,10 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
     animation.autoreverses = YES;
     animation.fromValue = @(start);
     animation.toValue = @(end);
-    animation.timingFunction =
-        [CAMediaTimingFunction functionWithControlPoints:kFlashTimingControlPoint1X
-                                                        :kFlashTimingControlPoint1Y
-                                                        :kFlashTimingControlPoint2X
-                                                        :kFlashTimingControlPoint2Y];
+    animation.timingFunction = [CAMediaTimingFunction
+         functionWithControlPoints:
+        kFlashTimingControlPoint1X:kFlashTimingControlPoint1Y:kFlashTimingControlPoint2X
+                                  :kFlashTimingControlPoint2Y];
     animation.removedOnCompletion = NO;
     [self.layer addAnimation:animation forKey:kFlashAnimationKey];
 }

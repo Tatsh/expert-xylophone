@@ -19,12 +19,12 @@ static const NSInteger kGridSection = 0;
 // The leftover slack on each axis is split so that half a gap sits before the first cell.
 static const NSInteger kGridSlackHalfDivisor = 2;
 
-// Standard (narrow) item metrics used when the large-font variant is off.
+// Standard (narrow) item metrics used when the large-iPad idiom is off.
 static const CGFloat kItemWidthNarrow = 92.0;
 static const CGFloat kItemHeightNarrow = 114.0;
 static const UIEdgeInsets kPageInsetNarrow = {5.0, 10.0, 0.0, 10.0};
 
-// Large-font (wide) item metrics used when the large-font variant is on.
+// Large-font (wide) item metrics used when the large-iPad idiom is on.
 static const CGFloat kItemWidthWide = 184.0;
 static const CGFloat kItemHeightWide = 230.0;
 static const CGFloat kSpacingWide = 10.0;
@@ -35,7 +35,7 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
 - (instancetype)init {
     self = [super init];
     if (self) {
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             self.itemSize = CGSizeMake(kItemWidthNarrow, kItemHeightNarrow);
             self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
             self.minimumLineSpacing = 0.0;
@@ -61,18 +61,14 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
     self.itemCount = [self.collectionView numberOfItemsInSection:kGridSection];
     self.pageSize = self.collectionView.bounds.size;
 
-    CGFloat usableWidth =
-        self.pageSize.width - self.pageInset.left - self.pageInset.right;
-    CGFloat usableHeight =
-        self.pageSize.height - self.pageInset.top - self.pageInset.bottom;
+    CGFloat usableWidth = self.pageSize.width - self.pageInset.left - self.pageInset.right;
+    CGFloat usableHeight = self.pageSize.height - self.pageInset.top - self.pageInset.bottom;
 
-    self.colCount =
-        (NSInteger)(usableWidth / (self.itemSize.width + self.minimumInteritemSpacing));
+    self.colCount = (NSInteger)(usableWidth / (self.itemSize.width + self.minimumInteritemSpacing));
     if (self.colCount < 1) {
         self.colCount = 1;
     }
-    self.rowCount =
-        (NSInteger)(usableHeight / (self.itemSize.height + self.minimumLineSpacing));
+    self.rowCount = (NSInteger)(usableHeight / (self.itemSize.height + self.minimumLineSpacing));
     if (self.rowCount < 1) {
         self.rowCount = 1;
     }
@@ -86,13 +82,13 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
 
     NSInteger columnSlack = 0;
     if (self.colCount >= 2) {
-        columnSlack = (NSInteger)((usableWidth - self.colCount * self.itemSize.width) /
-                                  self.colCount);
+        columnSlack =
+            (NSInteger)((usableWidth - self.colCount * self.itemSize.width) / self.colCount);
     }
     NSInteger rowSlack = 0;
     if (self.rowCount >= 2) {
-        rowSlack = (NSInteger)((usableHeight - self.rowCount * self.itemSize.height) /
-                               self.rowCount);
+        rowSlack =
+            (NSInteger)((usableHeight - self.rowCount * self.itemSize.height) / self.rowCount);
     }
 
     NSMutableArray<UICollectionViewLayoutAttributes *> *layouts =
@@ -124,17 +120,15 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
     return self.contentSize;
 }
 
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:
-    (NSIndexPath *)indexPath {
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     return [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
 }
 
 - (UICollectionViewLayoutAttributes *)
     layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind
                                    atIndexPath:(NSIndexPath *)indexPath {
-    return [UICollectionViewLayoutAttributes
-        layoutAttributesForSupplementaryViewOfKind:elementKind
-                                     withIndexPath:indexPath];
+    return [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:elementKind
+                                                                          withIndexPath:indexPath];
 }
 
 - (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect {

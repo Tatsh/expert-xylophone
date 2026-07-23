@@ -174,7 +174,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.backgroundColor = [UIColor grayColor];
 
         UIImage *panelImage = [UIImage imageWithName:kItemPanelBackgroundName];
-        BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
+        BOOL isPad = IsPad();
 
         UIView *item =
             [[UIView alloc] initWithFrame:CGRectMake(0, 0, kItemViewWidth, kItemViewHeight)];
@@ -253,7 +253,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.labelLevels.font = [UIFont boldSystemFontOfSize:kLevelsFontSize];
         self.labelLevels.adjustsFontSizeToFitWidth = YES;
         self.labelLevels.minimumScaleFactor = kLabelMinimumScaleFactor;
-        if (isWideVariant) {
+        if (isPad) {
             self.labelLevels.textColor = [UIColor colorWithRed:kLevelsVariantRed
                                                          green:kLevelsVariantGreen
                                                           blue:kLevelsVariantBlue
@@ -271,8 +271,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                            alpha:kFullAlpha];
         self.downloadBtn.cornerRadius = kActionBtnCornerRadius;
         self.downloadBtn.exclusiveTouch = YES;
-        CGFloat actionBtnFontSize =
-            isWideVariant ? kActionBtnFontSizeWide : kActionBtnFontSizeNarrow;
+        CGFloat actionBtnFontSize = isPad ? kActionBtnFontSizeWide : kActionBtnFontSizeNarrow;
         self.downloadBtn.titleLabel.font = [UIFont boldSystemFontOfSize:actionBtnFontSize];
         [self.downloadBtn setButtonColor:[StoreCampaignItemInfo getButtonColor:buttonType]];
         [self.downloadBtn setTitle:[StoreCampaignItemInfo getButtonName:buttonType]
@@ -711,13 +710,13 @@ static const CGFloat kFullAlpha = 1.0;
         return;
     }
     if (artwork.size.width == artwork.size.height) {
-        BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
-        CGSize margin = [self getArtworkMargin:isWideVariant];
-        CGFloat yInset = isWideVariant ? 0.0 : kSquareArtworkVariantYInset;
-        CGFloat size = isWideVariant ? kSquareArtworkSizeWide : kSquareArtworkSizeNarrow;
+        BOOL isPad = IsPad();
+        CGSize margin = [self getArtworkMargin:isPad];
+        CGFloat yInset = isPad ? 0.0 : kSquareArtworkVariantYInset;
+        CGFloat size = isPad ? kSquareArtworkSizeWide : kSquareArtworkSizeNarrow;
         self.artworkView.frame = CGRectMake(margin.width, margin.height - yInset, size, size);
     } else {
-        CGSize itemSize = [self getItemSize:GetFontVariantFlag() != kFontVariantDefault];
+        CGSize itemSize = [self getItemSize:IsPad()];
         self.artworkView.frame = CGRectMake(0, 0, itemSize.width, itemSize.height);
     }
     self.artworkView.image = artwork;

@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Measures a campaign message string constrained to the message-bubble width for the current
- * font variant.
+ * iPad idiom.
  * @param text The message text to measure.
  * @return The size the text occupies.
  * @ghidraAddress 0x2e5d4

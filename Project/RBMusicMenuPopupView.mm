@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicMenuPopupView). Verified
-//  against the arm64 disassembly: -setupView's theme- and font-variant-dependent frame maths were
+//  against the arm64 disassembly: -setupView's theme- and idiom-dependent frame maths were
 //  recovered from the soft-float register moves that the decompiler folds into pseudo-variables.
 //  This is an Objective-C++ file because -hideAnimation reaches the C++ SoundEffectManager engine
 //  singleton.
@@ -32,7 +32,7 @@ constexpr UIViewAutoresizing kAutoresizingCentred =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// Base-panel geometry for the wide font variant. The narrow variant uses a square panel centred on
+// Base-panel geometry for the iPad (wide) layout. The narrow variant uses a square panel centred on
 // the popup instead.
 constexpr CGRect kWideBaseFrame = {{112.0, 160.0}, {552.0, 680.0}};
 constexpr CGFloat kNarrowBaseSize = 320.0;
@@ -86,7 +86,7 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
 #pragma mark - Layout
 
 - (void)setupView {
-    BOOL wide = GetFontVariantFlag() != 0;
+    BOOL wide = IsPad() != 0;
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
 
     [self setAlpha:0.0];
@@ -155,7 +155,7 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     [self addSubview:self.baseView];
 
     // The title bar sits at the top of the base panel; its offset from the panel origin depends on
-    // the theme and font variant.
+    // the theme and iPad idiom.
     CGFloat titleX = 0.0;
     CGFloat titleY = 0.0;
     if (wide) {

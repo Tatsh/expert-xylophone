@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The first-run tutorial overlay view.
  *
  * The overlay is a full-screen @c UIControl. @c initWithFrame: sizes the message content view from
- * the font variant, @c setupView builds the dimming layers, message artwork, pastel bubble, cursor,
+ * the iPad idiom, @c setupView builds the dimming layers, message artwork, pastel bubble, cursor,
  * and touch marker, and the tutorial is driven forward by taps through @c hitTest:withEvent:.
  */
 @interface RBMenuTutorialView : UIControl
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Create the overlay with the given frame and size its message content view from the current
- *        font variant.
+ *        iPad idiom.
  * @param frame The view's frame rectangle.
  * @return The initialised overlay, or @c nil.
  * @ghidraAddress 0x37b0c
@@ -288,14 +288,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign) NSUInteger tutorialStatus;
 
 /**
- * @brief The message content view's width, derived from the font variant.
+ * @brief The message content view's width, derived from the iPad idiom.
  * @ghidraAddress 0x1412f4 (getter)
  * @ghidraAddress 0x141304 (setter)
  */
 @property(nonatomic, assign) CGFloat contentViewWidth;
 
 /**
- * @brief The message content view's height, derived from the font variant.
+ * @brief The message content view's height, derived from the iPad idiom.
  * @ghidraAddress 0x141314 (getter)
  * @ghidraAddress 0x141324 (setter)
  */

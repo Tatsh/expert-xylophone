@@ -41,8 +41,12 @@ static NSString *const kClearBaseImageNames[] = {
 // The clear-rank indicator images, indexed by the clear-rank tier returned by GetClearRank (highest
 // tier first).
 static NSString *const kRankImageNames[] = {
-    @"01_music_select/sel_cl_5", @"01_music_select/sel_cl_4", @"01_music_select/sel_cl_3",
-    @"01_music_select/sel_cl_2", @"01_music_select/sel_cl_1", @"01_music_select/sel_cl_0",
+    @"01_music_select/sel_cl_5",
+    @"01_music_select/sel_cl_4",
+    @"01_music_select/sel_cl_3",
+    @"01_music_select/sel_cl_2",
+    @"01_music_select/sel_cl_1",
+    @"01_music_select/sel_cl_0",
 };
 
 // The full-combo indicator images, indexed by the derived full-combo tier (0 through 3).
@@ -62,13 +66,13 @@ enum {
     kDifficultyCount = 4,
 };
 
-// The add and remove buttons share a fixed 29x29 frame; the narrow-font variant nudges it up and to
+// The add and remove buttons share a fixed 29x29 frame; the narrow-iPad idiom nudges it up and to
 // the left.
 static const CGFloat kPlaylistButtonSize = 29.0;
 static const CGFloat kPlaylistButtonOriginXNarrow = -3.0;
 static const CGFloat kPlaylistButtonOriginYNarrow = -2.0;
 
-// The artwork square, its top-left origin, and both are chosen by font variant.
+// The artwork square, its top-left origin, and both are chosen by device idiom.
 static const CGFloat kArtworkOriginXNarrow = 7.0;
 static const CGFloat kArtworkOriginXWide = 14.0;
 static const CGFloat kArtworkOriginYNarrow = 8.0;
@@ -83,17 +87,17 @@ static const CGFloat kClearColumnXWide = 14.0;
 static const CGFloat kRankColumnXNarrow = 64.0;
 static const CGFloat kRankColumnXWide = 143.0;
 
-// The indicator rows, top to bottom, for each of the four difficulties, chosen by font variant.
+// The indicator rows, top to bottom, for each of the four difficulties, chosen by device idiom.
 static const CGFloat kIndicatorRowsNarrow[] = {75.0, 64.0, 53.0, 42.0};
 static const CGFloat kIndicatorRowsWide[] = {152.0, 134.0, 114.0, 95.0};
 
-// The title label metrics for the wide-font variant.
+// The title label metrics for the wide-iPad idiom.
 static const CGFloat kTitleOriginXWide = 18.0;
 static const CGFloat kTitleOriginYWide = 182.0;
 static const CGFloat kTitleWidthWide = 146.0;
 static const CGFloat kTitleHeightWide = 18.0;
 
-// The title label metrics for the narrow-font variant, sized relative to the cell's own frame. The
+// The title label metrics for the narrow-iPad idiom, sized relative to the cell's own frame. The
 // bottom inset differs by one point between the Classic/Limelight themes and the Colette theme.
 static const CGFloat kTitleOriginXNarrow = 5.0;
 static const CGFloat kTitleBottomInsetClassic = 23.0;
@@ -101,7 +105,7 @@ static const CGFloat kTitleBottomInsetColette = 22.0;
 static const CGFloat kTitleWidthInsetNarrow = 10.0;
 static const CGFloat kTitleHeightNarrow = 15.0;
 
-// The artist label and its scrim, present only in the wide-font variant. Both sit below the title
+// The artist label and its scrim, present only in the wide-iPad idiom. Both sit below the title
 // at a shared origin and width; the scrim is one point tall.
 static const CGFloat kArtistOriginXWide = 18.0;
 static const CGFloat kArtistOriginYWide = 197.0;
@@ -111,7 +115,7 @@ static const CGFloat kArtistScrimHeight = 1.0;
 // Yes, this exceeds 1.0; the binary sets it verbatim (a normal scale factor is <= 1.0).
 static const CGFloat kArtistMinimumScaleFactor = 5.0;
 
-// The title font point size, chosen by font variant, and the fixed artist font point size.
+// The title font point size, chosen by device idiom, and the fixed artist font point size.
 static const CGFloat kTitleFontSizeNarrow = 12.0;
 static const CGFloat kTitleFontSizeWide = 14.0;
 static const CGFloat kArtistFontSize = 12.0;
@@ -151,9 +155,11 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
         [self SetupView];
 
         CGRect buttonFrame;
-        if (GetFontVariantFlag() == kFontVariantDefault) {
-            buttonFrame = CGRectMake(kPlaylistButtonOriginXNarrow, kPlaylistButtonOriginYNarrow,
-                                     kPlaylistButtonSize, kPlaylistButtonSize);
+        if (!IsPad()) {
+            buttonFrame = CGRectMake(kPlaylistButtonOriginXNarrow,
+                                     kPlaylistButtonOriginYNarrow,
+                                     kPlaylistButtonSize,
+                                     kPlaylistButtonSize);
         } else {
             buttonFrame = CGRectMake(0.0, 0.0, kPlaylistButtonSize, kPlaylistButtonSize);
         }
@@ -190,15 +196,15 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.bgImageLayer.contents = (__bridge id)bgImage.CGImage;
     [self.contentView.layer addSublayer:self.bgImageLayer];
 
-    BOOL wide = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL wide = IsPad();
 
     // The artwork view.
     self.artworkImageView = [[UIImageView alloc] init];
     self.artworkImageView.backgroundColor = [UIColor clearColor];
-    self.artworkImageView.frame = CGRectMake(
-        wide ? kArtworkOriginXWide : kArtworkOriginXNarrow,
-        wide ? kArtworkOriginYWide : kArtworkOriginYNarrow,
-        wide ? kArtworkSizeWide : kArtworkSizeNarrow, wide ? kArtworkSizeWide : kArtworkSizeNarrow);
+    self.artworkImageView.frame = CGRectMake(wide ? kArtworkOriginXWide : kArtworkOriginXNarrow,
+                                             wide ? kArtworkOriginYWide : kArtworkOriginYNarrow,
+                                             wide ? kArtworkSizeWide : kArtworkSizeNarrow,
+                                             wide ? kArtworkSizeWide : kArtworkSizeNarrow);
     [self.contentView addSubview:self.artworkImageView];
 
     // Build the four indicator layers for each difficulty: full-combo base, full-combo, clear-rank
@@ -214,26 +220,26 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     for (NSInteger i = 0; i < kDifficultyCount; ++i) {
         CGFloat rowY = wide ? kIndicatorRowsWide[i] : kIndicatorRowsNarrow[i];
 
-        CALayer *clearBaseLayer =
-            [self addIndicatorLayerWithImageName:kClearBaseImageNames[i] originX:clearColumnX
-                                         originY:rowY];
+        CALayer *clearBaseLayer = [self addIndicatorLayerWithImageName:kClearBaseImageNames[i]
+                                                               originX:clearColumnX
+                                                               originY:rowY];
         [clearBase addObject:clearBaseLayer];
         m_ClearType[i] = 0;
 
-        CALayer *clearLayer =
-            [self addIndicatorLayerWithImageName:kClearImageNames[0] originX:clearColumnX
-                                         originY:rowY];
+        CALayer *clearLayer = [self addIndicatorLayerWithImageName:kClearImageNames[0]
+                                                           originX:clearColumnX
+                                                           originY:rowY];
         [clear addObject:clearLayer];
 
-        CALayer *rankBaseLayer =
-            [self addIndicatorLayerWithImageName:kRankBaseImageNames[i] originX:rankColumnX
-                                         originY:rowY];
+        CALayer *rankBaseLayer = [self addIndicatorLayerWithImageName:kRankBaseImageNames[i]
+                                                              originX:rankColumnX
+                                                              originY:rowY];
         [rankBase addObject:rankBaseLayer];
         m_RankType[i] = 0;
 
-        CALayer *rankLayer =
-            [self addIndicatorLayerWithImageName:kRankImageNames[0] originX:rankColumnX
-                                         originY:rowY];
+        CALayer *rankLayer = [self addIndicatorLayerWithImageName:kRankImageNames[0]
+                                                          originX:rankColumnX
+                                                          originY:rowY];
         [rank addObject:rankLayer];
     }
     self.rankBaseImageLayers = [NSArray arrayWithArray:rankBase];
@@ -241,12 +247,13 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.clearBaseImageLayers = [NSArray arrayWithArray:clearBase];
     self.clearImageLayers = [NSArray arrayWithArray:clear];
 
-    // The title label. The wide-font variant uses a fixed frame; the narrow-font variant sizes the
+    // The title label. The wide-iPad idiom uses a fixed frame; the narrow-iPad idiom sizes the
     // label from the cell's own frame. Only the Classic, Limelight, and Colette themes create it.
     if (wide) {
-        self.titleLabel = [[UILabel alloc]
-            initWithFrame:CGRectMake(kTitleOriginXWide, kTitleOriginYWide, kTitleWidthWide,
-                                     kTitleHeightWide)];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(kTitleOriginXWide,
+                                                                    kTitleOriginYWide,
+                                                                    kTitleWidthWide,
+                                                                    kTitleHeightWide)];
     } else if (thema == RBUserSettingDataThemeClassic || thema == RBUserSettingDataThemeLimelight) {
         self.titleLabel = [[UILabel alloc]
             initWithFrame:CGRectMake(kTitleOriginXNarrow,
@@ -270,14 +277,15 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
         [UIFont systemFontOfSize:(wide ? kTitleFontSizeWide : kTitleFontSizeNarrow)];
     [self.contentView addSubview:self.titleLabel];
 
-    // The artist label and its scrim exist only in the wide-font variant.
+    // The artist label and its scrim exist only in the wide-iPad idiom.
     if (!wide) {
         return;
     }
 
-    UIView *scrim = [[UIView alloc]
-        initWithFrame:CGRectMake(kArtistOriginXWide, kArtistOriginYWide, kArtistWidthWide,
-                                 kArtistScrimHeight)];
+    UIView *scrim = [[UIView alloc] initWithFrame:CGRectMake(kArtistOriginXWide,
+                                                             kArtistOriginYWide,
+                                                             kArtistWidthWide,
+                                                             kArtistScrimHeight)];
     if (thema == RBUserSettingDataThemeClassic) {
         scrim.backgroundColor = [UIColor colorWithWhite:1.0 alpha:kTitleScrimAlpha];
     } else if (thema == RBUserSettingDataThemeColette) {
@@ -287,9 +295,10 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     }
     [self.contentView addSubview:scrim];
 
-    self.artistLabel = [[UILabel alloc]
-        initWithFrame:CGRectMake(kArtistOriginXWide, kArtistOriginYWide, kArtistWidthWide,
-                                 kArtistHeightWide)];
+    self.artistLabel = [[UILabel alloc] initWithFrame:CGRectMake(kArtistOriginXWide,
+                                                                 kArtistOriginYWide,
+                                                                 kArtistWidthWide,
+                                                                 kArtistHeightWide)];
     self.artistLabel.text = @"";
     self.artistLabel.textAlignment = NSTextAlignmentCenter;
     self.artistLabel.minimumScaleFactor = kArtistMinimumScaleFactor;
@@ -344,8 +353,8 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.bgImageLayer.contents = (__bridge id)bgImage.CGImage;
 
     // The binary keeps the cell's origin but resizes it to the background image.
-    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, bgImage.size.width,
-                            bgImage.size.height);
+    self.frame = CGRectMake(
+        self.frame.origin.x, self.frame.origin.y, bgImage.size.width, bgImage.size.height);
 
     for (NSInteger i = 0; i < kDifficultyCount; ++i) {
         // Read the difficulty's achievement rate, full-combo flag, and personal clear count. The
@@ -356,30 +365,30 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
         int playCount = 0;
         if (scoreData) {
             switch (i) {
-                case 0:
-                    achievementRate = scoreData.arBas.floatValue;
-                    fullCombo = scoreData.fcBas.boolValue;
-                    playCount = scoreData.pcBas.intValue;
-                    break;
-                case 1:
-                    achievementRate = scoreData.arMed.floatValue;
-                    fullCombo = scoreData.fcMed.boolValue;
-                    playCount = scoreData.pcMed.intValue;
-                    break;
-                case 2:
-                    achievementRate = scoreData.arHar.floatValue;
-                    fullCombo = scoreData.fcHar.boolValue;
-                    playCount = scoreData.pcHar.intValue;
-                    break;
-                case 3:
-                    if (spData) {
-                        achievementRate = spData.arBas.floatValue;
-                        fullCombo = spData.fcBas.boolValue;
-                        playCount = spData.pcBas.intValue;
-                    }
-                    break;
-                default:
-                    break;
+            case 0:
+                achievementRate = scoreData.arBas.floatValue;
+                fullCombo = scoreData.fcBas.boolValue;
+                playCount = scoreData.pcBas.intValue;
+                break;
+            case 1:
+                achievementRate = scoreData.arMed.floatValue;
+                fullCombo = scoreData.fcMed.boolValue;
+                playCount = scoreData.pcMed.intValue;
+                break;
+            case 2:
+                achievementRate = scoreData.arHar.floatValue;
+                fullCombo = scoreData.fcHar.boolValue;
+                playCount = scoreData.pcHar.intValue;
+                break;
+            case 3:
+                if (spData) {
+                    achievementRate = spData.arBas.floatValue;
+                    fullCombo = spData.fcBas.boolValue;
+                    playCount = spData.pcBas.intValue;
+                }
+                break;
+            default:
+                break;
             }
         }
 

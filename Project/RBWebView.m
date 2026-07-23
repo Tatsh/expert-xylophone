@@ -59,7 +59,8 @@ static NSString *const kDisableTouchCalloutScript =
     self = [super initWithFrame:frame];
     if (self) {
         self.grayView = [[UIView alloc] initWithFrame:frame];
-        self.grayView.backgroundColor = [UIColor colorWithWhite:kGrayViewWhite alpha:kGrayViewAlpha];
+        self.grayView.backgroundColor = [UIColor colorWithWhite:kGrayViewWhite
+                                                          alpha:kGrayViewAlpha];
         self.grayView.hidden = YES;
         [self addSubview:self.grayView];
 
@@ -91,10 +92,10 @@ static NSString *const kDisableTouchCalloutScript =
 #pragma mark - WebResourceLoadDelegate
 
 - (id)uiWebView:(id)uiWebView
-             resource:(id)resource
-      willSendRequest:(id)willSendRequest
-     redirectResponse:(id)redirectResponse
-       fromDataSource:(id)fromDataSource {
+            resource:(id)resource
+     willSendRequest:(id)willSendRequest
+    redirectResponse:(id)redirectResponse
+      fromDataSource:(id)fromDataSource {
     [willSendRequest setValue:GetDeviceDescriptionString() forHTTPHeaderField:@"User-Agent"];
     return willSendRequest;
 }
@@ -189,10 +190,10 @@ static NSString *const kDisableTouchCalloutScript =
     if (self.parentView) {
         if ([self.parentView respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                /** @ghidraAddress 0x73cb0 */
-                [self.parentView performSelector:@selector(webView:didFailLoadWithError:)
-                                      withObject:webView
-                                      withObject:error];
+              /** @ghidraAddress 0x73cb0 */
+              [self.parentView performSelector:@selector(webView:didFailLoadWithError:)
+                                    withObject:webView
+                                    withObject:error];
             });
         }
     }

@@ -4,7 +4,7 @@
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBTimingSlider). The
 //  initialiser's soft-float sprite, grip, track, and digit-readout geometry, and the theme- and
-//  font-variant dependent layout, were recovered from the arm64 disassembly (the decompiler folds
+//  iPad idiom dependent layout, were recovered from the arm64 disassembly (the decompiler folds
 //  the CGRect components into pseudo-variables). This is the delay-frame slider created by
 //  RBCustomSelectCollectionView.
 //
@@ -21,11 +21,17 @@ static NSString *const kTimingSliderGripImageName = @"02_music_detail/det_col_br
 
 // The digit glyphs are cus_nms_0 ... cus_nms_9 followed by the minus sign; a value place indexes
 // this array directly, and the sign slot uses the last entry.
-static NSString *const kTimingSliderDigitImageNames[] = {
-    @"04_customize/cus_nms_0", @"04_customize/cus_nms_1", @"04_customize/cus_nms_2",
-    @"04_customize/cus_nms_3", @"04_customize/cus_nms_4", @"04_customize/cus_nms_5",
-    @"04_customize/cus_nms_6", @"04_customize/cus_nms_7", @"04_customize/cus_nms_8",
-    @"04_customize/cus_nms_9", @"04_customize/cus_nms_minus"};
+static NSString *const kTimingSliderDigitImageNames[] = {@"04_customize/cus_nms_0",
+                                                         @"04_customize/cus_nms_1",
+                                                         @"04_customize/cus_nms_2",
+                                                         @"04_customize/cus_nms_3",
+                                                         @"04_customize/cus_nms_4",
+                                                         @"04_customize/cus_nms_5",
+                                                         @"04_customize/cus_nms_6",
+                                                         @"04_customize/cus_nms_7",
+                                                         @"04_customize/cus_nms_8",
+                                                         @"04_customize/cus_nms_9",
+                                                         @"04_customize/cus_nms_minus"};
 
 // The index of the minus-sign glyph within numImages (also the digit-count of glyphs, base ten).
 static const NSUInteger kTimingSliderMinusImageIndex = 10;
@@ -38,7 +44,7 @@ static const int kTimingSliderBarMax = 10;
 // its natural origin.
 static const CGFloat kTimingSliderVerticalOffset = 6.0;
 
-// The track rectangle (the grip's travel) by font variant: origin x/y, then width. Its height is
+// The track rectangle (the grip's travel) by device idiom: origin x/y, then width. Its height is
 // taken from the track sprite's own frame. Narrow mirrors the default font, wide the large font.
 static const CGFloat kTimingSliderBarOriginXNarrow = 19.0;
 static const CGFloat kTimingSliderBarOriginYNarrow = 21.0;
@@ -47,14 +53,14 @@ static const CGFloat kTimingSliderBarOriginXWide = 40.0;
 static const CGFloat kTimingSliderBarOriginYWide = 33.0;
 static const CGFloat kTimingSliderBarWidthWide = 315.0;
 
-// The digit readout's origin and glyph metrics vary by the active theme and font variant. The
+// The digit readout's origin and glyph metrics vary by the active theme and iPad idiom. The
 // binary groups the themes by their raw stored value: values below the colette threshold (the
 // classic and limelight themes) share one readout layout, the colette theme its own, and any
 // further theme leaves the readout at the zero origin. The suffixes below name those two groups.
 static const CGFloat kTimingSliderReadoutOriginXLowThemeNarrow = 141.0; // 0x1002ec6c0
 static const CGFloat kTimingSliderReadoutOriginXLowThemeWide = 213.0;   // 0x100301850
 static const CGFloat kTimingSliderReadoutOriginYLowThemeNarrow = 10.0;
-static const CGFloat kTimingSliderReadoutOriginYLowThemeWide = 138.0; // 0x10030dde0
+static const CGFloat kTimingSliderReadoutOriginYLowThemeWide = 138.0;  // 0x10030dde0
 static const CGFloat kTimingSliderReadoutOriginXColetteNarrow = 138.0; // 0x10030ddd8
 static const CGFloat kTimingSliderReadoutOriginXColetteWide = 221.0;   // 0x1003011b8
 static const CGFloat kTimingSliderReadoutOriginYColetteNarrow = 10.0;
@@ -66,11 +72,11 @@ static const CGFloat kTimingSliderColetteSignYAdjust = 0.5;
 // Per-digit horizontal advance and its +1 point inter-glyph gap.
 static const CGFloat kTimingSliderDigitGap = 1.0;
 
-// The glyph cell width, height, and step share the track-rectangle metrics per font variant.
+// The glyph cell width, height, and step share the track-rectangle metrics per device idiom.
 static const CGFloat kTimingSliderCellWidthNarrow = 19.0;
 static const CGFloat kTimingSliderCellHeightNarrow = 21.0;
 static const CGFloat kTimingSliderCellStepNarrow = 210.0;
-static const CGFloat kTimingSliderCellWidthWide = 40.0;  // g_dSliderRowHeightWide
+static const CGFloat kTimingSliderCellWidthWide = 40.0; // g_dSliderRowHeightWide
 static const CGFloat kTimingSliderCellHeightWide = 33.0;
 static const CGFloat kTimingSliderCellStepWide = 315.0;
 
@@ -103,7 +109,7 @@ enum {
         return nil;
     }
 
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     self.digit = digit;
 
     UIImageView *track =
@@ -111,31 +117,38 @@ enum {
     self.baseView = track;
     CGRect trackFrame = self.baseView.frame;
     CGFloat trackY = trackFrame.origin.y + kTimingSliderVerticalOffset;
-    self.baseView.frame = CGRectMake(trackFrame.origin.x, trackY, trackFrame.size.width,
-                                     trackFrame.size.height);
+    self.baseView.frame =
+        CGRectMake(trackFrame.origin.x, trackY, trackFrame.size.width, trackFrame.size.height);
     [self addSubview:self.baseView];
 
     UIImageView *grip =
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kTimingSliderGripImageName]];
     self.gripView = grip;
     CGRect gripFrame = self.gripView.frame;
-    self.gripView.frame =
-        CGRectMake(gripFrame.origin.x, gripFrame.origin.y + kTimingSliderVerticalOffset,
-                   gripFrame.size.width, gripFrame.size.height);
+    self.gripView.frame = CGRectMake(gripFrame.origin.x,
+                                     gripFrame.origin.y + kTimingSliderVerticalOffset,
+                                     gripFrame.size.width,
+                                     gripFrame.size.height);
     [self addSubview:self.gripView];
 
     CGFloat trackHeight = self.baseView.frame.size.height;
-    if (isWideVariant) {
-        self.barRect = CGRectMake(kTimingSliderBarOriginXWide, kTimingSliderBarOriginYWide,
-                                  kTimingSliderBarWidthWide, trackHeight);
+    if (isPad) {
+        self.barRect = CGRectMake(kTimingSliderBarOriginXWide,
+                                  kTimingSliderBarOriginYWide,
+                                  kTimingSliderBarWidthWide,
+                                  trackHeight);
     } else {
-        self.barRect = CGRectMake(kTimingSliderBarOriginXNarrow, kTimingSliderBarOriginYNarrow,
-                                  kTimingSliderBarWidthNarrow, trackHeight);
+        self.barRect = CGRectMake(kTimingSliderBarOriginXNarrow,
+                                  kTimingSliderBarOriginYNarrow,
+                                  kTimingSliderBarWidthNarrow,
+                                  trackHeight);
     }
 
     CGRect selfFrame = self.frame;
-    self.frame = CGRectMake(selfFrame.origin.x, selfFrame.origin.y + kTimingSliderVerticalOffset,
-                            selfFrame.size.width, selfFrame.size.height);
+    self.frame = CGRectMake(selfFrame.origin.x,
+                            selfFrame.origin.y + kTimingSliderVerticalOffset,
+                            selfFrame.size.width,
+                            selfFrame.size.height);
 
     self.value = (float)[RBUserSettingData sharedInstance].delayFrame;
     self.barMin = kTimingSliderBarMin;
@@ -151,14 +164,13 @@ enum {
 
     CGFloat readoutOriginX = 0.0;
     CGFloat readoutOriginY = 0.0;
-    CGFloat cellWidth = isWideVariant ? kTimingSliderCellWidthWide : kTimingSliderCellWidthNarrow;
-    CGFloat cellHeight =
-        isWideVariant ? kTimingSliderCellHeightWide : kTimingSliderCellHeightNarrow;
-    CGFloat cellStep = isWideVariant ? kTimingSliderCellStepWide : kTimingSliderCellStepNarrow;
+    CGFloat cellWidth = isPad ? kTimingSliderCellWidthWide : kTimingSliderCellWidthNarrow;
+    CGFloat cellHeight = isPad ? kTimingSliderCellHeightWide : kTimingSliderCellHeightNarrow;
+    CGFloat cellStep = isPad ? kTimingSliderCellStepWide : kTimingSliderCellStepNarrow;
 
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     if (thema < kTimingSliderColetteThemaThreshold) {
-        if (isWideVariant) {
+        if (isPad) {
             readoutOriginX = kTimingSliderReadoutOriginXLowThemeWide;
             readoutOriginY = kTimingSliderReadoutOriginYLowThemeWide;
         } else {
@@ -166,7 +178,7 @@ enum {
             readoutOriginY = kTimingSliderReadoutOriginYLowThemeNarrow;
         }
     } else if (thema == kTimingSliderColetteThema) {
-        if (isWideVariant) {
+        if (isPad) {
             readoutOriginX = kTimingSliderReadoutOriginXColetteWide;
             readoutOriginY = kTimingSliderReadoutOriginYColetteWide;
         } else {
@@ -190,15 +202,18 @@ enum {
             RBUserSettingDataTheme signThema = [RBUserSettingData sharedInstance].thema;
             if (signThema < kTimingSliderColetteThemaThreshold) {
                 glyph.frame = CGRectMake(readoutOriginX, readoutOriginY, cellWidth, cellHeight);
-            } else if (signThema == kTimingSliderColetteThema && isWideVariant) {
+            } else if (signThema == kTimingSliderColetteThema && isPad) {
                 glyph.frame = CGRectMake(readoutOriginX,
                                          readoutOriginY + kTimingSliderColetteSignYAdjust,
-                                         cellWidth, cellHeight);
+                                         cellWidth,
+                                         cellHeight);
             }
         } else {
-            glyph.frame = CGRectMake((CGFloat)column + readoutOriginXWithGap +
-                                         cellStep * (CGFloat)column,
-                                     readoutOriginY, cellStep, cellHeight);
+            glyph.frame =
+                CGRectMake((CGFloat)column + readoutOriginXWithGap + cellStep * (CGFloat)column,
+                           readoutOriginY,
+                           cellStep,
+                           cellHeight);
         }
         [self addSubview:glyph];
         [self.numImageViews addObject:glyph];
@@ -221,7 +236,9 @@ enum {
     CGRect gripFrame = self.gripView.frame;
     self.gripView.frame =
         CGRectMake(bar.origin.x + bar.size.width * 0.5 + (CGFloat)(_value * self.step),
-                   bar.origin.y, gripFrame.size.width, gripFrame.size.height);
+                   bar.origin.y,
+                   gripFrame.size.width,
+                   gripFrame.size.height);
 
     if (self.value >= 0.0) {
         self.numImageViews[self.digit].hidden = YES;

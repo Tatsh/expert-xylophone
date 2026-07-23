@@ -101,7 +101,7 @@ static NSString *const kOkButtonImageName = @"05_theme/theme_ok";
     if (self.thema == RBUserSettingDataThemeColette) {
         UIImage *gradationImage = [UIImage imageWithName:kGradationImageName];
         UIImageView *gradationView = [[UIImageView alloc] initWithImage:gradationImage];
-        // The font-variant branches in the binary compute the same overlay placement.
+        // The iPad idiom branches in the binary compute the same overlay placement.
         CGFloat gradationY = self.contentView.frame.size.height - gradationImage.size.height;
         gradationView.frame =
             CGRectMake(0.0, gradationY, gradationImage.size.width, gradationImage.size.height);

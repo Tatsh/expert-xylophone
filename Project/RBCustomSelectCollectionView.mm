@@ -107,7 +107,7 @@ constexpr CGFloat kNoteButtonHeightNarrow = 62.0;
 // The RBMusicGridLayout item edge length for the paged categories.
 constexpr CGFloat kGridItemSizeWide = 68.0;
 constexpr CGFloat kGridItemSizeNarrow = 62.0;
-// The RBMusicGridLayout page inset: a font-variant-dependent left and right inset and fixed top and
+// The RBMusicGridLayout page inset: a idiom-dependent left and right inset and fixed top and
 // bottom insets.
 constexpr CGFloat kGridPageInsetSideWide = 5.0;
 constexpr CGFloat kGridPageInsetSideNarrow = 3.0;
@@ -123,7 +123,7 @@ constexpr CGFloat kGaugeButtonTopWideOther = 45.0;
 constexpr CGFloat kGaugeButtonTopWideColette = 59.0;
 constexpr CGFloat kGaugeButtonTopNarrow = 22.0;
 
-// The timing slider sits a font-variant-dependent margin below the page control row.
+// The timing slider sits a idiom-dependent margin below the page control row.
 constexpr CGFloat kTimingSliderMarginWide = 8.0;
 constexpr CGFloat kTimingSliderMarginNarrow = 4.0;
 
@@ -165,7 +165,7 @@ constexpr long kPageControlMinPageCount = 2;
 #pragma mark Setup
 
 - (void)setupView {
-    BOOL wideFont = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL wideFont = IsPad();
 
     // The framed background stretches with a symmetric vertical cap inset and centres horizontally.
     UIImage *frameImage = [UIImage imageWithName:kFrameBackgroundImageNames[self.customizeType]];
@@ -400,8 +400,7 @@ constexpr long kPageControlMinPageCount = 2;
 // Builds the judge-timing category's slider, centred within the framed background.
 - (void)setupTimingSlider {
     RBTimingSlider *slider = [[RBTimingSlider alloc] initWithDigit:2];
-    CGFloat margin = (GetFontVariantFlag() != kFontVariantDefault) ? kTimingSliderMarginWide :
-                                                                     kTimingSliderMarginNarrow;
+    CGFloat margin = (IsPad()) ? kTimingSliderMarginWide : kTimingSliderMarginNarrow;
     slider.frame =
         CGRectMake((self.frame.size.width - slider.frame.size.width) * kCentreFactor,
                    (self.frame.size.height - slider.frame.size.height) * kCentreFactor + margin,

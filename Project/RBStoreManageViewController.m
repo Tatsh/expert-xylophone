@@ -22,10 +22,6 @@
 #import "UIImage+RB.h"
 #import "neEngineBridge.h"
 
-// The device-region font variant. GetFontVariantFlag() returns kFontVariantDefault on a phone
-// layout and a non-default value on the wide (pad) layout.
-enum { kFontVariantDefault = 0 };
-
 // Sort orders selectable on the manage screen.
 typedef NS_ENUM(NSUInteger, RBStoreManageSortOrder) {
     RBStoreManageSortOrderDownloadAscending = 0,  // Download order, oldest first.
@@ -87,7 +83,7 @@ static const CGFloat kCellLabelHeightPad = 18.0;
 // The trailing gap between the action button and the cell's right edge without an index bar.
 static const CGFloat kCellButtonTrailingGap = 10.0;
 
-// The table row heights and action-button heights, indexed by the font variant (phone, then pad).
+// The table row heights and action-button heights, indexed by the iPad idiom (phone, then pad).
 // @ghidraAddress 0x3107b0 (row heights), 0x3107c0 (button heights)
 static const CGFloat kRowHeight[] = {50.0, 60.0};
 static const CGFloat kButtonHeight[] = {36.0, 40.0};
@@ -145,7 +141,7 @@ static NSString *const kSortLookupKeyFormat = @"%d";
     unsigned char sectionOpenList[kSectionCount];
     // The row index whose cell action button is currently being acted on, or kNoWorkingIndex.
     NSInteger working_index;
-    // The wide (pad) font-variant flag captured at initialisation.
+    // The wide (pad) iPad idiom flag captured at initialisation.
     BOOL isPad;
 }
 @end
@@ -191,8 +187,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
                                                            style:UIBarButtonItemStylePlain
                                                           target:self
                                                           action:@selector(presentSortSelect:)];
-        CGFloat fontSize = GetFontVariantFlag() == kFontVariantDefault ? kBarButtonFontSizePhone :
-                                                                         kBarButtonFontSizePad;
+        CGFloat fontSize = !IsPad() ? kBarButtonFontSizePhone : kBarButtonFontSizePad;
         UIFont *font = [UIFont systemFontOfSize:fontSize];
         NSDictionary *attributes = @{NSFontAttributeName : font};
         [self.sortButton setTitleTextAttributes:attributes forState:UIControlStateNormal];
@@ -216,8 +211,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
                                                          action:@selector(goToTop:)];
-        CGFloat fontSize = GetFontVariantFlag() == kFontVariantDefault ? kBarButtonFontSizePhone :
-                                                                         kBarButtonFontSizePad;
+        CGFloat fontSize = !IsPad() ? kBarButtonFontSizePhone : kBarButtonFontSizePad;
         UIFont *font = [UIFont systemFontOfSize:fontSize];
         NSDictionary *attributes = @{NSFontAttributeName : font};
         [self.topButton setTitleTextAttributes:attributes forState:UIControlStateNormal];
@@ -232,7 +226,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         self.navigationItem.rightBarButtonItems = @[ self.sortButton ];
     }
 
-    isPad = GetFontVariantFlag() != kFontVariantDefault;
+    isPad = IsPad();
 
     return self;
 }
@@ -266,7 +260,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         [[UINavigationController alloc] initWithRootViewController:self.sortViewCtrl];
 
     // The sort selector is shown in a popover on the pad.
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         self.sortPopoverCtrl =
             [[UIPopoverController alloc] initWithContentViewController:self.sortNavCtrl];
         self.sortPopoverCtrl.delegate = self;
@@ -294,7 +288,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 /** @ghidraAddress 0x1cf0ec */
 - (void)presentSortSelect:(id)sender {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.navigationController pushViewController:self.sortViewCtrl animated:YES];
         return;
     }
@@ -311,7 +305,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 /** @ghidraAddress 0x1cf2cc */
 - (void)hideSortSelect:(id)sender {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         [self.sortPopoverCtrl dismissPopoverAnimated:YES];
@@ -491,7 +485,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (self.currentSortIndex >= RBStoreManageSortOrderTitle &&
         [self.sortedList[section] count] != 0) {
-        return GetFontVariantFlag() != kFontVariantDefault ? kHeaderHeightPad : kHeaderHeightPhone;
+        return IsPad() ? kHeaderHeightPad : kHeaderHeightPhone;
     }
     return 0.0;
 }
@@ -614,8 +608,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     if (self.currentSortIndex < RBStoreManageSortOrderTitle) {
         trailingInset = kCellButtonTrailingGap;
     } else {
-        trailingInset = GetFontVariantFlag() == kFontVariantDefault ? kHeaderHeightPhone :
-                                                                      g_dSliderRowHeightWide;
+        trailingInset = !IsPad() ? kHeaderHeightPhone : g_dSliderRowHeightWide;
     }
     button.frame = CGRectMake(cellWidth - buttonWidth - trailingInset,
                               (cellHeight - buttonHeight) * 0.5,

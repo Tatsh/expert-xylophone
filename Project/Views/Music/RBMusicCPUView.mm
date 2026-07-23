@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicCPUView). Verified against
-//  the arm64 disassembly: -SetupView's per-theme, per-font-variant slider and container geometry was
+//  the arm64 disassembly: -SetupView's per-theme, per-idiom slider and container geometry was
 //  recovered from the soft-float register moves and constant-pool loads that the decompiler folds
 //  into pseudo-variables, and the marker-glide animation was confirmed against the block literal the
 //  decompiler emits. This is an Objective-C++ file because -SelectLevel: reaches the C++
@@ -28,7 +28,7 @@ constexpr int kSoundEffectLevelChange = 2;
 // The sentinel stored in m_PrevSound before any level-change sound effect has played.
 constexpr unsigned int kNoSoundHandle = 0xffffffff;
 
-// The Colette theme selects the wide (font-variant) slider layout.
+// The Colette theme selects the wide (iPad) slider layout.
 constexpr int kThemeColette = 2;
 
 // The slider-type variants written by -initWithFrame:MusicSelectedBase:.
@@ -45,7 +45,7 @@ constexpr UIViewAutoresizing kAutoresizingFlexibleAll =
 static NSString *const kSliderBarImageName = @"02_music_detail/det_lev_bar";
 static NSString *const kLevelMarkerImageName = @"02_music_detail/det_lev_sel";
 
-// The slider bar frame per (theme, font variant). The Colette theme's wide bar spans the whole view
+// The slider bar frame per (theme, idiom). The Colette theme's wide bar spans the whole view
 // width with x zero and a themed top inset; every other combination uses a fixed constant-pool
 // rectangle. Decoded from the constant pool at 0x1002fcfd8 (280), 0x100301158 (36), 0x1002ec6e0
 // (50), 0x100301198 (274), 0x1002ec6c8 (80), and 0x1002eecd8 (64), plus the inline immediate values.
@@ -60,7 +60,7 @@ constexpr CGFloat kSliderBarDefaultY = 27.0;
 constexpr CGFloat kSliderBarDefaultWidth = 274.0;
 constexpr CGFloat kSliderBarDefaultHeight = 50.0;
 
-// The bar-container frame per (theme, font variant). Decoded from the constant pool at 0x1002eeef0
+// The bar-container frame per (theme, idiom). Decoded from the constant pool at 0x1002eeef0
 // (54), 0x1003011b0 (41), 0x1003011c0 (378), 0x1003011b8 (220), 0x1003011c8 (82), 0x1002ec6e0 (50),
 // 0x1002ee9a8 (42), 0x1002ee950 (40), 0x1003011a8 (370), 0x1003011a0 (261), 0x1002eea00 (68), and
 // 0x1002ef170 (56), plus the 0.0, 12.0, 9.0, and 19.0 inline immediate values.
@@ -84,7 +84,7 @@ constexpr CGFloat kBarBaseDefaultHeight = 56.0;
 // Half a bar, used to centre the marker within the container and to centre the wide slider bar.
 constexpr CGFloat kHalf = 0.5;
 
-// The tap dead-zone at each end of the bar, per (theme, font variant): a tap within this margin of
+// The tap dead-zone at each end of the bar, per (theme, idiom): a tap within this margin of
 // the left edge selects LEVEL zero, and one within it of the right edge selects LEVEL nine.
 constexpr CGFloat kTapDeadZoneColetteWide = 56.0;
 constexpr CGFloat kTapDeadZoneColetteDefault = 30.0;
@@ -113,7 +113,7 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
         self.level = [RBUserSettingData sharedInstance].cpuLevel;
         self->m_PrevSound = kNoSoundHandle;
         if ([RBUserSettingData sharedInstance].thema == kThemeColette) {
-            if (GetFontVariantFlag() != kFontVariantDefault) {
+            if (IsPad()) {
                 self.sliderType = kSliderTypeColetteWide;
             }
         } else {
@@ -133,11 +133,11 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kSliderBarImageName]];
 
     BOOL colette = [RBUserSettingData sharedInstance].thema == kThemeColette;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     CGRect sliderFrame;
     if (colette) {
-        if (fontVariant) {
+        if (isPad) {
             // The Colette wide bar spans the whole view width, pinned to a fixed top inset. The
             // binary reads the slider view's frame three times here and discards each result.
             CGRect bounds = self.bounds;
@@ -150,7 +150,7 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
                                      kSliderBarColetteDefaultHeight);
         }
     } else {
-        if (fontVariant) {
+        if (isPad) {
             CGRect bounds = self.bounds;
             sliderFrame =
                 CGRectMake(0.0, kSliderBarWideTopInset, bounds.size.width, bounds.size.height);
@@ -171,21 +171,21 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
     [self.sliderView addGestureRecognizer:tap];
 
     BOOL coletteAgain = [RBUserSettingData sharedInstance].thema == kThemeColette;
-    BOOL fontVariantAgain = GetFontVariantFlag() != kFontVariantDefault;
+    isPad = IsPad(); // Re-read, as the binary does; the value is unchanged.
 
     CGRect barFrame;
     if (coletteAgain) {
-        barFrame = fontVariantAgain ? CGRectMake(kBarBaseColetteWideX,
-                                                 kBarBaseColetteWideY,
-                                                 kBarBaseColetteWideWidth,
-                                                 kBarBaseColetteWideHeight) :
-                                      CGRectMake(kBarBaseColetteX,
-                                                 kBarBaseColetteY,
-                                                 kBarBaseColetteWidth,
-                                                 kBarBaseColetteHeight);
+        barFrame = isPad ? CGRectMake(kBarBaseColetteWideX,
+                                      kBarBaseColetteWideY,
+                                      kBarBaseColetteWideWidth,
+                                      kBarBaseColetteWideHeight) :
+                           CGRectMake(kBarBaseColetteX,
+                                      kBarBaseColetteY,
+                                      kBarBaseColetteWidth,
+                                      kBarBaseColetteHeight);
     } else {
         barFrame =
-            fontVariantAgain ?
+            isPad ?
                 CGRectMake(kBarBaseWideX, kBarBaseWideY, kBarBaseWideWidth, kBarBaseWideHeight) :
                 CGRectMake(kBarBaseDefaultX,
                            kBarBaseDefaultY,
@@ -221,11 +221,9 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
 
     CGFloat deadZone;
     if ([RBUserSettingData sharedInstance].thema == kThemeColette) {
-        deadZone = GetFontVariantFlag() != kFontVariantDefault ? kTapDeadZoneColetteWide :
-                                                                 kTapDeadZoneColetteDefault;
+        deadZone = IsPad() ? kTapDeadZoneColetteWide : kTapDeadZoneColetteDefault;
     } else {
-        deadZone =
-            GetFontVariantFlag() != kFontVariantDefault ? kTapDeadZoneWide : kTapDeadZoneDefault;
+        deadZone = IsPad() ? kTapDeadZoneWide : kTapDeadZoneDefault;
     }
 
     CGFloat barWidth = tap.view.frame.size.width;

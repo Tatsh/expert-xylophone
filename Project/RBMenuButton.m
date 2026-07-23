@@ -15,14 +15,14 @@
 #import "UIImageView+RB.h"
 #import "neEngineBridge.h"
 
-// The inner button's bounds, chosen by the active font variant. The wide variant uses a larger
+// The inner button's bounds, chosen by the active iPad idiom. The wide variant uses a larger
 // button to fit the wider glyphs.
 static const CGFloat kMenuButtonWidthNarrow = 30.0;
 static const CGFloat kMenuButtonHeightNarrow = 42.0;
 static const CGFloat kMenuButtonWidthWide = 92.0;
 static const CGFloat kMenuButtonHeightWide = 72.0;
 
-// The theme index below which the button always uses the narrow artwork regardless of font variant.
+// The theme index below which the button always uses the narrow artwork regardless of iPad idiom.
 static const NSInteger kMenuButtonWideArtworkTheme = 2;
 
 // The autoresizing mask applied to the button and its flash background: flexible right and bottom
@@ -48,18 +48,30 @@ static const NSUInteger kMenuButtonImageNamesPerType = 4;
 // type order. The playlist add and delete buttons share the add/delete background and the settings
 // flash background; the finish button shares the store flash background.
 static NSString *const kMenuButtonImageNames[][kMenuButtonImageNamesPerType] = {
-    {@"01_music_select/sel_b_set_1", @"01_music_select/sel_b_set_3",
-     @"01_music_select/sel_b_set_eff_1", @"01_music_select/sel_b_set_eff_3"},
-    {@"01_music_select/sel_b_rank_1", @"01_music_select/sel_b_rank_3",
-     @"01_music_select/sel_b_rank_eff_1", @"01_music_select/sel_b_rank_eff_3"},
-    {@"01_music_select/sel_b_stor_1", @"01_music_select/sel_b_stor_3",
-     @"01_music_select/sel_b_stor_eff_1", @"01_music_select/sel_b_stor_eff_3"},
-    {@"01_music_select/sel_b_add_del_1", @"01_music_select/sel_b_add_3",
-     @"01_music_select/sel_b_set_eff_1", @"01_music_select/sel_b_add_eff_3"},
-    {@"01_music_select/sel_b_add_del_1", @"01_music_select/sel_b_del_3",
-     @"01_music_select/sel_b_set_eff_1", @"01_music_select/sel_b_del_eff_3"},
-    {@"01_music_select/sel_b_fin_1", @"01_music_select/sel_b_fin_3",
-     @"01_music_select/sel_b_stor_eff_1", @"01_music_select/sel_b_fin_eff_3"},
+    {@"01_music_select/sel_b_set_1",
+     @"01_music_select/sel_b_set_3",
+     @"01_music_select/sel_b_set_eff_1",
+     @"01_music_select/sel_b_set_eff_3"},
+    {@"01_music_select/sel_b_rank_1",
+     @"01_music_select/sel_b_rank_3",
+     @"01_music_select/sel_b_rank_eff_1",
+     @"01_music_select/sel_b_rank_eff_3"},
+    {@"01_music_select/sel_b_stor_1",
+     @"01_music_select/sel_b_stor_3",
+     @"01_music_select/sel_b_stor_eff_1",
+     @"01_music_select/sel_b_stor_eff_3"},
+    {@"01_music_select/sel_b_add_del_1",
+     @"01_music_select/sel_b_add_3",
+     @"01_music_select/sel_b_set_eff_1",
+     @"01_music_select/sel_b_add_eff_3"},
+    {@"01_music_select/sel_b_add_del_1",
+     @"01_music_select/sel_b_del_3",
+     @"01_music_select/sel_b_set_eff_1",
+     @"01_music_select/sel_b_del_eff_3"},
+    {@"01_music_select/sel_b_fin_1",
+     @"01_music_select/sel_b_fin_3",
+     @"01_music_select/sel_b_stor_eff_1",
+     @"01_music_select/sel_b_fin_eff_3"},
 };
 
 // The slot index within a type's image-name row.
@@ -81,9 +93,9 @@ enum {
 }
 
 - (void)setupView:(RBMenuButtonType)type {
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
-    CGFloat width = isWideVariant ? kMenuButtonWidthWide : kMenuButtonWidthNarrow;
-    CGFloat height = isWideVariant ? kMenuButtonHeightWide : kMenuButtonHeightNarrow;
+    BOOL isPad = IsPad();
+    CGFloat width = isPad ? kMenuButtonWidthWide : kMenuButtonWidthNarrow;
+    CGFloat height = isPad ? kMenuButtonHeightWide : kMenuButtonHeightNarrow;
     self.bounds = CGRectMake(0.0, 0.0, width, height);
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -92,24 +104,23 @@ enum {
 
     NSString *const *imageNames = kMenuButtonImageNames[type];
 
-    // The binary selects the background image through the theme and font variant, but every branch
+    // The binary selects the background image through the theme and iPad idiom, but every branch
     // resolves to the same name, so the outcome does not depend on either.
     NSString *backgroundName = imageNames[kMenuButtonImageBackground];
     UIImage *background = nil;
     if ([RBUserSettingData sharedInstance].thema < kMenuButtonWideArtworkTheme) {
         background = [UIImage imageWithName:backgroundName];
-    } else if (!isWideVariant) {
+    } else if (!isPad) {
         background = [UIImage imageWithName:backgroundName];
     } else {
         background = [UIImage imageWithName:backgroundName];
     }
     background = [background
-        resizableImageWithCapInsets:UIEdgeInsetsMake(0.0,
-                                                     background.size.width * 0.5 -
-                                                         kMenuButtonCapInsetMargin,
-                                                     0.0,
-                                                     background.size.height * 0.5 -
-                                                         kMenuButtonCapInsetMargin)];
+        resizableImageWithCapInsets:UIEdgeInsetsMake(
+                                        0.0,
+                                        background.size.width * 0.5 - kMenuButtonCapInsetMargin,
+                                        0.0,
+                                        background.size.height * 0.5 - kMenuButtonCapInsetMargin)];
     [self.button setBackgroundImage:background forState:UIControlStateNormal];
     self.button.frame = self.bounds;
     self.button.autoresizingMask = kMenuButtonAutoresizingMask;

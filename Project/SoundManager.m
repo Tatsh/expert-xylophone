@@ -67,15 +67,15 @@ static const UInt32 kMixerElementCount = 8;
 @interface SoundManager () {
     // The decoded-asset pool. The 32-bit offsets are documentation only; access always goes through
     // these named fields.
-    SoundData *m_SoundData[kSoundDataPoolCount]; // +0x08
+    SoundData *m_SoundData[kSoundDataPoolCount];        // +0x08
     SoundPlayer *m_SoundPlayer[kSoundPlayerVoiceCount]; // +0x58
-    BOOL m_InitGraph; // +0x98
-    BOOL m_IsPlayGraph; // +0x99
-    AUGraph m_Graph; // +0xa0
-    AUNode m_MixerNode; // +0xa8
-    AUNode m_OutputNode; // +0xac
-    AudioUnit m_MixerUnit; // +0xb0
-    AudioUnit m_OutputUnit; // +0xb8
+    BOOL m_InitGraph;                                   // +0x98
+    BOOL m_IsPlayGraph;                                 // +0x99
+    AUGraph m_Graph;                                    // +0xa0
+    AUNode m_MixerNode;                                 // +0xa8
+    AUNode m_OutputNode;                                // +0xac
+    AudioUnit m_MixerUnit;                              // +0xb0
+    AudioUnit m_OutputUnit;                             // +0xb8
 }
 
 // Configures the audio session and builds the mixer graph; called once from -init.
@@ -161,13 +161,21 @@ static OSStatus HandleSoundStreamCallback(void *inRefCon,
     AUGraphNodeInfo(m_Graph, m_OutputNode, NULL, &m_OutputUnit);
 
     UInt32 elementCount = kMixerElementCount;
-    AudioUnitSetProperty(m_MixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input,
-                         kMixerBusInput, &elementCount, sizeof(elementCount));
+    AudioUnitSetProperty(m_MixerUnit,
+                         kAudioUnitProperty_ElementCount,
+                         kAudioUnitScope_Input,
+                         kMixerBusInput,
+                         &elementCount,
+                         sizeof(elementCount));
 
     AudioStreamBasicDescription format;
     InitFloatPcmFormatDescriptor(&format, kSoundManagerSampleRate, kOutputChannelCount);
-    AudioUnitSetProperty(m_OutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input,
-                         kMixerBusInput, &format, sizeof(format));
+    AudioUnitSetProperty(m_OutputUnit,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Input,
+                         kMixerBusInput,
+                         &format,
+                         sizeof(format));
 
     AUGraphUpdate(m_Graph, NULL);
     AUGraphInitialize(m_Graph);
@@ -255,21 +263,33 @@ static OSStatus HandleSoundStreamCallback(void *inRefCon,
 
 - (void)setCallBack:(int)element DataFormat:(AudioStreamBasicDescription *)format {
     /** @ghidraAddress 0x351f4 */
-    AudioUnitSetProperty(m_MixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input,
-                         element, format, sizeof(AudioStreamBasicDescription));
+    AudioUnitSetProperty(m_MixerUnit,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Input,
+                         element,
+                         format,
+                         sizeof(AudioStreamBasicDescription));
     AURenderCallbackStruct callback = {
         .inputProc = HandleSoundStreamCallback,
         .inputProcRefCon = (__bridge void *)self,
     };
-    AudioUnitSetProperty(m_MixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input,
-                         element, &callback, sizeof(callback));
+    AudioUnitSetProperty(m_MixerUnit,
+                         kAudioUnitProperty_SetRenderCallback,
+                         kAudioUnitScope_Input,
+                         element,
+                         &callback,
+                         sizeof(callback));
 }
 
 - (void)unsetCallBack:(int)element {
     /** @ghidraAddress 0x3532c */
     AURenderCallbackStruct callback = {0};
-    AudioUnitSetProperty(m_MixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input,
-                         element, &callback, sizeof(callback));
+    AudioUnitSetProperty(m_MixerUnit,
+                         kAudioUnitProperty_SetRenderCallback,
+                         kAudioUnitScope_Input,
+                         element,
+                         &callback,
+                         sizeof(callback));
 }
 
 - (SoundPlayer *)getSoundPlayer:(int)index {

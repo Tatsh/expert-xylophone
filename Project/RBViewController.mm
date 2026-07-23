@@ -314,7 +314,7 @@ constexpr int kDefaultPlayColor = 0;
         if (sheetFarX / sheetFarY < aspect) {
             distance = sheetFarY * halfCot;
         }
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             distance = (sheetFarX / aspect) * halfCot;
         }
         ne_Viewport *viewport =
@@ -560,7 +560,7 @@ constexpr int kDefaultPlayColor = 0;
     if ([NSFileManager isFileExist:previewPath]) {
         previewMusic = [MusicData dataWithPath:previewPath ID:kPreviewMusicID];
     }
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         GameSystem::GetGameSystem()->ConfigureSheetLayerForScreen(0);
         gameSystem->SetSheetHeight(0.0f);
         gameSystem->SetCameraPitchHeight(kStandardCameraPitchHeight);
@@ -590,7 +590,7 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x8bf40 */
     if (music) {
         [AppDelegate.appDelegate setMusicData:music];
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             gameSystem->SetSheetHeight(0.0f);
             gameSystem->SetCameraPitchHeight(kStandardCameraPitchHeight);
             gameSystem->SetCameraTargetX(0.0f);
@@ -777,7 +777,7 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x8945c */
     RBNavigationController *navController =
         [[RBNavigationController alloc] initWithRootViewController:self.playlistViewController];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self presentViewController:navController
                            animated:YES
                          completion:^{
@@ -805,7 +805,7 @@ constexpr int kDefaultPlayColor = 0;
 - (void)didSelectPlaylistViewController:(id)viewController {
     /** @ghidraAddress 0x8a294 */
     [self.musicMenuView playlistAddDelButtonUpdate];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         [self.playlistViewController.navigationController dismissViewControllerAnimated:YES
                                                                              completion:^{
                                                                                  /** @ghidraAddress

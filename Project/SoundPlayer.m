@@ -15,11 +15,11 @@
 @interface SoundPlayer () {
     // The binary's own ivars, in declaration order. The 32-bit offsets are documentation only;
     // access always goes through these named fields.
-    BOOL m_IsPlaying; // +0x364
-    SoundData *m_SoundData; // +0x368
+    BOOL m_IsPlaying;         // +0x364
+    SoundData *m_SoundData;   // +0x368
     long long m_CurrentFrame; // +0x36c
-    BOOL m_IsLoop; // +0x370
-    BOOL m_IsStop; // +0x374
+    BOOL m_IsLoop;            // +0x370
+    BOOL m_IsStop;            // +0x374
 }
 @end
 

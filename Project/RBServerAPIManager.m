@@ -13,7 +13,6 @@
 #import "Downloader.h"
 #import "NetworkUtil.h"
 #import "RBUserSettingData.h"
-
 #import "neEngineBridge.h"
 
 // The initial capacity of the live-request array.
@@ -66,7 +65,8 @@ static NSString *const kParamKeyTypes = @"types";
     static RBServerAPIManager *sharedInstance = nil;
     if (!sharedInstance) {
         sharedInstance = [[RBServerAPIManager alloc] init];
-        sharedInstance.httpArray = [[NSMutableArray alloc] initWithCapacity:kHTTPArrayInitialCapacity];
+        sharedInstance.httpArray =
+            [[NSMutableArray alloc] initWithCapacity:kHTTPArrayInitialCapacity];
     }
     return sharedInstance;
 }

@@ -107,8 +107,8 @@ static NSString *g_pResourcePathCache = nil;
 + (unsigned long long)freeFileSystemSize {
     /** @ghidraAddress 0x1c9ba0 */
     NSString *path = [NSFileManager applicationSupportDirectoryPath];
-    NSDictionary *attributes =
-        [[NSFileManager defaultManager] attributesOfFileSystemForPath:path error:nil];
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:path
+                                                                                       error:nil];
     return [[attributes valueForKey:NSFileSystemFreeSize] longLongValue];
 }
 
@@ -175,8 +175,7 @@ static NSString *g_pResourcePathCache = nil;
 + (NSString *)resourcePath {
     /** @ghidraAddress 0x1ca560 */
     if (g_pResourcePathCache == nil) {
-        g_pResourcePathCache =
-            [[NSString alloc] initWithString:[NSBundle mainBundle].resourcePath];
+        g_pResourcePathCache = [[NSString alloc] initWithString:[NSBundle mainBundle].resourcePath];
     }
     return g_pResourcePathCache;
 }

@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Build the inner control and the background, foreground, effect, and effect-text views.
  *
- * Sizes the receiver's bounds for the current theme and font variant, creates the inner @c button,
+ * Sizes the receiver's bounds for the current theme and iPad idiom, creates the inner @c button,
  * loads the resizable themed artwork for @p filename, and adds the two hidden effect image views.
  * @param filename The menu-entry artwork index selecting the themed image family.
  * @ghidraAddress 0xe902c

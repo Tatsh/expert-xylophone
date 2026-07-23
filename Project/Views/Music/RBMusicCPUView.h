@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Calls through to @c super, stores the hosting detail view, seeds @c level from
  * @c RBUserSettingData.cpuLevel, resets the previous-sound handle, selects the slider-type variant
- * for the current theme and font variant, and builds the slider.
+ * for the current theme and iPad idiom, and builds the slider.
  * @param frame The view's frame rectangle.
  * @param MusicSelectedBase The hosting music-detail view.
  * @return The initialised view, or @c nil.
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) UIImageView *sliderView;
 /** @brief The container that hosts the slider bar and marker. */
 @property(strong, nonatomic, nullable) UIView *barBase;
-/** @brief The slider layout variant selected for the current theme and font variant. */
+/** @brief The slider layout variant selected for the current theme and iPad idiom. */
 @property(nonatomic, assign) int sliderType;
 /** @brief The hosting music-detail view, held weakly. */
 @property(weak, nonatomic, nullable) RBMusicView *musicSelectedBase;

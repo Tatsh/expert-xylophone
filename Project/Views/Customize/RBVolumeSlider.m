@@ -21,7 +21,7 @@ static NSString *const kVolumeSliderGaugeImageName = @"04_customize/cus_vol_2";
 static const float kVolumeSliderMinValue = 0.0f;
 static const float kVolumeSliderMaxValue = 1.0f;
 
-// The bar rectangle (the gauge's full-value extent) by font variant: origin x/y, then width and
+// The bar rectangle (the gauge's full-value extent) by device idiom: origin x/y, then width and
 // height. Narrow mirrors the default font, wide the large font.
 static const CGFloat kVolumeSliderBarOriginXNarrow = 16.0;
 static const CGFloat kVolumeSliderBarOriginYNarrow = 9.0;
@@ -51,12 +51,16 @@ static const CGFloat kVolumeSliderBarHeightWide = 6.0;
     self.gaugeView = gauge;
     [self addSubview:self.gaugeView];
 
-    if (GetFontVariantFlag() != kFontVariantDefault) {
-        self.barRect = CGRectMake(kVolumeSliderBarOriginXWide, kVolumeSliderBarOriginYWide,
-                                  kVolumeSliderBarWidthWide, kVolumeSliderBarHeightWide);
+    if (IsPad()) {
+        self.barRect = CGRectMake(kVolumeSliderBarOriginXWide,
+                                  kVolumeSliderBarOriginYWide,
+                                  kVolumeSliderBarWidthWide,
+                                  kVolumeSliderBarHeightWide);
     } else {
-        self.barRect = CGRectMake(kVolumeSliderBarOriginXNarrow, kVolumeSliderBarOriginYNarrow,
-                                  kVolumeSliderBarWidthNarrow, kVolumeSliderBarHeightNarrow);
+        self.barRect = CGRectMake(kVolumeSliderBarOriginXNarrow,
+                                  kVolumeSliderBarOriginYNarrow,
+                                  kVolumeSliderBarWidthNarrow,
+                                  kVolumeSliderBarHeightNarrow);
     }
 
     self.gaugeView.frame = self.barRect;
@@ -75,9 +79,10 @@ static const CGFloat kVolumeSliderBarHeightWide = 6.0;
     _value = value;
 
     CGRect gaugeFrame = self.gaugeView.frame;
-    self.gaugeView.frame =
-        CGRectMake(gaugeFrame.origin.x, gaugeFrame.origin.y,
-                   (CGFloat)_value * self.barRect.size.width, gaugeFrame.size.height);
+    self.gaugeView.frame = CGRectMake(gaugeFrame.origin.x,
+                                      gaugeFrame.origin.y,
+                                      (CGFloat)_value * self.barRect.size.width,
+                                      gaugeFrame.size.height);
 }
 
 - (void)sliderChangeWithTouchPoint:(CGPoint)point {

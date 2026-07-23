@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Create the colour selector for the given hosting detail view and build its controls.
  *
  * Seeds @c color from @c RBUserSettingData.playerColor and @c rivalAlpha from
- * @c RBUserSettingData.rivalAlpha, seeds @c layoutOffset from the theme and font variant, then
+ * @c RBUserSettingData.rivalAlpha, seeds @c layoutOffset from the theme and iPad idiom, then
  * builds the buttons and shows the current selection.
  * @param frame The view's frame rectangle.
  * @param MusicSelectedBase The hosting music-select detail view, held weakly.
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
  * to the button and alpha-change overlays.
  */
 @property(assign, nonatomic) float rivalAlpha;
-/** @brief The horizontal layout offset applied to the controls on the font-variant layout. */
+/** @brief The horizontal layout offset applied to the controls on the iPad idiom layout. */
 @property(assign, nonatomic) float layoutOffset;
 /** @brief The hosting music-select detail view, held weakly. */
 @property(weak, nonatomic, nullable) RBMusicView *musicSelectedBase;

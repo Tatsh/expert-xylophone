@@ -337,13 +337,13 @@ static NSString *const kDetDecTable[] = {
 };
 enum { kDetDecFixedIndex = 3 };
 
-// The detail-view geometry per (font variant, game type, theme) leg. Every value was decoded from
+// The detail-view geometry per (iPad idiom, game type, theme) leg. Every value was decoded from
 // the .const pools referenced by the big geometry block (@0xcca64..@0xccf30) and traced to its
 // setFrame:/setCenter:/initWithFrame: consumer. The layout structure holds one leg's values.
 namespace {
 struct DetailGeometry {
     CGFloat jacketX, jacketY, jacketSize;
-    CGFloat nameFrameX, nameFrameY, artistFrameY;         // font-variant (setFrame:) legs
+    CGFloat nameFrameX, nameFrameY, artistFrameY;         // iPad idiom (setFrame:) legs
     CGFloat nameCenterX, musicNameCenterY, artistCenterY; // default (setCenter:) legs
     CGFloat scoreX, scoreY, scoreW, scoreH;
     CGFloat rankX, rankY;
@@ -377,7 +377,7 @@ static const CGFloat kHistoryOffsetX = 110.0;
 static const CGFloat kHistoryOffsetY = 160.0;
 static const CGFloat kFirstInfoCenterY = 40.0;
 
-// The font-variant arena leg (@0xccafc). Uses the setFrame: name path.
+// The iPad idiom arena leg (@0xccafc). Uses the setFrame: name path.
 static const DetailGeometry kGeometryVariantArena = {
     53.0,  56.0,  180.0,        // jacket
     266.0, 40.0,  84.0,         // name-frame (variant path)
@@ -392,7 +392,7 @@ static const DetailGeometry kGeometryVariantArena = {
     214.0, 235.0,               // ghost
 };
 
-// The font-variant non-arena leg (@0xccd44). jacketX, nameFrameY, and jacketSize are picked from a
+// The iPad idiom non-arena leg (@0xccd44). jacketX, nameFrameY, and jacketSize are picked from a
 // two-entry theme table (non-white then white); the white values are recorded here and the
 // non-white overrides are applied in-line.
 static const DetailGeometry kGeometryVariantNormal = {
@@ -465,7 +465,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         [self SetupView];
         [self ShowSelectDifficulty];
         [self ShowSettingView:kSettingPageDifficulty];
-        if (self->_thema == kThemeWhite && GetFontVariantFlag() != kFontVariantDefault) {
+        if (self->_thema == kThemeWhite && IsPad()) {
             [self SetUpLineView];
         }
         [self setExclusiveTouch:YES];
@@ -557,11 +557,11 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     bgImageView.exclusiveTouch = YES;
     [self.baseView addSubview:bgImageView];
 
-    // The big geometry block: pick the leg for the current font variant, game type, and theme.
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    // The big geometry block: pick the leg for the current iPad idiom, game type, and theme.
+    BOOL isPad = IsPad();
     BOOL themaIsWhite = thema == kThemeWhite;
     DetailGeometry geometry;
-    if (fontVariant) {
+    if (isPad) {
         if (m_GameType == kGameTypeDouble) {
             geometry = kGeometryVariantArena;
         } else {
@@ -619,7 +619,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 
     self.musicNameImageView = [[UIImageView alloc] initWithImage:musicNameSrc];
     self.musicNameImageView.alpha = m_GameType == kGameTypeSingle ? kNameAlphaDim : kNameAlphaFull;
-    if (fontVariant) {
+    if (isPad) {
         CGSize size = self.musicNameImageView.frame.size;
         self.musicNameImageView.frame =
             CGRectMake(geometry.nameFrameX, geometry.nameFrameY, size.width, size.height);
@@ -631,7 +631,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 
     self.artistNameImageView = [[UIImageView alloc] initWithImage:artistNameSrc];
     self.artistNameImageView.alpha = m_GameType == kGameTypeSingle ? kNameAlphaDim : kNameAlphaFull;
-    if (fontVariant) {
+    if (isPad) {
         CGSize size = self.artistNameImageView.frame.size;
         self.artistNameImageView.frame =
             CGRectMake(geometry.nameFrameX, geometry.artistFrameY, size.width, size.height);
@@ -969,13 +969,13 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     // and contents scale are set inside a zero-duration transaction. On the compact layout every
     // frame and position is halved. @ghidraAddress 0xd2764
     CGRect selfBounds = self.bounds;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     UIView *container = [[UIView alloc] initWithFrame:CGRectMake(kPopupBaseOriginXWide,
                                                                  kPopupBaseOriginYWide,
                                                                  kPopupBaseWidthWide,
                                                                  kPopupBaseHeightWide)];
-    if (!fontVariant) {
+    if (!isPad) {
         CGRect b = container.bounds;
         b.size.width *= kSelLineHalfScale;
         b.size.height *= kSelLineHalfScale;
@@ -1005,7 +1005,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         imageView.autoresizingMask = kLineAutoresizingMask;
         [self.lineView addSubview:imageView];
 
-        if (!fontVariant) {
+        if (!isPad) {
             CGRect f = imageView.frame;
             imageView.frame = CGRectMake(f.origin.x * kSelLineHalfScale,
                                          f.origin.y * kSelLineHalfScale,
@@ -1017,7 +1017,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         [CATransaction begin];
         [CATransaction setAnimationDuration:kSelLineAnimationDuration];
         layer.anchorPoint = CGPointMake(geometry.anchorX, geometry.anchorY);
-        if (fontVariant) {
+        if (isPad) {
             layer.position = CGPointMake(geometry.positionX, geometry.positionY);
         } else {
             layer.position = CGPointMake(geometry.positionX * kSelLineHalfScale,
@@ -1251,13 +1251,13 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     if (hidePastel) {
         self.whitePastelButton.hidden = YES;
         self.blackPastelButton.hidden = YES;
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             self.doubleButton.hidden = NO;
         }
     } else {
         self.whitePastelButton.hidden = NO;
         self.blackPastelButton.hidden = NO;
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             self.doubleButton.hidden = YES;
         }
     }
@@ -1401,7 +1401,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     GameSystem *gameSystem = GetGameSystem();
     if (self->m_GameType == kGameTypeDouble) {
         gameSystem->ConfigureSheetLayerForScreen(0);
-    } else if (GetFontVariantFlag() != kFontVariantDefault) {
+    } else if (IsPad()) {
         gameSystem->ConfigureSheetLayerForScreen([self.speedView speed]);
     } else {
         gameSystem->ConfigureSheetLayerForScreen(0);
@@ -1567,7 +1567,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 }
 
 - (void)firstInfoAnimationCheck {
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         self->m_FirstInfo = NO;
         return;
     }
@@ -1646,7 +1646,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     if (static_cast<float>(self.settingPage.currentPage) != snappedPage) {
         self.settingPage.currentPage = static_cast<NSInteger>(snappedPage);
     }
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         for (int i = 0; i < kSettingTitleImageCount; ++i) {
             [self.settingTitleImages[i] setHidden:YES];
         }

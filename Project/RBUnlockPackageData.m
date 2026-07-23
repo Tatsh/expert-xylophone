@@ -19,8 +19,7 @@ static NSString *const kTitleDictionaryKey = @"Title";
 static NSString *const kDataDictionaryKey = @"Data";
 
 // The debug description format: class, address, identifier, order, title, and item list.
-static NSString *const kDescriptionFormat =
-    @"<%@: %p identity:%zd order:%zd title:%@ data:%@>";
+static NSString *const kDescriptionFormat = @"<%@: %p identity:%zd order:%zd title:%@ data:%@>";
 
 @implementation RBUnlockPackageData
 
@@ -37,21 +36,26 @@ static NSString *const kDescriptionFormat =
         [items addObject:item];
     }
     [items sortUsingComparator:^NSComparisonResult(id lhs, id rhs) {
-        /** @ghidraAddress 0x19a884 */
-        // Orders a higher point value first. As in the shipped build, the else branch compares the
-        // right-hand item's point against itself, so it can only ever report the two items as equal.
-        if ([lhs point] > [rhs point]) {
-            return NSOrderedAscending;
-        }
-        return ([rhs point] < [rhs point]) ? NSOrderedAscending : NSOrderedSame;
+      /** @ghidraAddress 0x19a884 */
+      // Orders a higher point value first. As in the shipped build, the else branch compares the
+      // right-hand item's point against itself, so it can only ever report the two items as equal.
+      if ([lhs point] > [rhs point]) {
+          return NSOrderedAscending;
+      }
+      return ([rhs point] < [rhs point]) ? NSOrderedAscending : NSOrderedSame;
     }];
     self.data = items;
 }
 
 - (NSString *)description {
     /** @ghidraAddress 0x19a408 */
-    return [NSString stringWithFormat:kDescriptionFormat, NSStringFromClass([self class]), self,
-                                      self.identity, self.order, self.title, self.data];
+    return [NSString stringWithFormat:kDescriptionFormat,
+                                      NSStringFromClass([self class]),
+                                      self,
+                                      self.identity,
+                                      self.order,
+                                      self.title,
+                                      self.data];
 }
 
 @end

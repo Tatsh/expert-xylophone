@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
  * scrolling news label, and the repeating anchor-point animation.
  *
  * The label colours and background are chosen by the active theme, and the fonts are sized by the
- * font variant.
+ * iPad idiom.
  * @ghidraAddress 0x9e6f0
  */
 - (void)SetUpView;
@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) UILabel *textView;
 
 /**
- * @brief The font used for the news text, sized by the active font variant.
+ * @brief The font used for the news text, sized by the active iPad idiom.
  */
 @property(strong, nonatomic, nullable) UIFont *font;
 

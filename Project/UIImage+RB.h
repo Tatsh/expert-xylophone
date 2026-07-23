@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Load a localised PNG resource from the main bundle without the texture cache.
  *
  * Resolves the resource through a language (@c ja / @c en) and region (@c JP) fallback chain, first
- * for the font-variant Retina-tagged name and then for the plain name.
+ * for the idiom Retina-tagged name and then for the plain name.
  * @param name The base resource name (without extension).
  * @return The loaded image, or @c nil when the resource is missing.
  * @ghidraAddress 0x1a1b08

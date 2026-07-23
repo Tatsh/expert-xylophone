@@ -129,11 +129,11 @@ static NSString *const kTermsKeyType = @"type";
 static NSString *const kTermsKeyVersion = @"version";
 static const NSInteger kTermsRecordTypeCurrent = 1; // The current terms-of-service record's type.
 
-// The search-mascot base Y positions selected by the font variant, decoded from the binary.
+// The search-mascot base Y positions selected by the iPad idiom, decoded from the binary.
 static const float kSearchPastelPosBaseYWide = 85.0f;
 static const float kSearchPastelPosBaseYTall = 140.0f;
 
-// The white-theme (font-variant) settings-anchor rectangle offsets, decoded from the binary.
+// The white-theme (iPad idiom) settings-anchor rectangle offsets, decoded from the binary.
 static const CGFloat kSettingAnchorOffsetX = -102.0;
 static const CGFloat kSettingAnchorOffsetY = -24.0;
 static const CGFloat kSettingAnchorWidth = 204.0;
@@ -190,7 +190,7 @@ static NSString *const kSearchCancelImageNameWide = @"01_music_select/search_can
 static NSString *const kSearchCancelImageNameTall = @"01_music_select/search_cancel_btn";
 
 // layoutSubviews per-theme geometry metrics, decoded from the binary. The "wide" set applies when
-// the font-variant flag is clear (the native-resolution wide layout); the "tall" set when it is
+// the iPad idiom flag is clear (the native-resolution wide layout); the "tall" set when it is
 // set. These are the design constants the button rows and columns are laid out from.
 static const CGFloat kLayoutWideThemaCampaignWidthDelta = -81.0;   // @0x100300fd0
 static const CGFloat kLayoutWideThemaCampaignHeightDelta = -867.0; // @0x100300fd8
@@ -261,10 +261,10 @@ static BOOL g_bRandamIntSeeded = NO;
 /** @brief Build the tall-layout header and the theme 0/1 footer. */
 - (void)buildHeaderAndFooter:(NSInteger)thema;
 /** @brief Build the campaign paging background; returns whether the effect view was used. */
-- (BOOL)buildCampaignBackground:(BOOL)isFontVariant;
+- (BOOL)buildCampaignBackground:(BOOL)isPad;
 /** @brief Build the button bar, grid, mascot, search UI, news ticker, cover, and gestures. */
 - (void)buildMenuBarWithThema:(NSInteger)thema
-                  fontVariant:static_cast<BOOL>(isFontVariant)
+                        isPad:static_cast<BOOL>(isPad)
      backgroundUsesEffectView:static_cast<BOOL>(bgUsesEffectView);
 /** @brief Re-lay the wrapping paging background scroll view and its image pages. */
 - (void)layoutPagingBackground;
@@ -345,7 +345,7 @@ static BOOL g_bRandamIntSeeded = NO;
                        }
                      }];
 
-    if (self.backgroundScrollView != nil && (GetFontVariantFlag() & 1) == 0) {
+    if (self.backgroundScrollView != nil && !IsPad()) {
         [self layoutPagingBackground];
     }
 
@@ -362,10 +362,10 @@ static BOOL g_bRandamIntSeeded = NO;
     [super layoutSubviews];
 
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
-    // The binary dispatches on the raw font-variant flag: a zero flag takes the computed (base/3)
+    // The binary dispatches on the raw iPad idiom flag: a zero flag takes the computed (base/3)
     // layouts and a non-zero flag takes the fixed design-coordinate layouts. The named theme sets
     // below keep the binary's own "wide" and "tall" constant names.
-    BOOL isFontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     CGSize bounds = self.bounds.size;
 
     // The per-theme layout metrics. Each branch fills the same set of column and row coordinates,
@@ -385,7 +385,7 @@ static BOOL g_bRandamIntSeeded = NO;
     CGFloat storeInfoInsetWidth = 0.0;
     int editMode = self.playListEditMode;
 
-    if (isFontVariant) {
+    if (isPad) {
         // Fixed design-coordinate layouts (the binary's "wide" constants). In every wide theme the
         // page-label origin Y is the fixed column-0 coordinate, whereas the side-button row Y takes
         // that fixed coordinate only while editing and is computed from the height otherwise.
@@ -661,7 +661,7 @@ static BOOL g_bRandamIntSeeded = NO;
         }
     }
 
-    if (!isFontVariant) {
+    if (!isPad) {
         // Restore the correct page after a size change.
         if (self.prevIndex == 0) {
             CGFloat pageWidth = self.collectionView.frame.size.width;
@@ -741,9 +741,8 @@ static BOOL g_bRandamIntSeeded = NO;
         self.viewController = viewController;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.newsGetTime = nil;
-        self.searchPastelPosBaseY = (GetFontVariantFlag() == kFontVariantDefault) ?
-                                        kSearchPastelPosBaseYWide :
-                                        kSearchPastelPosBaseYTall;
+        self.searchPastelPosBaseY =
+            (!IsPad()) ? kSearchPastelPosBaseYWide : kSearchPastelPosBaseYTall;
         self.playListEditMode = kMenuModePlaylistFinished;
         [self CreateView];
     }
@@ -758,7 +757,7 @@ static BOOL g_bRandamIntSeeded = NO;
 
 - (void)CreateView {
     NSInteger thema = [RBUserSettingData sharedInstance].thema;
-    BOOL isFontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     // Set when an animated or scrolling background (not a plain static texture) is installed. It
     // gates the mascot and the campaign page-label colour.
     BOOL bgUsesEffectView = NO;
@@ -766,8 +765,8 @@ static BOOL g_bRandamIntSeeded = NO;
     if (thema == kThemaPastel) {
         self.backgroundColor = UIColor.whiteColor;
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
-            bgUsesEffectView = [self buildCampaignBackground:isFontVariant];
-        } else if (isFontVariant) {
+            bgUsesEffectView = [self buildCampaignBackground:isPad];
+        } else if (isPad) {
             self.bgEffectView = [[RBMenuBGEffectView alloc] initWithFrame:self.bounds];
             [self.bgEffectView setupView];
             [self addSubview:self.bgEffectView];
@@ -795,7 +794,7 @@ static BOOL g_bRandamIntSeeded = NO;
         [self addSubview:self.backgroundView];
     }
 
-    if (isFontVariant) {
+    if (isPad) {
         [self buildHeaderAndFooter:thema];
     } else if (thema == kThemaClassic) {
         // Wide classic theme: a horizontally resizable footer pinned to the bottom.
@@ -820,9 +819,7 @@ static BOOL g_bRandamIntSeeded = NO;
         [self addSubview:self.footerView];
     }
 
-    [self buildMenuBarWithThema:thema
-                     fontVariant:isFontVariant
-        backgroundUsesEffectView:bgUsesEffectView];
+    [self buildMenuBarWithThema:thema isPad:isPad backgroundUsesEffectView:bgUsesEffectView];
 }
 
 - (void)buildHeaderAndFooter:(NSInteger)thema {
@@ -849,7 +846,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self addSubview:self.footerView];
 }
 
-- (BOOL)buildCampaignBackground:(BOOL)isFontVariant {
+- (BOOL)buildCampaignBackground:(BOOL)isPad {
     /** @ghidraAddress 0xa4f58 */
     // Load up to ten numbered campaign images; when present they are shuffled into a horizontally
     // paging scroll view, otherwise the animated effect view is installed instead.
@@ -888,7 +885,7 @@ static BOOL g_bRandamIntSeeded = NO;
     self.backgroundScrollView.showsHorizontalScrollIndicator = NO;
     self.backgroundScrollView.showsVerticalScrollIndicator = NO;
     self.backgroundScrollView.autoresizingMask =
-        isFontVariant ? UIViewAutoresizingFlexibleWidth : kBackgroundAutoresizingMask;
+        isPad ? UIViewAutoresizingFlexibleWidth : kBackgroundAutoresizingMask;
     self.backgroundScrollView.contentOffset = CGPointMake(self.bounds.size.width, 0);
     self.backgroundScrollView.userInteractionEnabled = NO;
     [self addSubview:self.backgroundScrollView];
@@ -900,7 +897,7 @@ static BOOL g_bRandamIntSeeded = NO;
     for (NSUInteger page = 0; page < shuffled.count + 2; ++page) {
         UIImage *image = shuffled[page % shuffled.count];
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        if (isFontVariant) {
+        if (isPad) {
             imageView.frame =
                 CGRectMake(static_cast<int>(page) * pageWidth, 0, image.size.width, 0);
             imageView.contentMode = UIViewContentModeRedraw;
@@ -920,7 +917,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)buildMenuBarWithThema:(NSInteger)thema
-                  fontVariant:static_cast<BOOL>(isFontVariant)
+                        isPad:static_cast<BOOL>(isPad)
      backgroundUsesEffectView:static_cast<BOOL>(bgUsesEffectView) {
     /** @ghidraAddress 0xa5380 */
     // The six side-menu buttons; the play-list add and delete buttons start disabled.
@@ -1017,7 +1014,7 @@ static BOOL g_bRandamIntSeeded = NO;
                                  kPageLabelHeight)];
     self.pageLabel.backgroundColor = UIColor.clearColor;
     self.pageLabel.font =
-        [UIFont systemFontOfSize:(isFontVariant ? kPageLabelFontTall : kPageLabelFontWide)];
+        [UIFont systemFontOfSize:(isPad ? kPageLabelFontTall : kPageLabelFontWide)];
     if (thema == kThemaClassic) {
         self.pageLabel.textColor = UIColor.whiteColor;
     } else if (thema == kThemaWhite) {
@@ -1113,15 +1110,12 @@ static BOOL g_bRandamIntSeeded = NO;
     hideSearch.direction = UISwipeGestureRecognizerDirectionDown;
     [self addGestureRecognizer:hideSearch];
 
-    CGFloat cancelWidth = (GetFontVariantFlag() != kFontVariantDefault) ? kSearchCancelWidthTall :
-                                                                          kSearchCancelWidthWide;
+    CGFloat cancelWidth = (IsPad()) ? kSearchCancelWidthTall : kSearchCancelWidthWide;
     self.searchCancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.searchCancelButton.frame = CGRectMake(
         self.frame.size.width - cancelWidth, kSearchBarOriginY, cancelWidth, kSearchBarHeight);
     // The wide layout uses the large cancel artwork, the tall/variant layout uses the small one.
-    NSString *cancelName = (GetFontVariantFlag() == kFontVariantDefault) ?
-                               kSearchCancelImageNameWide :
-                               kSearchCancelImageNameTall;
+    NSString *cancelName = (!IsPad()) ? kSearchCancelImageNameWide : kSearchCancelImageNameTall;
     [self.searchCancelButton setBackgroundImage:[UIImage imageWithName:cancelName]
                                        forState:UIControlStateNormal];
     self.searchCancelButton.exclusiveTouch = YES;
@@ -1317,7 +1311,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self selectMusic:music animated:([selectRandom tag] == 1)];
     self.selectedView.isRandom = YES;
     self.selectedView.randomButton.frame = self.randomButton.frame;
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         self.selectedView.randomButton.hidden = NO;
     }
 
@@ -1503,7 +1497,7 @@ static BOOL g_bRandamIntSeeded = NO;
         CGRect buttonFrame;
         switch ([RBUserSettingData sharedInstance].thema) {
         case kThemaWhite:
-            if (GetFontVariantFlag() != kFontVariantDefault) {
+            if (IsPad()) {
                 // Centre a fixed-size anchor rectangle on the button's centre.
                 CGPoint centre = self.settingButton.center;
                 buttonFrame = CGRectMake(centre.x + kSettingAnchorOffsetX,
@@ -1578,7 +1572,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)showSearchView {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         // Phone build: push a full map view controller onto the navigation stack.
         self.mapViewController = [[RBSearchMapViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.mapViewController
@@ -1605,7 +1599,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)showNotificationPageView {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         // Phone build: push a full web page view controller.
         self.webViewController = [[RBNotificationPagePhoneViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.webViewController
@@ -1631,7 +1625,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)showTermView {
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         // Phone build: push a full terms-of-use view controller.
         self.termViewController = [[RBTermPhoneViewController alloc] init];
         [[[AppDelegate appDelegate] navigationController] pushViewController:self.termViewController
@@ -1695,7 +1689,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self setSearchBarNonActive];
     [self hideSettingView];
     [self releaseSelectMusic];
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         // Phone build: dismiss any modally-presented controller.
         [self.viewController dismissViewControllerAnimated:NO
                                                 completion:^{
@@ -1704,10 +1698,10 @@ static BOOL g_bRandamIntSeeded = NO;
         // Pad build: dismiss the playlist popover instead.
         [self.viewController.playlistPopoverController dismissPopoverAnimated:NO];
     }
-    if (GetFontVariantFlag() == kFontVariantDefault && self.mapViewController != nil) {
+    if (!IsPad() && self.mapViewController != nil) {
         [self.mapViewController forceClose];
     }
-    if (GetFontVariantFlag() == kFontVariantDefault && self.webViewController != nil) {
+    if (!IsPad() && self.webViewController != nil) {
         [self.webViewController forceClose];
     }
     // POST the current region to the terms endpoint and check the accepted terms version.
@@ -2311,7 +2305,7 @@ static BOOL g_bRandamIntSeeded = NO;
             }
         }
         cell.titleLabel.text = cell.musicData.musicName;
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             cell.artistLabel.text = cell.musicData.artistName;
         }
     }

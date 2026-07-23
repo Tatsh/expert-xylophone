@@ -26,11 +26,11 @@ static NSString *const kNotificationURLKey = @"url";
 // The URL scheme handed back to the delegate rather than routed through RBUrlSchemeManager.
 static NSString *const kExternalURLScheme = @"http";
 
-// Message-label geometry and font size for the default (region) font variant.
+// Message-label geometry and font size for the default (region) iPad idiom.
 constexpr CGRect kMessageLabelFrameDefault{{120.0, 7.0}, {190.0, 32.0}};
 constexpr CGFloat kMessageLabelFontSizeDefault = 12.0;
 
-// Message-label geometry and font size for the wide font variant.
+// Message-label geometry and font size for the iPad (wide) layout.
 constexpr CGRect kMessageLabelFrameWide{{186.0, 14.0}, {290.0, 40.0}};
 constexpr CGFloat kMessageLabelFontSizeWide = 14.0;
 
@@ -64,7 +64,7 @@ constexpr NSInteger kMessageLabelLineCount = 2;
                                    self.bgView.width,
                                    self.bgView.height);
 
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.messageLabel = [[UILabel alloc] initWithFrame:kMessageLabelFrameDefault];
         self.messageLabel.font = [UIFont systemFontOfSize:kMessageLabelFontSizeDefault];
     } else {

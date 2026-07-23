@@ -4,7 +4,7 @@
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBEffectSizeSlider). The
 //  initialiser's soft-float sprite, grip, track, and digit-readout geometry, and the theme- and
-//  font-variant dependent layout, were recovered from the arm64 disassembly (the decompiler folds
+//  iPad idiom dependent layout, were recovered from the arm64 disassembly (the decompiler folds
 //  the CGRect components into pseudo-variables). This is the explosion (bounds-effect-size) slider
 //  created by RBCustomSelectCollectionView.
 //
@@ -23,11 +23,17 @@ static NSString *const kEffectSizeSliderGripImageName = @"02_music_detail/det_co
 
 // The readout glyphs are cus_nms_0 ... cus_nms_9 followed by the decimal point. A value place
 // indexes this array directly, and the point column uses the last entry.
-static NSString *const kEffectSizeSliderDigitImageNames[] = {
-    @"04_customize/cus_nms_0", @"04_customize/cus_nms_1", @"04_customize/cus_nms_2",
-    @"04_customize/cus_nms_3", @"04_customize/cus_nms_4", @"04_customize/cus_nms_5",
-    @"04_customize/cus_nms_6", @"04_customize/cus_nms_7", @"04_customize/cus_nms_8",
-    @"04_customize/cus_nms_9", @"04_customize/cus_nms_dot"};
+static NSString *const kEffectSizeSliderDigitImageNames[] = {@"04_customize/cus_nms_0",
+                                                             @"04_customize/cus_nms_1",
+                                                             @"04_customize/cus_nms_2",
+                                                             @"04_customize/cus_nms_3",
+                                                             @"04_customize/cus_nms_4",
+                                                             @"04_customize/cus_nms_5",
+                                                             @"04_customize/cus_nms_6",
+                                                             @"04_customize/cus_nms_7",
+                                                             @"04_customize/cus_nms_8",
+                                                             @"04_customize/cus_nms_9",
+                                                             @"04_customize/cus_nms_dot"};
 
 // The index of the decimal-point glyph within numImages (also the count of digit glyphs, base
 // ten).
@@ -44,7 +50,7 @@ static const float kEffectSizeSliderStepValue = 0.5f;
 // its natural origin.
 static const CGFloat kEffectSizeSliderVerticalOffset = 6.0;
 
-// The track rectangle (the grip's travel) by font variant: origin x/y, then width. Its height is
+// The track rectangle (the grip's travel) by device idiom: origin x/y, then width. Its height is
 // taken from the track sprite's own frame. Narrow mirrors the default font, wide the large font.
 static const CGFloat kEffectSizeSliderBarOriginXNarrow = 19.0;
 static const CGFloat kEffectSizeSliderBarOriginYNarrow = 21.0;
@@ -53,7 +59,7 @@ static const CGFloat kEffectSizeSliderBarOriginXWide = 38.0;
 static const CGFloat kEffectSizeSliderBarOriginYWide = 33.0;
 static const CGFloat kEffectSizeSliderBarWidthWide = 315.0;
 
-// The digit readout's origin varies by the active theme and font variant. The binary groups the
+// The digit readout's origin varies by the active theme and iPad idiom. The binary groups the
 // themes by their raw stored value: values below the colette threshold (the classic and limelight
 // themes) share one readout origin, the colette theme its own, and any further theme leaves the
 // readout at the zero origin.
@@ -95,42 +101,47 @@ enum {
         return nil;
     }
 
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     self.digit = digit;
 
     UIImage *trackImage = [UIImage imageWithName:kEffectSizeSliderTrackImageName];
     UIImageView *track = [[UIImageView alloc] initWithImage:trackImage];
     self.baseView = track;
     CGRect trackFrame = self.baseView.frame;
-    self.baseView.frame =
-        CGRectMake(trackFrame.origin.x, trackFrame.origin.y + kEffectSizeSliderVerticalOffset,
-                   trackFrame.size.width, trackFrame.size.height);
+    self.baseView.frame = CGRectMake(trackFrame.origin.x,
+                                     trackFrame.origin.y + kEffectSizeSliderVerticalOffset,
+                                     trackFrame.size.width,
+                                     trackFrame.size.height);
     [self addSubview:self.baseView];
 
     UIImageView *grip =
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kEffectSizeSliderGripImageName]];
     self.gripView = grip;
     CGRect gripFrame = self.gripView.frame;
-    self.gripView.frame =
-        CGRectMake(gripFrame.origin.x, gripFrame.origin.y + kEffectSizeSliderVerticalOffset,
-                   gripFrame.size.width, gripFrame.size.height);
+    self.gripView.frame = CGRectMake(gripFrame.origin.x,
+                                     gripFrame.origin.y + kEffectSizeSliderVerticalOffset,
+                                     gripFrame.size.width,
+                                     gripFrame.size.height);
     [self addSubview:self.gripView];
 
     CGFloat trackHeight = self.baseView.frame.size.height;
-    if (isWideVariant) {
-        self.barRect =
-            CGRectMake(kEffectSizeSliderBarOriginXWide, kEffectSizeSliderBarOriginYWide,
-                       kEffectSizeSliderBarWidthWide, trackHeight);
+    if (isPad) {
+        self.barRect = CGRectMake(kEffectSizeSliderBarOriginXWide,
+                                  kEffectSizeSliderBarOriginYWide,
+                                  kEffectSizeSliderBarWidthWide,
+                                  trackHeight);
     } else {
-        self.barRect =
-            CGRectMake(kEffectSizeSliderBarOriginXNarrow, kEffectSizeSliderBarOriginYNarrow,
-                       kEffectSizeSliderBarWidthNarrow, trackHeight);
+        self.barRect = CGRectMake(kEffectSizeSliderBarOriginXNarrow,
+                                  kEffectSizeSliderBarOriginYNarrow,
+                                  kEffectSizeSliderBarWidthNarrow,
+                                  trackHeight);
     }
 
     CGRect selfFrame = self.frame;
-    self.frame =
-        CGRectMake(selfFrame.origin.x, selfFrame.origin.y + kEffectSizeSliderVerticalOffset,
-                   selfFrame.size.width, selfFrame.size.height);
+    self.frame = CGRectMake(selfFrame.origin.x,
+                            selfFrame.origin.y + kEffectSizeSliderVerticalOffset,
+                            selfFrame.size.width,
+                            selfFrame.size.height);
 
     self.stepValue = kEffectSizeSliderStepValue;
     self.value = [RBUserSettingData sharedInstance].boundsEffectSize;
@@ -139,8 +150,7 @@ enum {
     self.step = (float)(self.barRect.size.width /
                         (CGFloat)((self.barMax - self.barMin) * kEffectSizeSliderStepsPerUnit));
 
-    self.numImages =
-        [[NSMutableArray alloc] initWithCapacity:kEffectSizeSliderPointImageIndex + 1];
+    self.numImages = [[NSMutableArray alloc] initWithCapacity:kEffectSizeSliderPointImageIndex + 1];
     // The point glyph is appended in the last iteration; the digit glyphs before it. The first
     // digit glyph and the point glyph are also measured, giving the readout its cell sizes.
     CGSize digitGlyphSize = CGSizeZero;
@@ -155,13 +165,12 @@ enum {
         }
     }
 
-    self.numImageViews =
-        [[NSMutableArray alloc] initWithCapacity:kEffectSizeSliderReadoutCapacity];
+    self.numImageViews = [[NSMutableArray alloc] initWithCapacity:kEffectSizeSliderReadoutCapacity];
 
     CGPoint readoutOrigin = CGPointZero;
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     if (thema < kEffectSizeSliderColetteThemaThreshold) {
-        if (isWideVariant) {
+        if (isPad) {
             readoutOrigin = CGPointMake(kEffectSizeSliderReadoutOriginXLowThemeWide,
                                         kEffectSizeSliderReadoutOriginYLowThemeWide);
         } else {
@@ -169,7 +178,7 @@ enum {
                                         kEffectSizeSliderReadoutOriginYLowThemeNarrow);
         }
     } else if (thema == kEffectSizeSliderColetteThemaThreshold) {
-        if (isWideVariant) {
+        if (isPad) {
             readoutOrigin = CGPointMake(kEffectSizeSliderReadoutOriginXColetteWide,
                                         kEffectSizeSliderReadoutOriginYColetteWide);
         } else {
@@ -185,22 +194,22 @@ enum {
     CGFloat pointColumnX = readoutOrigin.x + digitGlyphSize.width;
     CGFloat fractionColumnX = pointColumnX + pointGlyphSize.width;
     switch ([RBUserSettingData sharedInstance].thema) {
-        case RBUserSettingDataThemeClassic:
-        case RBUserSettingDataThemeColette:
-            if (isWideVariant) {
-                fractionColumnX += kEffectSizeSliderWideFractionGap;
-            }
-            break;
-        case RBUserSettingDataThemeLimelight:
-            break;
-        default:
-            assert(0);
-            break;
+    case RBUserSettingDataThemeClassic:
+    case RBUserSettingDataThemeColette:
+        if (isPad) {
+            fractionColumnX += kEffectSizeSliderWideFractionGap;
+        }
+        break;
+    case RBUserSettingDataThemeLimelight:
+        break;
+    default:
+        assert(0);
+        break;
     }
 
     UIImageView *wholeDigitView = [[UIImageView alloc] init];
-    wholeDigitView.frame = CGRectMake(readoutOrigin.x, readoutOrigin.y, digitGlyphSize.width,
-                                      digitGlyphSize.height);
+    wholeDigitView.frame =
+        CGRectMake(readoutOrigin.x, readoutOrigin.y, digitGlyphSize.width, digitGlyphSize.height);
     [self addSubview:wholeDigitView];
     [self.numImageViews addObject:wholeDigitView];
 
@@ -211,8 +220,8 @@ enum {
     [self.numImageViews addObject:pointView];
 
     UIImageView *fractionDigitView = [[UIImageView alloc] init];
-    fractionDigitView.frame = CGRectMake(fractionColumnX, readoutOrigin.y, digitGlyphSize.width,
-                                         digitGlyphSize.height);
+    fractionDigitView.frame =
+        CGRectMake(fractionColumnX, readoutOrigin.y, digitGlyphSize.width, digitGlyphSize.height);
     [self addSubview:fractionDigitView];
     [self.numImageViews addObject:fractionDigitView];
 
@@ -232,12 +241,13 @@ enum {
     CGRect bar = self.barRect;
     CGRect gripFrame = self.gripView.frame;
     self.gripView.frame =
-        CGRectMake(bar.origin.x + (CGFloat)((_value / self.stepValue) * self.step), bar.origin.y,
-                   gripFrame.size.width, gripFrame.size.height);
+        CGRectMake(bar.origin.x + (CGFloat)((_value / self.stepValue) * self.step),
+                   bar.origin.y,
+                   gripFrame.size.width,
+                   gripFrame.size.height);
 
     int scaledValue = (int)(self.value * (float)kEffectSizeSliderDecimalBase);
-    int wholeDigit =
-        (scaledValue / kEffectSizeSliderDecimalBase) % kEffectSizeSliderDecimalBase;
+    int wholeDigit = (scaledValue / kEffectSizeSliderDecimalBase) % kEffectSizeSliderDecimalBase;
     self.numImageViews[0].image = self.numImages[wholeDigit];
     self.numImageViews[1].image = self.numImages[kEffectSizeSliderPointImageIndex];
     self.numImageViews[2].image = self.numImages[scaledValue % kEffectSizeSliderDecimalBase];

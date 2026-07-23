@@ -32,7 +32,7 @@ static const CGFloat kCompactTrackYOther = 10.0;
 static const CGFloat kCompactTrackWidth = 99.0;
 static const CGFloat kCompactTrackHeight = 4.0;
 
-// The track base-view frame on the font-variant (Colette) layout. The horizontal origin and width
+// The track base-view frame on the iPad idiom (Colette) layout. The horizontal origin and width
 // depend on the theme; the vertical origin and height are fixed.
 static const CGFloat kVariantTrackXColette = 40.0;
 static const CGFloat kVariantTrackXOther = 38.0;
@@ -89,7 +89,7 @@ static const UIGestureRecognizerState kPanIgnoredState = UIGestureRecognizerStat
 
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     CGRect trackFrame;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         trackFrame = CGRectMake(kCompactTrackX,
                                 thema == RBUserSettingDataThemeColette ? kCompactTrackYColette :
                                                                          kCompactTrackYOther,

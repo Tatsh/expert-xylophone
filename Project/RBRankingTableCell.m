@@ -6,7 +6,7 @@
 //  -initWithStyle:reuseIdentifier: label geometry and fonts and the -drawRect: CoreGraphics path
 //  geometry were recovered from the arm64 disassembly, where the decompiler folds the soft-float
 //  register moves and scrambles the CoreGraphics argument order. This class uses only Objective-C,
-//  CoreGraphics, and the C font-variant helper, so it is a plain Objective-C (.m) file.
+//  CoreGraphics, and the C iPad idiom helper, so it is a plain Objective-C (.m) file.
 //
 
 #import "RBRankingTableCell.h"
@@ -73,7 +73,7 @@ static const CGFloat kEdgeInset = 0.5;
 static const CGFloat kHalfScale = 0.5;
 
 @implementation RBRankingTableCell {
-    // Whether the cell draws with the wider iPad geometry and fonts, captured from the font-variant
+    // Whether the cell draws with the wider iPad geometry and fonts, captured from the iPad idiom
     // flag at construction. It is not a property; the binary keeps only this backing ivar and reads
     // it directly.
     BOOL isPad;
@@ -85,7 +85,7 @@ static const CGFloat kHalfScale = 0.5;
               reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        isPad = GetFontVariantFlag() != kFontVariantDefault;
+        isPad = IsPad();
 
         // The rank label: bold, centred, auto-shrinking to fit.
         CGRect rankFrame =

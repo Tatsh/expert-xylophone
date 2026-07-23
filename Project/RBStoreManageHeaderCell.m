@@ -2,7 +2,7 @@
 
 #import "neEngineBridge.h"
 
-// The header height for the pad (wide) and phone (narrow) font variants.
+// The header height for the pad (wide) and phone (narrow) iPad idioms.
 static const CGFloat kHeaderHeightPad = 30.0;
 static const CGFloat kHeaderHeightPhone = 25.0;
 
@@ -58,10 +58,10 @@ static NSString *const kTitleSizingGlyph = @"　";
         return nil;
     }
 
-    BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
     CGFloat width = frame.size.width;
-    CGFloat headerHeight = isWideVariant ? kHeaderHeightPad : kHeaderHeightPhone;
-    CGFloat trailingInset = isWideVariant ? g_dSliderRowHeightWide : kTrailingInsetPhone;
+    CGFloat headerHeight = isPad ? kHeaderHeightPad : kHeaderHeightPhone;
+    CGFloat trailingInset = isPad ? g_dSliderRowHeightWide : kTrailingInsetPhone;
 
     self.frame = CGRectMake(0, 0, width, headerHeight);
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;

@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBTermView). Verified against the
-//  arm64 disassembly: -setupView's and -showTermsList's theme- and font-variant-dependent frame
+//  arm64 disassembly: -setupView's and -showTermsList's theme- and idiom-dependent frame
 //  maths were recovered from the soft-float register moves that the decompiler folds into
 //  pseudo-variables. This class does not reach the C++ engine, so it is a plain Objective-C (.m)
 //  file.
@@ -74,7 +74,7 @@ static const CGFloat kClassicContentTopReference = 188.0;
 static const CGFloat kClassicContentFallbackOffset = 12.0;
 
 // The content-view top inset applied to the list, body, and text views. It is theme- and
-// font-variant-dependent: the wide layout insets the classic theme less than the themed skins;
+// idiom-dependent: the wide layout insets the classic theme less than the themed skins;
 // the tall layout insets only the themed skins.
 static const CGFloat kContentTopInsetWideThemed = 64.0;  // Colette/Limelight wide.
 static const CGFloat kContentTopInsetWideClassic = 32.0; // Classic wide.
@@ -92,7 +92,7 @@ static const CGFloat kTermTextInsetVertical = 10.0;
 static const CGFloat kTermTextInsetHorizontal = 5.0;
 static const CGFloat kTermBodyFontSize = 16.0;
 
-// Terms-list button-row geometry. The wide (font-variant) layout uses larger metrics than the tall
+// Terms-list button-row geometry. The wide (iPad) layout uses larger metrics than the tall
 // layout; the list content width is the content-view width divided by the visible fraction.
 static const CGFloat kTermListStartYWide = 64.0;
 static const CGFloat kTermListStartYTall = 32.0;
@@ -154,7 +154,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     // fallback when the panel origin is unavailable); the other themes leave it at zero.
     CGFloat contentTopInset = 0.0;
     if (thema == RBUserSettingDataThemeClassic) {
-        if (GetFontVariantFlag() == kFontVariantDefault) {
+        if (!IsPad()) {
             contentTopInset = kClassicContentFallbackOffset;
         } else {
             CGFloat baseY = self.baseView.frame.origin.y;
@@ -227,7 +227,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     // uses a fixed inset per theme; the tall layout uses a smaller one for the themed skins.
     NSInteger themaInset = [RBUserSettingData sharedInstance].thema;
     CGFloat contentInset;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         contentInset =
             (themaInset != RBUserSettingDataThemeClassic) ? kContentTopInsetTallThemed : 0.0;
     } else if (themaInset == RBUserSettingDataThemeClassic) {
@@ -421,15 +421,15 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     }
     self.backButton.hidden = YES;
 
-    // The list start Y and the term-button width, height, and row gap are font-variant-dependent.
-    BOOL isFontVariant = GetFontVariantFlag() != kFontVariantDefault;
-    CGFloat listStartY = isFontVariant ? kTermListStartYWide : kTermListStartYTall;
+    // The list start Y and the term-button width, height, and row gap are idiom-dependent.
+    BOOL isPad = IsPad();
+    CGFloat listStartY = isPad ? kTermListStartYWide : kTermListStartYTall;
     int buttonWidth = kTermButtonWidthTall;
-    if (!isFontVariant) {
+    if (!isPad) {
         buttonWidth = (int)(self.contentView.frame.size.width / kTermButtonVisibleFraction);
     }
-    CGFloat rowHeight = isFontVariant ? kTermRowHeightWide : kTermRowHeightTall;
-    CGFloat rowGap = isFontVariant ? kTermRowGapWide : kTermRowGapTall;
+    CGFloat rowHeight = isPad ? kTermRowHeightWide : kTermRowHeightTall;
+    CGFloat rowGap = isPad ? kTermRowGapWide : kTermRowGapTall;
 
     if (self.termsList != nil) {
         CGFloat centreX = self.contentView.frame.size.width * kHalf;

@@ -673,7 +673,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** @brief The current playlist edit mode. */
 @property(assign, nonatomic) int playListEditMode;
 
-/** @brief The base Y position of the pastel search mascot, derived from the font variant. */
+/** @brief The base Y position of the pastel search mascot, derived from the iPad idiom. */
 @property(assign, nonatomic) float searchPastelPosBaseY;
 
 /** @brief The number of distinct paging background images. */

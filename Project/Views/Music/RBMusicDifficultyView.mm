@@ -22,7 +22,7 @@ enum {
 // Limelight) use the ordinary artwork.
 static const NSInteger kThemaColette = RBUserSettingDataThemeColette;
 
-// The layout offset applied to the buttons on the font-variant Colette layout (0x41500000).
+// The layout offset applied to the buttons on the iPad idiom Colette layout (0x41500000).
 static const float kColetteLayoutOffset = 13.0f;
 
 // The autoresizing mask applied to every button and overlay: the four flexible margins.
@@ -39,7 +39,7 @@ static const CGFloat kButtonAlphaTranslucent = 0.8;
 // The centre of a button's overlay is half its bounds.
 static const CGFloat kOverlayHalf = 0.5;
 
-// The button vertical centre on the default (non-font-variant) and font-variant layouts.
+// The button vertical centre on the default (non-iPad idiom) and iPad idiom layouts.
 static const CGFloat kButtonCenterYDefault = 43.0; // DAT_1002eeee8
 static const CGFloat kButtonCenterYVariant = 84.0; // g_dLayoutMetricEightyFour
 
@@ -54,7 +54,7 @@ static const CGFloat kHardCenterXDefault[] = {185.0, 245.0};   // DAT_1003011d0
 static const CGFloat kMediumCenterXDefault[] = {115.0, 150.0}; // DAT_1003011e0
 static const CGFloat kBasicCenterXDefault[] = {45.0, 54.0};    // DAT_1003011f0
 
-// The font-variant button horizontal centres, added to the layout offset. The three-button layout
+// The iPad idiom button horizontal centres, added to the layout offset. The three-button layout
 // (no extended chart) and the four-button layout use different columns.
 static const CGFloat kBasicCenterXVariantThree = 89.0;    // DAT_1002eef00
 static const CGFloat kMediumCenterXVariantThree = 228.0;  // DAT_10030120c
@@ -65,7 +65,7 @@ static const CGFloat kHardCenterXVariantFour = 283.0;     // DAT_100301204
 static const CGFloat kExtendedCenterXVariantFour = 393.0; // DAT_100301208
 
 // The number-image centre offsets added to the button centre on the non-Colette themes, keyed by
-// the font variant (decoded from the guard-initialised globals at 0x1003dc6e0/0x1003dc6f0, sourced
+// the iPad idiom (decoded from the guard-initialised globals at 0x1003dc6e0/0x1003dc6f0, sourced
 // from 0x1002eef10/0x1002eef20).
 static const CGFloat kNumberOffsetXVariant = 6.0;
 static const CGFloat kNumberOffsetYVariant = 12.0;
@@ -199,8 +199,7 @@ static NSString *const kExtendedLevelNames[] = {
     if (self) {
         self.musicSelectedBase = MusicSelectedBase;
         self.difficulty = [RBUserSettingData sharedInstance].difficulty;
-        if ([RBUserSettingData sharedInstance].thema == kThemaColette &&
-            GetFontVariantFlag() != kFontVariantDefault) {
+        if ([RBUserSettingData sharedInstance].thema == kThemaColette && IsPad()) {
             self.layoutOffset = kColetteLayoutOffset;
         } else {
             self.layoutOffset = 0.0f;
@@ -217,7 +216,7 @@ static NSString *const kExtendedLevelNames[] = {
     MusicData *musicData = self.musicSelectedBase.musicData;
     MusicDataExtend *extend = musicData.spData;
     BOOL hasExtended = extend != nil;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     CGFloat basicX;
     CGFloat mediumX;
@@ -226,7 +225,7 @@ static NSString *const kExtendedLevelNames[] = {
     CGFloat extendedX = 0.0;
     CGFloat extendedY = 0.0;
 
-    if (!fontVariant) {
+    if (!isPad) {
         // The three horizontal-centre tables are indexed by whether the song lacks its extended
         // chart.
         NSUInteger column = hasExtended ? 0 : 1;
@@ -279,11 +278,11 @@ static NSString *const kExtendedLevelNames[] = {
 - (void)CreateButton:(int)CreateButton Position:(CGPoint)Position Number:(int)Number {
     int thema = [RBUserSettingData sharedInstance].thema;
     BOOL hasExtended = self.musicSelectedBase.musicData.spData != nil;
-    BOOL fontVariant = GetFontVariantFlag() != kFontVariantDefault;
+    BOOL isPad = IsPad();
 
     NSString *iconName = kDifficultyIconColette;
     if (thema < kThemaColette) {
-        if (!fontVariant && hasExtended) {
+        if (!isPad && hasExtended) {
             iconName = kDifficultyIconAltNames[CreateButton];
         } else {
             iconName = kDifficultyIconNames[CreateButton];
@@ -309,7 +308,7 @@ static NSString *const kExtendedLevelNames[] = {
 
     NSString *selectedName = kDifficultySelectedColette;
     if (thema < kThemaColette) {
-        if (!fontVariant && hasExtended) {
+        if (!isPad && hasExtended) {
             selectedName = kDifficultySelectedAltNames[CreateButton];
         } else {
             selectedName = kDifficultySelectedNames[CreateButton];
@@ -356,13 +355,13 @@ static NSString *const kExtendedLevelNames[] = {
         CGSize levelSize = levelImage.size;
         levelView.frame = CGRectMake(0.0, 0.0, levelSize.width, levelSize.height);
         if ([RBUserSettingData sharedInstance].thema < kThemaColette) {
-            CGFloat offsetX = fontVariant ? kNumberOffsetXVariant : kNumberOffsetXDefault;
-            CGFloat offsetY = fontVariant ? kNumberOffsetYVariant : kNumberOffsetYDefault;
+            CGFloat offsetX = isPad ? kNumberOffsetXVariant : kNumberOffsetXDefault;
+            CGFloat offsetY = isPad ? kNumberOffsetYVariant : kNumberOffsetYDefault;
             levelView.center = CGPointMake(button.bounds.size.width * kOverlayHalf + offsetX,
                                            button.bounds.size.height * kOverlayHalf + offsetY);
         } else {
-            // On the Colette themes the number nudges one point left on the font variant.
-            CGFloat offsetX = -static_cast<CGFloat>(fontVariant ? 1 : 0);
+            // On the Colette themes the number nudges one point left on the iPad idiom.
+            CGFloat offsetX = -static_cast<CGFloat>(isPad ? 1 : 0);
             levelView.center = CGPointMake(button.bounds.size.width * kOverlayHalf + offsetX,
                                            button.bounds.size.height * kOverlayHalf);
         }

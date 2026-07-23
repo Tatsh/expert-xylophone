@@ -41,7 +41,7 @@ constexpr double kBaseImageTopFactor = 0.1;
 // The half factor used to centre a child within its parent.
 constexpr double kHalf = 0.5;
 
-// The default region uses the narrower rest inset and track adjustment; the font variant uses the
+// The default region uses the narrower rest inset and track adjustment; the iPad idiom uses the
 // wider pair.
 constexpr double kBarRestLeftDefault = 11.0;
 constexpr double kBarRestLeftVariant = 18.0;
@@ -154,7 +154,7 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
 
     CGFloat containerWidth = container.width;
     CGFloat containerHeight = container.height;
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         labelImage.frame =
             CGRectMake(static_cast<int>(containerWidth * kHalf - labelImage.width * kHalf),
                        static_cast<int>(containerHeight * kBaseImageTopFactor),
@@ -188,7 +188,7 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
     // variant alone: the default region gets the narrower rest geometry and any variant gets the
     // wider one, so the theme test has no effect on the result.
     (void)[RBUserSettingData sharedInstance].thema;
-    BOOL fontDefault = GetFontVariantFlag() == kFontVariantDefault;
+    BOOL fontDefault = !IsPad();
     double barRestLeft = fontDefault ? kBarRestLeftDefault : kBarRestLeftVariant;
     double barWidthAdjust = fontDefault ? kBarWidthAdjustDefault : kBarWidthAdjustVariant;
     CGRect barRect = CGRectMake(barRestLeft, 0.0, knob.width + barWidthAdjust, knob.height);

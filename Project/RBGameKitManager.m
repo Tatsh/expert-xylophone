@@ -30,8 +30,8 @@ static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
     static RBGameKitManager *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        /** @ghidraAddress 0x202c54 */
-        instance = [[self alloc] init];
+      /** @ghidraAddress 0x202c54 */
+      instance = [[self alloc] init];
     });
     return instance;
 }
@@ -41,8 +41,7 @@ static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
 - (BOOL)isGameCenterAPIAvailable {
     return NSClassFromString(kGameCenterLocalPlayerClassName) != nil &&
            [[UIDevice currentDevice].systemVersion compare:kMinimumGameCenterSystemVersion
-                                                    options:NSNumericSearch] !=
-               NSOrderedAscending;
+                                                   options:NSNumericSearch] != NSOrderedAscending;
 }
 
 - (void)loginGameCenter {
@@ -55,12 +54,12 @@ static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
     }
     __weak GKLocalPlayer *weakLocalPlayer = localPlayer;
     [localPlayer setAuthenticateHandler:^(NSError *error) {
-        /** @ghidraAddress 0x202ea4 */
-        if (error == nil) {
-            (void)weakLocalPlayer.playerID;
-        } else {
-            (void)error.code;
-        }
+      /** @ghidraAddress 0x202ea4 */
+      if (error == nil) {
+          (void)weakLocalPlayer.playerID;
+      } else {
+          (void)error.code;
+      }
     }];
 }
 

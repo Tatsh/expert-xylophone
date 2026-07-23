@@ -109,9 +109,9 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
                                  withObject:@((NSUInteger)indexPath.row)];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    // The binary branches on the font variant here, but both arms dismiss identically, so the call
+    // The binary branches on the iPad idiom here, but both arms dismiss identically, so the call
     // is unconditional.
-    (void)GetFontVariantFlag();
+    (void)IsPad();
     [self.storeViewCtrl hideGenreSelect:nil];
 }
 

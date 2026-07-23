@@ -41,7 +41,8 @@ static const NSTimeInterval kSliderRotationFadeDuration = 0.3;
 - (void)showView:(CGRect)frame pageMax:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage {
     [self.slider reset:pageMax currentPage:currentPage];
     self.slider.frame = CGRectMake(self.slider.frame.origin.x,
-                                   frame.origin.y + frame.size.height, self.slider.frame.size.width,
+                                   frame.origin.y + frame.size.height,
+                                   self.slider.frame.size.width,
                                    self.slider.frame.size.height);
     [super showAnimation];
 }

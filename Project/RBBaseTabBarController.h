@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Reports whether the store screens may rotate to the given orientation. The default region
- *        always may; a font variant region may rotate only to portrait orientations, and only
+ *        always may; a iPad idiom region may rotate only to portrait orientations, and only
  *        while no background music is playing.
  * @param interfaceOrientation The orientation being queried.
  * @return @c YES if rotation to that orientation is permitted.

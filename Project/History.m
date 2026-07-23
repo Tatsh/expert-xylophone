@@ -15,7 +15,6 @@
 // already use); they resolve once those classes land.
 #import "HistoryData.h"
 #import "RBScoreHash.h"
-
 #import "neEngineBridge.h"
 
 // The Core Data entity name backing this class.
@@ -52,17 +51,16 @@ static const int kHalfWordShift = 16;
 #pragma mark - Fetch helpers
 
 + (NSArray *)getScoreData:(unsigned int)tuneID
-               Difficulty:(HistoryDifficulty)difficulty
+                Difficulty:(HistoryDifficulty)difficulty
     inManagedObjectContext:(NSManagedObjectContext *)context {
     /** @ghidraAddress 0x5a7d0 */
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     request.entity = [NSEntityDescription entityForName:kHistoryEntityName
                                  inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDAndDifficulty,
-                                                         tuneID,
-                                                         difficulty];
+    request.predicate =
+        [NSPredicate predicateWithFormat:kPredicateTuneIDAndDifficulty, tuneID, difficulty];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:kHistorySortKey ascending:NO];
-    request.sortDescriptors = @[sort];
+    request.sortDescriptors = @[ sort ];
     NSArray *records = [context executeFetchRequest:request error:nil];
     NSMutableArray *result = [[NSMutableArray alloc] init];
     for (NSManagedObject *record in records) {
@@ -74,8 +72,7 @@ static const int kHalfWordShift = 16;
     return result;
 }
 
-+ (NSArray *)getScoreData:(NSDate *)date
-    inManagedObjectContext:(NSManagedObjectContext *)context {
++ (NSArray *)getScoreData:(NSDate *)date inManagedObjectContext:(NSManagedObjectContext *)context {
     /** @ghidraAddress 0x5abd8 */
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     request.entity = [NSEntityDescription entityForName:kHistoryEntityName
@@ -105,9 +102,8 @@ static const int kHalfWordShift = 16;
     if (startDate && endDate) {
         NSDate *localStart = [HistoryData convertLocalDate:startDate];
         NSDate *localEnd = [HistoryData convertLocalDate:endDate];
-        request.predicate = [NSPredicate predicateWithFormat:kPredicatePlayDateInRange,
-                                                             localStart,
-                                                             localEnd];
+        request.predicate =
+            [NSPredicate predicateWithFormat:kPredicatePlayDateInRange, localStart, localEnd];
     }
     request.fetchLimit = limit != 0 ? limit : kDefaultFetchLimit;
     NSArray *records = [context executeFetchRequest:request error:nil];
@@ -149,14 +145,14 @@ static const int kHalfWordShift = 16;
 }
 
 + (id)recordWithTuneID:(unsigned int)tuneID
-            Difficulty:(HistoryDifficulty)difficulty
+                Difficulty:(HistoryDifficulty)difficulty
     inManagedObjectContext:(NSManagedObjectContext *)context {
     /** @ghidraAddress 0x5b7ac */
     if (tuneID < kMinimumTuneID) {
         return nil;
     }
     id record = [NSEntityDescription insertNewObjectForEntityForName:kHistoryEntityName
-                                             inManagedObjectContext:context];
+                                              inManagedObjectContext:context];
     [record setTuneID:[NSNumber numberWithInt:(int)tuneID]];
     [record setDiff:[NSNumber numberWithInt:(int)difficulty]];
     [History reset:record];

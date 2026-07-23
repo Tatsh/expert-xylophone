@@ -66,7 +66,7 @@ static const CGFloat kLabelShadowWhite = 0.6196078658103943;
 static const CGFloat kAlternateRowWhite = 0.7568627595901489;
 // The sample-playback BGM fade-in time.
 static const float kSampleBGMFadeTime = 0.5f;
-// The loading-label point size, and the error-label point sizes per font variant.
+// The loading-label point size, and the error-label point sizes per device idiom.
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kErrorLabelFontSizeDefault = 16.0;
 static const CGFloat kErrorLabelFontSizeWide = 18.0;
@@ -148,7 +148,7 @@ static NSString *const kCampaignIdFormat = @"%d";
     // Unused by the campaign page; retained from the shared store layout.
     int infoRandomKey;
 }
-// Whether the pad (wide font-variant) layout is active.
+// Whether the pad (wide iPad idiom) layout is active.
 @property(nonatomic, assign) BOOL isPad;
 // The row whose action button is mid-flight, or kNoActiveIndex when none is working.
 @property(nonatomic, assign) int workingIndex;
@@ -195,7 +195,7 @@ static NSString *const kCampaignIdFormat = @"%d";
                                                             action:@selector(storeEnd:)];
     self.navigationItem.leftBarButtonItem = back;
 
-    self.isPad = GetFontVariantFlag() != kFontVariantDefault;
+    self.isPad = IsPad();
     self.workingIndex = kNoActiveIndex;
     self.samplePlayedIndex = kNoActiveIndex;
     self.unlockMusicCheckList = nil;
@@ -313,9 +313,7 @@ static NSString *const kCampaignIdFormat = @"%d";
         UILabel *error = [[UILabel alloc] initWithFrame:self.view.bounds];
         self.errorLabel = error;
         self.errorLabel.backgroundColor = self.view.backgroundColor;
-        CGFloat errorFontSize = GetFontVariantFlag() == kFontVariantDefault ?
-                                    kErrorLabelFontSizeDefault :
-                                    kErrorLabelFontSizeWide;
+        CGFloat errorFontSize = !IsPad() ? kErrorLabelFontSizeDefault : kErrorLabelFontSizeWide;
         self.errorLabel.font = [UIFont boldSystemFontOfSize:errorFontSize];
         self.errorLabel.textColor = [UIColor colorWithWhite:kLabelShadowWhite alpha:kOpaqueAlpha];
         self.errorLabel.textAlignment = NSTextAlignmentCenter;
@@ -594,7 +592,7 @@ static NSString *const kCampaignIdFormat = @"%d";
         return;
     }
 
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         [self.itemDetailViewPad cancelLoading];
         [self.itemDetailViewPad sampleStop];
         self.coverViewPad.alpha = kPadCoverBlackWhite;

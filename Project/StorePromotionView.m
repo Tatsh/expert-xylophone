@@ -24,7 +24,7 @@ static const CGFloat kBannerWidthReference = -292.0;
 static const CGFloat kBannerHeightReference = -96.0;
 static const CGFloat kCenterScale = 0.5;
 
-// The wide (pad) font variant uses fixed banner geometry.
+// The wide (pad) iPad idiom uses fixed banner geometry.
 static const CGFloat kPadPageOffsetX = 145.0;
 static const CGFloat kPadBannerOffsetX = 20.0;
 static const CGFloat kPadBannerOffsetY = 8.0;
@@ -82,7 +82,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     [self addSubview:indicator];
     self.indicator = indicator;
 
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         self.pageOffsetX = (self.frame.size.width + kPageInsetReference) * kCenterScale;
         CGFloat bannerX = (self.frame.size.width + kBannerWidthReference) * kCenterScale;
         CGFloat bannerY = (self.frame.size.height + kBannerHeightReference) * kCenterScale;
@@ -178,7 +178,7 @@ static const NSUInteger kDownloaderCapacity = 32;
         imageDownloader.indexPathInTableView =
             [NSIndexPath indexPathWithIndex:[self.promotionDataArray indexOfObject:promotion]];
         imageDownloader.delegate = self;
-        if (GetFontVariantFlag() != kFontVariantDefault) {
+        if (IsPad()) {
             imageDownloader.unUseRetina = YES;
         }
         [self.imageDownloader addObject:imageDownloader];
@@ -499,7 +499,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 /** @ghidraAddress 0x100103c6c */
 - (void)scrollViewDidRotate:(float)width {
-    if (GetFontVariantFlag() != kFontVariantDefault) {
+    if (IsPad()) {
         return;
     }
     self.pageOffsetX = (CGFloat)((width + kPageInsetReference) * kCenterScale);

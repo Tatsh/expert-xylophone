@@ -3,13 +3,13 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBBaseViewController). Verified
-//  against the arm64 disassembly: the rotation overrides gate on the region font variant and the
+//  against the arm64 disassembly: the rotation overrides gate on the region iPad idiom and the
 //  engine's "background music playing" flag, and the status-bar override returns a constant.
 //
 
 #import "RBBaseViewController.h"
 
-// GetGameSystem() -> GameSystem* (with the fBgmPlaying playback flag) and GetFontVariantFlag(),
+// GetGameSystem() -> GameSystem* (with the fBgmPlaying playback flag) and IsPad(),
 // which reports whether the region uses the wide (variant) font layout that also selects the
 // constrained-rotation behaviour.
 #import "neEngineBridge.h"
@@ -23,7 +23,7 @@
 
 - (BOOL)shouldAutorotate {
     /** @ghidraAddress 0x202748 */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return YES;
     }
     return !GameSystem::GetGameSystem()->GetBgmPlaying();
@@ -31,7 +31,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     /** @ghidraAddress 0x202778 */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return UIInterfaceOrientationMaskAll;
     }
     if (!GameSystem::GetGameSystem()->GetBgmPlaying()) {
@@ -50,7 +50,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     /** @ghidraAddress 0x2027dc */
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         return YES;
     }
     if (interfaceOrientation == UIInterfaceOrientationPortrait ||

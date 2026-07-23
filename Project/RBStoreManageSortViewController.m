@@ -119,8 +119,8 @@ static const CGFloat kSortCellFontSize = 19.0;
                                   withObject:self.sortTitleList[indexPath.row]];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    // The binary tests the region glyph-spacing flag here but takes the same action either way.
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    // The binary tests the iPad idiom flag here but takes the same action either way.
+    if (!IsPad()) {
         [self.manageViewCtrl hideSortSelect:nil];
     } else {
         [self.manageViewCtrl hideSortSelect:nil];

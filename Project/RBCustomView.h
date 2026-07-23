@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
  * experience picker, the mode-toggle buttons, the gradient frame, the effect overlay, and the
  * reward list.
  *
- * Calls through to @c super, then reads the theme and font-variant flag to size and place each
+ * Calls through to @c super, then reads the theme and iPad idiom flag to size and place each
  * subview. The experience picker starts translated off screen so the mode toggle can slide it in.
  * @ghidraAddress 0x96724
  */

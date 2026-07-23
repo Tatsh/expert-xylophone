@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Create the detail view for the given music and build its whole panel.
  *
  * Calls through to @c super, seeds the theme from @c RBUserSettingData, sets the music, resets the
- * game type, and builds the panel, difficulty selection, and setting view. On a font variant the
+ * game type, and builds the panel, difficulty selection, and setting view. On a iPad idiom the
  * animated line overlay is also built.
  * @param frame The view's frame rectangle.
  * @param MusicData The music this detail view describes.
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setBpm:(int)bpm Point:(CGPoint *)Point;
 
 /**
- * @brief Build the animated select-line overlay (font-variant layouts only).
+ * @brief Build the animated select-line overlay (iPad idiom layouts only).
  * @ghidraAddress 0xd2764
  */
 - (void)SetUpLineView;
@@ -369,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) NSMutableArray *settingTitleImages;
 /** @brief The song's iTunes URL string, when it has one. */
 @property(strong, nonatomic, nullable) NSString *iTunesURL;
-/** @brief The animated select-line overlay (font-variant layouts). */
+/** @brief The animated select-line overlay (iPad idiom layouts). */
 @property(strong, nonatomic, nullable) UIView *lineView;
 /** @brief The animated select-line overlay layers. */
 @property(strong, nonatomic, nullable) NSMutableArray *lineAnimationLayers;

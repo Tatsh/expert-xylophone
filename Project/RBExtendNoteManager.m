@@ -19,7 +19,6 @@
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
-
 #import "neEngineBridge.h"
 
 // The archive filename format: a nine-digit zero-padded extend-note identifier with a @c .rb
@@ -124,8 +123,8 @@ static const int kClientNoteEntriesPerPage = 20;
             BFCodec *codec = [[BFCodec alloc] init];
             [codec cipherInit:Md5StringToData(key.UTF8String)];
             [codec decipher:data];
-            NSData *payload = [data subdataWithRange:NSMakeRange(kListSaltLength,
-                                                                 data.length - kListSaltLength)];
+            NSData *payload =
+                [data subdataWithRange:NSMakeRange(kListSaltLength, data.length - kListSaltLength)];
             self.purchasedExtendNoteDictionaries = [payload mutableArray];
             [self setExtendNoteDataArrayDirty];
         }
@@ -257,8 +256,7 @@ static const int kClientNoteEntriesPerPage = 20;
         [self setExtendNoteDataArrayDirty];
         return NO;
     }
-    self.purchasedExtendNoteDictionaries[index] =
-        [NSDictionary dictionaryWithDictionary:merged];
+    self.purchasedExtendNoteDictionaries[index] = [NSDictionary dictionaryWithDictionary:merged];
     [self setExtendNoteDataArrayDirty];
     return YES;
 }
@@ -349,8 +347,8 @@ static const int kClientNoteEntriesPerPage = 20;
     /** @ghidraAddress 0x1840d0 */
     [self releaseClientMusic];
     self.clientExtendNotePageNum = pageNum;
-    self.clientExtendNotes = [[NSMutableArray alloc]
-        initWithCapacity:(NSUInteger)(pageNum * kClientNoteEntriesPerPage)];
+    self.clientExtendNotes =
+        [[NSMutableArray alloc] initWithCapacity:(NSUInteger)(pageNum * kClientNoteEntriesPerPage)];
 }
 
 - (int)setClientMusic:(NSArray *)clientMusic {

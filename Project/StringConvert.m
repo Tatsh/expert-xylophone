@@ -32,16 +32,18 @@ static const NSInteger kNoPreviousIndex = -1;
     if (!string || string.length == 0) {
         return string;
     }
-    NSString *folded = [StringConvert stringTransform:string
-                                        withTransform:(__bridge NSString *)
-                                                          kCFStringTransformFullwidthHalfwidth
-                                              reverse:YES];
+    NSString *folded =
+        [StringConvert stringTransform:string
+                         withTransform:(__bridge NSString *)kCFStringTransformFullwidthHalfwidth
+                               reverse:YES];
     folded = [StringConvert convertFromVToB:[folded copy]];
     folded = [StringConvert convertDJ:folded];
     folded = [StringConvert convertKorsk:folded];
     NSMutableString *result = [[NSMutableString alloc] init];
     NSRegularExpression *katakana =
-        [NSRegularExpression regularExpressionWithPattern:kKatakanaRangePattern options:0 error:nil];
+        [NSRegularExpression regularExpressionWithPattern:kKatakanaRangePattern
+                                                  options:0
+                                                    error:nil];
     NSInteger index = kNoPreviousIndex;
     while (index + 1 < (NSInteger)folded.length) {
         NSString *character = [folded substringWithRange:NSMakeRange(index + 1, 1)];
@@ -84,8 +86,10 @@ static const NSInteger kNoPreviousIndex = -1;
     if (!string || string.length == 0) {
         return string;
     }
-    string = [string stringByReplacingOccurrencesOfString:@"ディージェー" withString:@"ディイジエイ"];
-    string = [string stringByReplacingOccurrencesOfString:@"ディージェイ" withString:@"ディイジエイ"];
+    string = [string stringByReplacingOccurrencesOfString:@"ディージェー"
+                                               withString:@"ディイジエイ"];
+    string = [string stringByReplacingOccurrencesOfString:@"ディージェイ"
+                                               withString:@"ディイジエイ"];
     return string;
 }
 
@@ -121,8 +125,8 @@ static const NSInteger kNoPreviousIndex = -1;
                 withTransform:(NSString *)transform
                       reverse:(BOOL)reverse {
     NSMutableString *copy = [[NSMutableString alloc] initWithString:string];
-    CFStringTransform((__bridge CFMutableStringRef)copy, NULL, (__bridge CFStringRef)transform,
-                      reverse);
+    CFStringTransform(
+        (__bridge CFMutableStringRef)copy, NULL, (__bridge CFStringRef)transform, reverse);
     return copy;
 }
 

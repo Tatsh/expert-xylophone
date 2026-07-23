@@ -95,7 +95,7 @@ typedef enum {
     [self setBackgroundColor:[UIColor grayColor]];
 
     UIImage *packBg = [UIImage imageWithName:kStorePackBgImageName];
-    const BOOL isWide = GetFontVariantFlag() != kFontVariantDefault;
+    const BOOL isWide = IsPad();
 
     self.noteView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kCardWidth, kCardHeight)];
 
@@ -470,13 +470,13 @@ typedef enum {
         return;
     }
     if (artwork.size.width == artwork.size.height) {
-        const BOOL isWide = GetFontVariantFlag() != kFontVariantDefault;
-        CGSize margin = [self getArtworkMargin:(GetFontVariantFlag() != kFontVariantDefault)];
+        const BOOL isWide = IsPad();
+        CGSize margin = [self getArtworkMargin:(IsPad())];
         const double topInset = isWide ? 0.0 : 2.0;
         const double side = isWide ? kArtworkSideWide : kArtworkSideNarrow;
         [self.artworkView setFrame:CGRectMake(margin.width, margin.height - topInset, side, side)];
     } else {
-        CGSize itemSize = [self getItemSize:(GetFontVariantFlag() != kFontVariantDefault)];
+        CGSize itemSize = [self getItemSize:(IsPad())];
         [self.artworkView setFrame:CGRectMake(0.0, 0.0, itemSize.width, itemSize.height)];
     }
     [self.artworkView setImage:artwork];

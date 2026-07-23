@@ -213,13 +213,13 @@ static constexpr uint8_t kDoNotBackUpXattrValue = 1;
     [RBMusicManager.getInstance loadPurchasedMusics];
     [RBMusicManager.getInstance setMusicDataArrayDirty];
 
-    // Lay out the note sheet against the screen. The font-variant (large-text) build uses a fixed
+    // Lay out the note sheet against the screen. The iPad idiom (large-text) build uses a fixed
     // 640-wide sheet; the standard build fits the sheet to the screen, clamped to the 4" 640x1136
     // envelope (0x140 x 0x238 points).
     gameSystem->SetSheetWidth(kSheetWidth);
     gameSystem->SetSheetHeight(kSheetHeight);
     gameSystem->SetSheetLayerFlags(0);
-    if (GetFontVariantFlag() == kFontVariantDefault) {
+    if (!IsPad()) {
         double shortEdge = MIN(screenBounds.size.width, screenBounds.size.height);
         double longEdge = MAX(screenBounds.size.width, screenBounds.size.height);
         int height = static_cast<int>(longEdge) <= kReferenceScreenHeightPoints ?
