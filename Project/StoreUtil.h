@@ -111,6 +111,17 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSURL *)packInfoURL:(int)packID UserOpen:(BOOL)userOpen;
 
 /**
+ * @brief Build the extend-note-detail info download URL for an extend note.
+ *
+ * Forwards to @c NetworkUtil to compose the extend-note-info endpoint URL for the item.
+ * @param extendNoteID The extend-note identifier.
+ * @param userOpen Whether the request is on behalf of a user-initiated open.
+ * @return The extend-note-detail info endpoint URL.
+ * @ghidraAddress 0x8748c
+ */
++ (nullable NSURL *)extendNoteInfoURL:(unsigned int)extendNoteID UserOpen:(BOOL)userOpen;
+
+/**
  * @brief Build the manage-screen sort-metadata list download URL.
  * @return The sort-metadata list endpoint URL.
  * @ghidraAddress 0x859d0
