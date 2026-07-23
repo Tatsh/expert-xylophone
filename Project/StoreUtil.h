@@ -79,6 +79,56 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSString *)pidToProductID:(int)pid;
 
+/**
+ * @brief Build the tune-info download URL for a purchased tune.
+ * @param musicId The tune identifier.
+ * @return The tune-info endpoint URL.
+ * @ghidraAddress 0x8596c
+ */
++ (nullable NSURL *)musicInfoURL:(int)musicId;
+
+/**
+ * @brief Build the manage-screen sort-metadata list download URL.
+ * @return The sort-metadata list endpoint URL.
+ * @ghidraAddress 0x859d0
+ */
++ (nullable NSURL *)manageSortListURL;
+
+/**
+ * @brief Map an App Store product identifier to its numeric extend-note identifier.
+ * @param productID The product identifier string.
+ * @return The numeric extend-note identifier.
+ */
++ (int)productIDToPid:(nullable NSString *)productID;
+
+/**
+ * @brief Build the user-age and purchase-limit-type check URL.
+ * @return The user-age check endpoint URL.
+ */
++ (nullable NSURL *)userAgeURL;
+
+/**
+ * @brief Extract the affiliate product parameters carried by an iTunes URL.
+ * @param url The iTunes URL to parse.
+ * @return The affiliate parameters, or @c nil when the URL carries none.
+ */
++ (nullable NSDictionary *)affiliateParametersFromURL:(nullable NSString *)url;
+
+/**
+ * @brief Map an App Store product identifier to its numeric pack identifier.
+ * @param productID The product identifier string.
+ * @return The numeric pack identifier, or @c -1 when it is not a pack product.
+ * @ghidraAddress 0x1e66f8 (caller reference)
+ */
++ (int)packIDForProductID:(nullable NSString *)productID;
+
+/**
+ * @brief Map a numeric pack identifier to its App Store product identifier.
+ * @param packID The numeric pack identifier.
+ * @return The product identifier string.
+ */
++ (nullable NSString *)productIDForPackID:(int)packID;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -33,6 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)forceOpenCampaignDetailView;
 
+/**
+ * @brief Reloads the campaign unlock table after a purchase, download, or deletion.
+ * @ghidraAddress 0x1ff038
+ */
+- (void)refreshUnlockTable;
+
 @end
 
 NS_ASSUME_NONNULL_END

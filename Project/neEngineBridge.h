@@ -280,6 +280,42 @@ extern const char *const kChartDecodeKeys[];
  */
 extern const int kChartDecodeKeyLengths[];
 
+/**
+ * @brief A shared layout metric of 100 points used across the customize and store screens.
+ * @ghidraAddress 0x2ec6f8
+ */
+extern const double g_dCustomizeLayoutMetric100;
+/**
+ * @brief The wide (pad) slider and section row height metric.
+ * @ghidraAddress 0x2ee950
+ */
+extern const double g_dSliderRowHeightWide;
+/**
+ * @brief The shared translucent-panel background white value.
+ * @ghidraAddress 0x2ec6a0
+ */
+extern const double g_dTranslucentAlpha;
+/**
+ * @brief The localised "Delete" action-button title (pad layout).
+ * @ghidraAddress 0x3cfbb0
+ */
+extern NSString *const g_pLocalizedDelete;
+/**
+ * @brief The localised "Download" action-button title (pad layout).
+ * @ghidraAddress 0x3cfbc8
+ */
+extern NSString *const g_pLocalizedDownload;
+/**
+ * @brief The download-progress modal-dialog message format string (one @c %@ tune name).
+ * @ghidraAddress 0x3cfbd8
+ */
+extern NSString *const g_pDownloadingMessageFormat;
+/**
+ * @brief The delete-confirmation alert message format string (one @c %@ tune name).
+ * @ghidraAddress 0x3cfcb8
+ */
+extern NSString *const g_pDeleteConfirmFormat;
+
 #ifdef __cplusplus
 }
 #endif

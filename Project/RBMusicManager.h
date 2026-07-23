@@ -119,6 +119,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setMusicDataArrayDirty;
 /**
+ * @brief Rebuild the cached @c MusicData catalogue array from the current data sources.
+ * @ghidraAddress 0x6c18c
+ */
+- (void)createMusicDataArray;
+/**
  * @brief The cached @c MusicData array, rebuilt first when absent or marked dirty.
  * @ghidraAddress 0x6c6b8
  * @return The catalogue-entry array.
