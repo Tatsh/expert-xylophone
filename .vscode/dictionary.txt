@@ -54,10 +54,12 @@ exprosion
 extern
 extraout
 falied
+fmla
 foxundermoon
 fram
 fullwidth
 ghidra
+ghidra's
 gles
 grage
 halfwidth

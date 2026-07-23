@@ -110,6 +110,26 @@ reconstructed code faithful to the original.
   model such a function as taking fewer arguments than the `in_*` usage and the disassembly's
   register/stack reads prove (in particular, never as no-arg when it clearly is not) — fix the Ghidra
   prototype, then reconstruct the real signature. Scan for `in_*` whenever a signature looks empty.
+- Fix the Ghidra program itself, not only the reconstructed source. As you work a function, in Ghidra:
+  give every parameter, local, and return a real type (never a bare `long`/`int`/`undefined*` standing
+  in for an object or struct pointer); rename every auto-named variable (`pnVar1`, `lVar2`,
+  `uVar3`, `iVar4`, `pcVar5`, …) to a meaningful name; rename and type every `DAT_*`/`FUN_*`/`PTR_*`
+  global as it is encountered; and create the real `struct`/`class` types so that offset-and-cast
+  access (`*(int *)(in_x0 + i * 4 + 0x28)`) becomes a named field access (`p->nSpriteCount`). A
+  function whose first argument is a pointer to a structure is almost always an instance method of
+  that structure's class — model it as one.
+- Scrutinise return values as hard as arguments: confirm the real return type and whether the value
+  is actually returned/used (a discarded return, a returned `this`, or a bool-in-a-wider-register are
+  all common), and fix the Ghidra prototype accordingly.
+- The decompile is a guide, not the source of truth — verify against the disassembly. If a function
+  shows any hint of NEON / vectorisation (SIMD `v`/`q` registers, `ld1`/`st1`, `fmla`, `tbl`, …), work
+  it from the **disassembly only**: no guessing, no "best effort" reconstruction from the garbled
+  decompile.
+- Gate for the C/C++ engine phase: do not begin reconstructing an engine function until Ghidra's data
+  structures are set up and everything the function touches is well-typed (signature, locals, return,
+  globals, and the structs it reads/writes). `InitializeBackgroundSceneNodes` is the canonical example
+  of the mess to clean up first — incorrect variable types, casts, `in_*` args, un-renamed `pnVar1`
+  variables, and offset-with-cast field access.
 
 ## C
 
