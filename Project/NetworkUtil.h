@@ -113,6 +113,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)resourceURL;
 
+/**
+ * @brief The terms-of-service list endpoint.
+ * @ghidraAddress 0x338cc
+ */
++ (nullable NSURL *)termList;
+
+/**
+ * @brief The terms-of-service detail (single-term body) endpoint.
+ * @ghidraAddress 0x338ec
+ */
++ (nullable NSURL *)termFetch;
+
 @end
 
 NS_ASSUME_NONNULL_END

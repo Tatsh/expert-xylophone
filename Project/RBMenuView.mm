@@ -4,6 +4,7 @@
 #import "AudioManager.h"
 #import "Downloader.h"
 #import "NetworkUtil.h"
+#import "RBApplilinkView.h"
 #import "RBBGMManager.h"
 #import "RBCampaignData.h"
 #import "RBCollectionView.h"
@@ -21,8 +22,10 @@
 #import "RBMusicManager.h"
 #import "RBNewsHUDView.h"
 #import "RBPlaylistManager.h"
+#import "RBRankingView.h"
 #import "RBSearchView.h"
 #import "RBSettingView.h"
+#import "RBTermView.h"
 #import "RBThemaView.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
@@ -247,11 +250,8 @@ static BOOL g_bRandamIntSeeded = NO;
 
 // The not-yet-reconstructed collaborators this hub creates or messages. They are forward-declared
 // so the hub compiles ahead of their own reconstructions; each is a small overlay or controller.
-@class RBApplilinkView;
 @class RBMusicSearchExpander;
 @class RBNotificationPageView;
-@class RBRankingView;
-@class RBTermView;
 
 @interface RBMenuView ()
 
