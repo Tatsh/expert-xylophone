@@ -1,9 +1,9 @@
 /** @file
- * A rounded store action button with a configurable fill colour and a distinct disabled colour.
+ * A rounded store action button with a configurable gradient fill and a distinct disabled colour.
  *
- * Minimal stub for the surface @c RBCampaignDetailViewController messages; the full class is
- * reconstructed separately. Reconstructed from Ghidra project rb458, program rb458 (class
- * @c StoreButtonView, image base 0x100000000).
+ * Shared across the store user interface (the campaign detail and extend-note detail pages hold
+ * @c downloadBtn and @c linkBtn instances of it). Reconstructed from Ghidra project rb458, program
+ * rb458 (class @c StoreButtonView, image base 0x100000000).
  */
 
 #import <UIKit/UIKit.h>
@@ -11,25 +11,30 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A rounded store action button.
+ * @brief A rounded @c UIButton subclass that paints its own gradient fill, disabled fill, and a
+ *        grey inner-shadow border.
+ *
+ * The control redraws itself whenever its fill colour, disabled colour, corner radius, highlighted
+ * state, or selected state changes.
  */
 @interface StoreButtonView : UIButton
 
 /**
- * @brief Sets the button's enabled fill colour.
- * @param buttonColor The fill colour.
+ * @brief The enabled fill colour, used as the basis for the drawn gradient.
+ *
+ * Lazily defaults to @c +[UIColor blueColor] when it has never been set.
  */
-- (void)setButtonColor:(nullable UIColor *)buttonColor;
+@property(nonatomic, strong, null_resettable) UIColor *buttonColor;
 /**
- * @brief Sets the button's disabled fill colour.
- * @param disabledColor The disabled fill colour.
+ * @brief The fill colour used while the control is disabled.
+ *
+ * Lazily defaults to @c +[UIColor grayColor] when it has never been set.
  */
-- (void)setDisabledColor:(nullable UIColor *)disabledColor;
+@property(nonatomic, strong, null_resettable) UIColor *disabledColor;
 /**
- * @brief Sets the button's corner radius.
- * @param cornerRadius The corner radius, in points.
+ * @brief The corner radius of the rounded fill, in points.
  */
-- (void)setCornerRadius:(CGFloat)cornerRadius;
+@property(nonatomic) CGFloat cornerRadius;
 
 @end
 
