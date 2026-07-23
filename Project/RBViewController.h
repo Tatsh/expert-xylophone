@@ -14,6 +14,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RBBaseViewController.h"
+#import "neGLView.h"
 
 @class CADisplayLink;
 @class MusicData;
@@ -27,7 +28,6 @@
 @class SKStoreProductViewController;
 @class TwitterImageCreater;
 @class UIPopoverController;
-@class neGLView;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Root view controller that hosts the game GL view and music-select menu and runs the
  * display-link game loop.
  */
-@interface RBViewController : RBBaseViewController <UINavigationControllerDelegate>
+@interface RBViewController
+    : RBBaseViewController <UINavigationControllerDelegate, neGLViewDelegate>
 
 #pragma mark - Class helpers
 
@@ -102,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param glView The GL view that was laid out.
  * @ghidraAddress 0x8a7e4
  */
-- (void)LayoutedGLView:(nullable neGLView *)glView;
+- (void)LayoutedGLView:(neGLView *)glView;
 
 #pragma mark - Display-link loop control
 

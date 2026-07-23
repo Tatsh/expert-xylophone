@@ -141,6 +141,25 @@ static const double kPiOverTwo = 1.5707963267948966;
 static const float kSheetCentreX = 384.0f;
 static const float kSheetCentreY = 512.0f;
 
+// The component indices of a two-component screen-size vector.
+enum {
+    kVectorComponentX = 0,
+    kVectorComponentY = 1,
+};
+
+// The playlist view controller modes. Type "create" opens the playlist create and browse screen
+// from the playlist button; type "add to set" adds a music set to an existing playlist.
+enum {
+    kPlaylistTypeCreate = 0,
+    kPlaylistTypeAddToSet = 1,
+};
+
+// The terms-agreement document type shown by -showTermsWithDelegate:.
+static const int kTermTypeAgreement = 1;
+
+// The default play colour that the preview restores before showing the bundled preview song.
+static const int kDefaultPlayColor = 0;
+
 @interface RBViewController () <NSURLConnectionDataDelegate, SKStoreProductViewControllerDelegate>
 
 // The display-link callback that runs one task and draw pass.
@@ -208,7 +227,7 @@ static const float kSheetCentreY = 512.0f;
     if ([self.glView respondsToSelector:@selector(setContentScaleFactor:)]) {
         self.glView.contentScaleFactor = [UIScreen mainScreen].scale;
     }
-    [(id)self.glView setDelegate:self];
+    self.glView.delegate = self;
     [self.view addSubview:self.glView];
     [self setupCorporateButton];
 }
@@ -246,10 +265,10 @@ static const float kSheetCentreY = 512.0f;
     neGLESRenderer *renderer = GetGlRenderer();
     float elapsed = GetElapsedMediaTime(reinterpret_cast<double *>(&m_RenderTime));
     if (elapsed < kMaxRenderFrameElapsed) {
-        [(id)self.glView BeginRender];
+        [self.glView BeginRender];
         ClearBuffers(renderer, kClearColor);
         RenderGlobalSceneTree();
-        [(id)self.glView Present];
+        [self.glView Present];
     }
     StartMediaTimer(reinterpret_cast<double *>(&m_RenderTime));
 }
@@ -266,19 +285,19 @@ static const float kSheetCentreY = 512.0f;
     // the note sheet, following the arm64 disassembly. The camera helpers take a viewport for the
     // active-camera slot and an ne_CameraNode for the model node.
     neGLESRenderer *renderer = GetGlRenderer();
-    int viewW = static_cast<int>([(id)self.glView GetFrontBufferWidth]);
-    int viewH = static_cast<int>([(id)self.glView GetFrontBufferHeight]);
-    float scaleFactor = static_cast<float>([(id)self.glView contentScaleFactor]);
+    int viewW = [self.glView GetFrontBufferWidth];
+    int viewH = [self.glView GetFrontBufferHeight];
+    float scaleFactor = static_cast<float>(self.glView.contentScaleFactor);
 
     GameSystem *gameSystem = GameSystem::GetGameSystem();
-    float scaledSize[2] = {static_cast<float>(viewW), static_cast<float>(viewH)};
+    float scaledSize[] = {static_cast<float>(viewW), static_cast<float>(viewH)};
     float aspect = static_cast<float>(viewW) / static_cast<float>(viewH);
     ScaleVector2(scaledSize, 1.0f / scaleFactor);
-    gameSystem->SetViewportWidth(scaledSize[0]);
-    gameSystem->SetViewportHeight(scaledSize[1]);
+    gameSystem->SetViewportWidth(scaledSize[kVectorComponentX]);
+    gameSystem->SetViewportHeight(scaledSize[kVectorComponentY]);
 
-    ne_Viewport *orthoViewport =
-        CreateOrthoViewport(scaledSize[0], scaledSize[1], 0, 0, viewW, viewH);
+    ne_Viewport *orthoViewport = CreateOrthoViewport(
+        scaledSize[kVectorComponentX], scaledSize[kVectorComponentY], 0, 0, viewW, viewH);
     SetCurrentProjection(orthoViewport);
     ReleaseViewportCamera(orthoViewport);
 
@@ -307,9 +326,9 @@ static const float kSheetCentreY = 512.0f;
                                       0,
                                       viewW,
                                       viewH);
-        float eye[3] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), -distance};
-        float target[3] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
-        float up[3] = {0.0f, -1.0f, 0.0f};
+        float eye[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), -distance};
+        float target[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
+        float up[] = {0.0f, -1.0f, 0.0f};
         ne_CameraNode *camera = CreateLookAtCamera(eye, target, up);
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
@@ -318,7 +337,7 @@ static const float kSheetCentreY = 512.0f;
         // Landscape: either a flat perspective or a 3D-tilt projection depending on whether the
         // sheet still fits when tilted.
         float pitchRef = gameSystem->GetCameraPitchHeight();
-        float halfViewH = scaledSize[1] * 0.5f;
+        float halfViewH = scaledSize[kVectorComponentY] * 0.5f;
         float sheetRatio = gameSystem->GetSheetHeight() / halfViewH;
         float sheetFarX = gameSystem->GetSheetFarX();
         float sheetFarY = gameSystem->GetSheetFarY();
@@ -343,9 +362,9 @@ static const float kSheetCentreY = 512.0f;
             // matrices into the accumulator in that order.
             float sheetMidY = sheetFarY * 0.5f;
             float lookAt[16] = {};
-            float lookTarget[3] = {0.0f, sheetMidY, 0.0f};
-            float lookEye[3] = {0.0f, sheetMidY, 1.0f};
-            float lookUp[3] = {0.0f, -1.0f, 0.0f};
+            float lookTarget[] = {0.0f, sheetMidY, 0.0f};
+            float lookEye[] = {0.0f, sheetMidY, 1.0f};
+            float lookUp[] = {0.0f, -1.0f, 0.0f};
             MakeLookAtMatrix(lookAt, lookTarget, lookEye, lookUp);
             float rotation[16] = {};
             MakeRotationMatrixX(-(static_cast<float>(kPiOverTwo) - pitch), rotation);
@@ -357,22 +376,22 @@ static const float kSheetCentreY = 512.0f;
             MakeTranslationMatrix(zOffset, 0.0f, 0.0f, -pitchDepth);
             // The accumulator is seeded with the identity matrix (loaded as four constant vectors
             // in the binary) before the composition chain.
-            float viewMatrix[16] = {1.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    1.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    1.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    1.0f};
+            float viewMatrix[] = {1.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  1.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  1.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  0.0f,
+                                  1.0f};
             ComposeMatrices(viewMatrix, lookAt);
             ComposeMatrices(viewMatrix, yOffset);
             ComposeMatrices(viewMatrix, rotation);
@@ -387,11 +406,11 @@ static const float kSheetCentreY = 512.0f;
             gameSystem->SetSheetLayerFlags(0);
             ne_Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
-            float eye[3] = {kSheetCentreX,
-                            kSheetCentreY,
-                            static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
-            float target[3] = {kSheetCentreX, kSheetCentreY, 0.0f};
-            float up[3] = {0.0f, -1.0f, 0.0f};
+            float eye[] = {kSheetCentreX,
+                           kSheetCentreY,
+                           static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
+            float target[] = {kSheetCentreX, kSheetCentreY, 0.0f};
+            float up[] = {0.0f, -1.0f, 0.0f};
             ne_CameraNode *camera = CreateLookAtCamera(eye, target, up);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
@@ -399,11 +418,11 @@ static const float kSheetCentreY = 512.0f;
         }
     }
 
-    [(id)self.glView BeginRender];
-    [(id)self.glView SetDefaultFrameBuffer];
+    [self.glView BeginRender];
+    [self.glView SetDefaultFrameBuffer];
     ClearBuffers(renderer, kClearColorAndDepth);
-    [(id)self.glView SetDefaultColorBuffer];
-    [(id)self.glView Present];
+    [self.glView SetDefaultColorBuffer];
+    [self.glView Present];
 }
 
 #pragma mark - Display-link loop control
@@ -588,9 +607,9 @@ static const float kSheetCentreY = 512.0f;
     }
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
     m_PreviewGrageCache = [settings difficulty];
-    [settings setDifficulty:0];
+    [settings setDifficulty:kDifficultyBasic];
     m_PreviewPlayerColorCache = [settings playColor];
-    [settings setPlayColor:0];
+    [settings setPlayColor:kDefaultPlayColor];
     gameSystem->SetGameType([settings gameType]);
     gameSystem->SetDifficulty([settings difficulty]);
     gameSystem->SetDifficultyLevel([settings difficultyLevel]);
@@ -725,7 +744,7 @@ static const float kSheetCentreY = 512.0f;
 - (void)playListAddMusicSet:(id)musicSet {
     /** @ghidraAddress 0x89798 */
     self.playlistViewController = [[RBPlaylistViewController alloc] init];
-    [self.playlistViewController setPlaylistType:1];
+    [self.playlistViewController setPlaylistType:kPlaylistTypeAddToSet];
     [self.playlistViewController setPlaylistNode:nil];
     self.playlistViewController.delegate = self;
     [self.playlistViewController setMusicSet:musicSet];
@@ -740,7 +759,7 @@ static const float kSheetCentreY = 512.0f;
     [self.musicMenuView setSearchBarNonActive];
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     self.playlistViewController = [[RBPlaylistViewController alloc] init];
-    [self.playlistViewController setPlaylistType:0];
+    [self.playlistViewController setPlaylistType:kPlaylistTypeCreate];
     [self.playlistViewController setPlaylistNode:nil];
     self.playlistViewController.delegate = self;
     [self showPresentViewController];
@@ -913,7 +932,8 @@ static const float kSheetCentreY = 512.0f;
     if (self.termAgreeView) {
         return;
     }
-    RBTermAgreeView *terms = [[RBTermAgreeView alloc] initWithFrame:self.view.bounds termType:1];
+    RBTermAgreeView *terms = [[RBTermAgreeView alloc] initWithFrame:self.view.bounds
+                                                           termType:kTermTypeAgreement];
     terms.parentViewController = self;
     terms.delegate = delegate;
     self.termAgreeView = terms;
@@ -928,7 +948,7 @@ static const float kSheetCentreY = 512.0f;
     if (!url) {
         return;
     }
-    id affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
+    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
     if (!affiliateParameters) {
         [[UIApplication sharedApplication] openURL:url];
         return;
