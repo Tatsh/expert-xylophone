@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class RBNumberLabel;
 @class RBUnlockPackageItemData;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,9 +34,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) UIImageView *frameImageView;
 
 /**
- * @brief The "new" badge overlay, hidden once the item has been seen.
+ * @brief The "new" badge overlay, shown while an unlocked music track is still un-downloaded.
  */
 @property(strong, nonatomic, nullable) UIImageView *badgeView;
+
+/**
+ * @brief The overlay revealed once the item has been unlocked.
+ */
+@property(strong, nonatomic, nullable) UIImageView *unlockView;
+
+/**
+ * @brief The label showing the item's point cost.
+ */
+@property(strong, nonatomic, nullable) RBNumberLabel *pointLabel;
+
+/**
+ * @brief The index path the cell is currently laid out at.
+ */
+@property(strong, nonatomic, nullable) NSIndexPath *indexPath;
+
+/**
+ * @brief Whether the cell may be tapped to unlock its item.
+ */
+@property(nonatomic, assign) BOOL enabled;
 
 @end
 

@@ -145,6 +145,26 @@ void InitializeSourceManager(void);
  */
 int GetClearRank(float achievementRate);
 /**
+ * @brief Builds the bundle image path for a customize asset of the given category and variant.
+ *
+ * Formats a name of the form @c "04_customize/cus_i<category>_<variant>" for the bgm (0), shot (1),
+ * explosion (2), frame (3), background (4), object (5), and thema (10) categories, or the
+ * variant-less @c "04_customize/cus_imusic" for a music item (7); returns @c nil for any other
+ * category.
+ * @param assetType The customize asset category.
+ * @param variantIndex The index into the category's variant-name table.
+ * @return An autoreleased path string, or @c nil for an unhandled category.
+ * @ghidraAddress 0x54ee0
+ */
+NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantIndex);
+/**
+ * @brief Builds the bundle image path for a customize music-item frame overlay.
+ * @param kind The customize element id; only the music kind (7) yields a path.
+ * @return An autoreleased path string, or @c nil for any other kind.
+ * @ghidraAddress 0x550dc
+ */
+NSString *_Nullable GetCustomizeFrameImagePath(int kind);
+/**
  * @brief One-time initialiser for the global device, locale, and filesystem environment values.
  * @ghidraAddress 0x1a04c4
  */
@@ -415,7 +435,52 @@ public:
      * @ghidraAddress 0x1cd190
      */
     void LoadAll();
+    /**
+     * @brief Stores the shot sound group volume (clamped to the unit interval) and applies it to the
+     *        audio manager's shot bus.
+     * @param flVolume The requested volume, clamped to the range zero to one.
+     * @ghidraAddress 0x1cd4a4
+     */
+    void SetVolume(float flVolume);
+    /**
+     * @brief Auditions a shot sound slot, returning its play handle.
+     * @param uChannel The mixer channel to play on.
+     * @param iSlot The shot resource id to play.
+     * @param iVariant The slot variant.
+     * @ghidraAddress 0x1cd364
+     */
+    unsigned int PlaySlot(unsigned long uChannel, int iSlot, int iVariant);
 };
+
+/**
+ * The engine play-timing singleton. It is created lazily by @c EnsurePlayTimer and read directly
+ * through the @c g_pPlayTimer global; only the delay-frame offset the customize picker writes is
+ * modelled here.
+ * @ghidraAddress g_pPlayTimer (engine singleton, 0x40 bytes)
+ */
+class PlayTimer {
+public:
+    /**
+     * @brief Stores the delay-frame-derived timing offset applied to note judging.
+     * @param value The offset in seconds.
+     */
+    void SetDelayFrameOffset(float value) {
+        m_flDelayFrameOffset = value;
+    }
+
+private:
+    char m_reserved[0x20] = {};      // +0x00
+    float m_flDelayFrameOffset = {}; // +0x20
+};
+
+/**
+ * @brief Constructs the engine play-timing singleton (@c g_pPlayTimer) on first use.
+ * @ghidraAddress 0x131868
+ */
+void EnsurePlayTimer(void);
+
+/** @brief The engine play-timing singleton, constructed by @c EnsurePlayTimer. */
+extern PlayTimer *g_pPlayTimer;
 
 /**
  * A two-component float vector shared with the engine's sheet-layout helpers.
