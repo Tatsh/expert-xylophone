@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised slider, or @c nil.
  * @ghidraAddress 0x1beba8
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame delegate:(nullable id)delegate;
+- (nullable instancetype)initWithFrame:(CGRect)frame
+                              delegate:(nullable id<RBMenuPageSliderDelegate>)delegate;
 
 /**
  * @brief Reconfigure the page range and jump to a page.

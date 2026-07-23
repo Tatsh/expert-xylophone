@@ -67,7 +67,7 @@ enum {
 
 @implementation RBMenuPageSlider
 
-- (instancetype)initWithFrame:(CGRect)frame delegate:(id)delegate {
+- (instancetype)initWithFrame:(CGRect)frame delegate:(id<RBMenuPageSliderDelegate>)delegate {
     BOOL isWideVariant = GetFontVariantFlag() != kFontVariantDefault;
     CGFloat rowHeight = isWideVariant ? kSliderRowHeightWide : kSliderRowHeightNarrow;
 
