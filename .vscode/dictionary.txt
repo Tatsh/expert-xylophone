@@ -4,6 +4,8 @@ accell
 anim
 appli
 applilink
+applilinkapplist
+applist
 archs
 asbd
 autocapitalization
@@ -37,6 +39,7 @@ copysign
 coveragerc
 cplusplus
 creater
+cryptor
 cstring
 dashcam
 datas
@@ -86,6 +89,7 @@ howtoplay
 ifdef
 ifndef
 infomation
+initilize
 instancetype
 interitem
 ivar
@@ -201,6 +205,7 @@ theos
 thunks
 tomosuke
 transactioing
+udid
 udvare
 unarchiver
 undecryptable
