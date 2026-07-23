@@ -19,6 +19,7 @@ brighness
 bsky
 bunner
 bzero
+caeagl
 cfstring
 cfurl
 cfuuid
@@ -162,6 +163,7 @@ regen
 regist
 relase
 renderbuffer
+renderbuffer's
 resoure
 rgba
 rhythmin
