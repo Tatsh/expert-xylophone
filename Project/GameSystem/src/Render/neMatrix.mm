@@ -13,6 +13,20 @@ enum {
     kMatrixTranslateZ = 14,
 };
 
+// Component indices of a 3-component vector.
+enum {
+    kVectorComponentX = 0,
+    kVectorComponentY = 1,
+    kVectorComponentZ = 2,
+};
+
+// Row indices of the rotation basis in a column-major view matrix.
+enum {
+    kViewMatrixRowRight = 0,
+    kViewMatrixRowUp = 1,
+    kViewMatrixRowForward = 2,
+};
+
 /** @ghidraAddress 0x18fac */
 void SetMatrixIdentity(float *pMatrix) {
     static const float kIdentity[] = {
@@ -89,4 +103,49 @@ void ComposeMatrices(float *pAccumulator, float *pSource) {
     float matrixCopy[16];
     std::memcpy(matrixCopy, pAccumulator, sizeof(matrixCopy));
     MultiplyMatrix4x4(pAccumulator, pSource, matrixCopy);
+}
+
+// Writes one basis axis into a view-matrix row: the axis components spread across the three
+// rotation columns, and -dot(eye, axis) into the translation column.
+static inline void SetViewMatrixAxisRow(float *pOut, int row, float *pAxis, float *pEye) {
+    pOut[row] = pAxis[kVectorComponentX];
+    pOut[row + kMatrix4Order] = pAxis[kVectorComponentY];
+    pOut[row + 2 * kMatrix4Order] = pAxis[kVectorComponentZ];
+    pOut[row + 3 * kMatrix4Order] = -DotProductVector3(pEye, pAxis);
+}
+
+/** @ghidraAddress 0x19844 */
+float *MakeLookAtMatrix(float *pOut, float *pEye, float *pTarget, float *pUp) {
+    // Camera basis. forward points from the target back towards the eye.
+    float forward[] = {
+        pEye[kVectorComponentX] - pTarget[kVectorComponentX],
+        pEye[kVectorComponentY] - pTarget[kVectorComponentY],
+        pEye[kVectorComponentZ] - pTarget[kVectorComponentZ],
+    };
+    NormalizeVector3(forward);
+
+    // right = normalize(up x forward). CrossProductVector3 overwrites its first argument, which
+    // starts out holding the caller's up vector.
+    float right[] = {pUp[kVectorComponentX], pUp[kVectorComponentY], pUp[kVectorComponentZ]};
+    CrossProductVector3(right, forward);
+    NormalizeVector3(right);
+
+    // up = normalize(forward x right), re-orthogonalising the up vector against the basis.
+    float up[] = {
+        forward[kVectorComponentX], forward[kVectorComponentY], forward[kVectorComponentZ]};
+    CrossProductVector3(up, right);
+    NormalizeVector3(up);
+
+    // The rotation rows hold the basis vectors (the view matrix is the transpose of the camera
+    // orientation); each translation-column entry is -dot(eye, axis).
+    SetViewMatrixAxisRow(pOut, kViewMatrixRowRight, right, pEye);
+    SetViewMatrixAxisRow(pOut, kViewMatrixRowUp, up, pEye);
+    SetViewMatrixAxisRow(pOut, kViewMatrixRowForward, forward, pEye);
+
+    // Bottom row (0, 0, 0, 1).
+    pOut[3] = 0.0f;
+    pOut[7] = 0.0f;
+    pOut[11] = 0.0f;
+    pOut[15] = 1.0f;
+    return pOut;
 }

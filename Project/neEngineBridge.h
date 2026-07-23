@@ -232,10 +232,27 @@ void StartMediaTimer(double *pStartTime);
  */
 void ScaleVector2(float *pVec, float scale);
 /**
- * @brief Builds a look-at view matrix from a target, an eye, and an up vector.
+ * @brief Computes the dot product of two 3-component vectors.
+ * @return The dot product @c pA · @c pB.
+ * @ghidraAddress 0x20cf8
+ */
+float DotProductVector3(float *pA, float *pB);
+/**
+ * @brief Computes the cross product @c pOut @c = @c pOut @c × @c pB in place.
+ * @ghidraAddress 0x20d68
+ */
+void CrossProductVector3(float *pOut, float *pB);
+/**
+ * @brief Normalizes a 3-component vector in place, guarding against a near-zero length.
+ * @ghidraAddress 0x20d20
+ */
+void NormalizeVector3(float *pVec);
+/**
+ * @brief Builds a look-at view matrix from an eye, a target, and an up vector.
+ * @return @p pOutMatrix, so the result can be passed on inline.
  * @ghidraAddress 0x19844
  */
-void MakeLookAtMatrix(float *pOutMatrix, float *pTarget, float *pEye, float *pUp);
+float *MakeLookAtMatrix(float *pOutMatrix, float *pEye, float *pTarget, float *pUp);
 /**
  * @brief Builds an x-axis rotation matrix for the given angle, in radians.
  * @return @p pOutMatrix, so the result can be passed on inline.
