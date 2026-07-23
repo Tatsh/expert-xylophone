@@ -1,9 +1,40 @@
-#include "neTexture.h"
+#import "neTexture.h"
 
-#include <cstring>
-#include <new>
+#import <cstring>
+#import <new>
+
+#import "../../../neEngineBridge.h"
 
 namespace ne {
+
+/** @ghidraAddress 0x319d0 */
+C_TEXTURE::C_TEXTURE() {
+    // Every other field is zeroed by its in-class initialiser; the scale defaults to 1 and the flag
+    // records whether the device is an iPad.
+    m_flScale = 1.0f;
+    m_fFlag60 = IsPad();
+}
+
+/** @ghidraAddress 0x31a24 */
+C_TEXTURE::~C_TEXTURE() {
+    g_dwTotalTextureMemory -= m_nByteSize;
+    // Splice the entry out of the cache list when both links are set.
+    if (m_pPrev != nullptr && m_pNext != nullptr) {
+        m_pPrev->m_pNext = m_pNext;
+        m_pNext->m_pPrev = m_pPrev;
+    }
+    if (m_pKeyName != nullptr) {
+        delete[] m_pKeyName;
+        m_pKeyName = nullptr;
+    }
+    if (m_pSourcePath != nullptr) {
+        delete[] m_pSourcePath;
+        m_pSourcePath = nullptr;
+    }
+    if (m_nGLHandle != 0) {
+        GetGlRenderer()->DeleteTexture(m_nGLHandle);
+    }
+}
 
 /** @ghidraAddress 0x33c78 */
 C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
@@ -16,9 +47,9 @@ C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
         }
     }
 
-    // Not cached: allocate a new entry, initialise it, and load the image.
-    auto *pNewEntry = static_cast<C_TEXTURE *>(operator new(sizeof(C_TEXTURE)));
-    InitializeTextureEntry(pNewEntry);
+    // Not cached: construct a new entry and load the image. On a load failure the binary abandons
+    // the entry without freeing it; that is reproduced here.
+    auto *pNewEntry = new C_TEXTURE();
     if (LoadTextureFromUIImage(pNewEntry, pszName) == 0) {
         return nullptr;
     }

@@ -110,11 +110,10 @@ extern C_TEXTURE **g_ppTextureCacheHead;
 C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
 
 /**
- * @brief Initialise a freshly allocated texture cache entry to its empty state.
- * @param pTexture The texture to initialise.
- * @ghidraAddress 0x319d0
+ * @brief Running total of the bytes held by all live textures, for memory accounting.
+ * @ghidraAddress 0x3cff28
  */
-void InitializeTextureEntry(C_TEXTURE *pTexture);
+extern int g_dwTotalTextureMemory;
 
 /**
  * @brief Load a texture's pixels from the named UIImage asset.

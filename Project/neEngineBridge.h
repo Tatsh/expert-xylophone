@@ -508,6 +508,11 @@ public:
      */
     void ClearBuffers(unsigned int dwMask);
     /**
+     * @brief Deletes the GL texture object @p dwHandle.
+     * @ghidraAddress 0x21a68
+     */
+    void DeleteTexture(unsigned int dwHandle);
+    /**
      * @brief Generates one GL framebuffer object name into @p pOutFramebuffer.
      * @ghidraAddress 0x212ac
      */
