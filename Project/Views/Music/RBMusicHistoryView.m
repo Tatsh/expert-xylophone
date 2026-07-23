@@ -1,14 +1,10 @@
 #import "RBMusicHistoryView.h"
 
+#import "GraphView.h"
 #import "History.h"
 #import "HistoryData.h"
 #import "RBCoreDataManager.h"
 #import "UIImage+RB.h"
-
-// GraphView is the custom achievement-rate plot this panel hosts. It is not yet reconstructed (no
-// header exists), so it is only forward-declared and the messages to it (initWithFrame:,
-// setData:maxValue:, and reset) cannot compile until its header is created. The exact selectors are
-// listed in the class header's @class note.
 
 // The graph view's frame within the panel, decoded from the .const pools referenced by CreateView
 // (@0x4980..: x 16.0, y 20.0, and the two doubles DAT_1002ec690 and DAT_1002ec698).
