@@ -62,8 +62,9 @@ private:
     bool m_bVisible = {};                 // +0xd1
     unsigned char m_reservedTail[2] = {}; // +0xd2
 
-    // The scene-graph attach helper reaches the private sibling and parent links directly.
+    // The scene-graph link/unlink helpers reach the private sibling and parent links directly.
     friend void AttachSceneNode(C_RENDER *pParent, C_RENDER *pChild);
+    friend void DetachSceneNode(C_RENDER *pNode);
 };
 
 /**
@@ -75,6 +76,16 @@ private:
  * @ghidraAddress 0x29d08
  */
 void AttachSceneNode(C_RENDER *pParent, C_RENDER *pChild);
+
+/**
+ * @brief Unlink @p pNode from its parent's child list.
+ *
+ * Advances the parent's child-list head past @p pNode if it was the head, splices the node out of
+ * its sibling ring, then clears its parent link and resets its sibling links to itself.
+ * @param pNode The node to detach.
+ * @ghidraAddress 0x29c8c
+ */
+void DetachSceneNode(C_RENDER *pNode);
 
 } // namespace ne
 
