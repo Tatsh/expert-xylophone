@@ -128,6 +128,72 @@ void ComposeMatrices(float *pAccumulator, float *pSource) {
     MultiplyMatrix4x4(pAccumulator, pSource, matrixCopy);
 }
 
+/** @ghidraAddress 0x18d9c */
+void MultiplyMatrixInPlace(float *pMatrix, float *pRight) {
+    // pMatrix := pMatrix * pRight. As in ComposeMatrices the left operand is copied first, because
+    // MultiplyMatrix4x4 rereads it for every output column and so cannot alias the result. Unlike
+    // ComposeMatrices, the in-place matrix is the left operand here, not the right.
+    float matrixCopy[16];
+    std::memcpy(matrixCopy, pMatrix, sizeof(matrixCopy));
+    MultiplyMatrix4x4(pMatrix, matrixCopy, pRight);
+}
+
+/** @ghidraAddress 0x19660 */
+void SetMatrixTranslation(float *pMatrix, float x, float y, float z) {
+    // Overwrite only the translation column, leaving the rotation/scale block and bottom row intact.
+    pMatrix[kMatrixTranslateX] = x;
+    pMatrix[kMatrixTranslateY] = y;
+    pMatrix[kMatrixTranslateZ] = z;
+}
+
+/** @ghidraAddress 0x197ec */
+void MakeScaleMatrix(float *pOutMatrix, float flScaleX, float flScaleY, float flScaleZ) {
+    // Diagonal scale matrix (column-major); the binary zeroes the off-diagonal elements with vector
+    // stores. Elements [0], [5], and [10] hold the per-axis scale and [15] the homogeneous 1.
+    static const float kZeroMatrix[16] = {};
+    std::memcpy(pOutMatrix, kZeroMatrix, sizeof(kZeroMatrix));
+    pOutMatrix[0] = flScaleX;
+    pOutMatrix[5] = flScaleY;
+    pOutMatrix[10] = flScaleZ;
+    pOutMatrix[15] = 1.0f;
+}
+
+/** @ghidraAddress 0x19798 */
+float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle) {
+    // Z rotation in the upper-left 3x3 (column-major), leaving the translation column and bottom row
+    // intact. The binary computes the sine and cosine together with the combined sincos routine.
+    //   [ cos  -sin   0 ]
+    //   [ sin   cos   0 ]
+    //   [  0     0    1 ]
+    const float flSin = std::sin(flAngle);
+    const float flCos = std::cos(flAngle);
+    pMatrix[0] = flCos;
+    pMatrix[1] = flSin;
+    pMatrix[2] = 0.0f;
+    pMatrix[4] = -flSin;
+    pMatrix[5] = flCos;
+    pMatrix[6] = 0.0f;
+    pMatrix[8] = 0.0f;
+    pMatrix[9] = 0.0f;
+    pMatrix[10] = 1.0f;
+    return pMatrix;
+}
+
+/** @ghidraAddress 0x19824 */
+void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flScaleZ) {
+    // Diagonal scale in the upper-left 3x3, zeroing the off-diagonal 3x3 elements and leaving the
+    // translation column and bottom row intact.
+    pMatrix[0] = flScaleX;
+    pMatrix[1] = 0.0f;
+    pMatrix[2] = 0.0f;
+    pMatrix[4] = 0.0f;
+    pMatrix[5] = flScaleY;
+    pMatrix[6] = 0.0f;
+    pMatrix[8] = 0.0f;
+    pMatrix[9] = 0.0f;
+    pMatrix[10] = flScaleZ;
+}
+
 // Writes one basis axis into a view-matrix row: the axis components spread across the three
 // rotation columns, and -dot(eye, axis) into the translation column.
 static inline void SetViewMatrixAxisRow(float *pOut, int row, S_VECTOR3 *pAxis, S_VECTOR3 *pEye) {

@@ -283,6 +283,37 @@ void MultiplyMatrix4x4(float *pOut, float *pLeft, float *pRight);
  * @ghidraAddress 0x18fac
  */
 void SetMatrixIdentity(float *pMatrix);
+/**
+ * @brief Multiplies @p pMatrix by @p pRight on the right, in place.
+ *
+ * Computes @c pMatrix @c = @c pMatrix @c * @c pRight (column-major), multiplying against a copy of
+ * @p pMatrix so the in-place result does not alias its own input.
+ * @ghidraAddress 0x18d9c
+ */
+void MultiplyMatrixInPlace(float *pMatrix, float *pRight);
+/**
+ * @brief Builds a 4x4 column-major diagonal scale matrix.
+ * @ghidraAddress 0x197ec
+ */
+void MakeScaleMatrix(float *pOutMatrix, float flScaleX, float flScaleY, float flScaleZ);
+/**
+ * @brief Sets a matrix's translation column, leaving the rest of the matrix intact.
+ * @ghidraAddress 0x19660
+ */
+void SetMatrixTranslation(float *pMatrix, float x, float y, float z);
+/**
+ * @brief Sets the upper-left 3x3 of a matrix to a z-axis rotation, leaving the translation column
+ * and bottom row intact.
+ * @return @p pMatrix, so the result can be passed on inline.
+ * @ghidraAddress 0x19798
+ */
+float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle);
+/**
+ * @brief Sets the upper-left 3x3 of a matrix to a diagonal scale, zeroing the other 3x3 elements
+ * and leaving the translation column and bottom row intact.
+ * @ghidraAddress 0x19824
+ */
+void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flScaleZ);
 
 // Shared engine data tables, seeded at startup. They are defined once in the engine layer and read
 // from the Objective-C code, so they are declared here rather than re-declared locally.
