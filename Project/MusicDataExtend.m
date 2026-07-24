@@ -65,4 +65,24 @@ static NSString *const kExtendKeyComment = @"Comment";
     return nil;
 }
 
+- (NSMutableData *)getZipData:(NSString *)entryName {
+    /** @ghidraAddress 0x5a60c */
+    return nil;
+}
+
+#pragma mark - Unused artwork-cache hooks
+
+- (void)createCache {
+    /** @ghidraAddress 0x5a614 */
+}
+
+- (void)releaseCache {
+    /** @ghidraAddress 0x5a618 */
+}
+
+- (BOOL)isArtworkCache {
+    /** @ghidraAddress 0x5a61c */
+    return NO;
+}
+
 @end

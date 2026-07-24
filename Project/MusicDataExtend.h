@@ -97,6 +97,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSMutableData *)getExtendZipData:(NSString *)entryName
                                         Path:(NSString *)zipPath
                                   DecodeType:(int)decodeType;
+/**
+ * @brief An unused hook mirroring @c MusicData's archive reader; the binary returns @c nil.
+ * @param entryName The archive member name (ignored).
+ * @return @c nil.
+ * @ghidraAddress 0x5a60c
+ */
+- (nullable NSMutableData *)getZipData:(NSString *)entryName;
+/**
+ * @brief An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
+ * @ghidraAddress 0x5a614
+ */
+- (void)createCache;
+/**
+ * @brief An unused artwork-cache hook mirroring @c MusicData; the binary leaves it empty.
+ * @ghidraAddress 0x5a618
+ */
+- (void)releaseCache;
+/**
+ * @brief Whether the artwork image is cached; the binary always returns @c NO.
+ * @return @c NO.
+ * @ghidraAddress 0x5a61c
+ */
+- (BOOL)isArtworkCache;
 
 @end
 

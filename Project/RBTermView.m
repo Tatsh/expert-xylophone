@@ -642,4 +642,37 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     }
 }
 
+/** @ghidraAddress 0x114848 */
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // The binary provides an empty implementation.
+}
+
+/** @ghidraAddress 0x11484c */
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // The binary provides an empty implementation.
+}
+
+/** @ghidraAddress 0x114850 */
+- (void)alertViewCancel:(UIAlertView *)alertView {
+    // The binary provides an empty implementation.
+}
+
+#pragma mark - Rotation
+
+/** @ghidraAddress 0x114854 */
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return interfaceOrientation == UIInterfaceOrientationPortrait ||
+           interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown;
+}
+
+/** @ghidraAddress 0x114864 */
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
+/** @ghidraAddress 0x11486c */
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+
 @end
