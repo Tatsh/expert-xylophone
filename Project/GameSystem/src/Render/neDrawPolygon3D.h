@@ -8,6 +8,7 @@
 #include "neDrawPolygon2D.h"
 #include "neRender.h"
 
+struct S_VECTOR2;
 struct S_VECTOR3;
 
 namespace ne {
@@ -50,6 +51,34 @@ public:
                  unsigned char nAlpha);
 
     /**
+     * @brief Set only the alpha of a mesh vertex's colour, if the mesh carries a colour attribute.
+     * @param nIndex The vertex index.
+     * @param nAlpha The alpha component.
+     * @ghidraAddress 0x29810
+     */
+    void SetAlpha(int nIndex, unsigned char nAlpha);
+
+    /**
+     * @brief Set a mesh vertex's UV coordinates, if the mesh carries a texcoord attribute.
+     *
+     * The U and V are stored as 16-bit fixed point, with V flipped (1 - v), at the vertex's UV
+     * offset within the interleaved buffer.
+     * @param nIndex The vertex index.
+     * @param flU The U coordinate.
+     * @param flV The V coordinate.
+     * @ghidraAddress 0x296cc
+     */
+    void SetUV(int nIndex, float flU, float flV);
+
+    /**
+     * @brief Set a mesh vertex's UV coordinates from a vector pointer, forwarding to @c SetUV.
+     * @param nIndex The vertex index.
+     * @param pUv The UV coordinates.
+     * @ghidraAddress 0x296c4
+     */
+    void SetUvFromVec(int nIndex, const S_VECTOR2 *pUv);
+
+    /**
      * @brief Store a vertex index into the mesh's index buffer and mark it dirty.
      * @param nIndex The position in the index buffer.
      * @param wValue The vertex index to store.
@@ -60,6 +89,7 @@ public:
     // The vertex-format attribute bits tested before writing a vertex attribute.
     enum VertexFormatFlag {
         kVertexHasPosition = 1 << 0, // The mesh carries per-vertex positions.
+        kVertexHasTexcoord = 1 << 1, // The mesh carries per-vertex texture coordinates.
         kVertexHasColor = 1 << 2,    // The mesh carries per-vertex colours.
     };
 
@@ -68,8 +98,9 @@ private:
     int m_nVertexCount = {};           // +0xdc: the number of vertices.
     int m_nVertexStride = {};          // +0xe0: the interleaved byte stride between vertices.
     int m_nPositionOffset = {};        // +0xe4: the position byte offset within a vertex.
-    // +0xe8..+0xfc: further mesh state still being worked out.
-    unsigned char m_aReservedE8[0x15] = {}; // +0xe8
+    int m_nUvOffset = {};              // +0xe8: the texcoord byte offset within a vertex.
+    // +0xec..+0xfc: further mesh state still being worked out.
+    unsigned char m_aReservedEc[0x11] = {}; // +0xec
     bool m_bVertexDirty = {};               // +0xfd: set when a vertex attribute is modified.
     bool m_bColorDirty = {};                // +0xfe: set when a vertex colour is modified.
     // +0xff..+0x107 is padding before the array pointers.
