@@ -12,6 +12,11 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
   `g_`-prefixed globals). Ghidra placeholder names (`FUN_*`, `DAT_*`, `PTR_*`) are never used as
   identifiers in reconstructed code; rename them descriptively and record the address with
   `@ghidraAddress`.
+- Take a C++ class's name from its RTTI when RTTI is present: the Itanium `type_info` name string
+  (and the demangled vtable/`type_info` symbol) is authoritative — use it verbatim as the class
+  name, exactly as an Objective-C class name comes from the runtime metadata. When there is no RTTI
+  (a non-polymorphic class emits none), name the class from its embedded `__FILE__` basename and its
+  method/`__func__` names instead, and note that the name is inferred rather than RTTI-confirmed.
 - Model real types, not decompiler artifacts. Use real struct fields (never `field_0xNN`) and real
   pointer, enum, and `BOOL` types (never `void *` for a typed pointer, an `int` that holds a
   pointer, or `undefined`/`undefined4`).

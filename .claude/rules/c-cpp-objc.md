@@ -2,6 +2,14 @@
 
 ## General
 
+- One class per header and per implementation file: each Objective-C `@interface`/`@implementation`
+  and each C++ `class`/`struct` with methods gets its own `.h` and `.m`/`.mm`/`.cpp`, named for that
+  class. Do not aggregate several classes into one shared header. The engine bridge
+  (`neEngineBridge.h`) and `neRenderer.h` predate this rule and must be split into per-class headers
+  (each class moving to its own header, with the bridge retained only for genuinely free shared
+  engine functions and globals, or dropped once empty). A file may contain small tightly-coupled
+  helpers of its one class (a file-private struct, a delegate protocol it defines), but not a second
+  independent class.
 - Place a reconstructed source file in the subdirectory of `Project/` that mirrors the binary's
   embedded `__FILE__` path, with two elisions: drop the
   `/Users/.../Program/Games/REFLECBEAT/` prefix, and drop the `Classess/` path segment (a typo in
