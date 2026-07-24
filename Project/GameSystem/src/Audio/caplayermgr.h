@@ -75,7 +75,7 @@ public:
      * @brief Plays the sound registered under a call name, returning its handle.
      * @ghidraAddress 0x4ba1c
      */
-    unsigned int PlaySoundForKey(NSString *callName);
+    unsigned int PlaySoundForKey(NSString *callName, int volume);
     /**
      * @brief Plays the sound at the given index on a specific voice, returning its handle.
      * @ghidraAddress 0x4b9d4
@@ -118,10 +118,16 @@ public:
     void SetMasterVoiceParameter();
 
 private:
-    caCAMixer *m_pMixer = {};            // +0x00 the Core Audio voice mixer
-    unsigned char m_aReserved08[8] = {}; // +0x08 the name-to-id dictionary (not yet modelled)
-    caSource **m_pSourceArray = {};      // +0x10 the registered sound buffers, indexed by id
-    int m_nSourceCount = {};             // +0x18 the number of registered sounds
+    // Registers @p pSource in a free slot of the sound array and returns its slot index (sound id).
+    unsigned int RegisterSource(caSource *pSource);
+    // Returns the index of a free slot in the sound array, growing it by a fixed step and returning
+    // the first new index when none is free.
+    unsigned int FindOrGrowFreeSlot();
+
+    caCAMixer *m_pMixer = {};                // +0x00 the Core Audio voice mixer
+    NSMutableDictionary *m_pSourceDict = {}; // +0x08 the call-name -> sound-id map
+    caSource **m_pSourceArray = {};          // +0x10 the registered sound buffers, indexed by id
+    int m_nSourceCount = {};                 // +0x18 the number of registered sounds
 };
 
 // code: language=Objective-C++

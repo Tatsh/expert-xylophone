@@ -9,6 +9,8 @@
 
 #include "caplayermgr.h"
 
+#include <cassert>
+
 #include "cacamixer.h"
 #include "casound.h"
 
@@ -31,6 +33,64 @@ unsigned int DecodeVoiceHandle(unsigned int hTagged) {
 }
 
 } // namespace
+
+// The number of extra sound-array slots each grow reserves.
+namespace {
+constexpr int kSlotGrowStep = 0x14;
+} // namespace
+
+/** @ghidraAddress 0x4bbd4 */
+unsigned int caPlayerMgr::FindOrGrowFreeSlot() {
+    // Reuse the first empty slot if there is one.
+    for (int nSlot = 0; nSlot < m_nSourceCount; ++nSlot) {
+        if (m_pSourceArray[nSlot] == nullptr) {
+            return static_cast<unsigned int>(nSlot);
+        }
+    }
+    // Otherwise grow the array by a fixed step, copying the existing slots and zeroing the new ones,
+    // and return the first new index.
+    const int nOldCount = m_nSourceCount;
+    const int nNewCount = nOldCount + kSlotGrowStep;
+    m_nSourceCount = nNewCount;
+    auto **pNewArray = new caSource *[nNewCount]();
+    for (int nSlot = 0; nSlot < nOldCount; ++nSlot) {
+        pNewArray[nSlot] = m_pSourceArray[nSlot];
+    }
+    delete[] m_pSourceArray;
+    m_pSourceArray = pNewArray;
+    return static_cast<unsigned int>(nOldCount);
+}
+
+/** @ghidraAddress 0x4b6c4 */
+unsigned int caPlayerMgr::RegisterSource(caSource *pSource) {
+    const unsigned int nSlot = FindOrGrowFreeSlot();
+    m_pSourceArray[nSlot] = pSource;
+    // The binary asserts the slot fits in 24 bits; a real free slot always does.
+    assert((nSlot >> 24) == 0);
+    return nSlot;
+}
+
+/** @ghidraAddress 0x4b62c */
+int caPlayerMgr::CreateAndLoadSound(const char *szPath, bool bLoop) {
+    if (szPath == nullptr) {
+        return -1;
+    }
+    auto *pSource = new caSource();
+    if (pSource->LoadFromPath(szPath, bLoop) != 0) {
+        return static_cast<int>(RegisterSource(pSource));
+    }
+    delete pSource;
+    return -1;
+}
+
+/** @ghidraAddress 0x4ba1c */
+unsigned int caPlayerMgr::PlaySoundForKey(NSString *callName, int volume) {
+    NSNumber *pId = m_pSourceDict[callName];
+    if (pId == nil) {
+        return kInvalidHandle;
+    }
+    return PlaySoundByIndex(pId.intValue, volume);
+}
 
 /** @ghidraAddress 0x4b998 */
 unsigned int caPlayerMgr::PlaySoundByIndex(int index, int volume) {

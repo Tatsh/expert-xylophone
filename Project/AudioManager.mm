@@ -644,7 +644,7 @@ constexpr double kResumeFadeInTime = 0.3;
                                                          kResourceIndexMask);
     }
     if (group == kSeGroupCaPlayer) {
-        return sePlayer->PlaySoundForKey(callName);
+        return sePlayer->PlaySoundForKey(callName, volume);
     }
     return seAVPlayer->AcquireAudioBusForSourceKey(callName, volume);
 }
