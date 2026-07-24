@@ -85,9 +85,13 @@ private:
     int m_aTexParams[4] = {};               // +0x140
     int m_nBlendMode = {};                  // +0x150
     bool m_bBatchFlag = {};                 // +0x154
-    // +0x155: reserved so the object matches the binary's 352-byte allocation; the trailing fields
-    // beyond the batch flag have not yet been recovered.
-    unsigned char m_reserved155[11] = {};
+    // +0x158: an 8-byte member present in the binary's 0x160-byte object but read or written by no
+    // C_SPRITE_INSTANCING method (verified by an exhaustive whole-binary cross-reference of +0x158
+    // accesses). The sibling render-node subclasses (RenderPolygon2dMesh / RenderPolygon3dMesh) keep
+    // a live mesh-texture member here; this batch node holds its texture at m_pTexture (+0x138)
+    // instead, leaving this slot of the shared node layout unused. It is kept so the object matches
+    // the binary's allocation size. (+0x155..+0x157 is alignment padding.)
+    long long m_unused158 = {}; // +0x158
 };
 
 /**
