@@ -18,8 +18,17 @@ namespace {
 // callers can tell which subsystem produced the handle.
 constexpr unsigned int kOneShotSourceTag = 0x20000000;
 
+// The mask isolating the raw voice handle (index<<16 | generation) from the tagged handle.
+constexpr unsigned int kHandleMask = 0x0fffffff;
+
 // The sentinel returned when the sound index is out of range or unregistered.
 constexpr unsigned int kInvalidHandle = 0xffffffff;
+
+// Strips the one-shot source tag from a play handle, yielding the raw mixer handle, or the invalid
+// sentinel when the tag is absent (so the mixer's index/generation check rejects it).
+unsigned int DecodeVoiceHandle(unsigned int hTagged) {
+    return (hTagged & kOneShotSourceTag) != 0 ? (hTagged & kHandleMask) : kInvalidHandle;
+}
 
 } // namespace
 
@@ -41,4 +50,29 @@ unsigned int caPlayerMgr::PlaySoundOnVoice(int resourceId, int busId, int volume
         return kInvalidHandle;
     }
     return m_pMixer->EnqueueVoiceBuffer(pSource, busId, volume) | kOneShotSourceTag;
+}
+
+/** @ghidraAddress 0x4bb6c */
+void caPlayerMgr::ResumeVoiceByHandle(unsigned int handle) {
+    m_pMixer->StartVoice(DecodeVoiceHandle(handle));
+}
+
+/** @ghidraAddress 0x4bb9c */
+void caPlayerMgr::PauseVoiceByHandle(unsigned int handle) {
+    m_pMixer->PauseVoice(DecodeVoiceHandle(handle));
+}
+
+/** @ghidraAddress 0x4bb84 */
+void caPlayerMgr::StopVoiceByHandle(unsigned int handle) {
+    m_pMixer->StopVoice(DecodeVoiceHandle(handle));
+}
+
+/** @ghidraAddress 0x4bcac */
+void caPlayerMgr::ReleaseVoiceByHandle(unsigned int handle) {
+    m_pMixer->StopAndClearVoice(DecodeVoiceHandle(handle));
+}
+
+/** @ghidraAddress 0x4bbb4 */
+int caPlayerMgr::GetVoiceStateByHandle(unsigned int handle) {
+    return m_pMixer->GetVoiceState(DecodeVoiceHandle(handle));
 }

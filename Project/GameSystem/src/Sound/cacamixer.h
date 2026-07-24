@@ -20,6 +20,8 @@ public:
     enum State {
         kStateFree = -1,    /*!< No sound is bound to the voice. */
         kStatePrepared = 1, /*!< A sound is bound and ready to render. */
+        kStatePlaying = 2,  /*!< The voice is playing. */
+        kStatePaused = 3,   /*!< The voice is paused. */
         kStateFinished = 4, /*!< Playback has finished; the voice may be reused. */
     };
 
@@ -78,6 +80,38 @@ public:
      */
     unsigned int FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume);
 
+    /**
+     * @brief Moves the prepared or paused voice named by @p hVoice to playing.
+     * @param hVoice The raw handle (voice index in bits 16+, generation in the low 16).
+     * @return @c 1 when the voice matched and started, @c 0 otherwise.
+     * @ghidraAddress 0x4b28c
+     */
+    unsigned int StartVoice(unsigned int hVoice);
+    /**
+     * @brief Marks the voice named by @p hVoice finished (stopped).
+     * @return @c 1 when the voice matched, @c 0 otherwise.
+     * @ghidraAddress 0x4b2e4
+     */
+    unsigned int StopVoice(unsigned int hVoice);
+    /**
+     * @brief Pauses the voice named by @p hVoice.
+     * @return @c 1 when the voice matched, @c 0 otherwise.
+     * @ghidraAddress 0x4b32c
+     */
+    unsigned int PauseVoice(unsigned int hVoice);
+    /**
+     * @brief Returns the playback state of the voice named by @p hVoice, or @c -1 when the handle
+     *        does not resolve to a live voice.
+     * @ghidraAddress 0x4b374
+     */
+    int GetVoiceState(unsigned int hVoice);
+    /**
+     * @brief Frees the voice named by @p hVoice (marks it finished and drops its source) so a later
+     *        @c FindFreeVoiceAndEnqueue can recycle it. Always returns @c 1.
+     * @ghidraAddress 0x4b42c
+     */
+    unsigned int StopAndClearVoice(unsigned int hVoice);
+
     void InstallVoiceRenderCallback(int nBus);
 
     /**
@@ -93,6 +127,10 @@ public:
     bool ApplyVoicePanParam(int nVolume, int nBus);
 
 private:
+    // Resolves a raw play handle to its live voice (index in the high bits, generation in the low
+    // 16), or @c nullptr when the index is out of range or the generation is stale.
+    caVoice *ResolveVoice(unsigned int hVoice);
+
     unsigned char m_aReserved00[0x18] = {}; // +0x00
     AudioUnit m_pMixerUnit = {};            // +0x18 the spatial-mixer AudioUnit
     unsigned char m_aReserved20[4] = {};    // +0x20

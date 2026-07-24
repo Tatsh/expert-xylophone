@@ -127,3 +127,68 @@ bool caCAMixer::ApplyVoicePanParam(int nVolume, int nBus) {
                m_pMixerUnit, kMixerGainParam, kMixerGainScope, 0, g_aVoiceGainTable[nVolume], 0) ==
            noErr;
 }
+
+// Resolves a raw play handle to its live voice, or nullptr when the index is out of range or the
+// generation does not match (a stale handle). The voice index is the handle's high bits and the
+// generation is its low 16 bits.
+caVoice *caCAMixer::ResolveVoice(unsigned int hVoice) {
+    const int nBus = static_cast<int>(hVoice >> kHandleBusShift);
+    if (nBus >= m_nVoiceCount) {
+        return nullptr;
+    }
+    caVoice *pVoice = m_pVoiceArray[nBus];
+    if (pVoice == nullptr || pVoice->m_wGeneration != (hVoice & 0xffff)) {
+        return nullptr;
+    }
+    return pVoice;
+}
+
+/** @ghidraAddress 0x4b28c */
+unsigned int caCAMixer::StartVoice(unsigned int hVoice) {
+    caVoice *pVoice = ResolveVoice(hVoice);
+    if (pVoice == nullptr) {
+        return 0;
+    }
+    // Only a prepared (1) or paused (3) voice may start; both satisfy (state | 2) == 3.
+    if ((pVoice->m_nState | 2) != caVoice::kStatePaused) {
+        return 0;
+    }
+    pVoice->m_nState = caVoice::kStatePlaying;
+    return 1;
+}
+
+/** @ghidraAddress 0x4b2e4 */
+unsigned int caCAMixer::StopVoice(unsigned int hVoice) {
+    caVoice *pVoice = ResolveVoice(hVoice);
+    if (pVoice == nullptr) {
+        return 0;
+    }
+    pVoice->m_nState = caVoice::kStateFinished;
+    return 1;
+}
+
+/** @ghidraAddress 0x4b32c */
+unsigned int caCAMixer::PauseVoice(unsigned int hVoice) {
+    caVoice *pVoice = ResolveVoice(hVoice);
+    if (pVoice == nullptr) {
+        return 0;
+    }
+    pVoice->m_nState = caVoice::kStatePaused;
+    return 1;
+}
+
+/** @ghidraAddress 0x4b374 */
+int caCAMixer::GetVoiceState(unsigned int hVoice) {
+    caVoice *pVoice = ResolveVoice(hVoice);
+    return pVoice != nullptr ? pVoice->m_nState : -1;
+}
+
+/** @ghidraAddress 0x4b42c */
+unsigned int caCAMixer::StopAndClearVoice(unsigned int hVoice) {
+    caVoice *pVoice = ResolveVoice(hVoice);
+    if (pVoice != nullptr) {
+        pVoice->m_nState = caVoice::kStateFinished;
+        pVoice->m_pSource = nullptr;
+    }
+    return 1;
+}
