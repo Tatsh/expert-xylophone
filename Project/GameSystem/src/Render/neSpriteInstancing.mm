@@ -1,9 +1,17 @@
 #include "neSpriteInstancing.h"
 
+#include <cassert>
+
 #import "neEngineBridge.h"
 #include "neTexture.h"
 
 namespace ne {
+
+// The sprite-batch precondition check (the binary's tempAssert): aborts when the condition is
+// false. The compiler emits it both inlined into the colour accessors and out-of-line (0x2f638).
+static void tempAssert(bool bCondition) {
+    assert(bCondition);
+}
 
 // The static quad geometry the batch builds once: four vertices and six indices (two triangles)
 // per sprite.
@@ -130,6 +138,30 @@ void C_SPRITE_INSTANCING::SetRefCountedMember(C_TEXTURE *pTexture) {
         pTexture->AddRef();
         m_pTexture = pTexture;
     }
+}
+
+/** @ghidraAddress 0x318c0 */
+unsigned int C_SPRITE_INSTANCING::GetColorRed(int nIndex) const {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    return m_pSpriteColorArray[nIndex] & 0xff;
+}
+
+/** @ghidraAddress 0x31904 */
+unsigned int C_SPRITE_INSTANCING::GetColorGreen(int nIndex) const {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    return (m_pSpriteColorArray[nIndex] >> 8) & 0xff;
+}
+
+/** @ghidraAddress 0x31948 */
+unsigned int C_SPRITE_INSTANCING::GetColorBlue(int nIndex) const {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    return (m_pSpriteColorArray[nIndex] >> 16) & 0xff;
+}
+
+/** @ghidraAddress 0x3187c */
+unsigned int C_SPRITE_INSTANCING::GetColorAlpha(int nIndex) const {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    return (m_pSpriteColorArray[nIndex] >> 24) & 0xff;
 }
 
 } // namespace ne

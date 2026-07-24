@@ -82,6 +82,32 @@ public:
         return m_pTexture;
     }
 
+    /**
+     * @brief The red component of sprite @p nIndex's packed colour.
+     *
+     * The compiler emits these colour accessors (and their @c tempAssert bounds check) twice, once
+     * with the assertion inlined and once calling the out-of-line copy, so each appears at two
+     * addresses in the binary; that duplication is a template instantiation artefact and collapses
+     * to one accessor here.
+     * @ghidraAddress 0x318c0
+     */
+    unsigned int GetColorRed(int nIndex) const;
+    /**
+     * @brief The green component of sprite @p nIndex's packed colour.
+     * @ghidraAddress 0x31904
+     */
+    unsigned int GetColorGreen(int nIndex) const;
+    /**
+     * @brief The blue component of sprite @p nIndex's packed colour.
+     * @ghidraAddress 0x31948
+     */
+    unsigned int GetColorBlue(int nIndex) const;
+    /**
+     * @brief The alpha component of sprite @p nIndex's packed colour.
+     * @ghidraAddress 0x3187c
+     */
+    unsigned int GetColorAlpha(int nIndex) const;
+
 private:
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0
