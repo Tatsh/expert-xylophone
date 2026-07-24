@@ -3,6 +3,7 @@
 #include <cassert>
 
 #import "neEngineBridge.h"
+#include "neGLES.h"
 #include "neTexture.h"
 
 namespace ne {

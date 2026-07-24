@@ -23,6 +23,7 @@
 
 #import "AppDelegate.h"
 #import "AudioManager.h"
+#import "GameSystem/src/OpenGL/neGLES.h"
 #import "GameSystem/src/OpenGL/neTexture.h"
 #import "MusicData.h"
 #import "NSFileManager+RB.h"

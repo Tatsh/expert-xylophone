@@ -1,6 +1,8 @@
 // The binary's source file is neGLES.cpp (pure C++). It is reconstructed here as an Objective-C++
-// translation unit because neGLESRenderer is declared in the Foundation-importing engine bridge;
-// once neGLESRenderer is extracted into its own pure-C++ header this becomes neGLES.cpp.
+// translation unit for now; once every referenced engine type is available without the
+// Foundation-importing bridge this becomes neGLES.cpp.
+
+#include "neGLES.h"
 
 #include <cassert>
 

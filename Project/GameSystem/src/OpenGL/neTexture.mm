@@ -7,6 +7,7 @@
 
 #import "UIImage+RB.h"
 #import "neEngineBridge.h"
+#include "neGLES.h"
 
 namespace ne {
 

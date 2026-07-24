@@ -5,6 +5,7 @@
 #import <OpenGLES/ES1/gl.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "GameSystem/src/OpenGL/neGLES.h"
 #import "neEngineBridge.h"
 
 // The most recently created GL view. The binary keeps a single file-scope pointer that
