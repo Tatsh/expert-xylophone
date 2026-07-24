@@ -190,6 +190,7 @@ nolist
 nonatomic
 nonnull
 notelist
+notemodel
 nsascii
 nsec
 nshttp
@@ -228,6 +229,7 @@ rainbowanimation
 randam
 rbbgm
 rbff
+rbffnoterecord
 rbmacros
 rbplus
 rbscorehash
