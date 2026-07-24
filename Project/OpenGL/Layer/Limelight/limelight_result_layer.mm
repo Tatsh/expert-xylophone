@@ -496,3 +496,75 @@ void LimelightResultLayer::RenderFraction(int nNumerator,
         flX -= flAdvance;
     }
 }
+
+namespace {
+
+// The rating glyph bank's '0' part id, the rating decimal-point part id, and the per-glyph
+// horizontal gap the rating value advances by beyond each glyph's width.
+constexpr unsigned int kRatingDigitZeroPart = 0xf1;
+constexpr unsigned int kRatingPointPart = 0xfb;
+constexpr float kRatingGlyphGap = 4.0f;
+// The number of digits the scaled rating value is split into, and the minimum drawn.
+constexpr int kRatingDigits = 3;
+constexpr int kRatingMinDigits = 2;
+// The one-decimal scale applied to the rating value before it is split into digits.
+constexpr float kRatingScale = 10.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x127680 */
+void LimelightResultLayer::RenderRatingValue(float flValue,
+                                             const S_VECTOR2 &position,
+                                             unsigned int nAlpha) {
+    // Scale to one decimal place and split into up to three digits (least-significant first).
+    int aDigits[kRatingDigits] = {};
+    int nSignificant = 0;
+    int nScaled = static_cast<int>(flValue * kRatingScale);
+    for (int i = 0; i < kRatingDigits; ++i) {
+        aDigits[i] = nScaled % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nScaled /= 10;
+    }
+    const int nDrawn = nSignificant > kRatingMinDigits ? nSignificant : kRatingMinDigits;
+
+    float flX = position.x;
+    int nDigit = 0;
+    while (true) {
+        // The fractional digit past the integer part is drawn at half alpha.
+        if (nDigit == nDrawn) {
+            nAlpha = static_cast<unsigned int>(static_cast<float>(nAlpha & 0xff) * 0.5f);
+        }
+        const int nValue = aDigits[nDigit];
+        const PartsDataRecord *pRecord = GetPartsData(nValue + kRatingDigitZeroPart);
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       nValue + kRatingDigitZeroPart,
+                       S_VECTOR2{flX - pRecord->flWidth, position.y - pRecord->flHeight},
+                       nAlpha & 0xff,
+                       0);
+        flX -= pRecord->flWidth;
+        if (nDigit == 0) {
+            // Insert the decimal point after the ones digit, using its own advance and offset.
+            const PartsDataRecord *pPoint = GetPartsData(kRatingPointPart);
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPartsSlot,
+                           kRatingPointPart,
+                           S_VECTOR2{flX - pPoint->flWidth, position.y - pPoint->flHeight},
+                           nAlpha & 0xff,
+                           0);
+            nDigit = 1;
+        } else {
+            ++nDigit;
+            if (nDigit == kRatingDigits) {
+                return;
+            }
+        }
+        flX -= kRatingGlyphGap;
+    }
+}

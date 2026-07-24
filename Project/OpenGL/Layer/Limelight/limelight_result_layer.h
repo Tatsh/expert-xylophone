@@ -174,6 +174,19 @@ public:
                         const S_VECTOR2 &position,
                         unsigned int nAlpha);
 
+    /**
+     * @brief Renders a one-decimal rating value as small glyph sprites with a decimal point.
+     *
+     * Scales @p flValue by ten and splits it into up to three digits (at least two), emitting each
+     * from the rating glyph bank right to left with a per-glyph vertical offset; inserts the point
+     * glyph after the ones digit and halves the alpha for the fractional digit.
+     * @param flValue The rating value.
+     * @param position The right-hand start position.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x127680
+     */
+    void RenderRatingValue(float flValue, const S_VECTOR2 &position, unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 
