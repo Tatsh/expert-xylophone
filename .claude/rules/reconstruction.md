@@ -12,6 +12,15 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
   `g_`-prefixed globals). Ghidra placeholder names (`FUN_*`, `DAT_*`, `PTR_*`) are never used as
   identifiers in reconstructed code; rename them descriptively and record the address with
   `@ghidraAddress`.
+- Assume every Ghidra "free function" is really a class method until proven otherwise. First test
+  whether it is an instance method: a pointer argument (in any position, not only the first) that the
+  function treats as its object — reads/writes that object's fields, or is the receiver the name
+  implies — makes it an instance method of that object's class (`obj->Method(otherArgs)`). If no
+  argument is an object receiver, test whether it is a static method: does it construct, vend, or
+  operate on one specific class (a `Class::shared()` singleton getter, a factory, a table/among a
+  family keyed to one class)? Place it as a `static` member of that class. Only after both searches
+  are exhausted — no receiver argument and no owning class — may it be reconstructed as a genuine
+  free function. Singleton getters are always static methods named `shared()` on the vended class.
 - Take a C++ class's name from its RTTI when RTTI is present: the Itanium `type_info` name string
   (and the demangled vtable/`type_info` symbol) is authoritative — use it verbatim as the class
   name, exactly as an Objective-C class name comes from the runtime metadata. When there is no RTTI

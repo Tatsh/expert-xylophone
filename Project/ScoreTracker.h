@@ -86,6 +86,31 @@ public:
     void ResetLaneGaugeState();
 
     /**
+     * @brief Stores a side's lane gauge value and repaints its background band, arming the
+     * low-gauge warning on the 2P side when the danger state changes.
+     * @param flValue The gauge value.
+     * @param uSide The player side.
+     * @ghidraAddress 0x149324
+     */
+    void ApplyLaneGaugeValueAndBackground(float flValue, unsigned long long uSide);
+
+    /**
+     * @brief Arms a side's score-digit roll-up on the given player-field layer.
+     *
+     * Seeds the layer's per-side @c ScoreDigitField so the digits animate from the current value to
+     * @p nValue over @p flDuration.
+     * @param flDuration The roll-up duration, in seconds.
+     * @param pLayer The player-field layer whose score digits are updated.
+     * @param uSide The player side.
+     * @param nValue The target score value.
+     * @ghidraAddress 0x18b7cc
+     */
+    static void SetScoreDigitTarget(float flDuration,
+                                    PlayFieldLayerBase *pLayer,
+                                    unsigned int uSide,
+                                    int nValue);
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
@@ -96,17 +121,6 @@ private:
     int m_nField0 = {};                     // +0x00: leading tracker state.
     PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
 };
-
-/**
- * @brief Sets a side's lane gauge to a value and repaints its background band.
- * @param flValue The gauge value.
- * @param pTracker The score tracker.
- * @param uSide The player side.
- * @ghidraAddress 0x149324
- */
-void ApplyLaneGaugeValueAndBackground(float flValue,
-                                      ScoreTracker *pTracker,
-                                      unsigned long long uSide);
 
 // code: language=C++
 // kate: hl C++;

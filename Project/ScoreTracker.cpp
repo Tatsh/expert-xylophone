@@ -13,10 +13,22 @@ void ScoreTracker::ResetLaneGaugeState() {
         for (int &nCell : record.nCells) {
             nCell = 0;
         }
-        PlayFieldLayerBase *pLayer = PlayFieldLayerBase::shared();
-        SetScoreDigitTarget(0.0f, pLayer, nSide, record.nCells[0]);
-        ApplyLaneGaugeValueAndBackground(0.0f, this, nSide);
+        SetScoreDigitTarget(0.0f, PlayFieldLayerBase::shared(), nSide, record.nCells[0]);
+        ApplyLaneGaugeValueAndBackground(0.0f, nSide);
     }
+}
+
+/** @ghidraAddress 0x18b7cc */
+void ScoreTracker::SetScoreDigitTarget(float flDuration,
+                                       PlayFieldLayerBase *pLayer,
+                                       unsigned int uSide,
+                                       int nValue) {
+    ScoreDigitField &field = pLayer->GetScoreDigitField(uSide);
+    field.nTarget = nValue;
+    field.flFrom = field.flCurrent;
+    field.flTo = static_cast<float>(nValue);
+    field.flElapsed = 0.0f;
+    field.flDuration = flDuration;
 }
 
 /** @ghidraAddress 0x1492cc */
