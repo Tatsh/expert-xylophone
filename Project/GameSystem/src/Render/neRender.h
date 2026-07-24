@@ -94,13 +94,13 @@ private:
     C_RENDER *m_pSiblingNext = {}; // +0x38
     // +0x40: lazily-allocated buffer freed with delete[] in the destructor; the element type is not
     // yet recovered, so it is modelled as a raw byte buffer.
-    unsigned char *m_pBuffer = {};        // +0x40
-    unsigned char m_reserved48[8] = {};   // +0x48: node state not yet recovered.
-    float m_mLocalMatrix[16] = {};        // +0x50: local transform.
-    float m_mWorldMatrix[16] = {};        // +0x90: composed world transform.
-    bool m_bDeleteRequest = {};           // +0xd0
-    bool m_bVisible = {};                 // +0xd1
-    unsigned char m_reservedTail[2] = {}; // +0xd2
+    unsigned char *m_pBuffer = {};      // +0x40
+    unsigned char m_reserved48[8] = {}; // +0x48: node state not yet recovered.
+    float m_mLocalMatrix[16] = {};      // +0x50: local transform.
+    float m_mWorldMatrix[16] = {};      // +0x90: composed world transform.
+    bool m_bDeleteRequest = {};         // +0xd0
+    bool m_bVisible = {};               // +0xd1
+    // +0xd2..+0xd7 is compiler alignment padding to the 0xd8-byte object size (no member there).
 };
 
 } // namespace ne
