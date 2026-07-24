@@ -156,6 +156,7 @@ modelines
 movi
 mtype
 mulist
+musicinfo
 musicselect
 mypy
 nbobhfs

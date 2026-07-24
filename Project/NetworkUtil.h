@@ -170,6 +170,85 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)extendNoteInfoURL:(unsigned int)extendNoteID UserOpen:(BOOL)userOpen;
 
+/**
+ * @brief Build the LINE-message share endpoint URL, carrying the region and device user-info.
+ * @return The LINE-message endpoint URL.
+ * @ghidraAddress 0x32cb0
+ */
++ (nullable NSURL *)lineMessageURL;
+
+/**
+ * @brief Build the store pack-list endpoint URL for a page of a genre.
+ * @param head The first pack index of the page.
+ * @param limit The maximum number of packs to return.
+ * @param genre The genre filter.
+ * @return The store pack-list endpoint URL.
+ * @ghidraAddress 0x33188
+ */
++ (nullable NSURL *)packListURL:(unsigned int)head
+                          limit:(unsigned int)limit
+                          genre:(unsigned int)genre;
+
+/**
+ * @brief Build the store pack-info endpoint URL for a pack, carrying the device user-info only for a
+ * user-initiated open.
+ * @param packID The pack identifier.
+ * @param userOpen Whether the request is on behalf of a user-initiated open.
+ * @return The store pack-info endpoint URL.
+ * @ghidraAddress 0x332a8
+ */
++ (nullable NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen;
+
+/**
+ * @brief Build the store music-info endpoint URL for a tune, carrying the device user-info.
+ * @param musicID The tune identifier.
+ * @return The store music-info endpoint URL.
+ * @ghidraAddress 0x33408
+ */
++ (nullable NSURL *)musicInfoURL:(unsigned int)musicID;
+
+/**
+ * @brief Build the V3 receipt-verification endpoint URL.
+ * @return The receipt-verification endpoint URL.
+ * @ghidraAddress 0x33514
+ */
++ (nullable NSURL *)receiptV3URL;
+
+/**
+ * @brief Build the campaign-list endpoint URL.
+ * @return The campaign-list endpoint URL.
+ * @ghidraAddress 0x33534
+ */
++ (nullable NSURL *)campaignListURL;
+
+/**
+ * @brief Build the campaign serial-code verification endpoint URL.
+ * @return The campaign serial-check endpoint URL.
+ * @ghidraAddress 0x33554
+ */
++ (nullable NSURL *)campaignSerialCheckURL;
+
+/**
+ * @brief Build the campaign item-info endpoint URL.
+ * @return The campaign item-info endpoint URL.
+ * @ghidraAddress 0x33574
+ */
++ (nullable NSURL *)campaignItemInfoURL;
+
+/**
+ * @brief Build the store manage-sort-list endpoint URL, carrying the region.
+ * @return The manage-sort-list endpoint URL.
+ * @ghidraAddress 0x33594
+ */
++ (nullable NSURL *)manageSortListURL;
+
+/**
+ * @brief Build the user-age registration endpoint URL.
+ * @return The user-age endpoint URL.
+ * @ghidraAddress 0x3392c
+ */
++ (nullable NSURL *)userAgeURL;
+
 @end
 
 NS_ASSUME_NONNULL_END

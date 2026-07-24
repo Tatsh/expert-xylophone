@@ -57,6 +57,27 @@ static NSString *const kExtendNoteListParamFormat = @"target=%@&head=%d&limit=%d
 static NSString *const kExtendNoteInfoParamFormat = @"target=%@&extitem=%d";
 static NSString *const kExtendNoteInfoUserOpenParamFormat = @"target=%@&extitem=%d&%@";
 
+// The store pack/music/campaign and miscellaneous endpoint paths, relative to the CGI base path.
+static NSString *const kLineMessageAPIPath = @"new2/";
+static NSString *const kPackListAPIPath = @"v3/packlist/";
+static NSString *const kPackInfoAPIPath = @"v3/packinfo/";
+static NSString *const kMusicInfoAPIPath = @"v3/musicinfo/";
+static NSString *const kReceiptV3APIPath = @"v3/verify_receipt/";
+static NSString *const kCampaignListAPIPath = @"campaign/list/";
+static NSString *const kCampaignItemInfoAPIPath = @"campaign/fetch/";
+static NSString *const kCampaignSerialCheckAPIPath = @"campaign/verify/";
+static NSString *const kManageSortListAPIPath = @"manage_sort/";
+static NSString *const kUserAgeAPIPath = @"v3/age/";
+
+// The store pack/music query format strings. The user-open pack variant and the music query carry
+// the device user-info parameters; the closed pack variant does not.
+static NSString *const kLineMessageParamFormat = @"target=%@&%@";
+static NSString *const kPackListParamFormat = @"target=%@&head=%d&limit=%d&genre=%d&%@";
+static NSString *const kPackInfoParamFormat = @"target=%@&pack=%d";
+static NSString *const kPackInfoUserOpenParamFormat = @"target=%@&pack=%d&%@";
+static NSString *const kMusicInfoParamFormat = @"target=%@&music=%d&%@";
+static NSString *const kManageSortListParamFormat = @"target=%@";
+
 // The suffix appended to the device UUID key before hashing it into the request fingerprint.
 static NSString *const kIdentifierKeySuffix = @"_STORE";
 
@@ -236,6 +257,78 @@ static NSString *const kNonceCharFormat = @"%c";
             [NSString stringWithFormat:kExtendNoteInfoParamFormat, GetRegionCode(), extendNoteID];
     }
     return [NetworkUtil createSecureAPI:kExtendNoteInfoAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x32cb0 */
++ (NSURL *)lineMessageURL {
+    NSString *param =
+        [NSString stringWithFormat:kLineMessageParamFormat, GetRegionCode(), [NetworkUtil userInfo]];
+    return [NetworkUtil createSecureAPI:kLineMessageAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x33188 */
++ (NSURL *)packListURL:(unsigned int)head limit:(unsigned int)limit genre:(unsigned int)genre {
+    NSString *param = [NSString stringWithFormat:kPackListParamFormat,
+                                                 GetRegionCode(),
+                                                 head,
+                                                 limit,
+                                                 genre,
+                                                 [NetworkUtil userInfo]];
+    return [NetworkUtil createSecureAPI:kPackListAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x332a8 */
++ (NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen {
+    NSString *param;
+    if (userOpen) {
+        param = [NSString stringWithFormat:kPackInfoUserOpenParamFormat,
+                                           GetRegionCode(),
+                                           packID,
+                                           [NetworkUtil userInfo]];
+    } else {
+        param = [NSString stringWithFormat:kPackInfoParamFormat, GetRegionCode(), packID];
+    }
+    return [NetworkUtil createSecureAPI:kPackInfoAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x33408 */
++ (NSURL *)musicInfoURL:(unsigned int)musicID {
+    NSString *param = [NSString stringWithFormat:kMusicInfoParamFormat,
+                                                 GetRegionCode(),
+                                                 musicID,
+                                                 [NetworkUtil userInfo]];
+    return [NetworkUtil createSecureAPI:kMusicInfoAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x33514 */
++ (NSURL *)receiptV3URL {
+    return [NetworkUtil createSecureAPI:kReceiptV3APIPath withParam:nil];
+}
+
+/** @ghidraAddress 0x33534 */
++ (NSURL *)campaignListURL {
+    return [NetworkUtil createSecureAPI:kCampaignListAPIPath withParam:nil];
+}
+
+/** @ghidraAddress 0x33554 */
++ (NSURL *)campaignSerialCheckURL {
+    return [NetworkUtil createSecureAPI:kCampaignSerialCheckAPIPath withParam:nil];
+}
+
+/** @ghidraAddress 0x33574 */
++ (NSURL *)campaignItemInfoURL {
+    return [NetworkUtil createSecureAPI:kCampaignItemInfoAPIPath withParam:nil];
+}
+
+/** @ghidraAddress 0x33594 */
++ (NSURL *)manageSortListURL {
+    NSString *param = [NSString stringWithFormat:kManageSortListParamFormat, GetRegionCode()];
+    return [NetworkUtil createSecureAPI:kManageSortListAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x3392c */
++ (NSURL *)userAgeURL {
+    return [NetworkUtil createSecureAPI:kUserAgeAPIPath withParam:nil];
 }
 
 @end
