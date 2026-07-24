@@ -27,6 +27,27 @@ class C_TEXTURE;
 class C_DRAW_POLYGON_3D : public C_RENDER {
 public:
     /**
+     * @brief Constructs a 3D polygon-mesh node with the given draw mode, vertex format, vertex and
+     * index counts, ownership flags, and draw colour.
+     *
+     * Records the configuration and initialises the per-vertex attribute offsets to their unset
+     * sentinels; @c AllocateBuffers derives the real offsets and allocates the buffers.
+     * @param nDrawMode The primitive draw mode.
+     * @param nVertexFormat The vertex-format attribute bit-set.
+     * @param nVertexCount The number of vertices.
+     * @param bVertexBufferExternal Whether the vertex buffer is externally owned.
+     * @param nIndexCount The number of index-buffer entries.
+     * @param bIndexBufferExternal Whether the index buffer is externally owned.
+     * @ghidraAddress 0x285e8
+     */
+    C_DRAW_POLYGON_3D(unsigned int nDrawMode,
+                      unsigned int nVertexFormat,
+                      unsigned int nVertexCount,
+                      unsigned char bVertexBufferExternal,
+                      unsigned int nIndexCount,
+                      unsigned char bIndexBufferExternal);
+
+    /**
      * @brief Set a mesh vertex's 3D position, if the mesh carries a position attribute.
      *
      * The position is taken by value (its three components arrive in the floating-point argument
@@ -110,36 +131,81 @@ public:
         kVertexHasPosition = 1 << 0, // The mesh carries per-vertex positions.
         kVertexHasTexcoord = 1 << 1, // The mesh carries per-vertex texture coordinates.
         kVertexHasColor = 1 << 2,    // The mesh carries per-vertex colours.
+        kVertexHasSkin = 7 << 3,     // The mesh carries per-vertex bone weights and indices.
     };
 
+    /**
+     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh) the
+     * per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
+     *
+     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking the
+     * mesh's vertex and index data dirty so the first draw uploads them.
+     * @ghidraAddress 0x287e8
+     */
+    void AllocateBuffers();
+
 private:
+    // The first derived member sits at +0xd4, in the polymorphic base's tail padding.
+    unsigned int m_nDrawMode = {};     // +0xd4: the primitive draw mode.
     unsigned int m_nVertexFormat = {}; // +0xd8: the vertex-format attribute bit-set.
     int m_nVertexCount = {};           // +0xdc: the number of vertices.
     int m_nVertexStride = {};          // +0xe0: the interleaved byte stride between vertices.
     int m_nPositionOffset = {};        // +0xe4: the position byte offset within a vertex.
-    int m_nUvOffset = {};              // +0xe8: the texcoord byte offset within a vertex.
-    // +0xec..+0xfc: further mesh state still being worked out.
-    unsigned char m_aReservedEc[0x11] = {}; // +0xec
-    bool m_bVertexDirty = {};               // +0xfd: set when a vertex attribute is modified.
-    bool m_bColorDirty = {};                // +0xfe: set when a vertex colour is modified.
-    // +0xff..+0x107 is padding before the array pointers.
-    unsigned char m_aPadFf[9] = {}; // +0xff
-    void *m_pVertexArray = {};      // +0x108: the interleaved vertex-attribute array.
-    S_RGBA *m_pColorArray = {};     // +0x110: the per-vertex RGBA colour array.
-    int m_nIndexCount = {};         // +0x118: the number of entries in the index buffer.
-    // +0x11c..+0x120: further mesh state still being worked out.
-    unsigned char m_aReserved11c[5] = {}; // +0x11c
-    bool m_bIndexDirty = {};              // +0x121: set when the index buffer is modified.
-    // +0x122..+0x127 is alignment padding before the index-array pointer.
-    unsigned char m_aPad122[6] = {};    // +0x122
+    int m_nUvOffset = {};           // +0xe8: the texcoord (format bit 1) byte offset in a vertex.
+    int m_nColorOffset = {};        // +0xec: the colour (format bit 2) byte offset in a vertex.
+    int m_nMatrixWeightOffset = {}; // +0xf0: the bone-weight byte offset within a vertex.
+    int m_nMatrixIndexOffset = {};  // +0xf4: the bone-index byte offset within a vertex.
+    int m_nBoneComponentCount = {}; // +0xf8: the number of bone components per vertex.
+    bool m_bVertexBufferExternal = {}; // +0xfc: whether the vertex buffer is externally owned.
+    bool m_bVertexDirty = {};          // +0xfd: set when a vertex attribute is modified.
+    bool m_bColorDirty = {};           // +0xfe: set when a vertex colour is modified.
+    // +0xff is alignment padding before the vertex VBO handle.
+    unsigned char m_aPadFf[1] = {};  // +0xff
+    unsigned int m_dwVertexVbo = {}; // +0x100: the vertex-buffer GL handle.
+    // +0x104 is alignment padding before the vertex-buffer pointer.
+    unsigned char m_aPad104[4] = {};  // +0x104
+    void *m_pVertexArray = {};        // +0x108: the interleaved vertex-attribute buffer.
+    S_RGBA *m_pColorArray = {};       // +0x110: the per-vertex colour array (a.k.a. texcoord slot).
+    int m_nIndexCount = {};           // +0x118: the number of entries in the index buffer.
+    unsigned int m_dwDrawColor = {};  // +0x11c: the mesh's flat draw colour.
+    bool m_bIndexBufferExternal = {}; // +0x120: whether the index buffer is externally owned.
+    bool m_bIndexDirty = {};          // +0x121: set when the index buffer is modified.
+    // +0x122 is alignment padding before the index VBO handle.
+    unsigned char m_aPad122[2] = {};    // +0x122
+    unsigned int m_dwIndexVbo = {};     // +0x124: the index-buffer GL handle.
     unsigned short *m_pIndexArray = {}; // +0x128: the 16-bit index buffer.
-    // +0x130..+0x15f: transform and further mesh state still being worked out.
-    unsigned char m_aReserved130[0x30] = {}; // +0x130
-    C_TEXTURE *m_pTexture = {};              // +0x160: the retained texture.
-    int m_aTexEnvParams[4] = {};             // +0x168: the texture-environment parameters.
-    // +0x178..+0x17b: remaining mesh state still being worked out.
-    unsigned char m_aReserved178[4] = {}; // +0x178
+    float m_flTranslateX = {};          // +0x130: the model translation X.
+    float m_flTranslateY = {};          // +0x134: the model translation Y.
+    float m_flTranslateZ = {};          // +0x138: the model translation Z.
+    float m_flRotationZ = {};           // +0x13c: the model rotation about Z.
+    float m_flScale = {};               // +0x140: the uniform model scale.
+    // +0x144..+0x147 is alignment padding before the per-bone array pointers.
+    unsigned char m_aPad144[4] = {}; // +0x144
+    void *m_pBoneTranslate = {};     // +0x148: the per-bone translation array.
+    void *m_pBoneRotation = {};      // +0x150: the per-bone rotation array.
+    void *m_pBoneScale = {};         // +0x158: the per-bone scale array.
+    C_TEXTURE *m_pTexture = {};      // +0x160: the retained texture.
+    int m_aTexEnvParams[4] = {};     // +0x168: the texture-environment parameters.
+    int m_nBlendMode = {};           // +0x178: the blend-mode identifier.
 };
+
+/**
+ * @brief Allocates and initialises a 3D polygon-mesh node ready to be populated and drawn.
+ * @param nDrawMode The primitive draw mode.
+ * @param nVertexFormat The vertex-format attribute bit-set.
+ * @param nVertexCount The number of vertices.
+ * @param bVertexBufferExternal Whether the vertex buffer is externally owned.
+ * @param nIndexCount The number of index-buffer entries.
+ * @param bIndexBufferExternal Whether the index buffer is externally owned.
+ * @return The new 3D polygon-mesh node.
+ * @ghidraAddress 0x295a8
+ */
+C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
+                                       unsigned int nVertexFormat,
+                                       unsigned int nVertexCount,
+                                       unsigned char bVertexBufferExternal,
+                                       unsigned int nIndexCount,
+                                       unsigned char bIndexBufferExternal);
 
 } // namespace ne
 

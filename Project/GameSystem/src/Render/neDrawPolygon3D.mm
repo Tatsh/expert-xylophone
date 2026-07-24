@@ -13,7 +13,129 @@ namespace {
 // vertex buffer (@ghidraAddress 0x2eed04 for U, 0x2eed08 for V).
 constexpr float kUvFixedPointScale = 32767.0f;
 
+// The sentinel stored in an unset per-vertex attribute offset.
+constexpr int kUnsetOffset = -1;
+
+// The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap) the constructor
+// seeds (@ghidraAddress 0x2eecf0).
+constexpr int kDefaultTexParams[] = {0, 0, 7, 7};
+
+// The interleaved byte size of a 3D vertex position (three floats).
+constexpr unsigned int kPositionStride = 0xc;
+
 } // namespace
+
+/** @ghidraAddress 0x285e8 */
+C_DRAW_POLYGON_3D::C_DRAW_POLYGON_3D(unsigned int nDrawMode,
+                                     unsigned int nVertexFormat,
+                                     unsigned int nVertexCount,
+                                     unsigned char bVertexBufferExternal,
+                                     unsigned int nIndexCount,
+                                     unsigned char bIndexBufferExternal) {
+    // The base C_RENDER constructor and the derived vtable are installed by the compiler.
+    m_nDrawMode = nDrawMode;
+    m_nVertexFormat = nVertexFormat;
+    m_nVertexCount = nVertexCount;
+    m_nVertexStride = 0;
+    // The per-vertex attribute offsets start unset; the buffer allocator derives the real ones.
+    m_nPositionOffset = kUnsetOffset;
+    m_nUvOffset = kUnsetOffset;
+    m_nColorOffset = kUnsetOffset;
+    m_nMatrixWeightOffset = kUnsetOffset;
+    m_nMatrixIndexOffset = kUnsetOffset;
+    m_nBoneComponentCount = 0;
+    m_bVertexBufferExternal = bVertexBufferExternal != 0;
+    m_dwVertexVbo = 0;
+    m_nIndexCount = nIndexCount;
+    m_dwDrawColor = nIndexCount;
+    m_bIndexBufferExternal = bIndexBufferExternal != 0;
+    m_dwIndexVbo = 0;
+    m_flTranslateX = 0.0f;
+    m_flTranslateY = 0.0f;
+    m_flTranslateZ = 0.0f;
+    m_flRotationZ = 0.0f;
+    m_flScale = 1.0f;
+    m_pBoneTranslate = nullptr;
+    m_pBoneRotation = nullptr;
+    m_pBoneScale = nullptr;
+    m_nBlendMode = 0;
+    m_aTexEnvParams[0] = kDefaultTexParams[0];
+    m_aTexEnvParams[1] = kDefaultTexParams[1];
+    m_aTexEnvParams[2] = kDefaultTexParams[2];
+    m_aTexEnvParams[3] = kDefaultTexParams[3];
+}
+
+/** @ghidraAddress 0x287e8 */
+void C_DRAW_POLYGON_3D::AllocateBuffers() {
+    neGLESRenderer *pRenderer = GetGlRenderer();
+    unsigned int nStride = 0;
+    m_nVertexStride = 0;
+
+    // Build the interleaved vertex stride and per-attribute byte offsets from the format bits. A 3D
+    // position occupies three floats.
+    if ((m_nVertexFormat & kVertexHasPosition) != 0) {
+        nStride = kPositionStride;
+        m_nVertexStride = static_cast<int>(nStride);
+        m_nPositionOffset = 0;
+    }
+    if ((m_nVertexFormat & kVertexHasTexcoord) != 0) {
+        m_nUvOffset = static_cast<int>(nStride);
+        nStride += 4;
+        m_nVertexStride = static_cast<int>(nStride);
+    }
+    if ((m_nVertexFormat & kVertexHasColor) != 0) {
+        m_nColorOffset = static_cast<int>(nStride);
+        nStride += 4;
+        m_nVertexStride = static_cast<int>(nStride);
+        m_pColorArray = new S_RGBA[m_nVertexCount];
+    }
+    if ((m_nVertexFormat & kVertexHasSkin) != 0) {
+        m_nBoneComponentCount = 3;
+        m_nMatrixWeightOffset = static_cast<int>(nStride);
+        m_nMatrixIndexOffset = static_cast<int>(nStride) + 0xc;
+        nStride += 0xf;
+        m_nVertexStride = static_cast<int>(nStride);
+        const int nMaxUnits = pRenderer->GetMaxVertexUnits();
+        auto **ppTranslate = new void *[nMaxUnits];
+        for (int i = 0; i < nMaxUnits; ++i) {
+            ppTranslate[i] = nullptr;
+        }
+        m_pBoneTranslate = ppTranslate;
+        m_pBoneRotation = new float[nMaxUnits];
+        m_pBoneScale = new float[nMaxUnits];
+    }
+
+    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless caller-owned.
+    m_pVertexArray = new unsigned char[static_cast<unsigned int>(m_nVertexCount) * nStride];
+    if (!m_bVertexBufferExternal) {
+        pRenderer->GenBuffer(&m_dwVertexVbo);
+        m_bVertexDirty = true;
+    }
+
+    // Allocate the 16-bit index buffer; gen a GL index VBO and mark dirty unless caller-owned.
+    m_pIndexArray = new unsigned short[static_cast<unsigned int>(m_nIndexCount)];
+    if (!m_bIndexBufferExternal) {
+        pRenderer->GenBuffer(&m_dwIndexVbo);
+        m_bIndexDirty = true;
+    }
+}
+
+/** @ghidraAddress 0x295a8 */
+C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
+                                       unsigned int nVertexFormat,
+                                       unsigned int nVertexCount,
+                                       unsigned char bVertexBufferExternal,
+                                       unsigned int nIndexCount,
+                                       unsigned char bIndexBufferExternal) {
+    auto *pMesh = new C_DRAW_POLYGON_3D(nDrawMode,
+                                        nVertexFormat,
+                                        nVertexCount,
+                                        bVertexBufferExternal,
+                                        nIndexCount,
+                                        bIndexBufferExternal);
+    pMesh->AllocateBuffers();
+    return pMesh;
+}
 
 /** @ghidraAddress 0x29638 */
 void C_DRAW_POLYGON_3D::SetPos(int nIndex, S_VECTOR3 position) {
