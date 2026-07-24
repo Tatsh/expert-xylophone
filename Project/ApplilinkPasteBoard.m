@@ -42,17 +42,17 @@ enum {
 // Localised error codes raised through ApplilinkNetworkError. These mirror the file-private codes in
 // ApplilinkNetworkError.m; only the codes this class raises are named here.
 enum {
-    kApplilinkPasteBoardErrorInvalidField = 1013,    // A pasteboard slot could not be opened.
-    kApplilinkPasteBoardErrorWriteFailed = 1015,     // Every slot write failed.
-    kApplilinkPasteBoardErrorValidateError = 1016,   // A decoded record failed validation.
-    kApplilinkPasteBoardErrorInvalidKey = 1017,      // The storage index exceeded the slot count.
-    kApplilinkPasteBoardErrorInvalidDataType = 1018, // A slot held no value for the record type.
-    kApplilinkPasteBoardErrorInvalidFormat = 1019,   // The record was not a dictionary.
-    kApplilinkPasteBoardErrorInvalidValue = 1020,    // The record was missing its value.
-    kApplilinkPasteBoardErrorInvalidEntryDate = 1021,   // The record was missing its entry date.
-    kApplilinkPasteBoardErrorInvalidLastAccess = 1022,  // The record was missing its last access.
-    kApplilinkPasteBoardErrorInvalidVersion = 1023,  // The record was missing its version.
-    kApplilinkPasteBoardErrorOldVersion = 1024,      // The record's version was not positive.
+    kApplilinkPasteBoardErrorInvalidField = 1013,      // A pasteboard slot could not be opened.
+    kApplilinkPasteBoardErrorWriteFailed = 1015,       // Every slot write failed.
+    kApplilinkPasteBoardErrorValidateError = 1016,     // A decoded record failed validation.
+    kApplilinkPasteBoardErrorInvalidKey = 1017,        // The storage index exceeded the slot count.
+    kApplilinkPasteBoardErrorInvalidDataType = 1018,   // A slot held no value for the record type.
+    kApplilinkPasteBoardErrorInvalidFormat = 1019,     // The record was not a dictionary.
+    kApplilinkPasteBoardErrorInvalidValue = 1020,      // The record was missing its value.
+    kApplilinkPasteBoardErrorInvalidEntryDate = 1021,  // The record was missing its entry date.
+    kApplilinkPasteBoardErrorInvalidLastAccess = 1022, // The record was missing its last access.
+    kApplilinkPasteBoardErrorInvalidVersion = 1023,    // The record was missing its version.
+    kApplilinkPasteBoardErrorOldVersion = 1024,        // The record's version was not positive.
 };
 
 @implementation ApplilinkPasteBoard
@@ -119,8 +119,8 @@ enum {
 - (NSDictionary *)storageData {
     NSString *serviceName = [self getServiceName];
     for (int storageIndex = 0; storageIndex < kApplilinkUdidStorageSlotCount; ++storageIndex) {
-        NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                    storageIndex];
+        NSString *name = [NSString
+            stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
         if ([UIPasteboard pasteboardWithName:name create:NO] != nil) {
             NSError *readError = nil;
             NSDictionary *record = [self storageDataWithServiceName:serviceName
@@ -140,8 +140,8 @@ enum {
 - (NSDictionary *)storageDataOld {
     NSString *serviceName = [self getServiceNameOld];
     for (int storageIndex = 0; storageIndex < kApplilinkUdidStorageSlotCount; ++storageIndex) {
-        NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                    storageIndex];
+        NSString *name = [NSString
+            stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
         if ([UIPasteboard pasteboardWithName:name create:NO] != nil) {
             NSError *readError = nil;
             NSDictionary *record = [self storageDataWithServiceName:serviceName
@@ -166,8 +166,8 @@ enum {
         }
         return nil;
     }
-    NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                storageIndex];
+    NSString *name =
+        [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
     UIPasteboard *pasteboard = [UIPasteboard pasteboardWithName:name create:NO];
     if (pasteboard == nil) {
         if (error != NULL) {
@@ -213,8 +213,8 @@ enum {
     NSError *writeError = nil;
     NSError *deleteError = nil;
     for (int storageIndex = 0; storageIndex < kApplilinkUdidStorageSlotCount; ++storageIndex) {
-        NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                    storageIndex];
+        NSString *name = [NSString
+            stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
         if ([UIPasteboard pasteboardWithName:name create:NO] == nil) {
             NSDictionary *record = [self writeStorageData:udid
                                              storageIndex:storageIndex
@@ -245,8 +245,8 @@ enum {
         return nil;
     }
     NSString *serviceName = [self getServiceName];
-    NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                storageIndex];
+    NSString *name =
+        [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
     NSData *keySeed = [name dataUsingEncoding:NSUTF8StringEncoding];
     NSData *key = [Crypto createHash:keySeed];
     NSData *plaintext = [udid dataUsingEncoding:NSUTF8StringEncoding];
@@ -254,10 +254,16 @@ enum {
                                              value:plaintext
                                                key:key];
     NSDate *now = [NSDate date];
-    NSDictionary *record = [NSDictionary
-        dictionaryWithObjectsAndKeys:encryptedValue, kApplilinkUdidValueKey, now,
-                                     kApplilinkUdidEntryDateKey, now, kApplilinkUdidLastAccessKey,
-                                     @(kApplilinkUdidRecordVersion), kApplilinkUdidVersionKey, nil];
+    NSDictionary *record =
+        [NSDictionary dictionaryWithObjectsAndKeys:encryptedValue,
+                                                   kApplilinkUdidValueKey,
+                                                   now,
+                                                   kApplilinkUdidEntryDateKey,
+                                                   now,
+                                                   kApplilinkUdidLastAccessKey,
+                                                   @(kApplilinkUdidRecordVersion),
+                                                   kApplilinkUdidVersionKey,
+                                                   nil];
     UIPasteboard *pasteboard = [UIPasteboard pasteboardWithName:name create:YES];
     if (pasteboard == nil) {
         if (error != NULL) {
@@ -282,8 +288,8 @@ enum {
         return NO;
     }
     NSString *serviceName = [self getServiceName];
-    NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                storageIndex];
+    NSString *name =
+        [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
     UIPasteboard *pasteboard = [UIPasteboard pasteboardWithName:name create:NO];
     if (pasteboard == nil) {
         if (error != NULL) {
@@ -315,8 +321,8 @@ enum {
     if (index != nil) {
         result[kApplilinkUdidStorageIndexKey] = index;
     }
-    NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                storageIndex];
+    NSString *name =
+        [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
     NSData *key = [Crypto createHash:[name dataUsingEncoding:NSUTF8StringEncoding]];
     NSData *encryptedValue = result[kApplilinkUdidValueKey];
     NSData *decrypted = [Crypto cryptorToData:kApplilinkUdidCipherDecrypt
@@ -337,8 +343,8 @@ enum {
     if (env == nil || [env isEqualToString:kApplilinkUdidEnvDisabled]) {
         return kApplilinkUdidServiceName;
     }
-    return [NSString stringWithFormat:kApplilinkUdidServiceNameFormat, env,
-                                      kApplilinkUdidServiceName];
+    return
+        [NSString stringWithFormat:kApplilinkUdidServiceNameFormat, env, kApplilinkUdidServiceName];
 }
 
 /** @ghidraAddress 0x236478 */
@@ -347,8 +353,8 @@ enum {
     if (env == nil || [env isEqualToString:kApplilinkUdidEnvDisabled]) {
         return kApplilinkUdidServiceName;
     }
-    return [NSString stringWithFormat:kApplilinkUdidServiceNameFormat, env,
-                                      kApplilinkUdidServiceName];
+    return
+        [NSString stringWithFormat:kApplilinkUdidServiceNameFormat, env, kApplilinkUdidServiceName];
 }
 
 #pragma mark Debugging
@@ -357,8 +363,8 @@ enum {
 - (void)debugLog {
     NSString *serviceName = [self getServiceName];
     for (int storageIndex = 0; storageIndex < kApplilinkUdidStorageSlotCount; ++storageIndex) {
-        NSString *name = [NSString stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName,
-                                                    storageIndex];
+        NSString *name = [NSString
+            stringWithFormat:kApplilinkUdidPasteboardNameFormat, serviceName, storageIndex];
         if ([UIPasteboard pasteboardWithName:name create:NO] != nil) {
             NSError *readError = nil;
             NSDictionary *record = [self storageDataWithServiceName:serviceName

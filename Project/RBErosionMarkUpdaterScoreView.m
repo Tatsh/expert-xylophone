@@ -113,12 +113,13 @@ static const UIViewAutoresizing kPanelAutoresizingMask =
     [panel addSubview:titleBar];
 
     // The centred, bold title label.
-    UILabel *title = [[UILabel alloc]
-        initWithFrame:CGRectMake(kLabelTopInset, kLabelTopInset, dialogWidth - kLabelWidthInset,
-                                 self.displayRate * kTitleBarHeightMetric)];
+    UILabel *title =
+        [[UILabel alloc] initWithFrame:CGRectMake(kLabelTopInset,
+                                                  kLabelTopInset,
+                                                  dialogWidth - kLabelWidthInset,
+                                                  self.displayRate * kTitleBarHeightMetric)];
     title.text = @"";
-    title.font =
-        [UIFont boldSystemFontOfSize:IsPad() ? kTitleFontSizePad : kTitleFontSizePhone];
+    title.font = [UIFont boldSystemFontOfSize:IsPad() ? kTitleFontSizePad : kTitleFontSizePhone];
     title.textAlignment = NSTextAlignmentCenter;
     self.titleLabel = title;
     [panel addSubview:title];
@@ -139,16 +140,14 @@ static const UIViewAutoresizing kPanelAutoresizingMask =
 
     CGFloat buttonWidth = panel.frame.size.width * 0.5;
     CGFloat buttonHeight = self.displayRate * kMessageRowHeightMetric;
-    CGFloat buttonOriginY =
-        panel.frame.size.height - self.displayRate * kMessageRowHeightMetric;
+    CGFloat buttonOriginY = panel.frame.size.height - self.displayRate * kMessageRowHeightMetric;
 
     // The left (cancel) button.
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
     cancelButton.enabled = YES;
     cancelButton.exclusiveTouch = YES;
     cancelButton.layer.borderWidth = 1.0;
-    cancelButton.layer.borderColor =
-        [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0].CGColor;
+    cancelButton.layer.borderColor = [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0].CGColor;
     [cancelButton setTitle:g_pLocalizedCancel forState:UIControlStateNormal];
     cancelButton.frame = CGRectMake(0.0, buttonOriginY, buttonWidth, buttonHeight);
     [cancelButton addTarget:self.delegate
@@ -181,14 +180,14 @@ static const UIViewAutoresizing kPanelAutoresizingMask =
     __weak RBErosionMarkUpdaterScoreView *weakSelf = self;
     [UIView animateWithDuration:kBackdropAlpha
         animations:^{
-            /** @ghidraAddress 0x1425fc */
-            weakSelf.dialogView.alpha = 1.0;
+          /** @ghidraAddress 0x1425fc */
+          weakSelf.dialogView.alpha = 1.0;
         }
         completion:^(BOOL finished) {
-            /** @ghidraAddress 0x142694 */
-            if (completion) {
-                completion();
-            }
+          /** @ghidraAddress 0x142694 */
+          if (completion) {
+              completion();
+          }
         }];
 }
 
@@ -196,14 +195,14 @@ static const UIViewAutoresizing kPanelAutoresizingMask =
     __weak RBErosionMarkUpdaterScoreView *weakSelf = self;
     [UIView animateWithDuration:kBackdropAlpha
         animations:^{
-            /** @ghidraAddress 0x1427f0 */
-            weakSelf.dialogView.alpha = 0.0;
+          /** @ghidraAddress 0x1427f0 */
+          weakSelf.dialogView.alpha = 0.0;
         }
         completion:^(BOOL finished) {
-            /** @ghidraAddress 0x142888 */
-            if (completion) {
-                completion();
-            }
+          /** @ghidraAddress 0x142888 */
+          if (completion) {
+              completion();
+          }
         }];
 }
 

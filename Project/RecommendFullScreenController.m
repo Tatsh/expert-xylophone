@@ -123,8 +123,8 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     self.applilinkFullViewDelegate = closeDelegate;
 
     NSError *createError = [RecommendAdCache createHtmlWithAdModel:adModel
-                                                       adLocation:adLocation
-                                                    verticalAlign:verticalAlign];
+                                                        adLocation:adLocation
+                                                     verticalAlign:verticalAlign];
     if (createError) {
         [ApplilinkCore toDelegateFailOpenWithError:createError
                                           appParam:self.applilinkParams
@@ -134,13 +134,13 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     }
 
     NSString *contentPath = [[RecommendAdCache getContentsPath]
-        stringByAppendingPathComponent:[NSString stringWithFormat:@"%d_%@.html", adModel,
-                                                                   adLocation]];
+        stringByAppendingPathComponent:[NSString
+                                           stringWithFormat:@"%d_%@.html", adModel, adLocation]];
     BOOL isDirectory = NO;
     if (![[NSFileManager defaultManager] fileExistsAtPath:contentPath isDirectory:&isDirectory]) {
         NSError *missingError = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kApplilinkErrorHtmlFileCreate
-                                   userInfo:@{@"html file create error": @"Error"}];
+                                   userInfo:@{@"html file create error" : @"Error"}];
         [ApplilinkCore toDelegateFailOpenWithError:missingError
                                           appParam:applilinkParams
                                           delegate:self.applilinkDelegate];
@@ -150,8 +150,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
 
     dispatch_async(dispatch_get_main_queue(), ^{
       /** @ghidraAddress 0x246d84 */
-      RecommendAdAreaView *adView =
-          [[RecommendAdAreaView alloc] initWithFrame:self.baseView.frame];
+      RecommendAdAreaView *adView = [[RecommendAdAreaView alloc] initWithFrame:self.baseView.frame];
       [adView setAdModel:adModel
               adLocation:adLocation
                   adType:kRecommendInterstitialAdType
@@ -169,8 +168,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
  * @ghidraAddress 0x246fb4
  */
 - (void)setViewSize {
-    UIInterfaceOrientation orientation =
-        [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     (void)[UIScreen mainScreen].bounds; // Yes, the binary reads and discards these bounds.
     CGRect screenBounds = [UIScreen mainScreen].bounds;
     CGFloat screenWidth = screenBounds.size.width;
@@ -202,8 +200,8 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     BOOL isXcode6 = [ApplilinkCore isBuildXcode6];
     CGFloat systemVersion = [[UIDevice currentDevice].systemVersion floatValue];
 
-    CGRect shadeFrame = CGRectMake(screenBounds.origin.x, screenBounds.origin.y,
-                                   screenWidth, screenHeight);
+    CGRect shadeFrame =
+        CGRectMake(screenBounds.origin.x, screenBounds.origin.y, screenWidth, screenHeight);
     CGRect baseFrame;
     if (isLandscape) {
         if (isXcode6 && systemVersion >= kRecommendXcode6SystemVersion) {
@@ -231,8 +229,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
             }
         }
     } else {
-        CGFloat scale =
-            (float)(((screenWidth - statusBar) - margin1 - margin2) / baseWidthFactor);
+        CGFloat scale = (float)(((screenWidth - statusBar) - margin1 - margin2) / baseWidthFactor);
         CGFloat baseW = (float)(baseWidthFactor * scale);
         CGFloat baseH = (float)(baseHeightFactor * scale);
         CGFloat baseX = (screenWidth - baseW) * 0.5;
@@ -277,8 +274,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
         return;
     }
 
-    UIInterfaceOrientation orientation =
-        [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     CGFloat systemVersionAgain = [[UIDevice currentDevice].systemVersion floatValue];
     CGFloat statusBarInset = 0.0;
     if (systemVersionAgain < kRecommendStatusBarInsetSystemVersion) {
@@ -292,25 +288,26 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     CGRect shadeFrame = self.shadeView.frame;
     CGAffineTransform transform;
     switch (orientation) {
-        case UIInterfaceOrientationPortraitUpsideDown:
-            transform = CGAffineTransformMakeRotation(M_PI);
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            transform = CGAffineTransformMakeRotation(M_PI_2);
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            transform = CGAffineTransformMakeRotation(-M_PI_2);
-            break;
-        default:
-            transform = CGAffineTransformMakeRotation(0.0);
-            break;
+    case UIInterfaceOrientationPortraitUpsideDown:
+        transform = CGAffineTransformMakeRotation(M_PI);
+        break;
+    case UIInterfaceOrientationLandscapeLeft:
+        transform = CGAffineTransformMakeRotation(M_PI_2);
+        break;
+    case UIInterfaceOrientationLandscapeRight:
+        transform = CGAffineTransformMakeRotation(-M_PI_2);
+        break;
+    default:
+        transform = CGAffineTransformMakeRotation(0.0);
+        break;
     }
 
     [UIView animateWithDuration:duration
                      animations:^{
                        /** @ghidraAddress 0x2479c4 */
                        self.view.transform = transform;
-                       [self.view setBounds:CGRectMake(shadeFrame.origin.x, statusBarInset,
+                       [self.view setBounds:CGRectMake(shadeFrame.origin.x,
+                                                       statusBarInset,
                                                        shadeFrame.size.width,
                                                        shadeFrame.size.height)];
                      }];
@@ -345,20 +342,20 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     }
     UIInterfaceOrientationMask mask;
     switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-            mask = UIInterfaceOrientationMaskPortrait;
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            mask = UIInterfaceOrientationMaskPortraitUpsideDown;
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            mask = UIInterfaceOrientationMaskLandscapeLeft;
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            mask = UIInterfaceOrientationMaskLandscapeRight;
-            break;
-        default:
-            return NO;
+    case UIInterfaceOrientationPortrait:
+        mask = UIInterfaceOrientationMaskPortrait;
+        break;
+    case UIInterfaceOrientationPortraitUpsideDown:
+        mask = UIInterfaceOrientationMaskPortraitUpsideDown;
+        break;
+    case UIInterfaceOrientationLandscapeLeft:
+        mask = UIInterfaceOrientationMaskLandscapeLeft;
+        break;
+    case UIInterfaceOrientationLandscapeRight:
+        mask = UIInterfaceOrientationMaskLandscapeRight;
+        break;
+    default:
+        return NO;
     }
     return ([self supportedInterfaceOrientations] & mask) != 0;
 }
@@ -400,7 +397,8 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
     self.indicator = nil;
     [RecommendFullScreenController cancelPreviousPerformRequestsWithTarget:self];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kRecommendShowBaseViewDelayNanoseconds),
-                   dispatch_get_main_queue(), ^{
+                   dispatch_get_main_queue(),
+                   ^{
                      /** @ghidraAddress 0x247d08 */
                      self.shadeView.userInteractionEnabled = YES;
                      self.shadeView.hidden = NO;

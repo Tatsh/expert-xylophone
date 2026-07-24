@@ -66,9 +66,10 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
         [GetApplicationSupportPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
     if ([fileManager fileExistsAtPath:path]) {
         NSData *data = [NSData dataWithContentsOfFile:path];
-        NSDictionary *decoded = [NSJSONSerialization JSONObjectWithData:data
-                                                               options:NSJSONReadingMutableContainers
-                                                                 error:nil];
+        NSDictionary *decoded =
+            [NSJSONSerialization JSONObjectWithData:data
+                                            options:NSJSONReadingMutableContainers
+                                              error:nil];
         self.expandDict = [NSMutableDictionary dictionaryWithDictionary:decoded];
     } else {
         self.expandDict = [[NSMutableDictionary alloc] init];
@@ -78,8 +79,8 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
 - (void)saveDictionary {
     NSError *error = nil;
     NSData *data = [NSJSONSerialization dataWithJSONObject:self.expandDict
-                                                  options:NSJSONWritingPrettyPrinted
-                                                    error:&error];
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:&error];
     NSString *json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSString *path =
         [GetApplicationSupportPath() stringByAppendingPathComponent:kSearchExpandDictFileName];

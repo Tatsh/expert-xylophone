@@ -47,8 +47,8 @@ static NSString *const kApplilinkSdkVersionBuild = @"5";
 }
 
 + (NSString *)versionDev {
-    return [NSString stringWithFormat:@"%@.%@", kApplilinkSdkVersionBase,
-                                      kApplilinkSdkVersionBuild];
+    return
+        [NSString stringWithFormat:@"%@.%@", kApplilinkSdkVersionBase, kApplilinkSdkVersionBuild];
 }
 
 + (void)clearSession {

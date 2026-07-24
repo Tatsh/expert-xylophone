@@ -143,8 +143,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 - (void)setupView:(UIImage *)image {
     // Body.
     CGRect bodyClip = [self getClipList:kPastelIndexBody];
-    UIImageView *body =
-        [[UIImageView alloc] initWithImage:[image clipImageWithRect:bodyClip]];
+    UIImageView *body = [[UIImageView alloc] initWithImage:[image clipImageWithRect:bodyClip]];
     self.bodyView = body;
     self.bodyView.layer.anchorPoint = CGPointMake(kPastelHalf, 1.0);
     self.bodyView.frame = CGRectMake(
@@ -156,8 +155,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
     // Head.
     CGRect headClip = [self getClipList:kPastelIndexHead];
-    UIImageView *head =
-        [[UIImageView alloc] initWithImage:[image clipImageWithRect:headClip]];
+    UIImageView *head = [[UIImageView alloc] initWithImage:[image clipImageWithRect:headClip]];
     self.headView = head;
     self.headView.layer.anchorPoint = CGPointMake(kPastelHalf, 1.0);
     self.headView.frame = CGRectMake(
@@ -169,8 +167,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
     // Right tail.
     CGRect rightClip = [self getClipList:kPastelIndexRight];
-    UIImageView *right =
-        [[UIImageView alloc] initWithImage:[image clipImageWithRect:rightClip]];
+    UIImageView *right = [[UIImageView alloc] initWithImage:[image clipImageWithRect:rightClip]];
     self.rightView = right;
     self.rightView.layer.anchorPoint = CGPointMake(0.0, 0.0);
     self.rightView.layer.position = CGPointMake(self.displayRate * kPastelRightPositionX,
@@ -179,8 +176,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 
     // Left tail.
     CGRect leftClip = [self getClipList:kPastelIndexLeft];
-    UIImageView *left =
-        [[UIImageView alloc] initWithImage:[image clipImageWithRect:leftClip]];
+    UIImageView *left = [[UIImageView alloc] initWithImage:[image clipImageWithRect:leftClip]];
     self.leftView = left;
     self.leftView.layer.anchorPoint = CGPointMake(1.0, 0.0);
     self.leftView.frame =

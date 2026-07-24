@@ -37,8 +37,8 @@ static const float kMinimumStoreSystemVersion = 6.0f;
 
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     dispatch_once(&sAllocOnceToken, ^{
-        /** @ghidraAddress 0x220538 */
-        sSharedInstance = [super allocWithZone:zone];
+      /** @ghidraAddress 0x220538 */
+      sSharedInstance = [super allocWithZone:zone];
     });
     return sSharedInstance;
 }
@@ -47,16 +47,16 @@ static const float kMinimumStoreSystemVersion = 6.0f;
 - (instancetype)init {
     __block ApplilinkStore *initResult = self;
     dispatch_sync(dispatch_get_main_queue(), ^{
-        /** @ghidraAddress 0x2203fc */
-        initResult = [super init];
+      /** @ghidraAddress 0x2203fc */
+      initResult = [super init];
     });
     return initResult;
 }
 
 + (instancetype)sharedInstance {
     dispatch_once(&sSharedOnceToken, ^{
-        /** @ghidraAddress 0x220604 */
-        sSharedInstance = [[ApplilinkStore alloc] init];
+      /** @ghidraAddress 0x220604 */
+      sSharedInstance = [[ApplilinkStore alloc] init];
     });
     return sSharedInstance;
 }
@@ -115,8 +115,7 @@ static const float kMinimumStoreSystemVersion = 6.0f;
     }
 }
 
-- (void)appStoreFailLoadNoticeWithError:(NSError *)error
-                               appParam:(ApplilinkParameters *)appParam {
+- (void)appStoreFailLoadNoticeWithError:(NSError *)error appParam:(ApplilinkParameters *)appParam {
     if (sViewController != nil) {
         [sViewController setSdkDelegate:nil];
     }

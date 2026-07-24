@@ -16,9 +16,12 @@ static NSString *const kURLEscapedCharacters = @"!*'();:@&=+$,/?%#[]";
 @implementation NSStringURLEncoding
 
 + (NSString *)URLEncodedString:(NSString *)string {
-    return CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
-        kCFAllocatorDefault, (__bridge CFStringRef)string, NULL,
-        (__bridge CFStringRef)kURLEscapedCharacters, kCFStringEncodingUTF8));
+    return CFBridgingRelease(
+        CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                (__bridge CFStringRef)string,
+                                                NULL,
+                                                (__bridge CFStringRef)kURLEscapedCharacters,
+                                                kCFStringEncodingUTF8));
 }
 
 + (NSString *)URLDecodedString:(NSString *)string {

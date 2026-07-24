@@ -92,42 +92,42 @@
         [mainWindow addSubview:self.view];
     }
 
-    NSDictionary *parameters = @{SKStoreProductParameterITunesItemIdentifier: appStoreId};
+    NSDictionary *parameters = @{SKStoreProductParameterITunesItemIdentifier : appStoreId};
     SEL openedNotice = @selector(appStoreOpenedNoticeWithAppParam:);
     SEL failLoadNotice = @selector(appStoreFailLoadNoticeWithError:appParam:);
     [storeViewController
         loadProductWithParameters:parameters
                   completionBlock:^(BOOL result, NSError *error) {
-                      /** @ghidraAddress 0x213c18 */
-                      if (!result) {
-                          if (self.indicator) {
-                              [self.indicator removeFromSuperview];
-                          }
-                          self.indicator = nil;
-                          [self.view removeFromSuperview];
-                          if (self.sdkDelegate &&
-                              [self.sdkDelegate respondsToSelector:failLoadNotice]) {
-                              ApplilinkParameters *params = self.applilinkParams;
-                              [self.sdkDelegate appStoreFailLoadNoticeWithError:error
-                                                                      appParam:params];
-                          }
-                          return;
-                      }
-                      [self presentViewController:storeViewController
-                                         animated:YES
-                                       completion:^{
-                                           /** @ghidraAddress 0x213dd0 */
-                                           if (self.indicator) {
-                                               [self.indicator removeFromSuperview];
-                                           }
-                                           self.indicator = nil;
-                                           if (self.sdkDelegate &&
-                                               [self.sdkDelegate
-                                                   respondsToSelector:openedNotice]) {
-                                               [self.sdkDelegate appStoreOpenedNoticeWithAppParam:
-                                                                     self.applilinkParams];
-                                           }
-                                       }];
+                    /** @ghidraAddress 0x213c18 */
+                    if (!result) {
+                        if (self.indicator) {
+                            [self.indicator removeFromSuperview];
+                        }
+                        self.indicator = nil;
+                        [self.view removeFromSuperview];
+                        if (self.sdkDelegate &&
+                            [self.sdkDelegate respondsToSelector:failLoadNotice]) {
+                            ApplilinkParameters *params = self.applilinkParams;
+                            [self.sdkDelegate appStoreFailLoadNoticeWithError:error
+                                                                     appParam:params];
+                        }
+                        return;
+                    }
+                    [self
+                        presentViewController:storeViewController
+                                     animated:YES
+                                   completion:^{
+                                     /** @ghidraAddress 0x213dd0 */
+                                     if (self.indicator) {
+                                         [self.indicator removeFromSuperview];
+                                     }
+                                     self.indicator = nil;
+                                     if (self.sdkDelegate &&
+                                         [self.sdkDelegate respondsToSelector:openedNotice]) {
+                                         [self.sdkDelegate
+                                             appStoreOpenedNoticeWithAppParam:self.applilinkParams];
+                                     }
+                                   }];
                   }];
 }
 
@@ -142,13 +142,13 @@
     SEL closedNotice = @selector(appStoreClosedNoticeWithAppParam:);
     [self dismissViewControllerAnimated:YES
                              completion:^{
-                                 /** @ghidraAddress 0x21404c */
-                                 [self.view removeFromSuperview];
-                                 if (self.sdkDelegate &&
-                                     [self.sdkDelegate respondsToSelector:closedNotice]) {
-                                     [self.sdkDelegate
-                                         appStoreClosedNoticeWithAppParam:self.applilinkParams];
-                                 }
+                               /** @ghidraAddress 0x21404c */
+                               [self.view removeFromSuperview];
+                               if (self.sdkDelegate &&
+                                   [self.sdkDelegate respondsToSelector:closedNotice]) {
+                                   [self.sdkDelegate
+                                       appStoreClosedNoticeWithAppParam:self.applilinkParams];
+                               }
                              }];
 }
 
@@ -161,13 +161,13 @@
     SEL closedNotice = @selector(appStoreClosedNoticeWithAppParam:);
     [self dismissViewControllerAnimated:NO
                              completion:^{
-                                 /** @ghidraAddress 0x214270 */
-                                 [self.view removeFromSuperview];
-                                 if (self.sdkDelegate &&
-                                     [self.sdkDelegate respondsToSelector:closedNotice]) {
-                                     [self.sdkDelegate
-                                         appStoreClosedNoticeWithAppParam:self.applilinkParams];
-                                 }
+                               /** @ghidraAddress 0x214270 */
+                               [self.view removeFromSuperview];
+                               if (self.sdkDelegate &&
+                                   [self.sdkDelegate respondsToSelector:closedNotice]) {
+                                   [self.sdkDelegate
+                                       appStoreClosedNoticeWithAppParam:self.applilinkParams];
+                               }
                              }];
 }
 

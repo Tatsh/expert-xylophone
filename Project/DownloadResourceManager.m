@@ -96,14 +96,15 @@ static NSString *const kResponseTypeAcceptable = @"1";
                           options:NSNumericSearch] != NSOrderedAscending) {
         // The installed bundle is at least as new as the server's; the launch may proceed once the
         // installed file list verifies.
-        return [DownloadResourceManager fileListCheck] ? DownloadResourceManagerResultCurrent
-                                                       : DownloadResourceManagerResultUpdate;
+        return [DownloadResourceManager fileListCheck] ? DownloadResourceManagerResultCurrent :
+                                                         DownloadResourceManagerResultUpdate;
     }
     // The installed bundle is older than the server's. The "Type" flag decides whether the launch
     // may still proceed: the binary returns the inverse of whether the flag equals "1".
     NSString *type = response[kResponseKeyType];
     BOOL acceptable = type != nil && [kResponseTypeAcceptable isEqualToString:type];
-    return acceptable ? DownloadResourceManagerResultMissing : DownloadResourceManagerResultOutdated;
+    return acceptable ? DownloadResourceManagerResultMissing :
+                        DownloadResourceManagerResultOutdated;
 }
 
 @end

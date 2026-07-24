@@ -38,8 +38,8 @@ static NSString *const kEmptyDefault = @"";
         defaultValue = kEmptyDefault;
     }
     return [bundle localizedStringForKey:localizedMessage
-                                  value:defaultValue
-                                  table:kApplilinkMessageStringsTable];
+                                   value:defaultValue
+                                   table:kApplilinkMessageStringsTable];
 }
 
 @end

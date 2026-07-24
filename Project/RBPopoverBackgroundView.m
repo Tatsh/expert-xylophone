@@ -142,8 +142,8 @@ typedef struct {
 }
 
 + (UIEdgeInsets)contentViewInsets {
-    return UIEdgeInsetsMake(kContentViewInset, kContentViewInset, kContentViewInset,
-                            kContentViewInset);
+    return UIEdgeInsetsMake(
+        kContentViewInset, kContentViewInset, kContentViewInset, kContentViewInset);
 }
 
 #pragma mark Lifecycle
@@ -228,8 +228,7 @@ typedef struct {
         return;
     }
     CAAnimation *bounds = [layer animationForKey:kBoundsAnimationKey];
-    CABasicAnimation *animation =
-        [CABasicAnimation animationWithKeyPath:kShadowPathAnimationKey];
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:kShadowPathAnimationKey];
     animation.toValue = [NSValue valueWithPointer:shadowPath];
     animation.timingFunction = bounds.timingFunction;
     animation.duration = bounds.duration;
@@ -244,8 +243,7 @@ typedef struct {
 
 - (CGFloat)arrowCenter {
     CGRect bounds = self.bounds;
-    CGFloat center =
-        [self wantsUpOrDownArrow] ? CGRectGetMidX(bounds) : CGRectGetMidY(bounds);
+    CGFloat center = [self wantsUpOrDownArrow] ? CGRectGetMidX(bounds) : CGRectGetMidY(bounds);
     return center + self.arrowOffset;
 }
 
@@ -307,8 +305,7 @@ typedef struct {
         return [self twoPartStretchableImageNamed:imageName insets:insets];
     }
     NSString *imageName = wantsUpArrow ? kImageNameUpRight : kImageNameDownRight;
-    UIEdgeInsets insets =
-        UIEdgeInsetsMake(top, kUpDownLeftInset, bottom, kUpDownCornerRightInset);
+    UIEdgeInsets insets = UIEdgeInsetsMake(top, kUpDownLeftInset, bottom, kUpDownCornerRightInset);
     BOOL mirrored = [self isArrowAtLeftEdgeOfPopover];
     return [self stretchableImageNamed:imageName insets:insets mirrored:mirrored];
 }
@@ -316,16 +313,15 @@ typedef struct {
 - (UIImage *)sideArrowImage {
     [self adjustCentersIfNecessary];
     if ([self isArrowBetweenTopAndBottomEdgesOfPopover]) {
-        UIEdgeInsets insets = UIEdgeInsetsMake(kSideTwoPartTop, kSideTwoPartLeft,
-                                               kSideTwoPartBottom, kSideTwoPartRight);
+        UIEdgeInsets insets = UIEdgeInsetsMake(
+            kSideTwoPartTop, kSideTwoPartLeft, kSideTwoPartBottom, kSideTwoPartRight);
         return [self twoPartStretchableImageNamed:kImageNameSide insets:insets];
     }
     BOOL wantsTop = [self isArrowAtTopEdgeOfPopover];
     NSString *imageName = wantsTop ? kImageNameTop : kImageNameBottom;
     CGFloat top = wantsTop ? kSideTopArrowTop : kSideBottomArrowTop;
     CGFloat bottom = wantsTop ? kSideTopArrowBottom : kSideBottomArrowBottom;
-    UIEdgeInsets insets =
-        UIEdgeInsetsMake(top, kSideArrowLeftInset, bottom, kSideArrowRightInset);
+    UIEdgeInsets insets = UIEdgeInsetsMake(top, kSideArrowLeftInset, bottom, kSideArrowRightInset);
     BOOL mirrored = self.arrowDirection == UIPopoverArrowDirectionLeft;
     return [self stretchableImageNamed:imageName insets:insets mirrored:mirrored];
 }
@@ -337,8 +333,8 @@ typedef struct {
                           mirrored:(BOOL)mirrored {
     UIImage *image = [UIImage imageWithName:imageName];
     if (mirrored) {
-        return [[self mirroredImage:image]
-            resizableImageWithCapInsets:[self mirroredInsets:insets]];
+        return
+            [[self mirroredImage:image] resizableImageWithCapInsets:[self mirroredInsets:insets]];
     }
     return [image resizableImageWithCapInsets:insets];
 }
@@ -352,8 +348,8 @@ typedef struct {
     UIImage *stretched = [image resizableImageWithCapInsets:insets];
     CGSize size = [self contextSizeForFirstHalfImage:stretched];
     UIImage *firstHalf = [self imageFromImageContextWithSourceImage:stretched size:size];
-    UIEdgeInsets secondHalfInsets =
-        [self secondHalfInsetsForStretchedImage:firstHalf insets:insets];
+    UIEdgeInsets secondHalfInsets = [self secondHalfInsetsForStretchedImage:firstHalf
+                                                                     insets:insets];
     return [firstHalf resizableImageWithCapInsets:secondHalfInsets];
 }
 
@@ -387,14 +383,14 @@ typedef struct {
 
 - (UIEdgeInsets)horizontalInsetsForStretchedImage:(UIImage *)image insets:(UIEdgeInsets)insets {
     CGSize size = image.size;
-    return UIEdgeInsetsMake(insets.top, size.width - kSecondHalfShrink, insets.bottom,
-                            kSecondHalfTrailingInset);
+    return UIEdgeInsetsMake(
+        insets.top, size.width - kSecondHalfShrink, insets.bottom, kSecondHalfTrailingInset);
 }
 
 - (UIEdgeInsets)verticalInsetsForStretchedImage:(UIImage *)image insets:(UIEdgeInsets)insets {
     CGSize size = image.size;
-    return UIEdgeInsetsMake(size.height - kSecondHalfShrink, insets.left,
-                            kSecondHalfTrailingInset, insets.right);
+    return UIEdgeInsetsMake(
+        size.height - kSecondHalfShrink, insets.left, kSecondHalfTrailingInset, insets.right);
 }
 
 #pragma mark Image helpers

@@ -113,47 +113,48 @@ enum {
     if ((adModel != kRecommendCachedAdModelFive) &&
         (adModel < kRecommendCachedAdModelLower || adModel > kRecommendCachedAdModelUpper)) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            /** @ghidraAddress 0x245c84 */
-            if (!self.webView) {
-                CGRect webFrame = self.frame;
-                self.webView = [[RecommendAdWebView alloc]
-                    initWithFrame:CGRectMake(0, 0, webFrame.size.width, webFrame.size.height)];
-                [self addSubview:self.webView];
-            }
-            CGRect frame = self.frame;
-            if (!self.indicator && frame.size.width >= kRecommendIndicatorSize &&
-                frame.size.height >= kRecommendIndicatorSize) {
-                self.indicator = [[UIActivityIndicatorView alloc]
-                    initWithFrame:CGRectMake((frame.size.width - kRecommendIndicatorSize) * 0.5,
-                                             (frame.size.height - kRecommendIndicatorSize) * 0.5,
-                                             kRecommendIndicatorSize, kRecommendIndicatorSize)];
-                self.indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
-                self.indicator.autoresizingMask =
-                    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
-                    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
-                    UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
-                if ([self.indicator respondsToSelector:@selector(setColor:)]) {
-                    self.indicator.color = [ApplilinkCore getIndicatorColor];
-                }
-                [self addSubview:self.indicator];
-                [self.indicator startAnimating];
-                [self performSelector:@selector(hiddenIndicator)
-                           withObject:nil
-                           afterDelay:kRecommendIndicatorSize];
-            }
-            [self.webView setScrollEnabled:self.webViewBounces];
-            self.applilinkDelegate = delegate;
-            [self.webView loadRequestWithAdModel:adModel
-                                      adLocation:adLocation
-                                   verticalAlign:verticalAlign
-                                     requestCode:self.applilinkParams.requestCode
-                                        delegate:self];
+          /** @ghidraAddress 0x245c84 */
+          if (!self.webView) {
+              CGRect webFrame = self.frame;
+              self.webView = [[RecommendAdWebView alloc]
+                  initWithFrame:CGRectMake(0, 0, webFrame.size.width, webFrame.size.height)];
+              [self addSubview:self.webView];
+          }
+          CGRect frame = self.frame;
+          if (!self.indicator && frame.size.width >= kRecommendIndicatorSize &&
+              frame.size.height >= kRecommendIndicatorSize) {
+              self.indicator = [[UIActivityIndicatorView alloc]
+                  initWithFrame:CGRectMake((frame.size.width - kRecommendIndicatorSize) * 0.5,
+                                           (frame.size.height - kRecommendIndicatorSize) * 0.5,
+                                           kRecommendIndicatorSize,
+                                           kRecommendIndicatorSize)];
+              self.indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+              self.indicator.autoresizingMask =
+                  UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+                  UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+                  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
+              if ([self.indicator respondsToSelector:@selector(setColor:)]) {
+                  self.indicator.color = [ApplilinkCore getIndicatorColor];
+              }
+              [self addSubview:self.indicator];
+              [self.indicator startAnimating];
+              [self performSelector:@selector(hiddenIndicator)
+                         withObject:nil
+                         afterDelay:kRecommendIndicatorSize];
+          }
+          [self.webView setScrollEnabled:self.webViewBounces];
+          self.applilinkDelegate = delegate;
+          [self.webView loadRequestWithAdModel:adModel
+                                    adLocation:adLocation
+                                 verticalAlign:verticalAlign
+                                   requestCode:self.applilinkParams.requestCode
+                                      delegate:self];
         });
         return;
     }
     NSError *createError = [RecommendAdCache createHtmlWithAdModel:adModel
-                                                       adLocation:adLocation
-                                                    verticalAlign:verticalAlign];
+                                                        adLocation:adLocation
+                                                     verticalAlign:verticalAlign];
     if (createError) {
         [ApplilinkCore toDelegateFailLoadWithError:createError
                                           appParam:self.applilinkParams

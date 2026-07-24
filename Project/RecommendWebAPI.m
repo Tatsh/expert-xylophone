@@ -24,8 +24,7 @@ static NSString *const kRecommendWebAPIPathAppInstallRegist =
     @"/ad/external/app/install/regist.php";
 static NSString *const kRecommendWebAPIPathBannerDetail = @"/ad/external/banner/detail.php";
 static NSString *const kRecommendWebAPIPathAppReadRegist = @"/ad/external/app/read/regist.php";
-static NSString *const kRecommendWebAPIPathCheckAllRead =
-    @"/ad/external/app/read/checkAllRead.php";
+static NSString *const kRecommendWebAPIPathCheckAllRead = @"/ad/external/app/read/checkAllRead.php";
 static NSString *const kRecommendWebAPIPathPreInfoForDisplay =
     @"/ad/external/app/preInfoForDisplay.php";
 static NSString *const kRecommendWebAPIPathAllAdDataForDisplay =
@@ -137,9 +136,9 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
 @implementation RecommendWebAPI
 
 + (NSError *)malformedErrorForResponse:(id)response {
-    return [ApplilinkNetworkError
-        localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorMalformed
-                               userInfo:response];
+    return
+        [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorMalformed
+                                                      userInfo:response];
 }
 
 + (NSError *)loginErrorForResponse:(id)response {
@@ -178,16 +177,15 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorParameter
                                    userInfo:response];
     }
-    return [ApplilinkNetworkError
-        localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorMalformed
-                               userInfo:response];
+    return
+        [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorMalformed
+                                                      userInfo:response];
 }
 
 #pragma mark - Login
 
-+ (void)checkLoginWithCallback:(void (^)(BOOL loginStatus,
-                                         BOOL userIdPresent,
-                                         NSError *_Nullable error))callback {
++ (void)checkLoginWithCallback:
+    (void (^)(BOOL loginStatus, BOOL userIdPresent, NSError *_Nullable error))callback {
     if ([ApplilinkConsts isNeedRecommendLogin]) {
         // The binary passes a third positional argument here even though callers read only the
         // login state and error.
@@ -200,50 +198,48 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     NSDictionary *parameters = [ApplilinkUtilities userAgentParameters];
     BOOL userIdPresent = userId != nil;
     NSString *url =
-        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:
-                    kRecommendWebAPIPathCheckLoginStatus];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIShortTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x22f17c */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(NO, NO, error);
-                           }
-                           return;
-                       }
-                       if (![response[kRecommendWebAPIKeyStatus] boolValue]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(NO, NO, error);
-                           }
-                           return;
-                       }
-                       BOOL loginStatus = [response[kRecommendWebAPIKeyLoginStatus] boolValue];
-                       if (callback) {
-                           callback(loginStatus, userIdPresent, nil);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x22f33c */
-                         if (error.code == kRecommendWebAPIURLErrorTimedOut) {
-                             if (callback) {
-                                 callback(NO, userIdPresent, nil);
-                             }
-                             return;
-                         }
-                         if (callback) {
-                             callback(NO, NO, error);
-                         }
-                       }];
+        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathCheckLoginStatus];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIShortTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x22f17c */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(NO, NO, error);
+              }
+              return;
+          }
+          if (![response[kRecommendWebAPIKeyStatus] boolValue]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(NO, NO, error);
+              }
+              return;
+          }
+          BOOL loginStatus = [response[kRecommendWebAPIKeyLoginStatus] boolValue];
+          if (callback) {
+              callback(loginStatus, userIdPresent, nil);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x22f33c */
+          if (error.code == kRecommendWebAPIURLErrorTimedOut) {
+              if (callback) {
+                  callback(NO, userIdPresent, nil);
+              }
+              return;
+          }
+          if (callback) {
+              callback(NO, NO, error);
+          }
+        }];
 }
 
 + (void)startLoginWithCallback:(void (^)(NSError *_Nullable error))callback {
@@ -260,44 +256,43 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     [parameters setValue:encodedUserId forKey:kRecommendWebAPIParamUserId];
     [parameters setValue:kRecommendWebAPIParamTrue forKey:kRecommendWebAPIParamCfr];
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
-    NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:
-                kRecommendWebAPIPathLogin];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x22f6b0 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(error);
-                           }
-                           return;
-                       }
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           if (callback) {
-                               callback(nil);
-                           }
-                           return;
-                       }
-                       if (callback) {
-                           callback([self loginErrorForResponse:response]);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x22f930 */
-                         if (callback) {
-                             callback(error);
-                         }
-                       }];
+    NSString *url =
+        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathLogin];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x22f6b0 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(error);
+              }
+              return;
+          }
+          if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              if (callback) {
+                  callback(nil);
+              }
+              return;
+          }
+          if (callback) {
+              callback([self loginErrorForResponse:response]);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x22f930 */
+          if (callback) {
+              callback(error);
+          }
+        }];
 }
 
 #pragma mark - Advert detail
@@ -333,72 +328,68 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathExternalDetail];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x22fd54 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(nil, nil, error);
-                           }
-                           return;
-                       }
-                       id status = response[kRecommendWebAPIKeyStatus];
-                       if (![status isKindOfClass:[NSString class]] &&
-                           ![status isKindOfClass:[NSNumber class]]) {
-                           status = nil;
-                       }
-                       id errorCode = response[kRecommendWebAPIKeyErrorCode];
-                       BOOL errorCodeSuccess;
-                       if ([errorCode isKindOfClass:[NSString class]] ||
-                           [errorCode isKindOfClass:[NSNumber class]]) {
-                           errorCodeSuccess =
-                               errorCode != nil &&
-                               [errorCode intValue] == kRecommendWebAPISuccessSentinel;
-                       } else {
-                           errorCodeSuccess = YES;
-                       }
-                       if ([status boolValue] && errorCodeSuccess) {
-                           id categoryId = response[kRecommendWebAPIKeyCategoryId];
-                           id countryCode = response[kRecommendWebAPIKeyCountryCode];
-                           if ([categoryId isKindOfClass:[NSString class]]) {
-                               [ApplilinkConsts setCategoryId:categoryId];
-                           }
-                           if ([countryCode isKindOfClass:[NSString class]]) {
-                               [ApplilinkConsts setCountryCode:countryCode];
-                           }
-                           NSDate *expiryDate = [[NSDate date]
-                               dateByAddingTimeInterval:kRecommendWebAPIAdDetailCacheExpiry];
-                           NSData *expiry =
-                               [NSKeyedArchiver archivedDataWithRootObject:expiryDate];
-                           [[NSUserDefaults standardUserDefaults]
-                               setObject:expiry
-                                  forKey:kRecommendWebAPIDefaultsAdDetail];
-                           [[NSUserDefaults standardUserDefaults] synchronize];
-                           if (callback) {
-                               callback(categoryId, countryCode, nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(nil, nil, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x2301a4 */
-                         if (callback) {
-                             callback(nil, nil, error);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x22fd54 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(nil, nil, error);
+              }
+              return;
+          }
+          id status = response[kRecommendWebAPIKeyStatus];
+          if (![status isKindOfClass:[NSString class]] &&
+              ![status isKindOfClass:[NSNumber class]]) {
+              status = nil;
+          }
+          id errorCode = response[kRecommendWebAPIKeyErrorCode];
+          BOOL errorCodeSuccess;
+          if ([errorCode isKindOfClass:[NSString class]] ||
+              [errorCode isKindOfClass:[NSNumber class]]) {
+              errorCodeSuccess =
+                  errorCode != nil && [errorCode intValue] == kRecommendWebAPISuccessSentinel;
+          } else {
+              errorCodeSuccess = YES;
+          }
+          if ([status boolValue] && errorCodeSuccess) {
+              id categoryId = response[kRecommendWebAPIKeyCategoryId];
+              id countryCode = response[kRecommendWebAPIKeyCountryCode];
+              if ([categoryId isKindOfClass:[NSString class]]) {
+                  [ApplilinkConsts setCategoryId:categoryId];
+              }
+              if ([countryCode isKindOfClass:[NSString class]]) {
+                  [ApplilinkConsts setCountryCode:countryCode];
+              }
+              NSDate *expiryDate =
+                  [[NSDate date] dateByAddingTimeInterval:kRecommendWebAPIAdDetailCacheExpiry];
+              NSData *expiry = [NSKeyedArchiver archivedDataWithRootObject:expiryDate];
+              [[NSUserDefaults standardUserDefaults] setObject:expiry
+                                                        forKey:kRecommendWebAPIDefaultsAdDetail];
+              [[NSUserDefaults standardUserDefaults] synchronize];
+              if (callback) {
+                  callback(categoryId, countryCode, nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(nil, nil, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x2301a4 */
+          if (callback) {
+              callback(nil, nil, error);
+          }
+        }];
 }
 
 #pragma mark - Installed-application list
@@ -407,92 +398,87 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                                                NSError *_Nullable error))callback {
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathAdidIndex];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:nil
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIShortTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x230350 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(nil, error);
-                           }
-                           return;
-                       }
-                       BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
-                       int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
-                       id kind = response[kRecommendWebAPIKeyKind];
-                       if (![kind isKindOfClass:[NSString class]]) {
-                           kind = nil;
-                       }
-                       if (success && errorCode == kRecommendWebAPISuccessSentinel) {
-                           [ApplilinkConsts setAppInstallList:response[kRecommendWebAPIKeyList]];
-                           if (callback) {
-                               callback(nil, nil);
-                           }
-                           return;
-                       }
-                       if (errorCode == kRecommendWebAPIErrorCodeGeneric) {
-                           NSError *error = [ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorGeneric
-                                                      userInfo:response];
-                           if (callback) {
-                               callback(nil, error);
-                           }
-                           return;
-                       }
-                       if (errorCode == kRecommendWebAPIErrorCodeAuthorization) {
-                           NSError *error = [ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:
-                                   kRecommendWebAPINetworkErrorAuthorization
-                                                      userInfo:response];
-                           if (callback) {
-                               callback(nil, error);
-                           }
-                           return;
-                       }
-                       if ([kind isEqualToString:kRecommendWebAPIKindAuthorization]) {
-                           [ApplilinkCore
-                               appAuthSessionRegenerateWithBlock:^(NSError *_Nullable regenError) {
-                                 /** @ghidraAddress 0x23072c */
-                                 if (regenError != nil) {
-                                     NSError *error = [ApplilinkNetworkError
-                                         localizedApplilinkErrorWithCode:
-                                             kRecommendWebAPINetworkErrorLoginRequired
-                                                                userInfo:response];
-                                     if (callback) {
-                                         callback(nil, error);
-                                     }
-                                 }
-                               }];
-                           return;
-                       }
-                       NSError *error;
-                       if ([kind isEqualToString:kRecommendWebAPIKindParameterError]) {
-                           error = [ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:
-                                   kRecommendWebAPINetworkErrorParameter
-                                                      userInfo:response];
-                       } else {
-                           error = [self malformedErrorForResponse:response];
-                       }
-                       if (callback) {
-                           callback(nil, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x230808 */
-                         // The binary forwards a single nil here and drops the transport error.
-                         if (callback) {
-                             callback(nil, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:nil
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIShortTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x230350 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(nil, error);
+              }
+              return;
+          }
+          BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
+          int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
+          id kind = response[kRecommendWebAPIKeyKind];
+          if (![kind isKindOfClass:[NSString class]]) {
+              kind = nil;
+          }
+          if (success && errorCode == kRecommendWebAPISuccessSentinel) {
+              [ApplilinkConsts setAppInstallList:response[kRecommendWebAPIKeyList]];
+              if (callback) {
+                  callback(nil, nil);
+              }
+              return;
+          }
+          if (errorCode == kRecommendWebAPIErrorCodeGeneric) {
+              NSError *error = [ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorGeneric
+                                         userInfo:response];
+              if (callback) {
+                  callback(nil, error);
+              }
+              return;
+          }
+          if (errorCode == kRecommendWebAPIErrorCodeAuthorization) {
+              NSError *error = [ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorAuthorization
+                                         userInfo:response];
+              if (callback) {
+                  callback(nil, error);
+              }
+              return;
+          }
+          if ([kind isEqualToString:kRecommendWebAPIKindAuthorization]) {
+              [ApplilinkCore appAuthSessionRegenerateWithBlock:^(NSError *_Nullable regenError) {
+                /** @ghidraAddress 0x23072c */
+                if (regenError != nil) {
+                    NSError *error = [ApplilinkNetworkError
+                        localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorLoginRequired
+                                               userInfo:response];
+                    if (callback) {
+                        callback(nil, error);
+                    }
+                }
+              }];
+              return;
+          }
+          NSError *error;
+          if ([kind isEqualToString:kRecommendWebAPIKindParameterError]) {
+              error = [ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorParameter
+                                         userInfo:response];
+          } else {
+              error = [self malformedErrorForResponse:response];
+          }
+          if (callback) {
+              callback(nil, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x230808 */
+          // The binary forwards a single nil here and drops the transport error.
+          if (callback) {
+              callback(nil, nil);
+          }
+        }];
 }
 
 + (void)appliListWithParameters:(NSDictionary *)parameters
@@ -501,50 +487,47 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     [merged setValue:kRecommendWebAPIParamTrue forKey:kRecommendWebAPIParamTestFlg];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathExternalIndex];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIShortTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x230a24 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callBack) {
-                               callBack(nil, error);
-                           }
-                           return;
-                       }
-                       BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
-                       int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
-                       id kind = response[kRecommendWebAPIKeyKind];
-                       if (![kind isKindOfClass:[NSString class]]) {
-                           kind = nil;
-                       }
-                       if (success && errorCode == kRecommendWebAPISuccessSentinel) {
-                           if (callBack) {
-                               callBack(response[kRecommendWebAPIKeyList], nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self errorForResponse:response
-                                                     errorCode:errorCode
-                                                          kind:kind];
-                       if (callBack) {
-                           callBack(nil, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x230dac */
-                         // The binary forwards a single nil here and drops the transport error.
-                         if (callBack) {
-                             callBack(nil, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIShortTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x230a24 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callBack) {
+                  callBack(nil, error);
+              }
+              return;
+          }
+          BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
+          int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
+          id kind = response[kRecommendWebAPIKeyKind];
+          if (![kind isKindOfClass:[NSString class]]) {
+              kind = nil;
+          }
+          if (success && errorCode == kRecommendWebAPISuccessSentinel) {
+              if (callBack) {
+                  callBack(response[kRecommendWebAPIKeyList], nil);
+              }
+              return;
+          }
+          NSError *error = [self errorForResponse:response errorCode:errorCode kind:kind];
+          if (callBack) {
+              callBack(nil, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x230dac */
+          // The binary forwards a single nil here and drops the transport error.
+          if (callBack) {
+              callBack(nil, nil);
+          }
+        }];
 }
 
 #pragma mark - Application install
@@ -577,41 +560,39 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         [parameters setValue:udid forKey:kRecommendWebAPIParamOtherUdid];
     }
     NSString *url =
-        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:
-                    kRecommendWebAPIPathAppInstallRegist];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodPost
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x23114c */
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           if (callback) {
-                               callback(nil);
-                           }
-                           return;
-                       }
-                       int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
-                       NSError *error = [self errorForResponse:response
-                                                     errorCode:errorCode
-                                                          kind:response[kRecommendWebAPIKeyKind]];
-                       if (callback) {
-                           callback(error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x23144c */
-                         if (callback) {
-                             callback(error);
-                         }
-                       }];
+        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathAppInstallRegist];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodPost
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x23114c */
+          if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              if (callback) {
+                  callback(nil);
+              }
+              return;
+          }
+          int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
+          NSError *error = [self errorForResponse:response
+                                        errorCode:errorCode
+                                             kind:response[kRecommendWebAPIKeyKind]];
+          if (callback) {
+              callback(error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x23144c */
+          if (callback) {
+              callback(error);
+          }
+        }];
 }
 
 #pragma mark - Advert status queries
@@ -631,66 +612,63 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathBannerDetail];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x231734 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(0, error);
-                           }
-                           return;
-                       }
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           id info = response[kRecommendWebAPIKeyInfo];
-                           NSInteger status = 0;
-                           if (info != nil) {
-                               id expireValue = info[kRecommendWebAPIKeyExpire];
-                               int expire = 0;
-                               if ([expireValue isKindOfClass:[NSString class]] ||
-                                   [expireValue isKindOfClass:[NSNumber class]]) {
-                                   expire = [expireValue intValue];
-                               }
-                               // The binary computes the expiry date here but discards it; only
-                               // the integer offset feeds the cache write below.
-                               (void)[[NSDate date] dateByAddingTimeInterval:expire];
-                               id statusValue = info[kRecommendWebAPIKeyStatus];
-                               if ([statusValue isKindOfClass:[NSString class]] ||
-                                   [statusValue isKindOfClass:[NSNumber class]]) {
-                                   status = [statusValue intValue];
-                               }
-                               if (status != 0) {
-                                   [self setTemporaryCacheWithAdModel:adModel
-                                                                value:status
-                                                           expiration:expire];
-                               }
-                           }
-                           if (callback) {
-                               callback(status, nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(0, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x231ad0 */
-                         if (callback) {
-                             callback(0, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x231734 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(0, error);
+              }
+              return;
+          }
+          if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              id info = response[kRecommendWebAPIKeyInfo];
+              NSInteger status = 0;
+              if (info != nil) {
+                  id expireValue = info[kRecommendWebAPIKeyExpire];
+                  int expire = 0;
+                  if ([expireValue isKindOfClass:[NSString class]] ||
+                      [expireValue isKindOfClass:[NSNumber class]]) {
+                      expire = [expireValue intValue];
+                  }
+                  // The binary computes the expiry date here but discards it; only
+                  // the integer offset feeds the cache write below.
+                  (void)[[NSDate date] dateByAddingTimeInterval:expire];
+                  id statusValue = info[kRecommendWebAPIKeyStatus];
+                  if ([statusValue isKindOfClass:[NSString class]] ||
+                      [statusValue isKindOfClass:[NSNumber class]]) {
+                      status = [statusValue intValue];
+                  }
+                  if (status != 0) {
+                      [self setTemporaryCacheWithAdModel:adModel value:status expiration:expire];
+                  }
+              }
+              if (callback) {
+                  callback(status, nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(0, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x231ad0 */
+          if (callback) {
+              callback(0, nil);
+          }
+        }];
 }
 
 + (void)readRegistWithAdType:(int)adType
@@ -706,46 +684,45 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     }
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathAppReadRegist];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x231d60 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(error);
-                           }
-                           return;
-                       }
-                       BOOL success = NO;
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue]) {
-                           success = [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                                     kRecommendWebAPISuccessSentinel;
-                       }
-                       if (success) {
-                           if (callback) {
-                               callback(nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x231f0c */
-                         if (callback) {
-                             callback(error);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x231d60 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(error);
+              }
+              return;
+          }
+          BOOL success = NO;
+          if ([response[kRecommendWebAPIKeyStatus] boolValue]) {
+              success = [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                        kRecommendWebAPISuccessSentinel;
+          }
+          if (success) {
+              if (callback) {
+                  callback(nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x231f0c */
+          if (callback) {
+              callback(error);
+          }
+        }];
 }
 
 + (void)getUnreadCountWithAdModel:(int)adModel
@@ -766,45 +743,44 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathCheckAllRead];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x2321fc */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(0, error);
-                           }
-                           return;
-                       }
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           id unreadCount = response[kRecommendWebAPIKeyUnreadCount];
-                           NSInteger status = unreadCount != nil ? [unreadCount intValue] : 0;
-                           if (callback) {
-                               callback(status, nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(0, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x2323f0 */
-                         if (callback) {
-                             callback(0, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x2321fc */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(0, error);
+              }
+              return;
+          }
+          if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              id unreadCount = response[kRecommendWebAPIKeyUnreadCount];
+              NSInteger status = unreadCount != nil ? [unreadCount intValue] : 0;
+              if (callback) {
+                  callback(status, nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(0, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x2323f0 */
+          if (callback) {
+              callback(0, nil);
+          }
+        }];
 }
 
 + (void)getPreInfoWithAdModel:(int)adModel
@@ -827,49 +803,46 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     [parameters setValue:[NSString stringWithFormat:kRecommendWebAPIIntegerFormat, adModel]
                   forKey:kRecommendWebAPIParamAdModel];
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
-    NSString *url =
-        [[ApplilinkConsts baseUrlSsl] stringByAppendingString:
-                    kRecommendWebAPIPathPreInfoForDisplay];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x2327bc */
-                       if ([response isKindOfClass:[NSDictionary class]] &&
-                           [response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           id unreadCount = response[kRecommendWebAPIKeyUnreadCount];
-                           int unread = unreadCount != nil ? [unreadCount intValue] : 0;
-                           id bannerStatus = response[kRecommendWebAPIKeyBannerDisplayStatus];
-                           int banner = bannerStatus != nil ? [bannerStatus intValue] : 0;
-                           [status setValue:@(unread) forKey:kRecommendWebAPIStatusKeyUnreadCount];
-                           [status setValue:@(banner)
-                                     forKey:kRecommendWebAPIStatusKeyBannerDisplayStatus];
-                           if (callback) {
-                               callback(status, nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(status, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x232ae0 */
-                         // The binary forwards only the captured status dictionary here and drops
-                         // the transport error.
-                         if (callback) {
-                             callback(status, nil);
-                         }
-                       }];
+    NSString *url = [[ApplilinkConsts baseUrlSsl]
+        stringByAppendingString:kRecommendWebAPIPathPreInfoForDisplay];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x2327bc */
+          if ([response isKindOfClass:[NSDictionary class]] &&
+              [response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              id unreadCount = response[kRecommendWebAPIKeyUnreadCount];
+              int unread = unreadCount != nil ? [unreadCount intValue] : 0;
+              id bannerStatus = response[kRecommendWebAPIKeyBannerDisplayStatus];
+              int banner = bannerStatus != nil ? [bannerStatus intValue] : 0;
+              [status setValue:@(unread) forKey:kRecommendWebAPIStatusKeyUnreadCount];
+              [status setValue:@(banner) forKey:kRecommendWebAPIStatusKeyBannerDisplayStatus];
+              if (callback) {
+                  callback(status, nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(status, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x232ae0 */
+          // The binary forwards only the captured status dictionary here and drops
+          // the transport error.
+          if (callback) {
+              callback(status, nil);
+          }
+        }];
 }
 
 #pragma mark - Display-status cache
@@ -878,8 +851,8 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                                value:(NSInteger)value
                           expiration:(NSInteger)expiration {
     NSDate *expiry = [[NSDate alloc]
-        initWithTimeIntervalSinceNow:expiration == 0 ? kRecommendWebAPIDefaultCacheExpiry
-                                                     : (double)expiration];
+        initWithTimeIntervalSinceNow:expiration == 0 ? kRecommendWebAPIDefaultCacheExpiry :
+                                                       (double)expiration];
     NSString *statusString = [@(value) stringValue];
     NSDictionary *entry = @{
         kRecommendWebAPICacheKeyStatus : statusString,
@@ -948,37 +921,36 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     NSDictionary *merged = [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathClickRegist];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:merged
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x233540 */
-                       if ([response isKindOfClass:[NSDictionary class]] &&
-                           [response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           if (callback) {
-                               callback(response[kRecommendWebAPIKeyLocation], nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(nil, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x233738 */
-                         if (callback) {
-                             callback(nil, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:merged
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x233540 */
+          if ([response isKindOfClass:[NSDictionary class]] &&
+              [response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              if (callback) {
+                  callback(response[kRecommendWebAPIKeyLocation], nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(nil, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x233738 */
+          if (callback) {
+              callback(nil, nil);
+          }
+        }];
 }
 
 + (void)appStartWithAdIdFrom:(NSString *)adIdFrom
@@ -992,46 +964,45 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                   forKey:kRecommendWebAPIParamAdType];
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathAppStart];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x2339d8 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(error);
-                           }
-                           return;
-                       }
-                       BOOL success = NO;
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue]) {
-                           success = [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                                     kRecommendWebAPISuccessSentinel;
-                       }
-                       if (success) {
-                           if (callback) {
-                               callback(nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x233b84 */
-                         if (callback) {
-                             callback(error);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x2339d8 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(error);
+              }
+              return;
+          }
+          BOOL success = NO;
+          if ([response[kRecommendWebAPIKeyStatus] boolValue]) {
+              success = [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                        kRecommendWebAPISuccessSentinel;
+          }
+          if (success) {
+              if (callback) {
+                  callback(nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x233b84 */
+          if (callback) {
+              callback(error);
+          }
+        }];
 }
 
 #pragma mark - All advert data
@@ -1039,52 +1010,48 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
 + (void)allAdDataWithCallBack:(void (^)(id _Nullable data, NSError *_Nullable error))callback {
     NSString *url = [[ApplilinkConsts baseUrlSsl]
         stringByAppendingString:kRecommendWebAPIPathAllAdDataForDisplay];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:nil
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIShortTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x233d24 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(nil, error);
-                           }
-                           return;
-                       }
-                       int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
-                       BOOL success =
-                           [response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           errorCode == kRecommendWebAPISuccessSentinel;
-                       id kind = response[kRecommendWebAPIKeyKind];
-                       if (![kind isKindOfClass:[NSString class]]) {
-                           kind = nil;
-                       }
-                       if (success) {
-                           if (callback) {
-                               callback(response, nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self errorForResponse:response
-                                                     errorCode:errorCode
-                                                          kind:kind];
-                       if (callback) {
-                           callback(nil, error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x234084 */
-                         // The binary forwards a single nil here and drops the transport error.
-                         if (callback) {
-                             callback(nil, nil);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:nil
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIShortTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x233d24 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(nil, error);
+              }
+              return;
+          }
+          int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
+          BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue] &&
+                         errorCode == kRecommendWebAPISuccessSentinel;
+          id kind = response[kRecommendWebAPIKeyKind];
+          if (![kind isKindOfClass:[NSString class]]) {
+              kind = nil;
+          }
+          if (success) {
+              if (callback) {
+                  callback(response, nil);
+              }
+              return;
+          }
+          NSError *error = [self errorForResponse:response errorCode:errorCode kind:kind];
+          if (callback) {
+              callback(nil, error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x234084 */
+          // The binary forwards a single nil here and drops the transport error.
+          if (callback) {
+              callback(nil, nil);
+          }
+        }];
 }
 
 #pragma mark - Layout index
@@ -1092,44 +1059,43 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
 + (void)layoutIndexWithCallback:(void (^)(NSError *_Nullable error))callback {
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendWebAPIPathLayoutIndex];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kRecommendWebAPIMethodGet
-                        parameters:nil
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRecommendWebAPIStandardTimeout
-                             retry:NO
-                     finishedBlock:^(id _Nullable request, id _Nullable response) {
-                       /** @ghidraAddress 0x234224 */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           NSError *error = [self malformedErrorForResponse:response];
-                           if (callback) {
-                               callback(error);
-                           }
-                           return;
-                       }
-                       if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
-                           [response[kRecommendWebAPIKeyErrorCode] intValue] ==
-                               kRecommendWebAPISuccessSentinel) {
-                           [ApplilinkConsts setTemplateList:response[kRecommendWebAPIKeyList]];
-                           if (callback) {
-                               callback(nil);
-                           }
-                           return;
-                       }
-                       NSError *error = [self malformedErrorForResponse:response];
-                       if (callback) {
-                           callback(error);
-                       }
-                     }
-                       failedBlock:^(id _Nullable request, NSError *_Nullable error) {
-                         /** @ghidraAddress 0x234408 */
-                         if (callback) {
-                             callback(error);
-                         }
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kRecommendWebAPIMethodGet
+        parameters:nil
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRecommendWebAPIStandardTimeout
+        retry:NO
+        finishedBlock:^(id _Nullable request, id _Nullable response) {
+          /** @ghidraAddress 0x234224 */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              NSError *error = [self malformedErrorForResponse:response];
+              if (callback) {
+                  callback(error);
+              }
+              return;
+          }
+          if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
+              [response[kRecommendWebAPIKeyErrorCode] intValue] ==
+                  kRecommendWebAPISuccessSentinel) {
+              [ApplilinkConsts setTemplateList:response[kRecommendWebAPIKeyList]];
+              if (callback) {
+                  callback(nil);
+              }
+              return;
+          }
+          NSError *error = [self malformedErrorForResponse:response];
+          if (callback) {
+              callback(error);
+          }
+        }
+        failedBlock:^(id _Nullable request, NSError *_Nullable error) {
+          /** @ghidraAddress 0x234408 */
+          if (callback) {
+              callback(error);
+          }
+        }];
 }
 
 #pragma mark - Request builders

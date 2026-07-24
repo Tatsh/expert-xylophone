@@ -75,10 +75,10 @@ static NSString *const kNewlineString = @"\n";
     self.navigationItem.titleView = self.titleLabel;
     [self setTitle:g_pLocalizedCreatePlaylist];
 
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                             target:self
-                             action:@selector(doneButtonPush:)];
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                      target:self
+                                                      action:@selector(doneButtonPush:)];
     if ([UIDevice currentDevice].systemVersion.floatValue < kBarTintColorMinSystemVersion) {
         self.navigationItem.rightBarButtonItem.tintColor = self.buttonColor;
     }

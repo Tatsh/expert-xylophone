@@ -49,7 +49,7 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
     // The digest is taken over the UTF-8 C string, but the byte count passed is the string's
     // -length (its character count, not the UTF-8 byte count) exactly as the binary does.
     NSData *data = [NSData dataWithBytes:[string cStringUsingEncoding:NSUTF8StringEncoding]
-                                 length:string.length];
+                                  length:string.length];
     unsigned char digest[CC_SHA1_DIGEST_LENGTH];
     CC_SHA1(data.bytes, (CC_LONG)data.length, digest);
     NSMutableString *hex = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
@@ -64,7 +64,7 @@ static const size_t kCryptoKeyLength = kCCKeySizeAES128;
     // As with -sha1:, the digest is taken over the UTF-8 C string but the byte count passed is the
     // string's -length (its character count, not the UTF-8 byte count) exactly as the binary does.
     NSData *data = [NSData dataWithBytes:[string cStringUsingEncoding:NSUTF8StringEncoding]
-                                 length:string.length];
+                                  length:string.length];
     unsigned char digest[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
     NSMutableString *hex = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];

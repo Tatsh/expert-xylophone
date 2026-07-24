@@ -34,10 +34,10 @@ static NSString *const kDestinationPath = @"/destination/regist.php";
     ApplilinkWebAPI *webAPI = [[ApplilinkWebAPI alloc] init];
     NSString *requestURL = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kDestinationPath];
     NSMutableURLRequest *request = [webAPI requestWithURL:requestURL
-                                                  method:kDestinationHTTPMethod
-                                              parameters:joinedParameters
-                                                 timeout:kDestinationRequestTimeout
-                                             cachePolicy:nil];
+                                                   method:kDestinationHTTPMethod
+                                               parameters:joinedParameters
+                                                  timeout:kDestinationRequestTimeout
+                                              cachePolicy:nil];
     ApplilinkURLConnection *connection = [[ApplilinkURLConnection alloc] init];
     // The class object itself is the connection delegate; the delegate argument is ignored.
     [connection loadRequestWithRequest:request delegate:(id)self];

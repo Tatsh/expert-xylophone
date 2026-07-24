@@ -11,10 +11,10 @@
 
 // Applilink error codes reported through appListFailLoadWithError:.
 enum {
-    RecommendAdWebViewErrorCodeSdkUnavailable = 0x401,      // SDK not usable on this environment.
-    RecommendAdWebViewErrorCodeAdTrackingDisabled = 0x404,  // Advertising tracking is disabled.
-    RecommendAdWebViewErrorCodeNoAd = 0x40a,                // No recommend advert is available.
-    RecommendAdWebViewErrorCodeLoadCancelled = 0x40b,       // The advert load was cancelled.
+    RecommendAdWebViewErrorCodeSdkUnavailable = 0x401,     // SDK not usable on this environment.
+    RecommendAdWebViewErrorCodeAdTrackingDisabled = 0x404, // Advertising tracking is disabled.
+    RecommendAdWebViewErrorCodeNoAd = 0x40a,               // No recommend advert is available.
+    RecommendAdWebViewErrorCodeLoadCancelled = 0x40b,      // The advert load was cancelled.
 };
 
 // Banner-detail status returned by RecommendWebAPI getBannerDetailWithAdModel:callback:.
@@ -37,10 +37,10 @@ enum {
 
 // UIWebView cancellation and policy-change error codes ignored during the advert load.
 enum {
-    RecommendAdWebViewWebKitFrameLoadInterrupted = 102,      // 0x66
-    RecommendAdWebViewWebKitPlugInWillHandleLoad = 204,      // 0xcc
-    RecommendAdWebViewURLErrorCancelled = -999,              // NSURLErrorCancelled
-    RecommendAdWebViewURLErrorFrameLoadInterrupted = -1009,  // NSURLErrorNotConnectedToInternet
+    RecommendAdWebViewWebKitFrameLoadInterrupted = 102,     // 0x66
+    RecommendAdWebViewWebKitPlugInWillHandleLoad = 204,     // 0xcc
+    RecommendAdWebViewURLErrorCancelled = -999,             // NSURLErrorCancelled
+    RecommendAdWebViewURLErrorFrameLoadInterrupted = -1009, // NSURLErrorNotConnectedToInternet
 };
 
 // Web-view request timeout, in seconds, for advert loads.
@@ -150,9 +150,9 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
 - (void)loadRequest {
     _webViewStatus = RecommendAdWebViewStatusIdle;
     if (![ApplilinkConsts canUseApplilinkSdk]) {
-        [self appListFailLoadWithError:[ApplilinkNetworkError
-                                           localizedApplilinkErrorWithCode:
-                                               RecommendAdWebViewErrorCodeSdkUnavailable]];
+        [self appListFailLoadWithError:
+                  [ApplilinkNetworkError
+                      localizedApplilinkErrorWithCode:RecommendAdWebViewErrorCodeSdkUnavailable]];
         return;
     }
     if (![ApplilinkUdid isAdvertisingTrackingEnabled]) {
@@ -165,64 +165,64 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
     _loadComplete = NO;
     RecommendAdWebView *blockSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        /** @ghidraAddress 0x216fdc */
-        if (!blockSelf.reloadFlg) {
-            blockSelf.backgroundColor = UIColor.clearColor;
-            blockSelf.opaque = NO;
-        }
-        [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *sessionError) {
-            /** @ghidraAddress 0x2170d0 */
-            if (sessionError == nil) {
-                if (!blockSelf.cancelFlg) {
-                    [RecommendWebAPI
-                        getBannerDetailWithAdModel:blockSelf.adModel
-                                          callback:^(NSInteger status, NSError *detailError) {
-                                              /** @ghidraAddress 0x2171c8 */
-                                              if (detailError != nil) {
-                                                  blockSelf.loadComplete = YES;
-                                                  [blockSelf appListFailLoadWithError:detailError];
-                                                  return;
-                                              }
-                                              if (blockSelf.cancelFlg) {
-                                                  blockSelf.loadComplete = YES;
-                                                  [blockSelf
-                                                      appListFailLoadWithError:
-                                                          [ApplilinkNetworkError
-                                                              localizedApplilinkErrorWithCode:
-                                                                  RecommendAdWebViewErrorCodeLoadCancelled]];
-                                                  return;
-                                              }
-                                              if (status != RecommendAdWebViewBannerStatusHasAd) {
-                                                  blockSelf.loadComplete = YES;
-                                                  [blockSelf
-                                                      appListFailLoadWithError:
-                                                          [ApplilinkNetworkError
-                                                              localizedApplilinkErrorWithCode:
-                                                                  RecommendAdWebViewErrorCodeNoAd]];
-                                                  return;
-                                              }
-                                              // Continues into the RecommendCore advert-list cache
-                                              // step, which builds and loads the advert web request.
-                                              [[RecommendCore sharedInstance]
-                                                  appliListCacheWithCallBack:^(id list,
-                                                                               NSError *cacheError) {
-                                                      /** @ghidraAddress 0x217378 */
-                                                      (void)list;
-                                                      (void)cacheError;
-                                                  }];
-                                          }];
-                } else {
-                    blockSelf.loadComplete = YES;
-                    [blockSelf
-                        appListFailLoadWithError:[ApplilinkNetworkError
-                                                     localizedApplilinkErrorWithCode:
-                                                         RecommendAdWebViewErrorCodeLoadCancelled]];
-                }
+      /** @ghidraAddress 0x216fdc */
+      if (!blockSelf.reloadFlg) {
+          blockSelf.backgroundColor = UIColor.clearColor;
+          blockSelf.opaque = NO;
+      }
+      [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *sessionError) {
+        /** @ghidraAddress 0x2170d0 */
+        if (sessionError == nil) {
+            if (!blockSelf.cancelFlg) {
+                [RecommendWebAPI
+                    getBannerDetailWithAdModel:blockSelf.adModel
+                                      callback:^(NSInteger status, NSError *detailError) {
+                                        /** @ghidraAddress 0x2171c8 */
+                                        if (detailError != nil) {
+                                            blockSelf.loadComplete = YES;
+                                            [blockSelf appListFailLoadWithError:detailError];
+                                            return;
+                                        }
+                                        if (blockSelf.cancelFlg) {
+                                            blockSelf.loadComplete = YES;
+                                            [blockSelf
+                                                appListFailLoadWithError:
+                                                    [ApplilinkNetworkError
+                                                        localizedApplilinkErrorWithCode:
+                                                            RecommendAdWebViewErrorCodeLoadCancelled]];
+                                            return;
+                                        }
+                                        if (status != RecommendAdWebViewBannerStatusHasAd) {
+                                            blockSelf.loadComplete = YES;
+                                            [blockSelf
+                                                appListFailLoadWithError:
+                                                    [ApplilinkNetworkError
+                                                        localizedApplilinkErrorWithCode:
+                                                            RecommendAdWebViewErrorCodeNoAd]];
+                                            return;
+                                        }
+                                        // Continues into the RecommendCore advert-list cache
+                                        // step, which builds and loads the advert web request.
+                                        [[RecommendCore sharedInstance]
+                                            appliListCacheWithCallBack:^(id list,
+                                                                         NSError *cacheError) {
+                                              /** @ghidraAddress 0x217378 */
+                                              (void)list;
+                                              (void)cacheError;
+                                            }];
+                                      }];
             } else {
                 blockSelf.loadComplete = YES;
-                [blockSelf appListFailLoadWithError:sessionError];
+                [blockSelf
+                    appListFailLoadWithError:[ApplilinkNetworkError
+                                                 localizedApplilinkErrorWithCode:
+                                                     RecommendAdWebViewErrorCodeLoadCancelled]];
             }
-        }];
+        } else {
+            blockSelf.loadComplete = YES;
+            [blockSelf appListFailLoadWithError:sessionError];
+        }
+      }];
     });
 }
 
@@ -327,8 +327,8 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
         _reloadFlg = YES;
         RecommendAdWebView *blockSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            /** @ghidraAddress 0x218a70 */
-            [blockSelf appListDidAppear];
+          /** @ghidraAddress 0x218a70 */
+          [blockSelf appListDidAppear];
         });
     } else {
         [self appliListClosed];
@@ -417,9 +417,7 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
 - (void)appListFailLoadWithError:(NSError *)error {
     ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
     [appParam setRequestWithAdModel:_adModel adLocation:_adLocation requestCode:_requestCode];
-    [ApplilinkCore toDelegateFailLoadWithError:error
-                                      appParam:appParam
-                                      delegate:_applilinkDelegate];
+    [ApplilinkCore toDelegateFailLoadWithError:error appParam:appParam delegate:_applilinkDelegate];
     _applilinkDelegate = nil;
 }
 
@@ -427,9 +425,7 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
 - (void)appListFailLinkWithError:(NSError *)error {
     ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
     [appParam setRequestWithAdModel:_adModel adLocation:_adLocation requestCode:_requestCode];
-    [ApplilinkCore toDelegateFailLinkWithError:error
-                                      appParam:appParam
-                                      delegate:_applilinkDelegate];
+    [ApplilinkCore toDelegateFailLinkWithError:error appParam:appParam delegate:_applilinkDelegate];
 }
 
 @end

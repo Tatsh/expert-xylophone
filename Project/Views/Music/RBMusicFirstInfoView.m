@@ -50,7 +50,7 @@ static const CGFloat kCloseButtonInsetX = 5.0;
 static const CGFloat kCloseButtonPhoneY = 6.0;
 
 // The iPad-layout close-button geometry (a fixed top-right position).
-static const CGFloat kCloseButtonPadX = 552.0;  // @0x301228
+static const CGFloat kCloseButtonPadX = 552.0; // @0x301228
 static const CGFloat kCloseButtonPadY = 12.0;
 
 // The iPad-layout music-hint image origin.
@@ -62,8 +62,8 @@ static const CGFloat kInfo2CenterX = 30.0;
 static const CGFloat kInfo2CenterY = 204.0; // @0x301218
 
 // The iPhone-layout info_1 image centre: a fixed x with a y measured up from the bottom of the view.
-static const CGFloat kInfo1CenterX = 90.0;         // @0x2ee9a0
-static const CGFloat kInfo1CenterYOffset = -44.0;  // @0x301220, added to the view height
+static const CGFloat kInfo1CenterX = 90.0;        // @0x2ee9a0
+static const CGFloat kInfo1CenterYOffset = -44.0; // @0x301220, added to the view height
 
 // The show animation's fade timings, in seconds.
 static const NSTimeInterval kShowFadeDuration = 0.5;
@@ -168,8 +168,8 @@ static const NSTimeInterval kShowFadeDelay = 0.75;
         [self addSubview:musicView];
     }
 
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(tap:)];
     [self addGestureRecognizer:tap];
 }
 

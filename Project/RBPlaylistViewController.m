@@ -156,9 +156,8 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     self.titleLabel.backgroundColor = UIColor.clearColor;
     self.navigationItem.titleView = self.titleLabel;
 
-    self.segmentedControl =
-        [[UISegmentedControl alloc] initWithItems:@[ kHeaderMusicSegmentTitle,
-                                                     kHeaderArtistSegmentTitle ]];
+    self.segmentedControl = [[UISegmentedControl alloc]
+        initWithItems:@[ kHeaderMusicSegmentTitle, kHeaderArtistSegmentTitle ]];
     self.segmentedControl.frame =
         CGRectMake(0.0, 0.0, g_dMascotMessageMaxWidthPhone, kSortSegmentHeight);
     self.segmentedControl.selectedSegmentIndex = sortIndex;
@@ -176,10 +175,10 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     UIBarButtonItem *sortLabelItem = [[UIBarButtonItem alloc] initWithCustomView:sortLabel];
     UIBarButtonItem *segmentItem =
         [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl];
-    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                             target:nil
-                             action:nil];
+    UIBarButtonItem *flexSpace =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                      target:nil
+                                                      action:nil];
     self.toolbarItems = @[ flexSpace, sortLabelItem, segmentItem, flexSpace ];
 
     if (self.playlistNode == RBPlaylistNodeRoot) {
@@ -189,11 +188,11 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
             [self setTitle:g_pLocalizedAddToPlaylist];
         }
         if (!IsPad()) {
-            self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-                initWithTitle:g_pLocalizedClose
-                        style:UIBarButtonItemStyleDone
-                       target:self
-                       action:@selector(closeButtonPush:)];
+            self.navigationItem.leftBarButtonItem =
+                [[UIBarButtonItem alloc] initWithTitle:g_pLocalizedClose
+                                                 style:UIBarButtonItemStyleDone
+                                                target:self
+                                                action:@selector(closeButtonPush:)];
             if ([UIDevice currentDevice].systemVersion.floatValue < kBarTintColorMinSystemVersion) {
                 self.navigationItem.leftBarButtonItem.tintColor = self.buttonColor;
             }
@@ -207,11 +206,11 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
             self.navigationItem.rightBarButtonItem.tintColor = self.buttonColor;
         }
     } else if (self.playlistNode == RBPlaylistNodeLevel) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:g_pLocalizedReturn
-                    style:UIBarButtonItemStyleDone
-                   target:self
-                   action:@selector(returnButtonPush:)];
+        self.navigationItem.leftBarButtonItem =
+            [[UIBarButtonItem alloc] initWithTitle:g_pLocalizedReturn
+                                             style:UIBarButtonItemStyleDone
+                                            target:self
+                                            action:@selector(returnButtonPush:)];
         if ([UIDevice currentDevice].systemVersion.floatValue < kBarTintColorMinSystemVersion) {
             self.navigationItem.leftBarButtonItem.tintColor = self.buttonColor;
         }
@@ -233,11 +232,11 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     for (id segment in self.segmentedControl.subviews) {
         BOOL isSelected = [segment isSelected];
         if (!isSelected) {
-            [segment setTintColor:(selected == kMenuItemSortMusic ? self.artistColor
-                                                                  : self.musicColor)];
+            [segment
+                setTintColor:(selected == kMenuItemSortMusic ? self.artistColor : self.musicColor)];
         } else {
-            [segment setTintColor:(selected == kMenuItemSortMusic ? self.musicColor
-                                                                  : self.artistColor)];
+            [segment
+                setTintColor:(selected == kMenuItemSortMusic ? self.musicColor : self.artistColor)];
         }
     }
 
@@ -288,10 +287,12 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
 
 /** @ghidraAddress 0x93ae8 */
 - (void)closeButtonPush:(id)sender {
-    [self.navigationController dismissViewControllerAnimated:YES completion:^{
-      /** @ghidraAddress 0x10035bd10 */
-      // The completion is the shared empty global block; nothing to do.
-    }];
+    [self.navigationController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                               /** @ghidraAddress 0x10035bd10 */
+                               // The completion is the shared empty global block; nothing to do.
+                           }];
 }
 
 /** @ghidraAddress 0x93bd8 */
@@ -308,12 +309,12 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
 - (void)reloadData {
     if (self.playlistNode == RBPlaylistNodeRoot) {
         if (self.playlistType == RBPlaylistTypeMenu) {
-            self.menuItems = [NSMutableArray arrayWithObjects:
-                @{kRowKeyTitle : g_pLocalizedAll},
-                @{kRowKeyTitle : g_pLocalizedNoPlaySongs},
-                @{kRowKeyTitle : g_pLocalizedLevel},
-                @{kRowKeyTitle : g_pLocalizedSpecial},
-                nil];
+            self.menuItems =
+                [NSMutableArray arrayWithObjects:@{kRowKeyTitle : g_pLocalizedAll},
+                                                 @{kRowKeyTitle : g_pLocalizedNoPlaySongs},
+                                                 @{kRowKeyTitle : g_pLocalizedLevel},
+                                                 @{kRowKeyTitle : g_pLocalizedSpecial},
+                                                 nil];
         } else {
             self.menuItems = nil;
         }
@@ -345,15 +346,24 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
             }
         }
 
-        NSString *const levelTitles[] = {
-            g_pLocalizedLevel1, g_pLocalizedLevel2, g_pLocalizedLevel3, g_pLocalizedLevel4,
-            g_pLocalizedLevel5, g_pLocalizedLevel6, g_pLocalizedLevel7, g_pLocalizedLevel8,
-            g_pLocalizedLevel9, g_pLocalizedLevel10, g_pLocalizedLevel11, g_pLocalizedLevel12,
-            g_pLocalizedLevel13, g_pLocalizedLevel14, g_pLocalizedLevel15};
+        NSString *const levelTitles[] = {g_pLocalizedLevel1,
+                                         g_pLocalizedLevel2,
+                                         g_pLocalizedLevel3,
+                                         g_pLocalizedLevel4,
+                                         g_pLocalizedLevel5,
+                                         g_pLocalizedLevel6,
+                                         g_pLocalizedLevel7,
+                                         g_pLocalizedLevel8,
+                                         g_pLocalizedLevel9,
+                                         g_pLocalizedLevel10,
+                                         g_pLocalizedLevel11,
+                                         g_pLocalizedLevel12,
+                                         g_pLocalizedLevel13,
+                                         g_pLocalizedLevel14,
+                                         g_pLocalizedLevel15};
         NSMutableArray *items = [NSMutableArray arrayWithCapacity:kNumDifficultyLevels];
         for (int level = 0; level < kNumDifficultyLevels; ++level) {
-            NSString *countText =
-                [NSString stringWithFormat:kSongsCountFormat, songCounts[level]];
+            NSString *countText = [NSString stringWithFormat:kSongsCountFormat, songCounts[level]];
             [items addObject:@{kRowKeyTitle : levelTitles[level], kRowKeyText : countText}];
         }
         self.menuItems = items;
@@ -416,22 +426,22 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
             if (playlistID < RBPlaylistIDPlaylist) {
                 if ((NSInteger)[RBUserSettingData sharedInstance].playlistID == indexPath.row &&
                     indexPath.section == kSectionMenu) {
-                    cell.accessoryView = [[UIImageView alloc]
-                        initWithImage:[UIImage imageWithName:kCheckImageName]];
+                    cell.accessoryView =
+                        [[UIImageView alloc] initWithImage:[UIImage imageWithName:kCheckImageName]];
                     cell.textLabel.textColor = self.selectedRowColor;
                 }
             } else if (playlistID == RBPlaylistIDPlaylist) {
                 if ([RBUserSettingData sharedInstance].playlistID == RBPlaylistIDPlaylist &&
                     indexPath.section == kSectionPlaylists &&
                     (NSInteger)[RBUserSettingData sharedInstance].playlistLevel == indexPath.row) {
-                    cell.accessoryView = [[UIImageView alloc]
-                        initWithImage:[UIImage imageWithName:kCheckImageName]];
+                    cell.accessoryView =
+                        [[UIImageView alloc] initWithImage:[UIImage imageWithName:kCheckImageName]];
                     cell.textLabel.textColor = self.selectedRowColor;
                 }
             } else if (playlistID == RBPlaylistIDAppend && indexPath.row == kMenuRowAppend &&
                        indexPath.section == kSectionMenu) {
-                cell.accessoryView = [[UIImageView alloc]
-                    initWithImage:[UIImage imageWithName:kCheckImageName]];
+                cell.accessoryView =
+                    [[UIImageView alloc] initWithImage:[UIImage imageWithName:kCheckImageName]];
                 cell.textLabel.textColor = self.selectedRowColor;
             }
         } else if (self.playlistNode == RBPlaylistNodeLevel) {
@@ -453,20 +463,20 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
             cell.textLabel.text = item[kRowKeyTitle];
             cell.detailTextLabel.text = item[kRowKeyText];
             switch (indexPath.row) {
-                case kMenuRowAll:
-                    cell.imageView.image = [UIImage imageWithName:kIconAllImageName];
-                    break;
-                case kMenuRowNew:
-                    cell.imageView.image = [UIImage imageWithName:kIconNewImageName];
-                    break;
-                case kMenuRowLevel:
-                    cell.imageView.image = [UIImage imageWithName:kIconLevelImageName];
-                    break;
-                case kMenuRowAppend:
-                    cell.imageView.image = [UIImage imageWithName:kIconAppendImageName];
-                    break;
-                default:
-                    break;
+            case kMenuRowAll:
+                cell.imageView.image = [UIImage imageWithName:kIconAllImageName];
+                break;
+            case kMenuRowNew:
+                cell.imageView.image = [UIImage imageWithName:kIconNewImageName];
+                break;
+            case kMenuRowLevel:
+                cell.imageView.image = [UIImage imageWithName:kIconLevelImageName];
+                break;
+            case kMenuRowAppend:
+                cell.imageView.image = [UIImage imageWithName:kIconAppendImageName];
+                break;
+            default:
+                break;
             }
         } else {
             NSDictionary *item = self.menuItems[indexPath.row];
@@ -524,30 +534,29 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
                 [RBUserSettingData sharedInstance].playlistLevel = (int)indexPath.row;
             } else if (indexPath.section == kSectionMenu) {
                 switch (indexPath.row) {
-                    case kMenuRowAll:
-                        [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDAll;
-                        [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
-                        break;
-                    case kMenuRowNew:
-                        [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDNew;
-                        [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
-                        break;
-                    case kMenuRowLevel: {
-                        RBPlaylistViewController *levelCtrl =
-                            [[RBPlaylistViewController alloc] init];
-                        levelCtrl.delegate = self.delegate;
-                        levelCtrl.playlistNode = RBPlaylistNodeLevel;
-                        levelCtrl.navigationItem.hidesBackButton = YES;
-                        levelCtrl.view.frame = self.view.frame;
-                        [self.navigationController pushViewController:levelCtrl animated:YES];
-                        return;
-                    }
-                    case kMenuRowAppend:
-                        [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDAppend;
-                        [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
-                        break;
-                    default:
-                        break;
+                case kMenuRowAll:
+                    [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDAll;
+                    [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
+                    break;
+                case kMenuRowNew:
+                    [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDNew;
+                    [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
+                    break;
+                case kMenuRowLevel: {
+                    RBPlaylistViewController *levelCtrl = [[RBPlaylistViewController alloc] init];
+                    levelCtrl.delegate = self.delegate;
+                    levelCtrl.playlistNode = RBPlaylistNodeLevel;
+                    levelCtrl.navigationItem.hidesBackButton = YES;
+                    levelCtrl.view.frame = self.view.frame;
+                    [self.navigationController pushViewController:levelCtrl animated:YES];
+                    return;
+                }
+                case kMenuRowAppend:
+                    [RBUserSettingData sharedInstance].playlistID = RBPlaylistIDAppend;
+                    [RBUserSettingData sharedInstance].playlistLevel = kPlaylistLevelNone;
+                    break;
+                default:
+                    break;
                 }
             }
         } else if (self.playlistNode == RBPlaylistNodeLevel) {

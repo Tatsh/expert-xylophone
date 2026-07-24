@@ -29,9 +29,9 @@ enum {
 
 // UIWebView cancellation and policy-change error codes ignored during the advert load.
 enum {
-    RecommendAdAreaViewWebKitFrameLoadInterrupted = 102,      // 0x66
-    RecommendAdAreaViewWebKitPlugInWillHandleLoad = 204,      // 0xcc
-    RecommendAdAreaViewURLErrorCancelled = -999,              // NSURLErrorCancelled
+    RecommendAdAreaViewWebKitFrameLoadInterrupted = 102, // 0x66
+    RecommendAdAreaViewWebKitPlugInWillHandleLoad = 204, // 0xcc
+    RecommendAdAreaViewURLErrorCancelled = -999,         // NSURLErrorCancelled
     RecommendAdAreaViewURLErrorNotConnectedToInternet = -1009,
 };
 
@@ -239,9 +239,9 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
                                  }];
     _impressionId = [ApplilinkUtilities getImpressionId];
     [[RecommendCore sharedInstance] postAnalysisListRegistWithAdType:_adType
-                                                            AdModel:_adModel
-                                                         adLocation:_adLocation
-                                                       impressionId:_impressionId];
+                                                             AdModel:_adModel
+                                                          adLocation:_adLocation
+                                                        impressionId:_impressionId];
     [self appListDidAppear];
 }
 
@@ -325,8 +325,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     NSString *displayNumber = nil;
     NSString *storeId = nil;
     NSString *appliIdTo = nil;
-    NSArray *components =
-        [query componentsSeparatedByString:kRecommendAdAreaViewQuerySeparator];
+    NSArray *components = [query componentsSeparatedByString:kRecommendAdAreaViewQuerySeparator];
     for (NSString *component in components) {
         NSString *k = kRecommendAdAreaViewQueryDefaultScheme;
         if ([component rangeOfString:k].location != NSNotFound) {
@@ -376,9 +375,8 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     if (path == nil || (![path isEqualToString:kRecommendAdAreaViewSendCommand] &&
                         ![path hasPrefix:kRecommendAdAreaViewSendCommandPrefix])) {
         // Non-send taps drive an external App Store or scheme transition.
-        NSString *extAppPrefix =
-            [NSString stringWithFormat:kRecommendAdAreaViewFormatObject,
-                                       kRecommendAdAreaViewExtAppUrl];
+        NSString *extAppPrefix = [NSString
+            stringWithFormat:kRecommendAdAreaViewFormatObject, kRecommendAdAreaViewExtAppUrl];
         NSString *destination = path;
         if ([url.absoluteString hasPrefix:extAppPrefix]) {
             destination = [url.absoluteString substringFromIndex:extAppPrefix.length];
@@ -433,7 +431,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     // A send tap registers the click analytics and reloads the target advert.
     if (adIdFrom != nil && countryCode != nil && categoryId != nil) {
         RecommendAdId *adId = [[RecommendAdId alloc] initWithCountryCode:countryCode
-                                                             categoryId:categoryId];
+                                                              categoryId:categoryId];
         [adId setWithAdIdFrom:adIdFrom
                   countryCode:countryCode
                    categoryId:categoryId
@@ -452,19 +450,18 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
                                                   callback:^(NSError *_Nullable error){
                                                       /** @ghidraAddress 0x241360 */
                                                   }];
-    NSURL *schemeUrl =
-        [NSURL URLWithString:[NSString stringWithFormat:kRecommendAdAreaViewFormatScheme,
-                                                        defaultScheme]];
+    NSURL *schemeUrl = [NSURL
+        URLWithString:[NSString stringWithFormat:kRecommendAdAreaViewFormatScheme, defaultScheme]];
     if (schemeUrl != nil && [[UIApplication sharedApplication] canOpenURL:schemeUrl]) {
         NSString *appliIdFrom = [ApplilinkConsts adId];
         NSURLRequest *appStartRequest = [RecommendWebAPI appStartWithAdIdFrom:appliIdFrom
-                                                                      adIdTo:adIdTo
-                                                                      adType:_adType];
+                                                                       adIdTo:adIdTo
+                                                                       adType:_adType];
         [self loadRequest:appStartRequest];
     } else {
         NSURLRequest *clickRequest = [RecommendWebAPI clickRegistWithAdIdFrom:adIdFrom
-                                                                      adIdTo:adIdTo
-                                                                     adModel:_adModel];
+                                                                       adIdTo:adIdTo
+                                                                      adModel:_adModel];
         [self loadRequest:clickRequest];
     }
     return RecommendAdAreaViewRedirectConsumed;
@@ -509,9 +506,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     }
     ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
     [appParam setRequestWithAdModel:_adModel adLocation:_adLocation requestCode:_requestCode];
-    [ApplilinkCore toDelegateFailLoadWithError:error
-                                      appParam:appParam
-                                      delegate:_applilinkDelegate];
+    [ApplilinkCore toDelegateFailLoadWithError:error appParam:appParam delegate:_applilinkDelegate];
 }
 
 /** @ghidraAddress 0x23fe44 */
@@ -523,9 +518,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     }
     ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
     [appParam setRequestWithAdModel:_adModel adLocation:_adLocation requestCode:_requestCode];
-    [ApplilinkCore toDelegateFailLinkWithError:error
-                                      appParam:appParam
-                                      delegate:_applilinkDelegate];
+    [ApplilinkCore toDelegateFailLinkWithError:error appParam:appParam delegate:_applilinkDelegate];
 }
 
 #pragma mark - App Store notices

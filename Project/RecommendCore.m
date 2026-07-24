@@ -298,40 +298,40 @@ static NSDate *g_recommendCoreLoginValidUntil = nil;
           [g_recommendCoreLoginValidUntil timeIntervalSinceNow] < 0.0) {
           // The recommend API invokes this block with (loginStatus, userIdPresent, error); the
           // binary reads only the login status and the error, ignoring userIdPresent.
-          [RecommendWebAPI checkLoginWithCallback:^(BOOL loggedIn, BOOL userIdPresent,
-                                                    NSError *checkError) {
-            /** @ghidraAddress 0x237960 */
-            if (checkError != nil) {
-                if (callback) {
-                    callback(checkError);
+          [RecommendWebAPI
+              checkLoginWithCallback:^(BOOL loggedIn, BOOL userIdPresent, NSError *checkError) {
+                /** @ghidraAddress 0x237960 */
+                if (checkError != nil) {
+                    if (callback) {
+                        callback(checkError);
+                    }
+                    return;
                 }
-                return;
-            }
-            if (!loggedIn) {
-                [RecommendWebAPI startLoginWithCallback:^(NSError *_Nullable loginError) {
-                  /** @ghidraAddress 0x237a94 */
-                  if (loginError != nil) {
-                      if (callback) {
-                          callback(loginError);
+                if (!loggedIn) {
+                    [RecommendWebAPI startLoginWithCallback:^(NSError *_Nullable loginError) {
+                      /** @ghidraAddress 0x237a94 */
+                      if (loginError != nil) {
+                          if (callback) {
+                              callback(loginError);
+                          }
+                          return;
                       }
-                      return;
-                  }
-                  [ApplilinkUdid setUdidKeychainFromPasteBoard];
-                  [ApplilinkConsts loggedInRecommend];
-                  g_recommendCoreLoginValidUntil =
-                      [[NSDate date] dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
-                  if (callback) {
-                      callback(nil);
-                  }
-                }];
-                return;
-            }
-            g_recommendCoreLoginValidUntil =
-                [[NSDate date] dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
-            if (callback) {
-                callback(nil);
-            }
-          }];
+                      [ApplilinkUdid setUdidKeychainFromPasteBoard];
+                      [ApplilinkConsts loggedInRecommend];
+                      g_recommendCoreLoginValidUntil = [[NSDate date]
+                          dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
+                      if (callback) {
+                          callback(nil);
+                      }
+                    }];
+                    return;
+                }
+                g_recommendCoreLoginValidUntil =
+                    [[NSDate date] dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
+                if (callback) {
+                    callback(nil);
+                }
+              }];
           return;
       }
       if (callback) {

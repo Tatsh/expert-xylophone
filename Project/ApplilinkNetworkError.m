@@ -182,8 +182,7 @@ static NSMutableDictionary *gApplilinkErrorMessages = nil;
     return [self localizedApplilinkErrorWithCode:code userInfo:nil];
 }
 
-+ (NSError *)localizedApplilinkErrorWithCode:(NSInteger)code
-                                    userInfo:(NSDictionary *)userInfo {
++ (NSError *)localizedApplilinkErrorWithCode:(NSInteger)code userInfo:(NSDictionary *)userInfo {
     if (gApplilinkErrorMessages == nil) {
         gApplilinkErrorMessages = [[NSMutableDictionary alloc] init];
         NSBundle *bundle = [ApplilinkBundle rewardBundle];

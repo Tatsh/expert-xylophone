@@ -54,9 +54,9 @@ enum {
 
 // Reward request priorities.
 enum {
-    kRewardPriorityNormal = 0,      // Normal install / initial login.
-    kRewardPriorityThreeKind = 1,   // Retry once three-kind UDIDs are present.
-    kRewardPriorityPasteBoard = 2,  // Pasteboard-sourced path.
+    kRewardPriorityNormal = 0,     // Normal install / initial login.
+    kRewardPriorityThreeKind = 1,  // Retry once three-kind UDIDs are present.
+    kRewardPriorityPasteBoard = 2, // Pasteboard-sourced path.
 };
 
 // Reward SSL request paths appended to ApplilinkConsts.baseUrlSsl.
@@ -139,81 +139,75 @@ static BOOL RewardResponseIsSuccess(id response) {
     NSDictionary *signedParameters =
         [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathAppInstallRegist];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodPost
-                        parameters:signedParameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x223c78 (ApplilinkInstallResponseHandlerBlock) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                      userInfo:response]);
-                           return;
-                       }
-                       BOOL statusOk = [response[kResponseStatus] boolValue];
-                       int errorCode = [response[kResponseErrorCode] intValue];
-                       NSString *kind = response[kResponseKind];
-                       if (![kind isKindOfClass:[NSString class]]) {
-                           kind = nil;
-                       }
-                       if (statusOk && errorCode == kRewardResponseSuccess) {
-                           if (priority == kRewardPriorityNormal &&
-                               [ApplilinkUdid isUdidThreeKinds]) {
-                               [RewardWebAPI
-                                   postApplicationInstallWithPriority:kRewardPriorityThreeKind
-                                                             callback:callback];
-                               return;
-                           }
-                           if (priority != kRewardPriorityPasteBoard) {
-                               NSString *campaignFlg = response[kResponseCampaignFlg];
-                               if ([campaignFlg isKindOfClass:[NSString class]]) {
-                                   [[NSUserDefaults standardUserDefaults] setObject:campaignFlg
-                                                                             forKey:
-                                                                                 kDefaultsCampaignFlg];
-                                   [ApplilinkUdid setUdidKeychainFromPasteBoard];
-                                   [[NSUserDefaults standardUserDefaults] synchronize];
-                               }
-                               NSString *currentUdid = [ApplilinkCore currentUdid];
-                               if (currentUdid != nil) {
-                                   [ApplilinkUdid setOldUdid:currentUdid error:nil];
-                               }
-                               [ApplilinkCore updatePasteBoard];
-                           }
-                           callback(nil);
-                           return;
-                       }
-                       if (errorCode == kRewardInstallErrorRejected) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorInstallRejected
-                                                      userInfo:response]);
-                       } else if (errorCode == kRewardInstallErrorConflict) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorInstallConflict
-                                                      userInfo:response]);
-                       } else if ([kind isEqualToString:kResponseKindAuthorization]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorAuthorization
-                                                      userInfo:response]);
-                       } else if ([kind isEqualToString:kResponseKindParameterError]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorUserIdMissing
-                                                      userInfo:response]);
-                       } else {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                      userInfo:response]);
-                       }
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x224160 (ApplilinkInvokeCompletionBlock) */
-                         callback(error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodPost
+        parameters:signedParameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x223c78 (ApplilinkInstallResponseHandlerBlock) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          BOOL statusOk = [response[kResponseStatus] boolValue];
+          int errorCode = [response[kResponseErrorCode] intValue];
+          NSString *kind = response[kResponseKind];
+          if (![kind isKindOfClass:[NSString class]]) {
+              kind = nil;
+          }
+          if (statusOk && errorCode == kRewardResponseSuccess) {
+              if (priority == kRewardPriorityNormal && [ApplilinkUdid isUdidThreeKinds]) {
+                  [RewardWebAPI postApplicationInstallWithPriority:kRewardPriorityThreeKind
+                                                          callback:callback];
+                  return;
+              }
+              if (priority != kRewardPriorityPasteBoard) {
+                  NSString *campaignFlg = response[kResponseCampaignFlg];
+                  if ([campaignFlg isKindOfClass:[NSString class]]) {
+                      [[NSUserDefaults standardUserDefaults] setObject:campaignFlg
+                                                                forKey:kDefaultsCampaignFlg];
+                      [ApplilinkUdid setUdidKeychainFromPasteBoard];
+                      [[NSUserDefaults standardUserDefaults] synchronize];
+                  }
+                  NSString *currentUdid = [ApplilinkCore currentUdid];
+                  if (currentUdid != nil) {
+                      [ApplilinkUdid setOldUdid:currentUdid error:nil];
+                  }
+                  [ApplilinkCore updatePasteBoard];
+              }
+              callback(nil);
+              return;
+          }
+          if (errorCode == kRewardInstallErrorRejected) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorInstallRejected
+                                         userInfo:response]);
+          } else if (errorCode == kRewardInstallErrorConflict) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorInstallConflict
+                                         userInfo:response]);
+          } else if ([kind isEqualToString:kResponseKindAuthorization]) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorAuthorization
+                                         userInfo:response]);
+          } else if ([kind isEqualToString:kResponseKindParameterError]) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorUserIdMissing
+                                         userInfo:response]);
+          } else {
+              callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+          }
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x224160 (ApplilinkInvokeCompletionBlock) */
+          callback(error);
+        }];
 }
 
 #pragma mark Login
@@ -228,37 +222,34 @@ static BOOL RewardResponseIsSuccess(id response) {
         return;
     }
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathCheckLoginStatus];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:nil
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x2243b8 (ApplilinkLoginStatusResponseBlock) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           block(NO,
-                                 [ApplilinkNetworkError
-                                     localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                            userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseStatus] boolValue]) {
-                           block([response[kResponseLoginStatus] boolValue], nil);
-                           return;
-                       }
-                       block(NO,
-                             [ApplilinkNetworkError
-                                 localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                        userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x224544 (ApplilinkCallbackNilForwardBlock) */
-                         block(NO, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:nil
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x2243b8 (ApplilinkLoginStatusResponseBlock) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              block(NO,
+                    [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                  userInfo:response]);
+              return;
+          }
+          if ([response[kResponseStatus] boolValue]) {
+              block([response[kResponseLoginStatus] boolValue], nil);
+              return;
+          }
+          block(NO,
+                [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                              userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x224544 (ApplilinkCallbackNilForwardBlock) */
+          block(NO, error);
+        }];
 }
 
 // @ghidraAddress 0x22456c.
@@ -282,64 +273,59 @@ static BOOL RewardResponseIsSuccess(id response) {
     [RewardWebAPI setSignatureWithParameters:signedParameters];
     [signedParameters setValue:kParamCfrValue forKey:kParamCfr];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathAuthLogin];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodPost
-                        parameters:signedParameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x2248c4 (ApplilinkLoginResponseHandlerBlock) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                      userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseStatus] boolValue] &&
-                           [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
-                           if (priority == kRewardPriorityNormal &&
-                               [ApplilinkUdid isUdidThreeKinds]) {
-                               [RewardWebAPI startLoginWithUserId:userId
-                                                     withPriority:kRewardPriorityThreeKind
-                                                         callback:callback];
-                               return;
-                           }
-                           if (priority == kRewardPriorityPasteBoard) {
-                               [RewardWebAPI startLoginWithUserId:userId
-                                                     withPriority:kRewardPriorityPasteBoard
-                                                         callback:callback];
-                               return;
-                           }
-                           callback(nil);
-                           return;
-                       }
-                       int errorCode = [response[kResponseErrorCode] intValue];
-                       if (errorCode == kRewardLoginErrorAuthA ||
-                           errorCode == kRewardLoginErrorAuthB ||
-                           errorCode == kRewardLoginErrorAuthC) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorAuthorization
-                                                      userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseKind] isEqualToString:kResponseKindParameterError]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorUserIdMissing
-                                                      userInfo:response]);
-                       } else {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                      userInfo:response]);
-                       }
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x224cd8 (ApplilinkCallbackForwardBlock) */
-                         callback(error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodPost
+        parameters:signedParameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x2248c4 (ApplilinkLoginResponseHandlerBlock) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          if ([response[kResponseStatus] boolValue] &&
+              [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
+              if (priority == kRewardPriorityNormal && [ApplilinkUdid isUdidThreeKinds]) {
+                  [RewardWebAPI startLoginWithUserId:userId
+                                        withPriority:kRewardPriorityThreeKind
+                                            callback:callback];
+                  return;
+              }
+              if (priority == kRewardPriorityPasteBoard) {
+                  [RewardWebAPI startLoginWithUserId:userId
+                                        withPriority:kRewardPriorityPasteBoard
+                                            callback:callback];
+                  return;
+              }
+              callback(nil);
+              return;
+          }
+          int errorCode = [response[kResponseErrorCode] intValue];
+          if (errorCode == kRewardLoginErrorAuthA || errorCode == kRewardLoginErrorAuthB ||
+              errorCode == kRewardLoginErrorAuthC) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorAuthorization
+                                         userInfo:response]);
+              return;
+          }
+          if ([response[kResponseKind] isEqualToString:kResponseKindParameterError]) {
+              callback([ApplilinkNetworkError
+                  localizedApplilinkErrorWithCode:kRewardErrorUserIdMissing
+                                         userInfo:response]);
+          } else {
+              callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+          }
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x224cd8 (ApplilinkCallbackForwardBlock) */
+          callback(error);
+        }];
 }
 
 #pragma mark Application lists
@@ -353,63 +339,58 @@ static BOOL RewardResponseIsSuccess(id response) {
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [parameters setValue:kParamFormatJson forKey:kParamFormat];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathAppIndex];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x224ee8 (ApplilinkDataResponseHandlerBlock) */
-                       if (RewardResponseIsSuccess(response)) {
-                           callback(response, nil);
-                           return;
-                       }
-                       callback(nil,
-                                [ApplilinkNetworkError
-                                    localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                           userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x22509c (ApplilinkCallbackNilForwardBlock) */
-                         callback(nil, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x224ee8 (ApplilinkDataResponseHandlerBlock) */
+          if (RewardResponseIsSuccess(response)) {
+              callback(response, nil);
+              return;
+          }
+          callback(nil,
+                   [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                 userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x22509c (ApplilinkCallbackNilForwardBlock) */
+          callback(nil, error);
+        }];
     [parameters removeAllObjects]; // Yes, the binary clears the dictionary after dispatching.
 }
 
 // @ghidraAddress 0x2250c4.
 + (void)appliIdListWithType:(int)type
                    callback:(void (^)(NSDictionary *result, NSError *error))callback {
-    NSDictionary *parameters =
-        [NSDictionary dictionaryWithObject:@(type) forKey:kParamType];
+    NSDictionary *parameters = [NSDictionary dictionaryWithObject:@(type) forKey:kParamType];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathAppliIdIndex];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x2252b4 (ApplilinkDataResponseHandlerBlock) */
-                       if (RewardResponseIsSuccess(response)) {
-                           callback(response, nil);
-                           return;
-                       }
-                       callback(nil,
-                                [ApplilinkNetworkError
-                                    localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                           userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x225468 (InvokeCallbackNilBlockInvoke) */
-                         callback(nil, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x2252b4 (ApplilinkDataResponseHandlerBlock) */
+          if (RewardResponseIsSuccess(response)) {
+              callback(response, nil);
+              return;
+          }
+          callback(nil,
+                   [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                 userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x225468 (InvokeCallbackNilBlockInvoke) */
+          callback(nil, error);
+        }];
 }
 
 #pragma mark Status flags
@@ -419,50 +400,45 @@ static BOOL RewardResponseIsSuccess(id response) {
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [parameters setValue:kParamFormatJson forKey:kParamFormat];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathCheckAllInstall];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x225738 (HandleAllInstallFlagResponseBlockInvoke) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           callback(0,
-                                    [ApplilinkNetworkError
-                                        localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                               userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseStatus] boolValue] &&
-                           [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
-                           id flg = response[kResponseAllInstallFlg];
-                           if (flg != nil) {
-                               [RewardWebAPI
-                                   setTemporaryCacheWithKey:kCacheKeyAppInstallFlg
-                                                      value:[NSString stringWithFormat:@"%@", flg]
-                                                 expiration:0];
-                               callback([flg intValue], nil);
-                               return;
-                           }
-                           callback(-1,
-                                    [ApplilinkNetworkError
-                                        localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                               userInfo:response]);
-                           return;
-                       }
-                       callback(0,
-                                [ApplilinkNetworkError
-                                    localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                           userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x2259e4 (InvokeCallbackNil2BlockInvoke) */
-                         callback(0, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x225738 (HandleAllInstallFlagResponseBlockInvoke) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              callback(0,
+                       [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          if ([response[kResponseStatus] boolValue] &&
+              [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
+              id flg = response[kResponseAllInstallFlg];
+              if (flg != nil) {
+                  [RewardWebAPI setTemporaryCacheWithKey:kCacheKeyAppInstallFlg
+                                                   value:[NSString stringWithFormat:@"%@", flg]
+                                              expiration:0];
+                  callback([flg intValue], nil);
+                  return;
+              }
+              callback(-1,
+                       [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          callback(0,
+                   [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                 userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x2259e4 (InvokeCallbackNil2BlockInvoke) */
+          callback(0, error);
+        }];
 }
 
 // @ghidraAddress 0x225a0c.
@@ -470,50 +446,45 @@ static BOOL RewardResponseIsSuccess(id response) {
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [parameters setValue:kParamFormatJson forKey:kParamFormat];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathPreInfoForDisplay];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x225c84 (HandleAllInstallFlagResponse2BlockInvoke) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           callback(0,
-                                    [ApplilinkNetworkError
-                                        localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                               userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseStatus] boolValue] &&
-                           [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
-                           id flg = response[kResponseAllInstallFlg];
-                           if (flg != nil) {
-                               [RewardWebAPI
-                                   setTemporaryCacheWithKey:kCacheKeyAppInstallFlg
-                                                      value:[NSString stringWithFormat:@"%@", flg]
-                                                 expiration:0];
-                               callback([flg intValue], nil);
-                               return;
-                           }
-                           callback(-1,
-                                    [ApplilinkNetworkError
-                                        localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                               userInfo:response]);
-                           return;
-                       }
-                       callback(0,
-                                [ApplilinkNetworkError
-                                    localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                           userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x225f30 (InvokeCallbackNil3BlockInvoke) */
-                         callback(0, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x225c84 (HandleAllInstallFlagResponse2BlockInvoke) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              callback(0,
+                       [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          if ([response[kResponseStatus] boolValue] &&
+              [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
+              id flg = response[kResponseAllInstallFlg];
+              if (flg != nil) {
+                  [RewardWebAPI setTemporaryCacheWithKey:kCacheKeyAppInstallFlg
+                                                   value:[NSString stringWithFormat:@"%@", flg]
+                                              expiration:0];
+                  callback([flg intValue], nil);
+                  return;
+              }
+              callback(-1,
+                       [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          callback(0,
+                   [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                 userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x225f30 (InvokeCallbackNil3BlockInvoke) */
+          callback(0, error);
+        }];
 }
 
 #pragma mark Install report
@@ -527,53 +498,47 @@ static BOOL RewardResponseIsSuccess(id response) {
         page = [appliList copy];
         remaining = nil;
     } else {
-        NSIndexSet *pageRange = [NSIndexSet
-            indexSetWithIndexesInRange:NSMakeRange(0, kRewardInstallReportPageSize)];
+        NSIndexSet *pageRange =
+            [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, kRewardInstallReportPageSize)];
         page = [appliList objectsAtIndexes:pageRange];
         NSIndexSet *remainingRange = [NSIndexSet
             indexSetWithIndexesInRange:NSMakeRange(kRewardInstallReportPageSize,
-                                                   appliList.count -
-                                                       kRewardInstallReportPageSize)];
+                                                   appliList.count - kRewardInstallReportPageSize)];
         remaining = [appliList objectsAtIndexes:remainingRange];
     }
-    NSDictionary *parameters =
-        [NSDictionary dictionaryWithObject:page forKey:kParamAppliIdList];
+    NSDictionary *parameters = [NSDictionary dictionaryWithObject:page forKey:kParamAppliIdList];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathInstallReportRegist];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodPost
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x226260 (HandleInstallReportResponseBlockInvoke) */
-                       if (![response isKindOfClass:[NSDictionary class]]) {
-                           callback([ApplilinkNetworkError
-                               localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                      userInfo:response]);
-                           return;
-                       }
-                       if ([response[kResponseStatus] boolValue] &&
-                           [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
-                           if (remaining != nil && remaining.count != 0) {
-                               [RewardWebAPI postAppliInstallReportWithAppliList:remaining
-                                                                       callback:callback];
-                               return;
-                           }
-                           callback(nil);
-                           return;
-                       }
-                       callback([ApplilinkNetworkError
-                           localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                  userInfo:response]);
-                     }
-                       failedBlock:^(id request, id result) {
-                         /** @ghidraAddress 0x226484 (ForwardResultToCallbackBlockInvoke) */
-                         callback(result);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodPost
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x226260 (HandleInstallReportResponseBlockInvoke) */
+          if (![response isKindOfClass:[NSDictionary class]]) {
+              callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                     userInfo:response]);
+              return;
+          }
+          if ([response[kResponseStatus] boolValue] &&
+              [response[kResponseErrorCode] intValue] == kRewardResponseSuccess) {
+              if (remaining != nil && remaining.count != 0) {
+                  [RewardWebAPI postAppliInstallReportWithAppliList:remaining callback:callback];
+                  return;
+              }
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                                 userInfo:response]);
+        }
+        failedBlock:^(id request, id result) {
+          /** @ghidraAddress 0x226484 (ForwardResultToCallbackBlockInvoke) */
+          callback(result);
+        }];
 }
 
 #pragma mark Banner
@@ -582,38 +547,36 @@ static BOOL RewardResponseIsSuccess(id response) {
 + (void)bannerInfoWithBlock:(void (^)(NSDictionary *result, NSError *error))block {
     NSDictionary *parameters = [ApplilinkUtilities userAgentParameters];
     NSString *url = [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kPathBannerDetail];
-    [ApplilinkWebAPI
-        requestAsynchronousWithURL:url
-                            method:kHTTPMethodGet
-                        parameters:parameters
-                          userInfo:nil
-                               tag:0
-                       cachePolicy:nil
-                           timeout:kRewardRequestTimeout
-                             retry:NO
-                     finishedBlock:^(id request, id response) {
-                       /** @ghidraAddress 0x226658 (HandleApiSuccessResponseBlockInvoke) */
-                       if (RewardResponseIsSuccess(response)) {
-                           block(response, nil);
-                           return;
-                       }
-                       block(nil,
-                             [ApplilinkNetworkError
-                                 localizedApplilinkErrorWithCode:kRewardErrorGeneric
-                                                        userInfo:response]);
-                     }
-                       failedBlock:^(id request, NSError *error) {
-                         /** @ghidraAddress 0x22680c (InvokeCallbackNil4BlockInvoke) */
-                         block(nil, error);
-                       }];
+    [ApplilinkWebAPI requestAsynchronousWithURL:url
+        method:kHTTPMethodGet
+        parameters:parameters
+        userInfo:nil
+        tag:0
+        cachePolicy:nil
+        timeout:kRewardRequestTimeout
+        retry:NO
+        finishedBlock:^(id request, id response) {
+          /** @ghidraAddress 0x226658 (HandleApiSuccessResponseBlockInvoke) */
+          if (RewardResponseIsSuccess(response)) {
+              block(response, nil);
+              return;
+          }
+          block(nil,
+                [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorGeneric
+                                                              userInfo:response]);
+        }
+        failedBlock:^(id request, NSError *error) {
+          /** @ghidraAddress 0x22680c (InvokeCallbackNil4BlockInvoke) */
+          block(nil, error);
+        }];
 }
 
 #pragma mark Signing and cache
 
 // @ghidraAddress 0x226834.
 + (void)setSignatureWithParameters:(NSMutableDictionary *)parameters {
-    NSArray *sortedKeys = [[parameters allKeys]
-        sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSArray *sortedKeys =
+        [[parameters allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     NSMutableArray *pairs = [NSMutableArray array];
     for (NSString *key in sortedKeys) {
         id value = parameters[key];
@@ -628,18 +591,16 @@ static BOOL RewardResponseIsSuccess(id response) {
     NSString *joined = [pairs componentsJoinedByString:@"&"];
     NSString *signatureSource =
         [NSString stringWithFormat:@"%@&%@", joined, [ApplilinkCore signatureKey]];
-    NSString *signature =
-        [Crypto sha256:[NSStringURLEncoding URLDecodedString:signatureSource]];
+    NSString *signature = [Crypto sha256:[NSStringURLEncoding URLDecodedString:signatureSource]];
     parameters[kParamSignature] = signature;
 }
 
 // @ghidraAddress 0x226cdc.
 + (void)setTemporaryCacheWithKey:(NSString *)key value:(id)value expiration:(NSInteger)expiration {
-    NSDate *expiry = [[NSDate alloc]
-        initWithTimeIntervalSinceNow:(expiration == 0 ? 1.0 : (double)expiration)];
-    NSDictionary *cacheEntry =
-        [NSDictionary dictionaryWithObjectsAndKeys:value, kCacheKeyValue, expiry, kCacheKeyExpire,
-                                                   nil];
+    NSDate *expiry =
+        [[NSDate alloc] initWithTimeIntervalSinceNow:(expiration == 0 ? 1.0 : (double)expiration)];
+    NSDictionary *cacheEntry = [NSDictionary
+        dictionaryWithObjectsAndKeys:value, kCacheKeyValue, expiry, kCacheKeyExpire, nil];
     [[NSUserDefaults standardUserDefaults]
         setObject:[NSKeyedArchiver archivedDataWithRootObject:cacheEntry]
            forKey:key];

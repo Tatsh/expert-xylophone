@@ -106,7 +106,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
                                                                   style:UIBarButtonItemStyleDone
                                                                  target:self
                                                                  action:@selector(pickerClose)];
-    toolbar.items = @[resetItem, closeItem];
+    toolbar.items = @[ resetItem, closeItem ];
     self.toolbar = toolbar;
 
     self.basicPickerView = [[UIPickerView alloc] init];
@@ -137,26 +137,30 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 - (void)createAlertSetScore {
     NSString *title = [NSString stringWithFormat:@"スコアの確認"];
     if (NSClassFromString(@"UIAlertController") == nil) {
-        self.alertSetScoreView = [[RBErosionMarkUpdaterScoreView alloc]
-            initWithFrame:self.viewController.view.bounds
-                 delegate:self];
+        self.alertSetScoreView =
+            [[RBErosionMarkUpdaterScoreView alloc] initWithFrame:self.viewController.view.bounds
+                                                        delegate:self];
         self.alertSetScoreView.titleLabel.text = title;
 
-        UIView *container = [[UIView alloc] initWithFrame:CGRectMake(5.0, self.displayRate * 100.0,
-                                                                     IsPad() ? 300.0 : 280.0, 0.0)];
+        UIView *container = [[UIView alloc]
+            initWithFrame:CGRectMake(5.0, self.displayRate * 100.0, IsPad() ? 300.0 : 280.0, 0.0)];
         NSInteger bases[] = {self.baseBasicScore, self.baseMediumScore, self.baseHardScore};
-        UIPickerView *pickers[] = {self.basicPickerView, self.mediumPickerView, self.hardPickerView};
+        UIPickerView *pickers[] = {
+            self.basicPickerView, self.mediumPickerView, self.hardPickerView};
         for (int difficulty = kDifficultyBasic; difficulty <= kDifficultyHard; ++difficulty) {
             if (bases[difficulty] != g_lowerScoreBounds[difficulty].integerValue) {
                 continue;
             }
-            UITextField *field = [[UITextField alloc]
-                initWithFrame:CGRectMake(self.displayRate * 15.0, container.frame.size.height + 5.0,
-                                         self.displayRate * 250.0, self.displayRate * 30.0)];
+            UITextField *field =
+                [[UITextField alloc] initWithFrame:CGRectMake(self.displayRate * 15.0,
+                                                              container.frame.size.height + 5.0,
+                                                              self.displayRate * 250.0,
+                                                              self.displayRate * 30.0)];
             field.borderStyle = UITextBorderStyleLine;
-            field.layer.borderColor = [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0].CGColor;
-            UILabel *label =
-                [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
+            field.layer.borderColor =
+                [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0].CGColor;
+            UILabel *label = [[UILabel alloc]
+                initWithFrame:CGRectMake(10.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
             label.font = [UIFont systemFontOfSize:14.0];
             label.text = @"";
             field.leftView = label;
@@ -173,7 +177,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
             } else {
                 self.hardField = field;
             }
-            container.frame = CGRectMake(container.frame.origin.x, container.frame.origin.y,
+            container.frame = CGRectMake(container.frame.origin.x,
+                                         container.frame.origin.y,
                                          self.displayRate * 260.0,
                                          container.frame.size.height + self.displayRate * 30.0);
             [container addSubview:field];
@@ -185,78 +190,81 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
 
     __weak RBErosionMarkUpdater *weakSelf = self;
-    self.alertSetScoreController =
-        [RBErosionMarkUpdaterAlertController alertControllerWithTitle:title
-                                                             message:@"確認したいスコアを入力してください"
-                                                      preferredStyle:UIAlertControllerStyleAlert];
+    self.alertSetScoreController = [RBErosionMarkUpdaterAlertController
+        alertControllerWithTitle:title
+                         message:@"確認したいスコアを入力してください"
+                  preferredStyle:UIAlertControllerStyleAlert];
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
-        [self.alertSetScoreController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-            /** @ghidraAddress 0x1463f8 */
-            UILabel *label = [[UILabel alloc]
-                initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
-            label.font = [UIFont systemFontOfSize:14.0];
-            label.text = @"BASIC";
-            textField.leftView = label;
-            textField.leftViewMode = UITextFieldViewModeAlways;
-            textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseBasicScore];
-            textField.inputAccessoryView = weakSelf.toolbar;
-            textField.inputView = weakSelf.basicPickerView;
-            textField.delegate = weakSelf;
-            textField.tag = kDifficultyBasic;
-            weakSelf.basicField = textField;
-        }];
+        [self.alertSetScoreController
+            addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+              /** @ghidraAddress 0x1463f8 */
+              UILabel *label = [[UILabel alloc]
+                  initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
+              label.font = [UIFont systemFontOfSize:14.0];
+              label.text = @"BASIC";
+              textField.leftView = label;
+              textField.leftViewMode = UITextFieldViewModeAlways;
+              textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseBasicScore];
+              textField.inputAccessoryView = weakSelf.toolbar;
+              textField.inputView = weakSelf.basicPickerView;
+              textField.delegate = weakSelf;
+              textField.tag = kDifficultyBasic;
+              weakSelf.basicField = textField;
+            }];
     }
     if (self.baseMediumScore == g_lowerScoreBounds[kDifficultyMedium].integerValue) {
-        [self.alertSetScoreController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-            /** @ghidraAddress 0x146524 */
-            UILabel *label = [[UILabel alloc]
-                initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
-            label.font = [UIFont systemFontOfSize:14.0];
-            label.text = @"MEDIUM";
-            textField.leftView = label;
-            textField.leftViewMode = UITextFieldViewModeAlways;
-            textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseMediumScore];
-            textField.inputAccessoryView = weakSelf.toolbar;
-            textField.inputView = weakSelf.mediumPickerView;
-            textField.delegate = weakSelf;
-            textField.tag = kDifficultyMedium;
-            weakSelf.mediumField = textField;
-        }];
+        [self.alertSetScoreController
+            addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+              /** @ghidraAddress 0x146524 */
+              UILabel *label = [[UILabel alloc]
+                  initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
+              label.font = [UIFont systemFontOfSize:14.0];
+              label.text = @"MEDIUM";
+              textField.leftView = label;
+              textField.leftViewMode = UITextFieldViewModeAlways;
+              textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseMediumScore];
+              textField.inputAccessoryView = weakSelf.toolbar;
+              textField.inputView = weakSelf.mediumPickerView;
+              textField.delegate = weakSelf;
+              textField.tag = kDifficultyMedium;
+              weakSelf.mediumField = textField;
+            }];
     }
     if (self.baseHardScore == g_lowerScoreBounds[kDifficultyHard].integerValue) {
-        [self.alertSetScoreController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-            /** @ghidraAddress 0x146658 */
-            UILabel *label = [[UILabel alloc]
-                initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
-            label.font = [UIFont systemFontOfSize:14.0];
-            label.text = @"HARD";
-            textField.leftView = label;
-            textField.leftViewMode = UITextFieldViewModeAlways;
-            textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseHardScore];
-            textField.inputAccessoryView = weakSelf.toolbar;
-            textField.inputView = weakSelf.hardPickerView;
-            textField.delegate = weakSelf;
-            textField.tag = kDifficultyHard;
-            weakSelf.hardField = textField;
-        }];
+        [self.alertSetScoreController
+            addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+              /** @ghidraAddress 0x146658 */
+              UILabel *label = [[UILabel alloc]
+                  initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
+              label.font = [UIFont systemFontOfSize:14.0];
+              label.text = @"HARD";
+              textField.leftView = label;
+              textField.leftViewMode = UITextFieldViewModeAlways;
+              textField.text = [NSString stringWithFormat:@"%04zd", weakSelf.baseHardScore];
+              textField.inputAccessoryView = weakSelf.toolbar;
+              textField.inputView = weakSelf.hardPickerView;
+              textField.delegate = weakSelf;
+              textField.tag = kDifficultyHard;
+              weakSelf.hardField = textField;
+            }];
     }
     [self.alertSetScoreController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedCancel
                                            style:UIAlertActionStyleCancel
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x146cbc */
-                                             [self performSelector:@selector(showAlertCancel)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x146cbc */
+                                           [self performSelector:@selector(showAlertCancel)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
     [self.alertSetScoreController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedOK
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x146cfc */
-                                             [self performSelector:@selector(showAlertConfirm)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x146cfc */
+                                           [self performSelector:@selector(showAlertConfirm)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
 }
 
@@ -273,25 +281,25 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
     self.alertCancelController =
         [RBErosionMarkUpdaterAlertController alertControllerWithTitle:title
-                                                             message:message
-                                                      preferredStyle:UIAlertControllerStyleAlert];
+                                                              message:message
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     [self.alertCancelController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedRetry
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x1470b4 */
-                                             [self performSelector:@selector(showAlertSetScore)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x1470b4 */
+                                           [self performSelector:@selector(showAlertSetScore)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
     [self.alertCancelController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedOK
                                            style:UIAlertActionStyleCancel
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x1470f4 */
-                                             [self performSelector:@selector(updateCancel)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x1470f4 */
+                                           [self performSelector:@selector(updateCancel)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
 }
 
@@ -307,25 +315,25 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
     self.alertConfirmController =
         [RBErosionMarkUpdaterAlertController alertControllerWithTitle:title
-                                                             message:@""
-                                                      preferredStyle:UIAlertControllerStyleAlert];
+                                                              message:@""
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     [self.alertConfirmController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedCancel
                                            style:UIAlertActionStyleCancel
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x146cfc */
-                                             [self performSelector:@selector(showAlertSetScore)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x146cfc */
+                                           [self performSelector:@selector(showAlertSetScore)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
     [self.alertConfirmController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedOK
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *action) {
-                                             /** @ghidraAddress 0x1474a4 */
-                                             [self performSelector:@selector(updatePerform)
-                                                        withObject:nil
-                                                        afterDelay:0];
+                                           /** @ghidraAddress 0x1474a4 */
+                                           [self performSelector:@selector(updatePerform)
+                                                      withObject:nil
+                                                      afterDelay:0];
                                          }]];
 }
 
@@ -333,16 +341,16 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     if (NSClassFromString(@"UIAlertController") != nil) {
         [self.alertSetScoreController setMessage:@""];
         [[AppDelegate appDelegate].viewController presentViewController:self.alertSetScoreController
-                                                              animated:YES
-                                                            completion:nil];
+                                                               animated:YES
+                                                             completion:nil];
         return;
     }
     __weak RBErosionMarkUpdater *weakSelf = self;
     self.alertSetScoreView.messageLabel.text = @"";
     [self.viewController.view addSubview:self.alertSetScoreView];
     [self.alertSetScoreView showAnimation:^{
-        /** @ghidraAddress 0x14780c */
-        [weakSelf pickerOpen];
+      /** @ghidraAddress 0x14780c */
+      [weakSelf pickerOpen];
     }];
 }
 
@@ -355,8 +363,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
     [self.alertSetScoreController setMessage:message];
     [[AppDelegate appDelegate].viewController presentViewController:self.alertSetScoreController
-                                                          animated:YES
-                                                        completion:nil];
+                                                           animated:YES
+                                                         completion:nil];
 }
 
 - (void)showAlertCancel {
@@ -367,8 +375,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         return;
     }
     [[AppDelegate appDelegate].viewController presentViewController:self.alertCancelController
-                                                          animated:YES
-                                                        completion:nil];
+                                                           animated:YES
+                                                         completion:nil];
 }
 
 - (void)showAlertConfirm {
@@ -382,7 +390,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         [summary appendFormat:@"BASIC: %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
     }
     if (self.baseMediumScore == g_lowerScoreBounds[kDifficultyMedium].integerValue) {
-        [summary appendFormat:@"MEDIUM: %04zd → %04zd\n", self.baseMediumScore, self.editMediumScore];
+        [summary
+            appendFormat:@"MEDIUM: %04zd → %04zd\n", self.baseMediumScore, self.editMediumScore];
     }
     if (self.baseHardScore == g_lowerScoreBounds[kDifficultyHard].integerValue) {
         [summary appendFormat:@"HARD: %04zd → %04zd\n", self.baseHardScore, self.editHardScore];
@@ -396,8 +405,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     }
     [self.alertConfirmController setMessage:summary];
     [[AppDelegate appDelegate].viewController presentViewController:self.alertConfirmController
-                                                          animated:YES
-                                                        completion:nil];
+                                                           animated:YES
+                                                         completion:nil];
 }
 
 #pragma mark Editing
@@ -530,8 +539,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (NSString *)scoreValidate {
-    if (self.editBasicScore == self.baseBasicScore && self.editMediumScore == self.baseMediumScore &&
-        self.editHardScore == self.baseHardScore) {
+    if (self.editBasicScore == self.baseBasicScore &&
+        self.editMediumScore == self.baseMediumScore && self.editHardScore == self.baseHardScore) {
         return @"スコアが変更されていません。";
     }
     if (self.editBasicScore != self.baseBasicScore) {
@@ -614,8 +623,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     NSInteger tag = pickerView.tag;
-    return (tag == kDifficultyMedium || tag == kDifficultyHard) ? kMediumHardDigitCount
-                                                                : kBasicDigitCount;
+    return (tag == kDifficultyMedium || tag == kDifficultyHard) ? kMediumHardDigitCount :
+                                                                  kBasicDigitCount;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {

@@ -65,22 +65,22 @@ static NSString *const kAdTypeIcon = @"3";
 /** @ghidraAddress 0x219180 */
 + (NSArray<NSDictionary *> *)adModelSettingList {
     return @[
-        @{kAdModelKey: @"1", kAdLocationKey: kAdLocationTop, kAdTypeKey: @"1"},
-        @{kAdModelKey: @"4", kAdLocationKey: kAdLocationTop, kAdTypeKey: @"4"},
-        @{kAdModelKey: @"5", kAdLocationKey: kAdLocationTop, kAdTypeKey: @"5"},
-        @{kAdModelKey: @"100", kAdLocationKey: kAdLocationTop, kAdTypeKey: @"2"},
-        @{kAdModelKey: @"101", kAdLocationKey: kAdLocationTop, kAdTypeKey: @"3"},
+        @{kAdModelKey : @"1", kAdLocationKey : kAdLocationTop, kAdTypeKey : @"1"},
+        @{kAdModelKey : @"4", kAdLocationKey : kAdLocationTop, kAdTypeKey : @"4"},
+        @{kAdModelKey : @"5", kAdLocationKey : kAdLocationTop, kAdTypeKey : @"5"},
+        @{kAdModelKey : @"100", kAdLocationKey : kAdLocationTop, kAdTypeKey : @"2"},
+        @{kAdModelKey : @"101", kAdLocationKey : kAdLocationTop, kAdTypeKey : @"3"},
     ];
 }
 
 /** @ghidraAddress 0x2193f0 */
 + (NSArray<NSDictionary *> *)bannerDisplayStatusList {
     return @[
-        @{kAdModelKey: @"1", kStatusKey: @"1"},
-        @{kAdModelKey: @"4", kStatusKey: @"1"},
-        @{kAdModelKey: @"5", kStatusKey: @"1"},
-        @{kAdModelKey: @"100", kStatusKey: @"1"},
-        @{kAdModelKey: @"101", kStatusKey: @"1"},
+        @{kAdModelKey : @"1", kStatusKey : @"1"},
+        @{kAdModelKey : @"4", kStatusKey : @"1"},
+        @{kAdModelKey : @"5", kStatusKey : @"1"},
+        @{kAdModelKey : @"100", kStatusKey : @"1"},
+        @{kAdModelKey : @"101", kStatusKey : @"1"},
     ];
 }
 
@@ -110,48 +110,47 @@ static NSString *const kAdTypeIcon = @"3";
         NSString *iconUrl = [NSString
             stringWithFormat:@"https://sandbox.applilink.jp/img/appli_icon/dummy_icon%lu.png",
                              (unsigned long)(i + 1)];
-        NSString *bannerUrl =
-            [NSString stringWithFormat:@"https://sandbox.applilink.jp/img/banner/test%@.png", suffix];
+        NSString *bannerUrl = [NSString
+            stringWithFormat:@"https://sandbox.applilink.jp/img/banner/test%@.png", suffix];
         NSString *interstitialUrl = [NSString
-            stringWithFormat:@"https://sandbox.applilink.jp/img/interstitial/bnr_type%@_570x570.jpg",
-                             suffix];
+            stringWithFormat:
+                @"https://sandbox.applilink.jp/img/interstitial/bnr_type%@_570x570.jpg", suffix];
         NSDictionary *externalAdDispMng = @{
-            kSortNoKey: @0,
-            kSpecialFrameFlgKey: @0,
-            kIndicatorKey: kPlaceholder,
-            kStartDateKey: kSandboxStartDate,
-            kEndDateKey: kSandboxEndDate,
-            kIndicatorStartDateKey: kSandboxStartDate,
-            kIndicatorEndDateKey: kSandboxEndDate,
-            kIndicatorStatusKey: @1,
+            kSortNoKey : @0,
+            kSpecialFrameFlgKey : @0,
+            kIndicatorKey : kPlaceholder,
+            kStartDateKey : kSandboxStartDate,
+            kEndDateKey : kSandboxEndDate,
+            kIndicatorStartDateKey : kSandboxStartDate,
+            kIndicatorEndDateKey : kSandboxEndDate,
+            kIndicatorStatusKey : @1,
         };
         [records addObject:@{
-            kAdIdKey: adIds[i],
-            kGenreKey: @"ゲーム",
-            kTitleKey: [@"テスト" stringByAppendingString:suffix],
-            kCountryCodeKey: @"jp",
-            kCategoryIdKey: [@"test.ios." stringByAppendingString:suffix],
-            kAppliIdKey: appliId,
-            kInstallFlgKey: installFlg,
-            kTargetUrlKey: kTargetUrl,
-            kIconUrlKey: kPlaceholder,
-            kBannerIconUrlKey: iconUrl,
-            kBannerUrlKey: bannerUrl,
-            kBannerUrlWideKey: kPlaceholder,
-            kInterstitialBannerUrlKey: interstitialUrl,
-            kDescriptionKey: kPlaceholder,
-            kIntroductionKey: [@"テストアプリ" stringByAppendingString:suffix],
-            kIndicatorKey: kPlaceholder,
-            kCarrierKey: @"ip",
-            kPayKey: @0,
-            kDefaultSchemeKey: [@"applilink" stringByAppendingString:appliId],
-            kDefaultPackageKey:
-                [@"jp.applilink.reward.sample" stringByAppendingString:suffix],
-            kLaunchClassKey: kPlaceholder,
-            kIncentiveTypeKey: kRewardNone,
-            kReadFlgKey: @0,
-            kExternalAdDispMngKey: externalAdDispMng,
-            kAdTypeKey: adType,
+            kAdIdKey : adIds[i],
+            kGenreKey : @"ゲーム",
+            kTitleKey : [@"テスト" stringByAppendingString:suffix],
+            kCountryCodeKey : @"jp",
+            kCategoryIdKey : [@"test.ios." stringByAppendingString:suffix],
+            kAppliIdKey : appliId,
+            kInstallFlgKey : installFlg,
+            kTargetUrlKey : kTargetUrl,
+            kIconUrlKey : kPlaceholder,
+            kBannerIconUrlKey : iconUrl,
+            kBannerUrlKey : bannerUrl,
+            kBannerUrlWideKey : kPlaceholder,
+            kInterstitialBannerUrlKey : interstitialUrl,
+            kDescriptionKey : kPlaceholder,
+            kIntroductionKey : [@"テストアプリ" stringByAppendingString:suffix],
+            kIndicatorKey : kPlaceholder,
+            kCarrierKey : @"ip",
+            kPayKey : @0,
+            kDefaultSchemeKey : [@"applilink" stringByAppendingString:appliId],
+            kDefaultPackageKey : [@"jp.applilink.reward.sample" stringByAppendingString:suffix],
+            kLaunchClassKey : kPlaceholder,
+            kIncentiveTypeKey : kRewardNone,
+            kReadFlgKey : @0,
+            kExternalAdDispMngKey : externalAdDispMng,
+            kAdTypeKey : adType,
         }];
     }
     return records;

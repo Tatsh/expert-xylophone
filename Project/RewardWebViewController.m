@@ -43,8 +43,8 @@ static const float kSystemVersionIOS8 = 8.0f;
 
 // The redirect dispositions returned by RewardCore -redirectWithRequest:.
 enum {
-    kRedirectAllow = 0,   // Continue loading the request.
-    kRedirectHandled = 1, // The redirect was handled internally; still load the request.
+    kRedirectAllow = 0,    // Continue loading the request.
+    kRedirectHandled = 1,  // The redirect was handled internally; still load the request.
     kRedirectExternal = 3, // The redirect opened elsewhere; cancel the request.
 };
 
@@ -57,10 +57,10 @@ enum {
 
 // Web-view/URL error codes handled specially in -webView:didFailLoadWithError:.
 enum {
-    kWebErrorCancelled = -999,           // NSURLErrorCancelled; always ignored.
-    kWebErrorNotConnected = -1009,       // NSURLErrorNotConnectedToInternet; a post-load link failure.
-    kWebErrorPlugInLoadFailed = 204,     // WebKit plug-in load failure; ignored on the WebKit domain.
-    kWebErrorFrameLoadFailed = 102,      // WebKit frame-load failure; ignored on the WebKit domain.
+    kWebErrorCancelled = -999,       // NSURLErrorCancelled; always ignored.
+    kWebErrorNotConnected = -1009,   // NSURLErrorNotConnectedToInternet; a post-load link failure.
+    kWebErrorPlugInLoadFailed = 204, // WebKit plug-in load failure; ignored on the WebKit domain.
+    kWebErrorFrameLoadFailed = 102,  // WebKit frame-load failure; ignored on the WebKit domain.
 };
 
 @interface RewardWebViewController () <UIWebViewDelegate>
@@ -135,19 +135,16 @@ enum {
 
     self.baseView = [[UIView alloc] init];
     self.baseView.backgroundColor = UIColor.whiteColor;
-    self.baseView.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                     UIViewAutoresizingFlexibleHeight |
-                                     UIViewAutoresizingFlexibleTopMargin |
-                                     UIViewAutoresizingFlexibleBottomMargin |
-                                     UIViewAutoresizingFlexibleLeftMargin |
-                                     UIViewAutoresizingFlexibleRightMargin;
+    self.baseView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
+        UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
+        UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     CGFloat inset = navigationBarHidden ? kNavigationBarInsetHidden : kNavigationBarInsetShown;
     self.baseView.frame =
         CGRectMake(0, inset, _baseFrame.size.width, _baseFrame.size.height - inset);
 
-    self.webView =
-        [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, _baseFrame.size.width,
-                                                    _baseFrame.size.height - inset)];
+    self.webView = [[UIWebView alloc]
+        initWithFrame:CGRectMake(0, 0, _baseFrame.size.width, _baseFrame.size.height - inset)];
     self.webView.delegate = self;
     self.webView.backgroundColor = UIColor.whiteColor;
     if (self.webView) {
@@ -160,15 +157,13 @@ enum {
 
     if (!navigationBarHidden) {
         self.navigationBar = [[UINavigationBar alloc] initWithFrame:CGRectZero];
-        UINavigationItem *item =
-            [[UINavigationItem alloc] initWithTitle:[ApplilinkMessage
-                                                        localizedMessage:kAppListTitleKey]];
-        item.leftBarButtonItem =
-            [[UIBarButtonItem alloc] initWithTitle:[ApplilinkMessage
-                                                       localizedMessage:kAppListCloseButtonKey]
-                                             style:UIBarButtonItemStyleDone
-                                            target:self
-                                            action:@selector(btnCloseClicked:)];
+        UINavigationItem *item = [[UINavigationItem alloc]
+            initWithTitle:[ApplilinkMessage localizedMessage:kAppListTitleKey]];
+        item.leftBarButtonItem = [[UIBarButtonItem alloc]
+            initWithTitle:[ApplilinkMessage localizedMessage:kAppListCloseButtonKey]
+                    style:UIBarButtonItemStyleDone
+                   target:self
+                   action:@selector(btnCloseClicked:)];
         if (![ApplilinkCore isNavigationBarCommonAppearance]) {
             if ([[UIDevice currentDevice].systemVersion floatValue] >= kSystemVersionIOS7) {
                 self.navigationBar.barTintColor = UIColor.whiteColor;
@@ -181,9 +176,9 @@ enum {
         [self.view addSubview:self.indicator];
     }
 
-    [self rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication]
-                                                    .statusBarOrientation
-                                       duration:0.0];
+    [self
+        rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation
+                                     duration:0.0];
     [self appListDidStart];
 }
 
@@ -227,14 +222,14 @@ enum {
     // named masks; reproduce the shift faithfully.
     NSUInteger bit;
     switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-        case UIInterfaceOrientationPortraitUpsideDown:
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight:
-            bit = (NSUInteger)1 << orientation;
-            break;
-        default:
-            return NO;
+    case UIInterfaceOrientationPortrait:
+    case UIInterfaceOrientationPortraitUpsideDown:
+    case UIInterfaceOrientationLandscapeLeft:
+    case UIInterfaceOrientationLandscapeRight:
+        bit = (NSUInteger)1 << orientation;
+        break;
+    default:
+        return NO;
     }
     return ([self supportedInterfaceOrientations] & bit) != 0;
 }
@@ -242,9 +237,9 @@ enum {
 // @ 0x21efec
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation
                                          duration:(NSTimeInterval)duration {
-    [self rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication]
-                                                    .statusBarOrientation
-                                       duration:duration];
+    [self
+        rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation
+                                     duration:duration];
 }
 
 // Lays the base view, navigation bar, web view, and indicator out to follow the interface
@@ -283,8 +278,9 @@ enum {
 
     // The manual rotation transform is only applied on the pre-iOS 8 (or non-Xcode 6 build) path,
     // where UIKit does not rotate the window's content for us.
-    BOOL legacyRotation = [[UIDevice currentDevice].systemVersion floatValue] < kSystemVersionIOS8 ||
-                          ![ApplilinkCore isBuildXcode6];
+    BOOL legacyRotation =
+        [[UIDevice currentDevice].systemVersion floatValue] < kSystemVersionIOS8 ||
+        ![ApplilinkCore isBuildXcode6];
     CGFloat portraitWidth = MIN(width, height);
     CGFloat portraitHeight = MAX(width, height);
     if (legacyRotation) {
@@ -292,22 +288,22 @@ enum {
         CGFloat viewWidth = portraitWidth;
         CGFloat viewHeight = portraitHeight;
         switch (orientation) {
-            case UIInterfaceOrientationPortraitUpsideDown:
-                transform = CGAffineTransformMakeRotation((CGFloat)M_PI);
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                transform = CGAffineTransformMakeRotation((CGFloat)(-M_PI_2));
-                viewWidth = portraitHeight;
-                viewHeight = portraitWidth;
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
-                viewWidth = portraitHeight;
-                viewHeight = portraitWidth;
-                break;
-            default:
-                transform = CGAffineTransformMakeRotation(0);
-                break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            transform = CGAffineTransformMakeRotation((CGFloat)M_PI);
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            transform = CGAffineTransformMakeRotation((CGFloat)(-M_PI_2));
+            viewWidth = portraitHeight;
+            viewHeight = portraitWidth;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            transform = CGAffineTransformMakeRotation((CGFloat)M_PI_2);
+            viewWidth = portraitHeight;
+            viewHeight = portraitWidth;
+            break;
+        default:
+            transform = CGAffineTransformMakeRotation(0);
+            break;
         }
         if (hosted) {
             self.view.bounds = CGRectMake(0, statusInset, viewWidth, viewHeight);
@@ -315,9 +311,9 @@ enum {
             CGRect boundsRect = CGRectMake(0, statusInset, viewWidth, viewHeight);
             [UIView animateWithDuration:duration
                              animations:^{
-                                 /** @ghidraAddress 0x20a768 */
-                                 self.view.transform = transform;
-                                 self.view.bounds = boundsRect;
+                               /** @ghidraAddress 0x20a768 */
+                               self.view.transform = transform;
+                               self.view.bounds = boundsRect;
                              }];
         }
     }
@@ -335,8 +331,7 @@ enum {
         float version = [[UIDevice currentDevice].systemVersion floatValue];
         if (version >= kSystemVersionIOS7) {
             if (version >= kSystemVersionIOS8 && [ApplilinkCore isBuildXcode6]) {
-                UIInterfaceOrientation now =
-                    [UIApplication sharedApplication].statusBarOrientation;
+                UIInterfaceOrientation now = [UIApplication sharedApplication].statusBarOrientation;
                 if (now == UIInterfaceOrientationLandscapeRight) {
                     originX = statusInset;
                     originY = 0.0;
@@ -347,8 +342,7 @@ enum {
                 }
             }
         } else {
-            UIInterfaceOrientation now =
-                [UIApplication sharedApplication].statusBarOrientation;
+            UIInterfaceOrientation now = [UIApplication sharedApplication].statusBarOrientation;
             if (now == UIInterfaceOrientationLandscapeRight) {
                 originX = statusInset;
             } else if (now == UIInterfaceOrientationPortrait) {
@@ -379,8 +373,8 @@ enum {
 
     self.indicator.frame = self.view.bounds;
     // The web view fills the base view starting from its origin.
-    self.webView.frame = CGRectMake(0, 0, self.baseView.frame.size.width,
-                                    self.baseView.frame.size.height);
+    self.webView.frame =
+        CGRectMake(0, 0, self.baseView.frame.size.width, self.baseView.frame.size.height);
 }
 
 #pragma mark - Loading
@@ -399,17 +393,16 @@ enum {
     }
 
     NSString *full = [ApplilinkUtilities appendParametersToURL:url parameters:parameters];
-    NSMutableURLRequest *request =
-        [NSMutableURLRequest requestWithURL:[NSURL URLWithString:full]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:full]];
     request.timeoutInterval = kRequestTimeout;
     request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
 
     if (!self.webView) {
         [self loadView];
     }
-    [self rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication]
-                                                    .statusBarOrientation
-                                       duration:0.0];
+    [self
+        rotateWebViewWithInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation
+                                     duration:0.0];
     [self.webView loadRequest:request];
 }
 
@@ -492,16 +485,13 @@ enum {
     if (error.code == kWebErrorCancelled) {
         return;
     }
-    if (error.code == kWebErrorPlugInLoadFailed &&
-        [error.domain isEqual:@"WebKitErrorDomain"]) {
+    if (error.code == kWebErrorPlugInLoadFailed && [error.domain isEqual:@"WebKitErrorDomain"]) {
         return;
     }
-    if (error.code == kWebErrorFrameLoadFailed &&
-        [error.domain isEqual:@"WebKitErrorDomain"]) {
+    if (error.code == kWebErrorFrameLoadFailed && [error.domain isEqual:@"WebKitErrorDomain"]) {
         return;
     }
-    if (self.webViewStatus == kWebViewStatusFinished &&
-        error.code == kWebErrorNotConnected) {
+    if (self.webViewStatus == kWebViewStatusFinished && error.code == kWebErrorNotConnected) {
         NSError *linkError = [NSError errorWithDomain:error.domain code:error.code userInfo:nil];
         [self appListFailLinkWithError:linkError];
     } else {

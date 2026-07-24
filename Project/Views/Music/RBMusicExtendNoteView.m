@@ -31,9 +31,9 @@ static const UIViewAutoresizing kExtendNoteAutoresizingMask =
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
 // The caption panel and label geometry, in points.
-static const CGFloat kCaptionPanelTopY = 40.0;         // Also g_dSliderRowHeightWide.
-static const CGFloat kCaptionPanelHeightInset = 80.0;  // Trimmed from the badge height.
-static const CGFloat kCaptionPanelWhite = 0.5;         // Half-opacity grey panel.
+static const CGFloat kCaptionPanelTopY = 40.0;        // Also g_dSliderRowHeightWide.
+static const CGFloat kCaptionPanelHeightInset = 80.0; // Trimmed from the badge height.
+static const CGFloat kCaptionPanelWhite = 0.5;        // Half-opacity grey panel.
 static const CGFloat kCaptionPanelAlpha = 0.5;
 static const CGFloat kCaptionFontSize = 15.0;
 static const CGFloat kCaptionTextWhite = 0.19607843137254902; // 50/255.
@@ -46,13 +46,20 @@ static NSString *const kSelectedFrameImageThemed = @"02_music_detail/det_dif_sel
 
 // The level-number glyphs, indexed by the clamped difficulty (levels 1 through 15).
 static NSString *const kDifficultyGlyphNames[] = {
-    @"02_music_detail/det_difc_1",  @"02_music_detail/det_difc_2",
-    @"02_music_detail/det_difc_3",  @"02_music_detail/det_difc_4",
-    @"02_music_detail/det_difc_5",  @"02_music_detail/det_difc_6",
-    @"02_music_detail/det_difc_7",  @"02_music_detail/det_difc_8",
-    @"02_music_detail/det_difc_9",  @"02_music_detail/det_difc_10",
-    @"02_music_detail/det_difc_11", @"02_music_detail/det_difc_12",
-    @"02_music_detail/det_difc_13", @"02_music_detail/det_difc_14",
+    @"02_music_detail/det_difc_1",
+    @"02_music_detail/det_difc_2",
+    @"02_music_detail/det_difc_3",
+    @"02_music_detail/det_difc_4",
+    @"02_music_detail/det_difc_5",
+    @"02_music_detail/det_difc_6",
+    @"02_music_detail/det_difc_7",
+    @"02_music_detail/det_difc_8",
+    @"02_music_detail/det_difc_9",
+    @"02_music_detail/det_difc_10",
+    @"02_music_detail/det_difc_11",
+    @"02_music_detail/det_difc_12",
+    @"02_music_detail/det_difc_13",
+    @"02_music_detail/det_difc_14",
     @"02_music_detail/det_difc_15",
 };
 
@@ -117,11 +124,11 @@ static const CGFloat kClassicGlyphOffsetYPhone = 10.0;
     // The selected-frame overlay, centred on the button.
     theme = [RBUserSettingData sharedInstance].thema;
     classicTheme = theme < RBUserSettingDataThemeColette;
-    UIImage *selectedImage = [UIImage imageWithName:classicTheme ? kSelectedFrameImageClassic
-                                                                  : kSelectedFrameImageThemed];
+    UIImage *selectedImage = [UIImage
+        imageWithName:classicTheme ? kSelectedFrameImageClassic : kSelectedFrameImageThemed];
     UIImageView *selectedView = [[UIImageView alloc] initWithImage:selectedImage];
-    selectedView.center = CGPointMake(button.bounds.size.width * 0.5,
-                                      button.bounds.size.height * 0.5);
+    selectedView.center =
+        CGPointMake(button.bounds.size.width * 0.5, button.bounds.size.height * 0.5);
     selectedView.autoresizingMask = kExtendNoteAutoresizingMask;
     [button addSubview:selectedView];
     // The binary reads the theme once more here and discards it before the flash pulse.
@@ -159,9 +166,8 @@ static const CGFloat kClassicGlyphOffsetYPhone = 10.0;
     CGFloat panelX = button.center.x + button.width;
     CGFloat panelWidth = self.width - (button.center.x + button.width + button.width * 0.5);
     CGFloat panelHeight = self.height - kCaptionPanelHeightInset;
-    UIView *captionPanel =
-        [[UIView alloc] initWithFrame:CGRectMake(panelX, kCaptionPanelTopY, panelWidth,
-                                                 panelHeight)];
+    UIView *captionPanel = [[UIView alloc]
+        initWithFrame:CGRectMake(panelX, kCaptionPanelTopY, panelWidth, panelHeight)];
     captionPanel.backgroundColor = [UIColor colorWithRed:kCaptionPanelWhite
                                                    green:kCaptionPanelWhite
                                                     blue:kCaptionPanelWhite
@@ -180,8 +186,10 @@ static const CGFloat kClassicGlyphOffsetYPhone = 10.0;
     captionLabel.numberOfLines = 0;
     captionLabel.text = extendNote.comment;
     [captionLabel sizeToFit];
-    captionLabel.frame = CGRectMake(0.0, panelHeight * 0.5 - captionLabel.height * 0.5,
-                                    captionLabel.width, captionLabel.height);
+    captionLabel.frame = CGRectMake(0.0,
+                                    panelHeight * 0.5 - captionLabel.height * 0.5,
+                                    captionLabel.width,
+                                    captionLabel.height);
     [captionPanel addSubview:captionLabel];
     [self addSubview:captionPanel];
 }

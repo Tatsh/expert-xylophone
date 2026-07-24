@@ -71,8 +71,8 @@ static const CGFloat kHalf = 0.5;
     UIActivityIndicatorView *indicator =
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:kIndicatorStyle];
     [indicator startAnimating];
-    indicator.center = CGPointMake(self.view.bounds.size.width * kHalf,
-                                   self.view.bounds.size.height * kHalf);
+    indicator.center =
+        CGPointMake(self.view.bounds.size.width * kHalf, self.view.bounds.size.height * kHalf);
     indicator.autoresizingMask = kIndicatorAutoresizingMask;
     [self.view addSubview:indicator];
     self.indicator = indicator;

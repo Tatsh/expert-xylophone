@@ -199,8 +199,9 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     if (existing != nil) {
         [shared.pasteBoard deleteWithStorageIndex:0 error:&readError];
     }
-    NSDictionary *written = [shared.pasteBoard writeStorageData:udid storageIndex:0
-                                                         error:&readError];
+    NSDictionary *written = [shared.pasteBoard writeStorageData:udid
+                                                   storageIndex:0
+                                                          error:&readError];
     if (written != nil) {
         [ApplilinkUdid sharedInstance].pasteBoard.nonPasteBoardUdidFlag = NO;
     }

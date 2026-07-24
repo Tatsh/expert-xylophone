@@ -20,10 +20,10 @@ enum {
 
 // Applilink error codes forwarded to the caller's completion callback.
 enum {
-    kApplilinkErrorGeneric = 1000,           // Non-success server response.
-    kApplilinkErrorMissingParameter = 1001,  // A required parameter was nil.
-    kApplilinkErrorUdidParameters = 1026,    // ApplilinkUdid could not supply UDID parameters.
-    kApplilinkErrorTrackingDisabled = 1028,  // Advertising tracking is disabled.
+    kApplilinkErrorGeneric = 1000,          // Non-success server response.
+    kApplilinkErrorMissingParameter = 1001, // A required parameter was nil.
+    kApplilinkErrorUdidParameters = 1026,   // ApplilinkUdid could not supply UDID parameters.
+    kApplilinkErrorTrackingDisabled = 1028, // Advertising tracking is disabled.
 };
 
 // The server response is a success when its status is truthy and its error_code equals this value.
@@ -65,7 +65,8 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
 #pragma mark - Persistence flags
 
 + (BOOL)getInitalizeFlg {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kAnalysisDefaultsInitalizeKey] != nil;
+    return
+        [[NSUserDefaults standardUserDefaults] objectForKey:kAnalysisDefaultsInitalizeKey] != nil;
 }
 
 + (BOOL)getSendDauFlg {
@@ -104,8 +105,8 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
 
     parameters[kAnalysisParamActionType] = [NSString stringWithFormat:@"%d", actionType];
     if (![ApplilinkUdid setUdidParameters:parameters]) {
-        callback([ApplilinkNetworkError
-            localizedApplilinkErrorWithCode:kApplilinkErrorUdidParameters]);
+        callback(
+            [ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorUdidParameters]);
         return;
     }
     if (![ApplilinkUdid isAdvertisingTrackingEnabled]) {
@@ -121,9 +122,9 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         parameters[kAnalysisParamUserId] = [NSStringURLEncoding URLEncodedString:uesrId];
     }
 
-    NSString *udidSource = [ApplilinkUdid isAdvertisingTrackingOSVersion]
-                               ? [ApplilinkUdid getAdUdid]
-                               : [ApplilinkUdid getCFUUID];
+    NSString *udidSource = [ApplilinkUdid isAdvertisingTrackingOSVersion] ?
+                               [ApplilinkUdid getAdUdid] :
+                               [ApplilinkUdid getCFUUID];
     if (udidSource) {
         parameters[kAnalysisParamUdidSrc] = udidSource;
     }
@@ -155,27 +156,25 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         resultId:nil
         uesrId:nil
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20d7d4 */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                [[NSUserDefaults standardUserDefaults] setObject:now
-                                                          forKey:kAnalysisDefaultsInitalizeKey];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20d7d4 */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              [[NSUserDefaults standardUserDefaults] setObject:now
+                                                        forKey:kAnalysisDefaultsInitalizeKey];
+              [[NSUserDefaults standardUserDefaults] synchronize];
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20d9dc */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20d9dc */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }
         callback:callback];
 }
@@ -192,27 +191,25 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         resultId:nil
         uesrId:userId
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20dbfc */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                [[NSUserDefaults standardUserDefaults] setObject:now
-                                                          forKey:kAnalysisDefaultsDauDateKey];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20dbfc */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              [[NSUserDefaults standardUserDefaults] setObject:now
+                                                        forKey:kAnalysisDefaultsDauDateKey];
+              [[NSUserDefaults standardUserDefaults] synchronize];
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20de04 */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20de04 */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }
         callback:callback];
 }
@@ -232,24 +229,22 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         resultId:resultId
         uesrId:userId
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20e018 */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20e018 */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20e160 */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20e160 */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }
         callback:callback];
 }
@@ -266,24 +261,22 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         resultId:nil
         uesrId:userId
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20e358 */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20e358 */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20e4a0 */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20e4a0 */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }
         callback:callback];
 }
@@ -339,24 +332,22 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         timeout:kAnalysisRequestTimeout
         retry:NO
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20ed64 */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20ed64 */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20eeac */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20eeac */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }];
 }
 
@@ -438,24 +429,22 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
         timeout:kAnalysisRequestTimeout
         retry:NO
         finishedBlock:^(id request, id result) {
-            /** @ghidraAddress 0x20f40c */
-            (void)request;
-            NSDictionary *response = (NSDictionary *)result;
-            if ([response[@"status"] boolValue] &&
-                [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
-                callback(nil);
-                return;
-            }
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
-                                       userInfo:response]);
+          /** @ghidraAddress 0x20f40c */
+          (void)request;
+          NSDictionary *response = (NSDictionary *)result;
+          if ([response[@"status"] boolValue] &&
+              [response[@"error_code"] intValue] == kApplilinkResponseSuccessCode) {
+              callback(nil);
+              return;
+          }
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric
+                                                                 userInfo:response]);
         }
         failedBlock:^(id request, NSError *error) {
-            /** @ghidraAddress 0x20f554 */
-            (void)request;
-            (void)error;
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
+          /** @ghidraAddress 0x20f554 */
+          (void)request;
+          (void)error;
+          callback([ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorGeneric]);
         }];
 }
 
@@ -463,12 +452,12 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
 
 + (void)postAnalysisDataWithCallback:(void (^)(NSError *error))callback {
     [self postInitalizeWithCallback:^(NSError *initError) {
-        /** @ghidraAddress 0x20f870 */
-        [self postDAUWithCallback:^(NSError *dauError) {
-            /** @ghidraAddress 0x20f920 */
-            // Forward the initialisation error when it occurred, otherwise the DAU error.
-            callback(initError ? initError : dauError);
-        }];
+      /** @ghidraAddress 0x20f870 */
+      [self postDAUWithCallback:^(NSError *dauError) {
+        /** @ghidraAddress 0x20f920 */
+        // Forward the initialisation error when it occurred, otherwise the DAU error.
+        callback(initError ? initError : dauError);
+      }];
     }];
 }
 

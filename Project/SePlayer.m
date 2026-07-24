@@ -18,8 +18,8 @@
 // The OpenAL alBufferDataStatic extension, resolved lazily on first use. It references the caller's
 // PCM samples in place rather than copying them, so the player must keep the samples alive for the
 // buffer's lifetime.
-typedef ALvoid (*AlBufferDataStaticProc)(ALuint buffer, ALenum format, ALvoid *data, ALsizei size,
-                                         ALsizei frequency);
+typedef ALvoid (*AlBufferDataStaticProc)(
+    ALuint buffer, ALenum format, ALvoid *data, ALsizei size, ALsizei frequency);
 
 // Load an audio file and decode it to interleaved signed 16-bit PCM for OpenAL. Returns a malloc'd
 // buffer the caller frees, or NULL on failure, writing the byte size, OpenAL format, and sample
@@ -30,8 +30,8 @@ static void *LoadAudioFileToPcm(NSURL *url, ALsizei *outSize, ALenum *outFormat,
 // Call the alBufferDataStatic extension, resolving it lazily on first use.
 // @ghidraAddress 0x179c8 (CallAlBufferDataStatic)
 // @ghidraAddress 0x3dc238 (g_alBufferDataStaticProc)
-static void CallAlBufferDataStatic(ALuint buffer, ALenum format, void *data, ALsizei size,
-                                   ALsizei frequency);
+static void
+CallAlBufferDataStatic(ALuint buffer, ALenum format, void *data, ALsizei size, ALsizei frequency);
 
 // The player decodes to signed 16-bit PCM, so at most a stereo stream is supported.
 static const UInt32 kMaxChannelCount = 2;
@@ -46,10 +46,10 @@ static AlBufferDataStaticProc g_alBufferDataStaticProc = NULL;
     // The binary's own ivars, in declaration order. The 32-bit offsets are documentation only;
     // access always goes through these named fields. These are plain (non-property) ivars, so they
     // keep the binary's literal names with no leading underscore.
-    ALuint soundBuffer;      // +0x08
-    ALuint soundSource;      // +0x0c
-    ALCdevice *soundDevice;  // +0x10
-    void *soundData;         // +0x18
+    ALuint soundBuffer;       // +0x08
+    ALuint soundSource;       // +0x0c
+    ALCdevice *soundDevice;   // +0x10
+    void *soundData;          // +0x18
     ALCcontext *soundContext; // +0x20
 }
 
@@ -108,8 +108,9 @@ static void *LoadAudioFileToPcm(NSURL *url, ALsizei *outSize, ALenum *outFormat,
     void *pcmData = NULL;
     if (ExtAudioFileOpenURL((__bridge CFURLRef)url, &audioFile) == noErr) {
         AudioStreamBasicDescription fileFormat;
-        if (ExtAudioFileGetProperty(audioFile, kExtAudioFileProperty_FileDataFormat, &propertySize,
-                                    &fileFormat) == noErr &&
+        if (ExtAudioFileGetProperty(
+                audioFile, kExtAudioFileProperty_FileDataFormat, &propertySize, &fileFormat) ==
+                noErr &&
             fileFormat.mChannelsPerFrame <= kMaxChannelCount) {
             AudioStreamBasicDescription clientFormat;
             clientFormat.mSampleRate = fileFormat.mSampleRate;
@@ -121,11 +122,15 @@ static void *LoadAudioFileToPcm(NSURL *url, ALsizei *outSize, ALenum *outFormat,
             clientFormat.mFormatFlags =
                 kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
             clientFormat.mBytesPerFrame = clientFormat.mBytesPerPacket;
-            if (ExtAudioFileSetProperty(audioFile, kExtAudioFileProperty_ClientDataFormat,
-                                        sizeof(clientFormat), &clientFormat) == noErr) {
+            if (ExtAudioFileSetProperty(audioFile,
+                                        kExtAudioFileProperty_ClientDataFormat,
+                                        sizeof(clientFormat),
+                                        &clientFormat) == noErr) {
                 propertySize = sizeof(frameCount);
-                if (ExtAudioFileGetProperty(audioFile, kExtAudioFileProperty_FileLengthFrames,
-                                            &propertySize, &frameCount) == noErr) {
+                if (ExtAudioFileGetProperty(audioFile,
+                                            kExtAudioFileProperty_FileLengthFrames,
+                                            &propertySize,
+                                            &frameCount) == noErr) {
                     UInt32 byteSize = (UInt32)(clientFormat.mBytesPerFrame * frameCount);
                     pcmData = malloc(byteSize);
                     if (pcmData != NULL) {
@@ -137,9 +142,9 @@ static void *LoadAudioFileToPcm(NSURL *url, ALsizei *outSize, ALenum *outFormat,
                         UInt32 framesToRead = (UInt32)frameCount;
                         if (ExtAudioFileRead(audioFile, &framesToRead, &bufferList) == noErr) {
                             *outSize = (ALsizei)byteSize;
-                            *outFormat = clientFormat.mChannelsPerFrame < kMaxChannelCount
-                                             ? AL_FORMAT_MONO16
-                                             : AL_FORMAT_STEREO16;
+                            *outFormat = clientFormat.mChannelsPerFrame < kMaxChannelCount ?
+                                             AL_FORMAT_MONO16 :
+                                             AL_FORMAT_STEREO16;
                             *outFreq = (ALsizei)clientFormat.mSampleRate;
                             goto done;
                         }
@@ -157,8 +162,8 @@ done:
     return pcmData;
 }
 
-static void CallAlBufferDataStatic(ALuint buffer, ALenum format, void *data, ALsizei size,
-                                   ALsizei frequency) {
+static void
+CallAlBufferDataStatic(ALuint buffer, ALenum format, void *data, ALsizei size, ALsizei frequency) {
     /** @ghidraAddress 0x179c8 */
     if (g_alBufferDataStaticProc == NULL) {
         g_alBufferDataStaticProc =
