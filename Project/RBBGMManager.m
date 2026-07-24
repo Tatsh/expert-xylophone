@@ -169,6 +169,13 @@ static NSString *const kThemeAssetNames[] = {
     }
 }
 
+- (void)SeekToTop {
+    /** @ghidraAddress 0x6a154 */
+    if (fIsMusic) {
+        [[AudioManager sharedManager] seekBgmToTop];
+    }
+}
+
 #pragma mark - Overlay stack
 
 - (BOOL)pushMusic {

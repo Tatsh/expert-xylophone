@@ -110,6 +110,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @param time The fade-out duration in seconds.
  */
 - (void)StopMusic:(float)time;
+/**
+ * @brief Seek the loaded background track back to its start, when a track is loaded.
+ * @ghidraAddress 0x6a154
+ */
+- (void)SeekToTop;
 
 #pragma mark Overlay stack
 

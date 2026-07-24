@@ -114,7 +114,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(assign, nonatomic) int viewType;
 /** @brief The reusable pool of term buttons. */
 @property(strong, nonatomic, nullable) NSMutableArray *buttons;
-/** @brief The identifier of the term whose body is shown. */
+/**
+ * @brief The identifier of the term whose body is shown.
+ * @ghidraAddress 0x4a3d4 (getter)
+ */
 @property(strong, nonatomic, nullable) NSString *ID;
 /** @brief The container view for the term's body. */
 @property(assign, nonatomic, nullable) UIView *termView;

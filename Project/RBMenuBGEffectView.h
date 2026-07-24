@@ -35,7 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) NSString *rainbowImageBasePath; // +0x10
 /** @brief The base name of the ring artwork, without its @c "%02d" index suffix. */
 @property(strong, nonatomic, nullable) NSString *ringImageBasePath; // +0x18
-/** @brief The number of @c RBMenuBGEffectPartView particle layers this background hosts. */
+/**
+ * @brief The number of @c RBMenuBGEffectPartView particle layers this background hosts.
+ * @ghidraAddress 0xe8e90 (getter)
+ */
 @property(assign, nonatomic) int EFFECT_NUM; // +0x08
 /** @brief The live @c RBMenuBGEffectPartView particle layers attached to this background. */
 @property(strong, nonatomic, nullable) NSMutableArray *effList; // +0x20
