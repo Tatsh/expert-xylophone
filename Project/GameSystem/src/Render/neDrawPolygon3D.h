@@ -13,6 +13,8 @@ struct S_VECTOR3;
 
 namespace ne {
 
+class C_TEXTURE;
+
 /**
  * @brief A 3D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_3D).
  *
@@ -79,6 +81,23 @@ public:
     void SetUvFromVec(int nIndex, const S_VECTOR2 *pUv);
 
     /**
+     * @brief Assign the mesh's texture, updating reference counts.
+     *
+     * Releases the previously held texture and retains @p pTexture.
+     * @param pTexture The texture to assign, or @c nullptr to clear it.
+     * @ghidraAddress 0x29558
+     */
+    void SetTexture(C_TEXTURE *pTexture);
+
+    /**
+     * @brief Store one texture-environment parameter.
+     * @param nIndex The parameter slot.
+     * @param nValue The parameter value.
+     * @ghidraAddress 0x2959c
+     */
+    void SetTexEnvParam(int nIndex, int nValue);
+
+    /**
      * @brief Store a vertex index into the mesh's index buffer and mark it dirty.
      * @param nIndex The position in the index buffer.
      * @param wValue The vertex index to store.
@@ -114,8 +133,12 @@ private:
     // +0x122..+0x127 is alignment padding before the index-array pointer.
     unsigned char m_aPad122[6] = {};    // +0x122
     unsigned short *m_pIndexArray = {}; // +0x128: the 16-bit index buffer.
-    // +0x130..+0x17b: remaining mesh state still being worked out.
-    unsigned char m_aReserved130[0x4c] = {}; // +0x130
+    // +0x130..+0x15f: transform and further mesh state still being worked out.
+    unsigned char m_aReserved130[0x30] = {}; // +0x130
+    C_TEXTURE *m_pTexture = {};              // +0x160: the retained texture.
+    int m_aTexEnvParams[4] = {};             // +0x168: the texture-environment parameters.
+    // +0x178..+0x17b: remaining mesh state still being worked out.
+    unsigned char m_aReserved178[4] = {}; // +0x178
 };
 
 } // namespace ne

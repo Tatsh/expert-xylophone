@@ -3,6 +3,7 @@
 #include <cassert>
 
 #import "neEngineBridge.h"
+#include "neTexture.h"
 
 namespace ne {
 
@@ -75,6 +76,23 @@ void C_DRAW_POLYGON_3D::SetUV(int nIndex, float flU, float flV) {
 /** @ghidraAddress 0x296c4 */
 void C_DRAW_POLYGON_3D::SetUvFromVec(int nIndex, const S_VECTOR2 *pUv) {
     SetUV(nIndex, pUv->x, pUv->y);
+}
+
+/** @ghidraAddress 0x29558 */
+void C_DRAW_POLYGON_3D::SetTexture(C_TEXTURE *pTexture) {
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    if (pTexture != nullptr) {
+        pTexture->AddRef();
+        m_pTexture = pTexture;
+    }
+}
+
+/** @ghidraAddress 0x2959c */
+void C_DRAW_POLYGON_3D::SetTexEnvParam(int nIndex, int nValue) {
+    m_aTexEnvParams[nIndex] = nValue;
 }
 
 /** @ghidraAddress 0x29890 */
