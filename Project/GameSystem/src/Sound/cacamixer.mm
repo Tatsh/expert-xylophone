@@ -9,16 +9,32 @@
 
 #include "cacamixer.h"
 
+#include <cstring>
+
 #include "casound.h"
 
-// The per-voice render callback the mixer installs; the render loop calls it to pull PCM for a
-// voice. Defined elsewhere in the caplayer engine (@ghidraAddress 0x4b2xx).
+/** @ghidraAddress 0x4b3e8 */
 OSStatus RenderVoiceAudioCallback(void *pRefCon,
                                   AudioUnitRenderActionFlags *pActionFlags,
                                   const AudioTimeStamp *pTimeStamp,
                                   UInt32 nBusNumber,
                                   UInt32 nFrames,
-                                  AudioBufferList *pData);
+                                  AudioBufferList *pData) {
+    // The AURenderCallback wired onto each mixer input. The action flags, timestamp, bus, and frame
+    // count are unused: the voice pointer arrives as the reference, and it fills the single output
+    // buffer directly.
+    (void)pActionFlags;
+    (void)pTimeStamp;
+    (void)nBusNumber;
+    (void)nFrames;
+    auto *pVoice = static_cast<caVoice *>(pRefCon);
+    if (pVoice != nullptr) {
+        AudioBuffer &buffer = pData->mBuffers[0];
+        std::memset(buffer.mData, 0, buffer.mDataByteSize);
+        pVoice->FillPcm(buffer.mData, static_cast<int>(buffer.mDataByteSize));
+    }
+    return noErr;
+}
 
 // The mixer's decibel-gain lookup table, indexed by the engine volume level. Seeded in the engine
 // data segment.
@@ -96,8 +112,8 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
 
     InstallVoiceRenderCallback(nBus);
     ApplyVoicePanParam(nVolume, nBus);
-    pVoice->m_dwBytesRead = 0;
-    pVoice->m_dwReadPos = 0;
+    pVoice->m_nBytesRead = 0;
+    pVoice->m_nReadPos = 0;
     pVoice->m_nState = caVoice::kStatePrepared;
     return static_cast<unsigned int>(nGeneration) |
            static_cast<unsigned int>(nBus << kHandleBusShift);
@@ -320,4 +336,20 @@ void caCAMixer::Stop() {
     if (m_bIsRunning && AUGraphStop(m_pAUGraph) == noErr) {
         m_bIsRunning = false;
     }
+}
+
+/** @ghidraAddress 0x4ac40 */
+unsigned long caVoice::FillPcm(void *pDst, int nCount) {
+    // Only a playing voice with a bound source produces samples.
+    if (m_pSource == nullptr || m_nState != kStatePlaying) {
+        return 0;
+    }
+    // Pull the next span from the source's ring buffer through this voice's own read cursors; a
+    // zero-byte read means the source has drained, so the voice is marked finished.
+    const int nRead = m_pSource->ReadRingBuffer(pDst, nCount, &m_nBytesRead, &m_nReadPos);
+    if (nRead == 0) {
+        m_nState = kStateFinished;
+        return 0;
+    }
+    return static_cast<unsigned long>(nRead);
 }

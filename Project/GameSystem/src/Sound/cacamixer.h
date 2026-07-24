@@ -16,6 +16,19 @@ class caSource;
  */
 class caVoice {
 public:
+    /**
+     * @brief Fills @p nCount bytes at @p pDst with the voice's next PCM span while it is playing,
+     *        marking the voice finished when its source runs dry.
+     *
+     * A no-op (returns 0) when the voice has no source or is not in the playing state; otherwise it
+     * pulls from the bound source's ring buffer through the voice's own read cursors.
+     * @param pDst The output buffer to fill.
+     * @param nCount The number of bytes to fill.
+     * @return The number of bytes produced, or 0 when the source has drained.
+     * @ghidraAddress 0x4ac40
+     */
+    unsigned long FillPcm(void *pDst, int nCount);
+
     /** @brief The voice playback states stored in @c m_nState. */
     enum State {
         kStateFree = -1,    /*!< No sound is bound to the voice. */
@@ -30,8 +43,8 @@ public:
     /** @brief Whether the render callback has been installed on this voice. */
     bool m_bCallbackBound = {};          // +0x04
     unsigned char m_aReserved05[7] = {}; // +0x05
-    unsigned int m_dwBytesRead = {};     // +0x0c running consumed-byte counter for the ring read
-    unsigned int m_dwReadPos = {};       // +0x10 current read offset into the source PCM block
+    int m_nBytesRead = {};               // +0x0c running consumed-byte counter for the ring read
+    int m_nReadPos = {};                 // +0x10 current read offset into the source PCM block
     unsigned short m_wGeneration = {};   // +0x14 rolling generation, packed into the play handle
     unsigned char m_aReserved16[2] = {}; // +0x16
     int m_nState = {};                   // +0x18 one of State
