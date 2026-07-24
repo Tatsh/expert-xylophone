@@ -35,6 +35,10 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
   Ghidra program (fix the prototype so every call site re-decompiles cleanly) and any already-written
   reconstructed source that calls it. A signature fix is not complete until every caller agrees with
   it; a corrected callee with stale callers is a defect, not a finished routine.
+- When reconstructing a C or C++ function, update `CXX_FUNCTIONS.md` in the same change: flip that
+  function's status to done (`:white_check_mark:`) and replace its preliminary signature with the
+  final reconstructed one. The checklist is only accurate if every reconstructed routine is marked
+  and re-signed there as it lands.
 - Fix the Ghidra program itself, not only the reconstructed source. As you work a function, in
   Ghidra: give every parameter, local, and return a real type (never a bare `long`/`int`/`undefined*`
   standing in for an object or struct pointer); rename every auto-named variable (`pnVar1`, `lVar2`,
