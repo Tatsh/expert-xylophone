@@ -93,6 +93,28 @@ C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity) {
     m_aTexParams[3] = kDefaultTexParams[3];
 }
 
+/** @ghidraAddress 0x30c80 */
+C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
+    // Release the texture reference, free the per-sprite arrays and the vertex scratch, and delete
+    // the GL index buffer; the compiler chains to the C_RENDER base destructor. (The binary guards
+    // each free with the engine's safe-delete pattern; delete[] on a null pointer is a no-op.)
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    delete[] m_pSpritePositionArray;
+    delete[] m_pSpriteSizeArray;
+    delete[] m_pSpriteTexCoordArray;
+    delete[] m_pSpriteTexSizeArray;
+    delete[] m_pSpriteCentreArray;
+    delete[] m_pSpriteRotationArray;
+    delete[] m_pSpriteScaleXArray;
+    delete[] m_pSpriteScaleYArray;
+    delete[] m_pSpriteColorArray;
+    delete[] static_cast<unsigned char *>(m_pVertexScratch);
+    GetGlRenderer()->DeleteBuffer(m_dwIndexVbo);
+}
+
 /** @ghidraAddress 0x31834 */
 C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity) {
     return new C_SPRITE_INSTANCING(nCapacity);

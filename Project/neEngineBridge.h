@@ -614,6 +614,11 @@ public:
      * @ghidraAddress 0x2152c
      */
     void UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage);
+    /**
+     * @brief Deletes the GL buffer object @p dwBuffer.
+     * @ghidraAddress 0x21484
+     */
+    void DeleteBuffer(unsigned int dwBuffer);
 };
 
 /**
