@@ -308,6 +308,13 @@ extern NSDictionary *const g_pVoiceToVoicelessTable;
  */
 extern int g_nVariantScreenHeight;
 /**
+ * @brief The play-field full-height layout Y coordinate: the variant screen height minus one full
+ * 1024-unit field (0x400). It is the vertical base for full-screen background sprites (halved to
+ * give their centre). Computed by the play-field layout pass (@c ComputePlayfieldLayoutY, 0x554bc).
+ * @ghidraAddress 0x3d0008
+ */
+extern int g_nPlayfieldFullHeightY;
+/**
  * @brief The per-decode-type Blowfish key table shared with the chart loader.
  * @ghidraAddress 0x35b7c8
  */
@@ -1076,6 +1083,14 @@ public:
     void SetBackgroundBrightness(float value) {
         m_flBackgroundBrightness = value;
     }
+    /** @brief Whether the play-field background fade-in has reached full opacity. */
+    bool IsBackgroundFadeComplete() const {
+        return m_fBackgroundFadeComplete;
+    }
+    /** @brief Records whether the play-field background fade-in has reached full opacity. */
+    void SetBackgroundFadeComplete(bool bComplete) {
+        m_fBackgroundFadeComplete = bComplete;
+    }
     /** @brief Returns the shot cosmetic type. */
     int GetShotType() const {
         return m_nShotType;
@@ -1179,6 +1194,7 @@ private:
     float m_flScreenScale = {};          // +0x28
     float m_flViewportWidth = {};        // +0x2c
     float m_flViewportHeight = {};       // +0x30
+    bool m_fBackgroundFadeComplete = {}; // +0x34
     bool m_fUse3dTiltProjection = {};    // +0x35
     void *m_pMusicNameTexture = {};      // +0x48
     float m_flSheetPosX = {};            // +0x58
