@@ -62,6 +62,7 @@ datas
 dcmake
 ddeployment
 decodepoint
+demangled
 denable
 deserialisation
 deserialise
