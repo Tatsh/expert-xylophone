@@ -157,6 +157,41 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
     return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];
 }
 
+/** @ghidraAddress 0x76b5c */
+void ResultWindowColetteLayer::renderSpriteInstanceFromSlot(int nSlot,
+                                                            const S_VECTOR2 &position,
+                                                            const S_VECTOR2 &extent,
+                                                            unsigned int nAlpha) {
+    if (nSlot < 0 || nSlot >= kSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+
+    // Map the whole used image within its power-of-two allocation.
+    const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
+                               static_cast<float>(pTexture->GetAllocWidth()),
+                           static_cast<float>(pTexture->GetImageHeight()) /
+                               static_cast<float>(pTexture->GetAllocHeight())};
+    const S_VECTOR2 anchor{extent.x * 0.5f, extent.y * 0.5f};
+    appendSpriteToSlot(nSlot,
+                       position,
+                       anchor,
+                       extent,
+                       S_VECTOR2{0.0f, 0.0f},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       0xff,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x7ac58 */
 void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
                                                   const S_VECTOR2 &position,

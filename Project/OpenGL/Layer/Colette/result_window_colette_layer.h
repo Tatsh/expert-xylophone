@@ -72,6 +72,23 @@ public:
 
 private:
     /**
+     * @brief Draws a slot's whole bound texture as one quad, at half the given extent.
+     *
+     * Reads the slot instancer's bound texture, derives its UV size from the used-image over
+     * allocated dimensions, and appends a sprite at @p position anchored at half @p extent with a
+     * size of @p extent, fully opaque at the given alpha.
+     * @param nSlot The slot index (0 through 7).
+     * @param position The sprite's world position.
+     * @param extent The sprite's pixel size; its half is used as the anchor.
+     * @param nAlpha The sprite's alpha.
+     * @ghidraAddress 0x76b5c
+     */
+    void renderSpriteInstanceFromSlot(int nSlot,
+                                      const S_VECTOR2 &position,
+                                      const S_VECTOR2 &extent,
+                                      unsigned int nAlpha);
+
+    /**
      * @brief Appends one sprite quad to a slot's sprite instancer.
      *
      * When the slot index is in range, the slot's instancer exists, and it is not already full,
