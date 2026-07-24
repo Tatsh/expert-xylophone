@@ -253,6 +253,7 @@ winget
 wiswa
 wiswa's
 worktree
+xorshift
 yarnrc
 yomi
 yomigana
