@@ -1,6 +1,6 @@
 /**
  * @file
- * The 2D polygon-mesh "trail" (ribbon) descriptor and its initialiser.
+ * The 2D polygon-mesh "trail" (ribbon), @c Polygon2dTrail.
  */
 
 #pragma once
@@ -15,9 +15,19 @@ class C_DRAW_POLYGON_2D;
  * @brief A polygon-mesh trail (a ribbon strip that follows a moving point).
  *
  * Holds the strip's vertex list, its cached total length, and the mesh node that draws it. The
- * trailing @c // +0xNN comments document the original member offsets for reference only.
+ * trailing @c // +0xNN comments document the original member offsets for reference only. The vertex
+ * list and count are populated by the owner (a sprite-set state block) before @c Init runs.
  */
-struct Polygon2dTrail {
+class Polygon2dTrail {
+public:
+    /**
+     * @brief Builds the trail's mesh: creates the polygon-mesh node, registers it, seeds every
+     * vertex to the strip's first point (white, zero alpha), and caches the strip's total length.
+     * @ghidraAddress 0x11c744
+     */
+    void Init();
+
+private:
     // +0x00..+0x08: descriptor state preceding the cached length, still being worked out.
     unsigned char m_aReserved00[0xc] = {}; // +0x00
     float m_flTotalLength = {};            // +0x0c: the cached total length of the strip.
@@ -29,14 +39,6 @@ struct Polygon2dTrail {
     S_VECTOR2 *m_pVertices = {};         // +0x20: the strip vertex positions.
     ne::C_DRAW_POLYGON_2D *m_pMesh = {}; // +0x28: the mesh node that draws the strip.
 };
-
-/**
- * @brief Builds a trail's mesh: creates the polygon-mesh node, registers it, seeds every vertex to
- * the strip's first point (white, zero alpha), and caches the strip's total length.
- * @param pTrail The trail descriptor to initialise.
- * @ghidraAddress 0x11c744
- */
-void InitPolygon2dTrail(Polygon2dTrail *pTrail);
 
 // code: language=C++
 // kate: hl C++;
