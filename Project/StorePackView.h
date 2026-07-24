@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0xfebd8 (getter)
  * @ghidraAddress 0xfec38 (setter)
  */
-@property(nonatomic, assign, getter=isPurchased) BOOL purchased;
+@property(nonatomic, assign, getter=isPurchased, setter=setIsPurchased:) BOOL purchased;
 
 /**
  * @brief Sets the tile background image on @c backGroundImageView.

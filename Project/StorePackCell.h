@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0xf5528 (getter)
  * @ghidraAddress 0xf5588 (setter)
  */
-@property(nonatomic, assign, getter=isPurchased) BOOL purchased;
+@property(nonatomic, assign, getter=isPurchased, setter=setIsPurchased:) BOOL purchased;
 
 /**
  * @brief Sets the cell background image on @c bgView.

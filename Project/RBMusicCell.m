@@ -181,6 +181,16 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     return self;
 }
 
+- (void)prepareForReuse {
+    /** @ghidraAddress 0xbaeec */
+    [super prepareForReuse];
+    self.artworkImageView.image = nil;
+    self.titleLabel.text = nil;
+    self.artistLabel.text = nil;
+    self.addButton.hidden = YES;
+    self.removeButton.hidden = YES;
+}
+
 #pragma mark View setup
 
 - (void)SetupView {

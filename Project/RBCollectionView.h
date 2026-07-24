@@ -39,6 +39,22 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)didLayoutSubviews:(RBCollectionView *)collectionView;
 
+/**
+ * @brief Forwarded from the collection view's @c -touchesBegan:withEvent: after the inherited pass.
+ * @param touches The touches that began.
+ * @param event The owning event.
+ * @ghidraAddress 0x9d730
+ */
+- (void)touchesBeganFromRBCollectionView:(NSSet *)touches withEvent:(nullable UIEvent *)event;
+
+/**
+ * @brief Forwarded from the collection view's @c -touchesEnded:withEvent: after the inherited pass.
+ * @param touches The touches that ended.
+ * @param event The owning event.
+ * @ghidraAddress 0x9d874
+ */
+- (void)touchesEndedFromRBCollectionView:(NSSet *)touches withEvent:(nullable UIEvent *)event;
+
 @end
 
 /**

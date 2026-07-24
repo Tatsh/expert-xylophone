@@ -233,8 +233,8 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
 }
 
 /** @ghidraAddress 0xfec38 */
-- (void)setPurchased:(BOOL)purchased {
-    self.purchasedButton.hidden = !purchased;
+- (void)setIsPurchased:(BOOL)isPurchased {
+    self.purchasedButton.hidden = !isPurchased;
 }
 
 /** @ghidraAddress 0xfec94 */

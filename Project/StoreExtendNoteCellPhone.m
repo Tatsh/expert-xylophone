@@ -172,8 +172,8 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
 }
 
 /** @ghidraAddress 0x1c1bd8 */
-- (void)setPurchased:(BOOL)purchased {
-    self.purchasedLabel.hidden = !purchased;
+- (void)setIsPurchased:(BOOL)isPurchased {
+    self.purchasedLabel.hidden = !isPurchased;
 }
 
 /** @ghidraAddress 0x1c1fa0 */

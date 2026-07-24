@@ -142,8 +142,8 @@ static const UIViewAutoresizing kIconSpAutoresizing =
 }
 
 /** @ghidraAddress 0xf5588 */
-- (void)setPurchased:(BOOL)purchased {
-    self.labelPurchased.hidden = !purchased;
+- (void)setIsPurchased:(BOOL)isPurchased {
+    self.labelPurchased.hidden = !isPurchased;
 }
 
 /** @ghidraAddress 0xf5898 */

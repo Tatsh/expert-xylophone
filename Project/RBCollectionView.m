@@ -22,4 +22,22 @@
     }
 }
 
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x9d730 */
+    [super touchesBegan:touches withEvent:event];
+    if ([self.customDelegate
+            respondsToSelector:@selector(touchesBeganFromRBCollectionView:withEvent:)]) {
+        [self.customDelegate touchesBeganFromRBCollectionView:touches withEvent:event];
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x9d874 */
+    [super touchesEnded:touches withEvent:event];
+    if ([self.customDelegate
+            respondsToSelector:@selector(touchesEndedFromRBCollectionView:withEvent:)]) {
+        [self.customDelegate touchesEndedFromRBCollectionView:touches withEvent:event];
+    }
+}
+
 @end

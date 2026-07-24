@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1c1b78 (getter)
  * @ghidraAddress 0x1c1bd8 (setter)
  */
-@property(nonatomic, assign, getter=isPurchased) BOOL purchased;
+@property(nonatomic, assign, getter=isPurchased, setter=setIsPurchased:) BOOL purchased;
 
 /**
  * @brief Populates the cell's labels and "new" badge from the given extend-note item.
