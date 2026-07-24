@@ -150,3 +150,64 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
                        nIntensity,
                        nAlpha);
 }
+
+/** @ghidraAddress 0x126b78 */
+void LimelightResultLayer::EmitTexturedPart(unsigned long nSlot,
+                                            const S_VECTOR2 &position,
+                                            const S_VECTOR2 &size,
+                                            unsigned int nAlpha) {
+    if (nSlot >= kSpriteSlotCount || m_apSprites[nSlot] == nullptr) {
+        return;
+    }
+    ne::C_TEXTURE *pTexture = m_apSprites[nSlot]->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+    // The whole used image mapped within its power-of-two allocation.
+    const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
+                               static_cast<float>(pTexture->GetAllocWidth()),
+                           static_cast<float>(pTexture->GetImageHeight()) /
+                               static_cast<float>(pTexture->GetAllocHeight())};
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{0.0f, 0.0f},
+                       size,
+                       S_VECTOR2{0.0f, 0.0f},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       static_cast<unsigned int>(nSlot),
+                       0xff,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x126c34 */
+void LimelightResultLayer::EmitAutoUvPart(unsigned long nSlot,
+                                          const S_VECTOR2 &position,
+                                          unsigned int nBaseAlpha) {
+    if (nSlot >= kSpriteSlotCount || m_apSprites[nSlot] == nullptr) {
+        return;
+    }
+    ne::C_TEXTURE *pTexture = m_apSprites[nSlot]->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flScale = pTexture->GetScale();
+    // The pixel size is the used image over its scale; the UV rectangle is the used fraction of the
+    // power-of-two allocation.
+    const S_VECTOR2 size{flImageWidth / flScale, flImageHeight / flScale};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    const auto nAlpha = static_cast<unsigned int>(static_cast<float>(nBaseAlpha) * m_flBaseScale);
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{0.0f, 0.0f},
+                       size,
+                       S_VECTOR2{0.0f, 0.0f},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       static_cast<unsigned int>(nSlot),
+                       static_cast<unsigned int>(m_nDefaultAlpha),
+                       nAlpha);
+}

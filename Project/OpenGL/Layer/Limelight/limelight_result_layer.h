@@ -79,6 +79,31 @@ public:
                         const S_VECTOR2 &position,
                         unsigned int nAlpha,
                         int bShadowPass);
+    /**
+     * @brief Emits one part sprite drawing a slot's whole bound texture at the given size.
+     *
+     * The texture's used-image fraction of its power-of-two allocation becomes the sprite's UV
+     * rectangle. A no-op when the slot is out of range, empty, or unbound.
+     * @param nSlot The instancer slot (0 through 7).
+     * @param position The sprite's world position.
+     * @param size The sprite's pixel size.
+     * @param nAlpha The sprite's alpha.
+     * @ghidraAddress 0x126b78
+     */
+    void EmitTexturedPart(unsigned long nSlot,
+                          const S_VECTOR2 &position,
+                          const S_VECTOR2 &size,
+                          unsigned int nAlpha);
+    /**
+     * @brief Emits one part sprite from a slot's bound texture, deriving both the pixel size (the
+     *        texture's used size over its scale) and the UV rectangle (the used fraction of the
+     *        allocation), and scaling the alpha by the layer's fade factor.
+     * @param nSlot The instancer slot (0 through 7).
+     * @param position The sprite's world position.
+     * @param nBaseAlpha The base alpha, scaled by the layer fade.
+     * @ghidraAddress 0x126c34
+     */
+    void EmitAutoUvPart(unsigned long nSlot, const S_VECTOR2 &position, unsigned int nBaseAlpha);
 
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
