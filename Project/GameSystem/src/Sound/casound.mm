@@ -32,6 +32,14 @@ caSource::~caSource() {
     delete[] static_cast<unsigned char *>(m_pBuffer);
 }
 
+/** @ghidraAddress 0x4d368 */
+int caSource::FreeBuffer() {
+    delete[] static_cast<unsigned char *>(m_pBuffer);
+    m_pBuffer = nullptr;
+    m_dwBufferSize = 0;
+    return 1;
+}
+
 /** @ghidraAddress 0x4d3d0 */
 int caSource::LoadFromPath(const char *szPath, bool bLoop) {
     // Build a file URL from the path and load through it; a path that does not form a URL fails.

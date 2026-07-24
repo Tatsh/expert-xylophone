@@ -955,7 +955,7 @@ constexpr double kResumeFadeInTime = 0.3;
         return;
     }
     for (int channel = 0; channel < kVoiceChannelCount; ++channel) {
-        sePlayer->SetMasterVoiceParameter();
+        sePlayer->SetMasterVoiceParameter(seVolumeValue);
     }
 }
 

@@ -118,6 +118,16 @@ public:
     unsigned int StopAndClearVoice(unsigned int hVoice);
 
     /**
+     * @brief Detaches @p pSource from every voice that currently references it.
+     *
+     * Clears the bound-source pointer (leaving the voice state untouched) so no active voice reads
+     * the buffer's PCM data after it is freed. Called before a sound's data is released.
+     * @param pSource The sound being freed.
+     * @ghidraAddress 0x4b3b0
+     */
+    void ClearVoicesUsingBuffer(caSource *pSource);
+
+    /**
      * @brief Installs the per-voice render callback on the mixer AudioUnit for voice @p nBus, once.
      *
      * The callback (@c RenderVoiceAudioCallback) is bound with the voice as its reference so the
@@ -140,11 +150,36 @@ public:
     bool ApplyVoicePanParam(int nVolume, int nBus);
 
     /**
+     * @brief Sets the master output gain to the volume-table entry @p nVolume.
+     *
+     * A thin forwarder to @c ApplyVoicePanParam on bus 0, which the spatial mixer treats as the
+     * master output-scope gain.
+     * @param nVolume The gain-table index.
+     * @ghidraAddress 0x4afbc
+     */
+    void SetAllVolume(int nVolume);
+
+    /**
      * @brief Builds the AUGraph: a 3D spatial mixer feeding the RemoteIO output unit.
      * @return @c true when every Core Audio call succeeded.
      * @ghidraAddress 0x4acd0
      */
     bool BuildAudioUnitGraph();
+    /**
+     * @brief Builds the graph and, if that succeeds, configures it for @p nVoiceCount buses.
+     * @param nVoiceCount The number of mixer buses/voices.
+     * @return @c true when the graph both built and configured, @c false otherwise.
+     * @ghidraAddress 0x4ac94
+     */
+    bool GraphSetup(int nVoiceCount);
+
+    /**
+     * @brief Tears the mixer down: stops and disposes the AUGraph, then deletes every voice slot and
+     *        the voice array.
+     * @ghidraAddress 0x4affc
+     */
+    void Terminate();
+
     /**
      * @brief Sizes the mixer to @p nVoiceCount buses, allocates the voice slots, sets the output
      *        stream format, and initialises the graph.

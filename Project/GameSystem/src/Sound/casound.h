@@ -86,6 +86,17 @@ public:
      */
     int ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pReadPos);
 
+    /**
+     * @brief Frees the decoded PCM data block and clears the buffer pointer and size, leaving the
+     *        object reusable.
+     *
+     * Distinct from the destructor: the destructor only releases the block, whereas this also zeroes
+     * the pointer and size so the source can be reloaded.
+     * @return Always @c 1.
+     * @ghidraAddress 0x4d368
+     */
+    int FreeBuffer();
+
     /** @brief The source sample rate, in hertz. */
     double GetSampleRate() const {
         return m_dSampleRate;

@@ -131,6 +131,16 @@ unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) 
     return kInvalidHandle;
 }
 
+/** @ghidraAddress 0x4b3b0 */
+void caCAMixer::ClearVoicesUsingBuffer(caSource *pSource) {
+    // Drop the source pointer from every voice that holds it; the voice state is left untouched.
+    for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
+        if (m_pVoiceArray[nBus]->m_pSource == pSource) {
+            m_pVoiceArray[nBus]->m_pSource = nullptr;
+        }
+    }
+}
+
 /** @ghidraAddress 0x4b174 */
 void caCAMixer::InstallVoiceRenderCallback(int nBus) {
     if (nBus >= m_nVoiceCount) {
@@ -259,6 +269,34 @@ bool caCAMixer::BuildAudioUnitGraph() {
     return AUGraphNodeInfo(m_pAUGraph, m_nMixerNode, nullptr, &m_pMixerUnit) == noErr;
 }
 
+/** @ghidraAddress 0x4ac94 */
+bool caCAMixer::GraphSetup(int nVoiceCount) {
+    return BuildAudioUnitGraph() && ConfigureAudioUnitGraph(nVoiceCount);
+}
+
+/** @ghidraAddress 0x4affc */
+void caCAMixer::Terminate() {
+    // Stop the graph if it is running, then dispose it; a disposal failure aborts the teardown.
+    if (m_bIsRunning && AUGraphStop(m_pAUGraph) == noErr) {
+        m_bIsRunning = false;
+    }
+    if (DisposeAUGraph(m_pAUGraph) != noErr) {
+        return;
+    }
+    if (m_pVoiceArray == nullptr) {
+        return;
+    }
+    // Delete each voice slot (clearing its bound source first), re-reading the count and array after
+    // each delete to stay safe against re-entrant teardown, then free the array itself.
+    for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
+        caVoice *pVoice = m_pVoiceArray[nBus];
+        pVoice->m_pSource = nullptr;
+        delete pVoice;
+    }
+    delete[] m_pVoiceArray;
+    m_pVoiceArray = nullptr;
+}
+
 /** @ghidraAddress 0x4adb4 */
 bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
     if (nVoiceCount >= kMaxVoiceCount) {
@@ -329,6 +367,11 @@ void caCAMixer::Start() {
         m_bIsRunning = true;
     }
     ApplyVoicePanParam(kDefaultMasterGainIndex, 0);
+}
+
+/** @ghidraAddress 0x4afbc */
+void caCAMixer::SetAllVolume(int nVolume) {
+    ApplyVoicePanParam(nVolume, 0);
 }
 
 /** @ghidraAddress 0x4afc4 */

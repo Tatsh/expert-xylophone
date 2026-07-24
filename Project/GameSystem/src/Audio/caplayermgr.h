@@ -55,15 +55,18 @@ public:
      */
     int LoadAndCacheSoundForKey(const char *szPath, NSString *callName, bool bLoop);
     /**
-     * @brief Frees the sound buffer at the given index.
+     * @brief Frees the PCM data of the sound at @p index, detaching it from any active voice first.
+     * @param index The registered sound id.
+     * @return @c 1 when a sound was freed, @c 0 when the index is out of range or the slot is empty.
      * @ghidraAddress 0x4b870
      */
-    void FreeSoundDataByIndex(unsigned int index);
+    int FreeSoundDataByIndex(int index);
     /**
-     * @brief Frees the sound buffer registered under a call name.
+     * @brief Frees the sound registered under a call name and removes its dictionary entry.
+     * @return @c 1 when a cached sound was found and freed, @c 0 otherwise.
      * @ghidraAddress 0x4b8cc
      */
-    void FreeSoundForKey(NSString *callName);
+    int FreeSoundForKey(NSString *callName);
     /**
      * @brief Plays the sound at the given index on the first free voice, returning its handle.
      * @param index The registered sound id.
@@ -112,10 +115,11 @@ public:
      */
     int GetVoiceStateByHandle(unsigned int handle);
     /**
-     * @brief Sets the mixer's master voice gain.
+     * @brief Sets the mixer's master voice gain to the given volume-table index.
+     * @param volume The gain-table index applied to every voice.
      * @ghidraAddress 0x4bbcc
      */
-    void SetMasterVoiceParameter();
+    void SetMasterVoiceParameter(int volume);
 
 private:
     // Registers @p pSource in a free slot of the sound array and returns its slot index (sound id).

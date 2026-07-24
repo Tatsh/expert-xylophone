@@ -34,10 +34,52 @@ unsigned int DecodeVoiceHandle(unsigned int hTagged) {
 
 } // namespace
 
-// The number of extra sound-array slots each grow reserves.
+// The number of extra sound-array slots each grow reserves, and the initial slot count.
 namespace {
-constexpr int kSlotGrowStep = 0x14;
+constexpr int kSlotGrowStep = 20;
+constexpr int kInitialSlotCount = 20;
 } // namespace
+
+/** @ghidraAddress 0x4b580 */
+void caPlayerMgr::InitializeAudioContext(int channelCount) {
+    // Build and start the mixer graph.
+    m_pMixer = new caCAMixer();
+    m_pMixer->GraphSetup(channelCount);
+    m_pMixer->Start();
+    // Create the call-name dictionary and the fixed-size sound-buffer slot array.
+    m_pSourceDict = [[NSMutableDictionary alloc] init];
+    m_nSourceCount = kInitialSlotCount;
+    m_pSourceArray = new caSource *[kInitialSlotCount]();
+}
+
+/** @ghidraAddress 0x4b4a8 */
+void caPlayerMgr::DestroyAudioContext() {
+    // Tear down the mixer graph.
+    if (m_pMixer != nullptr) {
+        m_pMixer->Terminate();
+        delete m_pMixer;
+        m_pMixer = nullptr;
+    }
+    // Free every registered sound, re-reading the array and count after each delete to match the
+    // binary's re-entrancy-safe loop, then free the slot array.
+    for (int nSlot = 0; nSlot < m_nSourceCount; ++nSlot) {
+        caSource *pSource = m_pSourceArray[nSlot];
+        if (pSource != nullptr) {
+            pSource->FreeBuffer();
+            delete pSource;
+            m_pSourceArray[nSlot] = nullptr;
+        }
+    }
+    delete[] m_pSourceArray;
+    m_pSourceArray = nullptr;
+    // Drop the dictionary reference (ARC releases it).
+    m_pSourceDict = nil;
+}
+
+/** @ghidraAddress 0x4b57c */
+void caPlayerMgr::DestroyAudioContextWrapper() {
+    DestroyAudioContext();
+}
 
 /** @ghidraAddress 0x4bbd4 */
 unsigned int caPlayerMgr::FindOrGrowFreeSlot() {
@@ -110,6 +152,64 @@ unsigned int caPlayerMgr::PlaySoundOnVoice(int resourceId, int busId, int volume
         return kInvalidHandle;
     }
     return m_pMixer->EnqueueVoiceBuffer(pSource, busId, volume) | kOneShotSourceTag;
+}
+
+/** @ghidraAddress 0x4bac0 */
+unsigned int caPlayerMgr::PlaySoundForKeyOnBus(NSString *callName, int busId, int volume) {
+    NSNumber *pId = m_pSourceDict[callName];
+    if (pId == nil) {
+        return kInvalidHandle;
+    }
+    return PlaySoundOnVoice(pId.intValue, busId, volume);
+}
+
+/** @ghidraAddress 0x4b718 */
+int caPlayerMgr::LoadAndCacheSoundForKey(const char *szPath, NSString *callName, bool bLoop) {
+    // Skip work if the path is missing or the key is already cached.
+    if (szPath == nullptr || m_pSourceDict[callName] != nil) {
+        return 0;
+    }
+    auto *pSource = new caSource();
+    if (pSource->LoadFromPath(szPath, bLoop) != 0) {
+        const unsigned int nId = RegisterSource(pSource);
+        m_pSourceDict[callName] = @(static_cast<int>(nId));
+        return 1;
+    }
+    delete pSource;
+    return 0;
+}
+
+/** @ghidraAddress 0x4b870 */
+int caPlayerMgr::FreeSoundDataByIndex(int index) {
+    if (index < 0 || index >= m_nSourceCount) {
+        return 0;
+    }
+    caSource *pSource = m_pSourceArray[index];
+    if (pSource == nullptr) {
+        return 0;
+    }
+    // Detach the buffer from any active voice before releasing its PCM data.
+    m_pMixer->ClearVoicesUsingBuffer(pSource);
+    pSource->FreeBuffer();
+    return 1;
+}
+
+/** @ghidraAddress 0x4b8cc */
+int caPlayerMgr::FreeSoundForKey(NSString *callName) {
+    NSNumber *pId = m_pSourceDict[callName];
+    if (pId == nil) {
+        return 0;
+    }
+    if (FreeSoundDataByIndex(pId.intValue) != 0) {
+        [m_pSourceDict removeObjectForKey:callName];
+        return 1;
+    }
+    return 0;
+}
+
+/** @ghidraAddress 0x4bbcc */
+void caPlayerMgr::SetMasterVoiceParameter(int volume) {
+    m_pMixer->SetAllVolume(volume);
 }
 
 /** @ghidraAddress 0x4b61c */
