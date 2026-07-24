@@ -42,6 +42,23 @@ constexpr int kHandleBusShift = 16;
 // The failure sentinel returned when a voice cannot be bound.
 constexpr unsigned int kInvalidHandle = 0xffffffff;
 
+// The largest mixer bus count the graph configuration accepts.
+constexpr int kMaxVoiceCount = 0x1000;
+
+// The output stream format: 32 kHz stereo 16-bit linear PCM. The binary stores the format flags as
+// the literal 0xc2c (signed integer | packed | non-interleaved, with the sample-fraction field the
+// 3D mixer's RemoteIO input expects); it is used verbatim.
+constexpr double kOutputSampleRate = 32000.0;
+constexpr int kOutputBitsPerChannel = 16;
+constexpr int kOutputChannels = 2;
+constexpr int kOutputBytesPerFrame = 4;
+constexpr UInt32 kOutputFormatFlags = 0xc2c;
+
+// The per-voice element-count and stream-format AudioUnit properties, and the spatial-mixer gain
+// parameter reset to zero during configuration.
+constexpr AudioUnitPropertyID kElementCountProperty = kAudioUnitProperty_ElementCount;
+constexpr AudioUnitParameterID kMixerGainParamReset = 3;
+
 } // namespace
 
 /** @ghidraAddress 0x4b084 */
@@ -191,4 +208,94 @@ unsigned int caCAMixer::StopAndClearVoice(unsigned int hVoice) {
         pVoice->m_pSource = nullptr;
     }
     return 1;
+}
+
+/** @ghidraAddress 0x4acd0 */
+bool caCAMixer::BuildAudioUnitGraph() {
+    // The RemoteIO output unit and the embedded 3D spatial mixer, both Apple components.
+    AudioComponentDescription outputDesc = {};
+    outputDesc.componentType = kAudioUnitType_Output;
+    outputDesc.componentSubType = kAudioUnitSubType_RemoteIO;
+    outputDesc.componentManufacturer = kAudioUnitManufacturer_Apple;
+    AudioComponentDescription mixerDesc = {};
+    mixerDesc.componentType = kAudioUnitType_Mixer;
+    mixerDesc.componentSubType = kAudioUnitSubType_AU3DMixerEmbedded;
+    mixerDesc.componentManufacturer = kAudioUnitManufacturer_Apple;
+
+    if (NewAUGraph(&m_pAUGraph) != noErr) {
+        return false;
+    }
+    if (AUGraphAddNode(m_pAUGraph, &outputDesc, &m_nOutputNode) != noErr ||
+        AUGraphAddNode(m_pAUGraph, &mixerDesc, &m_nMixerNode) != noErr) {
+        return false;
+    }
+    // Route the mixer output into the output unit's input, then open the graph and fetch the units.
+    if (AUGraphConnectNodeInput(m_pAUGraph, m_nMixerNode, 0, m_nOutputNode, 0) != noErr) {
+        return false;
+    }
+    if (AUGraphOpen(m_pAUGraph) != noErr ||
+        AUGraphNodeInfo(m_pAUGraph, m_nOutputNode, nullptr, &m_pOutputUnit) != noErr) {
+        return false;
+    }
+    return AUGraphNodeInfo(m_pAUGraph, m_nMixerNode, nullptr, &m_pMixerUnit) == noErr;
+}
+
+/** @ghidraAddress 0x4adb4 */
+bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
+    if (nVoiceCount >= kMaxVoiceCount) {
+        return false;
+    }
+
+    // Size the mixer's input element (bus) count.
+    UInt32 nElementCount = static_cast<UInt32>(nVoiceCount);
+    if (AudioUnitSetProperty(m_pMixerUnit,
+                             kElementCountProperty,
+                             kAudioUnitScope_Input,
+                             0,
+                             &nElementCount,
+                             sizeof(nElementCount)) != noErr) {
+        m_nVoiceCount = 0;
+        return false;
+    }
+    m_nVoiceCount = nVoiceCount;
+
+    // Allocate the per-bus voice slots, each starting free with no source.
+    m_pVoiceArray = new caVoice *[nVoiceCount];
+    for (int nBus = 0; nBus < nVoiceCount; ++nBus) {
+        auto *pVoice = new caVoice();
+        pVoice->m_pSource = nullptr;
+        pVoice->m_bCallbackBound = false;
+        pVoice->m_wGeneration = 0;
+        pVoice->m_nState = caVoice::kStateFree;
+        m_pVoiceArray[nBus] = pVoice;
+    }
+
+    // Set the RemoteIO output format to 32 kHz stereo 16-bit LPCM.
+    AudioStreamBasicDescription outputAsbd = {};
+    outputAsbd.mSampleRate = kOutputSampleRate;
+    outputAsbd.mFormatID = kAudioFormatLinearPCM;
+    outputAsbd.mFormatFlags = kOutputFormatFlags;
+    outputAsbd.mBytesPerPacket = kOutputBytesPerFrame;
+    outputAsbd.mFramesPerPacket = 1;
+    outputAsbd.mBytesPerFrame = kOutputBytesPerFrame;
+    outputAsbd.mChannelsPerFrame = kOutputChannels;
+    outputAsbd.mBitsPerChannel = kOutputBitsPerChannel;
+    if (AudioUnitSetProperty(m_pOutputUnit,
+                             kAudioUnitProperty_StreamFormat,
+                             kAudioUnitScope_Input,
+                             0,
+                             &outputAsbd,
+                             sizeof(outputAsbd)) != noErr) {
+        return false;
+    }
+
+    // Reset the spatial-mixer master gain, then update and initialise the graph.
+    if (AudioUnitSetParameter(
+            m_pMixerUnit, kMixerGainParamReset, kAudioUnitScope_Output, 0, 0, 0) != noErr) {
+        return false;
+    }
+    if (AUGraphUpdate(m_pAUGraph, nullptr) != noErr || AUGraphInitialize(m_pAUGraph) != noErr) {
+        return false;
+    }
+    return AUGraphUpdate(m_pAUGraph, nullptr) == noErr;
 }

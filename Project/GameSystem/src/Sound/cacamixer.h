@@ -64,14 +64,6 @@ public:
     unsigned int EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVolume);
 
     /**
-     * @brief Installs the per-voice render callback on the mixer AudioUnit for voice @p nBus, once.
-     *
-     * The callback (@c RenderVoiceAudioCallback) is bound with the voice as its reference so the
-     * render loop can pull PCM for it; it is installed only once per voice.
-     * @param nBus The voice/bus index.
-     * @ghidraAddress 0x4b174
-     */
-    /**
      * @brief Binds @p pSource to the first free or finished voice and prepares it, returning its
      *        play handle, or @c 0xffffffff when every voice is busy.
      * @param pSource The sound to bind.
@@ -112,6 +104,14 @@ public:
      */
     unsigned int StopAndClearVoice(unsigned int hVoice);
 
+    /**
+     * @brief Installs the per-voice render callback on the mixer AudioUnit for voice @p nBus, once.
+     *
+     * The callback (@c RenderVoiceAudioCallback) is bound with the voice as its reference so the
+     * render loop can pull PCM for it; it is installed only once per voice.
+     * @param nBus The voice/bus index.
+     * @ghidraAddress 0x4b174
+     */
     void InstallVoiceRenderCallback(int nBus);
 
     /**
@@ -126,16 +126,35 @@ public:
      */
     bool ApplyVoicePanParam(int nVolume, int nBus);
 
+    /**
+     * @brief Builds the AUGraph: a 3D spatial mixer feeding the RemoteIO output unit.
+     * @return @c true when every Core Audio call succeeded.
+     * @ghidraAddress 0x4acd0
+     */
+    bool BuildAudioUnitGraph();
+    /**
+     * @brief Sizes the mixer to @p nVoiceCount buses, allocates the voice slots, sets the output
+     *        stream format, and initialises the graph.
+     * @param nVoiceCount The number of mixer buses/voices (must be below 4096).
+     * @return @c true on success, @c false on an oversized count or a Core Audio failure.
+     * @ghidraAddress 0x4adb4
+     */
+    bool ConfigureAudioUnitGraph(int nVoiceCount);
+
 private:
     // Resolves a raw play handle to its live voice (index in the high bits, generation in the low
     // 16), or @c nullptr when the index is out of range or the generation is stale.
     caVoice *ResolveVoice(unsigned int hVoice);
 
-    unsigned char m_aReserved00[0x18] = {}; // +0x00
-    AudioUnit m_pMixerUnit = {};            // +0x18 the spatial-mixer AudioUnit
-    unsigned char m_aReserved20[4] = {};    // +0x20
-    int m_nVoiceCount = {};                 // +0x24 the number of voices/buses
-    caVoice **m_pVoiceArray = {};           // +0x28 the per-bus voice slots
+    AUGraph m_pAUGraph = {};             // +0x00 the Core Audio processing graph
+    AUNode m_nOutputNode = {};           // +0x08 the RemoteIO output node
+    AUNode m_nMixerNode = {};            // +0x0c the 3D spatial-mixer node
+    AudioUnit m_pOutputUnit = {};        // +0x10 the RemoteIO output AudioUnit
+    AudioUnit m_pMixerUnit = {};         // +0x18 the spatial-mixer AudioUnit
+    bool m_bIsRunning = {};              // +0x20 whether the graph is started
+    unsigned char m_aReserved21[3] = {}; // +0x21
+    int m_nVoiceCount = {};              // +0x24 the number of voices/buses
+    caVoice **m_pVoiceArray = {};        // +0x28 the per-bus voice slots
 };
 
 // code: language=Objective-C++
