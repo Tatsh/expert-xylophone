@@ -7,10 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+class caCAMixer;
+class caSource;
+
 /**
  * The one-shot voice-player subsystem, reached through @c AudioManager's @c sePlayer ivar. The
  * former free engine functions that took the @c caPlayerMgr as their first argument are its
- * instance methods.
+ * instance methods. Only the members the reconstructed methods touch are modelled; the 32-bit
+ * offset comments are documentation only.
  */
 class caPlayerMgr {
 public:
@@ -110,6 +114,12 @@ public:
      * @ghidraAddress 0x4bbcc
      */
     void SetMasterVoiceParameter();
+
+private:
+    caCAMixer *m_pMixer = {};            // +0x00 the Core Audio voice mixer
+    unsigned char m_aReserved08[8] = {}; // +0x08 the name-to-id dictionary (not yet modelled)
+    caSource **m_pSourceArray = {};      // +0x10 the registered sound buffers, indexed by id
+    int m_nSourceCount = {};             // +0x18 the number of registered sounds
 };
 
 // code: language=Objective-C++
