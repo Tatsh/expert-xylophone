@@ -33,6 +33,7 @@ bsky
 bunner
 byref
 bzero
+cacamixer
 caeagl
 calcel
 caplayermgr

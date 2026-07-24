@@ -57,6 +57,15 @@ public:
      */
     int ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pReadPos);
 
+    /** @brief The source sample rate, in hertz. */
+    double GetSampleRate() const {
+        return m_dSampleRate;
+    }
+    /** @brief The number of channels in the decoded PCM. */
+    int GetChannelCount() const {
+        return m_nChannelCount;
+    }
+
 private:
     double m_dSampleRate = {}; // +0x00 the source sample rate, in hertz
     int m_nChannelCount = {};  // +0x08 the number of channels
