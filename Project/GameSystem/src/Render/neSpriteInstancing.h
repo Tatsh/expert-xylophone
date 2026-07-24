@@ -47,6 +47,18 @@ public:
     void Render() override;
 
     /**
+     * @brief Draws the batch as a world-space sprite set composed under the current model node's
+     * camera matrix (the @c CreateWorldSpriteBatch node's render path).
+     *
+     * Like @c Render's slow path, every live sprite carries its own transform matrix through the
+     * palette-matrix slot, but each is composed with the shared world*camera matrix (the current
+     * model node's view matrix times the parent's world matrix) rather than the parent world
+     * matrix alone, and there is no axis-aligned fast path.
+     * @ghidraAddress 0x30dc0
+     */
+    void RenderWorldSpace();
+
+    /**
      * @brief The number of sprites the node currently draws.
      */
     int GetSpriteCount() const {
@@ -104,7 +116,11 @@ public:
 
     /**
      * @brief The texture the batch currently draws with, or @c nullptr when it has none.
+     *
+     * The compiler emits this getter twice: inlined at @c 0x31820 and as an out-of-line copy at
+     * @c 0x307f0 (the copy the sprite-part emitter calls); both collapse to this one accessor.
      * @ghidraAddress 0x31820
+     * @ghidraAddress 0x307f0
      */
     C_TEXTURE *GetBoundTexture() const {
         return m_pTexture;
@@ -198,11 +214,15 @@ private:
     // array into the vertex scratch; shared by both draw paths.
     void BindPassTexture(neGLESRenderer *pRenderer);
     // The slow path: one instanced draw per sprite, each carrying its own transform matrix through
-    // the palette-matrix slot, flushed in batches of @p nMaxPerBatch. The scratch buffer is the
-    // per-frame @c m_pVertexScratch, cast to the file-private interleaved vertex type.
-    void RenderWithMatrices(neGLESRenderer *pRenderer, void *pScratch, int nMaxPerBatch);
+    // the palette-matrix slot, flushed in batches of @p nMaxPerBatch.
+    void RenderWithMatrices(neGLESRenderer *pRenderer, int nMaxPerBatch);
+    // The shared per-sprite matrix-emit loop for the slow and world-space paths: builds each quad
+    // into the per-frame vertex scratch and its transform, composes it with @p pComposeMatrix, and
+    // flushes a draw every @p nMaxPerBatch sprites.
+    void
+    EmitMatrixSprites(neGLESRenderer *pRenderer, int nMaxPerBatch, const float *pComposeMatrix);
     // The fast path: axis-aligned quads baked in world space and drawn in one indexed call.
-    void RenderAxisAligned(neGLESRenderer *pRenderer, void *pScratch);
+    void RenderAxisAligned(neGLESRenderer *pRenderer);
     // Builds sprite @p nSprite's translation*rotation*scale transform into @p pOutMatrix.
     void BuildSpriteMatrix(int nSprite, float *pOutMatrix);
 

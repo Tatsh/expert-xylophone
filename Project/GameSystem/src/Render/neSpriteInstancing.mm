@@ -5,6 +5,7 @@
 
 #include "matrixmath.h"
 #include "neGLES.h"
+#include "neRenderer.h"
 #include "neTexture.h"
 #import "s_vector2.h"
 
@@ -75,6 +76,11 @@ struct InstancedVertex {
     unsigned char nB = {};
     unsigned char nA = {};
 };
+
+// The byte offsets of the UV and colour attributes within an @c InstancedVertex, passed to the GL
+// texcoord- and colour-pointer calls (the position is at offset 0).
+constexpr int kVertexUvOffset = 8;
+constexpr int kVertexColorOffset = 0xc;
 
 // Packs the four quad corners' UV coordinates and their shared colour. The quad's UV runs from
 // uvOrigin to uvOrigin + uvSize; V is flipped to the texture's top-left origin. The corner order is
@@ -353,7 +359,8 @@ void C_SPRITE_INSTANCING::BindPassTexture(neGLESRenderer *pRenderer) {
     pRenderer->BindTexture2d(m_pTexture->GetGLHandle());
     pRenderer->SetGlClientState(kClientTexCoord, 1);
     auto *pScratch = static_cast<unsigned char *>(m_pVertexScratch);
-    pRenderer->SetTexCoordPointer(pScratch + offsetof(InstancedVertex, nU), kVertexStride);
+    pRenderer->SetTexCoordPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexUvOffset,
+                                  kVertexStride);
     for (int nParam = 0; nParam < kTextureParamCount; ++nParam) {
         UpdateTextureParameterIfChanged(m_pTexture, pRenderer, nParam, m_aTexParams[nParam]);
     }
@@ -392,19 +399,24 @@ void C_SPRITE_INSTANCING::Render() {
     pRenderer->SetBlendFunc(kBlendOne, m_nBlendMode == 0 ? kBlendOneMinusSrcAlpha : kBlendOne);
 
     if (bNeedsMatrix) {
-        RenderWithMatrices(pRenderer, m_pVertexScratch, nMaxPerBatch);
+        RenderWithMatrices(pRenderer, nMaxPerBatch);
     } else {
-        RenderAxisAligned(pRenderer, m_pVertexScratch);
+        RenderAxisAligned(pRenderer);
     }
 }
 
 // The slow path: one draw per sprite carries its own translation*rotation*scale matrix through the
 // palette-matrix slot. Quads are built in local space around the sprite anchor and flushed in
 // batches of nMaxPerBatch.
-void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer,
-                                             void *pScratchRaw,
-                                             int nMaxPerBatch) {
-    auto *pScratch = static_cast<InstancedVertex *>(pScratchRaw);
+void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer, int nMaxPerBatch) {
+    // The screen-space path composes each sprite against the parent's world matrix directly.
+    EmitMatrixSprites(pRenderer, nMaxPerBatch, GetParent()->GetWorldMatrix());
+}
+
+void C_SPRITE_INSTANCING::EmitMatrixSprites(neGLESRenderer *pRenderer,
+                                            int nMaxPerBatch,
+                                            const float *pComposeMatrix) {
+    auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     // Point the fixed vertex/colour/texture arrays into the scratch and enable the arrays the
     // per-instance-matrix path needs (weight and matrix-index arrays plus the palette).
     pRenderer->SetGlEnableState(kEnableMatrixPalette, 1);
@@ -412,8 +424,8 @@ void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer,
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    pRenderer->SetColorPointer(
-        reinterpret_cast<unsigned char *>(pScratch) + offsetof(InstancedVertex, nR), kVertexStride);
+    pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
+                               kVertexStride);
     BindPassTexture(pRenderer);
     pRenderer->BindArrayBuffer(m_dwArrayVbo);
     pRenderer->SetGlClientState(kClientWeight, 1);
@@ -449,11 +461,11 @@ void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer,
                         nAlpha);
 
         // Build the sprite's transform: translate the anchor to the position, applying rotation and
-        // scale about the anchor when present.
+        // scale about the anchor when present, then compose it with the shared matrix.
         float spriteMatrix[16];
         BuildSpriteMatrix(nSprite, spriteMatrix);
         pRenderer->SetCurrentPaletteMatrix(nQueued);
-        ComposeMatrices(spriteMatrix, GetParent()->GetWorldMatrix());
+        ComposeMatrices(spriteMatrix, const_cast<float *>(pComposeMatrix));
         pRenderer->SetMatrixMode(kMatrixModePalette, spriteMatrix);
 
         ++nQueued;
@@ -468,6 +480,39 @@ void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer,
         pRenderer->BindIndexBuffer(m_dwIndexVbo);
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
+}
+
+/** @ghidraAddress 0x30dc0 */
+void C_SPRITE_INSTANCING::RenderWorldSpace() {
+    neGLESRenderer *pRenderer = GetGlRenderer();
+    const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
+    SetMatrixIdentity(GetLocalMatrix());
+
+    // Count the live (non-transparent) sprites; bail if there are none.
+    int nLiveCount = 0;
+    for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
+        if (GetColorAlpha(nSprite) != 0) {
+            ++nLiveCount;
+        }
+    }
+    if (nLiveCount == 0) {
+        return;
+    }
+
+    // Bind the current projection camera and copy its world matrix into this node's, then reset the
+    // render state and select the blend mode.
+    SetCurrentCamera(pRenderer, g_pCurrentProjection);
+    std::memcpy(GetWorldMatrix(), GetParent()->GetWorldMatrix(), sizeof(float) * 16);
+    ResetRenderState(pRenderer);
+    pRenderer->SetBlendFunc(kBlendOne, m_nBlendMode == 0 ? kBlendOneMinusSrcAlpha : kBlendOne);
+
+    // The shared compose matrix is the current model node's camera (view) matrix multiplied by the
+    // parent's world matrix, so every world-space sprite is placed in the camera's frame.
+    float worldCamMatrix[16];
+    std::memcpy(worldCamMatrix, g_pCurrentModelNode->GetViewMatrix(), sizeof(worldCamMatrix));
+    MultiplyMatrixInPlace(worldCamMatrix, GetParent()->GetWorldMatrix());
+
+    EmitMatrixSprites(pRenderer, nMaxPerBatch, worldCamMatrix);
 }
 
 // Builds the per-sprite transform matrix for the slow path: a translation of the anchor to the
@@ -510,8 +555,8 @@ void C_SPRITE_INSTANCING::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
 
 // The fast path: every live sprite is an axis-aligned quad, so world positions are baked straight
 // into the scratch and a single indexed draw covers the whole batch under the node's world matrix.
-void C_SPRITE_INSTANCING::RenderAxisAligned(neGLESRenderer *pRenderer, void *pScratchRaw) {
-    auto *pScratch = static_cast<InstancedVertex *>(pScratchRaw);
+void C_SPRITE_INSTANCING::RenderAxisAligned(neGLESRenderer *pRenderer) {
+    auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     int nQueued = 0;
     for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
         const unsigned int nAlpha = GetColorAlpha(nSprite);
@@ -557,8 +602,8 @@ void C_SPRITE_INSTANCING::RenderAxisAligned(neGLESRenderer *pRenderer, void *pSc
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    pRenderer->SetColorPointer(
-        reinterpret_cast<unsigned char *>(pScratch) + offsetof(InstancedVertex, nR), kVertexStride);
+    pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
+                               kVertexStride);
     BindPassTexture(pRenderer);
     pRenderer->SetGlClientState(kClientWeight, 0);
     pRenderer->SetGlClientState(kClientMatrixIndex, 0);
