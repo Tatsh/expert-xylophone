@@ -36,6 +36,17 @@ public:
     ~C_SPRITE_INSTANCING() override;
 
     /**
+     * @brief Draws every live sprite of the batch (the @c C_RENDER vtable render slot).
+     *
+     * Skips fully-transparent sprites. When any live sprite has a rotation or non-unit scale it
+     * takes the slow path, building a per-sprite transform matrix and submitting one instanced draw
+     * per @c GetMaxSpritesPerBatch sprites; otherwise it takes the fast path, emitting axis-aligned
+     * quads directly and issuing a single indexed draw.
+     * @ghidraAddress 0x2faa8
+     */
+    void Render() override;
+
+    /**
      * @brief The number of sprites the node currently draws.
      */
     int GetSpriteCount() const {
@@ -183,6 +194,18 @@ public:
     void SetSpriteColor(int nIndex, unsigned int nColor);
 
 private:
+    // Binds the batch's texture (or disables texturing) and points the texture-unit's coordinate
+    // array into the vertex scratch; shared by both draw paths.
+    void BindPassTexture(neGLESRenderer *pRenderer);
+    // The slow path: one instanced draw per sprite, each carrying its own transform matrix through
+    // the palette-matrix slot, flushed in batches of @p nMaxPerBatch. The scratch buffer is the
+    // per-frame @c m_pVertexScratch, cast to the file-private interleaved vertex type.
+    void RenderWithMatrices(neGLESRenderer *pRenderer, void *pScratch, int nMaxPerBatch);
+    // The fast path: axis-aligned quads baked in world space and drawn in one indexed call.
+    void RenderAxisAligned(neGLESRenderer *pRenderer, void *pScratch);
+    // Builds sprite @p nSprite's translation*rotation*scale transform into @p pOutMatrix.
+    void BuildSpriteMatrix(int nSprite, float *pOutMatrix);
+
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0
     S_VECTOR2 *m_pSpriteAnchorArray = {};   // +0xe8

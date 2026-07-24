@@ -73,6 +73,25 @@ public:
     }
 
     /**
+     * @brief The node's composed world transform (a column-major 4x4 matrix).
+     *
+     * A render node copies its parent's world matrix into its own and composes each sprite's
+     * transform against it before drawing, so the matrix is exposed mutably.
+     */
+    float *GetWorldMatrix() {
+        return m_mWorldMatrix;
+    }
+
+    /**
+     * @brief The node's local transform (a column-major 4x4 matrix).
+     *
+     * Reset to identity at the start of a draw before the world matrix is composed.
+     */
+    float *GetLocalMatrix() {
+        return m_mLocalMatrix;
+    }
+
+    /**
      * @brief Attach @p pChild as a child of this node.
      *
      * @p pChild is first detached from any current parent, then linked into this node's child list.

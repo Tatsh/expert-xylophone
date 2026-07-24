@@ -161,6 +161,15 @@ public:
      * Read from the renderer's capability block; used to size a skinned mesh's per-bone arrays.
      */
     int GetMaxVertexUnits() const;
+    /**
+     * @brief The maximum number of sprite instances a single instanced draw call may submit.
+     *
+     * Read from the renderer's capability block; the sprite batch flushes a draw once this many
+     * per-instance matrices have been queued.
+     */
+    int GetMaxSpritesPerBatch() const {
+        return m_nMaxSpritesPerBatch;
+    }
 
     /**
      * @brief Enable or disable one engine render capability, skipping the GL call when the cached
@@ -213,7 +222,8 @@ private:
     unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc
     unsigned char m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache
     unsigned char m_aClientStateFlags[0x07] = {}; // +0x208 per-array client-state cache
-    unsigned char m_aReserved20f[0x49] = {};      // +0x20f remainder of the object
+    unsigned char m_aReserved20f[0x45] = {};      // +0x20f
+    int m_nMaxSpritesPerBatch = {};               // +0x254 GL capability: max instances per draw
 };
 
 /**
