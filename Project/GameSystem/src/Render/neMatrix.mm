@@ -350,6 +350,96 @@ float Matrix4x4Determinant(float *pMatrix) {
            pMatrix[7] * pMatrix[2] * pMatrix[9] * pMatrix[12];
 }
 
+/** @ghidraAddress 0x18fe0 */
+float *InvertMatrix4x4(float *pMatrix) {
+    // Adjugate-over-determinant inverse in place. A singular matrix (zero determinant) is returned
+    // unchanged. Pure scalar arithmetic. The shared two-factor products below are the ones the
+    // binary computes once and reuses across the cofactors; they are kept so the floating-point
+    // multiplication grouping matches the binary exactly.
+    const float flDet = Matrix4x4Determinant(pMatrix);
+    if (flDet == 0.0f) {
+        return pMatrix;
+    }
+    const float flInvDet = 1.0f / flDet;
+    const float m0 = pMatrix[0];
+    const float m1 = pMatrix[1];
+    const float m2 = pMatrix[2];
+    const float m3 = pMatrix[3];
+    const float m4 = pMatrix[4];
+    const float m5 = pMatrix[5];
+    const float m6 = pMatrix[6];
+    const float m7 = pMatrix[7];
+    const float m8 = pMatrix[8];
+    const float m9 = pMatrix[9];
+    const float m10 = pMatrix[10];
+    const float m11 = pMatrix[11];
+    const float m12 = pMatrix[12];
+    const float m13 = pMatrix[13];
+    const float m14 = pMatrix[14];
+    const float m15 = pMatrix[15];
+    const float p94 = m9 * m4;
+    const float p138 = m13 * m8;
+    const float p512 = m5 * m12;
+    const float p134 = m13 * m4;
+    const float p58 = m5 * m8;
+    const float p912 = m9 * m12;
+    const float p130 = m13 * m0;
+    const float p81 = m8 * m1;
+    const float p90 = m9 * m0;
+    const float p121 = m12 * m1;
+    const float p50 = m5 * m0;
+    const float p41 = m4 * m1;
+    pMatrix[0] =
+        flInvDet *
+        ((((m5 * m10 * m15 + m9 * m14 * m7 + m13 * m6 * m11) - m5 * m14 * m11) - m15 * m9 * m6) -
+         m7 * m10 * m13);
+    pMatrix[4] =
+        flInvDet *
+        ((((m11 * m14 * m4 + m15 * m6 * m8 + m7 * m10 * m12) - m15 * m10 * m4) - m7 * m14 * m8) -
+         m11 * m6 * m12);
+    pMatrix[8] =
+        flInvDet * ((((m15 * p94 + m7 * p138 + m11 * p512) - m11 * p134) - m15 * p58) - m7 * p912);
+    pMatrix[12] =
+        flInvDet * ((((m10 * p134 + m14 * p58 + m6 * p912) - m14 * p94) - m6 * p138) - m10 * p512);
+    pMatrix[1] =
+        flInvDet *
+        ((((m14 * m13 * m3 + m11 * m14 * m1 + m15 * m9 * m2) - m15 * m10 * m1) - m9 * m14 * m3) -
+         m11 * m13 * m2);
+    pMatrix[5] =
+        flInvDet *
+        ((((m11 * m12 * m2 + m14 * m8 * m3 + m15 * m10 * m0) - m11 * m14 * m0) - m15 * m8 * m2) -
+         m10 * m12 * m3);
+    pMatrix[9] =
+        flInvDet * ((((p912 * m3 + m15 * p81 + m11 * p130) - m15 * p90) - p138 * m3) - m11 * p121);
+    pMatrix[13] =
+        flInvDet * ((((m10 * p121 + p138 * m2 + m14 * p90) - m10 * p130) - m14 * p81) - p912 * m2);
+    pMatrix[2] =
+        flInvDet *
+        ((((m7 * m13 * m2 + m15 * m6 * m1 + m5 * m14 * m3) - m7 * m14 * m1) - m15 * m5 * m2) -
+         m13 * m6 * m3);
+    pMatrix[6] =
+        flInvDet *
+        ((((m6 * m12 * m3 + m15 * m4 * m2 + m7 * m14 * m0) - m15 * m6 * m0) - m14 * m4 * m3) -
+         m7 * m12 * m2);
+    pMatrix[10] =
+        flInvDet * ((((m7 * p121 + p134 * m3 + m15 * p50) - m7 * p130) - m15 * p41) - p512 * m3);
+    pMatrix[3] =
+        flInvDet *
+        ((((m9 * m6 * m3 + m7 * m10 * m1 + m11 * m5 * m2) - m11 * m6 * m1) - m5 * m10 * m3) -
+         m7 * m9 * m2);
+    pMatrix[7] =
+        flInvDet *
+        ((((m7 * m8 * m2 + m10 * m4 * m3 + m11 * m6 * m0) - m7 * m10 * m0) - m11 * m4 * m2) -
+         m6 * m8 * m3);
+    pMatrix[11] =
+        flInvDet * ((((p58 * m3 + m11 * p41 + m7 * p90) - m11 * p50) - p94 * m3) - m7 * p81);
+    pMatrix[14] =
+        flInvDet * ((((p512 * m2 + m14 * p41 + m6 * p130) - m14 * p50) - p134 * m2) - m6 * p121);
+    pMatrix[15] =
+        flInvDet * ((((m6 * p81 + p94 * m2 + m10 * p50) - m6 * p90) - m10 * p41) - p58 * m2);
+    return pMatrix;
+}
+
 /** @ghidraAddress 0x20db0 */
 void TransformPointByMatrix(float *pPoint, float *pMatrix) {
     // Transform a 3D point by a column-major matrix with the perspective divide: the point is taken

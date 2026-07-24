@@ -308,6 +308,14 @@ void MultiplyMatrix4x4(float *pOut, float *pLeft, float *pRight);
  */
 float Matrix4x4Determinant(float *pMatrix);
 /**
+ * @brief Inverts a 4x4 column-major matrix in place by the adjugate-over-determinant method.
+ *
+ * A singular matrix (zero determinant) is left unchanged.
+ * @return @p pMatrix, so the result can be passed on inline.
+ * @ghidraAddress 0x18fe0
+ */
+float *InvertMatrix4x4(float *pMatrix);
+/**
  * @brief Sets a 4x4 column-major matrix to the identity matrix.
  * @ghidraAddress 0x18fac
  */
