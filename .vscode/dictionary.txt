@@ -61,6 +61,7 @@ conn
 constexpr
 contoller
 cooldown
+copious
 copysign
 coveragerc
 cplusplus
@@ -132,6 +133,7 @@ howtoplay
 ifdef
 ifndef
 igles
+iidx
 immediates
 infomation
 initalize
@@ -225,6 +227,7 @@ pyinstaller
 pylock
 pyproject
 qrispy
+quavre
 rainbowanimation
 randam
 rbbgm

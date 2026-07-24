@@ -50,6 +50,25 @@ public:
      */
     void CreateExplosionEffect(unsigned int nColor, int nJudge, float flPosX, float flPosY);
 
+    /**
+     * @brief Sets a colour bank's explosion texture type, rebinding its instancer texture and
+     * clearing every effect slot when the type changes.
+     * @param nColor The player-colour bank (0 or 1).
+     * @param nType The explosion texture type (0 through 18).
+     * @ghidraAddress 0x176fb8
+     */
+    void SetEffectType(unsigned int nColor, int nType);
+
+    /**
+     * @brief Sets the burst size applied to every effect sprite's scale.
+     * @param flSize The burst size, from the user setting.
+     * @ghidraAddress 0x177130
+     */
+    void SetEffectSize(float flSize);
+
+    // The number of explosion texture types.
+    static constexpr int kEffectTypeCount = 19;
+
 private:
     // Constructs the layer: clears the sprite set and every effect slot.
     // @ghidraAddress 0x176e18
@@ -67,12 +86,16 @@ private:
 
     // +0x08: the two world-space sprite instancers, one per bank.
     ne::C_SPRITE_INSTANCING *m_apSprites[kBankCount] = {}; // +0x08
-    unsigned char m_aReserved18[8] = {};                   // +0x18
+    int m_aSpriteCount[kBankCount] = {};                   // +0x18: each bank's live sprite count.
     int m_aSpriteCapacity[kBankCount] = {};                // +0x20: each instancer's capacity.
     bool m_bBuilt = {};                                    // +0x28: set once the sprites are built.
-    unsigned char m_aReserved29[11] = {};                  // +0x29
-    EffectEntry m_aBanks[kBankCount][kSlotsPerBank] = {};  // +0x34: the two effect-slot banks.
-    unsigned char m_aReserved32c[12] = {};                 // +0x32c: trailing layer state.
+    unsigned char m_aPad29[3] = {};                        // +0x29
+    int m_aEffectType[kBankCount] = {}; // +0x2c: each bank's current explosion texture type.
+    EffectEntry m_aBanks[kBankCount][kSlotsPerBank] = {}; // +0x34: the two effect-slot banks.
+    // +0x32c..+0x32f: trailing state before the effect size.
+    unsigned char m_aReserved32c[4] = {}; // +0x32c
+    float m_flEffectSize = {};            // +0x330: the burst size from the user setting.
+    unsigned char m_aReserved334[4] = {}; // +0x334
 };
 
 // code: language=Objective-C++

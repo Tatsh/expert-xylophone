@@ -13,9 +13,31 @@
 #include "bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
+#include "neTexture.h"
 
 // The process-wide explosion effect layer, created lazily by shared().
 static ExplosionEffectLayer *g_pExplosionEffectLayer = nullptr; // @ghidraAddress 0x3deb50
+
+namespace {
+
+// The per-type burst texture names, interleaved red then blue, indexed by (colour + type * 2)
+// (@ghidraAddress 0x3ce608).
+constexpr const char *kEffectTextureNames[] = {
+    "00_texture/gm_red_classic",    "00_texture/gm_blue_classic",   "00_texture/gm_red_limelight",
+    "00_texture/gm_blue_limelight", "00_texture/gm_red_flame",      "00_texture/gm_blue_flame",
+    "00_texture/gm_red_ice",        "00_texture/gm_blue_ice",       "00_texture/gm_red_plasma",
+    "00_texture/gm_blue_plasma",    "00_texture/gm_red_tornado",    "00_texture/gm_blue_tornado",
+    "00_texture/gm_red_fireworks",  "00_texture/gm_blue_fireworks", "00_texture/gm_red_star",
+    "00_texture/gm_blue_star",      "00_texture/gm_red_quavre",     "00_texture/gm_blue_quavre",
+    "00_texture/gm_red_heart",      "00_texture/gm_blue_heart",     "00_texture/gm_red_rose",
+    "00_texture/gm_blue_rose",      "00_texture/gm_red_copious",    "00_texture/gm_blue_copious",
+    "00_texture/gm_red_colette",    "00_texture/gm_blue_colette",   "00_texture/gm_red_snow",
+    "00_texture/gm_blue_snow",      "00_texture/gm_red_tentei",     "00_texture/gm_blue_tentei",
+    "00_texture/gm_red_flower",     "00_texture/gm_blue_flower",    "00_texture/gm_red_maple",
+    "00_texture/gm_blue_maple",     "00_texture/gm_red_iidx",       "00_texture/gm_blue_iidx",
+    "00_texture/gm_red_popn",       "00_texture/gm_blue_popn"};
+
+} // namespace
 
 /** @ghidraAddress 0x176e18 */
 ExplosionEffectLayer::ExplosionEffectLayer() {
@@ -83,4 +105,32 @@ void ExplosionEffectLayer::CreateExplosionEffect(unsigned int nColor,
             return;
         }
     }
+}
+
+/** @ghidraAddress 0x176fb8 */
+void ExplosionEffectLayer::SetEffectType(unsigned int nColor, int nType) {
+    assert(nType >= 0 && nType < kEffectTypeCount);
+    assert(static_cast<int>(nColor) >= 0 && nColor < kBankCount);
+
+    if (m_aEffectType[nColor] == nType) {
+        return;
+    }
+    m_aEffectType[nColor] = nType;
+    // Rebind the bank's instancer texture once the sprites exist.
+    if (m_bBuilt) {
+        m_apSprites[nColor]->SetRefCountedMember(
+            ne::C_TEXTURE::FindOrLoadCached(kEffectTextureNames[nColor + nType * 2]));
+    }
+    // Clear every effect slot in both banks so no stale burst keeps the old texture.
+    for (int nBank = 0; nBank < kBankCount; ++nBank) {
+        for (int nSlot = 0; nSlot < kSlotsPerBank; ++nSlot) {
+            m_aBanks[nBank][nSlot].bActive = false;
+            m_aBanks[nBank][nSlot].nTimer = 0;
+        }
+    }
+}
+
+/** @ghidraAddress 0x177130 */
+void ExplosionEffectLayer::SetEffectSize(float flSize) {
+    m_flEffectSize = flSize;
 }
