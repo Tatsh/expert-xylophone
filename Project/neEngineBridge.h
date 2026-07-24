@@ -968,20 +968,21 @@ bool CheckFramebufferComplete();
  * @ghidraAddress TouchPoint (engine touch-slot struct)
  */
 struct TouchPoint {
-    int m_nId = {};        // +0x00 rolling touch id
-    int m_nBeginX = {};    // +0x04 x at begin
-    int m_nBeginY = {};    // +0x08 y at begin
-    int m_nCurrentX = {};  // +0x0c current x (the position UpdateTouchPoint/HandleTouchMoved match)
-    int m_nCurrentY = {};  // +0x10 current y
-    int m_nPreviousX = {}; // +0x14 previous x
-    int m_nPreviousY = {}; // +0x18 previous y
-    int m_nMinX = {};      // +0x1c retained begin x mirror
-    int m_nMinY = {};      // +0x20 retained begin y mirror
-    int m_nKey1 = {};      // +0x24 owning-view key pair (the view frame width at begin)
-    int m_nKey2 = {};      // +0x28 owning-view key pair (the view frame height at begin)
-    bool m_bActive = {};   // +0x2c slot kind/active flag (0 => uses m_bMoved, else m_bMovedAlt)
-    bool m_bMoved = {};    // +0x2d moved-this-frame flag for the primary kind
-    bool m_bMovedAlt = {}; // +0x2e moved-this-frame flag for the alternate kind
+    int m_nId = {};         // +0x00 rolling touch id (-1 in a fresh slot)
+    int m_nBeginX = {};     // +0x04 x at begin
+    int m_nBeginY = {};     // +0x08 y at begin
+    int m_nCurrentX = {};   // +0x0c live x (the position UpdateTouchPoint/HandleTouchMoved match)
+    int m_nCurrentY = {};   // +0x10 live y
+    int m_nPreviousX = {};  // +0x14 previous x (saved before an update)
+    int m_nPreviousY = {};  // +0x18 previous y
+    int m_nCommittedX = {}; // +0x1c frame-committed x (CompactTouchList copies the live x here)
+    int m_nCommittedY = {}; // +0x20 frame-committed y
+    int m_nKey1 = {};       // +0x24 owning-view key pair (the view frame width at begin)
+    int m_nKey2 = {};       // +0x28 owning-view key pair (the view frame height at begin)
+    bool m_bIsNew = {};     // +0x2c added this frame; cleared once CompactTouchList commits it
+    bool m_bEnded = {};     // +0x2d slated for removal on the next CompactTouchList pass
+    bool m_bEndedPending = {}; // +0x2e ended while still new; promoted to m_bEnded on next commit
+    // unsigned char m_aPad2f[1] = {}; // +0x2f trailing pad to the 0x30-byte slot size
 };
 
 /**
@@ -992,6 +993,15 @@ struct TouchPoint {
  */
 class TouchManager {
 public:
+    /** @brief The fixed number of pre-allocated touch slots the manager tracks. */
+    static constexpr int kSlotCount = 32;
+
+    /**
+     * @brief Constructs the manager with an empty active list and @c kSlotCount pre-allocated
+     * touch slots.
+     * @ghidraAddress 0x17c90
+     */
+    TouchManager();
     /**
      * @brief Returns the global touch-manager singleton, or @c nullptr when not yet created.
      * @ghidraAddress 0x17c38
@@ -1038,7 +1048,15 @@ public:
      * @ghidraAddress 0x17f50
      */
     void CompactTouchList();
+
+private:
+    TouchPoint *m_apSlots[kSlotCount] = {}; // +0x00 the slot pointer array (active slots first)
+    int m_nActiveCount = {};                // +0x100 number of active slots at the array head
+    int m_nNextId = {};                     // +0x104 the next rolling id to assign
 };
+
+/** @brief The global touch-manager singleton, constructed by @c EnsureTouchManagerSingleton. */
+extern TouchManager *g_pTouchManager;
 
 /**
  * The themed sound-effect manager. It holds three theme banks of twenty slots plus thirty-six
