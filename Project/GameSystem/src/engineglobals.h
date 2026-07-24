@@ -40,6 +40,18 @@ extern int g_nVariantScreenHeight;
  */
 extern int g_nPlayfieldFullHeightY;
 /**
+ * @brief The play-field top edge, in normalised field units (negative). Seeded by the play-field
+ * layout pass and read by the note and full-combo effect layers.
+ * @ghidraAddress 0x3ce95c
+ */
+extern float g_flPlayfieldBoundTop;
+/**
+ * @brief The play-field bottom edge, in normalised field units (positive). Seeded by the play-field
+ * layout pass and read by the note and full-combo effect layers.
+ * @ghidraAddress 0x3ce960
+ */
+extern float g_flPlayfieldBoundBottom;
+/**
  * @brief The per-decode-type Blowfish key table shared with the chart loader.
  * @ghidraAddress 0x35b7c8
  */

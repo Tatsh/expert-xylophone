@@ -32,6 +32,18 @@ public:
      */
     int IsSideFlipped() const;
 
+    /**
+     * @brief Returns the play-field Y bound for a virtual-lane band index.
+     *
+     * The nine bands run from the top edge (bands 0 through 3, at decreasing fractions of the field
+     * height), through the centre (band 4, which is zero), to the bottom edge (bands 5 through 8).
+     * The returned bound is twice the band's edge times its fraction.
+     * @param nBand The band index (0 through 8).
+     * @return The Y bound for the band.
+     * @ghidraAddress 0x1360a8
+     */
+    static float GetVirtualBoundY(int nBand);
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 
