@@ -319,6 +319,37 @@ void MultiplyVector4ByMatrixInPlace(float *pVec4, float *pMatrix) {
     MultiplyVector4ByMatrix(pVec4, pVec4, pMatrix);
 }
 
+/** @ghidraAddress 0x194b4 */
+float Matrix4x4Determinant(float *pMatrix) {
+    // Full permutation expansion of the 4x4 determinant: twelve positive product terms summed,
+    // then twelve negative terms subtracted, matching the binary's fmul/fadd accumulation order
+    // (the binary uses separate multiplies and adds, not fused multiply-adds).
+    return (pMatrix[3] * pMatrix[6] * pMatrix[9] * pMatrix[12] +
+            pMatrix[11] * pMatrix[2] * pMatrix[5] * pMatrix[12] +
+            pMatrix[7] * pMatrix[10] * pMatrix[1] * pMatrix[12] +
+            pMatrix[7] * pMatrix[2] * pMatrix[13] * pMatrix[8] +
+            pMatrix[3] * pMatrix[14] * pMatrix[5] * pMatrix[8] +
+            pMatrix[10] * pMatrix[13] * pMatrix[4] * pMatrix[3] +
+            pMatrix[15] * pMatrix[9] * pMatrix[4] * pMatrix[2] +
+            pMatrix[0] * pMatrix[5] * pMatrix[10] * pMatrix[15] +
+            pMatrix[0] * pMatrix[9] * pMatrix[14] * pMatrix[7] +
+            pMatrix[0] * pMatrix[13] * pMatrix[6] * pMatrix[11] +
+            pMatrix[11] * pMatrix[14] * pMatrix[4] * pMatrix[1] +
+            pMatrix[15] * pMatrix[6] * pMatrix[1] * pMatrix[8]) -
+           pMatrix[0] * pMatrix[5] * pMatrix[14] * pMatrix[11] -
+           pMatrix[15] * pMatrix[0] * pMatrix[9] * pMatrix[6] -
+           pMatrix[7] * pMatrix[10] * pMatrix[0] * pMatrix[13] -
+           pMatrix[15] * pMatrix[10] * pMatrix[4] * pMatrix[1] -
+           pMatrix[14] * pMatrix[9] * pMatrix[4] * pMatrix[3] -
+           pMatrix[11] * pMatrix[13] * pMatrix[4] * pMatrix[2] -
+           pMatrix[7] * pMatrix[14] * pMatrix[1] * pMatrix[8] -
+           pMatrix[15] * pMatrix[2] * pMatrix[5] * pMatrix[8] -
+           pMatrix[3] * pMatrix[6] * pMatrix[13] * pMatrix[8] -
+           pMatrix[11] * pMatrix[6] * pMatrix[1] * pMatrix[12] -
+           pMatrix[3] * pMatrix[10] * pMatrix[5] * pMatrix[12] -
+           pMatrix[7] * pMatrix[2] * pMatrix[9] * pMatrix[12];
+}
+
 /** @ghidraAddress 0x20db0 */
 void TransformPointByMatrix(float *pPoint, float *pMatrix) {
     // Transform a 3D point by a column-major matrix with the perspective divide: the point is taken

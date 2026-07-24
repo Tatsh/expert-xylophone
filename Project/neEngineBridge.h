@@ -303,6 +303,11 @@ void ComposeMatrices(float *pAccumulator, float *pSource);
  */
 void MultiplyMatrix4x4(float *pOut, float *pLeft, float *pRight);
 /**
+ * @brief Computes the determinant of a 4x4 column-major matrix.
+ * @ghidraAddress 0x194b4
+ */
+float Matrix4x4Determinant(float *pMatrix);
+/**
  * @brief Sets a 4x4 column-major matrix to the identity matrix.
  * @ghidraAddress 0x18fac
  */
