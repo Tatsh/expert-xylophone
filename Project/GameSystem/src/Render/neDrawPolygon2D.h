@@ -7,7 +7,19 @@
 
 #include "neRender.h"
 
+struct S_VECTOR2;
+
 namespace ne {
+
+/**
+ * @brief A packed 8-bit-per-channel RGBA colour, in memory order.
+ */
+struct S_RGBA {
+    unsigned char nRed = {};   // +0x00
+    unsigned char nGreen = {}; // +0x01
+    unsigned char nBlue = {};  // +0x02
+    unsigned char nAlpha = {}; // +0x03
+};
 
 /**
  * @brief A 2D polygon-mesh draw node (RTTI @c ne::C_DRAW_POLYGON_2D).
@@ -23,12 +35,22 @@ class C_DRAW_POLYGON_2D : public C_RENDER {
 public:
     /**
      * @brief Set a mesh vertex's position, if the mesh carries a position attribute.
+     *
+     * The position is taken by value (its two components arrive in the floating-point argument
+     * registers), so this is interchangeable with the pointer-taking @c SetPosFromVec wrapper.
      * @param nIndex The vertex index.
-     * @param flX The vertex X position.
-     * @param flY The vertex Y position.
+     * @param position The vertex position.
      * @ghidraAddress 0x28328
      */
-    void SetPos(int nIndex, float flX, float flY);
+    void SetPos(int nIndex, S_VECTOR2 position);
+
+    /**
+     * @brief Set a mesh vertex's position from a vector pointer, forwarding to @c SetPos.
+     * @param nIndex The vertex index.
+     * @param pPosition The vertex position.
+     * @ghidraAddress 0x28320
+     */
+    void SetPosFromVec(int nIndex, const S_VECTOR2 *pPosition);
 
     /**
      * @brief Set a mesh vertex's RGBA colour, if the mesh carries a colour attribute.
@@ -69,10 +91,10 @@ private:
     bool m_bVertexDirty = {};               // +0xfd: set when a vertex attribute is modified.
     bool m_bColorDirty = {};                // +0xfe: set when a vertex colour is modified.
     // +0xff..+0x107 is padding before the array pointers.
-    unsigned char m_aPadFf[9] = {};    // +0xff
-    void *m_pVertexArray = {};         // +0x108: the interleaved vertex-attribute array.
-    unsigned char *m_pColorArray = {}; // +0x110: the per-vertex RGBA colour array (4 bytes each).
-    int m_nIndexCount = {};            // +0x118: the number of entries in the index buffer.
+    unsigned char m_aPadFf[9] = {}; // +0xff
+    void *m_pVertexArray = {};      // +0x108: the interleaved vertex-attribute array.
+    S_RGBA *m_pColorArray = {};     // +0x110: the per-vertex RGBA colour array.
+    int m_nIndexCount = {};         // +0x118: the number of entries in the index buffer.
     // +0x11c..+0x120: further mesh state still being worked out.
     unsigned char m_aReserved11c[5] = {}; // +0x11c
     bool m_bIndexDirty = {};              // +0x121: set when the index buffer is modified.
