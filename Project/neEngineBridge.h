@@ -490,6 +490,11 @@ extern const double g_dCustomizeLayoutMetric100;
  */
 extern const double g_dSliderRowHeightWide;
 /**
+ * @brief The mascot message-balloon maximum width on the pad layout.
+ * @ghidraAddress 0x2ee930
+ */
+extern const double g_dMascotMessageMaxWidthPad;
+/**
  * @brief The shared translucent-panel background white value.
  * @ghidraAddress 0x2ec6a0
  */
@@ -547,6 +552,16 @@ extern NSString *const g_pLocalizedInstalling;
  * @ghidraAddress 0x3cfd10
  */
 extern NSString *const g_pLocalizedPurchased;
+/**
+ * @brief The localised "OK" button title.
+ * @ghidraAddress 0x3cfce0
+ */
+extern NSString *const g_pLocalizedOK;
+/**
+ * @brief The localised "Cancel" button title.
+ * @ghidraAddress 0x3cfb80
+ */
+extern NSString *const g_pLocalizedCancel;
 /**
  * @brief The download-progress modal-dialog message format string (one @c %@ tune name).
  * @ghidraAddress 0x3cfbd8
