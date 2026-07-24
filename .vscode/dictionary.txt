@@ -16,6 +16,7 @@ applist
 archs
 asbd
 autocapitalization
+autocorrection
 autorelease
 autoreleased
 autoreleasepool
@@ -277,6 +278,7 @@ wiswa
 wiswa's
 worktree
 xorshift
+xref
 yarnrc
 yomi
 yomigana
