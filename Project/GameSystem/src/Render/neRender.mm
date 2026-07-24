@@ -4,6 +4,10 @@
 
 namespace ne {
 
+// The process-wide scene-graph root. Its static constructor and atexit destructor registration are
+// the binary's InitializeGlobalSceneRoot (0x29ee0), emitted by the compiler for this global.
+C_RENDER g_globalSceneRoot;
+
 /** @ghidraAddress 0x29b3c */
 C_RENDER::C_RENDER() {
     // The two transforms start at identity. In the binary the matrix members are also pre-filled
@@ -93,6 +97,11 @@ void C_RENDER::AttachChild(C_RENDER *pChild) {
         pTail->m_pSiblingNext = pChild;
         pChild->m_pSiblingNext->m_pSiblingPrev = pChild;
     }
+}
+
+/** @ghidraAddress 0x29cf4 */
+void C_RENDER::RegisterGlobal() {
+    g_globalSceneRoot.AttachChild(this);
 }
 
 } // namespace ne

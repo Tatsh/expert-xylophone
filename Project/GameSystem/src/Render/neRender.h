@@ -90,6 +90,15 @@ public:
      */
     void Detach();
 
+    /**
+     * @brief Register this node in the global scene tree so it is drawn each frame.
+     *
+     * Attaches the node as a child of the process-wide scene root, @c g_globalSceneRoot, whose
+     * children @c RenderGlobalSceneTree traverses.
+     * @ghidraAddress 0x29cf4
+     */
+    void RegisterGlobal();
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     // +0x08/+0x10: this node's slot in a self-linked ring whose owning list is not yet identified;
@@ -111,6 +120,17 @@ private:
     bool m_bVisible = {};               // +0xd1
     // +0xd2..+0xd7 is compiler alignment padding to the 0xd8-byte object size (no member there).
 };
+
+/**
+ * @brief The process-wide scene-graph root.
+ *
+ * Nodes registered with @c C_RENDER::RegisterGlobal become its children and are traversed for
+ * drawing each frame by @c RenderGlobalSceneTree. It is a namespace-scope @c C_RENDER, so the
+ * compiler emits its static constructor and atexit destructor registration (the binary's
+ * @c InitializeGlobalSceneRoot at 0x29ee0).
+ * @ghidraAddress 0x3cfe20
+ */
+extern C_RENDER g_globalSceneRoot;
 
 } // namespace ne
 
