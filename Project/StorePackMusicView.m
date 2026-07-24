@@ -101,7 +101,7 @@ static const int kTuneCellBackgroundMaxIndex = 1;
 static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, CGFloat height) {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(x, y, width, height)];
     label.opaque = NO;
-    label.backgroundColor = [UIColor clearColor];
+    label.backgroundColor = UIColor.clearColor;
     return label;
 }
 
@@ -127,11 +127,11 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 
     self.artworkView = [[StoreImageView alloc]
         initWithFrame:CGRectMake(kArtworkOriginX, kArtworkOriginY, kArtworkSide, kArtworkSide)];
-    self.artworkView.backgroundColor = [UIColor whiteColor];
+    self.artworkView.backgroundColor = UIColor.whiteColor;
     self.artworkView.layer.borderWidth = kArtworkBorderWidth;
-    self.artworkView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.artworkView.layer.borderColor = UIColor.whiteColor.CGColor;
     self.artworkView.layer.shadowOffset = CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-    self.artworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
     self.artworkView.layer.shadowOpacity = kArtworkShadowOpacity;
     self.artworkView.layer.shadowRadius = kArtworkShadowRadius;
     self.artworkView.layer.shouldRasterize = YES;

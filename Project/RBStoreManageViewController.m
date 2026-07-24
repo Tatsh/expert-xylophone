@@ -553,10 +553,10 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         UILabel *nameLabel =
             [[UILabel alloc] initWithFrame:CGRectMake(0, 0, labelWidth, labelHeight)];
         nameLabel.opaque = NO;
-        nameLabel.backgroundColor = [UIColor clearColor];
+        nameLabel.backgroundColor = UIColor.clearColor;
         nameLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
         self.labelName = nameLabel;
-        self.labelName.backgroundColor = [UIColor clearColor];
+        self.labelName.backgroundColor = UIColor.clearColor;
         self.labelName.font =
             [UIFont boldSystemFontOfSize:isPad ? kCellTitleFontSizePad : kCellTitleFontSizePhone];
         self.labelName.textColor = [UIColor colorWithWhite:kTitleLabelAlpha alpha:kRowColorAlpha];
@@ -566,7 +566,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
         CGFloat buttonFontSize = isPad ? kCellButtonFontSizePad : kCellButtonFontSizePhone;
         button.titleLabel.font = [UIFont boldSystemFontOfSize:buttonFontSize];
-        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [button setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
         button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
                                   UIViewAutoresizingFlexibleTopMargin |
                                   UIViewAutoresizingFlexibleBottomMargin;

@@ -259,7 +259,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (UIColor *)getIndicatorColor {
     if (!sIndicatorColor) {
-        return [UIColor whiteColor];
+        return UIColor.whiteColor;
     }
     return sIndicatorColor;
 }

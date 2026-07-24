@@ -103,7 +103,7 @@ static const CGFloat kHeaderBaseHeight = 110.0;
                                      kNameLabelTop,
                                      self.frame.size.width - kNameLabelTrailingInset,
                                      kNameLabelHeight)];
-        name.backgroundColor = [UIColor clearColor];
+        name.backgroundColor = UIColor.clearColor;
         name.numberOfLines = kNameLabelLineCount;
         name.lineBreakMode = NSLineBreakByWordWrapping;
         name.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
@@ -117,7 +117,7 @@ static const CGFloat kHeaderBaseHeight = 110.0;
                                      kCommentLabelTop,
                                      self.frame.size.width - kCommentLabelTrailingInset,
                                      kCommentLabelInitialHeight)];
-        comment.backgroundColor = [UIColor clearColor];
+        comment.backgroundColor = UIColor.clearColor;
         comment.numberOfLines = 0;
         comment.lineBreakMode = NSLineBreakByWordWrapping;
         comment.font = [UIFont systemFontOfSize:kCommentLabelFontSize];
@@ -142,10 +142,10 @@ static const CGFloat kHeaderBaseHeight = 110.0;
                                                              topCapHeight:kButtonCapInset]
                             forState:UIControlStateDisabled];
         purchase.adjustsImageWhenDisabled = NO;
-        purchase.titleLabel.textColor = [UIColor whiteColor];
+        purchase.titleLabel.textColor = UIColor.whiteColor;
         purchase.titleLabel.font = [UIFont boldSystemFontOfSize:kButtonTitleFontSize];
         purchase.titleLabel.shadowOffset = CGSizeMake(0.0, kButtonShadowOffsetY);
-        [purchase setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [purchase setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         [purchase setTitleShadowColor:[UIColor colorWithWhite:0.0 alpha:kButtonShadowWhite]
                              forState:UIControlStateNormal];
         [purchase setTitleColor:[UIColor colorWithWhite:kButtonDisabledTitleWhite alpha:1.0]

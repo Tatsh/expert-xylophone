@@ -101,7 +101,7 @@ static const float kProgressReset = 0.0f;
 
     CALayer *layer = self.layer;
     layer.cornerRadius = kPanelCornerRadius;
-    layer.borderColor = [UIColor grayColor].CGColor;
+    layer.borderColor = UIColor.grayColor.CGColor;
     layer.borderWidth = kPanelBorderWidth;
     layer.shadowRadius = kPanelShadowRadius;
     layer.shadowOffset = CGSizeZero;
@@ -121,8 +121,8 @@ static const float kProgressReset = 0.0f;
 
     self.labelMessage =
         [[UILabel alloc] initWithFrame:CGRectMake(0, 0, width - kLabelWidthInset, kLabelHeight)];
-    self.labelMessage.backgroundColor = [UIColor clearColor];
-    self.labelMessage.textColor = [UIColor whiteColor];
+    self.labelMessage.backgroundColor = UIColor.clearColor;
+    self.labelMessage.textColor = UIColor.whiteColor;
     self.labelMessage.textAlignment = NSTextAlignmentCenter;
     self.labelMessage.numberOfLines = 1;
     self.labelMessage.font = [UIFont systemFontOfSize:kLabelFontSize];
@@ -141,7 +141,7 @@ static const float kProgressReset = 0.0f;
 
     self.buttonAbort = [UIButton buttonWithType:UIButtonTypeCustom];
     self.buttonAbort.frame = CGRectMake(0, 0, kAbortButtonWidth, abortImage.size.height);
-    self.buttonAbort.titleLabel.textColor = [UIColor whiteColor];
+    self.buttonAbort.titleLabel.textColor = UIColor.whiteColor;
     self.buttonAbort.titleLabel.font = [UIFont boldSystemFontOfSize:kAbortButtonFontSize];
     self.buttonAbort.titleLabel.shadowOffset = CGSizeMake(0, kAbortTitleShadowOffsetY);
     [self.buttonAbort setTitleShadowColor:[UIColor colorWithWhite:kAbortTitleShadowWhite

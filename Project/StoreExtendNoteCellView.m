@@ -68,9 +68,9 @@ static const NSInteger kCommentLabelLineCount = 3;
 
     CALayer *layer = imageView.layer;
     layer.borderWidth = kArtworkBorderWidth;
-    layer.borderColor = [UIColor whiteColor].CGColor;
+    layer.borderColor = UIColor.whiteColor.CGColor;
     layer.shadowOffset = CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-    layer.shadowColor = [UIColor blackColor].CGColor;
+    layer.shadowColor = UIColor.blackColor.CGColor;
     layer.shadowOpacity = kArtworkShadowOpacity;
     layer.shadowRadius = kArtworkShadowRadius;
     layer.shouldRasterize = YES;
@@ -89,7 +89,7 @@ static const NSInteger kCommentLabelLineCount = 3;
         UILabel *nameLabel = [[UILabel alloc]
             initWithFrame:CGRectMake(
                               kTextColumnX, kNameLabelY, textColumnWidth, kSingleLineLabelHeight)];
-        nameLabel.backgroundColor = [UIColor clearColor];
+        nameLabel.backgroundColor = UIColor.clearColor;
         nameLabel.font = [UIFont boldSystemFontOfSize:kNameFontSize];
         nameLabel.textColor = [UIColor colorWithWhite:0.0 alpha:1.0];
         nameLabel.adjustsFontSizeToFitWidth = YES;
@@ -100,7 +100,7 @@ static const NSInteger kCommentLabelLineCount = 3;
                                                                          kArtistLabelY,
                                                                          textColumnWidth,
                                                                          kSingleLineLabelHeight)];
-        artistLabel.backgroundColor = [UIColor clearColor];
+        artistLabel.backgroundColor = UIColor.clearColor;
         artistLabel.font = [UIFont systemFontOfSize:kArtistFontSize];
         artistLabel.textColor = [UIColor colorWithWhite:0.0 alpha:1.0];
         artistLabel.adjustsFontSizeToFitWidth = YES;
@@ -122,7 +122,7 @@ static const NSInteger kCommentLabelLineCount = 3;
         UILabel *commentLabel = [[UILabel alloc]
             initWithFrame:CGRectMake(
                               kTextColumnX, kCommentLabelY, textColumnWidth, kCommentLabelHeight)];
-        commentLabel.backgroundColor = [UIColor clearColor];
+        commentLabel.backgroundColor = UIColor.clearColor;
         commentLabel.font = [UIFont systemFontOfSize:kCommentFontSize];
         commentLabel.textColor = [UIColor colorWithWhite:kCommentTextWhite alpha:1.0];
         commentLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -133,7 +133,7 @@ static const NSInteger kCommentLabelLineCount = 3;
         UILabel *levelLabel = [[UILabel alloc]
             initWithFrame:CGRectMake(
                               kTextColumnX, kSecondRowY, kLevelLabelWidth, kSingleLineLabelHeight)];
-        levelLabel.backgroundColor = [UIColor clearColor];
+        levelLabel.backgroundColor = UIColor.clearColor;
         levelLabel.font = [UIFont boldSystemFontOfSize:kLevelFontSize];
         levelLabel.textColor = [UIColor colorWithRed:kLevelColorRed
                                                green:kLevelColorGreen

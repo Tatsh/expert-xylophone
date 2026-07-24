@@ -228,7 +228,7 @@ static NSString *const kCampaignIdFormat = @"%d";
     self.tableView.dataSource = self;
     self.tableView.allowsSelection = YES;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundColor = UIColor.clearColor;
     [self.view addSubview:self.tableView];
 
     if (self.unlockMusicCheckList != nil) {
@@ -287,7 +287,7 @@ static NSString *const kCampaignIdFormat = @"%d";
         [self.view addSubview:self.loadingLabel];
 
         UIView *indicatorHost = [[UIView alloc] initWithFrame:self.view.bounds];
-        indicatorHost.backgroundColor = [UIColor clearColor];
+        indicatorHost.backgroundColor = UIColor.clearColor;
         indicatorHost.autoresizingMask = kAutoresizingMaskFlexibleSize;
         indicatorHost.center = CGPointMake(self.loadingLabel.bounds.size.width * kCenterScale,
                                            self.loadingLabel.bounds.size.height * kCenterScale);

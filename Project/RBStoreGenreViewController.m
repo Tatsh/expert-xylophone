@@ -33,7 +33,7 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
 - (void)loadView {
     [super loadView];
     self.view.opaque = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = UIColor.whiteColor;
     self.view.autoresizesSubviews = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.view.exclusiveTouch = YES;
@@ -45,7 +45,7 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.allowsSelection = YES;
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundColor = UIColor.clearColor;
     CGFloat height = MIN((CGFloat)self.packListCtrl.numGenres * kGenreRowHeight,
                          kGenrePreferredContentMaxHeight);
     self.preferredContentSize = CGSizeMake(kGenrePreferredContentWidth, height);
@@ -72,7 +72,7 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
                                       reuseIdentifier:kStoreGenreTableCellIdentifier];
     }
     cell.textLabel.opaque = NO;
-    cell.textLabel.backgroundColor = [UIColor clearColor];
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:kGenreCellFontSize];
     cell.textLabel.text = [self.packListCtrl packListForGenreIndex:indexPath.row].genreName;
     return cell;

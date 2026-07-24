@@ -79,7 +79,7 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
 
 /** @ghidraAddress 0x216a48 */
 - (void)setInitParam {
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.opaque = NO;
     self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
                             UIViewAutoresizingFlexibleRightMargin |
@@ -167,7 +167,7 @@ static const NSTimeInterval kRecommendAdWebViewTimeout = 30.0;
     dispatch_async(dispatch_get_main_queue(), ^{
         /** @ghidraAddress 0x216fdc */
         if (!blockSelf.reloadFlg) {
-            blockSelf.backgroundColor = [UIColor clearColor];
+            blockSelf.backgroundColor = UIColor.clearColor;
             blockSelf.opaque = NO;
         }
         [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *sessionError) {

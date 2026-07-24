@@ -306,8 +306,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
         self.packTableLabel =
             [[UILabel alloc] initWithFrame:CGRectMake(kPadPackLabelOriginX, labelBaseY, 0.0, 0.0)];
-        [self.packTableLabel setTextColor:[UIColor blackColor]];
-        [self.packTableLabel setShadowColor:[UIColor lightGrayColor]];
+        [self.packTableLabel setTextColor:UIColor.blackColor];
+        [self.packTableLabel setShadowColor:UIColor.lightGrayColor];
         [self.packTableLabel setShadowOffset:CGSizeMake(1.0, 1.0)];
         [self.packTableLabel setFont:[UIFont systemFontOfSize:kPackLabelFontSize]];
         [self.packTableLabel setText:g_pStoreExtendTitle];
@@ -325,7 +325,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
         UIButton *showMore = [UIButton buttonWithType:UIButtonTypeCustom];
         [showMore setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-        [showMore setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
         [showMore sizeToFit];
         // Anchor the button just above the view's bottom edge.
         [showMore setCenter:CGPointMake(viewBounds.size.width * 0.5,
@@ -419,10 +419,10 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             UILabel *bannerLabel = [[UILabel alloc]
                 initWithFrame:CGRectMake(0.0, 0.0, viewBounds.size.width, kBannerLabelHeight)];
             [bannerLabel setTag:kBannerLabelTag];
-            [bannerLabel setBackgroundColor:[UIColor clearColor]];
+            [bannerLabel setBackgroundColor:UIColor.clearColor];
             [bannerLabel setText:g_pStoreBannerTitle];
             [bannerLabel setFont:[UIFont systemFontOfSize:kBannerLabelFontSize]];
-            [bannerLabel setTextColor:[UIColor whiteColor]];
+            [bannerLabel setTextColor:UIColor.whiteColor];
             [bannerLabel setTextAlignment:NSTextAlignmentCenter];
             [bannerLabel setHidden:YES];
             [packTableView addSubview:bannerLabel];
@@ -481,7 +481,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         static_cast<UILabel *>([self.view viewWithTag:kLoadingTitleLabelTag]);
     UIView *spinnerHost = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, kSliderRowHeightWide, kSliderRowHeightWide)];
-    [spinnerHost setBackgroundColor:[UIColor clearColor]];
+    [spinnerHost setBackgroundColor:UIColor.clearColor];
     [spinnerHost setAutoresizingMask:kMaskFlexibleTopBottomWidthHeight];
     [spinnerHost setCenter:CGPointMake(errorTitleLabel.bounds.size.width * 0.5,
                                        errorTitleLabel.bounds.size.height * 0.5)];
@@ -1742,7 +1742,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     // On the phone, reset the navigation bar to a plain white bar.
     if (!IsPad()) {
         self.navigationController.navigationBar.tintColor = nil;
-        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+        self.navigationController.navigationBar.barTintColor = UIColor.whiteColor;
         if ([self.navigationController.navigationBar
                 respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)]) {
             [self.navigationController.navigationBar setBackgroundImage:nil

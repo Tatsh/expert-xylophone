@@ -263,10 +263,19 @@
 
   Use `language=Objective-C++`, `hl Objective-C++`, and `ft=objcpp` for Objective-C++ headers.
 
-- When a `UIColor` is built from the components `red:0 green:0 blue:0 alpha:1`, use
-  `UIColor.blackColor` instead of the spelled-out `colorWithRed:green:blue:alpha:` call, and add a
-  short comment noting the original used the full component call. (Apply the analogous shorthand only
-  for this exact opaque-black case; do not fold other component colours into named constructors.)
+- When a `UIColor` is built from components (`colorWithRed:green:blue:alpha:` or
+  `colorWithWhite:alpha:`) that exactly equal one of Apple's predefined class colours, use that
+  predefined colour instead of the spelled-out component call, and add a short comment noting the
+  original used the full component call. The predefined colours are `blackColor` (0,0,0,1),
+  `blueColor` (0,0,1,1), `brownColor`, `cyanColor` (0,1,1,1), `darkGrayColor` (1/3 white),
+  `grayColor` (1/2 white), `greenColor` (0,1,0,1), `lightGrayColor` (2/3 white), `magentaColor`
+  (1,0,1,1), `orangeColor`, `purpleColor`, `redColor` (1,0,0,1), `whiteColor` (1,1,1,1), and
+  `yellowColor` (1,1,0,1). Only substitute when the components match exactly; leave other component
+  colours as the full call.
+- Access the predefined `UIColor` class colours with dot syntax, `UIColor.whiteColor`, not the
+  bracket message form `[UIColor whiteColor]` — property/dot access is preferred wherever possible
+  (see the Objective-C 2.0 rule above). This applies to the zero-argument class-colour accessors;
+  component constructors that take arguments (`[UIColor colorWithRed:…]`) stay in message form.
 - If a block is directly tied to a function in the binary, use `@ghidraAddress 0x...` to document
   that.
 

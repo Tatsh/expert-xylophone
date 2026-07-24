@@ -92,7 +92,7 @@ static NSString *const kDisableTouchCalloutScript =
             superView:self];
     webView.center = CGPointMake(contentBounds.size.width * kHalf,
                                  inset + (contentBounds.size.height - inset) * kHalf);
-    webView.backgroundColor = [UIColor clearColor];
+    webView.backgroundColor = UIColor.clearColor;
     [webView setUseGrayView:NO];
 
     // Prefer the just-consumed URL; fall back to the pre-release endpoint when there was none.
@@ -103,7 +103,7 @@ static NSString *const kDisableTouchCalloutScript =
     }
     [webView loadRequest:[NSURLRequest requestWithURL:url]];
     [self.contentView addSubview:webView];
-    self.contentView.backgroundColor = [UIColor clearColor];
+    self.contentView.backgroundColor = UIColor.clearColor;
 }
 
 - (void)hideAnimation {

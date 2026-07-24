@@ -84,7 +84,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
 - (void)loadView {
     [super loadView];
     self.view.userInteractionEnabled = YES;
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = UIColor.clearColor;
 }
 
 /** @ghidraAddress 0x246934 */
@@ -258,7 +258,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
         return;
     }
     self.baseView = [[UIView alloc] initWithFrame:baseFrame];
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     self.baseView.hidden = YES;
     [self.shadeView addSubview:self.baseView];
 }

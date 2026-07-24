@@ -161,10 +161,10 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     self.artworkView = [[StoreImageView alloc]
         initWithFrame:CGRectMake(kArtworkOrigin, kArtworkOrigin, kArtworkSide, kArtworkSide)];
     [self.artworkView.layer setBorderWidth:kArtworkBorderWidth];
-    [self.artworkView.layer setBorderColor:[UIColor whiteColor].CGColor];
-    [self.artworkView setBackgroundColor:[UIColor whiteColor]];
+    [self.artworkView.layer setBorderColor:UIColor.whiteColor.CGColor];
+    [self.artworkView setBackgroundColor:UIColor.whiteColor];
     [self.artworkView.layer setShadowOffset:CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset)];
-    [self.artworkView.layer setShadowColor:[UIColor blackColor].CGColor];
+    [self.artworkView.layer setShadowColor:UIColor.blackColor.CGColor];
     [self.artworkView.layer setShadowOpacity:kArtworkShadowOpacity];
     [self.artworkView.layer setShadowRadius:kArtworkShadowRadius];
     [self.artworkView.layer setShouldRasterize:YES];
@@ -282,7 +282,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
                                  self.view.bounds.size.width + kDetailWidthInset,
                                  descriptionHeight)];
     [self.bannerView setAutoresizingMask:kMaskFlexibleWidthTopBottom];
-    [self.descriptionTextView setBackgroundColor:[UIColor clearColor]];
+    [self.descriptionTextView setBackgroundColor:UIColor.clearColor];
     [self.descriptionTextView setEditable:NO];
     [self.descriptionTextView setScrollEnabled:NO];
     [self.descriptionTextView setFont:[UIFont systemFontOfSize:kDescriptionFontSize]];
@@ -327,7 +327,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 
     [self.view setOpaque:YES];
     [self.view setAutoresizingMask:kMaskFlexibleWidthHeight];
-    [self.view setBackgroundColor:[UIColor grayColor]];
+    [self.view setBackgroundColor:UIColor.grayColor];
 
     self.mainView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     [self.mainView setScrollEnabled:YES];

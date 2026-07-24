@@ -171,7 +171,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.layer.shadowOffset = CGSizeZero;
         self.layer.shadowOpacity = kPanelShadowOpacity;
         self.layer.shouldRasterize = YES;
-        self.backgroundColor = [UIColor grayColor];
+        self.backgroundColor = UIColor.grayColor;
 
         UIImage *panelImage = [UIImage imageWithName:kItemPanelBackgroundName];
         BOOL isPad = IsPad();
@@ -187,7 +187,7 @@ static const CGFloat kFullAlpha = 1.0;
         [self.itemView addSubview:background];
 
         UIView *panel = [[UIView alloc] initWithFrame:self.bounds];
-        panel.backgroundColor = [UIColor whiteColor];
+        panel.backgroundColor = UIColor.whiteColor;
         panel.layer.shadowOffset = CGSizeMake(0, kInnerPanelShadowOffset);
         panel.layer.shadowOpacity = kPanelShadowOpacity;
         panel.layer.shadowRadius = kInnerPanelShadowRadius;
@@ -197,9 +197,9 @@ static const CGFloat kFullAlpha = 1.0;
                                                                    kItemViewWidth - kTitleInset,
                                                                    kItemViewHeight)];
         self.labelTitle = title;
-        self.labelTitle.backgroundColor = [UIColor clearColor];
+        self.labelTitle.backgroundColor = UIColor.clearColor;
         self.labelTitle.font = [UIFont boldSystemFontOfSize:kTitleFontSize];
-        self.labelTitle.textColor = [UIColor blackColor];
+        self.labelTitle.textColor = UIColor.blackColor;
         self.labelTitle.textAlignment = NSTextAlignmentCenter;
         self.labelTitle.adjustsFontSizeToFitWidth = YES;
         [panel addSubview:self.labelTitle];
@@ -212,11 +212,11 @@ static const CGFloat kFullAlpha = 1.0;
                                                              g_dPopupBaseOriginYWide)];
         self.artworkView = artwork;
         self.artworkView.layer.borderWidth = kArtworkBorderWidth;
-        self.artworkView.layer.borderColor = (__bridge id)[UIColor whiteColor].CGColor;
-        self.artworkView.backgroundColor = [UIColor whiteColor];
+        self.artworkView.layer.borderColor = (__bridge id)UIColor.whiteColor.CGColor;
+        self.artworkView.backgroundColor = UIColor.whiteColor;
         self.artworkView.layer.shadowOffset =
             CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-        self.artworkView.layer.shadowColor = (__bridge id)[UIColor blackColor].CGColor;
+        self.artworkView.layer.shadowColor = (__bridge id)UIColor.blackColor.CGColor;
         self.artworkView.layer.shadowOpacity = g_dRBWebViewGrayViewWhite;
         self.artworkView.layer.shadowRadius = kArtworkShadowRadius;
         self.artworkView.layer.shouldRasterize = YES;
@@ -227,7 +227,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                                   kLabelNameWidth,
                                                                   kLabelLineHeight)];
         self.labelItemName = name;
-        self.labelItemName.backgroundColor = [UIColor clearColor];
+        self.labelItemName.backgroundColor = UIColor.clearColor;
         self.labelItemName.font = [UIFont boldSystemFontOfSize:kItemNameFontSize];
         self.labelItemName.adjustsFontSizeToFitWidth = YES;
         self.labelItemName.minimumScaleFactor = kLabelMinimumScaleFactor;
@@ -238,7 +238,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                                     kLabelNameWidth,
                                                                     kLabelLineHeight)];
         self.labelArtistName = artist;
-        self.labelArtistName.backgroundColor = [UIColor clearColor];
+        self.labelArtistName.backgroundColor = UIColor.clearColor;
         self.labelArtistName.font = [UIFont systemFontOfSize:kArtistFontSize];
         self.labelArtistName.adjustsFontSizeToFitWidth = YES;
         self.labelArtistName.minimumScaleFactor = kLabelMinimumScaleFactor;
@@ -249,7 +249,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                                     kLabelNameWidth,
                                                                     kLabelLineHeight)];
         self.labelLevels = levels;
-        self.labelLevels.backgroundColor = [UIColor clearColor];
+        self.labelLevels.backgroundColor = UIColor.clearColor;
         self.labelLevels.font = [UIFont boldSystemFontOfSize:kLevelsFontSize];
         self.labelLevels.adjustsFontSizeToFitWidth = YES;
         self.labelLevels.minimumScaleFactor = kLabelMinimumScaleFactor;
@@ -352,7 +352,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                                                kDescriptionWidth,
                                                                                kDescriptionHeight)];
         self.descriptionTextView = description;
-        self.descriptionTextView.backgroundColor = [UIColor clearColor];
+        self.descriptionTextView.backgroundColor = UIColor.clearColor;
         self.descriptionTextView.editable = NO;
         self.descriptionTextView.selectable = NO;
         self.descriptionTextView.scrollEnabled = NO;
@@ -365,7 +365,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                          kDescriptionWidth,
                                                          g_dSliderRowHeightWide)];
         self.copyrightView = copyright;
-        self.copyrightView.backgroundColor = [UIColor clearColor];
+        self.copyrightView.backgroundColor = UIColor.clearColor;
         self.copyrightView.editable = NO;
         self.copyrightView.font = [UIFont systemFontOfSize:kCopyrightFontSize];
         [self.detailView addSubview:self.copyrightView];
@@ -385,7 +385,7 @@ static const CGFloat kFullAlpha = 1.0;
         UILabel *loading = [[UILabel alloc]
             initWithFrame:CGRectMake(0, 0, g_dMascotMessageMaxWidthPhone, kLoadingLabelHeight)];
         self.labelLoading = loading;
-        self.labelLoading.backgroundColor = [UIColor clearColor];
+        self.labelLoading.backgroundColor = UIColor.clearColor;
         self.labelLoading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
         self.labelLoading.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                         alpha:kFullAlpha];
@@ -498,7 +498,7 @@ static const CGFloat kFullAlpha = 1.0;
 /** @ghidraAddress 0x44f74 */
 - (void)removeItemInfo {
     self.itemInfo = nil;
-    self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = UIColor.grayColor;
     self.artworkView.imageURL = nil;
     self.labelItemName.text = nil;
     self.labelArtistName.text = nil;

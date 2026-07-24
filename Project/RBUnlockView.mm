@@ -247,7 +247,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.activityIndicatorView = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     self.activityIndicatorView.backgroundColor =
-        [[UIColor grayColor] colorWithAlphaComponent:kSpinnerBackgroundAlpha];
+        [UIColor.grayColor colorWithAlphaComponent:kSpinnerBackgroundAlpha];
     self.activityIndicatorView.layer.cornerRadius = kSpinnerCornerRadius;
     self.activityIndicatorView.center = self.center;
     [self addSubview:self.activityIndicatorView];

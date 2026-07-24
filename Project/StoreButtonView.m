@@ -52,7 +52,7 @@ static const int kRGBAComponentCount = 4;
                                    kRetinaTitleShadowHeight :
                                    kNonRetinaTitleShadowHeight;
         self.titleLabel.shadowOffset = CGSizeMake(0.0, shadowHeight);
-        [self setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         [self setTitleShadowColor:[UIColor colorWithWhite:0.0 alpha:kTitleShadowAlpha]
                          forState:UIControlStateNormal];
         [self setTitleColor:[UIColor colorWithWhite:kHighlightedTitleWhite alpha:1.0]
@@ -74,7 +74,7 @@ static const int kRGBAComponentCount = 4;
 /** @ghidraAddress 0xc138 */
 - (UIColor *)buttonColor {
     if (_buttonColor == nil) {
-        _buttonColor = [UIColor blueColor];
+        _buttonColor = UIColor.blueColor;
     }
     return _buttonColor;
 }
@@ -88,7 +88,7 @@ static const int kRGBAComponentCount = 4;
 /** @ghidraAddress 0xc208 */
 - (UIColor *)disabledColor {
     if (_disabledColor == nil) {
-        _disabledColor = [UIColor grayColor];
+        _disabledColor = UIColor.grayColor;
     }
     return _disabledColor;
 }
@@ -210,7 +210,7 @@ static const int kRGBAComponentCount = 4;
     // Paint a grey inner shadow by filling an even-odd ring (an outward-inset rect minus the
     // rounded path), clipped to the rounded path and translated off to one side so its cast
     // shadow falls back inside the button.
-    CGColorRef blackColor = [UIColor blackColor].CGColor;
+    CGColorRef blackColor = UIColor.blackColor.CGColor;
     CGRect outerRect = CGRectInset(
         CGRectOffset(CGRectInset(roundedPath.bounds, -shadowBlur, -shadowBlur), -shadowOffset, 0.0),
         kBorderInset,
@@ -232,7 +232,7 @@ static const int kRGBAComponentCount = 4;
         blackColor);
     [roundedPath addClip];
     [borderPath applyTransform:CGAffineTransformMakeTranslation(-translation, 0.0)];
-    [[UIColor grayColor] setFill];
+    [UIColor.grayColor setFill];
     [borderPath fill];
     CGContextRestoreGState(context);
 

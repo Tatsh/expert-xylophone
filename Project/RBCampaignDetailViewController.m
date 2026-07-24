@@ -189,7 +189,7 @@ static const CGFloat kDisabledButtonWhite = 0.6000000238418579;
 
     self.view.opaque = YES;
     self.view.autoresizingMask = kAutoresizingMaskFlexibleSize;
-    self.view.backgroundColor = [UIColor grayColor];
+    self.view.backgroundColor = UIColor.grayColor;
 
     UIScrollView *scroll = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     self.mainView = scroll;
@@ -215,10 +215,10 @@ static const CGFloat kDisabledButtonWhite = 0.6000000238418579;
         initWithFrame:CGRectMake(kArtworkOrigin, kArtworkOrigin, kArtworkSize, kArtworkSize)];
     self.artworkView = artwork;
     self.artworkView.layer.borderWidth = kArtworkBorderWidth;
-    self.artworkView.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.artworkView.backgroundColor = [UIColor whiteColor];
+    self.artworkView.layer.borderColor = UIColor.whiteColor.CGColor;
+    self.artworkView.backgroundColor = UIColor.whiteColor;
     self.artworkView.layer.shadowOffset = CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-    self.artworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
     self.artworkView.layer.shadowOpacity = kArtworkShadowOpacity;
     self.artworkView.layer.shadowRadius = kArtworkShadowRadius;
     self.artworkView.layer.shouldRasterize = YES;
@@ -363,7 +363,7 @@ static const CGFloat kDisabledButtonWhite = 0.6000000238418579;
     self.descriptionTextView = description;
     self.bannerView.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
-    self.descriptionTextView.backgroundColor = [UIColor clearColor];
+    self.descriptionTextView.backgroundColor = UIColor.clearColor;
     self.descriptionTextView.editable = NO;
     self.descriptionTextView.scrollEnabled = NO;
     self.descriptionTextView.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
@@ -386,7 +386,7 @@ static const CGFloat kDisabledButtonWhite = 0.6000000238418579;
                                  self.view.bounds.size.width + kDescriptionWidthInset,
                                  kSecondaryLabelRowHeight)];
     self.copyrightView = copyright;
-    self.copyrightView.backgroundColor = [UIColor clearColor];
+    self.copyrightView.backgroundColor = UIColor.clearColor;
     self.copyrightView.editable = NO;
     self.copyrightView.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
     self.copyrightView.autoresizingMask =

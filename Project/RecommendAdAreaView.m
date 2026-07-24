@@ -96,7 +96,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.opaque = NO;
         self.autoresizingMask =
             UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
@@ -126,7 +126,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
     self.delegate = self;
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:path]];
     [self loadRequest:request];
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.opaque = NO;
 }
 

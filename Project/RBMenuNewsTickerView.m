@@ -113,8 +113,8 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     iconLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     iconLabel.textAlignment = NSTextAlignmentCenter;
     iconLabel.text = [NSString stringWithFormat:@""];
-    iconLabel.textColor = [UIColor blackColor];
-    iconLabel.backgroundColor = [UIColor clearColor];
+    iconLabel.textColor = UIColor.blackColor;
+    iconLabel.backgroundColor = UIColor.clearColor;
     [self addSubview:iconLabel];
 
     UIView *baseView = [[UIView alloc] initWithFrame:CGRectMake(textInset,
@@ -132,19 +132,19 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     UILabel *newsLabel = [[UILabel alloc] initWithFrame:baseView.bounds];
     newsLabel.font = self.font;
     if (theme == kNewsTickerThemeDarkTwo || theme == kNewsTickerThemeDarkOne) {
-        newsLabel.textColor = [UIColor blackColor];
-        iconLabel.textColor = [UIColor blackColor];
+        newsLabel.textColor = UIColor.blackColor;
+        iconLabel.textColor = UIColor.blackColor;
         self.backgroundColor = [UIColor colorWithRed:kNewsTickerDarkThemeBackgroundComponent
                                                green:kNewsTickerDarkThemeBackgroundComponent
                                                 blue:kNewsTickerDarkThemeBackgroundComponent
                                                alpha:kNewsTickerDarkThemeBackgroundAlpha];
     } else if (theme == kNewsTickerThemeLight) {
-        newsLabel.textColor = [UIColor whiteColor];
-        iconLabel.textColor = [UIColor whiteColor];
-        self.backgroundColor = [UIColor blackColor];
+        newsLabel.textColor = UIColor.whiteColor;
+        iconLabel.textColor = UIColor.whiteColor;
+        self.backgroundColor = UIColor.blackColor;
     }
-    newsLabel.backgroundColor = [UIColor clearColor];
-    iconLabel.backgroundColor = [UIColor clearColor];
+    newsLabel.backgroundColor = UIColor.clearColor;
+    iconLabel.backgroundColor = UIColor.clearColor;
     newsLabel.textAlignment = NSTextAlignmentLeft;
     newsLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     newsLabel.numberOfLines = 1;

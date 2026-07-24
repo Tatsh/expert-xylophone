@@ -96,7 +96,7 @@ static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.number = 0.0f;
     }
     return self;

@@ -158,7 +158,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
         banner.cornerRadius = kBannerCornerRadius;
         self.layer.shadowOffset = CGSizeMake(0.0, kBannerShadowOffsetHeight);
-        self.layer.shadowColor = [UIColor blackColor].CGColor;
+        self.layer.shadowColor = UIColor.blackColor.CGColor;
         self.layer.shadowOpacity = kBannerShadowOpacity;
         self.layer.shadowRadius = kBannerShadowRadius;
 

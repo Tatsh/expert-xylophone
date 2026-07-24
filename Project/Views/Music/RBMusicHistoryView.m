@@ -41,7 +41,7 @@ static const NSTimeInterval kMascotMoveAnimDuration = 0.1;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.dataArray = [[NSMutableArray alloc] init];
         self.pointViewArray = [[NSMutableArray alloc] init];
         [self CreateView];

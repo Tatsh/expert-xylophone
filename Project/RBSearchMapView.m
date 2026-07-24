@@ -185,7 +185,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 #pragma mark - View construction
 
 - (void)setupView {
-    [self setBackgroundColor:[UIColor clearColor]];
+    [self setBackgroundColor:UIColor.clearColor];
     [self setAutoresizingMask:g_dwAutoresizingMaskFlexibleAll];
 
     if (!self.mapView) {
@@ -231,7 +231,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
         [label setFont:[UIFont boldSystemFontOfSize:kMessageLabelFontSize]];
         [label setNumberOfLines:kMessageLabelLineCount];
         [label setText:@"店舗を表示するには\n地図を拡大して下さい"];
-        [label setTextColor:[UIColor whiteColor]];
+        [label setTextColor:UIColor.whiteColor];
         [label setTextAlignment:NSTextAlignmentCenter];
         [label.layer setCornerRadius:kMessageLabelCornerRadius];
         [label setAlpha:kMessageLabelHiddenAlpha];
@@ -259,7 +259,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
         [self.infomationView setHidden:YES];
         [self.infomationView setAutoresizingMask:g_dwRBWebViewIndicatorAutoresizingMask];
         [self.infomationView.layer setShadowRadius:kInfoOverlayShadowRadius];
-        [self.infomationView.layer setShadowColor:[UIColor blackColor].CGColor];
+        [self.infomationView.layer setShadowColor:UIColor.blackColor.CGColor];
         [self.infomationView.layer setShadowOpacity:kInfoOverlayShadowOpacity];
         [self.infomationView.layer setShadowOffset:CGSizeZero];
     }
@@ -306,7 +306,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
         [label setFont:[UIFont boldSystemFontOfSize:kMessageLabelFontSize]];
         [label setNumberOfLines:kMessageLabelLineCount];
         [label setText:@""];
-        [label setTextColor:[UIColor whiteColor]];
+        [label setTextColor:UIColor.whiteColor];
         [label setTextAlignment:NSTextAlignmentCenter];
         [label.layer setCornerRadius:kErrorLabelCornerRadius];
         [label setHidden:YES];

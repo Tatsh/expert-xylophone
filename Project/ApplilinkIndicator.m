@@ -28,7 +28,7 @@ static const CGFloat kCentreFactor = 0.5;
         self.indicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0, 0, g_dLayoutMetricEighty, g_dLayoutMetricEighty)];
         [self.indicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        self.backgroundColor = [UIColor blackColor];
+        self.backgroundColor = UIColor.blackColor;
         self.alpha = kOverlayAlpha;
         [self addSubview:self.indicator];
     }
@@ -59,7 +59,7 @@ static const CGFloat kCentreFactor = 0.5;
 }
 
 - (void)touchEventActived {
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.userInteractionEnabled = NO;
 }
 

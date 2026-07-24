@@ -151,7 +151,7 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
         self.baseView.center = self.center;
     }
     self.baseView.autoresizingMask = kAutoresizingCentred;
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     [self addSubview:self.baseView];
 
     // The title bar sits at the top of the base panel; its offset from the panel origin depends on

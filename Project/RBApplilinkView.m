@@ -71,7 +71,7 @@ static NSString *const kApplilinkAdLocation = @"ADL_TOP";
         UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.webTargetView.layer.cornerRadius = kWebTargetCornerRadius;
     self.webTargetView.clipsToBounds = YES;
-    self.webTargetView.backgroundColor = [UIColor clearColor];
+    self.webTargetView.backgroundColor = UIColor.clearColor;
     self.webTargetView.alpha = 0.0;
     [self.contentView addSubview:self.webTargetView];
 
@@ -83,7 +83,7 @@ static NSString *const kApplilinkAdLocation = @"ADL_TOP";
     [self.indicatorView startAnimating];
     [self.contentView addSubview:self.indicatorView];
 
-    self.contentView.backgroundColor = [UIColor clearColor];
+    self.contentView.backgroundColor = UIColor.clearColor;
     self.webTargetAnimating = NO;
 }
 

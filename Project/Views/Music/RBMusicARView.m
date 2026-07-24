@@ -96,7 +96,7 @@ static NSString *const kOtherDecimalImageName = @"02_music_detail/det_ran_ten";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         [self setFrame:CGRectMake(frame.origin.x, frame.origin.y, kReadoutWidth, kReadoutHeight)];
         self.numHeightL = 0.0f;
         self.numHeightS = 0.0f;

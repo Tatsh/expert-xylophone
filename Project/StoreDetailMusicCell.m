@@ -83,7 +83,7 @@ static const int kNoExtendNotePid = 0;
             initWithFrame:CGRectMake(kJacketInset, kJacketInset, kJacketSize, kJacketSize)];
         self.artworkView.image = [UIImage imageWithName:kStoreDefaultJacketImageName];
         self.artworkView.layer.shadowOffset = CGSizeMake(kJacketShadowOffset, kJacketShadowOffset);
-        self.artworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+        self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
         self.artworkView.layer.shadowOpacity = kJacketShadowOpacity;
         self.artworkView.layer.shadowRadius = kJacketShadowRadius;
         self.artworkView.layer.shouldRasterize = YES;
@@ -97,7 +97,7 @@ static const int kNoExtendNotePid = 0;
                                                                    kNameLabelTop,
                                                                    textColumnWidth,
                                                                    kNameLabelHeight)];
-        self.labelName.backgroundColor = [UIColor clearColor];
+        self.labelName.backgroundColor = UIColor.clearColor;
         self.labelName.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
         self.labelName.autoresizingMask = kLabelAutoresizing;
 
@@ -105,7 +105,7 @@ static const int kNoExtendNotePid = 0;
                                                                      kArtistLabelTop,
                                                                      textColumnWidth,
                                                                      kArtistLabelHeight)];
-        self.labelArtist.backgroundColor = [UIColor clearColor];
+        self.labelArtist.backgroundColor = UIColor.clearColor;
         self.labelArtist.font = [UIFont systemFontOfSize:kArtistLabelFontSize];
         self.labelArtist.autoresizingMask = kLabelAutoresizing;
 
@@ -113,7 +113,7 @@ static const int kNoExtendNotePid = 0;
                                                                      g_dLayoutMetricSixty,
                                                                      kLevelsLabelWidth,
                                                                      kLevelsLabelHeight)];
-        self.labelLevels.backgroundColor = [UIColor clearColor];
+        self.labelLevels.backgroundColor = UIColor.clearColor;
         self.labelLevels.font = [UIFont boldSystemFontOfSize:kLevelsLabelFontSize];
         self.labelLevels.adjustsFontSizeToFitWidth = YES;
 

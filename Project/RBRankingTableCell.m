@@ -94,8 +94,8 @@ static const CGFloat kHalfScale = 0.5;
                 CGRectMake(
                     kRankLabelXPhone, kRankLabelYPhone, kRankLabelWidthPhone, kRankLabelHeight);
         self.labelRank = [[UILabel alloc] initWithFrame:rankFrame];
-        self.labelRank.backgroundColor = [UIColor clearColor];
-        self.labelRank.textColor = [UIColor whiteColor];
+        self.labelRank.backgroundColor = UIColor.clearColor;
+        self.labelRank.textColor = UIColor.whiteColor;
         self.labelRank.font =
             [UIFont boldSystemFontOfSize:isPad ? kRankFontSizePad : kRankFontSizePhone];
         self.labelRank.adjustsFontSizeToFitWidth = YES;
@@ -112,8 +112,8 @@ static const CGFloat kHalfScale = 0.5;
                                kNameLabelWidthPhone,
                                kNameLabelHeightPhone);
         self.labelName = [[UILabel alloc] initWithFrame:nameFrame];
-        self.labelName.backgroundColor = [UIColor clearColor];
-        self.labelName.textColor = [UIColor whiteColor];
+        self.labelName.backgroundColor = UIColor.clearColor;
+        self.labelName.textColor = UIColor.whiteColor;
         self.labelName.font =
             [UIFont boldSystemFontOfSize:isPad ? kNameFontSizePad : kNameFontSizePhone];
         self.labelName.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
@@ -128,8 +128,8 @@ static const CGFloat kHalfScale = 0.5;
             isPad ? CGRectMake(scoreX, kScoreLabelYPad, kScoreLabelWidthPad, kScoreLabelHeight) :
                     CGRectMake(scoreX, kScoreLabelYPhone, kScoreLabelWidthPhone, kScoreLabelHeight);
         self.labelScore = [[UILabel alloc] initWithFrame:scoreFrame];
-        self.labelScore.backgroundColor = [UIColor clearColor];
-        self.labelScore.textColor = [UIColor whiteColor];
+        self.labelScore.backgroundColor = UIColor.clearColor;
+        self.labelScore.textColor = UIColor.whiteColor;
         self.labelScore.font =
             [UIFont systemFontOfSize:isPad ? kScoreFontSizePad : kScoreFontSizePhone];
         self.labelScore.textAlignment = NSTextAlignmentRight;
@@ -140,8 +140,8 @@ static const CGFloat kHalfScale = 0.5;
         [self addSubview:self.labelName];
         [self addSubview:self.labelScore];
 
-        self.fillColor = [UIColor whiteColor];
-        self.strokeColor = [UIColor whiteColor];
+        self.fillColor = UIColor.whiteColor;
+        self.strokeColor = UIColor.whiteColor;
     }
     return self;
 }

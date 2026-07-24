@@ -68,7 +68,7 @@ static const int kButtonTypePurchased = 1;
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
         self.tag = tag;
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
 
         CGSize itemSize = [self getItemSize:isPad];
         CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
@@ -104,7 +104,7 @@ static const int kButtonTypePurchased = 1;
         self.artworkView = artwork;
         [self.artworkView setImage:nil];
         self.artworkView.layer.shadowOffset = CGSizeMake(kJacketShadowOffset, kJacketShadowOffset);
-        self.artworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+        self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
         self.artworkView.layer.shadowOpacity = kJacketShadowOpacity;
         self.artworkView.layer.shadowRadius = kJacketShadowRadius;
         self.artworkView.layer.shouldRasterize = YES;

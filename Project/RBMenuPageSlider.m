@@ -139,7 +139,7 @@ enum {
                                                               green:1.0
                                                                blue:1.0
                                                               alpha:kSliderTranslucentAlpha];
-        self.indexLabel.textColor = [UIColor blackColor];
+        self.indexLabel.textColor = UIColor.blackColor;
         self.indexLabel.backgroundColor = [UIColor colorWithRed:1.0
                                                           green:1.0
                                                            blue:1.0
@@ -150,7 +150,7 @@ enum {
                                                               green:1.0
                                                                blue:1.0
                                                               alpha:kSliderTranslucentAlpha];
-        self.indexLabel.textColor = [UIColor whiteColor];
+        self.indexLabel.textColor = UIColor.whiteColor;
         self.indexLabel.backgroundColor = [UIColor colorWithRed:1.0
                                                           green:1.0
                                                            blue:1.0

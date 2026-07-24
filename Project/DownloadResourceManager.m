@@ -637,7 +637,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
         [self.bgEffectView setupView];
         [self.view addSubview:self.bgEffectView];
     }
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = UIColor.whiteColor;
 
     // The wide variant lays the help carousel out over a 670x544 canvas; the standard variant uses
     // a square 320x320 help canvas and a 320-tall pastel container.
@@ -755,7 +755,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     [self layoutScrollView];
 
     self.fadeImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-    self.fadeImageView.backgroundColor = [UIColor blackColor];
+    self.fadeImageView.backgroundColor = UIColor.blackColor;
     self.fadeImageView.alpha = 1.0;
     self.fadeImageView.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

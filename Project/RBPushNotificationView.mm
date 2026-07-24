@@ -54,7 +54,7 @@ constexpr NSInteger kMessageLabelLineCount = 2;
 
 - (void)setupViewWithDelegate:(id)delegate {
     self.upMargin = kDefaultUpMargin;
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.delegate = delegate;
 
     UIImage *bgImage = [UIImage imageWithName:kNotificationBackgroundImageName];

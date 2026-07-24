@@ -77,7 +77,7 @@
     self.sdkDelegate = delegate;
 
     self.view.frame = [UIScreen mainScreen].bounds;
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = UIColor.clearColor;
 
     RotateStoreProductViewController *storeViewController =
         [[RotateStoreProductViewController alloc] init];

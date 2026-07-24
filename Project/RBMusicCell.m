@@ -186,7 +186,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 - (void)SetupView {
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
 
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
 
     // The frame-bonus background layer, sized to its image and pinned to the cell's top-left.
     self.bgType = ScoreDataFrameBonusTypeNone;
@@ -200,7 +200,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 
     // The artwork view.
     self.artworkImageView = [[UIImageView alloc] init];
-    self.artworkImageView.backgroundColor = [UIColor clearColor];
+    self.artworkImageView.backgroundColor = UIColor.clearColor;
     self.artworkImageView.frame = CGRectMake(wide ? kArtworkOriginXWide : kArtworkOriginXNarrow,
                                              wide ? kArtworkOriginYWide : kArtworkOriginYNarrow,
                                              wide ? kArtworkSizeWide : kArtworkSizeNarrow,
@@ -270,7 +270,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 
     self.titleLabel.text = @"";
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.titleLabel.backgroundColor = [UIColor clearColor];
+    self.titleLabel.backgroundColor = UIColor.clearColor;
     [self applyThemeTextColor:thema toLabel:self.titleLabel];
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     self.titleLabel.font =
@@ -289,7 +289,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     if (thema == RBUserSettingDataThemeClassic) {
         scrim.backgroundColor = [UIColor colorWithWhite:1.0 alpha:kTitleScrimAlpha];
     } else if (thema == RBUserSettingDataThemeColette) {
-        scrim.backgroundColor = [UIColor clearColor];
+        scrim.backgroundColor = UIColor.clearColor;
     } else if (thema == RBUserSettingDataThemeLimelight) {
         scrim.backgroundColor = [UIColor colorWithWhite:0.0 alpha:kTitleScrimAlpha];
     }
@@ -304,7 +304,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.artistLabel.minimumScaleFactor = kArtistMinimumScaleFactor;
     self.artistLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     self.artistLabel.font = [UIFont systemFontOfSize:kArtistFontSize];
-    self.artistLabel.backgroundColor = [UIColor clearColor];
+    self.artistLabel.backgroundColor = UIColor.clearColor;
     [self applyThemeTextColor:thema toLabel:self.artistLabel];
     [self.contentView addSubview:self.artistLabel];
 }
@@ -317,7 +317,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     UIImage *image = [UIImage imageWithName:imageName];
     CALayer *layer = [CALayer layer];
     layer.frame = CGRectMake(originX, originY, image.size.width, image.size.height);
-    layer.backgroundColor = [UIColor clearColor].CGColor;
+    layer.backgroundColor = UIColor.clearColor.CGColor;
     layer.contents = (__bridge id)image.CGImage;
     layer.hidden = YES;
     [self.contentView.layer addSublayer:layer];
@@ -328,9 +328,9 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
 // Limelight and Colette.
 - (void)applyThemeTextColor:(RBUserSettingDataTheme)thema toLabel:(UILabel *)label {
     if (thema == RBUserSettingDataThemeClassic) {
-        label.textColor = [UIColor whiteColor];
+        label.textColor = UIColor.whiteColor;
     } else if (thema == RBUserSettingDataThemeColette || thema == RBUserSettingDataThemeLimelight) {
-        label.textColor = [[UIColor blackColor] colorWithAlphaComponent:kDarkThemeTextAlpha];
+        label.textColor = [UIColor.blackColor colorWithAlphaComponent:kDarkThemeTextAlpha];
     }
 }
 

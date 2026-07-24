@@ -92,7 +92,7 @@ typedef enum {
     self.layer.shadowOffset = CGSizeZero;
     self.layer.shadowOpacity = 0.5;
     self.layer.shouldRasterize = YES;
-    [self setBackgroundColor:[UIColor grayColor]];
+    [self setBackgroundColor:UIColor.grayColor];
 
     UIImage *packBg = [UIImage imageWithName:kStorePackBgImageName];
     const BOOL isWide = IsPad();
@@ -105,16 +105,16 @@ typedef enum {
     [self.noteView addSubview:noteBg];
 
     UIView *card = [[UIView alloc] initWithFrame:self.bounds];
-    [card setBackgroundColor:[UIColor whiteColor]];
+    [card setBackgroundColor:UIColor.whiteColor];
     card.layer.shadowOffset = CGSizeMake(0.0, 1.0);
     card.layer.shadowOpacity = 0.5;
     card.layer.shadowRadius = 1.0;
 
     self.labelTitle =
         [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, kCardWidth - 20.0, 44.0)];
-    [self.labelTitle setBackgroundColor:[UIColor clearColor]];
+    [self.labelTitle setBackgroundColor:UIColor.clearColor];
     [self.labelTitle setFont:[UIFont boldSystemFontOfSize:18.0]];
-    [self.labelTitle setTextColor:[UIColor blackColor]];
+    [self.labelTitle setTextColor:UIColor.blackColor];
     [self.labelTitle setTextAlignment:NSTextAlignmentCenter];
     [self.labelTitle setAdjustsFontSizeToFitWidth:YES];
     [card addSubview:self.labelTitle];
@@ -122,31 +122,31 @@ typedef enum {
 
     self.artworkView = [[StoreImageView alloc] initWithFrame:CGRectMake(18.0, 79.0, 79.0, 79.0)];
     self.artworkView.layer.borderWidth = 1.0;
-    self.artworkView.layer.borderColor = [UIColor whiteColor].CGColor;
-    [self.artworkView setBackgroundColor:[UIColor whiteColor]];
+    self.artworkView.layer.borderColor = UIColor.whiteColor.CGColor;
+    [self.artworkView setBackgroundColor:UIColor.whiteColor];
     self.artworkView.layer.shadowOffset = CGSizeMake(2.0, 2.0);
-    self.artworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
     self.artworkView.layer.shadowOpacity = (float)kArtworkShadowOpacity;
     self.artworkView.layer.shadowRadius = 2.0;
     self.artworkView.layer.shouldRasterize = YES;
     [self.noteView addSubview:self.artworkView];
 
     self.labelMusicName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 76.0, 421.0, 28.0)];
-    [self.labelMusicName setBackgroundColor:[UIColor clearColor]];
+    [self.labelMusicName setBackgroundColor:UIColor.clearColor];
     [self.labelMusicName setFont:[UIFont boldSystemFontOfSize:22.0]];
     [self.labelMusicName setAdjustsFontSizeToFitWidth:YES];
     [self.labelMusicName setMinimumScaleFactor:18.0]; // Yes, the binary passes 18.0 here.
     [self.noteView addSubview:self.labelMusicName];
 
     self.labelArtistName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 108.0, 421.0, 28.0)];
-    [self.labelArtistName setBackgroundColor:[UIColor clearColor]];
+    [self.labelArtistName setBackgroundColor:UIColor.clearColor];
     [self.labelArtistName setFont:[UIFont systemFontOfSize:18.0]];
     [self.labelArtistName setAdjustsFontSizeToFitWidth:YES];
     [self.labelArtistName setMinimumScaleFactor:18.0];
     [self.noteView addSubview:self.labelArtistName];
 
     self.labelLevel = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 172.0, 421.0, 28.0)];
-    [self.labelLevel setBackgroundColor:[UIColor clearColor]];
+    [self.labelLevel setBackgroundColor:UIColor.clearColor];
     [self.labelLevel setFont:[UIFont boldSystemFontOfSize:20.0]];
     [self.labelLevel setAdjustsFontSizeToFitWidth:YES];
     [self.labelLevel setMinimumScaleFactor:18.0];
@@ -227,7 +227,7 @@ typedef enum {
                                                      CGRectGetMaxY(self.bannerView.frame) + 10.0,
                                                      kDescriptionWidth,
                                                      kDescriptionHeight)];
-    [self.descriptionTextView setBackgroundColor:[UIColor clearColor]];
+    [self.descriptionTextView setBackgroundColor:UIColor.clearColor];
     [self.descriptionTextView setEditable:NO];
     [self.descriptionTextView setSelectable:NO];
     [self.descriptionTextView setScrollEnabled:NO];
@@ -236,7 +236,7 @@ typedef enum {
 
     self.copyrightView =
         [[UITextView alloc] initWithFrame:CGRectMake(10.0, kCopyrightOriginY, 0.0, 0.0)];
-    [self.copyrightView setBackgroundColor:[UIColor clearColor]];
+    [self.copyrightView setBackgroundColor:UIColor.clearColor];
     [self.copyrightView setEditable:NO];
     [self.copyrightView setFont:[UIFont systemFontOfSize:16.0]];
     [self.detailView addSubview:self.copyrightView];
@@ -252,7 +252,7 @@ typedef enum {
 
     self.labelLoading =
         [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, g_dMascotMessageMaxWidthPhone, 24.0)];
-    [self.labelLoading setBackgroundColor:[UIColor clearColor]];
+    [self.labelLoading setBackgroundColor:UIColor.clearColor];
     [self.labelLoading setFont:[UIFont boldSystemFontOfSize:18.0]];
     [self.labelLoading setTextColor:[UIColor colorWithWhite:kLoadingTextWhite alpha:1.0]];
     [self.labelLoading setShadowColor:[UIColor colorWithWhite:0.0 alpha:kLoadingShadowAlpha]];
@@ -325,7 +325,7 @@ typedef enum {
 /** @ghidraAddress 0x24b78 */
 - (void)removeNoteInfo {
     self.noteInfo = nil;
-    [self setBackgroundColor:[UIColor grayColor]];
+    [self setBackgroundColor:UIColor.grayColor];
     self.artworkView.imageURL = nil;
     [self.labelMusicName setText:nil];
     [self.labelArtistName setText:nil];

@@ -149,9 +149,9 @@ enum {
 
     // The package title label, black and clear-backed, laid over the backdrop.
     self.titleLabel = [[UILabel alloc] init];
-    self.titleLabel.textColor = [UIColor blackColor];
+    self.titleLabel.textColor = UIColor.blackColor;
     self.titleLabel.textAlignment = NSTextAlignmentLeft;
-    self.titleLabel.backgroundColor = [UIColor clearColor];
+    self.titleLabel.backgroundColor = UIColor.clearColor;
     [self.backgroundView addSubview:self.titleLabel];
 
     // The title geometry, font, and alignment depend on the iPad idiom and theme.
@@ -206,7 +206,7 @@ enum {
                                         collectionWidth,
                                         collectionHeight)
         collectionViewLayout:layout];
-    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.backgroundColor = UIColor.clearColor;
     [self.collectionView registerClass:[RBUnlockCollectionCell class]
             forCellWithReuseIdentifier:NSStringFromClass([RBUnlockCollectionCell class])];
     self.collectionView.showsVerticalScrollIndicator = NO;

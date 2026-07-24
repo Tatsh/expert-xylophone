@@ -44,7 +44,7 @@ static const CGFloat kSortCellFontSize = 19.0;
     [super loadView];
 
     self.view.opaque = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = UIColor.whiteColor;
     self.view.autoresizesSubviews = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.view.exclusiveTouch = YES;
@@ -57,7 +57,7 @@ static const CGFloat kSortCellFontSize = 19.0;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.allowsSelection = YES;
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundColor = UIColor.clearColor;
 
     CGFloat contentHeight = self.sortRuleCount * kSortRowContentHeight;
     if (contentHeight > kSortMaxContentHeight) {
@@ -94,7 +94,7 @@ static const CGFloat kSortCellFontSize = 19.0;
                                       reuseIdentifier:kSortTableCellReuseIdentifier];
     }
     cell.textLabel.opaque = NO;
-    cell.textLabel.backgroundColor = [UIColor clearColor];
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:kSortCellFontSize];
     cell.textLabel.text = self.sortTitleList[indexPath.row];
     return cell;

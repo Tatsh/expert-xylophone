@@ -161,7 +161,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 - (void)setupView {
     /** @ghidraAddress 0x37bfc */
     self.alpha = 0.0;
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.autoresizingMask = kAutoresizingMaskFlexibleAll;
 
     BOOL narrow = !IsPad();
@@ -295,7 +295,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
     // The opaque black full-cover tap target sits on top and absorbs the tap that advances a step.
     self.fullCoverView = [[UIView alloc] initWithFrame:self.frame];
-    self.fullCoverView.backgroundColor = [UIColor blackColor];
+    self.fullCoverView.backgroundColor = UIColor.blackColor;
     self.fullCoverView.alpha = 0.0;
     self.fullCoverView.autoresizingMask = kAutoresizingMaskFlexibleAll;
     [self addSubview:self.fullCoverView];
@@ -617,7 +617,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
             setAnimationTimingFunction:[CAMediaTimingFunction
                                            functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
         [CATransaction setDisableActions:YES];
-        self.baseView.backgroundColor = [UIColor blackColor];
+        self.baseView.backgroundColor = UIColor.blackColor;
         self.grayTL.hidden = YES;
         self.grayTR.hidden = YES;
         self.grayBL.hidden = YES;
@@ -652,7 +652,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
         setAnimationTimingFunction:[CAMediaTimingFunction
                                        functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
     [CATransaction setDisableActions:YES];
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     self.grayTL.hidden = NO;
     self.grayTR.hidden = NO;
     self.grayBL.hidden = NO;

@@ -124,7 +124,7 @@ constexpr CGFloat kNoButtonWideX = 249.0;
     self.baseView.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
         UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     [self addSubview:self.baseView];
 
     // The background artwork fills the panel and stretches with it.

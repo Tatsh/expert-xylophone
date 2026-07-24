@@ -109,7 +109,7 @@ extern NSString *g_localizedShowMoreArrow;
 
         _thema = [RBUserSettingData sharedInstance].thema;
         if (_thema == RBUserSettingDataThemeClassic) {
-            self.strokeColor = [UIColor whiteColor];
+            self.strokeColor = UIColor.whiteColor;
         } else if (_thema == RBUserSettingDataThemeLimelight) {
             self.strokeColor = [UIColor colorWithRed:kClassicStrokeGrey
                                                green:kClassicStrokeGrey
@@ -122,7 +122,7 @@ extern NSString *g_localizedShowMoreArrow;
                                                alpha:1.0];
         }
 
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.allowsSelection = NO;
         self.scrollIndicatorInsets = kScrollIndicatorInsets;
@@ -134,7 +134,7 @@ extern NSString *g_localizedShowMoreArrow;
         self.footer =
             [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, kFooterHeight)];
         self.footer.opaque = NO;
-        self.footer.backgroundColor = [UIColor clearColor];
+        self.footer.backgroundColor = UIColor.clearColor;
         self.footer.autoresizingMask =
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |
             UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
@@ -142,7 +142,7 @@ extern NSString *g_localizedShowMoreArrow;
 
         // The "show more" button.
         self.buttonLoadNext = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.buttonLoadNext.backgroundColor = [UIColor clearColor];
+        self.buttonLoadNext.backgroundColor = UIColor.clearColor;
         self.buttonLoadNext.contentEdgeInsets = kLoadNextContentInsets;
         self.buttonLoadNext.titleLabel.shadowOffset = kLoadNextShadowOffset;
         [self.buttonLoadNext setTitleColor:self.strokeColor forState:UIControlStateNormal];
@@ -175,14 +175,14 @@ extern NSString *g_localizedShowMoreArrow;
                                      kMessageLabelHeight)];
         self.msgLabel.center =
             CGPointMake((int)(self.frame.size.width * kHalf), (int)(kMessageLabelHeight * kHalf));
-        self.msgLabel.backgroundColor = [UIColor clearColor];
+        self.msgLabel.backgroundColor = UIColor.clearColor;
         self.msgLabel.font = [UIFont systemFontOfSize:kMessageLabelFontSize];
         if (_thema == RBUserSettingDataThemeClassic) {
-            self.msgLabel.textColor = [UIColor whiteColor];
+            self.msgLabel.textColor = UIColor.whiteColor;
         } else if (_thema == RBUserSettingDataThemeLimelight) {
-            self.msgLabel.textColor = [UIColor grayColor];
+            self.msgLabel.textColor = UIColor.grayColor;
         } else if (_thema == RBUserSettingDataThemeColette) {
-            self.msgLabel.textColor = [UIColor grayColor];
+            self.msgLabel.textColor = UIColor.grayColor;
         }
         self.msgLabel.textAlignment = NSTextAlignmentCenter;
         self.msgLabel.autoresizingMask =
@@ -451,7 +451,7 @@ extern NSString *g_localizedShowMoreArrow;
 - (void)tableView:(UITableView *)tableView
       willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
-    cell.backgroundColor = [UIColor clearColor];
+    cell.backgroundColor = UIColor.clearColor;
 }
 
 @end

@@ -125,7 +125,7 @@ enum {
     }
     _baseFrame = self.view.bounds;
     self.view.userInteractionEnabled = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = UIColor.whiteColor;
 
     BOOL navigationBarHidden = self.isNavigationBarHidden;
     (void)[UIScreen mainScreen].bounds; // Yes, the binary evaluates and discards this.
@@ -134,7 +134,7 @@ enum {
     }
 
     self.baseView = [[UIView alloc] init];
-    self.baseView.backgroundColor = [UIColor whiteColor];
+    self.baseView.backgroundColor = UIColor.whiteColor;
     self.baseView.autoresizingMask = UIViewAutoresizingFlexibleWidth |
                                      UIViewAutoresizingFlexibleHeight |
                                      UIViewAutoresizingFlexibleTopMargin |
@@ -149,7 +149,7 @@ enum {
         [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, _baseFrame.size.width,
                                                     _baseFrame.size.height - inset)];
     self.webView.delegate = self;
-    self.webView.backgroundColor = [UIColor whiteColor];
+    self.webView.backgroundColor = UIColor.whiteColor;
     if (self.webView) {
         self.webView.scrollView.bounces = !_webViewBounces;
     }
@@ -171,7 +171,7 @@ enum {
                                             action:@selector(btnCloseClicked:)];
         if (![ApplilinkCore isNavigationBarCommonAppearance]) {
             if ([[UIDevice currentDevice].systemVersion floatValue] >= kSystemVersionIOS7) {
-                self.navigationBar.barTintColor = [UIColor whiteColor];
+                self.navigationBar.barTintColor = UIColor.whiteColor;
             }
         }
         [self.navigationBar pushNavigationItem:item animated:NO];

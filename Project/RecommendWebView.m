@@ -58,7 +58,7 @@ enum {
 }
 
 - (void)setInitParam {
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.opaque = NO;
     self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
                             UIViewAutoresizingFlexibleRightMargin |

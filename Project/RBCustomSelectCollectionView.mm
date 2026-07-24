@@ -315,7 +315,7 @@ constexpr long kPageControlMinPageCount = 2;
     self.collectionView = [[RBCollectionView alloc]
                initWithFrame:CGRectMake(0.0, topY, self.frame.size.width, buttonHeight)
         collectionViewLayout:layout];
-    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.backgroundColor = UIColor.clearColor;
     [self.collectionView registerClass:[RBCustomSelectCollectionCell class]
             forCellWithReuseIdentifier:NSStringFromClass([RBCustomSelectCollectionCell class])];
     self.collectionView.customDelegate = self;

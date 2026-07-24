@@ -143,12 +143,12 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
                                               .CGColor;
         self.baseView.layer.cornerRadius = cornerRadii[thema];
     } else if (thema == RBUserSettingDataThemeLimelight) {
-        self.baseView.backgroundColor = [UIColor whiteColor];
+        self.baseView.backgroundColor = UIColor.whiteColor;
         self.baseView.layer.cornerRadius = kLimelightCornerRadius;
     } else if (thema == RBUserSettingDataThemeClassic) {
-        self.baseView.backgroundColor = [UIColor blackColor];
+        self.baseView.backgroundColor = UIColor.blackColor;
         self.baseView.layer.borderWidth = kThemedBorderWidth;
-        self.baseView.layer.borderColor = [UIColor whiteColor].CGColor;
+        self.baseView.layer.borderColor = UIColor.whiteColor.CGColor;
         self.baseView.layer.cornerRadius = cornerRadii[thema];
     }
 

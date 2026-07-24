@@ -247,9 +247,9 @@ static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
                                alpha:1];
     }
     if (self.purchasedNote && !(self.alreadyDownloadBin && self.alreadyDownloadNote)) {
-        return [UIColor blueColor];
+        return UIColor.blueColor;
     }
-    return [UIColor grayColor];
+    return UIColor.grayColor;
 }
 
 - (NSString *)getButtonName {

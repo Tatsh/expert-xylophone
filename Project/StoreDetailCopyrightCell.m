@@ -33,7 +33,7 @@ static const NSInteger kLabelUnlimitedLines = 0;
                                                       kLabelInset,
                                                       g_dStoreDetailCopyrightLabelWidth,
                                                       kLabelInitialHeight)];
-        self.labelCopyright.backgroundColor = [UIColor clearColor];
+        self.labelCopyright.backgroundColor = UIColor.clearColor;
         self.labelCopyright.textColor = [UIColor colorWithWhite:g_dAudioManagerResumeFadeInTime
                                                           alpha:kLabelTextAlpha];
         self.labelCopyright.numberOfLines = kLabelUnlimitedLines;

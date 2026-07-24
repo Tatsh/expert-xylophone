@@ -381,8 +381,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     CGFloat contentTop = kPadContentTop - headerHeight;
 
     self.packTableLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, contentTop, 27.0, 0.0)];
-    self.packTableLabel.textColor = [UIColor blackColor];
-    self.packTableLabel.shadowColor = [UIColor lightGrayColor];
+    self.packTableLabel.textColor = UIColor.blackColor;
+    self.packTableLabel.shadowColor = UIColor.lightGrayColor;
     self.packTableLabel.shadowOffset = CGSizeMake(1.0, 1.0);
     self.packTableLabel.font = [UIFont systemFontOfSize:kPackTableLabelFontSize];
     self.packTableLabel.text = kStorePackTableTitle;
@@ -457,7 +457,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
     UIButton *showMore = [UIButton buttonWithType:UIButtonTypeCustom];
     [showMore setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-    [showMore setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     [showMore sizeToFit];
     showMore.center =
         CGPointMake(bounds.size.width * kCenterScale,
@@ -549,10 +549,10 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
             UILabel *info =
                 [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, bounds.size.width, 25.0)];
             info.tag = kTagInfoLabel;
-            info.backgroundColor = [UIColor clearColor];
+            info.backgroundColor = UIColor.clearColor;
             info.text = g_pStoreBannerTitle;
             info.font = [UIFont systemFontOfSize:kInfoLabelFontSize];
-            info.textColor = [UIColor whiteColor];
+            info.textColor = UIColor.whiteColor;
             info.textAlignment = NSTextAlignmentCenter;
             info.hidden = YES;
             [table addSubview:info];
@@ -598,7 +598,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         [self.view addSubview:loading];
 
         UIView *spinnerHost = [[UIView alloc] init];
-        spinnerHost.backgroundColor = [UIColor clearColor];
+        spinnerHost.backgroundColor = UIColor.clearColor;
         spinnerHost.autoresizingMask =
             UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
             UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -689,7 +689,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
     if (!IsPad()) {
         self.navigationController.navigationBar.tintColor = nil;
-        self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+        self.navigationController.navigationBar.barTintColor = UIColor.whiteColor;
         if ([self.navigationController.navigationBar
                 respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)]) {
             [self.navigationController.navigationBar setBackgroundImage:nil

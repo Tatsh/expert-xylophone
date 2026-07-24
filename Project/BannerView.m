@@ -11,11 +11,11 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.opaque = NO;
-        self.backgroundColor = [UIColor grayColor];
+        self.backgroundColor = UIColor.grayColor;
 
         self.imageView = [[UIImageView alloc] initWithFrame:self.bounds];
         self.imageView.opaque = NO;
-        self.imageView.backgroundColor = [UIColor clearColor];
+        self.imageView.backgroundColor = UIColor.clearColor;
         self.imageView.contentMode = UIViewContentModeScaleToFill;
         self.imageView.userInteractionEnabled = NO;
         self.imageView.clipsToBounds = YES;

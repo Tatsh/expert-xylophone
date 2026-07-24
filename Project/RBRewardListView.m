@@ -57,7 +57,7 @@ static NSString *const kRewardAdLocation = @"ADL_TOP";
         UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.webTargetView.layer.cornerRadius = kWebTargetCornerRadius;
     self.webTargetView.clipsToBounds = YES;
-    self.webTargetView.backgroundColor = [UIColor clearColor];
+    self.webTargetView.backgroundColor = UIColor.clearColor;
     self.webTargetView.alpha = 0.0;
     [self addSubview:self.webTargetView];
 
@@ -69,7 +69,7 @@ static NSString *const kRewardAdLocation = @"ADL_TOP";
     [self.indicatorView startAnimating];
     [self addSubview:self.indicatorView];
 
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.webTargetAnimating = NO;
 
     // The close button dismisses the advert list. It is hidden and disabled until the list appears.

@@ -95,7 +95,7 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                                       kNameLabelTop,
                                                       self.frame.size.width - kNameLabelWidthInset,
                                                       kNameLabelHeight)];
-        self.nameLabel.backgroundColor = [UIColor clearColor];
+        self.nameLabel.backgroundColor = UIColor.clearColor;
         self.nameLabel.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
         self.nameLabel.textColor = [UIColor colorWithWhite:kJacketBackgroundWhite alpha:1.0];
         self.nameLabel.adjustsFontSizeToFitWidth = YES;
@@ -112,7 +112,7 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                      g_dLayoutMetricThirtyTwo,
                                      self.frame.size.width - kCommentLabelWidthInset,
                                      buttonTop - kCommentLabelBottomLift)];
-        self.commentLabel.backgroundColor = [UIColor clearColor];
+        self.commentLabel.backgroundColor = UIColor.clearColor;
         self.commentLabel.font = [UIFont systemFontOfSize:kCommentLabelFontSize];
         self.commentLabel.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
         self.commentLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -123,7 +123,7 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                                                     buttonTop,
                                                                     g_dCustomizeLayoutMetric100,
                                                                     buttonHeight)];
-        self.priceLabel.backgroundColor = [UIColor clearColor];
+        self.priceLabel.backgroundColor = UIColor.clearColor;
         self.priceLabel.font = [UIFont boldSystemFontOfSize:kPriceLabelFontSize];
         self.priceLabel.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
 
@@ -166,9 +166,9 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
         jacket.image = [UIImage imageWithName:imageName];
     }
     jacket.layer.borderWidth = kJacketBorderWidth;
-    jacket.layer.borderColor = [UIColor whiteColor].CGColor;
+    jacket.layer.borderColor = UIColor.whiteColor.CGColor;
     jacket.layer.shadowOffset = CGSizeMake(kJacketShadowOffset, kJacketShadowOffset);
-    jacket.layer.shadowColor = [UIColor blackColor].CGColor;
+    jacket.layer.shadowColor = UIColor.blackColor.CGColor;
     jacket.layer.shadowOpacity = kJacketShadowOpacity;
     jacket.layer.shadowRadius = kJacketShadowRadius;
     jacket.layer.shouldRasterize = YES;

@@ -121,7 +121,7 @@ static const int kNoExtendNotePid = -1;
 
     self.view.opaque = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.view.backgroundColor = [UIColor grayColor];
+    self.view.backgroundColor = UIColor.grayColor;
 
     CGRect bounds = self.view.bounds;
 
@@ -152,7 +152,7 @@ static const int kNoExtendNotePid = -1;
     [self.headerView.buttonPurchase setTitle:g_pLocalizedPurchased forState:UIControlStateDisabled];
 
     UILabel *loading = [[UILabel alloc] initWithFrame:bounds];
-    loading.backgroundColor = [UIColor clearColor];
+    loading.backgroundColor = UIColor.clearColor;
     loading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
     loading.textColor = [UIColor colorWithWhite:g_dMascotMessageAnimDuration alpha:1.0];
     loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:g_dAudioManagerResumeFadeInTime];

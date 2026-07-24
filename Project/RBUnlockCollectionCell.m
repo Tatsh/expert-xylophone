@@ -80,7 +80,7 @@ static const CGFloat kCentreFactor = 0.5;
         [self.backgroundView addSubview:self.frameImageView];
 
         self.disableView = [[UIView alloc] init];
-        self.disableView.backgroundColor = [UIColor blackColor];
+        self.disableView.backgroundColor = UIColor.blackColor;
         self.disableView.layer.cornerRadius = kDisableOverlayCornerRadius;
         self.disableView.alpha = 0.0;
         [self.backgroundView addSubview:self.disableView];

@@ -70,7 +70,7 @@ static neGLView *g_pGLView = nil;
     m_RenderBufferID = GetGLRenderbufferTarget();
 
     self.opaque = YES;
-    self.backgroundColor = [UIColor blackColor];
+    self.backgroundColor = UIColor.blackColor;
     self.multipleTouchEnabled = YES;
 
     m_GLInterface->GenFramebuffer(&m_DefaultFramebuffer);

@@ -185,7 +185,7 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     self.rewardListView = [[RBRewardListView alloc] initWithFrame:self.contentView.bounds];
     self.rewardListView.transform = CGAffineTransformMakeTranslation(contentFrame.size.width, 0.0);
     self.rewardListView.exclusiveTouch = YES;
-    self.rewardListView.backgroundColor = [UIColor whiteColor];
+    self.rewardListView.backgroundColor = UIColor.whiteColor;
     self.rewardListView.alpha = 0.0;
     self.rewardListView.hidden = YES;
     [self.contentView addSubview:self.rewardListView];

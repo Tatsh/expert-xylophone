@@ -159,7 +159,7 @@ static const CGFloat kCentreScale = 0.5;
     self.layer.shadowOffset = CGSizeZero;
     self.layer.shadowOpacity = kPanelShadowOpacity;
     self.layer.shouldRasterize = YES;
-    self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = UIColor.grayColor;
 
     UIImage *packBg = [UIImage imageWithName:kStorePackBgImageName];
     self.packView =
@@ -172,11 +172,11 @@ static const CGFloat kCentreScale = 0.5;
     self.packArtworkView = [[StoreImageView alloc]
         initWithFrame:CGRectMake(kArtworkOriginX, kArtworkOriginY, kArtworkSide, kArtworkSide)];
     self.packArtworkView.layer.borderWidth = kArtworkBorderWidth;
-    self.packArtworkView.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.packArtworkView.backgroundColor = [UIColor whiteColor];
+    self.packArtworkView.layer.borderColor = UIColor.whiteColor.CGColor;
+    self.packArtworkView.backgroundColor = UIColor.whiteColor;
     self.packArtworkView.layer.shadowOffset =
         CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-    self.packArtworkView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.packArtworkView.layer.shadowColor = UIColor.blackColor.CGColor;
     self.packArtworkView.layer.shadowOpacity = kArtworkShadowOpacity;
     self.packArtworkView.layer.shadowRadius = kArtworkShadowRadius;
     self.packArtworkView.layer.shouldRasterize = YES;
@@ -184,7 +184,7 @@ static const CGFloat kCentreScale = 0.5;
 
     self.labelPackName = [[UILabel alloc]
         initWithFrame:CGRectMake(kNameOriginX, kNameOriginY, kSideLabelWidth, kNameHeight)];
-    self.labelPackName.backgroundColor = [UIColor clearColor];
+    self.labelPackName.backgroundColor = UIColor.clearColor;
     self.labelPackName.font = [UIFont boldSystemFontOfSize:kNameFontSize];
     self.labelPackName.adjustsFontSizeToFitWidth = YES;
     self.labelPackName.minimumScaleFactor = kNameMinimumScaleFactor;
@@ -192,7 +192,7 @@ static const CGFloat kCentreScale = 0.5;
 
     self.labelComment = [[UILabel alloc]
         initWithFrame:CGRectMake(kNameOriginX, kCommentOriginY, kSideLabelWidth, kCommentHeight)];
-    self.labelComment.backgroundColor = [UIColor clearColor];
+    self.labelComment.backgroundColor = UIColor.clearColor;
     self.labelComment.numberOfLines = 0;
     self.labelComment.baselineAdjustment = UIBaselineAdjustmentNone;
     self.labelComment.font = [UIFont systemFontOfSize:kCommentFontSize];
@@ -202,7 +202,7 @@ static const CGFloat kCentreScale = 0.5;
     self.copyrightView = [[UITextView alloc]
         initWithFrame:CGRectMake(
                           kCopyrightOriginX, kCopyrightOriginY, kCopyrightWidth, kCopyrightHeight)];
-    self.copyrightView.backgroundColor = [UIColor clearColor];
+    self.copyrightView.backgroundColor = UIColor.clearColor;
     self.copyrightView.editable = NO;
     self.copyrightView.font = [UIFont systemFontOfSize:kCopyrightFontSize];
     [self.packView addSubview:self.copyrightView];
@@ -224,10 +224,10 @@ static const CGFloat kCentreScale = 0.5;
     [self.buttonPurchase setBackgroundImage:buttonDisabled forState:UIControlStateDisabled];
     self.buttonPurchase.exclusiveTouch = YES;
     self.buttonPurchase.adjustsImageWhenDisabled = NO;
-    self.buttonPurchase.titleLabel.textColor = [UIColor whiteColor];
+    self.buttonPurchase.titleLabel.textColor = UIColor.whiteColor;
     self.buttonPurchase.titleLabel.font = [UIFont boldSystemFontOfSize:kButtonTitleFontSize];
     self.buttonPurchase.titleLabel.shadowOffset = CGSizeMake(0.0, kTitleShadowOffsetY);
-    [self.buttonPurchase setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.buttonPurchase setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [self.buttonPurchase setTitleShadowColor:[UIColor colorWithWhite:0.0
                                                                alpha:kButtonTitleShadowAlpha]
                                     forState:UIControlStateNormal];
@@ -271,9 +271,9 @@ static const CGFloat kCentreScale = 0.5;
 
     self.labelLoading = [[UILabel alloc]
         initWithFrame:CGRectMake(0.0, 0.0, kLoadingLabelWidth, kLoadingLabelHeight)];
-    self.labelLoading.backgroundColor = [UIColor clearColor];
+    self.labelLoading.backgroundColor = UIColor.clearColor;
     self.labelLoading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
-    self.labelLoading.textColor = [UIColor whiteColor];
+    self.labelLoading.textColor = UIColor.whiteColor;
     self.labelLoading.shadowColor = [UIColor colorWithWhite:0.0 alpha:kLoadingShadowAlpha];
     self.labelLoading.shadowOffset = CGSizeMake(0.0, kTitleShadowOffsetY);
     self.labelLoading.textAlignment = NSTextAlignmentCenter;
@@ -283,7 +283,7 @@ static const CGFloat kCentreScale = 0.5;
     isInfoLoaded = NO;
 
     UIButton *webButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    webButton.backgroundColor = [UIColor clearColor];
+    webButton.backgroundColor = UIColor.clearColor;
     UIImage *webImage = [UIImage imageWithName:kStoreWebButtonImageName];
     [webButton setImage:webImage forState:UIControlStateNormal];
     [webButton sizeToFit];
@@ -338,7 +338,7 @@ static const CGFloat kCentreScale = 0.5;
         [self showPackInfo];
         return;
     }
-    self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = UIColor.grayColor;
     [self addSubview:self.indicator];
     [self addSubview:self.labelLoading];
     [self.indicator startAnimating];
@@ -413,7 +413,7 @@ static const CGFloat kCentreScale = 0.5;
 /** @ghidraAddress 0xf7ddc */
 - (void)removePackInfo {
     self.packInfo = nil;
-    self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = UIColor.grayColor;
     self.labelPackName.text = nil;
     self.labelComment.text = nil;
     self.copyrightView.text = nil;

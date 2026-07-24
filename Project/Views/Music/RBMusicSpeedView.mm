@@ -197,7 +197,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
     }
     self.barBase = [[UIView alloc] initWithFrame:barFrame];
     self.barBase.autoresizingMask = kAutoresizingFlexibleAll;
-    self.barBase.backgroundColor = [UIColor clearColor];
+    self.barBase.backgroundColor = UIColor.clearColor;
     self.barBase.userInteractionEnabled = NO;
     [self addSubview:self.barBase];
 

@@ -101,7 +101,7 @@ static NSString *const kDigitImageNamesGradeD[] = {
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = UIColor.clearColor;
         self.scoreImageViews = [NSMutableArray arrayWithCapacity:kScoreDigitCount];
         for (int i = 0; i < kScoreDigitCount; ++i) {
             [self.scoreImageViews addObject:[[UIImageView alloc] init]];

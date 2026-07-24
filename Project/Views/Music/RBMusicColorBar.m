@@ -70,7 +70,7 @@ static const UIGestureRecognizerState kPanIgnoredState = UIGestureRecognizerStat
 #pragma mark View construction
 
 - (void)SetupView {
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     self.userInteractionEnabled = YES;
 
     UITapGestureRecognizer *tapRecognizer =
@@ -106,7 +106,7 @@ static const UIGestureRecognizerState kPanIgnoredState = UIGestureRecognizerStat
 
     UIView *track = [[UIView alloc] initWithFrame:trackFrame];
     self.baseView = track;
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     self.baseView.userInteractionEnabled = NO;
     self.baseView.autoresizingMask = kBarAutoresizingMask;
     [self addSubview:self.baseView];

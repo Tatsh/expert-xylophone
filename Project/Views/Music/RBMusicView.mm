@@ -531,7 +531,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     }
 
     self.autoresizingMask = kSetupOuterAutoresizingMask;
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGesture:)];
@@ -548,7 +548,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, baseSize.width, baseSize.height)];
     self.baseView.center = self.center;
     self.baseView.autoresizingMask = kLineAutoresizingMask;
-    self.baseView.backgroundColor = [UIColor clearColor];
+    self.baseView.backgroundColor = UIColor.clearColor;
     self.baseView.exclusiveTouch = YES;
     self.baseView.layer.doubleSided = NO;
     [self addSubview:self.baseView];
@@ -1531,7 +1531,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [UIView animateWithDuration:kMusicViewCoverFadeDuration
         animations:^{
           /** @ghidraAddress 0xd5680 (ResetMusicViewBackgroundBlockInvoke) */
-          weakSelf0.backgroundColor = [UIColor clearColor];
+          weakSelf0.backgroundColor = UIColor.clearColor;
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0xd5680 (PlaySelectedMusicBlockInvoke) */

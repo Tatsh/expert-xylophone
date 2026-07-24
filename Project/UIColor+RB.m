@@ -87,7 +87,7 @@ static const CGFloat kPaletteDimmingCoverAlpha = 0.5;
                           green:kPaletteChannelZero
                            blue:kPaletteChannelZero
                           alpha:kPaletteDimmingCoverAlpha],
-          [UIColor whiteColor], // @ghidraAddress DAT_1003cff90
+          UIColor.whiteColor, // @ghidraAddress DAT_1003cff90
           // Opaque black. @ghidraAddress DAT_1003cff98
           [UIColor colorWithRed:kPaletteChannelZero
                           green:kPaletteChannelZero
@@ -95,7 +95,7 @@ static const CGFloat kPaletteDimmingCoverAlpha = 0.5;
                           alpha:kPaletteAlphaOpaque],
           greenGrass,            // @ghidraAddress DAT_1003cffa0
           magenta,               // @ghidraAddress DAT_1003cffa8
-          [UIColor purpleColor], // @ghidraAddress DAT_1003cffb0
+          UIColor.purpleColor, // @ghidraAddress DAT_1003cffb0
           // Dark green. @ghidraAddress DAT_1003cffb8
           [UIColor colorWithRed:kPaletteColorDarkGreenRed
                           green:kPaletteColorDarkGreenGreen

@@ -99,7 +99,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
         self.artworkLayer.frame =
             CGRectMake(kJacketLayerLeft, kJacketLayerTop, kJacketLayerSize, kJacketLayerSize);
         self.artworkLayer.shadowOffset = CGSizeMake(kJacketShadowOffset, kJacketShadowOffset);
-        self.artworkLayer.shadowColor = [UIColor blackColor].CGColor;
+        self.artworkLayer.shadowColor = UIColor.blackColor.CGColor;
         self.artworkLayer.shadowOpacity = kJacketShadowOpacity;
         self.artworkLayer.shadowRadius = kJacketShadowRadius;
         self.artworkLayer.shadowPath =
@@ -110,7 +110,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
                                                       kNameLabelTop,
                                                       contentWidth - kNameLabelWidthInset,
                                                       kNameLabelHeight)];
-        self.nameLabel.highlightedTextColor = [UIColor whiteColor];
+        self.nameLabel.highlightedTextColor = UIColor.whiteColor;
         self.nameLabel.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
         self.nameLabel.autoresizingMask = kNameLabelAutoresizing;
         self.nameLabel.adjustsFontSizeToFitWidth = YES;
@@ -122,7 +122,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
                                                       g_dLayoutMetricThirtyTwo,
                                                       contentWidth - kArtistLabelWidthInset,
                                                       kArtistLabelHeight)];
-        self.artistLabel.highlightedTextColor = [UIColor whiteColor];
+        self.artistLabel.highlightedTextColor = UIColor.whiteColor;
         self.artistLabel.font = [UIFont boldSystemFontOfSize:kArtistLabelFontSize];
         self.artistLabel.textColor = [UIColor colorWithWhite:g_dAudioManagerResumeFadeInTime
                                                        alpha:1.0];
@@ -136,7 +136,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
             initWithFrame:CGRectMake(
                               kTextColumnLeft, kLowerRowTop, kLevelLabelWidth, kLowerRowHeight)];
         self.levelLabel.textColor = [UIColor colorWithWhite:kSecondaryTextWhite alpha:1.0];
-        self.levelLabel.highlightedTextColor = [UIColor whiteColor];
+        self.levelLabel.highlightedTextColor = UIColor.whiteColor;
         self.levelLabel.font = [UIFont boldSystemFontOfSize:kLevelLabelFontSize];
 
         self.purchasedLabel =
@@ -146,7 +146,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
                                                       kLowerRowHeight)];
         self.purchasedLabel.autoresizingMask = kPurchasedLabelAutoresizing;
         self.purchasedLabel.textColor = [UIColor colorWithWhite:kPurchasedTextWhite alpha:1.0];
-        self.purchasedLabel.highlightedTextColor = [UIColor whiteColor];
+        self.purchasedLabel.highlightedTextColor = UIColor.whiteColor;
         self.purchasedLabel.font = [UIFont boldSystemFontOfSize:kPurchasedLabelFontSize];
         self.purchasedLabel.textAlignment = NSTextAlignmentRight;
         self.purchasedLabel.text = kStoreEmptyTitle;

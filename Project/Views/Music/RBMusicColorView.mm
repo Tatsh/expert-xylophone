@@ -263,7 +263,7 @@ struct ColorGeometry {
         }
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.backgroundColor = [UIColor clearColor];
+        button.backgroundColor = UIColor.clearColor;
         button.frame = CGRectMake(
             geometry.buttonX, geometry.buttonY, geometry.buttonWidth, geometry.buttonHeight);
         button.autoresizingMask = kColorAutoresizingMask;
