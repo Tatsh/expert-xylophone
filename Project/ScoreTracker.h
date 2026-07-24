@@ -109,6 +109,26 @@ public:
     SetScoreDigitTarget(float flDuration, PlayerFieldLayer *pLayer, unsigned int uSide, int nValue);
 
     /**
+     * @brief Applies one note's judgement to a player's record and fires the score effects.
+     *
+     * The binary qualifies this @c ScoreManager::AddScore (in @c score_manager.mm), but it takes the
+     * tracker as its object, so it is modelled as a tracker method. It adds the per-grade delta to
+     * the side's running score (clamped at zero), bumps the matching judgement counter, advances the
+     * combo and maximum combo (resetting the combo on a miss), recomputes the clear rate, and fires
+     * the lane-gauge, note-result, and score-digit effects. The result quad's position band is
+     * chosen from the hit's screen x against the note sheet's quarter-width, the play mode, and
+     * whether the note's player matches the current play side.
+     * @param nPlayer The scoring note's player index.
+     * @param nPosX The hit's screen x, selecting the result-quad band.
+     * @param nPosY The hit's screen y (unused by the score path).
+     * @param nJudge The judgement type (0 = just, 1 = great, 2 = good, 3 = miss).
+     * @param nBonusFlag The bonus modifier (deepens the miss penalty when set).
+     * @param nMode The play mode (non-zero shifts the result-quad band).
+     * @ghidraAddress 0x1493b0
+     */
+    void AddScore(int nPlayer, int nPosX, int nPosY, int nJudge, int nBonusFlag, int nMode);
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
@@ -116,7 +136,7 @@ public:
     static ScoreTracker *shared();
 
 private:
-    int m_nField0 = {};                     // +0x00: leading tracker state.
+    int m_nTotalNotes = {}; // +0x00: the chart's total note count (rate denominator).
     PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
 };
 

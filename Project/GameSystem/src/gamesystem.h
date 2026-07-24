@@ -70,6 +70,10 @@ public:
     void SetViewportHeight(float value) {
         m_flViewportHeight = value;
     }
+    /** @brief Returns the note sheet's near-plane x position (half-width reference). */
+    float GetSheetPosX() const {
+        return m_flSheetPosX;
+    }
     /** @brief Returns the far-plane x extent of the note sheet. */
     float GetSheetFarX() const {
         return m_flSheetFarX;
