@@ -15,12 +15,30 @@
 
 #import "title_swipe_state.h"
 
+#import "RBCampaignData.h"
 #import "neEngineBridge.h"
 
 namespace {
 
 // The themed sound-effect slot the hidden swipe fires on completion (the secret/credits jingle).
 constexpr int kSoundEffectTitleSecret = 0xd;
+// The themed sound-effect slot the flick-gesture swing toggle fires.
+constexpr int kSoundEffectTitleSwing = 0xe;
+
+// The flick-gesture state machine keeps its state at +0x730 and its completion flag at +0x734; the
+// hidden-mode flags are the Hinabita toggle at +0x740 and the swing-direction toggle at +0x735,
+// with the resulting swing delta at +0x738.
+constexpr int kGestureStateOffset = 0x730;
+constexpr int kGestureTriggeredOffset = 0x734;
+constexpr int kGestureSwingToggleOffset = 0x735;
+constexpr int kGestureSwingDeltaOffset = 0x738;
+constexpr int kGestureHinabitaOffset = 0x740;
+
+// The timers the completed gesture rewinds/clears.
+constexpr int kGestureReplayTimerValue = 0x24fa;
+constexpr int kGestureTimerOffset = 0x54;
+constexpr int kGestureTimerClear1Offset = 0x5c;
+constexpr int kGestureTimerClear2Offset = 0x60;
 
 // The classic title layer keeps its swipe state at +0x160 and its completion flag at +0x164; the
 // theme-2 title layer keeps them at +0x5c8 and +0x5cc.
@@ -114,6 +132,118 @@ void AdvanceTitleSwipeState(void *pLayer, int iSwipeEvent) {
     if (AdvanceSwipeSequence(state, iSwipeEvent, nextState)) {
         state = nextState;
     }
+}
+
+/** @ghidraAddress 0x597a8 */
+long AdvanceTitleGestureState(void *pLayer, int inputCode) {
+    int &state = StateAt(pLayer, kGestureStateOffset);
+    int nextState;
+    switch (inputCode) {
+    case 0:
+        if (state != 1) {
+            if (state != 0) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            state = 1;
+        }
+        nextState = 2;
+        break;
+    case 1:
+        if (state != 3) {
+            if (state != 2) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            state = 3;
+        }
+        nextState = 4;
+        break;
+    case 2:
+        if (state == 6) {
+            nextState = 7;
+        } else {
+            if (state != 4) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            nextState = 5;
+        }
+        break;
+    case 3:
+        if (state == 7) {
+            nextState = 8;
+        } else {
+            if (state != 5) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            nextState = 6;
+        }
+        break;
+    case 4:
+        if (state == 0x13) {
+            // Completing sequence A toggles the hidden Hinabita campaign mode.
+            state = 0x14;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
+            ByteAt(pLayer, kGestureTriggeredOffset) = 1;
+            unsigned char &hinabita = ByteAt(pLayer, kGestureHinabitaOffset);
+            hinabita ^= 1;
+            [[RBCampaignData sharedInstance] setHinabitaMode:hinabita];
+            StateAt(pLayer, kGestureTimerOffset) = kGestureReplayTimerValue;
+            StateAt(pLayer, kGestureTimerClear1Offset) = 0;
+            StateAt(pLayer, kGestureTimerClear2Offset) = 0;
+            state = 0;
+            return 0;
+        }
+        if (state != 9) {
+            return reinterpret_cast<long>(pLayer);
+        }
+        // Completing sequence B toggles the swing direction and returns the sound handle.
+        state = 10;
+        {
+            unsigned int handle =
+                SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSwing);
+            ByteAt(pLayer, kGestureTriggeredOffset) = 1;
+            StateAt(pLayer, kGestureTimerOffset) = kGestureReplayTimerValue;
+            unsigned char &swingToggle = ByteAt(pLayer, kGestureSwingToggleOffset);
+            const bool wasSet = swingToggle == 1;
+            swingToggle ^= 1;
+            StateAt(pLayer, kGestureSwingDeltaOffset) = wasSet ? -1 : 1;
+            state = 0;
+            return handle;
+        }
+    case 5:
+        if (state == 0x12) {
+            nextState = 0x13;
+        } else {
+            if (state != 8) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            nextState = 9;
+        }
+        break;
+    case 6:
+        if (state == 0x10) {
+            nextState = 0x11;
+        } else {
+            if (state != 4) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            nextState = 0xf;
+        }
+        break;
+    case 7:
+        if (state == 0x11) {
+            nextState = 0x12;
+        } else {
+            if (state != 0xf) {
+                return reinterpret_cast<long>(pLayer);
+            }
+            nextState = 0x10;
+        }
+        break;
+    default:
+        return reinterpret_cast<long>(pLayer);
+    }
+    state = nextState;
+    return reinterpret_cast<long>(pLayer);
 }
 
 /** @ghidraAddress 0x1549b8 */

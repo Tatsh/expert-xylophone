@@ -28,6 +28,17 @@ void AdvanceTitleSwipeState(void *pLayer, int iSwipeEvent);
  */
 void AdvanceTitle2SwipeState(void *pLayer, int iSwipeEvent);
 
+/**
+ * @brief Advances the title-screen flick-gesture state machine on a directional input, toggling the
+ * hidden Hinabita mode when sequence A completes and the swing direction when sequence B completes.
+ * @param pLayer The title layer (gesture state at +0x730).
+ * @param inputCode The directional gesture id.
+ * @return @p pLayer on a partial or broken step, @c 0 after the Hinabita toggle, or the played
+ * sound handle after the swing toggle.
+ * @ghidraAddress 0x597a8
+ */
+long AdvanceTitleGestureState(void *pLayer, int inputCode);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
