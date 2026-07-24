@@ -92,6 +92,7 @@ fullwidth
 gamecenter
 ghidra
 gles
+glext
 grage
 halfwidth
 handoff
@@ -156,6 +157,7 @@ oneline
 openurl
 packinfo
 packlist
+parameteriv
 pastelkun
 pbxproj
 plid
@@ -188,6 +190,7 @@ regist
 relase
 renderbuffer
 renderbuffer's
+renderbuffers
 resoure
 rgba
 rhythmin
