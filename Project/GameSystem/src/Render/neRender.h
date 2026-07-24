@@ -128,7 +128,9 @@ private:
     float m_mWorldMatrix[16] = {};      // +0x90: composed world transform.
     bool m_bDeleteRequest = {};         // +0xd0
     bool m_bVisible = {};               // +0xd1
-    // +0xd2..+0xd7 is compiler alignment padding to the 0xd8-byte object size (no member there).
+    // +0xd2..+0xd3 is alignment padding; the polymorphic object is 0xd4 bytes, and derived classes
+    // place their first member at +0xd4.
+    unsigned char m_reservedD2[2] = {}; // +0xd2
 };
 
 /**
