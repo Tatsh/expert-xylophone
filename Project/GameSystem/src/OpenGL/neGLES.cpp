@@ -519,3 +519,59 @@ void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
                     static_cast<GLenum>(kTexParamTypeBase + nParameter),
                     static_cast<GLint>(kTexParamValueToGl[nValue]));
 }
+
+/** @ghidraAddress 0x21484 */
+void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
+    // Clear the buffer from every cached binding slot so no stale binding references the freed name,
+    // then delete it.
+    const int nBuffer = static_cast<int>(dwBuffer);
+    if (m_nArrayBufferBound == nBuffer) {
+        m_nArrayBufferBound = 0;
+    }
+    if (m_nColorBufferBinding == nBuffer) {
+        m_nColorBufferBinding = 0;
+    }
+    if (m_nBufferBinding2 == nBuffer) {
+        m_nBufferBinding2 = 0;
+    }
+    if (m_nVertexBufferBinding == nBuffer) {
+        m_nVertexBufferBinding = 0;
+    }
+    for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
+        if (m_anTexCoordBufferBinding[nUnit] == nBuffer) {
+            m_anTexCoordBufferBinding[nUnit] = 0;
+        }
+    }
+    glDeleteBuffers(1, &dwBuffer);
+}
+
+/** @ghidraAddress 0x21a68 */
+void neGLESRenderer::DeleteTexture(unsigned int dwHandle) {
+    // Clear the texture from every per-unit binding cache, then delete it.
+    const int nTexture = static_cast<int>(dwHandle);
+    for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
+        if (m_anTexturePerUnit[nUnit] == nTexture) {
+            m_anTexturePerUnit[nUnit] = 0;
+        }
+    }
+    glDeleteTextures(1, &dwHandle);
+}
+
+/** @ghidraAddress 0x2152c */
+void neGLESRenderer::UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage) {
+    // A no-op when no array buffer is bound; the usage hint is static unless the caller asks for
+    // dynamic.
+    if (m_nArrayBufferBound == 0) {
+        return;
+    }
+    glBufferData(GL_ARRAY_BUFFER, nSize, pData, nUsage != 0 ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+}
+
+/** @ghidraAddress 0x21a30 */
+void neGLESRenderer::UploadIndexBufferData(const void *pData, unsigned int nSize, int nUsage) {
+    if (m_nElementBufferBound == 0) {
+        return;
+    }
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, nSize, pData, nUsage != 0 ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+}

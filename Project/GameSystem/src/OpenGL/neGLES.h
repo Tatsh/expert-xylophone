@@ -284,7 +284,9 @@ private:
     const void *m_pColorPointer = {};        // +0x048 cached colour array pointer
     int m_nColorStride = {};                 // +0x050 cached colour array stride
     int m_nColorBufferBinding = {};          // +0x054 colour array buffer binding
-    unsigned char m_aReserved058[0x10] = {}; // +0x058
+    unsigned char m_aReserved058[0x08] = {}; // +0x058
+    int m_nHandle060 = {};                   // +0x060 secondary handle slot (purpose not recovered)
+    int m_nBufferBinding2 = {};              // +0x064 secondary array-buffer binding cache
     const void *m_pVertexPointer = {};       // +0x068 cached vertex array pointer
     int m_nVertexStride = {};                // +0x070 cached vertex array stride
     int m_nVertexSize = {};                  // +0x074 cached vertex component count
