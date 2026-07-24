@@ -1,12 +1,12 @@
 //
-//  notemodel.cpp
+//  note_model.mm
 //  REFLEC BEAT plus
 //
 //  A live play-field note (NoteModel). Reconstructed from Ghidra project rb458, program rb458.
 //  @ghidraAddress values are relative to the program image base.
 //
 
-#include "notemodel.h"
+#include "note_model.h"
 
 #include "gamesystem.h"
 #include "rbffnoterecord.h"
