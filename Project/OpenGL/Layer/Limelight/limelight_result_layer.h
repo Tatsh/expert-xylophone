@@ -158,6 +158,22 @@ public:
      */
     void RenderPercentValue(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
+    /**
+     * @brief Renders a "denominator / numerator" fraction as digit glyphs with a slash glyph.
+     *
+     * Centres the combined run about @p position using the uniform zero-glyph advance, draws the
+     * denominator digits right to left, then the slash glyph, then the numerator digits.
+     * @param nNumerator The numerator value.
+     * @param nDenominator The denominator value.
+     * @param position The centre position of the run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x1271f4
+     */
+    void RenderFraction(int nNumerator,
+                        int nDenominator,
+                        const S_VECTOR2 &position,
+                        unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 

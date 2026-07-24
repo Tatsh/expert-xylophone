@@ -419,3 +419,80 @@ void LimelightResultLayer::RenderPercentValue(int nValue,
         }
     }
 }
+
+namespace {
+
+// The part id of the slash glyph drawn between a fraction's denominator and numerator.
+constexpr unsigned int kSlashPart = 0x74;
+
+} // namespace
+
+/** @ghidraAddress 0x1271f4 */
+void LimelightResultLayer::RenderFraction(int nNumerator,
+                                          int nDenominator,
+                                          const S_VECTOR2 &position,
+                                          unsigned int nAlpha) {
+    // Split the numerator and denominator into up to four digits each, tracking their significant
+    // counts (each at least one).
+    int aNumerator[kMaxDigits] = {};
+    int nNumeratorDigits = 0;
+    for (int i = 0; i < kMaxDigits; ++i) {
+        aNumerator[i] = nNumerator % 10;
+        if (aNumerator[i] != 0) {
+            nNumeratorDigits = i + 1;
+        }
+        nNumerator /= 10;
+    }
+    if (nNumeratorDigits == 0) {
+        nNumeratorDigits = 1;
+    }
+
+    int aDenominator[kMaxDigits] = {};
+    int nDenominatorDigits = 0;
+    for (int i = 0; i < kMaxDigits; ++i) {
+        aDenominator[i] = nDenominator % 10;
+        if (aDenominator[i] != 0) {
+            nDenominatorDigits = i + 1;
+        }
+        nDenominator /= 10;
+    }
+    if (nDenominatorDigits == 0) {
+        nDenominatorDigits = 1;
+    }
+
+    // The digits and slash advance by the uniform zero-glyph width; the run is centred about the
+    // position, with the slash and a one-pixel pad accounted for.
+    const float flAdvance = GetPartsData(kDigitZeroPart)->flWidth;
+    float flX = position.x + (static_cast<float>(static_cast<int>(nDenominatorDigits * flAdvance) +
+                                                 static_cast<int>(nNumeratorDigits * flAdvance)) +
+                              flAdvance + 2.0f) *
+                                 0.5f;
+
+    for (int i = 0; i < nDenominatorDigits; ++i) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       aDenominator[i] + kDigitZeroPart,
+                       S_VECTOR2{flX - flAdvance, position.y},
+                       nAlpha,
+                       0);
+        flX -= flAdvance;
+    }
+
+    flX -= flAdvance + 1.0f;
+    EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, kSlashPart, S_VECTOR2{flX, position.y}, nAlpha, 0);
+    flX -= 1.0f;
+
+    for (int i = 0; i < nNumeratorDigits; ++i) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       aNumerator[i] + kDigitZeroPart,
+                       S_VECTOR2{flX - flAdvance, position.y},
+                       nAlpha,
+                       0);
+        flX -= flAdvance;
+    }
+}
