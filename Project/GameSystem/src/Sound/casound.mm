@@ -110,3 +110,38 @@ int caSource::ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescr
         }
     }
 }
+
+/** @ghidraAddress 0x4d698 */
+int caSource::ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pReadPos) {
+    int nReadPos = *pReadPos;
+    int nTotalCopied = 0;
+    auto *pOut = static_cast<unsigned char *>(pDst);
+    while (nCount != 0) {
+        // Clamp this chunk so it does not run past the end of the PCM block.
+        int nChunk = nCount;
+        if (nReadPos + nChunk >= static_cast<int>(m_dwBufferSize)) {
+            nChunk = static_cast<int>(m_dwBufferSize) - nReadPos;
+        }
+        if (nChunk != 0) {
+            std::memcpy(pOut, static_cast<unsigned char *>(m_pBuffer) + nReadPos, nChunk);
+        }
+        nTotalCopied += nChunk;
+        nReadPos += nChunk;
+        *pReadPos = nReadPos;
+        *pTotalRead += nChunk;
+        pOut += nChunk;
+        nCount -= nChunk;
+        if (nCount == 0) {
+            break;
+        }
+        // More was requested than remained: a non-looping sound stops here; a looping sound wraps
+        // the read position (and its consumed counter) back to the start and continues.
+        if (!m_bLoop) {
+            break;
+        }
+        nReadPos = 0;
+        *pReadPos = 0;
+        *pTotalRead = 0;
+    }
+    return nTotalCopied;
+}

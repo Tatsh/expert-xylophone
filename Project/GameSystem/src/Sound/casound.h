@@ -41,10 +41,27 @@ public:
      */
     int ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescription *pAsbd);
 
+    /**
+     * @brief Copies @p nCount bytes out of the decoded PCM block as a ring buffer, wrapping at the
+     *        end when the sound loops.
+     *
+     * Reads from @p pReadPos, advancing it and @p pTotalRead. When the read reaches the end of the
+     * PCM block: a non-looping sound stops and returns the bytes read so far; a looping sound wraps
+     * the read position to the start and continues.
+     * @param pDst The destination buffer.
+     * @param nCount The number of bytes requested.
+     * @param pTotalRead The running consumed-byte counter (advanced, reset to 0 on a loop wrap).
+     * @param pReadPos The current read offset into the PCM block (advanced, wrapped on loop).
+     * @return The total number of bytes copied.
+     * @ghidraAddress 0x4d698
+     */
+    int ReadRingBuffer(void *pDst, int nCount, int *pTotalRead, int *pReadPos);
+
 private:
-    double m_dSampleRate = {};           // +0x00 the source sample rate, in hertz
-    int m_nChannelCount = {};            // +0x08 the number of channels
-    unsigned char m_aReserved0c[4] = {}; // +0x0c
+    double m_dSampleRate = {}; // +0x00 the source sample rate, in hertz
+    int m_nChannelCount = {};  // +0x08 the number of channels
+    bool m_bLoop = {};         // +0x0c whether ring reads wrap at the end of the PCM block
+    unsigned char m_aReserved0d[3] = {}; // +0x0d
     void *m_pBuffer = {};                // +0x10 the decoded 16-bit PCM data block
     unsigned int m_dwBufferSize = {};    // +0x14 the PCM data block's byte size
 };
