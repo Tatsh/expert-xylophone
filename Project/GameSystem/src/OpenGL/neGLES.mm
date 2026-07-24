@@ -27,6 +27,11 @@ void neGLESRenderer::GenTexture(unsigned int *pOutHandle) {
     glGenTextures(1, pOutHandle);
 }
 
+/** @ghidraAddress 0x2147c */
+void neGLESRenderer::GenBuffer(unsigned int *pOutBuffer) {
+    glGenBuffers(1, pOutBuffer);
+}
+
 /** @ghidraAddress 0x21bd0 */
 void neGLESRenderer::UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData) {
     // The binary asserts the format is in range and not the compressed sentinel before mapping it.
