@@ -3,6 +3,7 @@ accell
 actived
 adid
 advertisable
+allseasons
 Ångström
 anim
 apiurl
@@ -222,6 +223,7 @@ supportedi
 sysctlbyname
 tatsh
 teardown
+tentei
 thema
 themas
 theos
