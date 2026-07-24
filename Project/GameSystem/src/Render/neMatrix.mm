@@ -50,6 +50,61 @@ void NormalizeVector3(S_VECTOR3 *pVec) {
     }
 }
 
+/** @ghidraAddress 0x20c6c */
+void AddVector3(S_VECTOR3 *pAccum, S_VECTOR3 *pB) {
+    pAccum->x = pAccum->x + pB->x;
+    pAccum->y = pAccum->y + pB->y;
+    pAccum->z = pAccum->z + pB->z;
+}
+
+/** @ghidraAddress 0x20ca0 */
+void SubtractVector3(S_VECTOR3 *pAccum, S_VECTOR3 *pB) {
+    pAccum->x = pAccum->x - pB->x;
+    pAccum->y = pAccum->y - pB->y;
+    pAccum->z = pAccum->z - pB->z;
+}
+
+/** @ghidraAddress 0x20cd4 */
+void ScaleVector3(float flScalar, S_VECTOR3 *pVec) {
+    pVec->x = pVec->x * flScalar;
+    pVec->y = pVec->y * flScalar;
+    pVec->z = pVec->z * flScalar;
+}
+
+/** @ghidraAddress 0x20bc0 */
+void AddVector2(S_VECTOR2 *pOut, S_VECTOR2 *pIn) {
+    pOut->x = pOut->x + pIn->x;
+    pOut->y = pOut->y + pIn->y;
+}
+
+/** @ghidraAddress 0x20be4 */
+void SubtractVector2(S_VECTOR2 *pOut, S_VECTOR2 *pIn) {
+    pOut->x = pOut->x - pIn->x;
+    pOut->y = pOut->y - pIn->y;
+}
+
+/** @ghidraAddress 0x20c08 */
+void ScaleVector2(S_VECTOR2 *pVec, float flScale) {
+    pVec->x = pVec->x * flScale;
+    pVec->y = pVec->y * flScale;
+}
+
+/** @ghidraAddress 0x20c20 */
+float Vector2Length(S_VECTOR2 *pVec) {
+    return std::sqrt(pVec->x * pVec->x + pVec->y * pVec->y);
+}
+
+/** @ghidraAddress 0x20c38 */
+void NormalizeVector2(S_VECTOR2 *pVec) {
+    const float lengthSquared = pVec->x * pVec->x + pVec->y * pVec->y;
+    // Leave a near-zero-length vector unchanged to avoid dividing by zero.
+    if (lengthSquared > kNormalizeLengthSquaredEpsilon) {
+        const float length = std::sqrt(lengthSquared);
+        pVec->x /= length;
+        pVec->y /= length;
+    }
+}
+
 /** @ghidraAddress 0x18fac */
 void SetMatrixIdentity(float *pMatrix) {
     static const float kIdentity[] = {

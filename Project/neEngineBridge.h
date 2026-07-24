@@ -226,12 +226,48 @@ float GetElapsedMediaTime(double *pStartTime);
  * @ghidraAddress 0x366f8
  */
 void StartMediaTimer(double *pStartTime);
+struct S_VECTOR2;
+struct S_VECTOR3;
 /**
- * @brief Scales a two-component vector in place by the screen scale factor.
+ * @brief Adds a two-component vector into another in place: @c pOut @c += @c pIn.
+ * @ghidraAddress 0x20bc0
+ */
+void AddVector2(S_VECTOR2 *pOut, S_VECTOR2 *pIn);
+/**
+ * @brief Subtracts a two-component vector from another in place: @c pOut @c -= @c pIn.
+ * @ghidraAddress 0x20be4
+ */
+void SubtractVector2(S_VECTOR2 *pOut, S_VECTOR2 *pIn);
+/**
+ * @brief Scales a two-component vector in place by a scalar.
  * @ghidraAddress 0x20c08
  */
-void ScaleVector2(float *pVec, float scale);
-struct S_VECTOR3;
+void ScaleVector2(S_VECTOR2 *pVec, float flScale);
+/**
+ * @brief Returns the Euclidean length of a two-component vector.
+ * @ghidraAddress 0x20c20
+ */
+float Vector2Length(S_VECTOR2 *pVec);
+/**
+ * @brief Normalizes a two-component vector in place, guarding against a near-zero length.
+ * @ghidraAddress 0x20c38
+ */
+void NormalizeVector2(S_VECTOR2 *pVec);
+/**
+ * @brief Adds a 3-component vector into another in place: @c pAccum @c += @c pB.
+ * @ghidraAddress 0x20c6c
+ */
+void AddVector3(S_VECTOR3 *pAccum, S_VECTOR3 *pB);
+/**
+ * @brief Subtracts a 3-component vector from another in place: @c pAccum @c -= @c pB.
+ * @ghidraAddress 0x20ca0
+ */
+void SubtractVector3(S_VECTOR3 *pAccum, S_VECTOR3 *pB);
+/**
+ * @brief Scales a 3-component vector in place by a scalar.
+ * @ghidraAddress 0x20cd4
+ */
+void ScaleVector3(float flScalar, S_VECTOR3 *pVec);
 /**
  * @brief Computes the dot product of two 3-component vectors.
  * @return The dot product @c pA · @c pB.

@@ -142,12 +142,6 @@ constexpr double kPiOverTwo = 1.5707963267948966;
 constexpr float kSheetCentreX = 384.0f;
 constexpr float kSheetCentreY = 512.0f;
 
-// The component indices of a two-component screen-size vector.
-enum {
-    kVectorComponentX = 0,
-    kVectorComponentY = 1,
-};
-
 // The playlist view controller modes. Type "create" opens the playlist create and browse screen
 // from the playlist button; type "add to set" adds a music set to an existing playlist.
 enum {
@@ -291,14 +285,14 @@ constexpr int kDefaultPlayColor = 0;
     float scaleFactor = static_cast<float>(self.glView.contentScaleFactor);
 
     GameSystem *gameSystem = GameSystem::GetGameSystem();
-    float scaledSize[] = {static_cast<float>(viewW), static_cast<float>(viewH)};
+    S_VECTOR2 scaledSize{static_cast<float>(viewW), static_cast<float>(viewH)};
     float aspect = static_cast<float>(viewW) / static_cast<float>(viewH);
-    ScaleVector2(scaledSize, 1.0f / scaleFactor);
-    gameSystem->SetViewportWidth(scaledSize[kVectorComponentX]);
-    gameSystem->SetViewportHeight(scaledSize[kVectorComponentY]);
+    ScaleVector2(&scaledSize, 1.0f / scaleFactor);
+    gameSystem->SetViewportWidth(scaledSize.x);
+    gameSystem->SetViewportHeight(scaledSize.y);
 
-    ne_Viewport *orthoViewport = CreateOrthoViewport(
-        scaledSize[kVectorComponentX], scaledSize[kVectorComponentY], 0, 0, viewW, viewH);
+    ne_Viewport *orthoViewport =
+        CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
     SetCurrentProjection(orthoViewport);
     ReleaseViewportCamera(orthoViewport);
 
@@ -338,7 +332,7 @@ constexpr int kDefaultPlayColor = 0;
         // Landscape: either a flat perspective or a 3D-tilt projection depending on whether the
         // sheet still fits when tilted.
         float pitchRef = gameSystem->GetCameraPitchHeight();
-        float halfViewH = scaledSize[kVectorComponentY] * 0.5f;
+        float halfViewH = scaledSize.y * 0.5f;
         float sheetRatio = gameSystem->GetSheetHeight() / halfViewH;
         float sheetFarX = gameSystem->GetSheetFarX();
         float sheetFarY = gameSystem->GetSheetFarY();
