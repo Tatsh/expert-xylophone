@@ -7,6 +7,9 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+struct PartsDataRecord;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING;
@@ -42,10 +45,58 @@ public:
      */
     void InitializePhoneSpriteInstancers();
 
+    /**
+     * @brief Returns the result-window parts descriptor at @p nIndex.
+     *
+     * Selects the pad or phone parts table by the current device kind.
+     * @param nIndex The parts-record index (below @c 0xff).
+     * @return The parts descriptor.
+     * @ghidraAddress 0x123838
+     */
+    PartsDataRecord *GetPartsData(unsigned int nIndex) const;
+
+    /**
+     * @brief Emits one result-window part sprite by part id.
+     *
+     * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the
+     * layer's shared instancer slot. Part id @c 0xff is a no-op used to skip optional parts. The
+     * main pass draws at full alpha; the shadow pass draws the same quad at half intensity.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleX The sprite X scale.
+     * @param flScaleY The sprite Y scale.
+     * @param nSlot The instancer slot to append to.
+     * @param nPartId The part id (below @c 0xff).
+     * @param position The sprite's world position.
+     * @param nAlpha The sprite's alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @ghidraAddress 0x126ab4
+     */
+    void EmitPartSprite(float flRotation,
+                        float flScaleX,
+                        float flScaleY,
+                        unsigned int nSlot,
+                        unsigned int nPartId,
+                        const S_VECTOR2 &position,
+                        unsigned int nAlpha,
+                        int bShadowPass);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 
 private:
+    // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
+    // full; the shared low-level emit behind all the part helpers.
+    // @ghidraAddress 0x12ac64
+    void AppendSpriteToSlot(const S_VECTOR2 &position,
+                            const S_VECTOR2 &anchor,
+                            const S_VECTOR2 &size,
+                            const S_VECTOR2 &uvOrigin,
+                            const S_VECTOR2 &uvSize,
+                            float flRotation,
+                            const S_VECTOR2 &scale,
+                            unsigned int nSlot,
+                            unsigned int nIntensity,
+                            unsigned int nAlpha);
     // +0x08..+0x0f: descriptor state preceding the textures, still being worked out.
     unsigned char m_aReserved08[8] = {};      // +0x08
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.

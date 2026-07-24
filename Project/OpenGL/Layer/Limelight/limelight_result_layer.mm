@@ -1,8 +1,14 @@
 #include "limelight_result_layer.h"
 
+#include <cassert>
+
+#include "deviceenvironment.h"
+#include "limelight_parts_data_table.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "parts_data_table.h"
+#include "s_vector2.h"
 
 // The process-wide Limelight result-window layer, created lazily by shared().
 static LimelightResultLayer *g_pLimelightResultLayer = nullptr; // @ghidraAddress 0x3de008
@@ -72,4 +78,75 @@ void LimelightResultLayer::InitializePhoneSpriteInstancers() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x123838 */
+PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) const {
+    assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);
+
+    // The pad build uses the pad table; the phone build uses the phone table.
+    return IsPad() ? &g_aLimelightPartsPad[nIndex] : &g_aLimelightPartsPhone[nIndex];
+}
+
+/** @ghidraAddress 0x12ac64 */
+void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
+                                              const S_VECTOR2 &anchor,
+                                              const S_VECTOR2 &size,
+                                              const S_VECTOR2 &uvOrigin,
+                                              const S_VECTOR2 &uvSize,
+                                              float flRotation,
+                                              const S_VECTOR2 &scale,
+                                              unsigned int nSlot,
+                                              unsigned int nIntensity,
+                                              unsigned int nAlpha) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nSprite = pInstancer->GetSpriteCount();
+    if (nSprite >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    pInstancer->SetSpritePosition(nSprite, position);
+    pInstancer->SetSpriteAnchor(nSprite, anchor);
+    pInstancer->SetSpriteSize(nSprite, size);
+    pInstancer->SetSpriteUvOrigin(nSprite, uvOrigin);
+    pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    pInstancer->SetSpriteRotation(nSprite, flRotation);
+    pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
+    pInstancer->SetSpriteColor(nSprite, nIntensity, nIntensity, nIntensity, nAlpha);
+    pInstancer->SetSpriteCount(nSprite + 1);
+}
+
+/** @ghidraAddress 0x126ab4 */
+void LimelightResultLayer::EmitPartSprite(float flRotation,
+                                          float flScaleX,
+                                          float flScaleY,
+                                          unsigned int nSlot,
+                                          unsigned int nPartId,
+                                          const S_VECTOR2 &position,
+                                          unsigned int nAlpha,
+                                          int bShadowPass) {
+    // Part id 0xff is the "no part" sentinel used to skip optional parts.
+    if (nPartId >= 0xff) {
+        return;
+    }
+    const PartsDataRecord *pRecord = GetPartsData(nPartId);
+    const UvPaletteEntry &palette = g_aUvPalette[pRecord->nUvPaletteIndex];
+    // The main pass draws at full intensity; the shadow pass darkens the quad to half intensity.
+    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{pRecord->flX, pRecord->flY},
+                       S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
 }
