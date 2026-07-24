@@ -40,7 +40,7 @@ public:
      *
      * Skips fully-transparent sprites. When any live sprite has a rotation or non-unit scale it
      * takes the slow path, building a per-sprite transform matrix and submitting one instanced draw
-     * per @c GetMaxSpritesPerBatch sprites; otherwise it takes the fast path, emitting axis-aligned
+     * per @c GetMaxPaletteMatrices sprites; otherwise it takes the fast path, emitting axis-aligned
      * quads directly and issuing a single indexed draw.
      * @ghidraAddress 0x2faa8
      */

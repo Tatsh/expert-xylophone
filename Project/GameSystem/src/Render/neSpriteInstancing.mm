@@ -362,7 +362,7 @@ void C_SPRITE_INSTANCING::BindPassTexture(neGLESRenderer *pRenderer) {
 /** @ghidraAddress 0x2faa8 */
 void C_SPRITE_INSTANCING::Render() {
     neGLESRenderer *pRenderer = GetGlRenderer();
-    const int nMaxPerBatch = pRenderer->GetMaxSpritesPerBatch();
+    const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
 
     // Count the live (non-transparent) sprites and decide the path: any sprite with a rotation or a

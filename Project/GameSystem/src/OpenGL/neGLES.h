@@ -162,13 +162,14 @@ public:
      */
     int GetMaxVertexUnits() const;
     /**
-     * @brief The maximum number of sprite instances a single instanced draw call may submit.
+     * @brief The maximum number of palette matrices a single instanced draw call may use.
      *
-     * Read from the renderer's capability block; the sprite batch flushes a draw once this many
-     * per-instance matrices have been queued.
+     * Read from the renderer's capability block (the GL_OES_matrix_palette limit). The sprite batch
+     * flushes a draw once this many per-instance matrices have been queued, and a skinned mesh loads
+     * this many bone matrices.
      */
-    int GetMaxSpritesPerBatch() const {
-        return m_nMaxSpritesPerBatch;
+    int GetMaxPaletteMatrices() const {
+        return m_nMaxPaletteMatrices;
     }
 
     /**
@@ -223,7 +224,7 @@ private:
     unsigned char m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache
     unsigned char m_aClientStateFlags[0x07] = {}; // +0x208 per-array client-state cache
     unsigned char m_aReserved20f[0x45] = {};      // +0x20f
-    int m_nMaxSpritesPerBatch = {};               // +0x254 GL capability: max instances per draw
+    int m_nMaxPaletteMatrices = {}; // +0x254 GL capability: max palette matrices per draw
 };
 
 /**
