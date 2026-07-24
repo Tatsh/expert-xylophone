@@ -99,6 +99,25 @@ void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, f
     pOutMatrix[kMatrixTranslateZ] = -flNear / flDepth;
 }
 
+/** @ghidraAddress 0x199f4 */
+float *
+MakePerspectiveMatrix(float flFovY, float flAspect, float flNear, float flFar, float *pOutMatrix) {
+    // Perspective projection (column-major) from vertical field of view and aspect ratio. The
+    // focal term is tan(fovY / 2); m[11] = -1 supplies the perspective divide. The depth terms use
+    // the engine's own sign convention (positive m[10] and m[14]), not the textbook GL negative
+    // form. The binary zeroes the remaining elements with vector stores.
+    const float flFocal = std::tan(flFovY * 0.5f);
+    const float flDepth = flFar - flNear;
+    static const float kZeroMatrix[16] = {};
+    std::memcpy(pOutMatrix, kZeroMatrix, sizeof(kZeroMatrix));
+    pOutMatrix[0] = 1.0f / (flFocal * flAspect);
+    pOutMatrix[5] = 1.0f / flFocal;
+    pOutMatrix[10] = (flNear + flFar) / flDepth;
+    pOutMatrix[11] = -1.0f;
+    pOutMatrix[14] = (flNear + flNear) * flFar / flDepth;
+    return pOutMatrix;
+}
+
 /** @ghidraAddress 0x196b4 */
 float *MakeRotationMatrixX(float flAngle, float *pOut) {
     SetMatrixIdentity(pOut);

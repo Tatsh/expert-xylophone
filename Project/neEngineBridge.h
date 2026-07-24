@@ -274,6 +274,16 @@ void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
  */
 void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, float *pOutMatrix);
 /**
+ * @brief Builds a 4x4 column-major perspective projection matrix from vertical field of view and
+ * aspect ratio.
+ *
+ * Uses the engine's own depth-mapping sign convention rather than the textbook GL form.
+ * @return @p pOutMatrix, so the result can be passed on inline.
+ * @ghidraAddress 0x199f4
+ */
+float *
+MakePerspectiveMatrix(float flFovY, float flAspect, float flNear, float flFar, float *pOutMatrix);
+/**
  * @brief Composes @p pSource onto @p pAccumulator on the left, in place.
  *
  * Computes @c pAccumulator @c = @c pSource @c * @c pAccumulator (column-major), multiplying against
