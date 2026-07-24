@@ -135,6 +135,36 @@ float *MakeRotationMatrixX(float flAngle, float *pOut) {
     return pOut;
 }
 
+/** @ghidraAddress 0x19728 */
+float *MakeRotationMatrixZ(float flAngle, float *pOut) {
+    const float flSin = std::sin(flAngle);
+    const float flCos = std::cos(flAngle);
+    // Rotate in the X-Y plane, leaving the Z axis fixed (column-major). Unlike MakeRotationMatrixX
+    // the binary writes the whole matrix inline instead of calling SetMatrixIdentity, and computes
+    // the sine and cosine together with the combined sincos routine:
+    //   [ cos  -sin   0   0 ]
+    //   [ sin   cos   0   0 ]
+    //   [  0     0    1   0 ]
+    //   [  0     0    0   1 ]
+    pOut[0] = flCos;
+    pOut[1] = flSin;
+    pOut[2] = 0.0f;
+    pOut[3] = 0.0f;
+    pOut[4] = -flSin;
+    pOut[5] = flCos;
+    pOut[6] = 0.0f;
+    pOut[7] = 0.0f;
+    pOut[8] = 0.0f;
+    pOut[9] = 0.0f;
+    pOut[10] = 1.0f;
+    pOut[11] = 0.0f;
+    pOut[12] = 0.0f;
+    pOut[13] = 0.0f;
+    pOut[14] = 0.0f;
+    pOut[15] = 1.0f;
+    return pOut;
+}
+
 /** @ghidraAddress 0x18e40 */
 void MultiplyMatrix4x4(float *pResult, float *pLeft, float *pRight) {
     // Column-major product pResult = pLeft * pRight. Each result column is a linear
@@ -268,4 +298,36 @@ float *MakeLookAtMatrix(float *pOut, S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECT
     pOut[11] = 0.0f;
     pOut[15] = 1.0f;
     return pOut;
+}
+
+/** @ghidraAddress 0x20e7c */
+void MultiplyVector4ByMatrix(float *pOut, float *pVec4, float *pMatrix) {
+    // Row-vector times column-major matrix: pOut[j] = sum over i of pVec4[i] * pMatrix[i * 4 + j].
+    // Every input component is read before any output is written, so an in-place call is safe.
+    const float x = pVec4[0];
+    const float y = pVec4[1];
+    const float z = pVec4[2];
+    const float w = pVec4[3];
+    pOut[0] = x * pMatrix[0] + y * pMatrix[4] + z * pMatrix[8] + w * pMatrix[12];
+    pOut[1] = x * pMatrix[1] + y * pMatrix[5] + z * pMatrix[9] + w * pMatrix[13];
+    pOut[2] = x * pMatrix[2] + y * pMatrix[6] + z * pMatrix[10] + w * pMatrix[14];
+    pOut[3] = x * pMatrix[3] + y * pMatrix[7] + z * pMatrix[11] + w * pMatrix[15];
+}
+
+/** @ghidraAddress 0x20e5c */
+void MultiplyVector4ByMatrixInPlace(float *pVec4, float *pMatrix) {
+    MultiplyVector4ByMatrix(pVec4, pVec4, pMatrix);
+}
+
+/** @ghidraAddress 0x20db0 */
+void TransformPointByMatrix(float *pPoint, float *pMatrix) {
+    // Transform a 3D point by a column-major matrix with the perspective divide: the point is taken
+    // as (x, y, z, 1), transformed, then divided by the resulting homogeneous w (assumed non-zero).
+    const float x = pPoint[0];
+    const float y = pPoint[1];
+    const float z = pPoint[2];
+    const float flInvW = 1.0f / (pMatrix[15] + x * pMatrix[3] + y * pMatrix[7] + z * pMatrix[11]);
+    pPoint[0] = flInvW * (pMatrix[12] + x * pMatrix[0] + y * pMatrix[4] + z * pMatrix[8]);
+    pPoint[1] = flInvW * (pMatrix[13] + x * pMatrix[1] + y * pMatrix[5] + z * pMatrix[9]);
+    pPoint[2] = flInvW * (pMatrix[14] + x * pMatrix[2] + y * pMatrix[6] + z * pMatrix[10]);
 }

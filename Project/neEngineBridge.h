@@ -261,6 +261,12 @@ float *MakeLookAtMatrix(float *pOutMatrix, S_VECTOR3 *pEye, S_VECTOR3 *pTarget, 
  */
 float *MakeRotationMatrixX(float angle, float *pOutMatrix);
 /**
+ * @brief Builds a z-axis rotation matrix for the given angle, in radians.
+ * @return @p pOutMatrix, so the result can be passed on inline.
+ * @ghidraAddress 0x19728
+ */
+float *MakeRotationMatrixZ(float flAngle, float *pOutMatrix);
+/**
  * @brief Builds a translation matrix for the given offset.
  * @ghidraAddress 0x19624
  */
@@ -332,6 +338,28 @@ float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle);
  * @ghidraAddress 0x19824
  */
 void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flScaleZ);
+/**
+ * @brief Multiplies a 4-component row vector by a 4x4 column-major matrix: @c pOut @c = @c pVec4 @c *
+ *        @c pMatrix.
+ *
+ * All four input components are read before any output is written, so @p pOut may alias @p pVec4.
+ * @ghidraAddress 0x20e7c
+ */
+void MultiplyVector4ByMatrix(float *pOut, float *pVec4, float *pMatrix);
+/**
+ * @brief Multiplies a 4-component vector by a 4x4 column-major matrix in place.
+ * @ghidraAddress 0x20e5c
+ */
+void MultiplyVector4ByMatrixInPlace(float *pVec4, float *pMatrix);
+/**
+ * @brief Transforms a 3D point by a 4x4 column-major matrix in place, applying the perspective
+ *        divide.
+ *
+ * The point is taken as @c (x,y,z,1), transformed, and divided by the resulting homogeneous w
+ * (assumed non-zero).
+ * @ghidraAddress 0x20db0
+ */
+void TransformPointByMatrix(float *pPoint, float *pMatrix);
 
 // Shared engine data tables, seeded at startup. They are defined once in the engine layer and read
 // from the Objective-C code, so they are declared here rather than re-declared locally.
