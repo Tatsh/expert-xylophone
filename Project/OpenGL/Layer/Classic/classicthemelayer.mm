@@ -1,9 +1,9 @@
-#import "classic_theme_layer.h"
+#include "classicthemelayer.h"
 
-#import "../../../GameSystem/src/OpenGL/neTexture.h"
-#import "../../../GameSystem/src/Render/neRender.h"
-#import "../../../GameSystem/src/Render/neSpriteInstancing.h"
-#import "../Share/bg_layer.h"
+#include "bg_layer.h"
+#include "neRender.h"
+#include "neSpriteInstancing.h"
+#include "neTexture.h"
 
 // The background texture the Classic-theme batches all draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8

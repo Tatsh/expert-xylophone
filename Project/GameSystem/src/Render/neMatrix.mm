@@ -1,7 +1,7 @@
-#import <cmath>
-#import <cstring>
+#include <cmath>
+#include <cstring>
 
-#import "../../../neEngineBridge.h"
+#import "neEngineBridge.h"
 
 // The order (row and column count) of the square matrices this module operates on.
 constexpr int kMatrix4Order = 4;

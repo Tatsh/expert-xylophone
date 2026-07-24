@@ -1,3 +1,8 @@
+/**
+ * @file
+ * The batched sprite draw node, @c ne::C_SPRITE_INSTANCING.
+ */
+
 #pragma once
 
 #include "neRender.h"

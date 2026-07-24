@@ -1,3 +1,8 @@
+/**
+ * @file
+ * Shared declarations for the C++ game-engine layer, reached from the Objective-C code.
+ */
+
 //
 //  neEngineBridge.h
 //  REFLEC BEAT plus

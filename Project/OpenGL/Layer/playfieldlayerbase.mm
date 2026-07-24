@@ -1,7 +1,7 @@
-#import "play_field_layer_base.h"
+#include "playfieldlayerbase.h"
 
-#import "../../RBUserSettingData.h"
-#import "../../neEngineBridge.h"
+#import "RBUserSettingData.h"
+#import "neEngineBridge.h"
 
 /** @ghidraAddress 0x109d84 */
 void PlayFieldLayerBase::InitBase() {

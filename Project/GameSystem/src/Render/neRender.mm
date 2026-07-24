@@ -1,6 +1,6 @@
-#import "neRender.h"
+#include "neRender.h"
 
-#import "../../../neEngineBridge.h"
+#import "neEngineBridge.h"
 
 namespace ne {
 

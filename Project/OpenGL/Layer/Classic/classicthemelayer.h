@@ -1,6 +1,11 @@
+/**
+ * @file
+ * The Classic-theme play-field background layer.
+ */
+
 #pragma once
 
-#include "../play_field_layer_base.h"
+#include "playfieldlayerbase.h"
 
 namespace ne {
 class C_TEXTURE;

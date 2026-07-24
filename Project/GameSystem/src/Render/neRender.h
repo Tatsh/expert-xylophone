@@ -1,3 +1,8 @@
+/**
+ * @file
+ * The base scene-graph render node, @c ne::C_RENDER, and its scene-tree links.
+ */
+
 #pragma once
 
 namespace ne {

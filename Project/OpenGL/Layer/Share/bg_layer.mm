@@ -1,8 +1,8 @@
-#import "bg_layer.h"
+#include "bg_layer.h"
 
-#import <cassert>
+#include <cassert>
 
-#import "../../../GameSystem/src/Render/neRender.h"
+#include "neRender.h"
 
 // The process-wide background layer, created lazily by GetBackgroundLayer.
 static BgLayer *g_pBackgroundLayer = nullptr; // @ghidraAddress 0x3de808

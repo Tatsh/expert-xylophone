@@ -1,9 +1,9 @@
-#import "neTexture.h"
+#include "neTexture.h"
 
-#import <cstring>
-#import <new>
+#include <cstring>
+#include <new>
 
-#import "../../../neEngineBridge.h"
+#import "neEngineBridge.h"
 
 namespace ne {
 

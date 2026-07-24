@@ -2,7 +2,7 @@
 
 #include <new>
 
-#include "../OpenGL/neTexture.h"
+#include "neTexture.h"
 
 namespace ne {
 
