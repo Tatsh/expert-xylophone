@@ -146,11 +146,22 @@ public:
      */
     void SetSpriteScale(int nIndex, float flScaleX, float flScaleY);
     /**
-     * @brief Set sprite @p nIndex's packed RGBA colour.
+     * @brief Set sprite @p nIndex's colour from four @c [0, 255] channel values.
      *
-     * A convenience over the binary's four-channel setter (which packs its @c R, @c G, @c B, and
-     * @c A byte arguments into this same word); the batch builders write the packed word directly.
+     * Packs the channels into the sprite's colour word as @c R @c | @c (G @c << @c 8) @c |
+     * @c (B @c << @c 16) @c | @c (A @c << @c 24).
      * @ghidraAddress 0x5a1c0
+     */
+    void SetSpriteColor(int nIndex,
+                        unsigned int nRed,
+                        unsigned int nGreen,
+                        unsigned int nBlue,
+                        unsigned int nAlpha);
+    /**
+     * @brief Set sprite @p nIndex's colour from a pre-packed RGBA word.
+     *
+     * A convenience the batch builders use to write a packed colour directly; the binary inlines
+     * this store rather than calling the four-channel setter.
      */
     void SetSpriteColor(int nIndex, unsigned int nColor);
 

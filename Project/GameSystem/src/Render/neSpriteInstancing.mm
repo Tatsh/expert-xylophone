@@ -208,6 +208,13 @@ void C_SPRITE_INSTANCING::SetSpriteScale(int nIndex, float flScaleX, float flSca
 }
 
 /** @ghidraAddress 0x5a1c0 */
+void C_SPRITE_INSTANCING::SetSpriteColor(
+    int nIndex, unsigned int nRed, unsigned int nGreen, unsigned int nBlue, unsigned int nAlpha) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteColorArray[nIndex] =
+        (nRed & 0xff) | ((nGreen & 0xff) << 8) | ((nBlue & 0xff) << 16) | (nAlpha << 24);
+}
+
 void C_SPRITE_INSTANCING::SetSpriteColor(int nIndex, unsigned int nColor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteColorArray[nIndex] = nColor;
