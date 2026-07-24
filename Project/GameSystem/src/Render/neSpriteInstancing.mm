@@ -42,9 +42,9 @@ C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity) {
     // and scale arrays are filled in the build loop below, and the colour array by the caller.
     m_pSpritePositionArray = new S_VECTOR2[nCapacity];
     m_pSpriteSizeArray = new S_VECTOR2[nCapacity];
-    m_pSpriteTexCoordArray = new S_VECTOR2[nCapacity];
-    m_pSpriteTexSizeArray = new S_VECTOR2[nCapacity];
-    m_pSpriteCentreArray = new S_VECTOR2[nCapacity];
+    m_pSpriteAnchorArray = new S_VECTOR2[nCapacity];
+    m_pSpriteUvOriginArray = new S_VECTOR2[nCapacity];
+    m_pSpriteUvSizeArray = new S_VECTOR2[nCapacity];
     m_pSpriteRotationArray = new float[nCapacity];
     m_pSpriteScaleXArray = new float[nCapacity];
     m_pSpriteScaleYArray = new float[nCapacity];
@@ -112,9 +112,9 @@ C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
     }
     delete[] m_pSpritePositionArray;
     delete[] m_pSpriteSizeArray;
-    delete[] m_pSpriteTexCoordArray;
-    delete[] m_pSpriteTexSizeArray;
-    delete[] m_pSpriteCentreArray;
+    delete[] m_pSpriteAnchorArray;
+    delete[] m_pSpriteUvOriginArray;
+    delete[] m_pSpriteUvSizeArray;
     delete[] m_pSpriteRotationArray;
     delete[] m_pSpriteScaleXArray;
     delete[] m_pSpriteScaleYArray;
@@ -174,19 +174,19 @@ void C_SPRITE_INSTANCING::SetSpriteSize(int nIndex, const S_VECTOR2 &size) {
     m_pSpriteSizeArray[nIndex] = size;
 }
 
-void C_SPRITE_INSTANCING::SetSpriteTexCoord(int nIndex, const S_VECTOR2 &texCoord) {
+void C_SPRITE_INSTANCING::SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
-    m_pSpriteTexCoordArray[nIndex] = texCoord;
+    m_pSpriteAnchorArray[nIndex] = anchor;
 }
 
-void C_SPRITE_INSTANCING::SetSpriteTexSize(int nIndex, const S_VECTOR2 &texSize) {
+void C_SPRITE_INSTANCING::SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
-    m_pSpriteTexSizeArray[nIndex] = texSize;
+    m_pSpriteUvOriginArray[nIndex] = uvOrigin;
 }
 
-void C_SPRITE_INSTANCING::SetSpriteCentre(int nIndex, const S_VECTOR2 &centre) {
+void C_SPRITE_INSTANCING::SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
-    m_pSpriteCentreArray[nIndex] = centre;
+    m_pSpriteUvSizeArray[nIndex] = uvSize;
 }
 
 void C_SPRITE_INSTANCING::SetSpriteColor(int nIndex, unsigned int nColor) {

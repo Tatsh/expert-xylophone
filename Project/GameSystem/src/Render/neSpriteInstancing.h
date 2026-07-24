@@ -17,7 +17,7 @@ class C_TEXTURE;
  * @brief A batched sprite draw node (RTTI @c ne::C_SPRITE_INSTANCING).
  *
  * A single node draws up to @c m_dwCapacity sprites of one texture in one instanced draw call; the
- * per-sprite position, size, texture-coordinate, centre, rotation, scale, and colour arrays are
+ * per-sprite position, size, anchor, UV-origin, UV-size, rotation, scale, and colour arrays are
  * uploaded together. It is a @c C_RENDER, so it lives in the scene graph and inherits visibility and
  * transform. The trailing @c // +0xNN comments document the original 32-bit offsets for reference
  * only; state is reached through the accessors, never through those offsets.
@@ -109,25 +109,27 @@ public:
     unsigned int GetColorAlpha(int nIndex) const;
 
     /**
-     * @brief Set sprite @p nIndex's centre position.
+     * @brief Set sprite @p nIndex's world position: the point the anchor is translated to.
      */
     void SetSpritePosition(int nIndex, const S_VECTOR2 &position);
     /**
-     * @brief Set sprite @p nIndex's half-size.
+     * @brief Set sprite @p nIndex's pixel size: the quad spans from the origin to (width, height).
      */
     void SetSpriteSize(int nIndex, const S_VECTOR2 &size);
     /**
-     * @brief Set sprite @p nIndex's texture-coordinate origin.
+     * @brief Set sprite @p nIndex's anchor: the pivot offset subtracted from the position, so an
+     * anchor of half the size centres the quad on the position.
      */
-    void SetSpriteTexCoord(int nIndex, const S_VECTOR2 &texCoord);
+    void SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor);
     /**
-     * @brief Set sprite @p nIndex's texture-coordinate size.
+     * @brief Set sprite @p nIndex's UV origin: the top-left texture coordinate of the quad.
      */
-    void SetSpriteTexSize(int nIndex, const S_VECTOR2 &texSize);
+    void SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin);
     /**
-     * @brief Set sprite @p nIndex's rotation centre offset.
+     * @brief Set sprite @p nIndex's UV size: the texture-coordinate span added to the UV origin for
+     * the quad's far corners.
      */
-    void SetSpriteCentre(int nIndex, const S_VECTOR2 &centre);
+    void SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize);
     /**
      * @brief Set sprite @p nIndex's packed RGBA colour.
      */
@@ -136,9 +138,9 @@ public:
 private:
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0
-    S_VECTOR2 *m_pSpriteTexCoordArray = {}; // +0xe8
-    S_VECTOR2 *m_pSpriteTexSizeArray = {};  // +0xf0
-    S_VECTOR2 *m_pSpriteCentreArray = {};   // +0xf8
+    S_VECTOR2 *m_pSpriteAnchorArray = {};   // +0xe8
+    S_VECTOR2 *m_pSpriteUvOriginArray = {}; // +0xf0
+    S_VECTOR2 *m_pSpriteUvSizeArray = {};   // +0xf8
     float *m_pSpriteRotationArray = {};     // +0x100
     float *m_pSpriteScaleXArray = {};       // +0x108
     float *m_pSpriteScaleYArray = {};       // +0x110
