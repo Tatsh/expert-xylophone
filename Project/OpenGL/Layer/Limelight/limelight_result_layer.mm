@@ -161,6 +161,19 @@ constexpr int kMaxDigits = 4;
 // The instancer slot the parts atlas (including digit glyphs) draws into.
 constexpr unsigned int kPartsSlot = 1;
 
+// The maximum number of digits RenderNumber splits a value into (the binary's digit buffer holds
+// six).
+constexpr int kNumberMaxDigits = 6;
+// The glyph-bank base part ids that carry special per-column layout handling: the two score-column
+// banks, the rating-column bank, and the three banks whose trailing '1' is micro-nudged.
+constexpr unsigned int kScoreColumnPartA = 0x7c;
+constexpr unsigned int kScoreColumnPartB = 0x92;
+constexpr unsigned int kRatingColumnPart = 0xa8;
+constexpr unsigned int kNudgeBankPlus4A = 0x44;
+constexpr unsigned int kNudgeBankPlus4B = 0x4e;
+// The dim factor applied to the padded leading zeros (@ghidraAddress 0x2fd008).
+constexpr float kPadZeroDimFactor = 0.7f;
+
 } // namespace
 
 /** @ghidraAddress 0x12705c */
@@ -253,4 +266,100 @@ void LimelightResultLayer::EmitAutoUvPart(unsigned long nSlot,
                        static_cast<unsigned int>(nSlot),
                        static_cast<unsigned int>(m_nDefaultAlpha),
                        nAlpha);
+}
+
+/** @ghidraAddress 0x126cf8 */
+void LimelightResultLayer::RenderNumber(float flSpacing,
+                                        int nValue,
+                                        int nMaxDigits,
+                                        const S_VECTOR2 &position,
+                                        unsigned int nBasePartId,
+                                        unsigned int bPaired,
+                                        int bPadZeros,
+                                        unsigned int nAlpha) {
+    // Split the value into up to nMaxDigits decimal digits (least-significant first), tracking the
+    // index of the most-significant non-zero digit.
+    int aDigits[kNumberMaxDigits] = {};
+    int nMostSignificant = 0;
+    for (int i = 0; i < nMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nMostSignificant = i;
+        }
+        nValue /= 10;
+    }
+    // An all-zero value still shows one digit when the show-zero flag is set.
+    if (nMostSignificant == 0 && (bPaired & 1) != 0) {
+        nMostSignificant = 1;
+    }
+
+    S_VECTOR2 drawPos{position.x, position.y};
+    float flY = position.y;
+    for (int i = 0; i <= nMostSignificant; ++i) {
+        const float flColumnX = drawPos.x;
+        const int nDigit = aDigits[i];
+        unsigned int nPartId = nDigit + nBasePartId;
+
+        // The score columns comma-shift their first glyph and raise their second.
+        if (nBasePartId == kScoreColumnPartB || nBasePartId == kScoreColumnPartA) {
+            if (i == 0 && bPaired != 0) {
+                nPartId = nBasePartId + 0xb + nDigit;
+            } else if (i == 1 && bPaired != 0) {
+                flY -= 4.0f;
+                drawPos.y = flY;
+            }
+        }
+        // The rating column's first glyph (when paired) uses the comma-shifted bank.
+        const bool bFirstPaired = (i == 0) && (bPaired != 0);
+        if (nBasePartId == kRatingColumnPart && bFirstPaired) {
+            nPartId = nBasePartId + 0xb + nDigit;
+        }
+
+        const PartsDataRecord *pRecord = GetPartsData(nPartId);
+        drawPos.x = flColumnX - pRecord->flWidth;
+        // Micro-nudge a trailing '1' to keep decimal columns aligned across the glyph banks.
+        if (i == nMaxDigits - 1 && nDigit == 1) {
+            if (nBasePartId < kScoreColumnPartA) {
+                if (nBasePartId == kNudgeBankPlus4A || nBasePartId == kNudgeBankPlus4B) {
+                    drawPos.x += 4.0f;
+                } else if (nBasePartId == kDigitZeroPart) {
+                    drawPos.x += 2.0f;
+                }
+            } else if (nBasePartId == kScoreColumnPartA || nBasePartId == kScoreColumnPartB) {
+                drawPos.x += 6.0f;
+            } else if (nBasePartId == kRatingColumnPart) {
+                drawPos.x += 4.0f;
+            }
+        }
+
+        float flNextX = drawPos.x;
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, drawPos, nAlpha, 0);
+        flNextX -= flSpacing;
+        // A paired column draws a second glyph ten ids up from the base.
+        if (bFirstPaired) {
+            drawPos.x = flNextX;
+            const PartsDataRecord *pPaired = GetPartsData(nBasePartId + 10);
+            flNextX -= pPaired->flWidth;
+            if (nBasePartId == kRatingColumnPart) {
+                flY -= 2.0f;
+                drawPos.y = flY;
+            }
+            drawPos.x = flNextX;
+            EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nBasePartId + 10, drawPos, nAlpha, 0);
+            flNextX -= flSpacing;
+        }
+        drawPos.x = flNextX;
+    }
+
+    // Pad the remaining leading positions with dimmed grey zeros.
+    if (bPadZeros != 0 && nMostSignificant + 1 < nMaxDigits) {
+        const auto nDimAlpha =
+            static_cast<unsigned int>(static_cast<float>(nAlpha) * kPadZeroDimFactor);
+        for (int nRemaining = (nMaxDigits - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
+            const PartsDataRecord *pRecord = GetPartsData(nBasePartId);
+            drawPos.x -= pRecord->flWidth;
+            EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nBasePartId, drawPos, nDimAlpha, 0);
+            drawPos.x -= flSpacing;
+        }
+    }
 }

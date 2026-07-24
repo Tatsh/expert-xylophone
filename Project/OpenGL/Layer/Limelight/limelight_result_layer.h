@@ -118,6 +118,34 @@ public:
      */
     void RenderDigits(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
+    /**
+     * @brief Renders a multi-digit decimal number as right-aligned glyph sprites from a chosen glyph
+     *        bank, with optional leading-zero padding and per-column layout tweaks.
+     *
+     * Splits @p nValue into up to @p nMaxDigits decimal digits and emits each digit's glyph (part id
+     * @p nBasePartId plus the digit) right to left, advancing by each glyph's width less
+     * @p flSpacing. The score and rating columns carry paired glyphs and small vertical or
+     * horizontal alignment nudges; when @p bPadZeros is set, the remaining leading positions are
+     * drawn as dimmed grey zeros.
+     * @param flSpacing The extra gap subtracted between glyphs.
+     * @param nValue The value to render.
+     * @param nMaxDigits The maximum number of digits.
+     * @param position The right-hand start position of the run.
+     * @param nBasePartId The glyph bank's base part id (its '0').
+     * @param bPaired Non-zero to draw the column's paired second glyph and shifted first glyph.
+     * @param bPadZeros Non-zero to pad the leading positions with dimmed zeros.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x126cf8
+     */
+    void RenderNumber(float flSpacing,
+                      int nValue,
+                      int nMaxDigits,
+                      const S_VECTOR2 &position,
+                      unsigned int nBasePartId,
+                      unsigned int bPaired,
+                      int bPadZeros,
+                      unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 
