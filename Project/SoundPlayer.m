@@ -27,7 +27,7 @@
 
 #pragma mark - Asset
 
-- (SoundData *)soundData {
+- (SoundData *)getSoundData {
     /** @ghidraAddress 0x354fc */
     return m_SoundData;
 }

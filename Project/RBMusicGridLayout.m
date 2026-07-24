@@ -142,4 +142,10 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
     return visible;
 }
 
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+    /** @ghidraAddress 0x16e0a0 */
+    // The grid always re-lays out on a bounds change so the scrolled item frames stay correct.
+    return YES;
+}
+
 @end

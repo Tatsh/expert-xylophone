@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x354fc (getter)
  * @ghidraAddress 0x35498 (setter)
  */
-@property(nonatomic, strong, nullable) SoundData *soundData;
+@property(nonatomic, strong, nullable, getter=getSoundData) SoundData *soundData;
 /**
  * @brief The playback cursor, in frames, into the current asset. The setter clamps the value to the
  * range [0, the asset's total frame count].

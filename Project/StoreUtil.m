@@ -37,6 +37,9 @@ static NSString *const kReceiptCheckV2JSONFormat =
     @"{\"receiptdata\":\"%@\",\"target\":\"%@\",\"nonce\":\"%@\",\"products\":[%@],\"uuid\":\"%@\","
     @"\"device\":\"%@\",\"os\":\"%@\",\"locale\":\"%@\",\"version\":\"%@\",\"userid\":\"%@\","
     @"\"passwd\":\"%@\"}";
+static NSString *const kReceiptCheckJSONFormat =
+    @"{\"receipt_data\":\"%@\",\"client_info\":{\"uuid\":\"%@\",\"version\":\"%@\",\"device\":\"%@\","
+    @"\"os\":\"%@\",\"locale\":\"%@\"}}";
 static NSString *const kCampaignListJSONFormat =
     @"{\"target\":\"%@\",\"head\":\"%d\",\"limit\":%d,\"userId\":\"%@\",\"passwd\":\"%@\"}";
 static NSString *const kCampaignSerialCheckJSONFormat = @"{\"target\":\"%@\",\"userId\":\"%@\","
@@ -93,6 +96,17 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 /** @ghidraAddress 0x8665c */
 + (NSString *)createNonce:(unsigned long long)length {
     return [NetworkUtil createNonce:(int)length];
+}
+
+/** @ghidraAddress 0x85e54 */
++ (NSString *)createReceiptCheckJSON:(NSString *)receipt {
+    return [NSString stringWithFormat:kReceiptCheckJSONFormat,
+                                      receipt,
+                                      [NetworkUtil identifierParams],
+                                      GetBundleVersionString(),
+                                      [NetworkUtil deviceName],
+                                      GetSystemVersionString(),
+                                      GetFormattedVersionString()];
 }
 
 /** @ghidraAddress 0x85fd4 */

@@ -120,6 +120,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)StopLoop;
 
 /**
+ * @brief Marks the loop as resumed (suspending it) and invalidates the display-link timer.
+ * @ghidraAddress 0x8b0dc
+ */
+- (void)ResumeLoop;
+
+/**
  * @brief Clears the resume flag and (re)creates the display-link timer.
  * @ghidraAddress 0x8b0f8
  */
@@ -322,6 +328,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x8ce28
  */
 - (void)openItunesWithURL:(nullable NSURL *)url;
+
+/**
+ * @brief Dismisses the presented App Store product controller, sharing the finish handler's
+ * dismissal and audio-resume path.
+ * @ghidraAddress 0x8d204
+ */
+- (void)closeItunesWithURL;
 
 /**
  * @brief Walks the presentation chain from the root controller to the top-most presented one.

@@ -436,6 +436,12 @@ constexpr int kDefaultPlayColor = 0;
     [self RemoveTimer];
 }
 
+- (void)ResumeLoop {
+    /** @ghidraAddress 0x8b0dc */
+    m_IsResume = YES;
+    [self RemoveTimer];
+}
+
 - (void)RestartLoop {
     /** @ghidraAddress 0x8b0f8 */
     m_IsResume = NO;
@@ -987,6 +993,12 @@ constexpr int kDefaultPlayColor = 0;
                                    self.itunesViewCtrl = nil;
                                  }];
     }
+}
+
+- (void)closeItunesWithURL {
+    /** @ghidraAddress 0x8d204 */
+    // Route through the finish handler so the dismissal and audio-resume path is shared.
+    [self productViewControllerDidFinish:self.itunesViewCtrl];
 }
 
 #pragma mark - Twitter

@@ -55,6 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)createNonce:(unsigned long long)length;
 
 /**
+ * @brief Build the receipt-verification JSON payload for the original protocol.
+ * @param receipt The Base64-encoded App Store receipt.
+ * @return The JSON payload string with a nested @c client_info object.
+ * @ghidraAddress 0x85e54
+ */
++ (NSString *)createReceiptCheckJSON:(NSString *)receipt;
+
+/**
  * @brief Build the receipt-verification JSON payload for the V2 protocol.
  * @param receipt The Base64-encoded App Store receipt.
  * @param productIds The product identifiers being verified.
