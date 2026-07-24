@@ -1,5 +1,6 @@
 aaap
 accell
+accum
 actived
 adid
 advertisable
@@ -108,6 +109,7 @@ hnbt
 howtoplay
 ifdef
 ifndef
+igles
 infomation
 initalize
 initilize
@@ -248,10 +250,12 @@ theos
 thunks
 tomosuke
 transactioing
+uchar
 udid
 udids
 udvare
 uesr
+ulonglong
 unarchiver
 undecryptable
 undraft
