@@ -164,31 +164,50 @@ unsigned int C_SPRITE_INSTANCING::GetColorAlpha(int nIndex) const {
     return (m_pSpriteColorArray[nIndex] >> 24) & 0xff;
 }
 
+/** @ghidraAddress 0x5a0c4 */
 void C_SPRITE_INSTANCING::SetSpritePosition(int nIndex, const S_VECTOR2 &position) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nIndex] = position;
 }
 
+/** @ghidraAddress 0x59fbc */
 void C_SPRITE_INSTANCING::SetSpriteSize(int nIndex, const S_VECTOR2 &size) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteSizeArray[nIndex] = size;
 }
 
+/** @ghidraAddress 0x59f64 */
 void C_SPRITE_INSTANCING::SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteAnchorArray[nIndex] = anchor;
 }
 
+/** @ghidraAddress 0x5a014 */
 void C_SPRITE_INSTANCING::SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteUvOriginArray[nIndex] = uvOrigin;
 }
 
+/** @ghidraAddress 0x5a06c */
 void C_SPRITE_INSTANCING::SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteUvSizeArray[nIndex] = uvSize;
 }
 
+/** @ghidraAddress 0x5a174 */
+void C_SPRITE_INSTANCING::SetSpriteRotation(int nIndex, float flRotation) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteRotationArray[nIndex] = flRotation;
+}
+
+/** @ghidraAddress 0x5a11c */
+void C_SPRITE_INSTANCING::SetSpriteScale(int nIndex, float flScaleX, float flScaleY) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteScaleXArray[nIndex] = flScaleX;
+    m_pSpriteScaleYArray[nIndex] = flScaleY;
+}
+
+/** @ghidraAddress 0x5a1c0 */
 void C_SPRITE_INSTANCING::SetSpriteColor(int nIndex, unsigned int nColor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteColorArray[nIndex] = nColor;
