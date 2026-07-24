@@ -16,14 +16,14 @@ C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity) {
 }
 
 /** @ghidraAddress 0x317dc */
-void SetRefCountedMember(C_SPRITE_INSTANCING *pBatch, C_TEXTURE *pTexture) {
-    if (pBatch->m_pTexture != nullptr) {
-        ReleaseRefCountedObject(pBatch->m_pTexture);
-        pBatch->m_pTexture = nullptr;
+void C_SPRITE_INSTANCING::SetRefCountedMember(C_TEXTURE *pTexture) {
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
     }
     if (pTexture != nullptr) {
         pTexture->AddRef();
-        pBatch->m_pTexture = pTexture;
+        m_pTexture = pTexture;
     }
 }
 

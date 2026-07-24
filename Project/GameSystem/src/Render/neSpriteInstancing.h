@@ -52,6 +52,15 @@ public:
         m_nBlendMode = nBlendMode;
     }
 
+    /**
+     * @brief Assign the batch's texture, updating reference counts.
+     *
+     * Retains @p pTexture and releases whatever texture the batch previously held.
+     * @param pTexture The texture to assign.
+     * @ghidraAddress 0x317dc
+     */
+    void SetRefCountedMember(C_TEXTURE *pTexture);
+
 private:
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0
@@ -74,8 +83,6 @@ private:
     // +0x155: reserved so the object matches the binary's 352-byte allocation; the trailing fields
     // beyond the batch flag have not yet been recovered.
     unsigned char m_reserved155[11] = {};
-
-    friend void SetRefCountedMember(C_SPRITE_INSTANCING *pBatch, C_TEXTURE *pTexture);
 };
 
 /**
@@ -96,16 +103,6 @@ C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
  * @ghidraAddress 0x3097c
  */
 void InitWorldSpriteBatch(C_SPRITE_INSTANCING *pBatch, unsigned int nCapacity);
-
-/**
- * @brief Assign the batch's texture, updating reference counts.
- *
- * Retains @p pTexture and releases whatever texture the batch previously held.
- * @param pBatch The sprite batch whose texture is being set.
- * @param pTexture The texture to assign.
- * @ghidraAddress 0x317dc
- */
-void SetRefCountedMember(C_SPRITE_INSTANCING *pBatch, C_TEXTURE *pTexture);
 
 } // namespace ne
 

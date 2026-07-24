@@ -37,17 +37,17 @@ C_TEXTURE::~C_TEXTURE() {
 }
 
 /** @ghidraAddress 0x31b18 */
-void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath) {
-    if (pEntry->m_pSourcePath != nullptr) {
-        delete[] pEntry->m_pSourcePath;
-        pEntry->m_pSourcePath = nullptr;
+void C_TEXTURE::SetSourcePath(const char *pszPath) {
+    if (m_pSourcePath != nullptr) {
+        delete[] m_pSourcePath;
+        m_pSourcePath = nullptr;
     }
-    pEntry->m_pSourcePath = new char[std::strlen(pszPath) + 1];
-    std::strcpy(pEntry->m_pSourcePath, pszPath);
+    m_pSourcePath = new char[std::strlen(pszPath) + 1];
+    std::strcpy(m_pSourcePath, pszPath);
 }
 
 /** @ghidraAddress 0x33c78 */
-C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
+C_TEXTURE *C_TEXTURE::FindOrLoadCached(const char *pszName) {
     C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
     // Walk the circular cache list; a key match bumps the reference count and returns the entry.
     for (C_TEXTURE *pEntry = pSentinel->m_pPrev; pEntry != pSentinel; pEntry = pEntry->m_pPrev) {
@@ -60,7 +60,7 @@ C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
     // Not cached: construct a new entry and load the image. On a load failure the binary abandons
     // the entry without freeing it; that is reproduced here.
     auto *pNewEntry = new C_TEXTURE();
-    if (LoadTextureFromUIImage(pNewEntry, pszName) == 0) {
+    if (pNewEntry->LoadFromUIImage(pszName) == 0) {
         return nullptr;
     }
 
@@ -75,14 +75,12 @@ C_TEXTURE *FindOrLoadCachedTexture(const char *pszName) {
 }
 
 /** @ghidraAddress 0x31af4 */
-void ReleaseRefCountedObject(C_TEXTURE *pObject) {
-    // The reference count is decremented before the null check, matching the binary; callers pass a
-    // non-null object.
-    int nCount = pObject->ReleaseRef();
-    if (pObject != nullptr && nCount == 0) {
-        // The binary tail-calls the object's deleting destructor through its vtable slot; delete
-        // dispatches the same virtual destructor.
-        delete pObject;
+void C_TEXTURE::Release() {
+    // Decrement the reference count and destroy the object once it reaches zero. The binary
+    // dereferences the object before its now-redundant null check, so callers pass a live object;
+    // delete dispatches the same virtual destructor the binary tail-calls through the vtable.
+    if (ReleaseRef() == 0) {
+        delete this;
     }
 }
 

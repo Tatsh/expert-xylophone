@@ -6,8 +6,8 @@ namespace ne {
  * @brief A reference-counted GL texture (RTTI @c ne::C_TEXTURE).
  *
  * Textures are owned by the global texture cache (an intrusive @c m_pPrev / @c m_pNext list) and
- * shared by reference count: holders retain with @c AddRef and release through
- * @c ReleaseRefCountedObject, which destroys the texture when the last reference goes away. The
+ * shared by reference count: holders retain with @c AddRef and release through @c Release, which
+ * destroys the texture when the last reference goes away. The
  * class is polymorphic, so it is modelled with a virtual destructor (the vtable at offset 0 is what
  * the release helper dispatches through). Trailing @c // +0xNN comments document the original 32-bit
  * offsets for reference only.
@@ -33,6 +33,15 @@ public:
     }
 
     /**
+     * @brief Release one reference and destroy the texture once the count reaches zero.
+     *
+     * The binary dereferences the object before its now-redundant null check, so this must be called
+     * on a live texture; destruction runs through the virtual destructor.
+     * @ghidraAddress 0x31af4
+     */
+    void Release();
+
+    /**
      * @brief The texture's current reference count.
      */
     int GetRefCount() const {
@@ -53,6 +62,34 @@ public:
         return m_nGLHandle;
     }
 
+    /**
+     * @brief Store a copy of the source asset path, freeing any path already held.
+     * @param pszPath The source asset path to store.
+     * @ghidraAddress 0x31b18
+     */
+    void SetSourcePath(const char *pszPath);
+
+    /**
+     * @brief Load this texture's pixels from the named UIImage asset.
+     * @param pszName The image asset name.
+     * @return Non-zero on success, zero when the image could not be loaded.
+     * @ghidraAddress 0x31b60
+     */
+    int LoadFromUIImage(const char *pszName);
+
+    /**
+     * @brief Find a cached texture by key, loading and caching it on a miss.
+     *
+     * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's reference
+     * count is incremented and it is returned. On a miss a new entry is allocated, initialised, and
+     * loaded from the named image; on success it is reference-counted, spliced into the list, and
+     * returned, otherwise @c nullptr.
+     * @param pszName The texture key (an image asset path).
+     * @return The cached or newly loaded texture, or @c nullptr when the image could not be loaded.
+     * @ghidraAddress 0x33c78
+     */
+    static C_TEXTURE *FindOrLoadCached(const char *pszName);
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     int m_nRefCount = {};               // +0x08
@@ -71,22 +108,7 @@ private:
     float m_flScale = {};               // +0x5c
     bool m_fFlag60 = {};                // +0x60
     unsigned char m_reserved61[7] = {}; // +0x61
-
-    friend C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
-    friend void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath);
 };
-
-/**
- * @brief Release one reference to a polymorphic reference-counted object.
- *
- * Decrements the object's reference count and, when it reaches zero, destroys it through its virtual
- * destructor. The engine's ref-counted objects share the @c C_TEXTURE-style layout (a vtable at
- * offset 0 and the count just after it); the parameter is typed @c C_TEXTURE for its current callers
- * until the shared reference-counted base is reconstructed.
- * @param pObject The object to release; may be @c nullptr.
- * @ghidraAddress 0x31af4
- */
-void ReleaseRefCountedObject(C_TEXTURE *pObject);
 
 /**
  * @brief The texture cache's circular list, addressed through its sentinel node.
@@ -98,43 +120,10 @@ void ReleaseRefCountedObject(C_TEXTURE *pObject);
 extern C_TEXTURE **g_ppTextureCacheHead;
 
 /**
- * @brief Find a cached texture by key, loading and caching it on a miss.
- *
- * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's reference
- * count is incremented and it is returned. On a miss a new entry is allocated, initialised, and
- * loaded from the named image; on success it is reference-counted, spliced into the list, and
- * returned, otherwise @c nullptr.
- * @param pszName The texture key (an image asset path).
- * @return The cached or newly loaded texture, or @c nullptr when the image could not be loaded.
- * @ghidraAddress 0x33c78
- */
-C_TEXTURE *FindOrLoadCachedTexture(const char *pszName);
-
-/**
- * @brief Store a copy of the source asset path in a texture entry.
- *
- * Frees any path the entry already holds, then duplicates @p pszPath into a freshly allocated
- * buffer.
- * @param pEntry The texture entry to update.
- * @param pszPath The source asset path to store.
- * @ghidraAddress 0x31b18
- */
-void SetTextureSourcePath(C_TEXTURE *pEntry, const char *pszPath);
-
-/**
  * @brief Running total of the bytes held by all live textures, for memory accounting.
  * @ghidraAddress 0x3cff28
  */
 extern int g_dwTotalTextureMemory;
-
-/**
- * @brief Load a texture's pixels from the named UIImage asset.
- * @param pTexture The texture entry to fill in.
- * @param pszName The image asset name.
- * @return Non-zero on success, zero when the image could not be loaded.
- * @ghidraAddress 0x31b60
- */
-int LoadTextureFromUIImage(C_TEXTURE *pTexture, const char *pszName);
 
 } // namespace ne
 

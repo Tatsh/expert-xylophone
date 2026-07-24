@@ -18,7 +18,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     }
 
     ne::C_RENDER *pRootNode = GetBackgroundLayer()->GetBackgroundRenderObject();
-    m_pTexture = ne::FindOrLoadCachedTexture(g_szGmParts2TextureKey);
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(g_szGmParts2TextureKey);
 
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {
         ne::C_SPRITE_INSTANCING *pBatch =
@@ -28,7 +28,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
         // The first batch is stored without being given the shared texture; only the second and
         // third batches take it, exactly as the binary does.
         if (nBatchIndex != 0) {
-            ne::SetRefCountedMember(pBatch, m_pTexture);
+            pBatch->SetRefCountedMember(m_pTexture);
         }
         pBatch->SetSpriteCount(m_anSpriteCount[nBatchIndex]);
         // The last batch is additively blended over the others.
