@@ -23,7 +23,9 @@
 #import "RBMusicManager.h"
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
+#import "leveltables.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

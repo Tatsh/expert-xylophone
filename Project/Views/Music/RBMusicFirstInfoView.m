@@ -2,7 +2,8 @@
 
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The overlay covers the whole screen at 70%-translucent black and starts fully transparent so the
 // show animation can fade it in.

@@ -21,7 +21,8 @@
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot played once the acceptance has been submitted (the unlock chime).
 constexpr int kSoundEffectUnlocked = 9;

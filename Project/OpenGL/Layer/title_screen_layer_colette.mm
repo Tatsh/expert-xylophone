@@ -14,7 +14,7 @@
 
 #import "title_screen_layer_colette.h"
 
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot the completed Konami code fires (the secret/credits jingle).
 static constexpr int kSoundEffectTitleSecret = 0xd;

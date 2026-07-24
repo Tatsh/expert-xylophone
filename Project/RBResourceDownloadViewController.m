@@ -20,7 +20,7 @@
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // Server response keys.
 static NSString *const kResponseKeyError = @"Error";

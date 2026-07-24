@@ -4,7 +4,7 @@
 #import "StorePackInfo.h"
 #import "StoreUtil.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // A shared layout metric of 60 points, reached by its Ghidra address as the other reconstructed
 // views (for example RBSearchMapView) do. The 100-point metric and the 0.3-second short fade come

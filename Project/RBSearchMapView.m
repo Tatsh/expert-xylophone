@@ -5,7 +5,8 @@
 #import "RBMapAnnotation.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // Shared engine layout metrics and cached localised strings, referenced by their Ghidra names.
 extern const double g_dLayoutMetricThirtyTwo;                     // @ghidraAddress 0x2ee9b0 (32.0)

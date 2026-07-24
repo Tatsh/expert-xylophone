@@ -2,7 +2,8 @@
 
 #import "RBPlaylistManager.h"
 #import "RBUserSettingData.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The autoresizing mask applied to the root view: flexible width and flexible height.
 static const UIViewAutoresizing kRootViewAutoresizing =

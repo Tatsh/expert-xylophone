@@ -1,6 +1,7 @@
 #include "neRender.h"
 
-#import "neEngineBridge.h"
+#import "engineruntime.h"
+#import "matrixmath.h"
 
 namespace ne {
 

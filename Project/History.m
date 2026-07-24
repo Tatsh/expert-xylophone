@@ -15,7 +15,7 @@
 // already use); they resolve once those classes land.
 #import "HistoryData.h"
 #import "RBScoreHash.h"
-#import "neEngineBridge.h"
+#import "enginecrypto.h"
 
 // The Core Data entity name backing this class.
 static NSString *const kHistoryEntityName = @"History";

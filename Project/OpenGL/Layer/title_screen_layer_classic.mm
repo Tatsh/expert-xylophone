@@ -17,7 +17,7 @@
 #import <cmath>
 
 #import "RBCampaignData.h"
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 // The title-logo swing pivot the particle rest positions are measured against, and the screen
 // origin their rotated positions are offset back to.

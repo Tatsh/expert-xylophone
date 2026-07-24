@@ -15,7 +15,8 @@
 #import "RBMusicView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The number of speed steps the bar is divided into. The marker glides across ten equal slots and
 // SPEED is clamped to zero through ten.

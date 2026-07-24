@@ -35,7 +35,9 @@
 #import "StoreMusicInfo.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "shotsoundmanager.h"
+#import "soundeffectmanager.h"
 
 // The framed backdrop drawn behind the lime-point count.
 static NSString *const kPointBackgroundImageName = @"04_customize/cus_fram_lockp";

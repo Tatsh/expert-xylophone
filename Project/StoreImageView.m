@@ -1,7 +1,7 @@
 #import "StoreImageView.h"
 
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The placeholder jacket shown in the background view until the real artwork downloads.
 static NSString *const kPlaceholderJacketName = @"09_store/store_jacket_110";

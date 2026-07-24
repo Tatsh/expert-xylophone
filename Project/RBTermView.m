@@ -16,7 +16,7 @@
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The view types stored in RBTermView.viewType. The agreement overlay defers dismissal to the base
 // popup; the store terms viewer fades itself out and tears down the owning music-menu overlay.

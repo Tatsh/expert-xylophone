@@ -88,6 +88,9 @@ dplatform
 eagl
 eeac
 encp
+enginecrypto
+engineglobals
+engineruntime
 errno
 esbenp
 exprosion

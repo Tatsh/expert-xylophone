@@ -13,7 +13,8 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The track sprite (base view) and grip sprite texture names.
 static NSString *const kTimingSliderTrackImageName = @"04_customize/cus_vol_3";

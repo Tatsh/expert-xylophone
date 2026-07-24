@@ -19,7 +19,8 @@
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // The archive filename format: a nine-digit zero-padded extend-note identifier with a @c .rb
 // extension.

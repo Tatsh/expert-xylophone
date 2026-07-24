@@ -1,7 +1,7 @@
 #import "RBStoreManageSortViewController.h"
 
 #import "RBStoreManageViewController.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The four built-in sort-order titles, seeded into sortTitleList when it is empty.
 static NSString *const kSortTitleDownloadAscending = @"ダウンロード：昇順";

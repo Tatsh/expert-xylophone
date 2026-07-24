@@ -9,7 +9,7 @@
 
 #import "StringConvert.h"
 
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // Prolonged-sound mark (U+30FC, @c ー): when it follows a character it is replaced by that
 // character's vowel rather than kept verbatim.

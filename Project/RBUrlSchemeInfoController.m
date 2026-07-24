@@ -13,7 +13,7 @@
 #import "AppDelegate.h"
 
 // GetRegionCode() -> NSString* two-letter region code appended as the target parameter.
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The format used to derive a handler selector name from a routed action, for example
 // @c webRbAction: for the @c web action.

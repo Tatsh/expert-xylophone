@@ -6,7 +6,7 @@
 #import <UIKit/UIKit.h>
 
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 #include "neGLES.h"
 
 namespace ne {

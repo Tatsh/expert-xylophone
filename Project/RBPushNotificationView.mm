@@ -4,7 +4,9 @@
 #import "RBUrlSchemeManager.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "soundeffectmanager.h"
 
 // The music-menu themed sound-effect slot played when the banner slides into view. This is the
 // same slot the search bar uses for its slide-in in RBMenuView.

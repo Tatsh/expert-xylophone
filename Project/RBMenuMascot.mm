@@ -15,7 +15,9 @@
 #import "RBUrlSchemeManager.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "gamesystem.h"
+#import "s_vector2.h"
 
 // The base asset names for the mascot sprite frames and the campaign message bubble background.
 static NSString *const kNormalMascotAssetBase = @"01_music_select/as_mascot_";

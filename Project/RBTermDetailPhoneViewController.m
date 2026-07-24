@@ -17,7 +17,8 @@
 #import "NetworkUtil.h"
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The view types stored in RBTermDetailPhoneViewController.viewType. The agreement type hides the
 // navigation bar on dismissal; the store terms viewer leaves the bar as-is.

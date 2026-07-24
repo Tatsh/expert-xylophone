@@ -12,7 +12,7 @@
 
 // Collaborator category reached from these methods; its header is committed in this tree.
 #import "NSFileManager+RB.h"
-#import "neEngineBridge.h"
+#import "enginecrypto.h"
 
 // The bare filename of the persisted playlist archive under the documents directory.
 static NSString *const kPlaylistArchiveFilename = @"playlist";

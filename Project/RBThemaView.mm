@@ -15,7 +15,7 @@
 #import "RBExperienceData.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot played when the OK button is pressed.
 constexpr int kSoundEffectDecide = 1;

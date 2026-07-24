@@ -1,7 +1,7 @@
 #import "RBTutorialPastel.h"
 
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // Child indices into the clip-rectangle and position tables.
 enum {

@@ -15,7 +15,8 @@
 #import "RBUnlockPackageItemData.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineruntime.h"
 
 // The restore/"new" badge and the unlocked-state overlay artwork bundled with the app.
 static NSString *const kBadgeImageName = @"04_customize/cus_restore_badge";

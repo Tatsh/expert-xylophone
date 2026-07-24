@@ -16,7 +16,9 @@
 #import "RBUnlockPackageItemData.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineruntime.h"
+#import "soundeffectmanager.h"
 
 // The panel background, and the two button images, all live under the customize asset group.
 static NSString *const kPanelBackgroundImageName = @"04_customize/cus_unlock_bg";

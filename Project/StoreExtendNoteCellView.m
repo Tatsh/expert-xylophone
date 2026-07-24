@@ -3,7 +3,7 @@
 #import "StoreExtendNoteInfo.h"
 #import "StoreUtil.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The placeholder artwork shown behind the tune jacket.
 static NSString *const kArtworkPlaceholderImageName = @"09_store/store_jacket_64";

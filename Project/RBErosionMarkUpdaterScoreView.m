@@ -1,6 +1,7 @@
 #import "RBErosionMarkUpdaterScoreView.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 /// The translucent backdrop's black-fill opacity, also reused as the fade animation duration.
 /// @ghidraAddress 0x2ec718

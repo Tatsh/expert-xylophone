@@ -15,7 +15,7 @@
 #import "UIImage+RB.h"
 
 // SoundEffectManager::GetInstance()->PlayThemedSoundEffect(slot).
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 namespace {
 // The back button plays the shared "cancel" sound-effect slot.

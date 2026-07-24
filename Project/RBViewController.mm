@@ -34,7 +34,18 @@
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
 #import "UIAlertView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "engineruntime.h"
+#import "gamesystem.h"
+#import "matrixmath.h"
+#import "neRenderer.h"
+#import "ne_c_time.h"
+#import "s_vector2.h"
+#import "s_vector3.h"
+#import "soundeffectmanager.h"
+#import "touchmanager.h"
+#import "vectormath.h"
 
 // Speculative imports for collaborators that are not yet reconstructed. They are messaged through
 // their recovered selectors below.

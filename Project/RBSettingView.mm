@@ -18,7 +18,8 @@
 #import "RBSettingMenuButton.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // Themed sound-effect slots. The panel plays a theme-specific slot when it opens: the Classic theme
 // uses its own slot, and the Limelight and Colette themes share another. Dismissal and every

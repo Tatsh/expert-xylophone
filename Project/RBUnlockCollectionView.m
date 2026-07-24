@@ -18,7 +18,7 @@
 #import "RBUnlockPackageItemData.h"
 #import "RBUserSettingData.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The stretchable frame image drawn behind the package title and items.
 static NSString *const kUnlockFrameImageName = @"04_customize/cus_fram_unlock";

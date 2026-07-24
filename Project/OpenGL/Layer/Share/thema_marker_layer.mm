@@ -2,10 +2,10 @@
 
 #import "RBUserSettingData.h"
 #include "bg_layer.h"
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#import "s_vector2.h"
 
 // The process-wide theme-marker layer, created lazily by shared().
 static ThemaMarkerLayer *g_pThemaMarkerLayer = nullptr; // @ghidraAddress 0x3deed0

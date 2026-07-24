@@ -5,7 +5,8 @@
 #import "RBPlaylistManager.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The playlist filter identifiers persisted in RBUserSettingData.playlistID.
 enum {

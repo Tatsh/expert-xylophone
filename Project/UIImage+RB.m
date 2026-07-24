@@ -15,7 +15,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The shared image directory tried after the current theme directory.
 static NSString *const kSharedImageDirectoryName = @"00_Share";

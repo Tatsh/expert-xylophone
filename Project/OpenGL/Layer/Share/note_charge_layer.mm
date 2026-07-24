@@ -1,7 +1,7 @@
 #include "note_charge_layer.h"
 
 #include "bg_layer.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

@@ -2,10 +2,12 @@
 
 #include <cassert>
 
-#import "neEngineBridge.h"
+#import "engineglobals.h"
+#import "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#import "s_vector2.h"
 
 // The process-wide background layer, created lazily by GetBackgroundLayer.
 static BgLayer *g_pBackgroundLayer = nullptr; // @ghidraAddress 0x3de808

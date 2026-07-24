@@ -13,7 +13,8 @@
 // GameSystem::GetGameSystem() -> GameSystem* (with the background-music playback flag reported by
 // GetBgmPlaying()) and IsPad(), which reports whether the region uses the wide
 // (variant) font layout that also selects the constrained-rotation behaviour.
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "gamesystem.h"
 
 // The first system-software major version whose UITabBar defaults to a translucent bar; on it and
 // later the store keeps the opaque bar the earlier layout assumed.

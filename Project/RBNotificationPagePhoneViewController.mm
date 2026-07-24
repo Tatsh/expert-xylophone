@@ -19,7 +19,7 @@
 #import "RBWebView.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot played on cancel / back navigation.
 constexpr int kSoundEffectCancel = 4;

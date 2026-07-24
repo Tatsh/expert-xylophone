@@ -1,6 +1,6 @@
 #import "StoreDetailCopyrightCell.h"
 
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The wrap width of the copyright and terms label, shared with the store extend-note cell. Reached
 // by its Ghidra address as the other reconstructed store views do; it is not yet in the engine

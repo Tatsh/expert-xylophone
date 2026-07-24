@@ -2,11 +2,13 @@
 
 #include <cassert>
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "parts_data_table.h"
 #include "phone_anchor_table.h"
+#import "s_vector2.h"
 
 // The process-wide Colette result-window layer, created lazily by shared().
 static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddress 0x3dc598

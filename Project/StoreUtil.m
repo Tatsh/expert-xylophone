@@ -13,7 +13,8 @@
 
 #import "AppDelegate.h"
 #import "NetworkUtil.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // Source constant the receipt-check salt is carved out of; only a 27-character slice is used.
 static NSString *const kReceiptSaltSource = @"2012 Konami Digital Entertainment";

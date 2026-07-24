@@ -16,7 +16,9 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "soundeffectmanager.h"
 
 // The customize popup transitions all run over three tenths of a second.
 constexpr NSTimeInterval kCustomizeSlideAnimationDuration = 0.3;

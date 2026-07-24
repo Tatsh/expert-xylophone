@@ -6,7 +6,7 @@
 #import "StorePackInfo.h"
 #import "StorePackListGenre.h"
 #import "StoreUtil.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The default genre presented before any catalogue page has loaded, with identifier zero. Its name
 // is a three-character CFString literal at 0x36eee0 whose data lives at 0x41c800; that __cstring

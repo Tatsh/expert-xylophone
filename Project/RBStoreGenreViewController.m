@@ -5,7 +5,7 @@
 #import "RBStorePackList.h"
 #import "RBStorePageViewController.h"
 #import "StorePackListGenre.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The localised navigation title key and its empty fallback value, shared with the store page.
 static NSString *const kStoreCategoryKey = @"Category";

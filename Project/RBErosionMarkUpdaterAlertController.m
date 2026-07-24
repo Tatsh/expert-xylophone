@@ -10,7 +10,7 @@
 
 #import "RBErosionMarkUpdaterAlertController.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 @implementation RBErosionMarkUpdaterAlertController
 

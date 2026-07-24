@@ -12,7 +12,8 @@
 // GetGameSystem() -> GameSystem* (with the fBgmPlaying playback flag) and IsPad(),
 // which reports whether the region uses the wide (variant) font layout that also selects the
 // constrained-rotation behaviour.
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "gamesystem.h"
 
 @implementation RBBaseViewController
 

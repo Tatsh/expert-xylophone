@@ -1,6 +1,5 @@
 #include "tutorial_guide_layer.h"
 
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

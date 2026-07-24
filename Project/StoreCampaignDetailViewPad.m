@@ -9,7 +9,8 @@
 #import "StoreImageView.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The informal close callback the overlay sends to its weak delegate (the campaign list page). The
 // binary guards detailViewClose with respondsToSelector: before sending it.

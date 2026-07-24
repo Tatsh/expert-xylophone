@@ -22,7 +22,9 @@
 #import "RBMusicManager.h"
 #import "StringConvert.h"
 #import "UnZipArchive.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
+#import "engineglobals.h"
 
 // Archive member names. The White image accessors read the @c _b (black-background) members and
 // the Black image accessors read the @c _w (white-background) members; the binary names its

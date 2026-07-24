@@ -13,7 +13,7 @@
 #import "Downloader.h"
 #import "NetworkUtil.h"
 #import "RBUserSettingData.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The initial capacity of the live-request array.
 static const NSUInteger kHTTPArrayInitialCapacity = 5;

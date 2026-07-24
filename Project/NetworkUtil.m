@@ -12,7 +12,8 @@
 #import "AppDelegate.h"
 #import "RBUserSettingData.h"
 #import "SystemHardware.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under.
 static NSString *const kSecureAPIScheme = @"https";

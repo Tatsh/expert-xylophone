@@ -6,7 +6,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "GameSystem/src/OpenGL/neGLES.h"
-#import "neEngineBridge.h"
+#import "touchmanager.h"
 
 // The most recently created GL view. The binary keeps a single file-scope pointer that
 // -initWithFrame: writes last and -dealloc clears; +GetInstance returns it. Only one instance is

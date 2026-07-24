@@ -11,7 +11,7 @@
 #import "StoreImageView.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The informal close callbacks the detail page sends to its bare-id delegate (the campaign list
 // page). The binary guards detailViewClose with respondsToSelector: and sends alertViewClose

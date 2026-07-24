@@ -12,7 +12,9 @@
 
 #include <new>
 
-#include "neEngineBridge.h"
+#include "engineruntime.h"
+#include "gamesystem.h"
+#include "touchmanager.h"
 
 // The sentinel each fresh slot's position fields hold until a touch is registered: the bit pattern
 // 0x80000000, i.e. INT_MIN, which is also the representation of -0.0f the binary stores through its

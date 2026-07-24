@@ -17,7 +17,9 @@
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
 #import "RBScoreHash.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
+#import "engineruntime.h"
 
 // The Core Data entity name backing this class.
 static NSString *const kScoreDataEntityName = @"ScoreData";

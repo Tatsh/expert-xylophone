@@ -14,7 +14,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "neEngineBridge.h"
+#import "audiosourceslot.h"
+#import "caplayermgr.h"
+#import "engineglobals.h"
+#import "engineruntime.h"
 
 namespace {
 

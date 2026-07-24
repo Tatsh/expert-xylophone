@@ -10,7 +10,7 @@
 #import "NSFileManager+RB.h"
 #import "RBUserSettingData.h"
 #import "SSZipArchive.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The archive password shared by the manifest archive.
 static NSString *const kArchivePassword = @"mt972";

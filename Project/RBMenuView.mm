@@ -38,7 +38,10 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "gamesystem.h"
+#import "soundeffectmanager.h"
 
 // Theme identifiers returned by RBUserSettingData.thema.
 enum {

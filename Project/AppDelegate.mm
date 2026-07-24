@@ -34,8 +34,16 @@
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h" // GetGameSystem() + the ne:: engine/sheet-layer/texture-cache helpers.
+#import "clear_gauge_layer.h"
+#import "deviceenvironment.h"
+#import "engineruntime.h"
+#import "gamescene.h"
+#import "gamesystem.h"
+#import "leveltables.h"
 #import "neWindow.h"
+#import "playtimer.h"
+#import "s_vector2.h"
+#import "sheetlayer.h"
 
 // Private web-info-response helpers messaged from the startup-request success block and each other.
 @interface AppDelegate ()

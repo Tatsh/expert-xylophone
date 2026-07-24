@@ -7,7 +7,7 @@
 #import "RBMusicManager.h"
 #import "RBPurchaseManager.h"
 #import "StoreUtil.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // Server catalogue dictionary keys read by the extend-note initialisers and by setDictionary:.
 static NSString *const kStoreExtendKeyPID = @"PID";

@@ -15,7 +15,7 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // Build the resizable-image cap insets for a themed asset (defined below).
 static UIEdgeInsets CapInsetsForImage(UIImage *image);

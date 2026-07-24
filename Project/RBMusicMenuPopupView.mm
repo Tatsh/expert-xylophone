@@ -14,7 +14,8 @@
 #import "RBMenuView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The music-menu popups all fade over a quarter second.
 constexpr NSTimeInterval kPopupAnimationDuration = 0.25;

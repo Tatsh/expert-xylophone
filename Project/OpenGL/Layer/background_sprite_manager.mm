@@ -1,7 +1,6 @@
 #include "background_sprite_manager.h"
 
 #include "Share/bg_layer.h"
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

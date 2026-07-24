@@ -12,7 +12,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The achievement rate is scaled by this factor and truncated to an integer before being split into
 // decimal glyphs; the decimal point is placed after the first (tenths) digit.

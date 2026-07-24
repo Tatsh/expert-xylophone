@@ -6,7 +6,8 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The horizontal offset added on the wide (pad) Colette layout.
 static const float kPadLayoutOffset = 8.0f;

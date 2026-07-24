@@ -2,9 +2,9 @@
 
 #include <cassert>
 
-#import "neEngineBridge.h"
 #include "neGLES.h"
 #include "neTexture.h"
+#import "s_vector2.h"
 
 namespace ne {
 

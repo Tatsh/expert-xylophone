@@ -16,7 +16,7 @@
 #import "RBUserSettingData.h"
 #import "StoreExtendNoteInfo.h"
 #import "StoreUtil.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The number of catalogue items requested per page.
 static const unsigned int kExtendNoteListPageSize = 12;

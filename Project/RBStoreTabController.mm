@@ -9,7 +9,9 @@
 #import "RBStoreManageViewController.h"
 #import "RBStorePageViewController.h"
 #import "StoreDialogView.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "soundeffectmanager.h"
 
 // Store tab indices, matching the order the four navigation controllers are installed.
 enum {

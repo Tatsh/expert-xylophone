@@ -13,7 +13,8 @@
 #import "RBMenuBGEffectPartView.h"
 
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "gamesystem.h"
+#import "s_vector2.h"
 
 // The default sprite artwork paths seeded by -init. Concrete subclasses override these.
 static NSString *const kDefaultImage1Path = @"01_music_select/bg_tex_05";

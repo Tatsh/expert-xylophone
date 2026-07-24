@@ -12,7 +12,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The page range always starts at page one.
 static const NSUInteger kSliderMinPage = 1;

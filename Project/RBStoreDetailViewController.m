@@ -16,7 +16,8 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // Shared engine doubles reused as UI geometry and colour components, declared here the same way the
 // other store view controllers reach them (they are not yet in the engine bridge header). The pad

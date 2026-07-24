@@ -3,7 +3,8 @@
 #import "RBMusicManager.h"
 #import "StoreCampaignItemInfo.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The pad cell is 180 points tall; the phone cell reuses the shared 100-point layout metric.
 static const CGFloat kCellHeightPad = 180.0;

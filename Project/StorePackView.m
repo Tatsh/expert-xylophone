@@ -4,7 +4,7 @@
 #import "StorePackInfo.h"
 #import "StoreUtil.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // Layout metrics shared with other screens but not declared in the engine bridge header. Reached
 // by their Ghidra addresses, matching how the other reconstructed views (for example

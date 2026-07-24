@@ -18,7 +18,8 @@
 #import "RBTutorialPastelLayer.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The per-texture-type source rectangles into the tutorial artwork atlas, read by -getClipRect:.
 // @ghidraAddress 0x3de058 (g_pTutorialClipRect)

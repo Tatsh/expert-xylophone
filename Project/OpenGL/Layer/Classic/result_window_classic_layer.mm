@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "classic_parts_data_table.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "polygon2d_trail.h"

@@ -22,7 +22,8 @@
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
 #import "StoreMusicInfo.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // The archive filename format: a nine-digit zero-padded tune identifier with a @c .rb extension.
 // @ghidraAddress 0x337a27 (the format-string literal)

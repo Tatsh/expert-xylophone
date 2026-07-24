@@ -1,6 +1,5 @@
 #include "event_effect_layer.h"
 
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

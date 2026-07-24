@@ -1,6 +1,6 @@
 #import "RBMusicSearchExpander.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The synonym dictionary is persisted as JSON under this name in the application-support directory,
 // seeded on first run from the identically named bundled resource.

@@ -18,7 +18,9 @@
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot played when the agreement view type is dismissed via "back".
 constexpr int kSoundEffectCancel = 4;

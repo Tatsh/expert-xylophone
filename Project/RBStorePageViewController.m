@@ -38,7 +38,8 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // Store-page subview tags. -viewWithTag: is the single source of truth for whether a subview has
 // already been built, so these are domain values rather than bare integers.

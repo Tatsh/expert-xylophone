@@ -6,7 +6,9 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "soundeffectmanager.h"
 
 // The three play-colour slots this selector builds a button for.
 enum { kColorSlotCount = 3 };

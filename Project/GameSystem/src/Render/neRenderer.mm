@@ -2,8 +2,10 @@
 
 #include <cstring>
 
-#import "neEngineBridge.h"
+#import "matrixmath.h"
 #include "neGLES.h"
+#import "neRenderer.h"
+#import "s_vector3.h"
 
 // The reference-counted projection and view-camera slots the render path reads each frame.
 ne::Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00

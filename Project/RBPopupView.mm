@@ -10,7 +10,7 @@
 
 #import "RBPopupView.h"
 
-#import "neEngineBridge.h"
+#import "soundeffectmanager.h"
 
 // The popup fades over a quarter second.
 constexpr NSTimeInterval kPopupAnimationDuration = 0.25;

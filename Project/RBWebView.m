@@ -11,7 +11,7 @@
 
 #import "RBWebView.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The white component and alpha of the translucent loading cover shown over the content.
 static const CGFloat kGrayViewWhite = 0.9;

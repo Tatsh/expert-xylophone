@@ -16,7 +16,9 @@
 #import "RBViewController.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "shotsoundmanager.h"
+#import "soundeffectmanager.h"
 
 // The preview button that starts the game preview from the bottom of the stack.
 static NSString *const kPreviewButtonImageName = @"04_customize/cus_prev";

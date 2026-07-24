@@ -1,10 +1,10 @@
 #include "play_color_layer.h"
 
 #include "bg_layer.h"
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#import "s_vector2.h"
 
 // The process-wide play-colour layer, created lazily by shared().
 static PlayColorLayer *g_pPlayColorLayer = nullptr; // @ghidraAddress 0x3dc5a0

@@ -12,7 +12,7 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The localised store-loading title, reused from the store page. @ghidraAddress 0x3cfca8.
 extern NSString *const g_pStoreLoadingTitle;

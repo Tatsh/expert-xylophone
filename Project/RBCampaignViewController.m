@@ -21,7 +21,8 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The sentinel stored in workingIndex and samplePlayedIndex when no row is active.
 static const int kNoActiveIndex = -1;

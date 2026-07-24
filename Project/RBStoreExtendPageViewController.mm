@@ -38,7 +38,8 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The shared translucent-panel white value used by the store manage and web screens. It is a
 // file-scope global defined in another store screen, so it is declared here rather than redefined.

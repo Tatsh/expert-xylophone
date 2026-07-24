@@ -13,7 +13,8 @@
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineruntime.h"
 
 // The frame-bonus background images, indexed by ScoreDataFrameBonusType (None, Bronze, and Gold).
 static NSString *const kBgImageNames[] = {

@@ -15,7 +15,8 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The themed sound-effect slot played when a ranking tab is pressed.
 constexpr int kSoundEffectCancel = 1;

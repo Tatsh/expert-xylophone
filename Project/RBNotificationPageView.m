@@ -16,7 +16,7 @@
 #import "RBUserSettingData.h"
 #import "RBWebView.h"
 #import "UIAlertView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The information variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
 static const NSInteger kMusicMenuPopupViewTypeInformation = 7;

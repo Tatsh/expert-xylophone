@@ -18,7 +18,7 @@
 #import "RBUserSettingData.h"
 #import "TwitterImageCreaterScoreElement.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineruntime.h"
 
 // The number of score columns: index 0 is the local player, index 1 is the rival.
 static const int kScoreColumnCount = 2;

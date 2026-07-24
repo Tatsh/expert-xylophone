@@ -1,6 +1,7 @@
 #import "RBStoreManageHeaderCell.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The header height for the pad (wide) and phone (narrow) iPad idioms.
 static const CGFloat kHeaderHeightPad = 30.0;

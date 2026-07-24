@@ -11,7 +11,7 @@
 #import "RBVolumeSlider.h"
 
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The track sprite (base view) and gauge (fill) sprite texture names.
 static NSString *const kVolumeSliderTrackImageName = @"04_customize/cus_vol_1";

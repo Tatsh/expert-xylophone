@@ -15,7 +15,8 @@
 #import "RBMusicView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "soundeffectmanager.h"
 
 // The number of CPU-rival LEVEL slots the bar is divided into. The marker glides across nine equal
 // slots and LEVEL is clamped to zero through nine.

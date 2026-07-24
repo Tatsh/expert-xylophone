@@ -13,7 +13,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The news-ticker banner background image, whose height sets the ticker's overall bounds.
 static NSString *const kNewsTickerBackgroundImageName = @"01_music_select/sel_news";

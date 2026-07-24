@@ -7,7 +7,7 @@
 #import "RBBGMManager.h"
 #import "RBUserSettingData.h"
 #import "StorePackInfo.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // Promotion-dictionary keys shared with the store pack list and the promotion banners.
 static NSString *const kPromotionKeyID = @"ID";

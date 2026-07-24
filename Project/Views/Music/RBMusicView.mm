@@ -26,7 +26,11 @@
 #import "ScoreData.h"
 #import "UIColor+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
+#import "engineruntime.h"
+#import "gamesystem.h"
+#import "soundeffectmanager.h"
 
 // The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed by
 // difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).

@@ -3,7 +3,7 @@
 #import "RBMusicColorView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The autoresizing mask applied to the background, track, and grip views: the four flexible
 // margins plus flexible width and height (0x3f).

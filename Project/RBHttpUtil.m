@@ -11,7 +11,8 @@
 
 #import "RBHttpUtil.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // The common request headers stamped on every request.
 static NSString *const kUserAgentHeaderField = @"User-Agent";

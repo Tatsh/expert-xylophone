@@ -14,7 +14,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 #pragma mark - Label geometry
 

@@ -1,7 +1,8 @@
 #include "polygon2d_trail.h"
 
 #include "neDrawPolygon2D.h"
-#import "neEngineBridge.h"
+#import "s_vector2.h"
+#import "vectormath.h"
 
 namespace {
 

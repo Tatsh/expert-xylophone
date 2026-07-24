@@ -21,7 +21,8 @@
 #import "NSFileManager+RB.h"
 #import "PurchaseTransactionCache.h"
 #import "StoreUtil.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "enginecrypto.h"
 
 // The filename the encrypted owned-product list is written to under Application Support.
 // @ghidraAddress 0x337b84 (the filename literal)

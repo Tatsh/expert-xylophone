@@ -9,7 +9,7 @@
 
 #import "RBUserSettingData.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // Archive keys for the scalar and object settings. They match the shipped literals verbatim.
 static NSString *const kVersionCoderKey = @"kVersion";

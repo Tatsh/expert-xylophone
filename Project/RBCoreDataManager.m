@@ -11,7 +11,7 @@
 
 #import "RBCoreDataManager.h"
 
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The score store file name for the tablet and phone variants.
 static NSString *const kScoreDataStoreFileName = @"ScoreData.sqlite";

@@ -13,7 +13,7 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
 
 // The inner button's bounds, chosen by the active iPad idiom. The wide variant uses a larger
 // button to fit the wider glyphs.

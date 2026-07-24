@@ -22,7 +22,7 @@
 #import "StoreImageView.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "engineglobals.h"
 
 // The shared translucent-panel white value defined in another store screen; declared here rather
 // than redefined, matching how the store page controller reaches it.

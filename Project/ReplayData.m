@@ -15,7 +15,7 @@
 #import "BFCodec.h"
 #import "NSFileManager+RB.h"
 #import "SSZipArchive.h"
-#import "neEngineBridge.h"
+#import "enginecrypto.h"
 
 // Archive keys for each field. Several are abbreviations of their property name.
 static NSString *const kVersionCoderKey = @"ver";

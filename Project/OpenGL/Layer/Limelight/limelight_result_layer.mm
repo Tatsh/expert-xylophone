@@ -1,6 +1,5 @@
 #include "limelight_result_layer.h"
 
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

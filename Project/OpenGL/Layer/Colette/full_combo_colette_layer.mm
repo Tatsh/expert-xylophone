@@ -1,7 +1,6 @@
 #include "full_combo_colette_layer.h"
 
 #include "../Share/bg_layer.h"
-#import "neEngineBridge.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"

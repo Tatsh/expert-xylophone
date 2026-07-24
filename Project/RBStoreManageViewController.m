@@ -20,7 +20,8 @@
 #import "StringConvert.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "neEngineBridge.h"
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // Sort orders selectable on the manage screen.
 typedef NS_ENUM(NSUInteger, RBStoreManageSortOrder) {
