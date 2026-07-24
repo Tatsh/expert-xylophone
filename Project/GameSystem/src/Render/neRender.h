@@ -99,6 +99,16 @@ public:
      */
     void RegisterGlobal();
 
+    /**
+     * @brief Traverse this node's children for the frame.
+     *
+     * Draws each visible child (via @c Render) and recurses into its subtree, and destroys each
+     * child flagged for deletion. The child list is an intrusive circular ring, so deletions that
+     * remove the head are handled as the walk proceeds.
+     * @ghidraAddress 0x29d78
+     */
+    void TraverseChildren();
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     // +0x08/+0x10: this node's slot in a self-linked ring whose owning list is not yet identified;

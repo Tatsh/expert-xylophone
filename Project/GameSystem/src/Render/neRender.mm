@@ -104,4 +104,56 @@ void C_RENDER::RegisterGlobal() {
     g_globalSceneRoot.AttachChild(this);
 }
 
+/** @ghidraAddress 0x29d78 */
+void C_RENDER::TraverseChildren() {
+    C_RENDER *pChild = m_pChildHead;
+    if (pChild == nullptr) {
+        return;
+    }
+
+    // First pass: destroy any delete-requested children at the head, each of which advances the
+    // circular list's head, then draw the first live child (recursing into its subtree) and stop.
+    C_RENDER *pNext;
+    do {
+        pNext = pChild->m_pSiblingNext;
+        if (!pChild->m_bDeleteRequest) {
+            if (pChild->m_bVisible) {
+                pChild->Render();
+                if (pChild->m_pChildHead != nullptr) {
+                    pChild->TraverseChildren();
+                }
+            }
+            break;
+        }
+        delete pChild;
+        pChild = pNext;
+    } while (pNext == m_pChildHead);
+
+    // Second pass: walk the remaining siblings, drawing the visible ones (and recursing) and
+    // destroying the delete-requested ones, until the ring returns to the head.
+    if (m_pChildHead != nullptr && pNext != m_pChildHead) {
+        do {
+            C_RENDER *pAfter = pNext->m_pSiblingNext;
+            if (!pNext->m_bDeleteRequest) {
+                if (pNext->m_bVisible) {
+                    pNext->Render();
+                    if (pNext->m_pChildHead != nullptr) {
+                        pNext->TraverseChildren();
+                    }
+                }
+            } else {
+                delete pNext;
+            }
+            pNext = pAfter;
+        } while (m_pChildHead != nullptr && pNext != m_pChildHead);
+    }
+}
+
 } // namespace ne
+
+/** @ghidraAddress 0x29d58 */
+void RenderGlobalSceneTree() {
+    // The binary guards this with a child-head check, but TraverseChildren already returns early
+    // when the root has no children, so the guard is redundant.
+    ne::g_globalSceneRoot.TraverseChildren();
+}
