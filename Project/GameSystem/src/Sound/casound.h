@@ -17,6 +17,35 @@
 class caSource {
 public:
     /**
+     * @brief Constructs an empty sound buffer with all fields zeroed.
+     * @ghidraAddress 0x4d350
+     */
+    caSource() = default;
+    /**
+     * @brief Frees the decoded PCM data block.
+     * @ghidraAddress 0x4d39c
+     */
+    ~caSource();
+
+    /**
+     * @brief Loads a sound file at a filesystem path into this buffer.
+     * @param szPath The NUL-terminated file path.
+     * @param bLoop Whether ring reads of the decoded data should loop.
+     * @return Non-zero on success, 0 on failure or a path that does not form a URL.
+     * @ghidraAddress 0x4d3d0
+     */
+    int LoadFromPath(const char *szPath, bool bLoop);
+
+    /**
+     * @brief Opens the sound file at @p url, reads its format, and decodes the whole PCM block.
+     * @param url The source file URL.
+     * @param bLoop Whether ring reads of the decoded data should loop.
+     * @return The decoded byte count, or 0 when the format read fails.
+     * @ghidraAddress 0x4d450
+     */
+    int LoadFromUrl(CFURLRef url, bool bLoop);
+
+    /**
      * @brief Reads the source file's data format into @p pAsbd and derives the decoded PCM buffer
      *        size.
      *

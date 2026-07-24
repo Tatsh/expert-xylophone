@@ -25,6 +25,43 @@ constexpr long kMaxAllocation = 0x7fffffff;
 
 } // namespace
 
+/** @ghidraAddress 0x4d39c */
+caSource::~caSource() {
+    // Free the decoded PCM block; the binary clears the pointer and size afterwards, which the
+    // object's destruction makes moot.
+    delete[] static_cast<unsigned char *>(m_pBuffer);
+}
+
+/** @ghidraAddress 0x4d3d0 */
+int caSource::LoadFromPath(const char *szPath, bool bLoop) {
+    // Build a file URL from the path and load through it; a path that does not form a URL fails.
+    CFURLRef url =
+        CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
+                                                reinterpret_cast<const UInt8 *>(szPath),
+                                                static_cast<CFIndex>(std::strlen(szPath)),
+                                                false);
+    if (url == nullptr) {
+        return 0;
+    }
+    const int nResult = LoadFromUrl(url, bLoop);
+    CFRelease(url);
+    return nResult;
+}
+
+/** @ghidraAddress 0x4d450 */
+int caSource::LoadFromUrl(CFURLRef url, bool bLoop) {
+    m_bLoop = bLoop;
+    ExtAudioFileRef hAudioFile = nullptr;
+    ExtAudioFileOpenURL(url, &hAudioFile);
+    AudioStreamBasicDescription asbd = {};
+    int nResult = 0;
+    if (ReadAudioFormat(hAudioFile, &asbd) != 0) {
+        nResult = ReadAudioPcmData(hAudioFile, &asbd);
+    }
+    ExtAudioFileDispose(hAudioFile);
+    return nResult;
+}
+
 /** @ghidraAddress 0x4d4c4 */
 int caSource::ReadAudioFormat(ExtAudioFileRef hAudioFile, AudioStreamBasicDescription *pAsbd) {
     UInt32 nPropertySize = sizeof(AudioStreamBasicDescription);
