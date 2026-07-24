@@ -22,6 +22,11 @@ public:
      * @ghidraAddress 0x29b3c
      */
     C_RENDER();
+    /**
+     * @brief Destroys the node: unlinks it from the render-list ring, detaches it from its parent
+     * and detaches all of its children, then frees its buffer.
+     * @ghidraAddress 0x29c10
+     */
     virtual ~C_RENDER();
 
     /**
@@ -53,48 +58,45 @@ public:
         return m_pParent;
     }
 
+    /**
+     * @brief Attach @p pChild as a child of this node.
+     *
+     * @p pChild is first detached from any current parent, then linked into this node's child list.
+     * @param pChild The node to attach.
+     * @ghidraAddress 0x29d08
+     */
+    void AttachChild(C_RENDER *pChild);
+
+    /**
+     * @brief Unlink this node from its parent's child list.
+     *
+     * Advances the parent's child-list head past this node if it was the head, splices the node out
+     * of its sibling ring, then clears its parent link and resets its sibling links to itself.
+     * @ghidraAddress 0x29c8c
+     */
+    void Detach();
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     // +0x08/+0x10: this node's slot in a self-linked ring whose owning list is not yet identified;
     // it is distinct from the parent/child/sibling tree below, which the link helpers manage.
-    C_RENDER *m_pLinkPrev = {};           // +0x08
-    C_RENDER *m_pLinkNext = {};           // +0x10
-    int m_nField18 = {};                  // +0x18: node state not yet recovered.
-    C_RENDER *m_pParent = {};             // +0x20
-    C_RENDER *m_pChildHead = {};          // +0x28
-    C_RENDER *m_pSiblingPrev = {};        // +0x30
-    C_RENDER *m_pSiblingNext = {};        // +0x38
-    unsigned char m_reserved40[16] = {};  // +0x40: node state not yet recovered.
+    C_RENDER *m_pLinkPrev = {};    // +0x08
+    C_RENDER *m_pLinkNext = {};    // +0x10
+    int m_nField18 = {};           // +0x18: node state not yet recovered.
+    C_RENDER *m_pParent = {};      // +0x20
+    C_RENDER *m_pChildHead = {};   // +0x28
+    C_RENDER *m_pSiblingPrev = {}; // +0x30
+    C_RENDER *m_pSiblingNext = {}; // +0x38
+    // +0x40: lazily-allocated buffer freed with delete[] in the destructor; the element type is not
+    // yet recovered, so it is modelled as a raw byte buffer.
+    unsigned char *m_pBuffer = {};        // +0x40
+    unsigned char m_reserved48[8] = {};   // +0x48: node state not yet recovered.
     float m_mLocalMatrix[16] = {};        // +0x50: local transform.
     float m_mWorldMatrix[16] = {};        // +0x90: composed world transform.
     bool m_bDeleteRequest = {};           // +0xd0
     bool m_bVisible = {};                 // +0xd1
     unsigned char m_reservedTail[2] = {}; // +0xd2
-
-    // The scene-graph link/unlink helpers reach the private sibling and parent links directly.
-    friend void AttachSceneNode(C_RENDER *pParent, C_RENDER *pChild);
-    friend void DetachSceneNode(C_RENDER *pNode);
 };
-
-/**
- * @brief Insert @p pChild as a child of @p pParent in the scene graph.
- *
- * The node is first detached from any current parent, then linked into @p pParent's child list.
- * @param pParent The node to receive the child.
- * @param pChild The node to attach.
- * @ghidraAddress 0x29d08
- */
-void AttachSceneNode(C_RENDER *pParent, C_RENDER *pChild);
-
-/**
- * @brief Unlink @p pNode from its parent's child list.
- *
- * Advances the parent's child-list head past @p pNode if it was the head, splices the node out of
- * its sibling ring, then clears its parent link and resets its sibling links to itself.
- * @param pNode The node to detach.
- * @ghidraAddress 0x29c8c
- */
-void DetachSceneNode(C_RENDER *pNode);
 
 } // namespace ne
 

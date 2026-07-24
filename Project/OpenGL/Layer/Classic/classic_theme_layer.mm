@@ -23,7 +23,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {
         ne::C_SPRITE_INSTANCING *pBatch =
             ne::CreateWorldSpriteBatch(g_anClassicThemeBatchCapacities[nBatchIndex]);
-        ne::AttachSceneNode(pRootNode, pBatch);
+        pRootNode->AttachChild(pBatch);
         pBatch->SetVisible(true);
         // The first batch is stored without being given the shared texture; only the second and
         // third batches take it, exactly as the binary does.
