@@ -70,6 +70,17 @@ public:
      */
     PartsDataRecord *getPartsData(int nIndex) const;
 
+    /**
+     * @brief Returns a phone-layout parts descriptor by index.
+     *
+     * Always uses the phone parts table, regardless of device kind, and returns the record at
+     * @p nIndex.
+     * @param nIndex The parts-record index (0 through 399).
+     * @return The parts descriptor.
+     * @ghidraAddress 0x73adc
+     */
+    PartsDataRecord *getPartsData_Phone(int nIndex) const;
+
 private:
     /**
      * @brief Draws a slot's whole bound texture as one quad, at half the given extent.

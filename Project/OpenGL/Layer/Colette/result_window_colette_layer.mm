@@ -157,6 +157,14 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
     return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];
 }
 
+/** @ghidraAddress 0x73adc */
+PartsDataRecord *ResultWindowColetteLayer::getPartsData_Phone(int nIndex) const {
+    assert(nIndex >= 0 && nIndex < kColettePhonePartsRecordCount);
+
+    // This accessor always reads the phone parts table.
+    return &g_aColettePartsPhone[nIndex];
+}
+
 /** @ghidraAddress 0x76b5c */
 void ResultWindowColetteLayer::renderSpriteInstanceFromSlot(int nSlot,
                                                             const S_VECTOR2 &position,

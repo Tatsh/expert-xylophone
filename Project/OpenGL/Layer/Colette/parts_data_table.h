@@ -21,13 +21,16 @@ struct PartsDataRecord {
     int nUvPaletteIndex = {}; // +0x14: index into the UV-palette table for the part's texture rect.
 };
 
-// The number of records in each Colette result-window parts table.
+// The number of pad records, and the (larger) number of phone records. The device-selecting
+// accessor bounds both at the pad count, while the phone-only accessor bounds at the phone count.
 constexpr int kColettePartsRecordCount = 348;
+constexpr int kColettePhonePartsRecordCount = 400;
 
 // The Colette result-window parts tables, zero-initialised in the binary's @c __common segment and
 // filled at runtime; the pad-versus-phone device kind selects between them.
-extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount];   // @ghidraAddress 0x3d0010
-extern PartsDataRecord g_aColettePartsPhone[kColettePartsRecordCount]; // @ghidraAddress 0x3d20b0
+extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount]; // @ghidraAddress 0x3d0010
+extern PartsDataRecord
+    g_aColettePartsPhone[kColettePhonePartsRecordCount]; // @ghidraAddress 0x3d20b0
 
 // code: language=C++
 // kate: hl C++;
