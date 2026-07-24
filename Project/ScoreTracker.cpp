@@ -4,7 +4,9 @@
 
 #include "bg_layer.h"
 #include "clear_gauge_layer.h"
+#include "engineglobals.h"
 #include "gamesystem.h"
+#include "judge_effect_layer.h"
 #include "note_result_layer.h"
 
 // The process-wide score tracker, created lazily by GetScoreTracker.
@@ -17,6 +19,11 @@ constexpr float kLowGaugeWarningThreshold = 0.7f; // @ghidraAddress 0x2fd008
 constexpr unsigned int kSecondPlayerSide = 1;
 
 namespace {
+
+// The score bonuses awarded per judgement grade by the SetJudgeScore* helpers.
+constexpr int kJudgeBonus0 = 0x32;
+constexpr int kJudgeBonus2 = 0x19;
+constexpr int kJudgeBonus3 = 10;
 
 // The play-record cell indices AddScore addresses by name.
 enum ScoreCell {
@@ -181,4 +188,28 @@ void ScoreTracker::AddScore(
     // Fire the result-quad and score-digit effects.
     NoteResultLayer::shared()->Create(static_cast<unsigned int>(nBand), nJudge, nCombo);
     SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), bSideMatch ? 1 : 0, nScore);
+}
+
+/** @ghidraAddress 0x149710 */
+void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
+    int &nScore = m_aRecords[nSide].nCells[0];
+    nScore += kJudgeBonus0;
+    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus0, 0);
+}
+
+/** @ghidraAddress 0x14976c */
+void ScoreTracker::SetJudgeScore2(unsigned int nSide) {
+    int &nScore = m_aRecords[nSide].nCells[0];
+    nScore += kJudgeBonus2;
+    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus2, 2);
+}
+
+/** @ghidraAddress 0x1497c8 */
+void ScoreTracker::SetJudgeScore3(unsigned int nSide) {
+    int &nScore = m_aRecords[nSide].nCells[0];
+    nScore += kJudgeBonus3;
+    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus3, 3);
 }

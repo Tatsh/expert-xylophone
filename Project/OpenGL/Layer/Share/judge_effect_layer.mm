@@ -49,3 +49,14 @@ void JudgeEffectLayer::LoadJudgeEffectSprites() {
 
     m_bBuilt = true;
 }
+
+/** @ghidraAddress 0x184d48 */
+void JudgeEffectLayer::TriggerJudgeEffect(unsigned int nLane,
+                                          unsigned int nScore,
+                                          unsigned int nJudgeType) {
+    JudgeRecord &record = m_aJudgeRecords[nLane];
+    record.m_nJudgeType = nJudgeType;
+    record.m_nTimer = 0;
+    record.m_bActive = true;
+    record.m_nScore = nScore;
+}

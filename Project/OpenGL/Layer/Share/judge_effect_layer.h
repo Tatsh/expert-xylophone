@@ -43,6 +43,18 @@ public:
      */
     void LoadJudgeEffectSprites();
 
+    /**
+     * @brief Arms a lane's judgement score/combo popup effect.
+     *
+     * Marks the lane's record active, stores the displayed score and judgement type, and resets its
+     * animation timer.
+     * @param nLane The lane (0 or 1).
+     * @param nScore The score value to show.
+     * @param nJudgeType The judgement kind.
+     * @ghidraAddress 0x184d48
+     */
+    void TriggerJudgeEffect(unsigned int nLane, unsigned int nScore, unsigned int nJudgeType);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -50,11 +62,13 @@ private:
      */
     JudgeEffectLayer();
 
-    // A per-slot judge record the constructor zero-clears (its fields are still being worked out).
+    // A per-lane judge popup record.
     struct JudgeRecord {
-        bool m_bFlag = {};        // +0x00
-        unsigned char m_aData[8]; // +0x04: two fields still being worked out.
-        int m_nValue = {};        // +0x0c
+        bool m_bActive = {};            // +0x00: whether the popup is showing.
+        unsigned char m_aPad01[3] = {}; // +0x01
+        unsigned int m_nScore = {};     // +0x04: the displayed score value.
+        unsigned int m_nJudgeType = {}; // +0x08: the judgement kind.
+        int m_nTimer = {};              // +0x0c: the popup animation timer.
     };
 
     ne::C_TEXTURE *m_pTexture = {};          // +0x08: the gm_parts2 atlas.

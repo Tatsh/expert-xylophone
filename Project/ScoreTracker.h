@@ -129,6 +129,25 @@ public:
     void AddScore(int nPlayer, int nPosX, int nPosY, int nJudge, int nBonusFlag, int nMode);
 
     /**
+     * @brief Adds the full-combo bonus to a side's score and fires its judge popup (grade 0).
+     * @param nSide The player side.
+     * @ghidraAddress 0x149710
+     */
+    void SetJudgeScore0(unsigned int nSide);
+    /**
+     * @brief Adds the grade-2 bonus to a side's score and fires its judge popup.
+     * @param nSide The player side.
+     * @ghidraAddress 0x14976c
+     */
+    void SetJudgeScore2(unsigned int nSide);
+    /**
+     * @brief Adds the grade-3 bonus to a side's score and fires its judge popup.
+     * @param nSide The player side.
+     * @ghidraAddress 0x1497c8
+     */
+    void SetJudgeScore3(unsigned int nSide);
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
