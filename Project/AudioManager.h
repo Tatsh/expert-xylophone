@@ -77,6 +77,38 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)loadBgmData:(nullable NSData *)data isLoop:(BOOL)loop;
 /**
+ * @brief Load background music by copying a raw byte buffer into an @c NSData first.
+ * @param bytes The raw encoded-audio bytes.
+ * @param length The buffer length in bytes.
+ * @param loop Whether the music should loop indefinitely.
+ * @return @c YES when the player was created successfully.
+ * @ghidraAddress 0x3d764
+ */
+- (BOOL)loadBgmDataWithBytes:(const void *)bytes length:(int)length isLoop:(BOOL)loop;
+/**
+ * @brief Load background music from a raw byte buffer without copying it.
+ * @param bytes The raw encoded-audio bytes.
+ * @param length The buffer length in bytes.
+ * @param loop Whether the music should loop indefinitely.
+ * @return @c YES when the player was created successfully.
+ * @ghidraAddress 0x3d7ec
+ */
+- (BOOL)loadBgmDataWithBytesNoCopy:(void *)bytes length:(int)length isLoop:(BOOL)loop;
+/**
+ * @brief Load background music from a raw byte buffer without copying it, optionally freeing the
+ *        buffer when the data is deallocated.
+ * @param bytes The raw encoded-audio bytes.
+ * @param length The buffer length in bytes.
+ * @param freeWhenDone Whether the data object should free @p bytes when it is deallocated.
+ * @param loop Whether the music should loop indefinitely.
+ * @return @c YES when the player was created successfully.
+ * @ghidraAddress 0x3d874
+ */
+- (BOOL)loadBgmDataWithBytesNoCopy:(void *)bytes
+                            length:(int)length
+                      freeWhenDone:(BOOL)freeWhenDone
+                            isLoop:(BOOL)loop;
+/**
  * @brief Play the loaded background music, fading in over @p time seconds when it exceeds the
  *        no-fade threshold.
  * @ghidraAddress 0x3f994

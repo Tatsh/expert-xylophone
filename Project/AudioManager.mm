@@ -269,6 +269,27 @@ constexpr double kResumeFadeInTime = 0.3;
     return error == nil;
 }
 
+- (BOOL)loadBgmDataWithBytes:(const void *)bytes length:(int)length isLoop:(BOOL)loop {
+    /** @ghidraAddress 0x3d764 */
+    return [self loadBgmData:[NSData dataWithBytes:bytes length:length] isLoop:loop];
+}
+
+- (BOOL)loadBgmDataWithBytesNoCopy:(void *)bytes length:(int)length isLoop:(BOOL)loop {
+    /** @ghidraAddress 0x3d7ec */
+    return [self loadBgmData:[NSData dataWithBytesNoCopy:bytes length:length] isLoop:loop];
+}
+
+- (BOOL)loadBgmDataWithBytesNoCopy:(void *)bytes
+                            length:(int)length
+                      freeWhenDone:(BOOL)freeWhenDone
+                            isLoop:(BOOL)loop {
+    /** @ghidraAddress 0x3d874 */
+    return [self loadBgmData:[NSData dataWithBytesNoCopy:bytes
+                                                  length:length
+                                            freeWhenDone:freeWhenDone]
+                      isLoop:loop];
+}
+
 - (void)releaseBgm {
     /** @ghidraAddress 0x3e868 */
     [self.bgmPlayer stop];
