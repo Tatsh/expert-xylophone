@@ -43,6 +43,13 @@ public:
     }
 
     /**
+     * @brief The maximum number of sprites the node can draw.
+     */
+    unsigned int GetCapacity() const {
+        return m_dwCapacity;
+    }
+
+    /**
      * @brief Set how many of the node's sprites are drawn.
      * @param nSpriteCount The active sprite count (at most the node's capacity).
      */

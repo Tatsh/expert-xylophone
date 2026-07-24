@@ -71,6 +71,36 @@ public:
     PartsDataRecord *getPartsData(int nIndex) const;
 
 private:
+    /**
+     * @brief Appends one sprite quad to a slot's sprite instancer.
+     *
+     * When the slot index is in range, the slot's instancer exists, and it is not already full,
+     * writes the quad's position, anchor, size, UV origin, UV size, rotation, and scale into the
+     * next free sprite, sets its colour from the intensity and alpha, and advances the instancer's
+     * sprite count.
+     * @param nSlot The slot index (0 through 7).
+     * @param position The sprite's world position.
+     * @param anchor The sprite's anchor (pivot) offset.
+     * @param size The sprite's pixel size.
+     * @param uvOrigin The sprite's UV origin.
+     * @param uvSize The sprite's UV size.
+     * @param flRotation The sprite's rotation, in radians.
+     * @param scale The sprite's per-axis scale.
+     * @param nIntensity The value written to each of the red, green, and blue channels.
+     * @param nAlpha The alpha channel.
+     * @ghidraAddress 0x7ac58
+     */
+    void appendSpriteToSlot(int nSlot,
+                            const S_VECTOR2 &position,
+                            const S_VECTOR2 &anchor,
+                            const S_VECTOR2 &size,
+                            const S_VECTOR2 &uvOrigin,
+                            const S_VECTOR2 &uvSize,
+                            float flRotation,
+                            const S_VECTOR2 &scale,
+                            unsigned int nIntensity,
+                            unsigned int nAlpha);
+
     // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
     // are still being worked out.
     unsigned char m_aReserved08[0x08] = {};   // +0x08

@@ -156,3 +156,37 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
     // The pad build uses the pad table; the phone build uses the phone table.
     return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];
 }
+
+/** @ghidraAddress 0x7ac58 */
+void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
+                                                  const S_VECTOR2 &position,
+                                                  const S_VECTOR2 &anchor,
+                                                  const S_VECTOR2 &size,
+                                                  const S_VECTOR2 &uvOrigin,
+                                                  const S_VECTOR2 &uvSize,
+                                                  float flRotation,
+                                                  const S_VECTOR2 &scale,
+                                                  unsigned int nIntensity,
+                                                  unsigned int nAlpha) {
+    if (nSlot < 0 || nSlot >= kSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nSprite = pInstancer->GetSpriteCount();
+    if (nSprite >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    pInstancer->SetSpritePosition(nSprite, position);
+    pInstancer->SetSpriteAnchor(nSprite, anchor);
+    pInstancer->SetSpriteSize(nSprite, size);
+    pInstancer->SetSpriteUvOrigin(nSprite, uvOrigin);
+    pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    pInstancer->SetSpriteRotation(nSprite, flRotation);
+    pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
+    pInstancer->SetSpriteColor(nSprite, nIntensity, nIntensity, nIntensity, nAlpha);
+    pInstancer->SetSpriteCount(nSprite + 1);
+}
