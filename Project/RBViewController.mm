@@ -362,10 +362,12 @@ constexpr int kDefaultPlayColor = 0;
             // matrices into the accumulator in that order.
             float sheetMidY = sheetFarY * 0.5f;
             float lookAt[16] = {};
-            float lookTarget[] = {0.0f, sheetMidY, 0.0f};
-            float lookEye[] = {0.0f, sheetMidY, 1.0f};
-            float lookUp[] = {0.0f, -1.0f, 0.0f};
-            MakeLookAtMatrix(lookAt, lookTarget, lookEye, lookUp);
+            // Eye and target verified against the binary call site (x1 = eye at z = 0, x2 = target
+            // at z = 1); the camera looks along +z, as in the portrait branch above.
+            S_VECTOR3 lookEye{0.0f, sheetMidY, 0.0f};
+            S_VECTOR3 lookTarget{0.0f, sheetMidY, 1.0f};
+            S_VECTOR3 lookUp{0.0f, -1.0f, 0.0f};
+            MakeLookAtMatrix(lookAt, &lookEye, &lookTarget, &lookUp);
             float rotation[16] = {};
             MakeRotationMatrixX(-(static_cast<float>(kPiOverTwo) - pitch), rotation);
             float sheetHalfDepth = sheetFarX / (2.0f * aspect);

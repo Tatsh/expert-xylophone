@@ -231,28 +231,29 @@ void StartMediaTimer(double *pStartTime);
  * @ghidraAddress 0x20c08
  */
 void ScaleVector2(float *pVec, float scale);
+struct S_VECTOR3;
 /**
  * @brief Computes the dot product of two 3-component vectors.
  * @return The dot product @c pA · @c pB.
  * @ghidraAddress 0x20cf8
  */
-float DotProductVector3(float *pA, float *pB);
+float DotProductVector3(S_VECTOR3 *pA, S_VECTOR3 *pB);
 /**
  * @brief Computes the cross product @c pOut @c = @c pOut @c × @c pB in place.
  * @ghidraAddress 0x20d68
  */
-void CrossProductVector3(float *pOut, float *pB);
+void CrossProductVector3(S_VECTOR3 *pOut, S_VECTOR3 *pB);
 /**
  * @brief Normalizes a 3-component vector in place, guarding against a near-zero length.
  * @ghidraAddress 0x20d20
  */
-void NormalizeVector3(float *pVec);
+void NormalizeVector3(S_VECTOR3 *pVec);
 /**
  * @brief Builds a look-at view matrix from an eye, a target, and an up vector.
  * @return @p pOutMatrix, so the result can be passed on inline.
  * @ghidraAddress 0x19844
  */
-float *MakeLookAtMatrix(float *pOutMatrix, float *pEye, float *pTarget, float *pUp);
+float *MakeLookAtMatrix(float *pOutMatrix, S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);
 /**
  * @brief Builds an x-axis rotation matrix for the given angle, in radians.
  * @return @p pOutMatrix, so the result can be passed on inline.
@@ -734,37 +735,38 @@ void EnsurePlayTimer(void);
 extern PlayTimer *g_pPlayTimer;
 
 /**
- * A two-component float vector shared with the engine's sheet-layout helpers.
+ * A two-component float vector shared with the engine's sheet-layout helpers. Its components are
+ * public (a deliberate exception to the usual encapsulation, shared with @c S_VECTOR3) so the maths
+ * reads as @c v.x rather than through accessors.
  * @ghidraAddress S_VECTOR2 (engine struct type)
  */
-class S_VECTOR2 {
-public:
+struct S_VECTOR2 {
     /** @brief Constructs a zero vector. */
     S_VECTOR2() = default;
     /** @brief Constructs a vector from its two components. */
-    S_VECTOR2(float x, float y) : m_flX(x), m_flY(y) {
+    S_VECTOR2(float x, float y) : x(x), y(y) {
     }
 
-    /** @brief Returns the x component. */
-    float GetX() const {
-        return m_flX;
-    }
-    /** @brief Returns the y component. */
-    float GetY() const {
-        return m_flY;
-    }
-    /** @brief Stores the x component. */
-    void SetX(float value) {
-        m_flX = value;
-    }
-    /** @brief Stores the y component. */
-    void SetY(float value) {
-        m_flY = value;
+    float x = {}; // +0x0
+    float y = {}; // +0x4
+};
+
+/**
+ * A three-component float vector used by the engine's matrix and camera maths. Modelled on
+ * @c S_VECTOR2: the binary passes these helpers a raw @c float[3], and this POD layout of three
+ * consecutive floats matches it exactly, so a pointer to one is interchangeable with that pointer.
+ * The components are public so the maths reads as @c v->x rather than an indexed access.
+ */
+struct S_VECTOR3 {
+    /** @brief Constructs a zero vector. */
+    S_VECTOR3() = default;
+    /** @brief Constructs a vector from its three components. */
+    S_VECTOR3(float x, float y, float z) : x(x), y(y), z(z) {
     }
 
-private:
-    float m_flX = {}; // +0x0
-    float m_flY = {}; // +0x4
+    float x = {}; // +0x0
+    float y = {}; // +0x4
+    float z = {}; // +0x8
 };
 
 /**

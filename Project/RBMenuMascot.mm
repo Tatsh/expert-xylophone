@@ -280,7 +280,7 @@ static NSString *const kMessageTextKey = @"text";
     int baseYSpread = (IsPad()) ? kMascotBaseYSpreadPad : kMascotBaseYSpreadPhone;
     float baseYOffset = (IsPad()) ? kMascotBaseYOffsetPad : kMascotBaseYOffsetPhone;
     srand((unsigned int)time(NULL));
-    int span = (1 - baseYSpread) + (int)(self.m_screenSize.GetY() - baseYOffset);
+    int span = (1 - baseYSpread) + (int)(self.m_screenSize.y - baseYOffset);
     int randomBaseY = span != 0 ? (rand() % span) + baseYSpread : baseYSpread;
     self.baseY = (float)randomBaseY;
     self.accellY = 0.0f;
@@ -345,7 +345,7 @@ static NSString *const kMessageTextKey = @"text";
             newY = self.baseY;
         }
 
-        if (newX < -self.m_screenSize.GetX()) {
+        if (newX < -self.m_screenSize.x) {
             self.speedX = -self.speedX;
             self.mascotView.transform = CGAffineTransformMakeScale(-self.scale, self.scale);
             srand((unsigned int)time(NULL));
@@ -353,8 +353,8 @@ static NSString *const kMessageTextKey = @"text";
             int bounceY = span != 0 ? (rand() % span) + (int)minY : (int)minY;
             self.baseY = (float)bounceY;
             newY = (double)bounceY;
-            newX = -self.m_screenSize.GetX();
-        } else if (newX > self.limitX + self.m_screenSize.GetX()) {
+            newX = -self.m_screenSize.x;
+        } else if (newX > self.limitX + self.m_screenSize.x) {
             self.speedX = -self.speedX;
             self.mascotView.transform = CGAffineTransformMakeScale(self.scale, self.scale);
             srand((unsigned int)time(NULL));
@@ -362,7 +362,7 @@ static NSString *const kMessageTextKey = @"text";
             int bounceY = span != 0 ? (rand() % span) + (int)minY : (int)minY;
             self.baseY = (float)bounceY;
             newY = (double)bounceY;
-            newX = self.limitX + self.m_screenSize.GetX();
+            newX = self.limitX + self.m_screenSize.x;
         }
     }
 

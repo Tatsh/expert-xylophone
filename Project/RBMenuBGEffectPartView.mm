@@ -106,8 +106,8 @@ constexpr NSTimeInterval kFadeCycleDuration = 2.0;
 
     unsigned int randX = arc4random();
     unsigned int randY = arc4random();
-    float screenWidth = self.m_screenSize.GetX();
-    float screenHeight = self.m_screenSize.GetY();
+    float screenWidth = self.m_screenSize.x;
+    float screenHeight = self.m_screenSize.y;
 
     switch (randX % kSpriteImageCount) {
     case kSpriteImage3:
