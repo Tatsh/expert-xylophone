@@ -705,6 +705,23 @@ class ne_CameraNode;
  */
 neGLESRenderer *GetGlRenderer();
 /**
+ * @brief Installs a camera as the current one and applies it to the renderer.
+ *
+ * When the camera differs from the current one, releases the previous camera, retains the new one,
+ * stores it, and pushes its viewport and projection matrix to the renderer.
+ * @param pRenderer The renderer to apply the camera to.
+ * @param pCamera The camera to install.
+ * @ghidraAddress 0x29e70
+ */
+void SetCurrentCamera(neGLESRenderer *pRenderer, ne_Viewport *pCamera);
+/**
+ * @brief Pushes a camera's viewport rectangle and projection matrix to the renderer.
+ * @param pCamera The camera whose viewport and projection are applied.
+ * @param pRenderer The renderer to apply them to.
+ * @ghidraAddress 0x29a80
+ */
+void ApplyCameraToRenderer(ne_Viewport *pCamera, neGLESRenderer *pRenderer);
+/**
  * @brief Installs the given viewport as the current projection (retaining it and releasing the
  *        previous one).
  * @ghidraAddress 0x29f1c

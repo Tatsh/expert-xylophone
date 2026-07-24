@@ -5,9 +5,10 @@
 #import "neEngineBridge.h"
 
 // The reference-counted projection and view-camera slots the render path reads each frame.
-ne_Viewport *g_pCurrentProjection = nullptr;  // @ghidraAddress 0x3cff08
-ne_Viewport *g_pActiveViewCamera = nullptr;   // @ghidraAddress 0x3cff10
-ne_CameraNode *g_pCurrentModelNode = nullptr; // @ghidraAddress 0x3cff18
+ne_Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00
+ne_Viewport *g_pCurrentProjection = nullptr;    // @ghidraAddress 0x3cff08
+ne_Viewport *g_pActiveViewCamera = nullptr;     // @ghidraAddress 0x3cff10
+ne_CameraNode *g_pCurrentModelNode = nullptr;   // @ghidraAddress 0x3cff18
 
 /** @ghidraAddress 0x2991c */
 ne_Viewport::ne_Viewport(
@@ -67,6 +68,19 @@ void ReleaseViewportCamera(ne_Viewport *pViewport) {
     if (pViewport != nullptr && nCount == 0) {
         delete pViewport;
     }
+}
+
+/** @ghidraAddress 0x29e70 */
+void SetCurrentCamera(neGLESRenderer *pRenderer, ne_Viewport *pCamera) {
+    if (g_pCurrentAppliedCamera == pCamera) {
+        return;
+    }
+    if (g_pCurrentAppliedCamera != nullptr) {
+        ReleaseViewportCamera(g_pCurrentAppliedCamera);
+    }
+    pCamera->AddRef();
+    g_pCurrentAppliedCamera = pCamera;
+    ApplyCameraToRenderer(pCamera, pRenderer);
 }
 
 /** @ghidraAddress 0x29f1c */
