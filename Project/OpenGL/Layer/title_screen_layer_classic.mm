@@ -1,18 +1,18 @@
 //
-//  title_swipe_state.mm
+//  title_screen_layer_classic.mm
 //  REFLEC BEAT plus
 //
-//  The title-screen hidden Konami-code state machines: instance methods of the two title layer
-//  classes. A directional swipe (or the A/B input) advances a small step counter along the code
-//  (up, up, down, down, left, right, left, right, B, A); completing it toggles a hidden mode and
-//  plays a themed sound effect. Objective-C++ because the sound path reaches the ne engine bridge
-//  and the Hinabita toggle reaches RBCampaignData.
+//  The classic title screen layer's hidden Konami-code state machines and swing-particle rotation.
+//  A directional swipe (or the A/B input) advances a small step counter along the code (up, up,
+//  down, down, left, right, left, right, B, A); completing it toggles a hidden mode and plays a
+//  themed sound effect. Objective-C++ because the sound path reaches the ne engine bridge and the
+//  Hinabita toggle reaches RBCampaignData.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
 //
 
-#import "title_swipe_state.h"
+#import "title_screen_layer_classic.h"
 
 #import <cmath>
 
@@ -72,7 +72,7 @@ enum TitleSwipeStep {
     kGestureStepAltComplete = 0x14, // The Hinabita alternate sequence completed.
 };
 
-void TitleScreenLayer::AdvanceSwipeState(int iSwipeEvent) {
+void TitleScreenLayerClassic::AdvanceSwipeState(int iSwipeEvent) {
     /** @ghidraAddress 0x152cc8 */
     switch (iSwipeEvent) {
     case kTitleSwipeUp:
@@ -125,7 +125,7 @@ void TitleScreenLayer::AdvanceSwipeState(int iSwipeEvent) {
     }
 }
 
-unsigned int TitleScreenLayer::AdvanceGestureState(int inputCode) {
+unsigned int TitleScreenLayerClassic::AdvanceGestureState(int inputCode) {
     /** @ghidraAddress 0x597a8 */
     switch (inputCode) {
     case kTitleSwipeUp:
@@ -217,71 +217,17 @@ unsigned int TitleScreenLayer::AdvanceGestureState(int inputCode) {
     return 0;
 }
 
-void TitleScreenLayer::CalculateFade(int nDeltaFrames) {
+void TitleScreenLayerClassic::CalculateFade(int nDeltaFrames) {
     /** @ghidraAddress 0x149ff4 */
     m_fadeChannel.Advance(static_cast<float>(nDeltaFrames));
 }
 
-void TitleScreenLayer::AdvanceFadeValue(int nDeltaFrames) {
+void TitleScreenLayerClassic::AdvanceFadeValue(int nDeltaFrames) {
     /** @ghidraAddress 0x152548 */
     m_fadeValueChannel.Advance(static_cast<float>(nDeltaFrames));
 }
 
-void TitleScreenLayer2::AdvanceSwipeState(int iSwipeEvent) {
-    /** @ghidraAddress 0x1549b8 */
-    switch (iSwipeEvent) {
-    case kTitleSwipeUp:
-        if (m_nSwipeState != kSwipeStepUp1) {
-            if (m_nSwipeState != kSwipeStepNone) {
-                return;
-            }
-            m_nSwipeState = kSwipeStepUp1;
-        }
-        m_nSwipeState = kSwipeStepUp2;
-        return;
-    case kTitleSwipeDown:
-        if (m_nSwipeState != kSwipeStepDown1) {
-            if (m_nSwipeState != kSwipeStepUp2) {
-                return;
-            }
-            m_nSwipeState = kSwipeStepDown1;
-        }
-        m_nSwipeState = kSwipeStepDown2;
-        return;
-    case kTitleSwipeLeft:
-        if (m_nSwipeState == kSwipeStepRight1) {
-            m_nSwipeState = kSwipeStepLeft2;
-        } else if (m_nSwipeState == kSwipeStepDown2) {
-            m_nSwipeState = kSwipeStepLeft1;
-        }
-        return;
-    case kTitleSwipeRight:
-        if (m_nSwipeState == kSwipeStepLeft2) {
-            m_nSwipeState = kSwipeStepRight2;
-        } else if (m_nSwipeState == kSwipeStepLeft1) {
-            m_nSwipeState = kSwipeStepRight1;
-        }
-        return;
-    case kTitleSwipeButtonA:
-        // The final A completes the code: fire the secret effect, latch the flag, rewind timer.
-        if (m_nSwipeState == kSwipeStepButtonB) {
-            m_nSwipeState = kSwipeStepComplete;
-            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
-            m_bSwipeTriggered = true;
-            m_nSwipeTimer = kReplayTimerValue;
-        }
-        return;
-    case kTitleSwipeButtonB:
-        if (m_nSwipeState == kSwipeStepRight2) {
-            m_nSwipeState = kSwipeStepButtonB;
-        }
-        return;
-    default:
-        return;
-    }
-}
-
-float TitleScreenLayer::ComputeSwingParticleX(float flBaseX, float flBaseY) const {
+float TitleScreenLayerClassic::ComputeSwingParticleX(float flBaseX, float flBaseY) const {
     /** @ghidraAddress 0x58570 */
     const double dx = flBaseX + kSwingPivotX;
     const double dy = flBaseY + kSwingPivotY;
@@ -290,7 +236,7 @@ float TitleScreenLayer::ComputeSwingParticleX(float flBaseX, float flBaseY) cons
     return static_cast<float>(radius * std::cos(static_cast<float>(angle)) + kSwingOriginX);
 }
 
-float TitleScreenLayer::ComputeSwingParticleY(float flBaseX, float flBaseY) const {
+float TitleScreenLayerClassic::ComputeSwingParticleY(float flBaseX, float flBaseY) const {
     /** @ghidraAddress 0x58610 */
     const double dx = flBaseX + kSwingPivotX;
     const double dy = flBaseY + kSwingPivotY;

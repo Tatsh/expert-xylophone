@@ -1,13 +1,13 @@
 #pragma once
 
 //
-//  title_swipe_state.h
+//  title_screen_layer_classic.h
 //  REFLEC BEAT plus
 //
-//  The title-screen hidden-swipe/flick state machines. These are instance methods of the two title
-//  layer classes (classic and theme-2), which are not fully modelled yet: only the fields the state
-//  machines touch are named, with the surrounding object modelled as reserved spans so the named
-//  fields land at their real offsets.
+//  The classic title screen layer, as far as its hidden-gesture state machines and swing-particle
+//  rendering observe it. The class is not fully modelled yet: only the fields those routines touch
+//  are named, with the surrounding object modelled as reserved spans so the named fields land at
+//  their real offsets.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
@@ -16,13 +16,14 @@
 #include "linear_tween.h"
 
 /**
- * @brief The classic title screen layer, as far as its hidden-gesture state machines observe it.
+ * @brief The classic title screen layer, as far as its hidden-gesture state machines and
+ * swing-particle rendering observe it.
  *
- * Only the timer, swipe-sequence, and flick-gesture fields are named; the rest of the 0x898-byte
- * object is reserved padding until the full class is modelled.
- * @ghidraAddress TitleScreenLayer (engine layer, 0x898 bytes)
+ * Only the timer, swipe-sequence, flick-gesture, and swing fields are named; the rest of the
+ * 0x898-byte object is reserved padding until the full class is modelled.
+ * @ghidraAddress TitleScreenLayerClassic (engine layer, 0x898 bytes)
  */
-class TitleScreenLayer {
+class TitleScreenLayerClassic {
 public:
     /**
      * @brief Advances the hidden-swipe state on a directional swipe, firing the secret effect and
@@ -91,28 +92,6 @@ private:
     int m_nSwingPhase = {};                   // +0x73c accumulated swing phase, in degrees
     bool m_bHinabitaMode = {};                // +0x740 hidden Hinabita campaign toggle
     unsigned char m_aReserved741[0x157] = {}; // +0x741 remainder of the object
-};
-
-/**
- * @brief The theme-2 (Colette) title screen layer, as far as its hidden-swipe state machine
- * observes it. Only the timer and swipe-sequence fields are named.
- * @ghidraAddress TitleScreenLayer2 (engine layer)
- */
-class TitleScreenLayer2 {
-public:
-    /**
-     * @brief Advances the hidden-swipe state, rewinding the layer timer when the sequence completes.
-     * @param iSwipeEvent The directional swipe id.
-     * @ghidraAddress 0x1549b8
-     */
-    void AdvanceSwipeState(int iSwipeEvent);
-
-private:
-    unsigned char m_aReserved00[0x50] = {};  // +0x000
-    int m_nSwipeTimer = {};                  // +0x050 timer rewound on a completed swipe
-    unsigned char m_aReserved54[0x574] = {}; // +0x054
-    int m_nSwipeState = {};                  // +0x5c8 hidden-swipe sequence state
-    bool m_bSwipeTriggered = {};             // +0x5cc latched when the swipe sequence completes
 };
 
 // code: language=C++
