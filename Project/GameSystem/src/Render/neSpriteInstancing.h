@@ -73,6 +73,16 @@ public:
     }
 
     /**
+     * @brief Store one texture-environment parameter.
+     * @param nIndex The parameter slot (0 through 3).
+     * @param nValue The parameter value.
+     * @ghidraAddress 0x31828
+     */
+    void SetTexParam(int nIndex, int nValue) {
+        m_aTexParams[nIndex] = nValue;
+    }
+
+    /**
      * @brief Assign the batch's texture, updating reference counts.
      *
      * Retains @p pTexture and releases whatever texture the batch previously held.
