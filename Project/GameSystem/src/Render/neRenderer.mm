@@ -6,13 +6,13 @@
 #include "neGLES.h"
 
 // The reference-counted projection and view-camera slots the render path reads each frame.
-ne_Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00
-ne_Viewport *g_pCurrentProjection = nullptr;    // @ghidraAddress 0x3cff08
-ne_Viewport *g_pActiveViewCamera = nullptr;     // @ghidraAddress 0x3cff10
-ne_CameraNode *g_pCurrentModelNode = nullptr;   // @ghidraAddress 0x3cff18
+ne::Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00
+ne::Viewport *g_pCurrentProjection = nullptr;    // @ghidraAddress 0x3cff08
+ne::Viewport *g_pActiveViewCamera = nullptr;     // @ghidraAddress 0x3cff10
+ne::CameraNode *g_pCurrentModelNode = nullptr;   // @ghidraAddress 0x3cff18
 
 /** @ghidraAddress 0x2991c */
-ne_Viewport::ne_Viewport(
+ne::Viewport::Viewport(
     float flWidth, float flHeight, int nViewX, int nViewY, int nViewW, int nViewH) {
     // The binary redundantly sets the projection matrix to identity first; MakeOrthoMatrix overwrites
     // it entirely. The field of view and aspect stay zero for an ortho viewport.
@@ -25,14 +25,14 @@ ne_Viewport::ne_Viewport(
 }
 
 /** @ghidraAddress 0x299c4 */
-ne_Viewport::ne_Viewport(float flFovY,
-                         float flAspect,
-                         float flNear,
-                         float flFar,
-                         int nViewX,
-                         int nViewY,
-                         int nViewW,
-                         int nViewH) {
+ne::Viewport::Viewport(float flFovY,
+                       float flAspect,
+                       float flNear,
+                       float flFar,
+                       int nViewX,
+                       int nViewY,
+                       int nViewW,
+                       int nViewH) {
     m_nRefCount = 1;
     m_nViewX = nViewX;
     m_nViewY = nViewY;
@@ -44,25 +44,25 @@ ne_Viewport::ne_Viewport(float flFovY,
 }
 
 /** @ghidraAddress 0x2991c */
-ne_Viewport *CreateOrthoViewport(
+ne::Viewport *CreateOrthoViewport(
     float width, float height, int x, int y, int viewportWidth, int viewportHeight) {
-    return new ne_Viewport(width, height, x, y, viewportWidth, viewportHeight);
+    return new ne::Viewport(width, height, x, y, viewportWidth, viewportHeight);
 }
 
 /** @ghidraAddress 0x299c4 */
-ne_Viewport *CreatePerspectiveViewport(float fovY,
-                                       float aspect,
-                                       float nearZ,
-                                       float farZ,
-                                       int x,
-                                       int y,
-                                       int viewportWidth,
-                                       int viewportHeight) {
-    return new ne_Viewport(fovY, aspect, nearZ, farZ, x, y, viewportWidth, viewportHeight);
+ne::Viewport *CreatePerspectiveViewport(float fovY,
+                                        float aspect,
+                                        float nearZ,
+                                        float farZ,
+                                        int x,
+                                        int y,
+                                        int viewportWidth,
+                                        int viewportHeight) {
+    return new ne::Viewport(fovY, aspect, nearZ, farZ, x, y, viewportWidth, viewportHeight);
 }
 
 /** @ghidraAddress 0x29900 */
-void ReleaseViewportCamera(ne_Viewport *pViewport) {
+void ReleaseViewportCamera(ne::Viewport *pViewport) {
     // The binary decrements the count before its now-redundant null check, so this runs on a live
     // viewport; the viewport is destroyed once the last reference is dropped.
     const int nCount = pViewport->ReleaseRef();
@@ -72,7 +72,7 @@ void ReleaseViewportCamera(ne_Viewport *pViewport) {
 }
 
 /** @ghidraAddress 0x29e70 */
-void SetCurrentCamera(neGLESRenderer *pRenderer, ne_Viewport *pCamera) {
+void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera) {
     if (g_pCurrentAppliedCamera == pCamera) {
         return;
     }
@@ -85,7 +85,7 @@ void SetCurrentCamera(neGLESRenderer *pRenderer, ne_Viewport *pCamera) {
 }
 
 /** @ghidraAddress 0x29f1c */
-void SetCurrentProjection(ne_Viewport *pViewport) {
+void SetCurrentProjection(ne::Viewport *pViewport) {
     if (g_pCurrentProjection != pViewport) {
         if (g_pCurrentProjection != nullptr) {
             ReleaseViewportCamera(g_pCurrentProjection);
@@ -96,7 +96,7 @@ void SetCurrentProjection(ne_Viewport *pViewport) {
 }
 
 /** @ghidraAddress 0x29f64 */
-void SetActiveViewCamera(ne_Viewport *pViewport) {
+void SetActiveViewCamera(ne::Viewport *pViewport) {
     if (g_pActiveViewCamera != pViewport) {
         if (g_pActiveViewCamera != nullptr) {
             ReleaseViewportCamera(g_pActiveViewCamera);
@@ -107,7 +107,7 @@ void SetActiveViewCamera(ne_Viewport *pViewport) {
 }
 
 /** @ghidraAddress 0x21ed4 */
-ne_CameraNode::ne_CameraNode() {
+ne::CameraNode::CameraNode() {
     m_nRefCount = 1;
     // The binary writes the identity rows inline; SetMatrixIdentity is the de-inlined equivalent.
     SetMatrixIdentity(m_mView);
@@ -115,8 +115,7 @@ ne_CameraNode::ne_CameraNode() {
 }
 
 /** @ghidraAddress 0x21f74 */
-ne_CameraNode::ne_CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp)
-    : ne_CameraNode() {
+ne::CameraNode::CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) : ne::CameraNode() {
     // Build the view matrix, then derive the inverse-view (camera-to-world) matrix by inverting a
     // copy of it.
     MakeLookAtMatrix(m_mView, pEye, pTarget, pUp);
@@ -125,7 +124,7 @@ ne_CameraNode::ne_CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp
 }
 
 /** @ghidraAddress 0x21fe0 */
-ne_CameraNode::ne_CameraNode(const float *pViewMatrix) : ne_CameraNode() {
+ne::CameraNode::CameraNode(const float *pViewMatrix) : ne::CameraNode() {
     // The supplied matrix becomes the view matrix; its inverse becomes the inverse-view matrix.
     std::memcpy(m_mView, pViewMatrix, sizeof(m_mView));
     std::memcpy(m_mInverseView, pViewMatrix, sizeof(m_mInverseView));
@@ -133,17 +132,17 @@ ne_CameraNode::ne_CameraNode(const float *pViewMatrix) : ne_CameraNode() {
 }
 
 /** @ghidraAddress 0x21f74 */
-ne_CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) {
-    return new ne_CameraNode(pEye, pTarget, pUp);
+ne::CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) {
+    return new ne::CameraNode(pEye, pTarget, pUp);
 }
 
 /** @ghidraAddress 0x21fe0 */
-ne_CameraNode *CreateCameraFromMatrix(float *pMatrix) {
-    return new ne_CameraNode(pMatrix);
+ne::CameraNode *CreateCameraFromMatrix(float *pMatrix) {
+    return new ne::CameraNode(pMatrix);
 }
 
 /** @ghidraAddress 0x21f58 */
-void ReleaseCameraNode(ne_CameraNode *pCamera) {
+void ReleaseCameraNode(ne::CameraNode *pCamera) {
     // As with the viewport, the count is decremented before the now-redundant null check.
     const int nCount = pCamera->ReleaseRef();
     if (pCamera != nullptr && nCount == 0) {
@@ -152,7 +151,7 @@ void ReleaseCameraNode(ne_CameraNode *pCamera) {
 }
 
 /** @ghidraAddress 0x29fac */
-void SetCurrentModelNode(ne_CameraNode *pCamera) {
+void SetCurrentModelNode(ne::CameraNode *pCamera) {
     if (g_pCurrentModelNode != pCamera) {
         if (g_pCurrentModelNode != nullptr) {
             ReleaseCameraNode(g_pCurrentModelNode);
@@ -163,6 +162,6 @@ void SetCurrentModelNode(ne_CameraNode *pCamera) {
 }
 
 /** @ghidraAddress 0x22058 */
-void TransformVector4ByCamera(ne_CameraNode *pCamera, float *pVec4) {
+void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4) {
     MultiplyVector4ByMatrixInPlace(pVec4, pCamera->GetViewMatrix());
 }

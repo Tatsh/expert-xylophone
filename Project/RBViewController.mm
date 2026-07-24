@@ -279,7 +279,7 @@ constexpr int kDefaultPlayColor = 0;
     // Rebuilds the viewport and camera for the current front-buffer size. First installs an
     // orthographic viewport sized to the drawable, then a perspective (or 3D-tilt) projection for
     // the note sheet, following the arm64 disassembly. The camera helpers take a viewport for the
-    // active-camera slot and an ne_CameraNode for the model node.
+    // active-camera slot and an ne::CameraNode for the model node.
     neGLESRenderer *renderer = GetGlRenderer();
     int viewW = [self.glView GetFrontBufferWidth];
     int viewH = [self.glView GetFrontBufferHeight];
@@ -292,7 +292,7 @@ constexpr int kDefaultPlayColor = 0;
     gameSystem->SetViewportWidth(scaledSize.x);
     gameSystem->SetViewportHeight(scaledSize.y);
 
-    ne_Viewport *orthoViewport =
+    ne::Viewport *orthoViewport =
         CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
     SetCurrentProjection(orthoViewport);
     ReleaseViewportCamera(orthoViewport);
@@ -313,7 +313,7 @@ constexpr int kDefaultPlayColor = 0;
         if (IsPad()) {
             distance = (sheetFarX / aspect) * halfCot;
         }
-        ne_Viewport *viewport =
+        ne::Viewport *viewport =
             CreatePerspectiveViewport(fovY,
                                       aspect,
                                       static_cast<float>(distance * kNearPlaneScale),
@@ -325,7 +325,7 @@ constexpr int kDefaultPlayColor = 0;
         float eye[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), -distance};
         float target[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
         float up[] = {0.0f, -1.0f, 0.0f};
-        ne_CameraNode *camera = CreateLookAtCamera(eye, target, up);
+        ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
         ReleaseViewportCamera(viewport);
@@ -394,22 +394,22 @@ constexpr int kDefaultPlayColor = 0;
             ComposeMatrices(viewMatrix, yOffset);
             ComposeMatrices(viewMatrix, rotation);
             ComposeMatrices(viewMatrix, zOffset);
-            ne_Viewport *viewport = CreatePerspectiveViewport(
+            ne::Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
-            ne_CameraNode *camera = CreateCameraFromMatrix(viewMatrix);
+            ne::CameraNode *camera = CreateCameraFromMatrix(viewMatrix);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
             ReleaseViewportCamera(viewport);
         } else {
             gameSystem->SetSheetLayerFlags(0);
-            ne_Viewport *viewport = CreatePerspectiveViewport(
+            ne::Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
             float eye[] = {kSheetCentreX,
                            kSheetCentreY,
                            static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
             float target[] = {kSheetCentreX, kSheetCentreY, 0.0f};
             float up[] = {0.0f, -1.0f, 0.0f};
-            ne_CameraNode *camera = CreateLookAtCamera(eye, target, up);
+            ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
             ReleaseViewportCamera(viewport);

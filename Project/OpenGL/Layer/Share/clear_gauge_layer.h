@@ -26,6 +26,15 @@ public:
     // The number of player sides the gauge tracks.
     static constexpr int kSideCount = 2;
 
+    /** @brief Constructs the clear-gauge render layer. */
+    ClearGaugeLayer();
+
+    /**
+     * @brief Inserts this node into the priority-sorted engine listener list.
+     * @ghidraAddress 0x365e4
+     */
+    void InsertSortedListenerNode(int priority);
+
     /**
      * @brief Sets a side's clear-gauge value, clamped to the range zero to one.
      * @param flValue The gauge value (clamped to @c [0, 1]).

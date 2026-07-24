@@ -1,4 +1,4 @@
-#import "neEngineBridge.h"
+#include "curve.h"
 
 /** @ghidraAddress 0x55638 */
 float CalculateCurveInterpolation(const float *pPairs, int nCount, float flQueryX) {
