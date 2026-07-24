@@ -737,9 +737,23 @@ static const int kNoExtendNotePid = -1;
     }
 }
 
+/** @ghidraAddress 0x1dbeb4 */
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    // The binary takes no action on a button click.
+}
+
 /** @ghidraAddress 0x1dbfa8 */
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
     // The binary takes no action on dismissal.
+}
+
+/** @ghidraAddress 0x1dbeb8 */
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (!self.closingFlag) {
+        if ([self.delegate respondsToSelector:@selector(detailViewClose)]) {
+            [self.delegate performSelector:@selector(detailViewClose)];
+        }
+    }
 }
 
 /** @ghidraAddress 0x1dc0a4 */

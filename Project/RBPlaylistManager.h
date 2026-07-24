@@ -168,6 +168,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x72974 (setter)
  */
 @property(nonatomic, copy) NSString *filePath;
+/**
+ * @brief The identifier of the tune last selected within a playlist.
+ * @ghidraAddress 0x72980 (getter)
+ * @ghidraAddress 0x72990 (setter)
+ */
+@property(nonatomic, assign) unsigned int lastSelectedMusicID;
 
 @end
 

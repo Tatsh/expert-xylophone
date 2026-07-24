@@ -54,6 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBStoreExtendNoteList : NSObject <DownloaderDelegate, SKProductsRequestDelegate>
 
 /**
+ * @brief A copy of the store-country code cached from the most recently resolved StoreKit products,
+ * or @c nil when no products have resolved yet.
+ * @return A copy of the cached store-country code, or @c nil.
+ * @ghidraAddress 0xbf024
+ */
++ (nullable NSString *)storeCountry;
+
+/**
  * @brief The delegate notified as the catalogue loads.
  * @ghidraAddress 0xc11c4 (getter)
  * @ghidraAddress 0xc11a4 (setter)

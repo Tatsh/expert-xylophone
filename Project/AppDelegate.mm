@@ -163,6 +163,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 #pragma mark - Class helpers
 
++ (void)initialize {
+    /** @ghidraAddress 0x4d778 */
+    // The binary's body is empty; it establishes no one-time state.
+}
+
 + (instancetype)appDelegate {
     return static_cast<AppDelegate *>(UIApplication.sharedApplication.delegate);
 }

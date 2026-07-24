@@ -242,6 +242,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable, getter=getPackIDForOpenStore) NSString *packIDForOpenStore;
 
 /**
+ * @brief The one-time class initialiser; the binary leaves it empty.
+ * @ghidraAddress 0x4d778
+ */
++ (void)initialize;
+
+/**
  * @brief The shared app delegate: @c [[UIApplication sharedApplication] delegate].
  * @ghidraAddress 0x50af0
  */

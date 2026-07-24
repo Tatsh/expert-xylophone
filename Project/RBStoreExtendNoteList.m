@@ -59,6 +59,16 @@ static NSString *g_pStoreCountry = nil;
 
 @implementation RBStoreExtendNoteList
 
+#pragma mark - Store country
+
+/** @ghidraAddress 0xbf024 */
++ (NSString *)storeCountry {
+    if (g_pStoreCountry != nil) {
+        return [NSString stringWithString:g_pStoreCountry];
+    }
+    return nil;
+}
+
 #pragma mark - Lifecycle
 
 /** @ghidraAddress 0xbf064 */

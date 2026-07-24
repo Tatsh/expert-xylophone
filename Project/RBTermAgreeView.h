@@ -135,8 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Whether @c startLoadAnimation / @c endLoadAnimation also toggle the grey overlay.
+ * @ghidraAddress 0x1c9644 (getter)
+ * @ghidraAddress 0x1c9654 (setter)
  */
-@property(assign, nonatomic, getter=isUseGrayView) BOOL useGrayView;
+@property(assign, nonatomic) BOOL isUseGrayView;
 
 /**
  * @brief The rendered height of the terms text, used to gauge scroll progress.

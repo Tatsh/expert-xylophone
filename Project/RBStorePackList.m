@@ -66,6 +66,16 @@ static NSString *_lastProductCountryCode = nil;
 
 @implementation RBStorePackList
 
+#pragma mark - Store country
+
+/** @ghidraAddress 0x1f05fc */
++ (NSString *)storeCountry {
+    if (_lastProductCountryCode != nil) {
+        return [NSString stringWithString:_lastProductCountryCode];
+    }
+    return nil;
+}
+
 #pragma mark - Lifecycle
 
 /** @ghidraAddress 0x1f063c */

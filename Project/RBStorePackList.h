@@ -29,6 +29,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RBStorePackList : NSObject <SKProductsRequestDelegate>
 
 /**
+ * @brief A copy of the store-country code cached from the most recently resolved StoreKit products,
+ * or @c nil when no products have resolved yet.
+ * @return A copy of the cached store-country code, or @c nil.
+ * @ghidraAddress 0x1f05fc
+ */
++ (nullable NSString *)storeCountry;
+
+/**
  * @brief The parsed packs, keyed by insertion order and cached across pages.
  * @ghidraAddress 0x1f3460 (getter)
  * @ghidraAddress 0x1f3470 (setter)

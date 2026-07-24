@@ -195,6 +195,12 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  */
 @property(nonatomic, assign) BOOL isTutorial;
 /**
+ * @brief Whether tutorial input is currently accepted.
+ * @ghidraAddress 0x3647c (getter)
+ * @ghidraAddress 0x3648c (setter)
+ */
+@property(nonatomic, assign) BOOL isInputable;
+/**
  * @brief The view presenting the active tutorial overlay, held weakly.
  * @ghidraAddress 0x3649c (getter)
  * @ghidraAddress 0x364bc (setter)

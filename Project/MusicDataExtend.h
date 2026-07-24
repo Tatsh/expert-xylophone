@@ -54,6 +54,18 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x5a6dc (setter)
  */
 @property(nonatomic, strong) NSString *dataPath;
+/**
+ * @brief The archive-member decode-type selector passed to the extend archive reader.
+ * @ghidraAddress 0x5a75c (getter)
+ * @ghidraAddress 0x5a76c (setter)
+ */
+@property(nonatomic, assign) int decodeType;
+/**
+ * @brief The path of the extend note-sheet file within the archive.
+ * @ghidraAddress 0x5a714 (getter)
+ * @ghidraAddress 0x5a724 (setter)
+ */
+@property(nonatomic, strong) NSString *extFilePath;
 
 /**
  * @brief Build an extend-pack entry from @p path and a purchased-extend-note dictionary.
