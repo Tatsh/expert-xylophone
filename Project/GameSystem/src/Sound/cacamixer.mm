@@ -83,6 +83,18 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
            static_cast<unsigned int>(nBus << kHandleBusShift);
 }
 
+/** @ghidraAddress 0x4b238 */
+unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) {
+    // Bind the sound to the first voice that is free or has finished playing.
+    for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
+        const int nState = m_pVoiceArray[nBus]->m_nState;
+        if (nState == caVoice::kStateFree || nState == caVoice::kStateFinished) {
+            return EnqueueVoiceBuffer(pSource, nBus, nVolume);
+        }
+    }
+    return kInvalidHandle;
+}
+
 /** @ghidraAddress 0x4b174 */
 void caCAMixer::InstallVoiceRenderCallback(int nBus) {
     if (nBus >= m_nVoiceCount) {

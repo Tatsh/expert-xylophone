@@ -636,8 +636,9 @@ constexpr double kResumeFadeInTime = 0.3;
     // written only once.
     if (callName == nil) {
         if (group == kSeGroupCaPlayer) {
-            return sePlayer->PlaySoundByIndex(static_cast<unsigned int>(resourceId) &
-                                              kResourceIndexMask);
+            return sePlayer->PlaySoundByIndex(
+                static_cast<int>(static_cast<unsigned int>(resourceId) & kResourceIndexMask),
+                volume);
         }
         return seAVPlayer->AcquireAudioBusForSourceIndex(static_cast<unsigned int>(resourceId) &
                                                          kResourceIndexMask);

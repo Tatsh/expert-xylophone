@@ -66,9 +66,11 @@ public:
     void FreeSoundForKey(NSString *callName);
     /**
      * @brief Plays the sound at the given index on the first free voice, returning its handle.
+     * @param index The registered sound id.
+     * @param volume The gain-table index forwarded to the chosen voice.
      * @ghidraAddress 0x4b998
      */
-    unsigned int PlaySoundByIndex(unsigned int index);
+    unsigned int PlaySoundByIndex(int index, int volume);
     /**
      * @brief Plays the sound registered under a call name, returning its handle.
      * @ghidraAddress 0x4ba1c

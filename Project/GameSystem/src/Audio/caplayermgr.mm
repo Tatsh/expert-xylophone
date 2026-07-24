@@ -23,6 +23,14 @@ constexpr unsigned int kInvalidHandle = 0xffffffff;
 
 } // namespace
 
+/** @ghidraAddress 0x4b998 */
+unsigned int caPlayerMgr::PlaySoundByIndex(int index, int volume) {
+    if (index >= m_nSourceCount || m_pSourceArray[index] == nullptr) {
+        return kInvalidHandle;
+    }
+    return m_pMixer->FindFreeVoiceAndEnqueue(m_pSourceArray[index], volume) | kOneShotSourceTag;
+}
+
 /** @ghidraAddress 0x4b9d4 */
 unsigned int caPlayerMgr::PlaySoundOnVoice(int resourceId, int busId, int volume) {
     if (resourceId < 0 || resourceId >= m_nSourceCount) {

@@ -69,6 +69,15 @@ public:
      * @param nBus The voice/bus index.
      * @ghidraAddress 0x4b174
      */
+    /**
+     * @brief Binds @p pSource to the first free or finished voice and prepares it, returning its
+     *        play handle, or @c 0xffffffff when every voice is busy.
+     * @param pSource The sound to bind.
+     * @param nVolume The gain-table index.
+     * @ghidraAddress 0x4b238
+     */
+    unsigned int FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume);
+
     void InstallVoiceRenderCallback(int nBus);
 
     /**
