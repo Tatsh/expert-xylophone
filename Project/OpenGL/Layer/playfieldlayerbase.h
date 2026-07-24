@@ -36,6 +36,15 @@ public:
         return m_nThema;
     }
 
+    /**
+     * @brief Re-reads the user's theme setting into the layer.
+     *
+     * Called once per layer during theme initialisation to refresh @c m_nThema from the current
+     * @c RBUserSettingData theme.
+     * @ghidraAddress 0x109e04
+     */
+    void RefreshThema();
+
 protected:
     /**
      * @brief Constructs the layer base from the current device and settings.

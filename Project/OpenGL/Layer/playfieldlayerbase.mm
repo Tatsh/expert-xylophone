@@ -9,3 +9,8 @@ PlayFieldLayerBase::PlayFieldLayerBase() {
     m_fIsHardwareType9 = GetIsHardwareType9Flag();
     m_nThema = static_cast<int>([RBUserSettingData sharedInstance].thema);
 }
+
+/** @ghidraAddress 0x109e04 */
+void PlayFieldLayerBase::RefreshThema() {
+    m_nThema = static_cast<int>([RBUserSettingData sharedInstance].thema);
+}
