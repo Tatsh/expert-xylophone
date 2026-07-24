@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_SPRITE_INSTANCING;
 class C_TEXTURE;
@@ -43,6 +45,18 @@ public:
      * @ghidraAddress 0x73f2c
      */
     void InitializeResultWindowSprites();
+
+    /**
+     * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
+     *
+     * Looks up a @c PhoneAnchorRecord from one of two runtime-filled tables (selected by the
+     * portrait flag), copies its base coordinate into @p pOutPosition, then shifts it by the
+     * play-field viewport's half or full width and height according to the record's anchor mode.
+     * @param nIndex The position-record index (0 through 167).
+     * @param pOutPosition Receives the resolved position.
+     * @ghidraAddress 0x73b4c
+     */
+    void GetPhoneAnchorPosition(unsigned int nIndex, S_VECTOR2 *pOutPosition) const;
 
 private:
     // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields

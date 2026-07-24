@@ -1,10 +1,19 @@
 #include "result_window_colette_layer.h"
 
+#include <cassert>
+
+#import "neEngineBridge.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "phone_anchor_table.h"
 
 // The process-wide Colette result-window layer, created lazily by shared().
 static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddress 0x3dc598
+
+// The phone-layout anchor-position tables (declared in phone_anchor_table.h): zero-initialised here
+// to match the binary's __common segment, filled at runtime by the result-layout-table initialisers.
+PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount] = {}; // @ghidraAddress 0x3d4d50
+PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghidraAddress 0x3d5530
 
 namespace {
 
@@ -27,6 +36,20 @@ constexpr int kGlyphBaseA = 0x4e;
 constexpr int kGlyphBaseB = 0x45;
 constexpr int kGlyphBaseC = 0x3a;
 constexpr float kPartsScale = 1.0f;
+
+// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
+// any value outside this range) leaves the coordinate unshifted.
+enum AnchorMode {
+    kAnchorNone = 0,                // No offset.
+    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
+    kAnchorFullHeight = 2,          // y += viewportHeight.
+    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
+    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
+    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
+    kAnchorFullWidth = 6,           // x += viewportWidth.
+    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
+    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+};
 
 } // namespace
 
@@ -70,4 +93,55 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x73b4c */
+void ResultWindowColetteLayer::GetPhoneAnchorPosition(unsigned int nIndex,
+                                                      S_VECTOR2 *pOutPosition) const {
+    assert(static_cast<int>(nIndex) >= 0 && "getPosition_Phone");
+    assert(static_cast<int>(nIndex) < static_cast<int>(kPhoneAnchorRecordCount) &&
+           "getPosition_Phone");
+
+    // The portrait flag selects the portrait table; otherwise the default table is used.
+    const PhoneAnchorRecord &record =
+        m_bPortrait ? g_aPhoneAnchorPortrait[nIndex] : g_aPhoneAnchorDefault[nIndex];
+    pOutPosition->x = record.flX;
+    pOutPosition->y = record.flY;
+
+    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    switch (record.nAnchorMode) {
+    case kAnchorHalfHeight:
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorFullHeight:
+        pOutPosition->y += flHeight;
+        break;
+    case kAnchorHalfWidth:
+        pOutPosition->x += flWidth * 0.5f;
+        break;
+    case kAnchorHalfWidthHalfHeight:
+        pOutPosition->x += flWidth * 0.5f;
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorHalfWidthFullHeight:
+        pOutPosition->x += flWidth * 0.5f;
+        pOutPosition->y += flHeight;
+        break;
+    case kAnchorFullWidth:
+        pOutPosition->x += flWidth;
+        break;
+    case kAnchorFullWidthHalfHeight:
+        pOutPosition->x += flWidth;
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorFullWidthFullHeight:
+        pOutPosition->x += flWidth;
+        pOutPosition->y += flHeight;
+        break;
+    default:
+        break;
+    }
 }
