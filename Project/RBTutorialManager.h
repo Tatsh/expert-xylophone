@@ -74,6 +74,13 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  * @return The current @c RBTutorialStatus.
  */
 + (RBTutorialStatus)getCurrentStatus;
+/**
+ * @brief Map a tutorial status through the persisted status table.
+ * @param status The tutorial status to look up.
+ * @return The persisted status recorded for @p status.
+ * @ghidraAddress 0x35cfc
+ */
+- (unsigned int)getStatus:(unsigned int)status;
 
 #pragma mark Music-select tutorial
 
@@ -200,6 +207,13 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  * @ghidraAddress 0x364d0 (getter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *unlockItemInfo;
+
+/**
+ * @brief A copy of the pending unlocked-item info pair.
+ * @return A copy of the queued @c {itemInfo, itemId} array.
+ * @ghidraAddress 0x36308
+ */
++ (nullable NSArray *)getUnlockedItemInfo;
 
 /**
  * @brief Clear the pending unlocked-item info.

@@ -78,6 +78,13 @@ static const int kClientNoteEntriesPerPage = 20;
     return [NSString stringWithFormat:kExtendNoteDataFilenameFormat, extendNoteID];
 }
 
++ (NSString *)getPathFromBundle:(int)extendNoteID {
+    /** @ghidraAddress 0x181b48 */
+    // The filename already carries its extension, so the resource is looked up with an empty type.
+    NSString *filename = [RBExtendNoteManager getExtendNoteDataFilename:extendNoteID];
+    return [NSBundle.mainBundle pathForResource:filename ofType:@""];
+}
+
 + (NSString *)getPathFromPurchased:(int)extendNoteID {
     /** @ghidraAddress 0x181c04 */
     NSString *filename = [RBExtendNoteManager getExtendNoteDataFilename:extendNoteID];
@@ -303,6 +310,13 @@ static const int kClientNoteEntriesPerPage = 20;
         }
     }
     return nil;
+}
+
+- (void)releaseCacheMusicData {
+    /** @ghidraAddress 0x1839f4 */
+    for (MusicDataExtend *data in self.extendNoteDataArray) {
+        [data releaseCache];
+    }
 }
 
 - (NSMutableArray *)getExtendNoteIDs {

@@ -51,6 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)getExtendNoteDataFilename:(int)extendNoteID;
 /**
+ * @brief The bundled path a built-in extend note's archive is shipped at.
+ * @ghidraAddress 0x181b48
+ * @param extendNoteID The extend-note identifier.
+ * @return The archive path inside the main bundle, or @c nil when the resource is absent.
+ */
++ (nullable NSString *)getPathFromBundle:(int)extendNoteID;
+/**
  * @brief The private Documents path a purchased extend note's archive is stored at.
  * @ghidraAddress 0x181c04
  * @param extendNoteID The extend-note identifier.
@@ -135,6 +142,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The matching catalogue entry, or @c nil.
  */
 - (nullable MusicDataExtend *)getExtendNoteData:(int)extendNoteID;
+/**
+ * @brief Release the cached artwork of every catalogue entry in the data array.
+ * @ghidraAddress 0x1839f4
+ */
+- (void)releaseCacheMusicData;
 /**
  * @brief The extend-note identifiers of every purchased extend note.
  * @ghidraAddress 0x183b24

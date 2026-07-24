@@ -60,6 +60,11 @@ enum { kTutorialStatusReportOnly = 0x12 };
     return [[self getInstance] currentStatus];
 }
 
+- (unsigned int)getStatus:(unsigned int)status {
+    /** @ghidraAddress 0x35cfc */
+    return [[RBUserSettingData sharedInstance] getTutorialStatus:status];
+}
+
 #pragma mark - Music-select tutorial
 
 + (BOOL)needStartTutorialMusicselect {
@@ -187,6 +192,11 @@ enum { kTutorialStatusReportOnly = 0x12 };
         return;
     }
     [RBServerAPIManager tutorialAPI];
+}
+
+/** @ghidraAddress 0x36308 */
++ (NSArray *)getUnlockedItemInfo {
+    return [[RBTutorialManager getInstance].unlockItemInfo copy];
 }
 
 /** @ghidraAddress 0x363a8 */
