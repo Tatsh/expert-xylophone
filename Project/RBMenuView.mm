@@ -1203,7 +1203,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self preStartTutorial];
     [[RBBGMManager getInstance] LoadMusicSelect];
     [[AudioManager sharedManager] releaseVoice];
-    LoadThemedVoiceData(GetSoundEffectManager(), 1);
+    SoundEffectManager::GetInstance()->LoadThemedVoiceData(1);
     self.userInteractionEnabled = NO;
     self.hidden = NO;
     [self reloadMusicData];
@@ -1284,7 +1284,7 @@ static BOOL g_bRandamIntSeeded = NO;
                                     withRootView:self.selectedView];
     }
     [self.selectedView showAnimation:animated];
-    PlayThemedSoundEffect(GetSoundEffectManager(), 0);
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(0);
 }
 
 - (int)getRandamInt:(int)getRandamInt max:(int)max {
@@ -1680,7 +1680,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)SelectRankingButton {
     [self setSearchBarNonActive];
     [self hideSettingView];
-    PlayThemedSoundEffect(GetSoundEffectManager(), kSoundEffectDecide);
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     RBRankingView *view = [[RBRankingView alloc] initWithFrame:self.bounds];
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:view];
@@ -1734,7 +1734,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // First open: create the store tab controller and push it.
         self.storeViewController = [[RBStoreTabController alloc] init];
         self.storeViewController.musicMenuView = self;
-        PlayThemedSoundEffect(GetSoundEffectManager(), kSoundEffectDecide);
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
         [[[AppDelegate appDelegate] navigationController]
             pushViewController:self.storeViewController
                       animated:YES];
@@ -2052,7 +2052,8 @@ static BOOL g_bRandamIntSeeded = NO;
         return;
     }
     if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
-        PlayThemedSoundEffect(GetSoundEffectManager(), static_cast<int>(kSoundEffectSearchBarShow));
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(
+            static_cast<int>(kSoundEffectSearchBarShow));
     }
     [self.searchBar becomeFirstResponder];
     self.searchBar.text = self.backUpString;
@@ -2085,7 +2086,8 @@ static BOOL g_bRandamIntSeeded = NO;
     // Only hide while the search bar is on-screen (non-negative Y) and nothing else is shown.
     if (self.searchBar.frame.origin.y >= 0.0 && self.showView == nil && self.selectedView == nil &&
         self.settingView == nil) {
-        PlayThemedSoundEffect(GetSoundEffectManager(), static_cast<int>(kSoundEffectSearchBarHide));
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(
+            static_cast<int>(kSoundEffectSearchBarHide));
         [self.searchBar resignFirstResponder];
         self.backUpString = self.searchBar.text;
         [self searchBar:self.searchBar textDidChange:@""];

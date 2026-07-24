@@ -4,6 +4,7 @@ accum
 actived
 adid
 advertisable
+akhuta
 allseasons
 anim
 apiurl
@@ -13,6 +14,7 @@ applilink
 applilinkapplist
 applist
 archs
+areyouready
 asbd
 audiosourceslot
 autocapitalization
@@ -24,6 +26,7 @@ autoresizes
 autoresizing
 autoreverses
 baet
+battlestart
 behavior
 bewfsujtjoh
 bitcode
@@ -31,6 +34,7 @@ blit
 brighness
 bsky
 bunner
+bwaves
 byref
 bzero
 cacamixer
@@ -83,6 +87,7 @@ difd
 dios
 directorys
 disasm
+djsilverberg
 djtaka
 djyoshitaka
 docstrings
@@ -109,6 +114,7 @@ fmov
 fmul
 foxundermoon
 fram
+fullcombo
 fullwidth
 gamecenter
 gamescene
@@ -141,6 +147,7 @@ ivar
 ivars
 iwyu
 jefoujgjfs
+jinglebell
 jinja
 jsonnet
 jsonschema
@@ -161,6 +168,7 @@ malloc'd
 math
 matrixf
 matrixmath
+maxmaximizer
 memcpy
 memset
 minizip
@@ -200,7 +208,10 @@ packinfo
 packlist
 parameteri
 parameteriv
+pastelin
 pastelkun
+pastelout
+pawapuro
 pbxproj
 plid
 popn
@@ -247,6 +258,7 @@ rturl
 schemafile
 scorefor
 screenview
+seiya
 serialcode
 sheetlayer
 shellcheck
@@ -273,15 +285,18 @@ superview
 superview's
 supportedi
 sysctlbyname
+tabletennis
 tatsh
 teardown
 tentei
+thankyou
 thema
 themas
 theos
 thunks
 tomosuke
 totalscorephone
+totto
 touchmanager
 transactioing
 uchar
@@ -315,6 +330,8 @@ xref
 yarnrc
 yomi
 yomigana
+youlose
+youwin
 yukky
 ziparchive
 zizmor
