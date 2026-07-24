@@ -211,6 +211,17 @@ private:
  */
 C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
 
+/**
+ * @brief Allocate and initialise a screen-space sprite batch node.
+ *
+ * Like @c CreateWorldSpriteBatch, but the node is constructed with the screen-space instancer
+ * variant used by the result-window and menu layers.
+ * @param nCapacity The maximum number of sprites the batch can draw.
+ * @return The new sprite batch node.
+ * @ghidraAddress 0x30804
+ */
+C_SPRITE_INSTANCING *CreateSpriteInstancer(unsigned int nCapacity);
+
 } // namespace ne
 
 // code: language=C++
