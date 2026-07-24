@@ -156,6 +156,24 @@ private:
     int m_nBlendMode = {};              // +0x170: the blend-mode identifier.
 };
 
+/**
+ * @brief Allocates and initialises a 2D polygon-mesh node ready to be populated and drawn.
+ * @param nDrawMode The primitive draw mode.
+ * @param nVertexFormat The vertex-format attribute bit-set.
+ * @param nVertexCount The number of vertices.
+ * @param bVertexBufferExternal Whether the vertex buffer is externally owned.
+ * @param nIndexCount The number of index-buffer entries.
+ * @param bIndexBufferExternal Whether the index buffer is externally owned.
+ * @return The new 2D polygon-mesh node.
+ * @ghidraAddress 0x28290
+ */
+C_DRAW_POLYGON_2D *CreatePolygon2dMesh(unsigned int nDrawMode,
+                                       unsigned int nVertexFormat,
+                                       unsigned int nVertexCount,
+                                       unsigned char bVertexBufferExternal,
+                                       unsigned int nIndexCount,
+                                       unsigned char bIndexBufferExternal);
+
 } // namespace ne
 
 // code: language=C++
