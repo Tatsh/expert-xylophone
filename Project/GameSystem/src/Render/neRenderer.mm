@@ -1,11 +1,14 @@
 #include "neRenderer.h"
 
+#include <cmath>
 #include <cstring>
 
 #import "matrixmath.h"
 #include "neGLES.h"
 #import "neRenderer.h"
+#import "s_vector2.h"
 #import "s_vector3.h"
+#import "vectormath.h"
 
 // The reference-counted projection and view-camera slots the render path reads each frame.
 ne::Viewport *g_pCurrentAppliedCamera = nullptr; // @ghidraAddress 0x3cff00
@@ -166,4 +169,32 @@ void SetCurrentModelNode(ne::CameraNode *pCamera) {
 /** @ghidraAddress 0x22058 */
 void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4) {
     MultiplyVector4ByMatrixInPlace(pVec4, pCamera->GetViewMatrix());
+}
+
+/** @ghidraAddress 0x29ff4 */
+void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir) {
+    // Build the near-plane point in view space from the normalised screen coordinates: half the
+    // vertical field of view gives the view frustum's extent at unit depth, x is scaled by the
+    // aspect ratio, y is flipped, and the point sits one unit down the -Z axis.
+    const float flTanHalfFov = static_cast<float>(std::tan(g_pActiveViewCamera->GetFovY() * 0.5f));
+    S_VECTOR3 nearPoint;
+    nearPoint.x =
+        (pScreen->x - 0.5f + pScreen->x - 0.5f) * flTanHalfFov * g_pActiveViewCamera->GetAspect();
+    nearPoint.y = (pScreen->y - 0.5f) * -2.0f * flTanHalfFov;
+    nearPoint.z = -1.0f;
+
+    // Transform the ray origin (the camera position) and the near point into world space through the
+    // current model node's inverse-view (camera-to-world) matrix.
+    float invViewMatrix[16];
+    std::memcpy(invViewMatrix, g_pCurrentModelNode->GetInverseViewMatrix(), sizeof(invViewMatrix));
+    pRayOrigin->x = 0.0f;
+    pRayOrigin->y = 0.0f;
+    pRayOrigin->z = 0.0f;
+    TransformPointByMatrix(reinterpret_cast<float *>(pRayOrigin), invViewMatrix);
+    TransformPointByMatrix(reinterpret_cast<float *>(&nearPoint), invViewMatrix);
+
+    // The ray direction is the normalised vector from the origin to the near point.
+    *pRayDir = nearPoint;
+    SubtractVector3(pRayDir, pRayOrigin);
+    NormalizeVector3(pRayDir);
 }

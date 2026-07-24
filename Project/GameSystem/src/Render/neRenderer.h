@@ -7,6 +7,7 @@
 #pragma once
 
 class neGLESRenderer;
+struct S_VECTOR2;
 struct S_VECTOR3;
 
 namespace ne {
@@ -73,6 +74,18 @@ public:
      */
     const float *GetProjectionMatrix() const {
         return m_mProjection;
+    }
+    /**
+     * @brief The vertical field of view, in radians (zero for an orthographic viewport).
+     */
+    float GetFovY() const {
+        return m_flFovY;
+    }
+    /**
+     * @brief The perspective aspect ratio (zero for an orthographic viewport).
+     */
+    float GetAspect() const {
+        return m_flAspect;
     }
     /**
      * @brief The GL viewport x origin.
@@ -276,6 +289,21 @@ void ReleaseCameraNode(ne::CameraNode *pCamera);
  * @ghidraAddress 0x22058
  */
 void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4);
+
+/**
+ * @brief Computes a world-space picking ray from a normalised screen point (a perspective
+ *        unprojection through the current active-view camera and model node).
+ *
+ * Builds a near-plane point from the screen coordinates using @c tan(fovY/2) of the active-view
+ * camera (@c g_pActiveViewCamera), transforms the ray origin and near point into world space by the
+ * current model node's inverse-view matrix (@c g_pCurrentModelNode), and returns the origin and the
+ * normalised direction from origin to near point.
+ * @param pScreen The normalised screen coordinates (x, y in the unit square).
+ * @param pRayOrigin Receives the world-space ray origin (the camera position).
+ * @param pRayDir Receives the normalised world-space ray direction.
+ * @ghidraAddress 0x29ff4
+ */
+void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir);
 
 // code: language=C++
 // kate: hl C++;
