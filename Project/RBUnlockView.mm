@@ -593,7 +593,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
           /** @ghidraAddress 0x98720 */
           [self.progressOverlayView setProgress:(float)step * kProgressIncrement];
           if (self.progressOverlayView.progress >= 1.0) {
-              [self.progressOverlayView displayOperationDidFinishAnimating];
+              [self.progressOverlayView displayOperationDidFinishAnimation];
               [self.selectedView configureCell:self.selectedCell];
               SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectUnlocked);
           }
@@ -673,7 +673,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         musicInfo = [[StoreMusicInfo alloc] initWithDictionary:json];
     }
     if (!musicInfo) {
-        [self.progressOverlayView displayOperationDidFinishAnimating];
+        [self.progressOverlayView displayOperationDidFinishAnimation];
         [UIAlertView showNetworkErrorWithDelegate:nil];
         [self reloadData];
         return;
@@ -696,7 +696,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 
 - (void)downloadManagerCompleted:(StoreDownloadManager *)manager {
     [[AppDelegate appDelegate].viewController.musicMenuView reloadMusicData];
-    [self.progressOverlayView displayOperationDidFinishAnimating];
+    [self.progressOverlayView displayOperationDidFinishAnimation];
     [self.selectedView configureCell:self.selectedCell];
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectUnlocked);
     [UIAlertView showUnlockedMusicInfoWithDelegate:nil musicName:self.dlMusicName];
