@@ -495,6 +495,11 @@ extern const double g_dSliderRowHeightWide;
  */
 extern const double g_dMascotMessageMaxWidthPad;
 /**
+ * @brief The mascot message-balloon maximum width on the phone layout.
+ * @ghidraAddress 0x2ee938
+ */
+extern const double g_dMascotMessageMaxWidthPhone;
+/**
  * @brief The shared translucent-panel background white value.
  * @ghidraAddress 0x2ec6a0
  */
@@ -593,6 +598,70 @@ extern NSString *const g_pLocalizedUpdateRequiredFormat;
  * @ghidraAddress 0x3cfdc8
  */
 extern NSString *const g_pLocalizedSearchVersionMismatch;
+/** @brief The localised "Close" button title. @ghidraAddress 0x3cfba0 */
+extern NSString *const g_pLocalizedClose;
+/** @brief The localised "All" filter title. @ghidraAddress 0x3cfb70 */
+extern NSString *const g_pLocalizedAll;
+/** @brief The localised "Add to playlist" action title. @ghidraAddress 0x3cfb68 */
+extern NSString *const g_pLocalizedAddToPlaylist;
+/** @brief The localised "Create playlist" action title. @ghidraAddress 0x3cfba8 */
+extern NSString *const g_pLocalizedCreatePlaylist;
+/** @brief The localised "No play songs" empty-state message. @ghidraAddress 0x3cfcd8 */
+extern NSString *const g_pLocalizedNoPlaySongs;
+/** @brief The localised "New" badge title. @ghidraAddress 0x3cfcc8 */
+extern NSString *const g_pLocalizedNew;
+/** @brief The localised "SPECIAL" level title. @ghidraAddress 0x3cfca0 */
+extern NSString *const g_pLocalizedSpecial;
+/** @brief The localised "Playlist" title. @ghidraAddress 0x3cfcf0 */
+extern NSString *const g_pLocalizedPlaylist;
+/** @brief The localised "PlaylistName" field label. @ghidraAddress 0x3cfcf8 */
+extern NSString *const g_pLocalizedPlaylistName;
+/** @brief The localised "Return" button title. @ghidraAddress 0x3cfd58 */
+extern NSString *const g_pLocalizedReturn;
+/** @brief The localised "Sort " menu title. @ghidraAddress 0x3cfd80 */
+extern NSString *const g_pLocalizedSort;
+/** @brief The localised "Level" title. @ghidraAddress 0x3cfc20 */
+extern NSString *const g_pLocalizedLevel;
+/**
+ * @brief The localised per-level titles "Level1" through "Level15".
+ * @ghidraAddress 0x3cfc28
+ */
+extern NSString *const g_pLocalizedLevel1;
+extern NSString *const g_pLocalizedLevel2;  /*!< @ghidraAddress 0x3cfc60 */
+extern NSString *const g_pLocalizedLevel3;  /*!< @ghidraAddress 0x3cfc68 */
+extern NSString *const g_pLocalizedLevel4;  /*!< @ghidraAddress 0x3cfc70 */
+extern NSString *const g_pLocalizedLevel5;  /*!< @ghidraAddress 0x3cfc78 */
+extern NSString *const g_pLocalizedLevel6;  /*!< @ghidraAddress 0x3cfc80 */
+extern NSString *const g_pLocalizedLevel7;  /*!< @ghidraAddress 0x3cfc88 */
+extern NSString *const g_pLocalizedLevel8;  /*!< @ghidraAddress 0x3cfc90 */
+extern NSString *const g_pLocalizedLevel9;  /*!< @ghidraAddress 0x3cfc98 */
+extern NSString *const g_pLocalizedLevel10; /*!< @ghidraAddress 0x3cfc30 */
+extern NSString *const g_pLocalizedLevel11; /*!< @ghidraAddress 0x3cfc38 */
+extern NSString *const g_pLocalizedLevel12; /*!< @ghidraAddress 0x3cfc40 */
+extern NSString *const g_pLocalizedLevel13; /*!< @ghidraAddress 0x3cfc48 */
+extern NSString *const g_pLocalizedLevel14; /*!< @ghidraAddress 0x3cfc50 */
+extern NSString *const g_pLocalizedLevel15; /*!< @ghidraAddress 0x3cfc58 */
+/**
+ * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
+ * @ghidraAddress 0x3cff90
+ */
+extern UIColor *g_pPaletteWhiteColor;       /*!< @ghidraAddress 0x3cff90 */
+extern UIColor *g_pPaletteOpaqueBlackColor; /*!< @ghidraAddress 0x3cff98 */
+extern UIColor *g_pPaletteGreenGrassColor;  /*!< @ghidraAddress 0x3cffa0 */
+extern UIColor *g_pPaletteMagentaColor;     /*!< @ghidraAddress 0x3cffa8 */
+extern UIColor *g_pPalettePurpleColor;      /*!< @ghidraAddress 0x3cffb0 */
+extern UIColor *g_pPaletteDarkGreenColor;   /*!< @ghidraAddress 0x3cffb8 */
+extern UIColor *g_pPaletteLeafGreenColor;   /*!< @ghidraAddress 0x3cffc0 */
+extern UIColor *g_pPaletteGreenGrassColor2; /*!< @ghidraAddress 0x3cffc8 */
+extern UIColor *g_pPaletteMagentaColor2;    /*!< @ghidraAddress 0x3cffd0 */
+extern UIColor *g_pPaletteLeafGreenColor2;  /*!< @ghidraAddress 0x3cffd8 */
+extern UIColor *g_pPaletteSteelBlueColor;   /*!< @ghidraAddress 0x3cffe0 */
+extern UIColor *g_pPaletteLeafGreenColor3;  /*!< @ghidraAddress 0x3cffe8 */
+extern UIColor *g_pPaletteSteelBlueColor2;  /*!< @ghidraAddress 0x3cfff0 */
+extern UIColor *g_pPaletteGoldColor;        /*!< @ghidraAddress 0x3cfff8 */
+extern UIColor *g_pPaletteSteelBlueColor3;  /*!< @ghidraAddress 0x3d0000 */
+/** @brief The 32-point shared layout metric. @ghidraAddress 0x2ee9b0 */
+extern const double g_dLayoutMetricThirtyTwo;
 
 #ifdef __cplusplus
 }

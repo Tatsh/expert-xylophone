@@ -7,57 +7,6 @@
 #import "UIImage+RB.h"
 #import "neEngineBridge.h"
 
-// The palette colour globals and localised UI-string globals this screen reads are not present in
-// neEngineBridge.h; they are declared here as local externals (matching the convention used by the
-// store detail controllers). Their values are populated at startup (the palette table and
-// CacheLocalizedUIStrings, image base 0x100000000).
-extern UIColor *g_pPaletteWhiteColor;         // @ghidraAddress 0x3cff90
-extern UIColor *g_pPaletteOpaqueBlackColor;   // @ghidraAddress 0x3cff98
-extern UIColor *g_pPaletteGreenGrassColor;    // @ghidraAddress 0x3cffa0
-extern UIColor *g_pPaletteMagentaColor;       // @ghidraAddress 0x3cffa8
-extern UIColor *g_pPalettePurpleColor;        // @ghidraAddress 0x3cffb0
-extern UIColor *g_pPaletteDarkGreenColor;     // @ghidraAddress 0x3cffb8
-extern UIColor *g_pPaletteLeafGreenColor;     // @ghidraAddress 0x3cffc0
-extern UIColor *g_pPaletteGreenGrassColor2;   // @ghidraAddress 0x3cffc8
-extern UIColor *g_pPaletteMagentaColor2;      // @ghidraAddress 0x3cffd0
-extern UIColor *g_pPaletteLeafGreenColor2;    // @ghidraAddress 0x3cffd8
-extern UIColor *g_pPaletteSteelBlueColor;     // @ghidraAddress 0x3cffe0
-extern UIColor *g_pPaletteLeafGreenColor3;    // @ghidraAddress 0x3cffe8
-extern UIColor *g_pPaletteSteelBlueColor2;    // @ghidraAddress 0x3cfff0
-extern UIColor *g_pPaletteGoldColor;          // @ghidraAddress 0x3cfff8
-extern UIColor *g_pPaletteSteelBlueColor3;    // @ghidraAddress 0x3d0000
-
-// Localised UI strings cached by CacheLocalizedUIStrings (@0x10e5c). Each comment gives the
-// localisation key and the global's address.
-extern NSString *g_pLocalizedClose;         // @ghidraAddress 0x3cfba0 ("Close")
-extern NSString *g_pLocalizedAll;           // @ghidraAddress 0x3cfb70 ("All")
-extern NSString *g_pLocalizedAddToPlaylist; // @ghidraAddress 0x3cfb68 ("Add to playlist")
-extern NSString *g_pLocalizedNoPlaySongs;   // @ghidraAddress 0x3cfcd8 ("No play songs")
-extern NSString *g_pLocalizedLevel;         // @ghidraAddress 0x3cfc20 ("Level")
-extern NSString *g_pLocalizedSpecial;       // @ghidraAddress 0x3cfca0 ("SPECIAL")
-extern NSString *g_pLocalizedNew;           // @ghidraAddress 0x3cfcc8 ("New")
-extern NSString *g_pLocalizedPlaylist;      // @ghidraAddress 0x3cfcf0 ("Playlist")
-extern NSString *g_pLocalizedReturn;        // @ghidraAddress 0x3cfd58 ("Return")
-extern NSString *g_pLocalizedSort;          // @ghidraAddress 0x3cfd80 ("Sort ")
-// The fifteen "Level1".."Level15" row titles, contiguous in the cache table but not in numeric
-// order (Level1, Level10, Level11, ... Level9). Indexed here by difficulty level to match the
-// binary's row-build order.
-extern NSString *g_pLocalizedLevel1;  // @ghidraAddress 0x3cfc28 ("Level1")
-extern NSString *g_pLocalizedLevel2;  // @ghidraAddress 0x3cfc60 ("Level2")
-extern NSString *g_pLocalizedLevel3;  // @ghidraAddress 0x3cfc68 ("Level3")
-extern NSString *g_pLocalizedLevel4;  // @ghidraAddress 0x3cfc70 ("Level4")
-extern NSString *g_pLocalizedLevel5;  // @ghidraAddress 0x3cfc78 ("Level5")
-extern NSString *g_pLocalizedLevel6;  // @ghidraAddress 0x3cfc80 ("Level6")
-extern NSString *g_pLocalizedLevel7;  // @ghidraAddress 0x3cfc88 ("Level7")
-extern NSString *g_pLocalizedLevel8;  // @ghidraAddress 0x3cfc90 ("Level8")
-extern NSString *g_pLocalizedLevel9;  // @ghidraAddress 0x3cfc98 ("Level9")
-extern NSString *g_pLocalizedLevel10; // @ghidraAddress 0x3cfc30 ("Level10")
-extern NSString *g_pLocalizedLevel11; // @ghidraAddress 0x3cfc38 ("Level11")
-extern NSString *g_pLocalizedLevel12; // @ghidraAddress 0x3cfc40 ("Level12")
-extern NSString *g_pLocalizedLevel13; // @ghidraAddress 0x3cfc48 ("Level13")
-extern NSString *g_pLocalizedLevel14; // @ghidraAddress 0x3cfc50 ("Level14")
-extern NSString *g_pLocalizedLevel15; // @ghidraAddress 0x3cfc58 ("Level15")
-
 // The playlist filter identifiers persisted in RBUserSettingData.playlistID.
 enum {
     RBPlaylistIDAll = 0,      // The "all songs" filter.
@@ -141,8 +90,6 @@ static const CGFloat kTitleFontSizePad = 18.0;
 // the phone mascot-message width.
 static const CGFloat kSortSegmentHeight = 30.0;
 static const CGFloat kSortLabelFontSize = 14.0;
-
-extern const CGFloat g_dMascotMessageMaxWidthPhone; // @ghidraAddress 0x2ee938 (200.0)
 
 // The system version at which the navigation bar switched from tintColor to barTintColor.
 static const CGFloat kBarTintColorMinSystemVersion = 7.0;
