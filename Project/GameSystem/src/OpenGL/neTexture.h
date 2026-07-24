@@ -90,6 +90,15 @@ public:
      */
     static C_TEXTURE *FindOrLoadCached(const char *pszName);
 
+    /**
+     * @brief Lazily create the global texture-cache list.
+     *
+     * On first call allocates the cache head-holder and its self-linked sentinel entry, so the live
+     * list is always a non-empty circular list; a no-op once the list exists.
+     * @ghidraAddress 0x33bfc
+     */
+    static void EnsureCacheList();
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     int m_nRefCount = {};               // +0x08
@@ -114,7 +123,7 @@ private:
  * @brief The texture cache's circular list, addressed through its sentinel node.
  *
  * Dereferencing it yields the sentinel @c C_TEXTURE whose @c pNext / @c pPrev links thread the live
- * cache. Created lazily by @c EnsureTextureCacheList.
+ * cache. Created lazily by @c EnsureCacheList.
  * @ghidraAddress 0x3cff30
  */
 extern C_TEXTURE **g_ppTextureCacheHead;

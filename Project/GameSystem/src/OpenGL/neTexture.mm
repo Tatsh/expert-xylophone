@@ -7,6 +7,9 @@
 
 namespace ne {
 
+// The texture cache's circular-list head-holder, created lazily by EnsureCacheList.
+C_TEXTURE **g_ppTextureCacheHead = nullptr; // @ghidraAddress 0x3cff30
+
 /** @ghidraAddress 0x319d0 */
 C_TEXTURE::C_TEXTURE() {
     // Every other field is zeroed by its in-class initialiser; the scale defaults to 1 and the flag
@@ -72,6 +75,20 @@ C_TEXTURE *C_TEXTURE::FindOrLoadCached(const char *pszName) {
     pNewEntry->m_pNext = pSentinel;
     pSentinel->m_pPrev = pNewEntry;
     return pNewEntry;
+}
+
+/** @ghidraAddress 0x33bfc */
+void C_TEXTURE::EnsureCacheList() {
+    if (g_ppTextureCacheHead != nullptr) {
+        return;
+    }
+    // Value-initialisation zeroes the head cell (the binary stores a null there before the sentinel
+    // is ready); the sentinel is then a self-linked one-element circular list.
+    g_ppTextureCacheHead = new C_TEXTURE *();
+    auto *pSentinel = new C_TEXTURE();
+    *g_ppTextureCacheHead = pSentinel;
+    pSentinel->m_pPrev = pSentinel;
+    pSentinel->m_pNext = pSentinel;
 }
 
 /** @ghidraAddress 0x31af4 */

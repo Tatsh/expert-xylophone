@@ -16,6 +16,7 @@
 #import "ApplilinkNetwork.h"
 #import "AudioManager.h"
 #import "Downloader.h"
+#import "GameSystem/src/OpenGL/neTexture.h"
 #import "NSFileManager+RB.h"
 #import "NetworkUtil.h"
 #import "RBCampaignData.h"
@@ -261,7 +262,7 @@ static constexpr uint8_t kDoNotBackUpXattrValue = 1;
     // Bring up the touch manager, texture caches, and the persistent clear-gauge render layer, then
     // start the view controller's 60 fps game loop.
     EnsureTouchManagerSingleton();
-    EnsureTextureCacheList();
+    ne::C_TEXTURE::EnsureCacheList();
     EnsureTextureCacheSingleton(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
     clearGauge->InsertSortedListenerNode(kClearGaugeListenerPriority);

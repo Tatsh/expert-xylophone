@@ -23,6 +23,7 @@
 
 #import "AppDelegate.h"
 #import "AudioManager.h"
+#import "GameSystem/src/OpenGL/neTexture.h"
 #import "MusicData.h"
 #import "NSFileManager+RB.h"
 #import "RBCoreDataManager.h"
@@ -532,7 +533,7 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x8b3bc */
     [self createView];
     [self.musicMenuView showAnimation];
-    EnsureTextureCacheList();
+    ne::C_TEXTURE::EnsureCacheList();
     ReleaseAllCachedTextures();
     [self StopLoop];
     [[RBExperienceData sharedInstance] takeover];

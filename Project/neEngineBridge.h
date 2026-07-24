@@ -186,11 +186,6 @@ void InitializeDeviceEnvironment(void);
  */
 void EnsureTouchManagerSingleton(void);
 /**
- * @brief Lazily creates the global texture-cache list.
- * @ghidraAddress 0x33bfc
- */
-void EnsureTextureCacheList(void);
-/**
  * @brief Lazily allocates the texture-cache control singleton.
  * @ghidraAddress 0x3198c
  */
