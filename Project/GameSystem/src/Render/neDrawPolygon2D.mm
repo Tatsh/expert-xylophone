@@ -56,6 +56,77 @@ C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
     m_aTexParams[3] = kDefaultTexParams[3];
 }
 
+/** @ghidraAddress 0x27568 */
+void C_DRAW_POLYGON_2D::AllocateBuffers() {
+    neGLESRenderer *pRenderer = GetGlRenderer();
+    unsigned int nStride = 0;
+    m_nVertexStride = 0;
+
+    // Build the interleaved vertex stride and per-attribute byte offsets from the format bits.
+    if ((m_nVertexFormat & kVertexHasPosition) != 0) {
+        nStride = 8;
+        m_nVertexStride = 8;
+        m_nPositionOffset = 0;
+    }
+    if ((m_nVertexFormat & kVertexHasTexcoord) != 0) {
+        m_nTexcoordOffset = static_cast<int>(nStride);
+        nStride |= 4;
+        m_nVertexStride = static_cast<int>(nStride);
+    }
+    if ((m_nVertexFormat & kVertexHasColor) != 0) {
+        m_nColorOffset = static_cast<int>(nStride);
+        nStride += 4;
+        m_nVertexStride = static_cast<int>(nStride);
+        m_pColorArray = new S_RGBA[m_nVertexCount];
+    }
+    if ((m_nVertexFormat & kVertexHasSkin) != 0) {
+        m_nBoneComponentCount = 3;
+        m_nMatrixWeightOffset = static_cast<int>(nStride);
+        m_nMatrixIndexOffset = static_cast<int>(nStride) + 0xc;
+        nStride += 0xf;
+        m_nVertexStride = static_cast<int>(nStride);
+        const int nMaxUnits = pRenderer->GetMaxVertexUnits();
+        auto **ppTranslate = new void *[nMaxUnits];
+        for (int i = 0; i < nMaxUnits; ++i) {
+            ppTranslate[i] = nullptr;
+        }
+        m_pBoneTranslate = ppTranslate;
+        m_pBoneRotation = new float[nMaxUnits];
+        m_pBoneScale = new float[nMaxUnits];
+    }
+
+    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless caller-owned.
+    m_pVertexArray = new unsigned char[static_cast<unsigned int>(m_nVertexCount) * nStride];
+    if (!m_bVertexBufferExternal) {
+        pRenderer->GenBuffer(&m_dwVertexVbo);
+        m_bVertexDirty = true;
+    }
+
+    // Allocate the 16-bit index buffer; gen a GL index VBO and mark dirty unless caller-owned.
+    m_pIndexArray = new unsigned short[static_cast<unsigned int>(m_nIndexCount)];
+    if (!m_bIndexBufferExternal) {
+        pRenderer->GenBuffer(&m_dwIndexVbo);
+        m_bIndexDirty = true;
+    }
+}
+
+/** @ghidraAddress 0x28290 */
+C_DRAW_POLYGON_2D *CreatePolygon2dMesh(unsigned int nDrawMode,
+                                       unsigned int nVertexFormat,
+                                       unsigned int nVertexCount,
+                                       unsigned char bVertexBufferExternal,
+                                       unsigned int nIndexCount,
+                                       unsigned char bIndexBufferExternal) {
+    auto *pMesh = new C_DRAW_POLYGON_2D(nDrawMode,
+                                        nVertexFormat,
+                                        nVertexCount,
+                                        bVertexBufferExternal,
+                                        nIndexCount,
+                                        bIndexBufferExternal);
+    pMesh->AllocateBuffers();
+    return pMesh;
+}
+
 /** @ghidraAddress 0x28328 */
 void C_DRAW_POLYGON_2D::SetPos(int nIndex, S_VECTOR2 position) {
     if ((m_nVertexFormat & kVertexHasPosition) == 0) {

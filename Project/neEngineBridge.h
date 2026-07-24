@@ -922,6 +922,12 @@ public:
      * @ghidraAddress 0x21ea8
      */
     void DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices);
+    /**
+     * @brief The maximum number of vertex units (bone matrices) the renderer supports per vertex.
+     *
+     * Read from the renderer's capability block; used to size a skinned mesh's per-bone arrays.
+     */
+    int GetMaxVertexUnits() const;
 };
 
 /**

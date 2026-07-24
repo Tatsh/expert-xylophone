@@ -99,8 +99,20 @@ public:
     // The vertex-format attribute bits tested before writing a vertex attribute.
     enum VertexFormatFlag {
         kVertexHasPosition = 1 << 0, // The mesh carries per-vertex positions.
+        kVertexHasTexcoord = 1 << 1, // The mesh carries per-vertex texture coordinates.
         kVertexHasColor = 1 << 2,    // The mesh carries per-vertex colours.
+        kVertexHasSkin = 7 << 3,     // The mesh carries per-vertex bone weights and indices.
     };
+
+    /**
+     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh) the
+     * per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
+     *
+     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking the
+     * mesh's vertex and index data dirty so the first draw uploads them.
+     * @ghidraAddress 0x27568
+     */
+    void AllocateBuffers();
 
 private:
     // The first derived member sits at +0xd4, in the polymorphic base's tail padding.
@@ -109,11 +121,11 @@ private:
     int m_nVertexCount = {};           // +0xdc: the number of vertices.
     int m_nVertexStride = {};          // +0xe0: the interleaved byte stride between vertices.
     int m_nPositionOffset = {};        // +0xe4: the position byte offset within a vertex.
-    int m_nColorOffset = {};           // +0xe8: the colour byte offset within a vertex.
-    int m_nTexcoordOffset = {};        // +0xec: the texcoord byte offset within a vertex.
-    int m_nMatrixWeightOffset = {};    // +0xf0: the bone-weight byte offset within a vertex.
-    int m_nMatrixIndexOffset = {};     // +0xf4: the bone-index byte offset within a vertex.
-    int m_nBoneComponentCount = {};    // +0xf8: the number of bone components per vertex.
+    int m_nTexcoordOffset = {};     // +0xe8: the texcoord (format bit 1) byte offset in a vertex.
+    int m_nColorOffset = {};        // +0xec: the colour (format bit 2) byte offset in a vertex.
+    int m_nMatrixWeightOffset = {}; // +0xf0: the bone-weight byte offset within a vertex.
+    int m_nMatrixIndexOffset = {};  // +0xf4: the bone-index byte offset within a vertex.
+    int m_nBoneComponentCount = {}; // +0xf8: the number of bone components per vertex.
     bool m_bVertexBufferExternal = {}; // +0xfc: whether the vertex buffer is externally owned.
     bool m_bVertexDirty = {};          // +0xfd: set when a vertex attribute is modified.
     bool m_bColorDirty = {};           // +0xfe: set when a vertex colour is modified.
