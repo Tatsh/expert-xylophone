@@ -146,6 +146,18 @@ public:
                       int bPadZeros,
                       unsigned int nAlpha);
 
+    /**
+     * @brief Renders a value with a decimal-point glyph inserted after the ones digit.
+     *
+     * Emits up to four digit glyphs right to left (at least two are drawn), inserting the point
+     * glyph after the least-significant digit; used for the rate percentage such as 98.7.
+     * @param nValue The value to render (the point sits after its ones digit).
+     * @param position The right-hand start position.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x1274b0
+     */
+    void RenderPercentValue(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 

@@ -363,3 +363,59 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
         }
     }
 }
+
+namespace {
+
+// The part id of the decimal-point glyph inserted by RenderPercentValue.
+constexpr unsigned int kPointPart = 0x73;
+// The minimum number of digits RenderPercentValue draws (the ones digit plus one more).
+constexpr int kPercentMinDigits = 2;
+
+} // namespace
+
+/** @ghidraAddress 0x1274b0 */
+void LimelightResultLayer::RenderPercentValue(int nValue,
+                                              const S_VECTOR2 &position,
+                                              unsigned int nAlpha) {
+    // Split into up to four digits, tracking the significant count; at least two digits are drawn.
+    int aDigits[kMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant < kPercentMinDigits) {
+        nSignificant = kPercentMinDigits;
+    }
+
+    float flX = position.x;
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nPart = kDigitZeroPart + aDigits[i];
+        const float flGlyphWidth = GetPartsData(nPart)->flWidth;
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       nPart,
+                       S_VECTOR2{flX - flGlyphWidth, position.y},
+                       nAlpha,
+                       0);
+        flX -= flGlyphWidth;
+        // Insert the decimal point after the ones digit.
+        if (i == 0) {
+            const float flPointWidth = GetPartsData(kPointPart)->flWidth;
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPartsSlot,
+                           kPointPart,
+                           S_VECTOR2{flX - flPointWidth, position.y},
+                           nAlpha,
+                           0);
+            flX -= flPointWidth;
+        }
+    }
+}
