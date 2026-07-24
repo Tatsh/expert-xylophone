@@ -14,8 +14,19 @@
 
 #import "title_swipe_state.h"
 
+#import <cmath>
+
 #import "RBCampaignData.h"
 #import "neEngineBridge.h"
+
+// The title-logo swing pivot the particle rest positions are measured against, and the screen
+// origin their rotated positions are offset back to.
+static constexpr double kSwingPivotX = -384.0;
+static constexpr double kSwingPivotY = -466.0;
+static constexpr double kSwingOriginX = 384.0;
+static constexpr double kSwingOriginY = 466.0;
+// The swing phase (in degrees) is scaled by pi/180 to radians before rotating.
+static constexpr double kSwingPhaseRadiansPerDegree = M_PI / 180.0;
 
 // The themed sound-effect slot the completed Konami code fires (the secret/credits jingle).
 static constexpr int kSoundEffectTitleSecret = 0xd;
@@ -268,4 +279,22 @@ void TitleScreenLayer2::AdvanceSwipeState(int iSwipeEvent) {
     default:
         return;
     }
+}
+
+float TitleScreenLayer::ComputeSwingParticleX(float flBaseX, float flBaseY) const {
+    /** @ghidraAddress 0x58570 */
+    const double dx = flBaseX + kSwingPivotX;
+    const double dy = flBaseY + kSwingPivotY;
+    const double angle = std::atan2(dy, dx) + m_nSwingPhase * kSwingPhaseRadiansPerDegree;
+    const double radius = std::sqrt(dx * dx + dy * dy);
+    return static_cast<float>(radius * std::cos(static_cast<float>(angle)) + kSwingOriginX);
+}
+
+float TitleScreenLayer::ComputeSwingParticleY(float flBaseX, float flBaseY) const {
+    /** @ghidraAddress 0x58610 */
+    const double dx = flBaseX + kSwingPivotX;
+    const double dy = flBaseY + kSwingPivotY;
+    const double angle = std::atan2(dy, dx) + m_nSwingPhase * kSwingPhaseRadiansPerDegree;
+    const double radius = std::sqrt(dx * dx + dy * dy);
+    return static_cast<float>(radius * std::sin(static_cast<float>(angle)) + kSwingOriginY);
 }

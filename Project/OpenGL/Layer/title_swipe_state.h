@@ -51,6 +51,23 @@ public:
      * @ghidraAddress 0x152548
      */
     void AdvanceFadeValue(int nDeltaFrames);
+    /**
+     * @brief Rotates a swing-particle rest position around the logo pivot by the current swing
+     * phase and returns its screen X coordinate.
+     * @param flBaseX The particle's rest x.
+     * @param flBaseY The particle's rest y.
+     * @return The rotated screen x coordinate.
+     * @ghidraAddress 0x58570
+     */
+    float ComputeSwingParticleX(float flBaseX, float flBaseY) const;
+    /**
+     * @brief The Y counterpart of @c ComputeSwingParticleX.
+     * @param flBaseX The particle's rest x.
+     * @param flBaseY The particle's rest y.
+     * @return The rotated screen y coordinate.
+     * @ghidraAddress 0x58610
+     */
+    float ComputeSwingParticleY(float flBaseX, float flBaseY) const;
 
 private:
     unsigned char m_aReserved00[0x54] = {};   // +0x000
@@ -71,7 +88,7 @@ private:
     bool m_bSwingToggle = {};                 // +0x735 swing-direction toggle
     unsigned char m_aReserved736[0x02] = {};  // +0x736
     int m_nSwingDelta = {};                   // +0x738 resulting swing delta (+1 or -1)
-    unsigned char m_aReserved73c[0x04] = {};  // +0x73c
+    int m_nSwingPhase = {};                   // +0x73c accumulated swing phase, in degrees
     bool m_bHinabitaMode = {};                // +0x740 hidden Hinabita campaign toggle
     unsigned char m_aReserved741[0x157] = {}; // +0x741 remainder of the object
 };
