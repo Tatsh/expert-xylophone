@@ -24,14 +24,17 @@ autoreverses
 baet
 bewfsujtjoh
 bitcode
+blit
 brighness
 bsky
 bunner
+byref
 bzero
 caeagl
 calcel
 ccontext
 cdevice
+centered
 cfstr
 cfstring
 cfurl
@@ -76,6 +79,7 @@ djyoshitaka
 docstrings
 dplatform
 eagl
+eeac
 encp
 errno
 esbenp
@@ -107,8 +111,11 @@ ifndef
 infomation
 initalize
 initilize
+instancer
+instancers
 instancetype
 interitem
+interp
 ivar
 ivars
 iwyu
@@ -127,6 +134,8 @@ longrate
 lproj
 lsizei
 malloc
+malloc'd
+math
 memcpy
 memset
 minizip
@@ -177,6 +186,7 @@ qrispy
 rainbowanimation
 randam
 rbbgm
+rbff
 rbmacros
 rbplus
 rbscorehash
@@ -200,6 +210,7 @@ rhythmin
 ringanimation
 ripgreprc
 rodata
+roundf
 rtti
 rturl
 schemafile
