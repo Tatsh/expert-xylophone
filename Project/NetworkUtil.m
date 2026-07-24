@@ -40,6 +40,10 @@ static NSString *const kUnlockListAPIPath = @"unlock/";
 static NSString *const kUnlockMusicAPIPath = @"unlockmusic/";
 static NSString *const kUnlockedAPIPath = @"unlocked/";
 static NSString *const kTutorialAPIPath = @"tutorial/";
+static NSString *const kStartupAPIPath = @"startup/";
+
+// The startup / web-info query format string.
+static NSString *const kStartupParamFormat = @"target=%@";
 static NSString *const kResourceAPIPath = @"v3/ssl_resource/";
 static NSString *const kTermListAPIPath = @"v3/terms/list/";
 static NSString *const kTermFetchAPIPath = @"v3/terms/fetch/";
@@ -167,6 +171,12 @@ static NSString *const kNonceCharFormat = @"%c";
         [nonce appendFormat:kNonceCharFormat, kNonceAlphabet[arc4random() % kNonceAlphabetSize]];
     }
     return [[NSString alloc] initWithString:nonce];
+}
+
+/** @ghidraAddress 0x32ba0 */
++ (NSURL *)startupURL {
+    NSString *param = [NSString stringWithFormat:kStartupParamFormat, GetRegionCode()];
+    return [NetworkUtil createSecureAPI:kStartupAPIPath withParam:param];
 }
 
 /** @ghidraAddress 0x32dcc */

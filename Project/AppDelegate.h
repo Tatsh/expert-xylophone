@@ -351,6 +351,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetGame;
 
 /**
+ * @brief Return to the title screen: log in to Game Center, initialise Applilink, reset the
+ * effect-size settings, schedule the title-layer build, and kick off the startup request.
+ * @ghidraAddress 0x4f7e0
+ */
+- (void)showTitle;
+
+/**
+ * @brief Issue the startup / web-info request, cancelling any in-flight download first.
+ * @ghidraAddress 0x4fb4c
+ */
+- (void)startupRequest;
+
+/**
+ * @brief Kick off the recommend-advert unread-count fetch, updating @c unreadRecommendCount when it
+ * completes.
+ * @ghidraAddress 0x50920
+ */
++ (void)setRecommendUnreadCount;
+
+/**
  * @brief Store the latest accepted terms version.
  *
  * A thin wrapper that forwards to the @c latestTermVer setter.

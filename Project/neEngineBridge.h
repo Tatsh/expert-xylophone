@@ -206,10 +206,26 @@ void LoadAllCachedTextures(void);
  */
 void ReleaseAllCachedTextures(void);
 /**
+ * @brief The head of the global live-texture cache list.
+ *
+ * The release-and-reload helpers read the list head as a side effect before cycling the cache; the
+ * returned value is otherwise unused at the call sites that pair it with them.
+ * @ghidraAddress 0x33bf0
+ */
+void *GetTextureCacheList(void);
+/**
  * @brief Renders the whole global scene tree for the current frame.
  * @ghidraAddress 0x29d58
  */
 void RenderGlobalSceneTree(void);
+/**
+ * @brief Constructs the title/gauge scene layer matching the current UI theme and registers it in
+ * the sorted listener list at priority 1.
+ *
+ * The concrete layer class is chosen by the selected theme.
+ * @ghidraAddress 0x4fa24
+ */
+void CreateTitleLayerForTheme(void);
 /**
  * @brief Dispatches the per-frame notification (an opaque frame-elapsed argument) to every live
  *        node in the engine listener list.
@@ -1128,6 +1144,11 @@ public:
      * @ghidraAddress 0x14b010
      */
     void PausePlayTimerAndBgm();
+    /**
+     * @brief Resets the scene's state field to zero.
+     * @ghidraAddress 0x14a510
+     */
+    void ClearLayerStateField();
 
 private:
     int m_nState = {}; // +0x4c

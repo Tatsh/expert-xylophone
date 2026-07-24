@@ -102,6 +102,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)createNonce:(int)length;
 
 /**
+ * @brief The startup / web-info endpoint (@c .../akx/main/cgi/startup/), carrying the region code.
+ * @ghidraAddress 0x32ba0
+ */
++ (nullable NSURL *)startupURL;
+
+/**
  * @brief The tutorial-status endpoint (@c .../akx/main/cgi/tutorial/).
  * @ghidraAddress 0x32dcc
  */

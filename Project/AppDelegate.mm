@@ -20,15 +20,26 @@
 #import "NSFileManager+RB.h"
 #import "NetworkUtil.h"
 #import "RBCampaignData.h"
+#import "RBGameKitManager.h"
+#import "RBMenuView.h"
 #import "RBMusicManager.h"
 #import "RBNavigationController.h"
 #import "RBPurchaseManager.h"
 #import "RBUrlSchemeManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
+#import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
+#import "UIImage+RB.h"
 #import "neEngineBridge.h" // GetGameSystem() + the ne:: engine/sheet-layer/texture-cache helpers.
 #import "neWindow.h"
+
+// Private web-info-response helpers messaged from the startup-request success block and each other.
+@interface AppDelegate ()
+- (void)handleWebInfoResponse:(nullable Downloader *)response;
+- (void)setWebInfoURL:(nullable NSString *)webInfoURL;
+- (void)setPreWebInfoURL:(nullable NSString *)preWebInfoURL;
+@end
 
 // GameScene state-machine value referenced at launch. The state enum lives with the GameScene class
 // (neEngineBridge.h); only the value used here is named.
@@ -88,6 +99,29 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 
 // The value written into the do-not-back-up extended attribute to mark a file as excluded.
 static constexpr uint8_t kDoNotBackUpXattrValue = 1;
+
+// The Applilink application identifier and server environment ("0" is production) passed at init.
+static NSString *const kApplilinkAppId = @"10";
+static NSString *const kApplilinkEnv = @"0";
+
+// The ad-location the recommend-unread-count fetch queries.
+static NSString *const kRecommendUnreadAdLocation = @"ADL_MYPAGE";
+
+// The total-score leaderboard category identifiers for the two device idioms.
+static NSString *const kTotalScoreLeaderboardPad = @"rbplus.totalscore";
+static NSString *const kTotalScoreLeaderboardPhone = @"rbplus.totalscorephone";
+
+// The delay before the theme title layer is built, and the corporate-button target fade alpha.
+static constexpr int64_t kTitleLayerBuildDelayNs = 100000000;
+static constexpr float kCorporateButtonFadeAlpha = 1.0f;
+
+// The web-info response JSON keys, its timestamp format, and the epoch fallback used when the
+// stored timestamp cannot be parsed.
+static NSString *const kWebInfoKeyURL = @"URL";
+static NSString *const kWebInfoKeyUpdateTime = @"UpdateTime";
+static NSString *const kWebInfoKeyAnotherURL = @"AnotherURL";
+static NSString *const kWebInfoDateFormat = @"YYYYMMddHHmm";
+static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 @implementation AppDelegate
 
@@ -562,6 +596,302 @@ static constexpr uint8_t kDoNotBackUpXattrValue = 1;
     // Mark an update as in progress on the shared delegate, then open the store product page.
     AppDelegate.appDelegate.isUpdate = YES;
     [UIApplication.sharedApplication openURL:[NSURL URLWithString:kAppStoreURLString]];
+}
+
+#pragma mark - Server data
+
+/** @ghidraAddress 0x514c8 */
++ (BOOL)setServerData:(NSString *)p1 andB:(NSString *)p2 {
+    // Only persist the pair on first run, when no server-data item exists yet.
+    if ([AppDelegate getServerData] != nil) {
+        return NO;
+    }
+    NSMutableDictionary *item =
+        [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
+                                                          (__bridge id)kSecClass,
+                                                          kServerIdKeychainAccount,
+                                                          (__bridge id)kSecAttrAccount,
+                                                          NSBundle.mainBundle.bundleIdentifier,
+                                                          (__bridge id)kSecAttrService,
+                                                          nil];
+    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
+                                              options:NSNumericSearch] != NSOrderedAscending) {
+        item[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
+    }
+    NSString *joined = [NSString stringWithFormat:@"%@%@%@", p1, kServerDataSeparator, p2];
+    item[(__bridge id)kSecValueData] = [joined dataUsingEncoding:NSUTF8StringEncoding];
+    SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
+    return YES;
+}
+
+/** @ghidraAddress 0x50cb8 */
++ (NSString *)musicListKey {
+    NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
+
+    // Try to read the stored generic-password key for this app.
+    NSDictionary *attributeQuery = @{
+        (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+    };
+    CFTypeRef attributesResult = nullptr;
+    if (SecItemCopyMatching((__bridge CFDictionaryRef)attributeQuery, &attributesResult) ==
+        errSecSuccess) {
+        NSMutableDictionary *dataQuery = [NSMutableDictionary
+            dictionaryWithDictionary:(__bridge NSDictionary *)attributesResult];
+        dataQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+        dataQuery[(__bridge id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+        CFTypeRef dataResult = nullptr;
+        NSString *stored = nil;
+        if (SecItemCopyMatching((__bridge CFDictionaryRef)dataQuery, &dataResult) ==
+            errSecSuccess) {
+            NSData *data = (__bridge_transfer NSData *)dataResult;
+            stored = [[NSString alloc] initWithBytes:data.bytes
+                                              length:data.length
+                                            encoding:NSUTF8StringEncoding];
+        }
+        if (stored) {
+            return stored;
+        }
+    }
+
+    // No key stored yet: generate a fresh UUID string and persist it as the generic password.
+    CFUUIDRef uuid = CFUUIDCreate(nullptr);
+    CFStringRef uuidString = CFUUIDCreateString(nullptr, uuid);
+    NSString *key = [NSString stringWithString:(__bridge NSString *)uuidString];
+    CFRelease(uuidString);
+    CFRelease(uuid);
+
+    NSMutableDictionary *item =
+        [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
+                                                          (__bridge id)kSecClass,
+                                                          bundleIdentifier,
+                                                          (__bridge id)kSecAttrService,
+                                                          nil];
+    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
+                                              options:NSNumericSearch] != NSOrderedAscending) {
+        item[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
+    }
+    item[(__bridge id)kSecValueData] = [key dataUsingEncoding:NSUTF8StringEncoding];
+    SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
+    return key;
+}
+
+#pragma mark - Applilink
+
+/** @ghidraAddress 0x50698 */
++ (void)ApplilinkInitialize {
+    // Only initialise when server data (a KONAMI ID login) is present; otherwise mark uninitialised.
+    NSArray *serverData = [AppDelegate getServerData];
+    if (serverData != nil && serverData[kServerDataUserIdIndex] != nil) {
+        [ApplilinkNetwork
+            initializeWithAppliId:kApplilinkAppId
+                              env:kApplilinkEnv
+                         callback:^(NSError *error) {
+                           /** @ghidraAddress 0x507c8 */
+                           if (error == nil) {
+                               [ApplilinkNetwork
+                                   setUserId:[AppDelegate getServerData][kServerDataUserIdIndex]];
+                               [AppDelegate setRecommendUnreadCount];
+                               AppDelegate.appDelegate.applilinkInitialized = YES;
+                           } else {
+                               AppDelegate.appDelegate.applilinkInitialized = NO;
+                           }
+                         }];
+        return;
+    }
+    AppDelegate.appDelegate.applilinkInitialized = NO;
+}
+
+/** @ghidraAddress 0x50920 */
++ (void)setRecommendUnreadCount {
+    NSArray *serverData = [AppDelegate getServerData];
+    if (serverData == nil || serverData[kServerDataUserIdIndex] == nil) {
+        return;
+    }
+    [RecommendNetwork getUnreadCountWithAdModel:RecommendAdModelAppList
+                                     adLocation:kRecommendUnreadAdLocation
+                                       callback:^(NSInteger status, NSError *error) {
+                                         /** @ghidraAddress 0x50a20 */
+                                         AppDelegate.appDelegate.unreadRecommendCount =
+                                             error == nil ? status : 0;
+                                       }];
+}
+
+#pragma mark - Leaderboard
+
+/** @ghidraAddress 0x50c8c */
++ (NSString *)totalScoreLeaderboardCategory {
+    return IsPad() ? kTotalScoreLeaderboardPad : kTotalScoreLeaderboardPhone;
+}
+
+#pragma mark - Title
+
+/** @ghidraAddress 0x51828 */
+- (void)resetGame {
+    __weak AppDelegate *weakSelf = self;
+    [self.viewController.musicMenuView hideAnimation:^{
+      /** @ghidraAddress 0x51978 */
+      AppDelegate *strongSelf = weakSelf;
+      // Cycle the whole texture cache to reclaim GPU memory, then rebuild the title.
+      [UIImage clearImageCache];
+      GetTextureCacheList();
+      ReleaseAllCachedTextures();
+      GetTextureCacheList();
+      LoadAllCachedTextures();
+      [strongSelf.viewController removeView];
+      RBCampaignData.sharedInstance.hinabitaMode = 0;
+      [strongSelf showTitle];
+      [strongSelf.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
+      [strongSelf.viewController StartLoop];
+      GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
+      if (scene) {
+          scene->ClearLayerStateField();
+          scene->AdvanceGameSceneStateFrom11();
+      }
+      [AudioManager.sharedManager systemResume];
+      [strongSelf.viewController RestartLoop];
+    }];
+}
+
+/** @ghidraAddress 0x4f7e0 */
+- (void)showTitle {
+    [RBGameKitManager.sharedInstance loginGameCenter];
+    [AppDelegate ApplilinkInitialize];
+    if (self.resourceDownloadViewController) {
+        self.resourceDownloadViewController = nil;
+    }
+    [self.viewController UpdateProjection];
+
+    // Reset the play-field effect sizes to their defaults and persist.
+    RBUserSettingData.sharedInstance.explosionEffectSize = g_flDefaultExplosionEffectSize;
+    RBUserSettingData.sharedInstance.boundsEffectSize = 1.0f;
+    RBUserSettingData.sharedInstance.damageEffectSize = 1.0f;
+    [RBUserSettingData.sharedInstance save];
+
+    // Build the theme title layer shortly after, then request the startup / web-info data.
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, kTitleLayerBuildDelayNs), dispatch_get_main_queue(), ^{
+          /** @ghidraAddress 0x4fa24 */
+          CreateTitleLayerForTheme();
+        });
+    [self startupRequest];
+    [self.viewController fadeCorporateButton:kCorporateButtonFadeAlpha];
+}
+
+/** @ghidraAddress 0x4fb4c */
+- (void)startupRequest {
+    // Cancel any in-flight startup download before issuing a fresh one.
+    if (self.downloader) {
+        [self.downloader cancel];
+        self.downloader = nil;
+    }
+    self.downloader = [[Downloader alloc] initWithURL:[NetworkUtil startupURL] save:nil];
+    [self.downloader
+        startDownloadingWithProceed:^(Downloader *downloader) {
+          /** @ghidraAddress 0x4fde8 */
+          // The proceed handler is empty.
+        }
+        success:^(Downloader *downloader) {
+          [self handleWebInfoResponse:downloader];
+        }
+        failure:^(Downloader *downloader){
+            /** @ghidraAddress 0x50394 */
+            // The failure handler is empty.
+        }];
+}
+
+/** @ghidraAddress 0x4fdec */
+- (void)handleWebInfoResponse:(Downloader *)response {
+    NSDictionary *json = [response getDataInJSON];
+    NSString *url = json[kWebInfoKeyURL];
+    NSString *updateTime = json[kWebInfoKeyUpdateTime];
+    NSString *lastRead = RBUserSettingData.sharedInstance.infoLastReadTimeString;
+    [self setPreWebInfoURL:json[kWebInfoKeyAnotherURL]];
+
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = kWebInfoDateFormat;
+    if (lastRead == nil) {
+        // No prior read: adopt the served info unconditionally.
+        [self setWebInfoURL:url];
+        self.infoLastUpdateTimeString = updateTime;
+    } else {
+        NSDate *last = [formatter dateFromString:lastRead];
+        if (last == nil) {
+            last = [formatter dateFromString:kWebInfoEpochFallback];
+        }
+        NSDate *served = [formatter dateFromString:updateTime];
+        // Adopt the served info only when it is newer than what was last read.
+        if ([last compare:served] == NSOrderedAscending) {
+            [self setWebInfoURL:url];
+            self.infoLastUpdateTimeString = updateTime;
+        }
+    }
+
+    // Rebuild the base web-info URL from the served URL's scheme, host, and path.
+    NSURL *served = [NSURL URLWithString:url];
+    NSString *base =
+        [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host, served.path];
+    self.urlBaseWebInfo = [NSURL URLWithString:base];
+}
+
+/** @ghidraAddress 0x4eb88 */
+- (void)setWebInfoURL:(NSString *)webInfoURL {
+    self.urlWebInfo = webInfoURL ? [NSURL URLWithString:webInfoURL] : nil;
+}
+
+/** @ghidraAddress 0x4ec28 */
+- (void)setPreWebInfoURL:(NSString *)preWebInfoURL {
+    if (preWebInfoURL) {
+        self.urlPreWebInfo = [NSURL URLWithString:preWebInfoURL];
+    }
+}
+
+#pragma mark - Push notifications
+
+/** @ghidraAddress 0x4f0fc */
++ (NSDictionary *)popPushNotificationData {
+    NSMutableArray *pushList = AppDelegate.appDelegate.pushList;
+    if (pushList != nil && pushList.count != 0) {
+        NSDictionary *data = pushList[0];
+        [pushList removeObjectAtIndex:0];
+        return data;
+    }
+    return nil;
+}
+
+#pragma mark - Outer URL
+
+/** @ghidraAddress 0x4f3d4 */
++ (NSURL *)getOuterURL {
+    return AppDelegate.appDelegate.outerUrl;
+}
+
+/** @ghidraAddress 0x4f444 */
++ (void)setOuterURL:(NSURL *)url {
+    AppDelegate.appDelegate.outerUrl = url;
+}
+
+#pragma mark - Open-store campaign
+
+/** @ghidraAddress 0x4f034 */
+- (NSString *)getCampaignIDForOpenStore {
+    return self->_campaignIDForOpenStore;
+}
+
+/** @ghidraAddress 0x4effc */
+- (void)setCampaignIDForOpenStore:(NSString *)campaignID {
+    self->_campaignIDForOpenStore = campaignID;
+}
+
+#pragma mark - Terms
+
+/** @ghidraAddress 0x4ee40 */
+- (NSString *)getTermLastUpdateTimeString {
+    return self->_termLastUpdateTimeString;
+}
+
+/** @ghidraAddress 0x4ef50 */
+- (void)setLatestTermsVersion:(NSString *)latestTermsVersion {
+    self.latestTermVer = latestTermsVersion;
 }
 
 @end
