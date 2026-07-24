@@ -22,7 +22,7 @@ struct PartsDataRecord {
 };
 
 // The number of records in each Colette result-window parts table.
-constexpr unsigned int kColettePartsRecordCount = 348;
+constexpr int kColettePartsRecordCount = 348;
 
 // The Colette result-window parts tables, zero-initialised in the binary's @c __common segment and
 // filled at runtime; the pad-versus-phone device kind selects between them.

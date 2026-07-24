@@ -20,7 +20,7 @@ struct PhoneAnchorRecord {
 };
 
 // The number of records in each phone-layout anchor-position table.
-constexpr unsigned int kPhoneAnchorRecordCount = 168;
+constexpr int kPhoneAnchorRecordCount = 168;
 
 // The phone-layout anchor-position tables, zero-initialised in the binary's @c __common segment and
 // filled at runtime by the result-layout-table initialisers; the portrait flag selects between them.

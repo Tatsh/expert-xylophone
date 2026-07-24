@@ -102,11 +102,8 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
 }
 
 /** @ghidraAddress 0x73b4c */
-void ResultWindowColetteLayer::GetPhoneAnchorPosition(unsigned int nIndex,
-                                                      S_VECTOR2 *pOutPosition) const {
-    assert(static_cast<int>(nIndex) >= 0 && "getPosition_Phone");
-    assert(static_cast<int>(nIndex) < static_cast<int>(kPhoneAnchorRecordCount) &&
-           "getPosition_Phone");
+void ResultWindowColetteLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
+    assert(nIndex >= 0 && nIndex < kPhoneAnchorRecordCount);
 
     // The portrait flag selects the portrait table; otherwise the default table is used.
     const PhoneAnchorRecord &record =
@@ -153,9 +150,8 @@ void ResultWindowColetteLayer::GetPhoneAnchorPosition(unsigned int nIndex,
 }
 
 /** @ghidraAddress 0x73a44 */
-PartsDataRecord *ResultWindowColetteLayer::GetPartsDataByIndex(unsigned int nIndex) const {
-    assert(static_cast<int>(nIndex) >= 0 && "getPartsData");
-    assert(static_cast<int>(nIndex) < static_cast<int>(kColettePartsRecordCount) && "getPartsData");
+PartsDataRecord *ResultWindowColetteLayer::getPartsData(int nIndex) const {
+    assert(nIndex >= 0 && nIndex < kColettePartsRecordCount);
 
     // The pad build uses the pad table; the phone build uses the phone table.
     return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];

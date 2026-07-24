@@ -57,7 +57,7 @@ public:
      * @param pOutPosition Receives the resolved position.
      * @ghidraAddress 0x73b4c
      */
-    void GetPhoneAnchorPosition(unsigned int nIndex, S_VECTOR2 *pOutPosition) const;
+    void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
      * @brief Returns a result-window parts descriptor by index.
@@ -68,7 +68,7 @@ public:
      * @return The parts descriptor.
      * @ghidraAddress 0x73a44
      */
-    PartsDataRecord *GetPartsDataByIndex(unsigned int nIndex) const;
+    PartsDataRecord *getPartsData(int nIndex) const;
 
 private:
     // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
