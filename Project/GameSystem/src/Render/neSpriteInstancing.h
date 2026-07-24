@@ -108,6 +108,31 @@ public:
      */
     unsigned int GetColorAlpha(int nIndex) const;
 
+    /**
+     * @brief Set sprite @p nIndex's centre position.
+     */
+    void SetSpritePosition(int nIndex, const S_VECTOR2 &position);
+    /**
+     * @brief Set sprite @p nIndex's half-size.
+     */
+    void SetSpriteSize(int nIndex, const S_VECTOR2 &size);
+    /**
+     * @brief Set sprite @p nIndex's texture-coordinate origin.
+     */
+    void SetSpriteTexCoord(int nIndex, const S_VECTOR2 &texCoord);
+    /**
+     * @brief Set sprite @p nIndex's texture-coordinate size.
+     */
+    void SetSpriteTexSize(int nIndex, const S_VECTOR2 &texSize);
+    /**
+     * @brief Set sprite @p nIndex's rotation centre offset.
+     */
+    void SetSpriteCentre(int nIndex, const S_VECTOR2 &centre);
+    /**
+     * @brief Set sprite @p nIndex's packed RGBA colour.
+     */
+    void SetSpriteColor(int nIndex, unsigned int nColor);
+
 private:
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0

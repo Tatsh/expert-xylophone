@@ -164,4 +164,34 @@ unsigned int C_SPRITE_INSTANCING::GetColorAlpha(int nIndex) const {
     return (m_pSpriteColorArray[nIndex] >> 24) & 0xff;
 }
 
+void C_SPRITE_INSTANCING::SetSpritePosition(int nIndex, const S_VECTOR2 &position) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpritePositionArray[nIndex] = position;
+}
+
+void C_SPRITE_INSTANCING::SetSpriteSize(int nIndex, const S_VECTOR2 &size) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteSizeArray[nIndex] = size;
+}
+
+void C_SPRITE_INSTANCING::SetSpriteTexCoord(int nIndex, const S_VECTOR2 &texCoord) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteTexCoordArray[nIndex] = texCoord;
+}
+
+void C_SPRITE_INSTANCING::SetSpriteTexSize(int nIndex, const S_VECTOR2 &texSize) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteTexSizeArray[nIndex] = texSize;
+}
+
+void C_SPRITE_INSTANCING::SetSpriteCentre(int nIndex, const S_VECTOR2 &centre) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteCentreArray[nIndex] = centre;
+}
+
+void C_SPRITE_INSTANCING::SetSpriteColor(int nIndex, unsigned int nColor) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    m_pSpriteColorArray[nIndex] = nColor;
+}
+
 } // namespace ne
