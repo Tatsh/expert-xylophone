@@ -43,6 +43,95 @@ constexpr GLenum kPrimitiveToGlMode[] = {
     GL_TRIANGLES,      //
 };
 
+// The number of engine render capabilities (neIGLES::ES_MAX) and vertex-array client states
+// (neIGLES::CS_MAX). They bound the enable- and client-state indices the setters accept.
+constexpr int kEnableStateMax = 0x24;
+constexpr int kClientStateMax = 7;
+
+// The number of engine blend factors (neIGLES::BLEND_SRC_VALUE_MAX / BLEND_DEST_VALUE_MAX). The
+// source table has one extra factor (the destination cannot be a source-only factor).
+constexpr int kBlendSrcMax = 9;
+constexpr int kBlendDestMax = 8;
+
+// Maps an engine enable-state index to its GL capability. The last slot has no GL ES 1.1 name; it
+// is a table entry the engine never enables, kept so the index mapping matches the binary.
+constexpr GLenum kEnableStateToGlCap[] = {
+    GL_ALPHA_TEST,               // 0
+    GL_BLEND,                    // 1
+    GL_COLOR_LOGIC_OP,           // 2
+    GL_CLIP_PLANE0,              // 3
+    GL_CLIP_PLANE1,              // 4
+    GL_CLIP_PLANE2,              // 5
+    GL_CLIP_PLANE3,              // 6
+    GL_CLIP_PLANE4,              // 7
+    GL_CLIP_PLANE5,              // 8
+    GL_COLOR_MATERIAL,           // 9
+    GL_CULL_FACE,                // 10
+    GL_DEPTH_TEST,               // 11
+    GL_DITHER,                   // 12
+    GL_FOG,                      // 13
+    GL_LIGHT0,                   // 14
+    GL_LIGHT1,                   // 15
+    GL_LIGHT2,                   // 16
+    GL_LIGHT3,                   // 17
+    GL_LIGHT4,                   // 18
+    GL_LIGHT5,                   // 19
+    GL_LIGHT6,                   // 20
+    GL_LIGHT7,                   // 21
+    GL_LIGHTING,                 // 22
+    GL_LINE_SMOOTH,              // 23
+    GL_MULTISAMPLE,              // 24
+    GL_NORMALIZE,                // 25
+    GL_POINT_SMOOTH,             // 26
+    GL_POINT_SPRITE_OES,         // 27
+    GL_POLYGON_OFFSET_FILL,      // 28
+    GL_RESCALE_NORMAL,           // 29
+    GL_SAMPLE_ALPHA_TO_COVERAGE, // 30
+    GL_SAMPLE_ALPHA_TO_ONE,      // 31
+    GL_SAMPLE_COVERAGE,          // 32
+    GL_SCISSOR_TEST,             // 33
+    GL_TEXTURE_2D,               // 34
+    static_cast<GLenum>(0x8840), // 35 (engine table slot with no GL ES 1.1 capability name)
+};
+
+// Maps an engine client-state index to its GL vertex-array client state.
+constexpr GLenum kClientStateToGlArray[] = {
+    GL_COLOR_ARRAY,            // 0
+    GL_MATRIX_INDEX_ARRAY_OES, // 1
+    GL_NORMAL_ARRAY,           // 2
+    GL_POINT_SIZE_ARRAY_OES,   // 3
+    GL_TEXTURE_COORD_ARRAY,    // 4
+    GL_VERTEX_ARRAY,           // 5
+    GL_WEIGHT_ARRAY_OES,       // 6
+};
+
+// Maps an engine matrix-mode index (1..3) to its GL matrix mode; any other index selects model-view.
+constexpr GLenum kMatrixModeToGl[] = {GL_PROJECTION, GL_TEXTURE, GL_MATRIX_PALETTE_OES};
+
+// Maps engine blend factor indices to their GL blend enums. The first two entries (GL_ZERO, GL_ONE)
+// are shared; the source table has the extra GL_SRC_ALPHA_SATURATE at index 8.
+constexpr GLenum kBlendSrcToGl[] = {
+    GL_ZERO,                //
+    GL_ONE,                 //
+    GL_DST_COLOR,           //
+    GL_ONE_MINUS_DST_COLOR, //
+    GL_SRC_ALPHA,           //
+    GL_ONE_MINUS_SRC_ALPHA, //
+    GL_DST_ALPHA,           //
+    GL_ONE_MINUS_DST_ALPHA, //
+    GL_SRC_ALPHA_SATURATE,  //
+};
+constexpr GLenum kBlendDestToGl[] = {
+    GL_ZERO,                //
+    GL_ONE,                 //
+    GL_SRC_COLOR,           //
+    GL_ONE_MINUS_SRC_COLOR, //
+    GL_SRC_ALPHA,           //
+    GL_ONE_MINUS_SRC_ALPHA, //
+    GL_DST_ALPHA,           //
+    GL_ONE_MINUS_DST_ALPHA, //
+};
+
 } // namespace
 
 /** @ghidraAddress 0x21a60 */
@@ -138,4 +227,67 @@ void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const voi
                               kPrimitiveToGlMode[nPrimitive] :
                               GL_POINTS;
     glDrawElements(glMode, nCount, GL_UNSIGNED_SHORT, pIndices);
+}
+
+/** @ghidraAddress 0x21d80 */
+void neGLESRenderer::SetGlEnableState(unsigned int nState, unsigned int bEnable) {
+    if (m_aEnableStateFlags[nState] == bEnable) {
+        return;
+    }
+    m_aEnableStateFlags[nState] = static_cast<unsigned char>(bEnable);
+    assert(static_cast<int>(nState) >= 0 && static_cast<int>(nState) < kEnableStateMax);
+    if (bEnable != 0) {
+        glEnable(kEnableStateToGlCap[nState]);
+    } else {
+        glDisable(kEnableStateToGlCap[nState]);
+    }
+}
+
+/** @ghidraAddress 0x21e14 */
+void neGLESRenderer::SetGlClientState(unsigned int nState, unsigned int bEnable) {
+    if (m_aClientStateFlags[nState] == bEnable) {
+        return;
+    }
+    m_aClientStateFlags[nState] = static_cast<unsigned char>(bEnable);
+    assert(static_cast<int>(nState) >= 0 && static_cast<int>(nState) < kClientStateMax);
+    if (bEnable != 0) {
+        glEnableClientState(kClientStateToGlArray[nState]);
+    } else {
+        glDisableClientState(kClientStateToGlArray[nState]);
+    }
+}
+
+/** @ghidraAddress 0x21460 */
+void neGLESRenderer::SetCurrentPaletteMatrix(int nState) {
+    if (m_nPaletteMatrix == nState) {
+        return;
+    }
+    m_nPaletteMatrix = nState;
+    glCurrentPaletteMatrixOES(static_cast<GLuint>(nState));
+}
+
+/** @ghidraAddress 0x21c98 */
+void neGLESRenderer::SetBlendFunc(int nSrcFactor, int nDstFactor) {
+    if (m_nBlendSrc == nSrcFactor && m_nBlendDest == nDstFactor) {
+        return;
+    }
+    m_nBlendSrc = nSrcFactor;
+    m_nBlendDest = nDstFactor;
+    // The binary's embedded __func__ here is BlendSrcValueToGLValue: the value-mapping helpers are
+    // inlined into the setter, each asserting its factor is in range before the table lookup.
+    assert(nSrcFactor >= 0 && nSrcFactor < kBlendSrcMax);
+    assert(nDstFactor >= 0 && nDstFactor < kBlendDestMax);
+    glBlendFunc(kBlendSrcToGl[nSrcFactor], kBlendDestToGl[nDstFactor]);
+}
+
+/** @ghidraAddress 0x21250 */
+void neGLESRenderer::SetMatrixMode(int nMode, const float *pMatrix) {
+    // The mode switch is cached, but the matrix is loaded every call.
+    if (m_nMatrixMode != nMode) {
+        m_nMatrixMode = nMode;
+        const GLenum glMode =
+            (static_cast<unsigned int>(nMode - 1) < 3) ? kMatrixModeToGl[nMode - 1] : GL_MODELVIEW;
+        glMatrixMode(glMode);
+    }
+    glLoadMatrixf(pMatrix);
 }

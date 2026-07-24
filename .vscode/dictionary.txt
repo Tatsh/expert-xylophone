@@ -149,14 +149,17 @@ lsizei
 malloc
 malloc'd
 math
+matrixf
 memcpy
 memset
 minizip
 mispacked
 mktemp
 modelines
+modelview
 movi
 mtype
+multisample
 mulist
 musicinfo
 musicselect

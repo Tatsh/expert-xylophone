@@ -944,6 +944,59 @@ public:
      * Read from the renderer's capability block; used to size a skinned mesh's per-bone arrays.
      */
     int GetMaxVertexUnits() const;
+
+    /**
+     * @brief Enable or disable one engine render capability, skipping the GL call when the cached
+     *        state is already @p bEnable.
+     * @param nState The engine enable-state index (0 through @c kEnableStateMax - 1).
+     * @param bEnable @c 1 to enable the capability, @c 0 to disable it.
+     * @ghidraAddress 0x21d80
+     */
+    void SetGlEnableState(unsigned int nState, unsigned int bEnable);
+    /**
+     * @brief Enable or disable one engine vertex-array client state, skipping the GL call when the
+     *        cached state is already @p bEnable.
+     * @param nState The engine client-state index (0 through @c kClientStateMax - 1).
+     * @param bEnable @c 1 to enable the array, @c 0 to disable it.
+     * @ghidraAddress 0x21e14
+     */
+    void SetGlClientState(unsigned int nState, unsigned int bEnable);
+    /**
+     * @brief Select the current palette matrix, caching it so an unchanged value skips the GL call.
+     * @param nState The palette-matrix index.
+     * @ghidraAddress 0x21460
+     */
+    void SetCurrentPaletteMatrix(int nState);
+    /**
+     * @brief Set the GL blend function, caching the factors so an unchanged pair skips the GL call.
+     * @param nSrcFactor The engine blend source factor (0 through @c kBlendSrcMax - 1).
+     * @param nDstFactor The engine blend destination factor (0 through @c kBlendDestMax - 1).
+     * @ghidraAddress 0x21c98
+     */
+    void SetBlendFunc(int nSrcFactor, int nDstFactor);
+    /**
+     * @brief Select the active matrix mode and load @p pMatrix into it; an unchanged mode skips the
+     *        @c glMatrixMode call but the matrix is always loaded.
+     * @param nMode The engine matrix-mode index (1 through 3, else model-view).
+     * @param pMatrix The 16-float matrix to load after switching mode.
+     * @ghidraAddress 0x21250
+     */
+    void SetMatrixMode(int nMode, const float *pMatrix);
+
+private:
+    // Only the state-cache fields the render-state setters above touch are modelled; the remainder
+    // of the 0x258-byte object is reserved until the full engine class is reconstructed. The
+    // trailing // +0xNN comments document the original offsets for reference only.
+    unsigned char m_aReserved000[0x28] = {};      // +0x000
+    int m_nMatrixMode = {};                       // +0x028 cached active matrix mode
+    int m_nPaletteMatrix = {};                    // +0x02c cached current palette matrix
+    unsigned char m_aReserved030[0x1a4] = {};     // +0x030
+    int m_nBlendSrc = {};                         // +0x1d4 cached blend source factor
+    int m_nBlendDest = {};                        // +0x1d8 cached blend destination factor
+    unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc
+    unsigned char m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache
+    unsigned char m_aClientStateFlags[0x07] = {}; // +0x208 per-array client-state cache
+    unsigned char m_aReserved20f[0x49] = {};      // +0x20f remainder of the object
 };
 
 /**
