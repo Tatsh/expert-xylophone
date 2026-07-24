@@ -17,7 +17,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
         return;
     }
 
-    ne::C_RENDER *pRootNode = GetBackgroundLayer()->GetBackgroundRenderObject();
+    ne::C_RENDER *pRootNode = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(g_szGmParts2TextureKey);
 
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {

@@ -17,6 +17,13 @@ class C_RENDER;
 class BgLayer : public PlayFieldLayerBase {
 public:
     /**
+     * @brief The process-wide background layer, created on first use.
+     * @return The shared background layer.
+     * @ghidraAddress 0x17203c
+     */
+    static BgLayer *GetBackgroundLayer();
+
+    /**
      * @brief The root scene-graph node background sprites are attached to, building the layer on
      * first access.
      * @return The background layer's root render node.
@@ -40,16 +47,7 @@ private:
     bool m_fBuilt = {};                  // +0x34
     int m_nLayerKind = {};               // +0x38
     unsigned char m_reserved3c[44] = {}; // +0x3c: layer state not yet recovered.
-
-    friend BgLayer *GetBackgroundLayer();
 };
-
-/**
- * @brief The process-wide background layer, created on first use.
- * @return The shared background layer.
- * @ghidraAddress 0x17203c
- */
-BgLayer *GetBackgroundLayer();
 
 // code: language=C++
 // kate: hl C++;
