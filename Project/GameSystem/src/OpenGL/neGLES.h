@@ -209,16 +209,101 @@ public:
      * @ghidraAddress 0x21250
      */
     void SetMatrixMode(int nMode, const float *pMatrix);
+    /**
+     * @brief Point the vertex (position) array at client memory, caching the pointer, stride, and
+     *        size so an unchanged binding skips the @c glVertexPointer call.
+     * @ghidraAddress 0x21634
+     */
+    void SetVertexPointer(const void *pData, int nSize, int nStride);
+    /**
+     * @brief Point the colour array at client memory (four unsigned bytes per colour), caching the
+     *        pointer and stride so an unchanged binding skips the @c glColorPointer call.
+     * @ghidraAddress 0x2155c
+     */
+    void SetColorPointer(const void *pData, int nStride);
+    /**
+     * @brief Point the active texture unit's coordinate array at client memory (two shorts per
+     *        coordinate), caching the per-unit pointer and stride.
+     * @ghidraAddress 0x21718
+     */
+    void SetTexCoordPointer(const void *pData, int nStride);
+    /**
+     * @brief Point the skinning weight array at client memory.
+     * @ghidraAddress 0x2183c
+     */
+    void SetWeightPointer(const void *pData, int nSize, int nStride);
+    /**
+     * @brief Point the skinning matrix-index array at client memory.
+     * @ghidraAddress 0x21928
+     */
+    void SetMatrixIndexPointer(const void *pData, int nSize, int nStride);
+    /**
+     * @brief Re-issue the vertex array against the bound array buffer, resetting the cached vertex
+     *        pointer state when the bound buffer changed.
+     * @ghidraAddress 0x216dc
+     */
+    void ClearVertexPointer(int nStride, int nSize);
+    /**
+     * @brief Re-issue the colour array against the bound array buffer, resetting the cached colour
+     *        pointer state when the bound buffer changed.
+     * @ghidraAddress 0x215f4
+     */
+    void ClearColorPointer(int nStride, int nColorOffset, int nBinding);
+    /**
+     * @brief Re-issue the active unit's texcoord array against the bound array buffer, resetting the
+     *        cached per-unit pointer state when the bound buffer changed.
+     * @ghidraAddress 0x217e4
+     */
+    void ClearTexCoordPointer(int nStride, int nTexCoordOffset);
+    /**
+     * @brief Re-issue the skinning weight array against the bound array buffer, resetting its cached
+     *        pointer state when the bound buffer changed.
+     * @ghidraAddress 0x218ec
+     */
+    void ClearWeightPointer(int nStride, int nSize);
+    /**
+     * @brief Re-issue the skinning matrix-index array against the bound array buffer, resetting its
+     *        cached pointer state when the bound buffer changed.
+     * @ghidraAddress 0x219d8
+     */
+    void ClearMatrixIndexPointer(int nStride, int nSize);
 
 private:
+    // The maximum number of texture units the per-unit texture-coordinate caches hold.
+    static constexpr int kMaxTextureUnits = 8;
+
     // Only the state-cache fields the render-state setters above touch are modelled; the remainder
     // of the 0x258-byte object is reserved until the full engine class is reconstructed. The
     // trailing // +0xNN comments document the original offsets for reference only.
-    unsigned char m_aReserved000[0x28] = {};      // +0x000
-    int m_nMatrixMode = {};                       // +0x028 cached active matrix mode
-    int m_nPaletteMatrix = {};                    // +0x02c cached current palette matrix
-    unsigned char m_aReserved030[0x1a4] = {};     // +0x030
-    int m_nBlendSrc = {};                         // +0x1d4 cached blend source factor
+    unsigned char m_aReserved000[0x28] = {}; // +0x000
+    int m_nMatrixMode = {};                  // +0x028 cached active matrix mode
+    int m_nPaletteMatrix = {};               // +0x02c cached current palette matrix
+    unsigned char m_aReserved030[0x10] = {}; // +0x030
+    int m_nArrayBufferBound = {};            // +0x040 currently-bound array buffer name (0 none)
+    unsigned char m_aReserved044[0x04] = {}; // +0x044
+    const void *m_pColorPointer = {};        // +0x048 cached colour array pointer
+    int m_nColorStride = {};                 // +0x050 cached colour array stride
+    int m_nColorBufferBinding = {};          // +0x054 colour array buffer binding
+    unsigned char m_aReserved058[0x10] = {}; // +0x058
+    const void *m_pVertexPointer = {};       // +0x068 cached vertex array pointer
+    int m_nVertexStride = {};                // +0x070 cached vertex array stride
+    int m_nVertexSize = {};                  // +0x074 cached vertex component count
+    int m_nVertexBufferBinding = {};         // +0x078 vertex array buffer binding
+    int m_nActiveTexUnit = {};               // +0x07c active texture-unit index
+    const void *m_apTexCoordPointer[kMaxTextureUnits] = {}; // +0x080 per-unit texcoord pointers
+    int m_anTexCoordStride[kMaxTextureUnits] = {};          // +0x0c0 per-unit texcoord strides
+    int m_anTexCoordBufferBinding[kMaxTextureUnits] = {};   // +0x0e0 per-unit texcoord bindings
+    const void *m_pWeightPointer = {};                      // +0x100 cached weight array pointer
+    int m_nWeightStride = {};                               // +0x108 cached weight array stride
+    int m_nWeightSize = {};                                 // +0x10c cached weights per vertex
+    int m_nWeightBufferBinding = {};                        // +0x110 weight array buffer binding
+    unsigned char m_aReserved114[0x04] = {};                // +0x114
+    const void *m_pMatrixIndexPointer = {};                 // +0x118 cached matrix-index pointer
+    int m_nMatrixIndexStride = {};                          // +0x120 cached matrix-index stride
+    int m_nMatrixIndexSize = {};                            // +0x124 matrix indices per vertex
+    int m_nMatrixIndexBufferBinding = {};                   // +0x128 matrix-index buffer binding
+    unsigned char m_aReserved12c[0xa8] = {};                // +0x12c
+    int m_nBlendSrc = {};                                   // +0x1d4 cached blend source factor
     int m_nBlendDest = {};                        // +0x1d8 cached blend destination factor
     unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc
     unsigned char m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache

@@ -287,3 +287,177 @@ void neGLESRenderer::SetMatrixMode(int nMode, const float *pMatrix) {
     }
     glLoadMatrixf(pMatrix);
 }
+
+// The number of colour channels a packed vertex colour carries, and the sentinel a reset pointer
+// cache stores for its stride.
+namespace {
+constexpr int kColorComponentCount = 4;
+constexpr int kResetStrideSentinel = -1;
+} // namespace
+
+/** @ghidraAddress 0x21634 */
+void neGLESRenderer::SetVertexPointer(const void *pData, int nSize, int nStride) {
+    if (m_nArrayBufferBound != 0) {
+        // An array buffer is bound: unbind it so the client pointer takes effect.
+        m_nArrayBufferBound = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_nVertexSize = nSize;
+        m_nVertexBufferBinding = 0;
+        m_pVertexPointer = pData;
+        m_nVertexStride = nStride;
+    } else {
+        if (m_pVertexPointer == pData && m_nVertexStride == nStride && m_nVertexSize == nSize) {
+            return;
+        }
+        m_pVertexPointer = pData;
+        m_nVertexStride = nStride;
+        m_nVertexSize = nSize;
+        m_nVertexBufferBinding = 0;
+    }
+    glVertexPointer(nSize, GL_FLOAT, nStride, pData);
+}
+
+/** @ghidraAddress 0x2155c */
+void neGLESRenderer::SetColorPointer(const void *pData, int nStride) {
+    if (m_nArrayBufferBound != 0) {
+        m_nArrayBufferBound = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_nColorStride = nStride;
+        m_nColorBufferBinding = 0;
+        m_pColorPointer = pData;
+    } else {
+        if (m_pColorPointer == pData && m_nColorStride == nStride) {
+            return;
+        }
+        m_pColorPointer = pData;
+        m_nColorStride = nStride;
+        m_nColorBufferBinding = 0;
+    }
+    glColorPointer(kColorComponentCount, GL_UNSIGNED_BYTE, nStride, pData);
+}
+
+/** @ghidraAddress 0x21718 */
+void neGLESRenderer::SetTexCoordPointer(const void *pData, int nStride) {
+    const int nUnit = m_nActiveTexUnit;
+    if (m_nArrayBufferBound != 0) {
+        m_nArrayBufferBound = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_anTexCoordBufferBinding[nUnit] = 0;
+        m_apTexCoordPointer[nUnit] = pData;
+        m_anTexCoordStride[nUnit] = nStride;
+    } else {
+        if (m_apTexCoordPointer[nUnit] == pData && m_anTexCoordStride[nUnit] == nStride) {
+            return;
+        }
+        m_apTexCoordPointer[nUnit] = pData;
+        m_anTexCoordStride[nUnit] = nStride;
+        m_anTexCoordBufferBinding[nUnit] = 0;
+    }
+    glTexCoordPointer(2, GL_SHORT, nStride, pData);
+}
+
+/** @ghidraAddress 0x2183c */
+void neGLESRenderer::SetWeightPointer(const void *pData, int nSize, int nStride) {
+    if (m_nArrayBufferBound != 0) {
+        m_nArrayBufferBound = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_nWeightBufferBinding = 0;
+        m_pWeightPointer = pData;
+        m_nWeightStride = nStride;
+        m_nWeightSize = nSize;
+    } else {
+        if (m_pWeightPointer == pData && m_nWeightStride == nStride && m_nWeightSize == nSize) {
+            return;
+        }
+        m_pWeightPointer = pData;
+        m_nWeightStride = nStride;
+        m_nWeightSize = nSize;
+        m_nWeightBufferBinding = 0;
+    }
+    glWeightPointerOES(nSize, GL_FLOAT, nStride, pData);
+}
+
+/** @ghidraAddress 0x21928 */
+void neGLESRenderer::SetMatrixIndexPointer(const void *pData, int nSize, int nStride) {
+    if (m_nArrayBufferBound != 0) {
+        m_nArrayBufferBound = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_nMatrixIndexBufferBinding = 0;
+        m_pMatrixIndexPointer = pData;
+        m_nMatrixIndexStride = nStride;
+        m_nMatrixIndexSize = nSize;
+    } else {
+        if (m_pMatrixIndexPointer == pData && m_nMatrixIndexStride == nStride &&
+            m_nMatrixIndexSize == nSize) {
+            return;
+        }
+        m_pMatrixIndexPointer = pData;
+        m_nMatrixIndexStride = nStride;
+        m_nMatrixIndexSize = nSize;
+        m_nMatrixIndexBufferBinding = 0;
+    }
+    glMatrixIndexPointerOES(nSize, GL_UNSIGNED_BYTE, nStride, pData);
+}
+
+/** @ghidraAddress 0x216dc */
+void neGLESRenderer::ClearVertexPointer(int nStride, int nSize) {
+    // Re-point the array at the bound buffer's default (offset 0) only when the binding changed.
+    if (m_nArrayBufferBound != 0 && m_nVertexBufferBinding != m_nArrayBufferBound) {
+        m_nVertexBufferBinding = m_nArrayBufferBound;
+        m_pVertexPointer = nullptr;
+        m_nVertexStride = kResetStrideSentinel;
+        m_nVertexSize = 0;
+        glVertexPointer(nSize, GL_FLOAT, nStride, nullptr);
+    }
+}
+
+/** @ghidraAddress 0x215f4 */
+void neGLESRenderer::ClearColorPointer(int nStride, int nColorOffset, int nBinding) {
+    (void)nBinding; // The binary reloads the cached binding from m_nArrayBufferBound; the caller's
+                    // scratch value is unused.
+    if (m_nArrayBufferBound != 0 && m_nColorBufferBinding != m_nArrayBufferBound) {
+        m_nColorBufferBinding = m_nArrayBufferBound;
+        m_nColorStride = kResetStrideSentinel;
+        m_pColorPointer = nullptr;
+        glColorPointer(kColorComponentCount,
+                       GL_UNSIGNED_BYTE,
+                       nStride,
+                       reinterpret_cast<const void *>(static_cast<long>(nColorOffset)));
+    }
+}
+
+/** @ghidraAddress 0x217e4 */
+void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
+    const int nUnit = m_nActiveTexUnit;
+    if (m_nArrayBufferBound != 0 && m_anTexCoordBufferBinding[nUnit] != m_nArrayBufferBound) {
+        m_anTexCoordBufferBinding[nUnit] = m_nArrayBufferBound;
+        m_apTexCoordPointer[nUnit] = nullptr;
+        m_anTexCoordStride[nUnit] = kResetStrideSentinel;
+        glTexCoordPointer(2,
+                          GL_SHORT,
+                          nStride,
+                          reinterpret_cast<const void *>(static_cast<long>(nTexCoordOffset)));
+    }
+}
+
+/** @ghidraAddress 0x218ec */
+void neGLESRenderer::ClearWeightPointer(int nStride, int nSize) {
+    if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding != m_nArrayBufferBound) {
+        m_nWeightBufferBinding = m_nArrayBufferBound;
+        m_pWeightPointer = nullptr;
+        m_nWeightStride = kResetStrideSentinel;
+        m_nWeightSize = 0;
+        glWeightPointerOES(nSize, GL_FLOAT, nStride, nullptr);
+    }
+}
+
+/** @ghidraAddress 0x219d8 */
+void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize) {
+    if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding != m_nArrayBufferBound) {
+        m_nMatrixIndexBufferBinding = m_nArrayBufferBound;
+        m_pMatrixIndexPointer = nullptr;
+        m_nMatrixIndexStride = kResetStrideSentinel;
+        m_nMatrixIndexSize = 0;
+        glMatrixIndexPointerOES(nSize, GL_UNSIGNED_BYTE, nStride, nullptr);
+    }
+}
