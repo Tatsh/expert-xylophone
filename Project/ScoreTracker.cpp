@@ -9,6 +9,9 @@ static ScoreTracker *g_pScoreTracker = nullptr; // @ghidraAddress 0x3de4b0
 // The gauge value at or below which the 2P side shows the low-gauge danger warning.
 constexpr float kLowGaugeWarningThreshold = 0.7f; // @ghidraAddress 0x2fd008
 
+// The second player's side index; only this side drives the background clear-effect overlay.
+constexpr unsigned int kSecondPlayerSide = 1;
+
 /** @ghidraAddress 0x149268 */
 void ScoreTracker::ResetLaneGaugeState() {
     // Zero each side's play record, then repaint that side's score digits and lane gauge from the
@@ -25,12 +28,12 @@ void ScoreTracker::ResetLaneGaugeState() {
 }
 
 /** @ghidraAddress 0x149324 */
-void ScoreTracker::ApplyLaneGaugeValueAndBackground(float flValue, unsigned long long uSide) {
+void ScoreTracker::ApplyLaneGaugeValueAndBackground(float flValue, unsigned int uSide) {
     // Store the value into this side's play-record rate slot, then push it to the clear-gauge bar.
-    m_aRecords[uSide & 0xffffffff].flRate = flValue;
-    ClearGaugeLayer::shared()->SetValue(flValue, static_cast<unsigned int>(uSide));
+    m_aRecords[uSide].flRate = flValue;
+    ClearGaugeLayer::shared()->SetValue(flValue, uSide);
     // Only the 2P side drives the background clear-effect overlay.
-    if (static_cast<int>(uSide) == 1) {
+    if (uSide == kSecondPlayerSide) {
         BgLayer::GetBackgroundLayer()->SetClearEffectActive(kLowGaugeWarningThreshold <= flValue);
     }
 }

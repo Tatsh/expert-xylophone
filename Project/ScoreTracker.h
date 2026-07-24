@@ -92,7 +92,7 @@ public:
      * @param uSide The player side.
      * @ghidraAddress 0x149324
      */
-    void ApplyLaneGaugeValueAndBackground(float flValue, unsigned long long uSide);
+    void ApplyLaneGaugeValueAndBackground(float flValue, unsigned int uSide);
 
     /**
      * @brief Arms a side's score-digit roll-up on the given player-field layer.
