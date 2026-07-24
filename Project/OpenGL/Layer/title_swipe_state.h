@@ -22,7 +22,8 @@
  * object is reserved padding until the full class is modelled.
  * @ghidraAddress TitleScreenLayer (engine layer, 0x898 bytes)
  */
-struct TitleScreenLayer {
+class TitleScreenLayer {
+public:
     /**
      * @brief Advances the hidden-swipe state on a directional swipe, firing the secret effect and
      * latching the completion flag when the sequence completes.
@@ -51,6 +52,7 @@ struct TitleScreenLayer {
      */
     void AdvanceFadeValue(int nDeltaFrames);
 
+private:
     unsigned char m_aReserved00[0x54] = {};   // +0x000
     int m_nGestureTimer = {};                 // +0x054 timer rewound on a completed gesture
     unsigned char m_aReserved58[0x04] = {};   // +0x058
@@ -79,7 +81,8 @@ struct TitleScreenLayer {
  * observes it. Only the timer and swipe-sequence fields are named.
  * @ghidraAddress TitleScreenLayer2 (engine layer)
  */
-struct TitleScreenLayer2 {
+class TitleScreenLayer2 {
+public:
     /**
      * @brief Advances the hidden-swipe state, rewinding the layer timer when the sequence completes.
      * @param iSwipeEvent The directional swipe id.
@@ -87,6 +90,7 @@ struct TitleScreenLayer2 {
      */
     void AdvanceSwipeState(int iSwipeEvent);
 
+private:
     unsigned char m_aReserved00[0x50] = {};  // +0x000
     int m_nSwipeTimer = {};                  // +0x050 timer rewound on a completed swipe
     unsigned char m_aReserved54[0x574] = {}; // +0x054

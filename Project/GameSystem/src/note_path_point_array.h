@@ -28,7 +28,8 @@ struct NotePathPoint {
  * @ghidraAddress NotePathPointArray (engine chart-parse struct: data +0x0, count +0x8, capacity
  * +0xc)
  */
-struct NotePathPointArray {
+class NotePathPointArray {
+public:
     /** @brief The number of extra entries each grow reserves. */
     static constexpr int kGrowStep = 5;
 
@@ -49,6 +50,7 @@ struct NotePathPointArray {
      */
     void Append(const NotePathPoint &point);
 
+private:
     NotePathPoint *m_pEntries = {}; // +0x00 the entry buffer
     int m_nCount = {};              // +0x08 live entry count
     int m_nCapacity = {};           // +0x0c allocated entry count
