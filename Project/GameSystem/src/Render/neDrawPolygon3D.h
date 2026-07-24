@@ -33,16 +33,16 @@ public:
      * Records the configuration and initialises the per-vertex attribute offsets to their unset
      * sentinels; @c AllocateBuffers derives the real offsets and allocates the buffers.
      * @param nDrawMode The primitive draw mode.
-     * @param nVertexFormat The vertex-format attribute bit-set.
      * @param nVertexCount The number of vertices.
+     * @param nVertexFormat The vertex-format attribute bit-set.
      * @param bVertexBufferExternal Whether the vertex buffer is externally owned.
      * @param nIndexCount The number of index-buffer entries.
      * @param bIndexBufferExternal Whether the index buffer is externally owned.
      * @ghidraAddress 0x285e8
      */
     C_DRAW_POLYGON_3D(unsigned int nDrawMode,
-                      unsigned int nVertexFormat,
                       unsigned int nVertexCount,
+                      unsigned int nVertexFormat,
                       unsigned char bVertexBufferExternal,
                       unsigned int nIndexCount,
                       unsigned char bIndexBufferExternal);
@@ -192,8 +192,8 @@ private:
 /**
  * @brief Allocates and initialises a 3D polygon-mesh node ready to be populated and drawn.
  * @param nDrawMode The primitive draw mode.
- * @param nVertexFormat The vertex-format attribute bit-set.
  * @param nVertexCount The number of vertices.
+ * @param nVertexFormat The vertex-format attribute bit-set.
  * @param bVertexBufferExternal Whether the vertex buffer is externally owned.
  * @param nIndexCount The number of index-buffer entries.
  * @param bIndexBufferExternal Whether the index buffer is externally owned.
@@ -201,8 +201,8 @@ private:
  * @ghidraAddress 0x295a8
  */
 C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
-                                       unsigned int nVertexFormat,
                                        unsigned int nVertexCount,
+                                       unsigned int nVertexFormat,
                                        unsigned char bVertexBufferExternal,
                                        unsigned int nIndexCount,
                                        unsigned char bIndexBufferExternal);

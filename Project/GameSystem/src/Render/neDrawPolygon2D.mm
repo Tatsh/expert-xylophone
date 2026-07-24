@@ -19,8 +19,8 @@ constexpr int kDefaultTexParams[] = {0, 0, 7, 7};
 
 /** @ghidraAddress 0x27374 */
 C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
-                                     unsigned int nVertexFormat,
                                      unsigned int nVertexCount,
+                                     unsigned int nVertexFormat,
                                      unsigned char bVertexBufferExternal,
                                      unsigned int nIndexCount,
                                      unsigned char bIndexBufferExternal) {
@@ -112,14 +112,14 @@ void C_DRAW_POLYGON_2D::AllocateBuffers() {
 
 /** @ghidraAddress 0x28290 */
 C_DRAW_POLYGON_2D *CreatePolygon2dMesh(unsigned int nDrawMode,
-                                       unsigned int nVertexFormat,
                                        unsigned int nVertexCount,
+                                       unsigned int nVertexFormat,
                                        unsigned char bVertexBufferExternal,
                                        unsigned int nIndexCount,
                                        unsigned char bIndexBufferExternal) {
     auto *pMesh = new C_DRAW_POLYGON_2D(nDrawMode,
-                                        nVertexFormat,
                                         nVertexCount,
+                                        nVertexFormat,
                                         bVertexBufferExternal,
                                         nIndexCount,
                                         bIndexBufferExternal);

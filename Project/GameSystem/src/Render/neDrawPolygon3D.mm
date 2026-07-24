@@ -27,8 +27,8 @@ constexpr unsigned int kPositionStride = 0xc;
 
 /** @ghidraAddress 0x285e8 */
 C_DRAW_POLYGON_3D::C_DRAW_POLYGON_3D(unsigned int nDrawMode,
-                                     unsigned int nVertexFormat,
                                      unsigned int nVertexCount,
+                                     unsigned int nVertexFormat,
                                      unsigned char bVertexBufferExternal,
                                      unsigned int nIndexCount,
                                      unsigned char bIndexBufferExternal) {
@@ -122,14 +122,14 @@ void C_DRAW_POLYGON_3D::AllocateBuffers() {
 
 /** @ghidraAddress 0x295a8 */
 C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
-                                       unsigned int nVertexFormat,
                                        unsigned int nVertexCount,
+                                       unsigned int nVertexFormat,
                                        unsigned char bVertexBufferExternal,
                                        unsigned int nIndexCount,
                                        unsigned char bIndexBufferExternal) {
     auto *pMesh = new C_DRAW_POLYGON_3D(nDrawMode,
-                                        nVertexFormat,
                                         nVertexCount,
+                                        nVertexFormat,
                                         bVertexBufferExternal,
                                         nIndexCount,
                                         bIndexBufferExternal);
