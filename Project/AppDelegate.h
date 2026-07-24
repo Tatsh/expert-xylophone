@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The application delegate for REFLEC BEAT plus.
  */
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UIAlertViewDelegate>
 
 /**
  * @brief The main window that hosts the game engine's render surface.
@@ -131,11 +131,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, nullable) NSString *serverTime;
 /**
- * @brief Whether the server flagged a mandatory app update.
+ * @brief The server's mandatory-update flag string (@c "1" when a mandatory update is required,
+ * otherwise @c "0"), taken verbatim from the startup response's @c "Type" field.
  * @ghidraAddress 0x54a5c (getter)
  * @ghidraAddress 0x54a6c (setter)
  */
-@property(nonatomic, assign) BOOL mustUpdateFlag;
+@property(nonatomic, copy, nullable) NSString *mustUpdateFlag;
 /**
  * @brief Whether the app is still in its startup sequence.
  * @ghidraAddress 0x54a78 (getter)
@@ -267,6 +268,97 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setOuterURL:(nullable NSURL *)url;
 
 /**
+ * @brief The base news web-info URL.
+ * @ghidraAddress 0x4eb78
+ */
+- (nullable NSURL *)getBaseWebInfoURL;
+
+/**
+ * @brief The resolved news web-info URL.
+ * @ghidraAddress 0x4ec18
+ */
+- (nullable NSURL *)getWebInfoURL;
+
+/**
+ * @brief The pre-release news web-info URL.
+ * @ghidraAddress 0x4eca4
+ */
+- (nullable NSURL *)getPreWebInfoURL;
+
+/**
+ * @brief Store the base terms URL.
+ * @param baseTermURL The base terms URL.
+ * @ghidraAddress 0x4ecb4
+ */
+- (void)setBaseTermURL:(nullable NSURL *)baseTermURL;
+
+/**
+ * @brief The base terms URL.
+ * @ghidraAddress 0x4ecec
+ */
+- (nullable NSURL *)getBaseTermURL;
+
+/**
+ * @brief The terms URL for a given terms id, built from the base terms URL and the region code.
+ *
+ * A @c nil id resolves the terms URL to the base terms URL; otherwise the region and type are
+ * appended.
+ * @param termID The terms identifier, or @c nil for the base URL.
+ * @return The resolved terms URL.
+ * @ghidraAddress 0x4ecfc
+ */
+- (nullable NSURL *)getTermURLWithID:(nullable NSString *)termID;
+
+/**
+ * @brief The last-update time string for the news info feed.
+ * @ghidraAddress 0x4efa4
+ */
+- (nullable NSString *)getInfoLastUpdateTimeString;
+
+/**
+ * @brief The extend-note product identifier queued for a launch-time store open.
+ * @ghidraAddress 0x4f07c
+ */
+- (nullable NSString *)getExtendNotePIDForOpenStore;
+
+/**
+ * @brief The pending push-notification queue.
+ * @ghidraAddress 0x4f08c
+ */
++ (nullable NSMutableArray *)getPushNotificationData;
+
+/**
+ * @brief Append a payload to the pending push-notification queue.
+ * @param data The notification payload to queue.
+ * @ghidraAddress 0x4f314
+ */
++ (void)addPushNotificationData:(nullable NSDictionary *)data;
+
+/**
+ * @brief Whether the accepted terms version is older than the latest available, requiring re-accept.
+ * @ghidraAddress 0x4ee50
+ */
+- (BOOL)needUpdateTerms;
+
+/**
+ * @brief Whether the current music has an early-bonus entry.
+ * @ghidraAddress 0x4f4d0
+ */
+- (BOOL)isEnableEarlyBonus;
+
+/**
+ * @brief Whether the current music has a hot-bonus entry.
+ * @ghidraAddress 0x4f658
+ */
+- (BOOL)isEnableHotBonus;
+
+/**
+ * @brief The fixed passphrase used to encrypt persisted save data.
+ * @ghidraAddress 0x517fc
+ */
+- (nullable NSString *)saveDataKey;
+
+/**
  * @brief The campaign identifier queued for a launch-time open of the campaign store tab.
  * @return The queued campaign identifier, or @c nil when none is queued.
  */
@@ -378,6 +470,34 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x4ef50
  */
 - (void)setLatestTermsVersion:(nullable NSString *)latestTermsVersion;
+
+/**
+ * @brief Begin the application: record the device OS-version timing tier and the delay-frame
+ * timing offset, then branch on the offline resource check to either prompt for a resource update
+ * or issue the resource-info request.
+ * @ghidraAddress 0x4d77c
+ */
+- (void)startApplication;
+
+/**
+ * @brief Post the resource-info request: build the identity payload (region, version, credentials,
+ * and music-list key), replace any in-flight downloader, and start the request whose success routes
+ * the startup response and whose failure falls back to the file-list check.
+ * @ghidraAddress 0x4da2c
+ */
+- (void)requestResourceInfo;
+
+/**
+ * @brief Present the terms-of-service screen through the root view controller.
+ * @ghidraAddress 0x4faf4
+ */
+- (void)showTerms;
+
+/**
+ * @brief Present the resource-download screen, seeded with the pending download URL and version.
+ * @ghidraAddress 0x50398
+ */
+- (void)showDownload;
 
 @end
 

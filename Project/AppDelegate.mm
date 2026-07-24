@@ -15,8 +15,10 @@
 
 #import "ApplilinkNetwork.h"
 #import "AudioManager.h"
+#import "DownloadResourceManager.h"
 #import "Downloader.h"
 #import "GameSystem/src/OpenGL/neTexture.h"
+#import "MusicData.h"
 #import "NSFileManager+RB.h"
 #import "NetworkUtil.h"
 #import "RBCampaignData.h"
@@ -25,6 +27,7 @@
 #import "RBMusicManager.h"
 #import "RBNavigationController.h"
 #import "RBPurchaseManager.h"
+#import "RBResourceDownloadViewController.h"
 #import "RBUrlSchemeManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
@@ -114,6 +117,39 @@ static NSString *const kTotalScoreLeaderboardPhone = @"rbplus.totalscorephone";
 // The delay before the theme title layer is built, and the corporate-button target fade alpha.
 static constexpr int64_t kTitleLayerBuildDelayNs = 100000000;
 static constexpr float kCorporateButtonFadeAlpha = 1.0f;
+
+// The terms-URL format (base, region, terms id), the bonus-list music-id key format, and the fixed
+// save-data passphrase.
+static NSString *const kTermURLFormat = @"%@/?target=%@&type=%@";
+static NSString *const kBonusListKeyFormat = @"%d";
+static NSString *const kSaveDataPassphrase = @"Copyright 2014 KDE.";
+
+// The device OS versions whose timing behaviour differs, compared numerically at startup.
+static NSString *const kOsVersion80 = @"8.0";
+static NSString *const kOsVersion81 = @"8.1";
+
+// The resource-info request payload keys.
+static NSString *const kResourceInfoKeyTarget = @"target";
+static NSString *const kResourceInfoKeyVersion = @"version";
+static NSString *const kResourceInfoKeyUserID = @"user_id";
+static NSString *const kResourceInfoKeyPasswd = @"passwd";
+static NSString *const kResourceInfoKeyUUID = @"uuid";
+
+// The startup response JSON keys and the mandatory-update-off flag value.
+static NSString *const kStartupKeyVersion = @"Version";
+static NSString *const kStartupKeyItemURL = @"ItemURL";
+static NSString *const kStartupKeyType = @"Type";
+static NSString *const kStartupKeyApp = @"App";
+static NSString *const kStartupKeyUserID = @"UserID";
+static NSString *const kStartupKeyPasswd = @"Passwd";
+static NSString *const kStartupKeyCol = @"Col";
+static NSString *const kStartupKeyTermsVersion = @"terms_version";
+static NSString *const kMustUpdateFlagOff = @"0";
+
+// The alert-view tags that route the delegate callback.
+static const NSInteger kResourceUpdateAlertTag = 2;
+static const NSInteger kNewVersionAlertTag = 3;
+static const NSInteger kStartupNetworkErrorTag = 10;
 
 // The web-info response JSON keys, its timestamp format, and the epoch fallback used when the
 // stored timestamp cannot be parsed.
@@ -845,7 +881,109 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     }
 }
 
+#pragma mark - Web-info and terms URLs
+
+/** @ghidraAddress 0x4eb78 */
+- (NSURL *)getBaseWebInfoURL {
+    return self.urlBaseWebInfo;
+}
+
+/** @ghidraAddress 0x4ec18 */
+- (NSURL *)getWebInfoURL {
+    return self.urlWebInfo;
+}
+
+/** @ghidraAddress 0x4eca4 */
+- (NSURL *)getPreWebInfoURL {
+    return self.urlPreWebInfo;
+}
+
+/** @ghidraAddress 0x4ecb4 */
+- (void)setBaseTermURL:(NSURL *)baseTermURL {
+    self.urlBaseTerm = baseTermURL;
+}
+
+/** @ghidraAddress 0x4ecec */
+- (NSURL *)getBaseTermURL {
+    return self.urlBaseTerm;
+}
+
+/** @ghidraAddress 0x4ecfc */
+- (NSURL *)getTermURLWithID:(NSString *)termID {
+    if (termID == nil) {
+        // No id: the resolved terms URL is just the base terms URL.
+        self.urlTerm = self.urlBaseTerm;
+    } else {
+        self.urlTerm = [NSURL URLWithString:[NSString stringWithFormat:kTermURLFormat,
+                                                                       self.urlBaseTerm,
+                                                                       GetRegionCode(),
+                                                                       termID]];
+    }
+    return self.urlTerm;
+}
+
+/** @ghidraAddress 0x4efa4 */
+- (NSString *)getInfoLastUpdateTimeString {
+    return self.infoLastUpdateTimeString;
+}
+
+/** @ghidraAddress 0x4f07c */
+- (NSString *)getExtendNotePIDForOpenStore {
+    return self.extendNotePIDForOpenStore;
+}
+
+/** @ghidraAddress 0x4ee50 */
+- (BOOL)needUpdateTerms {
+    NSString *accepted = RBUserSettingData.sharedInstance.termVersion;
+    NSString *latest = self.latestTermVer;
+    if (accepted == nil) {
+        // No version accepted yet: an update is required.
+        return YES;
+    }
+    if (latest == nil) {
+        return NO;
+    }
+    // The accepted version being older than the latest means a re-accept is needed.
+    return [accepted compare:latest options:NSNumericSearch] == NSOrderedAscending;
+}
+
+/** @ghidraAddress 0x4f4d0 */
+- (BOOL)isEnableEarlyBonus {
+    if (self.earlyBonusList == nil || self.earlyBonusList.count == 0) {
+        return NO;
+    }
+    // The bonus lists are keyed by the current music id (the binary treats them as dictionaries).
+    MusicData *music = static_cast<MusicData *>(self.musicData);
+    NSString *key = [NSString stringWithFormat:kBonusListKeyFormat, music.MusicID];
+    return [static_cast<id>(self.earlyBonusList) objectForKey:key] != nil;
+}
+
+/** @ghidraAddress 0x4f658 */
+- (BOOL)isEnableHotBonus {
+    if (self.hotBonusList == nil || self.hotBonusList.count == 0) {
+        return NO;
+    }
+    MusicData *music = static_cast<MusicData *>(self.musicData);
+    NSString *key = [NSString stringWithFormat:kBonusListKeyFormat, music.MusicID];
+    return [static_cast<id>(self.hotBonusList) objectForKey:key] != nil;
+}
+
+/** @ghidraAddress 0x517fc */
+- (NSString *)saveDataKey {
+    return kSaveDataPassphrase;
+}
+
 #pragma mark - Push notifications
+
+/** @ghidraAddress 0x4f08c */
++ (NSMutableArray *)getPushNotificationData {
+    return AppDelegate.appDelegate.pushList;
+}
+
+/** @ghidraAddress 0x4f314 */
++ (void)addPushNotificationData:(NSDictionary *)data {
+    [AppDelegate.appDelegate.pushList addObject:data];
+}
 
 /** @ghidraAddress 0x4f0fc */
 + (NSDictionary *)popPushNotificationData {
@@ -892,6 +1030,220 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 /** @ghidraAddress 0x4ef50 */
 - (void)setLatestTermsVersion:(NSString *)latestTermsVersion {
     self.latestTermVer = latestTermsVersion;
+}
+
+#pragma mark - Startup and resource update
+
+/** @ghidraAddress 0x4d77c */
+- (void)startApplication {
+    // Classify the device OS version so play timing can compensate for the iOS 8.0/8.1 changes.
+    if ([UIDevice.currentDevice.systemVersion compare:kOsVersion81
+                                              options:NSNumericSearch] == NSOrderedAscending) {
+        if ([UIDevice.currentDevice.systemVersion compare:kOsVersion80
+                                                  options:NSNumericSearch] == NSOrderedAscending) {
+            EnsurePlayTimer();
+            g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTierPre80);
+        } else {
+            EnsurePlayTimer();
+            g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTier80To81);
+        }
+    } else {
+        EnsurePlayTimer();
+        g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTier81OrLater);
+    }
+
+    // Seed the delay-frame timing offset from the persisted user setting.
+    EnsurePlayTimer();
+    g_pPlayTimer->SetDelayFrameOffset(RBUserSettingData.sharedInstance.delayFrame *
+                                      g_flDelayFrameToSeconds);
+
+    __weak AppDelegate *weakSelf = self;
+    switch ([DownloadResourceManager offlineCheck]) {
+    case DownloadResourceManagerResultMissing:
+    case DownloadResourceManagerResultOutdated:
+        // No usable bundle: the user must download the resources before playing.
+        [UIAlertView showAlertNeedResourceUpdate:weakSelf];
+        break;
+    case DownloadResourceManagerResultUpdate:
+        [UIAlertView showAlertNeedResourceUpdate:weakSelf];
+        break;
+    case DownloadResourceManagerResultCurrent:
+        [self requestResourceInfo];
+        break;
+    }
+}
+
+/** @ghidraAddress 0x4da2c */
+- (void)requestResourceInfo {
+    // Build the identity payload. When server data is present its credentials are used; otherwise
+    // empty credentials are sent.
+    NSArray *serverData = [AppDelegate getServerData];
+    NSDictionary *payload;
+    if (serverData) {
+        payload = @{
+            kResourceInfoKeyTarget : GetRegionCode(),
+            kResourceInfoKeyVersion : GetBundleVersionString(),
+            kResourceInfoKeyUserID : serverData[0],
+            kResourceInfoKeyPasswd : serverData[1],
+            kResourceInfoKeyUUID : [AppDelegate musicListKey],
+        };
+    } else {
+        payload = @{
+            kResourceInfoKeyTarget : GetRegionCode(),
+            kResourceInfoKeyVersion : GetBundleVersionString(),
+            kResourceInfoKeyUserID : @"",
+            kResourceInfoKeyPasswd : @"",
+            kResourceInfoKeyUUID : [AppDelegate musicListKey],
+        };
+    }
+    NSData *json = [Downloader dictionaryToJsonData:payload];
+
+    // Replace any in-flight downloader with a fresh resource-info request.
+    if (self.downloader) {
+        [self.downloader cancel];
+        self.downloader = nil;
+    }
+    self.downloader = [[Downloader alloc] initWithURL:[NetworkUtil resourceURL]
+                                                 post:json
+                                          contentType:nil];
+
+    __weak AppDelegate *weakSelf = self;
+    [self.downloader startDownloadingWithProceed:nil
+        success:^(Downloader *downloader) {
+          /** @ghidraAddress 0x4e01c */
+          // Apply the served configuration to the app-info fields, then route the startup flow.
+          NSDictionary *response = [downloader getDataInJSON];
+          weakSelf.version = response[kStartupKeyVersion];
+          weakSelf.urlString = response[kStartupKeyItemURL];
+          weakSelf.mustUpdateFlag = response[kStartupKeyType];
+          if (weakSelf.mustUpdateFlag == nil) {
+              weakSelf.mustUpdateFlag = kMustUpdateFlagOff;
+          }
+
+          NSString *requiredAppVersion = response[kStartupKeyApp];
+          NSString *userID = response[kStartupKeyUserID];
+          NSString *passwd = response[kStartupKeyPasswd];
+
+          // Proceed when server data already exists, or when both credentials were returned.
+          BOOL haveCredentials = (userID != nil && passwd != nil);
+          if (serverData != nil || haveCredentials) {
+              [AppDelegate setServerData:userID andB:passwd];
+              RebuildDeviceDescriptionString();
+
+              NSDictionary *campaign = response[kStartupKeyCol];
+              if (campaign) {
+                  [[RBCampaignData sharedInstance] parseDictionary:campaign];
+              }
+              weakSelf.latestTermVer = response[kStartupKeyTermsVersion];
+
+              if (!weakSelf.isSkipUpdate &&
+                  [GetBundleVersionString() compare:requiredAppVersion
+                                            options:NSNumericSearch] == NSOrderedAscending) {
+                  // The installed app is older than the required version: prompt to update.
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x4e774 */
+                    [UIAlertView showAlertLatestApplication:weakSelf];
+                  });
+                  return;
+              }
+
+              switch ([DownloadResourceManager onlineChek:response]) {
+              case DownloadResourceManagerResultMissing:
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x4e7b8 */
+                    [UIAlertView showAlertNeedResourceUpdate:weakSelf];
+                  });
+                  break;
+              case DownloadResourceManagerResultOutdated:
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x4e830 */
+                    [UIAlertView showDownloadWithDelegate:weakSelf];
+                  });
+                  break;
+              case DownloadResourceManagerResultUpdate:
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x4e8a8 */
+                    [weakSelf showDownload];
+                  });
+                  break;
+              case DownloadResourceManagerResultCurrent:
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x4e904 */
+                    [weakSelf showTitle];
+                  });
+                  break;
+              }
+          } else {
+              // Missing credentials: show the startup network-error alert (tag 10).
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x4e6cc */
+                UIAlertView *alert = [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+                alert.tag = kStartupNetworkErrorTag;
+              });
+          }
+        }
+        failure:^(Downloader *downloader) {
+          /** @ghidraAddress 0x4e9c4 */
+          // Offline fallback: dispatch to the title screen when the file list is intact, otherwise
+          // to the download screen.
+          if ([DownloadResourceManager fileListCheck]) {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x4eaac */
+                [weakSelf showTitle];
+              });
+          } else {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                /** @ghidraAddress 0x4eb08 */
+                [weakSelf showDownload];
+              });
+          }
+        }];
+}
+
+/** @ghidraAddress 0x4faf4 */
+- (void)showTerms {
+    [self.viewController showTermsWithDelegate:nil];
+}
+
+/** @ghidraAddress 0x50398 */
+- (void)showDownload {
+    RBResourceDownloadViewController *downloadViewController =
+        [[RBResourceDownloadViewController alloc] init];
+    self.resourceDownloadViewController = downloadViewController;
+    downloadViewController.downloadPath = self.urlString;
+    downloadViewController.version = self.version;
+    [self.viewController presentViewController:downloadViewController animated:NO completion:nil];
+}
+
+#pragma mark - Alert view delegate
+
+/** @ghidraAddress 0x504dc */
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    alertView.delegate = nil;
+    if (alertView.tag == kResourceUpdateAlertTag) {
+        [self showDownload];
+    } else if (alertView.tag == kStartupNetworkErrorTag) {
+        [self requestResourceInfo];
+    } else if (alertView.tag == kNewVersionAlertTag) {
+        if (alertView.cancelButtonIndex == buttonIndex) {
+            self.isSkipUpdate = YES;
+            if (self.resourceDownloadViewController == nil) {
+                [self requestResourceInfo];
+            } else {
+                [self.resourceDownloadViewController download];
+            }
+        } else {
+            // The binary sends -launchAppStore to the AppDelegate class object rather than to an
+            // instance; this reproduces that exactly.
+            [(id)AppDelegate.class launchAppStore];
+        }
+    } else {
+        if (alertView.cancelButtonIndex == buttonIndex) {
+            [self showTitle];
+        } else {
+            [self showDownload];
+        }
+    }
 }
 
 @end
