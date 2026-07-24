@@ -84,7 +84,7 @@ constexpr unsigned int kAlphaShift = 24;
 constexpr float kAlphaScale = 255.0f;
 
 // Chooses the clear-effect overlay texture name for a background id: the slot for its theme family.
-const char *SelectClearEffectName(int nBackgroundId) {
+constexpr const char *SelectClearEffectName(int nBackgroundId) {
     if (nBackgroundId <= kLastClassicBackgroundId) {
         return kBackgroundTextureNames[kClearEffectClassicIndex];
     }
