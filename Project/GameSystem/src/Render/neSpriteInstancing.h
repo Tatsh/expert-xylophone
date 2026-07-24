@@ -157,38 +157,45 @@ public:
     /**
      * @brief Set sprite @p nIndex's world position: the point the anchor is translated to.
      * @ghidraAddress 0x5a0c4
+     * @ghidraAddress 0x66f6c
      */
     void SetSpritePosition(int nIndex, const S_VECTOR2 &position);
     /**
      * @brief Set sprite @p nIndex's pixel size: the quad spans from the origin to (width, height).
      * @ghidraAddress 0x59fbc
+     * @ghidraAddress 0x67020
      */
     void SetSpriteSize(int nIndex, const S_VECTOR2 &size);
     /**
      * @brief Set sprite @p nIndex's anchor: the pivot offset subtracted from the position, so an
      * anchor of half the size centres the quad on the position.
      * @ghidraAddress 0x59f64
+     * @ghidraAddress 0x66fc8
      */
     void SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor);
     /**
      * @brief Set sprite @p nIndex's UV origin: the top-left texture coordinate of the quad.
      * @ghidraAddress 0x5a014
+     * @ghidraAddress 0x67078
      */
     void SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin);
     /**
      * @brief Set sprite @p nIndex's UV size: the texture-coordinate span added to the UV origin for
      * the quad's far corners.
      * @ghidraAddress 0x5a06c
+     * @ghidraAddress 0x670d0
      */
     void SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize);
     /**
      * @brief Set sprite @p nIndex's rotation, in radians.
      * @ghidraAddress 0x5a174
+     * @ghidraAddress 0x67128
      */
     void SetSpriteRotation(int nIndex, float flRotation);
     /**
      * @brief Set sprite @p nIndex's per-axis scale, applied to its pixel size.
      * @ghidraAddress 0x5a11c
+     * @ghidraAddress 0x67174
      */
     void SetSpriteScale(int nIndex, float flScaleX, float flScaleY);
     /**
@@ -197,6 +204,7 @@ public:
      * Packs the channels into the sprite's colour word as @c R @c | @c (G @c << @c 8) @c |
      * @c (B @c << @c 16) @c | @c (A @c << @c 24).
      * @ghidraAddress 0x5a1c0
+     * @ghidraAddress 0x671cc
      */
     void SetSpriteColor(int nIndex,
                         unsigned int nRed,
