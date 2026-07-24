@@ -302,7 +302,8 @@ private:
     int m_nMatrixIndexStride = {};                          // +0x120 cached matrix-index stride
     int m_nMatrixIndexSize = {};                            // +0x124 matrix indices per vertex
     int m_nMatrixIndexBufferBinding = {};                   // +0x128 matrix-index buffer binding
-    unsigned char m_aReserved12c[0xa8] = {};                // +0x12c
+    int m_nElementBufferBound = {};                         // +0x12c cached element-array binding
+    unsigned char m_aReserved130[0xa4] = {};                // +0x130
     int m_nBlendSrc = {};                                   // +0x1d4 cached blend source factor
     int m_nBlendDest = {};                        // +0x1d8 cached blend destination factor
     unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc

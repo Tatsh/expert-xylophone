@@ -461,3 +461,21 @@ void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize) {
         glMatrixIndexPointerOES(nSize, GL_UNSIGNED_BYTE, nStride, nullptr);
     }
 }
+
+/** @ghidraAddress 0x21510 */
+void neGLESRenderer::BindArrayBuffer(unsigned int dwBuffer) {
+    if (m_nArrayBufferBound == static_cast<int>(dwBuffer)) {
+        return;
+    }
+    m_nArrayBufferBound = static_cast<int>(dwBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, dwBuffer);
+}
+
+/** @ghidraAddress 0x21a14 */
+void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
+    if (m_nElementBufferBound == static_cast<int>(dwBuffer)) {
+        return;
+    }
+    m_nElementBufferBound = static_cast<int>(dwBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dwBuffer);
+}
