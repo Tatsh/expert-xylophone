@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "playfieldlayerbase.h"
+
 /**
  * @brief One player side's play record: the per-grade judgement counters plus the derived rate,
  * rank, and a trailing field.
@@ -77,17 +79,16 @@ public:
         return m_aRecords[nSide].nField10;
     }
 
+    /**
+     * @brief Resets every side's play record and repaints the score fields and lane gauges.
+     * @ghidraAddress 0x149268
+     */
+    void ResetLaneGaugeState();
+
 private:
     int m_nField0 = {};                     // +0x00: leading tracker state.
     PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
 };
-
-/**
- * @brief Resets the per-side records of a score tracker and repaints the score fields and gauges.
- * @param pTracker The score tracker to reset.
- * @ghidraAddress 0x149268
- */
-void ResetLaneGaugeState(ScoreTracker *pTracker);
 
 /**
  * @brief Returns the process-wide score tracker, creating it on first use.
@@ -95,6 +96,36 @@ void ResetLaneGaugeState(ScoreTracker *pTracker);
  * @ghidraAddress 0x1492cc
  */
 ScoreTracker *GetScoreTracker();
+
+/**
+ * @brief Returns the play-field layer that draws the score digits and lane gauges.
+ * @ghidraAddress 0x18b668
+ */
+PlayFieldLayerBase *GetPlayerFieldLayer();
+
+/**
+ * @brief Animates a side's score-digit field towards a target value over a duration.
+ * @param flDuration The tween duration, in seconds.
+ * @param pLayer The play-field layer.
+ * @param uSide The player side.
+ * @param nValue The target score value.
+ * @ghidraAddress 0x18b7cc
+ */
+void SetScoreDigitTarget(float flDuration,
+                         PlayFieldLayerBase *pLayer,
+                         unsigned int uSide,
+                         int nValue);
+
+/**
+ * @brief Sets a side's lane gauge to a value and repaints its background band.
+ * @param flValue The gauge value.
+ * @param pTracker The score tracker.
+ * @param uSide The player side.
+ * @ghidraAddress 0x149324
+ */
+void ApplyLaneGaugeValueAndBackground(float flValue,
+                                      ScoreTracker *pTracker,
+                                      unsigned long long uSide);
 
 // code: language=C++
 // kate: hl C++;
