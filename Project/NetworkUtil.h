@@ -144,6 +144,26 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable NSURL *)termAgree;
 
+/**
+ * @brief Build the paged extend-note catalogue list endpoint URL, carrying the region code, the
+ * device user-info parameters, and the requested page.
+ * @param offset The one-based catalogue offset of the first item to fetch.
+ * @param limit The maximum number of items to fetch.
+ * @return The extend-note list endpoint URL.
+ * @ghidraAddress 0x3365c
+ */
++ (nullable NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit;
+
+/**
+ * @brief Build the extend-note-detail info endpoint URL for an item, carrying the device user-info
+ * parameters only for a user-initiated open.
+ * @param extendNoteID The extend-note identifier.
+ * @param userOpen Whether the request is on behalf of a user-initiated open.
+ * @return The extend-note-detail info endpoint URL.
+ * @ghidraAddress 0x3376c
+ */
++ (nullable NSURL *)extendNoteInfoURL:(unsigned int)extendNoteID UserOpen:(BOOL)userOpen;
+
 @end
 
 NS_ASSUME_NONNULL_END

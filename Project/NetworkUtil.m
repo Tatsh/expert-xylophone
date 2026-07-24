@@ -44,6 +44,14 @@ static NSString *const kResourceAPIPath = @"v3/ssl_resource/";
 static NSString *const kTermListAPIPath = @"v3/terms/list/";
 static NSString *const kTermFetchAPIPath = @"v3/terms/fetch/";
 static NSString *const kTermAgreeAPIPath = @"v3/terms/log/";
+static NSString *const kExtendNoteListAPIPath = @"v3/extmusiclist/";
+static NSString *const kExtendNoteInfoAPIPath = @"v3/extmusicinfo/";
+
+// The extend-note list and info query format strings. The list and the user-open info variant carry
+// the device user-info parameters; the non-user-open info variant does not.
+static NSString *const kExtendNoteListParamFormat = @"target=%@&head=%d&limit=%d&%@";
+static NSString *const kExtendNoteInfoParamFormat = @"target=%@&extitem=%d";
+static NSString *const kExtendNoteInfoUserOpenParamFormat = @"target=%@&extitem=%d&%@";
 
 // The suffix appended to the device UUID key before hashing it into the request fingerprint.
 static NSString *const kIdentifierKeySuffix = @"_STORE";
@@ -193,6 +201,31 @@ static NSString *const kNonceCharFormat = @"%c";
  */
 + (NSURL *)playedURL {
     return nil;
+}
+
+/** @ghidraAddress 0x3365c */
++ (NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit {
+    NSString *param = [NSString stringWithFormat:kExtendNoteListParamFormat,
+                                                 GetRegionCode(),
+                                                 offset,
+                                                 limit,
+                                                 [NetworkUtil userInfo]];
+    return [NetworkUtil createSecureAPI:kExtendNoteListAPIPath withParam:param];
+}
+
+/** @ghidraAddress 0x3376c */
++ (NSURL *)extendNoteInfoURL:(unsigned int)extendNoteID UserOpen:(BOOL)userOpen {
+    NSString *param;
+    if (userOpen) {
+        param = [NSString stringWithFormat:kExtendNoteInfoUserOpenParamFormat,
+                                           GetRegionCode(),
+                                           extendNoteID,
+                                           [NetworkUtil userInfo]];
+    } else {
+        param =
+            [NSString stringWithFormat:kExtendNoteInfoParamFormat, GetRegionCode(), extendNoteID];
+    }
+    return [NetworkUtil createSecureAPI:kExtendNoteInfoAPIPath withParam:param];
 }
 
 @end

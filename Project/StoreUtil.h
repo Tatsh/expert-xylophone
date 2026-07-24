@@ -183,6 +183,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)priceString:(nullable SKProduct *)product;
 
 /**
+ * @brief Format a StoreKit product's localised price string.
+ *
+ * The @p useCatalogPrice flag is accepted for call-site compatibility but does not affect the
+ * result: the localised price always comes from the StoreKit product itself.
+ * @param product The StoreKit product whose price to format.
+ * @param useCatalogPrice Ignored.
+ * @return The localised price string.
+ * @ghidraAddress 0x85b7c
+ */
++ (nullable NSString *)priceString:(nullable SKProduct *)product
+                   useCatalogPrice:(BOOL)useCatalogPrice;
+
+/**
  * @brief The campaign unlock-list endpoint URL.
  * @return The campaign list endpoint URL.
  */

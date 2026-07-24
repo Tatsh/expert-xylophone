@@ -24,6 +24,7 @@ autoresizes
 autoresizing
 autoreverses
 baet
+behavior
 bewfsujtjoh
 bitcode
 blit
@@ -89,6 +90,9 @@ errno
 esbenp
 exprosion
 extern
+extitem
+extmusicinfo
+extmusiclist
 extraout
 fabsf
 falied
@@ -199,6 +203,7 @@ rbplus
 rbscorehash
 rdparty
 readwrite
+receiptdata
 recomputation
 rect
 rects
