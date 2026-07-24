@@ -28,6 +28,15 @@ public:
      */
     C_RENDER();
     /**
+     * @brief Render this node.
+     *
+     * The base node is not drawable and does nothing; drawable subclasses such as
+     * @c C_SPRITE_INSTANCING override this to emit their draw calls. Invoked by the scene-tree
+     * render walk. This is the first virtual slot, before the destructor.
+     * @ghidraAddress 0x29edc
+     */
+    virtual void Render();
+    /**
      * @brief Destroys the node: unlinks it from the render-list ring, detaches it from its parent
      * and detaches all of its children, then frees its buffer.
      * @ghidraAddress 0x29c10

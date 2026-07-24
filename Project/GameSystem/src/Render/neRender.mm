@@ -21,6 +21,11 @@ C_RENDER::C_RENDER() {
     m_pSiblingNext = this;
 }
 
+/** @ghidraAddress 0x29edc */
+void C_RENDER::Render() {
+    // The base render node is not drawable; drawable subclasses override this.
+}
+
 /** @ghidraAddress 0x29c10 */
 C_RENDER::~C_RENDER() {
     // Unlink from the render-list ring.

@@ -74,6 +74,14 @@ public:
      */
     void SetRefCountedMember(C_TEXTURE *pTexture);
 
+    /**
+     * @brief The texture the batch currently draws with, or @c nullptr when it has none.
+     * @ghidraAddress 0x31820
+     */
+    C_TEXTURE *GetBoundTexture() const {
+        return m_pTexture;
+    }
+
 private:
     S_VECTOR2 *m_pSpritePositionArray = {}; // +0xd8
     S_VECTOR2 *m_pSpriteSizeArray = {};     // +0xe0
