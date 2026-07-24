@@ -82,6 +82,23 @@ void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z) {
     pOutMatrix[kMatrixTranslateZ] = z;
 }
 
+/** @ghidraAddress 0x19990 */
+void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, float *pOutMatrix) {
+    // Top-left-origin orthographic projection (column-major): x [0, width] -> [-1, 1], y
+    // [0, height] -> [1, -1] (flipped for screen space), and z [near, far] -> [0, 1]. The binary
+    // zeroes the off-diagonal elements with vector stores.
+    static const float kZeroMatrix[16] = {};
+    std::memcpy(pOutMatrix, kZeroMatrix, sizeof(kZeroMatrix));
+    const float flDepth = flFar - flNear;
+    pOutMatrix[0] = 2.0f / flWidth;
+    pOutMatrix[5] = -2.0f / flHeight;
+    pOutMatrix[10] = 1.0f / flDepth;
+    pOutMatrix[15] = 1.0f;
+    pOutMatrix[kMatrixTranslateX] = -1.0f;
+    pOutMatrix[kMatrixTranslateY] = 1.0f;
+    pOutMatrix[kMatrixTranslateZ] = -flNear / flDepth;
+}
+
 /** @ghidraAddress 0x196b4 */
 float *MakeRotationMatrixX(float flAngle, float *pOut) {
     SetMatrixIdentity(pOut);

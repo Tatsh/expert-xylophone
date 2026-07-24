@@ -266,6 +266,14 @@ float *MakeRotationMatrixX(float angle, float *pOutMatrix);
  */
 void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
 /**
+ * @brief Builds a 4x4 column-major top-left-origin orthographic projection matrix.
+ *
+ * Maps x from @c [0, flWidth] to @c [-1, 1], y from @c [0, flHeight] to @c [1, -1] (flipped for
+ * screen space), and z from @c [flNear, flFar] to @c [0, 1].
+ * @ghidraAddress 0x19990
+ */
+void MakeOrthoMatrix(float flWidth, float flHeight, float flNear, float flFar, float *pOutMatrix);
+/**
  * @brief Composes @p pSource onto @p pAccumulator on the left, in place.
  *
  * Computes @c pAccumulator @c = @c pSource @c * @c pAccumulator (column-major), multiplying against
