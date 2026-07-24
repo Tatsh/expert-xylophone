@@ -85,36 +85,17 @@ public:
      */
     void ResetLaneGaugeState();
 
+    /**
+     * @brief The process-wide score tracker, created on first use.
+     * @return The shared score tracker.
+     * @ghidraAddress 0x1492cc
+     */
+    static ScoreTracker *shared();
+
 private:
     int m_nField0 = {};                     // +0x00: leading tracker state.
     PlayRecord m_aRecords[kSideCount] = {}; // +0x04: one play record per player side.
 };
-
-/**
- * @brief Returns the process-wide score tracker, creating it on first use.
- * @return The score tracker.
- * @ghidraAddress 0x1492cc
- */
-ScoreTracker *GetScoreTracker();
-
-/**
- * @brief Returns the play-field layer that draws the score digits and lane gauges.
- * @ghidraAddress 0x18b668
- */
-PlayFieldLayerBase *GetPlayerFieldLayer();
-
-/**
- * @brief Animates a side's score-digit field towards a target value over a duration.
- * @param flDuration The tween duration, in seconds.
- * @param pLayer The play-field layer.
- * @param uSide The player side.
- * @param nValue The target score value.
- * @ghidraAddress 0x18b7cc
- */
-void SetScoreDigitTarget(float flDuration,
-                         PlayFieldLayerBase *pLayer,
-                         unsigned int uSide,
-                         int nValue);
 
 /**
  * @brief Sets a side's lane gauge to a value and repaints its background band.

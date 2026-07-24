@@ -13,14 +13,14 @@ void ScoreTracker::ResetLaneGaugeState() {
         for (int &nCell : record.nCells) {
             nCell = 0;
         }
-        PlayFieldLayerBase *pLayer = GetPlayerFieldLayer();
+        PlayFieldLayerBase *pLayer = PlayFieldLayerBase::shared();
         SetScoreDigitTarget(0.0f, pLayer, nSide, record.nCells[0]);
         ApplyLaneGaugeValueAndBackground(0.0f, this, nSide);
     }
 }
 
 /** @ghidraAddress 0x1492cc */
-ScoreTracker *GetScoreTracker() {
+ScoreTracker *ScoreTracker::shared() {
     if (g_pScoreTracker == nullptr) {
         // The binary allocates the raw object, clears the leading field, then resets the per-side
         // records; value-initialisation zeroes the whole object, so only the record reset remains.

@@ -35,6 +35,14 @@ public:
         return m_nThema;
     }
 
+    /**
+     * @brief The shared play-field layer that draws the score digits and lane gauges, created on
+     * first use.
+     * @return The shared player-field layer.
+     * @ghidraAddress 0x18b668
+     */
+    static PlayFieldLayerBase *shared();
+
 protected:
     /**
      * @brief Initialise the layer base from the current device and settings.
@@ -51,6 +59,19 @@ private:
     bool m_fIsHardwareType9 = {};      // +0x01
     int m_nThema = {};                 // +0x04
 };
+
+/**
+ * @brief Animates a side's score-digit field towards a target value over a duration.
+ * @param flDuration The roll-up duration, in seconds.
+ * @param pLayer The player-field layer.
+ * @param uSide The player side.
+ * @param nValue The target score value.
+ * @ghidraAddress 0x18b7cc
+ */
+void SetScoreDigitTarget(float flDuration,
+                         PlayFieldLayerBase *pLayer,
+                         unsigned int uSide,
+                         int nValue);
 
 // code: language=C++
 // kate: hl C++;
