@@ -132,6 +132,13 @@ void SetMatrixIdentity(float *pMatrix) {
     std::memcpy(pMatrix, kIdentity, sizeof(kIdentity));
 }
 
+/** @ghidraAddress 0x1966c */
+void MakeTranslationMatrix(float *pOutMatrix, const float *pTranslation) {
+    // The binary copies the three identity basis rows, sets the homogeneous element, and stores the
+    // translation column; that is the identity-then-translate the scalar overload already performs.
+    MakeTranslationMatrix(pOutMatrix, pTranslation[0], pTranslation[1], pTranslation[2]);
+}
+
 /** @ghidraAddress 0x19624 */
 void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z) {
     SetMatrixIdentity(pOutMatrix);

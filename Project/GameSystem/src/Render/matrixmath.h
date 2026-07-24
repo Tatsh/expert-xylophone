@@ -31,6 +31,13 @@ float *MakeRotationMatrixZ(float flAngle, float *pOutMatrix);
  */
 void MakeTranslationMatrix(float *pOutMatrix, float x, float y, float z);
 /**
+ * @brief Builds a translation matrix from a three-component translation vector.
+ * @param pOutMatrix The 16-element output matrix.
+ * @param pTranslation The three-component translation (x, y, z).
+ * @ghidraAddress 0x1966c
+ */
+void MakeTranslationMatrix(float *pOutMatrix, const float *pTranslation);
+/**
  * @brief Builds a 4x4 column-major top-left-origin orthographic projection matrix.
  *
  * Maps x from @c [0, flWidth] to @c [-1, 1], y from @c [0, flHeight] to @c [1, -1] (flipped for
