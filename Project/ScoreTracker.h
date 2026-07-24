@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "playfieldlayerbase.h"
+#include "playerfieldlayer.h"
 
 /**
  * @brief One player side's play record: the per-grade judgement counters plus the derived rate,
@@ -105,10 +105,8 @@ public:
      * @param nValue The target score value.
      * @ghidraAddress 0x18b7cc
      */
-    static void SetScoreDigitTarget(float flDuration,
-                                    PlayFieldLayerBase *pLayer,
-                                    unsigned int uSide,
-                                    int nValue);
+    static void
+    SetScoreDigitTarget(float flDuration, PlayerFieldLayer *pLayer, unsigned int uSide, int nValue);
 
     /**
      * @brief The process-wide score tracker, created on first use.

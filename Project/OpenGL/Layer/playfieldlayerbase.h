@@ -6,26 +6,12 @@
 #pragma once
 
 /**
- * @brief One player side's score-digit roll-up tween: the target value and the animation it plays
- * to reach it.
- *
- * The trailing @c // +0xNN comments document the original 32-bit member offsets for reference only.
- */
-struct ScoreDigitField {
-    int nTarget = {};      // +0x00: the target score value.
-    float flFrom = {};     // +0x04: the animation's start value (the current value when armed).
-    float flTo = {};       // +0x08: the animation's end value (the target as a float).
-    float flCurrent = {};  // +0x0c: the current animated value.
-    float flElapsed = {};  // +0x10: the elapsed animation time.
-    float flDuration = {}; // +0x14: the animation duration, in seconds.
-};
-
-/**
  * @brief Shared base for the play-field theme layers.
  *
  * Holds the presentation context common to every theme layer: the font variant, whether the device
- * is the older hardware type, and the selected theme. The trailing @c // +0xNN comments document the
- * original 32-bit offsets for reference only.
+ * is the older hardware type, and the selected theme. Concrete play-field layers (the clear gauge,
+ * the player-field score layer, the effect layers) derive from it. The trailing @c // +0xNN comments
+ * document the original 32-bit offsets for reference only.
  */
 class PlayFieldLayerBase {
 public:
@@ -50,23 +36,6 @@ public:
         return m_nThema;
     }
 
-    /**
-     * @brief A player side's score-digit roll-up record.
-     * @param uSide The player side.
-     * @return The side's score-digit field.
-     */
-    ScoreDigitField &GetScoreDigitField(unsigned int uSide) {
-        return m_aScoreFields[uSide];
-    }
-
-    /**
-     * @brief The shared play-field layer that draws the score digits and lane gauges, created on
-     * first use.
-     * @return The shared player-field layer.
-     * @ghidraAddress 0x18b668
-     */
-    static PlayFieldLayerBase *shared();
-
 protected:
     /**
      * @brief Initialise the layer base from the current device and settings.
@@ -82,10 +51,6 @@ private:
     unsigned char m_bFontVariant = {}; // +0x00
     bool m_fIsHardwareType9 = {};      // +0x01
     int m_nThema = {};                 // +0x04
-    // +0x08..+0x3f: the layer's presentation transform and flags (seeded by the shared() factory),
-    // whose individual fields are still being worked out.
-    unsigned char m_aLayerState08[0x38] = {}; // +0x08
-    ScoreDigitField m_aScoreFields[2] = {};   // +0x40: the per-side score-digit roll-up records.
 };
 
 // code: language=C++
