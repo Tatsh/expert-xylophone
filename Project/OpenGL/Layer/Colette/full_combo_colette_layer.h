@@ -42,16 +42,25 @@ public:
      */
     void InitializeBackgroundSpriteLayers();
 
+    /**
+     * @brief Activates the full-combo effect for a player colour.
+     * @param nColor The player colour (0 or 1).
+     * @ghidraAddress 0x9b2e4
+     */
+    void CreateFullComboColette(unsigned int nColor);
+
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 3;
+    // The number of player colours with a full-combo effect record.
+    static constexpr int kColorCount = 2;
 
 private:
-    // A per-slot effect record the constructor zero-clears (its fields are still being worked out).
+    // A per-colour full-combo effect record.
     struct EffectRecord {
-        bool m_bFlag = {}; // +0x00
+        bool m_bActive = {}; // +0x00: whether the effect is playing.
         // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
-        int m_nValue = {};  // +0x04
-        bool m_bFlag2 = {}; // +0x08
+        int m_nTimer = {};  // +0x04: the effect animation timer.
+        bool m_bFlag2 = {}; // +0x08: a secondary state flag, cleared on activation.
         // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 
@@ -66,7 +75,7 @@ private:
     bool m_bBuilt = {};                         // +0x4c: set once the sprites are built.
     // +0x4d..+0x4f is alignment padding before the effect records.
     // unsigned char m_aPad4d[3]; // +0x4d (alignment padding, compiler-inserted)
-    EffectRecord m_aEffects[kSpriteSlotCount - 1] = {}; // +0x50: two per-slot effect records.
+    EffectRecord m_aEffects[kColorCount] = {}; // +0x50: one effect record per player colour.
 };
 
 // code: language=C++
