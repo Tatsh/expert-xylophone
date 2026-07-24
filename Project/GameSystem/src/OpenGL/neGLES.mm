@@ -21,6 +21,17 @@ enum {
 // Maps an engine texture format (1..3) to its unsized GL ES 1.1 pixel format.
 constexpr GLenum kEngineFormatToGl[] = {GL_RGBA, GL_RGB, GL_LUMINANCE_ALPHA};
 
+// The framebuffer attachment points are spaced 0x20 apart starting at the colour attachment, and
+// there are three of them (colour, depth, stencil).
+constexpr int kRenderKindAttachmentStride = 0x20;
+constexpr int kRenderKindMax = 3;
+
+// Maps a render-kind to its GL framebuffer attachment enum, computed inline as the binary does.
+int RenderKindToGLRenderKind(RenderKind nRenderKind) {
+    assert(nRenderKind >= 0 && nRenderKind < kRenderKindMax);
+    return GL_COLOR_ATTACHMENT0_OES + static_cast<int>(nRenderKind) * kRenderKindAttachmentStride;
+}
+
 } // namespace
 
 /** @ghidraAddress 0x21a60 */
@@ -92,4 +103,18 @@ void neGLESRenderer::GetRenderbufferWidth(int *pOutWidth) {
 /** @ghidraAddress 0x213ec */
 void neGLESRenderer::GetRenderbufferHeight(int *pOutHeight) {
     glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, pOutHeight);
+}
+
+/** @ghidraAddress 0x21380 */
+void neGLESRenderer::AttachRenderbufferToFramebuffer(RenderKind nRenderKind,
+                                                     unsigned int dwRenderbuffer) {
+    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES,
+                                 RenderKindToGLRenderKind(nRenderKind),
+                                 GL_RENDERBUFFER_OES,
+                                 dwRenderbuffer);
+}
+
+/** @ghidraAddress 0x212a4 */
+unsigned int GetGLRenderbufferTarget() {
+    return GL_RENDERBUFFER_OES;
 }
