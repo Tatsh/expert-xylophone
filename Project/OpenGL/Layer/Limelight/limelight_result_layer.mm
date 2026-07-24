@@ -9,6 +9,7 @@
 #include "neTexture.h"
 #include "parts_data_table.h"
 #include "s_vector2.h"
+#include "soundeffectmanager.h"
 
 // The process-wide Limelight result-window layer, created lazily by shared().
 static LimelightResultLayer *g_pLimelightResultLayer = nullptr; // @ghidraAddress 0x3de008
@@ -566,5 +567,26 @@ void LimelightResultLayer::RenderRatingValue(float flValue,
             }
         }
         flX -= kRatingGlyphGap;
+    }
+}
+
+namespace {
+
+// The time threshold, in frame-delta units, past which the bonus voice cue fires.
+constexpr float kBonusCueThreshold = 3300.0f;
+// The themed voice identifier played for the result bonus cue.
+constexpr int kBonusCueVoiceId = 7;
+
+} // namespace
+
+/** @ghidraAddress 0x1240a8 */
+void LimelightResultLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
+    if (!m_bBonusCueArmed) {
+        return;
+    }
+    m_flBonusCueTimer += flDeltaTime;
+    if (m_flBonusCueTimer > kBonusCueThreshold) {
+        m_bBonusCueArmed = false;
+        SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kBonusCueVoiceId);
     }
 }

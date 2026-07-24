@@ -216,9 +216,25 @@ private:
     // unsigned char m_aPad69[3]; // +0x69 (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
-    // +0x74..+0x16f: the remaining layer state, still being worked out, kept as a reserved span to
-    // preserve the allocation size.
-    unsigned char m_aReserved74[0xfc] = {}; // +0x74
+    // +0x74..+0x13b: the remaining per-frame presentation state (tweens, slide timer, frame index),
+    // still being worked out, kept as a reserved span to preserve the allocation size.
+    unsigned char m_aReserved74[0xc8] = {}; // +0x74
+    bool m_bBonusCueArmed = {};             // +0x13c: whether the bonus voice cue is still pending.
+    // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
+    unsigned char m_aPad13d[3] = {}; // +0x13d
+    float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
+    // +0x144..+0x16f: the remaining layer state, still being worked out.
+    unsigned char m_aReserved144[0x2c] = {}; // +0x144
+
+    /**
+     * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
+     *
+     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold the
+     * cue is disarmed and themed voice 7 is loaded and played.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x1240a8
+     */
+    void UpdateBonusSoundCueTimer(float flDeltaTime);
 };
 
 // code: language=C++
