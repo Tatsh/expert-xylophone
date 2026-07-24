@@ -36,6 +36,7 @@ bzero
 caeagl
 calcel
 caplayermgr
+casound
 ccontext
 cdevice
 centered
@@ -151,6 +152,7 @@ libera
 libsonnet
 limepoint
 longrate
+lpcm
 lproj
 lsizei
 malloc

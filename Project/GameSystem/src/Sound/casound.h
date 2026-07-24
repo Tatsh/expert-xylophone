@@ -1,0 +1,54 @@
+/**
+ * @file
+ * A decoded one-shot sound buffer, @c caSource.
+ */
+
+#pragma once
+
+#import <AudioToolbox/AudioToolbox.h>
+
+/**
+ * A single decoded sound: the source file's sample rate and channel count, and the fully-decoded
+ * 16-bit signed PCM data block. Populated from an @c ExtAudioFileRef by @c ReadAudioFormat (which
+ * fills the format fields and computes the buffer size) and @c ReadAudioPcmData (which allocates
+ * and decodes the PCM).
+ * @ghidraAddress caSource (engine sound-buffer struct)
+ */
+class caSource {
+public:
+    /**
+     * @brief Reads the source file's data format into @p pAsbd and derives the decoded PCM buffer
+     *        size.
+     *
+     * Queries the file's data format and length, sets @p pAsbd to the client 16-bit signed packed
+     * LPCM format, and records the sample rate, channel count, and total byte size to decode.
+     * @param hAudioFile The opened source file.
+     * @param pAsbd The stream description to fill with the client format.
+     * @return @c 1 on success, @c 0 when a property query fails.
+     * @ghidraAddress 0x4d4c4
+     */
+    int ReadAudioFormat(ExtAudioFileRef hAudioFile, AudioStreamBasicDescription *pAsbd);
+
+    /**
+     * @brief Decodes the whole source file into the PCM data block sized by @c ReadAudioFormat.
+     *
+     * Allocates and zeroes the PCM buffer, sets the client data format on the file, and reads frames
+     * in a loop until the buffer is full.
+     * @param hAudioFile The opened source file.
+     * @param pAsbd The client stream description set by @c ReadAudioFormat.
+     * @return @c 1 on success, @c 0 on an empty size or read error.
+     * @ghidraAddress 0x4d58c
+     */
+    int ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescription *pAsbd);
+
+private:
+    double m_dSampleRate = {};           // +0x00 the source sample rate, in hertz
+    int m_nChannelCount = {};            // +0x08 the number of channels
+    unsigned char m_aReserved0c[4] = {}; // +0x0c
+    void *m_pBuffer = {};                // +0x10 the decoded 16-bit PCM data block
+    unsigned int m_dwBufferSize = {};    // +0x14 the PCM data block's byte size
+};
+
+// code: language=Objective-C++
+// kate: hl Objective-C++;
+// vim: set ft=objcpp :
