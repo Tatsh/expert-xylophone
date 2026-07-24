@@ -963,9 +963,31 @@ unsigned int GetGLRenderbufferTarget();
 bool CheckFramebufferComplete();
 
 /**
+ * One tracked touch inside the @c TouchManager slot array. The 32-bit offset comments are
+ * documentation only; the 64-bit build goes through the named fields.
+ * @ghidraAddress TouchPoint (engine touch-slot struct)
+ */
+struct TouchPoint {
+    int m_nId = {};        // +0x00 rolling touch id
+    int m_nBeginX = {};    // +0x04 x at begin
+    int m_nBeginY = {};    // +0x08 y at begin
+    int m_nCurrentX = {};  // +0x0c current x (the position UpdateTouchPoint/HandleTouchMoved match)
+    int m_nCurrentY = {};  // +0x10 current y
+    int m_nPreviousX = {}; // +0x14 previous x
+    int m_nPreviousY = {}; // +0x18 previous y
+    int m_nMinX = {};      // +0x1c retained begin x mirror
+    int m_nMinY = {};      // +0x20 retained begin y mirror
+    int m_nKey1 = {};      // +0x24 owning-view key pair (the view frame width at begin)
+    int m_nKey2 = {};      // +0x28 owning-view key pair (the view frame height at begin)
+    bool m_bActive = {};   // +0x2c slot kind/active flag (0 => uses m_bMoved, else m_bMovedAlt)
+    bool m_bMoved = {};    // +0x2d moved-this-frame flag for the primary kind
+    bool m_bMovedAlt = {}; // +0x2e moved-this-frame flag for the alternate kind
+};
+
+/**
  * The global touch manager. The application obtains it through @c FetchSharedSingleton and commits
- * each frame through @c CompactTouchList; only the operations the Objective-C layer calls are
- * modelled here.
+ * each frame through @c CompactTouchList. The Objective-C GL view feeds it raw touch phases through
+ * @c AddTouchPoint, @c UpdateTouchPoint, @c HandleTouchMoved, and @c MarkAllTouchesEnded.
  * @ghidraAddress TouchManager (engine class, slot array at +0x0, count at +0x100)
  */
 class TouchManager {
@@ -975,6 +997,42 @@ public:
      * @ghidraAddress 0x17c38
      */
     static TouchManager *FetchSharedSingleton();
+    /**
+     * @brief Registers a new touch in the next free slot, assigning it the next rolling id and the
+     *        owning view's key pair.
+     * @param nX The touch x in view coordinates.
+     * @param nY The touch y in view coordinates.
+     * @param nKey1 The owning-view key (its frame width at begin).
+     * @param nKey2 The owning-view key (its frame height at begin).
+     * @ghidraAddress 0x17dbc
+     */
+    void AddTouchPoint(int nX, int nY, int nKey1, int nKey2);
+    /**
+     * @brief Advances the tracked touch whose current position matches (@p nKey1, @p nKey2) to the
+     *        new position, saving the old position as the previous one.
+     * @param nX The new touch x.
+     * @param nY The new touch y.
+     * @param nKey1 The previous x used to locate the slot.
+     * @param nKey2 The previous y used to locate the slot.
+     * @ghidraAddress 0x17e10
+     */
+    void UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2);
+    /**
+     * @brief Marks the tracked touch at (@p nOldX, @p nOldY) as moved to (@p nNewX, @p nNewY),
+     *        preferring an exact old-position match and falling back to the new position.
+     * @param nNewX The new touch x.
+     * @param nNewY The new touch y.
+     * @param nOldX The previous touch x to match.
+     * @param nOldY The previous touch y to match.
+     * @ghidraAddress 0x17e5c
+     */
+    void HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY);
+    /**
+     * @brief Marks every tracked touch as moved/ended for this frame (used when all touches end or
+     *        cancel at once).
+     * @ghidraAddress 0x17f14
+     */
+    void MarkAllTouchesEnded();
     /**
      * @brief Commits the current touch frame and swap-removes the touches that have ended.
      * @ghidraAddress 0x17f50

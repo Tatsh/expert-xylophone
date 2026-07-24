@@ -145,4 +145,54 @@ static neGLView *g_pGLView = nil;
     return [self.glContext presentRenderbuffer:m_RenderBufferID];
 }
 
+#pragma mark - Touch input
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x3a550 */
+    // The owning-view key pair is this view's frame size, correlating each touch to the GL surface.
+    CGRect frame = self.frame;
+    int key1 = static_cast<int>(CGRectGetWidth(frame));
+    int key2 = static_cast<int>(CGRectGetHeight(frame));
+    for (UITouch *touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        TouchManager::FetchSharedSingleton()->AddTouchPoint(
+            static_cast<int>(location.x), static_cast<int>(location.y), key1, key2);
+    }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x3a704 */
+    for (UITouch *touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        CGPoint previous = [touch previousLocationInView:self];
+        // The previous position locates the tracked slot; the current position replaces it.
+        TouchManager::FetchSharedSingleton()->UpdateTouchPoint(static_cast<int>(location.x),
+                                                               static_cast<int>(location.y),
+                                                               static_cast<int>(previous.x),
+                                                               static_cast<int>(previous.y));
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x3a8b0 */
+    if (touches.count == [event touchesForView:self].count) {
+        // Every touch on this view ended at once: mark them all ended in a single pass.
+        TouchManager::FetchSharedSingleton()->MarkAllTouchesEnded();
+        return;
+    }
+    for (UITouch *touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        CGPoint previous = [touch previousLocationInView:self];
+        TouchManager::FetchSharedSingleton()->HandleTouchMoved(static_cast<int>(location.x),
+                                                               static_cast<int>(location.y),
+                                                               static_cast<int>(previous.x),
+                                                               static_cast<int>(previous.y));
+    }
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    /** @ghidraAddress 0x3ab14 */
+    [self touchesEnded:touches withEvent:event];
+}
+
 @end
