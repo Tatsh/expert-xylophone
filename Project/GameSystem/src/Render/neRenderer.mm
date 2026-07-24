@@ -1,10 +1,13 @@
 #include "neRenderer.h"
 
+#include <cstring>
+
 #import "neEngineBridge.h"
 
 // The reference-counted projection and view-camera slots the render path reads each frame.
-ne_Viewport *g_pCurrentProjection = nullptr; // @ghidraAddress 0x3cff08
-ne_Viewport *g_pActiveViewCamera = nullptr;  // @ghidraAddress 0x3cff10
+ne_Viewport *g_pCurrentProjection = nullptr;  // @ghidraAddress 0x3cff08
+ne_Viewport *g_pActiveViewCamera = nullptr;   // @ghidraAddress 0x3cff10
+ne_CameraNode *g_pCurrentModelNode = nullptr; // @ghidraAddress 0x3cff18
 
 /** @ghidraAddress 0x2991c */
 ne_Viewport::ne_Viewport(
@@ -86,4 +89,65 @@ void SetActiveViewCamera(ne_Viewport *pViewport) {
         pViewport->AddRef();
         g_pActiveViewCamera = pViewport;
     }
+}
+
+/** @ghidraAddress 0x21ed4 */
+ne_CameraNode::ne_CameraNode() {
+    m_nRefCount = 1;
+    // The binary writes the identity rows inline; SetMatrixIdentity is the de-inlined equivalent.
+    SetMatrixIdentity(m_mView);
+    SetMatrixIdentity(m_mInverseView);
+}
+
+/** @ghidraAddress 0x21f74 */
+ne_CameraNode::ne_CameraNode(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp)
+    : ne_CameraNode() {
+    // Build the view matrix, then derive the inverse-view (camera-to-world) matrix by inverting a
+    // copy of it.
+    MakeLookAtMatrix(m_mView, pEye, pTarget, pUp);
+    std::memcpy(m_mInverseView, m_mView, sizeof(m_mView));
+    InvertMatrix4x4(m_mInverseView);
+}
+
+/** @ghidraAddress 0x21fe0 */
+ne_CameraNode::ne_CameraNode(const float *pViewMatrix) : ne_CameraNode() {
+    // The supplied matrix becomes the view matrix; its inverse becomes the inverse-view matrix.
+    std::memcpy(m_mView, pViewMatrix, sizeof(m_mView));
+    std::memcpy(m_mInverseView, pViewMatrix, sizeof(m_mInverseView));
+    InvertMatrix4x4(m_mInverseView);
+}
+
+/** @ghidraAddress 0x21f74 */
+ne_CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp) {
+    return new ne_CameraNode(pEye, pTarget, pUp);
+}
+
+/** @ghidraAddress 0x21fe0 */
+ne_CameraNode *CreateCameraFromMatrix(float *pMatrix) {
+    return new ne_CameraNode(pMatrix);
+}
+
+/** @ghidraAddress 0x21f58 */
+void ReleaseCameraNode(ne_CameraNode *pCamera) {
+    // As with the viewport, the count is decremented before the now-redundant null check.
+    const int nCount = pCamera->ReleaseRef();
+    if (pCamera != nullptr && nCount == 0) {
+        delete pCamera;
+    }
+}
+
+/** @ghidraAddress 0x29fac */
+void SetCurrentModelNode(ne_CameraNode *pCamera) {
+    if (g_pCurrentModelNode != pCamera) {
+        if (g_pCurrentModelNode != nullptr) {
+            ReleaseCameraNode(g_pCurrentModelNode);
+        }
+        pCamera->AddRef();
+        g_pCurrentModelNode = pCamera;
+    }
+}
+
+/** @ghidraAddress 0x22058 */
+void TransformVector4ByCamera(ne_CameraNode *pCamera, float *pVec4) {
+    MultiplyVector4ByMatrixInPlace(pVec4, pCamera->GetViewMatrix());
 }

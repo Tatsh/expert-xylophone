@@ -671,7 +671,18 @@ ne_CameraNode *CreateCameraFromMatrix(float *pMatrix);
  * @brief Creates a look-at camera node from an eye, a target, and an up vector.
  * @ghidraAddress 0x21f74
  */
-ne_CameraNode *CreateLookAtCamera(float *pEye, float *pTarget, float *pUp);
+ne_CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);
+/**
+ * @brief Releases a camera node created by one of the camera-node constructors (decrements its
+ *        reference count and destroys it at zero).
+ * @ghidraAddress 0x21f58
+ */
+void ReleaseCameraNode(ne_CameraNode *pCamera);
+/**
+ * @brief Transforms a 4-vector in place by a camera node's view matrix.
+ * @ghidraAddress 0x22058
+ */
+void TransformVector4ByCamera(ne_CameraNode *pCamera, float *pVec4);
 
 /**
  * @brief The engine render-kind that selects a GL framebuffer attachment point.
