@@ -30,6 +30,8 @@ bunner
 bzero
 caeagl
 calcel
+ccontext
+cdevice
 cfstr
 cfstring
 cfurl
@@ -123,6 +125,7 @@ libsonnet
 limepoint
 longrate
 lproj
+lsizei
 malloc
 memcpy
 memset
@@ -208,6 +211,7 @@ shellformat
 signedness
 snapcraft
 sota
+sourcei
 statusline
 stdbool
 stdlib
