@@ -192,6 +192,19 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
     return g_recommendCoreInstance;
 }
 
+- (instancetype)init {
+    // @ghidraAddress 0x236978
+    // The super-init runs synchronously on the serial queue (dispatch_once body
+    // BlockInvokeInitRecommendCore at 0x236a88), so every initialisation of the singleton is
+    // serialised against its other work.
+    __block RecommendCore *result = nil;
+    dispatch_sync(g_recommendCoreQueue, ^{
+      /** @ghidraAddress 0x236a88 */
+      result = [super init];
+    });
+    return result;
+}
+
 #pragma mark - Initialisation state
 
 - (BOOL)isInitialized {

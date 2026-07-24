@@ -48,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Prepare the embedded slider for a device rotation.
+ *
+ * Hides the slider by dropping it to full transparency and marks the view as animating; the
+ * complementary @c didRotate fades it back in once the rotation completes.
+ * @ghidraAddress 0x1c0578
  */
 - (void)willRotate;
 
@@ -61,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Reconfigure the embedded slider's page range and current page.
  * @param pageMax The highest selectable page.
  * @param currentPage The page to move the grip to.
+ * @ghidraAddress 0x1c0750
  */
 - (void)reset:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage;
 

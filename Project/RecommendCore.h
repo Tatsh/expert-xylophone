@@ -111,6 +111,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedInstance;
 
 /**
+ * @brief Initialise the recommend core, serialising the super initialisation on its work queue.
+ * @return The initialised instance.
+ * @ghidraAddress 0x236978
+ */
+- (instancetype)init;
+
+/**
  * @brief Whether the recommend core is fully initialised.
  * @return @c YES when @c initializeFlg equals one.
  * @ghidraAddress 0x236d24

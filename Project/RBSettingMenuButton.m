@@ -155,6 +155,14 @@ static const UIViewAutoresizing kEffectTextAutoresizing =
     [self.button addSubview:self.effectTextImageView];
 }
 
+#pragma mark UIControl
+
+- (void)setEnabled:(BOOL)enabled {
+    // The binary ignores the requested state and always disables the inner button; this quirk is
+    // preserved deliberately.
+    self.button.enabled = NO;
+}
+
 #pragma mark Flash effect
 
 - (void)setFlashEffect {

@@ -68,6 +68,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) NSURLResponse *responseData;
 
 /**
+ * @brief Initialise the connection wrapper.
+ * @return The initialised instance.
+ * @ghidraAddress 0x207150
+ */
+- (instancetype)init;
+
+/**
  * @brief Start the given request, forwarding its outcome to the delegate.
  *
  * The delegate is stored weakly, a new @c NSURLConnection is created and started immediately, and a

@@ -180,12 +180,12 @@ static const int kFrameBonusMaxTier = 2;
 
 #pragma mark - Tamper hash
 
-// Folds a tune's identifier and per-difficulty score and achievement-rate figures into an eight
-// word buffer and returns its MD5 digest. The pairing of the words depends on the iPad idiom
-// flag reported by @c IsPad so that the word layout matches the shipped build.
-// @ghidraAddress 0x5d300
-static void
-ScoreDataHashScoreForTune(int tuneID, int basic, int medium, int hard, unsigned char *pHash) {
++ (void)hashScoreforTune:(int)tuneID
+                   Basic:(int)basic
+                  Medium:(int)medium
+                    Hard:(int)hard
+                    Hash:(unsigned char *)hash {
+    /** @ghidraAddress 0x5d300 */
     int words[kHashWordCount];
     words[kHashWordTuneID] = tuneID;
     words[kHashWordSlot2] = medium;
@@ -202,7 +202,7 @@ ScoreDataHashScoreForTune(int tuneID, int basic, int medium, int hard, unsigned 
         words[kHashWordSlot4] = hard + basic;
         words[kHashWordSlot6] = medium + basic;
     }
-    ComputeMd5Digest(words, sizeof(words), pHash);
+    ComputeMd5Digest(words, sizeof(words), hash);
 }
 
 + (NSData *)hashScore:(ScoreData *)record {
@@ -215,11 +215,11 @@ ScoreDataHashScoreForTune(int tuneID, int basic, int medium, int hard, unsigned 
     int scoreHard = record.scoHar.intValue;
     float rateHard = record.arHar.floatValue;
     unsigned char digest[kHashDigestLength];
-    ScoreDataHashScoreForTune(tuneID,
-                              (int)(rateBasic * kAchievementRateHashScale) + scoreBasic,
-                              (int)(rateMedium * kAchievementRateHashScale) + scoreMedium,
-                              (int)(rateHard * kAchievementRateHashScale) + scoreHard,
-                              digest);
+    [ScoreData hashScoreforTune:tuneID
+                          Basic:(int)(rateBasic * kAchievementRateHashScale) + scoreBasic
+                         Medium:(int)(rateMedium * kAchievementRateHashScale) + scoreMedium
+                           Hard:(int)(rateHard * kAchievementRateHashScale) + scoreHard
+                           Hash:digest];
     return [NSData dataWithBytes:digest length:kHashDigestLength];
 }
 

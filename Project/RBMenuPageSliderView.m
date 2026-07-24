@@ -47,6 +47,20 @@ static const NSTimeInterval kSliderRotationFadeDuration = 0.3;
     [super showAnimation];
 }
 
+- (void)willRotate {
+    self.slider.alpha = 0.0;
+    [self setAnimating:YES];
+}
+
+- (void)reset:(NSUInteger)pageMax currentPage:(NSUInteger)currentPage {
+    [self.slider reset:pageMax currentPage:currentPage];
+}
+
+- (void)hideAnimation {
+    self.slider.delegate = nil;
+    [super hideAnimation];
+}
+
 - (void)didRotate {
     [UIView animateWithDuration:kSliderRotationFadeDuration
         animations:^{

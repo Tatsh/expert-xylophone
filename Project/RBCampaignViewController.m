@@ -1114,6 +1114,14 @@ static NSString *const kCampaignIdFormat = @"%d";
     [[RBExperienceData sharedInstance] addItem:type ID:itemID];
 }
 
+/** @ghidraAddress 0x1fdcb4 */
+- (void)showError:(NSString *)message {
+    self.loadingLabel.hidden = YES;
+    self.tableView.hidden = YES;
+    self.errorLabel.text = message;
+    self.errorLabel.hidden = NO;
+}
+
 /** @ghidraAddress 0x1fe4f8 */
 - (void)storeClose {
     // The store-close hook is intentionally empty.

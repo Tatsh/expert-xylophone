@@ -2,6 +2,14 @@
 
 @implementation ApplilinkURLConnection
 
+#pragma mark Lifecycle
+
+- (instancetype)init {
+    // @ghidraAddress 0x207150
+    self = [super init];
+    return self;
+}
+
 #pragma mark Request
 
 - (void)loadRequestWithRequest:(NSURLRequest *)request

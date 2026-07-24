@@ -71,6 +71,14 @@ static const int kClientNoteEntriesPerPage = 20;
     return instance;
 }
 
+#pragma mark - Lifecycle
+
+- (instancetype)init {
+    // @ghidraAddress 0x181f64
+    self = [super init];
+    return self;
+}
+
 #pragma mark - Asset paths
 
 + (NSString *)getExtendNoteDataFilename:(int)extendNoteID {

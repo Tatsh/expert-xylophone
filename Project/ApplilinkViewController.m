@@ -26,6 +26,11 @@
 
 #pragma mark - View lifecycle
 
+// @ghidraAddress 0x2136e0
+- (void)viewDidLoad {
+    [super viewDidLoad];
+}
+
 // @ghidraAddress 0x21371c
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];

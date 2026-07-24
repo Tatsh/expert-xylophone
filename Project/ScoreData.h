@@ -161,6 +161,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reset:(ScoreData *)record;
 
 /**
+ * @brief Computes the tamper hash for a set of already unpacked per-difficulty score figures.
+ * @param tuneID The tune identifier.
+ * @param basic The Basic-difficulty score figure.
+ * @param medium The Medium-difficulty score figure.
+ * @param hard The Hard-difficulty score figure.
+ * @param hash The sixteen-byte buffer that receives the computed digest.
+ * @ghidraAddress 0x5d300
+ */
++ (void)hashScoreforTune:(int)tuneID
+                   Basic:(int)basic
+                  Medium:(int)medium
+                    Hard:(int)hard
+                    Hash:(unsigned char *)hash;
+
+/**
  * @brief Recomputes the tamper hash for a record's current score values.
  * @param record The record to hash.
  * @return The freshly computed hash data.

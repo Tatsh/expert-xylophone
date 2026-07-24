@@ -450,4 +450,19 @@ static const UIViewAutoresizing kTermButtonAutoresizingMask = (UIViewAutoresizin
     }
 }
 
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // @ghidraAddress 0x171da8
+    // The binary provides an empty implementation.
+}
+
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // @ghidraAddress 0x171dac
+    // The binary provides an empty implementation.
+}
+
+- (void)alertViewCancel:(UIAlertView *)alertView {
+    // @ghidraAddress 0x171db0
+    // The binary provides an empty implementation.
+}
+
 @end

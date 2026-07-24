@@ -41,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)getInstance;
 
+/**
+ * @brief Initialise the extend-note manager.
+ * @ghidraAddress 0x181f64
+ * @return The initialised instance.
+ */
+- (instancetype)init;
+
 #pragma mark Asset paths
 
 /**

@@ -57,6 +57,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeFlashEffect;
 
 /**
+ * @brief Enable or disable the receiver.
+ *
+ * Overrides @c UIControl to forward the enabled state to the inner @c button.
+ * @param enabled Whether the button accepts touches.
+ * @ghidraAddress 0xe9c28
+ */
+- (void)setEnabled:(BOOL)enabled;
+
+/**
  * @brief The inner button that carries the themed artwork and the caller's target/action.
  */
 @property(strong, nonatomic, nullable) UIButton *button;
