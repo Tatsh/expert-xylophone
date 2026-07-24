@@ -134,6 +134,12 @@ static BOOL g_recommendCoreScreenOpen = NO;
 // The absolute time until which the recommend login remains valid; nil forces a re-login.
 static NSDate *g_recommendCoreLoginValidUntil = nil;
 
+// The singleton and its serial queue, allocated once through +allocWithZone: so that every
+// allocation of a RecommendCore yields the same object (Ghidra: DAT_1003df6c8 singleton,
+// DAT_1003df6d0 queue).
+static RecommendCore *g_recommendCoreInstance = nil;
+static dispatch_queue_t g_recommendCoreQueue = nil;
+
 @interface RecommendCore ()
 
 // The installed-application-list callback body for the advert-screen presentation.
@@ -167,6 +173,23 @@ static NSDate *g_recommendCoreLoginValidUntil = nil;
       instance.initializeFlg = NO;
     });
     return instance;
+}
+
+/**
+ * @ghidraAddress 0x236b4c (dispatch_once body BlockInvokeAllocRecommendCore at 0x236bc4). Routes
+ * every allocation through a single super-allocation so the class is a true singleton, and creates
+ * the serial queue used to serialise its work.
+ */
++ (instancetype)allocWithZone:(NSZone *)zone {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      g_recommendCoreQueue = dispatch_queue_create("RecommendCore", nil);
+      if (g_recommendCoreInstance == nil) {
+          g_recommendCoreInstance = [super allocWithZone:zone];
+          g_recommendCoreInstance.initializeFlg = NO;
+      }
+    });
+    return g_recommendCoreInstance;
 }
 
 #pragma mark - Initialisation state

@@ -92,6 +92,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)getAdStatusWithBlock:(nullable void (^)(NSInteger status, NSError *_Nullable error))block;
 
+/**
+ * @brief Hide or show the reward-advert navigation bar by forwarding to the reward core.
+ * @param navigationBarHidden Whether the navigation bar should be hidden.
+ * @ghidraAddress 0x21fd74
+ */
++ (void)setNavigationBarHidden:(BOOL)navigationBarHidden;
+
+/**
+ * @brief The localised reward app-list navigation-bar title.
+ * @return The localised title from the reward message bundle.
+ * @ghidraAddress 0x21fdcc
+ */
++ (nullable NSString *)getNavigationTitle;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -10,6 +10,7 @@
 
 #import "ApplilinkConsts.h"
 #import "ApplilinkCore.h"
+#import "ApplilinkMessage.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkParameters.h"
 #import "RewardCore.h"
@@ -19,6 +20,9 @@ enum {
     kRewardErrorSdkUnavailable = 0x401, // The SDK cannot run on this device.
     kRewardErrorNotInitialized = 0x3f2, // The SDK has not finished initialising.
 };
+
+// The reward app-list navigation-bar title key, looked up in the reward message bundle.
+static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTitle";
 
 @implementation RewardNetwork
 
@@ -118,6 +122,16 @@ enum {
       // @ 0x21fd04 — forward to the RewardCore app-list status query on a background queue.
       [[RewardCore sharedInstance] getAppListStatusWithBlock:block];
     });
+}
+
+// @ 0x21fd74
++ (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
+    [[RewardCore sharedInstance] setNavigationBarHidden:navigationBarHidden];
+}
+
+// @ 0x21fdcc
++ (NSString *)getNavigationTitle {
+    return [ApplilinkMessage localizedMessage:kRewardNetworkAppListTitleKey];
 }
 
 @end

@@ -96,6 +96,12 @@ static NSDate *gRewardAuthExpiry;       // Ghidra: DAT_1003df5f8 — reward auth
 static NSDictionary *gRewardBannerInfo; // Ghidra: DAT_1003df600 — cached banner info dictionary.
 static NSDate *gRewardBannerExpiry;     // Ghidra: DAT_1003df608 — cached banner info expiry.
 
+// The singleton and its serial queue, allocated once through +allocWithZone: so that every
+// allocation of a RewardCore yields the same object (Ghidra: DAT_1003df5d8 singleton,
+// DAT_1003df5e0 queue).
+static RewardCore *gRewardCoreInstance;
+static dispatch_queue_t gRewardCoreQueue;
+
 @implementation RewardCore
 
 #pragma mark Singleton
@@ -109,6 +115,23 @@ static NSDate *gRewardBannerExpiry;     // Ghidra: DAT_1003df608 — cached bann
       instance.initializeFlg = 0;
     });
     return instance;
+}
+
+/**
+ * @ghidraAddress 0x2078b8 (dispatch_once body AllocRewardCoreSingleton at 0x207930). Routes every
+ * allocation through a single super-allocation so the class is a true singleton, and creates the
+ * serial queue used to serialise its work.
+ */
++ (instancetype)allocWithZone:(NSZone *)zone {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      gRewardCoreQueue = dispatch_queue_create("RewardCore", nil);
+      if (gRewardCoreInstance == nil) {
+          gRewardCoreInstance = [super allocWithZone:zone];
+          gRewardCoreInstance.initializeFlg = 0;
+      }
+    });
+    return gRewardCoreInstance;
 }
 
 // @ghidraAddress 0x2076e4 (init body dispatched onto a serial queue; InitRewardCoreBlockInvoke at
