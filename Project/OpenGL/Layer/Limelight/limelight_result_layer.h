@@ -105,6 +105,19 @@ public:
      */
     void EmitAutoUvPart(unsigned long nSlot, const S_VECTOR2 &position, unsigned int nBaseAlpha);
 
+    /**
+     * @brief Renders a small unsigned integer as centred Limelight digit-glyph sprites.
+     *
+     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run about
+     * @p position using the zero-glyph advance, and emits each digit's glyph part right to left,
+     * stepping left by each glyph's own width.
+     * @param nValue The value to render (up to four digits).
+     * @param position The centre position of the digit run.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12705c
+     */
+    void RenderDigits(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 

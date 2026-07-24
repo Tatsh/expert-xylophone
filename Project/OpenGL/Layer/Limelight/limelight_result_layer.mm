@@ -151,6 +151,49 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
                        nAlpha);
 }
 
+namespace {
+
+// The part id of the '0' digit glyph; digits 0 through 9 are parts kDigitZeroPart through
+// kDigitZeroPart + 9.
+constexpr unsigned int kDigitZeroPart = 0x69;
+// The maximum number of decimal digits RenderDigits draws.
+constexpr int kMaxDigits = 4;
+// The instancer slot the parts atlas (including digit glyphs) draws into.
+constexpr unsigned int kPartsSlot = 1;
+
+} // namespace
+
+/** @ghidraAddress 0x12705c */
+void LimelightResultLayer::RenderDigits(int nValue,
+                                        const S_VECTOR2 &position,
+                                        unsigned int nAlpha) {
+    // Split the value into up to four decimal digits (least-significant first), tracking how many
+    // are significant; at least one digit is always drawn.
+    int aDigits[kMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant == 0) {
+        nSignificant = 1;
+    }
+
+    // Centre the run about the position using the zero-glyph's width as the nominal advance.
+    const float flAdvance = GetPartsData(kDigitZeroPart)->flWidth;
+    float flX = position.x + static_cast<float>(static_cast<int>(nSignificant * flAdvance)) * 0.5f;
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nPart = kDigitZeroPart + aDigits[i];
+        const float flGlyphWidth = GetPartsData(nPart)->flWidth;
+        const S_VECTOR2 drawPos{flX - flGlyphWidth, position.y};
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPart, drawPos, nAlpha, 0);
+        flX -= flGlyphWidth;
+    }
+}
+
 /** @ghidraAddress 0x126b78 */
 void LimelightResultLayer::EmitTexturedPart(unsigned long nSlot,
                                             const S_VECTOR2 &position,
