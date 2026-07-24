@@ -3,6 +3,9 @@
 #include <cstring>
 #include <new>
 
+#import <UIKit/UIKit.h>
+
+#import "UIImage+RB.h"
 #import "neEngineBridge.h"
 
 namespace ne {
@@ -99,6 +102,85 @@ void C_TEXTURE::Release() {
     if (ReleaseRef() == 0) {
         delete this;
     }
+}
+
+/** @ghidraAddress 0x31b60 */
+int C_TEXTURE::LoadFromUIImage(const char *pszName) {
+    UIImage *image = [UIImage imageWithName:[NSString stringWithUTF8String:pszName]];
+    if (image == nil) {
+        return 0;
+    }
+    if ([image respondsToSelector:@selector(scale)]) {
+        m_flScale = static_cast<float>(image.scale);
+    }
+    SetSourcePath(pszName);
+
+    CGImageRef cgImage = image.CGImage;
+    m_nImageWidth = static_cast<int>(CGImageGetWidth(cgImage));
+    m_nImageHeight = static_cast<int>(CGImageGetHeight(cgImage));
+
+    // GL ES 1.x requires power-of-two texture dimensions.
+    int nPotWidth = 1;
+    while (nPotWidth < m_nImageWidth) {
+        nPotWidth <<= 1;
+    }
+    int nPotHeight = 1;
+    while (nPotHeight < m_nImageHeight) {
+        nPotHeight <<= 1;
+    }
+
+    // Draw the image into a zeroed, top-left-origin RGBA8888 bitmap. CoreGraphics uses a
+    // bottom-left origin, so the context is flipped vertically before the image is drawn at its
+    // original size into the top-left of the (larger) power-of-two buffer.
+    const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
+    const int nRgbaStride = nPotWidth * 4;
+    m_nByteSize = nPotHeight * nRgbaStride;
+    auto *pRgbaBuffer = new unsigned char[m_nByteSize]();
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(pRgbaBuffer,
+                                                 static_cast<size_t>(nPotWidth),
+                                                 static_cast<size_t>(nPotHeight),
+                                                 8,
+                                                 static_cast<size_t>(nRgbaStride),
+                                                 colorSpace,
+                                                 kCGImageAlphaPremultipliedLast);
+    CGContextTranslateCTM(context, 0, m_nImageHeight);
+    CGContextScaleCTM(context, 1, -1);
+    CGContextDrawImage(context, CGRectMake(0, 0, m_nImageWidth, m_nImageHeight), cgImage);
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+
+    // Upload RGBA (format 1) when the image has an alpha channel; otherwise repack to tight 24-bit
+    // RGB (format 2) to save texture memory.
+    unsigned char *pUploadData;
+    int nFormat;
+    if (alphaInfo >= kCGImageAlphaPremultipliedLast && alphaInfo <= kCGImageAlphaFirst) {
+        pUploadData = pRgbaBuffer;
+        nFormat = 1;
+    } else {
+        m_nByteSize = nPotWidth * nPotHeight * 3;
+        auto *pRgbBuffer = new unsigned char[m_nByteSize];
+        for (int y = 0; y < nPotHeight; ++y) {
+            const unsigned char *pSrcRow = pRgbaBuffer + y * nRgbaStride;
+            unsigned char *pDstRow = pRgbBuffer + y * (nPotWidth * 3);
+            for (int x = 0; x < nPotWidth; ++x) {
+                pDstRow[x * 3 + 0] = pSrcRow[x * 4 + 0];
+                pDstRow[x * 3 + 1] = pSrcRow[x * 4 + 1];
+                pDstRow[x * 3 + 2] = pSrcRow[x * 4 + 2];
+            }
+        }
+        delete[] pRgbaBuffer;
+        pUploadData = pRgbBuffer;
+        nFormat = 2;
+    }
+
+    InitializeTexture2d(nPotWidth, nPotHeight, nFormat, pUploadData);
+    delete[] pUploadData;
+    g_dwTotalTextureMemory += m_nByteSize;
+
+    m_pKeyName = new char[std::strlen(pszName) + 1];
+    std::strcpy(m_pKeyName, pszName);
+    return 1;
 }
 
 } // namespace ne

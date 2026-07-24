@@ -83,6 +83,16 @@ public:
     int LoadFromUIImage(const char *pszName);
 
     /**
+     * @brief Create the GL texture object from decoded pixel data and store its handle.
+     * @param nWidth The power-of-two texture width.
+     * @param nHeight The power-of-two texture height.
+     * @param nFormat The pixel format: 1 for RGBA, 2 for tight 24-bit RGB.
+     * @param pData The decoded pixel data to upload.
+     * @ghidraAddress 0x31eb0
+     */
+    void InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *pData);
+
+    /**
      * @brief Find a cached texture by key, loading and caching it on a miss.
      *
      * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's reference
