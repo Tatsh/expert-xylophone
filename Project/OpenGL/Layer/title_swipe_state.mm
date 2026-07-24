@@ -2,12 +2,10 @@
 //  title_swipe_state.mm
 //  REFLEC BEAT plus
 //
-//  The title-screen hidden-swipe state machines. A directional swipe id advances a small integer
-//  state along an expected sequence; completing the sequence toggles a hidden mode and plays a
-//  themed sound effect. Two variants exist: the theme-2 (Colette) title layer keeps its state at a
-//  different offset from the classic title layer. The owning TitleScreenLayer classes are not
-//  modelled yet, so each function takes the layer as an opaque pointer and works the state field at
-//  its known offset. Objective-C++ because the sound path reaches the ne engine bridge.
+//  The title-screen hidden-swipe/flick state machines: instance methods of the two title layer
+//  classes. A directional swipe id advances a small integer state along an expected sequence;
+//  completing the sequence toggles a hidden mode and plays a themed sound effect. Objective-C++
+//  because the sound path reaches the ne engine bridge and the Hinabita toggle reaches RBCampaignData.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
@@ -18,251 +16,210 @@
 #import "RBCampaignData.h"
 #import "neEngineBridge.h"
 
-namespace {
-
 // The themed sound-effect slot the hidden swipe fires on completion (the secret/credits jingle).
-constexpr int kSoundEffectTitleSecret = 0xd;
+static constexpr int kSoundEffectTitleSecret = 0xd;
 // The themed sound-effect slot the flick-gesture swing toggle fires.
-constexpr int kSoundEffectTitleSwing = 0xe;
+static constexpr int kSoundEffectTitleSwing = 0xe;
 
-// The flick-gesture state machine keeps its state at +0x730 and its completion flag at +0x734; the
-// hidden-mode flags are the Hinabita toggle at +0x740 and the swing-direction toggle at +0x735,
-// with the resulting swing delta at +0x738.
-constexpr int kGestureStateOffset = 0x730;
-constexpr int kGestureTriggeredOffset = 0x734;
-constexpr int kGestureSwingToggleOffset = 0x735;
-constexpr int kGestureSwingDeltaOffset = 0x738;
-constexpr int kGestureHinabitaOffset = 0x740;
+// The state a completed swipe/gesture sequence reaches, and the timer value the completion rewinds.
+static constexpr int kSwipeCompleteState = 10;
+static constexpr int kReplayTimerValue = 0x24fa;
 
-// The timers the completed gesture rewinds/clears.
-constexpr int kGestureReplayTimerValue = 0x24fa;
-constexpr int kGestureTimerOffset = 0x54;
-constexpr int kGestureTimerClear1Offset = 0x5c;
-constexpr int kGestureTimerClear2Offset = 0x60;
-
-// The classic title layer keeps its swipe state at +0x160 and its completion flag at +0x164; the
-// theme-2 title layer keeps them at +0x5c8 and +0x5cc.
-constexpr int kClassicSwipeStateOffset = 0x160;
-constexpr int kClassicSwipeTriggeredOffset = 0x164;
-constexpr int kTheme2SwipeStateOffset = 0x5c8;
-constexpr int kTheme2SwipeTriggeredOffset = 0x5cc;
-
-// The rewound timer value the theme-2 variant writes on completion.
-constexpr int kTheme2ReplayTimerValue = 0x24fa;
-constexpr int kTheme2TimerOffset = 0x50;
-
-int &StateAt(void *pLayer, int nOffset) {
-    return *reinterpret_cast<int *>(static_cast<unsigned char *>(pLayer) + nOffset);
-}
-
-unsigned char &ByteAt(void *pLayer, int nOffset) {
-    return *(static_cast<unsigned char *>(pLayer) + nOffset);
-}
-
-// The shared swipe sequence: each directional id advances the state from an expected predecessor,
-// or bails when the sequence is broken. Returns the next state to store, or -1 to leave it
-// unchanged (a broken or completing step the caller handles).
-bool AdvanceSwipeSequence(int &state, int iSwipeEvent, int &nextState) {
+void TitleScreenLayer::AdvanceSwipeState(int iSwipeEvent) {
+    /** @ghidraAddress 0x152cc8 */
     switch (iSwipeEvent) {
     case 0:
-        if (state != 1) {
-            if (state != 0) {
-                return false;
+        if (m_nSwipeState != 1) {
+            if (m_nSwipeState != 0) {
+                return;
             }
-            state = 1;
+            m_nSwipeState = 1;
         }
-        nextState = 2;
-        return true;
+        m_nSwipeState = 2;
+        return;
     case 1:
-        if (state != 3) {
-            if (state != 2) {
-                return false;
+        if (m_nSwipeState != 3) {
+            if (m_nSwipeState != 2) {
+                return;
             }
-            state = 3;
+            m_nSwipeState = 3;
         }
-        nextState = 4;
-        return true;
+        m_nSwipeState = 4;
+        return;
     case 2:
-        if (state == 6) {
-            nextState = 7;
-        } else {
-            if (state != 4) {
-                return false;
-            }
-            nextState = 5;
+        if (m_nSwipeState == 6) {
+            m_nSwipeState = 7;
+        } else if (m_nSwipeState == 4) {
+            m_nSwipeState = 5;
         }
-        return true;
+        return;
     case 3:
-        if (state == 7) {
-            nextState = 8;
-        } else {
-            if (state != 5) {
-                return false;
-            }
-            nextState = 6;
+        if (m_nSwipeState == 7) {
+            m_nSwipeState = 8;
+        } else if (m_nSwipeState == 5) {
+            m_nSwipeState = 6;
         }
-        return true;
+        return;
+    case 4:
+        // Completing the sequence (state 9 -> 10) fires the secret effect and latches the flag.
+        if (m_nSwipeState == 9) {
+            m_nSwipeState = kSwipeCompleteState;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
+            m_bSwipeTriggered = true;
+        }
+        return;
     case 5:
-        if (state != 8) {
-            return false;
+        if (m_nSwipeState == 8) {
+            m_nSwipeState = 9;
         }
-        nextState = 9;
-        return true;
+        return;
     default:
-        return false;
-    }
-}
-
-} // namespace
-
-/** @ghidraAddress 0x152cc8 */
-void AdvanceTitleSwipeState(void *pLayer, int iSwipeEvent) {
-    int &state = StateAt(pLayer, kClassicSwipeStateOffset);
-    if (iSwipeEvent == 4) {
-        // Completing the sequence (state 9 -> 10) fires the secret effect and latches the trigger.
-        if (state != 9) {
-            return;
-        }
-        state = 10;
-        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
-        ByteAt(pLayer, kClassicSwipeTriggeredOffset) = 1;
         return;
     }
-    int nextState = 0;
-    if (AdvanceSwipeSequence(state, iSwipeEvent, nextState)) {
-        state = nextState;
-    }
 }
 
-/** @ghidraAddress 0x597a8 */
-long AdvanceTitleGestureState(void *pLayer, int inputCode) {
-    int &state = StateAt(pLayer, kGestureStateOffset);
-    int nextState;
+unsigned int TitleScreenLayer::AdvanceGestureState(int inputCode) {
+    /** @ghidraAddress 0x597a8 */
     switch (inputCode) {
     case 0:
-        if (state != 1) {
-            if (state != 0) {
-                return reinterpret_cast<long>(pLayer);
+        if (m_nGestureState != 1) {
+            if (m_nGestureState != 0) {
+                break;
             }
-            state = 1;
+            m_nGestureState = 1;
         }
-        nextState = 2;
+        m_nGestureState = 2;
         break;
     case 1:
-        if (state != 3) {
-            if (state != 2) {
-                return reinterpret_cast<long>(pLayer);
+        if (m_nGestureState != 3) {
+            if (m_nGestureState != 2) {
+                break;
             }
-            state = 3;
+            m_nGestureState = 3;
         }
-        nextState = 4;
+        m_nGestureState = 4;
         break;
     case 2:
-        if (state == 6) {
-            nextState = 7;
-        } else {
-            if (state != 4) {
-                return reinterpret_cast<long>(pLayer);
-            }
-            nextState = 5;
+        if (m_nGestureState == 6) {
+            m_nGestureState = 7;
+        } else if (m_nGestureState == 4) {
+            m_nGestureState = 5;
         }
         break;
     case 3:
-        if (state == 7) {
-            nextState = 8;
-        } else {
-            if (state != 5) {
-                return reinterpret_cast<long>(pLayer);
-            }
-            nextState = 6;
+        if (m_nGestureState == 7) {
+            m_nGestureState = 8;
+        } else if (m_nGestureState == 5) {
+            m_nGestureState = 6;
         }
         break;
     case 4:
-        if (state == 0x13) {
+        if (m_nGestureState == 0x13) {
             // Completing sequence A toggles the hidden Hinabita campaign mode.
-            state = 0x14;
+            m_nGestureState = 0x14;
             SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
-            ByteAt(pLayer, kGestureTriggeredOffset) = 1;
-            unsigned char &hinabita = ByteAt(pLayer, kGestureHinabitaOffset);
-            hinabita ^= 1;
-            [[RBCampaignData sharedInstance] setHinabitaMode:hinabita];
-            StateAt(pLayer, kGestureTimerOffset) = kGestureReplayTimerValue;
-            StateAt(pLayer, kGestureTimerClear1Offset) = 0;
-            StateAt(pLayer, kGestureTimerClear2Offset) = 0;
-            state = 0;
+            m_bGestureTriggered = true;
+            m_bHinabitaMode = !m_bHinabitaMode;
+            [[RBCampaignData sharedInstance] setHinabitaMode:m_bHinabitaMode];
+            m_nGestureTimer = kReplayTimerValue;
+            m_nTimerClear1 = 0;
+            m_nTimerClear2 = 0;
+            m_nGestureState = 0;
             return 0;
         }
-        if (state != 9) {
-            return reinterpret_cast<long>(pLayer);
-        }
-        // Completing sequence B toggles the swing direction and returns the sound handle.
-        state = 10;
-        {
-            unsigned int handle =
+        if (m_nGestureState == 9) {
+            // Completing sequence B toggles the swing direction and returns the sound handle.
+            m_nGestureState = kSwipeCompleteState;
+            const unsigned int handle =
                 SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSwing);
-            ByteAt(pLayer, kGestureTriggeredOffset) = 1;
-            StateAt(pLayer, kGestureTimerOffset) = kGestureReplayTimerValue;
-            unsigned char &swingToggle = ByteAt(pLayer, kGestureSwingToggleOffset);
-            const bool wasSet = swingToggle == 1;
-            swingToggle ^= 1;
-            StateAt(pLayer, kGestureSwingDeltaOffset) = wasSet ? -1 : 1;
-            state = 0;
+            m_bGestureTriggered = true;
+            m_nGestureTimer = kReplayTimerValue;
+            const bool wasSet = m_bSwingToggle;
+            m_bSwingToggle = !m_bSwingToggle;
+            m_nSwingDelta = wasSet ? -1 : 1;
+            m_nGestureState = 0;
             return handle;
         }
+        break;
     case 5:
-        if (state == 0x12) {
-            nextState = 0x13;
-        } else {
-            if (state != 8) {
-                return reinterpret_cast<long>(pLayer);
-            }
-            nextState = 9;
+        if (m_nGestureState == 0x12) {
+            m_nGestureState = 0x13;
+        } else if (m_nGestureState == 8) {
+            m_nGestureState = 9;
         }
         break;
     case 6:
-        if (state == 0x10) {
-            nextState = 0x11;
-        } else {
-            if (state != 4) {
-                return reinterpret_cast<long>(pLayer);
-            }
-            nextState = 0xf;
+        if (m_nGestureState == 0x10) {
+            m_nGestureState = 0x11;
+        } else if (m_nGestureState == 4) {
+            m_nGestureState = 0xf;
         }
         break;
     case 7:
-        if (state == 0x11) {
-            nextState = 0x12;
-        } else {
-            if (state != 0xf) {
-                return reinterpret_cast<long>(pLayer);
-            }
-            nextState = 0x10;
+        if (m_nGestureState == 0x11) {
+            m_nGestureState = 0x12;
+        } else if (m_nGestureState == 0xf) {
+            m_nGestureState = 0x10;
         }
         break;
     default:
-        return reinterpret_cast<long>(pLayer);
+        break;
     }
-    state = nextState;
-    return reinterpret_cast<long>(pLayer);
+    // No sound handle was produced this step. (On these paths the binary leaves its object pointer
+    // in the return register; no caller reads it, so a plain 0 is faithful to observed behaviour.)
+    return 0;
 }
 
-/** @ghidraAddress 0x1549b8 */
-void AdvanceTitle2SwipeState(void *pLayer, int iSwipeEvent) {
-    int &state = StateAt(pLayer, kTheme2SwipeStateOffset);
-    if (iSwipeEvent == 4) {
-        // Completing the sequence (state 9 -> 10) fires the secret effect, latches the trigger, and
-        // rewinds the layer's timer.
-        if (state != 9) {
-            return;
+void TitleScreenLayer2::AdvanceSwipeState(int iSwipeEvent) {
+    /** @ghidraAddress 0x1549b8 */
+    switch (iSwipeEvent) {
+    case 0:
+        if (m_nSwipeState != 1) {
+            if (m_nSwipeState != 0) {
+                return;
+            }
+            m_nSwipeState = 1;
         }
-        state = 10;
-        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
-        ByteAt(pLayer, kTheme2SwipeTriggeredOffset) = 1;
-        StateAt(pLayer, kTheme2TimerOffset) = kTheme2ReplayTimerValue;
+        m_nSwipeState = 2;
         return;
-    }
-    int nextState = 0;
-    if (AdvanceSwipeSequence(state, iSwipeEvent, nextState)) {
-        state = nextState;
+    case 1:
+        if (m_nSwipeState != 3) {
+            if (m_nSwipeState != 2) {
+                return;
+            }
+            m_nSwipeState = 3;
+        }
+        m_nSwipeState = 4;
+        return;
+    case 2:
+        if (m_nSwipeState == 6) {
+            m_nSwipeState = 7;
+        } else if (m_nSwipeState == 4) {
+            m_nSwipeState = 5;
+        }
+        return;
+    case 3:
+        if (m_nSwipeState == 7) {
+            m_nSwipeState = 8;
+        } else if (m_nSwipeState == 5) {
+            m_nSwipeState = 6;
+        }
+        return;
+    case 4:
+        // Completing the sequence fires the secret effect, latches the flag, and rewinds timer.
+        if (m_nSwipeState == 9) {
+            m_nSwipeState = kSwipeCompleteState;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
+            m_bSwipeTriggered = true;
+            m_nSwipeTimer = kReplayTimerValue;
+        }
+        return;
+    case 5:
+        if (m_nSwipeState == 8) {
+            m_nSwipeState = 9;
+        }
+        return;
+    default:
+        return;
     }
 }
