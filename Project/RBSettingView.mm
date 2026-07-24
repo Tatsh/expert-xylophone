@@ -327,6 +327,15 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
 #pragma mark Touch handling
 
+/** @ghidraAddress 0xeb9c0 */
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    // The overlay only acts on touch-up; began/moved/cancelled are intentionally empty.
+}
+
+/** @ghidraAddress 0xeb9c4 */
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+}
+
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if (m_Animating) {
         return;
@@ -343,6 +352,10 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
             return;
         }
     }
+}
+
+/** @ghidraAddress 0xebbbc */
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 }
 
 #pragma mark Menu actions
@@ -403,6 +416,13 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     [self.parentView showSearchView];
     [self hideAnimation];
+}
+
+#pragma mark Accessors
+
+/** @ghidraAddress 0xec164 */
+- (RBSettingMenuButton *)getCustomizeButtonView {
+    return self.customButton;
 }
 
 @end

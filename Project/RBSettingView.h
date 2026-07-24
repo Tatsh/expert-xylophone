@@ -139,6 +139,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)selectMap:(nullable id)sender;
 
 /**
+ * @brief The customise menu button, exposed for the music-select view's flash-effect handling.
+ * @return The customise button.
+ * @ghidraAddress 0xec164
+ */
+- (nullable RBSettingMenuButton *)getCustomizeButtonView;
+
+/**
  * @brief The music-select view that presents this overlay.
  */
 @property(weak, nonatomic, nullable) RBMusicView *parentView;
