@@ -1,5 +1,7 @@
 #include "full_combo_classic_layer.h"
 
+#include <cassert>
+
 #include "../Share/bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -68,4 +70,13 @@ void FullComboClassicLayer::InitializeBackgroundSprites() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x10f3f4 */
+void FullComboClassicLayer::CreateFullComboClassic(unsigned int nColor) {
+    assert(static_cast<int>(nColor) >= 0 && nColor < kColorCount);
+    EffectRecord &effect = m_aEffects[nColor];
+    effect.m_bActive = true;
+    effect.m_nTimer = 0;
+    effect.m_bFlag2 = false;
 }

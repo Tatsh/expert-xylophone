@@ -1,5 +1,7 @@
 #include "full_combo_limelight_layer.h"
 
+#include <cassert>
+
 #include "../Share/bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -78,4 +80,13 @@ void FullComboLimelightLayer::LoadTexturesAndBatchesForLimelightLayer() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x122a44 */
+void FullComboLimelightLayer::CreateFullComboLimelight(unsigned int nColor) {
+    assert(static_cast<int>(nColor) >= 0 && nColor < kColorCount);
+    EffectRecord &effect = m_aEffects[nColor];
+    effect.m_bActive = true;
+    effect.m_nTimer = 0;
+    effect.m_bFlag2 = false;
 }
