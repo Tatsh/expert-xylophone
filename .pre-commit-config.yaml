@@ -85,7 +85,7 @@ repos:
         id: 'fix-formatting-prettier'
         language: 'system'
         name: 'check files are formatted with Prettier'
-      - entry: 'yarn markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix'
+      - entry: './node_modules/.bin/markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix'
         id: 'fix-formatting-markdown'
         language: 'system'
         name: 'check Markdown files are formatted'
