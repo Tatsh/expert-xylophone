@@ -128,6 +128,24 @@ constexpr GLenum kBlendDestToGl[] = {
     GL_ONE_MINUS_DST_ALPHA, //
 };
 
+// The base GL texture-parameter name; the engine parameter type (0..3: mag filter, min filter,
+// wrap S, wrap T) is added to it to form the GL enum (GL_TEXTURE_MAG_FILTER + type).
+constexpr GLenum kTexParamTypeBase = GL_TEXTURE_MAG_FILTER;
+constexpr int kTexParamTypeMax = 4;
+
+// Maps an engine texture-parameter value index (0..7) to its GL filter or wrap enum.
+constexpr GLenum kTexParamValueToGl[] = {
+    GL_NEAREST,                //
+    GL_LINEAR,                 //
+    GL_NEAREST_MIPMAP_NEAREST, //
+    GL_LINEAR_MIPMAP_NEAREST,  //
+    GL_NEAREST_MIPMAP_LINEAR,  //
+    GL_LINEAR_MIPMAP_LINEAR,   //
+    GL_CLAMP_TO_EDGE,          //
+    GL_REPEAT,                 //
+};
+constexpr int kTexParamValueMax = 8;
+
 } // namespace
 
 /** @ghidraAddress 0x21a60 */
@@ -478,4 +496,26 @@ void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
     }
     m_nElementBufferBound = static_cast<int>(dwBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dwBuffer);
+}
+
+/** @ghidraAddress 0x21ab4 */
+void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
+    // Cache the binding for the active texture unit; skip the GL call when it is unchanged.
+    if (m_anTexturePerUnit[m_nActiveTextureUnit] == static_cast<int>(dwHandle)) {
+        return;
+    }
+    m_anTexturePerUnit[m_nActiveTextureUnit] = static_cast<int>(dwHandle);
+    glBindTexture(GL_TEXTURE_2D, dwHandle);
+}
+
+/** @ghidraAddress 0x21ae8 */
+void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
+    // Translate the engine parameter type and value enums to GL and apply them to the bound texture.
+    // The binary's embedded __func__ is TexParamValueFuncToGLValue: the type and value mappers are
+    // inlined into this setter, each asserting its argument is in range.
+    assert(nParameter >= 0 && nParameter < kTexParamTypeMax);
+    assert(nValue >= 0 && nValue < kTexParamValueMax);
+    glTexParameteri(GL_TEXTURE_2D,
+                    static_cast<GLenum>(kTexParamTypeBase + nParameter),
+                    static_cast<GLint>(kTexParamValueToGl[nValue]));
 }

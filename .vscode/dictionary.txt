@@ -195,6 +195,7 @@ oneline
 openurl
 packinfo
 packlist
+parameteri
 parameteriv
 pastelkun
 pbxproj

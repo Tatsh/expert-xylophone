@@ -303,7 +303,9 @@ private:
     int m_nMatrixIndexSize = {};                            // +0x124 matrix indices per vertex
     int m_nMatrixIndexBufferBinding = {};                   // +0x128 matrix-index buffer binding
     int m_nElementBufferBound = {};                         // +0x12c cached element-array binding
-    unsigned char m_aReserved130[0xa4] = {};                // +0x130
+    int m_nActiveTextureUnit = {};                          // +0x130 active texture unit for binds
+    int m_anTexturePerUnit[kMaxTextureUnits] = {};          // +0x134 per-unit bound texture cache
+    unsigned char m_aReserved154[0x80] = {};                // +0x154
     int m_nBlendSrc = {};                                   // +0x1d4 cached blend source factor
     int m_nBlendDest = {};                        // +0x1d8 cached blend destination factor
     unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc
