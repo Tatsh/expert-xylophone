@@ -7,6 +7,11 @@
 
 #include "playfieldlayerbase.h"
 
+namespace ne {
+class C_TEXTURE;
+class C_SPRITE_INSTANCING;
+} // namespace ne
+
 /**
  * @brief One player side's score-digit roll-up tween: the target value and the animation it plays
  * to reach it.
@@ -43,6 +48,9 @@ public:
         return m_aScoreFields[uSide];
     }
 
+    // The score-number sprite-instancer capacity the layer builds.
+    static constexpr unsigned int kSpriteCapacity = 0x14;
+
     /**
      * @brief The shared player-field layer, created on first use.
      * @return The shared player-field layer.
@@ -50,10 +58,24 @@ public:
      */
     static PlayerFieldLayer *shared();
 
+    /**
+     * @brief Lazily builds the score-number sprite: loads the gm_parts2 atlas and creates the sprite
+     * instancer (attaching it under the background layer's render object, making it visible, binding
+     * the atlas, and seeding its sprite count).
+     *
+     * Guarded so the sprite is built only once.
+     * @ghidraAddress 0x18b6fc
+     */
+    void CreateScoreNumberSpriteBatch();
+
 private:
-    // +0x08..+0x3f: the layer's presentation transform and flags (seeded by shared()), whose
+    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the score-number atlas (gm_parts2).
+    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the score-number sprite instancer.
+    int m_nSpriteCount = {};                 // +0x18: the instancer's initial sprite count.
+    bool m_bBuilt = {};                      // +0x1c: set once the score sprite is built.
+    // +0x20..+0x3f: the layer's presentation transform and flags (seeded by shared()), whose
     // individual fields are still being worked out.
-    unsigned char m_aLayerState08[0x38] = {};        // +0x08
+    unsigned char m_aLayerState20[0x20] = {};        // +0x20
     ScoreDigitField m_aScoreFields[kSideCount] = {}; // +0x40: the per-side score-digit records.
 };
 
