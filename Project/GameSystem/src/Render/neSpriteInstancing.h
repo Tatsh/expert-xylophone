@@ -24,7 +24,15 @@ class C_TEXTURE;
  */
 class C_SPRITE_INSTANCING : public C_RENDER {
 public:
-    C_SPRITE_INSTANCING();
+    /**
+     * @brief Constructs a sprite batch that can draw up to @p nCapacity sprites.
+     *
+     * Allocates the per-sprite attribute arrays and the per-frame vertex scratch, then builds and
+     * uploads the static quad vertex and index buffers (four vertices and six indices per sprite).
+     * @param nCapacity The maximum number of sprites the batch can draw.
+     * @ghidraAddress 0x3097c
+     */
+    explicit C_SPRITE_INSTANCING(unsigned int nCapacity);
     ~C_SPRITE_INSTANCING() override;
 
     /**
@@ -104,14 +112,6 @@ private:
  * @ghidraAddress 0x31834
  */
 C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
-
-/**
- * @brief Initialise a freshly allocated sprite batch to hold up to @p nCapacity sprites.
- * @param pBatch The newly allocated batch to initialise.
- * @param nCapacity The maximum number of sprites the batch can draw.
- * @ghidraAddress 0x3097c
- */
-void InitWorldSpriteBatch(C_SPRITE_INSTANCING *pBatch, unsigned int nCapacity);
 
 } // namespace ne
 

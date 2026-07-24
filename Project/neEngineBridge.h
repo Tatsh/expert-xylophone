@@ -589,6 +589,31 @@ public:
      * @ghidraAddress 0x213ec
      */
     void GetRenderbufferHeight(int *pOutHeight);
+    /**
+     * @brief Generates one GL buffer object name into @p pOutBuffer.
+     * @ghidraAddress 0x2147c
+     */
+    void GenBuffer(unsigned int *pOutBuffer);
+    /**
+     * @brief Binds @p dwBuffer as the current @c GL_ELEMENT_ARRAY_BUFFER.
+     * @ghidraAddress 0x21a14
+     */
+    void BindIndexBuffer(unsigned int dwBuffer);
+    /**
+     * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
+     * @ghidraAddress 0x21510
+     */
+    void BindArrayBuffer(unsigned int dwBuffer);
+    /**
+     * @brief Uploads @p nSize bytes of index data to the bound element-array buffer.
+     * @ghidraAddress 0x21a30
+     */
+    void UploadIndexBufferData(const void *pData, unsigned int nSize, int nUsage);
+    /**
+     * @brief Uploads @p nSize bytes of vertex data to the bound array buffer.
+     * @ghidraAddress 0x2152c
+     */
+    void UploadArrayBufferData(const void *pData, unsigned int nSize, int nUsage);
 };
 
 /**
