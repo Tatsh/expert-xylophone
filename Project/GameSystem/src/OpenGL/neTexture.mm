@@ -13,6 +13,16 @@ namespace ne {
 // The texture cache's circular-list head-holder, created lazily by EnsureCacheList.
 C_TEXTURE **g_ppTextureCacheHead = nullptr; // @ghidraAddress 0x3cff30
 
+// Sampler-parameter indices and the default values a freshly created texture is given.
+enum {
+    kTexParamMinFilter = 0,
+    kTexParamMagFilter = 1,
+    kTexParamWrapS = 2,
+    kTexParamWrapT = 3,
+};
+constexpr int kTexWrapRepeat = 7;
+constexpr int kTexFilterNearest = 0;
+
 /** @ghidraAddress 0x319d0 */
 C_TEXTURE::C_TEXTURE() {
     // Every other field is zeroed by its in-class initialiser; the scale defaults to 1 and the flag
@@ -181,6 +191,29 @@ int C_TEXTURE::LoadFromUIImage(const char *pszName) {
     m_pKeyName = new char[std::strlen(pszName) + 1];
     std::strcpy(m_pKeyName, pszName);
     return 1;
+}
+
+/** @ghidraAddress 0x31eb0 */
+void C_TEXTURE::InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *pData) {
+    m_nAllocWidth = nWidth;
+    m_nAllocHeight = nHeight;
+    m_nFormat = nFormat;
+
+    neGLESRenderer *pRenderer = GetGlRenderer();
+    pRenderer->GenTexture(&m_nGLHandle);
+    pRenderer->BindTexture2d(m_nGLHandle);
+
+    // Give the new texture the default sampler state: repeat wrap on both axes, nearest filtering.
+    pRenderer->SetTextureParameter(kTexParamWrapS, kTexWrapRepeat);
+    pRenderer->SetTextureParameter(kTexParamWrapT, kTexWrapRepeat);
+    pRenderer->SetTextureParameter(kTexParamMinFilter, kTexFilterNearest);
+    pRenderer->SetTextureParameter(kTexParamMagFilter, kTexFilterNearest);
+    m_aTexParams[kTexParamMinFilter] = kTexFilterNearest;
+    m_aTexParams[kTexParamMagFilter] = kTexFilterNearest;
+    m_aTexParams[kTexParamWrapS] = kTexWrapRepeat;
+    m_aTexParams[kTexParamWrapT] = kTexWrapRepeat;
+
+    pRenderer->UploadTexture2d(nFormat, nWidth, nHeight, pData);
 }
 
 } // namespace ne

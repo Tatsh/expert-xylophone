@@ -63,7 +63,7 @@ public:
     /**
      * @brief The OpenGL texture handle.
      */
-    int GetGLHandle() const {
+    unsigned int GetGLHandle() const {
         return m_nGLHandle;
     }
 
@@ -116,21 +116,21 @@ public:
 
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
-    int m_nRefCount = {};     // +0x08
-    C_TEXTURE *m_pPrev = {};  // +0x10: previous texture in the cache list.
-    C_TEXTURE *m_pNext = {};  // +0x18: next texture in the cache list.
-    char *m_pKeyName = {};    // +0x20: the cache key.
-    char *m_pSourcePath = {}; // +0x28: the source image path.
-    int m_nGLHandle = {};     // +0x30
-    int m_nAllocWidth = {};   // +0x34: allocated (power-of-two) width.
-    int m_nAllocHeight = {};  // +0x38: allocated (power-of-two) height.
-    int m_nImageWidth = {};   // +0x3c: source image width.
-    int m_nImageHeight = {};  // +0x40: source image height.
-    int m_nByteSize = {};     // +0x44
-    float m_aUvScale[4] = {}; // +0x48: texture-coordinate scale.
-    int m_nParam58 = {};      // +0x58
-    float m_flScale = {};     // +0x5c
-    bool m_fFlag60 = {};      // +0x60
+    int m_nRefCount = {};          // +0x08
+    C_TEXTURE *m_pPrev = {};       // +0x10: previous texture in the cache list.
+    C_TEXTURE *m_pNext = {};       // +0x18: next texture in the cache list.
+    char *m_pKeyName = {};         // +0x20: the cache key.
+    char *m_pSourcePath = {};      // +0x28: the source image path.
+    unsigned int m_nGLHandle = {}; // +0x30
+    int m_nAllocWidth = {};        // +0x34: allocated (power-of-two) width.
+    int m_nAllocHeight = {};       // +0x38: allocated (power-of-two) height.
+    int m_nImageWidth = {};        // +0x3c: source image width.
+    int m_nImageHeight = {};       // +0x40: source image height.
+    int m_nByteSize = {};          // +0x44
+    int m_aTexParams[4] = {};      // +0x48: sampler-parameter shadow (min, mag, wrap S, wrap T).
+    int m_nFormat = {};            // +0x58: the pixel format (1 = RGBA, 2 = tight 24-bit RGB).
+    float m_flScale = {};          // +0x5c
+    bool m_fFlag60 = {};           // +0x60
     // +0x61..+0x67 is compiler alignment padding to the 0x68-byte object size (no member there).
 };
 

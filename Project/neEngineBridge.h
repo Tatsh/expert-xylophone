@@ -619,6 +619,27 @@ public:
      * @ghidraAddress 0x21484
      */
     void DeleteBuffer(unsigned int dwBuffer);
+    /**
+     * @brief Generates one GL texture object name into @p pOutHandle.
+     * @ghidraAddress 0x21a60
+     */
+    void GenTexture(unsigned int *pOutHandle);
+    /**
+     * @brief Binds @p dwHandle as the current @c GL_TEXTURE_2D.
+     * @ghidraAddress 0x21ab4
+     */
+    void BindTexture2d(unsigned int dwHandle);
+    /**
+     * @brief Sets one texture sampler parameter (@p nParameter: 0 min filter, 1 mag filter, 2 wrap
+     *        S, 3 wrap T) to @p nValue on the bound texture.
+     * @ghidraAddress 0x21ae8
+     */
+    void SetTextureParameter(int nParameter, int nValue);
+    /**
+     * @brief Uploads @p nWidth by @p nHeight pixels in the given @p nFormat to the bound texture.
+     * @ghidraAddress 0x21bd0
+     */
+    void UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData);
 };
 
 /**
