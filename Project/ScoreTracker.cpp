@@ -1,7 +1,13 @@
 #include "ScoreTracker.h"
 
+#include "bg_layer.h"
+#include "clear_gauge_layer.h"
+
 // The process-wide score tracker, created lazily by GetScoreTracker.
 static ScoreTracker *g_pScoreTracker = nullptr; // @ghidraAddress 0x3de4b0
+
+// The gauge value at or below which the 2P side shows the low-gauge danger warning.
+constexpr float kLowGaugeWarningThreshold = 0.7f; // @ghidraAddress 0x2fd008
 
 /** @ghidraAddress 0x149268 */
 void ScoreTracker::ResetLaneGaugeState() {
@@ -15,6 +21,17 @@ void ScoreTracker::ResetLaneGaugeState() {
         }
         SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), nSide, record.nCells[0]);
         ApplyLaneGaugeValueAndBackground(0.0f, nSide);
+    }
+}
+
+/** @ghidraAddress 0x149324 */
+void ScoreTracker::ApplyLaneGaugeValueAndBackground(float flValue, unsigned long long uSide) {
+    // Store the value into this side's play-record rate slot, then push it to the clear-gauge bar.
+    m_aRecords[uSide & 0xffffffff].flRate = flValue;
+    ClearGaugeLayer::shared()->SetValue(flValue, static_cast<unsigned int>(uSide));
+    // Only the 2P side drives the background clear-effect overlay.
+    if (static_cast<int>(uSide) == 1) {
+        BgLayer::GetBackgroundLayer()->SetClearEffectActive(kLowGaugeWarningThreshold <= flValue);
     }
 }
 

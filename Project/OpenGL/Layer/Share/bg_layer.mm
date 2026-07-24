@@ -141,11 +141,10 @@ ne::C_RENDER *BgLayer::GetBackgroundRenderObject() {
 /** @ghidraAddress 0x17203c */
 BgLayer *BgLayer::GetBackgroundLayer() {
     if (g_pBackgroundLayer == nullptr) {
-        // Value-initialisation zeroes the layer; InitBase fills in the base fields and the factory
-        // stamps the sprite capacity and the "no background selected" sentinel, matching the
-        // binary's raw allocation plus explicit initialisation.
+        // The base constructor fills in the base fields and value-initialisation zeroes the rest;
+        // the factory then stamps the sprite capacity and the "no background selected" sentinel,
+        // matching the binary's raw allocation plus explicit initialisation.
         BgLayer *pLayer = new BgLayer();
-        pLayer->InitBase();
         pLayer->m_nSpriteCapacity = 1;
         pLayer->m_nBackgroundId = kNoBackground;
         g_pBackgroundLayer = pLayer;
@@ -229,7 +228,7 @@ void BgLayer::InitializeBackgroundLayer() {
 
 /** @ghidraAddress 0x1727fc */
 void BgLayer::StartBackgroundFadeIn(float flDuration) {
-    RecentreBackgroundSprites();
+    RecenterBackgroundSprites();
     m_flFadeFrom = m_flFadeCurrent;
     m_flFadeTo = 1.0f;
     m_flFadeDuration = flDuration;
@@ -313,7 +312,7 @@ void BgLayer::ProcessBackgroundLayer(float flFrameDelta) {
 }
 
 // The re-centre block inlined at the start of StartBackgroundFadeIn (0x1727fc), factored out here.
-void BgLayer::RecentreBackgroundSprites() {
+void BgLayer::RecenterBackgroundSprites() {
     const float flCentreY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
     m_pRootSprite->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});
     m_pBackgroundBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});

@@ -38,14 +38,14 @@ public:
 
 protected:
     /**
-     * @brief Initialise the layer base from the current device and settings.
+     * @brief Constructs the layer base from the current device and settings.
      *
-     * Fills in the font variant, hardware type, and selected theme; every layer factory runs this
-     * before the subclass sets up its own fields. The binary returns @c this for chaining, but the
-     * callers ignore it, so the method returns void.
+     * Fills in the font variant, hardware type, and selected theme. Every concrete layer's
+     * constructor runs this base constructor before setting up its own fields. The binary returns
+     * @c this for chaining, but the callers ignore it.
      * @ghidraAddress 0x109d84
      */
-    void InitBase();
+    PlayFieldLayerBase();
 
 private:
     unsigned char m_bFontVariant = {}; // +0x00

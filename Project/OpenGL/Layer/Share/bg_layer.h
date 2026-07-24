@@ -85,13 +85,30 @@ public:
      */
     void ProcessBackgroundLayer(float flFrameDelta);
 
+    /**
+     * @brief Sets whether the clear-effect overlay is active: when the state changes, starts the
+     * clear-effect fade and records the new state.
+     * @param bActive Whether the gauge has reached the clear threshold.
+     */
+    void SetClearEffectActive(bool bActive) {
+        if (bActive != m_bClearEffectActive) {
+            m_flClearEffectDuration = kClearEffectFadeDuration;
+            m_flClearEffectElapsed = 0.0f;
+            m_bColorDirty = true;
+        }
+        m_bClearEffectActive = bActive;
+    }
+
 private:
     // The "no background selected" sentinel the factory stamps into m_nBackgroundId; while it is set,
     // no background texture is loaded.
     static constexpr int kNoBackground = 0x1d;
 
+    // The clear-effect fade duration used when the clear-effect overlay is toggled.
+    static constexpr float kClearEffectFadeDuration = 1000.0f;
+
     // Re-centre the built background batches on the play-field's full-height layout Y.
-    void RecentreBackgroundSprites();
+    void RecenterBackgroundSprites();
 
     ne::C_SPRITE_INSTANCING *m_pRootSprite = {};       // +0x08: root container node.
     ne::C_TEXTURE *m_pBackgroundTexture = {};          // +0x10: the background image texture.
