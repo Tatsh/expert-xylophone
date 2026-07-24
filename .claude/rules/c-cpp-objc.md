@@ -263,6 +263,10 @@
 
   Use `language=Objective-C++`, `hl Objective-C++`, and `ft=objcpp` for Objective-C++ headers.
 
+- When a `UIColor` is built from the components `red:0 green:0 blue:0 alpha:1`, use
+  `UIColor.blackColor` instead of the spelled-out `colorWithRed:green:blue:alpha:` call, and add a
+  short comment noting the original used the full component call. (Apply the analogous shorthand only
+  for this exact opaque-black case; do not fold other component colours into named constructors.)
 - If a block is directly tied to a function in the binary, use `@ghidraAddress 0x...` to document
   that.
 

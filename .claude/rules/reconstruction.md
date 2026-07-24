@@ -30,6 +30,11 @@ faithful C, C++, and Objective-C. The coding style of the resulting source lives
   model such a function as taking fewer arguments than the `in_*` usage and the disassembly's
   register/stack reads prove (in particular, never as no-arg when it clearly is not) — fix the Ghidra
   prototype, then reconstruct the real signature. Scan for `in_*` whenever a signature looks empty.
+- When reconstructing a C or C++ function you MUST get its signature correct first (per the `in_*`
+  rule above), and then update ALL of its callers to match that corrected signature — both the
+  Ghidra program (fix the prototype so every call site re-decompiles cleanly) and any already-written
+  reconstructed source that calls it. A signature fix is not complete until every caller agrees with
+  it; a corrected callee with stale callers is a defect, not a finished routine.
 - Fix the Ghidra program itself, not only the reconstructed source. As you work a function, in
   Ghidra: give every parameter, local, and return a real type (never a bare `long`/`int`/`undefined*`
   standing in for an object or struct pointer); rename every auto-named variable (`pnVar1`, `lVar2`,
