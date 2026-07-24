@@ -5,6 +5,7 @@
 #include <cassert>
 
 #import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 
 #import "neEngineBridge.h"
 
@@ -46,4 +47,49 @@ void neGLESRenderer::UploadTexture2d(int nFormat, int nWidth, int nHeight, const
                  glFormat,
                  GL_UNSIGNED_BYTE,
                  pData);
+}
+
+/** @ghidraAddress 0x21400 */
+void neGLESRenderer::ClearBuffers(unsigned int dwMask) {
+    glClear(dwMask);
+}
+
+/** @ghidraAddress 0x212ac */
+void neGLESRenderer::GenFramebuffer(unsigned int *pOutFramebuffer) {
+    glGenFramebuffersOES(1, pOutFramebuffer);
+}
+
+/** @ghidraAddress 0x212b4 */
+void neGLESRenderer::DeleteFramebuffer(unsigned int dwFramebuffer) {
+    glDeleteFramebuffersOES(1, &dwFramebuffer);
+}
+
+/** @ghidraAddress 0x212dc */
+void neGLESRenderer::BindFramebuffer(unsigned int dwFramebuffer) {
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, dwFramebuffer);
+}
+
+/** @ghidraAddress 0x212e4 */
+void neGLESRenderer::GenRenderbuffer(unsigned int *pOutRenderbuffer) {
+    glGenRenderbuffersOES(1, pOutRenderbuffer);
+}
+
+/** @ghidraAddress 0x212ec */
+void neGLESRenderer::DeleteRenderbuffer(unsigned int dwRenderbuffer) {
+    glDeleteRenderbuffersOES(1, &dwRenderbuffer);
+}
+
+/** @ghidraAddress 0x21314 */
+void neGLESRenderer::BindRenderbuffer(unsigned int dwRenderbuffer) {
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, dwRenderbuffer);
+}
+
+/** @ghidraAddress 0x213d8 */
+void neGLESRenderer::GetRenderbufferWidth(int *pOutWidth) {
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, pOutWidth);
+}
+
+/** @ghidraAddress 0x213ec */
+void neGLESRenderer::GetRenderbufferHeight(int *pOutHeight) {
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, pOutHeight);
 }
