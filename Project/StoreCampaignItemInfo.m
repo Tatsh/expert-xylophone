@@ -42,6 +42,23 @@ static NSString *const kUnlockKeyID = @"ID";
 // The format that turns a terms-table entry into a scheme URL probed with -canOpenURL:.
 static NSString *const kTermsURLFormat = @"%@://";
 
+// The action-button kinds carried by an item's buttonType, and the localised button titles they map
+// to.
+enum {
+    kCampaignButtonTypeDownload = 0,     // The item can be downloaded.
+    kCampaignButtonTypeDownloaded = 1,   // The item has already been downloaded.
+    kCampaignButtonTypeUnlockCond = 2,   // The unlock conditions are shown.
+    kCampaignButtonTypeUpdate = 3,       // An update is available.
+    kCampaignButtonTypeSerialInput = 4,  // A serial code must be entered.
+    kCampaignButtonTypePointUnlocked = 5, // The item was unlocked with points.
+};
+static NSString *const kButtonNameDownload = @"ダウンロード";
+static NSString *const kButtonNameDownloaded = @"ダウンロード済み";
+static NSString *const kButtonNameUnlockCond = @"解禁条件";
+static NSString *const kButtonNameUpdate = @"アップデート";
+static NSString *const kButtonNameSerialInput = @"シリアル入力";
+static NSString *const kButtonNamePointUnlocked = @"ポイント解禁済み";
+
 // The unlock-terms kinds carried by the item's unlockType.
 enum {
     kCampaignUnlockTypeOpen = 0,    // Immediately unlocked.
@@ -245,6 +262,47 @@ static const int kCampaignHideTypeVisible = 0;
 - (void)registSuccess {
     _bServerUnlock = YES;
     _bUnlock = YES;
+}
+
+/** @ghidraAddress 0x1099cc */
++ (UIColor *)getButtonColor:(int)buttonType {
+    switch (buttonType) {
+    case kCampaignButtonTypeDownload:
+        return UIColor.blueColor;
+    case kCampaignButtonTypeDownloaded:
+        return UIColor.grayColor;
+    case kCampaignButtonTypeUnlockCond:
+        return [UIColor colorWithRed:0 green:0 blue:0.501960813999176f alpha:1];
+    case kCampaignButtonTypeUpdate:
+        return [UIColor colorWithRed:0 green:0.5882353186607361f blue:1 alpha:1];
+    case kCampaignButtonTypeSerialInput:
+        return UIColor.greenColor;
+    case kCampaignButtonTypePointUnlocked:
+        return UIColor.grayColor;
+    default:
+        // The original built this from components equal to white.
+        return UIColor.whiteColor;
+    }
+}
+
+/** @ghidraAddress 0x109b10 */
++ (NSString *)getButtonName:(int)buttonType {
+    switch (buttonType) {
+    case kCampaignButtonTypeDownload:
+        return kButtonNameDownload;
+    case kCampaignButtonTypeDownloaded:
+        return kButtonNameDownloaded;
+    case kCampaignButtonTypeUnlockCond:
+        return kButtonNameUnlockCond;
+    case kCampaignButtonTypeUpdate:
+        return kButtonNameUpdate;
+    case kCampaignButtonTypeSerialInput:
+        return kButtonNameSerialInput;
+    case kCampaignButtonTypePointUnlocked:
+        return kButtonNamePointUnlocked;
+    default:
+        return nil;
+    }
 }
 
 @end

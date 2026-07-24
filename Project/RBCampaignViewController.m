@@ -1114,4 +1114,9 @@ static NSString *const kCampaignIdFormat = @"%d";
     [[RBExperienceData sharedInstance] addItem:type ID:itemID];
 }
 
+/** @ghidraAddress 0x1fe4f8 */
+- (void)storeClose {
+    // The store-close hook is intentionally empty.
+}
+
 @end

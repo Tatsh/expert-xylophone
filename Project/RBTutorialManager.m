@@ -21,6 +21,9 @@
 // "needs to start" predicates treat any other stored value as "not yet seen".
 static const unsigned int kTutorialSeenValue = 1;
 
+// The initial capacity of the pending unlocked-item info queue (the {itemInfo, itemId} pair).
+static const NSUInteger kUnlockItemInfoCapacity = 2;
+
 // The music-select "seen" flag identifier stored in the persisted tutorial-status map. It is the
 // same value as RBTutorialStatusMusicSelectSeen but is queried directly against RBUserSettingData
 // rather than compared against the live cursor.
@@ -184,6 +187,24 @@ enum { kTutorialStatusReportOnly = 0x12 };
         return;
     }
     [RBServerAPIManager tutorialAPI];
+}
+
+/** @ghidraAddress 0x363a8 */
++ (void)resetUnlockedItemInfo {
+    [[RBTutorialManager getInstance].unlockItemInfo removeAllObjects];
+}
+
+/** @ghidraAddress 0x36098 */
++ (void)setUnlockedItemInfo:(int)unlockedItemInfo itemId:(int)itemId {
+    // Create the queue on first use; otherwise empty it before re-queuing the pair.
+    if ([RBTutorialManager getInstance].unlockItemInfo == nil) {
+        [RBTutorialManager getInstance].unlockItemInfo =
+            [[NSMutableArray alloc] initWithCapacity:kUnlockItemInfoCapacity];
+    } else {
+        [RBTutorialManager resetUnlockedItemInfo];
+    }
+    [[RBTutorialManager getInstance].unlockItemInfo addObject:@(unlockedItemInfo)];
+    [[RBTutorialManager getInstance].unlockItemInfo addObject:@(itemId)];
 }
 
 @end
