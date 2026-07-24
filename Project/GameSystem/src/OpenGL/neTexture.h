@@ -68,6 +68,41 @@ public:
     }
 
     /**
+     * @brief The allocated (power-of-two) texture width in texels.
+     */
+    int GetAllocWidth() const {
+        return m_nAllocWidth;
+    }
+
+    /**
+     * @brief The allocated (power-of-two) texture height in texels.
+     */
+    int GetAllocHeight() const {
+        return m_nAllocHeight;
+    }
+
+    /**
+     * @brief The source image width in pixels (the used region of the allocation).
+     */
+    int GetImageWidth() const {
+        return m_nImageWidth;
+    }
+
+    /**
+     * @brief The source image height in pixels (the used region of the allocation).
+     */
+    int GetImageHeight() const {
+        return m_nImageHeight;
+    }
+
+    /**
+     * @brief The texture's content scale: pixel dimensions divided by it give layout points.
+     */
+    float GetScale() const {
+        return m_flScale;
+    }
+
+    /**
      * @brief Store a copy of the source asset path, freeing any path already held.
      * @param pszPath The source asset path to store.
      * @ghidraAddress 0x31b18
