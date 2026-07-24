@@ -53,11 +53,11 @@ private:
 
     // A per-slot effect record the constructor zero-clears (its fields are still being worked out).
     struct EffectRecord {
-        bool m_bFlag = {};             // +0x00
-        unsigned char m_aPad1[3] = {}; // +0x01
-        int m_nValue = {};             // +0x04
-        bool m_bFlag2 = {};            // +0x08
-        unsigned char m_aPad9[3] = {}; // +0x09
+        bool m_bFlag = {}; // +0x00
+        // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
+        int m_nValue = {};  // +0x04
+        bool m_bFlag2 = {}; // +0x08
+        // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 
     ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
@@ -66,7 +66,7 @@ private:
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
     bool m_bBuilt = {};                         // +0x34: set once the sprites are built.
     // +0x35..+0x37 is alignment padding before the effect records.
-    unsigned char m_aPad35[3] = {};                     // +0x35
+    // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
     EffectRecord m_aEffects[kSpriteSlotCount - 1] = {}; // +0x38: two per-slot effect records.
 };
 

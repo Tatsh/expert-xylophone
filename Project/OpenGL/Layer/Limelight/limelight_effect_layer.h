@@ -58,13 +58,13 @@ private:
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
     bool m_bSpritesBuilt = {};                  // +0x30: set once the sprites are built.
     // +0x31..+0x33 is alignment padding before the trailing state.
-    unsigned char m_aPad31[3] = {}; // +0x31
+    // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
     // +0x34..+0x47: further layer state (two ints, a byte flag, and one more int the constructor
     // zero-clears) still being worked out, kept to preserve the 0x48-byte allocation size.
-    int m_nReserved34 = {};              // +0x34
-    int m_nReserved38 = {};              // +0x38
-    bool m_bReserved3c = {};             // +0x3c
-    unsigned char m_aPad3d[3] = {};      // +0x3d
+    int m_nReserved34 = {};  // +0x34
+    int m_nReserved38 = {};  // +0x38
+    bool m_bReserved3c = {}; // +0x3c
+    // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
     int m_nReserved40 = {};              // +0x40
     unsigned char m_aReserved44[4] = {}; // +0x44
 };

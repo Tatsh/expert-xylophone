@@ -58,7 +58,7 @@ private:
     bool m_bBuilt = {};                         // +0x34: set once the nodes are built.
     bool m_bReserved35 = {};                    // +0x35: a further byte flag.
     // +0x36..+0x37 is alignment padding before the trailing int.
-    unsigned char m_aPad36[2] = {};      // +0x36
+    // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
     int m_nReserved38 = {};              // +0x38: a further int the constructor zero-clears.
     unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };

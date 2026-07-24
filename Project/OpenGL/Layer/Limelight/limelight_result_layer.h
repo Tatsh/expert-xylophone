@@ -55,7 +55,7 @@ private:
         {};             // +0x28: the per-slot sprite batches.
     bool m_bBuilt = {}; // +0x68: set once the sprites are built.
     // +0x69..+0x6b is alignment padding before the default alpha.
-    unsigned char m_aPad69[3] = {}; // +0x69
+    // unsigned char m_aPad69[3]; // +0x69 (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
     // +0x74..+0x16f: the remaining layer state, still being worked out, kept as a reserved span to
