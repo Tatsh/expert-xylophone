@@ -812,6 +812,15 @@ public:
      * @ghidraAddress 0x21bd0
      */
     void UploadTexture2d(int nFormat, int nWidth, int nHeight, const void *pData);
+    /**
+     * @brief Draws indexed primitives of the given engine primitive kind from the bound element
+     *        buffer (Ghidra names this @c SetGlParameterByIndex).
+     * @param nPrimitive The engine primitive index; an out-of-range value draws points.
+     * @param nCount The number of indices to draw.
+     * @param pIndices The index data (or the byte offset into the bound element buffer).
+     * @ghidraAddress 0x21ea8
+     */
+    void DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices);
 };
 
 /**

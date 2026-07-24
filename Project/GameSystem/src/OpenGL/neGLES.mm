@@ -32,6 +32,17 @@ int RenderKindToGLRenderKind(RenderKind nRenderKind) {
     return GL_COLOR_ATTACHMENT0_OES + static_cast<int>(nRenderKind) * kRenderKindAttachmentStride;
 }
 
+// Maps an engine primitive index (0..6) to its GL ES draw mode.
+constexpr GLenum kPrimitiveToGlMode[] = {
+    GL_POINTS,         //
+    GL_LINE_STRIP,     //
+    GL_LINE_LOOP,      //
+    GL_LINES,          //
+    GL_TRIANGLE_STRIP, //
+    GL_TRIANGLE_FAN,   //
+    GL_TRIANGLES,      //
+};
+
 } // namespace
 
 /** @ghidraAddress 0x21a60 */
@@ -117,4 +128,14 @@ void neGLESRenderer::AttachRenderbufferToFramebuffer(RenderKind nRenderKind,
 /** @ghidraAddress 0x212a4 */
 unsigned int GetGLRenderbufferTarget() {
     return GL_RENDERBUFFER_OES;
+}
+
+/** @ghidraAddress 0x21ea8 */
+void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices) {
+    // An out-of-range primitive index maps to GL_POINTS, matching the binary's default.
+    const GLenum glMode = (static_cast<unsigned int>(nPrimitive) <
+                           sizeof(kPrimitiveToGlMode) / sizeof(kPrimitiveToGlMode[0])) ?
+                              kPrimitiveToGlMode[nPrimitive] :
+                              GL_POINTS;
+    glDrawElements(glMode, nCount, GL_UNSIGNED_SHORT, pIndices);
 }
