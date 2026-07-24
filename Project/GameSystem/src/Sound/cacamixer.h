@@ -141,6 +141,21 @@ public:
      */
     bool ConfigureAudioUnitGraph(int nVoiceCount);
 
+    /**
+     * @brief Starts the graph (once) and applies the default master gain.
+     *
+     * The compiler emits this both inlined at @c 0x4af6c and as an out-of-line thunk at @c 0x4aff8;
+     * both collapse to this one method.
+     * @ghidraAddress 0x4af6c
+     * @ghidraAddress 0x4aff8
+     */
+    void Start();
+    /**
+     * @brief Stops the graph when it is running.
+     * @ghidraAddress 0x4afc4
+     */
+    void Stop();
+
 private:
     // Resolves a raw play handle to its live voice (index in the high bits, generation in the low
     // 16), or @c nullptr when the index is out of range or the generation is stale.

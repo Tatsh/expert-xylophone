@@ -52,6 +52,20 @@ unsigned int caPlayerMgr::PlaySoundOnVoice(int resourceId, int busId, int volume
     return m_pMixer->EnqueueVoiceBuffer(pSource, busId, volume) | kOneShotSourceTag;
 }
 
+/** @ghidraAddress 0x4b61c */
+void caPlayerMgr::StartAudioGraph() {
+    if (m_pMixer != nullptr) {
+        m_pMixer->Start();
+    }
+}
+
+/** @ghidraAddress 0x4b60c */
+void caPlayerMgr::StopAudioGraph() {
+    if (m_pMixer != nullptr) {
+        m_pMixer->Stop();
+    }
+}
+
 /** @ghidraAddress 0x4bb6c */
 void caPlayerMgr::ResumeVoiceByHandle(unsigned int handle) {
     m_pMixer->StartVoice(DecodeVoiceHandle(handle));

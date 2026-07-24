@@ -45,6 +45,9 @@ constexpr unsigned int kInvalidHandle = 0xffffffff;
 // The largest mixer bus count the graph configuration accepts.
 constexpr int kMaxVoiceCount = 0x1000;
 
+// The gain-table index applied as the default master gain when the graph starts (full volume).
+constexpr int kDefaultMasterGainIndex = 0x7f;
+
 // The output stream format: 32 kHz stereo 16-bit linear PCM. The binary stores the format flags as
 // the literal 0xc2c (signed integer | packed | non-interleaved, with the sample-fraction field the
 // 3D mixer's RemoteIO input expects); it is used verbatim.
@@ -298,4 +301,23 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
         return false;
     }
     return AUGraphUpdate(m_pAUGraph, nullptr) == noErr;
+}
+
+/** @ghidraAddress 0x4af6c */
+void caCAMixer::Start() {
+    // Start the graph once; then (re)apply the default master gain regardless.
+    if (!m_bIsRunning) {
+        if (AUGraphStart(m_pAUGraph) != noErr) {
+            return;
+        }
+        m_bIsRunning = true;
+    }
+    ApplyVoicePanParam(kDefaultMasterGainIndex, 0);
+}
+
+/** @ghidraAddress 0x4afc4 */
+void caCAMixer::Stop() {
+    if (m_bIsRunning && AUGraphStop(m_pAUGraph) == noErr) {
+        m_bIsRunning = false;
+    }
 }
