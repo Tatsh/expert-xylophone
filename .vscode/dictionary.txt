@@ -42,6 +42,7 @@ cfstring
 cfurl
 cfuuid
 chache
+chek
 chksco
 classess
 codesign
