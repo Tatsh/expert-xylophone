@@ -6,8 +6,10 @@
 //
 //  A recurring engine idiom: a five-float linear-interpolation channel embedded in a UI layer
 //  (a start value, an end value, a duration, the elapsed time, and the current interpolated value).
-//  Many layers advance one such channel per frame; each binary function operates on the channel
-//  embedded at its own offset within the owning layer.
+//  Many layers advance one such channel per frame. Each advancer is an instance method of its
+//  owning layer; the layers are not fully modelled yet, so only the channel (and, where a method
+//  touches them, the sibling fields) is named, with reserved spans positioning it at its real
+//  offset.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
@@ -26,57 +28,89 @@ struct LinearTween {
     float m_flCurrent = {};  // +0x10 last computed interpolated value
 
     /**
-     * @brief Advances the channel by @p flDelta and recomputes @c m_flCurrent, unless the channel
-     * has already reached its duration.
-     *
-     * The elapsed time is clamped to the duration; a zero duration forces the progress to 1. This
-     * matches the shared tween idiom used by the title, full-combo, grade-gauge, and number-effect
-     * layers.
+     * @brief Advances the channel by @p flDelta and recomputes @c m_flCurrent, unless it has
+     * already reached its duration. The elapsed time is clamped to the duration; a zero duration
+     * forces the progress to 1.
      * @param flDelta The time (or frame count) to advance by.
      */
     void Advance(float flDelta);
 };
 
-// The per-layer channel-advance functions. Each advances the @c LinearTween embedded at its own
-// offset within the owning layer; the owning layer classes are not modelled yet, so each takes the
-// layer as an opaque pointer.
+/**
+ * @brief The classic-theme animation state, as far as its eased-progress channel is concerned.
+ * @ghidraAddress ClassicThemeAnimation (engine layer)
+ */
+struct ClassicThemeAnimation {
+    unsigned char m_aReserved00[0x44] = {}; // +0x00
+    LinearTween m_easeChannel;              // +0x44
+    /**
+     * @brief Advances the eased-progress channel by @p flDelta.
+     * @ghidraAddress 0x10a5fc
+     */
+    void AdvanceEasedProgress(float flDelta);
+};
 
 /**
- * @brief Advances the title screen's fade channel by @p nDeltaFrames.
- * @ghidraAddress 0x149ff4
+ * @brief The full-combo effect layer, as far as its fade/scale channel is concerned.
+ * @ghidraAddress FullComboEffectLayer (engine layer)
  */
-void CalculateTitleFade(void *pLayer, int nDeltaFrames);
+struct FullComboEffectLayer {
+    unsigned char m_aReserved00[0x6c] = {}; // +0x00
+    LinearTween m_fadeChannel;              // +0x6c
+    /**
+     * @brief Advances the fade/scale channel by @p flDeltaTime.
+     * @ghidraAddress 0x18795c
+     */
+    void AdvanceFadeInterp(float flDeltaTime);
+};
+
 /**
- * @brief Advances the title screen's secondary fade/tween channel by @p nDeltaFrames.
- * @ghidraAddress 0x152548
+ * @brief The grade-gauge display layer, as far as its interpolation channel is concerned.
+ * @ghidraAddress GradeGaugeLayer (engine layer)
  */
-void AdvanceTitleFadeValue(void *pLayer, int nDeltaFrames);
+struct GradeGaugeLayer {
+    unsigned char m_aReserved00[0x6c] = {}; // +0x00
+    LinearTween m_gaugeChannel;             // +0x6c
+    /**
+     * @brief Advances the grade-gauge channel by @p flDeltaTime.
+     * @ghidraAddress 0x120a74
+     */
+    void AdvanceChannel(float flDeltaTime);
+};
+
 /**
- * @brief Advances a classic-theme animation channel's eased progress by @p flDelta.
- * @ghidraAddress 0x10a5fc
+ * @brief The number-effect layer, as far as its fade channel and active flag are concerned.
+ * @ghidraAddress NumberEffectLayer (engine layer)
  */
-void AdvanceEasedProgress(void *pState, float flDelta);
+struct NumberEffectLayer {
+    unsigned char m_aReserved00[0x30] = {}; // +0x00
+    LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
+    bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame
+    /**
+     * @brief Advances the fade channel by @p flDeltaTime and raises the active flag.
+     * @ghidraAddress 0x189ef0
+     */
+    void AdvanceFadeInterp(float flDeltaTime);
+};
+
 /**
- * @brief Advances the full-combo layer's fade/scale channel by @p flDeltaTime.
- * @ghidraAddress 0x18795c
+ * @brief A score-counter roll-up record: a compact value/start/end/elapsed/duration tuple that
+ * snaps to the end value once complete.
+ * @ghidraAddress ScoreDigitAnim (engine 0x18-byte record)
  */
-void AdvanceFcFadeInterp(float flDeltaTime, void *pLayer);
-/**
- * @brief Advances the grade-gauge display's interpolation channel by @p flDeltaTime.
- * @ghidraAddress 0x120a74
- */
-void AdvanceGradeGaugeChannel(float flDeltaTime, void *pThis);
-/**
- * @brief Advances the number-effect layer's fade channel by @p flDeltaTime and raises its active
- * flag.
- * @ghidraAddress 0x189ef0
- */
-void AdvanceNumberFadeInterp(float flDeltaTime, void *pLayer);
-/**
- * @brief Advances a score-counter roll-up animation, snapping to the end value once complete.
- * @ghidraAddress 0x18bd58
- */
-void AdvanceScoreDigitInterp(float flDeltaTime, void *pAnim);
+struct ScoreDigitAnim {
+    unsigned char m_aReserved00[0x04] = {}; // +0x00
+    float m_flStart = {};                   // +0x04 start value
+    float m_flEnd = {};                     // +0x08 end value
+    float m_flValue = {};                   // +0x0c current displayed value
+    float m_flElapsed = {};                 // +0x10 elapsed time so far
+    float m_flDuration = {};                // +0x14 total duration
+    /**
+     * @brief Advances the roll-up by @p flDeltaTime, snapping the value to the end once complete.
+     * @ghidraAddress 0x18bd58
+     */
+    void Advance(float flDeltaTime);
+};
 
 // code: language=C++
 // kate: hl C++;
