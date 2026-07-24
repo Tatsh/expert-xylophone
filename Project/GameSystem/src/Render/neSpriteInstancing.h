@@ -108,9 +108,11 @@ public:
     /**
      * @brief Assign the batch's texture, updating reference counts.
      *
-     * Retains @p pTexture and releases whatever texture the batch previously held.
+     * Retains @p pTexture and releases whatever texture the batch previously held. The compiler
+     * emits this both at @c 0x317dc and, identically, out-of-line at @c 0x307ac.
      * @param pTexture The texture to assign.
      * @ghidraAddress 0x317dc
+     * @ghidraAddress 0x307ac
      */
     void SetRefCountedMember(C_TEXTURE *pTexture);
 
