@@ -5,6 +5,7 @@
 #import "neEngineBridge.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "parts_data_table.h"
 #include "phone_anchor_table.h"
 
 // The process-wide Colette result-window layer, created lazily by shared().
@@ -14,6 +15,11 @@ static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddr
 // to match the binary's __common segment, filled at runtime by the result-layout-table initialisers.
 PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount] = {}; // @ghidraAddress 0x3d4d50
 PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghidraAddress 0x3d5530
+
+// The Colette parts tables (declared in parts_data_table.h): zero-initialised here to match the
+// binary's __common segment, filled at runtime.
+PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount] = {};   // @ghidraAddress 0x3d0010
+PartsDataRecord g_aColettePartsPhone[kColettePartsRecordCount] = {}; // @ghidraAddress 0x3d20b0
 
 namespace {
 
@@ -144,4 +150,13 @@ void ResultWindowColetteLayer::GetPhoneAnchorPosition(unsigned int nIndex,
     default:
         break;
     }
+}
+
+/** @ghidraAddress 0x73a44 */
+PartsDataRecord *ResultWindowColetteLayer::GetPartsDataByIndex(unsigned int nIndex) const {
+    assert(static_cast<int>(nIndex) >= 0 && "getPartsData");
+    assert(static_cast<int>(nIndex) < static_cast<int>(kColettePartsRecordCount) && "getPartsData");
+
+    // The pad build uses the pad table; the phone build uses the phone table.
+    return IsPad() ? &g_aColettePartsPad[nIndex] : &g_aColettePartsPhone[nIndex];
 }

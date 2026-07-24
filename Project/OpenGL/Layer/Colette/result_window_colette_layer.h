@@ -8,6 +8,7 @@
 #include "playfieldlayerbase.h"
 
 struct S_VECTOR2;
+struct PartsDataRecord;
 
 namespace ne {
 class C_SPRITE_INSTANCING;
@@ -57,6 +58,17 @@ public:
      * @ghidraAddress 0x73b4c
      */
     void GetPhoneAnchorPosition(unsigned int nIndex, S_VECTOR2 *pOutPosition) const;
+
+    /**
+     * @brief Returns a result-window parts descriptor by index.
+     *
+     * Selects the pad or phone parts table by the current device kind and returns the record at
+     * @p nIndex.
+     * @param nIndex The parts-record index (0 through 347).
+     * @return The parts descriptor.
+     * @ghidraAddress 0x73a44
+     */
+    PartsDataRecord *GetPartsDataByIndex(unsigned int nIndex) const;
 
 private:
     // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
