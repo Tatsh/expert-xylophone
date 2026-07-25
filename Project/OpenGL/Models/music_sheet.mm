@@ -167,10 +167,8 @@ MusicSheet::MusicSheet() {
     // The version starts unread; the parser fills it in. Every count, timing, and buffer pointer is
     // cleared by the member initialisers, matching the binary's field-by-field zeroing.
     m_nVersion = -1;
-    // The path buffer starts with room for one node and no nodes read.
-    m_pPathNodes = new SheetPathNode[1]();
-    m_nPathPointCount = 0;
-    m_nPathPointCapacity = 1;
+    // The path-node array starts with room for one node and none read.
+    m_pathNodes.Reserve();
     m_pRecords = nullptr;
     m_pSlideRecords = nullptr;
     m_pSideIndexArray = nullptr;
@@ -199,10 +197,7 @@ MusicSheet::~MusicSheet() {
     }
     delete[] m_pSlideRecords;
     m_pSlideRecords = nullptr;
-    delete[] m_pPathNodes;
-    m_pPathNodes = nullptr;
-    m_nPathPointCount = 0;
-    m_nPathPointCapacity = 0;
+    m_pathNodes.Free();
 }
 
 /** @ghidraAddress 0x130d64 */
@@ -261,14 +256,15 @@ void MusicSheet::ResolveNoteScrollSpeeds() {
         const int nEndTime = record.nTimeA + record.nTimeB;
         // Walk the path nodes, advancing the start speed up to the note's start time and the end
         // speed up to its end time, until a node lies past the note's end.
-        for (int nNode = 1; nNode < m_nPathPointCount; ++nNode) {
-            if (GetSheetPathNode(nNode)->nTime <= nStartTime) {
-                record.flScrollStartSpeed = static_cast<float>(GetSheetPathNode(nNode)->nSpeed);
+        for (int nNode = 1; nNode < m_pathNodes.GetCount(); ++nNode) {
+            // A node's time is its y coordinate and its speed its x coordinate.
+            if (GetSheetPathNode(nNode)->y <= nStartTime) {
+                record.flScrollStartSpeed = static_cast<float>(GetSheetPathNode(nNode)->x);
             }
-            if (GetSheetPathNode(nNode)->nTime <= nEndTime) {
-                record.flScrollEndSpeed = static_cast<float>(GetSheetPathNode(nNode)->nSpeed);
+            if (GetSheetPathNode(nNode)->y <= nEndTime) {
+                record.flScrollEndSpeed = static_cast<float>(GetSheetPathNode(nNode)->x);
             }
-            if (GetSheetPathNode(nNode)->nTime > nEndTime) {
+            if (GetSheetPathNode(nNode)->y > nEndTime) {
                 break;
             }
         }
@@ -335,17 +331,18 @@ int MusicSheet::CalculateChartTiming() {
 
 /** @ghidraAddress 0x12f604 */
 SheetPathNode *MusicSheet::GetSheetPathNode(int nIndex) {
-    assert(nIndex >= 0 && nIndex < m_nPathPointCount);
-    return &m_pPathNodes[nIndex];
+    assert(nIndex >= 0 && nIndex < m_pathNodes.GetCount());
+    return &m_pathNodes[nIndex];
 }
 
 /** @ghidraAddress 0x1316b4 */
 float MusicSheet::GetFirstPathSpeed() {
-    if (m_nPathPointCount == 0) {
+    if (m_pathNodes.GetCount() == 0) {
         return kDefaultPathSpeed;
     }
-    assert(m_nPathPointCount > 0);
-    return static_cast<float>(m_pPathNodes[0].nSpeed);
+    assert(m_pathNodes.GetCount() > 0);
+    // The node's speed occupies the path point's x slot.
+    return static_cast<float>(m_pathNodes[0].x);
 }
 
 /** @ghidraAddress 0x13183c */

@@ -50,6 +50,31 @@ public:
      */
     void Append(const NotePathPoint &point);
 
+    /** @brief The number of live entries. */
+    int GetCount() const {
+        return m_nCount;
+    }
+
+    /** @brief The entry at @p nIndex. */
+    NotePathPoint &operator[](int nIndex) {
+        return m_pEntries[nIndex];
+    }
+
+    /** @brief Releases the entry buffer and clears the count and capacity. */
+    void Free() {
+        delete[] m_pEntries;
+        m_pEntries = nullptr;
+        m_nCount = 0;
+        m_nCapacity = 0;
+    }
+
+    /** @brief Seeds an empty array with room for a single entry (the reader's initial state). */
+    void Reserve() {
+        m_pEntries = AllocateEntries(1);
+        m_nCount = 0;
+        m_nCapacity = 1;
+    }
+
 private:
     NotePathPoint *m_pEntries = {}; // +0x00 the entry buffer
     int m_nCount = {};              // +0x08 live entry count
