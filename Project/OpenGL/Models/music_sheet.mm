@@ -14,6 +14,10 @@
 
 namespace {
 
+// The default first-path speed used when the chart carries no speed-change nodes (@ghidraAddress
+// 0x2ec6b0, a shared read-only 100.0 constant).
+constexpr float kDefaultPathSpeed = 100.0f;
+
 // The side-object flag bit in a note record's flags.
 constexpr unsigned int kSideObjectFlag = 1u << 5;
 // The note type of a slide-tail (excluded from the late-note count), and the hold type (whose end
@@ -89,6 +93,15 @@ int MusicSheet::CalculateChartTiming() {
 SheetPathNode *MusicSheet::GetSheetPathNode(int nIndex) {
     assert(nIndex >= 0 && nIndex < m_nPathPointCount);
     return &m_pPathNodes[nIndex];
+}
+
+/** @ghidraAddress 0x1316b4 */
+float MusicSheet::GetFirstPathSpeed() {
+    if (m_nPathPointCount == 0) {
+        return kDefaultPathSpeed;
+    }
+    assert(m_nPathPointCount > 0);
+    return static_cast<float>(m_pPathNodes[0].nSpeed);
 }
 
 /** @ghidraAddress 0x13183c */

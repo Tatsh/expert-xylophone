@@ -45,6 +45,13 @@ public:
     SheetPathNode *GetSheetPathNode(int nIndex);
 
     /**
+     * @brief Returns the first path node's speed value, or a default when there are no path nodes.
+     * @return The first node's speed as a float, or the default speed.
+     * @ghidraAddress 0x1316b4
+     */
+    float GetFirstPathSpeed();
+
+    /**
      * @brief Counts the chart's late notes per side and computes its scroll timing.
      *
      * Walks the note records to find each side's side-object end time, counts the notes (and slide
