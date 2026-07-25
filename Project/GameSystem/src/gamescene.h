@@ -21,6 +21,11 @@ public:
      */
     void AdvanceGameSceneStateFrom11();
     /**
+     * @brief Sets this scene's state to 0x13.
+     * @ghidraAddress 0x14afec
+     */
+    void SetGameSceneState13();
+    /**
      * @brief Pauses the play timer and background music when this scene is interrupted.
      * @ghidraAddress 0x14b010
      */

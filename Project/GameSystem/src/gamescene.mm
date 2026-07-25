@@ -29,6 +29,7 @@ constexpr float kSceneFadeDuration = 1000.0f;
 // The scene states the exit transitions advance into.
 constexpr int kPauseExitState = 0xe;
 constexpr int kMusicReleaseState = 0xd;
+constexpr int kGameSceneState13 = 0x13;
 
 } // namespace
 
@@ -39,6 +40,13 @@ void GameScene::AdvanceGameSceneStateFrom11() {
         m_nState = kActivePlayState + 1;
         m_nStateSubStep = 0;
     }
+}
+
+/** @ghidraAddress 0x14afec */
+void GameScene::SetGameSceneState13() {
+    // The binary's 64-bit store sets the state and clears the sub-step together.
+    m_nState = kGameSceneState13;
+    m_nStateSubStep = 0;
 }
 
 /** @ghidraAddress 0x14a510 */
