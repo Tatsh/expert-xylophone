@@ -156,6 +156,18 @@ public:
                                   unsigned int nAlpha);
 
     /**
+     * @brief Renders a value padded to at least two digits with a dot glyph after the ones digit.
+     *
+     * Splits @p nValue into up to four digits (at least two) and emits each digit right to left from
+     * @p position stepping by its own width, inserting the dot glyph after the ones digit.
+     * @param nValue The value to render.
+     * @param position The right-hand start position.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x115d7c
+     */
+    void RenderScorePaddedWithDot(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
+
+    /**
      * @brief Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and

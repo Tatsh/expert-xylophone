@@ -191,6 +191,11 @@ constexpr unsigned int kCharCodeBound = 0x7e;
 // The dot glyph character code drawn between the integer and fractional parts.
 constexpr unsigned int kDotGlyph = 0x7d;
 
+// The dot glyph part id RenderScorePaddedWithDot inserts after the ones digit, and its minimum
+// digit count.
+constexpr unsigned int kPaddedDotPart = 0x7c;
+constexpr int kPaddedMinDigits = 2;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -495,6 +500,55 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+/** @ghidraAddress 0x115d7c */
+void ResultWindowClassicLayer::RenderScorePaddedWithDot(int nValue,
+                                                        const S_VECTOR2 &position,
+                                                        unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into up to four digits, showing at least two.
+    int aDigits[kCompactMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kCompactMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant < kPaddedMinDigits) {
+        nSignificant = kPaddedMinDigits;
+    }
+
+    // Emit each digit right to left from the position, inserting the dot after the ones digit.
+    float flX = position.x;
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nPart = aDigits[i] + kCompactDigitBank;
+        const float flGlyphWidth = getPartsData(static_cast<int>(nPart))->flWidth;
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kGlyphSlot,
+                       nPart,
+                       S_VECTOR2{flX - flGlyphWidth, position.y},
+                       nAlpha,
+                       0);
+        flX -= flGlyphWidth;
+        if (i == 0) {
+            const float flDotWidth = getPartsData(static_cast<int>(kPaddedDotPart))->flWidth;
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kGlyphSlot,
+                           kPaddedDotPart,
+                           S_VECTOR2{flX - flDotWidth, position.y},
+                           nAlpha,
+                           0);
+            flX -= flDotWidth;
+        }
     }
 }
 
