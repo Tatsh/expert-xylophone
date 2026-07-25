@@ -76,6 +76,17 @@ void ReleaseViewportCamera(ne::Viewport *pViewport) {
     }
 }
 
+/** @ghidraAddress 0x29a80 */
+void ApplyCameraToRenderer(ne::Viewport *pCamera, neGLESRenderer *pRenderer) {
+    // The engine matrix-mode index for the projection matrix (SetMatrixMode maps 1 to GL_PROJECTION).
+    constexpr int kMatrixModeProjection = 1;
+    pRenderer->SetViewport(pCamera->GetViewX(),
+                           pCamera->GetViewY(),
+                           pCamera->GetViewWidth(),
+                           pCamera->GetViewHeight());
+    pRenderer->SetMatrixMode(kMatrixModeProjection, pCamera->GetProjectionMatrix());
+}
+
 /** @ghidraAddress 0x29e70 */
 void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera) {
     if (g_pCurrentAppliedCamera == pCamera) {
