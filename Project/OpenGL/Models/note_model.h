@@ -55,8 +55,31 @@ public:
      */
     float GetLaneX() const;
 
+    /**
+     * @brief Returns the note's play side.
+     *
+     * Reads the chart record's side, or (for a synthetic note) derives it from the own-side flag,
+     * returning the no-side sentinel when the flag is unset.
+     * @return The play side, or the no-side sentinel.
+     * @ghidraAddress 0x133a24
+     */
+    int GetSide() const;
+
+    /**
+     * @brief Returns the note's type.
+     *
+     * Reads the chart record's type, or (for a synthetic note) returns a fixed value from the
+     * own-side flag (the idle sentinel when the flag is unset).
+     * @return The note type.
+     * @ghidraAddress 0x1336c0
+     */
+    int GetType() const;
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
+
+    /** @brief The idle-type sentinel a synthetic note reports for its type when it has no own side. */
+    static constexpr int kIdleTypeSentinel = 5;
 
 private:
     void *m_pSheet = {};            // +0x00: the owning note sheet.

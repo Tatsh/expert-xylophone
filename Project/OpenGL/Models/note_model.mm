@@ -61,6 +61,24 @@ int NoteModel::IsSideFlipped() const {
     return GameSystem::GetGameSystem()->GetPlayColor() != nSide;
 }
 
+/** @ghidraAddress 0x133a24 */
+int NoteModel::GetSide() const {
+    if (m_pRecord != nullptr) {
+        return m_pRecord->nSide;
+    }
+    // A synthetic note reports side 0 when its own-side flag is set, else the no-side sentinel.
+    return m_bOwnSide ? 0 : kNoSideSentinel;
+}
+
+/** @ghidraAddress 0x1336c0 */
+int NoteModel::GetType() const {
+    if (m_pRecord != nullptr) {
+        return m_pRecord->nType;
+    }
+    // A synthetic note reports type 0 when its own-side flag is set, else the idle-kind sentinel.
+    return m_bOwnSide ? 0 : kIdleTypeSentinel;
+}
+
 /** @ghidraAddress 0x1352b8 */
 float NoteModel::GetLaneX() const {
     int nKind;
