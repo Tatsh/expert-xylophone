@@ -69,3 +69,8 @@ void PlayerFieldLayer::StartScoreFadeOut(float flDuration) {
         m_fadeChannel.SetCurrent(0.0f);
     }
 }
+
+/** @ghidraAddress 0x18b7f4 */
+void PlayerFieldLayer::SetScoreSideFlag(int nSide) {
+    m_nScoreSideFlag = nSide;
+}
