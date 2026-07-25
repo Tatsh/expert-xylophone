@@ -125,6 +125,21 @@ public:
     static constexpr int kSideCount = 2;
 
 private:
+    /**
+     * @brief Parses a legacy (version 6 and 7) note-chart word stream into the record pool and links
+     * long notes.
+     *
+     * Reads the note count and chart end time from the header, allocates and default-constructs the
+     * record pool, deserialises each note (allocating its path-point sub-array), derives its flag
+     * bits (long-note head, free note, path-carrying), and scales its target coordinate. A second
+     * pass pairs notes sharing an absolute time (same or different side) and resolves each long
+     * note's tail.
+     * @param pStream The decoded chart word stream (a header followed by note records).
+     * @return @c 1 on success, @c 0 when a note fails to deserialise.
+     * @ghidraAddress 0x12fa34
+     */
+    int ParseNoteChartData(const unsigned int *pStream);
+
     void *m_pVtable = {}; // +0x00: the virtual-function table.
     int m_nVersion = {};  // +0x08: the parsed chart format version.
     // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10, the

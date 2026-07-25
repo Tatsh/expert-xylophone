@@ -160,6 +160,22 @@ constexpr int kSpeedTierMidThreshold = 200;
 constexpr int kSpeedTierHighThreshold = 400;
 constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
 
+// The note flag bits the legacy parser derives.
+constexpr unsigned int kNoteFlagSameLane = 1; // Paired with another note at the same time and side.
+constexpr unsigned int kNoteFlagLongHead = 8; // Heads a long note.
+constexpr unsigned int kNoteFlagDifferentLane =
+    4;                                          // Paired with a note at the same time, other side.
+constexpr unsigned int kNoteFlagFree = 0x10;    // A free (anywhere) note; start time is -1.
+constexpr unsigned int kNoteFlagHasPath = 0x20; // Carries a path-point sub-array.
+
+// The on-disk note kind marking a long-note head.
+constexpr int kChartKindLongHead = 2;
+
+// The target-coordinate scaling: a coordinate is divided by the field width and scaled to the hash
+// range (@ghidraAddress 0x2f8578 = 60.0 field width, 0x2f8540 = 1000.0 hash scale).
+constexpr float kFieldWidth = 60.0f;
+constexpr float kTargetScale = 1000.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x12f828 */
@@ -175,6 +191,94 @@ MusicSheet::MusicSheet() {
     m_pIndexArrayB = nullptr;
     m_nFirstIndex = 0;
     m_nIndexCount = 0;
+}
+
+/** @ghidraAddress 0x12fa34 */
+int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
+    // The header carries the note count and chart end time; the note records follow it.
+    const unsigned int nNoteCount = pStream[1];
+    m_nChartEndTime = static_cast<int>(pStream[2]);
+    m_nSeedA = static_cast<int>(pStream[3]);
+    m_nNoteCount = static_cast<int>(nNoteCount);
+    m_nTempoEventCount = 0;
+    m_nFreeNoteCount = 0;
+    // The first path node is the chart's implicit start node.
+    m_pathNodes.Append(NotePathPoint{static_cast<int>(pStream[0]), 0});
+
+    const auto *pCursor = reinterpret_cast<const unsigned char *>(pStream + 4);
+    m_pRecords = new RbffNoteRecord[nNoteCount];
+    for (unsigned int i = 0; i < nNoteCount; ++i) {
+        RbffChartNote chartNote;
+        if (DeserializeNoteRecord(&chartNote, &pCursor) == 0) {
+            return 0;
+        }
+        RbffNoteRecord &record = m_pRecords[i];
+        record.nTimeA = chartNote.nTimeA;
+        record.nTimeB = chartNote.nTimeB;
+        record.nNoteId = chartNote.nNoteId;
+        record.nStartTime = chartNote.nStartTime;
+        record.nPointCount = chartNote.nPointCount;
+        if (chartNote.nPointCount > 0) {
+            record.pPathPoints = new short[chartNote.nPointCount];
+            for (int j = 0; j < chartNote.nPointCount; ++j) {
+                record.pPathPoints[j] = chartNote.pathPoints[j];
+            }
+        }
+        record.nKind = chartNote.nKind;
+        record.nSide = chartNote.nSide;
+        // The three target coordinates follow the eight path-point shorts on disk.
+        for (int j = 0; j < 3; ++j) {
+            record.aTargetCoords[j] = chartNote.pathPoints[4 + j];
+        }
+        record.nTargetPad = 0;
+        record.nHoldKind = chartNote.nHoldFlag != 0 ? 1 : 0;
+        record.nType = chartNote.nType;
+
+        unsigned int dwFlags = 0;
+        // An on-disk note type of 2 marks a long-note head.
+        if (chartNote.nType == kChartKindLongHead) {
+            record.nType = 0;
+            dwFlags = kNoteFlagLongHead;
+            record.chainLink.SetLongNoteHead(chartNote.nChainLink, chartNote.nChainPartner);
+        }
+        if (record.nStartTime == -1) {
+            dwFlags |= kNoteFlagFree;
+        }
+        if (record.nPointCount > 0) {
+            dwFlags |= kNoteFlagHasPath;
+        }
+        record.dwFlags = dwFlags;
+        // Scale the first target coordinate into the hash range.
+        record.aTargetCoords[0] = static_cast<short>(static_cast<int>(
+            (static_cast<float>(record.aTargetCoords[0]) / kFieldWidth) * kTargetScale));
+    }
+
+    // Second pass: pair notes sharing an absolute end time and resolve each long note's tail.
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &head = m_pRecords[i];
+        for (int j = 0; j < m_nNoteCount; ++j) {
+            if (i == j) {
+                continue;
+            }
+            RbffNoteRecord &other = m_pRecords[j];
+            if (head.nTimeA + head.nTimeB == other.nTimeA + other.nTimeB) {
+                head.dwFlags |=
+                    (head.nSide == other.nSide) ? kNoteFlagSameLane : kNoteFlagDifferentLane;
+            }
+            // Resolve a long-note head's tail against the note whose id matches its chain link.
+            if ((head.dwFlags & kNoteFlagLongHead) != 0 && head.chainLink.GetChainId() != -1 &&
+                head.chainLink.GetChainId() == other.nNoteId) {
+                other.dwFlags |= kNoteFlagLongHead;
+                other.chainLink.SetTail(static_cast<short>(head.nNoteId),
+                                        static_cast<short>(head.nTimeA - other.nTimeA));
+            }
+        }
+        if ((head.dwFlags & kNoteFlagFree) != 0) {
+            ++m_nFreeNoteCount;
+        }
+    }
+
+    return 1;
 }
 
 /**
