@@ -126,7 +126,12 @@ static void DecryptBlowfishBlock(const BlowfishContext *ctx, uint64_t *pLeft, ui
 
 // Zero the whole Blowfish context, wiping any key material. Called before loading a schedule and
 // before freeing the context.
+//
+// The compiler also emits this same 0x2090-byte zeroing out of line at 0x15a80 and 0x15aa8 (the
+// bzero-and-return-buffer thunks the -init allocation path calls); both collapse to this helper.
 // @ghidraAddress 0x15a68
+// @ghidraAddress 0x15a80
+// @ghidraAddress 0x15aa8
 static inline void blowfishCtxClear(BlowfishContext *ctx) {
     memset(ctx, 0, sizeof(BlowfishContext));
 }
