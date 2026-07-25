@@ -271,6 +271,83 @@ public:
                                       float flScaleX,
                                       float flScaleY);
 
+    /**
+     * @brief Emits one phone-table glyph sprite at a position plus an offset, with rotation and
+     *        scale.
+     *
+     * Looks up the glyph's placement rectangle from the phone parts table and its glyph UV-palette
+     * rectangle, adds @p offset to @p position, and appends the quad to the slot. Character codes at
+     * or above the glyph-table bound are ignored. The main pass draws at full intensity, the shadow
+     * pass at half.
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the glyph-table bound).
+     * @param position The glyph's base position.
+     * @param offset The offset added to the base position.
+     * @param nAlpha The glyph alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x116b94
+     */
+    void RenderTableSpriteAtIndex(unsigned int nSlot,
+                                  unsigned int nCharCode,
+                                  const S_VECTOR2 &position,
+                                  const S_VECTOR2 &offset,
+                                  unsigned int nAlpha,
+                                  int bShadowPass,
+                                  float flRotation,
+                                  float flScaleX,
+                                  float flScaleY);
+
+    /**
+     * @brief Emits one phone-table glyph sprite at a resolved position index plus an offset.
+     *
+     * Resolves the base position from the phone position table by @p nPositionIndex, then behaves as
+     * RenderTableSpriteAtIndex: looks up the glyph rectangle and UV rectangle, adds @p offset, and
+     * appends the quad with the given rotation and scale (half intensity on the shadow pass).
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the glyph-table bound).
+     * @param nPositionIndex The phone position-record index.
+     * @param offset The offset added to the resolved position.
+     * @param nAlpha The glyph alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x116cc0
+     */
+    void RenderTableSpriteWithOffset(unsigned int nSlot,
+                                     unsigned int nCharCode,
+                                     int nPositionIndex,
+                                     const S_VECTOR2 &offset,
+                                     unsigned int nAlpha,
+                                     int bShadowPass,
+                                     float flRotation,
+                                     float flScaleX,
+                                     float flScaleY);
+
+    /**
+     * @brief Emits one glyph sprite at a resolved position index plus an offset, X-scaled only.
+     *
+     * Resolves the base position from the phone position table by @p nPositionIndex, adds @p offset,
+     * then dispatches the glyph through the glyph dispatcher with the given X scale (unit Y scale, no
+     * rotation, full intensity).
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the glyph-table bound).
+     * @param nPositionIndex The phone position-record index.
+     * @param offset The offset added to the resolved position.
+     * @param nAlpha The glyph alpha.
+     * @param flScaleX The glyph X scale.
+     * @ghidraAddress 0x116c2c
+     */
+    void RenderSpriteWithPositionOffset(unsigned int nSlot,
+                                        unsigned int nCharCode,
+                                        int nPositionIndex,
+                                        const S_VECTOR2 &offset,
+                                        unsigned int nAlpha,
+                                        float flScaleX);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).

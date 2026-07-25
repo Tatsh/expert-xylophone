@@ -542,6 +542,83 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
     }
 }
 
+/** @ghidraAddress 0x116b94 */
+void ResultWindowClassicLayer::RenderTableSpriteAtIndex(unsigned int nSlot,
+                                                        unsigned int nCharCode,
+                                                        const S_VECTOR2 &position,
+                                                        const S_VECTOR2 &offset,
+                                                        unsigned int nAlpha,
+                                                        int bShadowPass,
+                                                        float flRotation,
+                                                        float flScaleX,
+                                                        float flScaleY) {
+    if (nCharCode >= kCharCodeBound) {
+        return;
+    }
+    // The glyph metrics come from the phone parts table indexed by the character code; the texture
+    // rectangle from the glyph UV palette. The sprite is placed at the position plus the offset.
+    const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
+    const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x116cc0 */
+void ResultWindowClassicLayer::RenderTableSpriteWithOffset(unsigned int nSlot,
+                                                           unsigned int nCharCode,
+                                                           int nPositionIndex,
+                                                           const S_VECTOR2 &offset,
+                                                           unsigned int nAlpha,
+                                                           int bShadowPass,
+                                                           float flRotation,
+                                                           float flScaleX,
+                                                           float flScaleY) {
+    if (nCharCode >= kCharCodeBound) {
+        return;
+    }
+    // Resolve the base position by index, then emit as RenderTableSpriteAtIndex does: phone glyph
+    // metrics, glyph UV palette, placed at the resolved position plus the offset.
+    S_VECTOR2 position{};
+    getPosition_Phone(nPositionIndex, &position);
+    const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
+    const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x116c2c */
+void ResultWindowClassicLayer::RenderSpriteWithPositionOffset(unsigned int nSlot,
+                                                              unsigned int nCharCode,
+                                                              int nPositionIndex,
+                                                              const S_VECTOR2 &offset,
+                                                              unsigned int nAlpha,
+                                                              float flScaleX) {
+    // Resolve the base position by index, add the offset, then dispatch the glyph X-scaled only.
+    S_VECTOR2 position{};
+    getPosition_Phone(nPositionIndex, &position);
+    S_VECTOR2 offsetCopy{offset.x, offset.y};
+    AddVector2(&position, &offsetCopy);
+    DispatchGlyphSpriteFromTable(nSlot, nCharCode, &position, nAlpha, 0, 0.0f, flScaleX, 1.0f);
+}
+
 /** @ghidraAddress 0x1166a8 */
 void ResultWindowClassicLayer::RenderDigitRowSpacedByWidth(int nValue,
                                                            const S_VECTOR2 *pPosition,
