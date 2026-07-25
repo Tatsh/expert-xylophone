@@ -177,6 +177,14 @@ public:
      */
     void UpdateStepFadeOut();
 
+    /**
+     * @brief The state-machine shot step: advances the reflected note along its reversed velocity by
+     * its speed and progress, stores the render position and draw flags, and finishes the note once
+     * it flies below the play field.
+     * @ghidraAddress 0x132b20
+     */
+    void UpdateStepShot();
+
     /** @brief The note's index in its sheet. */
     int GetNoteIndex() const {
         return m_nNoteIndex;
@@ -225,7 +233,12 @@ private:
     S_VECTOR2 m_pos = {};           // +0x34: the current position.
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
-    unsigned char m_aReserved4c[0x28] = {}; // +0x4c: further animation/long-note state.
+    unsigned char m_aReserved4c[8] = {};    // +0x4c: further animation state.
+    float m_flShotSpeed = {};               // +0x54: the shot step's travel speed.
+    float m_flShotProgress = {};            // +0x58: the shot step's travel progress.
+    float m_flRenderX = {};                 // +0x5c: the note's render X coordinate.
+    float m_flRenderY = {};                 // +0x60: the note's render Y coordinate.
+    unsigned char m_aReserved64[0x10] = {}; // +0x64: further animation/long-note state.
 
     // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
     // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
@@ -253,8 +266,11 @@ private:
     WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
     unsigned char m_aReserved5c8[0x8] = {};     // +0x5c8
     float m_flFadeTimer = {};                   // +0x5d0: the fade-out step's decaying timer.
-    unsigned char m_aReserved5d4[0xb] = {};     // +0x5d4
-    bool m_bTouched = {};                       // +0x5df: the frame's nearest-hit winner flag.
+    unsigned char m_aReserved5d4[4] = {};       // +0x5d4
+    // +0x5d8: the two render draw flags, packed as one 16-bit store {bDrawFlag0, bDrawFlag1}.
+    unsigned short m_wDrawFlags = {};
+    unsigned char m_aReserved5da[5] = {}; // +0x5da
+    bool m_bTouched = {};                 // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
     unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.

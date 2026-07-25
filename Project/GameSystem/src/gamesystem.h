@@ -90,6 +90,10 @@ public:
     float GetSheetInsetHalfY() const {
         return m_flSheetInsetHalfY;
     }
+    /** @brief Returns the note sheet's half radius, the off-screen cull margin below the field. */
+    float GetSheetRadiusHalf() const {
+        return m_flSheetRadiusHalf;
+    }
     /** @brief Returns the play-field scale. */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;

@@ -219,6 +219,8 @@ constexpr float kWaypointTimeOffset = -1500.0f;
 constexpr float kFadeDecayDivisor = -300.0f;
 // The note-state-machine states the fade-out step reads and writes.
 constexpr int kNoteStateFinished = 8;
+// The shot step's packed render draw flags: {bDrawFlag0 = 0, bDrawFlag1 = 1}.
+constexpr unsigned short kShotDrawFlags = 0x100;
 } // namespace
 
 /** @ghidraAddress 0x136960 */
@@ -244,6 +246,28 @@ void NoteModel::UpdateStepFadeOut() {
     m_flFadeTimer += flDelta / kFadeDecayDivisor;
     if (m_flFadeTimer <= 0.0f) {
         m_flFadeTimer = 0.0f;
+        m_nState = kNoteStateFinished;
+        m_nSubState = 0;
+    }
+}
+
+/** @ghidraAddress 0x132b20 */
+void NoteModel::UpdateStepShot() {
+    AdvancePosition();
+    // Travel along the reversed, normalised velocity by the shot speed times its progress.
+    S_VECTOR2 offset = m_velocity;
+    ScaleVector2(&offset, -1.0f);
+    NormalizeVector2(&offset);
+    ScaleVector2(&offset, m_flShotSpeed * m_flShotProgress);
+    AddVector2(&offset, &m_pos);
+    m_flRenderX = offset.x;
+    m_flRenderY = offset.y;
+    // The two render draw flags, packed as {0, 1}.
+    m_wDrawFlags = kShotDrawFlags;
+    // Finish the note once it has flown below the play field's cull margin.
+    const float flCullY = GameSystem::GetGameSystem()->GetSheetInsetHalfY() +
+                          GameSystem::GetGameSystem()->GetSheetRadiusHalf();
+    if (flCullY < offset.y) {
         m_nState = kNoteStateFinished;
         m_nSubState = 0;
     }
