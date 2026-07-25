@@ -20,6 +20,9 @@ static ExplosionEffectLayer *g_pExplosionEffectLayer = nullptr; // @ghidraAddres
 
 namespace {
 
+// The scale converting a unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
+constexpr float kAlphaByteScale = 255.0f;
+
 // The per-type burst texture names, interleaved red then blue, indexed by (colour + type * 2)
 // (@ghidraAddress 0x3ce608).
 constexpr const char *kEffectTextureNames[] = {
@@ -133,4 +136,11 @@ void ExplosionEffectLayer::SetEffectType(unsigned int nColor, int nType) {
 /** @ghidraAddress 0x177130 */
 void ExplosionEffectLayer::SetEffectSize(float flSize) {
     m_flEffectSize = flSize;
+}
+
+/** @ghidraAddress 0x17710c */
+void ExplosionEffectLayer::SetPlayColorAlpha(float flAlpha, int nLane) {
+    // Lane zero stores the first bank's alpha byte, any other lane the second.
+    const int nBank = nLane != 0 ? 1 : 0;
+    m_aPlayColorAlpha[nBank] = static_cast<unsigned char>(flAlpha * kAlphaByteScale);
 }

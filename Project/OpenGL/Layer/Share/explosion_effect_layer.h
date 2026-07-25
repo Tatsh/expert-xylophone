@@ -66,6 +66,14 @@ public:
      */
     void SetEffectSize(float flSize);
 
+    /**
+     * @brief Stores a lane's play-colour alpha, scaling the unit-interval value to a byte.
+     * @param flAlpha The alpha, in the range zero to one.
+     * @param nLane The lane (0 selects the first bank's byte, non-zero the second).
+     * @ghidraAddress 0x17710c
+     */
+    void SetPlayColorAlpha(float flAlpha, int nLane);
+
     // The number of explosion texture types.
     static constexpr int kEffectTypeCount = 19;
 
@@ -92,8 +100,9 @@ private:
     unsigned char m_aPad29[3] = {};                        // +0x29
     int m_aEffectType[kBankCount] = {}; // +0x2c: each bank's current explosion texture type.
     EffectEntry m_aBanks[kBankCount][kSlotsPerBank] = {}; // +0x34: the two effect-slot banks.
-    // +0x32c..+0x32f: trailing state before the effect size.
-    unsigned char m_aReserved32c[4] = {}; // +0x32c
+    unsigned char m_aPlayColorAlpha[kBankCount] = {}; // +0x32c: per-lane play-colour alpha bytes.
+    // +0x32e..+0x32f is alignment padding before the effect size.
+    unsigned char m_aPad32e[2] = {};      // +0x32e
     float m_flEffectSize = {};            // +0x330: the burst size from the user setting.
     unsigned char m_aReserved334[4] = {}; // +0x334
 };
