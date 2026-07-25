@@ -7,6 +7,7 @@
 
 class MusicSheet;
 class NoteModel;
+struct RbffNoteRecord;
 
 /**
  * @brief The process-wide note manager: it owns the active chart, the live note render/effect
@@ -47,6 +48,15 @@ public:
     NoteModel *FindNoteByIndex(int nIndex);
 
     /**
+     * @brief Returns the active chart's note record at @p nIndex, or @c nullptr when no chart is
+     *        bound.
+     * @param nIndex The note-record index.
+     * @return The note record, or @c nullptr.
+     * @ghidraAddress 0x137004
+     */
+    RbffNoteRecord *GetActiveNoteRecord(int nIndex);
+
+    /**
      * @brief Grows the note-object pool and active-list arrays to hold at least @p nCount objects.
      *
      * A no-op when the current capacity already covers @p nCount. Otherwise it allocates new pool
@@ -56,6 +66,15 @@ public:
      * @ghidraAddress 0x1371a4
      */
     void EnsureNoteObjectCapacity(int nCount);
+
+    /**
+     * @brief Prepares the note objects for the bound chart: ensures pool capacity for the chart's
+     *        note count, assigns each note its index, and clears the active list.
+     *
+     * A no-op when no chart is bound.
+     * @ghidraAddress 0x137934
+     */
+    void InitNoteObjects();
 
     /**
      * @brief The active note count (the loaded chart's note count).

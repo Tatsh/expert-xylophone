@@ -46,6 +46,11 @@ public:
      */
     RbffNoteRecord *GetNoteRecordByIndex(int nIndex);
 
+    /** @brief The number of note records in the chart's pool. */
+    int GetNoteCount() const {
+        return m_nNoteCount;
+    }
+
     /**
      * @brief Returns the speed-change path node at @p nIndex.
      *

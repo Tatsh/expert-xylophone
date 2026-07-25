@@ -138,6 +138,14 @@ public:
         return m_nNoteIndex;
     }
 
+    /**
+     * @brief Assigns the note's chart index and refreshes its record pointer from the owning
+     *        manager's active chart.
+     * @param nIndex The chart note index.
+     * @ghidraAddress 0x131aa8
+     */
+    void SetNoteIndex(int nIndex);
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 

@@ -9,6 +9,7 @@
 #include "note_effect_mgr.h"
 
 #include "deviceenvironment.h"
+#include "music_sheet.h"
 #include "note_model.h"
 
 // The process-wide note manager, created lazily by shared().
@@ -31,6 +32,14 @@ void NoteEffectMgr::ClearNotePositionCache() {
     }
 }
 
+/** @ghidraAddress 0x137004 */
+RbffNoteRecord *NoteEffectMgr::GetActiveNoteRecord(int nIndex) {
+    if (m_pMusicSheet == nullptr) {
+        return nullptr;
+    }
+    return m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+}
+
 /** @ghidraAddress 0x137018 */
 NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     // A valid in-range index maps straight to its pooled object (when the pool covers it).
@@ -48,6 +57,28 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
         }
     }
     return nullptr;
+}
+
+/** @ghidraAddress 0x137934 */
+void NoteEffectMgr::InitNoteObjects() {
+    if (m_pMusicSheet == nullptr) {
+        return;
+    }
+    const int nCount = m_pMusicSheet->GetNoteCount();
+    EnsureNoteObjectCapacity(nCount);
+    m_nNoteCount = nCount;
+    // Bind each chart note to its pooled object.
+    for (int i = 0; i < nCount; ++i) {
+        NoteModel *pNote = FindNoteByIndex(i);
+        if (pNote != nullptr) {
+            pNote->SetNoteIndex(i);
+        }
+    }
+    // Clear the active list and reset the active count.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        m_ppActiveList[i] = nullptr;
+    }
+    m_nActiveCount = 0;
 }
 
 /** @ghidraAddress 0x1371a4 */

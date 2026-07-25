@@ -16,6 +16,7 @@
 #include "deviceenvironment.h"
 #include "engineglobals.h"
 #include "gamesystem.h"
+#include "note_effect_mgr.h"
 #include "rbffnoterecord.h"
 
 // The play-field edge bounds, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and
@@ -63,6 +64,15 @@ NoteModel::NoteModel(void *pSheet) {
         entry.nSeedD = kSubEntrySeed;
     }
     m_bFontVariant = IsPad();
+}
+
+/** @ghidraAddress 0x131aa8 */
+void NoteModel::SetNoteIndex(int nIndex) {
+    m_nNoteIndex = nIndex;
+    // Refresh the record pointer from the owning manager's currently-bound chart.
+    if (m_pSheet != nullptr) {
+        m_pRecord = static_cast<NoteEffectMgr *>(m_pSheet)->GetActiveNoteRecord(nIndex);
+    }
 }
 
 /** @ghidraAddress 0x135e84 */
