@@ -209,3 +209,23 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
     SubtractVector3(pRayDir, pRayOrigin);
     NormalizeVector3(pRayDir);
 }
+
+/** @ghidraAddress 0x29abc */
+void ProjectWorldToScreen(ne::Viewport *pViewport, float *pVec4) {
+    // The matrix helper only reads its matrix argument, so casting away the accessor's constness is
+    // safe here.
+    MultiplyVector4ByMatrixInPlace(pVec4, const_cast<float *>(pViewport->GetProjectionMatrix()));
+    // Perspective divide, then map clip space into the pixel rectangle; the Y axis is negated so the
+    // origin is top-left.
+    const float x = pVec4[0];
+    const float y = pVec4[1];
+    const float w = pVec4[3];
+    pVec4[0] = static_cast<float>(pViewport->GetViewWidth()) * (x / w + 1.0f) * 0.5f;
+    pVec4[1] = static_cast<float>(pViewport->GetViewHeight()) * (y / w - 1.0f) * -0.5f;
+}
+
+/** @ghidraAddress 0x2a158 */
+void ProjectWorldToScreenCurrent(float *pVec4) {
+    TransformVector4ByCamera(g_pCurrentModelNode, pVec4);
+    ProjectWorldToScreen(g_pActiveViewCamera, pVec4);
+}

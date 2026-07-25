@@ -305,6 +305,29 @@ void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4);
  */
 void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir);
 
+/**
+ * @brief Projects a world-space homogeneous point to screen (pixel) coordinates through a viewport.
+ *
+ * Applies the viewport's projection matrix, performs the perspective divide, and maps the clip-space
+ * result into the viewport's pixel rectangle (with the Y axis flipped to a top-left origin). The
+ * point's @c x and @c y are overwritten with the screen coordinates; @c z and @c w are left as they
+ * are after the projection multiply.
+ * @param pViewport The viewport whose projection matrix and pixel size define the mapping.
+ * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
+ * @ghidraAddress 0x29abc
+ */
+void ProjectWorldToScreen(ne::Viewport *pViewport, float *pVec4);
+
+/**
+ * @brief Projects a world-space point to screen coordinates through the current camera globals.
+ *
+ * A convenience wrapper: transforms @p pVec4 by the current model node's view matrix
+ * (@c g_pCurrentModelNode), then projects it through the active view camera (@c g_pActiveViewCamera).
+ * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
+ * @ghidraAddress 0x2a158
+ */
+void ProjectWorldToScreenCurrent(float *pVec4);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
