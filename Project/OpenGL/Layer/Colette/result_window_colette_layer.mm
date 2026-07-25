@@ -11,6 +11,7 @@
 #include "parts_data_table.h"
 #include "phone_anchor_table.h"
 #import "s_vector2.h"
+#include "soundeffectmanager.h"
 
 // The process-wide Colette result-window layer, created lazily by shared().
 static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddress 0x3dc598
@@ -61,6 +62,11 @@ constexpr int kOverlaySlot = 7;
 // The sprite colour intensities for the main pass and the half-intensity dimmed pass.
 constexpr unsigned int kIntensityFull = 0xff;
 constexpr unsigned int kIntensityDimmed = 0x80;
+
+// The bonus voice-cue delay threshold, in milliseconds (@ghidraAddress 0x2fcffc), and the themed
+// voice id the cue plays.
+constexpr float kBonusCueThreshold = 3956.0f;
+constexpr int kBonusCueVoiceId = 7;
 
 // The fixed glyph-table base indices and parts scale the builder stamps into the layer.
 constexpr int kGlyphBaseA = 0x4e;
@@ -209,6 +215,18 @@ void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     pOutRect->flX += pGameSystem->GetViewportWidth() * 0.5f;
     pOutRect->flY += pGameSystem->GetViewportHeight() * 0.5f;
+}
+
+/** @ghidraAddress 0x74238 */
+void ResultWindowColetteLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
+    if (!m_bBonusCueArmed) {
+        return;
+    }
+    m_flBonusCueTimer += flDeltaTime;
+    if (m_flBonusCueTimer > kBonusCueThreshold) {
+        m_bBonusCueArmed = false;
+        SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kBonusCueVoiceId);
+    }
 }
 
 /** @ghidraAddress 0x76b5c */

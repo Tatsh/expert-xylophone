@@ -93,6 +93,16 @@ public:
      */
     void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
+    /**
+     * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
+     *
+     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold the
+     * cue is disarmed and the themed bonus voice is loaded and played.
+     * @param flDeltaTime The elapsed time since the last frame, in milliseconds.
+     * @ghidraAddress 0x74238
+     */
+    void UpdateBonusSoundCueTimer(float flDeltaTime);
+
 private:
     /**
      * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
@@ -345,10 +355,16 @@ private:
     int m_nGlyphBaseB = {};         // +0x70: glyph-table base index B (0x45).
     int m_nGlyphBaseC = {};         // +0x74: glyph-table base index C (0x3a).
     float m_flPartsScale = {};      // +0x78: the parts-sprite scale (1.0).
-    // +0x7c..+0x17f: the panel's per-frame presentation state (page index, flick blend, handle,
+    // +0x7c..+0x143: the panel's per-frame presentation state (page index, flick blend, handle,
     // per-side statistics, fade alphas, bonus values, and side colours) that the render pass reads;
     // the individual fields are still being worked out.
-    unsigned char m_aReserved7c[0x104] = {}; // +0x7c
+    unsigned char m_aReserved7c[0xc8] = {}; // +0x7c
+    bool m_bBonusCueArmed = {};             // +0x144: whether the bonus voice cue is still pending.
+    // +0x145..+0x147 is alignment padding before the bonus-cue timer.
+    unsigned char m_aPad145[3] = {}; // +0x145
+    float m_flBonusCueTimer = {};    // +0x148: time accumulated toward the bonus voice cue.
+    // +0x14c..+0x17f: further presentation state, still being worked out.
+    unsigned char m_aReserved14c[0x34] = {}; // +0x14c
 };
 
 // code: language=Objective-C++
