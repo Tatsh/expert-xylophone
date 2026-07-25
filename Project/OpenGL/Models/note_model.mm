@@ -214,6 +214,11 @@ namespace {
 // lead-in (@ghidraAddress 0x2f8540 = 1000.0, 0x308b60 = -1500.0).
 constexpr float kWaypointTimeScale = 1000.0f;
 constexpr float kWaypointTimeOffset = -1500.0f;
+// The fade-out step's per-frame decay divisor (negative, so the timer counts down)
+// (@ghidraAddress 0x2fd050 = -300.0).
+constexpr float kFadeDecayDivisor = -300.0f;
+// The note-state-machine states the fade-out step reads and writes.
+constexpr int kNoteStateFinished = 8;
 } // namespace
 
 /** @ghidraAddress 0x136960 */
@@ -229,6 +234,19 @@ void NoteModel::AdvanceAlongWaypoint() {
     ScaleVector2(&delta, flFraction);
     AddVector2(&delta, &m_pCurrentWaypoint->startPos);
     m_pos = delta;
+}
+
+/** @ghidraAddress 0x1334dc */
+void NoteModel::UpdateStepFadeOut() {
+    const float flDelta = PlayTimer::shared()->GetFrameDelta();
+    AdvancePosition();
+    // The decay divisor is negative, so the timer counts down toward zero each frame.
+    m_flFadeTimer += flDelta / kFadeDecayDivisor;
+    if (m_flFadeTimer <= 0.0f) {
+        m_flFadeTimer = 0.0f;
+        m_nState = kNoteStateFinished;
+        m_nSubState = 0;
+    }
 }
 
 /** @ghidraAddress 0x1336e4 */

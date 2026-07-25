@@ -170,6 +170,13 @@ public:
      */
     void AdvanceAlongWaypoint();
 
+    /**
+     * @brief The state-machine fade-out step: advances the note's position and decays its fade
+     * timer, transitioning to the finished state once the timer reaches zero.
+     * @ghidraAddress 0x1334dc
+     */
+    void UpdateStepFadeOut();
+
     /** @brief The note's index in its sheet. */
     int GetNoteIndex() const {
         return m_nNoteIndex;
@@ -244,7 +251,9 @@ private:
     bool m_bWaypointActive = {};                // +0x594
     unsigned char m_aWaypointBlock1[0x2b] = {}; // +0x595
     WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
-    unsigned char m_aReserved5c8[0x17] = {};    // +0x5c8
+    unsigned char m_aReserved5c8[0x8] = {};     // +0x5c8
+    float m_flFadeTimer = {};                   // +0x5d0: the fade-out step's decaying timer.
+    unsigned char m_aReserved5d4[0xb] = {};     // +0x5d4
     bool m_bTouched = {};                       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
