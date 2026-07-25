@@ -902,3 +902,11 @@ void LimelightResultLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
         SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kBonusCueVoiceId);
     }
 }
+
+/** @ghidraAddress 0x123da4 */
+void LimelightResultLayer::ResetThemeSelectState() {
+    m_nThemeSelectState = 0;
+    m_uThemeSelectState0 = 0;
+    m_uThemeSelectState1 = 0;
+    RefreshThema();
+}

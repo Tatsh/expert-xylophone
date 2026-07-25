@@ -38,6 +38,15 @@ public:
     static LimelightResultLayer *shared();
 
     /**
+     * @brief Resets the theme-select state and refreshes the current theme.
+     *
+     * Clears the two theme-select state words and the state counter, then re-reads the user's current
+     * theme (through the base layer's theme refresh).
+     * @ghidraAddress 0x123da4
+     */
+    void ResetThemeSelectState();
+
+    /**
      * @brief Lazily builds the eight result-window sprite instancers: loads the two atlases and
      * creates each instancer (registering it in the global scene tree, making it visible, binding
      * the edge slots' textures, and clearing its sprite count).
@@ -387,8 +396,15 @@ private:
     // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
     unsigned char m_aPad13d[3] = {}; // +0x13d
     float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
-    // +0x144..+0x16f: the remaining layer state, still being worked out.
-    unsigned char m_aReserved144[0x2c] = {}; // +0x144
+    // +0x144..+0x14f: further presentation state, still being worked out.
+    unsigned char m_aReserved144[0xc] = {}; // +0x144
+    // +0x150 and +0x158: two theme-select state words the reset clears.
+    unsigned long m_uThemeSelectState0 = {}; // +0x150
+    unsigned long m_uThemeSelectState1 = {}; // +0x158
+    int m_nThemeSelectState = {}; // +0x160: a theme-select state counter the reset zeroes.
+    int m_nResultScore = {};      // +0x164: the result score value seeded from the scene.
+    int m_nResultScoreHi = {};    // +0x168: the second result score value seeded from the scene.
+    // unsigned char m_aReserved16c[4]; // +0x16c (trailing pad to the 0x170-byte allocation)
 
     /**
      * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
