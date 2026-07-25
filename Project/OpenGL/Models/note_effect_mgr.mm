@@ -59,6 +59,23 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
+/** @ghidraAddress 0x1379cc */
+void NoteEffectMgr::ResetAllNoteSubEntries() {
+    // Detach every pooled note from its chart binding.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        NoteModel *pNote = m_ppNotePool[i];
+        if (pNote != nullptr) {
+            pNote->ResetBinding();
+        }
+    }
+    m_nNoteCount = 0;
+    // Clear the active list and reset the active count.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        m_ppActiveList[i] = nullptr;
+    }
+    m_nActiveCount = 0;
+}
+
 /** @ghidraAddress 0x137934 */
 void NoteEffectMgr::InitNoteObjects() {
     if (m_pMusicSheet == nullptr) {

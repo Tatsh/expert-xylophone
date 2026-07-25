@@ -146,6 +146,13 @@ public:
      */
     void SetNoteIndex(int nIndex);
 
+    /**
+     * @brief Detaches the note from any chart note: clears the chart index (to -1) and the record
+     *        pointer.
+     * @ghidraAddress 0x131ad8
+     */
+    void ResetBinding();
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 

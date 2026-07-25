@@ -77,6 +77,13 @@ public:
     void InitNoteObjects();
 
     /**
+     * @brief Detaches every pooled note from its chart binding and clears the active list (a lighter
+     *        reset than a full re-init).
+     * @ghidraAddress 0x1379cc
+     */
+    void ResetAllNoteSubEntries();
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */

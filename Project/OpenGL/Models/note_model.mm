@@ -75,6 +75,12 @@ void NoteModel::SetNoteIndex(int nIndex) {
     }
 }
 
+/** @ghidraAddress 0x131ad8 */
+void NoteModel::ResetBinding() {
+    m_nNoteIndex = -1;
+    m_pRecord = nullptr;
+}
+
 /** @ghidraAddress 0x135e84 */
 int NoteModel::IsSideFlipped() const {
     int nSide;
