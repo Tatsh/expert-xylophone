@@ -83,6 +83,21 @@ public:
 
 private:
     /**
+     * @brief Draws a slot's whole bound texture scaled by the layer's parts scale, tinted.
+     *
+     * Reads the slot's bound texture, sizes the quad by the texture's own scale factor, derives its
+     * UV size from the used image over allocated dimensions, and appends it through
+     * @c appendSpriteToSlotRgba. The alpha is @p nScale times the layer's parts scale; the red,
+     * green, and blue channels come from the layer's three glyph-base bytes (reused as a colour
+     * tint). A no-op when the slot is out of range, empty, or unbound.
+     * @param nSlot The slot index (0 through 7).
+     * @param position The sprite's world position.
+     * @param nScale The scale units multiplied into the alpha.
+     * @ghidraAddress 0x76c1c
+     */
+    void renderSpriteInstanceScaled(int nSlot, const S_VECTOR2 &position, unsigned int nScale);
+
+    /**
      * @brief Draws a slot's whole bound texture as one quad, at half the given extent.
      *
      * Reads the slot instancer's bound texture, derives its UV size from the used-image over
@@ -162,6 +177,35 @@ private:
                                 const S_VECTOR2 &uvSize,
                                 float flRotation,
                                 const S_VECTOR2 &scale);
+
+    /**
+     * @brief Emits one glyph sprite at a resolved position index plus an offset, dimmable.
+     *
+     * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
+     * looks up the glyph placement rectangle from the phone parts table by @p nCharCode and its
+     * texture rectangle from the Colette glyph UV palette, then appends the quad to the slot with the
+     * given rotation and scale. Character codes at or above the phone parts table count are ignored.
+     * The main pass draws at full intensity, the shadow pass at half.
+     * @param nSlot The slot index (0 through 7).
+     * @param nCharCode The glyph character code (below the phone parts table count).
+     * @param nPositionIndex The phone anchor-position index.
+     * @param offset The offset added to the resolved position.
+     * @param nAlpha The glyph alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x7aa54
+     */
+    void RenderAnchoredGlyphWithAlpha(int nSlot,
+                                      int nCharCode,
+                                      int nPositionIndex,
+                                      const S_VECTOR2 &offset,
+                                      unsigned int nAlpha,
+                                      int bShadowPass,
+                                      float flRotation,
+                                      float flScaleX,
+                                      float flScaleY);
 
     /**
      * @brief Emits one result-window part sprite by part id with a per-channel float colour.

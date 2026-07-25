@@ -287,6 +287,83 @@ void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
     pInstancer->SetSpriteCount(nSprite + 1);
 }
 
+/** @ghidraAddress 0x76c1c */
+void ResultWindowColetteLayer::renderSpriteInstanceScaled(int nSlot,
+                                                          const S_VECTOR2 &position,
+                                                          unsigned int nScale) {
+    if (nSlot < 0 || nSlot >= kSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    // The quad is sized by the texture's own scale factor; the UV region is the used image area.
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    // The alpha is the requested scale times the layer's parts scale; the colour channels reuse the
+    // layer's three glyph-base bytes as a tint.
+    const unsigned int nAlpha =
+        static_cast<unsigned int>(static_cast<float>(nScale) * m_flPartsScale);
+    const unsigned int nRed = static_cast<unsigned int>(m_nGlyphBaseA) & 0xff;
+    const unsigned int nGreen = static_cast<unsigned int>(m_nGlyphBaseB) & 0xff;
+    const unsigned int nBlue = static_cast<unsigned int>(m_nGlyphBaseC) & 0xff;
+    appendSpriteToSlotRgba(nSlot,
+                           nRed,
+                           nGreen,
+                           nBlue,
+                           nAlpha,
+                           position,
+                           S_VECTOR2{},
+                           spriteSize,
+                           S_VECTOR2{},
+                           uvSize,
+                           0.0f,
+                           S_VECTOR2{1.0f, 1.0f});
+}
+
+/** @ghidraAddress 0x7aa54 */
+void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
+                                                            int nCharCode,
+                                                            int nPositionIndex,
+                                                            const S_VECTOR2 &offset,
+                                                            unsigned int nAlpha,
+                                                            int bShadowPass,
+                                                            float flRotation,
+                                                            float flScaleX,
+                                                            float flScaleY) {
+    if (nCharCode >= kColettePhonePartsRecordCount) {
+        return;
+    }
+    // Resolve the base position by index and add the offset.
+    S_VECTOR2 position{};
+    getPosition_Phone(nPositionIndex, &position);
+    // The glyph metrics come from the phone parts table indexed by the character code; the texture
+    // rectangle from the Colette glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nCharCode];
+    const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityDimmed : kIntensityFull;
+    appendSpriteToSlot(nSlot,
+                       S_VECTOR2{position.x + offset.x, position.y + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nIntensity,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x769cc */
 void ResultWindowColetteLayer::RenderPartSpriteByIndex(int nSlot,
                                                        int nPartId,
