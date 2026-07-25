@@ -8,7 +8,19 @@
 
 #include "note_lane_tracker.h"
 
+#include <cstdlib>
+
 #include "Random.h"
+
+/** @ghidraAddress 0x14911c */
+void ShuffleIndices(int *pArray, int nCount) {
+    for (int i = 0; i < nCount; ++i) {
+        const int nSwap = nCount != 0 ? std::rand() % nCount : 0;
+        const int nTemp = pArray[i];
+        pArray[i] = pArray[nSwap];
+        pArray[nSwap] = nTemp;
+    }
+}
 
 /** @ghidraAddress 0x148c78 */
 NoteLaneTracker::NoteLaneTracker() {

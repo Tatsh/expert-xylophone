@@ -8,6 +8,17 @@
 class Random;
 
 /**
+ * @brief Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
+ *
+ * Ties are broken with the C library @c rand rather than the engine generator. (The binary takes an
+ * ignored leading register argument, dropped here.)
+ * @param pArray The int array to shuffle in place.
+ * @param nCount The element count.
+ * @ghidraAddress 0x14911c
+ */
+void ShuffleIndices(int *pArray, int nCount);
+
+/**
  * @brief One lane's occupancy slot: three start/end time pairs marking the spans the lane is in use.
  *
  * A polymorphic 32-byte record (its own one-slot vtable plus six 32-bit time fields). Freshly
