@@ -119,6 +119,21 @@ public:
     bool CheckNoteNearTime(int nTime, int nTarget);
 
     /**
+     * @brief Finds a note on @p nLane whose active span overlaps the time range, from @p nStartIndex.
+     * @return The first matching note record, or @c nullptr.
+     * @ghidraAddress 0x131704
+     */
+    RbffNoteRecord *FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex);
+
+    /**
+     * @brief Finds the nearest chain-eligible note on @p nLane whose timing selector matches
+     * @p nField, from @p nStartIndex.
+     * @return The matching note record, or @c nullptr.
+     * @ghidraAddress 0x131760
+     */
+    RbffNoteRecord *FindChainNote(int nLane, int nTime, int nField, int nStartIndex);
+
+    /**
      * @brief Returns the last note of the chain @p pNote belongs to.
      *
      * Asserts @p pNote is a chain note that is not already the tail, then follows the chain's

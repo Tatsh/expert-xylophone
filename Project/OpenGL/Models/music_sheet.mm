@@ -576,6 +576,51 @@ float MusicSheet::GetFirstPathSpeed() {
     return static_cast<float>(m_pathNodes[0].x);
 }
 
+/** @ghidraAddress 0x131704 */
+RbffNoteRecord *
+MusicSheet::FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex) {
+    for (int i = nStartIndex; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        if (record.nLane != nLane) {
+            continue;
+        }
+        const int nEndTime = record.nHitWindow + record.nHitTime;
+        const int nTailTime = nEndTime + record.nRoute;
+        if (nTimeEnd > nEndTime && nTailTime != nTimeStart &&
+            (nTimeEnd <= nEndTime || nTimeStart <= nTailTime)) {
+            return &record;
+        }
+    }
+    return nullptr;
+}
+
+/** @ghidraAddress 0x131760 */
+RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int nStartIndex) {
+    int nBestEndTime = -1;
+    for (int i = nStartIndex; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        // Only notes on the lane that are either not chain notes or a chain head, with a distinct
+        // hit time, are candidates.
+        if (record.nLane != nLane) {
+            continue;
+        }
+        const bool bEligible =
+            (record.dwFlags & kNoteFlagLongHead) == 0 || record.chainLink.IsHead();
+        const int nEndTime = record.nHitWindow + record.nHitTime;
+        if (bEligible && nEndTime != nTime) {
+            // The candidates must be non-decreasing in end time; a smaller one ends the search.
+            if (nBestEndTime != -1 && nEndTime <= nBestEndTime) {
+                return nullptr;
+            }
+            nBestEndTime = nTime;
+            if (record.nTimingSel == nField) {
+                return &record;
+            }
+        }
+    }
+    return nullptr;
+}
+
 /** @ghidraAddress 0x130cbc */
 RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
     // The start note must be a chain note and must not already be the chain's tail.
