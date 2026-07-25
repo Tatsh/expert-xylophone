@@ -204,6 +204,33 @@ private:
                             unsigned int nSlot,
                             unsigned int nIntensity,
                             unsigned int nAlpha);
+
+    /**
+     * @brief Emits one glyph sprite from the pad parts table by part id, dimmable.
+     *
+     * Looks up the glyph's placement rectangle from the pad parts table indexed by @p nPartId and its
+     * texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot at
+     * @p position with the given rotation and scale. Part ids at or above the pad glyph table count
+     * are ignored. The main pass draws at full intensity, the dimmed pass at half.
+     * @param nSlot The instancer slot to append to.
+     * @param nPartId The glyph part id (below the pad glyph table count).
+     * @param position The glyph's world position.
+     * @param nAlpha The glyph alpha.
+     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x1299d8
+     */
+    void RenderPhoneResultSpriteById(unsigned int nSlot,
+                                     unsigned int nPartId,
+                                     const S_VECTOR2 &position,
+                                     unsigned int nAlpha,
+                                     int bDimmed,
+                                     float flRotation,
+                                     float flScaleX,
+                                     float flScaleY);
+
     // +0x08..+0x0f: descriptor state preceding the textures, still being worked out.
     unsigned char m_aReserved08[8] = {};      // +0x08
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.

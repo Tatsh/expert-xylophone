@@ -123,6 +123,35 @@ void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
     pInstancer->SetSpriteCount(nSprite + 1);
 }
 
+/** @ghidraAddress 0x1299d8 */
+void LimelightResultLayer::RenderPhoneResultSpriteById(unsigned int nSlot,
+                                                       unsigned int nPartId,
+                                                       const S_VECTOR2 &position,
+                                                       unsigned int nAlpha,
+                                                       int bDimmed,
+                                                       float flRotation,
+                                                       float flScaleX,
+                                                       float flScaleY) {
+    if (nPartId >= kLimelightPadGlyphRecordBound) {
+        return;
+    }
+    // The glyph metrics come from the pad parts table indexed by the part id; the texture rectangle
+    // from the Limelight glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nPartId];
+    const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bDimmed != 0 ? 0x80 : 0xff;
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x126ab4 */
 void LimelightResultLayer::EmitPartSprite(float flRotation,
                                           float flScaleX,

@@ -35,6 +35,15 @@ struct UvPaletteEntry {
 // referenced by the code, so it is declared without a bound.
 extern const UvPaletteEntry g_aUvPalette[]; // @ghidraAddress 0x2f2a28
 
+// The Limelight glyph UV-palette table the pad-glyph emitter indexes by a parts record's UV-palette
+// index; distinct from the shared part palette above. Read-only ROM data in the binary; its length
+// is not referenced by the code.
+extern const UvPaletteEntry g_aLimelightGlyphUvPalette[]; // @ghidraAddress 0x2f55a8
+
+// The number of glyph records the pad-glyph emitter will index (the emitter ignores part ids at or
+// above this bound).
+constexpr int kLimelightPadGlyphRecordBound = 142;
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
