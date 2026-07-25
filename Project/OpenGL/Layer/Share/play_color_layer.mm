@@ -54,7 +54,9 @@ constexpr int kVertexFlagMode = 1;
 /** @ghidraAddress 0x83460 */
 PlayColorLayer::PlayColorLayer() {
     // Seed the transform block's scales to 1 (offsets +0x90/+0x98/+0x9c in the binary).
-    m_aTransform[7] = 1.0f;
+    m_flScaleX = 1.0f;
+    m_flScaleY = 1.0f;
+    m_flScaleZ = 1.0f;
 
     // Assign each part group a non-overlapping index range within its batch, accumulating each
     // batch's total capacity as it goes.
@@ -72,20 +74,6 @@ PlayColorLayer *PlayColorLayer::shared() {
         g_pPlayColorLayer = new PlayColorLayer();
     }
     return g_pPlayColorLayer;
-}
-
-/** @ghidraAddress 0x8394c */
-void PlayColorLayer::StartShrinkAnimation(float flDuration) {
-    m_nShrinkStep = 0;
-    m_shrinkChannel.SetStart(m_shrinkChannel.GetCurrent());
-    m_shrinkChannel.SetEnd(0.0f);
-    m_shrinkChannel.SetDuration(flDuration);
-    m_shrinkChannel.SetElapsed(0.0f);
-    // A non-positive duration snaps straight to empty and marks the colour dirty.
-    if (flDuration <= 0.0f) {
-        m_shrinkChannel.SetCurrent(0.0f);
-        m_bShrinkColorDirty = true;
-    }
 }
 
 /** @ghidraAddress 0x8355c */
@@ -174,4 +162,9 @@ void PlayColorLayer::StartShrinkAnimation(float flDuration) {
         m_shrinkChannel.SetCurrent(0.0f);
         m_bShrinkColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x83c90 */
+void PlayColorLayer::SetPlayColorValue(int nValue) {
+    m_nPlayColorValue = nValue;
 }

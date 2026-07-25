@@ -80,12 +80,11 @@ public:
                              unsigned int nAlpha);
 
     /**
-     * @brief Begins the gauge shrink/empty animation, easing the gauge to empty over @p flDuration
-     * (snapping to empty and marking the colour dirty when the duration is non-positive).
-     * @param flDuration The animation duration.
-     * @ghidraAddress 0x8394c
+     * @brief Sets the play-colour value (a theme-indexed colour selector).
+     * @param nValue The colour value.
+     * @ghidraAddress 0x83c90
      */
-    void StartShrinkAnimation(float flDuration);
+    void SetPlayColorValue(int nValue);
 
 private:
     /**
@@ -111,8 +110,7 @@ private:
     // +0x8c..+0x8f: further animation state, still being worked out.
     unsigned char m_aReserved8c[4] = {}; // +0x8c
     float m_flScaleX = {};               // +0x90: a scale the constructor seeds to 1.
-    // +0x94..+0x97: further state, still being worked out.
-    unsigned char m_aReserved94[4] = {}; // +0x94
+    int m_nPlayColorValue = {};          // +0x94: the theme-indexed play-colour value.
     float m_flScaleY = {};               // +0x98: a scale the constructor seeds to 1.
     float m_flScaleZ = {};               // +0x9c: a scale the constructor seeds to 1.
 };
