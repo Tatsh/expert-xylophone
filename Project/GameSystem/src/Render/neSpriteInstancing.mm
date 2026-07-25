@@ -125,7 +125,8 @@ void PackQuadUvColor(InstancedVertex *pQuad,
 } // namespace
 
 // The sprite-batch precondition check (the binary's tempAssert): aborts when the condition is
-// false. The compiler emits it both inlined into the colour accessors and out-of-line (0x2f638).
+// false. The compiler emits it both inlined into the colour accessors and out-of-line.
+/** @ghidraAddress 0x2f638 */
 static void tempAssert(bool bCondition) {
     assert(bCondition);
 }
