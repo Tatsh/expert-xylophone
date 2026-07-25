@@ -211,6 +211,22 @@ constexpr float kDecimalGlyphAdvance = 6.0f;
 constexpr float kDecimalCenterBias = 2.0f;
 constexpr float kDecimalDotAdvance = 2.0f;
 
+// The glyph codes RenderRatioDigits draws: the digit bank (its '0') and the separator glyph placed
+// between the numerator and denominator groups. It shows at least one significant digit per group,
+// out of a maximum of four.
+constexpr unsigned int kRatioDigitBank = 0x39;
+constexpr unsigned int kRatioSeparatorGlyph = 0x46;
+constexpr int kRatioMaxDigits = 4;
+// RenderRatioDigits lays glyphs out on a fixed seven-pixel advance, drawing each digit six pixels
+// left of the advancing cursor. Centring reserves the separator's nominal width plus a two-pixel
+// bias; the cursor pre-steps a full advance before the separator and is tightened one extra pixel
+// after it.
+constexpr float kRatioGlyphAdvance = 7.0f;
+constexpr float kRatioDigitInset = 6.0f;
+constexpr float kRatioSeparatorWidth = 6.0f;
+constexpr float kRatioCenterBias = 2.0f;
+constexpr float kRatioSeparatorTighten = 1.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -515,6 +531,76 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+/** @ghidraAddress 0x116258 */
+void ResultWindowClassicLayer::RenderRatioDigits(int nNumerator,
+                                                 int nDenominator,
+                                                 const S_VECTOR2 *pPosition,
+                                                 unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split each value into up to four digits (ones first), tracking the count of significant
+    // digits, rendering at least one per group.
+    int aNumerator[kRatioMaxDigits] = {};
+    int aDenominator[kRatioMaxDigits] = {};
+    int nNumeratorSig = 0;
+    int nDenominatorSig = 0;
+    for (int i = 0; i < kRatioMaxDigits; ++i) {
+        aNumerator[i] = nNumerator % 10;
+        if (aNumerator[i] != 0) {
+            nNumeratorSig = i + 1;
+        }
+        nNumerator /= 10;
+    }
+    if (nNumeratorSig == 0) {
+        nNumeratorSig = 1;
+    }
+    for (int i = 0; i < kRatioMaxDigits; ++i) {
+        aDenominator[i] = nDenominator % 10;
+        if (aDenominator[i] != 0) {
+            nDenominatorSig = i + 1;
+        }
+        nDenominator /= 10;
+    }
+    if (nDenominatorSig == 0) {
+        nDenominatorSig = 1;
+    }
+
+    // Centre the combined run about the position: reserve one glyph advance per digit plus the
+    // separator's nominal width and a two-pixel bias. The cursor starts at the centre and steps
+    // left; the run is emitted right to left (denominator, separator, numerator).
+    const int nNumeratorWidth =
+        static_cast<int>(static_cast<float>(nNumeratorSig) * kRatioGlyphAdvance);
+    const int nDenominatorWidth =
+        static_cast<int>(static_cast<float>(nDenominatorSig) * kRatioGlyphAdvance);
+    const float flHalfWidth = (static_cast<float>(nDenominatorWidth + nNumeratorWidth) +
+                               kRatioSeparatorWidth + kRatioCenterBias) *
+                              0.5f;
+    float flCursorX = pPosition->x + flHalfWidth;
+
+    // The denominator digits (rightmost group).
+    for (int i = 0; i < nDenominatorSig; ++i) {
+        const unsigned int nGlyph = aDenominator[i] + kRatioDigitBank;
+        S_VECTOR2 drawPos{flCursorX - kRatioDigitInset, pPosition->y};
+        DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        flCursorX -= kRatioGlyphAdvance;
+    }
+
+    // The separator glyph, pre-stepped a full advance and tightened one pixel afterwards.
+    flCursorX -= kRatioGlyphAdvance;
+    S_VECTOR2 separatorPos{flCursorX, pPosition->y};
+    DispatchGlyphSpriteFromTable(
+        kGlyphSlot, kRatioSeparatorGlyph, &separatorPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+    flCursorX -= kRatioSeparatorTighten;
+
+    // The numerator digits (leftmost group).
+    for (int i = 0; i < nNumeratorSig; ++i) {
+        const unsigned int nGlyph = aNumerator[i] + kRatioDigitBank;
+        S_VECTOR2 drawPos{flCursorX - kRatioDigitInset, pPosition->y};
+        DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        flCursorX -= kRatioGlyphAdvance;
     }
 }
 

@@ -198,6 +198,26 @@ public:
                                   float flSpacing);
 
     /**
+     * @brief Renders two digit groups separated by a separator glyph, centred as one run.
+     *
+     * Splits both values into up to four digits each (rendering at least one significant digit
+     * per group), centres the combined run about @p pPosition using a nominal seven-pixel glyph
+     * width, then emits the run right to left: the denominator digits, the separator glyph, then
+     * the numerator digits. Each digit is drawn a fixed inset left of the advancing cursor, which
+     * steps by the glyph width; the separator adds a small extra gap. All glyphs draw at unit scale
+     * and full intensity.
+     * @param nNumerator The left-hand (numerator) value.
+     * @param nDenominator The right-hand (denominator) value.
+     * @param pPosition The centre position of the run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x116258
+     */
+    void RenderRatioDigits(int nNumerator,
+                           int nDenominator,
+                           const S_VECTOR2 *pPosition,
+                           unsigned int nAlpha);
+
+    /**
      * @brief Renders a value as centred digit glyphs with a leading glyph and an inline dot glyph.
      *
      * Splits @p nValue into up to four digits (rendering at least two significant digits), centres
