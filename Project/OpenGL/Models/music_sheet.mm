@@ -8,6 +8,8 @@
 
 #include "music_sheet.h"
 
+#include <cassert>
+
 #include "rbffnoterecord.h"
 
 namespace {
@@ -81,6 +83,12 @@ int MusicSheet::CalculateChartTiming() {
     m_nRemainTiming =
         static_cast<int>(flSpeed * static_cast<float>(m_nChartNoteCount - m_aSideCount[0]));
     return m_nRemainTiming;
+}
+
+/** @ghidraAddress 0x12f604 */
+SheetPathNode *MusicSheet::GetSheetPathNode(int nIndex) {
+    assert(nIndex >= 0 && nIndex < m_nPathPointCount);
+    return &m_pPathNodes[nIndex];
 }
 
 /** @ghidraAddress 0x13183c */
