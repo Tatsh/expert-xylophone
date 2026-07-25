@@ -130,6 +130,40 @@ private:
                             unsigned int nAlpha);
 
     /**
+     * @brief Appends one sprite quad to a slot's instancer with an explicit per-channel colour.
+     *
+     * Identical to @c appendSpriteToSlot but takes independent red, green, and blue channels rather
+     * than a single intensity. When the slot is in range, its instancer exists, and it is not full,
+     * writes the quad's position, anchor, size, UV origin, UV size, rotation, and scale into the next
+     * free sprite, sets its colour from the four channels, and advances the sprite count.
+     * @param nSlot The slot index (0 through 7).
+     * @param nRed The red channel.
+     * @param nGreen The green channel.
+     * @param nBlue The blue channel.
+     * @param nAlpha The alpha channel.
+     * @param position The sprite's world position.
+     * @param anchor The sprite's anchor (pivot) offset.
+     * @param size The sprite's pixel size.
+     * @param uvOrigin The sprite's UV origin.
+     * @param uvSize The sprite's UV size.
+     * @param flRotation The sprite's rotation, in radians.
+     * @param scale The sprite's per-axis scale.
+     * @ghidraAddress 0x7ada0
+     */
+    void appendSpriteToSlotRgba(int nSlot,
+                                unsigned int nRed,
+                                unsigned int nGreen,
+                                unsigned int nBlue,
+                                unsigned int nAlpha,
+                                const S_VECTOR2 &position,
+                                const S_VECTOR2 &anchor,
+                                const S_VECTOR2 &size,
+                                const S_VECTOR2 &uvOrigin,
+                                const S_VECTOR2 &uvSize,
+                                float flRotation,
+                                const S_VECTOR2 &scale);
+
+    /**
      * @brief Emits one result-window part sprite by part id, dimmable.
      *
      * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its

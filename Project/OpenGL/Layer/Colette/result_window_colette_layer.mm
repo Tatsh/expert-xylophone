@@ -251,6 +251,42 @@ void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
     pInstancer->SetSpriteCount(nSprite + 1);
 }
 
+/** @ghidraAddress 0x7ada0 */
+void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
+                                                      unsigned int nRed,
+                                                      unsigned int nGreen,
+                                                      unsigned int nBlue,
+                                                      unsigned int nAlpha,
+                                                      const S_VECTOR2 &position,
+                                                      const S_VECTOR2 &anchor,
+                                                      const S_VECTOR2 &size,
+                                                      const S_VECTOR2 &uvOrigin,
+                                                      const S_VECTOR2 &uvSize,
+                                                      float flRotation,
+                                                      const S_VECTOR2 &scale) {
+    if (nSlot < 0 || nSlot >= kSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nSprite = pInstancer->GetSpriteCount();
+    if (nSprite >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    pInstancer->SetSpritePosition(nSprite, position);
+    pInstancer->SetSpriteAnchor(nSprite, anchor);
+    pInstancer->SetSpriteSize(nSprite, size);
+    pInstancer->SetSpriteUvOrigin(nSprite, uvOrigin);
+    pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    pInstancer->SetSpriteRotation(nSprite, flRotation);
+    pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
+    pInstancer->SetSpriteColor(nSprite, nRed, nGreen, nBlue, nAlpha);
+    pInstancer->SetSpriteCount(nSprite + 1);
+}
+
 /** @ghidraAddress 0x76a98 */
 void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
                                                          int nPartId,
