@@ -90,7 +90,7 @@ void CreateTitleLayerForTheme(void);
  */
 void DispatchListenerList(void *pFrameArg);
 /**
- * @brief Returns the elapsed time since the timer was last started, scaled to frames, as a float.
+ * @brief Returns the elapsed time since the timer was last started, in milliseconds, as a float.
  * @ghidraAddress 0x3671c
  */
 float GetElapsedMediaTime(double *pStartTime);

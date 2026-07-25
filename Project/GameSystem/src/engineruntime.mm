@@ -1,6 +1,11 @@
 #import "engineruntime.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 namespace {
+
+// The media-timer scale: elapsed seconds are reported in milliseconds. @ghidraAddress 0x2eeea0
+constexpr double kMediaTimeMillisScale = 1000.0;
 
 // The achievement-rate thresholds for each clear rank, highest first. A rate at or above a threshold
 // earns that rank; below the lowest earns rank zero.
@@ -35,4 +40,14 @@ int GetClearRank(float achievementRate) {
         return kClearRank2;
     }
     return achievementRate >= kClearRankThreshold1 ? kClearRank1 : kClearRank0;
+}
+
+/** @ghidraAddress 0x366f8 */
+void StartMediaTimer(double *pStartTime) {
+    *pStartTime = CACurrentMediaTime();
+}
+
+/** @ghidraAddress 0x3671c */
+float GetElapsedMediaTime(double *pStartTime) {
+    return static_cast<float>((CACurrentMediaTime() - *pStartTime) * kMediaTimeMillisScale);
 }
