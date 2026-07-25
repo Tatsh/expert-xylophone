@@ -73,6 +73,19 @@ public:
      */
     void ResolveNoteScrollSpeeds();
 
+    /**
+     * @brief Reports whether any note on a target lane falls within two ticks of a query time.
+     *
+     * Scans the note records for one on @p nTarget whose end time (and, for a hold note, its tail)
+     * is within tolerance of @p nTime, stopping once past the query time; failing that, scans the
+     * slide records keyed to their owning note's lane.
+     * @param nTime The query time.
+     * @param nTarget The target lane id.
+     * @return @c true when a matching note is near.
+     * @ghidraAddress 0x130d64
+     */
+    bool CheckNoteNearTime(int nTime, int nTarget);
+
     /** @brief The byte stride between note records in the pool (@c sizeof(RbffNoteRecord)). */
     static constexpr int kNoteRecordStride = 0xb8;
 

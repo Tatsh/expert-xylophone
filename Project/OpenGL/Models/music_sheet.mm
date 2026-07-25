@@ -9,6 +9,7 @@
 #include "music_sheet.h"
 
 #include <cassert>
+#include <cstdlib>
 
 #include "rbffnoterecord.h"
 
@@ -25,6 +26,9 @@ constexpr unsigned int kSideObjectFlag = 1u << 5;
 constexpr int kNoteTypeSlideTail = 3;
 constexpr int kNoteTypeHold = 1;
 
+// The tolerance, in ticks, within which a note counts as near a query time.
+constexpr int kNearTimeTolerance = 2;
+
 // The chart-note-count thresholds selecting a scroll-speed tier, and the per-tier scroll speeds
 // (@ghidraAddress 0x308af0).
 constexpr int kSpeedTierMidThreshold = 200;
@@ -32,6 +36,50 @@ constexpr int kSpeedTierHighThreshold = 400;
 constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
 
 } // namespace
+
+/** @ghidraAddress 0x130d64 */
+bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
+    // Scan the note records for one on the target lane whose end time is near the query time.
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        const RbffNoteRecord &record = m_pRecords[i];
+        if (record.nLane != nTarget) {
+            continue;
+        }
+        int nEndTime = record.nHitTime + record.nHitWindow;
+        if (std::abs(nEndTime - nTime) < kNearTimeTolerance) {
+            return true;
+        }
+        // A hold note also matches on its tail end.
+        if (record.nType == kNoteTypeHold) {
+            const int nTailTime = nEndTime + record.nChainOffset;
+            if (std::abs(nTailTime - nTime) < kNearTimeTolerance) {
+                return true;
+            }
+            nEndTime = nTailTime;
+        }
+        if (nTime < nEndTime) {
+            break;
+        }
+    }
+
+    // Otherwise scan the slide records, keyed to their owning note's lane. A slide matches when it
+    // is within one tick of the query time, or still lies ahead of it.
+    for (int i = 0; i < m_nSlideRecordCount; ++i) {
+        const RbffSlideRecord &slide = m_pSlideRecords[i];
+        if (m_pRecords[slide.nNoteIndex].nLane != nTarget) {
+            continue;
+        }
+        const int nSlideTime = slide.nValueBScaled + slide.nValueAScaled;
+        const int nDelta = nSlideTime - nTime;
+        const bool bAhead = nDelta != 0 && nSlideTime >= nTime;
+        const bool bNear = std::abs(nDelta) <= 1 ? true : bAhead;
+        if (bNear) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 /** @ghidraAddress 0x1309a8 */
 void MusicSheet::ResolveNoteScrollSpeeds() {
