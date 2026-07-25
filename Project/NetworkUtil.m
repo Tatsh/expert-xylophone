@@ -262,8 +262,8 @@ static NSString *const kNonceCharFormat = @"%c";
 
 /** @ghidraAddress 0x32cb0 */
 + (NSURL *)lineMessageURL {
-    NSString *param =
-        [NSString stringWithFormat:kLineMessageParamFormat, GetRegionCode(), [NetworkUtil userInfo]];
+    NSString *param = [NSString
+        stringWithFormat:kLineMessageParamFormat, GetRegionCode(), [NetworkUtil userInfo]];
     return [NetworkUtil createSecureAPI:kLineMessageAPIPath withParam:param];
 }
 
@@ -294,10 +294,8 @@ static NSString *const kNonceCharFormat = @"%c";
 
 /** @ghidraAddress 0x33408 */
 + (NSURL *)musicInfoURL:(unsigned int)musicID {
-    NSString *param = [NSString stringWithFormat:kMusicInfoParamFormat,
-                                                 GetRegionCode(),
-                                                 musicID,
-                                                 [NetworkUtil userInfo]];
+    NSString *param = [NSString
+        stringWithFormat:kMusicInfoParamFormat, GetRegionCode(), musicID, [NetworkUtil userInfo]];
     return [NetworkUtil createSecureAPI:kMusicInfoAPIPath withParam:param];
 }
 

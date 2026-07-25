@@ -45,11 +45,11 @@ static NSString *const kTermsURLFormat = @"%@://";
 // The action-button kinds carried by an item's buttonType, and the localised button titles they map
 // to.
 enum {
-    kCampaignButtonTypeDownload = 0,     // The item can be downloaded.
-    kCampaignButtonTypeDownloaded = 1,   // The item has already been downloaded.
-    kCampaignButtonTypeUnlockCond = 2,   // The unlock conditions are shown.
-    kCampaignButtonTypeUpdate = 3,       // An update is available.
-    kCampaignButtonTypeSerialInput = 4,  // A serial code must be entered.
+    kCampaignButtonTypeDownload = 0,      // The item can be downloaded.
+    kCampaignButtonTypeDownloaded = 1,    // The item has already been downloaded.
+    kCampaignButtonTypeUnlockCond = 2,    // The unlock conditions are shown.
+    kCampaignButtonTypeUpdate = 3,        // An update is available.
+    kCampaignButtonTypeSerialInput = 4,   // A serial code must be entered.
     kCampaignButtonTypePointUnlocked = 5, // The item was unlocked with points.
 };
 static NSString *const kButtonNameDownload = @"ダウンロード";

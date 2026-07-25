@@ -39,7 +39,8 @@ static NSString *const kReceiptCheckV2JSONFormat =
     @"\"device\":\"%@\",\"os\":\"%@\",\"locale\":\"%@\",\"version\":\"%@\",\"userid\":\"%@\","
     @"\"passwd\":\"%@\"}";
 static NSString *const kReceiptCheckJSONFormat =
-    @"{\"receipt_data\":\"%@\",\"client_info\":{\"uuid\":\"%@\",\"version\":\"%@\",\"device\":\"%@\","
+    @"{\"receipt_data\":\"%@\",\"client_info\":{\"uuid\":\"%@\",\"version\":\"%@\",\"device\":\"%@"
+    @"\","
     @"\"os\":\"%@\",\"locale\":\"%@\"}}";
 static NSString *const kCampaignListJSONFormat =
     @"{\"target\":\"%@\",\"head\":\"%d\",\"limit\":%d,\"userId\":\"%@\",\"passwd\":\"%@\"}";
@@ -117,10 +118,10 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     // Assemble the product-id array literal, comma-separating every element but the last.
     NSMutableString *products = [[NSMutableString alloc] initWithString:@""];
     for (NSUInteger i = 0; i < productIds.count; ++i) {
-        NSString *element = i == productIds.count - 1
-                                ? [NSString stringWithFormat:kProductElementFormat, productIds[i]]
-                                : [NSString stringWithFormat:kProductElementWithCommaFormat,
-                                                             productIds[i]];
+        NSString *element =
+            i == productIds.count - 1 ?
+                [NSString stringWithFormat:kProductElementFormat, productIds[i]] :
+                [NSString stringWithFormat:kProductElementWithCommaFormat, productIds[i]];
         [products appendString:element];
     }
     NSArray *serverData = [AppDelegate getServerData];
