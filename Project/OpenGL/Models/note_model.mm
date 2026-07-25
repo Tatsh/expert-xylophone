@@ -13,6 +13,7 @@
 #include "Render/neRenderer.h"
 #include "Render/s_vector3.h"
 #include "Render/vectormath.h"
+#include "deviceenvironment.h"
 #include "engineglobals.h"
 #include "gamesystem.h"
 #include "rbffnoterecord.h"
@@ -42,6 +43,27 @@ constexpr int kWideLaneLeft = 1;
 constexpr int kWideLaneRight = 2;
 
 } // namespace
+
+// The sub-entry seed values the constructor writes into every slot.
+namespace {
+constexpr int kSubEntryKindNone = 5;
+constexpr int kSubEntryIndexNone = -1;
+constexpr int kSubEntrySeed = 5;
+} // namespace
+
+/** @ghidraAddress 0x1319fc */
+NoteModel::NoteModel(void *pSheet) {
+    m_pSheet = pSheet;
+    m_nNoteIndex = -1;
+    // Seed every hold/slide segment slot to its empty state; the other fields stay zero-initialised.
+    for (SubEntry &entry : m_aSubEntries) {
+        entry.nKind = kSubEntryKindNone;
+        entry.nIndex = kSubEntryIndexNone;
+        entry.nSeedA = kSubEntrySeed;
+        entry.nSeedD = kSubEntrySeed;
+    }
+    m_bFontVariant = IsPad();
+}
 
 /** @ghidraAddress 0x135e84 */
 int NoteModel::IsSideFlipped() const {

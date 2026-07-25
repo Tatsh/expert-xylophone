@@ -16,11 +16,19 @@ struct RbffNoteRecord;
  * Spawned from an @c RbffNoteRecord when the chart reaches the note's lead-in and advanced each
  * frame by the note state machine until it is hit or missed. The trailing @c // +0xNN comments
  * document the original member offsets for reference only; the spans between the modelled members
- * are the note's animation and waypoint state, reserved to preserve the 1516-byte layout.
- * @ghidraAddress NoteModel (engine note struct, 1516 bytes)
+ * are the note's animation and waypoint state, reserved to preserve the 1528-byte layout.
+ * @ghidraAddress NoteModel (engine note struct, 1528 bytes)
  */
 class NoteModel {
 public:
+    /**
+     * @brief Constructs a note bound to its owning sheet: clears the play state, seeds every
+     * sub-entry slot to its empty defaults, zeroes the waypoint block, and stores the font variant.
+     * @param pSheet The owning note sheet.
+     * @ghidraAddress 0x1319fc
+     */
+    explicit NoteModel(void *pSheet);
+
     /**
      * @brief Reports whether the note should be horizontally mirrored for the current play side.
      *
@@ -136,6 +144,9 @@ public:
     /** @brief The idle-type sentinel a synthetic note reports for its type when it has no own side. */
     static constexpr int kIdleTypeSentinel = 5;
 
+    /** @brief The number of per-note sub-entry (hold/slide segment) slots. */
+    static constexpr int kSubEntryCount = 16;
+
 private:
     void *m_pSheet = {};            // +0x00: the owning note sheet.
     RbffNoteRecord *m_pRecord = {}; // +0x08: the parsed chart record, or null for a synthetic note.
@@ -150,10 +161,32 @@ private:
     S_VECTOR2 m_pos = {};           // +0x34: the current position.
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
-    unsigned char m_aReserved4c[0x593] = {}; // +0x4c: animation, long-note, and waypoint state.
-    bool m_bTouched = {}; // +0x5df: set when this note is the frame's nearest-hit winner.
-    bool m_bOwnSide = {}; // +0x5e0: the note's own side flag, used when it has no record.
-    unsigned char m_aReserved5e1[0xb] = {}; // +0x5e1
+    unsigned char m_aReserved4c[0x28] = {}; // +0x4c: further animation/long-note state.
+
+    // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
+    // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
+    struct SubEntry {
+        int nKind = {};                       // +0x00: the segment kind (5 = none).
+        int nIndex = {};                      // +0x04: the source note index (-1 = none).
+        unsigned char aReserved08[0x30] = {}; // +0x08: per-segment state, still being worked out.
+        int nSeedA = {};                      // +0x38: a seed value (constructed to 5).
+        int nSeedB = {};                      // +0x3c: a seed value (constructed to 0).
+        int nSeedC = {};                      // +0x40: a seed value (constructed to 0).
+        int nSeedD = {};                      // +0x44: a seed value (constructed to 5).
+    };
+    // +0x74..+0x4f3: the 16 per-note sub-entry slots.
+    SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
+    int m_nField4f4 = {};                      // +0x4f4: post-table state, still being worked out.
+    int m_nField4f8 = {};                      // +0x4f8: post-table state, still being worked out.
+    unsigned char m_aReserved4fc[0xc] = {};    // +0x4fc
+    void *m_pField508 = {};                    // +0x508: cleared on construction.
+    unsigned char m_aReserved510[0x10] = {};   // +0x510
+    unsigned char m_aWaypointBlock[0xa0] = {}; // +0x520: memset to zero on construction.
+    unsigned char m_aReserved5c0[0x1f] = {};   // +0x5c0
+    bool m_bTouched = {};                      // +0x5df: the frame's nearest-hit winner flag.
+    bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
+    bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
+    unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.
 };
 
 /**
