@@ -287,6 +287,72 @@ void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
     pInstancer->SetSpriteCount(nSprite + 1);
 }
 
+/** @ghidraAddress 0x74018 */
+void ResultWindowColetteLayer::applySpriteInstancerTexture(int nSlot, ne::C_TEXTURE *pTexture) {
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nCapacity = static_cast<int>(pInstancer->GetCapacity());
+    pInstancer->SetRefCountedMember(pTexture);
+    if (pTexture == nullptr) {
+        return;
+    }
+
+    // Refresh every sprite slot to the newly bound texture's dimensions.
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    for (int nSprite = 0; nSprite < nCapacity; ++nSprite) {
+        pInstancer->SetSpriteSize(nSprite, spriteSize);
+        pInstancer->SetSpriteUvOrigin(nSprite, S_VECTOR2{});
+        pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    }
+}
+
+/** @ghidraAddress 0x79e7c */
+void ResultWindowColetteLayer::blitSpriteInstanceHalfScale(int nSlot,
+                                                           const S_VECTOR2 &position,
+                                                           unsigned int nScale) {
+    if (nSlot < 0 || nSlot >= kSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    // The binary does not null-check the bound texture here.
+    ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    const unsigned int nAlpha =
+        static_cast<unsigned int>(static_cast<float>(nScale) * m_flPartsScale);
+    const unsigned int nRed = static_cast<unsigned int>(m_nGlyphBaseA) & 0xff;
+    const unsigned int nGreen = static_cast<unsigned int>(m_nGlyphBaseB) & 0xff;
+    const unsigned int nBlue = static_cast<unsigned int>(m_nGlyphBaseC) & 0xff;
+    appendSpriteToSlotRgba(nSlot,
+                           nRed,
+                           nGreen,
+                           nBlue,
+                           nAlpha,
+                           position,
+                           anchor,
+                           spriteSize,
+                           S_VECTOR2{},
+                           uvSize,
+                           0.0f,
+                           S_VECTOR2{1.0f, 1.0f});
+}
+
 /** @ghidraAddress 0x76c1c */
 void ResultWindowColetteLayer::renderSpriteInstanceScaled(int nSlot,
                                                           const S_VECTOR2 &position,

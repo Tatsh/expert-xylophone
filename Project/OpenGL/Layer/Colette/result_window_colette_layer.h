@@ -83,6 +83,32 @@ public:
 
 private:
     /**
+     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
+     *
+     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
+     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
+     * sets its UV size to the used region. Does nothing if the slot is empty or @p pTexture is null.
+     * @param nSlot The slot index (0 through 7).
+     * @param pTexture The texture to bind.
+     * @ghidraAddress 0x74018
+     */
+    void applySpriteInstancerTexture(int nSlot, ne::C_TEXTURE *pTexture);
+
+    /**
+     * @brief Draws a slot's whole bound texture centred on a position (half-size anchor), tinted.
+     *
+     * Like @c renderSpriteInstanceScaled (full texture-scaled size), but anchors the quad at half
+     * its size so it is centred on @p position. The alpha is @p nScale times the layer parts scale;
+     * the colour channels reuse the layer's three glyph-base bytes as a tint. The binary does not
+     * null-check the bound texture.
+     * @param nSlot The slot index (0 through 7).
+     * @param position The sprite's centre position.
+     * @param nScale The scale units multiplied into the alpha.
+     * @ghidraAddress 0x79e7c
+     */
+    void blitSpriteInstanceHalfScale(int nSlot, const S_VECTOR2 &position, unsigned int nScale);
+
+    /**
      * @brief Draws a slot's whole bound texture scaled by the layer's parts scale, tinted.
      *
      * Reads the slot's bound texture, sizes the quad by the texture's own scale factor, derives its
