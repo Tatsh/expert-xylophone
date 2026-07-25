@@ -14,6 +14,12 @@ namespace {
 // The sentinel stored in an unset per-vertex attribute offset.
 constexpr int kUnsetOffset = -1;
 
+// The scale mapping a normalised texture coordinate to the signed 16-bit fixed-point range the
+// vertex texcoord slot stores; the U scale is single-precision and the flipped-V scale is double
+// (@ghidraAddress 0x2eed04 and 0x2eed08).
+constexpr float kTexcoordScaleU = 32767.0f;
+constexpr double kTexcoordScaleV = 32767.0;
+
 // The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap) the constructor
 // seeds (@ghidraAddress 0x2eecf0).
 constexpr int kDefaultTexParams[] = {0, 0, 7, 7};
@@ -212,6 +218,40 @@ void C_DRAW_POLYGON_2D::SetRGBA(int nIndex,
     // The binary writes both dirty bytes together as a single halfword of 0x0101.
     m_bVertexDirty = true;
     m_bColorDirty = true;
+}
+
+/** @ghidraAddress 0x283b4 */
+void C_DRAW_POLYGON_2D::SetUV(int nIndex, float flU, float flV) {
+    if ((m_nVertexFormat & kVertexHasTexcoord) == 0) {
+        return;
+    }
+    assert(nIndex >= 0 && nIndex < m_nVertexCount);
+    // The texcoord slot sits at the format-derived offset within the interleaved vertex.
+    unsigned char *pVertex =
+        static_cast<unsigned char *>(m_pVertexArray) + nIndex * m_nVertexStride + m_nTexcoordOffset;
+    short *pTexcoord = reinterpret_cast<short *>(pVertex);
+    // The vertical coordinate is stored flipped; both channels are scaled to the signed 16-bit range.
+    pTexcoord[0] = static_cast<short>(flU * kTexcoordScaleU);
+    pTexcoord[1] = static_cast<short>((1.0 - static_cast<double>(flV)) * kTexcoordScaleV);
+    m_bVertexDirty = true;
+}
+
+/** @ghidraAddress 0x283ac */
+void C_DRAW_POLYGON_2D::SetUVFromVec(int nIndex, const S_VECTOR2 *pUv) {
+    SetUV(nIndex, pUv->x, pUv->y);
+}
+
+/** @ghidraAddress 0x2824c */
+void C_DRAW_POLYGON_2D::SetTexture(C_TEXTURE *pTexture) {
+    // Release the previously bound texture, then retain and store the new one.
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    if (pTexture != nullptr) {
+        pTexture->AddRef();
+        m_pTexture = pTexture;
+    }
 }
 
 /** @ghidraAddress 0x28578 */

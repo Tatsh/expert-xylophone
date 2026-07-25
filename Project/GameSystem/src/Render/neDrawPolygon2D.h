@@ -91,12 +91,40 @@ public:
                  unsigned char nAlpha);
 
     /**
+     * @brief Set a mesh vertex's texture coordinate, if the mesh carries a texcoord attribute.
+     *
+     * Encodes @p flU and the vertically-flipped @p flV to the signed 16-bit fixed-point range and
+     * writes them into the vertex's texcoord slot, marking the vertex data dirty.
+     * @param nIndex The vertex index.
+     * @param flU The horizontal texture coordinate, in the range zero to one.
+     * @param flV The vertical texture coordinate, in the range zero to one (stored flipped).
+     * @ghidraAddress 0x283b4
+     */
+    void SetUV(int nIndex, float flU, float flV);
+
+    /**
+     * @brief Set a mesh vertex's texture coordinate from a vector pointer, forwarding to @c SetUV.
+     * @param nIndex The vertex index.
+     * @param pUv The texture coordinate (its x and y are the U and V).
+     * @ghidraAddress 0x283ac
+     */
+    void SetUVFromVec(int nIndex, const S_VECTOR2 *pUv);
+
+    /**
      * @brief Store a vertex index into the mesh's index buffer and mark it dirty.
      * @param nIndex The position in the index buffer.
      * @param wValue The vertex index to store.
      * @ghidraAddress 0x28578
      */
     void SetIndex(int nIndex, unsigned short wValue);
+
+    /**
+     * @brief Bind a texture to the mesh, releasing any previously bound texture and retaining the
+     *        new one.
+     * @param pTexture The texture to bind, or null to unbind.
+     * @ghidraAddress 0x2824c
+     */
+    void SetTexture(C_TEXTURE *pTexture);
 
     // The vertex-format attribute bits tested before writing a vertex attribute.
     enum VertexFormatFlag {
