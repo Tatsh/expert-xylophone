@@ -154,3 +154,17 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
 
     m_bBuilt = true;
 }
+
+/** @ghidraAddress 0x180438 */
+void ThemaMarkerLayer::StartFadeOut(float flDuration) {
+    m_nActiveMarker = 0;
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(0.0f);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to transparent and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(0.0f);
+        m_bFadeColorDirty = true;
+    }
+}

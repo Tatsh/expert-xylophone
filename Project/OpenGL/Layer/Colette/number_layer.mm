@@ -75,3 +75,14 @@ void NumberLayer::InitializeNumberLayer() {
 
     m_bBuilt = true;
 }
+
+/** @ghidraAddress 0x17df2c */
+void NumberLayer::SetReady() {
+    m_bReady = true;
+    m_nFrameCounter = 0;
+}
+
+/** @ghidraAddress 0x17df3c */
+void NumberLayer::ClearReady() {
+    m_bReady = false;
+}

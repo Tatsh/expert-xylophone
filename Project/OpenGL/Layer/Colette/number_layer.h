@@ -43,6 +43,18 @@ public:
     // The number of number-layer sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 2;
 
+    /**
+     * @brief Marks the number display ready to show and resets its frame counter.
+     * @ghidraAddress 0x17df2c
+     */
+    void SetReady();
+
+    /**
+     * @brief Clears the number display's ready flag.
+     * @ghidraAddress 0x17df3c
+     */
+    void ClearReady();
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -60,11 +72,11 @@ private:
     // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
     // +0x34..+0x47: further layer state (two ints, a byte flag, and one more int the constructor
     // zero-clears) still being worked out, kept to preserve the 0x48-byte allocation size.
-    int m_nReserved34 = {};  // +0x34
-    int m_nReserved38 = {};  // +0x38
-    bool m_bReserved3c = {}; // +0x3c
+    int m_nReserved34 = {}; // +0x34
+    int m_nReserved38 = {}; // +0x38
+    bool m_bReady = {};     // +0x3c: whether the number display is ready to show.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    int m_nReserved40 = {};              // +0x40
+    int m_nFrameCounter = {};            // +0x40: the display frame counter, reset when made ready.
     unsigned char m_aReserved44[4] = {}; // +0x44
 };
 

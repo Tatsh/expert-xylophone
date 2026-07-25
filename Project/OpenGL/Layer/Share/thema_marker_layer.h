@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -47,6 +48,15 @@ public:
      */
     void LoadThemaMarkerSprites();
 
+    /**
+     * @brief Begins the marker fade-out: resets the active marker index and eases the markers to
+     * transparent over @p flDuration (snapping to transparent and marking the colour dirty when the
+     * duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x180438
+     */
+    void StartFadeOut(float flDuration);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its scales, and computing
@@ -61,11 +71,14 @@ private:
     int m_aBatchCapacity[kBatchCount] = {};                 // +0x28: each batch's sprite capacity.
     int m_aMarkerBaseIndex[kMarkerLayoutCount] = {}; // +0x30: each marker group's base index.
     bool m_bBuilt = {};                              // +0x48: set once the sprites are built.
-    bool m_bReserved49 = {};                         // +0x49: a further byte flag.
-    unsigned char m_aReserved4a[0x1a] = {}; // +0x4a: further state, still being worked out.
-    float m_flScaleX = {};                  // +0x64: a scale the constructor seeds to 1.
-    float m_flScaleY = {};                  // +0x68: a scale the constructor seeds to 1.
-    int m_nReserved6c = {};                 // +0x6c: an int the constructor zero-clears.
+    bool m_bFadeColorDirty = {};                     // +0x49: set when the fade snaps or advances.
+    // +0x4a..+0x4b is alignment padding before the active-marker index.
+    unsigned char m_aPad4a[2] = {};      // +0x4a
+    int m_nActiveMarker = {};            // +0x4c: the active marker index.
+    LinearTween m_fadeChannel;           // +0x50: the marker fade channel.
+    float m_flScaleX = {};               // +0x64: a scale the constructor seeds to 1.
+    float m_flScaleY = {};               // +0x68: a scale the constructor seeds to 1.
+    int m_nReserved6c = {};              // +0x6c: an int the constructor zero-clears.
     float m_aTransform[6] = {};          // +0x70: a six-float transform block seeded from a table.
     int m_nReserved88 = {};              // +0x88: an int the constructor zero-clears.
     float m_flReserved8c = {};           // +0x8c: a float the constructor seeds to 1.
