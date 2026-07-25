@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -55,6 +56,22 @@ public:
      */
     void TriggerJudgeEffect(unsigned int nLane, unsigned int nScore, unsigned int nJudgeType);
 
+    /**
+     * @brief Begins the fade-in animation, easing the layer to fully opaque over @p flDuration
+     * (snapping to opaque immediately when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x184d00
+     */
+    void StartFadeIn(float flDuration);
+
+    /**
+     * @brief Begins the fade-out animation, easing the layer to transparent over @p flDuration
+     * (snapping to transparent immediately when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x184d28
+     */
+    void StartFadeOut(float flDuration);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -75,8 +92,7 @@ private:
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the judge-effect sprite instancer.
     int m_nSpriteCount = {};                 // +0x18: the instancer's initial sprite count.
     bool m_bBuilt = {};                      // +0x1c: set once the sprite is built.
-    unsigned char m_aReserved20[0x10] = {};  // +0x20: further layer state, still being worked out.
-    int m_nReserved30 = {};                  // +0x30: an int the constructor zero-clears.
+    LinearTween m_fadeChannel;               // +0x20: the layer's fade-in/out channel.
     float m_flScaleX = {};                   // +0x34: a scale the constructor seeds to 1.
     float m_flScaleY = {};                   // +0x38: a scale the constructor seeds to 1.
     JudgeRecord m_aJudgeRecords[2] = {};     // +0x3c: two per-judge records.

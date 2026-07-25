@@ -13,10 +13,22 @@ namespace {
 // The atlas the judge effect draws from (@ghidraAddress 0x3ceaa8).
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
+// The fade channel's fully-opaque and fully-transparent endpoints.
+constexpr float kFadeOpaque = 1.0f;
+constexpr float kFadeTransparent = 0.0f;
+
+// The scale pair the constructor seeds.
+constexpr float kInitialScale = 1.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x184bb0 */
-JudgeEffectLayer::JudgeEffectLayer() = default;
+JudgeEffectLayer::JudgeEffectLayer() {
+    // The base constructor and the zero-initialised members clear the texture, sprite, fade channel,
+    // and per-lane records; the constructor then seeds the scale pair to one.
+    m_flScaleX = kInitialScale;
+    m_flScaleY = kInitialScale;
+}
 
 /** @ghidraAddress 0x184c28 */
 JudgeEffectLayer *JudgeEffectLayer::shared() {
@@ -59,4 +71,26 @@ void JudgeEffectLayer::TriggerJudgeEffect(unsigned int nLane,
     record.m_nTimer = 0;
     record.m_bActive = true;
     record.m_nScore = nScore;
+}
+
+/** @ghidraAddress 0x184d00 */
+void JudgeEffectLayer::StartFadeIn(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(kFadeOpaque);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(kFadeOpaque);
+    }
+}
+
+/** @ghidraAddress 0x184d28 */
+void JudgeEffectLayer::StartFadeOut(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(kFadeTransparent);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(kFadeTransparent);
+    }
 }
