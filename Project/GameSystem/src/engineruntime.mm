@@ -15,6 +15,19 @@ constexpr float kClearRankThreshold3 = 0.80f; // @ghidraAddress 0x2f856c
 constexpr float kClearRankThreshold2 = 0.70f; // @ghidraAddress 0x2fd008
 constexpr float kClearRankThreshold1 = 0.50f;
 
+// The customize-asset categories BuildCustomizeAssetPathString and GetCustomizeFrameImagePath key
+// off. The gaps (6, 8, 9) have no asset path.
+enum {
+    kCustomizeKindBgm = 0,
+    kCustomizeKindShot = 1,
+    kCustomizeKindExplosion = 2,
+    kCustomizeKindFrame = 3,
+    kCustomizeKindBackground = 4,
+    kCustomizeKindObject = 5,
+    kCustomizeKindMusic = 7,
+    kCustomizeKindThema = 10,
+};
+
 // The clear-rank values the thresholds map to.
 constexpr int kClearRank5 = 5;
 constexpr int kClearRank4 = 4;
@@ -40,6 +53,15 @@ int GetClearRank(float achievementRate) {
         return kClearRank2;
     }
     return achievementRate >= kClearRankThreshold1 ? kClearRank1 : kClearRank0;
+}
+
+/** @ghidraAddress 0x550dc */
+NSString *_Nullable GetCustomizeFrameImagePath(int kind) {
+    // Only the music item (kind 7) has a frame overlay; every other customize element returns nil.
+    if (kind == kCustomizeKindMusic) {
+        return [NSString stringWithFormat:@"04_customize/cus_imusic_frm"];
+    }
+    return nil;
 }
 
 /** @ghidraAddress 0x366f8 */
