@@ -56,6 +56,18 @@ public:
     PartsDataRecord *GetPartsData(unsigned int nIndex) const;
 
     /**
+     * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
+     *
+     * Looks up a @c PhoneAnchorRecord from the portrait or default table (selected by the layer's
+     * orientation flag), copies its base coordinate, then shifts it by the play-field viewport's
+     * half or full width and height per the record's anchor mode.
+     * @param nIndex The position-record index (0 through 87).
+     * @param pOutPosition Receives the resolved position.
+     * @ghidraAddress 0x123940
+     */
+    void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
+
+    /**
      * @brief Emits one result-window part sprite by part id.
      *
      * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the
@@ -237,10 +249,11 @@ private:
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
     ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
-        {};             // +0x28: the per-slot sprite batches.
-    bool m_bBuilt = {}; // +0x68: set once the sprites are built.
-    // +0x69..+0x6b is alignment padding before the default alpha.
-    // unsigned char m_aPad69[3]; // +0x69 (alignment padding, compiler-inserted)
+        {};                // +0x28: the per-slot sprite batches.
+    bool m_bBuilt = {};    // +0x68: set once the sprites are built.
+    bool m_bPortrait = {}; // +0x69: selects the portrait phone anchor-position table.
+    // +0x6a..+0x6b is alignment padding before the default alpha.
+    // unsigned char m_aPad6a[2]; // +0x6a (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
     // +0x74..+0x13b: the remaining per-frame presentation state (tweens, slide timer, frame index),

@@ -2,7 +2,9 @@
 
 #include <cassert>
 
+#include "../Colette/phone_anchor_table.h"
 #include "deviceenvironment.h"
+#import "gamesystem.h"
 #include "limelight_parts_data_table.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -13,6 +15,17 @@
 
 // The process-wide Limelight result-window layer, created lazily by shared().
 static LimelightResultLayer *g_pLimelightResultLayer = nullptr; // @ghidraAddress 0x3de008
+
+// The number of records in each Limelight phone-layout anchor-position table.
+constexpr int kLimelightPhoneAnchorRecordCount = 88;
+
+// The Limelight phone-layout anchor-position tables, zero-initialised in the binary's __common
+// segment and filled at runtime by the result-layout-table initialisers; the orientation flag
+// selects between them.
+PhoneAnchorRecord
+    g_aLimelightPhoneAnchorDefault[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3dad10
+PhoneAnchorRecord
+    g_aLimelightPhoneAnchorPortrait[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3db130
 
 namespace {
 
@@ -37,6 +50,59 @@ constexpr float kBaseScale = 0.7f;
 // kFirstUntexturedSlot + kUntexturedSlotSpan - 1 (that is, slots 2 through 6).
 constexpr int kFirstUntexturedSlot = 2;
 constexpr int kUntexturedSlotSpan = 5;
+
+// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
+// any value outside this range) leaves the coordinate unshifted.
+enum AnchorMode {
+    kAnchorNone = 0,                // No offset.
+    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
+    kAnchorFullHeight = 2,          // y += viewportHeight.
+    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
+    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
+    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
+    kAnchorFullWidth = 6,           // x += viewportWidth.
+    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
+    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+};
+
+// Offsets a base coordinate by half or full viewport dimensions per the anchor mode.
+inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    switch (nAnchorMode) {
+    case kAnchorHalfHeight:
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorFullHeight:
+        *pY += flHeight;
+        break;
+    case kAnchorHalfWidth:
+        *pX += flWidth * 0.5f;
+        break;
+    case kAnchorHalfWidthHalfHeight:
+        *pX += flWidth * 0.5f;
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorHalfWidthFullHeight:
+        *pX += flWidth * 0.5f;
+        *pY += flHeight;
+        break;
+    case kAnchorFullWidth:
+        *pX += flWidth;
+        break;
+    case kAnchorFullWidthHalfHeight:
+        *pX += flWidth;
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorFullWidthFullHeight:
+        *pX += flWidth;
+        *pY += flHeight;
+        break;
+    default:
+        break;
+    }
+}
 
 } // namespace
 
@@ -87,6 +153,20 @@ PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) const {
 
     // The pad build uses the pad table; the phone build uses the phone table.
     return IsPad() ? &g_aLimelightPartsPad[nIndex] : &g_aLimelightPartsPhone[nIndex];
+}
+
+/** @ghidraAddress 0x123940 */
+void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
+    assert(nIndex >= 0 && nIndex < kLimelightPhoneAnchorRecordCount);
+
+    // The orientation flag selects the portrait table; otherwise the default table is used.
+    const PhoneAnchorRecord &record = m_bPortrait ? g_aLimelightPhoneAnchorPortrait[nIndex] :
+                                                    g_aLimelightPhoneAnchorDefault[nIndex];
+    pOutPosition->x = record.flX;
+    pOutPosition->y = record.flY;
+
+    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
+    ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
 }
 
 /** @ghidraAddress 0x12ac64 */
