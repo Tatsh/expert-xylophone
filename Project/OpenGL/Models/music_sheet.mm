@@ -10,8 +10,48 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <cstring>
 
+#include "rbff_chart_note.h"
 #include "rbffnoterecord.h"
+
+namespace {
+
+// Reads one little-endian value of type T from the byte cursor and advances it.
+template <typename T>
+T ReadStream(const unsigned char *&pCursor) {
+    T value;
+    std::memcpy(&value, pCursor, sizeof(T));
+    pCursor += sizeof(T);
+    return value;
+}
+
+} // namespace
+
+/** @ghidraAddress 0x12e944 */
+int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor) {
+    const unsigned char *pCursor = *ppCursor;
+    pRecord->nTimeA = ReadStream<int>(pCursor);
+    pRecord->nTimeB = ReadStream<int>(pCursor);
+    pRecord->nNoteId = ReadStream<short>(pCursor);
+    pRecord->nStartTime = ReadStream<short>(pCursor);
+    pRecord->nKind = ReadStream<signed char>(pCursor);
+    pRecord->nPointCount = ReadStream<signed char>(pCursor);
+    // The first eight path-point coordinates.
+    for (int i = 0; i < 8; ++i) {
+        pRecord->pathPoints[i] = ReadStream<short>(pCursor);
+    }
+    pRecord->nSide = ReadStream<signed char>(pCursor);
+    pRecord->nType = ReadStream<signed char>(pCursor);
+    pRecord->nHoldFlag = ReadStream<signed char>(pCursor);
+    pRecord->reserved1 = ReadStream<signed char>(pCursor);
+    // The chain-link ids and trailing reserved short (stored contiguously after the path points).
+    pRecord->nChainLink = ReadStream<short>(pCursor);
+    pRecord->nChainPartner = ReadStream<short>(pCursor);
+    pRecord->reserved2 = ReadStream<short>(pCursor);
+    *ppCursor = pCursor;
+    return 1;
+}
 
 namespace {
 
