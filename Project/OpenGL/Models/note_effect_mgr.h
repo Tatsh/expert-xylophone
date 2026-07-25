@@ -28,6 +28,13 @@ public:
     static NoteEffectMgr *shared();
 
     /**
+     * @brief Resets the per-note position cache: sets every render entry's cached position to the
+     *        -1 empty marker.
+     * @ghidraAddress 0x1373a0
+     */
+    void ClearNotePositionCache();
+
+    /**
      * @brief The current lane/combo field.
      * @ghidraAddress 0x13719c
      */
@@ -78,14 +85,19 @@ private:
     int m_nDensityTier = {};                // +0x30: the note-density tier (0, 1, or 2).
     unsigned char m_aReserved34[4] = {};    // +0x34
     // +0x38..+0x60: the six active-slot note indices, seeded to the -1 empty marker.
-    long m_aActiveSlot[6] = {};          // +0x38
-    unsigned char m_aReserved68[4] = {}; // +0x68
-    // +0x6c..+0x157: the 20-entry per-note render sub-table (stride kRenderEntryStride).
-    unsigned char m_aRenderTable[0xec] = {}; // +0x6c
-    bool m_bFontVariant = {};                // +0x158: the device font variant.
-    unsigned char m_aReserved159[7] = {};    // +0x159
-    int m_nHitCount = {};                    // +0x160: the accumulated hit (judged-note) count.
-    unsigned char m_aReserved164[4] = {};    // +0x164
+    long m_aActiveSlot[6] = {}; // +0x38
+
+    // One per-note render entry: the cached note position (-1 when empty) and its render state.
+    struct RenderEntry {
+        int nCachedPosition = {};          // +0x00: the cached note position, or -1 when empty.
+        unsigned char aReserved04[8] = {}; // +0x04: per-note render state, still being worked out.
+    };
+    // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
+    RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68
+    bool m_bFontVariant = {};                           // +0x158: the device font variant.
+    unsigned char m_aReserved159[7] = {};               // +0x159
+    int m_nHitCount = {};                 // +0x160: the accumulated hit (judged-note) count.
+    unsigned char m_aReserved164[4] = {}; // +0x164
 };
 
 // code: language=C++

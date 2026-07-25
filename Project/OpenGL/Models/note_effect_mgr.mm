@@ -23,6 +23,13 @@ NoteEffectMgr::NoteEffectMgr() {
     m_bFontVariant = IsPad();
 }
 
+/** @ghidraAddress 0x1373a0 */
+void NoteEffectMgr::ClearNotePositionCache() {
+    for (RenderEntry &entry : m_aRenderTable) {
+        entry.nCachedPosition = -1;
+    }
+}
+
 /** @ghidraAddress 0x136b9c */
 NoteEffectMgr *NoteEffectMgr::shared() {
     if (g_pNoteEffectMgr == nullptr) {
