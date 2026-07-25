@@ -315,9 +315,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         S_VECTOR2 sheetSize{static_cast<float>(width * kRetinaScale - kSheetSizeInsetX),
                             static_cast<float>(height * kRetinaScale - kSheetSizeInsetY)};
         gameSystem->SetSheetLayerPosition(&sheetSize);
-        SheetLayer::SetSheetLayerMargins(
-            kSheetMarginX, kSheetMarginY, kSheetMarginX, kSheetMarginY, gameSystem);
-        SheetLayer::SetSheetLayerRadius(kSheetLayerRadius, gameSystem);
+        gameSystem->SetSheetMargins(kSheetMarginX, kSheetMarginY, kSheetMarginX, kSheetMarginY);
+        gameSystem->SetSheetRadius(kSheetLayerRadius);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(kSheetCameraTargetY);
     } else {
@@ -325,9 +324,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
             kSheetVariantWidth,
             static_cast<float>(kVariantScreenHeightPoints - kSheetVariantHeightInset)};
         gameSystem->SetSheetLayerPosition(&sheetSize);
-        SheetLayer::SetSheetLayerMargins(
-            kSheetVariantMargin, kSheetMarginY, kSheetVariantMargin, kSheetMarginY, gameSystem);
-        SheetLayer::SetSheetLayerRadius(kSheetVariantMargin, gameSystem);
+        gameSystem->SetSheetMargins(
+            kSheetVariantMargin, kSheetMarginY, kSheetVariantMargin, kSheetMarginY);
+        gameSystem->SetSheetRadius(kSheetVariantMargin);
         gameSystem->SetCameraTargetX(0.0f);
         gameSystem->SetCameraTargetY(0.0f);
     }

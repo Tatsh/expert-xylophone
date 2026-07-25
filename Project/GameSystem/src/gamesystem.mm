@@ -13,6 +13,9 @@ static GameSystem *g_pGameSystem = nullptr; // @ghidraAddress 0x3de010
 
 namespace {
 
+// The scale applied to the sheet radius to derive the scaled radius (one sixty-fourth).
+constexpr float kSheetRadiusScale = 0.015625f;
+
 // The non-zero field defaults the constructor seeds; every other field stays zero-initialised.
 constexpr float kDefaultScreenScale = 1.0f;
 constexpr float kDefaultSheetRadius = 64.0f;
@@ -45,4 +48,27 @@ GameSystem *GameSystem::GetGameSystem() {
         g_pGameSystem = new GameSystem();
     }
     return g_pGameSystem;
+}
+
+/** @ghidraAddress 0x12f3c4 */
+void GameSystem::SetSheetRadius(float flRadius) {
+    m_flSheetRadius = flRadius;
+    m_flSheetRadiusHalf = flRadius * 0.5f;
+    m_flSheetRadiusScaled = flRadius * kSheetRadiusScale;
+    m_flSheetInsetX = m_flSheetPosX - flRadius;
+    m_flSheetInsetY = m_flSheetPosY - flRadius;
+    m_flSheetInsetHalfX = m_flSheetInsetX * 0.5f;
+    m_flSheetInsetHalfY = m_flSheetInsetY * 0.5f;
+    // The squared sheet diameter, kept ready for radius-based hit tests.
+    m_flSheetDiameterSq = (flRadius + flRadius) * (flRadius + flRadius);
+}
+
+/** @ghidraAddress 0x12f394 */
+void GameSystem::SetSheetMargins(float flLeft, float flTop, float flRight, float flBottom) {
+    m_flSheetMarginLeft = flLeft;
+    m_flSheetMarginTop = flTop;
+    m_flSheetMarginRight = flRight;
+    m_flSheetMarginBottom = flBottom;
+    m_flSheetFarX = m_flSheetPosX + flLeft + flRight;
+    m_flSheetFarY = m_flSheetPosY + flTop + flBottom;
 }

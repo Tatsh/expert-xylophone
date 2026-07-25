@@ -358,6 +358,22 @@ public:
      * @ghidraAddress 0x8ef60
      */
     void ConfigureSheetLayerForScreen(int speedType);
+    /**
+     * @brief Sets the note-sheet corner radius and recomputes the derived inset, half, scaled, and
+     *        squared-diameter fields.
+     * @param flRadius The sheet corner radius.
+     * @ghidraAddress 0x12f3c4
+     */
+    void SetSheetRadius(float flRadius);
+    /**
+     * @brief Sets the note-sheet margins and recomputes the far-corner anchor.
+     * @param flLeft The left margin.
+     * @param flTop The top margin.
+     * @param flRight The right margin.
+     * @param flBottom The bottom margin.
+     * @ghidraAddress 0x12f394
+     */
+    void SetSheetMargins(float flLeft, float flTop, float flRight, float flBottom);
     /** @brief Returns the active game scene, or @c nullptr when none is running. */
     GameScene *GetCurrentScene() const {
         return m_pCurrentScene;
