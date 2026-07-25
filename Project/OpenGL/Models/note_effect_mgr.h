@@ -35,11 +35,11 @@ public:
     void ClearNotePositionCache();
 
     /**
-     * @brief The current lane/combo field.
+     * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */
-    int GetComboField() const {
-        return m_nComboField;
+    int GetNoteCount() const {
+        return m_nNoteCount;
     }
 
     /**
@@ -78,12 +78,16 @@ private:
     // The empty marker held by an unused active-slot index.
     static constexpr long kActiveSlotNone = -1;
 
-    unsigned char m_aReserved00[0x18] = {}; // +0x00: header state, still being worked out.
-    int m_nComboField = {};                 // +0x18: the current lane/combo field.
-    unsigned char m_aReserved1c[0xc] = {};  // +0x1c
-    MusicSheet *m_pMusicSheet = {};         // +0x28: the bound active chart, or null.
-    int m_nDensityTier = {};                // +0x30: the note-density tier (0, 1, or 2).
-    unsigned char m_aReserved34[4] = {};    // +0x34
+    unsigned char m_aReserved00[8] = {}; // +0x00: header state, still being worked out.
+    void *m_pNotePool = {};              // +0x08: the pooled note-object array.
+    void **m_ppActiveList = {};          // +0x10: the active-note pointer array.
+    int m_nNoteCount = {};               // +0x18: the active note count (the chart's note count).
+    int m_nPoolCapacity = {};            // +0x1c: the note-object pool/array capacity.
+    int m_nActiveCount = {};             // +0x20: the number of active notes.
+    unsigned char m_aReserved24[4] = {}; // +0x24
+    MusicSheet *m_pMusicSheet = {};      // +0x28: the bound active chart, or null.
+    int m_nDensityTier = {};             // +0x30: the note-density tier (0, 1, or 2).
+    unsigned char m_aReserved34[4] = {}; // +0x34
     // +0x38..+0x60: the six active-slot note indices, seeded to the -1 empty marker.
     long m_aActiveSlot[6] = {}; // +0x38
 
