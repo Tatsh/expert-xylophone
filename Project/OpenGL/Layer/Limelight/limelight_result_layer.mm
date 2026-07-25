@@ -222,6 +222,37 @@ void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) co
     ApplyAnchorOffset(kAnchorHalfWidthHalfHeight, &pOutRect->flX, &pOutRect->flY);
 }
 
+/** @ghidraAddress 0x129f84 */
+void LimelightResultLayer::EmitPhonePartWithOffset(unsigned int nSlot,
+                                                   unsigned int nCharCode,
+                                                   const S_VECTOR2 &position,
+                                                   const S_VECTOR2 &offset,
+                                                   unsigned int nAlpha,
+                                                   int bShadowPass,
+                                                   float flRotation,
+                                                   float flScaleX,
+                                                   float flScaleY) {
+    if (nCharCode >= kLimelightPadGlyphRecordBound) {
+        return;
+    }
+    // The glyph metrics come from the pad parts table indexed by the character code; the texture
+    // rectangle from the Limelight glyph UV palette. The sprite is placed at the position plus the
+    // offset.
+    const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nCharCode];
+    const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x12a01c */
 void LimelightResultLayer::RenderPhonePartWithOffset(unsigned int nSlot,
                                                      unsigned int nCharCode,

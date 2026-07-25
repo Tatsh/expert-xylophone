@@ -196,6 +196,34 @@ public:
                                    float flScaleY);
 
     /**
+     * @brief Emits one glyph sprite at a position plus an offset, dimmable.
+     *
+     * Looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
+     * texture rectangle from the Limelight glyph UV palette, adds @p offset to @p position, and
+     * appends the quad to the slot with the given rotation and scale. Character codes at or above the
+     * pad glyph bound are ignored. The main pass draws at full intensity, the shadow pass at half.
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the pad glyph bound).
+     * @param position The glyph's base position.
+     * @param offset The offset added to the base position.
+     * @param nAlpha The glyph alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x129f84
+     */
+    void EmitPhonePartWithOffset(unsigned int nSlot,
+                                 unsigned int nCharCode,
+                                 const S_VECTOR2 &position,
+                                 const S_VECTOR2 &offset,
+                                 unsigned int nAlpha,
+                                 int bShadowPass,
+                                 float flRotation,
+                                 float flScaleX,
+                                 float flScaleY);
+
+    /**
      * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size anchor).
      *
      * Sizes the quad by the texture's own scale factor, derives its UV rectangle from the used
