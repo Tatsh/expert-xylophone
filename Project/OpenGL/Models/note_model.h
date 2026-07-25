@@ -125,6 +125,11 @@ public:
      */
     void MarkTouched();
 
+    /** @brief The note's index in its sheet. */
+    int GetNoteIndex() const {
+        return m_nNoteIndex;
+    }
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 

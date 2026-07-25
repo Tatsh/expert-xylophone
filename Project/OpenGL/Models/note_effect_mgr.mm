@@ -9,6 +9,7 @@
 #include "note_effect_mgr.h"
 
 #include "deviceenvironment.h"
+#include "note_model.h"
 
 // The process-wide note manager, created lazily by shared().
 static NoteEffectMgr *g_pNoteEffectMgr = nullptr; // @ghidraAddress 0x3de050
@@ -28,6 +29,25 @@ void NoteEffectMgr::ClearNotePositionCache() {
     for (RenderEntry &entry : m_aRenderTable) {
         entry.nCachedPosition = -1;
     }
+}
+
+/** @ghidraAddress 0x137018 */
+NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
+    // A valid in-range index maps straight to its pooled object (when the pool covers it).
+    if (nIndex >= 0 && nIndex < m_nNoteCount) {
+        if (m_nPoolCapacity <= nIndex) {
+            return nullptr;
+        }
+        return m_ppNotePool[nIndex];
+    }
+    // Otherwise scan the pool for an object whose note index matches.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        NoteModel *pNote = m_ppNotePool[i];
+        if (pNote != nullptr && pNote->GetNoteIndex() == nIndex) {
+            return pNote;
+        }
+    }
+    return nullptr;
 }
 
 /** @ghidraAddress 0x136b9c */

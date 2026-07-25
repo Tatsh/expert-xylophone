@@ -6,6 +6,7 @@
 #pragma once
 
 class MusicSheet;
+class NoteModel;
 
 /**
  * @brief The process-wide note manager: it owns the active chart, the live note render/effect
@@ -33,6 +34,17 @@ public:
      * @ghidraAddress 0x1373a0
      */
     void ClearNotePositionCache();
+
+    /**
+     * @brief Returns the note object for a chart note index, or @c nullptr when none matches.
+     *
+     * A valid in-range index returns the pooled object directly; otherwise (or for a negative index)
+     * the pool is scanned for an object whose note index matches.
+     * @param nIndex The chart note index.
+     * @return The matching note object, or @c nullptr.
+     * @ghidraAddress 0x137018
+     */
+    NoteModel *FindNoteByIndex(int nIndex);
 
     /**
      * @brief The active note count (the loaded chart's note count).
@@ -79,7 +91,7 @@ private:
     static constexpr long kActiveSlotNone = -1;
 
     unsigned char m_aReserved00[8] = {}; // +0x00: header state, still being worked out.
-    void *m_pNotePool = {};              // +0x08: the pooled note-object array.
+    NoteModel **m_ppNotePool = {};       // +0x08: the pooled NoteModel-object array.
     void **m_ppActiveList = {};          // +0x10: the active-note pointer array.
     int m_nNoteCount = {};               // +0x18: the active note count (the chart's note count).
     int m_nPoolCapacity = {};            // +0x1c: the note-object pool/array capacity.
