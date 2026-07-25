@@ -2,6 +2,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "Audio/soundeffectmanager.h"
 #import "RBBGMManager.h"
 #import "gamesystem.h"
 #import "playtimer.h"
@@ -15,6 +16,9 @@ namespace {
 constexpr int kStateBound = 0x14;
 constexpr unsigned int kIgnorePauseStateMask = 0xd7c03;
 constexpr int kActivePlayState = 0x11;
+
+// The themed sound-effect slot for the decide/confirm cue.
+constexpr int kSoundEffectDecide = 1;
 
 } // namespace
 
@@ -84,4 +88,13 @@ void ResumePlayTimerAndBgm(void) {
     if (pTimer->IsPaused()) {
         pTimer->Resume(CACurrentMediaTime());
     }
+}
+
+/** @ghidraAddress 0x15139c */
+void HandlePauseResume(void) {
+    // Resume play only when a scene is active, then play the pause-menu confirm effect.
+    if (GameSystem::GetGameSystem()->GetCurrentScene() != nullptr) {
+        ResumePlayTimerAndBgm();
+    }
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
 }

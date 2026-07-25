@@ -45,6 +45,13 @@ private:
  */
 void ResumePlayTimerAndBgm(void);
 
+/**
+ * @brief The pause-menu Resume action: resumes play when a scene is active and plays the confirm
+ *        sound effect.
+ * @ghidraAddress 0x15139c
+ */
+void HandlePauseResume(void);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

@@ -351,7 +351,9 @@ public:
      */
     void ConfigureSheetLayerForScreen(int speedType);
     /** @brief Returns the active game scene, or @c nullptr when none is running. */
-    GameScene *GetCurrentScene() const;
+    GameScene *GetCurrentScene() const {
+        return m_pCurrentScene;
+    }
     /**
      * @brief Returns the global GameSystem singleton, constructing it on first use.
      * @ghidraAddress 0x12edb4
@@ -359,6 +361,7 @@ public:
     static GameSystem *GetGameSystem();
 
 private:
+    GameScene *m_pCurrentScene = {};     // +0x00: the active game scene, or null when none runs.
     double m_dScreenX = {};              // +0x08
     double m_dScreenY = {};              // +0x10
     double m_dScreenWidth = {};          // +0x18
