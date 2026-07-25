@@ -105,6 +105,11 @@ void C_TEXTURE::EnsureCacheList() {
     pSentinel->m_pNext = pSentinel;
 }
 
+/** @ghidraAddress 0x33bf0 */
+C_TEXTURE **C_TEXTURE::GetCacheList() {
+    return g_ppTextureCacheHead;
+}
+
 /** @ghidraAddress 0x31af4 */
 void C_TEXTURE::Release() {
     // Decrement the reference count and destroy the object once it reaches zero. The binary

@@ -149,6 +149,13 @@ public:
      */
     static void EnsureCacheList();
 
+    /**
+     * @brief Returns the texture cache's circular-list head-holder (its sentinel node's address).
+     * @return The cache-list head-holder, or @c nullptr before @c EnsureCacheList has run.
+     * @ghidraAddress 0x33bf0
+     */
+    static C_TEXTURE **GetCacheList();
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     int m_nRefCount = {};          // +0x08
