@@ -38,20 +38,20 @@ TouchManager::TouchManager() {
     // recycled by CompactTouchList's swap-remove rather than freed.
     for (int i = 0; i < kSlotCount; ++i) {
         auto *pSlot = new TouchPoint;
-        pSlot->m_nId = kFreeSlotId;
-        pSlot->m_nBeginX = kUninitialisedCoord;
-        pSlot->m_nBeginY = kUninitialisedCoord;
-        pSlot->m_nCurrentX = kUninitialisedCoord;
-        pSlot->m_nCurrentY = kUninitialisedCoord;
-        pSlot->m_nPreviousX = kUninitialisedCoord;
-        pSlot->m_nPreviousY = kUninitialisedCoord;
-        pSlot->m_nCommittedX = kUninitialisedCoord;
-        pSlot->m_nCommittedY = kUninitialisedCoord;
-        pSlot->m_nKey1 = kUninitialisedKey;
-        pSlot->m_nKey2 = kUninitialisedKey;
-        pSlot->m_bIsNew = true;
-        pSlot->m_bEnded = false;
-        pSlot->m_bEndedPending = false;
+        pSlot->nId = kFreeSlotId;
+        pSlot->nBeginX = kUninitialisedCoord;
+        pSlot->nBeginY = kUninitialisedCoord;
+        pSlot->nCurrentX = kUninitialisedCoord;
+        pSlot->nCurrentY = kUninitialisedCoord;
+        pSlot->nPreviousX = kUninitialisedCoord;
+        pSlot->nPreviousY = kUninitialisedCoord;
+        pSlot->nCommittedX = kUninitialisedCoord;
+        pSlot->nCommittedY = kUninitialisedCoord;
+        pSlot->nKey1 = kUninitialisedKey;
+        pSlot->nKey2 = kUninitialisedKey;
+        pSlot->bIsNew = true;
+        pSlot->bEnded = false;
+        pSlot->bEndedPending = false;
         m_apSlots[i] = pSlot;
     }
 }
@@ -65,20 +65,20 @@ TouchManager *TouchManager::FetchSharedSingleton() {
 void TouchManager::AddTouchPoint(int nX, int nY, int nKey1, int nKey2) {
     // Claim the slot just past the active prefix and give it the next rolling id.
     TouchPoint *pSlot = m_apSlots[m_nActiveCount];
-    pSlot->m_nId = m_nNextId;
-    pSlot->m_nBeginX = nX;
-    pSlot->m_nBeginY = nY;
-    pSlot->m_nCurrentX = nX;
-    pSlot->m_nCurrentY = nY;
-    pSlot->m_nPreviousX = nX;
-    pSlot->m_nPreviousY = nY;
-    pSlot->m_nCommittedX = nX;
-    pSlot->m_nCommittedY = nY;
-    pSlot->m_nKey1 = nKey1;
-    pSlot->m_nKey2 = nKey2;
-    pSlot->m_bIsNew = true;
-    pSlot->m_bEnded = false;
-    pSlot->m_bEndedPending = false;
+    pSlot->nId = m_nNextId;
+    pSlot->nBeginX = nX;
+    pSlot->nBeginY = nY;
+    pSlot->nCurrentX = nX;
+    pSlot->nCurrentY = nY;
+    pSlot->nPreviousX = nX;
+    pSlot->nPreviousY = nY;
+    pSlot->nCommittedX = nX;
+    pSlot->nCommittedY = nY;
+    pSlot->nKey1 = nKey1;
+    pSlot->nKey2 = nKey2;
+    pSlot->bIsNew = true;
+    pSlot->bEnded = false;
+    pSlot->bEndedPending = false;
     m_nNextId = m_nNextId == kMaxTouchId ? 0 : m_nNextId + 1;
     ++m_nActiveCount;
 }
@@ -89,11 +89,11 @@ void TouchManager::UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2) {
     // and advance it, saving the old position as the previous one.
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
-        if (pSlot->m_nCurrentX == nKey1 && pSlot->m_nCurrentY == nKey2) {
-            pSlot->m_nPreviousX = pSlot->m_nCurrentX;
-            pSlot->m_nPreviousY = pSlot->m_nCurrentY;
-            pSlot->m_nCurrentX = nX;
-            pSlot->m_nCurrentY = nY;
+        if (pSlot->nCurrentX == nKey1 && pSlot->nCurrentY == nKey2) {
+            pSlot->nPreviousX = pSlot->nCurrentX;
+            pSlot->nPreviousY = pSlot->nCurrentY;
+            pSlot->nCurrentX = nX;
+            pSlot->nCurrentY = nY;
             return;
         }
     }
@@ -103,11 +103,11 @@ void TouchManager::UpdateTouchPoint(int nX, int nY, int nKey1, int nKey2) {
 void TouchManager::HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY) {
     // Prefer a not-yet-ended slot whose live position matches the old point; fall back to one that
     // already sits at the new point. On a match, save the previous position, move to the new point,
-    // and raise the moved flag (m_bIsNew slots use m_bEnded, older ones m_bEndedPending).
+    // and raise the moved flag (fresh slots use bEnded, older ones bEndedPending).
     TouchPoint *pMatch = nullptr;
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
-        if (!pSlot->m_bEnded && pSlot->m_nCurrentX == nOldX && pSlot->m_nCurrentY == nOldY) {
+        if (!pSlot->bEnded && pSlot->nCurrentX == nOldX && pSlot->nCurrentY == nOldY) {
             pMatch = pSlot;
             break;
         }
@@ -115,7 +115,7 @@ void TouchManager::HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY) 
     if (pMatch == nullptr) {
         for (int i = 0; i < m_nActiveCount; ++i) {
             TouchPoint *pSlot = m_apSlots[i];
-            if (!pSlot->m_bEnded && pSlot->m_nCurrentX == nNewX && pSlot->m_nCurrentY == nNewY) {
+            if (!pSlot->bEnded && pSlot->nCurrentX == nNewX && pSlot->nCurrentY == nNewY) {
                 pMatch = pSlot;
                 break;
             }
@@ -124,14 +124,14 @@ void TouchManager::HandleTouchMoved(int nNewX, int nNewY, int nOldX, int nOldY) 
     if (pMatch == nullptr) {
         return;
     }
-    pMatch->m_nPreviousX = pMatch->m_nCurrentX;
-    pMatch->m_nPreviousY = pMatch->m_nCurrentY;
-    pMatch->m_nCurrentX = nNewX;
-    pMatch->m_nCurrentY = nNewY;
-    if (!pMatch->m_bIsNew) {
-        pMatch->m_bEnded = true;
+    pMatch->nPreviousX = pMatch->nCurrentX;
+    pMatch->nPreviousY = pMatch->nCurrentY;
+    pMatch->nCurrentX = nNewX;
+    pMatch->nCurrentY = nNewY;
+    if (!pMatch->bIsNew) {
+        pMatch->bEnded = true;
     } else {
-        pMatch->m_bEndedPending = true;
+        pMatch->bEndedPending = true;
     }
 }
 
@@ -140,10 +140,10 @@ void TouchManager::MarkAllTouchesEnded() {
     // Flag every active slot as moved/ended for this frame, unconditionally.
     for (int i = 0; i < m_nActiveCount; ++i) {
         TouchPoint *pSlot = m_apSlots[i];
-        if (!pSlot->m_bIsNew) {
-            pSlot->m_bEnded = true;
+        if (!pSlot->bIsNew) {
+            pSlot->bEnded = true;
         } else {
-            pSlot->m_bEndedPending = true;
+            pSlot->bEndedPending = true;
         }
     }
 }
@@ -154,13 +154,13 @@ void TouchManager::CompactTouchList() {
     int i = 0;
     while (i < count) {
         TouchPoint *pSlot = m_apSlots[i];
-        if (!pSlot->m_bEnded) {
+        if (!pSlot->bEnded) {
             // Still live: commit the current position and promote a pending end to a real one.
-            pSlot->m_bIsNew = false;
-            pSlot->m_nCommittedX = pSlot->m_nCurrentX;
-            pSlot->m_nCommittedY = pSlot->m_nCurrentY;
-            if (pSlot->m_bEndedPending) {
-                pSlot->m_bEnded = true;
+            pSlot->bIsNew = false;
+            pSlot->nCommittedX = pSlot->nCurrentX;
+            pSlot->nCommittedY = pSlot->nCurrentY;
+            if (pSlot->bEndedPending) {
+                pSlot->bEnded = true;
             }
             ++i;
         } else {
@@ -175,6 +175,27 @@ void TouchManager::CompactTouchList() {
             m_nActiveCount = count;
         }
     }
+}
+
+/** @ghidraAddress 0x17d4c */
+TouchPoint *TouchManager::FindTouchById(int nTouchId) {
+    for (int i = 0; i < m_nActiveCount; ++i) {
+        TouchPoint *pSlot = m_apSlots[i];
+        if (pSlot->nId == nTouchId) {
+            return pSlot;
+        }
+    }
+    return nullptr;
+}
+
+/** @ghidraAddress 0x17d84 */
+bool TouchManager::HasActiveTouch() const {
+    for (int i = 0; i < m_nActiveCount; ++i) {
+        if (m_apSlots[i]->bIsNew) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /** @ghidraAddress 0x17c44 */

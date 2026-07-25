@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "touch_point.h"
+
 /**
  * The global touch manager. The application obtains it through @c FetchSharedSingleton and commits
  * each frame through @c CompactTouchList. The Objective-C GL view feeds it raw touch phases through
@@ -69,33 +71,22 @@ public:
      */
     void CompactTouchList();
 
-private:
     /**
-     * One tracked touch inside the slot array. Used only by @c TouchManager, so it is a private
-     * nested record: the private nesting encapsulates it and the manager accesses its fields
-     * directly. The 32-bit offset comments are documentation only; the 64-bit build goes through the
-     * named fields.
-     * @ghidraAddress TouchPoint (engine touch-slot struct)
+     * @brief Returns the active touch slot whose id equals @p nTouchId, or @c nullptr when none
+     *        matches.
+     * @param nTouchId The rolling touch id to look up.
+     * @return The matching slot, or @c nullptr.
+     * @ghidraAddress 0x17d4c
      */
-    struct TouchPoint {
-        int m_nId = {};       // +0x00 rolling touch id (-1 in a fresh slot)
-        int m_nBeginX = {};   // +0x04 x at begin
-        int m_nBeginY = {};   // +0x08 y at begin
-        int m_nCurrentX = {}; // +0x0c live x (the position UpdateTouchPoint/HandleTouchMoved match)
-        int m_nCurrentY = {}; // +0x10 live y
-        int m_nPreviousX = {};  // +0x14 previous x (saved before an update)
-        int m_nPreviousY = {};  // +0x18 previous y
-        int m_nCommittedX = {}; // +0x1c frame-committed x (CompactTouchList copies the live x here)
-        int m_nCommittedY = {}; // +0x20 frame-committed y
-        int m_nKey1 = {};       // +0x24 owning-view key pair (the view frame width at begin)
-        int m_nKey2 = {};       // +0x28 owning-view key pair (the view frame height at begin)
-        bool m_bIsNew = {};     // +0x2c added this frame; cleared once CompactTouchList commits it
-        bool m_bEnded = {};     // +0x2d slated for removal on the next CompactTouchList pass
-        bool m_bEndedPending =
-            {}; // +0x2e ended while still new; promoted to m_bEnded on next commit
-        // unsigned char m_aPad2f[1] = {}; // +0x2f trailing pad to the 0x30-byte slot size
-    };
+    TouchPoint *FindTouchById(int nTouchId);
 
+    /**
+     * @brief Returns whether any active slot was added this frame (has a fresh touch).
+     * @ghidraAddress 0x17d84
+     */
+    bool HasActiveTouch() const;
+
+private:
     TouchPoint *m_apSlots[kSlotCount] = {}; // +0x00 the slot pointer array (active slots first)
     int m_nActiveCount = {};                // +0x100 number of active slots at the array head
     int m_nNextId = {};                     // +0x104 the next rolling id to assign
