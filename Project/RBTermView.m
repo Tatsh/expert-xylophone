@@ -327,13 +327,11 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
           /** @ghidraAddress 0x111be8 */
           // Parse the JSON list into termsList, then show it (or the network-error alert) and stop
           // the spinner, all marshalled to the main queue.
-          NSDictionary *json = [weakSelf.downloader getDataInJSON];
-          weakSelf.termsList = json[kTermsResponseKeyList];
+          weakSelf.termsList = [weakSelf.downloader getDataInJSON][kTermsResponseKeyList];
           if (weakSelf.termsList == nil) {
               dispatch_async(dispatch_get_main_queue(), ^{
-                /** @ghidraAddress 0x111e04 (error branch) */
+                /** @ghidraAddress 0x111e60 */
                 [UIAlertView showNetworkErrorWithDelegate:weakSelf];
-                [weakSelf endLoadAnimation];
               });
           } else {
               dispatch_async(dispatch_get_main_queue(), ^{
@@ -341,6 +339,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
                 [weakSelf showTermsList];
               });
           }
+          // The spinner is always stopped, regardless of which branch ran.
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0x111ed8 */
             [weakSelf endLoadAnimation];
