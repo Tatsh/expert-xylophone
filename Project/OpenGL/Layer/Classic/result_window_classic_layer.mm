@@ -169,6 +169,18 @@ constexpr unsigned int kPartIdBound = 0xf0;
 constexpr unsigned int kIntensityFull = 0xff;
 constexpr unsigned int kIntensityShadow = 0x80;
 
+// The glyph banks that carry special digit-sequence layout: the two score-column banks and the
+// rating-column bank (which draw a paired glyph and shift the first glyph), plus the banks whose
+// trailing '1' is kerned.
+constexpr unsigned int kScoreColumnBankA = 0x85;
+constexpr unsigned int kScoreColumnBankB = 0x9b;
+constexpr unsigned int kRatingColumnBank = 0xb1;
+constexpr unsigned int kKernBankPlus4A = 0x4d;
+constexpr unsigned int kKernBankPlus4B = 0x57;
+constexpr unsigned int kKernBankPlus2 = 0x72;
+// The maximum number of digits RenderDigitSequence splits a value into.
+constexpr int kMaxDigitCount = 6;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -278,6 +290,97 @@ void ResultWindowClassicLayer::EmitPartSprite(float flRotation,
                        nSlot,
                        nIntensity,
                        nAlpha);
+}
+
+/** @ghidraAddress 0x115514 */
+void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
+                                                   int nDigitCount,
+                                                   const S_VECTOR2 *pOrigin,
+                                                   unsigned int nGlyphBase,
+                                                   unsigned int bLeadingZero,
+                                                   int bPadRight,
+                                                   unsigned int nAlpha,
+                                                   float flSpacing) {
+    // The glyphs draw into the parts slot at unit scale.
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into decimal digits (least-significant first), tracking the most-significant
+    // non-zero digit.
+    int aDigits[kMaxDigitCount] = {};
+    int nMostSignificant = 0;
+    for (int i = 0; i < nDigitCount; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nMostSignificant = i;
+        }
+        nValue /= 10;
+    }
+    // An all-zero value still shows one digit when the leading-zero flag is set.
+    if (nMostSignificant == 0 && (bLeadingZero & 1) != 0) {
+        nMostSignificant = 1;
+    }
+
+    S_VECTOR2 drawPos{pOrigin->x, pOrigin->y};
+    float flY = pOrigin->y;
+    for (int i = 0; i <= nMostSignificant; ++i) {
+        const int nDigit = aDigits[i];
+        unsigned int nPartId = nDigit + nGlyphBase;
+
+        // The score columns comma-shift their first glyph and raise their second.
+        if (nGlyphBase == kScoreColumnBankB || nGlyphBase == kScoreColumnBankA) {
+            if (i == 0 && bLeadingZero != 0) {
+                nPartId = nGlyphBase + 0xb + nDigit;
+            } else if (i == 1 && bLeadingZero != 0) {
+                flY -= 4.0f;
+                drawPos.y = flY;
+            }
+        }
+        const bool bFirstPaired = (i == 0) && (bLeadingZero != 0);
+        if (nGlyphBase == kRatingColumnBank && bFirstPaired) {
+            nPartId = nGlyphBase + 0xb + nDigit;
+        }
+
+        const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nPartId));
+        drawPos.x -= pRecord->flWidth;
+        // Micro-nudge a trailing '1' to keep decimal columns aligned across the glyph banks.
+        if (i == nDigitCount - 1 && nDigit == 1) {
+            if (nGlyphBase < kScoreColumnBankA) {
+                if (nGlyphBase == kKernBankPlus4A || nGlyphBase == kKernBankPlus4B) {
+                    drawPos.x += 4.0f;
+                } else if (nGlyphBase == kKernBankPlus2) {
+                    drawPos.x += 2.0f;
+                }
+            } else if (nGlyphBase == kScoreColumnBankA || nGlyphBase == kScoreColumnBankB) {
+                drawPos.x += 6.0f;
+            } else if (nGlyphBase == kRatingColumnBank) {
+                drawPos.x += 4.0f;
+            }
+        }
+
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, nPartId, drawPos, nAlpha, 0);
+        drawPos.x -= flSpacing;
+        // A paired column draws a second glyph ten ids up from the base.
+        if (bFirstPaired) {
+            const PartsDataRecord *pPaired = getPartsData(static_cast<int>(nGlyphBase + 10));
+            drawPos.x -= pPaired->flWidth;
+            if (nGlyphBase == kRatingColumnBank) {
+                flY -= 2.0f;
+                drawPos.y = flY;
+            }
+            EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, nGlyphBase + 10, drawPos, nAlpha, 0);
+            drawPos.x -= flSpacing;
+        }
+    }
+
+    // Pad the remaining leading positions with dimmed zeros.
+    if (bPadRight != 0 && nMostSignificant + 1 < nDigitCount) {
+        for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
+            const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nGlyphBase));
+            drawPos.x -= pRecord->flWidth;
+            EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, nGlyphBase, drawPos, nAlpha, 1);
+            drawPos.x -= flSpacing;
+        }
+    }
 }
 
 /** @ghidraAddress 0x11524c */

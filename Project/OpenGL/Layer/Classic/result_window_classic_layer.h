@@ -100,6 +100,32 @@ public:
                         unsigned int nAlpha,
                         int bShadowPass);
 
+    /**
+     * @brief Renders a right-to-left digit sequence from a chosen glyph bank.
+     *
+     * Splits @p nValue into up to @p nDigitCount decimal digits and emits each glyph (part id
+     * @p nGlyphBase plus the digit) right to left, advancing by each glyph's width less
+     * @p flSpacing. The score and rating banks carry paired glyphs and small kerning nudges, and
+     * the leading positions are optionally padded with dimmed zeros.
+     * @param nValue The value to render.
+     * @param nDigitCount The maximum number of digits.
+     * @param pOrigin The right-hand start position.
+     * @param nGlyphBase The glyph bank's base part id (its '0').
+     * @param bLeadingZero Non-zero to draw the paired/leading glyph when the value is zero.
+     * @param bPadRight Non-zero to pad the leading positions with dimmed zeros.
+     * @param nAlpha The glyph alpha.
+     * @param flSpacing The extra gap subtracted between glyphs.
+     * @ghidraAddress 0x115514
+     */
+    void RenderDigitSequence(int nValue,
+                             int nDigitCount,
+                             const S_VECTOR2 *pOrigin,
+                             unsigned int nGlyphBase,
+                             unsigned int bLeadingZero,
+                             int bPadRight,
+                             unsigned int nAlpha,
+                             float flSpacing);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
