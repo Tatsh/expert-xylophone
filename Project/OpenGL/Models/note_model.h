@@ -192,6 +192,16 @@ void InitNoteLaneTable();
  */
 float GetNoteLaneFraction(int nKind, int nLane);
 
+/**
+ * @brief Projects a note's screen point onto the play-field intersection line, in place.
+ *
+ * Builds the screen pick ray through @p pPointInOut, intersects it with the downward reference
+ * plane, and writes the resulting X and Y back into @p pPointInOut.
+ * @param pPointInOut The screen point in; the projected intersection point out.
+ * @ghidraAddress 0x1372e4
+ */
+void ProjectNoteHitPoint(S_VECTOR2 *pPointInOut);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

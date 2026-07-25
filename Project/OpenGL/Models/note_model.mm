@@ -10,6 +10,9 @@
 
 #include <cassert>
 
+#include "Render/neRenderer.h"
+#include "Render/s_vector3.h"
+#include "Render/vectormath.h"
 #include "engineglobals.h"
 #include "gamesystem.h"
 #include "rbffnoterecord.h"
@@ -201,6 +204,28 @@ float GetNoteLaneFraction(int nKind, int nLane) {
     default:
         return 0.0f;
     }
+}
+
+/** @ghidraAddress 0x1372e4 */
+void ProjectNoteHitPoint(S_VECTOR2 *pPointInOut) {
+    // Build the screen pick ray (origin and direction) through the screen point.
+    S_VECTOR3 rayOrigin;
+    S_VECTOR3 rayDir;
+    ComputeScreenPickRay(pPointInOut, &rayOrigin, &rayDir);
+
+    // Intersect the ray with the downward reference plane: t = dot(ref, -origin) / dot(ref, dir).
+    S_VECTOR3 downRef{0.0f, 0.0f, -1.0f};
+    S_VECTOR3 negOrigin;
+    SubtractVector3(&negOrigin, &rayOrigin);
+    const float flNum = DotProductVector3(&downRef, &negOrigin);
+    const float flDen = DotProductVector3(&downRef, &rayDir);
+
+    // The intersection point is origin + dir * t; write its X and Y back.
+    S_VECTOR3 hit = rayDir;
+    ScaleVector3(flNum / flDen, &hit);
+    AddVector3(&hit, &rayOrigin);
+    pPointInOut->x = hit.x;
+    pPointInOut->y = hit.y;
 }
 
 /** @ghidraAddress 0x1360a8 */
