@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include "../Classic/classic_parts_data_table.h"
 #include "../Limelight/limelight_parts_data_table.h"
 #import "deviceenvironment.h"
 #import "gamesystem.h"
@@ -28,6 +29,13 @@ PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount] = {}; // @gh
 // index; distinct from the glyph palette below. Read-only ROM data in the binary; its length is not
 // referenced by the code.
 extern const UvPaletteEntry g_aColettePartUvPalette[]; // @ghidraAddress 0x2f39d8
+
+// The single Colette phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor mode):
+// the state record, and the portrait and default records (selected by the font-variant and
+// orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
+PhoneLayoutRect g_ColetteCenterPositionPhoneState = {};    // @ghidraAddress 0x3d6620
+PhoneLayoutRect g_ColetteCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3d6630
+PhoneLayoutRect g_ColetteCenterPositionPhoneDefault = {};  // @ghidraAddress 0x3d6640
 
 // The Colette glyph UV-palette table the dimmable-glyph emitter indexes by a parts record's
 // UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM data
@@ -180,6 +188,27 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData_Phone(int nIndex) const 
 
     // This accessor always reads the phone parts table.
     return &g_aColettePartsPhone[nIndex];
+}
+
+/** @ghidraAddress 0x73e50 */
+void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
+    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
+    if (GetFontVariant()) {
+        *pOutRect = g_ColetteCenterPositionPhoneState;
+        (void)GameSystem::
+            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        return;
+    }
+
+    // Otherwise the orientation flag selects the portrait or default record, and the leading
+    // coordinate is shifted by half the viewport width and height.
+    const PhoneLayoutRect &record =
+        m_bPortrait ? g_ColetteCenterPositionPhonePortrait : g_ColetteCenterPositionPhoneDefault;
+    *pOutRect = record;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    pOutRect->flX += pGameSystem->GetViewportWidth() * 0.5f;
+    pOutRect->flY += pGameSystem->GetViewportHeight() * 0.5f;
 }
 
 /** @ghidraAddress 0x76b5c */

@@ -9,6 +9,7 @@
 
 struct S_VECTOR2;
 struct PartsDataRecord;
+struct PhoneLayoutRect;
 
 namespace ne {
 class C_SPRITE_INSTANCING;
@@ -80,6 +81,17 @@ public:
      * @ghidraAddress 0x73adc
      */
     PartsDataRecord *getPartsData_Phone(int nIndex) const;
+
+    /**
+     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     *
+     * Copies the state, portrait, or default centre record (selected by the font-variant and
+     * orientation flags) to @p pOutRect. When the state flag is clear the leading coordinate is
+     * shifted by half the viewport width and height.
+     * @param pOutRect Receives the resolved rectangle.
+     * @ghidraAddress 0x73e50
+     */
+    void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
 private:
     /**
