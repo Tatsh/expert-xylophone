@@ -113,6 +113,17 @@ public:
      */
     void SetAllBusVolume(int nVolume);
 
+    /**
+     * @brief Suspends the mixer, pausing @c m_nVoiceCount voices.
+     * @ghidraAddress 0x47d5c
+     */
+    void SuspendAllBuses();
+    /**
+     * @brief Resumes the mixer, un-pausing @c m_nVoiceCount voices.
+     * @ghidraAddress 0x47e08
+     */
+    void ResumeAllBuses();
+
 private:
     unsigned char m_bReady = {};            // +0x00: whether the pool has been built.
     unsigned char m_aReserved01[3] = {};    // +0x01: alignment before the voice count.

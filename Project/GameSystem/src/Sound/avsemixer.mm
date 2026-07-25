@@ -138,6 +138,27 @@ bool AVSeMixer::SetBusVolumeByHandle(unsigned int dwHandle, int nVolume) {
     return pBus != nil;
 }
 
+/** @ghidraAddress 0x47d5c */
+void AVSeMixer::SuspendAllBuses() {
+    // The binary loops m_nVoiceCount times but allocates a fresh throwaway AVBus each iteration and
+    // pauses that, rather than pausing the pooled voices — reproduced faithfully. (A newly created
+    // voice begins paused, so this is effectively a no-op with an allocation per voice.)
+    for (int nVoice = 0; nVoice < m_nVoiceCount; ++nVoice) {
+        AVBus *pBus = [[AVBus alloc] init];
+        [pBus pause];
+    }
+}
+
+/** @ghidraAddress 0x47e08 */
+void AVSeMixer::ResumeAllBuses() {
+    // As with SuspendAllBuses, the binary allocates a throwaway AVBus per voice and un-pauses it
+    // rather than touching the pooled voices — reproduced faithfully.
+    for (int nVoice = 0; nVoice < m_nVoiceCount; ++nVoice) {
+        AVBus *pBus = [[AVBus alloc] init];
+        [pBus offPause];
+    }
+}
+
 /** @ghidraAddress 0x48290 */
 void AVSeMixer::SetAllBusVolume(int nVolume) {
     const float flVolume = static_cast<float>(nVolume) / kVolumeScale;

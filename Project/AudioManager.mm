@@ -211,7 +211,7 @@ constexpr double kResumeFadeInTime = 0.3;
 - (void)onStartPlayer:(nullable NSTimer *)timer {
     /** @ghidraAddress 0x3d50c */
     sePlayer->InitializeAudioContext(kVoiceChannelCount);
-    InitializeSourceManager();
+    seAVPlayer->InitializeSourceManager(kVoiceChannelCount);
     _isStart = YES;
 }
 
@@ -226,7 +226,7 @@ constexpr double kResumeFadeInTime = 0.3;
     /** @ghidraAddress 0x40d6c */
     if (_isStart && !isSuspend) {
         sePlayer->StopAudioGraph();
-        seAVPlayer->PauseAllAudioBuses();
+        seAVPlayer->PauseAllBuses();
         [self suspendPlayer:kPlayerIndexBgm];
         [self suspendPlayer:kPlayerIndexVoice];
         isSuspend = YES;
@@ -237,7 +237,7 @@ constexpr double kResumeFadeInTime = 0.3;
     /** @ghidraAddress 0x40e00 */
     if (_isStart && isSuspend) {
         sePlayer->StartAudioGraph();
-        seAVPlayer->ResumeAllAudioBuses();
+        seAVPlayer->ResumeAllBuses();
         [self resumePlayer:kPlayerIndexBgm];
         [self resumePlayer:kPlayerIndexVoice];
         isSuspend = NO;

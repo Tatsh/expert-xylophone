@@ -13,11 +13,6 @@ extern "C" {
 #endif
 
 /**
- * @brief Constructs and initialises the AVFoundation sound-effect backend.
- * @ghidraAddress 0x4a5e8
- */
-void InitializeSourceManager(void);
-/**
  * @brief Returns the clear rank for the given achievement rate.
  * @ghidraAddress 0x14992c
  */
