@@ -330,9 +330,9 @@ void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
     // The font-variant state flag selects the state table; otherwise the orientation flag selects
     // the landscape or portrait table.
     const PhoneLayoutRecord &record =
-        m_bFontVariant ? g_aClassicPositionPhoneState[nIndex] :
-                         (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
-                                        g_aClassicPositionPhoneStateLandscape[nIndex]);
+        GetFontVariant() ? g_aClassicPositionPhoneState[nIndex] :
+                           (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
+                                          g_aClassicPositionPhoneStateLandscape[nIndex]);
     pOutRect->flX = record.flX;
     pOutRect->flY = record.flY;
     pOutRect->flWidth = record.flWidth;
@@ -345,7 +345,7 @@ void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
 /** @ghidraAddress 0x115008 */
 void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
-    if (m_bFontVariant) {
+    if (GetFontVariant()) {
         *pOutRect = g_ClassicCenterPositionPhoneState;
         (void)GameSystem::
             GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
