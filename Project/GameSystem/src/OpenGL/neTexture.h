@@ -136,6 +136,30 @@ public:
     void InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *pData);
 
     /**
+     * @brief Record the texture's logical size and scale, track its GPU byte footprint, and upload.
+     *
+     * Stores the source image's logical dimensions and content scale, computes the byte size from
+     * the pixel format (RGB is 3 bytes per texel, alpha or luminance is 1, RGBA is 4), adds it to the
+     * global texture-memory total, then uploads the pixels through @c InitializeTexture2d.
+     * @param nWidth The power-of-two texture width.
+     * @param nHeight The power-of-two texture height.
+     * @param nFormat The pixel format (2 for RGB, 3 for alpha or luminance, otherwise RGBA).
+     * @param pData The decoded pixel data to upload.
+     * @param nLogicalWidth The source image's logical width in pixels.
+     * @param nLogicalHeight The source image's logical height in pixels.
+     * @param flScale The texture's content scale.
+     * @return Always 1.
+     * @ghidraAddress 0x31f80
+     */
+    int SetDataAndUpload(int nWidth,
+                         int nHeight,
+                         int nFormat,
+                         void *pData,
+                         int nLogicalWidth,
+                         int nLogicalHeight,
+                         float flScale);
+
+    /**
      * @brief Store one sampler parameter, skipping the GL call when the cached value is unchanged.
      *
      * The texture keeps a shadow of its four current sampler-parameter values; a set only reaches GL
@@ -179,6 +203,31 @@ public:
      * @ghidraAddress 0x33e5c
      */
     static void ReloadAll();
+
+    /**
+     * @brief Build a cached texture directly from decoded pixel data (rather than an image asset).
+     *
+     * Allocates a texture, uploads the given pixels while tracking their GPU footprint, and, on
+     * success, reference-counts the texture and splices it into the head of the live cache list. Used
+     * by the @c NSData image decoder path, which decodes to a power-of-two RGBA (or tight RGB) buffer
+     * itself.
+     * @param nWidth The power-of-two texture width.
+     * @param nHeight The power-of-two texture height.
+     * @param nFormat The pixel format (2 for RGB, 3 for alpha or luminance, otherwise RGBA).
+     * @param pData The decoded pixel data to upload.
+     * @param nLogicalWidth The source image's logical width in pixels.
+     * @param nLogicalHeight The source image's logical height in pixels.
+     * @param flScale The texture's content scale.
+     * @return The newly cached texture, or @c nullptr when the upload failed.
+     * @ghidraAddress 0x33d3c
+     */
+    static C_TEXTURE *CreateAndCache(int nWidth,
+                                     int nHeight,
+                                     int nFormat,
+                                     void *pData,
+                                     int nLogicalWidth,
+                                     int nLogicalHeight,
+                                     float flScale);
 
     /**
      * @brief Find a cached texture by key, loading and caching it on a miss.

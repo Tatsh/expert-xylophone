@@ -225,6 +225,58 @@ void C_TEXTURE::InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *
     pRenderer->UploadTexture2d(nFormat, nWidth, nHeight, pData);
 }
 
+/** @ghidraAddress 0x31f80 */
+int C_TEXTURE::SetDataAndUpload(int nWidth,
+                                int nHeight,
+                                int nFormat,
+                                void *pData,
+                                int nLogicalWidth,
+                                int nLogicalHeight,
+                                float flScale) {
+    m_nImageWidth = nLogicalWidth;
+    m_nImageHeight = nLogicalHeight;
+    m_flScale = flScale;
+
+    int nByteSize;
+    if (nFormat == 2) {
+        nByteSize = nWidth * nHeight * 3;
+    } else if (nFormat == 3) {
+        nByteSize = nWidth * nHeight;
+    } else {
+        nByteSize = nWidth * nHeight * 4;
+    }
+    m_nByteSize = nByteSize;
+    g_dwTotalTextureMemory += nByteSize;
+
+    InitializeTexture2d(nWidth, nHeight, nFormat, pData);
+    return 1;
+}
+
+/** @ghidraAddress 0x33d3c */
+C_TEXTURE *C_TEXTURE::CreateAndCache(int nWidth,
+                                     int nHeight,
+                                     int nFormat,
+                                     void *pData,
+                                     int nLogicalWidth,
+                                     int nLogicalHeight,
+                                     float flScale) {
+    auto *pEntry = new C_TEXTURE();
+    if (pEntry->SetDataAndUpload(
+            nWidth, nHeight, nFormat, pData, nLogicalWidth, nLogicalHeight, flScale) == 0) {
+        return nullptr;
+    }
+
+    pEntry->AddRef();
+    // Splice the new entry in at the head of the live list (right after the sentinel).
+    C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
+    C_TEXTURE *pOldPrev = pSentinel->m_pPrev;
+    pOldPrev->m_pNext = pEntry;
+    pEntry->m_pPrev = pOldPrev;
+    pEntry->m_pNext = pSentinel;
+    pSentinel->m_pPrev = pEntry;
+    return pEntry;
+}
+
 /** @ghidraAddress 0x31fe0 */
 void C_TEXTURE::SetCachedTextureParameter(neGLESRenderer *pRenderer, int nIndex, int nValue) {
     if (m_aTexParams[nIndex] == nValue) {
