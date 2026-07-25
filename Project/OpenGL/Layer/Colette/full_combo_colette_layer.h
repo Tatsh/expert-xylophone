@@ -56,6 +56,15 @@ public:
      */
     void CreateFullComboColette(unsigned int nColor);
 
+    /**
+     * @brief Clears every player colour's full-combo effect active flag.
+     *
+     * The binary reuses this on the Classic and Limelight full-combo layers too, whose effect-record
+     * arrays share this layout.
+     * @ghidraAddress 0x9b35c
+     */
+    void ClearEffectFlags();
+
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 3;
     // The number of player colours with a full-combo effect record.

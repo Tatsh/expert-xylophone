@@ -100,3 +100,10 @@ void FullComboColetteLayer::CreateFullComboColette(unsigned int nColor) {
     effect.m_nTimer = 0;
     effect.m_bFlag2 = false;
 }
+
+/** @ghidraAddress 0x9b35c */
+void FullComboColetteLayer::ClearEffectFlags() {
+    for (EffectRecord &effect : m_aEffects) {
+        effect.m_bActive = false;
+    }
+}

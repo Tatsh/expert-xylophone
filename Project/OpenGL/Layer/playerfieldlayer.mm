@@ -47,3 +47,25 @@ void PlayerFieldLayer::CreateScoreNumberSpriteBatch() {
 
     m_bBuilt = true;
 }
+
+/** @ghidraAddress 0x18b784 */
+void PlayerFieldLayer::StartScoreFadeIn(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(1.0f);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(1.0f);
+    }
+}
+
+/** @ghidraAddress 0x18b7ac */
+void PlayerFieldLayer::StartScoreFadeOut(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(0.0f);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(0.0f);
+    }
+}

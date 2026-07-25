@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -68,14 +69,32 @@ public:
      */
     void CreateScoreNumberSpriteBatch();
 
+    /**
+     * @brief Begins the score display's fade-in, easing it to fully opaque over @p flDuration
+     * (snapping to opaque when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x18b784
+     */
+    void StartScoreFadeIn(float flDuration);
+
+    /**
+     * @brief Begins the score display's fade-out, easing it to transparent over @p flDuration
+     * (snapping to transparent when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x18b7ac
+     */
+    void StartScoreFadeOut(float flDuration);
+
 private:
     ne::C_TEXTURE *m_pTexture = {};          // +0x08: the score-number atlas (gm_parts2).
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the score-number sprite instancer.
     int m_nSpriteCount = {};                 // +0x18: the instancer's initial sprite count.
     bool m_bBuilt = {};                      // +0x1c: set once the score sprite is built.
-    // +0x20..+0x3f: the layer's presentation transform and flags (seeded by shared()), whose
-    // individual fields are still being worked out.
-    unsigned char m_aLayerState20[0x20] = {};        // +0x20
+    // +0x20..+0x23: a presentation flag, still being worked out.
+    unsigned char m_aReserved20[4] = {}; // +0x20
+    LinearTween m_fadeChannel;           // +0x24: the score display's fade channel.
+    // +0x38..+0x3f: further presentation state, still being worked out.
+    unsigned char m_aReserved38[8] = {};             // +0x38
     ScoreDigitField m_aScoreFields[kSideCount] = {}; // +0x40: the per-side score-digit records.
 };
 
