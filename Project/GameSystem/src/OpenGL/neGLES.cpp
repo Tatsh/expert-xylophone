@@ -241,6 +241,11 @@ unsigned int GetGLRenderbufferTarget() {
     return GL_RENDERBUFFER_OES;
 }
 
+/** @ghidraAddress 0x213b4 */
+bool CheckFramebufferComplete() {
+    return glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) == GL_FRAMEBUFFER_COMPLETE_OES;
+}
+
 /** @ghidraAddress 0x21ea8 */
 void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices) {
     // An out-of-range primitive index maps to GL_POINTS, matching the binary's default.
