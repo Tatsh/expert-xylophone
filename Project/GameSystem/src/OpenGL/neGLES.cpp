@@ -306,6 +306,20 @@ void neGLESRenderer::SetMatrixMode(int nMode, const float *pMatrix) {
     glLoadMatrixf(pMatrix);
 }
 
+/** @ghidraAddress 0x21408 */
+void neGLESRenderer::SetViewport(int nX, int nY, int nWidth, int nHeight) {
+    // The viewport is cached; an unchanged rectangle skips the GL call.
+    if (m_nViewportX == nX && m_nViewportY == nY && m_nViewportWidth == nWidth &&
+        m_nViewportHeight == nHeight) {
+        return;
+    }
+    m_nViewportX = nX;
+    m_nViewportY = nY;
+    m_nViewportWidth = nWidth;
+    m_nViewportHeight = nHeight;
+    glViewport(nX, nY, nWidth, nHeight);
+}
+
 // The number of colour channels a packed vertex colour carries, and the sentinel a reset pointer
 // cache stores for its stride.
 namespace {

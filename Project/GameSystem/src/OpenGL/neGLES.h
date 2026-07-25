@@ -210,6 +210,16 @@ public:
      */
     void SetMatrixMode(int nMode, const float *pMatrix);
     /**
+     * @brief Set the GL viewport rectangle, caching it so an unchanged rectangle skips the
+     *        @c glViewport call.
+     * @param nX The viewport x origin.
+     * @param nY The viewport y origin.
+     * @param nWidth The viewport width.
+     * @param nHeight The viewport height.
+     * @ghidraAddress 0x21408
+     */
+    void SetViewport(int nX, int nY, int nWidth, int nHeight);
+    /**
      * @brief Point the vertex (position) array at client memory, caching the pointer, stride, and
      *        size so an unchanged binding skips the @c glVertexPointer call.
      * @ghidraAddress 0x21634
@@ -275,7 +285,11 @@ private:
     // Only the state-cache fields the render-state setters above touch are modelled; the remainder
     // of the 0x258-byte object is reserved until the full engine class is reconstructed. The
     // trailing // +0xNN comments document the original offsets for reference only.
-    unsigned char m_aReserved000[0x28] = {}; // +0x000
+    unsigned char m_aReserved000[0x18] = {}; // +0x000
+    int m_nViewportX = {};                   // +0x018 cached viewport x
+    int m_nViewportY = {};                   // +0x01c cached viewport y
+    int m_nViewportWidth = {};               // +0x020 cached viewport width
+    int m_nViewportHeight = {};              // +0x024 cached viewport height
     int m_nMatrixMode = {};                  // +0x028 cached active matrix mode
     int m_nPaletteMatrix = {};               // +0x02c cached current palette matrix
     unsigned char m_aReserved030[0x10] = {}; // +0x030
