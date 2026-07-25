@@ -246,6 +246,16 @@ bool CheckFramebufferComplete() {
     return glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) == GL_FRAMEBUFFER_COMPLETE_OES;
 }
 
+/** @ghidraAddress 0x2131c */
+int RenderKindToGLRenderKind(RenderKind nKind) {
+    assert(nKind >= 0 && nKind < RENDER_KIND_MAX);
+    // The colour, depth, and stencil attachment enums are consecutive; the binary computes them
+    // inline as GL_COLOR_ATTACHMENT0_OES + kind * (GL_DEPTH_ATTACHMENT_OES - GL_COLOR_ATTACHMENT0_OES).
+    constexpr int kAttachments[] = {
+        GL_COLOR_ATTACHMENT0_OES, GL_DEPTH_ATTACHMENT_OES, GL_STENCIL_ATTACHMENT_OES};
+    return kAttachments[nKind];
+}
+
 /** @ghidraAddress 0x21ea8 */
 void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices) {
     // An out-of-range primitive index maps to GL_POINTS, matching the binary's default.

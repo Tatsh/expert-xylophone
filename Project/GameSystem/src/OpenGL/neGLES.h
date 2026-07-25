@@ -29,7 +29,18 @@ enum RenderKind {
     RENDER_KIND_COLOR = 0,   /*!< The colour attachment (@c GL_COLOR_ATTACHMENT0_OES). */
     RENDER_KIND_DEPTH = 1,   /*!< The depth attachment (@c GL_DEPTH_ATTACHMENT_OES). */
     RENDER_KIND_STENCIL = 2, /*!< The stencil attachment (@c GL_STENCIL_ATTACHMENT_OES). */
+    RENDER_KIND_MAX = 3,     /*!< The number of render kinds. */
 };
+
+/**
+ * @brief Maps a render kind to its GL framebuffer-attachment enum.
+ *
+ * Asserts the kind is in range; colour, depth, and stencil map to consecutive attachment enums.
+ * @param nKind The render kind.
+ * @return The GL attachment enum for @p nKind.
+ * @ghidraAddress 0x2131c
+ */
+int RenderKindToGLRenderKind(RenderKind nKind);
 
 // The shared ne::neGLES_11 GL ES 1.1 render-state backend. Only the members the application and
 // render layers call are declared; the state-cache fields the render-state setters touch are
