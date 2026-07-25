@@ -86,6 +86,10 @@ public:
     float GetSheetInsetHalfX() const {
         return m_flSheetInsetHalfX;
     }
+    /** @brief Returns the note sheet's half-height inset, the toward-edge position scale. */
+    float GetSheetInsetHalfY() const {
+        return m_flSheetInsetHalfY;
+    }
     /** @brief Returns the play-field scale. */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;
