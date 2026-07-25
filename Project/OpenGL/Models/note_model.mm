@@ -61,6 +61,29 @@ int NoteModel::IsSideFlipped() const {
     return GameSystem::GetGameSystem()->GetPlayColor() != nSide;
 }
 
+// The fixed lead time a synthetic note's hit time adds to its spawn time (@ghidraAddress 0x2fcf80).
+static constexpr float kSyntheticHitLead = 3000.0f;
+
+/** @ghidraAddress 0x13490c */
+int NoteModel::GetStartTime() const {
+    if (m_pRecord == nullptr) {
+        return -1;
+    }
+    return m_pRecord->nStartTime;
+}
+
+/** @ghidraAddress 0x13353c */
+float NoteModel::GetHitTime() const {
+    if (m_pRecord != nullptr) {
+        return static_cast<float>(m_pRecord->nTimeA + m_pRecord->nTimeB);
+    }
+    // A synthetic note times its hit from the spawn time plus a fixed lead.
+    if (m_bOwnSide) {
+        return m_flSpawnTime + kSyntheticHitLead;
+    }
+    return 0.0f;
+}
+
 /** @ghidraAddress 0x133a24 */
 int NoteModel::GetSide() const {
     if (m_pRecord != nullptr) {

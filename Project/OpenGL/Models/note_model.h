@@ -75,6 +75,23 @@ public:
      */
     int GetType() const;
 
+    /**
+     * @brief Returns the note's chart start time, or -1 when it has no record.
+     * @return The start time.
+     * @ghidraAddress 0x13490c
+     */
+    int GetStartTime() const;
+
+    /**
+     * @brief Returns the note's hit time.
+     *
+     * From a chart record, the hit time is the sum of the record's two time stamps; for a synthetic
+     * note it is the spawn time plus a fixed lead, and zero when the note has neither.
+     * @return The hit time.
+     * @ghidraAddress 0x13353c
+     */
+    float GetHitTime() const;
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 
