@@ -37,6 +37,32 @@ constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
 
 } // namespace
 
+/**
+ * @ghidraAddress 0x12f874
+ * @ghidraAddress 0x12f938
+ */
+MusicSheet::~MusicSheet() {
+    delete[] m_pIndexArrayB;
+    m_pIndexArrayB = nullptr;
+    delete[] m_pSideIndexArray;
+    m_pSideIndexArray = nullptr;
+    if (m_pRecords != nullptr) {
+        // Free each note's path-point sub-buffer before releasing the record pool itself.
+        for (int i = 0; i < m_nNoteCount; ++i) {
+            delete[] m_pRecords[i].pPathPoints;
+            m_pRecords[i].pPathPoints = nullptr;
+        }
+        delete[] m_pRecords;
+        m_pRecords = nullptr;
+    }
+    delete[] m_pSlideRecords;
+    m_pSlideRecords = nullptr;
+    delete[] m_pPathNodes;
+    m_pPathNodes = nullptr;
+    m_nPathPointCount = 0;
+    m_nPathPointCapacity = 0;
+}
+
 /** @ghidraAddress 0x130d64 */
 bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
     // Scan the note records for one on the target lane whose end time is near the query time.

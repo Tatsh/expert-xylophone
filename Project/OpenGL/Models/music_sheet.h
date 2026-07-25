@@ -27,6 +27,18 @@ struct SheetPathNode {
 class MusicSheet {
 public:
     /**
+     * @brief Frees every buffer the chart owns: the two note-index arrays, the note-record pool
+     * (each record's path-point sub-buffer first), the slide-record array, and the path nodes; then
+     * clears the path-point count and capacity.
+     *
+     * The binary emits a non-deleting destructor body (@c 0x12f874) and a deleting variant
+     * (@c 0x12f938) that runs it then frees the object; both are this destructor.
+     * @ghidraAddress 0x12f874
+     * @ghidraAddress 0x12f938
+     */
+    ~MusicSheet();
+
+    /**
      * @brief Returns the note record at @p nIndex, or null when the index is out of range.
      * @param nIndex The note-record index.
      * @return The note record, or null.
