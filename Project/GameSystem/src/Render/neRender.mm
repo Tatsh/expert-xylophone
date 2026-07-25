@@ -31,7 +31,10 @@ void C_RENDER::Render() {
     // The base render node is not drawable; drawable subclasses override this.
 }
 
-/** @ghidraAddress 0x29c10 */
+/**
+ * @ghidraAddress 0x29c10
+ * @ghidraAddress 0x29ce0 (the deleting-destructor thunk)
+ */
 C_RENDER::~C_RENDER() {
     // Unlink from the render-list ring.
     m_pLinkNext->m_pLinkPrev = m_pLinkPrev;

@@ -40,6 +40,7 @@ public:
      * @brief Destroys the node: unlinks it from the render-list ring, detaches it from its parent
      * and detaches all of its children, then frees its buffer.
      * @ghidraAddress 0x29c10
+     * @ghidraAddress 0x29ce0 (the deleting-destructor thunk)
      */
     virtual ~C_RENDER();
 
