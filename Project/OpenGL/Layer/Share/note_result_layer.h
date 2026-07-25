@@ -43,6 +43,14 @@ public:
      */
     void Create(unsigned int nPos, int nJudge, int nNumber);
 
+    /**
+     * @brief Sets one of the two quad-group scales.
+     * @param flValue The scale value.
+     * @param nWhich The group (0 = the first six quads, non-zero = the last six).
+     * @ghidraAddress 0x1895d4
+     */
+    void SetScale(float flValue, int nWhich);
+
 private:
     // Constructs the layer: clears the quad positions and records and seeds the default scale.
     // @ghidraAddress 0x189294

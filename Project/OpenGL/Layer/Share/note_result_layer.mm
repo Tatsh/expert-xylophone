@@ -55,3 +55,12 @@ void NoteResultLayer::Create(unsigned int nPos, int nJudge, int nNumber) {
     quad.flTimer = 0.0f;
     quad.nNumber = nNumber;
 }
+
+/** @ghidraAddress 0x1895d4 */
+void NoteResultLayer::SetScale(float flValue, int nWhich) {
+    if (nWhich != 0) {
+        m_flScaleB = flValue;
+    } else {
+        m_flScaleA = flValue;
+    }
+}
