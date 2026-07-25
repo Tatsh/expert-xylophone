@@ -24,6 +24,11 @@ PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghid
 PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount] = {};        // @ghidraAddress 0x3d0010
 PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount] = {}; // @ghidraAddress 0x3d20b0
 
+// The Colette part UV-palette table the part-sprite emitters index by a parts record's UV-palette
+// index; distinct from the glyph palette below. Read-only ROM data in the binary; its length is not
+// referenced by the code.
+extern const UvPaletteEntry g_aColettePartUvPalette[]; // @ghidraAddress 0x2f39d8
+
 // The Colette glyph UV-palette table the dimmable-glyph emitter indexes by a parts record's
 // UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM data
 // in the binary; its length is not referenced by the code.
@@ -244,6 +249,35 @@ void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
     pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
     pInstancer->SetSpriteColor(nSprite, nIntensity, nIntensity, nIntensity, nAlpha);
     pInstancer->SetSpriteCount(nSprite + 1);
+}
+
+/** @ghidraAddress 0x76a98 */
+void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
+                                                         int nPartId,
+                                                         const S_VECTOR2 &position,
+                                                         unsigned int nAlpha,
+                                                         int bShadowPass,
+                                                         float flRotation,
+                                                         float flScaleX,
+                                                         float flScaleY) {
+    if (nPartId >= kColettePartsRecordCount) {
+        return;
+    }
+    // The part metrics come from the device-selected parts table; the texture rectangle from the
+    // Colette part UV palette.
+    const PartsDataRecord *pRecord = getPartsData(nPartId);
+    const UvPaletteEntry &palette = g_aColettePartUvPalette[pRecord->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityDimmed : kIntensityFull;
+    appendSpriteToSlot(nSlot,
+                       position,
+                       S_VECTOR2{pRecord->flX, pRecord->flY},
+                       S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nIntensity,
+                       nAlpha);
 }
 
 /** @ghidraAddress 0x79df0 */

@@ -130,6 +130,32 @@ private:
                             unsigned int nAlpha);
 
     /**
+     * @brief Emits one result-window part sprite by part id, dimmable.
+     *
+     * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its
+     * texture rectangle from the Colette part UV palette, then appends the quad to the slot at
+     * @p position with the given rotation and scale. Part ids at or above the parts table count are
+     * ignored. The main pass draws at full intensity, the shadow pass at half.
+     * @param nSlot The slot index (0 through 7).
+     * @param nPartId The part id (below the parts table count).
+     * @param position The sprite's world position.
+     * @param nAlpha The sprite's alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleX The sprite X scale.
+     * @param flScaleY The sprite Y scale.
+     * @ghidraAddress 0x76a98
+     */
+    void RenderPartSpriteWithAlpha(int nSlot,
+                                   int nPartId,
+                                   const S_VECTOR2 &position,
+                                   unsigned int nAlpha,
+                                   int bShadowPass,
+                                   float flRotation,
+                                   float flScaleX,
+                                   float flScaleY);
+
+    /**
      * @brief Emits one glyph sprite from the phone parts table by part id, dimmable.
      *
      * Looks up the glyph's placement rectangle from the phone parts table indexed by @p nPartId and
