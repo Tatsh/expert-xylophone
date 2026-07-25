@@ -136,21 +136,25 @@ public:
      * addresses in the binary; that duplication is a template instantiation artefact and collapses
      * to one accessor here.
      * @ghidraAddress 0x318c0
+     * @ghidraAddress 0x30898
      */
     unsigned int GetColorRed(int nIndex) const;
     /**
      * @brief The green component of sprite @p nIndex's packed colour.
      * @ghidraAddress 0x31904
+     * @ghidraAddress 0x308e4
      */
     unsigned int GetColorGreen(int nIndex) const;
     /**
      * @brief The blue component of sprite @p nIndex's packed colour.
      * @ghidraAddress 0x31948
+     * @ghidraAddress 0x30930
      */
     unsigned int GetColorBlue(int nIndex) const;
     /**
      * @brief The alpha component of sprite @p nIndex's packed colour.
      * @ghidraAddress 0x3187c
+     * @ghidraAddress 0x3084c
      */
     unsigned int GetColorAlpha(int nIndex) const;
 
