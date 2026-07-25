@@ -209,6 +209,225 @@ MusicSheet::MusicSheet() {
     m_nIndexCount = 0;
 }
 
+namespace {
+// The v<11 colour-tone lane table, indexed by a per-side alternator (@ghidraAddress 0x308ac0).
+constexpr int kLegacyColorToneLane[] = {0, 2};
+// The per-side colour-tone alternator that flips 0<->1 each legacy note (@ghidraAddress 0x3de018).
+int g_aColorToneAlternator[2] = {};
+// The difficulty value for the BASIC chart.
+constexpr int kDifficultyBasic = 0;
+// The initial minimum basic-note time.
+constexpr int kBasicNoteTimeInit = 9999;
+// The unset index-array sentinel.
+constexpr int kIndexArraySentinel = 0x7fffffff;
+} // namespace
+
+/** @ghidraAddress 0x13029c */
+unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
+    // perSideCounters[side]: note index; [side+2]: playable+slide index count; [side+4]: side-object
+    // count; [side+6]: non-slide-tail (playable) count.
+    int perSideCounters[8] = {};
+    const int nPlayColor = pGameSystem->GetPlayColor();
+    const int nVersion = m_nVersion;
+
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        const int nSide = record.nSide;
+        record.nTargetCopy = record.aTargetCoords[0];
+        record.nLane = (nPlayColor == nSide) ? 1 : 0;
+        record.nLaneSlot = (nPlayColor != nSide) ? 1 : 0;
+        record.nHitTime =
+            static_cast<int>((static_cast<float>(record.nTimeA) * kFieldWidth) / kTargetScale);
+        record.nHitWindow =
+            static_cast<int>((static_cast<float>(record.nTimeB) * kFieldWidth) / kTargetScale);
+        record.nChainOffset = static_cast<int>(
+            (static_cast<float>(record.aTargetCoords[0]) * kFieldWidth) / kTargetScale);
+        const unsigned short nSel = static_cast<unsigned short>(record.aTargetCoords[1]);
+        record.nColorTone = static_cast<short>(nSel);
+        record.nLinkA = static_cast<short>(record.nTargetPad);
+
+        // Derive the shot/route selector into nTimingSel.
+        int nRoute = static_cast<short>(nSel);
+        if (record.nHoldKind == 1) {
+            nRoute += 7;
+        } else if (nVersion > 0xc) {
+            if (nSel < 0xfffe) {
+                if (nRoute == -3) {
+                    nRoute = -4;
+                } else if (nRoute == -4) {
+                    nRoute = -3;
+                } else {
+                    nRoute = kSlideLaneRemap[nRoute];
+                }
+            } else {
+                nRoute = -2;
+            }
+        } else {
+            nRoute = -2;
+        }
+        record.nTimingSel = nRoute;
+
+        // Legacy charts pick the colour tone from an alternating table.
+        if (nVersion < 0xb) {
+            const int nAlt = (nPlayColor == nSide) ? 1 : 0;
+            const unsigned int nEntry = g_aColorToneAlternator[nAlt];
+            record.nColorTone = kLegacyColorToneLane[nEntry];
+            g_aColorToneAlternator[nAlt] = nEntry ^ 1;
+        }
+
+        record.nSideIndex = perSideCounters[nSide];
+        ++perSideCounters[nSide];
+        if (record.nType != kNoteTypeSlideTail) {
+            ++perSideCounters[nSide + 6];
+        }
+        if ((record.dwFlags & kSideObjectFlag) != 0) {
+            ++perSideCounters[nSide + 4];
+        }
+    }
+
+    // Fold each slide record's owning side into the playable and index counters.
+    for (int i = 0; i < m_nSlideRecordCount; ++i) {
+        const int nSide = m_pRecords[m_pSlideRecords[i].nNoteIndex].nSide;
+        ++perSideCounters[nSide + 6];
+        ++perSideCounters[nSide + 2];
+    }
+
+    // Publish the per-side counts into the reader's count fields.
+    m_nChartNoteCount = perSideCounters[6];
+    m_nChartNoteCountSide1 = perSideCounters[7];
+    m_aSideObjectCounts[0] = perSideCounters[4];
+    m_aSideObjectCounts[1] = perSideCounters[5];
+    m_aPlayableCounts[0] = perSideCounters[2];
+    m_aPlayableCounts[1] = perSideCounters[3];
+
+    // Build the free-note side-index array, sized to the free-note count.
+    delete[] m_pSideIndexArray;
+    m_pSideIndexArray = new int[m_nFreeNoteCount];
+    const int nOwnSide = pGameSystem->GetPlayColor();
+    m_nFirstIndex = (nOwnSide == 0) ? m_nChartNoteCountSide1 : m_nChartNoteCount;
+    const int nOtherPlayable = (nOwnSide == 0) ? m_aPlayableCounts[1] : m_aPlayableCounts[0];
+    m_nIndexCount = 0;
+
+    // Count the own-side playable-index entries (a hold note contributes two).
+    int nOwnPlayable = 0;
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        if ((record.nLane & 4) == 0 && record.nSideIndex == 0) {
+            m_nIndexCount = nOwnPlayable + 1;
+            nOwnPlayable = nOwnPlayable + 1;
+            if (record.nType == 1) {
+                m_nIndexCount = nOwnPlayable + 1;
+                nOwnPlayable = nOwnPlayable + 1;
+            }
+        }
+    }
+
+    // Allocate the playable-index array and prefill the own-side slots with the sentinel.
+    m_pIndexArrayB = new int[nOtherPlayable + nOwnPlayable];
+    for (int i = 0; i < m_nIndexCount; ++i) {
+        m_pIndexArrayB[i] = kIndexArraySentinel;
+    }
+
+    const int nDifficulty = pGameSystem->GetDifficulty();
+    int nFreeIndex = 0;
+    int nPlayableIndex = 0;
+    int nBasicMinTime = kBasicNoteTimeInit;
+    bool bBasicOpen = true;
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+
+        // Mark the difficulty's basic notes: every own-side note on BASIC, otherwise the first
+        // non-decreasing run of hit times.
+        if (record.nLane == nOwnSide) {
+            if (nDifficulty == kDifficultyBasic) {
+                record.bBasicNote = true;
+            } else if (bBasicOpen && record.nHitTime + record.nHitWindow <= nBasicMinTime) {
+                record.bBasicNote = true;
+                nBasicMinTime = record.nHitTime + record.nHitWindow;
+            } else {
+                bBasicOpen = false;
+            }
+        }
+
+        // Record each free note's id in the side-index array.
+        if (nFreeIndex >= 0 && (record.dwFlags & kNoteFlagFree) != 0 &&
+            nFreeIndex < m_nFreeNoteCount) {
+            m_pSideIndexArray[nFreeIndex] = record.nNoteId;
+            ++nFreeIndex;
+        }
+
+        // Derive the note's route by type.
+        if (record.nType == kNoteTypeSlideTail) {
+            record.nRoute = 7;
+        } else if (record.nType == 1) {
+            record.nRoute = record.nChainOffset + (record.nHoldKind == 1 ? 7 : 9);
+        } else if ((record.dwFlags & kNoteFlagLongHead) != 0) {
+            if (record.chainLink.IsHead()) {
+                RbffNoteRecord *pLast = GetChainLastNote(&record);
+                int nR =
+                    (pLast->nHitTime + pLast->nHitWindow) - record.nHitTime - record.nHitWindow;
+                if (pLast->nType == 1) {
+                    nR += pLast->nChainOffset;
+                    nR += (record.nHoldKind == 1) ? 7 : 9;
+                } else {
+                    nR += 7;
+                }
+                record.nRoute = nR;
+            } else {
+                record.nRoute = 0;
+            }
+        } else {
+            record.nRoute = 7;
+        }
+
+        // Populate the playable-index array for own-side, lane-0 notes and flag simultaneous
+        // cross-side notes.
+        const bool bPlayable = (record.dwFlags & kNoteFlagFree) == 0 && record.nLane == 0;
+        if (bPlayable) {
+            m_pIndexArrayB[nPlayableIndex] = record.nHitWindow + record.nHitTime;
+            ++nPlayableIndex;
+            if (record.nType == 1) {
+                m_pIndexArrayB[nPlayableIndex] =
+                    record.nChainOffset + record.nHitTime + record.nHitWindow;
+                ++nPlayableIndex;
+            }
+        }
+        if (record.nType == 1) {
+            // Flag a note as simultaneous when a cross-side note ends within two ticks of its tail.
+            for (int j = 0; j < m_nNoteCount; ++j) {
+                RbffNoteRecord &other = m_pRecords[j];
+                if (other.nSide == record.nSide) {
+                    continue;
+                }
+                const unsigned int nDelta =
+                    (record.nChainOffset + record.nHitTime + record.nHitWindow + 1) -
+                    (other.nHitTime + other.nHitWindow);
+                if (nDelta < 3 || nDelta - other.nChainOffset < 3) {
+                    record.dwFlags |= kNoteFlagSideObject;
+                    break;
+                }
+            }
+        }
+    }
+
+    // Append each non-1-lane slide's time to the playable-index array when no note is near it.
+    for (int i = 0; i < m_nSlideRecordCount; ++i) {
+        RbffSlideRecord &slide = m_pSlideRecords[i];
+        if (m_pRecords[slide.nNoteIndex].nLane != 1 &&
+            nPlayableIndex < nOtherPlayable + nOwnPlayable) {
+            const int nTime = slide.nValueBScaled + slide.nValueAScaled;
+            if (!CheckNoteNearTime(nTime, 1)) {
+                m_pIndexArrayB[nPlayableIndex] = nTime;
+                ++nPlayableIndex;
+            }
+        }
+    }
+
+    AssignChartLanes(pGameSystem);
+    CalculateChartTiming();
+    return static_cast<unsigned long>(perSideCounters[6] == perSideCounters[7]);
+}
+
 /** @ghidraAddress 0x12fa34 */
 int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
     // The header carries the note count and chart end time; the note records follow it.

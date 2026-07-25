@@ -50,12 +50,12 @@ struct RbffNoteRecord {
     NoteChainLink chainLink = {};   // +0x3c: the 12-byte chain-link block threading chain notes.
     int nHitTime = {};              // +0x48: the scheduled hit time.
     int nHitWindow = {};            // +0x4c: the hit-window width.
-    unsigned char m_aPad50[4] = {}; // +0x50
-    int nLane = {};                 // +0x54: the note's lane.
-    int nLaneSlot = {};             // +0x58: the lane slot.
+    int nSideIndex = {}; // +0x50: the note's index within its side (assigned during install).
+    int nLane = {};      // +0x54: the note's lane.
+    int nLaneSlot = {};  // +0x58: the lane slot.
     unsigned char m_aPad5c[4] = {}; // +0x5c
     int nRoute = {};                // +0x60: the note's route.
-    unsigned char m_aPad64[4] = {}; // +0x64
+    int nTargetCopy = {};           // +0x64: a copy of the first target coordinate.
     int nChainOffset = {};          // +0x68: the chain offset.
     int nColorTone = {};            // +0x6c: the colour tone.
     bool bBasicNote = {};           // +0x70: whether the note is a basic note.

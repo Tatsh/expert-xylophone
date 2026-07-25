@@ -186,6 +186,20 @@ private:
     int ParseNoteChartData(const unsigned int *pStream);
 
     /**
+     * @brief Converts the parsed note records into runtime play state.
+     *
+     * BPM-scales each note's times into its runtime hit time and window, resolves its owning side
+     * against the game system's play colour, derives its shot/route value, counts the notes per
+     * side, builds the free-note and playable index arrays, marks the difficulty's basic notes,
+     * links each long note through its chain, and flags simultaneous cross-side notes. Finishes by
+     * assigning lanes and computing the chart timing.
+     * @param pGameSystem The game system (play colour and difficulty).
+     * @return Non-zero when the two sides carry an equal playable-note count.
+     * @ghidraAddress 0x13029c
+     */
+    unsigned long InstallParsedNotes(GameSystem *pGameSystem);
+
+    /**
      * @brief Parses a version 10-to-14 note-chart stream into the record pool, tempo events, and
      * slide records.
      *
