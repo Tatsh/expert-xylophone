@@ -31,6 +31,13 @@ public:
     static FullComboLimelightLayer *shared();
 
     /**
+     * @brief Constructs the layer: chains the base-layer constructor and seeds the layout size,
+     * leaving the texture, sprite, count, and effect state zero-cleared.
+     * @ghidraAddress 0x122870
+     */
+    FullComboLimelightLayer();
+
+    /**
      * @brief Lazily builds the layer's textures and sprites: loads the three atlases and creates the
      * three sprite instancers (attaching each under the background layer's render object, making it
      * visible, binding its mapped atlas, clearing its sprite count, flagging additive blend on the
@@ -64,7 +71,7 @@ private:
     };
 
     float m_flWidth = {};  // +0x08: the layer's layout width (384), seeded by the constructor.
-    float m_flHeight = {}; // +0x0c: the layer's layout height, seeded by the constructor.
+    float m_flHeight = {}; // +0x0c: the layer's layout height (1098), seeded by the constructor.
     ne::C_TEXTURE *m_pEffectTexture = {}; // +0x10: the ti_parts_eff atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};  // +0x18: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pPartsTexture2 = {}; // +0x20: a second gm_parts2 handle.

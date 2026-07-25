@@ -12,6 +12,10 @@ static FullComboLimelightLayer *g_pFullComboLimelightLayer = nullptr; // @ghidra
 
 namespace {
 
+// The layout size the constructor seeds.
+constexpr float kLayoutWidth = 384.0f;
+constexpr float kLayoutHeight = 1098.0f;
+
 // The full-combo atlases the layer loads (@ghidraAddress 0x3ceaf0 and 0x3ceaa8). The last two slots
 // share the gm_parts2 atlas.
 constexpr const char *kEffectTextureName = "00_texture/ti_parts_eff";
@@ -34,6 +38,14 @@ constexpr int kTexParamSlotLow = 0;
 constexpr int kTexParamEnabled = 1;
 
 } // namespace
+
+/** @ghidraAddress 0x122870 */
+FullComboLimelightLayer::FullComboLimelightLayer() {
+    // The base constructor runs first; the remaining state is already zero-cleared by the member
+    // initialisers, so only the layout size is seeded here.
+    m_flWidth = kLayoutWidth;
+    m_flHeight = kLayoutHeight;
+}
 
 /** @ghidraAddress 0x1228e4 */
 FullComboLimelightLayer *FullComboLimelightLayer::shared() {
