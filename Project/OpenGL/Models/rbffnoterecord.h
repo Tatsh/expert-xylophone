@@ -5,7 +5,21 @@
 
 #pragma once
 
-struct RbffSlideRecord;
+/**
+ * @brief One slide sub-record: a slide point's note index, timing selector, and value pair.
+ *
+ * The chart parser fills an array of these; @c CalculateChartTiming and the slide renderers index
+ * it. The trailing @c // +0xNN comments document the original 24-byte layout.
+ */
+struct RbffSlideRecord {
+    short nNoteIndex = {};  // +0x00: the owning note's index in the record pool.
+    short nField2 = {};     // +0x02: a secondary slide field, still being worked out.
+    int nTimingSel = {};    // +0x04: the timing selector.
+    int nValueA = {};       // +0x08: the primary slide value.
+    int nValueB = {};       // +0x0c: the secondary slide value.
+    int nValueAScaled = {}; // +0x10: the primary value in scaled units.
+    int nValueBScaled = {}; // +0x14: the secondary value in scaled units.
+};
 
 /**
  * @brief One parsed note from the chart: its timing, geometry, lane, and colour data.
