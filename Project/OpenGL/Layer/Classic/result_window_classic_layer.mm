@@ -197,6 +197,20 @@ constexpr unsigned int kDotGlyph = 0x7d;
 constexpr unsigned int kPaddedDotPart = 0x7c;
 constexpr int kPaddedMinDigits = 2;
 
+// The glyph character codes RenderDecimalWithDotGlyph draws: a leading glyph, the digit bank (its
+// '0'), and the narrow dot glyph inserted after the ones digit. It shows at least two significant
+// digits, out of a maximum of four.
+constexpr unsigned int kDecimalLeadingGlyph = 0x45;
+constexpr unsigned int kDecimalDigitBank = 0x39;
+constexpr unsigned int kDecimalDotGlyph = 0x43;
+constexpr int kDecimalMinDigits = 2;
+constexpr int kDecimalMaxDigits = 4;
+// The fixed per-glyph advance and the centring bias RenderDecimalWithDotGlyph uses (the dot glyph is
+// tucked two pixels tighter than a full advance).
+constexpr float kDecimalGlyphAdvance = 6.0f;
+constexpr float kDecimalCenterBias = 2.0f;
+constexpr float kDecimalDotAdvance = 2.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -501,6 +515,51 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+/** @ghidraAddress 0x1164e8 */
+void ResultWindowClassicLayer::RenderDecimalWithDotGlyph(int nValue,
+                                                         const S_VECTOR2 *pPosition,
+                                                         unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into up to four digits (ones first), tracking the count of significant
+    // digits, and render at least two.
+    int aDigits[kDecimalMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kDecimalMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant < kDecimalMinDigits) {
+        nSignificant = kDecimalMinDigits;
+    }
+
+    // Centre the run (the leading glyph plus the significant digits) about the given position using
+    // the fixed glyph advance, then start one advance to the left of the centre.
+    const int nGlyphCount = nSignificant + 1;
+    const int nHalfWidth = static_cast<int>(static_cast<float>(nGlyphCount) * kDecimalGlyphAdvance +
+                                            kDecimalCenterBias);
+    S_VECTOR2 drawPos{pPosition->x + static_cast<float>(nHalfWidth) * 0.5f, pPosition->y};
+
+    drawPos.x -= kDecimalGlyphAdvance;
+    DispatchGlyphSpriteFromTable(
+        kGlyphSlot, kDecimalLeadingGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nGlyph = aDigits[i] + kDecimalDigitBank;
+        drawPos.x -= kDecimalGlyphAdvance;
+        DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        // The dot glyph is tucked in after the ones digit.
+        if (i == 0) {
+            drawPos.x -= kDecimalDotAdvance;
+            DispatchGlyphSpriteFromTable(
+                kGlyphSlot, kDecimalDotGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        }
     }
 }
 

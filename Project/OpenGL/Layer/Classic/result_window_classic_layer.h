@@ -198,6 +198,20 @@ public:
                                   float flSpacing);
 
     /**
+     * @brief Renders a value as centred digit glyphs with a leading glyph and an inline dot glyph.
+     *
+     * Splits @p nValue into up to four digits (rendering at least two significant digits), centres
+     * the run about @p pPosition using a fixed six-pixel glyph advance, and emits the glyphs right
+     * to left: a leading glyph, then each digit (glyph base @c 0x39 plus the digit), inserting a
+     * narrow dot glyph after the ones digit. All glyphs draw at unit scale and full intensity.
+     * @param nValue The value to render.
+     * @param pPosition The centre position of the run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x1164e8
+     */
+    void RenderDecimalWithDotGlyph(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
+
+    /**
      * @brief Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and
