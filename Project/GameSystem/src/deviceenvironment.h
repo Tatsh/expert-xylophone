@@ -103,6 +103,12 @@ NSString *GetSystemVersionString(void);
  */
 NSString *GetFormattedVersionString(void);
 /**
+ * @brief Returns the cached "Game Center is available" flag (the @c GKLocalPlayer class exists and
+ *        the system version is at least 4.1).
+ * @ghidraAddress 0x1a1254
+ */
+bool GetHasGameCenterFlag(void);
+/**
  * @brief Reports whether the device uses the iPad interface idiom.
  *
  * Reads the cached idiom flag (@c UIDevice.userInterfaceIdiom @c == @c UIUserInterfaceIdiomPad) that
