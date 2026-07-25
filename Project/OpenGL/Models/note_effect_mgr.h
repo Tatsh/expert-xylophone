@@ -92,6 +92,14 @@ public:
     void SetActiveMusicSheet(MusicSheet *pMusicSheet);
 
     /**
+     * @brief Appends a newly-activated note to the active list and insertion-sorts it into hit-time
+     *        order.
+     * @param pNote The note to insert.
+     * @ghidraAddress 0x137080
+     */
+    void InsertActiveNoteSorted(NoteModel *pNote);
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */

@@ -59,6 +59,22 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
+/** @ghidraAddress 0x137080 */
+void NoteEffectMgr::InsertActiveNoteSorted(NoteModel *pNote) {
+    // Append at the tail, then bubble it earlier while its hit time precedes its predecessor's.
+    const int nInserted = m_nActiveCount;
+    m_ppActiveList[nInserted] = pNote;
+    m_nActiveCount = nInserted + 1;
+    for (int i = nInserted; i > 0; --i) {
+        if (m_ppActiveList[i - 1]->GetHitTime() <= m_ppActiveList[i]->GetHitTime()) {
+            break;
+        }
+        NoteModel *pTmp = m_ppActiveList[i - 1];
+        m_ppActiveList[i - 1] = m_ppActiveList[i];
+        m_ppActiveList[i] = pTmp;
+    }
+}
+
 /** @ghidraAddress 0x137a4c */
 void NoteEffectMgr::SetActiveMusicSheet(MusicSheet *pMusicSheet) {
     m_pMusicSheet = pMusicSheet;
