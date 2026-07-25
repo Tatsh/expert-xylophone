@@ -130,6 +130,20 @@ RbffNoteReadRecord *FreeNotePathArray(RbffNoteReadRecord *pRecord);
 int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor);
 
 /**
+ * @brief Zeroes a tempo-event record before it is read.
+ * @param pEvent The tempo event to clear.
+ * @ghidraAddress 0x12eb10
+ */
+void ClearNoteChartHeader(RbffTempoEvent *pEvent);
+
+/**
+ * @brief Zeroes a chart sub-record before it is read.
+ * @param pRecord The sub-record to clear.
+ * @ghidraAddress 0x12eb20
+ */
+void ClearNotePair(RbffChartHeaderRecord *pRecord);
+
+/**
  * @brief Reads one 36-byte RBFF tempo event from the stream, advancing the cursor.
  * @param pOut The destination tempo event.
  * @param ppCursor The stream cursor, advanced past the event on return.

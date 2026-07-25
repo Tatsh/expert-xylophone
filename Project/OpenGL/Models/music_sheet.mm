@@ -120,6 +120,16 @@ int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor)
     return 1;
 }
 
+/** @ghidraAddress 0x12eb10 */
+void ClearNoteChartHeader(RbffTempoEvent *pEvent) {
+    std::memset(pEvent->aData, 0, sizeof(pEvent->aData));
+}
+
+/** @ghidraAddress 0x12eb20 */
+void ClearNotePair(RbffChartHeaderRecord *pRecord) {
+    *pRecord = RbffChartHeaderRecord{};
+}
+
 /** @ghidraAddress 0x12ed14 */
 int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor) {
     // A tempo event is a verbatim 36-byte block.
@@ -621,7 +631,7 @@ int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
     // The tempo events follow the notes; a speed-change event (kind 3) appends a path node.
     for (int i = 0; i < m_nTempoEventCount; ++i) {
         RbffTempoEvent event;
-        std::memset(&event, 0, sizeof(event));
+        ClearNoteChartHeader(&event);
         if (ReadRbffTempoEvent(&event, &pCursor) == 0) {
             return 0;
         }
@@ -639,7 +649,7 @@ int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
         m_pSlideRecords = new RbffSlideRecord[m_nSlideRecordCount]();
         for (int i = 0; i < m_nSlideRecordCount; ++i) {
             RbffChartHeaderRecord header;
-            std::memset(&header, 0, sizeof(header));
+            ClearNotePair(&header);
             if (DeserializeChartHeaderRecord(&header, &pCursor) == 0) {
                 return 0;
             }
