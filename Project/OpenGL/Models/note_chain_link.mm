@@ -12,7 +12,11 @@
 
 /** @ghidraAddress 0x12eadc */
 void NoteChainLink::InitEmpty() {
+    // The binary sets both segment indices to the unset marker, then clears the following eight
+    // bytes (the partner, the marker, and the reserved tail) as one store.
     m_nPrev = kNone;
     m_nNext = kNone;
-    std::memset(m_aReserved04, 0, sizeof(m_aReserved04));
+    m_nPartner = 0;
+    m_nMarker = 0;
+    std::memset(m_aReserved08, 0, sizeof(m_aReserved08));
 }

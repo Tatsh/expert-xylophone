@@ -44,7 +44,8 @@ struct RbffNoteRecord {
     int nSide = {};                  // +0x24: the note's play side.
     int nHoldKind = {};              // +0x28: the hold-note kind.
     int nType = {};                  // +0x2c: the note type.
-    unsigned char m_aPad30[8] = {};  // +0x30
+    short aTargetCoords[3] = {};     // +0x30: the note's target coordinates (the first is scaled).
+    short nTargetPad = {};           // +0x36: cleared alongside the target coordinates.
     unsigned int dwFlags = {};       // +0x38: the note flag bits.
     NoteChainLink chainLink = {};    // +0x3c: the 12-byte chain-link block threading chain notes.
     int nHitTime = {};               // +0x48: the scheduled hit time.

@@ -44,13 +44,39 @@ public:
         return m_nNext;
     }
 
+    /** @brief The head-note chain id (the parser stores it here for a long-note head). */
+    short GetChainId() const {
+        return m_nPrev;
+    }
+
+    /** @brief Marks this note a long-note head bound to @p nPartner, with both end markers unset. */
+    void SetLongNoteHead(short nChainId, short nPartner) {
+        m_nPrev = nChainId;
+        m_nNext = kNone;
+        m_nPartner = nPartner;
+        m_nMarker = kNone;
+    }
+
+    /** @brief Records the resolved long-note tail: its partner note id and time delta. */
+    void SetTail(short nPartnerNoteId, short nTimeDelta) {
+        m_nNext = nPartnerNoteId;
+        m_nMarker = nTimeDelta;
+    }
+
+    /** @brief The bound partner index, when this note heads a long note. */
+    short GetPartner() const {
+        return m_nPartner;
+    }
+
 private:
     // The chain-segment index marker for an absent (head or tail) link.
     static constexpr short kNone = -1;
 
-    short m_nPrev = {};                  // +0x00: the previous chain-segment index (-1 = head).
+    short m_nPrev = {};                  // +0x00: the previous chain-segment index / head chain id.
     short m_nNext = {};                  // +0x02: the next chain-segment index (-1 = tail).
-    unsigned char m_aReserved04[8] = {}; // +0x04: cleared spare space.
+    short m_nPartner = {};               // +0x04: the bound partner index for a long-note head.
+    short m_nMarker = {};                // +0x06: an end marker / resolved tail time delta.
+    unsigned char m_aReserved08[4] = {}; // +0x08: cleared spare space.
 };
 
 // code: language=C++
