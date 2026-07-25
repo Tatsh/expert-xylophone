@@ -66,6 +66,47 @@ private:
     unsigned char m_aReserved5e1[0xb] = {}; // +0x5e1
 };
 
+/**
+ * @brief The note lane-position table: the across-field fractions for the note lanes, plus the lane
+ * spread span and the wide-lane fractions for the alternate lane kind.
+ *
+ * Seeded once by @c InitNoteLaneTable and read by @c GetNoteLaneFraction. The trailing @c // +0xNN
+ * comments document the original offsets within the table's global. The leading span is unused
+ * padding preceding the seeded fields.
+ */
+struct NoteLaneTable {
+    unsigned char m_aReserved00[0x28] = {}; // +0x00: unused padding before the seeded fields.
+    float flLaneFrac0 = {};                 // +0x28: lane 0 fraction (leftmost).
+    float flLaneFrac1 = {};                 // +0x2c: lane 1 fraction.
+    float flLaneFrac2 = {};                 // +0x30: lane 2 fraction.
+    float flLaneFrac4 = {};                 // +0x34: lane 4 fraction (lane 3 is the zero centre).
+    float flLaneFrac5 = {};                 // +0x38: lane 5 fraction.
+    float flLaneFrac6 = {};                 // +0x3c: lane 6 fraction (rightmost).
+    float flLaneSpread = {};                // +0x40: the lane spread span.
+    float flWideLaneLeft = {};              // +0x44: the alternate kind's left wide-lane fraction.
+    float flWideLaneRight = {};             // +0x48: the alternate kind's right wide-lane fraction.
+};
+
+/**
+ * @brief Seeds the note lane-position table with the across-field lane fractions, spread span, and
+ * wide-lane fractions.
+ * @ghidraAddress 0x136afc
+ */
+void InitNoteLaneTable();
+
+/**
+ * @brief Returns a note lane's across-field position fraction.
+ *
+ * For the ordinary lane kind, returns the lane's fraction (the centre lane is zero, and out-of-range
+ * lanes are zero). For the alternate wide-lane kind, the two wide lanes use the wide-lane fractions
+ * and every other lane is zero.
+ * @param nKind The lane kind.
+ * @param nLane The lane index.
+ * @return The lane's position fraction.
+ * @ghidraAddress 0x136a38
+ */
+float GetNoteLaneFraction(int nKind, int nLane);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
