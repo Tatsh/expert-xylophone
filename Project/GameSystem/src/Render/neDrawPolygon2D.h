@@ -57,6 +57,14 @@ public:
                       unsigned char bIndexBufferExternal);
 
     /**
+     * @brief Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
+     * per-bone arrays, deletes the GL vertex and index buffer objects it owns, and chains the base
+     * render-node destructor.
+     * @ghidraAddress 0x27440
+     */
+    ~C_DRAW_POLYGON_2D() override;
+
+    /**
      * @brief Set a mesh vertex's position, if the mesh carries a position attribute.
      *
      * The position is taken by value (its two components arrive in the floating-point argument

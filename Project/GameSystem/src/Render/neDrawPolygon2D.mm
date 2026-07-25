@@ -114,6 +114,37 @@ C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
     m_aTexParams[3] = kDefaultTexParams[3];
 }
 
+/** @ghidraAddress 0x27440 */
+C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
+    // Release the bound texture.
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    // Free the heap arrays.
+    delete[] static_cast<unsigned char *>(m_pVertexArray);
+    m_pVertexArray = nullptr;
+    delete[] m_pColorArray;
+    m_pColorArray = nullptr;
+    delete[] m_pIndexArray;
+    m_pIndexArray = nullptr;
+    delete[] static_cast<void **>(m_pBoneTranslate);
+    m_pBoneTranslate = nullptr;
+    delete[] static_cast<float *>(m_pBoneRotation);
+    m_pBoneRotation = nullptr;
+    delete[] static_cast<float *>(m_pBoneScale);
+    m_pBoneScale = nullptr;
+
+    // Delete the GL buffer objects this mesh owns.
+    neGLESRenderer *pRenderer = GetGlRenderer();
+    if (!m_bVertexBufferExternal) {
+        pRenderer->DeleteBuffer(m_dwVertexVbo);
+    }
+    if (!m_bIndexBufferExternal) {
+        pRenderer->DeleteBuffer(m_dwIndexVbo);
+    }
+}
+
 /** @ghidraAddress 0x27568 */
 void C_DRAW_POLYGON_2D::AllocateBuffers() {
     neGLESRenderer *pRenderer = GetGlRenderer();
