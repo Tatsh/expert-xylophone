@@ -84,6 +84,9 @@ static const int kSoundEffectDecide = 3;
 static const long kSoundEffectSearchBarShow = 0x11;
 static const long kSoundEffectSearchBarHide = 0x12;
 
+// The duration the cell artwork fades in over once its image has decoded.
+static const NSTimeInterval kArtworkFadeInDuration = 0.3; // @ghidraAddress 0x2ec718
+
 // Search-mascot behaviour.
 static const int kSearchMascotDefaultBias = 90; // rand()%100 threshold; below it uses image [0].
 static const float kSearchPushNotificationOverlapFactor = -0.9f;
@@ -2207,11 +2210,35 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (configureCell.musicData != nil) {
-        // Kick off the artwork load off the main thread; the block fades it in once ready.
+        // Decode the artwork off the main thread, then hand the loaded image to the main queue to
+        // fade into the cell.
         __weak RBMusicCell *weakCell = configureCell;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
           /** @ghidraAddress 0xb28d0 */
-          [weakCell loadArtworkAndFadeIn];
+          UIImage *artwork = weakCell.musicData.artwork;
+          if (artwork == nil) {
+              return;
+          }
+          dispatch_async(dispatch_get_main_queue(), ^{
+            /** @ghidraAddress 0xb2a04 */
+            // Apply the artwork only when the list is not mid-scroll, the cell still shows the same
+            // song, and it has no image yet, to avoid dropping stale artwork onto a reused cell.
+            if (!self.collectionView.isDecelerating &&
+                [weakCell.titleLabel.text isEqualToString:weakCell.musicData.musicName] &&
+                weakCell.artworkImageView.image == nil) {
+                weakCell.artworkImageView.image = artwork;
+                weakCell.artworkImageView.alpha = 0.0;
+                [UIView animateWithDuration:kArtworkFadeInDuration
+                    animations:^{
+                      /** @ghidraAddress 0xb2e00 */
+                      weakCell.artworkImageView.alpha = 1.0;
+                    }
+                    completion:^(BOOL finished) {
+                      /** @ghidraAddress 0xb2e98 */
+                      weakCell.artworkImageView.alpha = 1.0;
+                    }];
+            }
+          });
         });
     }
 
