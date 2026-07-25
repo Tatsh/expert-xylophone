@@ -198,6 +198,20 @@ public:
                                   float flSpacing);
 
     /**
+     * @brief Renders a value as centred digit glyphs, advancing by each glyph's own width.
+     *
+     * Splits @p nValue into up to four digits (rendering at least one significant digit), centres
+     * the run about @p pPosition using a nominal seven-pixel glyph width, then emits each digit
+     * (glyph base @c 0x39 plus the digit) right to left, stepping the cursor by each glyph's own
+     * width plus one pixel. All glyphs draw at unit scale and full intensity.
+     * @param nValue The value to render.
+     * @param pPosition The centre position of the run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x1166a8
+     */
+    void RenderDigitRowSpacedByWidth(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
+
+    /**
      * @brief Renders two digit groups separated by a separator glyph, centred as one run.
      *
      * Splits both values into up to four digits each (rendering at least one significant digit

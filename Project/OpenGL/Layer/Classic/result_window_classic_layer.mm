@@ -227,6 +227,14 @@ constexpr float kRatioSeparatorWidth = 6.0f;
 constexpr float kRatioCenterBias = 2.0f;
 constexpr float kRatioSeparatorTighten = 1.0f;
 
+// The digit bank RenderDigitRowSpacedByWidth draws from (its '0'), its maximum digit count, the
+// nominal glyph width used to centre the run, and the extra pixel added to each glyph's own width
+// when advancing.
+constexpr unsigned int kRowDigitBank = 0x39;
+constexpr int kRowMaxDigits = 4;
+constexpr float kRowNominalGlyphWidth = 7.0f;
+constexpr float kRowGlyphSpacing = 1.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -531,6 +539,43 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+/** @ghidraAddress 0x1166a8 */
+void ResultWindowClassicLayer::RenderDigitRowSpacedByWidth(int nValue,
+                                                           const S_VECTOR2 *pPosition,
+                                                           unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into up to four digits (ones first), tracking the count of significant
+    // digits, rendering at least one.
+    int aDigits[kRowMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kRowMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant == 0) {
+        nSignificant = 1;
+    }
+
+    // Centre the run about the position using the nominal glyph width, then step left by each
+    // glyph's own width (plus one pixel) as it is drawn.
+    const int nHalfWidth =
+        static_cast<int>(static_cast<float>(nSignificant) * kRowNominalGlyphWidth);
+    float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
+
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nGlyph = aDigits[i] + kRowDigitBank;
+        const float flWidth =
+            getPartsData_Phone(static_cast<int>(nGlyph))->flWidth + kRowGlyphSpacing;
+        flCursorX -= flWidth;
+        S_VECTOR2 drawPos{flCursorX, pPosition->y};
+        DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
     }
 }
 
