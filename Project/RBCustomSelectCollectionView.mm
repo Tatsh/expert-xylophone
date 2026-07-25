@@ -727,7 +727,7 @@ constexpr long kPageControlMinPageCount = 2;
         [self commitUserSettingsToGameSystem];
     } else if (slider.tag == kSliderTagTiming) {
         [RBUserSettingData sharedInstance].delayFrame = static_cast<int>(slider.value);
-        EnsurePlayTimer();
+        PlayTimer::shared();
         g_pPlayTimer->SetDelayFrameOffset(
             static_cast<float>([RBUserSettingData sharedInstance].delayFrame) *
             g_flDelayFrameToSeconds);

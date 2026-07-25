@@ -6,7 +6,7 @@
 #pragma once
 
 /**
- * The engine play-timing singleton. It is created lazily by @c EnsurePlayTimer and read directly
+ * The engine play-timing singleton. It is created lazily by @c PlayTimer::shared and read directly
  * through the @c g_pPlayTimer global; only the delay-frame offset the customize picker writes is
  * modelled here.
  * @ghidraAddress g_pPlayTimer (engine singleton, 0x40 bytes)
@@ -43,15 +43,30 @@ private:
     char m_reserved[0x1c] = {};      // +0x00
     int m_nOsVersionTier = {};       // +0x1c
     float m_flDelayFrameOffset = {}; // +0x20
+    // +0x24..+0x2f: further timing state, still being worked out.
+    char m_reserved24[0xc] = {}; // +0x24
+    bool m_bPaused = {};         // +0x30: set while the play timer is paused.
+    // +0x31..+0x37 is alignment padding before the pause timestamp.
+    char m_reserved31[7] = {};     // +0x31
+    double m_dPauseMediaTime = {}; // +0x38: the media time captured when the timer paused.
+
+public:
+    /** @brief Marks the timer paused and records the media time it paused at. */
+    void MarkPaused(double dMediaTime) {
+        m_dPauseMediaTime = dMediaTime;
+        m_bPaused = true;
+    }
+
+    /**
+     * @brief Returns the engine play-timing singleton (@c g_pPlayTimer), constructing it on first
+     * use.
+     * @return The singleton timer (also stored in @c g_pPlayTimer).
+     * @ghidraAddress 0x131868
+     */
+    static PlayTimer *shared();
 };
 
-/**
- * @brief Constructs the engine play-timing singleton (@c g_pPlayTimer) on first use.
- * @ghidraAddress 0x131868
- */
-void EnsurePlayTimer(void);
-
-/** @brief The engine play-timing singleton, constructed by @c EnsurePlayTimer. */
+/** @brief The engine play-timing singleton, constructed by @c PlayTimer::shared. */
 extern PlayTimer *g_pPlayTimer;
 
 /**

@@ -331,6 +331,14 @@ public:
     bool GetBgmPlaying() const {
         return m_fBgmPlaying;
     }
+    /** @brief Reports whether the game is paused or interrupted. */
+    bool GetPaused() const {
+        return m_fPaused;
+    }
+    /** @brief Sets whether the game is paused or interrupted. */
+    void SetPaused(bool value) {
+        m_fPaused = value;
+    }
     /**
      * @brief Stores the sheet-layer base position and recomputes its derived anchor points.
      * @ghidraAddress 0x12f33c
@@ -383,6 +391,8 @@ private:
     float m_flSheetHeight = {};          // +0xa4
     float m_flCameraPitchHeight = {};    // +0xa8
     bool m_fBgmPlaying = {};             // +0xac
+    bool m_fPaused = {};                 // +0xad: set while the game is paused or interrupted.
+    // +0xae..+0xaf is alignment padding before the game type.
     int m_nGameType = {};                // +0xb0
     int m_nPlayerColor = {};             // +0xb4
     int m_nPlayColor = {};               // +0xb8

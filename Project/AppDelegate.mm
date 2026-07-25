@@ -1054,19 +1054,19 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                               options:NSNumericSearch] == NSOrderedAscending) {
         if ([UIDevice.currentDevice.systemVersion compare:kOsVersion80
                                                   options:NSNumericSearch] == NSOrderedAscending) {
-            EnsurePlayTimer();
+            PlayTimer::shared();
             g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTierPre80);
         } else {
-            EnsurePlayTimer();
+            PlayTimer::shared();
             g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTier80To81);
         }
     } else {
-        EnsurePlayTimer();
+        PlayTimer::shared();
         g_pPlayTimer->SetOsVersionTier(PlayTimer::kOsVersionTier81OrLater);
     }
 
     // Seed the delay-frame timing offset from the persisted user setting.
-    EnsurePlayTimer();
+    PlayTimer::shared();
     g_pPlayTimer->SetDelayFrameOffset(RBUserSettingData.sharedInstance.delayFrame *
                                       g_flDelayFrameToSeconds);
 
