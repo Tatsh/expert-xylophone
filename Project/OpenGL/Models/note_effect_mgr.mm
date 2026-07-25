@@ -59,6 +59,27 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
+// The note-state bit that marks a note finished; a note survives compaction while any other bit
+// is set.
+namespace {
+constexpr unsigned int kNoteStateFinishedBit = 0x8;
+} // namespace
+
+/** @ghidraAddress 0x136f38 */
+void NoteEffectMgr::CompactActiveNotes() {
+    int nSurvivors = 0;
+    for (int i = 0; i < m_nActiveCount; ++i) {
+        NoteModel *pNote = m_ppActiveList[i];
+        if ((static_cast<unsigned int>(pNote->GetState()) & ~kNoteStateFinishedBit) != 0) {
+            // Keep the note, swapping it down to the survivor prefix.
+            m_ppActiveList[i] = m_ppActiveList[nSurvivors];
+            m_ppActiveList[nSurvivors] = pNote;
+            ++nSurvivors;
+        }
+    }
+    m_nActiveCount = nSurvivors;
+}
+
 /** @ghidraAddress 0x137080 */
 void NoteEffectMgr::InsertActiveNoteSorted(NoteModel *pNote) {
     // Append at the tail, then bubble it earlier while its hit time precedes its predecessor's.

@@ -100,6 +100,14 @@ public:
     void InsertActiveNoteSorted(NoteModel *pNote);
 
     /**
+     * @brief Removes finished notes from the active list, compacting the survivors to the front.
+     *
+     * A note survives while its state has any bit set other than the finished bit (bit 3).
+     * @ghidraAddress 0x136f38
+     */
+    void CompactActiveNotes();
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */

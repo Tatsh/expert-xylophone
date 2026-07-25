@@ -138,6 +138,11 @@ public:
         return m_nNoteIndex;
     }
 
+    /** @brief The note-state-machine state. */
+    int GetState() const {
+        return m_nState;
+    }
+
     /**
      * @brief Assigns the note's chart index and refreshes its record pointer from the owning
      *        manager's active chart.
