@@ -33,6 +33,34 @@ constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
 
 } // namespace
 
+/** @ghidraAddress 0x1309a8 */
+void MusicSheet::ResolveNoteScrollSpeeds() {
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        // Seed both speeds from the first path node.
+        record.flScrollStartSpeed = GetFirstPathSpeed();
+        record.flScrollEndSpeed = GetFirstPathSpeed();
+
+        const int nStartTime = record.nTimeA;
+        const int nEndTime = record.nTimeA + record.nTimeB;
+        // Walk the path nodes, advancing the start speed up to the note's start time and the end
+        // speed up to its end time, until a node lies past the note's end.
+        for (int nNode = 1; nNode < m_nPathPointCount; ++nNode) {
+            if (GetSheetPathNode(nNode)->nTime <= nStartTime) {
+                record.flScrollStartSpeed = static_cast<float>(GetSheetPathNode(nNode)->nSpeed);
+            }
+            if (GetSheetPathNode(nNode)->nTime <= nEndTime) {
+                record.flScrollEndSpeed = static_cast<float>(GetSheetPathNode(nNode)->nSpeed);
+            }
+            if (GetSheetPathNode(nNode)->nTime > nEndTime) {
+                break;
+            }
+        }
+
+        record.bScrollVisible = record.flScrollStartSpeed < record.flScrollEndSpeed;
+    }
+}
+
 /** @ghidraAddress 0x131294 */
 int MusicSheet::CalculateChartTiming() {
     int aPerSideEndTime[kSideCount] = {};

@@ -62,6 +62,17 @@ public:
      */
     int CalculateChartTiming();
 
+    /**
+     * @brief Resolves each note's start and end scroll speed against the speed-change path nodes.
+     *
+     * For every note record, seeds the start and end scroll speeds from the first path node, then
+     * walks the path nodes advancing the start speed while a node's time is at or before the note's
+     * start time and the end speed while it is at or before the note's end time. Finally flags the
+     * note visible when its start speed is below its end speed.
+     * @ghidraAddress 0x1309a8
+     */
+    void ResolveNoteScrollSpeeds();
+
     /** @brief The byte stride between note records in the pool (@c sizeof(RbffNoteRecord)). */
     static constexpr int kNoteRecordStride = 0xb8;
 
