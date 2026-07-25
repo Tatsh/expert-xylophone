@@ -44,6 +44,18 @@ public:
     // The number of background sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 2;
 
+    /**
+     * @brief Activates the effect and resets its frame counter.
+     * @ghidraAddress 0x120118
+     */
+    void SetActiveAndResetCounter();
+
+    /**
+     * @brief Deactivates the effect.
+     * @ghidraAddress 0x120128
+     */
+    void SetInactive();
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -61,11 +73,11 @@ private:
     // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
     // +0x34..+0x47: further layer state (two ints, a byte flag, and one more int the constructor
     // zero-clears) still being worked out, kept to preserve the 0x48-byte allocation size.
-    int m_nReserved34 = {};  // +0x34
-    int m_nReserved38 = {};  // +0x38
-    bool m_bReserved3c = {}; // +0x3c
+    int m_nReserved34 = {}; // +0x34
+    int m_nReserved38 = {}; // +0x38
+    bool m_bActive = {};    // +0x3c: whether the effect is active.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    int m_nReserved40 = {};              // +0x40
+    int m_nFrameCounter = {};            // +0x40: the effect frame counter, reset on activation.
     unsigned char m_aReserved44[4] = {}; // +0x44
 };
 

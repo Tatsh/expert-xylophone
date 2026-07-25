@@ -75,3 +75,14 @@ void LimelightEffectLayer::InitializeBackgroundSprites() {
 
     m_bSpritesBuilt = true;
 }
+
+/** @ghidraAddress 0x120118 */
+void LimelightEffectLayer::SetActiveAndResetCounter() {
+    m_bActive = true;
+    m_nFrameCounter = 0;
+}
+
+/** @ghidraAddress 0x120128 */
+void LimelightEffectLayer::SetInactive() {
+    m_bActive = false;
+}
