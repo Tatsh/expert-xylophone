@@ -37,6 +37,23 @@ constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
 
 } // namespace
 
+/** @ghidraAddress 0x12f828 */
+MusicSheet::MusicSheet() {
+    // The version starts unread; the parser fills it in. Every count, timing, and buffer pointer is
+    // cleared by the member initialisers, matching the binary's field-by-field zeroing.
+    m_nVersion = -1;
+    // The path buffer starts with room for one node and no nodes read.
+    m_pPathNodes = new SheetPathNode[1]();
+    m_nPathPointCount = 0;
+    m_nPathPointCapacity = 1;
+    m_pRecords = nullptr;
+    m_pSlideRecords = nullptr;
+    m_pSideIndexArray = nullptr;
+    m_pIndexArrayB = nullptr;
+    m_nFirstIndex = 0;
+    m_nIndexCount = 0;
+}
+
 /**
  * @ghidraAddress 0x12f874
  * @ghidraAddress 0x12f938

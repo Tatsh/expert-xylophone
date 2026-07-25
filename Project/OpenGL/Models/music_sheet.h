@@ -27,6 +27,13 @@ struct SheetPathNode {
 class MusicSheet {
 public:
     /**
+     * @brief Constructs an empty note-chart reader: installs the vtable, marks the version unread,
+     * allocates a one-node path buffer, and clears every count, timing, and buffer pointer.
+     * @ghidraAddress 0x12f828
+     */
+    MusicSheet();
+
+    /**
      * @brief Frees every buffer the chart owns: the two note-index arrays, the note-record pool
      * (each record's path-point sub-buffer first), the slide-record array, and the path nodes; then
      * clears the path-point count and capacity.
