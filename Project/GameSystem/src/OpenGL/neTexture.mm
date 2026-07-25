@@ -32,7 +32,10 @@ C_TEXTURE::C_TEXTURE() {
     m_fFlag60 = IsPad();
 }
 
-/** @ghidraAddress 0x31a24 */
+/**
+ * @ghidraAddress 0x31a24
+ * @ghidraAddress 0x31abc (the deleting-destructor thunk)
+ */
 C_TEXTURE::~C_TEXTURE() {
     g_dwTotalTextureMemory -= m_nByteSize;
     // Splice the entry out of the cache list when both links are set.

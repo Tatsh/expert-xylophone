@@ -20,6 +20,12 @@ namespace ne {
 class C_TEXTURE {
 public:
     C_TEXTURE();
+
+    /**
+     * @brief Splice the texture out of the cache list, free its buffers, and drop its GL handle.
+     * @ghidraAddress 0x31a24
+     * @ghidraAddress 0x31abc (the deleting-destructor thunk)
+     */
     virtual ~C_TEXTURE();
 
     /**
