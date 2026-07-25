@@ -91,6 +91,14 @@ public:
                  unsigned char nAlpha);
 
     /**
+     * @brief Set only a mesh vertex's alpha channel, if the mesh carries a colour attribute.
+     * @param nIndex The vertex index.
+     * @param nAlpha The alpha component.
+     * @ghidraAddress 0x284f8
+     */
+    void SetVertexAlpha(int nIndex, unsigned char nAlpha);
+
+    /**
      * @brief Set a mesh vertex's texture coordinate, if the mesh carries a texcoord attribute.
      *
      * Encodes @p flU and the vertically-flipped @p flV to the signed 16-bit fixed-point range and

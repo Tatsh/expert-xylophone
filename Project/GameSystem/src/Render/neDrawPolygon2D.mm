@@ -220,6 +220,18 @@ void C_DRAW_POLYGON_2D::SetRGBA(int nIndex,
     m_bColorDirty = true;
 }
 
+/** @ghidraAddress 0x284f8 */
+void C_DRAW_POLYGON_2D::SetVertexAlpha(int nIndex, unsigned char nAlpha) {
+    if ((m_nVertexFormat & kVertexHasColor) == 0) {
+        return;
+    }
+    assert(nIndex >= 0 && nIndex < m_nVertexCount);
+    m_pColorArray[nIndex].nAlpha = nAlpha;
+    // The binary writes both dirty bytes together as a single halfword of 0x0101.
+    m_bVertexDirty = true;
+    m_bColorDirty = true;
+}
+
 /** @ghidraAddress 0x283b4 */
 void C_DRAW_POLYGON_2D::SetUV(int nIndex, float flU, float flV) {
     if ((m_nVertexFormat & kVertexHasTexcoord) == 0) {
