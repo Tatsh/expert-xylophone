@@ -58,6 +58,64 @@ void InitPathPoint(RbffPathPoint *pPoint) {
     std::memset(pPoint->aData, 0, sizeof(pPoint->aData));
 }
 
+/** @ghidraAddress 0x12ea78 */
+void InitNoteChainData(RbffNoteReadRecord *pRecord) {
+    *pRecord = RbffNoteReadRecord{};
+    // The chain-link ids start at the unset sentinel.
+    pRecord->nChainLink = static_cast<short>(0xffff);
+    pRecord->nChainPartner = static_cast<short>(0xffff);
+}
+
+/** @ghidraAddress 0x12eaac */
+RbffNoteReadRecord *FreeNotePathArray(RbffNoteReadRecord *pRecord) {
+    if (pRecord->pPathPoints != nullptr) {
+        delete[] pRecord->pPathPoints;
+        pRecord->pPathPoints = nullptr;
+    }
+    return pRecord;
+}
+
+/** @ghidraAddress 0x12eb28 */
+int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor) {
+    const unsigned char *pCursor = *ppCursor;
+    pOut->nTimeA = ReadStream<int>(pCursor);
+    pOut->nTimeB = ReadStream<int>(pCursor);
+    pOut->nNoteId = ReadStream<short>(pCursor);
+    pOut->nStartTime = ReadStream<short>(pCursor);
+    pOut->nPointCount = ReadStream<short>(pCursor);
+    // A positive point count allocates the path-point array and reads that many coordinates.
+    if (pOut->nPointCount > 0) {
+        pOut->pPathPoints = new short[pOut->nPointCount];
+        for (int i = 0; i < pOut->nPointCount; ++i) {
+            pOut->pPathPoints[i] = ReadStream<short>(pCursor);
+        }
+    }
+    pOut->nKind = ReadStream<signed char>(pCursor);
+    pOut->nSide = ReadStream<signed char>(pCursor);
+    pOut->nHoldKind = ReadStream<signed char>(pCursor);
+    pOut->reserved1b = ReadStream<signed char>(pCursor);
+    for (int i = 0; i < 4; ++i) {
+        pOut->aTargetCoords[i] = ReadStream<short>(pCursor);
+    }
+    pOut->nFlags = ReadStream<unsigned int>(pCursor);
+    pOut->nField28 = ReadStream<signed char>(pCursor);
+    pOut->nField29 = ReadStream<signed char>(pCursor);
+    pOut->nField2a = ReadStream<short>(pCursor);
+    pOut->nType = ReadStream<int>(pCursor);
+    // The chain payload is present only when flag bit 3 is set: the binary reads the eight bytes at
+    // the cursor into the chain-link block (+0x30) and the four bytes at cursor+8 into the extra
+    // field (+0x38), then advances the cursor twelve bytes past all of it.
+    if ((pOut->nFlags & 8) != 0) {
+        long chainBlock;
+        std::memcpy(&chainBlock, pCursor, sizeof(chainBlock));
+        std::memcpy(&pOut->nChainLink, &chainBlock, sizeof(chainBlock));
+        std::memcpy(&pOut->nChainExtra, pCursor + sizeof(long), sizeof(int));
+        pCursor += sizeof(long) + sizeof(int);
+    }
+    *ppCursor = pCursor;
+    return 1;
+}
+
 /** @ghidraAddress 0x12ed14 */
 int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor) {
     // A tempo event is a verbatim 36-byte block.
