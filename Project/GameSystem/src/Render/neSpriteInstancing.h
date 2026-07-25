@@ -100,6 +100,7 @@ public:
      * @param nIndex The parameter slot (0 through 3).
      * @param nValue The parameter value.
      * @ghidraAddress 0x31828
+     * @ghidraAddress 0x307f8
      */
     void SetTexParam(int nIndex, int nValue) {
         m_aTexParams[nIndex] = nValue;
