@@ -16,8 +16,8 @@
  * @ghidraAddress NotePathPoint (engine chart-parse struct)
  */
 struct NotePathPoint {
-    int m_nX = {}; // +0x00
-    int m_nY = {}; // +0x04
+    int x = {}; // +0x00
+    int y = {}; // +0x04
 };
 
 /**

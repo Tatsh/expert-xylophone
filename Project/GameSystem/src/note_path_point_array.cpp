@@ -16,8 +16,8 @@ NotePathPoint *NotePathPointArray::AllocateEntries(int nCount) {
     // the fresh buffer for the caller to store.
     auto *pEntries = new NotePathPoint[nCount];
     for (int i = 0; i < nCount; ++i) {
-        pEntries[i].m_nX = 0;
-        pEntries[i].m_nY = 0;
+        pEntries[i].x = 0;
+        pEntries[i].y = 0;
     }
     return pEntries;
 }
