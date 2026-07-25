@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -122,6 +123,14 @@ public:
      */
     void SetMirrorSide(int nSide);
 
+    /**
+     * @brief Begins the gauge fade-out, easing the gauge to transparent over @p flDuration (snapping
+     * to transparent and marking the fade done when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x18ad6c
+     */
+    void StartFadeOut(float flDuration);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
@@ -142,8 +151,10 @@ private:
     int m_aBatchCapacity[kBatchCount] = {};     // +0x30: each batch's sprite capacity.
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x40: each part group's base index.
     bool m_bBuilt = {};                         // +0x58: set once the batches are built.
-    unsigned char m_aReserved59[0x1b] = {};     // +0x59: further state, still being worked out.
-    bool m_bReserved74 = {};                    // +0x74: a byte flag the constructor zero-clears.
+    // +0x59..+0x5f: further state, still being worked out.
+    unsigned char m_aReserved59[7] = {}; // +0x59
+    LinearTween m_fadeChannel;           // +0x60: the gauge fade channel.
+    bool m_bFadeDone = {};               // +0x74: set when the fade snaps to its endpoint.
     // +0x75..+0x77 is alignment padding before the scales.
     // unsigned char m_aPad75[3]; // +0x75 (alignment padding, compiler-inserted)
     float m_aScales[2] = {};             // +0x78: two scales the constructor seeds to 1.
