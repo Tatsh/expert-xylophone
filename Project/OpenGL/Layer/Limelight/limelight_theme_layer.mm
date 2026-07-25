@@ -106,6 +106,19 @@ void LimelightThemeLayer::InitFullComboLayerTextures() {
     m_bBuilt = true;
 }
 
+/** @ghidraAddress 0x120900 */
+void LimelightThemeLayer::StartGradeAnimation(float flDuration) {
+    // Animate from the channel's current value down to zero over the duration.
+    m_gradeChannel.SetStart(m_gradeChannel.GetCurrent());
+    m_gradeChannel.SetEnd(0.0f);
+    m_gradeChannel.SetDuration(flDuration);
+    m_gradeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to zero.
+    if (flDuration <= 0.0f) {
+        m_gradeChannel.SetCurrent(0.0f);
+    }
+}
+
 /** @ghidraAddress 0x120a74 */
 void LimelightThemeLayer::AdvanceGradeChannel(float flDeltaTime) {
     m_gradeChannel.Advance(flDeltaTime);

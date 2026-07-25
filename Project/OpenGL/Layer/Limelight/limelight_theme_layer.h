@@ -55,6 +55,14 @@ public:
     void InitializeGradeDisplayState();
 
     /**
+     * @brief Begins animating the grade-gauge reveal channel from its current value down to zero
+     * over @p flDuration (snapping straight to zero when the duration is non-positive).
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x120900
+     */
+    void StartGradeAnimation(float flDuration);
+
+    /**
      * @brief Advances the result grade-gauge reveal channel by @p flDeltaTime.
      * @ghidraAddress 0x120a74
      */
