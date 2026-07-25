@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "Random.h"
+#include "gamesystem.h"
+#include "note_lane_tracker.h"
 #include "rbff_chart_note.h"
 #include "rbffnoterecord.h"
 
@@ -179,6 +182,15 @@ constexpr float kTargetScale = 1000.0f;
 // The slide-target lane remap table: an on-disk slide lane (0..9) maps to the internal lane
 // (@ghidraAddress 0x308afc). Values at or above 0xfffe map to -2, 0xfffd to -4, and 0xfffc to -3.
 constexpr int kSlideLaneRemap[] = {6, 5, 4, 3, 2, 1, 0, 9, 8, 7};
+
+// The note-colour table indexed by the remapped timing selector (@ghidraAddress 0x308ac8).
+constexpr int kNoteColorTable[] = {0, 1, 2, 3, 4, 5, 6, 3, 3, 3};
+
+// The side-note lane-scan flag count.
+constexpr int kSideScanSlotCount = 3;
+
+// The side-object note flag bit.
+constexpr unsigned int kNoteFlagSideObject = 0x40;
 
 } // namespace
 
@@ -619,6 +631,117 @@ RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int 
         }
     }
     return nullptr;
+}
+
+/** @ghidraAddress 0x130e68 */
+void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
+    AssignGreenTargets();
+
+    const unsigned int dwSeed = pGameSystem->GetRandSeed();
+    NoteLaneTracker tracker;
+    tracker.SetNoteData(dwSeed);
+
+    // First pass: assign each note its display lane.
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        int nLane;
+        if ((record.dwFlags & kNoteFlagLongHead) != 0 && !record.chainLink.IsHead()) {
+            // A chain note that is not the head inherits its previous segment's display lane.
+            nLane = m_pRecords[record.chainLink.GetChainId()].nDisplayLane;
+        } else if (record.nHoldKind == 1) {
+            // A hold note reserves its fixed colour-tone lane.
+            tracker.ReserveNoteLane(record.nHitTime + record.nHitWindow,
+                                    record.nRoute,
+                                    record.nLane,
+                                    record.nColorTone,
+                                    false);
+            nLane = record.nColorTone;
+        } else {
+            bool bSpread = false;
+            if ((record.dwFlags & kNoteFlagSideObject) != 0) {
+                // A side note first marks the colour-tone slots of overlapping same-lane hold notes,
+                // then spreads onto them.
+                unsigned char aScanFlags[kSideScanSlotCount] = {};
+                int nMarked = -1;
+                for (int j = i; j < m_nNoteCount; ++j) {
+                    RbffNoteRecord &other = m_pRecords[j];
+                    if (other.nLane != record.nLane) {
+                        continue;
+                    }
+                    const int nEnd = record.nHitTime + record.nHitWindow;
+                    if (other.nHitTime + other.nHitWindow >= nEnd &&
+                        other.nHitTime + other.nHitWindow <= nEnd + record.nChainOffset &&
+                        other.nHoldKind == 1) {
+                        if (nMarked == -1) {
+                            nMarked = other.nColorTone;
+                        }
+                        aScanFlags[other.nColorTone] = 1;
+                    }
+                }
+                // Spread only when the first two slots are marked; the third gates the chosen slot.
+                const bool bBothMarked = aScanFlags[0] != 0 && aScanFlags[1] != 0;
+                const bool bThirdMarked = bBothMarked && aScanFlags[2] != 0;
+                for (int nSlot = 0; nSlot < kSideScanSlotCount; ++nSlot) {
+                    const bool bSkip = bThirdMarked && nMarked == nSlot;
+                    if (!bSkip && aScanFlags[nSlot] != 0) {
+                        tracker.ReserveNoteLane(record.nHitTime + record.nHitWindow,
+                                                record.nRoute,
+                                                record.nLane,
+                                                nSlot,
+                                                true);
+                    }
+                }
+                bSpread = true;
+            }
+            nLane = tracker.AssignNoteLane(record.nHitTime + record.nHitWindow,
+                                           record.nRoute,
+                                           record.nLane,
+                                           bSpread ? 1 : 0,
+                                           record.aGreenTargets);
+        }
+        record.nDisplayLane = nLane;
+    }
+
+    // Second pass: resolve each free note's display colour, driven by a default-seeded generator.
+    Random colourRng;
+    colourRng.SetSeed(dwSeed);
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        const int nColourIndex = colourRng.GetRandomRangeExclusive(0, 2);
+        // Paint each of the note's path-point targets with the shared colour index.
+        for (int j = 0; j < record.nPointCount; ++j) {
+            const int nTarget = record.pPathPoints != nullptr ? record.pPathPoints[j] : -1;
+            m_pRecords[nTarget].nColorIndex = nColourIndex;
+        }
+        if (record.nStartTime != -1) {
+            continue;
+        }
+        int nColour = colourRng.GetRandomBelow(7);
+        if (((static_cast<unsigned int>(record.nLinkA) >> 1 & 1) == 0 &&
+             static_cast<unsigned int>(record.nTimingSel) < 10) ||
+            record.nHoldKind == 1) {
+            // Map the timing selector through the slide-lane remap, then the note-colour table, and
+            // mirror it into the 0..6 colour range.
+            int nRemapped;
+            const unsigned int nSel = static_cast<unsigned int>(record.nTimingSel);
+            if (nSel < 0xfffffffe) {
+                if (nSel == 0xfffffffd) {
+                    nRemapped = -4;
+                } else if (nSel == 0xfffffffc) {
+                    nRemapped = -3;
+                } else {
+                    nRemapped = kSlideLaneRemap[record.nTimingSel];
+                }
+            } else {
+                nRemapped = -2;
+            }
+            // The binary indexes the colour table with the remapped selector even when it is
+            // negative (-2..-4), reading the words just before the table; reproduced faithfully.
+            const int nTableColour = kNoteColorTable[nRemapped];
+            nColour = static_cast<unsigned int>(nTableColour - 1) < 6 ? 6 - nTableColour : 6;
+        }
+        record.nColor = nColour;
+    }
 }
 
 /** @ghidraAddress 0x131450 */

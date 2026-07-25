@@ -141,6 +141,18 @@ public:
     void AssignGreenTargets();
 
     /**
+     * @brief Assigns every note its play-field display lane and resolves each free note's colour.
+     *
+     * Builds a lane tracker seeded from the game system, then for each note inherits the chain
+     * head's lane, reserves a hold note's fixed lane, spreads a side note across its blocked lanes,
+     * or assigns the least-conflicting lane. A second pass, driven by a default-seeded generator,
+     * paints path-point colour indices and resolves each free note's display colour.
+     * @param pGameSystem The game system (supplies the seed and note difficulty).
+     * @ghidraAddress 0x130e68
+     */
+    void AssignChartLanes(GameSystem *pGameSystem);
+
+    /**
      * @brief Returns the last note of the chain @p pNote belongs to.
      *
      * Asserts @p pNote is a chain note that is not already the tail, then follows the chain's
