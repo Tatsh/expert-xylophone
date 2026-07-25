@@ -25,6 +25,20 @@ unsigned int DecodePlayHandle(unsigned int handle) {
 }
 } // namespace
 
+/** @ghidraAddress 0x4abcc */
+int AudioSourceSlot::SourceRecord::Initialize(id source, bool bLoop) {
+    this->source = [source copy];
+    this->bLoop = bLoop;
+    return 1;
+}
+
+/** @ghidraAddress 0x4ab8c */
+int AudioSourceSlot::SourceRecord::Clear() {
+    source = nil;
+    companion = nil;
+    return 1;
+}
+
 /** @ghidraAddress 0x4a5d4 */
 void AudioSourceSlot::InitAudioSourceSlot() {
     m_pMixer = nullptr;
@@ -68,8 +82,7 @@ unsigned int AudioSourceSlot::AddSource(id source, bool bLoop) {
         return 0xffffffff;
     }
     auto *pRecord = new SourceRecord;
-    pRecord->source = [source copy];
-    pRecord->bLoop = bLoop;
+    pRecord->Initialize(source, bLoop);
     const int nIndex = FindFreeSlotIndex();
     m_pSourceArray[nIndex] = pRecord;
     return static_cast<unsigned int>(nIndex);
@@ -98,8 +111,7 @@ int AudioSourceSlot::RemoveSourceByIndex(int index) {
     // Detach the record from any voice still playing it, then release its object references.
     m_pMixer->RemoveSourceFromBuses(
         static_cast<unsigned int>(reinterpret_cast<uintptr_t>(pRecord)));
-    pRecord->source = nil;
-    pRecord->companion = nil;
+    pRecord->Clear();
     return 1;
 }
 

@@ -29,6 +29,19 @@ public:
         id companion = {}; // +0x08: a companion object released with the record.
         bool bLoop = {};   // +0x10: whether the source loops.
         // +0x11..+0x17 is trailing padding to the 0x18-byte record.
+
+        /**
+         * @brief Initialises the record: stores a copy of @p source and its loop flag.
+         * @return Always 1.
+         * @ghidraAddress 0x4abcc
+         */
+        int Initialize(id source, bool bLoop);
+        /**
+         * @brief Clears the record, releasing its two object references.
+         * @return Always 1.
+         * @ghidraAddress 0x4ab8c
+         */
+        int Clear();
     };
 
     /**
