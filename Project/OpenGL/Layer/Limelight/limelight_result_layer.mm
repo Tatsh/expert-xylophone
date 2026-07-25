@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include "../Classic/classic_parts_data_table.h"
 #include "../Colette/phone_anchor_table.h"
 #include "deviceenvironment.h"
 #import "gamesystem.h"
@@ -26,6 +27,23 @@ PhoneAnchorRecord
     g_aLimelightPhoneAnchorDefault[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3dad10
 PhoneAnchorRecord
     g_aLimelightPhoneAnchorPortrait[kLimelightPhoneAnchorRecordCount]; // @ghidraAddress 0x3db130
+
+// The number of records in each Limelight phone-layout separator table.
+constexpr int kLimelightSeparatorRecordCount = 52;
+
+// The Limelight phone-layout separator tables (0x14-stride PhoneLayoutRecord), zero-initialised in
+// the binary's __common segment and filled at runtime; the orientation flag selects between them.
+PhoneLayoutRecord
+    g_aLimelightSeparatorPhoneDefault[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db550
+PhoneLayoutRecord
+    g_aLimelightSeparatorPhonePortrait[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db960
+
+// The single Limelight phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
+// mode): the state record, and the portrait and default records (selected by the font-variant and
+// orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
+PhoneLayoutRect g_LimelightCenterPositionPhoneState = {};    // @ghidraAddress 0x3dbe60
+PhoneLayoutRect g_LimelightCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3dbe70
+PhoneLayoutRect g_LimelightCenterPositionPhoneDefault = {};  // @ghidraAddress 0x3dbe80
 
 namespace {
 
@@ -175,6 +193,33 @@ void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition
 
     // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
+}
+
+/** @ghidraAddress 0x123ad8 */
+const PhoneLayoutRecord *LimelightResultLayer::getSeparator_Phone(int nIndex) const {
+    assert(nIndex >= 0 && nIndex < kLimelightSeparatorRecordCount);
+
+    // The orientation flag selects the portrait table; otherwise the default table is used.
+    return m_bPortrait ? &g_aLimelightSeparatorPhonePortrait[nIndex] :
+                         &g_aLimelightSeparatorPhoneDefault[nIndex];
+}
+
+/** @ghidraAddress 0x123cc8 */
+void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
+    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
+    if (GetFontVariant()) {
+        *pOutRect = g_LimelightCenterPositionPhoneState;
+        (void)GameSystem::
+            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        return;
+    }
+
+    // Otherwise the orientation flag selects the portrait or default record, and the leading
+    // coordinate is shifted by half the viewport width and height.
+    const PhoneLayoutRect &record = m_bPortrait ? g_LimelightCenterPositionPhonePortrait :
+                                                  g_LimelightCenterPositionPhoneDefault;
+    *pOutRect = record;
+    ApplyAnchorOffset(kAnchorHalfWidthHalfHeight, &pOutRect->flX, &pOutRect->flY);
 }
 
 /** @ghidraAddress 0x12a01c */

@@ -9,6 +9,8 @@
 
 struct S_VECTOR2;
 struct PartsDataRecord;
+struct PhoneLayoutRecord;
+struct PhoneLayoutRect;
 
 namespace ne {
 class C_TEXTURE;
@@ -77,6 +79,28 @@ public:
      * @ghidraAddress 0x1238d0
      */
     static PartsDataRecord *getPartsData_Phone(int nIndex);
+
+    /**
+     * @brief Returns a phone-layout separator record by index.
+     *
+     * Selects the portrait or default separator table by the layer's orientation flag and returns
+     * the record at @p nIndex.
+     * @param nIndex The separator-record index (0 through 51).
+     * @return The separator record.
+     * @ghidraAddress 0x123ad8
+     */
+    const PhoneLayoutRecord *getSeparator_Phone(int nIndex) const;
+
+    /**
+     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     *
+     * Copies the state, portrait, or default centre record (selected by the font-variant and
+     * orientation flags) to @p pOutRect. When the state flag is clear the leading coordinate is
+     * shifted by half the viewport width and height.
+     * @param pOutRect Receives the resolved rectangle.
+     * @ghidraAddress 0x123cc8
+     */
+    void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
      * @brief Renders a small unsigned integer as centred phone digit-glyph sprites.
