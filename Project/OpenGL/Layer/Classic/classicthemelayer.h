@@ -54,9 +54,23 @@ public:
      */
     void SetColor(int nColor);
 
+    /**
+     * @brief Initialises the result-screen score-gauge display block, then seeds its per-side score
+     * values from the score tracker.
+     * @ghidraAddress 0x10a01c
+     */
+    void InitializeScoreGaugeState();
+
+    /**
+     * @brief Seeds the per-side score display values from the active score tracker's play records.
+     * @ghidraAddress 0x10a044
+     */
+    void InitializeScoreValuesFromTracker();
+
 private:
     static constexpr int kBackgroundBatchCount = 3;
-    static constexpr int kTrailingSlotCount = 2;
+    static constexpr int kScoreValueCount = 2;
+    static constexpr int kScoreGaugeBlockCount = 4;
 
     ne::C_TEXTURE *m_pTexture = {};                                       // +0x08
     ne::C_SPRITE_INSTANCING *m_apSpriteBatch[kBackgroundBatchCount] = {}; // +0x10
@@ -67,12 +81,14 @@ private:
     int m_nColor = {};              // +0x38: the theme colour index (defaults to one).
     bool m_bFlag3c = {};            // +0x3c: a flag the constructor clears.
     bool m_bFlag3d = {};            // +0x3d: a flag the constructor clears.
-    // +0x3e..+0x3f is alignment padding before the pointer block.
-    unsigned char m_aPad3e[2] = {};                // +0x3e
-    void *m_pField40 = {};                         // +0x40: a pointer the constructor clears.
-    void *m_pField48 = {};                         // +0x48: a pointer the constructor clears.
-    void *m_pField50 = {};                         // +0x50: a pointer the constructor clears.
-    int m_aTrailingSlots[kTrailingSlotCount] = {}; // +0x58: two slots seeded to four.
+    // +0x3e..+0x3f is alignment padding before the score-gauge block.
+    unsigned char m_aPad3e[2] = {}; // +0x3e
+    // +0x40..+0x4f: the score-gauge display block InitializeScoreGaugeState seeds (a start position
+    // and two scales), cleared by the constructor.
+    float m_aScoreGaugeBlock[kScoreGaugeBlockCount] = {}; // +0x40
+    int m_nScoreGaugeState = {};     // +0x50: a state field InitializeScoreGaugeState clears.
+    float m_flScoreGaugeTarget = {}; // +0x54: the gauge's full target (one).
+    int m_aScoreValues[kScoreValueCount] = {}; // +0x58: the per-side score display values.
 };
 
 // code: language=C++
