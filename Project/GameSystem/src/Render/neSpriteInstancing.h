@@ -166,6 +166,12 @@ public:
      */
     void SetSpritePosition(int nIndex, const S_VECTOR2 &position);
     /**
+     * @brief Set sprite @p nIndex's world position from separate components (the same position
+     * stream as @c SetSpritePosition, taking @p x and @p y directly).
+     * @ghidraAddress 0x83c98
+     */
+    void SetSpritePositionXY(int nIndex, float x, float y);
+    /**
      * @brief Set sprite @p nIndex's pixel size: the quad spans from the origin to (width, height).
      * @ghidraAddress 0x59fbc
      * @ghidraAddress 0x67020
