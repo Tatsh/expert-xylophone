@@ -47,6 +47,17 @@ public:
     NoteModel *FindNoteByIndex(int nIndex);
 
     /**
+     * @brief Grows the note-object pool and active-list arrays to hold at least @p nCount objects.
+     *
+     * A no-op when the current capacity already covers @p nCount. Otherwise it allocates new pool
+     * and active-list arrays, copies the existing pooled objects across, constructs a fresh
+     * @c NoteModel for each added slot, frees the old arrays, and records the new capacity.
+     * @param nCount The required object count.
+     * @ghidraAddress 0x1371a4
+     */
+    void EnsureNoteObjectCapacity(int nCount);
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */
@@ -92,7 +103,7 @@ private:
 
     unsigned char m_aReserved00[8] = {}; // +0x00: header state, still being worked out.
     NoteModel **m_ppNotePool = {};       // +0x08: the pooled NoteModel-object array.
-    void **m_ppActiveList = {};          // +0x10: the active-note pointer array.
+    NoteModel **m_ppActiveList = {};     // +0x10: the active-note pointer array.
     int m_nNoteCount = {};               // +0x18: the active note count (the chart's note count).
     int m_nPoolCapacity = {};            // +0x1c: the note-object pool/array capacity.
     int m_nActiveCount = {};             // +0x20: the number of active notes.

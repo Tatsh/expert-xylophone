@@ -50,6 +50,29 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
+/** @ghidraAddress 0x1371a4 */
+void NoteEffectMgr::EnsureNoteObjectCapacity(int nCount) {
+    if (m_nPoolCapacity >= nCount) {
+        return;
+    }
+    // Grow both arrays; the active list is reallocated but left for InitNoteObjects to populate.
+    auto **ppNewPool = new NoteModel *[nCount];
+    auto **ppNewActive = new NoteModel *[nCount];
+    // Carry the existing pooled objects across, then construct a fresh note for each added slot.
+    int i = 0;
+    for (; i < m_nPoolCapacity; ++i) {
+        ppNewPool[i] = m_ppNotePool[i];
+    }
+    for (; i < nCount; ++i) {
+        ppNewPool[i] = new NoteModel(this);
+    }
+    delete[] m_ppNotePool;
+    delete[] m_ppActiveList;
+    m_ppNotePool = ppNewPool;
+    m_nPoolCapacity = nCount;
+    m_ppActiveList = ppNewActive;
+}
+
 /** @ghidraAddress 0x136b9c */
 NoteEffectMgr *NoteEffectMgr::shared() {
     if (g_pNoteEffectMgr == nullptr) {

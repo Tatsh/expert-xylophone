@@ -148,7 +148,7 @@ public:
     static constexpr int kSubEntryCount = 16;
 
 private:
-    void *m_pSheet = {};            // +0x00: the owning note sheet.
+    void *m_pSheet = {};            // +0x00: the owning note manager (NoteEffectMgr).
     RbffNoteRecord *m_pRecord = {}; // +0x08: the parsed chart record, or null for a synthetic note.
     int m_nNoteIndex = {};          // +0x10: the note's index in its sheet.
     int m_nState = {};              // +0x14: the note-state-machine state.
