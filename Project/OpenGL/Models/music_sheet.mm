@@ -176,6 +176,10 @@ constexpr int kChartKindLongHead = 2;
 constexpr float kFieldWidth = 60.0f;
 constexpr float kTargetScale = 1000.0f;
 
+// The slide-target lane remap table: an on-disk slide lane (0..9) maps to the internal lane
+// (@ghidraAddress 0x308afc). Values at or above 0xfffe map to -2, 0xfffd to -4, and 0xfffc to -3.
+constexpr int kSlideLaneRemap[] = {6, 5, 4, 3, 2, 1, 0, 9, 8, 7};
+
 } // namespace
 
 /** @ghidraAddress 0x12f828 */
@@ -275,6 +279,129 @@ int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
         }
         if ((head.dwFlags & kNoteFlagFree) != 0) {
             ++m_nFreeNoteCount;
+        }
+    }
+
+    return 1;
+}
+
+/** @ghidraAddress 0x12fdf4 */
+int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
+    const auto *pHeader = reinterpret_cast<const unsigned char *>(pStream);
+    const auto readHeaderInt = [pHeader](int nOffset) {
+        int value;
+        std::memcpy(&value, pHeader + nOffset, sizeof(value));
+        return value;
+    };
+    const auto readHeaderShort = [pHeader](int nOffset) {
+        short value;
+        std::memcpy(&value, pHeader + nOffset, sizeof(value));
+        return value;
+    };
+
+    // The first path node is the chart's implicit start node (speed at +0x00).
+    m_pathNodes.Append(NotePathPoint{readHeaderInt(0x00), 0});
+    m_nChartEndTime = readHeaderInt(0x04);
+    m_nSeedA = readHeaderInt(0x08);
+    m_nNoteCount = readHeaderShort(0x0c);
+    m_nTempoEventCount = readHeaderShort(0x0e);
+    m_nFreeNoteCount = readHeaderShort(0x10);
+    m_nSlideRecordCount = readHeaderInt(0x14);
+
+    const unsigned char *pCursor = pHeader + 0x1c;
+    m_pRecords = new RbffNoteRecord[m_nNoteCount];
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteReadRecord staging;
+        InitNoteChainData(&staging);
+        if (ReadRbffNoteRecord(&staging, &pCursor) == 0) {
+            FreeNotePathArray(&staging);
+            return 0;
+        }
+        RbffNoteRecord &record = m_pRecords[i];
+        record.nTimeA = staging.nTimeA;
+        record.nTimeB = staging.nTimeB;
+        record.nNoteId = staging.nNoteId;
+        record.nStartTime = staging.nStartTime;
+        record.nPointCount = staging.nPointCount;
+        if (staging.nPointCount > 0) {
+            record.pPathPoints = new short[staging.nPointCount];
+            for (int j = 0; j < staging.nPointCount; ++j) {
+                record.pPathPoints[j] = staging.pPathPoints[j];
+            }
+        }
+        record.nKind = staging.nKind;
+        record.nSide = staging.nSide;
+        record.nHoldKind = staging.nHoldKind;
+        // The on-disk type of 2 is remapped to 0; any other value passes through.
+        record.nType = staging.nType == kChartKindLongHead ? 0 : staging.nType;
+        for (int j = 0; j < 3; ++j) {
+            record.aTargetCoords[j] = staging.aTargetCoords[j];
+        }
+        record.dwFlags = staging.nFlags;
+        if ((staging.nFlags & kNoteFlagLongHead) != 0) {
+            record.chainLink.SetLongNoteHead(staging.nChainLink, staging.nChainPartner);
+        }
+        FreeNotePathArray(&staging);
+    }
+
+    // The tempo events follow the notes; a speed-change event (kind 3) appends a path node.
+    for (int i = 0; i < m_nTempoEventCount; ++i) {
+        RbffTempoEvent event;
+        std::memset(&event, 0, sizeof(event));
+        if (ReadRbffTempoEvent(&event, &pCursor) == 0) {
+            return 0;
+        }
+        short nEventKind;
+        std::memcpy(&nEventKind, event.aData, sizeof(nEventKind));
+        if (nEventKind == 3) {
+            int aNode[2];
+            std::memcpy(aNode, event.aData + sizeof(int), sizeof(aNode));
+            m_pathNodes.Append(NotePathPoint{aNode[0], aNode[1]});
+        }
+    }
+
+    // The slide records follow the tempo events.
+    if (m_nSlideRecordCount > 0) {
+        m_pSlideRecords = new RbffSlideRecord[m_nSlideRecordCount]();
+        for (int i = 0; i < m_nSlideRecordCount; ++i) {
+            RbffChartHeaderRecord header;
+            std::memset(&header, 0, sizeof(header));
+            if (DeserializeChartHeaderRecord(&header, &pCursor) == 0) {
+                return 0;
+            }
+            RbffSlideRecord &slide = m_pSlideRecords[i];
+            slide.nNoteIndex = static_cast<short>(header.nField0);
+            slide.nField2 = static_cast<short>(header.nField2);
+            // Remap the slide's target lane; the high sentinels map to negative markers.
+            const unsigned short nLane = header.nField4;
+            if (nLane >= 0xfffe) {
+                slide.nTimingSel = -2;
+            } else if (nLane == 0xfffd) {
+                slide.nTimingSel = -4;
+            } else if (static_cast<short>(nLane) == -4) {
+                slide.nTimingSel = -3;
+            } else {
+                slide.nTimingSel = kSlideLaneRemap[static_cast<short>(nLane)];
+            }
+            slide.nValueA = header.nValueA;
+            slide.nValueB = header.nValueB;
+            slide.nValueAScaled =
+                static_cast<int>((static_cast<float>(header.nValueA) * kFieldWidth) / kTargetScale);
+            slide.nValueBScaled =
+                static_cast<int>((static_cast<float>(header.nValueB) * kFieldWidth) / kTargetScale);
+        }
+
+        // Link each run of slides to its owning note, counting the run into the note's slide count.
+        RbffNoteRecord *pOwner = nullptr;
+        int nLastIndex = -1;
+        for (int i = 0; i < m_nSlideRecordCount; ++i) {
+            const int nIndex = m_pSlideRecords[i].nNoteIndex;
+            if (pOwner == nullptr || nIndex != nLastIndex) {
+                pOwner = &m_pRecords[nIndex];
+                pOwner->pSlideRecord = &m_pSlideRecords[i];
+                nLastIndex = nIndex;
+            }
+            ++pOwner->nSlidePointCount;
         }
     }
 

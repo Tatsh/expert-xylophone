@@ -140,6 +140,21 @@ private:
      */
     int ParseNoteChartData(const unsigned int *pStream);
 
+    /**
+     * @brief Parses a version 10-to-14 note-chart stream into the record pool, tempo events, and
+     * slide records.
+     *
+     * Reads the header counts, allocates and default-constructs the record pool, and per note
+     * initialises a staging record, reads it from the stream, and unpacks it into the pool record
+     * (path points, kind/side/hold/type, target coordinates, flags, and the optional chain block).
+     * Then reads the tempo events (appending a path node for speed-change events) and the slide
+     * records, scaling their times and linking each to its owning note.
+     * @param pStream The decoded chart stream.
+     * @return @c 1 on success, @c 0 when a record fails to read.
+     * @ghidraAddress 0x12fdf4
+     */
+    int ParseNotesV10(const unsigned long *pStream);
+
     void *m_pVtable = {}; // +0x00: the virtual-function table.
     int m_nVersion = {};  // +0x08: the parsed chart format version.
     // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10, the
