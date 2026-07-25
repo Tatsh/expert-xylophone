@@ -12,7 +12,7 @@
 #include <cassert>
 
 #include "cacamixer.h"
-#include "casound.h"
+#include "casource.h"
 
 namespace {
 

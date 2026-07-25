@@ -1,55 +1,15 @@
 /**
  * @file
- * The Core Audio voice mixer, @c caCAMixer, and its per-voice slot, @c caVoice.
+ * The Core Audio voice mixer, @c caCAMixer.
  */
 
 #pragma once
 
 #import <AudioToolbox/AudioToolbox.h>
 
+#include "cavoice.h"
+
 class caSource;
-
-/**
- * One playback voice (mixer bus): the sound bound to it, its ring-read cursors, a rolling
- * generation counter, and its playback state. The 32-bit offset comments are documentation only.
- * @ghidraAddress caVoice (engine mixer-voice struct, 0x20 bytes)
- */
-class caVoice {
-public:
-    /**
-     * @brief Fills @p nCount bytes at @p pDst with the voice's next PCM span while it is playing,
-     *        marking the voice finished when its source runs dry.
-     *
-     * A no-op (returns 0) when the voice has no source or is not in the playing state; otherwise it
-     * pulls from the bound source's ring buffer through the voice's own read cursors.
-     * @param pDst The output buffer to fill.
-     * @param nCount The number of bytes to fill.
-     * @return The number of bytes produced, or 0 when the source has drained.
-     * @ghidraAddress 0x4ac40
-     */
-    unsigned long FillPcm(void *pDst, int nCount);
-
-    /** @brief The voice playback states stored in @c m_nState. */
-    enum State {
-        kStateFree = -1,    /*!< No sound is bound to the voice. */
-        kStatePrepared = 1, /*!< A sound is bound and ready to render. */
-        kStatePlaying = 2,  /*!< The voice is playing. */
-        kStatePaused = 3,   /*!< The voice is paused. */
-        kStateFinished = 4, /*!< Playback has finished; the voice may be reused. */
-    };
-
-    /** @brief The sound bound to this voice, or @c nullptr when free. */
-    caSource *m_pSource = {}; // +0x00
-    /** @brief Whether the render callback has been installed on this voice. */
-    bool m_bCallbackBound = {};          // +0x04
-    unsigned char m_aReserved05[7] = {}; // +0x05
-    int m_nBytesRead = {};               // +0x0c running consumed-byte counter for the ring read
-    int m_nReadPos = {};                 // +0x10 current read offset into the source PCM block
-    unsigned short m_wGeneration = {};   // +0x14 rolling generation, packed into the play handle
-    unsigned char m_aReserved16[2] = {}; // +0x16
-    int m_nState = {};                   // +0x18 one of State
-    unsigned char m_aReserved1c[4] = {}; // +0x1c
-};
 
 /**
  * The Core Audio voice mixer: a spatial-mixer AudioUnit and its array of playback voices. The

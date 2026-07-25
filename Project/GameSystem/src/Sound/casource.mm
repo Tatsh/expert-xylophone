@@ -1,12 +1,12 @@
 //
-//  casound.mm
+//  casource.mm
 //  REFLEC BEAT plus
 //
 //  A decoded one-shot sound buffer (the caplayer engine's caSource). Reconstructed from Ghidra
 //  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
-#include "casound.h"
+#include "casource.h"
 
 #include <cstring>
 

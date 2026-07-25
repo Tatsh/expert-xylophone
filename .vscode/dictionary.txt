@@ -41,7 +41,8 @@ cacamixer
 caeagl
 calcel
 caplayermgr
-casound
+casource
+cavoice
 ccontext
 cdevice
 centered

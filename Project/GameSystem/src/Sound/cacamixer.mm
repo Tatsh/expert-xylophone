@@ -11,7 +11,7 @@
 
 #include <cstring>
 
-#include "casound.h"
+#include "casource.h"
 
 /** @ghidraAddress 0x4b3e8 */
 OSStatus RenderVoiceAudioCallback(void *pRefCon,
@@ -84,12 +84,13 @@ constexpr AudioUnitParameterID kMixerGainParamReset = 3;
 unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVolume) {
     caVoice *pVoice = m_pVoiceArray[nBus];
     // Reuse the voice only when it is free or has finished playing.
-    if (pVoice->m_nState != caVoice::kStateFinished && pVoice->m_nState != caVoice::kStateFree) {
+    if (pVoice->GetState() != caVoice::kStateFinished &&
+        pVoice->GetState() != caVoice::kStateFree) {
         return kInvalidHandle;
     }
-    pVoice->m_pSource = pSource;
-    const unsigned short nGeneration = pVoice->m_wGeneration + 1;
-    pVoice->m_wGeneration = nGeneration;
+    pVoice->SetSource(pSource);
+    const unsigned short nGeneration = pVoice->GetGeneration() + 1;
+    pVoice->SetGeneration(nGeneration);
 
     // Build the signed-16-bit LPCM stream format from the source's rate and channel count.
     AudioStreamBasicDescription asbd = {};
@@ -112,9 +113,8 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
 
     InstallVoiceRenderCallback(nBus);
     ApplyVoicePanParam(nVolume, nBus);
-    pVoice->m_nBytesRead = 0;
-    pVoice->m_nReadPos = 0;
-    pVoice->m_nState = caVoice::kStatePrepared;
+    pVoice->ResetReadCursors();
+    pVoice->SetState(caVoice::kStatePrepared);
     return static_cast<unsigned int>(nGeneration) |
            static_cast<unsigned int>(nBus << kHandleBusShift);
 }
@@ -123,7 +123,7 @@ unsigned int caCAMixer::EnqueueVoiceBuffer(caSource *pSource, int nBus, int nVol
 unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) {
     // Bind the sound to the first voice that is free or has finished playing.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
-        const int nState = m_pVoiceArray[nBus]->m_nState;
+        const int nState = m_pVoiceArray[nBus]->GetState();
         if (nState == caVoice::kStateFree || nState == caVoice::kStateFinished) {
             return EnqueueVoiceBuffer(pSource, nBus, nVolume);
         }
@@ -135,8 +135,8 @@ unsigned int caCAMixer::FindFreeVoiceAndEnqueue(caSource *pSource, int nVolume) 
 void caCAMixer::ClearVoicesUsingBuffer(caSource *pSource) {
     // Drop the source pointer from every voice that holds it; the voice state is left untouched.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
-        if (m_pVoiceArray[nBus]->m_pSource == pSource) {
-            m_pVoiceArray[nBus]->m_pSource = nullptr;
+        if (m_pVoiceArray[nBus]->GetSource() == pSource) {
+            m_pVoiceArray[nBus]->SetSource(nullptr);
         }
     }
 }
@@ -147,7 +147,7 @@ void caCAMixer::InstallVoiceRenderCallback(int nBus) {
         return;
     }
     caVoice *pVoice = m_pVoiceArray[nBus];
-    if (pVoice->m_bCallbackBound) {
+    if (pVoice->IsCallbackBound()) {
         return;
     }
     AURenderCallbackStruct callback = {};
@@ -159,7 +159,7 @@ void caCAMixer::InstallVoiceRenderCallback(int nBus) {
                              nBus,
                              &callback,
                              sizeof(callback)) == noErr) {
-        pVoice->m_bCallbackBound = true;
+        pVoice->SetCallbackBound(true);
     }
 }
 
@@ -183,7 +183,7 @@ caVoice *caCAMixer::ResolveVoice(unsigned int hVoice) {
         return nullptr;
     }
     caVoice *pVoice = m_pVoiceArray[nBus];
-    if (pVoice == nullptr || pVoice->m_wGeneration != (hVoice & 0xffff)) {
+    if (pVoice == nullptr || pVoice->GetGeneration() != (hVoice & 0xffff)) {
         return nullptr;
     }
     return pVoice;
@@ -196,10 +196,10 @@ unsigned int caCAMixer::StartVoice(unsigned int hVoice) {
         return 0;
     }
     // Only a prepared (1) or paused (3) voice may start; both satisfy (state | 2) == 3.
-    if ((pVoice->m_nState | 2) != caVoice::kStatePaused) {
+    if ((pVoice->GetState() | 2) != caVoice::kStatePaused) {
         return 0;
     }
-    pVoice->m_nState = caVoice::kStatePlaying;
+    pVoice->SetState(caVoice::kStatePlaying);
     return 1;
 }
 
@@ -209,7 +209,7 @@ unsigned int caCAMixer::StopVoice(unsigned int hVoice) {
     if (pVoice == nullptr) {
         return 0;
     }
-    pVoice->m_nState = caVoice::kStateFinished;
+    pVoice->SetState(caVoice::kStateFinished);
     return 1;
 }
 
@@ -219,22 +219,22 @@ unsigned int caCAMixer::PauseVoice(unsigned int hVoice) {
     if (pVoice == nullptr) {
         return 0;
     }
-    pVoice->m_nState = caVoice::kStatePaused;
+    pVoice->SetState(caVoice::kStatePaused);
     return 1;
 }
 
 /** @ghidraAddress 0x4b374 */
 int caCAMixer::GetVoiceState(unsigned int hVoice) {
     caVoice *pVoice = ResolveVoice(hVoice);
-    return pVoice != nullptr ? pVoice->m_nState : -1;
+    return pVoice != nullptr ? pVoice->GetState() : -1;
 }
 
 /** @ghidraAddress 0x4b42c */
 unsigned int caCAMixer::StopAndClearVoice(unsigned int hVoice) {
     caVoice *pVoice = ResolveVoice(hVoice);
     if (pVoice != nullptr) {
-        pVoice->m_nState = caVoice::kStateFinished;
-        pVoice->m_pSource = nullptr;
+        pVoice->SetState(caVoice::kStateFinished);
+        pVoice->SetSource(nullptr);
     }
     return 1;
 }
@@ -290,7 +290,7 @@ void caCAMixer::Terminate() {
     // each delete to stay safe against re-entrant teardown, then free the array itself.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
         caVoice *pVoice = m_pVoiceArray[nBus];
-        pVoice->m_pSource = nullptr;
+        pVoice->SetSource(nullptr);
         delete pVoice;
     }
     delete[] m_pVoiceArray;
@@ -320,10 +320,10 @@ bool caCAMixer::ConfigureAudioUnitGraph(int nVoiceCount) {
     m_pVoiceArray = new caVoice *[nVoiceCount];
     for (int nBus = 0; nBus < nVoiceCount; ++nBus) {
         auto *pVoice = new caVoice();
-        pVoice->m_pSource = nullptr;
-        pVoice->m_bCallbackBound = false;
-        pVoice->m_wGeneration = 0;
-        pVoice->m_nState = caVoice::kStateFree;
+        pVoice->SetSource(nullptr);
+        pVoice->SetCallbackBound(false);
+        pVoice->SetGeneration(0);
+        pVoice->SetState(caVoice::kStateFree);
         m_pVoiceArray[nBus] = pVoice;
     }
 
@@ -379,20 +379,4 @@ void caCAMixer::Stop() {
     if (m_bIsRunning && AUGraphStop(m_pAUGraph) == noErr) {
         m_bIsRunning = false;
     }
-}
-
-/** @ghidraAddress 0x4ac40 */
-unsigned long caVoice::FillPcm(void *pDst, int nCount) {
-    // Only a playing voice with a bound source produces samples.
-    if (m_pSource == nullptr || m_nState != kStatePlaying) {
-        return 0;
-    }
-    // Pull the next span from the source's ring buffer through this voice's own read cursors; a
-    // zero-byte read means the source has drained, so the voice is marked finished.
-    const int nRead = m_pSource->ReadRingBuffer(pDst, nCount, &m_nBytesRead, &m_nReadPos);
-    if (nRead == 0) {
-        m_nState = kStateFinished;
-        return 0;
-    }
-    return static_cast<unsigned long>(nRead);
 }
