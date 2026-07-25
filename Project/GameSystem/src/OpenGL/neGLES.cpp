@@ -256,6 +256,14 @@ int RenderKindToGLRenderKind(RenderKind nKind) {
     return kAttachments[nKind];
 }
 
+/** @ghidraAddress 0x21b6c */
+int TexParamTypeToGl(TexParamType nType) {
+    assert(nType >= 0 && nType < kTexParamTypeMax);
+    // The four sampler parameter-name enums are consecutive, so the binary computes the result
+    // inline as GL_TEXTURE_MAG_FILTER + type rather than indexing a table.
+    return static_cast<int>(kTexParamTypeBase + nType);
+}
+
 /** @ghidraAddress 0x21ea8 */
 void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const void *pIndices) {
     // An out-of-range primitive index maps to GL_POINTS, matching the binary's default.

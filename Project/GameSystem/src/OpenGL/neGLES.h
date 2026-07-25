@@ -42,6 +42,32 @@ enum RenderKind {
  */
 int RenderKindToGLRenderKind(RenderKind nKind);
 
+/**
+ * @brief The engine texture-parameter type that selects a GL sampler parameter name.
+ *
+ * @c neGLES::TexParamTypeToGl maps the type to its GL parameter-name enum (the magnification and
+ * minification filters and the S and T wrap modes).
+ * @ghidraAddress neIGLES::TEX_PARAM_TYPE (engine enumeration)
+ */
+enum TexParamType {
+    TEX_PARAM_TYPE_MAG_FILTER = 0, /*!< The magnification filter (@c GL_TEXTURE_MAG_FILTER). */
+    TEX_PARAM_TYPE_MIN_FILTER = 1, /*!< The minification filter (@c GL_TEXTURE_MIN_FILTER). */
+    TEX_PARAM_TYPE_WRAP_S = 2,     /*!< The S-axis wrap mode (@c GL_TEXTURE_WRAP_S). */
+    TEX_PARAM_TYPE_WRAP_T = 3,     /*!< The T-axis wrap mode (@c GL_TEXTURE_WRAP_T). */
+    TEX_PARAM_TYPE_MAX = 4,        /*!< The number of texture-parameter types. */
+};
+
+/**
+ * @brief Maps a texture-parameter type to its GL sampler parameter-name enum.
+ *
+ * Asserts the type is in range; the four parameter names are consecutive enums, so the binary
+ * computes the result inline as @c GL_TEXTURE_MAG_FILTER @c + @p nType.
+ * @param nType The texture-parameter type.
+ * @return The GL parameter-name enum for @p nType.
+ * @ghidraAddress 0x21b6c
+ */
+int TexParamTypeToGl(TexParamType nType);
+
 // The shared ne::neGLES_11 GL ES 1.1 render-state backend. Only the members the application and
 // render layers call are declared; the state-cache fields the render-state setters touch are
 // modelled, and the rest of the 0x258-byte object is reserved until the full engine class is
