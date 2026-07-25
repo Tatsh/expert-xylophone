@@ -32,6 +32,11 @@ constexpr int kVertexFlagMode = 1;
 constexpr float kGaugeQuantizeScale = 100.0f;
 constexpr float kGaugeMax = 5.0f;
 
+// The affine map applied to the display brightness: value in [0, 1] maps to [kBrightnessBias,
+// kBrightnessBias + kBrightnessScale] = [0.3, 1.0] (@ghidraAddress 0x2fd008 and 0x2ee910).
+constexpr float kBrightnessScale = 0.7f;
+constexpr float kBrightnessBias = 0.3f;
+
 } // namespace
 
 /** @ghidraAddress 0x18a7d0 */
@@ -123,13 +128,18 @@ void ReflecGaugeLayer::SetValue(float flValue, int nColor) {
 }
 
 /** @ghidraAddress 0x18abfc */
-void AddReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nColor) {
+void ReflecGaugeLayer::AddReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nColor) {
     pGauge->SetValue(pGauge->GetValue(nColor) + flDelta, nColor);
 }
 
 /** @ghidraAddress 0x18acb8 */
-void SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer) {
+void ReflecGaugeLayer::SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer) {
     // The gauge side is the player's opposite-of-match against the current play side.
     const unsigned int nSide = GameSystem::GetGameSystem()->GetPlayColor() != nPlayer ? 1 : 0;
     pGauge->SetValueBySide(pGauge->GetValueBySide(nSide) - flDelta, nSide);
+}
+
+/** @ghidraAddress 0x18ad0c */
+void ReflecGaugeLayer::SetGaugeDisplayBrightness(float flValue, ReflecGaugeLayer *pGauge) {
+    pGauge->m_flDisplayBrightness = flValue * kBrightnessScale + kBrightnessBias;
 }

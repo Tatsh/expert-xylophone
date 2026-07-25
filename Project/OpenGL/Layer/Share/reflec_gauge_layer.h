@@ -23,6 +23,33 @@ class C_SPRITE_INSTANCING;
  */
 class ReflecGaugeLayer : public PlayFieldLayerBase {
 public:
+    /**
+     * @brief Sets a gauge layer's display brightness from a unit-interval value, mapped by an affine
+     * transform to @c [0.3, 1.0].
+     * @param flValue The brightness input, in the range zero to one.
+     * @param pGauge The gauge layer.
+     * @ghidraAddress 0x18ad0c
+     */
+    static void SetGaugeDisplayBrightness(float flValue, ReflecGaugeLayer *pGauge);
+
+    /**
+     * @brief Adds a delta to a player colour's Reflec gauge value.
+     * @param flDelta The amount to add.
+     * @param pGauge The gauge layer.
+     * @param nColor The player colour.
+     * @ghidraAddress 0x18abfc
+     */
+    static void AddReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nColor);
+
+    /**
+     * @brief Subtracts a delta from a player's Reflec gauge value on the matching side.
+     * @param flDelta The amount to subtract.
+     * @param pGauge The gauge layer.
+     * @param nPlayer The player id, compared against the current play side to pick the gauge side.
+     * @ghidraAddress 0x18acb8
+     */
+    static void SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer);
+
     // The number of gauge/slider sprite instancers the layer builds.
     static constexpr int kBatchCount = 4;
     // The number of part groups whose capacities the constructor accumulates.
@@ -106,27 +133,11 @@ private:
     // +0x75..+0x77 is alignment padding before the scales.
     // unsigned char m_aPad75[3]; // +0x75 (alignment padding, compiler-inserted)
     float m_aScales[2] = {};              // +0x78: two scales the constructor seeds to 1.
-    unsigned char m_aReserved80[4] = {};  // +0x80: further state, still being worked out.
+    float m_flDisplayBrightness = {};     // +0x80: the gauge display brightness (value mapped to
+                                          //        [0.3, 1.0]).
     SideGauge m_aSides[kSideCount] = {};  // +0x84: the per-side gauge state (stride 8).
     unsigned char m_aReserved94[12] = {}; // +0x94: trailing layer state.
 };
-
-/**
- * @brief Adds a delta to a player colour's Reflec gauge value.
- * @param flDelta The amount to add.
- * @param pGauge The gauge layer.
- * @param nColor The player colour.
- * @ghidraAddress 0x18abfc
- */
-void AddReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nColor);
-/**
- * @brief Subtracts a delta from a player's Reflec gauge value on the matching side.
- * @param flDelta The amount to subtract.
- * @param pGauge The gauge layer.
- * @param nPlayer The player id, compared against the current play side to pick the gauge side.
- * @ghidraAddress 0x18acb8
- */
-void SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGauge, int nPlayer);
 
 // code: language=Objective-C++
 // kate: hl Objective-C++;
