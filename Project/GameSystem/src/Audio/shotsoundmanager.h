@@ -50,6 +50,28 @@ public:
      */
     unsigned int PlaySlot(unsigned long uChannel, int iSlot, int iVariant);
 
+    /**
+     * @brief Records the highest-priority (lowest value) pending shot retrigger for this frame.
+     *
+     * Keeps the request whose priority is below the current pending priority, storing its slot and
+     * priority for the frame's timer update to play.
+     * @param nSlot The slot requesting a retrigger.
+     * @param nPriority The request's priority (lower wins).
+     * @ghidraAddress 0x1cd48c
+     */
+    void SetPendingRetrigger(int nSlot, int nPriority);
+
+    /**
+     * @brief Advances the shot retrigger cooldown and fires the pending shot when it elapses.
+     *
+     * While the cooldown timer is positive it is clamped to one frame and decremented; once it
+     * reaches zero, and unless the pending state is already idle, the pending slot is played on
+     * channel one and the timer is reset to one frame. The pending state is set idle at the end.
+     * @param flDeltaTime The elapsed time since the last frame, in milliseconds.
+     * @ghidraAddress 0x1cd538
+     */
+    void UpdateRetriggerTimer(float flDeltaTime);
+
     /** @brief The number of shot slots. */
     static constexpr int kSlotCount = 33;
     /** @brief The number of judgement variants per slot. */
@@ -67,10 +89,12 @@ private:
     unsigned char m_aPad22[2] = {};                    // +0x22
     int m_aResourceId[kSlotCount][kVariantCount] = {}; // +0x24 per-slot per-variant resource ids
     unsigned int m_aChannelHandle[kChannelCount] = {}; // +0x234 per-channel active play handles
-    int m_nCurrentPrioritySlot = {};                   // +0x23c currently-sounding slot
-    int m_nMinPriority = {};                           // +0x240 minimum retrigger priority
-    int m_nReserved244 = {};                           // +0x244
-    float m_flVolume = {};                             // +0x248 shot group volume, zero to one
+    int m_nPendingSlot = {};                           // +0x23c the pending slot to retrigger
+    // +0x240 the pending judgement variant (0 through 3), which doubles as the retrigger priority
+    // (lower wins); 5 is the idle sentinel meaning no shot is pending.
+    int m_nPendingVariant = {};
+    float m_flRetriggerTimer = {}; // +0x244 the retrigger cooldown timer, in milliseconds
+    float m_flVolume = {};         // +0x248 shot group volume, zero to one
 };
 
 // code: language=Objective-C++

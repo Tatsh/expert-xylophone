@@ -27,8 +27,12 @@ static NSString *const kSlotNames[] = {
 // The judgement variant names, substituted as the second path component.
 static NSString *const kVariantNames[] = {@"JUST", @"GREAT", @"GOOD", @"RIVAL"};
 
-// The initial minimum retrigger priority.
-constexpr int kInitialMinPriority = 5;
+// The idle sentinel for the pending retrigger priority: no shot is pending at this value.
+constexpr int kIdlePriority = 5;
+// The retrigger cooldown period, in milliseconds (one frame at 30 fps).
+constexpr float kRetriggerPeriod = 33.333336f;
+// The playback channel the timer retriggers the pending shot on.
+constexpr int kRetriggerChannel = 1;
 // The playback group index shot sounds load and play on.
 constexpr int kShotGroup = 0;
 // The scale converting the unit-interval shot volume to the audio manager's integer volume range.
@@ -46,9 +50,9 @@ NSString *ShotPath(NSString *slotName, NSString *variantName) {
 /** @ghidraAddress 0x1ccf30 */
 ShotSoundManager::ShotSoundManager() {
     m_bSharedLoaded = false;
-    m_nCurrentPrioritySlot = 0;
-    m_nMinPriority = kInitialMinPriority;
-    m_nReserved244 = 0;
+    m_nPendingSlot = 0;
+    m_nPendingVariant = kIdlePriority;
+    m_flRetriggerTimer = 0.0f;
     m_flVolume = 1.0f;
     for (int slot = 0; slot < kSlotCount; ++slot) {
         m_aSlotLoaded[slot] = false;
@@ -139,4 +143,30 @@ unsigned int ShotSoundManager::PlaySlot(unsigned long uChannel, int iSlot, int i
                                         Volume:static_cast<int>(flVolume)];
     m_aChannelHandle[uChannel] = nHandle;
     return nHandle;
+}
+
+/** @ghidraAddress 0x1cd48c */
+void ShotSoundManager::SetPendingRetrigger(int nSlot, int nPriority) {
+    // Keep the highest-priority request (lowest value) pending for this frame.
+    if (m_nPendingVariant > nPriority) {
+        m_nPendingSlot = nSlot;
+        m_nPendingVariant = nPriority;
+    }
+}
+
+/** @ghidraAddress 0x1cd538 */
+void ShotSoundManager::UpdateRetriggerTimer(float flDeltaTime) {
+    if (m_flRetriggerTimer > 0.0f) {
+        // A retrigger is cooling down: clamp it to one frame and count it down.
+        if (m_flRetriggerTimer > kRetriggerPeriod) {
+            m_flRetriggerTimer = kRetriggerPeriod;
+        }
+        m_flRetriggerTimer -= flDeltaTime;
+    } else if (m_nPendingVariant != kIdlePriority) {
+        // The cooldown has elapsed and a shot is pending: play it and restart the cooldown.
+        PlaySlot(kRetriggerChannel, m_nPendingSlot, m_nPendingVariant);
+        m_flRetriggerTimer = kRetriggerPeriod;
+    }
+    // The pending state returns to idle for the next frame.
+    m_nPendingVariant = kIdlePriority;
 }
