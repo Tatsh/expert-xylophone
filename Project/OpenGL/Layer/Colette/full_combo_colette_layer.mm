@@ -12,6 +12,10 @@ static FullComboColetteLayer *g_pFullComboColetteLayer = nullptr; // @ghidraAddr
 
 namespace {
 
+// The layout size the constructor seeds.
+constexpr float kLayoutWidth = 384.0f;
+constexpr float kLayoutHeight = 1098.0f;
+
 // The atlas the layer loads into all three of its texture fields (@ghidraAddress 0x3ceaa8).
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
@@ -32,6 +36,14 @@ constexpr int kTexParamSlotLow = 0;
 constexpr int kTexParamEnabled = 1;
 
 } // namespace
+
+/** @ghidraAddress 0x9b118 */
+FullComboColetteLayer::FullComboColetteLayer() {
+    // The base constructor runs first; the remaining state is already zero-cleared by the member
+    // initialisers, so only the layout size is seeded here.
+    m_flWidth = kLayoutWidth;
+    m_flHeight = kLayoutHeight;
+}
 
 /** @ghidraAddress 0x9b18c */
 FullComboColetteLayer *FullComboColetteLayer::shared() {

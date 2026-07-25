@@ -31,6 +31,13 @@ public:
     static FullComboColetteLayer *shared();
 
     /**
+     * @brief Constructs the layer: chains the base-layer constructor and seeds the layout size,
+     * leaving the texture, sprite, count, and effect state zero-cleared.
+     * @ghidraAddress 0x9b118
+     */
+    FullComboColetteLayer();
+
+    /**
      * @brief Lazily builds the layer's textures and sprites: loads the atlas into each of the three
      * texture fields and creates the three sprite instancers (attaching each under the background
      * layer's render object, making it visible, binding its atlas, clearing its sprite count,
@@ -65,7 +72,7 @@ private:
     };
 
     float m_flWidth = {};  // +0x08: the layer's layout width (384), seeded by the constructor.
-    float m_flHeight = {}; // +0x0c: the layer's layout height, seeded by the constructor.
+    float m_flHeight = {}; // +0x0c: the layer's layout height (1098), seeded by the constructor.
     ne::C_TEXTURE *m_pTexture0 = {}; // +0x10: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pTexture1 = {}; // +0x18: a second gm_parts2 handle.
     ne::C_TEXTURE *m_pTexture2 = {}; // +0x20: a third gm_parts2 handle.
