@@ -51,6 +51,18 @@ public:
      */
     void BuildTutorialGuideSpriteTable();
 
+    /**
+     * @brief Hides the guide, clearing its active flag.
+     * @ghidraAddress 0x10b734
+     */
+    void Stop();
+
+    /**
+     * @brief Puts the guide into its fade-in state.
+     * @ghidraAddress 0x10b73c
+     */
+    void StartFadeIn();
+
 private:
     // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
     struct Keyframe {
@@ -71,7 +83,11 @@ private:
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x18: the guide sprite instancer.
     int m_nSpriteCount = {};                 // +0x20: the instancer's initial sprite count.
     bool m_bBuilt = {};                      // +0x24: set once the tables are built.
-    unsigned char m_aReserved25[0x1b] = {};  // +0x25: further layer state, still being worked out.
+    unsigned char m_aReserved25[0xb] = {};   // +0x25: further layer state, still being worked out.
+    bool m_bActive = {};                   // +0x30: whether the guide is showing; cleared to hide.
+    unsigned char m_aReserved31[0xb] = {}; // +0x31: further layer state, still being worked out.
+    short m_nFadeState = {};               // +0x3c: the fade state (1 = fading in).
+    unsigned char m_aReserved3e[2] = {};   // +0x3e: alignment before the keyframe table.
     Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40: the nine keyframe timings.
     int m_nStepHi0 = {};                        // +0xac: a trailing step index (14).
     int m_nStepHi1 = {};                        // +0xb0: a trailing step index (15).

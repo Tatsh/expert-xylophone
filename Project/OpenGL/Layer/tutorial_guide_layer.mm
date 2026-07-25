@@ -112,3 +112,13 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
         }
     }
 }
+
+/** @ghidraAddress 0x10b734 */
+void TutorialGuideLayer::Stop() {
+    m_bActive = false;
+}
+
+/** @ghidraAddress 0x10b73c */
+void TutorialGuideLayer::StartFadeIn() {
+    m_nFadeState = 1;
+}
