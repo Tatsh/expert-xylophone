@@ -213,12 +213,14 @@ private:
     int m_nSlideRecordCount = {};   // +0x34: the number of slide records.
     int m_nChartEndTimeScaled = {}; // +0x38: the chart end time in scaled units.
     int m_nField3c = {};            // +0x3c: chart-parse scratch, still being worked out.
-    int m_nChartNoteCount = {};     // +0x40: the note count used for the scroll-speed tier.
-    // +0x44..+0x57 is chart-parse scratch, still being worked out.
-    unsigned char m_aReserved44[0x14] = {};
-    int m_aSideCount[kSideCount] = {};     // +0x58: the per-side late-note counts.
-    int m_nScrollTiming = {};              // +0x60: the computed scroll timing.
-    int m_nRemainTiming = {};              // +0x64: the computed remaining timing.
+    // +0x40: side 0's playable-note count (drives the scroll-speed tier); +0x44 is side 1's.
+    int m_nChartNoteCount = {};
+    int m_nChartNoteCountSide1 = {};          // +0x44
+    int m_aSideObjectCounts[kSideCount] = {}; // +0x48: the per-side side-object note counts.
+    int m_aPlayableCounts[kSideCount] = {};   // +0x50: the per-side playable (slide-index) counts.
+    int m_aSideCount[kSideCount] = {};        // +0x58: the per-side late-note counts.
+    int m_nScrollTiming = {};                 // +0x60: the computed scroll timing.
+    int m_nRemainTiming = {};                 // +0x64: the computed remaining timing.
     RbffNoteRecord *m_pRecords = {};       // +0x68: the note-record pool (kNoteRecordStride each).
     RbffSlideRecord *m_pSlideRecords = {}; // +0x70: the slide-record array.
     int *m_pSideIndexArray = {};           // +0x78: the per-side note-index array.
