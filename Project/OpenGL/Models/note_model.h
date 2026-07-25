@@ -33,6 +33,17 @@ public:
     int IsSideFlipped() const;
 
     /**
+     * @brief Reports whether the note is on the current play side.
+     *
+     * With no chart record, or a record whose side is out of range, the note's own-side flag decides
+     * (returning the no-side sentinel when unset). Otherwise the note is on the play side when its
+     * side matches the game system's current play side.
+     * @return @c 1 when the note is on the play side, @c 0 when not, @c 3 as the no-side sentinel.
+     * @ghidraAddress 0x134924
+     */
+    int IsOnPlaySide() const;
+
+    /**
      * @brief Returns the play-field Y bound for a virtual-lane band index.
      *
      * The nine bands run from the top edge (bands 0 through 3, at decreasing fractions of the field

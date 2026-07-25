@@ -68,6 +68,27 @@ int NoteModel::IsSideFlipped() const {
     return GameSystem::GetGameSystem()->GetPlayColor() != nSide;
 }
 
+/** @ghidraAddress 0x134924 */
+int NoteModel::IsOnPlaySide() const {
+    int nSide;
+    if (m_pRecord == nullptr) {
+        // A synthetic note (no chart record) belongs to a side only when its own-side flag is set.
+        if (!m_bOwnSide) {
+            return kNoSideSentinel;
+        }
+        nSide = 0;
+    } else {
+        nSide = m_pRecord->nSide;
+        // A record side outside the two play sides is on the play side only when the own-side flag
+        // is set (returning the no-side sentinel otherwise).
+        if (nSide > 1) {
+            return m_bOwnSide ? 1 : kNoSideSentinel;
+        }
+    }
+    // The note is on the play side when its side matches the current play side.
+    return GameSystem::GetGameSystem()->GetPlayColor() == nSide;
+}
+
 // The fixed lead time a synthetic note's hit time adds to its spawn time (@ghidraAddress 0x2fcf80).
 static constexpr float kSyntheticHitLead = 3000.0f;
 
