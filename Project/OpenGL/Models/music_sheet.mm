@@ -16,6 +16,7 @@
 #include "gamesystem.h"
 #include "note_lane_tracker.h"
 #include "rbff_chart_note.h"
+#include "rbff_stream.h"
 #include "rbffnoterecord.h"
 
 namespace {
@@ -192,6 +193,11 @@ constexpr int kSideScanSlotCount = 3;
 // The side-object note flag bit.
 constexpr unsigned int kNoteFlagSideObject = 0x40;
 
+// The chart-format version ranges: 10 through 14 take the modern parser, 6 and 7 the legacy one.
+constexpr int kMinModernVersion = 10;
+constexpr unsigned int kModernVersionSpan = 5;
+constexpr int kMinLegacyVersion = 6;
+
 } // namespace
 
 /** @ghidraAddress 0x12f828 */
@@ -207,6 +213,43 @@ MusicSheet::MusicSheet() {
     m_pIndexArrayB = nullptr;
     m_nFirstIndex = 0;
     m_nIndexCount = 0;
+}
+
+/** @ghidraAddress 0x12f970 */
+int MusicSheet::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem) {
+    // Only parse into an empty reader.
+    if (m_pRecords != nullptr) {
+        return 0;
+    }
+
+    RbffStreamCursor cursor;
+    InitRbffStreamCursor(&cursor);
+    if (!CheckRbffMagic(pBytes)) {
+        return 0;
+    }
+
+    // The format version follows the four-byte magic; the note stream begins after the 16-byte
+    // header.
+    const auto *pWords = static_cast<const unsigned int *>(pBytes);
+    m_nVersion = static_cast<int>(pWords[1]);
+    const auto *pStream = static_cast<const unsigned char *>(pBytes) + 16;
+
+    bool bParsed;
+    if (static_cast<unsigned int>(m_nVersion - kMinModernVersion) < kModernVersionSpan) {
+        bParsed = ParseNotesV10(reinterpret_cast<const unsigned long *>(pStream)) != 0;
+    } else if (static_cast<unsigned int>(m_nVersion - kMinLegacyVersion) <= 1) {
+        bParsed = (ParseNoteChartData(reinterpret_cast<const unsigned int *>(pStream)) & 1) != 0;
+    } else {
+        bParsed = false;
+    }
+
+    if (bParsed && InstallParsedNotes(pGameSystem) != 0) {
+        ResolveNoteScrollSpeeds();
+        return 1;
+    }
+    // A parse or install failure still resolves scroll speeds before reporting failure.
+    ResolveNoteScrollSpeeds();
+    return 0;
 }
 
 namespace {

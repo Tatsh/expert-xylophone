@@ -56,6 +56,20 @@ public:
      */
     RbffNoteRecord *GetNoteRecordByIndex(int nIndex);
 
+    /**
+     * @brief Parses an RBFF note-chart blob into the reader and installs its runtime state.
+     *
+     * Bails if a chart is already loaded, checks the @c 'RBFF' magic, reads the format version
+     * (rejecting versions above 13), dispatches to the version-appropriate parser (versions 10 to
+     * 14 or the legacy 6 and 7 path), then installs the parsed notes and resolves each note's scroll
+     * speeds. A failure at any step still resolves scroll speeds before returning zero.
+     * @param pBytes The raw chart bytes.
+     * @param pGameSystem The game-system singleton the install path reads.
+     * @return @c 1 on success, @c 0 on a bad magic, unsupported version, or parse failure.
+     * @ghidraAddress 0x12f970
+     */
+    int ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem);
+
     /** @brief The number of note records in the chart's pool. */
     int GetNoteCount() const {
         return m_nNoteCount;
