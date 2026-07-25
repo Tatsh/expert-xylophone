@@ -188,6 +188,9 @@ constexpr int kCompactMaxDigits = 4;
 // The character-code upper bound the glyph dispatcher ignores at or above.
 constexpr unsigned int kCharCodeBound = 0x7e;
 
+// The dot glyph character code drawn between the integer and fractional parts.
+constexpr unsigned int kDotGlyph = 0x7d;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -417,6 +420,82 @@ void ResultWindowClassicLayer::DispatchGlyphSpriteFromTable(unsigned int nSlot,
                        nSlot,
                        nIntensity,
                        nAlpha);
+}
+
+/** @ghidraAddress 0x115ac0 */
+void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
+                                                        int nFractionValue,
+                                                        const S_VECTOR2 &position,
+                                                        unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the integer part into up to four digits (at least one significant).
+    int aInteger[kCompactMaxDigits] = {};
+    int nIntegerLen = 0;
+    for (int i = 0; i < kCompactMaxDigits; ++i) {
+        aInteger[i] = nIntegerValue % 10;
+        if (aInteger[i] != 0) {
+            nIntegerLen = i + 1;
+        }
+        nIntegerValue /= 10;
+    }
+    if (nIntegerLen == 0) {
+        nIntegerLen = 1;
+    }
+
+    // The uniform advance is the zero glyph's width.
+    const float flAdvance = getPartsData(static_cast<int>(kCompactDigitBank))->flWidth;
+
+    // Split the fractional part likewise.
+    int aFraction[kCompactMaxDigits] = {};
+    int nFractionLen = 0;
+    for (int i = 0; i < kCompactMaxDigits; ++i) {
+        aFraction[i] = nFractionValue % 10;
+        if (aFraction[i] != 0) {
+            nFractionLen = i + 1;
+        }
+        nFractionValue /= 10;
+    }
+    if (nFractionLen == 0) {
+        nFractionLen = 1;
+    }
+
+    // Centre the combined run (integer digits, the dot, and fraction digits) about the position.
+    const float flRunWidth = static_cast<float>(static_cast<int>(nFractionLen * flAdvance) +
+                                                static_cast<int>(nIntegerLen * flAdvance)) +
+                             flAdvance + 2.0f;
+    float flX = position.x + flRunWidth * 0.5f;
+
+    // Emit the integer digits right to left.
+    for (int i = 0; i < nIntegerLen; ++i) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kGlyphSlot,
+                       aInteger[i] + kCompactDigitBank,
+                       S_VECTOR2{flX - flAdvance, position.y},
+                       nAlpha,
+                       0);
+        flX -= flAdvance;
+    }
+
+    // Emit the dot glyph, then step past it.
+    flX -= flAdvance + 1.0f;
+    EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, kDotGlyph, S_VECTOR2{flX, position.y}, nAlpha, 0);
+    flX -= 1.0f;
+
+    // Emit the fraction digits right to left.
+    for (int i = 0; i < nFractionLen; ++i) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kGlyphSlot,
+                       aFraction[i] + kCompactDigitBank,
+                       S_VECTOR2{flX - flAdvance, position.y},
+                       nAlpha,
+                       0);
+        flX -= flAdvance;
+    }
 }
 
 /** @ghidraAddress 0x115928 */

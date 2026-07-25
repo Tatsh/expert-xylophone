@@ -139,6 +139,23 @@ public:
     void RenderScoreDigitsCompact(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
+     * @brief Renders an integer and fractional value joined by a dot glyph, centred as one run.
+     *
+     * Splits both parts into up to four digits each (at least one), centres the combined run
+     * (integer digits, the dot, and fraction digits) about @p position using the zero glyph's
+     * advance, then emits the integer digits, the dot glyph, and the fraction digits right to left.
+     * @param nIntegerValue The integer part.
+     * @param nFractionValue The fractional part.
+     * @param position The centre position of the run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x115ac0
+     */
+    void RenderScoreDigitsWithDot(int nIntegerValue,
+                                  int nFractionValue,
+                                  const S_VECTOR2 &position,
+                                  unsigned int nAlpha);
+
+    /**
      * @brief Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and
