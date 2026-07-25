@@ -132,3 +132,14 @@ void ColetteThemeLayer::LoadBestRankFlags() {
             ScoreTracker::shared()->GetPlayRecordField10(static_cast<unsigned int>(nSide));
     }
 }
+
+/** @ghidraAddress 0x18774c */
+void ColetteThemeLayer::StartFadeOut(float flDuration) {
+    m_gradeChannel.SetStart(m_gradeChannel.GetCurrent());
+    m_gradeChannel.SetEnd(0.0f);
+    m_gradeChannel.SetDuration(flDuration);
+    m_gradeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_gradeChannel.SetCurrent(0.0f);
+    }
+}

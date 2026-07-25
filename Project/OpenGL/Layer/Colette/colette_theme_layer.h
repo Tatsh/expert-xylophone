@@ -61,6 +61,14 @@ public:
      */
     void LoadBestRankFlags();
 
+    /**
+     * @brief Begins the result grade channel's fade-out, easing it to zero over @p flDuration and
+     *        snapping to zero immediately when the duration is non-positive.
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x18774c
+     */
+    void StartFadeOut(float flDuration);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
