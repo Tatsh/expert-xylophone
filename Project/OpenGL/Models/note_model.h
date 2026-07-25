@@ -10,6 +10,18 @@
 struct RbffNoteRecord;
 
 /**
+ * @brief One path waypoint node: a start time and the two endpoints a note interpolates between.
+ *
+ * A 20-byte record; @c AdvanceNoteAlongWaypoint interpolates the note position from @c startPos
+ * towards @c endPos by the elapsed fraction since @c flStartTime.
+ */
+struct WaypointNode {
+    float flStartTime = {};  // +0x00: the node's start time.
+    S_VECTOR2 startPos = {}; // +0x04: the interpolation start position.
+    S_VECTOR2 endPos = {};   // +0x0c: the interpolation end position (the per-fraction delta).
+};
+
+/**
  * @brief One live note on the play field: its chart record, animation state, world position, and
  * judgement result.
  *
@@ -144,6 +156,20 @@ public:
      */
     void MarkTouched();
 
+    /**
+     * @brief Advances the note's position by one frame: saves the previous position, then either
+     * follows its active waypoint or integrates its velocity over the frame delta.
+     * @ghidraAddress 0x1336e4
+     */
+    void AdvancePosition();
+
+    /**
+     * @brief Interpolates the note's position along its current waypoint node by the elapsed
+     * fraction since the node's start time.
+     * @ghidraAddress 0x136960
+     */
+    void AdvanceAlongWaypoint();
+
     /** @brief The note's index in its sheet. */
     int GetNoteIndex() const {
         return m_nNoteIndex;
@@ -207,14 +233,19 @@ private:
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
-    int m_nField4f4 = {};                      // +0x4f4: post-table state, still being worked out.
-    int m_nField4f8 = {};                      // +0x4f8: post-table state, still being worked out.
-    unsigned char m_aReserved4fc[0xc] = {};    // +0x4fc
-    void *m_pField508 = {};                    // +0x508: cleared on construction.
-    unsigned char m_aReserved510[0x10] = {};   // +0x510
-    unsigned char m_aWaypointBlock[0xa0] = {}; // +0x520: memset to zero on construction.
-    unsigned char m_aReserved5c0[0x1f] = {};   // +0x5c0
-    bool m_bTouched = {};                      // +0x5df: the frame's nearest-hit winner flag.
+    int m_nField4f4 = {};                    // +0x4f4: post-table state, still being worked out.
+    int m_nField4f8 = {};                    // +0x4f8: post-table state, still being worked out.
+    unsigned char m_aReserved4fc[0xc] = {};  // +0x4fc
+    void *m_pField508 = {};                  // +0x508: cleared on construction.
+    unsigned char m_aReserved510[0x10] = {}; // +0x510
+    // +0x520: the waypoint/path animation block, zeroed on construction. +0x594 holds the
+    // waypoint-active flag that switches AdvanceNotePosition onto the interpolated path.
+    unsigned char m_aWaypointBlock0[0x74] = {}; // +0x520
+    bool m_bWaypointActive = {};                // +0x594
+    unsigned char m_aWaypointBlock1[0x2b] = {}; // +0x595
+    WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
+    unsigned char m_aReserved5c8[0x17] = {};    // +0x5c8
+    bool m_bTouched = {};                       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
     unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.

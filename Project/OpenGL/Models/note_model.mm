@@ -17,6 +17,7 @@
 #include "engineglobals.h"
 #include "gamesystem.h"
 #include "note_effect_mgr.h"
+#include "playtimer.h"
 #include "rbffnoterecord.h"
 
 // The near-lane slope and its negative, seeded by the play-field layout pass
@@ -206,6 +207,43 @@ float NoteModel::GetTargetLineY() const {
 /** @ghidraAddress 0x13609c */
 void NoteModel::MarkTouched() {
     m_bTouched = true;
+}
+
+namespace {
+// The waypoint interpolation scales the play time to the chart's hash range and offsets it by the
+// lead-in (@ghidraAddress 0x2f8540 = 1000.0, 0x308b60 = -1500.0).
+constexpr float kWaypointTimeScale = 1000.0f;
+constexpr float kWaypointTimeOffset = -1500.0f;
+} // namespace
+
+/** @ghidraAddress 0x136960 */
+void NoteModel::AdvanceAlongWaypoint() {
+    if (m_pCurrentWaypoint == nullptr) {
+        return;
+    }
+    const float flPlayTime = PlayTimer::shared()->GetPlayTime();
+    const float flFraction =
+        (flPlayTime * kWaypointTimeScale + kWaypointTimeOffset) - m_pCurrentWaypoint->flStartTime;
+    // position = startPos + endPos * fraction.
+    S_VECTOR2 delta = m_pCurrentWaypoint->endPos;
+    ScaleVector2(&delta, flFraction);
+    AddVector2(&delta, &m_pCurrentWaypoint->startPos);
+    m_pos = delta;
+}
+
+/** @ghidraAddress 0x1336e4 */
+void NoteModel::AdvancePosition() {
+    const float flDelta = PlayTimer::shared()->GetFrameDelta();
+    m_prevPos = m_pos;
+    if (m_bWaypointActive) {
+        AdvanceAlongWaypoint();
+        return;
+    }
+    // position += velocity * frameDelta.
+    S_VECTOR2 step = m_velocity;
+    ScaleVector2(&step, flDelta);
+    AddVector2(&step, &m_pos);
+    m_pos = step;
 }
 
 /** @ghidraAddress 0x1352b8 */

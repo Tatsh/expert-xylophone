@@ -40,10 +40,11 @@ public:
     }
 
 private:
-    double m_dBaseTime = {}; // +0x00: the timing origin; a resume adds the paused interval to it.
-    // +0x08..+0x1b: further timing state, still being worked out.
-    char m_reserved08[0x14] = {};    // +0x08
-    int m_nOsVersionTier = {};       // +0x1c
+    double m_dBaseTime = {};   // +0x00: the timing origin; a resume adds the paused interval to it.
+    char m_reserved08[8] = {}; // +0x08: further timing state, still being worked out.
+    float m_flPlayTime = {};   // +0x10: the current play time, in scaled units.
+    float m_flFrameDelta = {}; // +0x14: the per-frame time step.
+    int m_nOsVersionTier = {}; // +0x1c
     float m_flDelayFrameOffset = {}; // +0x20
     // +0x24..+0x2f: further timing state, still being worked out.
     char m_reserved24[0xc] = {}; // +0x24
@@ -62,6 +63,16 @@ public:
     /** @brief Whether the timer is currently paused. */
     bool IsPaused() const {
         return m_bPaused;
+    }
+
+    /** @brief The current play time, in scaled units. */
+    float GetPlayTime() const {
+        return m_flPlayTime;
+    }
+
+    /** @brief The per-frame time step. */
+    float GetFrameDelta() const {
+        return m_flFrameDelta;
     }
 
     /**
