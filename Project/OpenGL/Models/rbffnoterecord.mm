@@ -28,6 +28,6 @@ RbffNoteRecord::RbffNoteRecord() {
     nColorIndex = kLinkNone;
     nColor = kLinkNone;
     nTimingSel = kTimingSelNone;
-    nLinkB = kLinkNone;
+    nChosenTarget = kLinkNone;
     // Every other field is left at its zero default (the binary explicitly zeroes them).
 }

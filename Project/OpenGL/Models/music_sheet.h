@@ -134,6 +134,13 @@ public:
     RbffNoteRecord *FindChainNote(int nLane, int nTime, int nField, int nStartIndex);
 
     /**
+     * @brief Clears each eligible note's green-target availability bitmap of the slots blocked by
+     * overlapping or chained notes, so a green note only offers reachable targets.
+     * @ghidraAddress 0x131450
+     */
+    void AssignGreenTargets();
+
+    /**
      * @brief Returns the last note of the chain @p pNote belongs to.
      *
      * Asserts @p pNote is a chain note that is not already the tail, then follows the chain's

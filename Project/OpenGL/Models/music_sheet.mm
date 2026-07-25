@@ -621,6 +621,88 @@ RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int 
     return nullptr;
 }
 
+/** @ghidraAddress 0x131450 */
+void MusicSheet::AssignGreenTargets() {
+    // First pass: record each hold note's or colour-resolved note's chosen target and mark its slot.
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        int nTarget = -1;
+        if (record.nHoldKind == 1) {
+            if (record.nColorTone != -1) {
+                nTarget = record.nColorTone;
+            }
+        } else if (static_cast<unsigned int>(record.nTimingSel) < 10) {
+            nTarget = record.nTimingSel;
+        }
+        if (nTarget != -1) {
+            record.nChosenTarget = nTarget;
+            record.aGreenTargets[nTarget] = 1;
+        }
+    }
+
+    // Second pass: for eligible green notes, initialise the availability bitmap then clear the slots
+    // blocked by overlapping and chained notes.
+    for (int i = 0; i < m_nNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        const bool bEligible =
+            record.nHoldKind != 1 && static_cast<unsigned int>(record.nTimingSel) >= 10 &&
+            ((record.dwFlags & kNoteFlagLongHead) == 0 || record.chainLink.IsHead());
+        if (!bEligible) {
+            continue;
+        }
+
+        // The seven reachable targets start available; the three beyond are not.
+        for (int nSlot = 0; nSlot < 7; ++nSlot) {
+            record.aGreenTargets[nSlot] = 1;
+        }
+        for (int nSlot = 7; nSlot < 11; ++nSlot) {
+            record.aGreenTargets[nSlot] = 0;
+        }
+
+        const int nHitEnd = record.nHitTime + record.nHitWindow;
+        // Clear the slots taken by notes overlapping this one's span; each search resumes past the
+        // note it found.
+        int nSearchStart = 0;
+        for (RbffNoteRecord *pOther =
+                 FindNoteInTimeRange(record.nLane, nHitEnd, nHitEnd + record.nRoute, nSearchStart);
+             pOther != nullptr;
+             pOther = FindNoteInTimeRange(
+                 record.nLane, nHitEnd, nHitEnd + record.nRoute, nSearchStart)) {
+            nSearchStart = pOther->nNoteId + 1;
+            if (pOther != &record && pOther->nChosenTarget != -1) {
+                record.aGreenTargets[pOther->nChosenTarget] = 0;
+                // A hold note also blocks its colour-tone slot.
+                if (pOther->nType == 1 && pOther->nHoldKind == 1) {
+                    record.aGreenTargets[pOther->nColorTone] = 0;
+                }
+            }
+        }
+
+        // Walk the chain forward (field -3) and backward (field -4); each step re-derives the search
+        // from the note just found, and each side trims the bitmap from one end.
+        int nForward = 0;
+        for (RbffNoteRecord *pChain = &record;
+             (pChain = FindChainNote(
+                  pChain->nLane, pChain->nHitTime + pChain->nHitWindow, -3, pChain->nNoteId)) !=
+             nullptr;) {
+            ++nForward;
+        }
+        int nBackward = 0;
+        for (RbffNoteRecord *pChain = &record;
+             (pChain = FindChainNote(
+                  pChain->nLane, pChain->nHitTime + pChain->nHitWindow, -4, pChain->nNoteId)) !=
+             nullptr;) {
+            ++nBackward;
+        }
+        if (nForward > 0) {
+            std::memset(record.aGreenTargets, 0, nForward);
+        }
+        if (nBackward > 0) {
+            std::memset(&record.aGreenTargets[7 - nBackward], 0, nBackward);
+        }
+    }
+}
+
 /** @ghidraAddress 0x130cbc */
 RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
     // The start note must be a chain note and must not already be the chain's tail.
