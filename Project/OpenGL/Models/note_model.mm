@@ -61,6 +61,21 @@ int NoteModel::IsSideFlipped() const {
     return GameSystem::GetGameSystem()->GetPlayColor() != nSide;
 }
 
+/** @ghidraAddress 0x1352b8 */
+float NoteModel::GetLaneX() const {
+    int nKind;
+    int nLane;
+    if (m_pRecord != nullptr) {
+        nKind = m_pRecord->nHoldKind;
+        nLane = m_pRecord->nDisplayLane;
+    } else {
+        // A synthetic note (no record) derives its kind and lane from the own-side flag.
+        nKind = m_bOwnSide ? 0 : kNoSideSentinel;
+        nLane = m_bOwnSide ? -1 : kNoSideSentinel;
+    }
+    return GetNoteLaneFraction(nKind, nLane) * GameSystem::GetGameSystem()->GetSheetInsetHalfX();
+}
+
 /** @ghidraAddress 0x136afc */
 void InitNoteLaneTable() {
     // The six across-field lane fractions are symmetric about the centre lane (which is zero).

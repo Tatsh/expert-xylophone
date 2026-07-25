@@ -44,6 +44,17 @@ public:
      */
     static float GetVirtualBoundY(int nBand);
 
+    /**
+     * @brief Returns the note's across-field X position.
+     *
+     * Looks up the lane fraction for the note's hold kind and display lane (from its chart record,
+     * or the own-side fallback for a synthetic note) and scales it by the game system's sheet-inset
+     * half-width.
+     * @return The across-field X position.
+     * @ghidraAddress 0x1352b8
+     */
+    float GetLaneX() const;
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 

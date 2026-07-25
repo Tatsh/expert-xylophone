@@ -82,6 +82,10 @@ public:
     float GetSheetFarY() const {
         return m_flSheetFarY;
     }
+    /** @brief Returns the note sheet's half-width inset, the across-field position scale. */
+    float GetSheetInsetHalfX() const {
+        return m_flSheetInsetHalfX;
+    }
     /** @brief Returns the play-field scale. */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;
