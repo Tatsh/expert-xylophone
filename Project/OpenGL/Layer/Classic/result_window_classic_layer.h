@@ -283,6 +283,19 @@ public:
     void RenderDecimalWithDotGlyph(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
+     *
+     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
+     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
+     * sets its UV size to the used region (image size over allocated power-of-two size). Does nothing
+     * if the slot is empty or @p pTexture is null.
+     * @param nSlot The instancer slot.
+     * @param pTexture The texture to bind.
+     * @ghidraAddress 0x115348
+     */
+    void SetInstancerTextureAndRefreshSlots(unsigned int nSlot, ne::C_TEXTURE *pTexture);
+
+    /**
      * @brief Emits one glyph sprite anchored by a separator record, at that record's scale.
      *
      * Fetches the separator record @p nSepIndex, which supplies the anchored base position (offset

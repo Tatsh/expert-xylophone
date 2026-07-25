@@ -617,6 +617,33 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
     }
 }
 
+/** @ghidraAddress 0x115348 */
+void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
+                                                                  ne::C_TEXTURE *pTexture) {
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nCapacity = static_cast<int>(pInstancer->GetCapacity());
+    pInstancer->SetRefCountedMember(pTexture);
+    if (pTexture == nullptr) {
+        return;
+    }
+
+    // Refresh every sprite slot to the newly bound texture's dimensions.
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    for (int nSprite = 0; nSprite < nCapacity; ++nSprite) {
+        pInstancer->SetSpriteSize(nSprite, spriteSize);
+        pInstancer->SetSpriteUvOrigin(nSprite, S_VECTOR2{});
+        pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    }
+}
+
 /** @ghidraAddress 0x116dc0 */
 void ResultWindowClassicLayer::RenderGlyphAtSeparator(unsigned int nSlot,
                                                       int nSepIndex,
