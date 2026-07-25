@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -43,6 +44,20 @@ public:
 
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 4;
+    // The number of player sides the result grade display tracks.
+    static constexpr int kSideCount = 2;
+
+    /**
+     * @brief Advances the result grade-gauge reveal channel by @p flDeltaTime.
+     * @ghidraAddress 0x120a74
+     */
+    void AdvanceGradeChannel(float flDeltaTime);
+
+    /**
+     * @brief Seeds the per-side grade values from the active score tracker's play records.
+     * @ghidraAddress 0x1208c4
+     */
+    void InitializeGradeValuesFromTracker();
 
 private:
     /**
@@ -67,10 +82,12 @@ private:
     bool m_bReserved61 = {}; // +0x61
     // unsigned char m_aPad62[2]; // +0x62 (alignment padding, compiler-inserted)
     int m_nReserved64 = {}; // +0x64
-    // +0x68..+0x87: further layer state (three 8-byte fields and one int the constructor zero-clears)
-    // still being worked out, kept to preserve the allocation size.
-    unsigned char m_aReserved68[0x20] = {}; // +0x68
-    int m_aCellCounts[2] = {};              // +0x88: a two-entry {4, 4} cell-count record.
+    // +0x68..+0x6b: further layer state the constructor zero-clears, still being worked out.
+    unsigned char m_aReserved68[4] = {}; // +0x68
+    LinearTween m_gradeChannel;          // +0x6c: the result grade-gauge reveal channel.
+    // +0x80..+0x87: the cached viewport size, still being worked out.
+    unsigned char m_aReserved80[8] = {}; // +0x80
+    int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side grade value from the play record.
     // +0x90..+0x97: the remaining layer state, still being worked out.
     unsigned char m_aReserved90[8] = {}; // +0x90
 };

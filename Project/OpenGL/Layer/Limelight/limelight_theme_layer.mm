@@ -1,6 +1,7 @@
 #include "limelight_theme_layer.h"
 
 #include "../Share/bg_layer.h"
+#include "ScoreTracker.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -76,4 +77,17 @@ void LimelightThemeLayer::InitFullComboLayerTextures() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x120a74 */
+void LimelightThemeLayer::AdvanceGradeChannel(float flDeltaTime) {
+    m_gradeChannel.Advance(flDeltaTime);
+}
+
+/** @ghidraAddress 0x1208c4 */
+void LimelightThemeLayer::InitializeGradeValuesFromTracker() {
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        m_aGradeValues[nSide] =
+            ScoreTracker::shared()->GetPlayRecordField10(static_cast<unsigned int>(nSide));
+    }
 }
