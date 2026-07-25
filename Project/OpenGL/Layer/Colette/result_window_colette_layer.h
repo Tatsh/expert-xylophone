@@ -129,6 +129,32 @@ private:
                             unsigned int nIntensity,
                             unsigned int nAlpha);
 
+    /**
+     * @brief Emits one glyph sprite from the phone parts table by part id, dimmable.
+     *
+     * Looks up the glyph's placement rectangle from the phone parts table indexed by @p nPartId and
+     * its texture rectangle from the Colette glyph UV palette, then appends the quad to the slot at
+     * @p position with the given rotation and scale. Part ids at or above the phone parts table count
+     * are ignored. The main pass draws at full intensity, the dimmed pass at half.
+     * @param nSlot The slot index (0 through 7).
+     * @param nPartId The glyph part id (below the phone parts table count).
+     * @param position The glyph's world position.
+     * @param nAlpha The glyph alpha.
+     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x79df0
+     */
+    void RenderDimmableGlyphFromTable(int nSlot,
+                                      int nPartId,
+                                      const S_VECTOR2 &position,
+                                      unsigned int nAlpha,
+                                      int bDimmed,
+                                      float flRotation,
+                                      float flScaleX,
+                                      float flScaleY);
+
     // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
     // are still being worked out.
     unsigned char m_aReserved08[0x08] = {};   // +0x08

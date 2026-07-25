@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include "../Limelight/limelight_parts_data_table.h"
 #import "deviceenvironment.h"
 #import "gamesystem.h"
 #include "neSpriteInstancing.h"
@@ -20,8 +21,13 @@ PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghid
 
 // The Colette parts tables (declared in parts_data_table.h): zero-initialised here to match the
 // binary's __common segment, filled at runtime.
-PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount] = {};   // @ghidraAddress 0x3d0010
-PartsDataRecord g_aColettePartsPhone[kColettePartsRecordCount] = {}; // @ghidraAddress 0x3d20b0
+PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount] = {};        // @ghidraAddress 0x3d0010
+PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount] = {}; // @ghidraAddress 0x3d20b0
+
+// The Colette glyph UV-palette table the dimmable-glyph emitter indexes by a parts record's
+// UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM data
+// in the binary; its length is not referenced by the code.
+extern const UvPaletteEntry g_aColetteGlyphUvPalette[]; // @ghidraAddress 0x2f5e88
 
 namespace {
 
@@ -38,6 +44,10 @@ constexpr unsigned int kSlotCapacities[] = {1, 500, 1, 1, 1, 2, 2, 1};
 // binds the parts atlas (+0x18) and slot 7 binds the overlay (+0x20).
 constexpr int kPartsSlot = 1;
 constexpr int kOverlaySlot = 7;
+
+// The sprite colour intensities for the main pass and the half-intensity dimmed pass.
+constexpr unsigned int kIntensityFull = 0xff;
+constexpr unsigned int kIntensityDimmed = 0x80;
 
 // The fixed glyph-table base indices and parts scale the builder stamps into the layer.
 constexpr int kGlyphBaseA = 0x4e;
@@ -234,4 +244,33 @@ void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
     pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
     pInstancer->SetSpriteColor(nSprite, nIntensity, nIntensity, nIntensity, nAlpha);
     pInstancer->SetSpriteCount(nSprite + 1);
+}
+
+/** @ghidraAddress 0x79df0 */
+void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
+                                                            int nPartId,
+                                                            const S_VECTOR2 &position,
+                                                            unsigned int nAlpha,
+                                                            int bDimmed,
+                                                            float flRotation,
+                                                            float flScaleX,
+                                                            float flScaleY) {
+    if (nPartId >= kColettePhonePartsRecordCount) {
+        return;
+    }
+    // The glyph metrics come from the phone parts table indexed by the part id; the texture
+    // rectangle from the Colette glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
+    const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bDimmed != 0 ? kIntensityDimmed : kIntensityFull;
+    appendSpriteToSlot(nSlot,
+                       position,
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nIntensity,
+                       nAlpha);
 }
