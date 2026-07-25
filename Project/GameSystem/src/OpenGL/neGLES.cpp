@@ -148,6 +148,14 @@ constexpr int kTexParamValueMax = 8;
 
 } // namespace
 
+// The global OpenGL ES render-state singleton, created lazily by EnsureGLRenderStateSingleton.
+neGLESRenderer *g_glesRenderer = nullptr; // @ghidraAddress 0x3dc250
+
+/** @ghidraAddress 0x20f50 */
+neGLESRenderer *GetGlRenderer() {
+    return g_glesRenderer;
+}
+
 /** @ghidraAddress 0x21a60 */
 void neGLESRenderer::GenTexture(unsigned int *pOutHandle) {
     glGenTextures(1, pOutHandle);
