@@ -92,6 +92,28 @@ public:
      */
     float GetHitTime() const;
 
+    /**
+     * @brief Returns the note's kind, or -1 when it has no chart record.
+     * @return The note kind.
+     * @ghidraAddress 0x136a20
+     */
+    int GetKind() const;
+
+    /**
+     * @brief Returns the number of slide points in a slide (type 3) note.
+     *
+     * Assumes a chart record is present (a slide note always has one).
+     * @return The slide-point count.
+     * @ghidraAddress 0x1369e8
+     */
+    int GetSlidePointCount() const;
+
+    /**
+     * @brief Marks this note as touched (the frame's nearest-hit winner).
+     * @ghidraAddress 0x13609c
+     */
+    void MarkTouched();
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 
@@ -112,7 +134,8 @@ private:
     S_VECTOR2 m_pos = {};           // +0x34: the current position.
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
-    unsigned char m_aReserved4c[0x594] = {}; // +0x4c: animation, long-note, and waypoint state.
+    unsigned char m_aReserved4c[0x593] = {}; // +0x4c: animation, long-note, and waypoint state.
+    bool m_bTouched = {}; // +0x5df: set when this note is the frame's nearest-hit winner.
     bool m_bOwnSide = {}; // +0x5e0: the note's own side flag, used when it has no record.
     unsigned char m_aReserved5e1[0xb] = {}; // +0x5e1
 };

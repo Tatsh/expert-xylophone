@@ -102,6 +102,24 @@ int NoteModel::GetType() const {
     return m_bOwnSide ? 0 : kIdleTypeSentinel;
 }
 
+/** @ghidraAddress 0x136a20 */
+int NoteModel::GetKind() const {
+    if (m_pRecord != nullptr) {
+        return m_pRecord->nKind;
+    }
+    return -1;
+}
+
+/** @ghidraAddress 0x1369e8 */
+int NoteModel::GetSlidePointCount() const {
+    return m_pRecord->nSlidePointCount;
+}
+
+/** @ghidraAddress 0x13609c */
+void NoteModel::MarkTouched() {
+    m_bTouched = true;
+}
+
 /** @ghidraAddress 0x1352b8 */
 float NoteModel::GetLaneX() const {
     int nKind;
