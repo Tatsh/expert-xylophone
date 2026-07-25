@@ -219,9 +219,13 @@ C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity) {
     m_aTexParams[3] = kDefaultTexParams[3];
 }
 
+// The deleting-destructor variant at 0x2fa70 (the D0 vtable thunk the compiler emits for
+// `delete pBatch`: it runs this destructor, then frees the object) shares this reconstruction; it is
+// a compiler artifact with no distinct source function.
 /**
  * @ghidraAddress 0x30c80
  * @ghidraAddress 0x2f968
+ * @ghidraAddress 0x2fa70
  */
 C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
     // Release the texture reference, free the per-sprite arrays and the vertex scratch, and delete
@@ -242,15 +246,6 @@ C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
     delete[] m_pSpriteColorArray;
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
     GetGlRenderer()->DeleteBuffer(m_dwIndexVbo);
-}
-
-// COMPILER-GENERATED: the deleting-destructor variant (vtable slot) the compiler emits for
-// `delete pBatch` — it runs the destructor above and then frees the object. Reconstructed to match
-// the binary; there is no distinct hand-written source for it.
-/** @ghidraAddress 0x2fa70 */
-void C_SPRITE_INSTANCING_deletingDtor(C_SPRITE_INSTANCING *pBatch) {
-    pBatch->~C_SPRITE_INSTANCING();
-    ::operator delete(pBatch);
 }
 
 /** @ghidraAddress 0x31834 */

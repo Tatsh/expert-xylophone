@@ -114,7 +114,11 @@ C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
     m_aTexParams[3] = kDefaultTexParams[3];
 }
 
+// The deleting-destructor variant at 0x27530 (the D0 vtable thunk the compiler emits for
+// `delete pMesh`: it runs this destructor, then frees the object) shares this reconstruction; it is
+// a compiler artifact with no distinct source function.
 /** @ghidraAddress 0x27440 */
+/** @ghidraAddress 0x27530 */
 C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
     // Release the bound texture.
     if (m_pTexture != nullptr) {
@@ -143,15 +147,6 @@ C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
     if (!m_bIndexBufferExternal) {
         pRenderer->DeleteBuffer(m_dwIndexVbo);
     }
-}
-
-// COMPILER-GENERATED: the deleting-destructor variant (vtable slot) the compiler emits for
-// `delete pMesh` — it runs the destructor above and then frees the object. Reconstructed to match
-// the binary; there is no distinct hand-written source for it.
-/** @ghidraAddress 0x27530 */
-void C_DRAW_POLYGON_2D_deletingDtor(C_DRAW_POLYGON_2D *pMesh) {
-    pMesh->~C_DRAW_POLYGON_2D();
-    ::operator delete(pMesh);
 }
 
 /** @ghidraAddress 0x27568 */
