@@ -617,6 +617,43 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
     }
 }
 
+/** @ghidraAddress 0x116dc0 */
+void ResultWindowClassicLayer::RenderGlyphAtSeparator(unsigned int nSlot,
+                                                      int nSepIndex,
+                                                      unsigned int nCharCode,
+                                                      const S_VECTOR2 &offset,
+                                                      unsigned int nAlpha) {
+    if (nCharCode >= kCharCodeBound) {
+        return;
+    }
+    if (nSepIndex < 0 || nSepIndex >= kClassicSeparatorRecordCount) {
+        return;
+    }
+
+    // The glyph metrics come from the phone parts table indexed by the character code; the texture
+    // rectangle from the glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
+    const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
+
+    // The separator record supplies the anchored base position and this sprite's scale and rotation:
+    // its width field is the X scale, its height field is the rotation.
+    const PhoneLayoutRecord *pSeparator = getSeparator_Phone(nSepIndex);
+    float flAnchoredX = pSeparator->flX;
+    float flAnchoredY = pSeparator->flY;
+    ApplyAnchorOffset(pSeparator->nAnchorMode, &flAnchoredX, &flAnchoredY);
+
+    AppendSpriteToSlot(S_VECTOR2{flAnchoredX + offset.x, flAnchoredY + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       pSeparator->flHeight,
+                       S_VECTOR2{pSeparator->flWidth, 1.0f},
+                       nSlot,
+                       kIntensityFull,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x116950 */
 void ResultWindowClassicLayer::BlitInstancerTextureSlot(unsigned int nSlot,
                                                         const S_VECTOR2 &position,

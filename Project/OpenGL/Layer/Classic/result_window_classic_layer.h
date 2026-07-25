@@ -283,6 +283,28 @@ public:
     void RenderDecimalWithDotGlyph(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Emits one glyph sprite anchored by a separator record, at that record's scale.
+     *
+     * Fetches the separator record @p nSepIndex, which supplies the anchored base position (offset
+     * relative to the viewport per its anchor mode), the sprite X scale (its width field), and the
+     * sprite rotation (its height field). Looks up the glyph's placement and glyph UV rectangles by
+     * @p nCharCode, adds @p offset to the anchored position, and appends the full-intensity quad.
+     * Character codes at or above the glyph-table bound, or separator indices at or above the table
+     * count, are ignored.
+     * @param nSlot The instancer slot to append to.
+     * @param nSepIndex The separator-record index.
+     * @param nCharCode The glyph character code (below the glyph-table bound).
+     * @param offset The offset added to the anchored position.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x116dc0
+     */
+    void RenderGlyphAtSeparator(unsigned int nSlot,
+                                int nSepIndex,
+                                unsigned int nCharCode,
+                                const S_VECTOR2 &offset,
+                                unsigned int nAlpha);
+
+    /**
      * @brief Draws a slot's whole bound texture image as one quad at a position and size.
      *
      * Reads the slot's bound texture, computes the used UV region (image size over allocated
