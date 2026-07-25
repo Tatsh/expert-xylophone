@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "note_chain_link.h"
+
 /**
  * @brief One slide sub-record: a slide point's note index, timing selector, and value pair.
  *
@@ -31,43 +33,39 @@ struct RbffSlideRecord {
  * @ghidraAddress RbffNoteRecord (engine chart-note struct, 184 bytes)
  */
 struct RbffNoteRecord {
-    int nTimeA = {};                // +0x00: the note's primary time stamp.
-    int nTimeB = {};                // +0x04: the note's secondary time stamp.
-    int nNoteId = {};               // +0x08: the note identifier.
-    int nStartTime = {};            // +0x0c: the note's start time.
-    int nPointCount = {};           // +0x10: the number of path points.
-    unsigned char m_aPad14[4] = {}; // +0x14
-    short *pPathPoints = {};        // +0x18: the packed path-point array.
-    int nKind = {};                 // +0x20: the note kind.
-    int nSide = {};                 // +0x24: the note's play side.
-    int nHoldKind = {};             // +0x28: the hold-note kind.
-    int nType = {};                 // +0x2c: the note type.
-    unsigned char m_aPad30[8] = {}; // +0x30
-    unsigned int dwFlags = {};      // +0x38: the note flag bits.
-    // +0x3c: the 12-byte chain-link block; both indices default to the -1 empty marker and the
-    // trailing eight bytes are cleared. @c InitializeEmptyNoteRecord seeds it.
-    short nChainLink = {};               // +0x3c: the previous chain-segment index (-1 = head).
-    short nChainLinkNext = {};           // +0x3e: the next chain-segment index (-1 = tail).
-    unsigned char m_aChainExtra[8] = {}; // +0x40: the chain block's cleared tail.
-    int nHitTime = {};                   // +0x48: the scheduled hit time.
-    int nHitWindow = {};                 // +0x4c: the hit-window width.
-    unsigned char m_aPad50[4] = {};      // +0x50
-    int nLane = {};                      // +0x54: the note's lane.
-    int nLaneSlot = {};                  // +0x58: the lane slot.
-    unsigned char m_aPad5c[4] = {};      // +0x5c
-    int nRoute = {};                     // +0x60: the note's route.
-    unsigned char m_aPad64[4] = {};      // +0x64
-    int nChainOffset = {};               // +0x68: the chain offset.
-    int nColorTone = {};                 // +0x6c: the colour tone.
-    bool bBasicNote = {};                // +0x70: whether the note is a basic note.
-    unsigned char m_aPad71[3] = {};      // +0x71
-    int nDisplayLane = {};               // +0x74: the display lane.
-    int nColorIndex = {};                // +0x78: the colour index.
-    int nColor = {};                     // +0x7c: the packed colour.
-    int nLinkA = {};                     // +0x80: the primary link.
-    int nTimingSel = {};                 // +0x84: the timing selector.
-    unsigned char m_aPad88[12] = {};     // +0x88
-    int nLinkB = {};                     // +0x94: the secondary link.
+    int nTimeA = {};                 // +0x00: the note's primary time stamp.
+    int nTimeB = {};                 // +0x04: the note's secondary time stamp.
+    int nNoteId = {};                // +0x08: the note identifier.
+    int nStartTime = {};             // +0x0c: the note's start time.
+    int nPointCount = {};            // +0x10: the number of path points.
+    unsigned char m_aPad14[4] = {};  // +0x14
+    short *pPathPoints = {};         // +0x18: the packed path-point array.
+    int nKind = {};                  // +0x20: the note kind.
+    int nSide = {};                  // +0x24: the note's play side.
+    int nHoldKind = {};              // +0x28: the hold-note kind.
+    int nType = {};                  // +0x2c: the note type.
+    unsigned char m_aPad30[8] = {};  // +0x30
+    unsigned int dwFlags = {};       // +0x38: the note flag bits.
+    NoteChainLink chainLink = {};    // +0x3c: the 12-byte chain-link block threading chain notes.
+    int nHitTime = {};               // +0x48: the scheduled hit time.
+    int nHitWindow = {};             // +0x4c: the hit-window width.
+    unsigned char m_aPad50[4] = {};  // +0x50
+    int nLane = {};                  // +0x54: the note's lane.
+    int nLaneSlot = {};              // +0x58: the lane slot.
+    unsigned char m_aPad5c[4] = {};  // +0x5c
+    int nRoute = {};                 // +0x60: the note's route.
+    unsigned char m_aPad64[4] = {};  // +0x64
+    int nChainOffset = {};           // +0x68: the chain offset.
+    int nColorTone = {};             // +0x6c: the colour tone.
+    bool bBasicNote = {};            // +0x70: whether the note is a basic note.
+    unsigned char m_aPad71[3] = {};  // +0x71
+    int nDisplayLane = {};           // +0x74: the display lane.
+    int nColorIndex = {};            // +0x78: the colour index.
+    int nColor = {};                 // +0x7c: the packed colour.
+    int nLinkA = {};                 // +0x80: the primary link.
+    int nTimingSel = {};             // +0x84: the timing selector.
+    unsigned char m_aPad88[12] = {}; // +0x88
+    int nLinkB = {};                 // +0x94: the secondary link.
     bool bScrollVisible = {};       // +0x98: whether the note is on-screen (startSpeed < endSpeed).
     unsigned char m_aPad99[3] = {}; // +0x99
     float flScrollStartSpeed = {};  // +0x9c: the resolved scroll speed at the note's start.
@@ -76,21 +74,6 @@ struct RbffNoteRecord {
     RbffSlideRecord *pSlideRecord = {}; // +0xa8: the slide sub-record, when present.
     int nSlidePointCount = {};          // +0xb0: the number of slide points.
     unsigned char m_aPadB4[4] = {};     // +0xb4
-
-    /**
-     * @brief Seeds the 12-byte chain-link block to the empty state.
-     *
-     * Sets both chain-segment indices to the -1 empty marker and clears the eight-byte tail.
-     * @ghidraAddress 0x12eadc
-     */
-    void InitEmptyChain();
-
-    /**
-     * @brief Reports whether this record heads its chain (has no previous chain segment).
-     * @return @c true when the previous chain-segment index is the -1 empty marker.
-     * @ghidraAddress 0x12eaf0
-     */
-    bool IsChainHead() const;
 };
 
 // code: language=C++
