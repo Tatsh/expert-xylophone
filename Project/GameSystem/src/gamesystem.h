@@ -365,6 +365,12 @@ public:
     static GameSystem *GetGameSystem();
 
 private:
+    /**
+     * @brief Constructs the singleton, seeding the non-default (non-zero) fields; every other field
+     * is zero-initialised. Inlined into @c GetGameSystem in the binary.
+     */
+    GameSystem();
+
     GameScene *m_pCurrentScene = {};     // +0x00: the active game scene, or null when none runs.
     double m_dScreenX = {};              // +0x08
     double m_dScreenY = {};              // +0x10
