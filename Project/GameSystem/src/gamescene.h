@@ -32,7 +32,8 @@ public:
     void ClearLayerStateField();
 
 private:
-    int m_nState = {}; // +0x4c
+    int m_nState = {};        // +0x4c: the scene's current state.
+    int m_nStateSubStep = {}; // +0x50: a per-state sub-step, cleared whenever the state is set.
 };
 
 /**

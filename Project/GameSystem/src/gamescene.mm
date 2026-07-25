@@ -18,6 +18,22 @@ constexpr int kActivePlayState = 0x11;
 
 } // namespace
 
+/** @ghidraAddress 0x14aff8 */
+void GameScene::AdvanceGameSceneStateFrom11() {
+    // Only the active-play state advances; the binary's 64-bit store also clears the sub-step.
+    if (m_nState == kActivePlayState) {
+        m_nState = kActivePlayState + 1;
+        m_nStateSubStep = 0;
+    }
+}
+
+/** @ghidraAddress 0x14a510 */
+void GameScene::ClearLayerStateField() {
+    // The binary clears the state and its sub-step together with one 64-bit store.
+    m_nState = 0;
+    m_nStateSubStep = 0;
+}
+
 /** @ghidraAddress 0x14b010 */
 void GameScene::PausePlayTimerAndBgm() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
