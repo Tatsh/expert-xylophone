@@ -80,6 +80,24 @@ public:
      */
     void ReserveNoteLane(int nTimeStart, int nDuration, int nPlayer, int nLane, bool bSpread);
 
+    /**
+     * @brief Assigns a note to the least-conflicting lane for its time span.
+     *
+     * Expires lane slots whose span has passed, buckets the seven lanes by how many overlap the
+     * note's span, and among the least-occupied bucket shuffles the candidates and picks the first
+     * lane not flagged in @p pLaneSkip. The chosen lane (and, for a spread note, its neighbours) is
+     * then reserved, with the chosen lane taking an extra tail.
+     * @param nTimeStart The span start time.
+     * @param nDuration The span duration.
+     * @param nPlayer The player side.
+     * @param bShortTail Whether the chosen lane takes the short tail rather than the long one.
+     * @param pLaneSkip A seven-entry table of per-lane skip flags.
+     * @return The assigned lane index (0 to 6), or @c -1 when the span is empty.
+     * @ghidraAddress 0x148dd8
+     */
+    int AssignNoteLane(
+        int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneSkip);
+
 private:
     void *m_pVtable = {};                   // +0x00: the tracker's vtable.
     Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
