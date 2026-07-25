@@ -145,6 +145,15 @@ C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
     }
 }
 
+// COMPILER-GENERATED: the deleting-destructor variant (vtable slot) the compiler emits for
+// `delete pMesh` — it runs the destructor above and then frees the object. Reconstructed to match
+// the binary; there is no distinct hand-written source for it.
+/** @ghidraAddress 0x27530 */
+void C_DRAW_POLYGON_2D_deletingDtor(C_DRAW_POLYGON_2D *pMesh) {
+    pMesh->~C_DRAW_POLYGON_2D();
+    ::operator delete(pMesh);
+}
+
 /** @ghidraAddress 0x27568 */
 void C_DRAW_POLYGON_2D::AllocateBuffers() {
     neGLESRenderer *pRenderer = GetGlRenderer();
