@@ -617,6 +617,112 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
     }
 }
 
+/** @ghidraAddress 0x116950 */
+void ResultWindowClassicLayer::BlitInstancerTextureSlot(unsigned int nSlot,
+                                                        const S_VECTOR2 &position,
+                                                        const S_VECTOR2 &size,
+                                                        unsigned int nAlpha) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+    // The used UV region is the image size over the allocated power-of-two size.
+    const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
+                               static_cast<float>(pTexture->GetAllocWidth()),
+                           static_cast<float>(pTexture->GetImageHeight()) /
+                               static_cast<float>(pTexture->GetAllocHeight())};
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{},
+                       size,
+                       S_VECTOR2{},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       nSlot,
+                       kIntensityFull,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x116a0c */
+void ResultWindowClassicLayer::RenderSpriteInstancerSlotScaled(unsigned int nSlot,
+                                                               const S_VECTOR2 &position,
+                                                               unsigned int nScale) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    if (pTexture == nullptr) {
+        return;
+    }
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    // The quad is sized by the texture's own scale factor; the UV region is the used image area.
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    // The alpha channel is the requested scale times the layer's default scale; the intensity is the
+    // texture's scale factor truncated to a byte.
+    const unsigned int nAlpha =
+        static_cast<unsigned int>(static_cast<float>(nScale) * m_flDefaultScale);
+    const unsigned int nIntensity = static_cast<unsigned int>(flTextureScale) & 0xff;
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{},
+                       spriteSize,
+                       S_VECTOR2{},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x116ad0 */
+void ResultWindowClassicLayer::RenderSpriteInstancerSlotHalfScale(unsigned int nSlot,
+                                                                  const S_VECTOR2 &position,
+                                                                  unsigned int nAlpha,
+                                                                  unsigned int nIntensity) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    // Unlike the other blit helpers, the binary does not null-check the bound texture here.
+    const ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    AppendSpriteToSlot(position,
+                       anchor,
+                       spriteSize,
+                       S_VECTOR2{},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x116b94 */
 void ResultWindowClassicLayer::RenderTableSpriteAtIndex(unsigned int nSlot,
                                                         unsigned int nCharCode,

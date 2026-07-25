@@ -283,6 +283,54 @@ public:
     void RenderDecimalWithDotGlyph(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Draws a slot's whole bound texture image as one quad at a position and size.
+     *
+     * Reads the slot's bound texture, computes the used UV region (image size over allocated
+     * power-of-two size), and appends a full-intensity quad of the given size at the given position.
+     * Does nothing if the slot is empty or has no bound texture.
+     * @param nSlot The instancer slot.
+     * @param position The quad's world position.
+     * @param size The quad's size, in pixels.
+     * @param nAlpha The quad alpha.
+     * @ghidraAddress 0x116950
+     */
+    void BlitInstancerTextureSlot(unsigned int nSlot,
+                                  const S_VECTOR2 &position,
+                                  const S_VECTOR2 &size,
+                                  unsigned int nAlpha);
+
+    /**
+     * @brief Draws a slot's bound texture image scaled by the texture's own scale factor.
+     *
+     * Like BlitInstancerTextureSlot, but sizes the quad by the texture's stored scale factor and
+     * draws it at the layer's default alpha, with the alpha channel driven by @p nScale times the
+     * layer's default scale.
+     * @param nSlot The instancer slot.
+     * @param position The quad's world position.
+     * @param nScale The scale units multiplied into the alpha.
+     * @ghidraAddress 0x116a0c
+     */
+    void RenderSpriteInstancerSlotScaled(unsigned int nSlot,
+                                         const S_VECTOR2 &position,
+                                         unsigned int nScale);
+
+    /**
+     * @brief Draws a slot's bound texture image centred on a position (half-size anchor).
+     *
+     * Like RenderSpriteInstancerSlotScaled's sizing, but anchors the quad at half its size so it is
+     * centred on @p position, and takes explicit alpha and intensity.
+     * @param nSlot The instancer slot.
+     * @param position The quad's centre position.
+     * @param nAlpha The quad alpha.
+     * @param nIntensity The quad colour intensity.
+     * @ghidraAddress 0x116ad0
+     */
+    void RenderSpriteInstancerSlotHalfScale(unsigned int nSlot,
+                                            const S_VECTOR2 &position,
+                                            unsigned int nAlpha,
+                                            unsigned int nIntensity);
+
+    /**
      * @brief Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and
