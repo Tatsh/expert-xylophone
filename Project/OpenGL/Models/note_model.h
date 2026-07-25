@@ -125,17 +125,6 @@ public:
      */
     void MarkTouched();
 
-    /**
-     * @brief Returns the note's target Y line: the screen edge it travels toward.
-     *
-     * The hold kind (from the chart record, or the own-side fallback for a synthetic note) selects a
-     * toward-edge fraction, scaled by the game system's half-height sheet inset. Kinds other than the
-     * two edge kinds have no target line and return zero.
-     * @return The target Y coordinate.
-     * @ghidraAddress 0x135310
-     */
-    float GetTargetLineY() const;
-
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 

@@ -38,13 +38,6 @@ constexpr int kWideLaneKind = 1;
 constexpr int kWideLaneLeft = 1;
 constexpr int kWideLaneRight = 2;
 
-// The two hold kinds that travel toward a screen edge, and each kind's toward-edge fraction of the
-// half-height sheet inset (@ghidraAddress 0x3ce960 and 0x3ce970). Other kinds have no target line.
-constexpr int kTargetLineKindNear = 0;
-constexpr int kTargetLineKindFar = 1;
-constexpr float kTargetLineFracNear = 0.7882096171379089f;
-constexpr float kTargetLineFracFar = 0.3537117838859558f;
-
 } // namespace
 
 /** @ghidraAddress 0x135e84 */
@@ -128,26 +121,6 @@ int NoteModel::GetType() const {
     }
     // A synthetic note reports type 0 when its own-side flag is set, else the idle-kind sentinel.
     return m_bOwnSide ? 0 : kIdleTypeSentinel;
-}
-
-/** @ghidraAddress 0x135310 */
-float NoteModel::GetTargetLineY() const {
-    // The hold kind picks the toward-edge fraction; a synthetic note falls back to its own-side flag.
-    int nKind;
-    if (m_pRecord == nullptr) {
-        nKind = m_bOwnSide ? kTargetLineKindNear : kNoSideSentinel;
-    } else {
-        nKind = m_pRecord->nHoldKind;
-    }
-    float flFraction;
-    if (nKind == kTargetLineKindFar) {
-        flFraction = kTargetLineFracFar;
-    } else if (nKind == kTargetLineKindNear) {
-        flFraction = kTargetLineFracNear;
-    } else {
-        flFraction = 0.0f;
-    }
-    return flFraction * GameSystem::GetGameSystem()->GetSheetInsetHalfY();
 }
 
 /** @ghidraAddress 0x136a20 */
