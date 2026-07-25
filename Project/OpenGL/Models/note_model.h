@@ -128,6 +128,17 @@ public:
     int GetSlidePointCount() const;
 
     /**
+     * @brief Returns the note's target Y line: the screen edge the note travels toward.
+     *
+     * The travel-line fraction is chosen by the note's hold kind (the record's hold kind, or the own-
+     * side flag for a synthetic note): kind 0 uses the near-lane slope, kind 1 uses the far-lane
+     * slope, any other kind yields zero. The fraction is scaled by the game system's sheet inset.
+     * @return The target Y coordinate.
+     * @ghidraAddress 0x135310
+     */
+    float GetTargetLineY() const;
+
+    /**
      * @brief Marks this note as touched (the frame's nearest-hit winner).
      * @ghidraAddress 0x13609c
      */

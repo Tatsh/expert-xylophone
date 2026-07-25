@@ -24,6 +24,7 @@
 // near-row offset to the field-centre row scale.
 float g_flPlayfieldNearLaneSlope = {};    // @ghidraAddress 0x3ce95c
 float g_flPlayfieldNearLaneSlopeNeg = {}; // @ghidraAddress 0x3ce960
+float g_flPlayfieldFarLaneSlopeNeg = {};  // @ghidraAddress 0x3ce970
 
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
 // by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the centre),
@@ -178,6 +179,28 @@ int NoteModel::GetKind() const {
 /** @ghidraAddress 0x1369e8 */
 int NoteModel::GetSlidePointCount() const {
     return m_pRecord->nSlidePointCount;
+}
+
+/** @ghidraAddress 0x135310 */
+float NoteModel::GetTargetLineY() const {
+    // A synthetic note (no record) uses its own-side flag as the hold kind: own side is kind 0, the
+    // other side is kind 3 (which selects no travel line).
+    int nHoldKind;
+    if (m_pRecord == nullptr) {
+        nHoldKind = m_bOwnSide ? 0 : 3;
+    } else {
+        nHoldKind = m_pRecord->nHoldKind;
+    }
+
+    float flFraction;
+    if (nHoldKind == 1) {
+        flFraction = g_flPlayfieldFarLaneSlopeNeg;
+    } else if (nHoldKind == 0) {
+        flFraction = g_flPlayfieldNearLaneSlopeNeg;
+    } else {
+        flFraction = 0.0f;
+    }
+    return flFraction * GameSystem::GetGameSystem()->GetSheetInsetHalfY();
 }
 
 /** @ghidraAddress 0x13609c */

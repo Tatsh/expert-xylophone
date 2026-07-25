@@ -52,6 +52,12 @@ extern float g_flPlayfieldNearLaneSlope;
  */
 extern float g_flPlayfieldNearLaneSlopeNeg;
 /**
+ * @brief The negative far-lane slope: the ratio of the far note row's offset to the field-centre row
+ * scale, negated. Seeded by the play-field layout pass and used as a note's target travel line.
+ * @ghidraAddress 0x3ce970
+ */
+extern float g_flPlayfieldFarLaneSlopeNeg;
+/**
  * @brief The per-decode-type Blowfish key table shared with the chart loader.
  * @ghidraAddress 0x35b7c8
  */
