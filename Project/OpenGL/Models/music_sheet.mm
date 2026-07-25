@@ -263,6 +263,64 @@ int MusicSheet::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem) 
 }
 
 namespace {
+// The default-chart geometry: twelve free notes from a base time, one per step, each a fixed
+// duration, with the chart end rounded up to a grid (@ghidraAddress 0x2fcff4/0x2feff4/0x453b8000/
+// 0x2feff0).
+constexpr int kDefaultNoteCount = 12;
+constexpr float kDefaultBaseTime = 1500.0f;
+constexpr float kDefaultStepTime = 500.0f;
+constexpr int kDefaultNoteDuration = 3000;
+constexpr float kDefaultEndRoundAdd = 3000.0f;
+constexpr float kDefaultEndGrid = 2000.0f;
+} // namespace
+
+/** @ghidraAddress 0x130af8 */
+unsigned long MusicSheet::BuildDefaultNoteChart(GameSystem *pGameSystem) {
+    if (m_pRecords != nullptr) {
+        return 0;
+    }
+
+    // The chart opens with a single start path node.
+    m_pathNodes.Append(NotePathPoint{});
+    m_pRecords = new RbffNoteRecord[kDefaultNoteCount];
+
+    float flTime = kDefaultBaseTime;
+    RbffNoteRecord *pLast = nullptr;
+    for (int i = 0; i < kDefaultNoteCount; ++i) {
+        RbffNoteRecord &record = m_pRecords[i];
+        record.nTimeA = static_cast<int>(flTime);
+        record.nTimeB = kDefaultNoteDuration;
+        record.nNoteId = i;
+        record.nStartTime = -1; // a free (anywhere) note
+        record.nPointCount = 0;
+        record.pPathPoints = nullptr;
+        record.nKind = -1;
+        record.nSide = 0;
+        record.nHoldKind = 0;
+        record.nType = 0;
+        record.dwFlags = kNoteFlagFree;
+        record.chainLink.InitEmpty();
+        flTime += kDefaultStepTime;
+        pLast = &record;
+    }
+
+    // Round the last note's end time up to the grid to get the chart length.
+    const float flEnd = static_cast<float>(
+        static_cast<int>((static_cast<float>(pLast->nTimeB + pLast->nTimeA) + kDefaultEndRoundAdd) /
+                         kDefaultEndGrid) *
+        kDefaultEndGrid);
+    m_nChartEndTime = static_cast<int>(flEnd);
+    m_nChartEndTimeScaled = static_cast<int>(flEnd * kFieldWidth);
+    m_nField3c = 0;
+    m_nSeedA = 0;
+    m_nNoteCount = kDefaultNoteCount;
+    m_nTempoEventCount = 0;
+    m_nFreeNoteCount = kDefaultNoteCount;
+
+    return InstallParsedNotes(pGameSystem);
+}
+
+namespace {
 // The v<11 colour-tone lane table, indexed by a per-side alternator (@ghidraAddress 0x308ac0).
 constexpr int kLegacyColorToneLane[] = {0, 2};
 // The per-side colour-tone alternator that flips 0<->1 each legacy note (@ghidraAddress 0x3de018).

@@ -57,6 +57,18 @@ public:
     RbffNoteRecord *GetNoteRecordByIndex(int nIndex);
 
     /**
+     * @brief Builds a default twelve-note free chart when no real chart is loaded.
+     *
+     * Only when the reader is empty: allocates twelve note records spaced at a regular time
+     * interval, each a free (target -1) note of fixed duration, seeds the chart header counts, and
+     * installs the runtime state.
+     * @param pGameSystem The install argument forwarded to @c InstallParsedNotes.
+     * @return The install result, or @c 0 when a chart was already loaded.
+     * @ghidraAddress 0x130af8
+     */
+    unsigned long BuildDefaultNoteChart(GameSystem *pGameSystem);
+
+    /**
      * @brief Parses an RBFF note-chart blob into the reader and installs its runtime state.
      *
      * Bails if a chart is already loaded, checks the @c 'RBFF' magic, reads the format version
