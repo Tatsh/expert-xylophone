@@ -74,6 +74,20 @@ PlayColorLayer *PlayColorLayer::shared() {
     return g_pPlayColorLayer;
 }
 
+/** @ghidraAddress 0x8394c */
+void PlayColorLayer::StartShrinkAnimation(float flDuration) {
+    m_nShrinkStep = 0;
+    m_shrinkChannel.SetStart(m_shrinkChannel.GetCurrent());
+    m_shrinkChannel.SetEnd(0.0f);
+    m_shrinkChannel.SetDuration(flDuration);
+    m_shrinkChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to empty and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_shrinkChannel.SetCurrent(0.0f);
+        m_bShrinkColorDirty = true;
+    }
+}
+
 /** @ghidraAddress 0x8355c */
 void PlayColorLayer::BuildGaugePartsSpriteBatches() {
     if (m_bBuilt) {
@@ -146,4 +160,18 @@ void PlayColorLayer::EmitGaugePartSprite(float flPosX,
     pBatch->SetSpriteRotation(nIndex, flRotation);
     pBatch->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, nAlpha);
     pBatch->SetSpriteCount(nIndex + 1);
+}
+
+/** @ghidraAddress 0x8394c */
+void PlayColorLayer::StartShrinkAnimation(float flDuration) {
+    m_nShrinkStep = 0;
+    m_shrinkChannel.SetStart(m_shrinkChannel.GetCurrent());
+    m_shrinkChannel.SetEnd(0.0f);
+    m_shrinkChannel.SetDuration(flDuration);
+    m_shrinkChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to empty and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_shrinkChannel.SetCurrent(0.0f);
+        m_bShrinkColorDirty = true;
+    }
 }

@@ -44,6 +44,12 @@ public:
     static constexpr unsigned int kRootCapacity = 1;
     static constexpr unsigned int kMainCapacity = 6;
 
+    /**
+     * @brief Finishes the event effect by setting its timer to its full duration.
+     * @ghidraAddress 0x1be5cc
+     */
+    void FinishEffect();
+
 private:
     ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_event atlas.
     ne::C_SPRITE_INSTANCING *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
@@ -52,7 +58,7 @@ private:
     bool m_bBuilt = {};      // +0x24: set once the sprites are built.
     // +0x25..+0x33 is further layer state (still being worked out) preceding the timer.
     unsigned char m_aReserved25[0xf] = {}; // +0x25
-    int m_nTimer = {};                     // +0x34: an animation timer the getter zero-clears.
+    float m_flTimer = {};                  // +0x34: the effect animation timer, in frames.
     int m_nMode = {};                      // +0x38: a mode field the getter zero-clears.
     bool m_bSoundFlag = {};                // +0x3c: a sound flag the getter zero-clears.
     unsigned char m_aReserved3d[3] = {};   // +0x3d: padding to the 0x40-byte allocation size.

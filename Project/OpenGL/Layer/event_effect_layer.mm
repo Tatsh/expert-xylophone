@@ -12,7 +12,15 @@ namespace {
 // The atlas the event effect draws from (@ghidraAddress 0x3ceb08).
 constexpr const char *kTextureName = "00_texture/gm_event";
 
+// The timer value that marks the event effect fully finished.
+constexpr float kEffectFinishedTimer = 5000.0f;
+
 } // namespace
+
+/** @ghidraAddress 0x1be5cc */
+void EventEffectLayer::FinishEffect() {
+    m_flTimer = kEffectFinishedTimer;
+}
 
 /** @ghidraAddress 0x1be49c */
 EventEffectLayer *EventEffectLayer::shared() {

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -34,6 +35,14 @@ public:
      * @ghidraAddress 0x8350c
      */
     static PlayColorLayer *shared();
+
+    /**
+     * @brief Begins the gauge shrink/empty animation, easing the gauge to empty over @p flDuration
+     * (snapping to empty and marking the colour dirty when the duration is non-positive).
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x8394c
+     */
+    void StartShrinkAnimation(float flDuration);
 
     /**
      * @brief Lazily builds the two gauge-part sprite batches and populates them with the gm_parts1
@@ -70,6 +79,14 @@ public:
                              unsigned int nPartIndex,
                              unsigned int nAlpha);
 
+    /**
+     * @brief Begins the gauge shrink/empty animation, easing the gauge to empty over @p flDuration
+     * (snapping to empty and marking the colour dirty when the duration is non-positive).
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x8394c
+     */
+    void StartShrinkAnimation(float flDuration);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
@@ -86,10 +103,18 @@ private:
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x30: each part group's base index.
     unsigned char m_aReserved58[0x18] = {};     // +0x58: further state, still being worked out.
     bool m_bBuilt = {};                         // +0x70: set once the batches are built.
-    // +0x71..+0x73 is alignment padding before the transform block.
-    // unsigned char m_aPad71[3]; // +0x71 (alignment padding, compiler-inserted)
-    float m_aTransform[9] = {}; // +0x74: a transform block the constructor seeds (scales to 1).
-    unsigned char m_aReserved98[8] = {}; // +0x98: padding to the 0xa0-byte allocation size.
+    bool m_bShrinkColorDirty = {};              // +0x71: set when the shrink animation snaps.
+    // +0x72..+0x73 is alignment padding before the shrink-animation block.
+    unsigned char m_aPad72[2] = {}; // +0x72
+    int m_nShrinkStep = {};         // +0x74: the shrink animation's step index.
+    LinearTween m_shrinkChannel;    // +0x78: the gauge shrink/empty channel.
+    // +0x8c..+0x8f: further animation state, still being worked out.
+    unsigned char m_aReserved8c[4] = {}; // +0x8c
+    float m_flScaleX = {};               // +0x90: a scale the constructor seeds to 1.
+    // +0x94..+0x97: further state, still being worked out.
+    unsigned char m_aReserved94[4] = {}; // +0x94
+    float m_flScaleY = {};               // +0x98: a scale the constructor seeds to 1.
+    float m_flScaleZ = {};               // +0x9c: a scale the constructor seeds to 1.
 };
 
 // code: language=C++
