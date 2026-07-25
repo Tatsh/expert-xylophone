@@ -168,6 +168,36 @@ public:
     void RenderScorePaddedWithDot(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
+     * @brief Renders a number field of glyphs at an offset position, with an optional paired glyph
+     *        and dimmed leading-zero padding.
+     *
+     * Splits @p nValue into up to @p nDigitCount digits, offsets @p position by @p offset, and emits
+     * each glyph (character code @p nGlyphBase plus the digit) right to left through the glyph
+     * dispatcher, advancing by each glyph's width less @p flSpacing. When the leading-zero flag is
+     * set the first digit also draws a paired glyph ten codes up, and when @p bPadRight is set the
+     * remaining positions are drawn as dimmed glyphs.
+     * @param nValue The value to render.
+     * @param nDigitCount The maximum number of digits.
+     * @param position The base position.
+     * @param offset The offset added to the base position.
+     * @param nGlyphBase The glyph bank's base character code.
+     * @param bLeadingZero Non-zero to draw the paired first glyph.
+     * @param bPadRight Non-zero to pad the leading positions with dimmed glyphs.
+     * @param nAlpha The glyph alpha.
+     * @param flSpacing The extra gap subtracted between glyphs.
+     * @ghidraAddress 0x115f4c
+     */
+    void RenderNumberFieldWithPad(int nValue,
+                                  int nDigitCount,
+                                  const S_VECTOR2 &position,
+                                  const S_VECTOR2 &offset,
+                                  unsigned int nGlyphBase,
+                                  unsigned int bLeadingZero,
+                                  int bPadRight,
+                                  unsigned int nAlpha,
+                                  float flSpacing);
+
+    /**
      * @brief Emits one glyph sprite from the glyph table by character code.
      *
      * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and

@@ -9,6 +9,7 @@
 #include "neTexture.h"
 #include "polygon2d_trail.h"
 #import "s_vector2.h"
+#include "vectormath.h"
 
 // The process-wide Classic result-window layer, created lazily by shared().
 static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddress 0x3dd2f8
@@ -500,6 +501,66 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+/** @ghidraAddress 0x115f4c */
+void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
+                                                        int nDigitCount,
+                                                        const S_VECTOR2 &position,
+                                                        const S_VECTOR2 &offset,
+                                                        unsigned int nGlyphBase,
+                                                        unsigned int bLeadingZero,
+                                                        int bPadRight,
+                                                        unsigned int nAlpha,
+                                                        float flSpacing) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into up to nDigitCount digits, tracking the most-significant non-zero digit.
+    int aDigits[kMaxDigitCount] = {};
+    int nMostSignificant = 0;
+    for (int i = 0; i < nDigitCount; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nMostSignificant = i;
+        }
+        nValue /= 10;
+    }
+    if (nMostSignificant == 0 && (bLeadingZero & 1) != 0) {
+        nMostSignificant = 1;
+    }
+
+    // The run starts at the base position shifted by the offset.
+    S_VECTOR2 drawPos{position.x, position.y};
+    S_VECTOR2 offsetCopy{offset.x, offset.y};
+    AddVector2(&drawPos, &offsetCopy);
+
+    const unsigned int nPairedGlyph = nGlyphBase + 0xa;
+    for (int i = 0; i <= nMostSignificant; ++i) {
+        const unsigned int nGlyph = aDigits[i] + nGlyphBase;
+        const float flGlyphWidth = getPartsData_Phone(static_cast<int>(nGlyph))->flWidth;
+        drawPos.x -= flGlyphWidth;
+        DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        drawPos.x -= flSpacing;
+        // The first glyph draws a paired glyph ten codes up when the leading-zero flag is set.
+        if (i == 0 && bLeadingZero != 0) {
+            const float flPairedWidth = getPartsData_Phone(static_cast<int>(nPairedGlyph))->flWidth;
+            drawPos.x -= flPairedWidth;
+            DispatchGlyphSpriteFromTable(
+                kGlyphSlot, nPairedGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+            drawPos.x -= flSpacing;
+        }
+    }
+
+    // Pad the remaining leading positions with dimmed glyphs.
+    if (bPadRight != 0 && nMostSignificant + 1 < nDigitCount) {
+        for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
+            const float flGlyphWidth = getPartsData_Phone(static_cast<int>(nGlyphBase))->flWidth;
+            drawPos.x -= flGlyphWidth;
+            DispatchGlyphSpriteFromTable(
+                kGlyphSlot, nGlyphBase, &drawPos, nAlpha, 1, 0.0f, 1.0f, 1.0f);
+            drawPos.x -= flSpacing;
+        }
     }
 }
 
