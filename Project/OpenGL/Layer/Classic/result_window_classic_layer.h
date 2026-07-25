@@ -138,6 +138,32 @@ public:
      */
     void RenderScoreDigitsCompact(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
+    /**
+     * @brief Emits one glyph sprite from the glyph table by character code.
+     *
+     * Looks up the glyph's placement rectangle (from the parts table indexed by @p nCharCode) and
+     * its glyph UV-palette rectangle, then appends a quad to the slot. Character codes at or above
+     * the glyph-table bound are ignored. The main pass draws at full intensity, the dimmed pass at
+     * half.
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the glyph-table bound).
+     * @param pPosition The glyph's world position.
+     * @param nAlpha The glyph alpha.
+     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x1161cc
+     */
+    void DispatchGlyphSpriteFromTable(unsigned int nSlot,
+                                      unsigned int nCharCode,
+                                      const S_VECTOR2 *pPosition,
+                                      unsigned int nAlpha,
+                                      int bDimmed,
+                                      float flRotation,
+                                      float flScaleX,
+                                      float flScaleY);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).

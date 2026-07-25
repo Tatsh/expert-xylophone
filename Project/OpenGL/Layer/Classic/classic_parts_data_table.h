@@ -37,6 +37,10 @@ extern PhoneAnchorRecord
 // index; distinct from the Limelight palette. Its length is not referenced by the code.
 extern const UvPaletteEntry g_aClassicUvPalette[]; // @ghidraAddress 0x2f1b28
 
+// The glyph UV-palette table the Classic glyph dispatcher indexes by a glyph record's UV-palette
+// index (distinct from the part UV palette). Its length is not referenced by the code.
+extern const UvPaletteEntry g_aClassicGlyphUvPalette[]; // @ghidraAddress 0x2f4dc8
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

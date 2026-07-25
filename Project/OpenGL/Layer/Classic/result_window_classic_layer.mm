@@ -185,6 +185,9 @@ constexpr int kMaxDigitCount = 6;
 constexpr unsigned int kCompactDigitBank = 0x72;
 constexpr int kCompactMaxDigits = 4;
 
+// The character-code upper bound the glyph dispatcher ignores at or above.
+constexpr unsigned int kCharCodeBound = 0x7e;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -385,6 +388,35 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
             drawPos.x -= flSpacing;
         }
     }
+}
+
+/** @ghidraAddress 0x1161cc */
+void ResultWindowClassicLayer::DispatchGlyphSpriteFromTable(unsigned int nSlot,
+                                                            unsigned int nCharCode,
+                                                            const S_VECTOR2 *pPosition,
+                                                            unsigned int nAlpha,
+                                                            int bDimmed,
+                                                            float flRotation,
+                                                            float flScaleX,
+                                                            float flScaleY) {
+    if (nCharCode >= kCharCodeBound) {
+        return;
+    }
+    // The glyph metrics come from the parts table indexed by the character code; the texture
+    // rectangle from the glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
+    const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bDimmed != 0 ? kIntensityShadow : kIntensityFull;
+    AppendSpriteToSlot(*pPosition,
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
 }
 
 /** @ghidraAddress 0x115928 */
