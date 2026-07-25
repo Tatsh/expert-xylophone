@@ -50,6 +50,18 @@ GameSystem *GameSystem::GetGameSystem() {
     return g_pGameSystem;
 }
 
+/** @ghidraAddress 0x12f33c */
+void GameSystem::SetSheetLayerPosition(S_VECTOR2 *pPosition) {
+    m_flSheetPosX = pPosition->x;
+    m_flSheetPosY = pPosition->y;
+    m_flSheetFarX = m_flSheetPosX + m_flSheetMarginLeft + m_flSheetMarginRight;
+    m_flSheetFarY = m_flSheetPosY + m_flSheetMarginTop + m_flSheetMarginBottom;
+    m_flSheetInsetX = m_flSheetPosX - m_flSheetRadius;
+    m_flSheetInsetY = m_flSheetPosY - m_flSheetRadius;
+    m_flSheetInsetHalfX = m_flSheetInsetX * 0.5f;
+    m_flSheetInsetHalfY = m_flSheetInsetY * 0.5f;
+}
+
 /** @ghidraAddress 0x12f3c4 */
 void GameSystem::SetSheetRadius(float flRadius) {
     m_flSheetRadius = flRadius;
