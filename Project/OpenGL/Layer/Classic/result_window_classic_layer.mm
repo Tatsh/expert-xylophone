@@ -181,6 +181,10 @@ constexpr unsigned int kKernBankPlus2 = 0x72;
 // The maximum number of digits RenderDigitSequence splits a value into.
 constexpr int kMaxDigitCount = 6;
 
+// The digit glyph bank RenderScoreDigitsCompact draws from, and the maximum digits it shows.
+constexpr unsigned int kCompactDigitBank = 0x72;
+constexpr int kCompactMaxDigits = 4;
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -380,6 +384,44 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
             EmitPartSprite(0.0f, 1.0f, 1.0f, kGlyphSlot, nGlyphBase, drawPos, nAlpha, 1);
             drawPos.x -= flSpacing;
         }
+    }
+}
+
+/** @ghidraAddress 0x115928 */
+void ResultWindowClassicLayer::RenderScoreDigitsCompact(int nValue,
+                                                        const S_VECTOR2 &position,
+                                                        unsigned int nAlpha) {
+    constexpr unsigned int kGlyphSlot = 1;
+
+    // Split the value into up to four digits, tracking the significant count (at least one).
+    int aDigits[kCompactMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kCompactMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant == 0) {
+        nSignificant = 1;
+    }
+
+    // Centre the run about the position using the zero glyph's width as the nominal advance.
+    const float flAdvance = getPartsData(static_cast<int>(kCompactDigitBank))->flWidth;
+    float flX = position.x + static_cast<float>(static_cast<int>(nSignificant * flAdvance)) * 0.5f;
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nPart = aDigits[i] + kCompactDigitBank;
+        const float flGlyphWidth = getPartsData(static_cast<int>(nPart))->flWidth;
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kGlyphSlot,
+                       nPart,
+                       S_VECTOR2{flX - flGlyphWidth, position.y},
+                       nAlpha,
+                       0);
+        flX -= flGlyphWidth;
     }
 }
 

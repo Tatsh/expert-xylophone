@@ -126,6 +126,18 @@ public:
                              unsigned int nAlpha,
                              float flSpacing);
 
+    /**
+     * @brief Renders a compact (no decimal point) score as centred digit glyphs.
+     *
+     * Splits @p nValue into up to four digits (at least one), centres the run about @p position
+     * using the zero glyph's advance, and emits each digit right to left stepping by its own width.
+     * @param nValue The value to render.
+     * @param position The centre position of the digit run.
+     * @param nAlpha The glyph alpha.
+     * @ghidraAddress 0x115928
+     */
+    void RenderScoreDigitsCompact(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
