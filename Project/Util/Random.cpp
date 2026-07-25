@@ -16,6 +16,7 @@ constexpr int kXorShiftC = 19;
 // Mask that drops the sign bit so the generated value is non-negative.
 constexpr unsigned int kNonNegativeMask = 0x7fffffff;
 
+/** @ghidraAddress 0x85824 */
 Random::Random() {
     m_nState0 = kDefaultSeed0;
     m_nState1 = kDefaultSeed1;
@@ -23,8 +24,10 @@ Random::Random() {
     m_nState3 = kDefaultSeed3;
 }
 
+/** @ghidraAddress 0x8584c */
 Random::~Random() = default;
 
+/** @ghidraAddress 0x85854 */
 void Random::SetSeed(unsigned int dwSeed) {
     m_nState0 = kDefaultSeed0;
     m_nState1 = kDefaultSeed1;
@@ -32,6 +35,7 @@ void Random::SetSeed(unsigned int dwSeed) {
     m_nState3 = dwSeed;
 }
 
+/** @ghidraAddress 0x8587c */
 int Random::GetRandRangeInt(int nMax) {
     assert(nMax >= 0);
     // xorshift128: advance the four state words, folding the outgoing first word and the incoming
@@ -52,15 +56,18 @@ int Random::GetRandRangeInt(int nMax) {
     return nValue - nQuotient * nRange;
 }
 
+/** @ghidraAddress 0x858f0 */
 int Random::GetRandRangeInt(int nMin, int nMax) {
     assert(nMin <= nMax);
     return GetRandRangeInt(nMax - nMin) + nMin;
 }
 
+/** @ghidraAddress 0x858e8 */
 int Random::GetRandomBelow(int nMaxExclusive) {
     return GetRandRangeInt(nMaxExclusive - 1);
 }
 
+/** @ghidraAddress 0x8593c */
 int Random::GetRandomRangeExclusive(int nMin, int nMaxExclusive) {
     return GetRandRangeInt(nMin, nMaxExclusive - 1);
 }
