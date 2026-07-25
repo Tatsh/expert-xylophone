@@ -228,7 +228,7 @@ void LimelightResultLayer::EmitPhonePartWithOffset(unsigned int nSlot,
                                                    const S_VECTOR2 &position,
                                                    const S_VECTOR2 &offset,
                                                    unsigned int nAlpha,
-                                                   int bShadowPass,
+                                                   bool bShadowPass,
                                                    float flRotation,
                                                    float flScaleX,
                                                    float flScaleY) {
@@ -240,7 +240,7 @@ void LimelightResultLayer::EmitPhonePartWithOffset(unsigned int nSlot,
     // offset.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nCharCode];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
     AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -259,7 +259,7 @@ void LimelightResultLayer::RenderPhonePartWithOffset(unsigned int nSlot,
                                                      int nPositionIndex,
                                                      const S_VECTOR2 &offset,
                                                      unsigned int nAlpha,
-                                                     int bShadowPass,
+                                                     bool bShadowPass,
                                                      float flRotation,
                                                      float flScaleX,
                                                      float flScaleY) {
@@ -273,7 +273,7 @@ void LimelightResultLayer::RenderPhonePartWithOffset(unsigned int nSlot,
     // rectangle from the Limelight glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nCharCode];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
     AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -411,7 +411,7 @@ void LimelightResultLayer::RenderPhoneResultSpriteById(unsigned int nSlot,
                                                        unsigned int nPartId,
                                                        const S_VECTOR2 &position,
                                                        unsigned int nAlpha,
-                                                       int bDimmed,
+                                                       bool bDimmed,
                                                        float flRotation,
                                                        float flScaleX,
                                                        float flScaleY) {
@@ -422,7 +422,7 @@ void LimelightResultLayer::RenderPhoneResultSpriteById(unsigned int nSlot,
     // from the Limelight glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nPartId];
     const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bDimmed != 0 ? 0x80 : 0xff;
+    const unsigned int nIntensity = bDimmed ? 0x80 : 0xff;
     AppendSpriteToSlot(position,
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -443,7 +443,7 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
                                           unsigned int nPartId,
                                           const S_VECTOR2 &position,
                                           unsigned int nAlpha,
-                                          int bShadowPass) {
+                                          bool bShadowPass) {
     // Part id 0xff is the "no part" sentinel used to skip optional parts.
     if (nPartId >= 0xff) {
         return;
@@ -451,7 +451,7 @@ void LimelightResultLayer::EmitPartSprite(float flRotation,
     const PartsDataRecord *pRecord = GetPartsData(nPartId);
     const UvPaletteEntry &palette = g_aUvPalette[pRecord->nUvPaletteIndex];
     // The main pass draws at full intensity; the shadow pass darkens the quad to half intensity.
-    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    const unsigned int nIntensity = bShadowPass ? 0x80 : 0xff;
     AppendSpriteToSlot(position,
                        S_VECTOR2{pRecord->flX, pRecord->flY},
                        S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
@@ -587,8 +587,8 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
                                         int nMaxDigits,
                                         const S_VECTOR2 &position,
                                         unsigned int nBasePartId,
-                                        unsigned int bPaired,
-                                        int bPadZeros,
+                                        bool bPaired,
+                                        bool bPadZeros,
                                         unsigned int nAlpha) {
     // Split the value into up to nMaxDigits decimal digits (least-significant first), tracking the
     // index of the most-significant non-zero digit.
@@ -602,7 +602,7 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
         nValue /= 10;
     }
     // An all-zero value still shows one digit when the show-zero flag is set.
-    if (nMostSignificant == 0 && (bPaired & 1) != 0) {
+    if (nMostSignificant == 0 && bPaired) {
         nMostSignificant = 1;
     }
 
@@ -615,15 +615,15 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
 
         // The score columns comma-shift their first glyph and raise their second.
         if (nBasePartId == kScoreColumnPartB || nBasePartId == kScoreColumnPartA) {
-            if (i == 0 && bPaired != 0) {
+            if (i == 0 && bPaired) {
                 nPartId = nBasePartId + 0xb + nDigit;
-            } else if (i == 1 && bPaired != 0) {
+            } else if (i == 1 && bPaired) {
                 flY -= 4.0f;
                 drawPos.y = flY;
             }
         }
         // The rating column's first glyph (when paired) uses the comma-shifted bank.
-        const bool bFirstPaired = (i == 0) && (bPaired != 0);
+        const bool bFirstPaired = (i == 0) && bPaired;
         if (nBasePartId == kRatingColumnPart && bFirstPaired) {
             nPartId = nBasePartId + 0xb + nDigit;
         }
@@ -665,7 +665,7 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
     }
 
     // Pad the remaining leading positions with dimmed grey zeros.
-    if (bPadZeros != 0 && nMostSignificant + 1 < nMaxDigits) {
+    if (bPadZeros && nMostSignificant + 1 < nMaxDigits) {
         const auto nDimAlpha =
             static_cast<unsigned int>(static_cast<float>(nAlpha) * kPadZeroDimFactor);
         for (int nRemaining = (nMaxDigits - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {

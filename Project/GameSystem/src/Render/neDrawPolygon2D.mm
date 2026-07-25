@@ -79,9 +79,9 @@ enum {
 C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
                                      unsigned int nVertexCount,
                                      unsigned int nVertexFormat,
-                                     unsigned char bVertexBufferExternal,
+                                     bool bVertexBufferExternal,
                                      unsigned int nIndexCount,
-                                     unsigned char bIndexBufferExternal) {
+                                     bool bIndexBufferExternal) {
     // The base C_RENDER constructor and the derived vtable are installed by the compiler.
     m_nDrawMode = nDrawMode;
     m_nVertexFormat = nVertexFormat;
@@ -94,11 +94,11 @@ C_DRAW_POLYGON_2D::C_DRAW_POLYGON_2D(unsigned int nDrawMode,
     m_nMatrixWeightOffset = kUnsetOffset;
     m_nMatrixIndexOffset = kUnsetOffset;
     m_nBoneComponentCount = 0;
-    m_bVertexBufferExternal = bVertexBufferExternal != 0;
+    m_bVertexBufferExternal = bVertexBufferExternal;
     m_dwVertexVbo = 0;
     m_nIndexCount = nIndexCount;
     m_nDrawIndexCount = nIndexCount;
-    m_bIndexBufferExternal = bIndexBufferExternal != 0;
+    m_bIndexBufferExternal = bIndexBufferExternal;
     m_dwIndexVbo = 0;
     m_flTranslateX = 0.0f;
     m_flTranslateY = 0.0f;
@@ -212,9 +212,9 @@ void C_DRAW_POLYGON_2D::AllocateBuffers() {
 C_DRAW_POLYGON_2D *CreatePolygon2dMesh(unsigned int nDrawMode,
                                        unsigned int nVertexCount,
                                        unsigned int nVertexFormat,
-                                       unsigned char bVertexBufferExternal,
+                                       bool bVertexBufferExternal,
                                        unsigned int nIndexCount,
-                                       unsigned char bIndexBufferExternal) {
+                                       bool bIndexBufferExternal) {
     auto *pMesh = new C_DRAW_POLYGON_2D(nDrawMode,
                                         nVertexCount,
                                         nVertexFormat,

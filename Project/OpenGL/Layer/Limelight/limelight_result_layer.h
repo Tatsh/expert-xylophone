@@ -129,7 +129,7 @@ public:
      * @param nPartId The part id (below @c 0xff).
      * @param position The sprite's world position.
      * @param nAlpha The sprite's alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass Whether this is the half-intensity shadow pass.
      * @ghidraAddress 0x126ab4
      */
     void EmitPartSprite(float flRotation,
@@ -139,7 +139,7 @@ public:
                         unsigned int nPartId,
                         const S_VECTOR2 &position,
                         unsigned int nAlpha,
-                        int bShadowPass);
+                        bool bShadowPass);
     /**
      * @brief Emits one part sprite drawing a slot's whole bound texture at the given size.
      *
@@ -179,7 +179,7 @@ public:
      * @param nPositionIndex The phone anchor-position index.
      * @param offset The offset added to the resolved position.
      * @param nAlpha The glyph alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass Whether this is the half-intensity shadow pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -190,7 +190,7 @@ public:
                                    int nPositionIndex,
                                    const S_VECTOR2 &offset,
                                    unsigned int nAlpha,
-                                   int bShadowPass,
+                                   bool bShadowPass,
                                    float flRotation,
                                    float flScaleX,
                                    float flScaleY);
@@ -207,7 +207,7 @@ public:
      * @param position The glyph's base position.
      * @param offset The offset added to the base position.
      * @param nAlpha The glyph alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass Whether this is the half-intensity shadow pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -218,7 +218,7 @@ public:
                                  const S_VECTOR2 &position,
                                  const S_VECTOR2 &offset,
                                  unsigned int nAlpha,
-                                 int bShadowPass,
+                                 bool bShadowPass,
                                  float flRotation,
                                  float flScaleX,
                                  float flScaleY);
@@ -268,8 +268,8 @@ public:
      * @param nMaxDigits The maximum number of digits.
      * @param position The right-hand start position of the run.
      * @param nBasePartId The glyph bank's base part id (its '0').
-     * @param bPaired Non-zero to draw the column's paired second glyph and shifted first glyph.
-     * @param bPadZeros Non-zero to pad the leading positions with dimmed zeros.
+     * @param bPaired Whether to draw the column's paired second glyph and shifted first glyph.
+     * @param bPadZeros Whether to pad the leading positions with dimmed zeros.
      * @param nAlpha The glyph alpha.
      * @ghidraAddress 0x126cf8
      */
@@ -278,8 +278,8 @@ public:
                       int nMaxDigits,
                       const S_VECTOR2 &position,
                       unsigned int nBasePartId,
-                      unsigned int bPaired,
-                      int bPadZeros,
+                      bool bPaired,
+                      bool bPadZeros,
                       unsigned int nAlpha);
 
     /**
@@ -352,7 +352,7 @@ private:
      * @param nPartId The glyph part id (below the pad glyph table count).
      * @param position The glyph's world position.
      * @param nAlpha The glyph alpha.
-     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param bDimmed Whether this is the half-intensity dimmed pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -362,7 +362,7 @@ private:
                                      unsigned int nPartId,
                                      const S_VECTOR2 &position,
                                      unsigned int nAlpha,
-                                     int bDimmed,
+                                     bool bDimmed,
                                      float flRotation,
                                      float flScaleX,
                                      float flScaleY);

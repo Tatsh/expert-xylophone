@@ -121,7 +121,7 @@ const LevelUnlockEntry *GetLevelUnlockEntry(int nLevel) {
 }
 
 /** @ghidraAddress 0x1cc3b4 */
-int ComputeLevelExpStep(int nLevel, int bAddHalf, float flBase, int bAddOffset) {
+int ComputeLevelExpStep(int nLevel, bool bAddHalf, float flBase, bool bAddOffset) {
     int nIndex = nLevel;
     if (nIndex > kStepTableMaxLevel) {
         nIndex = kStepTableMaxLevel;
@@ -130,8 +130,8 @@ int ComputeLevelExpStep(int nLevel, int bAddHalf, float flBase, int bAddOffset) 
         nIndex = 0;
     }
     const float flStep = static_cast<float>(g_aLevelExpStep[nIndex]);
-    float flValue = (flBase + (bAddHalf != 0 ? kHalfStep : 0.0f)) * flStep;
-    if (bAddOffset != 0) {
+    float flValue = (flBase + (bAddHalf ? kHalfStep : 0.0f)) * flStep;
+    if (bAddOffset) {
         flValue += kBaseOffset;
     }
     return static_cast<int>(flValue);

@@ -450,7 +450,7 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
                                                             int nPositionIndex,
                                                             const S_VECTOR2 &offset,
                                                             unsigned int nAlpha,
-                                                            int bShadowPass,
+                                                            bool bShadowPass,
                                                             float flRotation,
                                                             float flScaleX,
                                                             float flScaleY) {
@@ -464,7 +464,7 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
     // rectangle from the Colette glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityDimmed : kIntensityFull;
+    const unsigned int nIntensity = bShadowPass ? kIntensityDimmed : kIntensityFull;
     appendSpriteToSlot(nSlot,
                        S_VECTOR2{position.x + offset.x, position.y + offset.y},
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
@@ -514,7 +514,7 @@ void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
                                                          int nPartId,
                                                          const S_VECTOR2 &position,
                                                          unsigned int nAlpha,
-                                                         int bShadowPass,
+                                                         bool bShadowPass,
                                                          float flRotation,
                                                          float flScaleX,
                                                          float flScaleY) {
@@ -525,7 +525,7 @@ void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
     // Colette part UV palette.
     const PartsDataRecord *pRecord = getPartsData(nPartId);
     const UvPaletteEntry &palette = g_aColettePartUvPalette[pRecord->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityDimmed : kIntensityFull;
+    const unsigned int nIntensity = bShadowPass ? kIntensityDimmed : kIntensityFull;
     appendSpriteToSlot(nSlot,
                        position,
                        S_VECTOR2{pRecord->flX, pRecord->flY},
@@ -543,7 +543,7 @@ void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
                                                             int nPartId,
                                                             const S_VECTOR2 &position,
                                                             unsigned int nAlpha,
-                                                            int bDimmed,
+                                                            bool bDimmed,
                                                             float flRotation,
                                                             float flScaleX,
                                                             float flScaleY) {
@@ -554,7 +554,7 @@ void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
     // rectangle from the Colette glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bDimmed != 0 ? kIntensityDimmed : kIntensityFull;
+    const unsigned int nIntensity = bDimmed ? kIntensityDimmed : kIntensityFull;
     appendSpriteToSlot(nSlot,
                        position,
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},

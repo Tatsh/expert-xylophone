@@ -244,13 +244,13 @@ void neGLESRenderer::DrawIndexedPrimitives(int nPrimitive, int nCount, const voi
 }
 
 /** @ghidraAddress 0x21d80 */
-void neGLESRenderer::SetGlEnableState(unsigned int nState, unsigned int bEnable) {
+void neGLESRenderer::SetGlEnableState(unsigned int nState, bool bEnable) {
     if (m_aEnableStateFlags[nState] == bEnable) {
         return;
     }
-    m_aEnableStateFlags[nState] = static_cast<unsigned char>(bEnable);
+    m_aEnableStateFlags[nState] = bEnable;
     assert(static_cast<int>(nState) >= 0 && static_cast<int>(nState) < kEnableStateMax);
-    if (bEnable != 0) {
+    if (bEnable) {
         glEnable(kEnableStateToGlCap[nState]);
     } else {
         glDisable(kEnableStateToGlCap[nState]);
@@ -258,13 +258,13 @@ void neGLESRenderer::SetGlEnableState(unsigned int nState, unsigned int bEnable)
 }
 
 /** @ghidraAddress 0x21e14 */
-void neGLESRenderer::SetGlClientState(unsigned int nState, unsigned int bEnable) {
+void neGLESRenderer::SetGlClientState(unsigned int nState, bool bEnable) {
     if (m_aClientStateFlags[nState] == bEnable) {
         return;
     }
-    m_aClientStateFlags[nState] = static_cast<unsigned char>(bEnable);
+    m_aClientStateFlags[nState] = bEnable;
     assert(static_cast<int>(nState) >= 0 && static_cast<int>(nState) < kClientStateMax);
-    if (bEnable != 0) {
+    if (bEnable) {
         glEnableClientState(kClientStateToGlArray[nState]);
     } else {
         glDisableClientState(kClientStateToGlArray[nState]);

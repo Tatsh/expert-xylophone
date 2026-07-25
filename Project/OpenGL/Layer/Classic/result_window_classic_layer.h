@@ -125,7 +125,7 @@ public:
      * @param nPartId The part id.
      * @param position The sprite's world position.
      * @param nAlpha The sprite's alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass True for the half-intensity shadow pass.
      * @ghidraAddress 0x115864
      */
     void EmitPartSprite(float flRotation,
@@ -135,7 +135,7 @@ public:
                         unsigned int nPartId,
                         const S_VECTOR2 &position,
                         unsigned int nAlpha,
-                        int bShadowPass);
+                        bool bShadowPass);
 
     /**
      * @brief Renders a right-to-left digit sequence from a chosen glyph bank.
@@ -148,8 +148,8 @@ public:
      * @param nDigitCount The maximum number of digits.
      * @param pOrigin The right-hand start position.
      * @param nGlyphBase The glyph bank's base part id (its '0').
-     * @param bLeadingZero Non-zero to draw the paired/leading glyph when the value is zero.
-     * @param bPadRight Non-zero to pad the leading positions with dimmed zeros.
+     * @param bLeadingZero True to draw the paired/leading glyph when the value is zero.
+     * @param bPadRight True to pad the leading positions with dimmed zeros.
      * @param nAlpha The glyph alpha.
      * @param flSpacing The extra gap subtracted between glyphs.
      * @ghidraAddress 0x115514
@@ -158,8 +158,8 @@ public:
                              int nDigitCount,
                              const S_VECTOR2 *pOrigin,
                              unsigned int nGlyphBase,
-                             unsigned int bLeadingZero,
-                             int bPadRight,
+                             bool bLeadingZero,
+                             bool bPadRight,
                              unsigned int nAlpha,
                              float flSpacing);
 
@@ -218,8 +218,8 @@ public:
      * @param position The base position.
      * @param offset The offset added to the base position.
      * @param nGlyphBase The glyph bank's base character code.
-     * @param bLeadingZero Non-zero to draw the paired first glyph.
-     * @param bPadRight Non-zero to pad the leading positions with dimmed glyphs.
+     * @param bLeadingZero True to draw the paired first glyph.
+     * @param bPadRight True to pad the leading positions with dimmed glyphs.
      * @param nAlpha The glyph alpha.
      * @param flSpacing The extra gap subtracted between glyphs.
      * @ghidraAddress 0x115f4c
@@ -229,8 +229,8 @@ public:
                                   const S_VECTOR2 &position,
                                   const S_VECTOR2 &offset,
                                   unsigned int nGlyphBase,
-                                  unsigned int bLeadingZero,
-                                  int bPadRight,
+                                  bool bLeadingZero,
+                                  bool bPadRight,
                                   unsigned int nAlpha,
                                   float flSpacing);
 
@@ -376,7 +376,7 @@ public:
      * @param nCharCode The glyph character code (below the glyph-table bound).
      * @param pPosition The glyph's world position.
      * @param nAlpha The glyph alpha.
-     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param bDimmed True for the half-intensity dimmed pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -386,7 +386,7 @@ public:
                                       unsigned int nCharCode,
                                       const S_VECTOR2 *pPosition,
                                       unsigned int nAlpha,
-                                      int bDimmed,
+                                      bool bDimmed,
                                       float flRotation,
                                       float flScaleX,
                                       float flScaleY);
@@ -404,7 +404,7 @@ public:
      * @param position The glyph's base position.
      * @param offset The offset added to the base position.
      * @param nAlpha The glyph alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass True for the half-intensity shadow pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -415,7 +415,7 @@ public:
                                   const S_VECTOR2 &position,
                                   const S_VECTOR2 &offset,
                                   unsigned int nAlpha,
-                                  int bShadowPass,
+                                  bool bShadowPass,
                                   float flRotation,
                                   float flScaleX,
                                   float flScaleY);
@@ -431,7 +431,7 @@ public:
      * @param nPositionIndex The phone position-record index.
      * @param offset The offset added to the resolved position.
      * @param nAlpha The glyph alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass True for the half-intensity shadow pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -442,7 +442,7 @@ public:
                                      int nPositionIndex,
                                      const S_VECTOR2 &offset,
                                      unsigned int nAlpha,
-                                     int bShadowPass,
+                                     bool bShadowPass,
                                      float flRotation,
                                      float flScaleX,
                                      float flScaleY);

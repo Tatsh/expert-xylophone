@@ -239,7 +239,7 @@ private:
      * @param nPositionIndex The phone anchor-position index.
      * @param offset The offset added to the resolved position.
      * @param nAlpha The glyph alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass Whether this is the half-intensity shadow pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -250,7 +250,7 @@ private:
                                       int nPositionIndex,
                                       const S_VECTOR2 &offset,
                                       unsigned int nAlpha,
-                                      int bShadowPass,
+                                      bool bShadowPass,
                                       float flRotation,
                                       float flScaleX,
                                       float flScaleY);
@@ -297,7 +297,7 @@ private:
      * @param nPartId The part id (below the parts table count).
      * @param position The sprite's world position.
      * @param nAlpha The sprite's alpha.
-     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param bShadowPass Whether this is the half-intensity shadow pass.
      * @param flRotation The sprite rotation, in radians.
      * @param flScaleX The sprite X scale.
      * @param flScaleY The sprite Y scale.
@@ -307,7 +307,7 @@ private:
                                    int nPartId,
                                    const S_VECTOR2 &position,
                                    unsigned int nAlpha,
-                                   int bShadowPass,
+                                   bool bShadowPass,
                                    float flRotation,
                                    float flScaleX,
                                    float flScaleY);
@@ -323,7 +323,7 @@ private:
      * @param nPartId The glyph part id (below the phone parts table count).
      * @param position The glyph's world position.
      * @param nAlpha The glyph alpha.
-     * @param bDimmed Non-zero for the half-intensity dimmed pass.
+     * @param bDimmed Whether this is the half-intensity dimmed pass.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
@@ -333,7 +333,7 @@ private:
                                       int nPartId,
                                       const S_VECTOR2 &position,
                                       unsigned int nAlpha,
-                                      int bDimmed,
+                                      bool bDimmed,
                                       float flRotation,
                                       float flScaleX,
                                       float flScaleY);

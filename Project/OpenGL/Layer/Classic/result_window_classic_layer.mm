@@ -402,13 +402,13 @@ void ResultWindowClassicLayer::EmitPartSprite(float flRotation,
                                               unsigned int nPartId,
                                               const S_VECTOR2 &position,
                                               unsigned int nAlpha,
-                                              int bShadowPass) {
+                                              bool bShadowPass) {
     if (nPartId >= kPartIdBound) {
         return;
     }
     const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nPartId));
     const UvPaletteEntry &palette = g_aClassicUvPalette[pRecord->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    const unsigned int nIntensity = bShadowPass ? kIntensityShadow : kIntensityFull;
     AppendSpriteToSlot(position,
                        S_VECTOR2{pRecord->flX, pRecord->flY},
                        S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
@@ -426,8 +426,8 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
                                                    int nDigitCount,
                                                    const S_VECTOR2 *pOrigin,
                                                    unsigned int nGlyphBase,
-                                                   unsigned int bLeadingZero,
-                                                   int bPadRight,
+                                                   bool bLeadingZero,
+                                                   bool bPadRight,
                                                    unsigned int nAlpha,
                                                    float flSpacing) {
     // The glyphs draw into the parts slot at unit scale.
@@ -445,7 +445,7 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
         nValue /= 10;
     }
     // An all-zero value still shows one digit when the leading-zero flag is set.
-    if (nMostSignificant == 0 && (bLeadingZero & 1) != 0) {
+    if (nMostSignificant == 0 && bLeadingZero) {
         nMostSignificant = 1;
     }
 
@@ -457,14 +457,14 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
 
         // The score columns comma-shift their first glyph and raise their second.
         if (nGlyphBase == kScoreColumnBankB || nGlyphBase == kScoreColumnBankA) {
-            if (i == 0 && bLeadingZero != 0) {
+            if (i == 0 && bLeadingZero) {
                 nPartId = nGlyphBase + 0xb + nDigit;
-            } else if (i == 1 && bLeadingZero != 0) {
+            } else if (i == 1 && bLeadingZero) {
                 flY -= 4.0f;
                 drawPos.y = flY;
             }
         }
-        const bool bFirstPaired = (i == 0) && (bLeadingZero != 0);
+        const bool bFirstPaired = (i == 0) && bLeadingZero;
         if (nGlyphBase == kRatingColumnBank && bFirstPaired) {
             nPartId = nGlyphBase + 0xb + nDigit;
         }
@@ -502,7 +502,7 @@ void ResultWindowClassicLayer::RenderDigitSequence(int nValue,
     }
 
     // Pad the remaining leading positions with dimmed zeros.
-    if (bPadRight != 0 && nMostSignificant + 1 < nDigitCount) {
+    if (bPadRight && nMostSignificant + 1 < nDigitCount) {
         for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
             const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nGlyphBase));
             drawPos.x -= pRecord->flWidth;
@@ -517,7 +517,7 @@ void ResultWindowClassicLayer::DispatchGlyphSpriteFromTable(unsigned int nSlot,
                                                             unsigned int nCharCode,
                                                             const S_VECTOR2 *pPosition,
                                                             unsigned int nAlpha,
-                                                            int bDimmed,
+                                                            bool bDimmed,
                                                             float flRotation,
                                                             float flScaleX,
                                                             float flScaleY) {
@@ -528,7 +528,7 @@ void ResultWindowClassicLayer::DispatchGlyphSpriteFromTable(unsigned int nSlot,
     // rectangle from the glyph UV palette.
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bDimmed != 0 ? kIntensityShadow : kIntensityFull;
+    const unsigned int nIntensity = bDimmed ? kIntensityShadow : kIntensityFull;
     AppendSpriteToSlot(*pPosition,
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -793,7 +793,7 @@ void ResultWindowClassicLayer::RenderTableSpriteAtIndex(unsigned int nSlot,
                                                         const S_VECTOR2 &position,
                                                         const S_VECTOR2 &offset,
                                                         unsigned int nAlpha,
-                                                        int bShadowPass,
+                                                        bool bShadowPass,
                                                         float flRotation,
                                                         float flScaleX,
                                                         float flScaleY) {
@@ -804,7 +804,7 @@ void ResultWindowClassicLayer::RenderTableSpriteAtIndex(unsigned int nSlot,
     // rectangle from the glyph UV palette. The sprite is placed at the position plus the offset.
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    const unsigned int nIntensity = bShadowPass ? kIntensityShadow : kIntensityFull;
     AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -823,7 +823,7 @@ void ResultWindowClassicLayer::RenderTableSpriteWithOffset(unsigned int nSlot,
                                                            int nPositionIndex,
                                                            const S_VECTOR2 &offset,
                                                            unsigned int nAlpha,
-                                                           int bShadowPass,
+                                                           bool bShadowPass,
                                                            float flRotation,
                                                            float flScaleX,
                                                            float flScaleY) {
@@ -836,7 +836,7 @@ void ResultWindowClassicLayer::RenderTableSpriteWithOffset(unsigned int nSlot,
     getPosition_Phone(nPositionIndex, &position);
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
-    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    const unsigned int nIntensity = bShadowPass ? kIntensityShadow : kIntensityFull;
     AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
                        S_VECTOR2{pGlyph->flX, pGlyph->flY},
                        S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
@@ -1022,8 +1022,8 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
                                                         const S_VECTOR2 &position,
                                                         const S_VECTOR2 &offset,
                                                         unsigned int nGlyphBase,
-                                                        unsigned int bLeadingZero,
-                                                        int bPadRight,
+                                                        bool bLeadingZero,
+                                                        bool bPadRight,
                                                         unsigned int nAlpha,
                                                         float flSpacing) {
     constexpr unsigned int kGlyphSlot = 1;
@@ -1038,7 +1038,7 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
         }
         nValue /= 10;
     }
-    if (nMostSignificant == 0 && (bLeadingZero & 1) != 0) {
+    if (nMostSignificant == 0 && bLeadingZero) {
         nMostSignificant = 1;
     }
 
@@ -1055,7 +1055,7 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
         DispatchGlyphSpriteFromTable(kGlyphSlot, nGlyph, &drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
         drawPos.x -= flSpacing;
         // The first glyph draws a paired glyph ten codes up when the leading-zero flag is set.
-        if (i == 0 && bLeadingZero != 0) {
+        if (i == 0 && bLeadingZero) {
             const float flPairedWidth = getPartsData_Phone(static_cast<int>(nPairedGlyph))->flWidth;
             drawPos.x -= flPairedWidth;
             DispatchGlyphSpriteFromTable(
@@ -1065,7 +1065,7 @@ void ResultWindowClassicLayer::RenderNumberFieldWithPad(int nValue,
     }
 
     // Pad the remaining leading positions with dimmed glyphs.
-    if (bPadRight != 0 && nMostSignificant + 1 < nDigitCount) {
+    if (bPadRight && nMostSignificant + 1 < nDigitCount) {
         for (int nRemaining = (nDigitCount - 1) - nMostSignificant; nRemaining != 0; --nRemaining) {
             const float flGlyphWidth = getPartsData_Phone(static_cast<int>(nGlyphBase))->flWidth;
             drawPos.x -= flGlyphWidth;

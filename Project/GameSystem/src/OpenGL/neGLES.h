@@ -176,18 +176,18 @@ public:
      * @brief Enable or disable one engine render capability, skipping the GL call when the cached
      *        state is already @p bEnable.
      * @param nState The engine enable-state index (0 through @c kEnableStateMax - 1).
-     * @param bEnable @c 1 to enable the capability, @c 0 to disable it.
+     * @param bEnable Whether to enable the capability.
      * @ghidraAddress 0x21d80
      */
-    void SetGlEnableState(unsigned int nState, unsigned int bEnable);
+    void SetGlEnableState(unsigned int nState, bool bEnable);
     /**
      * @brief Enable or disable one engine vertex-array client state, skipping the GL call when the
      *        cached state is already @p bEnable.
      * @param nState The engine client-state index (0 through @c kClientStateMax - 1).
-     * @param bEnable @c 1 to enable the array, @c 0 to disable it.
+     * @param bEnable Whether to enable the array.
      * @ghidraAddress 0x21e14
      */
-    void SetGlClientState(unsigned int nState, unsigned int bEnable);
+    void SetGlClientState(unsigned int nState, bool bEnable);
     /**
      * @brief Select the current palette matrix, caching it so an unchanged value skips the GL call.
      * @param nState The palette-matrix index.
@@ -323,12 +323,12 @@ private:
     int m_anTexturePerUnit[kMaxTextureUnits] = {};          // +0x134 per-unit bound texture cache
     unsigned char m_aReserved154[0x80] = {};                // +0x154
     int m_nBlendSrc = {};                                   // +0x1d4 cached blend source factor
-    int m_nBlendDest = {};                        // +0x1d8 cached blend destination factor
-    unsigned char m_aReserved1dc[0x08] = {};      // +0x1dc
-    unsigned char m_aEnableStateFlags[0x24] = {}; // +0x1e4 per-capability enable cache
-    unsigned char m_aClientStateFlags[0x07] = {}; // +0x208 per-array client-state cache
-    unsigned char m_aReserved20f[0x45] = {};      // +0x20f
-    int m_nMaxPaletteMatrices = {}; // +0x254 GL capability: max palette matrices per draw
+    int m_nBlendDest = {};                   // +0x1d8 cached blend destination factor
+    unsigned char m_aReserved1dc[0x08] = {}; // +0x1dc
+    bool m_aEnableStateFlags[0x24] = {};     // +0x1e4 per-capability enable cache
+    bool m_aClientStateFlags[0x07] = {};     // +0x208 per-array client-state cache
+    unsigned char m_aReserved20f[0x45] = {}; // +0x20f
+    int m_nMaxPaletteMatrices = {};          // +0x254 GL capability: max palette matrices per draw
 };
 
 /**

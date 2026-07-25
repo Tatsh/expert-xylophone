@@ -91,13 +91,13 @@ const struct LevelUnlockEntry *GetLevelUnlockEntry(int nLevel);
  * @c (flBase + (bAddHalf ? 0.5 : 0)) * stepTable[nLevel], plus a fixed base offset when @p bAddOffset
  * is set, truncated to an integer.
  * @param nLevel The level (0 through 9).
- * @param bAddHalf Non-zero to bias the base by half a step.
+ * @param bAddHalf Whether to bias the base by half a step.
  * @param flBase The base multiplier.
- * @param bAddOffset Non-zero to add the fixed pixel base offset.
+ * @param bAddOffset Whether to add the fixed pixel base offset.
  * @return The scaled step value.
  * @ghidraAddress 0x1cc3b4
  */
-int ComputeLevelExpStep(int nLevel, int bAddHalf, float flBase, int bAddOffset);
+int ComputeLevelExpStep(int nLevel, bool bAddHalf, float flBase, bool bAddOffset);
 
 /**
  * @brief Builds the validation hash of a saved level record from its level and experience.

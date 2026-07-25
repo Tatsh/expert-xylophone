@@ -43,9 +43,9 @@ public:
     C_DRAW_POLYGON_3D(unsigned int nDrawMode,
                       unsigned int nVertexCount,
                       unsigned int nVertexFormat,
-                      unsigned char bVertexBufferExternal,
+                      bool bVertexBufferExternal,
                       unsigned int nIndexCount,
-                      unsigned char bIndexBufferExternal);
+                      bool bIndexBufferExternal);
 
     /**
      * @brief Destroys the mesh: releases the bound texture, frees the vertex, colour, index, and
@@ -230,9 +230,9 @@ private:
 C_DRAW_POLYGON_3D *CreatePolygon3dMesh(unsigned int nDrawMode,
                                        unsigned int nVertexCount,
                                        unsigned int nVertexFormat,
-                                       unsigned char bVertexBufferExternal,
+                                       bool bVertexBufferExternal,
                                        unsigned int nIndexCount,
-                                       unsigned char bIndexBufferExternal);
+                                       bool bIndexBufferExternal);
 
 } // namespace ne
 
