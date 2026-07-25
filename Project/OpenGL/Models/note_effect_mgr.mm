@@ -59,6 +59,25 @@ NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     return nullptr;
 }
 
+/** @ghidraAddress 0x137a4c */
+void NoteEffectMgr::SetActiveMusicSheet(MusicSheet *pMusicSheet) {
+    m_pMusicSheet = pMusicSheet;
+    if (pMusicSheet == nullptr) {
+        ResetAllNoteSubEntries();
+        return;
+    }
+    // Pick the density tier from the chart's note count.
+    const int nChartNotes = pMusicSheet->GetChartNoteCount();
+    if (nChartNotes < kDensityTierThreshold1) {
+        m_nDensityTier = 0;
+    } else if (nChartNotes < kDensityTierThreshold2) {
+        m_nDensityTier = 1;
+    } else {
+        m_nDensityTier = 2;
+    }
+    InitNoteObjects();
+}
+
 /** @ghidraAddress 0x1379cc */
 void NoteEffectMgr::ResetAllNoteSubEntries() {
     // Detach every pooled note from its chart binding.

@@ -84,6 +84,14 @@ public:
     void ResetAllNoteSubEntries();
 
     /**
+     * @brief Binds a parsed chart and prepares its note objects, choosing a density tier by the
+     *        chart's note count; a null chart clears the note bindings instead.
+     * @param pMusicSheet The parsed chart, or @c nullptr to clear.
+     * @ghidraAddress 0x137a4c
+     */
+    void SetActiveMusicSheet(MusicSheet *pMusicSheet);
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */
@@ -121,6 +129,9 @@ private:
      */
     NoteEffectMgr();
 
+    // The chart note-count thresholds that select the density tier (0, 1, or 2).
+    static constexpr int kDensityTierThreshold1 = 201;
+    static constexpr int kDensityTierThreshold2 = 401;
     // The per-note render sub-table entry count and byte stride.
     static constexpr int kRenderEntryCount = 20;
     static constexpr int kRenderEntryStride = 0xc;

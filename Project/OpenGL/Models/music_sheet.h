@@ -51,6 +51,11 @@ public:
         return m_nNoteCount;
     }
 
+    /** @brief The note count used to select the scroll-speed / density tier. */
+    int GetChartNoteCount() const {
+        return m_nChartNoteCount;
+    }
+
     /**
      * @brief Returns the speed-change path node at @p nIndex.
      *
