@@ -41,6 +41,55 @@ extern const UvPaletteEntry g_aClassicUvPalette[]; // @ghidraAddress 0x2f1b28
 // index (distinct from the part UV palette). Its length is not referenced by the code.
 extern const UvPaletteEntry g_aClassicGlyphUvPalette[]; // @ghidraAddress 0x2f4dc8
 
+/**
+ * @brief One Classic phone-layout rectangle record: an anchored position, a carried secondary
+ * coordinate, and the anchor mode that offsets the position relative to the play-field viewport.
+ *
+ * Used by the separator, position-by-state, and centre-position accessors. Only the leading
+ * coordinate is viewport-anchored; the secondary coordinate (@c flWidth / @c flHeight, names
+ * inferred from the separator-bar usage) is copied through verbatim. The tables are zero-initialised
+ * in the binary's @c __common segment and filled at runtime. The trailing @c // +0xNN comments
+ * document the original member offsets for reference only.
+ */
+struct PhoneLayoutRecord {
+    float flX = {};       // +0x00: the base X coordinate (viewport-anchored).
+    float flY = {};       // +0x04: the base Y coordinate (viewport-anchored).
+    float flWidth = {};   // +0x08: the carried secondary X coordinate or width.
+    float flHeight = {};  // +0x0c: the carried secondary Y coordinate or height.
+    int nAnchorMode = {}; // +0x10: the viewport-relative anchor mode (0 through 8).
+};
+
+// One anchored phone-layout rectangle, as returned by the position and centre accessors: the leading
+// coordinate after viewport anchoring, plus the record's carried secondary coordinate.
+struct PhoneLayoutRect {
+    float flX = {};      // +0x00: the anchored X coordinate.
+    float flY = {};      // +0x04: the anchored Y coordinate.
+    float flWidth = {};  // +0x08: the carried secondary X coordinate or width.
+    float flHeight = {}; // +0x0c: the carried secondary Y coordinate or height.
+};
+
+// The Classic phone-layout separator tables, zero-initialised in the binary's @c __common segment
+// and filled at runtime; the portrait flag selects between them.
+extern PhoneLayoutRecord
+    g_aClassicSeparatorPhonePortrait[kClassicSeparatorRecordCount]; // @ghidraAddress 0x3d88a0
+extern PhoneLayoutRecord
+    g_aClassicSeparatorPhoneLandscape[kClassicSeparatorRecordCount]; // @ghidraAddress 0x3d8c40
+
+// The Classic phone-layout position-by-state tables: the state table is used when the font-variant
+// state flag is set, otherwise the landscape or portrait table (selected by the orientation flag).
+// Zero-initialised in the binary's @c __common segment and filled at runtime; the record count is
+// not bounds-checked by the accessor.
+extern PhoneLayoutRecord g_aClassicPositionPhoneState[];          // @ghidraAddress 0x3d8fd8
+extern PhoneLayoutRecord g_aClassicPositionPhoneStatePortrait[];  // @ghidraAddress 0x3d9030
+extern PhoneLayoutRecord g_aClassicPositionPhoneStateLandscape[]; // @ghidraAddress 0x3d9080
+
+// The single Classic phone-layout centre-position records (16-byte, no anchor mode): the state
+// record, and the portrait and landscape records (selected by the orientation flag when the state
+// flag is clear). Zero-initialised in the binary's @c __common segment and filled at runtime.
+extern PhoneLayoutRect g_ClassicCenterPositionPhoneState;     // @ghidraAddress 0x3d90d0
+extern PhoneLayoutRect g_ClassicCenterPositionPhonePortrait;  // @ghidraAddress 0x3d90e0
+extern PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape; // @ghidraAddress 0x3d90f0
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

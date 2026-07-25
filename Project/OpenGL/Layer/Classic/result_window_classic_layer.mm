@@ -25,6 +25,30 @@ PhoneAnchorRecord g_aClassicPositionPhoneLandscape[kClassicPositionRecordCount] 
 PhoneAnchorRecord g_aClassicPositionPhonePortrait[kClassicPositionRecordCount] =
     {}; // @ghidraAddress 0x3d80e8
 
+// The Classic phone-layout separator tables (declared in classic_parts_data_table.h):
+// zero-initialised here to match the binary's __common segment, filled at runtime.
+PhoneLayoutRecord g_aClassicSeparatorPhonePortrait[kClassicSeparatorRecordCount] =
+    {}; // @ghidraAddress 0x3d88a0
+PhoneLayoutRecord g_aClassicSeparatorPhoneLandscape[kClassicSeparatorRecordCount] =
+    {}; // @ghidraAddress 0x3d8c40
+
+// The Classic phone-layout position-by-state tables. Their record count is not bounds-checked by
+// the accessor; it is inferred as four from the gaps between the runtime-filled symbols
+// (0x3d8fd8, 0x3d9030, 0x3d9080, each 0x50 = four 0x14-byte records apart).
+constexpr int kClassicPositionByStateRecordCount = 4;
+PhoneLayoutRecord g_aClassicPositionPhoneState[kClassicPositionByStateRecordCount] =
+    {}; // @ghidraAddress 0x3d8fd8
+PhoneLayoutRecord g_aClassicPositionPhoneStateLandscape[kClassicPositionByStateRecordCount] =
+    {}; // @ghidraAddress 0x3d9080
+PhoneLayoutRecord g_aClassicPositionPhoneStatePortrait[kClassicPositionByStateRecordCount] =
+    {}; // @ghidraAddress 0x3d9030
+
+// The single Classic phone-layout centre-position records (declared in classic_parts_data_table.h):
+// zero-initialised here to match the binary's __common segment, filled at runtime.
+PhoneLayoutRect g_ClassicCenterPositionPhoneState = {};     // @ghidraAddress 0x3d90d0
+PhoneLayoutRect g_ClassicCenterPositionPhonePortrait = {};  // @ghidraAddress 0x3d90e0
+PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x3d90f0
+
 // The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
 // per result-window part, giving each part's placement offset, size, and UV-palette index.
 const PartsDataRecord g_aClassicPartsPhone[kClassicPhonePartsRecordCount] = {
@@ -235,6 +259,46 @@ constexpr int kRowMaxDigits = 4;
 constexpr float kRowNominalGlyphWidth = 7.0f;
 constexpr float kRowGlyphSpacing = 1.0f;
 
+// Offsets a base coordinate by half or full viewport dimensions per the anchor mode, shared by the
+// phone position accessors.
+inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    switch (nAnchorMode) {
+    case kAnchorHalfHeight:
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorFullHeight:
+        *pY += flHeight;
+        break;
+    case kAnchorHalfWidth:
+        *pX += flWidth * 0.5f;
+        break;
+    case kAnchorHalfWidthHalfHeight:
+        *pX += flWidth * 0.5f;
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorHalfWidthFullHeight:
+        *pX += flWidth * 0.5f;
+        *pY += flHeight;
+        break;
+    case kAnchorFullWidth:
+        *pX += flWidth;
+        break;
+    case kAnchorFullWidthHalfHeight:
+        *pX += flWidth;
+        *pY += flHeight * 0.5f;
+        break;
+    case kAnchorFullWidthFullHeight:
+        *pX += flWidth;
+        *pY += flHeight;
+        break;
+    default:
+        break;
+    }
+}
+
 } // namespace
 
 /** @ghidraAddress 0x114c80 */
@@ -248,41 +312,52 @@ void ResultWindowClassicLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosi
     pOutPosition->y = record.flY;
 
     // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
-    GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    const float flWidth = pGameSystem->GetViewportWidth();
-    const float flHeight = pGameSystem->GetViewportHeight();
-    switch (record.nAnchorMode) {
-    case kAnchorHalfHeight:
-        pOutPosition->y += flHeight * 0.5f;
-        break;
-    case kAnchorFullHeight:
-        pOutPosition->y += flHeight;
-        break;
-    case kAnchorHalfWidth:
-        pOutPosition->x += flWidth * 0.5f;
-        break;
-    case kAnchorHalfWidthHalfHeight:
-        pOutPosition->x += flWidth * 0.5f;
-        pOutPosition->y += flHeight * 0.5f;
-        break;
-    case kAnchorHalfWidthFullHeight:
-        pOutPosition->x += flWidth * 0.5f;
-        pOutPosition->y += flHeight;
-        break;
-    case kAnchorFullWidth:
-        pOutPosition->x += flWidth;
-        break;
-    case kAnchorFullWidthHalfHeight:
-        pOutPosition->x += flWidth;
-        pOutPosition->y += flHeight * 0.5f;
-        break;
-    case kAnchorFullWidthFullHeight:
-        pOutPosition->x += flWidth;
-        pOutPosition->y += flHeight;
-        break;
-    default:
-        break;
+    ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
+}
+
+/** @ghidraAddress 0x114e18 */
+const PhoneLayoutRecord *ResultWindowClassicLayer::getSeparator_Phone(int nIndex) const {
+    assert(nIndex >= 0 && nIndex < kClassicSeparatorRecordCount);
+
+    // The orientation flag selects the portrait table; otherwise the landscape table is used.
+    return m_bPortrait ? &g_aClassicSeparatorPhonePortrait[nIndex] :
+                         &g_aClassicSeparatorPhoneLandscape[nIndex];
+}
+
+/** @ghidraAddress 0x114e9c */
+void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
+                                                        PhoneLayoutRect *pOutRect) const {
+    // The font-variant state flag selects the state table; otherwise the orientation flag selects
+    // the landscape or portrait table.
+    const PhoneLayoutRecord &record =
+        m_bFontVariant ? g_aClassicPositionPhoneState[nIndex] :
+                         (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
+                                        g_aClassicPositionPhoneStateLandscape[nIndex]);
+    pOutRect->flX = record.flX;
+    pOutRect->flY = record.flY;
+    pOutRect->flWidth = record.flWidth;
+    pOutRect->flHeight = record.flHeight;
+
+    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor mode.
+    ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
+}
+
+/** @ghidraAddress 0x115008 */
+void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
+    // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
+    if (m_bFontVariant) {
+        *pOutRect = g_ClassicCenterPositionPhoneState;
+        (void)GameSystem::
+            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        return;
     }
+
+    // Otherwise the orientation flag selects the portrait or landscape record, and the leading
+    // coordinate is shifted by half the viewport width and height.
+    const PhoneLayoutRect &record =
+        m_bPortrait ? g_ClassicCenterPositionPhonePortrait : g_ClassicCenterPositionPhoneLandscape;
+    *pOutRect = record;
+    ApplyAnchorOffset(kAnchorHalfWidthHalfHeight, &pOutRect->flX, &pOutRect->flY);
 }
 
 /** @ghidraAddress 0x116808 */

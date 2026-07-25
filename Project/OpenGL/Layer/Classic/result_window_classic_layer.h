@@ -8,6 +8,8 @@
 #include "playfieldlayerbase.h"
 
 struct PartsDataRecord;
+struct PhoneLayoutRecord;
+struct PhoneLayoutRect;
 struct S_VECTOR2;
 class Polygon2dTrail;
 
@@ -74,6 +76,41 @@ public:
      * @ghidraAddress 0x114c80
      */
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
+
+    /**
+     * @brief Returns a phone-layout separator record by index.
+     *
+     * Selects the portrait or landscape separator table by the layer's orientation flag and returns
+     * the record at @p nIndex.
+     * @param nIndex The separator-record index (0 through 45).
+     * @return The separator record.
+     * @ghidraAddress 0x114e18
+     */
+    const PhoneLayoutRecord *getSeparator_Phone(int nIndex) const;
+
+    /**
+     * @brief Resolves a phone-layout rectangle by index and state, offset relative to the viewport.
+     *
+     * Selects the state table when the font-variant state flag is set, otherwise the portrait or
+     * landscape table by the orientation flag, copies the record's four floats to @p pOutRect, then
+     * shifts the leading coordinate by the viewport's half or full width and height per the record's
+     * anchor mode.
+     * @param nIndex The position-record index.
+     * @param pOutRect Receives the resolved rectangle.
+     * @ghidraAddress 0x114e9c
+     */
+    void getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const;
+
+    /**
+     * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
+     *
+     * Copies the state, portrait, or landscape centre record (selected by the state and orientation
+     * flags) to @p pOutRect. When the state flag is clear the leading coordinate is shifted by half
+     * the viewport width and height.
+     * @param pOutRect Receives the resolved rectangle.
+     * @ghidraAddress 0x115008
+     */
+    void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
      * @brief Emits one result-window part sprite by part id into an instancer slot.
