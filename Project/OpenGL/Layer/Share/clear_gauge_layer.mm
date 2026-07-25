@@ -24,6 +24,16 @@ float ClearGaugeLayer::GetValue(unsigned int nSide) const {
     return m_aValues[nSide].flValue;
 }
 
+/** @ghidraAddress 0x175d68 */
+void ClearGaugeLayer::SetGaugeStyle(int nStyle) {
+    m_nGaugeStyle = nStyle;
+}
+
+/** @ghidraAddress 0x175d70 */
+void ClearGaugeLayer::SetTwoSideEnabled(bool bTwoSide) {
+    m_nTwoSideEnabled = bTwoSide;
+}
+
 /** @ghidraAddress 0x175aac */
 ClearGaugeLayer *ClearGaugeLayer::shared() {
     if (g_pClearGaugeLayer == nullptr) {

@@ -52,6 +52,21 @@ public:
     float GetValue(unsigned int nSide) const;
 
     /**
+     * @brief Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
+     * setting.
+     * @param nStyle The gauge style.
+     * @ghidraAddress 0x175d68
+     */
+    void SetGaugeStyle(int nStyle);
+
+    /**
+     * @brief Sets whether the two-player (both-side) gauge is drawn.
+     * @param bTwoSide Whether the 2P gauge is enabled.
+     * @ghidraAddress 0x175d70
+     */
+    void SetTwoSideEnabled(bool bTwoSide);
+
+    /**
      * @brief The process-wide clear-gauge layer, created on first use.
      * @return The shared clear-gauge layer.
      * @ghidraAddress 0x175aac
@@ -72,8 +87,9 @@ private:
     float m_flFadeElapsed = {};      // +0x12c: the reveal fade's elapsed time, in frames.
     float m_flFadeCurrent = {};      // +0x130: the reveal fade's current value.
     bool m_bColorDirty = {};         // +0x134: set when the fade advances.
-    // +0x135..+0x143 is alignment padding before the per-side value slots.
-    unsigned char m_aPad135[15] = {}; // +0x135
+    // +0x135..+0x13f is alignment padding before the gauge-style field.
+    unsigned char m_aPad135[11] = {}; // +0x135
+    int m_nGaugeStyle = {};           // +0x140: the gauge style / sprite-layout variant.
     // Each side's clear-gauge value occupies an eight-byte slot (the float followed by four unused
     // bytes), so the two sides sit at +0x144 and +0x14c.
     struct ValueSlot {
