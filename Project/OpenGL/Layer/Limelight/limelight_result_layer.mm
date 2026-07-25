@@ -169,6 +169,75 @@ void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition
     ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
 }
 
+/** @ghidraAddress 0x12a01c */
+void LimelightResultLayer::RenderPhonePartWithOffset(unsigned int nSlot,
+                                                     unsigned int nCharCode,
+                                                     int nPositionIndex,
+                                                     const S_VECTOR2 &offset,
+                                                     unsigned int nAlpha,
+                                                     int bShadowPass,
+                                                     float flRotation,
+                                                     float flScaleX,
+                                                     float flScaleY) {
+    if (nCharCode >= kLimelightPadGlyphRecordBound) {
+        return;
+    }
+    // Resolve the base position by index and add the offset.
+    S_VECTOR2 position{};
+    getPosition_Phone(nPositionIndex, &position);
+    // The glyph metrics come from the pad parts table indexed by the character code; the texture
+    // rectangle from the Limelight glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aLimelightPartsPad[nCharCode];
+    const UvPaletteEntry &palette = g_aLimelightGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? 0x80 : 0xff;
+    AppendSpriteToSlot(S_VECTOR2{position.x + offset.x, position.y + offset.y},
+                       S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                       S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
+/** @ghidraAddress 0x129c34 */
+void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
+                                                          const S_VECTOR2 &position,
+                                                          unsigned int nScale,
+                                                          unsigned int nIntensity) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    // The binary does not null-check the bound texture here.
+    ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flTextureScale = pTexture->GetScale();
+    // The quad is sized by the texture's scale factor and centred by anchoring at half its size.
+    const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
+    const S_VECTOR2 anchor{spriteSize.x * 0.5f, spriteSize.y * 0.5f};
+    const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
+                           flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
+    const unsigned int nAlpha =
+        static_cast<unsigned int>(static_cast<float>(nScale) * m_flBaseScale);
+    AppendSpriteToSlot(position,
+                       anchor,
+                       spriteSize,
+                       S_VECTOR2{},
+                       uvSize,
+                       0.0f,
+                       S_VECTOR2{1.0f, 1.0f},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x12ac64 */
 void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
                                               const S_VECTOR2 &anchor,

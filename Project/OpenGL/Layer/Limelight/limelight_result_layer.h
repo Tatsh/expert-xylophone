@@ -118,6 +118,53 @@ public:
     void EmitAutoUvPart(unsigned long nSlot, const S_VECTOR2 &position, unsigned int nBaseAlpha);
 
     /**
+     * @brief Emits one glyph sprite at a resolved position index plus an offset, dimmable.
+     *
+     * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
+     * looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
+     * texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot with
+     * the given rotation and scale. Character codes at or above the pad glyph bound are ignored. The
+     * main pass draws at full intensity, the shadow pass at half.
+     * @param nSlot The instancer slot to append to.
+     * @param nCharCode The glyph character code (below the pad glyph bound).
+     * @param nPositionIndex The phone anchor-position index.
+     * @param offset The offset added to the resolved position.
+     * @param nAlpha The glyph alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x12a01c
+     */
+    void RenderPhonePartWithOffset(unsigned int nSlot,
+                                   unsigned int nCharCode,
+                                   int nPositionIndex,
+                                   const S_VECTOR2 &offset,
+                                   unsigned int nAlpha,
+                                   int bShadowPass,
+                                   float flRotation,
+                                   float flScaleX,
+                                   float flScaleY);
+
+    /**
+     * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size anchor).
+     *
+     * Sizes the quad by the texture's own scale factor, derives its UV rectangle from the used
+     * image over its allocation, and centres it via a half-size anchor. The alpha is @p nScale times
+     * the layer base scale; the colour intensity is taken from @p nIntensity. A no-op when the slot
+     * is out of range or empty (the binary does not null-check the bound texture).
+     * @param nSlot The instancer slot (0 through 7).
+     * @param position The sprite's centre position.
+     * @param nScale The scale units multiplied into the alpha.
+     * @param nIntensity The sprite colour intensity.
+     * @ghidraAddress 0x129c34
+     */
+    void EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
+                                        const S_VECTOR2 &position,
+                                        unsigned int nScale,
+                                        unsigned int nIntensity);
+
+    /**
      * @brief Renders a small unsigned integer as centred Limelight digit-glyph sprites.
      *
      * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run about
