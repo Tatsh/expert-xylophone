@@ -21,21 +21,49 @@ class C_DRAW_POLYGON_2D;
 class Polygon2dTrail {
 public:
     /**
+     * @brief Constructs a trail over a caller-owned vertex buffer, clearing its derived state.
+     *
+     * Records the strip's vertex count and the buffer that holds its points, and zeroes the cached
+     * length and the mesh pointer; @c Init later builds the mesh from them. The binary inlines this
+     * into the owner's constructor (the four Classic result-window trails), seeding the count and
+     * buffer from static tables.
+     * @param nVertexCount The number of strip vertices.
+     * @param pVertices The caller-owned vertex buffer.
+     */
+    Polygon2dTrail(int nVertexCount, S_VECTOR2 *pVertices);
+
+    /**
      * @brief Builds the trail's mesh: creates the polygon-mesh node, registers it, seeds every
      * vertex to the strip's first point (white, zero alpha), and caches the strip's total length.
      * @ghidraAddress 0x11c744
      */
     void Init();
 
+    /**
+     * @brief Advances the trail's visible head along the strip by one frame's worth of travel.
+     *
+     * Adds @p flDeltaTime to the reveal progress (finishing and deactivating once it passes the
+     * reveal length, or waiting while it is still negative), then walks the strip's segments from the
+     * head by the per-frame step, snapping crossed vertices onto their path points and interpolating
+     * the partially-reached vertex, writing each moved vertex to the mesh in opaque white.
+     * @param nDeltaTime The elapsed frame time.
+     * @ghidraAddress 0x11c3e0
+     */
+    void Update(int nDeltaTime);
+
 private:
-    // +0x00..+0x08: descriptor state preceding the cached length, still being worked out.
-    unsigned char m_aReserved00[0xc] = {}; // +0x00
-    float m_flTotalLength = {};            // +0x0c: the cached total length of the strip.
-    // +0x10..+0x17: further descriptor state still being worked out.
-    unsigned char m_aReserved10[8] = {}; // +0x10
-    int m_nVertexCount = {};             // +0x18: the number of strip vertices.
+    bool m_bActive = {}; // +0x00: whether the trail is animating.
+    // +0x01..+0x03 is alignment padding before the progress value.
+    unsigned char m_aPad01[3] = {}; // +0x01
+    float m_flProgress = {};        // +0x04: the elapsed reveal progress, driven by Update.
+    float m_flRevealLength = {};    // +0x08: the reveal's total travel length (the progress bound).
+    float m_flTotalLength = {};     // +0x0c: the cached geometric length of the strip (sum of
+                                    //        segment lengths), computed by Init.
+    int m_nHeadIndex = {};          // +0x10: the index of the strip's current head vertex.
+    float m_flReachRemainder = {};  // +0x14: the reach carried between segments while advancing.
+    int m_nVertexCount = {};        // +0x18: the number of strip vertices.
     // +0x1c..+0x1f is padding before the vertex array pointer.
-    unsigned char m_aReserved1c[4] = {}; // +0x1c
+    unsigned char m_aPad1c[4] = {};      // +0x1c
     S_VECTOR2 *m_pVertices = {};         // +0x20: the strip vertex positions.
     ne::C_DRAW_POLYGON_2D *m_pMesh = {}; // +0x28: the mesh node that draws the strip.
 };
