@@ -68,6 +68,31 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
+     * @brief Returns a phone-layout glyph descriptor by index.
+     *
+     * Always reads the pad parts table (which doubles as the phone glyph-metrics table), regardless
+     * of device kind.
+     * @param nIndex The glyph-record index (0 through 141).
+     * @return The glyph descriptor.
+     * @ghidraAddress 0x1238d0
+     */
+    static PartsDataRecord *getPartsData_Phone(int nIndex);
+
+    /**
+     * @brief Renders a small unsigned integer as centred phone digit-glyph sprites.
+     *
+     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run about
+     * @p position using a nominal seven-pixel glyph width, and emits each digit's glyph (bank base
+     * @c 0x39 plus the digit) right to left through @c RenderPhoneResultSpriteById, stepping left by
+     * each glyph's own width plus one pixel.
+     * @param nValue The value to render (up to four digits).
+     * @param pPosition The centre position of the digit run.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12a11c
+     */
+    void RenderPhoneNumberDigitsRow(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
+
+    /**
      * @brief Emits one result-window part sprite by part id.
      *
      * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the

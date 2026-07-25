@@ -155,6 +155,14 @@ PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) const {
     return IsPad() ? &g_aLimelightPartsPad[nIndex] : &g_aLimelightPartsPhone[nIndex];
 }
 
+/** @ghidraAddress 0x1238d0 */
+PartsDataRecord *LimelightResultLayer::getPartsData_Phone(int nIndex) {
+    assert(nIndex >= 0 && nIndex < kLimelightPadGlyphRecordBound);
+
+    // The pad parts table doubles as the phone glyph-metrics table.
+    return &g_aLimelightPartsPad[nIndex];
+}
+
 /** @ghidraAddress 0x123940 */
 void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
     assert(nIndex >= 0 && nIndex < kLimelightPhoneAnchorRecordCount);
@@ -236,6 +244,56 @@ void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
                        nSlot,
                        nIntensity,
                        nAlpha);
+}
+
+namespace {
+
+// The digit glyph bank RenderPhoneNumberDigitsRow draws from (its '0'), its maximum digit count, the
+// nominal glyph width used to centre the run, and the extra pixel added to each glyph's own width
+// when advancing. The glyphs draw into the parts slot.
+constexpr unsigned int kPhoneRowGlyphSlot = 1;
+constexpr unsigned int kPhoneRowDigitBank = 0x39;
+constexpr int kPhoneRowMaxDigits = 4;
+constexpr float kPhoneRowNominalGlyphWidth = 7.0f;
+constexpr float kPhoneRowGlyphSpacing = 1.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x12a11c */
+void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
+                                                      const S_VECTOR2 *pPosition,
+                                                      unsigned int nAlpha) {
+    // Split the value into up to four digits (ones first), tracking the count of significant
+    // digits, rendering at least one.
+    int aDigits[kPhoneRowMaxDigits] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < kPhoneRowMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    if (nSignificant == 0) {
+        nSignificant = 1;
+    }
+
+    // Centre the run about the position using the nominal glyph width, then step left by each
+    // glyph's own width (plus one pixel) as it is drawn.
+    const int nHalfWidth =
+        static_cast<int>(static_cast<float>(nSignificant) * kPhoneRowNominalGlyphWidth);
+    float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
+    const float flY = pPosition->y;
+
+    for (int i = 0; i < nSignificant; ++i) {
+        const unsigned int nGlyph = aDigits[i] + kPhoneRowDigitBank;
+        const float flWidth =
+            getPartsData_Phone(static_cast<int>(nGlyph))->flWidth + kPhoneRowGlyphSpacing;
+        flCursorX -= flWidth;
+        const S_VECTOR2 drawPos{flCursorX, flY};
+        RenderPhoneResultSpriteById(
+            kPhoneRowGlyphSlot, nGlyph, drawPos, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+    }
 }
 
 /** @ghidraAddress 0x12ac64 */
