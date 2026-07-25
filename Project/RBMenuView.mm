@@ -280,10 +280,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)shiftMenuButtonsForPlaylistEditEntering:(BOOL)entering;
 /** @brief Hide or show the pastel search mascots for the push-notification transition. */
 - (void)setSearchMascotsHidden:(BOOL)hidden;
-/** @brief Terms-version download success: prompt to re-accept updated terms, or open the store. */
-- (void)handleTermsVersionResponse;
-/** @brief Terms-version download failure: present the network-error alert. */
-- (void)handleTermsNetworkError;
 
 @end
 
@@ -1718,17 +1714,40 @@ static BOOL g_bRandamIntSeeded = NO;
                                                      post:postData
                                               contentType:kTermsRequestContentType];
     [weakSelf.termDownloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35c040 */
           // Global no-op proceed block.
         }
-        success:^{
+        success:^(Downloader *downloader) {
           /** @ghidraAddress 0xad2c0 */
-          [weakSelf handleTermsVersionResponse];
+          // Walk the terms list; for the current terms record (type 1) compare the accepted version
+          // against the server's, and either prompt to re-accept the updated terms or open the store.
+          for (NSDictionary *entry in [downloader getDataInJSON][kTermsKeyList]) {
+              if ([entry[kTermsKeyType] integerValue] != 1) {
+                  continue;
+              }
+              NSString *accepted = [RBUserSettingData sharedInstance].termVersion;
+              if ([accepted compare:entry[kTermsKeyVersion]
+                            options:NSNumericSearch] == NSOrderedAscending) {
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0xad6e4 */
+                    [weakSelf.viewController showTermsWithDelegate:weakSelf];
+                  });
+              } else {
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0xad7a4 */
+                    [weakSelf StoreOpen];
+                  });
+              }
+          }
         }
-        error:^{
+        failure:^(Downloader *downloader) {
           /** @ghidraAddress 0xad844 */
-          [weakSelf handleTermsNetworkError];
+          // Show the network-error alert on the main queue.
+          dispatch_async(dispatch_get_main_queue(), ^{
+            /** @ghidraAddress 0xad8bc */
+            [UIAlertView showNetworkErrorWithDelegate:weakSelf];
+          });
         }];
 }
 
@@ -2916,40 +2935,6 @@ static BOOL g_bRandamIntSeeded = NO;
     CGFloat alpha = hidden ? kAlphaHidden : kAlphaOpaque;
     self.searchMascot.alpha = alpha;
     self.mascot.alpha = alpha;
-}
-
-- (void)handleTermsVersionResponse {
-    // Walk the terms list; for the current terms record, compare the accepted version against the
-    // server version and either prompt to re-accept the updated terms or proceed to the store.
-    NSArray *list = [self.termDownloader getDataInJSON][kTermsKeyList];
-    __weak RBMenuView *weakSelf = self;
-    for (NSDictionary *entry in list) {
-        if ([entry[kTermsKeyType] integerValue] != kTermsRecordTypeCurrent) {
-            continue;
-        }
-        NSString *accepted = [RBUserSettingData sharedInstance].termVersion;
-        NSComparisonResult order = [accepted compare:entry[kTermsKeyVersion]
-                                             options:NSNumericSearch];
-        if (order == NSOrderedAscending) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-              /** @ghidraAddress HandleShowTermsForUpdate */
-              [weakSelf showTermView];
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-              /** @ghidraAddress HandleStoreOpenAfterTerms */
-              [weakSelf StoreOpen];
-            });
-        }
-    }
-}
-
-- (void)handleTermsNetworkError {
-    __weak RBMenuView *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      /** @ghidraAddress HandleShowNetworkErrorWithDelegate */
-      [[AppDelegate appDelegate] showNetworkErrorAlertWithDelegate:weakSelf];
-    });
 }
 
 @end
