@@ -118,6 +118,17 @@ public:
      */
     bool CheckNoteNearTime(int nTime, int nTarget);
 
+    /**
+     * @brief Returns the last note of the chain @p pNote belongs to.
+     *
+     * Asserts @p pNote is a chain note that is not already the tail, then follows the chain's
+     * next-segment links until a note with no next segment is reached.
+     * @param pNote A note in the chain.
+     * @return The chain's last note record.
+     * @ghidraAddress 0x130cbc
+     */
+    RbffNoteRecord *GetChainLastNote(const RbffNoteRecord *pNote);
+
     /** @brief The byte stride between note records in the pool (@c sizeof(RbffNoteRecord)). */
     static constexpr int kNoteRecordStride = 0xb8;
 

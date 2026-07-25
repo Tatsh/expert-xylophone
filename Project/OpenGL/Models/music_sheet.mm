@@ -576,6 +576,19 @@ float MusicSheet::GetFirstPathSpeed() {
     return static_cast<float>(m_pathNodes[0].x);
 }
 
+/** @ghidraAddress 0x130cbc */
+RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
+    // The start note must be a chain note and must not already be the chain's tail.
+    assert((pNote->dwFlags & kNoteFlagLongHead) != 0);
+    assert(!pNote->chainLink.IsTail());
+    // Follow the next-segment links until a note has no next segment.
+    int nIndex = pNote->chainLink.GetNext();
+    while (m_pRecords[nIndex].chainLink.GetNext() >= 0) {
+        nIndex = m_pRecords[nIndex].chainLink.GetNext();
+    }
+    return &m_pRecords[nIndex];
+}
+
 /** @ghidraAddress 0x13183c */
 RbffNoteRecord *MusicSheet::GetNoteRecordByIndex(int nIndex) {
     if (nIndex < 0 || nIndex >= m_nNoteCount) {
