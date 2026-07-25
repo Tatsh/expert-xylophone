@@ -80,6 +80,18 @@ public:
     }
 
     /**
+     * @brief Recomputes each side's clear rate and grade tier from its judgement counts and records
+     * which side leads.
+     *
+     * Compares the two sides' first counter to pick the leading side (0, 1, or 2 for a tie), storing
+     * it in each record's trailing field. For each side the clear rate is
+     * @c (cool*3 + great*2 + good) / (totalNotes*3), stored in the rate slot, and mapped to a grade
+     * tier 0 through 5 by the same thresholds as @c GetClearRank, stored in the rank slot.
+     * @ghidraAddress 0x14983c
+     */
+    void ComputeLaneClearRateAndGrade();
+
+    /**
      * @brief Resets every side's play record and repaints the score fields and lane gauges.
      * @ghidraAddress 0x149268
      */

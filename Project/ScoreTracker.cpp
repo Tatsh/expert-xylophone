@@ -25,6 +25,10 @@ constexpr int kJudgeBonus0 = 0x32;
 constexpr int kJudgeBonus2 = 0x19;
 constexpr int kJudgeBonus3 = 10;
 
+// The duration the score digits roll up to a new bonus score over. This reads the shared 300.0
+// float literal the binary pools across many timing sites (@ghidraAddress 0x2eedcc).
+constexpr float kBonusScoreAnimDuration = 300.0f;
+
 // The play-record cell indices AddScore addresses by name.
 enum ScoreCell {
     kCellScore = 0,    // The running score.
@@ -57,6 +61,27 @@ constexpr int kRateWeightJust = 3;
 constexpr int kRateWeightGreat = 2;
 constexpr int kRateDenominatorScale = 3;
 
+// The achievement-rate thresholds for each grade tier, highest first (the same tiers GetClearRank
+// uses); a rate at or above a threshold earns that tier, and below the lowest earns tier zero.
+constexpr float kGradeThreshold5 = 0.95f; // @ghidraAddress 0x308d3c
+constexpr float kGradeThreshold4 = 0.90f; // @ghidraAddress 0x2ef17c
+constexpr float kGradeThreshold3 = 0.80f; // @ghidraAddress 0x2f856c
+constexpr float kGradeThreshold2 = 0.70f; // @ghidraAddress 0x2fd008
+constexpr float kGradeThreshold1 = 0.50f;
+constexpr int kGradeTier5 = 5;
+constexpr int kGradeTier4 = 4;
+constexpr int kGradeTier3 = 3;
+constexpr int kGradeTier2 = 2;
+constexpr int kGradeTier1 = 1;
+constexpr int kGradeTier0 = 0;
+
+// The leading-side indicator stored in each record's trailing field.
+enum LeadingSide {
+    kLeadingSideFirst = 0,  // The first side leads.
+    kLeadingSideSecond = 1, // The second side leads.
+    kLeadingSideTie = 2,    // The two sides are tied.
+};
+
 // The result-quad band selection thresholds against the sheet's near-plane half-width.
 constexpr float kBandNearFactor = -0.25f;
 constexpr float kBandFarFactor = 0.25f;
@@ -67,6 +92,49 @@ constexpr int kBandSideMatchOffset = 6;
 constexpr int kBandModeOffset = 3;
 
 } // namespace
+
+/** @ghidraAddress 0x14983c */
+void ScoreTracker::ComputeLaneClearRateAndGrade() {
+    // Pick the leading side from the two sides' first counters, recording it in each side's trailing
+    // field.
+    const int nFirstSideLead = m_aRecords[0].nCells[kCellScore];
+    const int nSecondSideLead = m_aRecords[1].nCells[kCellScore];
+    if (nSecondSideLead < nFirstSideLead) {
+        m_aRecords[0].nField10 = kLeadingSideFirst;
+        m_aRecords[1].nField10 = kLeadingSideSecond;
+    } else if (nFirstSideLead < nSecondSideLead) {
+        m_aRecords[0].nField10 = kLeadingSideSecond;
+        m_aRecords[1].nField10 = kLeadingSideFirst;
+    } else {
+        m_aRecords[0].nField10 = kLeadingSideTie;
+        m_aRecords[1].nField10 = kLeadingSideTie;
+    }
+
+    // Compute each side's clear rate and grade tier.
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        PlayRecord &record = m_aRecords[nSide];
+        const int nNumerator = record.nCells[kCellJust] * kRateWeightJust +
+                               record.nCells[kCellGreat] * kRateWeightGreat +
+                               record.nCells[kCellGood];
+        const float flClearRate = static_cast<float>(nNumerator) /
+                                  static_cast<float>(m_nTotalNotes * kRateDenominatorScale);
+        record.flRate = flClearRate;
+
+        int nGrade = kGradeTier0;
+        if (flClearRate >= kGradeThreshold5) {
+            nGrade = kGradeTier5;
+        } else if (flClearRate >= kGradeThreshold4) {
+            nGrade = kGradeTier4;
+        } else if (flClearRate >= kGradeThreshold3) {
+            nGrade = kGradeTier3;
+        } else if (flClearRate >= kGradeThreshold2) {
+            nGrade = kGradeTier2;
+        } else if (flClearRate >= kGradeThreshold1) {
+            nGrade = kGradeTier1;
+        }
+        record.nRank = nGrade;
+    }
+}
 
 /** @ghidraAddress 0x149268 */
 void ScoreTracker::ResetLaneGaugeState() {
@@ -194,7 +262,7 @@ void ScoreTracker::AddScore(
 void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus0;
-    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus0, 0);
 }
 
@@ -202,7 +270,7 @@ void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
 void ScoreTracker::SetJudgeScore2(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus2;
-    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus2, 2);
 }
 
@@ -210,6 +278,6 @@ void ScoreTracker::SetJudgeScore2(unsigned int nSide) {
 void ScoreTracker::SetJudgeScore3(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus3;
-    SetScoreDigitTarget(g_flMascotBaseYOffsetPad, PlayerFieldLayer::shared(), nSide, nScore);
+    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus3, 3);
 }
