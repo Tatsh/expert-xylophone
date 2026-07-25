@@ -53,6 +53,33 @@ int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor
     return 1;
 }
 
+/** @ghidraAddress 0x12ea68 */
+void InitPathPoint(RbffPathPoint *pPoint) {
+    std::memset(pPoint->aData, 0, sizeof(pPoint->aData));
+}
+
+/** @ghidraAddress 0x12ed14 */
+int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor) {
+    // A tempo event is a verbatim 36-byte block.
+    std::memcpy(pOut->aData, *ppCursor, sizeof(pOut->aData));
+    *ppCursor += sizeof(pOut->aData);
+    return 1;
+}
+
+/** @ghidraAddress 0x12ed44 */
+int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned char **ppCursor) {
+    const unsigned char *pCursor = *ppCursor;
+    pRecord->nField0 = ReadStream<unsigned short>(pCursor);
+    pRecord->nField2 = ReadStream<unsigned short>(pCursor);
+    pRecord->nField4 = ReadStream<unsigned short>(pCursor);
+    pRecord->nValueA = ReadStream<int>(pCursor);
+    pRecord->nValueB = ReadStream<int>(pCursor);
+    // The record is followed by four reserved bytes.
+    pCursor += 4;
+    *ppCursor = pCursor;
+    return 1;
+}
+
 namespace {
 
 // The default first-path speed used when the chart carries no speed-change nodes (@ghidraAddress

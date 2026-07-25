@@ -30,6 +30,35 @@ struct RbffChartNote {
 };
 
 /**
+ * @brief A note path-point staging record used while parsing (28 bytes), zeroed before use.
+ */
+struct RbffPathPoint {
+    unsigned char aData[28] =
+        {}; // The path-point fields, cleared to zero before the reader fills them.
+};
+
+/**
+ * @brief One RBFF tempo/speed-change event as stored in the chart stream (36 bytes).
+ */
+struct RbffTempoEvent {
+    unsigned char aData[36] = {}; // The raw 36-byte event payload, copied verbatim by the reader.
+};
+
+/**
+ * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts and two
+ * ints, with four trailing reserved bytes.
+ */
+struct RbffChartHeaderRecord {
+    unsigned short nField0 = {}; // +0x00
+    unsigned short nField2 = {}; // +0x02
+    unsigned short nField4 = {}; // +0x04
+    // +0x06 is two bytes of padding before the first int.
+    unsigned short reserved6 = {};
+    int nValueA = {}; // +0x08
+    int nValueB = {}; // +0x0c
+};
+
+/**
  * @brief Deserialises one @c RbffChartNote from a little-endian byte stream, advancing the cursor.
  * @param pRecord The destination chart-note record.
  * @param ppCursor The stream cursor, advanced past the record on return.
@@ -37,6 +66,32 @@ struct RbffChartNote {
  * @ghidraAddress 0x12e944
  */
 int DeserializeNoteRecord(RbffChartNote *pRecord, const unsigned char **ppCursor);
+
+/**
+ * @brief Zeroes a note path-point staging record before the reader fills it.
+ * @param pPoint The path-point record to clear.
+ * @ghidraAddress 0x12ea68
+ */
+void InitPathPoint(RbffPathPoint *pPoint);
+
+/**
+ * @brief Reads one 36-byte RBFF tempo event from the stream, advancing the cursor.
+ * @param pOut The destination tempo event.
+ * @param ppCursor The stream cursor, advanced past the event on return.
+ * @return Always 1.
+ * @ghidraAddress 0x12ed14
+ */
+int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor);
+
+/**
+ * @brief Deserialises one RBFF chart sub-record (three shorts, two ints, four reserved bytes),
+ * advancing the cursor.
+ * @param pRecord The destination sub-record.
+ * @param ppCursor The stream cursor, advanced past the record on return.
+ * @return Always 1.
+ * @ghidraAddress 0x12ed44
+ */
+int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned char **ppCursor);
 
 // code: language=C++
 // kate: hl C++;
