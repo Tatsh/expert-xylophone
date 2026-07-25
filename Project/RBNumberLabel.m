@@ -27,7 +27,7 @@ static const float kDecimalScale = 10.0f;
 static const NSInteger kDecimalMinDigits = 2;
 
 // The fraction of the measured run width the lime style shifts left by to centre it.
-static const CGFloat kCentreFactor = 0.5;
+static const CGFloat kCenterFactor = 0.5;
 
 // The whole-number digit glyphs (cus_unlock_nm_0 … cus_unlock_nm_9).
 static NSString *const kNormalDigitNames[] = {
@@ -159,7 +159,7 @@ RBNumberLabelGlyphImage(RBNumberLabelImageType imageType, int digit, NSInteger s
             UIImage *glyph = RBNumberLabelGlyphImage(self.imageType, digits[slot], slot);
             pen -= glyph.size.width;
         }
-        pen = CGRectGetMinX(rect) + pen * -kCentreFactor;
+        pen = CGRectGetMinX(rect) + pen * -kCenterFactor;
     }
 
     // Second pass: draw each glyph bottom-aligned, laid out right to left from the pen position.

@@ -13,7 +13,7 @@
 
 // The grey level applied to each of the backdrop's red, green, and blue components. The binary
 // reuses a shared 0.2 double literal here (Ghidra labels it g_dMascotMessageAnimDuration @0x2eedc0).
-static const CGFloat kShadeBackdropGrey = 0.2;
+static const CGFloat kShadeBackdropGray = 0.2;
 
 // The backdrop's alpha, leaving the screen dimmed but still faintly visible. The binary reuses a
 // shared 0.8 double literal here (Ghidra labels it g_dTranslucentAlpha @0x2ec6a0).
@@ -26,9 +26,9 @@ static const CGFloat kShadeBackdropAlpha = 0.8;
     self = [super initWithFrame:frame];
     if (self) {
         self.userInteractionEnabled = YES;
-        self.backgroundColor = [UIColor colorWithRed:kShadeBackdropGrey
-                                               green:kShadeBackdropGrey
-                                                blue:kShadeBackdropGrey
+        self.backgroundColor = [UIColor colorWithRed:kShadeBackdropGray
+                                               green:kShadeBackdropGray
+                                                blue:kShadeBackdropGray
                                                alpha:kShadeBackdropAlpha];
     }
     return self;

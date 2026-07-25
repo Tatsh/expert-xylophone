@@ -29,7 +29,7 @@ constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
-constexpr UIViewAutoresizing kAutoresizingCentred =
+constexpr UIViewAutoresizing kAutoresizingCentered =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
@@ -151,7 +151,7 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     if (!wide) {
         self.baseView.center = self.center;
     }
-    self.baseView.autoresizingMask = kAutoresizingCentred;
+    self.baseView.autoresizingMask = kAutoresizingCentered;
     self.baseView.backgroundColor = UIColor.clearColor;
     [self addSubview:self.baseView];
 

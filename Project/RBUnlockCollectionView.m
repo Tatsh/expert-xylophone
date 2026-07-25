@@ -46,7 +46,7 @@ static const CGFloat kFrameCapInsetNarrow = 20.0;
 static const CGFloat kFrameCapInsetWide = 36.5;
 
 // The framed backdrop is centred horizontally at the top of the view.
-static const CGFloat kBackgroundCentreFactor = 0.5;
+static const CGFloat kBackgroundCenterFactor = 0.5;
 
 // The package title label geometry and font size, chosen by device idiom and theme.
 static const CGFloat kTitleNarrowLimelightX = 23.0;
@@ -141,7 +141,7 @@ enum {
                                         capInset, 0.0, frameImage.size.width - capInset, 0.0)];
     self.backgroundView = [[UIImageView alloc] initWithImage:frameImage];
     self.backgroundView.frame =
-        CGRectMake((self.frame.size.width - frameImage.size.width) * kBackgroundCentreFactor,
+        CGRectMake((self.frame.size.width - frameImage.size.width) * kBackgroundCenterFactor,
                    0.0,
                    frameImage.size.width,
                    frameImage.size.height);
@@ -201,7 +201,7 @@ enum {
     CGFloat collectionWidth = (float)(frameImage.size.width - kCollectionWidthInset);
     self.collectionView = [[RBCollectionView alloc]
                initWithFrame:CGRectMake((self.frame.size.width - collectionWidth) *
-                                            kBackgroundCentreFactor,
+                                            kBackgroundCenterFactor,
                                         capInset,
                                         collectionWidth,
                                         collectionHeight)

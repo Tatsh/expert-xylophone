@@ -151,8 +151,8 @@ constexpr float kTiltFarPlane = 5000.0f;
 // @ghidraAddress 0x2fedd8
 constexpr double kPiOverTwo = 1.5707963267948966;
 // The sheet centre used as the flat-landscape camera focus, in points.
-constexpr float kSheetCentreX = 384.0f;
-constexpr float kSheetCentreY = 512.0f;
+constexpr float kSheetCenterX = 384.0f;
+constexpr float kSheetCenterY = 512.0f;
 
 // The playlist view controller modes. Type "create" opens the playlist create and browse screen
 // from the playlist button; type "add to set" adds a music set to an existing playlist.
@@ -415,10 +415,10 @@ constexpr int kDefaultPlayColor = 0;
             gameSystem->SetSheetLayerFlags(0);
             ne::Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
-            float eye[] = {kSheetCentreX,
-                           kSheetCentreY,
+            float eye[] = {kSheetCenterX,
+                           kSheetCenterY,
                            static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
-            float target[] = {kSheetCentreX, kSheetCentreY, 0.0f};
+            float target[] = {kSheetCenterX, kSheetCenterY, 0.0f};
             float up[] = {0.0f, -1.0f, 0.0f};
             ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
             SetActiveViewCamera(viewport);

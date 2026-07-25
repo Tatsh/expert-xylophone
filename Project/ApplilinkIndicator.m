@@ -18,7 +18,7 @@ extern const double g_dLayoutMetricEighty; // @ghidraAddress 0x2ec6c8 (80.0)
 // The overlay dims its black background to half opacity, and each bounds axis is halved to centre
 // the spinner.
 static const CGFloat kOverlayAlpha = 0.5;
-static const CGFloat kCentreFactor = 0.5;
+static const CGFloat kCenterFactor = 0.5;
 
 @implementation ApplilinkIndicator
 
@@ -38,8 +38,8 @@ static const CGFloat kCentreFactor = 0.5;
 - (void)layoutSubviews {
     [super layoutSubviews];
     if (self.indicator) {
-        [self.indicator setCenter:CGPointMake(self.bounds.size.width * kCentreFactor,
-                                              self.bounds.size.height * kCentreFactor)];
+        [self.indicator setCenter:CGPointMake(self.bounds.size.width * kCenterFactor,
+                                              self.bounds.size.height * kCenterFactor)];
     }
 }
 

@@ -87,7 +87,7 @@ static const CGFloat kArtworkShadowRadius = 2.0;
 static const NSInteger kBackgroundCap = 4;
 
 // The centre-scaling factor used to place the busy indicator over the sample button.
-static const CGFloat kCentreScale = 0.5;
+static const CGFloat kCenterScale = 0.5;
 
 // The index of the light tune-cell background, and the highest valid index into
 // kTuneCellBackgroundImageNames. Any @c setBG: argument above this clamps to the dark background.
@@ -154,8 +154,8 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 
     self.indicatorSample = [[UIActivityIndicatorView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, kIndicatorSide, kIndicatorSide)];
-    self.indicatorSample.center = CGPointMake(self.buttonSample.frame.size.width * kCentreScale,
-                                              self.buttonSample.frame.size.height * kCentreScale);
+    self.indicatorSample.center = CGPointMake(self.buttonSample.frame.size.width * kCenterScale,
+                                              self.buttonSample.frame.size.height * kCenterScale);
     self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
     self.indicatorSample.hidesWhenStopped = YES;
     [self.buttonSample addSubview:self.indicatorSample];

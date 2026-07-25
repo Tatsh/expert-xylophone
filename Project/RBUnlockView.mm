@@ -112,7 +112,7 @@ constexpr CGFloat kPackageRowGapWide = 10.0;
 constexpr CGFloat kRewardBannerRowFactor = 0.8;
 
 // The lime-point backdrop sits centred horizontally, at a idiom-dependent vertical offset.
-constexpr CGFloat kPointBackgroundCentreFactor = 0.5;
+constexpr CGFloat kPointBackgroundCenterFactor = 0.5;
 constexpr CGFloat kPointBackgroundTopNarrow = 34.0;
 constexpr CGFloat kPointBackgroundTopWide = 70.0;
 
@@ -201,7 +201,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.pointBackgroundView = [[UIImageView alloc] initWithImage:backgroundImage];
     CGFloat backgroundTop = (!isPad) ? kPointBackgroundTopNarrow : kPointBackgroundTopWide;
     self.pointBackgroundView.frame =
-        CGRectMake((self.width - self.pointBackgroundView.width) * kPointBackgroundCentreFactor,
+        CGRectMake((self.width - self.pointBackgroundView.width) * kPointBackgroundCenterFactor,
                    backgroundTop,
                    self.pointBackgroundView.width,
                    self.pointBackgroundView.height);

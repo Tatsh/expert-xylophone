@@ -53,7 +53,7 @@ static const CGFloat kNewsTickerTextLayerPositionY = 40.0;
 
 // The anchor-point x-coordinate the text layer animates to at startup, sliding the layer's origin to
 // its horizontal centre so the text scrolls symmetrically.
-static const CGFloat kNewsTickerTextAnchorCentreX = 0.5;
+static const CGFloat kNewsTickerTextAnchorCenterX = 0.5;
 
 // The relative time, within a scroll cycle, at which the text sits fully centred.
 static const CGFloat kNewsTickerScrollMidpointFraction = 0.5;
@@ -160,11 +160,11 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     anchorAnimation.fromValue =
         [NSValue valueWithCGPoint:CGPointMake(0.0, newsLabel.layer.anchorPoint.y)];
     anchorAnimation.toValue = [NSValue
-        valueWithCGPoint:CGPointMake(kNewsTickerTextAnchorCentreX, newsLabel.layer.anchorPoint.y)];
+        valueWithCGPoint:CGPointMake(kNewsTickerTextAnchorCenterX, newsLabel.layer.anchorPoint.y)];
     anchorAnimation.timingFunction =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     newsLabel.layer.anchorPoint =
-        CGPointMake(kNewsTickerTextAnchorCentreX, newsLabel.layer.anchorPoint.y);
+        CGPointMake(kNewsTickerTextAnchorCenterX, newsLabel.layer.anchorPoint.y);
     [newsLabel.layer addAnimation:anchorAnimation forKey:kNewsTickerAnchorAnimationKey];
 }
 

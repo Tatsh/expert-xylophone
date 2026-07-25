@@ -712,14 +712,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     // slide it clear to the side with the most room, clamped to the overlay bounds.
     if (spot.origin.y <= content.origin.y + content.size.height && !stay &&
         content.origin.y <= spot.origin.y + spot.size.height) {
-        CGFloat spotCentreY = spot.origin.y + spot.size.height;
-        if (content.size.width * 0.5 <= (spot.origin.y + spotCentreY) * 0.5) {
+        CGFloat spotCenterY = spot.origin.y + spot.size.height;
+        if (content.size.width * 0.5 <= (spot.origin.y + spotCenterY) * 0.5) {
             origin.y = (spot.origin.y - content.size.height) - 10.0;
             if (origin.y < 0.0) {
                 origin.y = 0.0;
             }
         } else {
-            origin.y = spotCentreY + 10.0;
+            origin.y = spotCenterY + 10.0;
             if (self.height < origin.y + content.size.height) {
                 origin.y = self.height - content.size.height;
             }

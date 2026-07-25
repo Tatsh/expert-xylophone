@@ -150,7 +150,7 @@ static const CGFloat kMoreRowHeightPad = 60.0;
 static const CGFloat kPackRowTintEvenWhite = 0.8;
 static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
-static const CGFloat kPadMoreRowGreyWhite = 0.6;
+static const CGFloat kPadMoreRowGrayWhite = 0.6;
 
 // The "load more" row text: 0.8 white idle, 0.4 white (matching the shadow) while loading.
 static const CGFloat kMoreCellTextWhiteIdle = 0.8;
@@ -175,7 +175,7 @@ static const CGFloat kEmptyStateDropPhone = 100.0;
 static const CGFloat kEmptyStateDropPad = 300.0;
 
 // The "show more" button is re-centred half-way across the table, 25 points below its content top.
-static const CGFloat kShowMoreCentreDrop = 25.0;
+static const CGFloat kShowMoreCenterDrop = 25.0;
 
 // The pad table appearance.
 static const CGFloat kPadTableCornerRadius = 8.0;
@@ -186,9 +186,9 @@ static const CGFloat kPadTitleLabelWidth = 720.0;
 static const CGFloat kPadTitleVerticalOffset = 20.0;
 static const CGFloat kPadContentTop = 330.0;
 static const CGFloat kPadDetailWidth = 650.0;
-static const CGFloat kPadDetailCentreYOffset = -44.0;
+static const CGFloat kPadDetailCenterYOffset = -44.0;
 static const CGFloat kPadTableHeightOffset = -236.0;
-static const CGFloat kPadTableCentreOffset = 236.0;
+static const CGFloat kPadTableCenterOffset = 236.0;
 static const CGFloat kPadSampleLabelX = 140.0;
 static const CGFloat kPadSampleLabelY = 217.0;
 static const CGFloat kPadSampleLabelWidth = 228.0;
@@ -496,7 +496,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                                          style:UITableViewStylePlain];
         table.tag = kTagPackTable;
         table.center = CGPointMake(bounds.size.width * kCenterScale,
-                                   tableHeight * kCenterScale + kPadTableCentreOffset);
+                                   tableHeight * kCenterScale + kPadTableCenterOffset);
         table.autoresizingMask = UIViewAutoresizingFlexibleWidth |
                                  UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleTopMargin;
@@ -533,7 +533,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         initWithFrame:CGRectMake(0.0, 0.0, kPadDetailWidth, kPromotionSectionHeight)];
     self.packDetailViewPad.center =
         CGPointMake((CGFloat)(int)self.coverViewPad.center.x,
-                    (CGFloat)(int)(self.coverViewPad.center.y + kPadDetailCentreYOffset));
+                    (CGFloat)(int)(self.coverViewPad.center.y + kPadDetailCenterYOffset));
     self.packDetailViewPad.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
         UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -859,14 +859,14 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         if (self.showMoreButton != nil) {
             self.showMoreButton.hidden = NO;
             [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-            CGPoint centre = self.showMoreButton.center;
+            CGPoint center = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
-            self.showMoreButton.center = centre;
+            self.showMoreButton.center = center;
         }
         UIView *overlay = [table viewWithTag:kTagShowMoreOverlay];
         overlay.hidden = NO;
         overlay.center = CGPointMake(table.bounds.size.width * kCenterScale,
-                                     table.contentSize.height + kShowMoreCentreDrop);
+                                     table.contentSize.height + kShowMoreCenterDrop);
     } else {
         if (self.showMoreButton != nil) {
             self.showMoreButton.hidden = YES;
@@ -906,9 +906,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         if (self.showMoreButton != nil) {
             self.showMoreButton.hidden = NO;
             [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-            CGPoint centre = self.showMoreButton.center;
+            CGPoint center = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
-            self.showMoreButton.center = centre;
+            self.showMoreButton.center = center;
         }
         if (self.showMoreIndicator != nil) {
             self.showMoreIndicator.hidden = NO;
@@ -1176,14 +1176,14 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
             CGFloat white = (indexPath.row & 1) ? kPackRowTintOddWhite : kPackRowTintEvenWhite;
             packCell.bgColor = [UIColor colorWithRed:white green:white blue:white alpha:1.0];
         } else {
-            cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGreyWhite alpha:1.0];
+            cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGrayWhite alpha:1.0];
         }
         return;
     }
     if (indexPath.row < [self numPackRows]) {
         cell.backgroundColor = [UIColor colorWithWhite:kPadPackRowTintWhite alpha:1.0];
     } else {
-        cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGreyWhite alpha:1.0];
+        cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGrayWhite alpha:1.0];
     }
 }
 
@@ -1220,9 +1220,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     m_IsLoadingMoreList = YES;
 
     [self.showMoreButton setTitle:g_pStoreLoadingTitle forState:UIControlStateNormal];
-    CGPoint centre = self.showMoreButton.center;
+    CGPoint center = self.showMoreButton.center;
     [self.showMoreButton sizeToFit];
-    self.showMoreButton.center = centre;
+    self.showMoreButton.center = center;
 
     self.showMoreIndicator.hidden = NO;
     [self.view viewWithTag:kTagShowMoreOverlay].hidden = YES;

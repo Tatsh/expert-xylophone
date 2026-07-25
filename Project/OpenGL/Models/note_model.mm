@@ -25,7 +25,7 @@ namespace {
 // centre line and produces no offset; bands 0 through 3 sit above it and 5 through 8 below.
 constexpr float kBandFractions[] = {0.38f, 0.30f, 0.20f, 0.10f, 0.0f, 0.10f, 0.20f, 0.30f, 0.38f};
 constexpr int kBandCount = 9;
-constexpr int kCentreBand = 4;
+constexpr int kCenterBand = 4;
 
 } // namespace
 
@@ -53,10 +53,10 @@ int NoteModel::IsSideFlipped() const {
 /** @ghidraAddress 0x1360a8 */
 float NoteModel::GetVirtualBoundY(int nBand) {
     assert(nBand >= 0 && nBand < kBandCount);
-    if (nBand == kCentreBand) {
+    if (nBand == kCenterBand) {
         return 0.0f;
     }
     // Bands above the centre take the top edge, bands below take the bottom edge.
-    const float flEdge = nBand < kCentreBand ? g_flPlayfieldBoundTop : g_flPlayfieldBoundBottom;
+    const float flEdge = nBand < kCenterBand ? g_flPlayfieldBoundTop : g_flPlayfieldBoundBottom;
     return (flEdge * kBandFractions[nBand]) + (flEdge * kBandFractions[nBand]);
 }

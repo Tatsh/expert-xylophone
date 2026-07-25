@@ -110,7 +110,7 @@ static const NSTimeInterval kNewsGetTimeOffset = 0.0;
 static const NSTimeInterval kNewsCacheValiditySeconds = -300.0; // Fresh if fetched < 5 min ago.
 static const NSTimeInterval kNewsBannerDefaultInterval = 10.8;
 static const CGFloat kNewsTickerDuration = 10.7;
-static const CGFloat kNewsHUDCentreScale = 0.5;
+static const CGFloat kNewsHUDCenterScale = 0.5;
 static const uint32_t kNewsRandomMask = 0xff;
 static const int kNewsInvalidInformationID = -1;
 
@@ -1502,8 +1502,8 @@ static BOOL g_bRandamIntSeeded = NO;
         case kThemaWhite:
             if (IsPad()) {
                 // Centre a fixed-size anchor rectangle on the button's centre.
-                CGPoint centre = self.settingButton.center;
-                buttonFrame = CGRectMake(centre.x + kSettingAnchorOffsetX,
+                CGPoint center = self.settingButton.center;
+                buttonFrame = CGRectMake(center.x + kSettingAnchorOffsetX,
                                          self.settingButton.center.y + kSettingAnchorOffsetY,
                                          kSettingAnchorWidth,
                                          kSettingAnchorHeight);
@@ -1853,8 +1853,8 @@ static BOOL g_bRandamIntSeeded = NO;
                     NSString *image = entry[kNewsKeyImage];
                     RBNewsHUDView *hud = [[RBNewsHUDView alloc] initWithFrame:self.bounds];
                     // The bounds are re-read for each centre component, matching the binary.
-                    hud.center = CGPointMake(self.bounds.size.width * kNewsHUDCentreScale,
-                                             self.bounds.size.height * kNewsHUDCentreScale);
+                    hud.center = CGPointMake(self.bounds.size.width * kNewsHUDCenterScale,
+                                             self.bounds.size.height * kNewsHUDCenterScale);
                     [self addSubview:hud];
                     [hud showImage:image InfomationID:informationID];
                     break;

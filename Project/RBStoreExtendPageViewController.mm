@@ -132,7 +132,7 @@ static const CGFloat kShowMoreIndicatorSize = 24.0;     // Activity-indicator sq
 static const CGFloat kPadTableTopSpacing = 16.0;        // Padding above and below the pack table.
 static const CGFloat kPadTableWidth = 728.0;            // Pack table frame width.
 static const CGFloat kPadTableHeightInset = -76.0;      // Added to view height for the table.
-static const CGFloat kPadTableCentreYOffset = 76.0;     // Table centre offset from half-height.
+static const CGFloat kPadTableCenterYOffset = 76.0;     // Table centre offset from half-height.
 static const CGFloat kPadTableCornerRadius = 8.0;       // Rounded corner radius.
 static const CGFloat kPadTableBorderWidth = 1.5;        // Border stroke width.
 static const CGFloat kScrollIndicatorInset = 4.0;       // Scroll-indicator top and bottom inset.
@@ -141,7 +141,7 @@ static const CGFloat kScrollIndicatorInset = 4.0;       // Scroll-indicator top 
 // uses, quoted here as a literal until that global is recovered as a shared extern.
 static const CGFloat kPadDetailBaseHeight = 680.0;
 static const CGFloat kPadDetailWidth = 650.0;
-static const CGFloat kPadDetailCentreYOffset = -44.0; // Detail-view centre Y offset.
+static const CGFloat kPadDetailCenterYOffset = -44.0; // Detail-view centre Y offset.
 static const CGFloat kBannerLabelHeight = 25.0;       // 0x186a0 banner label height.
 static const CGFloat kBannerLabelFontSize = 15.0;     // 0x186a0 banner label font.
 static const CGFloat kPackLabelFontSize = 18.0;       // Pack-table header label font.
@@ -161,7 +161,7 @@ static const CGFloat kLabelShadowAlpha = 0.3;              // Label drop-shadow 
 static const CGFloat kShowMoreSideMargin = 50.0;          // Left inset and right-edge inset.
 static const int kShowMoreContentGapPad = 300;            // Vertical gap below content on the pad.
 static const int kShowMoreContentGapPhone = 100;          // Vertical gap below content on phone.
-static const CGFloat kShowMoreButtonCentreYOffset = 25.0; // Extra drop for the button centre.
+static const CGFloat kShowMoreButtonCenterYOffset = 25.0; // Extra drop for the button centre.
 
 // UIView animation options and durations for the pad detail-overlay transitions.
 static const UIViewAnimationOptions kDetailOpenAnimationOptions = 0x30000; // Curve ease-in-out.
@@ -216,7 +216,7 @@ static const NSInteger kPurchasedTableSectionPhone = 1;
 // UIActivityIndicatorViewStyleGray.
 static const NSInteger kActivityIndicatorStyleGray = 1;
 // NSTextAlignmentCenter.
-static const NSInteger kTextAlignmentCentre = 1;
+static const NSInteger kTextAlignmentCenter = 1;
 // UITableViewCellStyleDefault.
 static const NSInteger kTableViewCellStyleDefault = 0;
 
@@ -366,7 +366,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                                                   style:UITableViewStylePlain];
             [packTable setTag:kPackTableViewTag];
             [packTable setCenter:CGPointMake(viewBounds.size.width * 0.5,
-                                             tableHeight * 0.5 + kPadTableCentreYOffset)];
+                                             tableHeight * 0.5 + kPadTableCenterYOffset)];
             [packTable setAutoresizingMask:kMaskFlexibleWidthBottomMargins];
             [packTable setOpaque:YES];
             [packTable setBackgroundColor:[UIColor colorWithWhite:kTableBackgroundWhite alpha:1.0]];
@@ -402,10 +402,10 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.extendNoteDetailViewPad = [[StoreExtendNoteDetailViewPad alloc]
             initWithFrame:CGRectMake(0.0, 0.0, kPadDetailWidth, kPadDetailBaseHeight)];
         // Centre the detail view on the cover, nudged upward, snapped to whole pixels.
-        CGFloat detailCentreX = static_cast<CGFloat>(static_cast<int>(self.coverViewPad.center.x));
-        CGFloat detailCentreY = static_cast<CGFloat>(
-            static_cast<int>(self.coverViewPad.center.y + kPadDetailCentreYOffset));
-        [self.extendNoteDetailViewPad setCenter:CGPointMake(detailCentreX, detailCentreY)];
+        CGFloat detailCenterX = static_cast<CGFloat>(static_cast<int>(self.coverViewPad.center.x));
+        CGFloat detailCenterY = static_cast<CGFloat>(
+            static_cast<int>(self.coverViewPad.center.y + kPadDetailCenterYOffset));
+        [self.extendNoteDetailViewPad setCenter:CGPointMake(detailCenterX, detailCenterY)];
         [self.extendNoteDetailViewPad setAutoresizingMask:kMaskFlexibleTopBottomWidthHeight];
         [self.extendNoteDetailViewPad setDelegate:self];
         [self.extendNoteDetailViewPad setHidden:YES];
@@ -704,15 +704,15 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
             [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-            CGPoint buttonCentre = self.showMoreButton.center;
+            CGPoint buttonCenter = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
-            [self.showMoreButton setCenter:buttonCentre];
+            [self.showMoreButton setCenter:buttonCenter];
         }
         UIView *showMoreBg0 = [packTable viewWithTag:kBannerLabelTag];
         [showMoreBg0 setHidden:NO];
         [showMoreBg0
             setCenter:CGPointMake(packTable.bounds.size.width * 0.5,
-                                  packTable.contentSize.height + kShowMoreButtonCentreYOffset)];
+                                  packTable.contentSize.height + kShowMoreButtonCenterYOffset)];
     } else {
         // No more packs: hide the "show more" button and its first backing view.
         if (self.showMoreButton != nil) {
@@ -737,9 +737,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
             [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
-            CGPoint buttonCentre = self.showMoreButton.center;
+            CGPoint buttonCenter = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
-            [self.showMoreButton setCenter:buttonCentre];
+            [self.showMoreButton setCenter:buttonCenter];
         }
         if (self.showMoreIndicator != nil) {
             [self.showMoreIndicator setHidden:NO];
@@ -1615,9 +1615,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     // Blank the button title, recentre it after a sizeToFit, reveal the spinner, hide the footer
     // spinner view, then fetch the next page.
     [self.showMoreButton setTitle:g_pStoreLoadingTitle forState:UIControlStateNormal];
-    CGPoint centre = self.showMoreButton.center;
+    CGPoint center = self.showMoreButton.center;
     [self.showMoreButton sizeToFit];
-    [self.showMoreButton setCenter:centre];
+    [self.showMoreButton setCenter:center];
     self.showMoreIndicator.hidden = NO;
     [self.view viewWithTag:kBannerLabelTag].hidden = YES;
     [self.extendNoteListCtrl startFetching];
@@ -1982,7 +1982,7 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
                                       reuseIdentifier:reuseIdentifier];
         CGFloat fontSize = isPad ? kMoreCellFontSizePad : kMoreCellFontSizePhone;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
-        cell.textLabel.textAlignment = static_cast<NSTextAlignment>(kTextAlignmentCentre);
+        cell.textLabel.textAlignment = static_cast<NSTextAlignment>(kTextAlignmentCenter);
     }
 
     if (!isLoadingMore) {

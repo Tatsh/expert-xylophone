@@ -116,8 +116,8 @@ void ConfigureBackgroundSprite(ne::C_SPRITE_INSTANCING *pBatch,
         flWidth += flWidth;
         flHeight += flHeight;
     }
-    const float flCentreY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
-    pBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});
+    const float flCenterY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
+    pBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCenterY});
     pBatch->SetSpriteAnchor(0, S_VECTOR2{flWidth * 0.5f, flHeight * 0.5f});
     pBatch->SetSpriteSize(0, S_VECTOR2{flWidth, flHeight});
     pBatch->SetSpriteUvOrigin(0, S_VECTOR2{0.0f, 0.0f});
@@ -315,11 +315,11 @@ void BgLayer::ProcessBackgroundLayer(float flFrameDelta) {
 
 // The re-centre block inlined at the start of StartBackgroundFadeIn (0x1727fc), factored out here.
 void BgLayer::RecenterBackgroundSprites() {
-    const float flCentreY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
-    m_pRootSprite->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});
-    m_pBackgroundBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});
+    const float flCenterY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
+    m_pRootSprite->SetSpritePosition(0, S_VECTOR2{0.0f, flCenterY});
+    m_pBackgroundBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCenterY});
     // The clear-effect batch exists for any positive theme mode; re-centre it too when present.
     if (GetThema() > 0) {
-        m_pClearEffectBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCentreY});
+        m_pClearEffectBatch->SetSpritePosition(0, S_VECTOR2{0.0f, flCenterY});
     }
 }

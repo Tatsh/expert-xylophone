@@ -48,7 +48,7 @@ static NSString *const kModeButtonEffectImageName = @"04_customize/cus_mode_bt_e
 // The mode toggles straddle the horizontal centre of the gradient frame. The set button sits to
 // the left by its own width less a hairline; the unlock button sits to the right by a fixed inset.
 // Both rest a hairline above the bottom of the content view.
-constexpr CGFloat kModeButtonCentreFactor = 0.5;
+constexpr CGFloat kModeButtonCenterFactor = 0.5;
 constexpr CGFloat kSetButtonRightHairline = 0.21875;
 constexpr CGFloat kUnlockButtonLeftInset = 20.0;
 constexpr CGFloat kModeButtonBottomHairline = 0.5;
@@ -129,7 +129,7 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     UIImage *setImage = [UIImage imageWithName:kSetModeButtonImageName];
     [self.experienceSetButton setImage:setImage forState:UIControlStateNormal];
     self.experienceSetButton.frame =
-        CGRectMake(gradientImage.size.width * kModeButtonCentreFactor - setImage.size.width -
+        CGRectMake(gradientImage.size.width * kModeButtonCenterFactor - setImage.size.width -
                        kSetButtonRightHairline,
                    contentFrame.size.height - setImage.size.height - kModeButtonBottomHairline,
                    setImage.size.width,
@@ -147,7 +147,7 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     UIImage *unlockImage = [UIImage imageWithName:kUnlockModeButtonImageName];
     [self.experienceUnlockButton setImage:unlockImage forState:UIControlStateNormal];
     self.experienceUnlockButton.frame =
-        CGRectMake(gradientImage.size.width * kModeButtonCentreFactor + kUnlockButtonLeftInset,
+        CGRectMake(gradientImage.size.width * kModeButtonCenterFactor + kUnlockButtonLeftInset,
                    contentFrame.size.height - unlockImage.size.height - kModeButtonBottomHairline,
                    unlockImage.size.width,
                    unlockImage.size.height);

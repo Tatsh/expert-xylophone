@@ -101,7 +101,7 @@ constexpr CGFloat kBackgroundCapInsetNarrow = 25.0;
 // The background image height passed to the cap-inset call.
 constexpr CGFloat kBackgroundCapInsetTotal = 25.0;
 // The background view centres horizontally within the grid.
-constexpr CGFloat kCentreFactor = 0.5;
+constexpr CGFloat kCenterFactor = 0.5;
 
 // The note-size and gauge-style button metrics differ between the wide (non-default) and narrow
 // (default) font layouts.
@@ -181,7 +181,7 @@ constexpr long kPageControlMinPageCount = 2;
                                         capInset, 0.0, kBackgroundCapInsetTotal - capInset, 0.0)];
     self.backgroundView = [[UIImageView alloc] initWithImage:frameImage];
     self.backgroundView.frame =
-        CGRectMake((self.frame.size.width - frameImage.size.width) * kCentreFactor,
+        CGRectMake((self.frame.size.width - frameImage.size.width) * kCenterFactor,
                    0.0,
                    frameImage.size.width,
                    frameImage.size.height);
@@ -218,12 +218,12 @@ constexpr long kPageControlMinPageCount = 2;
 
     UIImage *overlayImage = [UIImage imageWithName:kSelectionOverlayImageName];
     CGFloat noteButtonWidth = overlayImage.size.width;
-    CGFloat centre = (self.frame.size.width - frameImageWidth) * kCentreFactor;
+    CGFloat center = (self.frame.size.width - frameImageWidth) * kCenterFactor;
 
     // The three buttons straddle the horizontal centre; the wide layout spreads them one and a half
     // button widths apart, the narrow layout one width apart.
     CGFloat spread = wideFont ? noteButtonWidth * 1.5 : noteButtonWidth;
-    CGFloat buttonX[] = {centre - spread, centre, centre + spread};
+    CGFloat buttonX[] = {center - spread, center, center + spread};
 
     int selectedNoteType = [RBUserSettingData sharedInstance].noteType;
     for (NSUInteger i = 0; i < self.items.count; ++i) {
@@ -260,18 +260,18 @@ constexpr long kPageControlMinPageCount = 2;
                       buttonWidth:(CGFloat)buttonWidth
                      buttonHeight:(CGFloat)buttonHeight {
     UIImage *overlayImage = [UIImage imageWithName:kGaugeStyleOverlayImageName];
-    CGFloat centre = (self.frame.size.width - buttonWidth) * kCentreFactor;
+    CGFloat center = (self.frame.size.width - buttonWidth) * kCenterFactor;
 
     CGFloat buttonX[kGaugeStyleButtonCount];
     CGFloat buttonY;
     if (wideFont) {
         int thema = [RBUserSettingData sharedInstance].thema;
-        buttonX[0] = centre + kGaugeButtonInsetWideDefault;
-        buttonX[1] = kGaugeButtonExtraWide + centre + kGaugeButtonInsetWideDefault;
+        buttonX[0] = center + kGaugeButtonInsetWideDefault;
+        buttonX[1] = kGaugeButtonExtraWide + center + kGaugeButtonInsetWideDefault;
         buttonY = (thema == kThemaColette) ? kGaugeButtonTopWideColette : kGaugeButtonTopWideOther;
     } else {
-        buttonX[0] = centre + kGaugeButtonInsetNarrow;
-        buttonX[1] = kGaugeButtonExtraNarrow + centre + kGaugeButtonInsetNarrow;
+        buttonX[0] = center + kGaugeButtonInsetNarrow;
+        buttonX[1] = kGaugeButtonExtraNarrow + center + kGaugeButtonInsetNarrow;
         buttonY = kGaugeButtonTopNarrow;
     }
 
@@ -363,7 +363,7 @@ constexpr long kPageControlMinPageCount = 2;
 
     if (self.customizeType == RBCustomizeItemTypeShot) {
         RBVolumeSlider *slider = [[RBVolumeSlider alloc] init];
-        slider.frame = CGRectMake((self.frame.size.width - slider.frame.size.width) * kCentreFactor,
+        slider.frame = CGRectMake((self.frame.size.width - slider.frame.size.width) * kCenterFactor,
                                   self.pageControl.bottom,
                                   slider.frame.size.width,
                                   slider.frame.size.height);
@@ -383,7 +383,7 @@ constexpr long kPageControlMinPageCount = 2;
 
     if (self.customizeType == RBCustomizeItemTypeExplosion) {
         RBEffectSizeSlider *slider = [[RBEffectSizeSlider alloc] initWithDigit:2];
-        slider.frame = CGRectMake((self.frame.size.width - slider.frame.size.width) * kCentreFactor,
+        slider.frame = CGRectMake((self.frame.size.width - slider.frame.size.width) * kCenterFactor,
                                   self.pageControl.bottom,
                                   slider.frame.size.width,
                                   slider.frame.size.height);
@@ -408,8 +408,8 @@ constexpr long kPageControlMinPageCount = 2;
     RBTimingSlider *slider = [[RBTimingSlider alloc] initWithDigit:2];
     CGFloat margin = (IsPad()) ? kTimingSliderMarginWide : kTimingSliderMarginNarrow;
     slider.frame =
-        CGRectMake((self.frame.size.width - slider.frame.size.width) * kCentreFactor,
-                   (self.frame.size.height - slider.frame.size.height) * kCentreFactor + margin,
+        CGRectMake((self.frame.size.width - slider.frame.size.width) * kCenterFactor,
+                   (self.frame.size.height - slider.frame.size.height) * kCenterFactor + margin,
                    slider.frame.size.width,
                    slider.frame.size.height);
     slider.exclusiveTouch = YES;
@@ -754,7 +754,7 @@ constexpr long kPageControlMinPageCount = 2;
     CGFloat rawPage = scrollView.contentOffset.x / scrollView.bounds.size.width;
     int page = static_cast<int>(rawPage);
     // Round to the nearest page: snap up only once the offset passes the halfway point.
-    float targetPage = (static_cast<float>(rawPage) - static_cast<float>(page) <= kCentreFactor) ?
+    float targetPage = (static_cast<float>(rawPage) - static_cast<float>(page) <= kCenterFactor) ?
                            static_cast<float>(page) :
                            static_cast<float>(page + 1);
     if (static_cast<float>(self.pageControl.currentPage) != targetPage) {

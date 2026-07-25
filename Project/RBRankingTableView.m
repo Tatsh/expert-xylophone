@@ -65,7 +65,7 @@ static const CGFloat kMessageLabelFontSize = 17.0;
 static const CGFloat kColorScale = 255.0;
 
 // The Classic theme uses a single grey stroke colour.
-static const CGFloat kClassicStrokeGrey = 129.0 / kColorScale;
+static const CGFloat kClassicStrokeGray = 129.0 / kColorScale;
 
 // The Limelight and Colette themes: alternating light rows, and a warm current-player highlight.
 static const CGFloat kThemedAltRowWhite = 232.0 / kColorScale;
@@ -111,14 +111,14 @@ extern NSString *g_localizedShowMoreArrow;
         if (_thema == RBUserSettingDataThemeClassic) {
             self.strokeColor = UIColor.whiteColor;
         } else if (_thema == RBUserSettingDataThemeLimelight) {
-            self.strokeColor = [UIColor colorWithRed:kClassicStrokeGrey
-                                               green:kClassicStrokeGrey
-                                                blue:kClassicStrokeGrey
+            self.strokeColor = [UIColor colorWithRed:kClassicStrokeGray
+                                               green:kClassicStrokeGray
+                                                blue:kClassicStrokeGray
                                                alpha:1.0];
         } else if (_thema == RBUserSettingDataThemeColette) {
-            self.strokeColor = [UIColor colorWithRed:kClassicStrokeGrey
-                                               green:kClassicStrokeGrey
-                                                blue:kClassicStrokeGrey
+            self.strokeColor = [UIColor colorWithRed:kClassicStrokeGray
+                                               green:kClassicStrokeGray
+                                                blue:kClassicStrokeGray
                                                alpha:1.0];
         }
 

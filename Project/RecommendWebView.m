@@ -24,7 +24,7 @@ enum {
 
 // Applilink error codes reported through the delegate when the advert cannot be loaded.
 enum {
-    kApplilinkErrorNotInitialised = 0x3f2,
+    kApplilinkErrorNotInitialized = 0x3f2,
     kApplilinkErrorCachedFileMissing = 0x40b,
 };
 
@@ -102,7 +102,7 @@ enum {
     if ([RecommendCore sharedInstance].initializeFlg == 0 &&
         ![ApplilinkCore isInitializeStatusFlg]) {
         NSError *error =
-            [ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorNotInitialised];
+            [ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorNotInitialized];
         [ApplilinkCore toDelegateFailLoadWithError:error
                                           appParam:self.applilinkParams
                                           delegate:delegate];

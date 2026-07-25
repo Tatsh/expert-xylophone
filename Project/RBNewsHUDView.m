@@ -28,7 +28,7 @@ static const NSUInteger kDismissTapCount = 1;
 static const NSUInteger kDismissTouchCount = 1;
 
 // The centre of the host bounds is at half its width and height.
-static const CGFloat kCentreScale = 0.5;
+static const CGFloat kCenterScale = 0.5;
 
 // The show/hide cross-fade runs for a fifth of a second.
 // @ghidraAddress 0x2eedc0 (g_dMascotMessageAnimDuration)
@@ -92,7 +92,7 @@ static NSString *const kImageAnimationKeyPath = @"transform";
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     // Both bounds components are re-read from a fresh call, as the binary does.
     indicator.center =
-        CGPointMake(self.bounds.size.width * kCentreScale, self.bounds.size.height * kCentreScale);
+        CGPointMake(self.bounds.size.width * kCenterScale, self.bounds.size.height * kCenterScale);
     indicator.autoresizingMask = kIndicatorAutoresizingMask;
     [indicator startAnimating];
     [self addSubview:indicator];
@@ -161,7 +161,7 @@ static NSString *const kImageAnimationKeyPath = @"transform";
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[imageDownloader getImage]];
     // Both bounds components are re-read from a fresh call, as the binary does.
     imageView.center =
-        CGPointMake(self.bounds.size.width * kCentreScale, self.bounds.size.height * kCentreScale);
+        CGPointMake(self.bounds.size.width * kCenterScale, self.bounds.size.height * kCenterScale);
     imageView.autoresizingMask = kIndicatorAutoresizingMask;
     [self addSubview:imageView];
 

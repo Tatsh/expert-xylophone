@@ -56,7 +56,7 @@ static const CGFloat kArtistNameImageHeight = 14.0f;
 static const CGFloat kNameImageMaxWidth = 280.0f;
 
 // The factor that centres drawn text within its canvas.
-static const CGFloat kCentreFactor = 0.5f;
+static const CGFloat kCenterFactor = 0.5f;
 
 @implementation MusicDataFromDoc
 
@@ -236,8 +236,8 @@ static const CGFloat kCentreFactor = 0.5f;
     UIGraphicsBeginImageContextWithOptions(canvasSize, NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
-    CGRect textRect = CGRectMake((kArtworkCanvasSize - textSize.width) * kCentreFactor,
-                                 (kArtworkCanvasSize - textSize.height) * kCentreFactor,
+    CGRect textRect = CGRectMake((kArtworkCanvasSize - textSize.width) * kCenterFactor,
+                                 (kArtworkCanvasSize - textSize.height) * kCenterFactor,
                                  textSize.width,
                                  textSize.height);
     [title drawInRect:textRect
@@ -287,8 +287,8 @@ static const CGFloat kCentreFactor = 0.5f;
         CGSizeMake(canvasWidth, kMusicNameImageHeight), NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
-    CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCentreFactor,
-                                 (kMusicNameImageHeight - textSize.height) * kCentreFactor,
+    CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCenterFactor,
+                                 (kMusicNameImageHeight - textSize.height) * kCenterFactor,
                                  textSize.width,
                                  textSize.height);
     [title drawInRect:textRect withFont:font];
@@ -329,8 +329,8 @@ static const CGFloat kCentreFactor = 0.5f;
         CGSizeMake(canvasWidth, kArtistNameImageHeight), NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(context, luminance, luminance, luminance, kFillAlpha);
-    CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCentreFactor,
-                                 (kArtistNameImageHeight - textSize.height) * kCentreFactor,
+    CGRect textRect = CGRectMake((canvasWidth - textSize.width) * kCenterFactor,
+                                 (kArtistNameImageHeight - textSize.height) * kCenterFactor,
                                  textSize.width,
                                  textSize.height);
     [artist drawInRect:textRect withFont:font];

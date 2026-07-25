@@ -88,8 +88,8 @@ static const CGFloat kWebButtonRightAnchor = 630.0;
 // panel centre.
 static const CGFloat kLoadingLabelWidth = 200.0;
 static const CGFloat kLoadingLabelHeight = 24.0;
-static const CGFloat kIndicatorCentreYOffset = -15.0;
-static const CGFloat kLoadingLabelCentreYOffset = 15.0;
+static const CGFloat kIndicatorCenterYOffset = -15.0;
+static const CGFloat kLoadingLabelCenterYOffset = 15.0;
 
 // The bottom copyright-strip label frame and its font.
 static const CGFloat kTermStripOriginX = 10.0;
@@ -130,7 +130,7 @@ static const CGFloat kTermLinkGreenBlue = 0.47843137254901963;
 static const CGFloat kButtonTitleShadowAlpha = 0.6000000238418579;
 
 // The centre-scaling divisor used to place the spinner and loading label at the panel centre.
-static const CGFloat kCentreScale = 0.5;
+static const CGFloat kCenterScale = 0.5;
 
 @implementation StorePackDetailViewPad {
     // The index of the tune whose sample is currently playing, or @c kNoSamplePlaying (-1) when none
@@ -266,8 +266,8 @@ static const CGFloat kCentreScale = 0.5;
     self.indicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     self.indicator.frame = self.frame;
-    self.indicator.center = CGPointMake(kMusicRowStepX * kCentreScale,
-                                        kMusicRowStepY * kCentreScale + kIndicatorCentreYOffset);
+    self.indicator.center = CGPointMake(kMusicRowStepX * kCenterScale,
+                                        kMusicRowStepY * kCenterScale + kIndicatorCenterYOffset);
 
     self.labelLoading = [[UILabel alloc]
         initWithFrame:CGRectMake(0.0, 0.0, kLoadingLabelWidth, kLoadingLabelHeight)];
@@ -279,7 +279,7 @@ static const CGFloat kCentreScale = 0.5;
     self.labelLoading.textAlignment = NSTextAlignmentCenter;
     self.labelLoading.text = g_pStoreLoadingTitle;
     self.labelLoading.center = CGPointMake(
-        kMusicRowStepX * kCentreScale, kMusicRowStepY * kCentreScale + kLoadingLabelCentreYOffset);
+        kMusicRowStepX * kCenterScale, kMusicRowStepY * kCenterScale + kLoadingLabelCenterYOffset);
     isInfoLoaded = NO;
 
     UIButton *webButton = [UIButton buttonWithType:UIButtonTypeCustom];

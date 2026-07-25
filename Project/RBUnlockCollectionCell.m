@@ -59,10 +59,10 @@ static const CGFloat kDisableOverlayMargin = 6.0;
 static const CGFloat kPointLabelHeight = 14.0;
 
 // The badge sits centred on the artwork's right edge.
-static const CGFloat kBadgeCentreFactor = 0.5;
+static const CGFloat kBadgeCenterFactor = 0.5;
 
 // Each subview is centred by halving the surrounding gap; the offset is truncated to a whole point.
-static const CGFloat kCentreFactor = 0.5;
+static const CGFloat kCenterFactor = 0.5;
 
 @implementation RBUnlockCollectionCell
 
@@ -119,20 +119,20 @@ static const CGFloat kCentreFactor = 0.5;
 
     // Centre the frame image horizontally at the top of the cell, keeping its own size.
     self.frameImageView.frame =
-        CGRectMake((int)((cellWidth - frameWidth) * kCentreFactor), 0.0, frameWidth, frameHeight);
+        CGRectMake((int)((cellWidth - frameWidth) * kCenterFactor), 0.0, frameWidth, frameHeight);
 
     // Centre the artwork within the frame image.
     CGFloat imageWidth = self.imageView.frame.size.width;
     CGFloat imageHeight = self.imageView.frame.size.height;
-    self.imageView.frame = CGRectMake((int)((cellWidth - imageWidth) * kCentreFactor),
-                                      (int)((frameHeight - imageHeight) * kCentreFactor),
+    self.imageView.frame = CGRectMake((int)((cellWidth - imageWidth) * kCenterFactor),
+                                      (int)((frameHeight - imageHeight) * kCenterFactor),
                                       imageWidth,
                                       imageHeight);
 
     // Inset the dimming overlay inside the frame image.
     self.disableView.frame =
-        CGRectMake((int)((cellWidth - frameWidth) * kCentreFactor) + kDisableOverlayInset,
-                   (int)((frameHeight - frameWidth) * kCentreFactor) + kDisableOverlayInset,
+        CGRectMake((int)((cellWidth - frameWidth) * kCenterFactor) + kDisableOverlayInset,
+                   (int)((frameHeight - frameWidth) * kCenterFactor) + kDisableOverlayInset,
                    frameWidth - kDisableOverlayMargin,
                    frameHeight - kDisableOverlayMargin);
 
@@ -147,7 +147,7 @@ static const CGFloat kCentreFactor = 0.5;
     CGFloat badgeWidth = self.badgeView.frame.size.width;
     CGFloat badgeHeight = self.badgeView.frame.size.height;
     self.badgeView.frame = CGRectMake(
-        self.imageView.right - badgeWidth * kBadgeCentreFactor, 0.0, badgeWidth, badgeHeight);
+        self.imageView.right - badgeWidth * kBadgeCenterFactor, 0.0, badgeWidth, badgeHeight);
 }
 
 #pragma mark Reuse
@@ -219,7 +219,7 @@ static const CGFloat kCentreFactor = 0.5;
                   CGFloat inset =
                       (!IsPad()) ? kDownloadedArtworkInsetNarrow : kDownloadedArtworkInsetWide;
                   strongCell.imageView.frame =
-                      CGRectMake((int)((cellWidth - coverWidth) * kCentreFactor) + inset,
+                      CGRectMake((int)((cellWidth - coverWidth) * kCenterFactor) + inset,
                                  inset,
                                  kDownloadedArtworkSize,
                                  kDownloadedArtworkSize);

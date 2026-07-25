@@ -27,7 +27,7 @@ static NSString *const kPreviewButtonImageName = @"04_customize/cus_prev";
 constexpr int kSoundEffectDecide = 1;
 
 // The button horizontally centres within the scroll view.
-constexpr CGFloat kPreviewButtonCentreFactor = 0.5;
+constexpr CGFloat kPreviewButtonCenterFactor = 0.5;
 
 // The preview button flexes on every edge so it stays centred as the scroll view resizes.
 constexpr UIViewAutoresizing kAutoresizingFull =
@@ -186,7 +186,7 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
     UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [previewButton setImage:previewImage forState:UIControlStateNormal];
     previewButton.frame = CGRectMake((self.scrollView.frame.size.width - previewImage.size.width) *
-                                         kPreviewButtonCentreFactor,
+                                         kPreviewButtonCenterFactor,
                                      margin + lastGrid.bottom,
                                      previewImage.size.width,
                                      previewImage.size.height);
