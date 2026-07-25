@@ -7,6 +7,11 @@
 
 #include "playfieldlayerbase.h"
 
+namespace ne {
+class C_TEXTURE;
+class C_SPRITE_INSTANCING;
+} // namespace ne
+
 /**
  * @brief The play-field damage/bounds effect layer: a pool of per-hit effect records plus the
  * per-lane display values and the user's effect-size setting.
@@ -37,6 +42,13 @@ public:
      */
     void SetEffectSize(float flSize);
 
+    /**
+     * @brief Refreshes the theme, reads the user's bounds-effect style, and binds the matching
+     * effect atlas (default / limelight / colette) to the sprite instancer.
+     * @ghidraAddress 0x1740cc
+     */
+    void SetBoundsDamageStyle();
+
 private:
     // One pooled per-hit effect record (20 bytes): an active flag and its animation state.
     struct EffectRecord {
@@ -45,11 +57,14 @@ private:
         unsigned char aReserved08[0xc] = {}; // +0x08: the effect's animation state.
     };
 
-    unsigned char m_aReserved08[0x1c] = {};           // +0x08: header state (a listener node etc.).
+    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the bound effect atlas.
+    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the effect sprite instancer.
+    unsigned char m_aReserved18[0xc] = {};   // +0x18: further header state (a listener node etc.).
     EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled effect records.
     float m_aLaneValue[kLaneCount] = {};              // +0x2a4: the per-lane display values (1).
     float m_flEffectSize = {};                        // +0x2ac: the user's effect size (1).
-    unsigned char m_aReserved2b0[8] = {};             // +0x2b0: trailing state to 0x2b8.
+    int m_nStyle = {};                                // +0x2b0: the bounds-effect style (0/1/2).
+    unsigned char m_aReserved2b4[4] = {};             // +0x2b4: trailing state to 0x2b8.
 };
 
 // code: language=C++
