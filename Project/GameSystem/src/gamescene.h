@@ -35,6 +35,15 @@ private:
     int m_nState = {}; // +0x4c
 };
 
+/**
+ * @brief Resumes the play timer and background music after an interruption.
+ *
+ * The counterpart to @c GameScene::PausePlayTimerAndBgm; a no-op unless the game is paused. Unlike
+ * the pause side it takes no scene, since it acts only on the game-system and play-timer singletons.
+ * @ghidraAddress 0x14b144
+ */
+void ResumePlayTimerAndBgm(void);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

@@ -49,3 +49,23 @@ void GameScene::PausePlayTimerAndBgm() {
         [[RBBGMManager getInstance] PauseMusic:0.0f];
     }
 }
+
+/** @ghidraAddress 0x14b144 */
+void ResumePlayTimerAndBgm(void) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    // Nothing to resume unless the game is paused.
+    if (!pGameSystem->GetPaused()) {
+        return;
+    }
+
+    pGameSystem->SetPaused(false);
+    if (pGameSystem->GetBgmPlaying()) {
+        [[RBBGMManager getInstance] PlayMusic:0.0f];
+    }
+
+    // Resume the timer, advancing its origin past the interval it spent paused.
+    PlayTimer *pTimer = PlayTimer::shared();
+    if (pTimer->IsPaused()) {
+        pTimer->Resume(CACurrentMediaTime());
+    }
+}

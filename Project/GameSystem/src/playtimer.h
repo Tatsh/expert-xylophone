@@ -40,7 +40,9 @@ public:
     }
 
 private:
-    char m_reserved[0x1c] = {};      // +0x00
+    double m_dBaseTime = {}; // +0x00: the timing origin; a resume adds the paused interval to it.
+    // +0x08..+0x1b: further timing state, still being worked out.
+    char m_reserved08[0x14] = {};    // +0x08
     int m_nOsVersionTier = {};       // +0x1c
     float m_flDelayFrameOffset = {}; // +0x20
     // +0x24..+0x2f: further timing state, still being worked out.
@@ -55,6 +57,20 @@ public:
     void MarkPaused(double dMediaTime) {
         m_dPauseMediaTime = dMediaTime;
         m_bPaused = true;
+    }
+
+    /** @brief Whether the timer is currently paused. */
+    bool IsPaused() const {
+        return m_bPaused;
+    }
+
+    /**
+     * @brief Resumes the timer, shifting its origin forward by the interval it spent paused.
+     * @param dMediaTime The current media time.
+     */
+    void Resume(double dMediaTime) {
+        m_bPaused = false;
+        m_dBaseTime += dMediaTime - m_dPauseMediaTime;
     }
 
     /**
