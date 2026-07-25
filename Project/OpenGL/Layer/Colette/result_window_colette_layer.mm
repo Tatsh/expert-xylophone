@@ -287,6 +287,38 @@ void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
     pInstancer->SetSpriteCount(nSprite + 1);
 }
 
+/** @ghidraAddress 0x769cc */
+void ResultWindowColetteLayer::RenderPartSpriteByIndex(int nSlot,
+                                                       int nPartId,
+                                                       const S_VECTOR2 &position,
+                                                       unsigned int nAlpha,
+                                                       float flRotation,
+                                                       float flScaleX,
+                                                       float flScaleY,
+                                                       float flRed,
+                                                       float flGreen,
+                                                       float flBlue) {
+    if (nPartId >= kColettePartsRecordCount) {
+        return;
+    }
+    // The part metrics come from the device-selected parts table; the texture rectangle from the
+    // Colette part UV palette. The float colour channels are truncated to byte channels.
+    const PartsDataRecord *pRecord = getPartsData(nPartId);
+    const UvPaletteEntry &palette = g_aColettePartUvPalette[pRecord->nUvPaletteIndex];
+    appendSpriteToSlotRgba(nSlot,
+                           static_cast<unsigned int>(flRed),
+                           static_cast<unsigned int>(flGreen),
+                           static_cast<unsigned int>(flBlue),
+                           nAlpha,
+                           position,
+                           S_VECTOR2{pRecord->flX, pRecord->flY},
+                           S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
+                           S_VECTOR2{palette.flU, palette.flV},
+                           S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                           flRotation,
+                           S_VECTOR2{flScaleX, flScaleY});
+}
+
 /** @ghidraAddress 0x76a98 */
 void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
                                                          int nPartId,

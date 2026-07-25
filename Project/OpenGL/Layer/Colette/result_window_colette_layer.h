@@ -164,6 +164,37 @@ private:
                                 const S_VECTOR2 &scale);
 
     /**
+     * @brief Emits one result-window part sprite by part id with a per-channel float colour.
+     *
+     * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its
+     * texture rectangle from the Colette part UV palette, then appends the quad through
+     * @c appendSpriteToSlotRgba at @p position with the given rotation and scale. The three colour
+     * channels arrive as floats and are truncated to byte channels. Part ids at or above the parts
+     * table count are ignored.
+     * @param nSlot The slot index (0 through 7).
+     * @param nPartId The part id (below the parts table count).
+     * @param position The sprite's world position.
+     * @param nAlpha The sprite's alpha.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleX The sprite X scale.
+     * @param flScaleY The sprite Y scale.
+     * @param flRed The red channel (truncated to an integer).
+     * @param flGreen The green channel (truncated to an integer).
+     * @param flBlue The blue channel (truncated to an integer).
+     * @ghidraAddress 0x769cc
+     */
+    void RenderPartSpriteByIndex(int nSlot,
+                                 int nPartId,
+                                 const S_VECTOR2 &position,
+                                 unsigned int nAlpha,
+                                 float flRotation,
+                                 float flScaleX,
+                                 float flScaleY,
+                                 float flRed,
+                                 float flGreen,
+                                 float flBlue);
+
+    /**
      * @brief Emits one result-window part sprite by part id, dimmable.
      *
      * Looks up the part's placement rectangle by @p nPartId (device-selected parts table) and its
