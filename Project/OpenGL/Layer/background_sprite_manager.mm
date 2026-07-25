@@ -64,3 +64,14 @@ void BackgroundSpriteManager::BuildBackgroundSpriteNodes() {
 
     m_bBuilt = true;
 }
+
+/** @ghidraAddress 0x10a938 */
+void BackgroundSpriteManager::SetActiveAndResetCounter() {
+    m_bActive = true;
+    m_nFrameCounter = 0;
+}
+
+/** @ghidraAddress 0x10a948 */
+void BackgroundSpriteManager::SetInactive() {
+    m_bActive = false;
+}

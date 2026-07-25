@@ -44,6 +44,18 @@ public:
     // The number of background sprite instancers the manager builds.
     static constexpr int kSpriteSlotCount = 3;
 
+    /**
+     * @brief Activates the manager's animation and resets its frame counter.
+     * @ghidraAddress 0x10a938
+     */
+    void SetActiveAndResetCounter();
+
+    /**
+     * @brief Deactivates the manager's animation.
+     * @ghidraAddress 0x10a948
+     */
+    void SetInactive();
+
 private:
     /**
      * @brief Constructs the manager, chaining the base constructor and zero-clearing its own state.
@@ -56,10 +68,10 @@ private:
         {};                                     // +0x10: the per-slot sprite batches.
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x28: each slot's initial count.
     bool m_bBuilt = {};                         // +0x34: set once the nodes are built.
-    bool m_bReserved35 = {};                    // +0x35: a further byte flag.
-    // +0x36..+0x37 is alignment padding before the trailing int.
+    bool m_bActive = {};                        // +0x35: whether the manager's animation is active.
+    // +0x36..+0x37 is alignment padding before the frame counter.
     // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
-    int m_nReserved38 = {};              // +0x38: a further int the constructor zero-clears.
+    int m_nFrameCounter = {};            // +0x38: the animation frame counter, reset on activation.
     unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };
 
