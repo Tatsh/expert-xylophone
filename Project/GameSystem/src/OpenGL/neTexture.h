@@ -5,6 +5,8 @@
 
 #pragma once
 
+class neGLESRenderer;
+
 namespace ne {
 
 /**
@@ -132,6 +134,51 @@ public:
      * @ghidraAddress 0x31eb0
      */
     void InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *pData);
+
+    /**
+     * @brief Store one sampler parameter, skipping the GL call when the cached value is unchanged.
+     *
+     * The texture keeps a shadow of its four current sampler-parameter values; a set only reaches GL
+     * when the requested value differs from the shadow, after which the shadow is updated.
+     * @param pRenderer The GL renderer to issue the parameter change through.
+     * @param nIndex The sampler-parameter slot (0 through 3).
+     * @param nValue The parameter value.
+     * @ghidraAddress 0x31fe0
+     */
+    void SetCachedTextureParameter(neGLESRenderer *pRenderer, int nIndex, int nValue);
+
+    /**
+     * @brief Delete this texture's GL handle (context-loss teardown), leaving the entry reloadable.
+     *
+     * Deletes the GL texture and zeroes the handle so the entry can be re-uploaded later from its
+     * source path; a no-op when the entry has no source path or no live handle.
+     * @ghidraAddress 0x32020
+     */
+    void ReleaseGLHandle();
+
+    /**
+     * @brief Reload this texture's pixels from its stored source-image name.
+     *
+     * Decodes the named image, rounds to a power-of-two RGBA (or tight RGB) buffer, and re-uploads
+     * it; used to recover a texture whose GL handle was dropped on a context loss. A no-op when the
+     * entry has no source path.
+     * @return Non-zero on success (including the no-source-path no-op), zero when the image could not
+     *         be loaded.
+     * @ghidraAddress 0x3205c
+     */
+    int ReloadFromSourceName();
+
+    /**
+     * @brief Delete the GL handle of every texture in the cache (a context-loss teardown sweep).
+     * @ghidraAddress 0x33e1c
+     */
+    static void ReleaseAllHandles();
+
+    /**
+     * @brief Reload every texture in the cache from its source name (context-loss recovery sweep).
+     * @ghidraAddress 0x33e5c
+     */
+    static void ReloadAll();
 
     /**
      * @brief Find a cached texture by key, loading and caching it on a miss.

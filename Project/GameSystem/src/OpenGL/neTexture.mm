@@ -225,4 +225,115 @@ void C_TEXTURE::InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *
     pRenderer->UploadTexture2d(nFormat, nWidth, nHeight, pData);
 }
 
+/** @ghidraAddress 0x31fe0 */
+void C_TEXTURE::SetCachedTextureParameter(neGLESRenderer *pRenderer, int nIndex, int nValue) {
+    if (m_aTexParams[nIndex] == nValue) {
+        return;
+    }
+    pRenderer->SetTextureParameter(nIndex, nValue);
+    m_aTexParams[nIndex] = nValue;
+}
+
+/** @ghidraAddress 0x32020 */
+void C_TEXTURE::ReleaseGLHandle() {
+    // Guarded by the source path so only reloadable entries drop their handle; the handle is zeroed
+    // after deletion to guard against a double free on the next teardown.
+    if (m_pSourcePath != nullptr && m_nGLHandle != 0) {
+        GetGlRenderer()->DeleteTexture(m_nGLHandle);
+        m_nGLHandle = 0;
+    }
+}
+
+/** @ghidraAddress 0x3205c */
+int C_TEXTURE::ReloadFromSourceName() {
+    if (m_pSourcePath == nullptr) {
+        return 1;
+    }
+
+    UIImage *image = [UIImage imageWithName:[NSString stringWithCString:m_pSourcePath
+                                                               encoding:NSUTF8StringEncoding]];
+    if (image == nil) {
+        return 0;
+    }
+
+    CGImageRef cgImage = image.CGImage;
+    m_nImageWidth = static_cast<int>(CGImageGetWidth(cgImage));
+    m_nImageHeight = static_cast<int>(CGImageGetHeight(cgImage));
+
+    // GL ES 1.x requires power-of-two texture dimensions.
+    int nPotWidth = 1;
+    while (nPotWidth < m_nImageWidth) {
+        nPotWidth <<= 1;
+    }
+    int nPotHeight = 1;
+    while (nPotHeight < m_nImageHeight) {
+        nPotHeight <<= 1;
+    }
+
+    // Draw the image vertically flipped into a zeroed RGBA8888 power-of-two bitmap (see
+    // LoadFromUIImage for the origin-flip rationale). Unlike LoadFromUIImage this reload path does
+    // not re-record the content scale or source path.
+    const CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
+    const int nRgbaStride = nPotWidth * 4;
+    m_nByteSize = nPotHeight * nRgbaStride;
+    auto *pRgbaBuffer = new unsigned char[m_nByteSize]();
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(pRgbaBuffer,
+                                                 static_cast<size_t>(nPotWidth),
+                                                 static_cast<size_t>(nPotHeight),
+                                                 8,
+                                                 static_cast<size_t>(nRgbaStride),
+                                                 colorSpace,
+                                                 kCGImageAlphaPremultipliedLast);
+    CGContextTranslateCTM(context, 0, m_nImageHeight);
+    CGContextScaleCTM(context, 1, -1);
+    CGContextDrawImage(context, CGRectMake(0, 0, m_nImageWidth, m_nImageHeight), cgImage);
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+
+    // Upload RGBA (format 1) when the image has alpha; otherwise repack to tight 24-bit RGB
+    // (format 2).
+    unsigned char *pUploadData;
+    int nFormat;
+    if (alphaInfo >= kCGImageAlphaPremultipliedLast && alphaInfo <= kCGImageAlphaFirst) {
+        pUploadData = pRgbaBuffer;
+        nFormat = 1;
+    } else {
+        m_nByteSize = nPotWidth * nPotHeight * 3;
+        auto *pRgbBuffer = new unsigned char[m_nByteSize];
+        for (int y = 0; y < nPotHeight; ++y) {
+            const unsigned char *pSrcRow = pRgbaBuffer + y * nRgbaStride;
+            unsigned char *pDstRow = pRgbBuffer + y * (nPotWidth * 3);
+            for (int x = 0; x < nPotWidth; ++x) {
+                pDstRow[x * 3 + 0] = pSrcRow[x * 4 + 0];
+                pDstRow[x * 3 + 1] = pSrcRow[x * 4 + 1];
+                pDstRow[x * 3 + 2] = pSrcRow[x * 4 + 2];
+            }
+        }
+        delete[] pRgbaBuffer;
+        pUploadData = pRgbBuffer;
+        nFormat = 2;
+    }
+
+    InitializeTexture2d(nPotWidth, nPotHeight, nFormat, pUploadData);
+    delete[] pUploadData;
+    return 1;
+}
+
+/** @ghidraAddress 0x33e1c */
+void C_TEXTURE::ReleaseAllHandles() {
+    C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
+    for (C_TEXTURE *pEntry = pSentinel->m_pPrev; pEntry != pSentinel; pEntry = pEntry->m_pPrev) {
+        pEntry->ReleaseGLHandle();
+    }
+}
+
+/** @ghidraAddress 0x33e5c */
+void C_TEXTURE::ReloadAll() {
+    C_TEXTURE *pSentinel = *g_ppTextureCacheHead;
+    for (C_TEXTURE *pEntry = pSentinel->m_pPrev; pEntry != pSentinel; pEntry = pEntry->m_pPrev) {
+        pEntry->ReloadFromSourceName();
+    }
+}
+
 } // namespace ne
