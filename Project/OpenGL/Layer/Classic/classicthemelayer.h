@@ -22,6 +22,18 @@ class C_SPRITE_INSTANCING;
  */
 class ClassicThemeLayer : public PlayFieldLayerBase {
 public:
+    /**
+     * @brief The process-wide Classic-theme layer, created on first use.
+     * @return The shared layer.
+     * @ghidraAddress 0x109ee0
+     */
+    static ClassicThemeLayer *shared();
+
+    /**
+     * @brief Constructs the layer: chains the base constructor and clears the batch, count, texture,
+     * and colour state, defaulting the colour index to one and the two trailing slots to four.
+     * @ghidraAddress 0x109e68
+     */
     ClassicThemeLayer();
 
     /**
@@ -35,16 +47,32 @@ public:
      */
     void InitializeBackgroundSceneNodes();
 
+    /**
+     * @brief Sets the theme colour index.
+     * @param nColor The colour index.
+     * @ghidraAddress 0x10a0a0
+     */
+    void SetColor(int nColor);
+
 private:
     static constexpr int kBackgroundBatchCount = 3;
+    static constexpr int kTrailingSlotCount = 2;
 
     ne::C_TEXTURE *m_pTexture = {};                                       // +0x08
     ne::C_SPRITE_INSTANCING *m_apSpriteBatch[kBackgroundBatchCount] = {}; // +0x10
     int m_anSpriteCount[kBackgroundBatchCount] = {};                      // +0x28
     bool m_fInitialized = {};                                             // +0x34
-    // +0x35..+0x5f: layer state not yet recovered (a field count, flags, and pointers this routine
-    // does not touch); kept as reserved storage rather than invented field names.
-    unsigned char m_reserved35[43] = {};
+    // +0x35..+0x37 is alignment padding before the colour index.
+    unsigned char m_aPad35[3] = {}; // +0x35
+    int m_nColor = {};              // +0x38: the theme colour index (defaults to one).
+    bool m_bFlag3c = {};            // +0x3c: a flag the constructor clears.
+    bool m_bFlag3d = {};            // +0x3d: a flag the constructor clears.
+    // +0x3e..+0x3f is alignment padding before the pointer block.
+    unsigned char m_aPad3e[2] = {};                // +0x3e
+    void *m_pField40 = {};                         // +0x40: a pointer the constructor clears.
+    void *m_pField48 = {};                         // +0x48: a pointer the constructor clears.
+    void *m_pField50 = {};                         // +0x50: a pointer the constructor clears.
+    int m_aTrailingSlots[kTrailingSlotCount] = {}; // +0x58: two slots seeded to four.
 };
 
 // code: language=C++

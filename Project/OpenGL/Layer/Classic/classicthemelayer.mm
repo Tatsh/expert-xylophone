@@ -11,6 +11,38 @@ static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @gh
 // The sprite capacities (maximum sprite counts) for the three Classic-theme background batches.
 static const int g_anClassicThemeBatchCapacities[] = {1, 7, 30}; // @ghidraAddress 0x301970
 
+// The process-wide Classic-theme layer, created lazily by shared().
+static ClassicThemeLayer *g_pClassicThemeLayer = nullptr; // @ghidraAddress 0x3de7b8
+
+namespace {
+
+// The colour index the constructor defaults to.
+constexpr int kDefaultColor = 1;
+
+// The value the two trailing slots are seeded to.
+constexpr int kTrailingSlotDefault = 4;
+
+} // namespace
+
+/** @ghidraAddress 0x109ee0 */
+ClassicThemeLayer *ClassicThemeLayer::shared() {
+    if (g_pClassicThemeLayer == nullptr) {
+        // The binary allocates the raw 0x60-byte object and runs the constructor.
+        g_pClassicThemeLayer = new ClassicThemeLayer();
+    }
+    return g_pClassicThemeLayer;
+}
+
+/** @ghidraAddress 0x109e68 */
+ClassicThemeLayer::ClassicThemeLayer() {
+    // The base constructor and the zero-initialised members clear the texture, batches, counts, and
+    // flags; the constructor then applies the two non-zero defaults.
+    m_nColor = kDefaultColor;
+    for (int &nSlot : m_aTrailingSlots) {
+        nSlot = kTrailingSlotDefault;
+    }
+}
+
 /** @ghidraAddress 0x109f30 */
 void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     if (m_fInitialized) {
@@ -39,4 +71,9 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     }
 
     m_fInitialized = true;
+}
+
+/** @ghidraAddress 0x10a0a0 */
+void ClassicThemeLayer::SetColor(int nColor) {
+    m_nColor = nColor;
 }
