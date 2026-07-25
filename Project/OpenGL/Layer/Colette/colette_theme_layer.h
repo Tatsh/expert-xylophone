@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -44,6 +45,21 @@ public:
 
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 4;
+    // The number of player sides the result grade display tracks.
+    static constexpr int kSideCount = 2;
+
+    /**
+     * @brief Resets the result grade display: seeds the reveal channel, parks the reveal clock,
+     * arms the display, loads the per-side best-rank flags, and picks the reveal duration.
+     * @ghidraAddress 0x187690
+     */
+    void ResetGradeDisplayState();
+
+    /**
+     * @brief Loads the per-side best-rank flags from the active score tracker's play records.
+     * @ghidraAddress 0x187710
+     */
+    void LoadBestRankFlags();
 
 private:
     /**
@@ -63,17 +79,20 @@ private:
     bool m_bBuilt = {};                         // +0x58: set once the sprites are built.
     // +0x59..+0x5b is alignment padding before the trailing state.
     // unsigned char m_aPad59[3]; // +0x59 (alignment padding, compiler-inserted)
-    int m_nReserved5c = {};  // +0x5c: seeded to 1 by the constructor.
-    bool m_bReserved60 = {}; // +0x60
-    bool m_bReserved61 = {}; // +0x61
-    // unsigned char m_aPad62[2]; // +0x62 (alignment padding, compiler-inserted)
-    int m_nReserved64 = {}; // +0x64
-    // +0x68..+0x87: further layer state (three 8-byte fields and one int the constructor zero-clears)
-    // still being worked out, kept to preserve the allocation size.
-    unsigned char m_aReserved68[0x20] = {}; // +0x68
-    int m_aCellCounts[2] = {};              // +0x88: a two-entry {4, 4} cell-count record.
-    // +0x90..+0x97: the remaining layer state, still being worked out.
-    unsigned char m_aReserved90[8] = {}; // +0x90
+    int m_nSideCount = {}; // +0x5c: seeded to 1; the grade display runs single-side when this is 1.
+    bool m_bGradeVisible = {};     // +0x60: whether the result grade display draws.
+    bool m_bGradeClockActive = {}; // +0x61: whether the reveal clock is advancing.
+    // +0x62..+0x63 is alignment padding before the reveal clock.
+    float m_flGradeRevealClock = {}; // +0x64: the reveal clock, counting up to the threshold.
+    bool m_bGradeArmed = {};         // +0x68: raised once the grade display is initialised.
+    // +0x69..+0x6b is alignment padding before the reveal channel.
+    LinearTween m_gradeChannel; // +0x6c: the result grade-gauge reveal channel.
+    // +0x80..+0x87: the cached viewport size, still being worked out.
+    unsigned char m_aReserved80[8] = {}; // +0x80
+    int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side best-rank flag from the play record.
+    float m_flGradeRevealDuration = {};  // +0x90: the reveal clock's threshold (3000 or 5000).
+    // +0x94..+0x97: the remaining layer state, still being worked out.
+    unsigned char m_aReserved94[4] = {}; // +0x94
 };
 
 // code: language=C++

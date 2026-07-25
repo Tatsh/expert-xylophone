@@ -1,6 +1,7 @@
 #include "colette_theme_layer.h"
 
 #include "../Share/bg_layer.h"
+#include "ScoreTracker.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -26,10 +27,34 @@ constexpr int kSlotTextureField[] = {-1, 0, 1, 2};
 constexpr int kAdditiveBlendSlot = 3;
 constexpr int kAdditiveBlendMode = 1;
 
+// The layer's layout size the constructor seeds.
+constexpr float kLayoutWidth = 384.0f;
+constexpr float kLayoutHeight = 680.0f;
+
+// The grade-display defaults: single-side, both best-rank flags four.
+constexpr int kDefaultSideCount = 1;
+constexpr int kGradeValueDefault = 4;
+
+// The grade reveal-channel value that holds the display fully shown, the clock's off-screen start,
+// and the two reveal-duration thresholds.
+constexpr float kGradeChannelFull = 1.0f;
+constexpr float kGradeClockStart = -500.0f;
+constexpr float kGradeRevealDurationDual = 3000.0f;
+constexpr float kGradeRevealDurationSingle = 5000.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x187484 */
-ColetteThemeLayer::ColetteThemeLayer() = default;
+ColetteThemeLayer::ColetteThemeLayer() {
+    // The base constructor and the zero-initialised members clear the layer; the constructor then
+    // seeds the layout size, the single-side default, and the two best-rank flag slots.
+    m_flWidth = kLayoutWidth;
+    m_flHeight = kLayoutHeight;
+    m_nSideCount = kDefaultSideCount;
+    for (int &nValue : m_aGradeValues) {
+        nValue = kGradeValueDefault;
+    }
+}
 
 /** @ghidraAddress 0x18751c */
 ColetteThemeLayer *ColetteThemeLayer::shared() {
@@ -76,4 +101,34 @@ void ColetteThemeLayer::CreateFcEffectSprites() {
     }
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x187690 */
+void ColetteThemeLayer::ResetGradeDisplayState() {
+    // Seed the reveal channel to hold a full value, park the clock off-screen, arm the display, and
+    // load the per-side best-rank flags.
+    m_gradeChannel.SetStart(kGradeChannelFull);
+    m_gradeChannel.SetEnd(kGradeChannelFull);
+    m_gradeChannel.SetDuration(0.0f);
+    m_gradeChannel.SetElapsed(0.0f);
+    m_gradeChannel.SetCurrent(kGradeChannelFull);
+    m_flGradeRevealClock = kGradeClockStart;
+    m_bGradeVisible = true;
+    m_bGradeClockActive = true;
+    m_bGradeArmed = true;
+    LoadBestRankFlags();
+
+    // The reveal runs longer for a single-side display or when the second side has no records.
+    m_flGradeRevealDuration = kGradeRevealDurationDual;
+    if (m_nSideCount == 1 || m_aGradeValues[1] == 0) {
+        m_flGradeRevealDuration = kGradeRevealDurationSingle;
+    }
+}
+
+/** @ghidraAddress 0x187710 */
+void ColetteThemeLayer::LoadBestRankFlags() {
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        m_aGradeValues[nSide] =
+            ScoreTracker::shared()->GetPlayRecordField10(static_cast<unsigned int>(nSide));
+    }
 }
