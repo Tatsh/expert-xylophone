@@ -74,3 +74,8 @@ void PlayerFieldLayer::StartScoreFadeOut(float flDuration) {
 void PlayerFieldLayer::SetScoreSideFlag(int nSide) {
     m_nScoreSideFlag = nSide;
 }
+
+/** @ghidraAddress 0x18b7fc */
+void PlayerFieldLayer::SetScorePosition(float flValue, int nSide) {
+    m_aScorePosition[nSide != 0 ? 1 : 0] = flValue;
+}
