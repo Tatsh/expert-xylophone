@@ -34,6 +34,19 @@ void ClearGaugeLayer::SetTwoSideEnabled(bool bTwoSide) {
     m_nTwoSideEnabled = bTwoSide;
 }
 
+/** @ghidraAddress 0x175da8 */
+void ClearGaugeLayer::StartFadeOut(float flDuration) {
+    m_flFadeFrom = m_flFadeCurrent;
+    m_flFadeTo = 0.0f;
+    m_flFadeDuration = flDuration;
+    m_flFadeElapsed = 0.0f;
+    // A non-positive duration snaps straight to transparent and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_flFadeCurrent = 0.0f;
+        m_bColorDirty = true;
+    }
+}
+
 /** @ghidraAddress 0x175aac */
 ClearGaugeLayer *ClearGaugeLayer::shared() {
     if (g_pClearGaugeLayer == nullptr) {

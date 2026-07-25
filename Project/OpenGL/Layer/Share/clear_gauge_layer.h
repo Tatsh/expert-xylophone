@@ -67,6 +67,15 @@ public:
     void SetTwoSideEnabled(bool bTwoSide);
 
     /**
+     * @brief Begins the reveal fade-out, easing the gauge to transparent over @p flDuration
+     * (snapping to transparent and marking the colour dirty immediately when the duration is
+     * non-positive).
+     * @param flDuration The fade duration, in frames.
+     * @ghidraAddress 0x175da8
+     */
+    void StartFadeOut(float flDuration);
+
+    /**
      * @brief The process-wide clear-gauge layer, created on first use.
      * @return The shared clear-gauge layer.
      * @ghidraAddress 0x175aac
