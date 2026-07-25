@@ -74,6 +74,15 @@ struct RbffNoteRecord {
     RbffSlideRecord *pSlideRecord = {}; // +0xa8: the slide sub-record, when present.
     int nSlidePointCount = {};          // +0xb0: the number of slide points.
     unsigned char m_aPadB4[4] = {};     // +0xb4
+
+    /**
+     * @brief Constructs a note record in its default per-note state before the chart parser fills
+     * it: zeroes the timing, geometry, and link fields; seeds the empty chain-link block; and sets
+     * the default lane and lane-slot (3), the timing-selector sentinel (-2), and the colour/link
+     * sentinels (-1).
+     * @ghidraAddress 0x12f780
+     */
+    RbffNoteRecord();
 };
 
 // code: language=C++
