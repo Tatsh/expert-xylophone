@@ -18,6 +18,8 @@ areyouready
 asbd
 audioformat
 audiosourceslot
+avbus
+avsemixer
 autocapitalization
 autocorrection
 autorelease
