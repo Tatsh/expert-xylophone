@@ -54,6 +54,21 @@ public:
      */
     void SetNoteData(unsigned int dwSeed);
 
+    /**
+     * @brief Reserves a lane (and optionally its neighbours) for a note's time span.
+     *
+     * Extends the lane slot's occupied start/end range to cover @c [nTimeStart, nTimeStart +
+     * nDuration]; when @p bSpread is set, the adjacent lanes are extended likewise. Only the first
+     * three lane groups (@p nLane below 3) are reservable.
+     * @param nTimeStart The span start time.
+     * @param nDuration The span duration.
+     * @param nPlayer The player side.
+     * @param nLane The lane group (below 3).
+     * @param bSpread Whether to extend onto the adjacent lanes.
+     * @ghidraAddress 0x149178
+     */
+    void ReserveNoteLane(int nTimeStart, int nDuration, int nPlayer, int nLane, bool bSpread);
+
 private:
     void *m_pVtable = {};                   // +0x00: the tracker's vtable.
     Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
