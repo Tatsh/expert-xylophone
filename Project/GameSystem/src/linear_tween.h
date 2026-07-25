@@ -39,6 +39,36 @@ public:
         return m_flDuration;
     }
 
+    /** @brief The last computed interpolated value. */
+    float GetCurrent() const {
+        return m_flCurrent;
+    }
+
+    /** @brief Sets the interpolation start value. */
+    void SetStart(float flStart) {
+        m_flStart = flStart;
+    }
+
+    /** @brief Sets the interpolation end value. */
+    void SetEnd(float flEnd) {
+        m_flEnd = flEnd;
+    }
+
+    /** @brief Sets the total duration. */
+    void SetDuration(float flDuration) {
+        m_flDuration = flDuration;
+    }
+
+    /** @brief Sets the elapsed time so far. */
+    void SetElapsed(float flElapsed) {
+        m_flElapsed = flElapsed;
+    }
+
+    /** @brief Sets the last computed interpolated value. */
+    void SetCurrent(float flCurrent) {
+        m_flCurrent = flCurrent;
+    }
+
 private:
     float m_flStart = {};    // +0x00 interpolation start value
     float m_flEnd = {};      // +0x04 interpolation end value

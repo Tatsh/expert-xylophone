@@ -27,10 +27,37 @@ constexpr int kSlotTextureField[] = {-1, 0, 1, 2};
 constexpr int kAdditiveBlendSlot = 3;
 constexpr int kAdditiveBlendMode = 1;
 
+// The layer's layout size the constructor seeds.
+constexpr float kLayoutWidth = 384.0f;
+constexpr float kLayoutHeight = 680.0f;
+
+// The grade-display defaults the constructor seeds: single-side, and both grade values four.
+constexpr int kDefaultSideCount = 1;
+constexpr int kGradeValueDefault = 4;
+
+// The grade reveal-channel value that holds the display fully shown.
+constexpr float kGradeChannelFull = 1.0f;
+
+// The reveal clock's off-screen start value (a -500 immediate in the initialiser).
+constexpr float kGradeClockStart = -500.0f;
+
+// The reveal-clock threshold: shorter for a two-side display, longer for single-side or one record.
+constexpr float kGradeRevealDurationDual = 3000.0f;
+constexpr float kGradeRevealDurationSingle = 5000.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x120630 */
-LimelightThemeLayer::LimelightThemeLayer() = default;
+LimelightThemeLayer::LimelightThemeLayer() {
+    // The base constructor and the zero-initialised members clear the textures, sprites, counts, and
+    // flags; the constructor then applies the layout size and the non-zero grade-display defaults.
+    m_flWidth = kLayoutWidth;
+    m_flHeight = kLayoutHeight;
+    m_nSideCount = kDefaultSideCount;
+    for (int &nValue : m_aGradeValues) {
+        nValue = kGradeValueDefault;
+    }
+}
 
 /** @ghidraAddress 0x1206c8 */
 LimelightThemeLayer *LimelightThemeLayer::shared() {
@@ -89,5 +116,27 @@ void LimelightThemeLayer::InitializeGradeValuesFromTracker() {
     for (int nSide = 0; nSide < kSideCount; ++nSide) {
         m_aGradeValues[nSide] =
             ScoreTracker::shared()->GetPlayRecordField10(static_cast<unsigned int>(nSide));
+    }
+}
+
+/** @ghidraAddress 0x120844 */
+void LimelightThemeLayer::InitializeGradeDisplayState() {
+    // Seed the reveal channel to hold a full value, park the clock off-screen, arm the display, and
+    // fill the per-side grade values.
+    m_gradeChannel.SetStart(kGradeChannelFull);
+    m_gradeChannel.SetEnd(kGradeChannelFull);
+    m_gradeChannel.SetDuration(0.0f);
+    m_gradeChannel.SetElapsed(0.0f);
+    m_gradeChannel.SetCurrent(kGradeChannelFull);
+    m_flGradeRevealClock = kGradeClockStart;
+    m_bGradeVisible = true;
+    m_bGradeClockActive = true;
+    m_bGradeArmed = true;
+    InitializeGradeValuesFromTracker();
+
+    // The reveal runs longer for a single-side display or when the second side has no records.
+    m_flGradeRevealDuration = kGradeRevealDurationDual;
+    if (m_nSideCount == 1 || m_aGradeValues[1] == 0) {
+        m_flGradeRevealDuration = kGradeRevealDurationSingle;
     }
 }
