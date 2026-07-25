@@ -34,6 +34,12 @@ public:
      * @ghidraAddress 0x4b57c
      */
     void DestroyAudioContextWrapper();
+
+    /**
+     * @brief Destroys the manager: tears down the audio context and releases the source dictionary.
+     * @ghidraAddress 0x4b468
+     */
+    ~caPlayerMgr();
     /**
      * @brief Starts the audio graph.
      * @ghidraAddress 0x4b61c

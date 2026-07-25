@@ -81,6 +81,13 @@ void caPlayerMgr::DestroyAudioContextWrapper() {
     DestroyAudioContext();
 }
 
+/** @ghidraAddress 0x4b468 */
+caPlayerMgr::~caPlayerMgr() {
+    // Tear down the audio context; the source dictionary is released by ARC (the binary's explicit
+    // release of the +0x8 member).
+    DestroyAudioContext();
+}
+
 /** @ghidraAddress 0x4bbd4 */
 unsigned int caPlayerMgr::FindOrGrowFreeSlot() {
     // Reuse the first empty slot if there is one.
