@@ -19,10 +19,11 @@
 #include "note_effect_mgr.h"
 #include "rbffnoterecord.h"
 
-// The play-field edge bounds, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and
-// read here and by the effect layers.
-float g_flPlayfieldBoundTop = {};    // @ghidraAddress 0x3ce95c
-float g_flPlayfieldBoundBottom = {}; // @ghidraAddress 0x3ce960
+// The near-lane slope and its negative, seeded by the play-field layout pass
+// (ComputePlayfieldLayoutY) and read here and by the effect layers. Both are the ratio of the
+// near-row offset to the field-centre row scale.
+float g_flPlayfieldNearLaneSlope = {};    // @ghidraAddress 0x3ce95c
+float g_flPlayfieldNearLaneSlopeNeg = {}; // @ghidraAddress 0x3ce960
 
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
 // by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the centre),
@@ -34,7 +35,9 @@ namespace {
 
 // The band fractions of the play-field edge, indexed by band, and the count of bands. Band 4 is the
 // centre line and produces no offset; bands 0 through 3 sit above it and 5 through 8 below.
-constexpr float kBandFractions[] = {0.38f, 0.30f, 0.20f, 0.10f, 0.0f, 0.10f, 0.20f, 0.30f, 0.38f};
+// The per-band multiplier applied to the near-lane slope, from the binary's band switch. Bands 2,
+// 4, and 6 contribute nothing; the outer bands ramp 0.10, 0.30, 0.38 out from the centre.
+constexpr float kBandFractions[] = {0.38f, 0.30f, 0.0f, 0.10f, 0.0f, 0.10f, 0.0f, 0.30f, 0.38f};
 constexpr int kBandCount = 9;
 constexpr int kCenterBand = 4;
 
@@ -272,7 +275,9 @@ float NoteModel::GetVirtualBoundY(int nBand) {
     if (nBand == kCenterBand) {
         return 0.0f;
     }
-    // Bands above the centre take the top edge, bands below take the bottom edge.
-    const float flEdge = nBand < kCenterBand ? g_flPlayfieldBoundTop : g_flPlayfieldBoundBottom;
-    return (flEdge * kBandFractions[nBand]) + (flEdge * kBandFractions[nBand]);
+    // Bands above the centre use the near-lane slope, bands below use its negative; the result is
+    // twice the slope scaled by the band's multiplier (the binary sums s*m + s*m).
+    const float flSlope =
+        nBand < kCenterBand ? g_flPlayfieldNearLaneSlope : g_flPlayfieldNearLaneSlopeNeg;
+    return (flSlope * kBandFractions[nBand]) + (flSlope * kBandFractions[nBand]);
 }
