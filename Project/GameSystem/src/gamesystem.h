@@ -331,6 +331,10 @@ public:
     bool GetBgmPlaying() const {
         return m_fBgmPlaying;
     }
+    /** @brief Sets whether background music is currently playing. */
+    void SetBgmPlaying(bool value) {
+        m_fBgmPlaying = value;
+    }
     /** @brief Reports whether the game is paused or interrupted. */
     bool GetPaused() const {
         return m_fPaused;

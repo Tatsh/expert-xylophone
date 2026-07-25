@@ -1,11 +1,14 @@
 #import "gamescene.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
 
-#import "Audio/soundeffectmanager.h"
+#import "AudioManager.h"
 #import "RBBGMManager.h"
+#import "fade_overlay_layer.h"
 #import "gamesystem.h"
 #import "playtimer.h"
+#import "soundeffectmanager.h"
 
 namespace {
 
@@ -19,6 +22,13 @@ constexpr int kActivePlayState = 0x11;
 
 // The themed sound-effect slot for the decide/confirm cue.
 constexpr int kSoundEffectDecide = 1;
+
+// The scene-transition fade-in duration, in play-timer units.
+constexpr float kSceneFadeDuration = 1000.0f;
+
+// The scene states the exit transitions advance into.
+constexpr int kPauseExitState = 0xe;
+constexpr int kMusicReleaseState = 0xd;
 
 } // namespace
 
@@ -35,6 +45,39 @@ void GameScene::AdvanceGameSceneStateFrom11() {
 void GameScene::ClearLayerStateField() {
     // The binary clears the state and its sub-step together with one 64-bit store.
     m_nState = 0;
+    m_nStateSubStep = 0;
+}
+
+/** @ghidraAddress 0x14b228 */
+void GameScene::StopBgmAndAllowRotation() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    // Only act while the background music is still marked playing.
+    if (!pGameSystem->GetBgmPlaying()) {
+        return;
+    }
+    pGameSystem->SetBgmPlaying(false);
+    // Re-enable device auto-rotation, which play locks out.
+    [UIViewController attemptRotationToDeviceOrientation];
+    [[RBBGMManager getInstance] StopMusic:0.0f];
+    m_nBgmVoiceHandle = 0;
+}
+
+/** @ghidraAddress 0x14b1ec */
+void GameScene::EnterPauseExitState() {
+    StopBgmAndAllowRotation();
+    ResumePlayTimerAndBgm();
+    FadeOverlayLayer::shared()->StartFadeIn(kSceneFadeDuration);
+    m_nState = kPauseExitState;
+    m_nStateSubStep = 0;
+}
+
+/** @ghidraAddress 0x14b2b8 */
+void GameScene::EnterMusicReleaseState() {
+    StopBgmAndAllowRotation();
+    ReleaseBgmAndVoice();
+    ResumePlayTimerAndBgm();
+    FadeOverlayLayer::shared()->StartFadeIn(kSceneFadeDuration);
+    m_nState = kMusicReleaseState;
     m_nStateSubStep = 0;
 }
 
@@ -97,4 +140,15 @@ void HandlePauseResume(void) {
         ResumePlayTimerAndBgm();
     }
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
+}
+
+/** @ghidraAddress 0x14b2f8 */
+void ReleaseBgmAndVoice(void) {
+    // The music must already be stopped (its playing flag cleared) before its resources are freed.
+    if (GameSystem::GetGameSystem()->GetBgmPlaying()) {
+        return;
+    }
+    [[RBBGMManager getInstance] StopMusic:0.0f];
+    [[RBBGMManager getInstance] RelaseMusic];
+    [[AudioManager sharedManager] releaseVoice];
 }

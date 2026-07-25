@@ -31,9 +31,34 @@ public:
      */
     void ClearLayerStateField();
 
+    /**
+     * @brief Stops the background music and re-enables device auto-rotation, once, when the scene is
+     * torn down or interrupted.
+     * @ghidraAddress 0x14b228
+     */
+    void StopBgmAndAllowRotation();
+
+    /**
+     * @brief Transitions the scene into the pause-exit state: stops the BGM, resumes the play timer,
+     * starts the fade-in overlay, and advances to state 0xe.
+     * @ghidraAddress 0x14b1ec
+     */
+    void EnterPauseExitState();
+
+    /**
+     * @brief Transitions the scene into the music-release state: stops the BGM, releases the music
+     * and voice resources, resumes the play timer, starts the fade-in overlay, and advances to state
+     * 0xd.
+     * @ghidraAddress 0x14b2b8
+     */
+    void EnterMusicReleaseState();
+
 private:
     int m_nState = {};        // +0x4c: the scene's current state.
     int m_nStateSubStep = {}; // +0x50: a per-state sub-step, cleared whenever the state is set.
+    // +0x54..+0x5f: further scene state, still being worked out.
+    unsigned char m_aReserved54[0xc] = {}; // +0x54
+    int m_nBgmVoiceHandle = {};            // +0x60: the active BGM voice handle, cleared on stop.
 };
 
 /**
@@ -51,6 +76,15 @@ void ResumePlayTimerAndBgm(void);
  * @ghidraAddress 0x15139c
  */
 void HandlePauseResume(void);
+
+/**
+ * @brief Fully releases the current music and voice resources.
+ *
+ * A no-op while the background music is still marked active (it must be stopped first); otherwise it
+ * stops and releases the music and releases the audio manager's voices.
+ * @ghidraAddress 0x14b2f8
+ */
+void ReleaseBgmAndVoice(void);
 
 // code: language=C++
 // kate: hl C++;
