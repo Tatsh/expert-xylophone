@@ -16,6 +16,7 @@ applist
 archs
 areyouready
 asbd
+audioformat
 audiosourceslot
 autocapitalization
 autocorrection

@@ -15,15 +15,7 @@
 #include <strings.h>
 
 #import "RBMacros.h"
-
-// Fills an AudioStreamBasicDescription for signed 16-bit interleaved linear PCM at the given sample
-// rate and channel count. This lives in the plain-C engine layer, which is not C-safe to import, so
-// the prototype is declared locally.
-// @ghidraAddress 0x33ec8 (InitPcmFormatDescriptor)
-// @ghidraAddress 0x2eee60 (g_dSoundDataSampleRate)
-void InitPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
-                             double sampleRate,
-                             int channelCount);
+#import "audioformat.h"
 
 // The sample rate the client PCM format is configured for.
 static const double kSoundDataSampleRate = 44100.0;

@@ -15,15 +15,7 @@
 
 #import "SoundData.h"
 #import "SoundPlayer.h"
-
-// Fills an AudioStreamBasicDescription for 32-bit float interleaved linear PCM at the given sample
-// rate and channel count. This lives in the plain-C engine layer, which is not C-safe to import, so
-// the prototype is declared locally.
-// @ghidraAddress 0x33e9c (InitFloatPcmFormatDescriptor)
-// @ghidraAddress 0x2eee60 (g_dSoundDataSampleRate)
-void InitFloatPcmFormatDescriptor(AudioStreamBasicDescription *pAsbd,
-                                  double sampleRate,
-                                  int channelCount);
+#import "audioformat.h"
 
 // The sample rate the mixer output format is configured for.
 static const double kSoundManagerSampleRate = 44100.0;
