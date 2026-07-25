@@ -8,7 +8,7 @@
 //  from the disassembly).
 //
 //  This is Blowfish in CBC mode with one deviation from the textbook cipher: the round function F
-//  (see kBlowfishF in EncryptBlowfishBlock / DecryptBlowfishBlock). rb458 factors the key schedule
+//  (see BlowfishF in EncryptBlowfishBlock / DecryptBlowfishBlock). rb458 factors the key schedule
 //  out into the standalone C function SetBlowfishKey (0x15ad0), whereas the pop'n rhythmin twin
 //  inlines the whole schedule into -cipherInit:keyLength:; the behaviour is identical.
 //
@@ -80,7 +80,7 @@ static inline void blowfishStoreBE32(uint8_t *p, uint32_t value) {
 // ((S0[a] + S1[b]) ^ S2[c]) + S3[d]. The arithmetic is kept 64-bit to match the arm64 core, whose
 // sums may carry past bit 31 before the final store masks them back to 32 bits.
 // @ghidraAddress 0x15c50
-static inline uint64_t kBlowfishF(const BlowfishContext *ctx, uint64_t x) {
+static inline uint64_t BlowfishF(const BlowfishContext *ctx, uint64_t x) {
     uint64_t a = (x >> 24) & 0xff;
     uint64_t b = (x >> 16) & 0xff;
     uint64_t c = (x >> 8) & 0xff;
@@ -96,9 +96,9 @@ static void EncryptBlowfishBlock(const BlowfishContext *ctx, uint64_t *pLeft, ui
     uint64_t right = *pRight;
     for (int i = 0; i < kBlowfishPArrayCount - 2; i += 2) {
         left ^= ctx->P[i];
-        right ^= kBlowfishF(ctx, left);
+        right ^= BlowfishF(ctx, left);
         right ^= ctx->P[i + 1];
-        left ^= kBlowfishF(ctx, right);
+        left ^= BlowfishF(ctx, right);
     }
     left ^= ctx->P[kBlowfishPArrayCount - 2];
     right ^= ctx->P[kBlowfishPArrayCount - 1];
@@ -114,9 +114,9 @@ static void DecryptBlowfishBlock(const BlowfishContext *ctx, uint64_t *pLeft, ui
     uint64_t right = *pRight;
     for (int i = kBlowfishPArrayCount - 2; i >= 2; i -= 2) {
         left ^= ctx->P[i + 1];
-        right ^= kBlowfishF(ctx, left);
+        right ^= BlowfishF(ctx, left);
         right ^= ctx->P[i];
-        left ^= kBlowfishF(ctx, right);
+        left ^= BlowfishF(ctx, right);
     }
     left ^= ctx->P[1];
     right ^= ctx->P[0];
