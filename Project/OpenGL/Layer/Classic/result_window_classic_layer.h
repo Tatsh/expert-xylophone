@@ -8,6 +8,7 @@
 #include "playfieldlayerbase.h"
 
 struct PartsDataRecord;
+struct S_VECTOR2;
 class Polygon2dTrail;
 
 namespace ne {
@@ -62,12 +63,65 @@ public:
      */
     void InitSpriteSetsLazy();
 
+    /**
+     * @brief Resolves a phone-layout position by index, offset relative to the play-field viewport.
+     *
+     * Looks up a @c PhoneAnchorRecord from the portrait or landscape table (selected by the layer's
+     * orientation flag), copies its base coordinate, then shifts it by the viewport's half or full
+     * width and height per the record's anchor mode.
+     * @param nIndex The position-record index (0 through 81).
+     * @param pOutPosition Receives the resolved position.
+     * @ghidraAddress 0x114c80
+     */
+    void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
+
+    /**
+     * @brief Emits one result-window part sprite by part id into an instancer slot.
+     *
+     * Looks up the part's placement rectangle and UV-palette rectangle and appends a quad to the
+     * slot; part ids at or above the table bound are ignored. The main pass draws at full alpha, the
+     * shadow pass at half intensity.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleX The sprite X scale.
+     * @param flScaleY The sprite Y scale.
+     * @param nSlot The instancer slot to append to.
+     * @param nPartId The part id.
+     * @param position The sprite's world position.
+     * @param nAlpha The sprite's alpha.
+     * @param bShadowPass Non-zero for the half-intensity shadow pass.
+     * @ghidraAddress 0x115864
+     */
+    void EmitPartSprite(float flRotation,
+                        float flScaleX,
+                        float flScaleY,
+                        unsigned int nSlot,
+                        unsigned int nPartId,
+                        const S_VECTOR2 &position,
+                        unsigned int nAlpha,
+                        int bShadowPass);
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
     static constexpr int kTrailCount = 4;
+    // The number of phone-layout position records.
+    static constexpr int kPositionRecordCount = 82;
 
 private:
+    // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
+    // full; the shared low-level emit behind the part helpers.
+    // @ghidraAddress 0x116808
+    void AppendSpriteToSlot(const S_VECTOR2 &position,
+                            const S_VECTOR2 &anchor,
+                            const S_VECTOR2 &size,
+                            const S_VECTOR2 &uvOrigin,
+                            const S_VECTOR2 &uvSize,
+                            float flRotation,
+                            const S_VECTOR2 &scale,
+                            unsigned int nSlot,
+                            unsigned int nIntensity,
+                            unsigned int nAlpha);
+
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x08: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x10: the result-parts atlas.
     ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
@@ -81,8 +135,11 @@ private:
     // out, kept as a reserved span to preserve the allocation size.
     unsigned char m_aReserved64[0xcc] = {};       // +0x64
     Polygon2dTrail *m_apTrails[kTrailCount] = {}; // +0x130: the ribbon trails.
-    // +0x150..+0x1bf: the remaining layer state, still being worked out.
-    unsigned char m_aReserved150[0x70] = {}; // +0x150
+    // +0x150..+0x1b4: further layer state, still being worked out.
+    unsigned char m_aReserved150[0x65] = {}; // +0x150
+    bool m_bPortrait = {}; // +0x1b5: selects the portrait position/separator tables.
+    // +0x1b6..+0x1bf: trailing layer state, still being worked out.
+    unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
 };
 
 // code: language=Objective-C++

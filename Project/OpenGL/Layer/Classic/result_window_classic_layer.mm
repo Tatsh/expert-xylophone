@@ -4,9 +4,11 @@
 
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
+#import "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "polygon2d_trail.h"
+#import "s_vector2.h"
 
 // The process-wide Classic result-window layer, created lazily by shared().
 static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddress 0x3dd2f8
@@ -14,6 +16,13 @@ static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddr
 // The Classic pad parts table (declared in classic_parts_data_table.h): zero-initialised here to
 // match the binary's __common segment, filled at runtime.
 PartsDataRecord g_aClassicPartsPad[kClassicPartsRecordBound] = {}; // @ghidraAddress 0x3d6650
+
+// The Classic phone-layout position tables (declared in classic_parts_data_table.h):
+// zero-initialised here to match the binary's __common segment, filled at runtime.
+PhoneAnchorRecord g_aClassicPositionPhoneLandscape[kClassicPositionRecordCount] =
+    {}; // @ghidraAddress 0x3d84c0
+PhoneAnchorRecord g_aClassicPositionPhonePortrait[kClassicPositionRecordCount] =
+    {}; // @ghidraAddress 0x3d80e8
 
 // The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
 // per result-window part, giving each part's placement offset, size, and UV-palette index.
@@ -137,6 +146,139 @@ constexpr int kFirstUntexturedSlot = 2;
 constexpr int kUntexturedSlotSpan = 5;
 
 } // namespace
+
+namespace {
+
+// The anchor modes that offset a base coordinate relative to the play-field viewport. Mode 0 (and
+// any value outside this range) leaves the coordinate unshifted.
+enum AnchorMode {
+    kAnchorNone = 0,                // No offset.
+    kAnchorHalfHeight = 1,          // y += viewportHeight / 2.
+    kAnchorFullHeight = 2,          // y += viewportHeight.
+    kAnchorHalfWidth = 3,           // x += viewportWidth / 2.
+    kAnchorHalfWidthHalfHeight = 4, // x += viewportWidth / 2, y += viewportHeight / 2.
+    kAnchorHalfWidthFullHeight = 5, // x += viewportWidth / 2, y += viewportHeight.
+    kAnchorFullWidth = 6,           // x += viewportWidth.
+    kAnchorFullWidthHalfHeight = 7, // x += viewportWidth, y += viewportHeight / 2.
+    kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
+};
+
+// The part-id upper bound the sprite dispatcher ignores at or above.
+constexpr unsigned int kPartIdBound = 0xf0;
+// The sprite colour intensities for the main pass and the half-intensity shadow pass.
+constexpr unsigned int kIntensityFull = 0xff;
+constexpr unsigned int kIntensityShadow = 0x80;
+
+} // namespace
+
+/** @ghidraAddress 0x114c80 */
+void ResultWindowClassicLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const {
+    assert(nIndex >= 0 && nIndex < kClassicPositionRecordCount);
+
+    // The orientation flag selects the portrait table; otherwise the landscape table is used.
+    const PhoneAnchorRecord &record = m_bPortrait ? g_aClassicPositionPhonePortrait[nIndex] :
+                                                    g_aClassicPositionPhoneLandscape[nIndex];
+    pOutPosition->x = record.flX;
+    pOutPosition->y = record.flY;
+
+    // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    switch (record.nAnchorMode) {
+    case kAnchorHalfHeight:
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorFullHeight:
+        pOutPosition->y += flHeight;
+        break;
+    case kAnchorHalfWidth:
+        pOutPosition->x += flWidth * 0.5f;
+        break;
+    case kAnchorHalfWidthHalfHeight:
+        pOutPosition->x += flWidth * 0.5f;
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorHalfWidthFullHeight:
+        pOutPosition->x += flWidth * 0.5f;
+        pOutPosition->y += flHeight;
+        break;
+    case kAnchorFullWidth:
+        pOutPosition->x += flWidth;
+        break;
+    case kAnchorFullWidthHalfHeight:
+        pOutPosition->x += flWidth;
+        pOutPosition->y += flHeight * 0.5f;
+        break;
+    case kAnchorFullWidthFullHeight:
+        pOutPosition->x += flWidth;
+        pOutPosition->y += flHeight;
+        break;
+    default:
+        break;
+    }
+}
+
+/** @ghidraAddress 0x116808 */
+void ResultWindowClassicLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
+                                                  const S_VECTOR2 &anchor,
+                                                  const S_VECTOR2 &size,
+                                                  const S_VECTOR2 &uvOrigin,
+                                                  const S_VECTOR2 &uvSize,
+                                                  float flRotation,
+                                                  const S_VECTOR2 &scale,
+                                                  unsigned int nSlot,
+                                                  unsigned int nIntensity,
+                                                  unsigned int nAlpha) {
+    if (nSlot >= kSpriteSlotCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nSprite = pInstancer->GetSpriteCount();
+    if (nSprite >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    pInstancer->SetSpritePosition(nSprite, position);
+    pInstancer->SetSpriteAnchor(nSprite, anchor);
+    pInstancer->SetSpriteSize(nSprite, size);
+    pInstancer->SetSpriteUvOrigin(nSprite, uvOrigin);
+    pInstancer->SetSpriteUvSize(nSprite, uvSize);
+    pInstancer->SetSpriteRotation(nSprite, flRotation);
+    pInstancer->SetSpriteScale(nSprite, scale.x, scale.y);
+    pInstancer->SetSpriteColor(nSprite, nIntensity, nIntensity, nIntensity, nAlpha);
+    pInstancer->SetSpriteCount(nSprite + 1);
+}
+
+/** @ghidraAddress 0x115864 */
+void ResultWindowClassicLayer::EmitPartSprite(float flRotation,
+                                              float flScaleX,
+                                              float flScaleY,
+                                              unsigned int nSlot,
+                                              unsigned int nPartId,
+                                              const S_VECTOR2 &position,
+                                              unsigned int nAlpha,
+                                              int bShadowPass) {
+    if (nPartId >= kPartIdBound) {
+        return;
+    }
+    const PartsDataRecord *pRecord = getPartsData(static_cast<int>(nPartId));
+    const UvPaletteEntry &palette = g_aClassicUvPalette[pRecord->nUvPaletteIndex];
+    const unsigned int nIntensity = bShadowPass != 0 ? kIntensityShadow : kIntensityFull;
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{pRecord->flX, pRecord->flY},
+                       S_VECTOR2{pRecord->flWidth, pRecord->flHeight},
+                       S_VECTOR2{palette.flU, palette.flV},
+                       S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                       flRotation,
+                       S_VECTOR2{flScaleX, flScaleY},
+                       nSlot,
+                       nIntensity,
+                       nAlpha);
+}
 
 /** @ghidraAddress 0x11524c */
 void ResultWindowClassicLayer::InitSpriteSetsLazy() {
