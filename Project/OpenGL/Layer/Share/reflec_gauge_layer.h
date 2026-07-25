@@ -108,6 +108,20 @@ public:
      */
     void SetValueBySide(float flValue, unsigned int nSide);
 
+    /**
+     * @brief Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
+     * setting.
+     * @param nStyle The gauge style.
+     * @ghidraAddress 0x18ad2c
+     */
+    void SetGaugeStyle(int nStyle);
+    /**
+     * @brief Sets the mirror/side flag, which drives the gauge sprite's horizontal flip.
+     * @param nSide The mirror/side flag.
+     * @ghidraAddress 0x18ad34
+     */
+    void SetMirrorSide(int nSide);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
@@ -132,11 +146,13 @@ private:
     bool m_bReserved74 = {};                    // +0x74: a byte flag the constructor zero-clears.
     // +0x75..+0x77 is alignment padding before the scales.
     // unsigned char m_aPad75[3]; // +0x75 (alignment padding, compiler-inserted)
-    float m_aScales[2] = {};              // +0x78: two scales the constructor seeds to 1.
-    float m_flDisplayBrightness = {};     // +0x80: the gauge display brightness (value mapped to
-                                          //        [0.3, 1.0]).
-    SideGauge m_aSides[kSideCount] = {};  // +0x84: the per-side gauge state (stride 8).
-    unsigned char m_aReserved94[12] = {}; // +0x94: trailing layer state.
+    float m_aScales[2] = {};             // +0x78: two scales the constructor seeds to 1.
+    float m_flDisplayBrightness = {};    // +0x80: the gauge display brightness (value mapped to
+                                         //        [0.3, 1.0]).
+    SideGauge m_aSides[kSideCount] = {}; // +0x84: the per-side gauge state (stride 8).
+    int m_nGaugeStyle = {};              // +0x94: the gauge style / sprite-layout variant.
+    int m_nMirrorSide = {};              // +0x98: the mirror/side flag (drives sprite X-flip).
+    unsigned char m_aReserved9c[4] = {}; // +0x9c: trailing layer state.
 };
 
 // code: language=Objective-C++

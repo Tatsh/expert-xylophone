@@ -143,3 +143,13 @@ void ReflecGaugeLayer::SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGau
 void ReflecGaugeLayer::SetGaugeDisplayBrightness(float flValue, ReflecGaugeLayer *pGauge) {
     pGauge->m_flDisplayBrightness = flValue * kBrightnessScale + kBrightnessBias;
 }
+
+/** @ghidraAddress 0x18ad2c */
+void ReflecGaugeLayer::SetGaugeStyle(int nStyle) {
+    m_nGaugeStyle = nStyle;
+}
+
+/** @ghidraAddress 0x18ad34 */
+void ReflecGaugeLayer::SetMirrorSide(int nSide) {
+    m_nMirrorSide = nSide;
+}
