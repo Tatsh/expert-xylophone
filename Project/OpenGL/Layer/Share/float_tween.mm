@@ -10,22 +10,22 @@
 
 /** @ghidraAddress 0x12af38 */
 float FloatTween::Advance(float flDeltaTime) {
-    const float flReachEnd = flDuration + flDelay;
+    const float flReachEnd = m_flDuration + m_flDelay;
     // Once the accumulator has reached the ramp's end the tween holds its last value.
-    if (flElapsed >= flReachEnd) {
-        return flCurrent;
+    if (m_flElapsed >= flReachEnd) {
+        return m_flCurrent;
     }
     // Advance the accumulator, clamped so it does not overshoot the ramp's end.
-    float flAdvanced = flElapsed + flDeltaTime;
+    float flAdvanced = m_flElapsed + flDeltaTime;
     if (flAdvanced > flReachEnd) {
         flAdvanced = flReachEnd;
     }
-    flElapsed = flAdvanced;
+    m_flElapsed = flAdvanced;
     // The normalised ramp position; a zero-duration ramp jumps straight to the end.
-    float flT = flDuration == 0.0f ? 1.0f : (flAdvanced - flDelay) / flDuration;
+    float flT = m_flDuration == 0.0f ? 1.0f : (flAdvanced - m_flDelay) / m_flDuration;
     if (flT < 0.0f) {
         flT = 0.0f;
     }
-    flCurrent = flFrom + flT * (flTo - flFrom);
-    return flCurrent;
+    m_flCurrent = m_flFrom + flT * (m_flTo - m_flFrom);
+    return m_flCurrent;
 }
