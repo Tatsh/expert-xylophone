@@ -70,6 +70,10 @@ CGPoint g_extendNoteNumberOffsetPhone;
 // The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
+// The per-difficulty score-validation bounds, seeded by BuildGaugeThresholdArrays.
+NSArray *g_pScoreMinThresholds;
+NSArray *g_pScoreMaxThresholds;
+
 // The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
 // storage because they are assigned at load time, not compile time.
 NSString *g_pLocalizedAbort;
@@ -317,6 +321,16 @@ constexpr float kGaugePartsScaleNegative = -0.88888889f;
 constexpr float kGaugePartsScalePositive = 0.88888889f;
 constexpr float kGaugePartsScaleTrailing = 288.0f;
 } // namespace
+
+/** @ghidraAddress 0x148a70 */
+__attribute__((constructor)) void BuildGaugeThresholdArrays(void) {
+    @autoreleasepool {
+        // Per difficulty (basic, medium, hard): the minimum and maximum valid edited score. The
+        // score validator rejects an edited score below the minimum or above the maximum.
+        g_pScoreMinThresholds = @[ @680, @1067, @1946 ];
+        g_pScoreMaxThresholds = @[ @740, @1157, @2114 ];
+    }
+}
 
 /** @ghidraAddress 0x3394c */
 __attribute__((constructor)) void InitializeApiRequestTable(void) {

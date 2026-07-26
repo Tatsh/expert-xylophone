@@ -13,6 +13,22 @@ extern "C" {
 #endif
 
 /**
+ * @brief The per-difficulty minimum valid edited score (basic, medium, hard), used by the score
+ * validator. Seeded once at startup by @c BuildGaugeThresholdArrays.
+ * @ghidraAddress 0x3de4a0
+ */
+extern NSArray *g_pScoreMinThresholds;
+/**
+ * @brief The per-difficulty maximum valid edited score (basic, medium, hard).
+ * @ghidraAddress 0x3de4a8
+ */
+extern NSArray *g_pScoreMaxThresholds;
+/**
+ * @brief Seeds @c g_pScoreMinThresholds and @c g_pScoreMaxThresholds. Run once at startup.
+ * @ghidraAddress 0x148a70
+ */
+void BuildGaugeThresholdArrays(void);
+/**
  * @brief The network API request-descriptor table, keyed by endpoint name (startup,
  * v3_ssl_resource, v3_packlist); each value is @c {method: GET, param: [target]}. Seeded once at
  * startup by @c InitializeApiRequestTable.
