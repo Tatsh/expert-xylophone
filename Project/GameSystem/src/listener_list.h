@@ -21,24 +21,23 @@
 class SortedListenerNode;
 
 /**
- * @brief A listener node's virtual dispatch table.
+ * @brief A listener node's dispatch table.
  *
- * The engine uses a custom (non-Itanium) slot layout: slot 0 is the per-frame callback and slot 2
- * (vtable byte offset 0x10) is the destructor. Slot 1 is unused by the list dispatcher.
+ * The engine uses a custom slot layout: slot 0 is the per-frame callback, slot 1 the non-deleting
+ * destructor, and slot 2 the deleting destructor.
  */
 struct SortedListenerNodeVtable {
-    void (*pfnOnFrame)(SortedListenerNode *pNode, void *pFrameArg); // slot 0 (+0x00).
-    void (*pfnReserved)();                                          // slot 1 (+0x08), unused here.
-    void (*pfnDestroy)(SortedListenerNode *pNode);                  // slot 2 (+0x10).
+    void (*pfnOnFrame)(SortedListenerNode *pNode, void *pFrameArg); // slot 0 (+0x00): per-frame.
+    void (*pfnDestroyNode)(SortedListenerNode *pNode);              // slot 1 (+0x08): non-deleting.
+    void (*pfnDestroy)(SortedListenerNode *pNode);                  // slot 2 (+0x10): deleting.
 };
 
 /**
  * @brief One intrusive node in the engine's priority-sorted listener list.
  *
- * A polymorphic object: its first slot is the vtable, through which the dispatcher calls the
- * per-frame callback (slot 0) and, for a dead node, the destructor (slot 2, at vtable offset 0x10).
- * The prev/next links thread the circular list, and the priority is its sort key. The trailing
- * @c // +0xNN comments document the original member offsets for reference only.
+ * Its first slot is the dispatch table, through which the list invokes the per-frame callback and
+ * the destructors. The prev/next links thread the circular list, and the priority is its sort key.
+ * The trailing @c // +0xNN comments document the original member offsets for reference only.
  * @ghidraAddress SortedListenerNode (engine listener-list node)
  */
 class SortedListenerNode {
@@ -59,14 +58,43 @@ public:
     bool IsDead() const {
         return m_bDead;
     }
-    /** @brief Invokes the node's per-frame callback (vtable slot 0). */
+    /** @brief Invokes the node's per-frame callback (dispatch-table slot 0). */
     void OnFrame(void *pFrameArg) {
         m_pVtable->pfnOnFrame(this, pFrameArg);
     }
-    /** @brief Invokes the node's destructor (vtable slot 2). */
+    /** @brief Invokes the node's deleting destructor (dispatch-table slot 2). */
     void Destroy() {
         m_pVtable->pfnDestroy(this);
     }
+
+    /**
+     * @brief Inserts (or re-positions) this node in the global listener list, ascending by
+     * @p nPriority: unlinks it from its current position, then splices it before the first node
+     * whose priority is not below @p nPriority.
+     * @param nPriority The node's sort priority.
+     * @ghidraAddress 0x365e4
+     */
+    void InsertSorted(int nPriority);
+
+    /**
+     * @brief Unlinks this node from its list and frees its owned buffer (the non-deleting
+     * destructor body).
+     * @ghidraAddress 0x36580
+     */
+    void Unlink();
+
+    /**
+     * @brief The deleting destructor: unlinks and frees the buffer, then frees the node itself.
+     * @ghidraAddress 0x365d0
+     */
+    void DestroyAndFree();
+
+    /**
+     * @brief Seeds the global listener-list sentinel into an empty self-linked list at the sentinel
+     * priority and registers its teardown with @c atexit. Run once at startup.
+     * @ghidraAddress 0x366ac
+     */
+    static void InitializeGlobalContainer();
 
 private:
     SortedListenerNodeVtable *m_pVtable = {}; // +0x00: the node's dispatch table.
@@ -74,23 +102,10 @@ private:
     SortedListenerNode *m_pNext = {};         // +0x10: the next node.
     int m_nPriority = {};                     // +0x18: the sort key.
     unsigned char m_aReserved1c[0x24] = {};   // +0x1c: node-specific state.
-    void *m_pBuffer = {};                     // +0x40: an owned heap buffer, freed on destruction.
+    unsigned char *m_pBuffer = {};            // +0x40: an owned heap buffer, freed on destruction.
     bool m_bDead = {};                        // +0x48: set when the node should be destroyed.
     unsigned char m_aReserved49[7] = {};      // +0x49: trailing state.
-
-    friend void InsertSortedListenerNode(SortedListenerNode *pNode, int nPriority);
 };
-
-/**
- * @brief Inserts (or re-positions) @p pNode in the global listener list, ascending by @p nPriority.
- *
- * The node is first unlinked from its current position, then spliced in before the first node whose
- * priority is greater than or equal to @p nPriority.
- * @param pNode The node to insert.
- * @param nPriority The node's sort priority.
- * @ghidraAddress 0x365e4
- */
-void InsertSortedListenerNode(SortedListenerNode *pNode, int nPriority);
 
 // code: language=C++
 // kate: hl C++;
