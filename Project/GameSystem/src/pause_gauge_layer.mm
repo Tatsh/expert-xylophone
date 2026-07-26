@@ -9,14 +9,17 @@
 #import "pause_gauge_layer.h"
 
 #import "RBUserSettingData.h"
+#include "gamescene.h"
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #import "soundeffectmanager.h"
 
 namespace {
-// The themed sound-effect slot the pause gauge plays when it starts charging.
+// The themed sound-effect slots the pause gauge plays: the charge-start effect and the menu-action
+// confirm effect.
 constexpr int kSoundEffectPauseGaugeCharge = 3;
+constexpr int kSoundEffectPauseConfirm = 1;
 
 // The pause-gauge parts atlas.
 constexpr const char *kPartsTextureName = "00_texture/gm_parts2";
@@ -277,6 +280,21 @@ void PauseGaugeLayer::ShowPauseMenu() {
         lane.bDimmed = false;
     }
     ExecShow();
+}
+
+/** @ghidraAddress 0x1513c4 */
+void PauseGaugeLayer::HandleExit() {
+    // The Limelight and Colette themes refuse to exit while a pastel-bonus session is active.
+    if ((m_nThema == RBUserSettingDataThemeLimelight ||
+         m_nThema == RBUserSettingDataThemeColette) &&
+        GameSystem::GetGameSystem()->GetPastelBonusType() != 0) {
+        return;
+    }
+    GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
+    if (pScene != nullptr) {
+        pScene->EnterPauseExitState();
+    }
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
 }
 
 /** @ghidraAddress 0x1508b0 */

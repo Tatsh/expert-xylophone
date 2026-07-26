@@ -141,6 +141,15 @@ public:
     void ShowPauseMenu();
 
     /**
+     * @brief The pause-menu Exit action: leaves the song and returns to the menu.
+     *
+     * The Limelight and Colette themes refuse to exit while a pastel-bonus (two-player) session is
+     * active; otherwise the active scene enters its pause-exit state and the confirm sound plays.
+     * @ghidraAddress 0x1513c4
+     */
+    void HandleExit();
+
+    /**
      * @brief The pause-scene per-frame show step: lays out the menu items, updates the touch-drag
      * selection, and re-emits the gauge sprites.
      *
