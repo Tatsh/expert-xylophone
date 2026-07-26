@@ -167,8 +167,8 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     __weak RBResourceDownloadViewController *weakSelf = self;
     [UIView animateWithDuration:kFadeOutDuration
         animations:^{
-          /** @ghidraAddress 0x1a468 */
-          weakFadeImageView.hidden = YES;
+          /** @ghidraAddress 0x1a478 */
+          weakFadeImageView.alpha = 0.0;
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0x1a4d8 */
@@ -567,18 +567,17 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     __weak RBResourceDownloadViewController *weakSelf = self;
     [UIView animateWithDuration:kPopAnimationDuration
         animations:^{
-          /** @ghidraAddress 0x1c628 */
+          /** @ghidraAddress 0x1a8b4 */
           weakSelf.popImageView.alpha = 1.0;
           weakSelf.popImageView.transform = CGAffineTransformIdentity;
         }
         completion:^(BOOL finished) {
-          /** @ghidraAddress 0x1c574 */
-          __weak RBResourceDownloadViewController *retryWeakSelf = weakSelf;
+          /** @ghidraAddress 0x1a9cc */
           dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kAnimationRetryDelayNanos),
                          dispatch_get_main_queue(),
                          ^{
                            /** @ghidraAddress 0x1aa68 */
-                           [retryWeakSelf animation];
+                           [weakSelf animation];
                          });
         }];
 }
