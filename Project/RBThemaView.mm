@@ -163,11 +163,11 @@ static NSString *const kOkButtonImageName = @"05_theme/theme_ok";
     self.okButton.enabled = NO;
     [UIView animateWithDuration:kThemaFadeOutDuration
         animations:^{
-          /** @ghidraAddress 0x85c4 */
+          /** @ghidraAddress 0x1085c4 */
           weakSelf.alpha = 0.0;
         }
         completion:^(BOOL finished) {
-          /** @ghidraAddress 0x8624 */
+          /** @ghidraAddress 0x108624 */
           [RBUserSettingData sharedInstance].thema =
               static_cast<RBUserSettingDataTheme>(weakSelf.thema);
           [[RBUserSettingData sharedInstance] save];
