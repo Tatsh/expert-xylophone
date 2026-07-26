@@ -5,14 +5,8 @@
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "ScoreData.h"
-
-// Shared engine helpers and globals defined elsewhere in the binary.
-extern double g_dTranslucentAlpha;
-extern double g_dCustomizeLayoutMetric100;
-extern NSString *g_pLocalizedOK;
-extern NSString *g_pLocalizedCancel;
-extern NSString *g_pLocalizedRetry;
-BOOL IsPad(void);
+#import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // Local declarations for the two sibling classes reconstructed separately. These members belong in
 // the siblings' own headers (RBErosionMarkUpdaterAlertController and RBErosionMarkUpdaterScoreView).
