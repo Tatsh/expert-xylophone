@@ -661,6 +661,90 @@ constexpr float kDefaultProjection[] = {
 };
 } // namespace
 
+namespace {
+// The per-texture-unit sampler defaults the constructor seeds: minification filter, magnification
+// filter, S-wrap, and T-wrap (the GL enum values GL_LINEAR-family / GL_REPEAT the engine uses).
+constexpr int kDefaultTexParams[] = {4, 1, 7, 7};
+// The default blend function factors (source one, destination zero).
+constexpr int kDefaultBlendSrc = 1;
+constexpr int kDefaultBlendDest = 0;
+// The default cull-face mode.
+constexpr int kDefaultCullFace = 1;
+// The unbound sentinel a handle slot holds until an object is bound.
+constexpr int kUnboundHandle = -1;
+// The default current vertex colour red channel (opaque).
+constexpr float kDefaultColorComponent = 1.0f;
+// The colour matrix's default diagonal.
+constexpr float kDefaultColorMatrixDiagonal[] = {1.0f, 1.0f, 0.0f, 1.0f};
+// The value seeded into the +0x030 slot at construction.
+constexpr int kField030Default = 7;
+} // namespace
+
+/** @ghidraAddress 0x210ec */
+neGLESRenderer::neGLESRenderer() {
+    m_pField000 = nullptr;
+    m_pField008 = nullptr;
+    m_flCurrentColorR = kDefaultColorComponent;
+    // The viewport, matrix-mode, and palette-matrix caches start cleared, with the width sentinel
+    // and the +0x030 slot seeded from the constant blocks.
+    m_nField014 = 0;
+    m_nViewportX = 0;
+    m_nViewportY = 0;
+    m_nViewportWidth = kUnboundHandle;
+    m_nViewportHeight = kUnboundHandle;
+    m_nMatrixMode = 0;
+    m_nPaletteMatrix = 0;
+    m_nField030 = kField030Default;
+    m_nField034 = 0;
+    m_bDepthTestEnabled = true;
+    m_nCullFace = kDefaultCullFace;
+    m_nArrayBufferBound = 0;
+    // The colour, vertex, weight, and matrix-index array-pointer caches start empty, their handle
+    // slots unbound and their bindings zero.
+    m_pColorPointer = nullptr;
+    m_nColorStride = kUnboundHandle;
+    m_nColorBufferBinding = 0;
+    m_nHandle060 = kUnboundHandle;
+    m_nBufferBinding2 = 0;
+    m_pVertexPointer = nullptr;
+    m_nVertexStride = kUnboundHandle;
+    m_nVertexSize = 0;
+    m_nVertexBufferBinding = 0;
+    m_nActiveTexUnit = 0;
+    m_pWeightPointer = nullptr;
+    m_nWeightStride = kUnboundHandle;
+    m_nWeightSize = 0;
+    m_nWeightBufferBinding = 0;
+    m_pMatrixIndexPointer = nullptr;
+    m_nMatrixIndexStride = kUnboundHandle;
+    m_nMatrixIndexSize = 0;
+    m_nElementBufferBound = 0;
+    // Each texture unit starts with no bound coordinate array, an unbound stride sentinel, no
+    // binding, no bound texture, and the default sampler parameters.
+    for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
+        m_apTexCoordPointer[nUnit] = nullptr;
+        m_anTexCoordStride[nUnit] = kUnboundHandle;
+        m_anTexCoordBufferBinding[nUnit] = 0;
+        m_anTexturePerUnit[nUnit] = 0;
+        for (int nParam = 0; nParam < kTexParamCount; ++nParam) {
+            m_aTexParamCache[nUnit][nParam] = kDefaultTexParams[nParam];
+        }
+    }
+    m_nBlendSrc = kDefaultBlendSrc;
+    m_nBlendDest = kDefaultBlendDest;
+    m_nField1dc = kDefaultBlendSrc;
+    // The per-capability enable cache and per-array client-state cache start all-false.
+    m_nField20c = 0;
+    m_bField20e = false;
+    for (int i = 0; i < 4; ++i) {
+        m_aColorMatrixDiagonal[i] = kDefaultColorMatrixDiagonal[i];
+    }
+    m_nField220 = 0;
+    m_nHandle230 = kUnboundHandle;
+    m_nHandle238 = kUnboundHandle;
+    m_nHandle240 = kUnboundHandle;
+}
+
 /** @ghidraAddress 0x20f9c */
 void neGLESRenderer::QueryCaps() {
     // Scan the space-separated extension list for the matrix-palette extension.

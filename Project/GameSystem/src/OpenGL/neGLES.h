@@ -78,24 +78,13 @@ int TexParamTypeToGl(TexParamType nType);
 class neGLESRenderer {
 public:
     /**
-     * @brief Constructs the render state: zeroes the scalar caches, loads identity model-view,
-     *        texture, and colour matrices, seeds the default blend function and white current
-     *        colour, and marks every buffer and texture binding unbound.
+     * @brief Constructs the render state: clears the viewport, matrix-mode, and array-pointer
+     *        caches, seeds the default blend function, cull mode, current colour, sampler
+     *        parameters, and colour-matrix diagonal, and marks every buffer and texture binding
+     *        unbound.
      * @ghidraAddress 0x210ec
      */
     neGLESRenderer();
-
-    /**
-     * @brief Probes the live GL ES context capabilities into the render state and sets the initial
-     *        GL state.
-     *
-     * Scans the @c GL_EXTENSIONS string for @c GL_OES_matrix_palette (setting the flag and reading
-     * @c GL_MAX_VERTEX_UNITS_OES when present), reads @c GL_MAX_TEXTURE_SIZE, loads a default
-     * projection matrix, and sets the line width to one. (The binary returns a constant 1, discarded
-     * by the sole caller, so this is modelled as returning @c void.)
-     * @ghidraAddress 0x20f9c
-     */
-    void QueryCaps();
 
     /**
      * @brief Clears the current GL buffers selected by the GL clear mask.
@@ -349,25 +338,35 @@ public:
 private:
     // The maximum number of texture units the per-unit texture-coordinate caches hold.
     static constexpr int kMaxTextureUnits = 8;
+    // The number of sampler parameters cached per texture unit (min filter, mag filter, wrap S,
+    // wrap T).
+    static constexpr int kTexParamCount = 4;
 
     // Only the state-cache fields the render-state setters above touch are modelled; the remainder
     // of the 0x258-byte object is reserved until the full engine class is reconstructed. The
     // trailing // +0xNN comments document the original offsets for reference only.
-    unsigned char m_aReserved000[0x18] = {}; // +0x000
+    void *m_pField000 = {};                  // +0x000 leading pointer field (zeroed on construct)
+    void *m_pField008 = {};                  // +0x008 second pointer field (zeroed on construct)
+    float m_flCurrentColorR = {};            // +0x010 current vertex colour, red (defaults to 1.0)
+    int m_nField014 = {};                    // +0x014 (zeroed on construct)
     int m_nViewportX = {};                   // +0x018 cached viewport x
     int m_nViewportY = {};                   // +0x01c cached viewport y
     int m_nViewportWidth = {};               // +0x020 cached viewport width
     int m_nViewportHeight = {};              // +0x024 cached viewport height
     int m_nMatrixMode = {};                  // +0x028 cached active matrix mode
     int m_nPaletteMatrix = {};               // +0x02c cached current palette matrix
-    unsigned char m_aReserved030[0x10] = {}; // +0x030
+    int m_nField030 = {};                    // +0x030 (set to 7 on construct)
+    int m_nField034 = {};                    // +0x034 (zeroed on construct)
+    bool m_bDepthTestEnabled = {};           // +0x038 depth-test enabled (defaults true)
+    unsigned char m_aReserved039[0x03] = {}; // +0x039
+    int m_nCullFace = {};                    // +0x03c cull-face mode (defaults to 1)
     int m_nArrayBufferBound = {};            // +0x040 currently-bound array buffer name (0 none)
     unsigned char m_aReserved044[0x04] = {}; // +0x044
     const void *m_pColorPointer = {};        // +0x048 cached colour array pointer
     int m_nColorStride = {};                 // +0x050 cached colour array stride
     int m_nColorBufferBinding = {};          // +0x054 colour array buffer binding
     unsigned char m_aReserved058[0x08] = {}; // +0x058
-    int m_nHandle060 = {};                   // +0x060 secondary handle slot (purpose not recovered)
+    int m_nHandle060 = {};                   // +0x060 secondary handle slot (defaults to -1)
     int m_nBufferBinding2 = {};              // +0x064 secondary array-buffer binding cache
     const void *m_pVertexPointer = {};       // +0x068 cached vertex array pointer
     int m_nVertexStride = {};                // +0x070 cached vertex array stride
@@ -389,13 +388,24 @@ private:
     int m_nElementBufferBound = {};                         // +0x12c cached element-array binding
     int m_nActiveTextureUnit = {};                          // +0x130 active texture unit for binds
     int m_anTexturePerUnit[kMaxTextureUnits] = {};          // +0x134 per-unit bound texture cache
-    unsigned char m_aReserved154[0x80] = {};                // +0x154
-    int m_nBlendSrc = {};                                   // +0x1d4 cached blend source factor
+    // +0x154 per-unit sampler-parameter cache: four ints per unit {min filter, mag filter, wrap S,
+    // wrap T}, defaulted to {4, 1, 7, 7}.
+    int m_aTexParamCache[kMaxTextureUnits][kTexParamCount] = {};
+    int m_nBlendSrc = {};                    // +0x1d4 cached blend source factor
     int m_nBlendDest = {};                   // +0x1d8 cached blend destination factor
-    unsigned char m_aReserved1dc[0x08] = {}; // +0x1dc
+    int m_nField1dc = {};                    // +0x1dc (zeroed on construct)
+    unsigned char m_aReserved1e0[0x04] = {}; // +0x1e0
     bool m_aEnableStateFlags[0x24] = {};     // +0x1e4 per-capability enable cache
     bool m_aClientStateFlags[0x07] = {};     // +0x208 per-array client-state cache
-    unsigned char m_aReserved20f[0x35] = {}; // +0x20f
+    short m_nField20c = {};                  // +0x20c (zeroed on construct)
+    bool m_bField20e = {};                   // +0x20e (zeroed on construct)
+    unsigned char m_aReserved20f[0x01] = {}; // +0x20f
+    float m_aColorMatrixDiagonal[4] = {};    // +0x210 colour-matrix diagonal (defaults {1,1,0,1})
+    int m_nField220 = {};                    // +0x220 (zeroed on construct)
+    unsigned char m_aReserved224[0x0c] = {}; // +0x224
+    long m_nHandle230 = {};                  // +0x230 handle slot (defaults to -1)
+    long m_nHandle238 = {};                  // +0x238 handle slot (defaults to -1)
+    int m_nHandle240 = {};                   // +0x240 handle slot (defaults to -1)
     int m_nMaxTextureSize = {};              // +0x244 GL capability: GL_MAX_TEXTURE_SIZE
     unsigned char m_aReserved248[0x08] = {}; // +0x248
     bool m_bHasMatrixPalette = {};           // +0x250 GL capability: GL_OES_matrix_palette present
