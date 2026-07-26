@@ -398,6 +398,18 @@ extern CGPoint g_difficultyNumberOffsetPhone; /*!< @ghidraAddress 0x3dc6f0 */
  */
 void InitializeCGAffineTransformGlobals(void);
 /**
+ * @brief The Twitter share-image element draw positions, indexed: 0 title, 1 artist, 2 difficulty,
+ * 3 level (non-Colette), 4 line, 5 level (Colette), 6 just-reflec badge, 7 full-combo badge. Read by
+ * @c -[TwitterImageCreater createImage]. Seeded once by @c InitializeParticleOffsetTable.
+ * @ghidraAddress 0x3dc5d0
+ */
+extern CGPoint g_aTwitterImageDrawPos[8];
+/**
+ * @brief Seeds @c g_aTwitterImageDrawPos. Run once at startup.
+ * @ghidraAddress 0x88f24
+ */
+void InitializeParticleOffsetTable(void);
+/**
  * @brief The extend-note view's difficulty-number image centre offset, per device (the same {x, y}
  * pair pattern used by the music-detail view). Seeded by @c InitializeIdentityTransformGlobals.
  * @ghidraAddress 0x3dc2a0

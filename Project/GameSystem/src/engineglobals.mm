@@ -67,6 +67,9 @@ CGPoint g_difficultyNumberOffsetPhone;
 CGPoint g_extendNoteNumberOffsetPad;
 CGPoint g_extendNoteNumberOffsetPhone;
 
+// The Twitter share-image element draw positions, seeded by InitializeParticleOffsetTable.
+CGPoint g_aTwitterImageDrawPos[8];
+
 // The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
@@ -352,6 +355,21 @@ __attribute__((constructor)) void InitializeCGAffineTransformGlobals(void) {
         // The pad layout nudges the number image by (6, 12); the phone layout by (2, 10).
         g_difficultyNumberOffsetPad = CGPointMake(6.0, 12.0);
         g_difficultyNumberOffsetPhone = CGPointMake(2.0, 10.0);
+    }
+}
+
+/** @ghidraAddress 0x88f24 */
+__attribute__((constructor)) void InitializeParticleOffsetTable(void) {
+    @autoreleasepool {
+        // The share-image layout positions, in draw order.
+        g_aTwitterImageDrawPos[0] = CGPointMake(80.0, 62.0);   // title
+        g_aTwitterImageDrawPos[1] = CGPointMake(80.0, 89.0);   // artist
+        g_aTwitterImageDrawPos[2] = CGPointMake(24.0, 60.0);   // difficulty
+        g_aTwitterImageDrawPos[3] = CGPointMake(33.0, 79.0);   // level (non-Colette theme)
+        g_aTwitterImageDrawPos[4] = CGPointMake(129.0, 176.0); // line separator
+        g_aTwitterImageDrawPos[5] = CGPointMake(19.0, 57.0);   // level (Colette theme)
+        g_aTwitterImageDrawPos[6] = CGPointMake(25.0, 115.0);  // just-reflec badge
+        g_aTwitterImageDrawPos[7] = CGPointMake(25.0, 135.0);  // full-combo badge
     }
 }
 
