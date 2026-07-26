@@ -131,6 +131,25 @@ public:
      */
     void RenderForLane(unsigned int nLaneIndex);
 
+    /**
+     * @brief Opens the pause menu when the gauge is fully charged.
+     *
+     * Resets each instancer's sprite count, and when the gauge has charged, resets the menu
+     * selection state, clears the per-lane selection flags, and runs the pause-scene show step.
+     * @ghidraAddress 0x150ba8
+     */
+    void ShowPauseMenu();
+
+    /**
+     * @brief The pause-scene per-frame show step: lays out the menu items, updates the touch-drag
+     * selection, and re-emits the gauge sprites.
+     *
+     * A large touch-driven routine; declared here so ShowPauseMenu can run it. Reconstruction
+     * pending. The class's embedded @c __FILE__ is @c OpenGL/Scene/pause_scene.mm.
+     * @ghidraAddress 0x150bfc
+     */
+    void ExecShow();
+
 private:
     /**
      * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the
@@ -165,7 +184,8 @@ private:
     int m_aSlotCapacity[kSlotCount] = {};                  // +0x68: each slot's sprite capacity.
     int m_aLaneSlotId[kLaneSlotCount] = {};                // +0x70: the per-lane sprite-slot index.
     bool m_bCharging = {};                                 // +0xa4: whether the gauge is charging.
-    unsigned long m_qwActiveMask = {}; // +0xa8: the packed active-lane mask (seeded 0x4ffffffff).
+    int m_nSelectedTouchId = {}; // +0xa8: the id of the touch dragging a menu item (-1 when none).
+    int m_nSelectedLane = {};    // +0xac: the selected menu lane (4 when none is selected).
     LaneGeometry m_aLaneGeometry[kLaneCount] = {}; // +0xb0: the per-lane gauge centre and flag.
     int m_nThema = {};                             // +0xe0: the cached UI theme.
 };

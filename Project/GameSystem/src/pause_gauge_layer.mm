@@ -35,8 +35,9 @@ constexpr int kPartsSlot = 1;
 // The build state the sprite loader leaves the layer in.
 constexpr int kStateLoaded = 1;
 
-// The active-lane mask the constructor seeds (all five lanes of both sides plus the spare bit).
-constexpr unsigned long kInitialActiveMask = 0x4ffffffffUL;
+// The sentinels for "no menu item is being dragged" and "no menu lane is selected".
+constexpr int kNoSelectedTouch = -1;
+constexpr int kNoSelectedLane = 4;
 } // namespace
 
 /** @ghidraAddress 0x1508b4 */
@@ -44,7 +45,8 @@ PauseGaugeLayer::PauseGaugeLayer() {
     // The UI-layer base constructor ran first and the compiler installed the task dispatch vtable.
     m_nState = 0;
     m_bCharging = false;
-    m_qwActiveMask = kInitialActiveMask;
+    m_nSelectedTouchId = kNoSelectedTouch;
+    m_nSelectedLane = kNoSelectedLane;
     m_pTexture = nullptr;
     for (int nSlot = 0; nSlot < kSlotCount; ++nSlot) {
         m_apSprites[nSlot] = nullptr;
@@ -256,6 +258,25 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
 
     nLaneAlpha &= 0xff;
     EmitSprite(1.0f, nLaneIndex + nSingleSlotBase, center, nLaneAlpha, kOpaqueAlpha);
+}
+
+/** @ghidraAddress 0x150ba8 */
+void PauseGaugeLayer::ShowPauseMenu() {
+    // Reset every instancer's live sprite count before (re-)emitting.
+    for (ne::C_SPRITE_INSTANCING *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+    // The menu only opens once the gauge has fully charged.
+    if (!m_bCharging) {
+        return;
+    }
+    m_nState = 2;
+    m_nSelectedTouchId = kNoSelectedTouch;
+    m_nSelectedLane = kNoSelectedLane;
+    for (LaneGeometry &lane : m_aLaneGeometry) {
+        lane.bDimmed = false;
+    }
+    ExecShow();
 }
 
 /** @ghidraAddress 0x1508b0 */
