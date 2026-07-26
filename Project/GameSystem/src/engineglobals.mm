@@ -10,6 +10,16 @@
 #import "engineglobals.h"
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import "deviceenvironment.h"
+
+// The device slider/section row height, and the three cached UI colours, seeded at startup by the
+// module initialisers below.
+double g_dSliderRowHeight;
+UIColor *g_pCachedWhiteColor;
+UIColor *g_pCachedOffWhiteColor;
+UIColor *g_pCachedBlueColor;
 
 // The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
 // storage because they are assigned at load time, not compile time.
@@ -221,5 +231,31 @@ __attribute__((constructor)) void CacheLocalizedUIStrings(void) {
         g_pLocalizedAppInstalledReward = Localize(bundle, @"AppInstalledReward");
         g_pLocalizedLimePointAddedFormat = Localize(bundle, @"%d LimePoint has been Added.");
         g_pLocalizedSearchMusic = Localize(bundle, @"Search music");
+    }
+}
+
+namespace {
+// The slider/section row height on the phone layout; the pad layout uses the wide metric.
+constexpr double kSliderRowHeightPhone = 20.0;
+// The cached off-white brightness and the blue accent's red and green components. The blue's blue
+// channel and every alpha are 1.
+constexpr CGFloat kOffWhiteBrightness = 0.97;
+constexpr CGFloat kBlueRed = 0.0117647061124444;
+constexpr CGFloat kBlueGreen = 0.47843137383461;
+} // namespace
+
+/** @ghidraAddress 0x1c0a78 */
+__attribute__((constructor)) void InitializeSliderHeightConstant(void) {
+    @autoreleasepool {
+        g_dSliderRowHeight = IsPad() ? g_dSliderRowHeightWide : kSliderRowHeightPhone;
+    }
+}
+
+/** @ghidraAddress 0x1d52a0 */
+__attribute__((constructor)) void InitializeUiColorConstants(void) {
+    @autoreleasepool {
+        g_pCachedWhiteColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+        g_pCachedOffWhiteColor = [UIColor colorWithWhite:kOffWhiteBrightness alpha:1.0];
+        g_pCachedBlueColor = [UIColor colorWithRed:kBlueRed green:kBlueGreen blue:1.0 alpha:1.0];
     }
 }

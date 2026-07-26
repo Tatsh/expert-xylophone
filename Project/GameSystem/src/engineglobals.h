@@ -79,6 +79,28 @@ extern const double g_dCustomizeLayoutMetric100;
  */
 extern const double g_dSliderRowHeightWide;
 /**
+ * @brief The slider/section row height for the current device, seeded once at startup by
+ * @c InitializeSliderHeightConstant: 20 on the phone layout, else the wide metric.
+ * @ghidraAddress 0x3df4f8
+ */
+extern double g_dSliderRowHeight;
+/**
+ * @brief The cached opaque-white UI colour, seeded once at startup by @c InitializeUiColorConstants.
+ * @ghidraAddress 0x3df560
+ */
+extern UIColor *g_pCachedWhiteColor;
+/**
+ * @brief The cached near-white (0.97) UI colour, seeded by @c InitializeUiColorConstants.
+ * @ghidraAddress 0x3df568
+ */
+extern UIColor *g_pCachedOffWhiteColor;
+/**
+ * @brief The cached blue accent UI colour (RGB 0.012, 0.478, 1.0), seeded by
+ * @c InitializeUiColorConstants.
+ * @ghidraAddress 0x3df570
+ */
+extern UIColor *g_pCachedBlueColor;
+/**
  * @brief The mascot message-balloon maximum width on the pad layout.
  * @ghidraAddress 0x2ee930
  */
@@ -286,6 +308,16 @@ extern NSString *g_pLocalizedSearchMusic;          /*!< "Search music". @ghidraA
  * @ghidraAddress 0x10090
  */
 void CacheLocalizedUIStrings(void);
+/**
+ * @brief Seeds @c g_dSliderRowHeight from the device layout. Run once at startup.
+ * @ghidraAddress 0x1c0a78
+ */
+void InitializeSliderHeightConstant(void);
+/**
+ * @brief Seeds the three cached UI colours. Run once at startup.
+ * @ghidraAddress 0x1d52a0
+ */
+void InitializeUiColorConstants(void);
 /**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90
