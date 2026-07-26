@@ -66,3 +66,13 @@ void MainFrameLayer::SetMainFrameEnabled(bool bEnabled) {
         m_pMainSprite->SetVisible(bEnabled);
     }
 }
+
+/** @ghidraAddress 0x17c4c0 */
+void MainFrameLayer::SetFrameType(int nType) {
+    if (m_nFrameType == nType) {
+        return;
+    }
+    m_nFrameType = nType;
+    m_bReady = false;
+    BuildSprites();
+}

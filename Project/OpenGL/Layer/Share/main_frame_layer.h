@@ -55,7 +55,23 @@ public:
      */
     void SetMainFrameEnabled(bool bEnabled);
 
+    /**
+     * @brief Sets the frame type, rebuilding the frame sprites when it changes.
+     *
+     * A no-op when the type is unchanged; otherwise it records the new type, clears the built flag,
+     * and rebuilds the frame sprites.
+     * @param nType The frame type.
+     * @ghidraAddress 0x17c4c0
+     */
+    void SetFrameType(int nType);
+
 private:
+    /**
+     * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
+     * @ghidraAddress 0x17b654
+     */
+    void BuildSprites();
+
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its default layout
      * fields. The binary inlines this into @c shared (0x17b5d4).
@@ -72,8 +88,8 @@ private:
     // +0x4c..+0x4f: further layout state, still being worked out.
     unsigned char m_aReserved4c[4] = {}; // +0x4c
     int m_nSpriteCapacity = {};          // +0x50: a capacity field the constructor seeds to 5.
-    // +0x54..+0x57: further layout state, still being worked out.
-    unsigned char m_aReserved54[4] = {}; // +0x54
+    bool m_bReady = {}; // +0x54: cleared when the frame type changes (rebuild flag).
+    unsigned char m_aReserved55[3] = {}; // +0x55
     LinearTween m_fadeChannel;           // +0x58: the frame alpha fade channel.
     bool m_bFadeDone = {};               // +0x6c: set when the fade snaps to its endpoint.
     // +0x6d..+0x77: the remaining layer state, still being worked out.
