@@ -36,6 +36,23 @@ public:
     static ResultWindowClassicLayer *shared();
 
     /**
+     * @brief Whether a customize-character texture swap is pending.
+     * @return The reload flag.
+     * @ghidraAddress 0x11c590
+     */
+    bool GetCustomizeReloadFlag() const {
+        return m_bCustomizeReloadFlag;
+    }
+
+    /**
+     * @brief Clears the pending customize-character texture-swap flag.
+     * @ghidraAddress 0x11c598
+     */
+    void ClearCustomizeReloadFlag() {
+        m_bCustomizeReloadFlag = false;
+    }
+
+    /**
      * @brief Returns a result-window parts descriptor by index for the current device.
      *
      * Selects the pad or phone parts table by the device kind and returns the record at @p nIndex.
@@ -499,9 +516,13 @@ private:
     // unsigned char m_aPad59[3]; // +0x59 (alignment padding, compiler-inserted)
     unsigned int m_nDefaultAlpha = {}; // +0x5c: the default sprite alpha (255).
     float m_flDefaultScale = {};       // +0x60: the default sprite scale (1.0).
-    // +0x64..+0x12f: further layer state (transform vectors and per-cell fields) still being worked
+    // +0x64..+0x70: further layer state (transform vectors and per-cell fields) still being worked
     // out, kept as a reserved span to preserve the allocation size.
-    unsigned char m_aReserved64[0xcc] = {};       // +0x64
+    unsigned char m_aReserved64[0xd] = {}; // +0x64
+    bool m_bCustomizeReloadFlag =
+        {}; // +0x71: set when a customize-character texture swap is pending.
+    // +0x72..+0x12f: further layer state, still being worked out.
+    unsigned char m_aReserved72[0xbe] = {};       // +0x72
     Polygon2dTrail *m_apTrails[kTrailCount] = {}; // +0x130: the ribbon trails.
     // +0x150..+0x1b4: further layer state, still being worked out.
     unsigned char m_aReserved150[0x65] = {}; // +0x150
