@@ -46,6 +46,15 @@ private:
      */
     PlayTask();
 
+    /**
+     * @brief The play state that waits out the intro ready-delay, then starts the notes.
+     *
+     * Once the accumulated play time passes the ready-delay threshold, it either advances to the
+     * wait state (when no pastel bonus is active) or starts the event effect and advances past it.
+     * @ghidraAddress 0x14b818
+     */
+    void WaitForIntroThenStartNotes();
+
     int m_nState = {};    // +0x4c: the current state-machine state (dispatched each frame).
     int m_nPlayTime = {}; // +0x50: the accumulated play time, advanced by the frame delta.
     // +0x54..+0x63: further per-frame play sub-state (timers, the score tracker), still being worked
@@ -55,8 +64,9 @@ private:
     unsigned char m_aReserved65[0x03] = {}; // +0x65
     PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
     int m_nInitialState = {};               // +0x70: the state the task starts in (2).
-    // +0x74..+0x8f: trailing play state to the 0x90-byte object size, still being worked out.
-    unsigned char m_aReserved74[0x1c] = {}; // +0x74
+    unsigned char m_aReserved74[8] = {};    // +0x74
+    float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
+    unsigned char m_aReserved80[0x10] = {}; // +0x80: trailing play state to the 0x90-byte size.
 };
 
 // code: language=C++

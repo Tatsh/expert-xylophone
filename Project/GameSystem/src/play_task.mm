@@ -10,11 +10,16 @@
 
 #include <new>
 
+#include "event_effect_layer.h"
 #include "gamesystem.h"
 #include "pause_gauge_layer.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
+
+// The play states this step selects between: the note-play wait state and the past-effect state.
+static constexpr int kStateWaitNotes = 5;
+static constexpr int kStatePastEffect = 6;
 
 /** @ghidraAddress 0x14a21c */
 PlayTask::PlayTask() {
@@ -39,6 +44,20 @@ bool PlayTask::RefreshPauseGaugeAndGetActiveFlag() {
         m_pPauseGauge->SetCharging();
     }
     return false;
+}
+
+/** @ghidraAddress 0x14b818 */
+void PlayTask::WaitForIntroThenStartNotes() {
+    // Wait until the accumulated play time passes the intro ready-delay threshold.
+    if (m_flReadyDelay >= static_cast<float>(m_nPlayTime)) {
+        return;
+    }
+    if (GameSystem::GetGameSystem()->GetPastelBonusType() == 0) {
+        m_nState = kStateWaitNotes;
+    } else {
+        EventEffectLayer::shared()->StartEffect();
+        m_nState = kStatePastEffect;
+    }
 }
 
 /** @ghidraAddress 0x12ee88 */
