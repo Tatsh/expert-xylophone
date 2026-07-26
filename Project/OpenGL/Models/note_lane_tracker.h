@@ -44,8 +44,12 @@ public:
      * @brief Destroys the tracker, releasing its attached note-data generator.
      *
      * The class is polymorphic (the compiler emits its vtable at offset 0), so the destructor is
-     * virtual.
+     * virtual. The vtable holds the two Itanium destructor thunks — the complete-object variant
+     * (@c 0x148c70, an empty body) and the deleting variant (@c 0x148c74, which tail-calls
+     * @c operator @c delete) — both of which fold into this one destructor.
      * @ghidraAddress 0x148cd8
+     * @ghidraAddress 0x148c70
+     * @ghidraAddress 0x148c74
      */
     virtual ~NoteLaneTracker();
 
