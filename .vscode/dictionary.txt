@@ -47,7 +47,6 @@ caplayermgr
 casource
 cavoice
 ccontext
-cdecl
 cdevice
 centered
 cfstr
@@ -304,7 +303,6 @@ thankyou
 thema
 themas
 theos
-thiscall
 thunks
 tomosuke
 totalscorephone
