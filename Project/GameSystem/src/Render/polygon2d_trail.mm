@@ -81,6 +81,32 @@ void Polygon2dTrail::Update(int nDeltaTime) {
     }
 }
 
+/** @ghidraAddress 0x11c868 */
+void Polygon2dTrail::Start(int nDuration, int nStartOffset) {
+    m_bActive = true;
+    // A negative starting progress delays the reveal: it must climb back to zero before the head
+    // begins to move.
+    m_flProgress = static_cast<float>(-nStartOffset);
+    m_flRevealLength = static_cast<float>(nDuration);
+    // Reset the head-walk state (head index and carried reach, laid out as one 8-byte pair).
+    m_nHeadIndex = 0;
+    m_flReachRemainder = 0.0f;
+    ClearMeshVertices();
+}
+
+/** @ghidraAddress 0x11c8ec */
+void Polygon2dTrail::Reset() {
+    m_bActive = false;
+    ClearMeshVertices();
+}
+
+void Polygon2dTrail::ClearMeshVertices() {
+    for (int nVertex = 0; nVertex < m_nVertexCount; ++nVertex) {
+        m_pMesh->SetRGBA(nVertex, kFullChannel, kFullChannel, kFullChannel, 0);
+        m_pMesh->SetPosFromVec(nVertex, m_pVertices);
+    }
+}
+
 /** @ghidraAddress 0x11c744 */
 void Polygon2dTrail::Init() {
     const int nVertexCount = m_nVertexCount;

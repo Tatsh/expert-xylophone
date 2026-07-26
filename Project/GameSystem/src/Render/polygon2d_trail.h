@@ -51,7 +51,32 @@ public:
      */
     void Update(int nDeltaTime);
 
+    /**
+     * @brief Begins the trail's reveal animation over @p nDuration, after a @p nStartOffset delay.
+     *
+     * Activates the trail, seeds the reveal progress to @c -nStartOffset (so the reveal begins once
+     * the progress climbs back to zero) and the reveal length to @p nDuration, resets the head-walk
+     * state, and clears every mesh vertex back to the strip's first point in transparent white.
+     * @param nDuration The reveal duration.
+     * @param nStartOffset The delay before the reveal begins.
+     * @ghidraAddress 0x11c868
+     */
+    void Start(int nDuration, int nStartOffset);
+
+    /**
+     * @brief Resets the trail to its idle, hidden state.
+     *
+     * Deactivates the trail and clears every mesh vertex back to the strip's first point in
+     * transparent white, leaving no visible ribbon.
+     * @ghidraAddress 0x11c8ec
+     */
+    void Reset();
+
 private:
+    // Clears every mesh vertex back to the strip's first point in transparent white (the shared
+    // hidden state used by Start and Reset).
+    void ClearMeshVertices();
+
     bool m_bActive = {}; // +0x00: whether the trail is animating.
     // +0x01..+0x03 is alignment padding before the progress value.
     unsigned char m_aPad01[3] = {}; // +0x01
