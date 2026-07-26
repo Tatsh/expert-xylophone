@@ -20,14 +20,14 @@ constexpr int kLinkNone = -1;
 
 /** @ghidraAddress 0x12f780 */
 RbffNoteRecord::RbffNoteRecord() {
-    chainLink.InitEmpty();
-    nLane = kDefaultLane;
-    nLaneSlot = kDefaultLaneSlot;
-    nColorTone = kLinkNone;
-    nDisplayLane = kLinkNone;
-    nColorIndex = kLinkNone;
-    nColor = kLinkNone;
-    nTimingSel = kTimingSelNone;
-    nChosenTarget = kLinkNone;
+    m_chainLink.InitEmpty();
+    m_nLane = kDefaultLane;
+    m_nLaneSlot = kDefaultLaneSlot;
+    m_nColorTone = kLinkNone;
+    m_nDisplayLane = kLinkNone;
+    m_nColorIndex = kLinkNone;
+    m_nColor = kLinkNone;
+    m_nTimingSel = kTimingSelNone;
+    m_nChosenTarget = kLinkNone;
     // Every other field is left at its zero default (the binary explicitly zeroes them).
 }

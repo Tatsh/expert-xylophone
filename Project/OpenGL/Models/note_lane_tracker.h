@@ -42,9 +42,12 @@ public:
     NoteLaneTracker();
     /**
      * @brief Destroys the tracker, releasing its attached note-data generator.
+     *
+     * The class is polymorphic (the compiler emits its vtable at offset 0), so the destructor is
+     * virtual.
      * @ghidraAddress 0x148cd8
      */
-    ~NoteLaneTracker();
+    virtual ~NoteLaneTracker();
 
     /**
      * @brief Attaches a fresh lane-picking generator seeded with @p dwSeed.
@@ -88,7 +91,7 @@ public:
         int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed);
 
 private:
-    void *m_pVtable = {};                   // +0x00: the tracker's vtable.
+    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
     Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
     NoteLaneSlot m_aSlots[kSlotCount] = {}; // +0x10: the per-player, per-lane occupancy slots.
 };

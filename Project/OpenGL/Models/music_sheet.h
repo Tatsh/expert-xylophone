@@ -7,7 +7,7 @@
 
 #include "note_path_point_array.h"
 
-struct RbffNoteRecord;
+class RbffNoteRecord;
 struct RbffSlideRecord;
 class GameSystem;
 
@@ -30,8 +30,8 @@ using SheetPathNode = NotePathPoint;
 class MusicSheet {
 public:
     /**
-     * @brief Constructs an empty note-chart reader: installs the vtable, marks the version unread,
-     * allocates a one-node path buffer, and clears every count, timing, and buffer pointer.
+     * @brief Constructs an empty note-chart reader: marks the version unread, allocates a one-node
+     * path buffer, and clears every count, timing, and buffer pointer.
      * @ghidraAddress 0x12f828
      */
     MusicSheet();
@@ -41,12 +41,13 @@ public:
      * (each record's path-point sub-buffer first), the slide-record array, and the path nodes; then
      * clears the path-point count and capacity.
      *
-     * The binary emits a non-deleting destructor body (@c 0x12f874) and a deleting variant
+     * The class is polymorphic (the compiler emits its vtable at offset 0), so the destructor is
+     * virtual. The binary emits a non-deleting destructor body (@c 0x12f874) and a deleting variant
      * (@c 0x12f938) that runs it then frees the object; both are this destructor.
      * @ghidraAddress 0x12f874
      * @ghidraAddress 0x12f938
      */
-    ~MusicSheet();
+    virtual ~MusicSheet();
 
     /**
      * @brief Returns the note record at @p nIndex, or null when the index is out of range.
@@ -240,8 +241,8 @@ private:
      */
     int ParseNotesV10(const unsigned long *pStream);
 
-    void *m_pVtable = {}; // +0x00: the virtual-function table.
-    int m_nVersion = {};  // +0x08: the parsed chart format version.
+    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
+    int m_nVersion = {}; // +0x08: the parsed chart format version.
     // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10, the
     // live count at +0x18, and the capacity at +0x1c).
     NotePathPointArray m_pathNodes = {};

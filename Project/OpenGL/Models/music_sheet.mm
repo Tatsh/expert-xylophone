@@ -288,26 +288,27 @@ unsigned long MusicSheet::BuildDefaultNoteChart(GameSystem *pGameSystem) {
     RbffNoteRecord *pLast = nullptr;
     for (int i = 0; i < kDefaultNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        record.nTimeA = static_cast<int>(flTime);
-        record.nTimeB = kDefaultNoteDuration;
-        record.nNoteId = i;
-        record.nStartTime = -1; // a free (anywhere) note
-        record.nPointCount = 0;
-        record.pPathPoints = nullptr;
-        record.nKind = -1;
-        record.nSide = 0;
-        record.nHoldKind = 0;
-        record.nType = 0;
-        record.dwFlags = kNoteFlagFree;
-        record.chainLink.InitEmpty();
+        record.SetTimeA(static_cast<int>(flTime));
+        record.SetTimeB(kDefaultNoteDuration);
+        record.SetNoteId(i);
+        record.SetStartTime(-1); // a free (anywhere) note
+        record.SetPointCount(0);
+        record.SetPathPoints(nullptr);
+        record.SetKind(-1);
+        record.SetSide(0);
+        record.SetHoldKind(0);
+        record.SetType(0);
+        record.SetFlags(kNoteFlagFree);
+        record.GetChainLink().InitEmpty();
         flTime += kDefaultStepTime;
         pLast = &record;
     }
 
     // Round the last note's end time up to the grid to get the chart length.
     const float flEnd = static_cast<float>(
-        static_cast<int>((static_cast<float>(pLast->nTimeB + pLast->nTimeA) + kDefaultEndRoundAdd) /
-                         kDefaultEndGrid) *
+        static_cast<int>(
+            (static_cast<float>(pLast->GetTimeB() + pLast->GetTimeA()) + kDefaultEndRoundAdd) /
+            kDefaultEndGrid) *
         kDefaultEndGrid);
     m_nChartEndTime = static_cast<int>(flEnd);
     m_nChartEndTimeScaled = static_cast<int>(flEnd * kFieldWidth);
@@ -343,23 +344,23 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
 
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        const int nSide = record.nSide;
-        record.nTargetCopy = record.aTargetCoords[0];
-        record.nLane = (nPlayColor == nSide) ? 1 : 0;
-        record.nLaneSlot = (nPlayColor != nSide) ? 1 : 0;
-        record.nHitTime =
-            static_cast<int>((static_cast<float>(record.nTimeA) * kFieldWidth) / kTargetScale);
-        record.nHitWindow =
-            static_cast<int>((static_cast<float>(record.nTimeB) * kFieldWidth) / kTargetScale);
-        record.nChainOffset = static_cast<int>(
-            (static_cast<float>(record.aTargetCoords[0]) * kFieldWidth) / kTargetScale);
-        const unsigned short nSel = static_cast<unsigned short>(record.aTargetCoords[1]);
-        record.nColorTone = static_cast<short>(nSel);
-        record.nLinkA = static_cast<short>(record.nTargetPad);
+        const int nSide = record.GetSide();
+        record.SetTargetCopy(record.GetTargetCoords()[0]);
+        record.SetLane((nPlayColor == nSide) ? 1 : 0);
+        record.SetLaneSlot((nPlayColor != nSide) ? 1 : 0);
+        record.SetHitTime(
+            static_cast<int>((static_cast<float>(record.GetTimeA()) * kFieldWidth) / kTargetScale));
+        record.SetHitWindow(
+            static_cast<int>((static_cast<float>(record.GetTimeB()) * kFieldWidth) / kTargetScale));
+        record.SetChainOffset(static_cast<int>(
+            (static_cast<float>(record.GetTargetCoords()[0]) * kFieldWidth) / kTargetScale));
+        const unsigned short nSel = static_cast<unsigned short>(record.GetTargetCoords()[1]);
+        record.SetColorTone(static_cast<short>(nSel));
+        record.SetLinkA(static_cast<short>(record.GetTargetPad()));
 
         // Derive the shot/route selector into nTimingSel.
         int nRoute = static_cast<short>(nSel);
-        if (record.nHoldKind == 1) {
+        if (record.GetHoldKind() == 1) {
             nRoute += 7;
         } else if (nVersion > 0xc) {
             if (nSel < 0xfffe) {
@@ -376,29 +377,29 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
         } else {
             nRoute = -2;
         }
-        record.nTimingSel = nRoute;
+        record.SetTimingSel(nRoute);
 
         // Legacy charts pick the colour tone from an alternating table.
         if (nVersion < 0xb) {
             const int nAlt = (nPlayColor == nSide) ? 1 : 0;
             const unsigned int nEntry = g_aColorToneAlternator[nAlt];
-            record.nColorTone = kLegacyColorToneLane[nEntry];
+            record.SetColorTone(kLegacyColorToneLane[nEntry]);
             g_aColorToneAlternator[nAlt] = nEntry ^ 1;
         }
 
-        record.nSideIndex = perSideCounters[nSide];
+        record.SetSideIndex(perSideCounters[nSide]);
         ++perSideCounters[nSide];
-        if (record.nType != kNoteTypeSlideTail) {
+        if (record.GetType() != kNoteTypeSlideTail) {
             ++perSideCounters[nSide + 6];
         }
-        if ((record.dwFlags & kSideObjectFlag) != 0) {
+        if ((record.GetFlags() & kSideObjectFlag) != 0) {
             ++perSideCounters[nSide + 4];
         }
     }
 
     // Fold each slide record's owning side into the playable and index counters.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
-        const int nSide = m_pRecords[m_pSlideRecords[i].nNoteIndex].nSide;
+        const int nSide = m_pRecords[m_pSlideRecords[i].nNoteIndex].GetSide();
         ++perSideCounters[nSide + 6];
         ++perSideCounters[nSide + 2];
     }
@@ -423,10 +424,10 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
     int nOwnPlayable = 0;
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        if ((record.nLane & 4) == 0 && record.nSideIndex == 0) {
+        if ((record.GetLane() & 4) == 0 && record.GetSideIndex() == 0) {
             m_nIndexCount = nOwnPlayable + 1;
             nOwnPlayable = nOwnPlayable + 1;
-            if (record.nType == 1) {
+            if (record.GetType() == 1) {
                 m_nIndexCount = nOwnPlayable + 1;
                 nOwnPlayable = nOwnPlayable + 1;
             }
@@ -449,72 +450,72 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
 
         // Mark the difficulty's basic notes: every own-side note on BASIC, otherwise the first
         // non-decreasing run of hit times.
-        if (record.nLane == nOwnSide) {
+        if (record.GetLane() == nOwnSide) {
             if (nDifficulty == kDifficultyBasic) {
-                record.bBasicNote = true;
-            } else if (bBasicOpen && record.nHitTime + record.nHitWindow <= nBasicMinTime) {
-                record.bBasicNote = true;
-                nBasicMinTime = record.nHitTime + record.nHitWindow;
+                record.SetBasicNote(true);
+            } else if (bBasicOpen && record.GetHitTime() + record.GetHitWindow() <= nBasicMinTime) {
+                record.SetBasicNote(true);
+                nBasicMinTime = record.GetHitTime() + record.GetHitWindow();
             } else {
                 bBasicOpen = false;
             }
         }
 
         // Record each free note's id in the side-index array.
-        if (nFreeIndex >= 0 && (record.dwFlags & kNoteFlagFree) != 0 &&
+        if (nFreeIndex >= 0 && (record.GetFlags() & kNoteFlagFree) != 0 &&
             nFreeIndex < m_nFreeNoteCount) {
-            m_pSideIndexArray[nFreeIndex] = record.nNoteId;
+            m_pSideIndexArray[nFreeIndex] = record.GetNoteId();
             ++nFreeIndex;
         }
 
         // Derive the note's route by type.
-        if (record.nType == kNoteTypeSlideTail) {
-            record.nRoute = 7;
-        } else if (record.nType == 1) {
-            record.nRoute = record.nChainOffset + (record.nHoldKind == 1 ? 7 : 9);
-        } else if ((record.dwFlags & kNoteFlagLongHead) != 0) {
-            if (record.chainLink.IsHead()) {
+        if (record.GetType() == kNoteTypeSlideTail) {
+            record.SetRoute(7);
+        } else if (record.GetType() == 1) {
+            record.SetRoute(record.GetChainOffset() + (record.GetHoldKind() == 1 ? 7 : 9));
+        } else if ((record.GetFlags() & kNoteFlagLongHead) != 0) {
+            if (record.GetChainLink().IsHead()) {
                 RbffNoteRecord *pLast = GetChainLastNote(&record);
-                int nR =
-                    (pLast->nHitTime + pLast->nHitWindow) - record.nHitTime - record.nHitWindow;
-                if (pLast->nType == 1) {
-                    nR += pLast->nChainOffset;
-                    nR += (record.nHoldKind == 1) ? 7 : 9;
+                int nR = (pLast->GetHitTime() + pLast->GetHitWindow()) - record.GetHitTime() -
+                         record.GetHitWindow();
+                if (pLast->GetType() == 1) {
+                    nR += pLast->GetChainOffset();
+                    nR += (record.GetHoldKind() == 1) ? 7 : 9;
                 } else {
                     nR += 7;
                 }
-                record.nRoute = nR;
+                record.SetRoute(nR);
             } else {
-                record.nRoute = 0;
+                record.SetRoute(0);
             }
         } else {
-            record.nRoute = 7;
+            record.SetRoute(7);
         }
 
         // Populate the playable-index array for own-side, lane-0 notes and flag simultaneous
         // cross-side notes.
-        const bool bPlayable = (record.dwFlags & kNoteFlagFree) == 0 && record.nLane == 0;
+        const bool bPlayable = (record.GetFlags() & kNoteFlagFree) == 0 && record.GetLane() == 0;
         if (bPlayable) {
-            m_pIndexArrayB[nPlayableIndex] = record.nHitWindow + record.nHitTime;
+            m_pIndexArrayB[nPlayableIndex] = record.GetHitWindow() + record.GetHitTime();
             ++nPlayableIndex;
-            if (record.nType == 1) {
+            if (record.GetType() == 1) {
                 m_pIndexArrayB[nPlayableIndex] =
-                    record.nChainOffset + record.nHitTime + record.nHitWindow;
+                    record.GetChainOffset() + record.GetHitTime() + record.GetHitWindow();
                 ++nPlayableIndex;
             }
         }
-        if (record.nType == 1) {
+        if (record.GetType() == 1) {
             // Flag a note as simultaneous when a cross-side note ends within two ticks of its tail.
             for (int j = 0; j < m_nNoteCount; ++j) {
                 RbffNoteRecord &other = m_pRecords[j];
-                if (other.nSide == record.nSide) {
+                if (other.GetSide() == record.GetSide()) {
                     continue;
                 }
                 const unsigned int nDelta =
-                    (record.nChainOffset + record.nHitTime + record.nHitWindow + 1) -
-                    (other.nHitTime + other.nHitWindow);
-                if (nDelta < 3 || nDelta - other.nChainOffset < 3) {
-                    record.dwFlags |= kNoteFlagSideObject;
+                    (record.GetChainOffset() + record.GetHitTime() + record.GetHitWindow() + 1) -
+                    (other.GetHitTime() + other.GetHitWindow());
+                if (nDelta < 3 || nDelta - other.GetChainOffset() < 3) {
+                    record.SetFlags(record.GetFlags() | (kNoteFlagSideObject));
                     break;
                 }
             }
@@ -524,7 +525,7 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
     // Append each non-1-lane slide's time to the playable-index array when no note is near it.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         RbffSlideRecord &slide = m_pSlideRecords[i];
-        if (m_pRecords[slide.nNoteIndex].nLane != 1 &&
+        if (m_pRecords[slide.nNoteIndex].GetLane() != 1 &&
             nPlayableIndex < nOtherPlayable + nOwnPlayable) {
             const int nTime = slide.nValueBScaled + slide.nValueAScaled;
             if (!CheckNoteNearTime(nTime, 1)) {
@@ -559,44 +560,44 @@ int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
             return 0;
         }
         RbffNoteRecord &record = m_pRecords[i];
-        record.nTimeA = chartNote.nTimeA;
-        record.nTimeB = chartNote.nTimeB;
-        record.nNoteId = chartNote.nNoteId;
-        record.nStartTime = chartNote.nStartTime;
-        record.nPointCount = chartNote.nPointCount;
+        record.SetTimeA(chartNote.nTimeA);
+        record.SetTimeB(chartNote.nTimeB);
+        record.SetNoteId(chartNote.nNoteId);
+        record.SetStartTime(chartNote.nStartTime);
+        record.SetPointCount(chartNote.nPointCount);
         if (chartNote.nPointCount > 0) {
-            record.pPathPoints = new short[chartNote.nPointCount];
+            record.SetPathPoints(new short[chartNote.nPointCount]);
             for (int j = 0; j < chartNote.nPointCount; ++j) {
-                record.pPathPoints[j] = chartNote.pathPoints[j];
+                record.GetPathPoints()[j] = chartNote.pathPoints[j];
             }
         }
-        record.nKind = chartNote.nKind;
-        record.nSide = chartNote.nSide;
+        record.SetKind(chartNote.nKind);
+        record.SetSide(chartNote.nSide);
         // The three target coordinates follow the eight path-point shorts on disk.
         for (int j = 0; j < 3; ++j) {
-            record.aTargetCoords[j] = chartNote.pathPoints[4 + j];
+            record.GetTargetCoords()[j] = chartNote.pathPoints[4 + j];
         }
-        record.nTargetPad = 0;
-        record.nHoldKind = chartNote.nHoldFlag != 0 ? 1 : 0;
-        record.nType = chartNote.nType;
+        record.SetTargetPad(0);
+        record.SetHoldKind(chartNote.nHoldFlag != 0 ? 1 : 0);
+        record.SetType(chartNote.nType);
 
         unsigned int dwFlags = 0;
         // An on-disk note type of 2 marks a long-note head.
         if (chartNote.nType == kChartKindLongHead) {
-            record.nType = 0;
+            record.SetType(0);
             dwFlags = kNoteFlagLongHead;
-            record.chainLink.SetLongNoteHead(chartNote.nChainLink, chartNote.nChainPartner);
+            record.GetChainLink().SetLongNoteHead(chartNote.nChainLink, chartNote.nChainPartner);
         }
-        if (record.nStartTime == -1) {
+        if (record.GetStartTime() == -1) {
             dwFlags |= kNoteFlagFree;
         }
-        if (record.nPointCount > 0) {
+        if (record.GetPointCount() > 0) {
             dwFlags |= kNoteFlagHasPath;
         }
-        record.dwFlags = dwFlags;
+        record.SetFlags(dwFlags);
         // Scale the first target coordinate into the hash range.
-        record.aTargetCoords[0] = static_cast<short>(static_cast<int>(
-            (static_cast<float>(record.aTargetCoords[0]) / kFieldWidth) * kTargetScale));
+        record.GetTargetCoords()[0] = static_cast<short>(static_cast<int>(
+            (static_cast<float>(record.GetTargetCoords()[0]) / kFieldWidth) * kTargetScale));
     }
 
     // Second pass: pair notes sharing an absolute end time and resolve each long note's tail.
@@ -607,19 +608,22 @@ int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
                 continue;
             }
             RbffNoteRecord &other = m_pRecords[j];
-            if (head.nTimeA + head.nTimeB == other.nTimeA + other.nTimeB) {
-                head.dwFlags |=
-                    (head.nSide == other.nSide) ? kNoteFlagSameLane : kNoteFlagDifferentLane;
+            if (head.GetTimeA() + head.GetTimeB() == other.GetTimeA() + other.GetTimeB()) {
+                head.SetFlags(head.GetFlags() |
+                              ((head.GetSide() == other.GetSide()) ? kNoteFlagSameLane :
+                                                                     kNoteFlagDifferentLane));
             }
             // Resolve a long-note head's tail against the note whose id matches its chain link.
-            if ((head.dwFlags & kNoteFlagLongHead) != 0 && head.chainLink.GetChainId() != -1 &&
-                head.chainLink.GetChainId() == other.nNoteId) {
-                other.dwFlags |= kNoteFlagLongHead;
-                other.chainLink.SetTail(static_cast<short>(head.nNoteId),
-                                        static_cast<short>(head.nTimeA - other.nTimeA));
+            if ((head.GetFlags() & kNoteFlagLongHead) != 0 &&
+                head.GetChainLink().GetChainId() != -1 &&
+                head.GetChainLink().GetChainId() == other.GetNoteId()) {
+                other.SetFlags(other.GetFlags() | (kNoteFlagLongHead));
+                other.GetChainLink().SetTail(
+                    static_cast<short>(head.GetNoteId()),
+                    static_cast<short>(head.GetTimeA() - other.GetTimeA()));
             }
         }
-        if ((head.dwFlags & kNoteFlagFree) != 0) {
+        if ((head.GetFlags() & kNoteFlagFree) != 0) {
             ++m_nFreeNoteCount;
         }
     }
@@ -660,28 +664,28 @@ int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
             return 0;
         }
         RbffNoteRecord &record = m_pRecords[i];
-        record.nTimeA = staging.nTimeA;
-        record.nTimeB = staging.nTimeB;
-        record.nNoteId = staging.nNoteId;
-        record.nStartTime = staging.nStartTime;
-        record.nPointCount = staging.nPointCount;
+        record.SetTimeA(staging.nTimeA);
+        record.SetTimeB(staging.nTimeB);
+        record.SetNoteId(staging.nNoteId);
+        record.SetStartTime(staging.nStartTime);
+        record.SetPointCount(staging.nPointCount);
         if (staging.nPointCount > 0) {
-            record.pPathPoints = new short[staging.nPointCount];
+            record.SetPathPoints(new short[staging.nPointCount]);
             for (int j = 0; j < staging.nPointCount; ++j) {
-                record.pPathPoints[j] = staging.pPathPoints[j];
+                record.GetPathPoints()[j] = staging.pPathPoints[j];
             }
         }
-        record.nKind = staging.nKind;
-        record.nSide = staging.nSide;
-        record.nHoldKind = staging.nHoldKind;
+        record.SetKind(staging.nKind);
+        record.SetSide(staging.nSide);
+        record.SetHoldKind(staging.nHoldKind);
         // The on-disk type of 2 is remapped to 0; any other value passes through.
-        record.nType = staging.nType == kChartKindLongHead ? 0 : staging.nType;
+        record.SetType(staging.nType == kChartKindLongHead ? 0 : staging.nType);
         for (int j = 0; j < 3; ++j) {
-            record.aTargetCoords[j] = staging.aTargetCoords[j];
+            record.GetTargetCoords()[j] = staging.aTargetCoords[j];
         }
-        record.dwFlags = staging.nFlags;
+        record.SetFlags(staging.nFlags);
         if ((staging.nFlags & kNoteFlagLongHead) != 0) {
-            record.chainLink.SetLongNoteHead(staging.nChainLink, staging.nChainPartner);
+            record.GetChainLink().SetLongNoteHead(staging.nChainLink, staging.nChainPartner);
         }
         FreeNotePathArray(&staging);
     }
@@ -740,10 +744,10 @@ int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
             const int nIndex = m_pSlideRecords[i].nNoteIndex;
             if (pOwner == nullptr || nIndex != nLastIndex) {
                 pOwner = &m_pRecords[nIndex];
-                pOwner->pSlideRecord = &m_pSlideRecords[i];
+                pOwner->SetSlideRecord(&m_pSlideRecords[i]);
                 nLastIndex = nIndex;
             }
-            ++pOwner->nSlidePointCount;
+            ++pOwner->GetSlidePointCount();
         }
     }
 
@@ -762,8 +766,8 @@ MusicSheet::~MusicSheet() {
     if (m_pRecords != nullptr) {
         // Free each note's path-point sub-buffer before releasing the record pool itself.
         for (int i = 0; i < m_nNoteCount; ++i) {
-            delete[] m_pRecords[i].pPathPoints;
-            m_pRecords[i].pPathPoints = nullptr;
+            delete[] m_pRecords[i].GetPathPoints();
+            m_pRecords[i].SetPathPoints(nullptr);
         }
         delete[] m_pRecords;
         m_pRecords = nullptr;
@@ -778,16 +782,16 @@ bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
     // Scan the note records for one on the target lane whose end time is near the query time.
     for (int i = 0; i < m_nNoteCount; ++i) {
         const RbffNoteRecord &record = m_pRecords[i];
-        if (record.nLane != nTarget) {
+        if (record.GetLane() != nTarget) {
             continue;
         }
-        int nEndTime = record.nHitTime + record.nHitWindow;
+        int nEndTime = record.GetHitTime() + record.GetHitWindow();
         if (std::abs(nEndTime - nTime) < kNearTimeTolerance) {
             return true;
         }
         // A hold note also matches on its tail end.
-        if (record.nType == kNoteTypeHold) {
-            const int nTailTime = nEndTime + record.nChainOffset;
+        if (record.GetType() == kNoteTypeHold) {
+            const int nTailTime = nEndTime + record.GetChainOffset();
             if (std::abs(nTailTime - nTime) < kNearTimeTolerance) {
                 return true;
             }
@@ -802,7 +806,7 @@ bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
     // is within one tick of the query time, or still lies ahead of it.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const RbffSlideRecord &slide = m_pSlideRecords[i];
-        if (m_pRecords[slide.nNoteIndex].nLane != nTarget) {
+        if (m_pRecords[slide.nNoteIndex].GetLane() != nTarget) {
             continue;
         }
         const int nSlideTime = slide.nValueBScaled + slide.nValueAScaled;
@@ -822,27 +826,27 @@ void MusicSheet::ResolveNoteScrollSpeeds() {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         // Seed both speeds from the first path node.
-        record.flScrollStartSpeed = GetFirstPathSpeed();
-        record.flScrollEndSpeed = GetFirstPathSpeed();
+        record.SetScrollStartSpeed(GetFirstPathSpeed());
+        record.SetScrollEndSpeed(GetFirstPathSpeed());
 
-        const int nStartTime = record.nTimeA;
-        const int nEndTime = record.nTimeA + record.nTimeB;
+        const int nStartTime = record.GetTimeA();
+        const int nEndTime = record.GetTimeA() + record.GetTimeB();
         // Walk the path nodes, advancing the start speed up to the note's start time and the end
         // speed up to its end time, until a node lies past the note's end.
         for (int nNode = 1; nNode < m_pathNodes.GetCount(); ++nNode) {
             // A node's time is its y coordinate and its speed its x coordinate.
             if (GetSheetPathNode(nNode)->y <= nStartTime) {
-                record.flScrollStartSpeed = static_cast<float>(GetSheetPathNode(nNode)->x);
+                record.SetScrollStartSpeed(static_cast<float>(GetSheetPathNode(nNode)->x));
             }
             if (GetSheetPathNode(nNode)->y <= nEndTime) {
-                record.flScrollEndSpeed = static_cast<float>(GetSheetPathNode(nNode)->x);
+                record.SetScrollEndSpeed(static_cast<float>(GetSheetPathNode(nNode)->x));
             }
             if (GetSheetPathNode(nNode)->y > nEndTime) {
                 break;
             }
         }
 
-        record.bScrollVisible = record.flScrollStartSpeed < record.flScrollEndSpeed;
+        record.SetScrollVisible(record.GetScrollStartSpeed() < record.GetScrollEndSpeed());
     }
 }
 
@@ -854,9 +858,9 @@ int MusicSheet::CalculateChartTiming() {
     // Walk the records backward: for each side, record the end time of its last side-object note.
     for (int i = m_nNoteCount - 1; i >= 0; --i) {
         const RbffNoteRecord &record = m_pRecords[i];
-        const int nSide = record.nSide;
-        if (!aSideSeen[nSide] && (record.dwFlags & kSideObjectFlag) != 0) {
-            aPerSideEndTime[nSide] = record.nHitTime + record.nHitWindow;
+        const int nSide = record.GetSide();
+        if (!aSideSeen[nSide] && (record.GetFlags() & kSideObjectFlag) != 0) {
+            aPerSideEndTime[nSide] = record.GetHitTime() + record.GetHitWindow();
             aSideSeen[nSide] = true;
         }
         if (aSideSeen[0] && aSideSeen[1]) {
@@ -867,22 +871,22 @@ int MusicSheet::CalculateChartTiming() {
     // Count the notes whose end time runs past their side's side-object end time.
     for (int i = 0; i < m_nNoteCount; ++i) {
         const RbffNoteRecord &record = m_pRecords[i];
-        if (record.nType == kNoteTypeSlideTail) {
+        if (record.GetType() == kNoteTypeSlideTail) {
             continue;
         }
-        int nEndTime = record.nHitTime + record.nHitWindow;
-        if (record.nType == kNoteTypeHold) {
-            nEndTime += record.nChainOffset;
+        int nEndTime = record.GetHitTime() + record.GetHitWindow();
+        if (record.GetType() == kNoteTypeHold) {
+            nEndTime += record.GetChainOffset();
         }
-        if (aPerSideEndTime[record.nSide] < nEndTime) {
-            ++m_aSideCount[record.nSide];
+        if (aPerSideEndTime[record.GetSide()] < nEndTime) {
+            ++m_aSideCount[record.GetSide()];
         }
     }
 
     // Count the slide records likewise, keyed to their owning note's side.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const RbffSlideRecord &slide = m_pSlideRecords[i];
-        const int nSide = m_pRecords[slide.nNoteIndex].nSide;
+        const int nSide = m_pRecords[slide.nNoteIndex].GetSide();
         if (aPerSideEndTime[nSide] < slide.nValueAScaled + slide.nValueBScaled) {
             ++m_aSideCount[nSide];
         }
@@ -923,11 +927,11 @@ RbffNoteRecord *
 MusicSheet::FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex) {
     for (int i = nStartIndex; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        if (record.nLane != nLane) {
+        if (record.GetLane() != nLane) {
             continue;
         }
-        const int nEndTime = record.nHitWindow + record.nHitTime;
-        const int nTailTime = nEndTime + record.nRoute;
+        const int nEndTime = record.GetHitWindow() + record.GetHitTime();
+        const int nTailTime = nEndTime + record.GetRoute();
         if (nTimeEnd > nEndTime && nTailTime != nTimeStart &&
             (nTimeEnd <= nEndTime || nTimeStart <= nTailTime)) {
             return &record;
@@ -943,19 +947,19 @@ RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int 
         RbffNoteRecord &record = m_pRecords[i];
         // Only notes on the lane that are either not chain notes or a chain head, with a distinct
         // hit time, are candidates.
-        if (record.nLane != nLane) {
+        if (record.GetLane() != nLane) {
             continue;
         }
         const bool bEligible =
-            (record.dwFlags & kNoteFlagLongHead) == 0 || record.chainLink.IsHead();
-        const int nEndTime = record.nHitWindow + record.nHitTime;
+            (record.GetFlags() & kNoteFlagLongHead) == 0 || record.GetChainLink().IsHead();
+        const int nEndTime = record.GetHitWindow() + record.GetHitTime();
         if (bEligible && nEndTime != nTime) {
             // The candidates must be non-decreasing in end time; a smaller one ends the search.
             if (nBestEndTime != -1 && nEndTime <= nBestEndTime) {
                 return nullptr;
             }
             nBestEndTime = nTime;
-            if (record.nTimingSel == nField) {
+            if (record.GetTimingSel() == nField) {
                 return &record;
             }
         }
@@ -975,37 +979,38 @@ void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         int nLane;
-        if ((record.dwFlags & kNoteFlagLongHead) != 0 && !record.chainLink.IsHead()) {
+        if ((record.GetFlags() & kNoteFlagLongHead) != 0 && !record.GetChainLink().IsHead()) {
             // A chain note that is not the head inherits its previous segment's display lane.
-            nLane = m_pRecords[record.chainLink.GetChainId()].nDisplayLane;
-        } else if (record.nHoldKind == 1) {
+            nLane = m_pRecords[record.GetChainLink().GetChainId()].GetDisplayLane();
+        } else if (record.GetHoldKind() == 1) {
             // A hold note reserves its fixed colour-tone lane.
-            tracker.ReserveNoteLane(record.nHitTime + record.nHitWindow,
-                                    record.nRoute,
-                                    record.nLane,
-                                    record.nColorTone,
+            tracker.ReserveNoteLane(record.GetHitTime() + record.GetHitWindow(),
+                                    record.GetRoute(),
+                                    record.GetLane(),
+                                    record.GetColorTone(),
                                     false);
-            nLane = record.nColorTone;
+            nLane = record.GetColorTone();
         } else {
             bool bSpread = false;
-            if ((record.dwFlags & kNoteFlagSideObject) != 0) {
+            if ((record.GetFlags() & kNoteFlagSideObject) != 0) {
                 // A side note first marks the colour-tone slots of overlapping same-lane hold notes,
                 // then spreads onto them.
                 unsigned char aScanFlags[kSideScanSlotCount] = {};
                 int nMarked = -1;
                 for (int j = i; j < m_nNoteCount; ++j) {
                     RbffNoteRecord &other = m_pRecords[j];
-                    if (other.nLane != record.nLane) {
+                    if (other.GetLane() != record.GetLane()) {
                         continue;
                     }
-                    const int nEnd = record.nHitTime + record.nHitWindow;
-                    if (other.nHitTime + other.nHitWindow >= nEnd &&
-                        other.nHitTime + other.nHitWindow <= nEnd + record.nChainOffset &&
-                        other.nHoldKind == 1) {
+                    const int nEnd = record.GetHitTime() + record.GetHitWindow();
+                    if (other.GetHitTime() + other.GetHitWindow() >= nEnd &&
+                        other.GetHitTime() + other.GetHitWindow() <=
+                            nEnd + record.GetChainOffset() &&
+                        other.GetHoldKind() == 1) {
                         if (nMarked == -1) {
-                            nMarked = other.nColorTone;
+                            nMarked = other.GetColorTone();
                         }
-                        aScanFlags[other.nColorTone] = 1;
+                        aScanFlags[other.GetColorTone()] = 1;
                     }
                 }
                 // Spread only when the first two slots are marked; the third gates the chosen slot.
@@ -1014,22 +1019,22 @@ void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
                 for (int nSlot = 0; nSlot < kSideScanSlotCount; ++nSlot) {
                     const bool bSkip = bThirdMarked && nMarked == nSlot;
                     if (!bSkip && aScanFlags[nSlot] != 0) {
-                        tracker.ReserveNoteLane(record.nHitTime + record.nHitWindow,
-                                                record.nRoute,
-                                                record.nLane,
+                        tracker.ReserveNoteLane(record.GetHitTime() + record.GetHitWindow(),
+                                                record.GetRoute(),
+                                                record.GetLane(),
                                                 nSlot,
                                                 true);
                     }
                 }
                 bSpread = true;
             }
-            nLane = tracker.AssignNoteLane(record.nHitTime + record.nHitWindow,
-                                           record.nRoute,
-                                           record.nLane,
+            nLane = tracker.AssignNoteLane(record.GetHitTime() + record.GetHitWindow(),
+                                           record.GetRoute(),
+                                           record.GetLane(),
                                            bSpread ? 1 : 0,
-                                           record.aGreenTargets);
+                                           record.GetGreenTargets());
         }
-        record.nDisplayLane = nLane;
+        record.SetDisplayLane(nLane);
     }
 
     // Second pass: resolve each free note's display colour, driven by a default-seeded generator.
@@ -1039,28 +1044,28 @@ void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
         RbffNoteRecord &record = m_pRecords[i];
         const int nColourIndex = colourRng.GetRandomRangeExclusive(0, 2);
         // Paint each of the note's path-point targets with the shared colour index.
-        for (int j = 0; j < record.nPointCount; ++j) {
-            const int nTarget = record.pPathPoints != nullptr ? record.pPathPoints[j] : -1;
-            m_pRecords[nTarget].nColorIndex = nColourIndex;
+        for (int j = 0; j < record.GetPointCount(); ++j) {
+            const int nTarget = record.GetPathPoints() != nullptr ? record.GetPathPoints()[j] : -1;
+            m_pRecords[nTarget].SetColorIndex(nColourIndex);
         }
-        if (record.nStartTime != -1) {
+        if (record.GetStartTime() != -1) {
             continue;
         }
         int nColour = colourRng.GetRandomBelow(7);
-        if (((static_cast<unsigned int>(record.nLinkA) >> 1 & 1) == 0 &&
-             static_cast<unsigned int>(record.nTimingSel) < 10) ||
-            record.nHoldKind == 1) {
+        if (((static_cast<unsigned int>(record.GetLinkA()) >> 1 & 1) == 0 &&
+             static_cast<unsigned int>(record.GetTimingSel()) < 10) ||
+            record.GetHoldKind() == 1) {
             // Map the timing selector through the slide-lane remap, then the note-colour table, and
             // mirror it into the 0..6 colour range.
             int nRemapped;
-            const unsigned int nSel = static_cast<unsigned int>(record.nTimingSel);
+            const unsigned int nSel = static_cast<unsigned int>(record.GetTimingSel());
             if (nSel < 0xfffffffe) {
                 if (nSel == 0xfffffffd) {
                     nRemapped = -4;
                 } else if (nSel == 0xfffffffc) {
                     nRemapped = -3;
                 } else {
-                    nRemapped = kSlideLaneRemap[record.nTimingSel];
+                    nRemapped = kSlideLaneRemap[record.GetTimingSel()];
                 }
             } else {
                 nRemapped = -2;
@@ -1070,7 +1075,7 @@ void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
             const int nTableColour = kNoteColorTable[nRemapped];
             nColour = static_cast<unsigned int>(nTableColour - 1) < 6 ? 6 - nTableColour : 6;
         }
-        record.nColor = nColour;
+        record.SetColor(nColour);
     }
 }
 
@@ -1080,16 +1085,16 @@ void MusicSheet::AssignGreenTargets() {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         int nTarget = -1;
-        if (record.nHoldKind == 1) {
-            if (record.nColorTone != -1) {
-                nTarget = record.nColorTone;
+        if (record.GetHoldKind() == 1) {
+            if (record.GetColorTone() != -1) {
+                nTarget = record.GetColorTone();
             }
-        } else if (static_cast<unsigned int>(record.nTimingSel) < 10) {
-            nTarget = record.nTimingSel;
+        } else if (static_cast<unsigned int>(record.GetTimingSel()) < 10) {
+            nTarget = record.GetTimingSel();
         }
         if (nTarget != -1) {
-            record.nChosenTarget = nTarget;
-            record.aGreenTargets[nTarget] = 1;
+            record.SetChosenTarget(nTarget);
+            record.GetGreenTargets()[nTarget] = 1;
         }
     }
 
@@ -1098,35 +1103,35 @@ void MusicSheet::AssignGreenTargets() {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         const bool bEligible =
-            record.nHoldKind != 1 && static_cast<unsigned int>(record.nTimingSel) >= 10 &&
-            ((record.dwFlags & kNoteFlagLongHead) == 0 || record.chainLink.IsHead());
+            record.GetHoldKind() != 1 && static_cast<unsigned int>(record.GetTimingSel()) >= 10 &&
+            ((record.GetFlags() & kNoteFlagLongHead) == 0 || record.GetChainLink().IsHead());
         if (!bEligible) {
             continue;
         }
 
         // The seven reachable targets start available; the three beyond are not.
         for (int nSlot = 0; nSlot < 7; ++nSlot) {
-            record.aGreenTargets[nSlot] = 1;
+            record.GetGreenTargets()[nSlot] = 1;
         }
         for (int nSlot = 7; nSlot < 11; ++nSlot) {
-            record.aGreenTargets[nSlot] = 0;
+            record.GetGreenTargets()[nSlot] = 0;
         }
 
-        const int nHitEnd = record.nHitTime + record.nHitWindow;
+        const int nHitEnd = record.GetHitTime() + record.GetHitWindow();
         // Clear the slots taken by notes overlapping this one's span; each search resumes past the
         // note it found.
         int nSearchStart = 0;
-        for (RbffNoteRecord *pOther =
-                 FindNoteInTimeRange(record.nLane, nHitEnd, nHitEnd + record.nRoute, nSearchStart);
+        for (RbffNoteRecord *pOther = FindNoteInTimeRange(
+                 record.GetLane(), nHitEnd, nHitEnd + record.GetRoute(), nSearchStart);
              pOther != nullptr;
              pOther = FindNoteInTimeRange(
-                 record.nLane, nHitEnd, nHitEnd + record.nRoute, nSearchStart)) {
-            nSearchStart = pOther->nNoteId + 1;
-            if (pOther != &record && pOther->nChosenTarget != -1) {
-                record.aGreenTargets[pOther->nChosenTarget] = 0;
+                 record.GetLane(), nHitEnd, nHitEnd + record.GetRoute(), nSearchStart)) {
+            nSearchStart = pOther->GetNoteId() + 1;
+            if (pOther != &record && pOther->GetChosenTarget() != -1) {
+                record.GetGreenTargets()[pOther->GetChosenTarget()] = 0;
                 // A hold note also blocks its colour-tone slot.
-                if (pOther->nType == 1 && pOther->nHoldKind == 1) {
-                    record.aGreenTargets[pOther->nColorTone] = 0;
+                if (pOther->GetType() == 1 && pOther->GetHoldKind() == 1) {
+                    record.GetGreenTargets()[pOther->GetColorTone()] = 0;
                 }
             }
         }
@@ -1135,23 +1140,25 @@ void MusicSheet::AssignGreenTargets() {
         // from the note just found, and each side trims the bitmap from one end.
         int nForward = 0;
         for (RbffNoteRecord *pChain = &record;
-             (pChain = FindChainNote(
-                  pChain->nLane, pChain->nHitTime + pChain->nHitWindow, -3, pChain->nNoteId)) !=
-             nullptr;) {
+             (pChain = FindChainNote(pChain->GetLane(),
+                                     pChain->GetHitTime() + pChain->GetHitWindow(),
+                                     -3,
+                                     pChain->GetNoteId())) != nullptr;) {
             ++nForward;
         }
         int nBackward = 0;
         for (RbffNoteRecord *pChain = &record;
-             (pChain = FindChainNote(
-                  pChain->nLane, pChain->nHitTime + pChain->nHitWindow, -4, pChain->nNoteId)) !=
-             nullptr;) {
+             (pChain = FindChainNote(pChain->GetLane(),
+                                     pChain->GetHitTime() + pChain->GetHitWindow(),
+                                     -4,
+                                     pChain->GetNoteId())) != nullptr;) {
             ++nBackward;
         }
         if (nForward > 0) {
-            std::memset(record.aGreenTargets, 0, nForward);
+            std::memset(record.GetGreenTargets(), 0, nForward);
         }
         if (nBackward > 0) {
-            std::memset(&record.aGreenTargets[7 - nBackward], 0, nBackward);
+            std::memset(&record.GetGreenTargets()[7 - nBackward], 0, nBackward);
         }
     }
 }
@@ -1159,12 +1166,12 @@ void MusicSheet::AssignGreenTargets() {
 /** @ghidraAddress 0x130cbc */
 RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
     // The start note must be a chain note and must not already be the chain's tail.
-    assert((pNote->dwFlags & kNoteFlagLongHead) != 0);
-    assert(!pNote->chainLink.IsTail());
+    assert((pNote->GetFlags() & kNoteFlagLongHead) != 0);
+    assert(!pNote->GetChainLink().IsTail());
     // Follow the next-segment links until a note has no next segment.
-    int nIndex = pNote->chainLink.GetNext();
-    while (m_pRecords[nIndex].chainLink.GetNext() >= 0) {
-        nIndex = m_pRecords[nIndex].chainLink.GetNext();
+    int nIndex = pNote->GetChainLink().GetNext();
+    while (m_pRecords[nIndex].GetChainLink().GetNext() >= 0) {
+        nIndex = m_pRecords[nIndex].GetChainLink().GetNext();
     }
     return &m_pRecords[nIndex];
 }

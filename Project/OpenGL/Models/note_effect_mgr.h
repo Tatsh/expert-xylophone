@@ -7,7 +7,7 @@
 
 class MusicSheet;
 class NoteModel;
-struct RbffNoteRecord;
+class RbffNoteRecord;
 
 /**
  * @brief The process-wide note manager: it owns the active chart, the live note render/effect

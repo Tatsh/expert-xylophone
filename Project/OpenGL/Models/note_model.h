@@ -7,7 +7,7 @@
 
 #include "s_vector2.h"
 
-struct RbffNoteRecord;
+class RbffNoteRecord;
 
 /**
  * @brief One path waypoint node: a start time and the two endpoints a note interpolates between.

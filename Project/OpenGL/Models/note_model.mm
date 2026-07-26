@@ -97,7 +97,7 @@ int NoteModel::IsSideFlipped() const {
         }
         nSide = 0;
     } else {
-        nSide = m_pRecord->nSide;
+        nSide = m_pRecord->GetSide();
         // A record side outside the two play sides falls back to the own-side flag.
         if (nSide > 1) {
             return m_bOwnSide ? 0 : kNoSideSentinel;
@@ -117,7 +117,7 @@ int NoteModel::IsOnPlaySide() const {
         }
         nSide = 0;
     } else {
-        nSide = m_pRecord->nSide;
+        nSide = m_pRecord->GetSide();
         // A record side outside the two play sides is on the play side only when the own-side flag
         // is set (returning the no-side sentinel otherwise).
         if (nSide > 1) {
@@ -136,13 +136,13 @@ int NoteModel::GetStartTime() const {
     if (m_pRecord == nullptr) {
         return -1;
     }
-    return m_pRecord->nStartTime;
+    return m_pRecord->GetStartTime();
 }
 
 /** @ghidraAddress 0x13353c */
 float NoteModel::GetHitTime() const {
     if (m_pRecord != nullptr) {
-        return static_cast<float>(m_pRecord->nTimeA + m_pRecord->nTimeB);
+        return static_cast<float>(m_pRecord->GetTimeA() + m_pRecord->GetTimeB());
     }
     // A synthetic note times its hit from the spawn time plus a fixed lead.
     if (m_bOwnSide) {
@@ -154,7 +154,7 @@ float NoteModel::GetHitTime() const {
 /** @ghidraAddress 0x133a24 */
 int NoteModel::GetSide() const {
     if (m_pRecord != nullptr) {
-        return m_pRecord->nSide;
+        return m_pRecord->GetSide();
     }
     // A synthetic note reports side 0 when its own-side flag is set, else the no-side sentinel.
     return m_bOwnSide ? 0 : kNoSideSentinel;
@@ -163,7 +163,7 @@ int NoteModel::GetSide() const {
 /** @ghidraAddress 0x1336c0 */
 int NoteModel::GetType() const {
     if (m_pRecord != nullptr) {
-        return m_pRecord->nType;
+        return m_pRecord->GetType();
     }
     // A synthetic note reports type 0 when its own-side flag is set, else the idle-kind sentinel.
     return m_bOwnSide ? 0 : kIdleTypeSentinel;
@@ -172,14 +172,14 @@ int NoteModel::GetType() const {
 /** @ghidraAddress 0x136a20 */
 int NoteModel::GetKind() const {
     if (m_pRecord != nullptr) {
-        return m_pRecord->nKind;
+        return m_pRecord->GetKind();
     }
     return -1;
 }
 
 /** @ghidraAddress 0x1369e8 */
 int NoteModel::GetSlidePointCount() const {
-    return m_pRecord->nSlidePointCount;
+    return m_pRecord->GetSlidePointCount();
 }
 
 /** @ghidraAddress 0x135310 */
@@ -190,7 +190,7 @@ float NoteModel::GetTargetLineY() const {
     if (m_pRecord == nullptr) {
         nHoldKind = m_bOwnSide ? 0 : 3;
     } else {
-        nHoldKind = m_pRecord->nHoldKind;
+        nHoldKind = m_pRecord->GetHoldKind();
     }
 
     float flFraction;
@@ -293,8 +293,8 @@ float NoteModel::GetLaneX() const {
     int nKind;
     int nLane;
     if (m_pRecord != nullptr) {
-        nKind = m_pRecord->nHoldKind;
-        nLane = m_pRecord->nDisplayLane;
+        nKind = m_pRecord->GetHoldKind();
+        nLane = m_pRecord->GetDisplayLane();
     } else {
         // A synthetic note (no record) derives its kind and lane from the own-side flag.
         nKind = m_bOwnSide ? 0 : kNoSideSentinel;
