@@ -369,6 +369,32 @@ extern float g_aGaugePartsScale[3];
  */
 void InitializeGaugeAngleTable(void);
 /**
+ * @brief The difficulty-number image centre offset added over the button centre, per device: the
+ * pad and phone layouts each get their own {x, y}. Seeded by @c InitializeCGAffineTransformGlobals.
+ * @ghidraAddress 0x3dc6e0
+ */
+extern CGPoint g_difficultyNumberOffsetPad;
+extern CGPoint g_difficultyNumberOffsetPhone; /*!< @ghidraAddress 0x3dc6f0 */
+/**
+ * @brief Seeds @c g_difficultyNumberOffsetPad and @c g_difficultyNumberOffsetPhone. Run once at
+ * startup.
+ * @ghidraAddress 0xc933c
+ */
+void InitializeCGAffineTransformGlobals(void);
+/**
+ * @brief The extend-note view's difficulty-number image centre offset, per device (the same {x, y}
+ * pair pattern used by the music-detail view). Seeded by @c InitializeIdentityTransformGlobals.
+ * @ghidraAddress 0x3dc2a0
+ */
+extern CGPoint g_extendNoteNumberOffsetPad;
+extern CGPoint g_extendNoteNumberOffsetPhone; /*!< @ghidraAddress 0x3dc2b0 */
+/**
+ * @brief Seeds @c g_extendNoteNumberOffsetPad and @c g_extendNoteNumberOffsetPhone. Run once at
+ * startup.
+ * @ghidraAddress 0x3d04c
+ */
+void InitializeIdentityTransformGlobals(void);
+/**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90
  */

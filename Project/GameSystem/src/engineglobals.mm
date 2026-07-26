@@ -58,6 +58,15 @@ const double g_PaletteColorGoldBlue = 0.19215686619281769;
 // The gauge-parts scale table, seeded by InitializeGaugeAngleTable.
 float g_aGaugePartsScale[3];
 
+// The per-device difficulty-number image centre offsets, seeded by
+// InitializeCGAffineTransformGlobals.
+CGPoint g_difficultyNumberOffsetPad;
+CGPoint g_difficultyNumberOffsetPhone;
+
+// The extend-note view's per-device number offsets, seeded by InitializeIdentityTransformGlobals.
+CGPoint g_extendNoteNumberOffsetPad;
+CGPoint g_extendNoteNumberOffsetPhone;
+
 // The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
@@ -320,6 +329,24 @@ __attribute__((constructor)) void InitializeApiRequestTable(void) {
             @"v3_ssl_resource" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
             @"v3_packlist" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
         };
+    }
+}
+
+/** @ghidraAddress 0xc933c */
+__attribute__((constructor)) void InitializeCGAffineTransformGlobals(void) {
+    @autoreleasepool {
+        // The pad layout nudges the number image by (6, 12); the phone layout by (2, 10).
+        g_difficultyNumberOffsetPad = CGPointMake(6.0, 12.0);
+        g_difficultyNumberOffsetPhone = CGPointMake(2.0, 10.0);
+    }
+}
+
+/** @ghidraAddress 0x3d04c */
+__attribute__((constructor)) void InitializeIdentityTransformGlobals(void) {
+    @autoreleasepool {
+        // The same per-device number offsets the extend-note view applies over its button centre.
+        g_extendNoteNumberOffsetPad = CGPointMake(6.0, 12.0);
+        g_extendNoteNumberOffsetPhone = CGPointMake(2.0, 10.0);
     }
 }
 
