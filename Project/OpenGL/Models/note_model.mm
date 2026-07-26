@@ -470,6 +470,48 @@ float NoteModel::GetCurrentJudgeTime() const {
     return PlayTimer::shared()->GetPlayTime() * kWaypointTimeScale + kWaypointTimeOffset;
 }
 
+namespace {
+// The note states in which a note can accept a touch hit.
+constexpr int kNoteStateTouchableExisting = 2;
+constexpr int kNoteStateTouchableSlide = 5;
+// The minimum signed distance below the target line at which an out-of-window note is still
+// reachable by a touch (@ghidraAddress 0x308b7c).
+constexpr float kTouchBelowLineThreshold = -64.0f;
+} // namespace
+
+/** @ghidraAddress 0x135ee8 */
+bool NoteModel::CheckTouchHit(float flX, float flY, float *pOutDistanceSq) const {
+    // Only a live player note in an existing or slide-existing state is touchable.
+    if (m_nRivalMode != 0) {
+        return false;
+    }
+    if (m_nState != kNoteStateTouchableSlide && m_nState != kNoteStateTouchableExisting) {
+        return false;
+    }
+
+    const float flNow = GetCurrentJudgeTime();
+    const float flHitTime = GetHitTime();
+    const bool bInWindow =
+        flHitTime + kMissWindowLow < flNow && flNow < flHitTime + kJudgeWindowJustHigh;
+
+    // Out of the window, the note is still reachable only just below its target line.
+    if (!bInWindow && m_pos.y - GetTargetLineY() < kTouchBelowLineThreshold) {
+        return false;
+    }
+
+    // Compare the note's side-mirrored screen position against the touch point.
+    const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+    const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+    const float flDx = m_pos.x * flMirrorX - flX;
+    const float flDy = m_pos.y * flMirrorY - flY;
+    const float flDistanceSq = flDx * flDx + flDy * flDy;
+    if (GameSystem::GetGameSystem()->GetSheetDiameterSq() <= flDistanceSq) {
+        return false;
+    }
+    *pOutDistanceSq = flDistanceSq;
+    return true;
+}
+
 /** @ghidraAddress 0x133a48 */
 void NoteModel::JudgeNoteTiming() {
     if (!m_bTouched) {

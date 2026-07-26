@@ -284,6 +284,21 @@ public:
     void CheckShotGhost();
 
     /**
+     * @brief Tests whether a touch point hits this note, reporting the squared touch distance.
+     *
+     * Only a player note in its existing or slide-existing state can be hit, and only once the judge
+     * clock is inside its hit window or it is close enough below its target line. The note's
+     * side-mirrored screen position is compared against the touch point, and a hit requires the
+     * squared distance to fall within the sheet's touch radius.
+     * @param flX The touch X.
+     * @param flY The touch Y.
+     * @param pOutDistanceSq Receives the squared touch distance on a hit.
+     * @return @c true when the touch hits the note.
+     * @ghidraAddress 0x135ee8
+     */
+    bool CheckTouchHit(float flX, float flY, float *pOutDistanceSq) const;
+
+    /**
      * @brief Judges a touched note's timing accuracy and reports the resulting grade.
      *
      * Does nothing when the note is not the frame's touched note. Otherwise it grades the signed

@@ -98,6 +98,10 @@ public:
     float GetSheetRadiusScaled() const {
         return m_flSheetRadiusScaled;
     }
+    /** @brief Returns the squared note-sheet diameter, the note touch-hit radius test. */
+    float GetSheetDiameterSq() const {
+        return m_flSheetDiameterSq;
+    }
     /** @brief Returns the play-field scale. */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;
