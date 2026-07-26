@@ -9,6 +9,7 @@
 
 namespace ne {
 class C_SPRITE_INSTANCING;
+class C_TEXTURE;
 } // namespace ne
 
 /**
@@ -53,8 +54,18 @@ public:
      */
     SlideNoteLayer();
 
+    /**
+     * @brief Builds the three slide-note sprite batches under the background render object (once).
+     *
+     * Loads the gm_parts1 atlas, creates each batch, attaches it, makes it visible, binds the atlas,
+     * and resets its count; batches 0 and 2 use additive blending, and on the newer hardware each
+     * batch's wrap sampler parameters are set.
+     * @ghidraAddress 0x95ae0
+     */
+    void BuildSprites();
+
 private:
-    void *m_pField08 = {}; // +0x08: a leading pointer, cleared on reset.
+    ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the slide-trail atlas.
     ne::C_SPRITE_INSTANCING *m_apBatches[kBatchCount] = {}; // +0x10: the trail sprite batches.
     int m_anBatchCount[kBatchCount] = {};                   // +0x28: each batch's sprite count.
     bool m_bBuilt = {};                                     // +0x34: whether the sprites are built.
