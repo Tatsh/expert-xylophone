@@ -299,7 +299,8 @@ unsigned long MusicSheet::BuildDefaultNoteChart(GameSystem *pGameSystem) {
         record.SetHoldKind(0);
         record.SetType(0);
         record.SetFlags(kNoteFlagFree);
-        record.GetChainLink().InitEmpty();
+        // Reset the chain link to the empty state (the binary's chain-link init).
+        record.GetChainLink() = NoteChainLink();
         flTime += kDefaultStepTime;
         pLast = &record;
     }

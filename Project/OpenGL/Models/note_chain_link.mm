@@ -11,7 +11,7 @@
 #include <cstring>
 
 /** @ghidraAddress 0x12eadc */
-void NoteChainLink::InitEmpty() {
+NoteChainLink::NoteChainLink() {
     // The binary sets both segment indices to the unset marker, then clears the following eight
     // bytes (the partner, the marker, and the reserved tail) as one store.
     m_nPrev = kNone;

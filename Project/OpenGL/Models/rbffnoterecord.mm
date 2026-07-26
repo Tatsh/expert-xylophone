@@ -20,7 +20,7 @@ constexpr int kLinkNone = -1;
 
 /** @ghidraAddress 0x12f780 */
 RbffNoteRecord::RbffNoteRecord() {
-    m_chainLink.InitEmpty();
+    // m_chainLink default-constructs to the empty state (the binary's explicit chain-link init).
     m_nLane = kDefaultLane;
     m_nLaneSlot = kDefaultLaneSlot;
     m_nColorTone = kLinkNone;

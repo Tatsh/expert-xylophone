@@ -16,10 +16,11 @@
 class NoteChainLink {
 public:
     /**
-     * @brief Seeds the block to the empty state: both indices to the -1 marker, tail cleared.
+     * @brief Constructs the block in the empty state: both indices to the -1 marker, the partner,
+     * end marker, and trailing spare all cleared.
      * @ghidraAddress 0x12eadc
      */
-    void InitEmpty();
+    NoteChainLink();
 
     /**
      * @brief Whether this note heads its chain (no previous segment).
