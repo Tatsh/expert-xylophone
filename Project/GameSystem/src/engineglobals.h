@@ -107,129 +107,185 @@ extern const double g_dAudioManagerResumeFadeInTime;
  * @brief The localised "Delete" action-button title (pad layout).
  * @ghidraAddress 0x3cfbb0
  */
-extern NSString *const g_pLocalizedDelete;
+extern NSString *g_pLocalizedDelete;
 /**
  * @brief The localised "Download" action-button title (pad layout).
  * @ghidraAddress 0x3cfbc8
  */
-extern NSString *const g_pLocalizedDownload;
+extern NSString *g_pLocalizedDownload;
 /**
  * @brief The localised action-button title format for a purchasable store item (one @c %@ price,
  * localised from the @c "BUY (%@)" catalogue key).
  * @ghidraAddress 0x3cfb78
  */
-extern NSString *const g_pLocalizedBuyFormat;
+extern NSString *g_pLocalizedBuyFormat;
 /**
  * @brief The localised "Error" alert title.
  * @ghidraAddress 0x3cfbc8
  */
-extern NSString *const g_pLocalizedError;
+extern NSString *g_pLocalizedError;
 /**
  * @brief The localised "INSTALL" action-button title shown for a purchased but not-yet-downloaded
  * store item.
  * @ghidraAddress 0x3cfc00
  */
-extern NSString *const g_pLocalizedInstall;
+extern NSString *g_pLocalizedInstall;
 /**
  * @brief The localised "INSTALLED" action-button title shown once a store item is fully downloaded.
  * @ghidraAddress 0x3cfc08
  */
-extern NSString *const g_pLocalizedInstalled;
+extern NSString *g_pLocalizedInstalled;
 /**
  * @brief The localised "INSTALLING" action-button title shown while a store item downloads.
  * @ghidraAddress 0x3cfc10
  */
-extern NSString *const g_pLocalizedInstalling;
+extern NSString *g_pLocalizedInstalling;
 /**
  * @brief The localised "Purchased" disabled-button title shown on the pack detail purchase button
  * once the pack has been bought.
  * @ghidraAddress 0x3cfd10
  */
-extern NSString *const g_pLocalizedPurchased;
+extern NSString *g_pLocalizedPurchased;
 /**
  * @brief The localised "OK" button title.
  * @ghidraAddress 0x3cfce0
  */
-extern NSString *const g_pLocalizedOK;
+extern NSString *g_pLocalizedOK;
 /**
  * @brief The localised "Cancel" button title.
  * @ghidraAddress 0x3cfb80
  */
-extern NSString *const g_pLocalizedCancel;
+extern NSString *g_pLocalizedCancel;
 /**
  * @brief The download-progress modal-dialog message format string (one @c %@ tune name).
  * @ghidraAddress 0x3cfbd8
  */
-extern NSString *const g_pDownloadingMessageFormat;
+extern NSString *g_pDownloadingMessageFormat;
 /**
  * @brief The delete-confirmation alert message format string (one @c %@ tune name).
  * @ghidraAddress 0x3cfcb8
  */
-extern NSString *const g_pDeleteConfirmFormat;
+extern NSString *g_pDeleteConfirmFormat;
 /**
  * @brief The localised "failed to connect to the server" message.
  * @ghidraAddress 0x3cfcc0
  */
-extern NSString *const g_pLocalizedServerConnectFailed;
+extern NSString *g_pLocalizedServerConnectFailed;
 /**
  * @brief The localised message shown when the server returns no usable data.
  * @ghidraAddress 0x3cfd60
  */
-extern NSString *const g_pLocalizedServerNoData;
+extern NSString *g_pLocalizedServerNoData;
 /**
  * @brief The localised "update required" message format shown when the extend-note catalogue
  * demands a newer app version (positional @c %1$@ feature name and @c %2$@ minimum version).
  * @ghidraAddress 0x3cfd68
  */
-extern NSString *const g_pLocalizedUpdateRequiredFormat;
+extern NSString *g_pLocalizedUpdateRequiredFormat;
 /**
  * @brief The localised message shown when the shop-master version is older than the app.
  * @ghidraAddress 0x3cfdc8
  */
-extern NSString *const g_pLocalizedSearchVersionMismatch;
+extern NSString *g_pLocalizedSearchVersionMismatch;
 /** @brief The localised "Close" button title. @ghidraAddress 0x3cfba0 */
-extern NSString *const g_pLocalizedClose;
+extern NSString *g_pLocalizedClose;
 /** @brief The localised "All" filter title. @ghidraAddress 0x3cfb70 */
-extern NSString *const g_pLocalizedAll;
+extern NSString *g_pLocalizedAll;
 /** @brief The localised "Add to playlist" action title. @ghidraAddress 0x3cfb68 */
-extern NSString *const g_pLocalizedAddToPlaylist;
+extern NSString *g_pLocalizedAddToPlaylist;
 /** @brief The localised "Create playlist" action title. @ghidraAddress 0x3cfba8 */
-extern NSString *const g_pLocalizedCreatePlaylist;
+extern NSString *g_pLocalizedCreatePlaylist;
 /** @brief The localised "No play songs" empty-state message. @ghidraAddress 0x3cfcd8 */
-extern NSString *const g_pLocalizedNoPlaySongs;
+extern NSString *g_pLocalizedNoPlaySongs;
 /** @brief The localised "New" badge title. @ghidraAddress 0x3cfcc8 */
-extern NSString *const g_pLocalizedNew;
+extern NSString *g_pLocalizedNew;
 /** @brief The localised "SPECIAL" level title. @ghidraAddress 0x3cfca0 */
-extern NSString *const g_pLocalizedSpecial;
+extern NSString *g_pLocalizedSpecial;
 /** @brief The localised "Playlist" title. @ghidraAddress 0x3cfcf0 */
-extern NSString *const g_pLocalizedPlaylist;
+extern NSString *g_pLocalizedPlaylist;
 /** @brief The localised "PlaylistName" field label. @ghidraAddress 0x3cfcf8 */
-extern NSString *const g_pLocalizedPlaylistName;
+extern NSString *g_pLocalizedPlaylistName;
 /** @brief The localised "Return" button title. @ghidraAddress 0x3cfd58 */
-extern NSString *const g_pLocalizedReturn;
+extern NSString *g_pLocalizedReturn;
 /** @brief The localised "Sort " menu title. @ghidraAddress 0x3cfd80 */
-extern NSString *const g_pLocalizedSort;
+extern NSString *g_pLocalizedSort;
 /** @brief The localised "Level" title. @ghidraAddress 0x3cfc20 */
-extern NSString *const g_pLocalizedLevel;
+extern NSString *g_pLocalizedLevel;
 /**
  * @brief The localised per-level titles "Level1" through "Level15".
  * @ghidraAddress 0x3cfc28
  */
-extern NSString *const g_pLocalizedLevel1;
-extern NSString *const g_pLocalizedLevel2;  /*!< @ghidraAddress 0x3cfc60 */
-extern NSString *const g_pLocalizedLevel3;  /*!< @ghidraAddress 0x3cfc68 */
-extern NSString *const g_pLocalizedLevel4;  /*!< @ghidraAddress 0x3cfc70 */
-extern NSString *const g_pLocalizedLevel5;  /*!< @ghidraAddress 0x3cfc78 */
-extern NSString *const g_pLocalizedLevel6;  /*!< @ghidraAddress 0x3cfc80 */
-extern NSString *const g_pLocalizedLevel7;  /*!< @ghidraAddress 0x3cfc88 */
-extern NSString *const g_pLocalizedLevel8;  /*!< @ghidraAddress 0x3cfc90 */
-extern NSString *const g_pLocalizedLevel9;  /*!< @ghidraAddress 0x3cfc98 */
-extern NSString *const g_pLocalizedLevel10; /*!< @ghidraAddress 0x3cfc30 */
-extern NSString *const g_pLocalizedLevel11; /*!< @ghidraAddress 0x3cfc38 */
-extern NSString *const g_pLocalizedLevel12; /*!< @ghidraAddress 0x3cfc40 */
-extern NSString *const g_pLocalizedLevel13; /*!< @ghidraAddress 0x3cfc48 */
-extern NSString *const g_pLocalizedLevel14; /*!< @ghidraAddress 0x3cfc50 */
-extern NSString *const g_pLocalizedLevel15; /*!< @ghidraAddress 0x3cfc58 */
+extern NSString *g_pLocalizedLevel1;
+extern NSString *g_pLocalizedLevel2;  /*!< @ghidraAddress 0x3cfc60 */
+extern NSString *g_pLocalizedLevel3;  /*!< @ghidraAddress 0x3cfc68 */
+extern NSString *g_pLocalizedLevel4;  /*!< @ghidraAddress 0x3cfc70 */
+extern NSString *g_pLocalizedLevel5;  /*!< @ghidraAddress 0x3cfc78 */
+extern NSString *g_pLocalizedLevel6;  /*!< @ghidraAddress 0x3cfc80 */
+extern NSString *g_pLocalizedLevel7;  /*!< @ghidraAddress 0x3cfc88 */
+extern NSString *g_pLocalizedLevel8;  /*!< @ghidraAddress 0x3cfc90 */
+extern NSString *g_pLocalizedLevel9;  /*!< @ghidraAddress 0x3cfc98 */
+extern NSString *g_pLocalizedLevel10; /*!< @ghidraAddress 0x3cfc30 */
+extern NSString *g_pLocalizedLevel11; /*!< @ghidraAddress 0x3cfc38 */
+extern NSString *g_pLocalizedLevel12; /*!< @ghidraAddress 0x3cfc40 */
+extern NSString *g_pLocalizedLevel13; /*!< @ghidraAddress 0x3cfc48 */
+extern NSString *g_pLocalizedLevel14; /*!< @ghidraAddress 0x3cfc50 */
+extern NSString *g_pLocalizedLevel15; /*!< @ghidraAddress 0x3cfc58 */
+/**
+ * @brief The remaining localised UI strings, all seeded at startup by @c CacheLocalizedUIStrings.
+ * The trailing comments carry the binary's own spellings (e.g. "Infomation").
+ * @ghidraAddress 0x10090
+ */
+extern NSString *g_pLocalizedAbort;                   /*!< "Abort". @ghidraAddress 0x3cfb60 */
+extern NSString *g_pLocalizedInAppPurchasesDisabled;  /*!< @ghidraAddress 0x3cfb88 */
+extern NSString *g_pLocalizedCaution;                 /*!< "Caution". @ghidraAddress 0x3cfb90 */
+extern NSString *g_pLocalizedFreeSpaceLow;            /*!< @ghidraAddress 0x3cfb98 */
+extern NSString *g_pLocalizedDeleteSong;              /*!< "DELETE SONG". @ghidraAddress 0x3cfbb8 */
+extern NSString *g_pLocalizedOpenInMap;               /*!< @ghidraAddress 0x3cfbc0 */
+extern NSString *g_pLocalizedDownloadFailed;          /*!< @ghidraAddress 0x3cfbd0 */
+extern NSString *g_pLocalizedGameCenterConnectFailed; /*!< @ghidraAddress 0x3cfbe8 */
+extern NSString *g_pLocalizedNoLeaderboardData;       /*!< @ghidraAddress 0x3cfbf0 */
+extern NSString *g_pLocalizedInfomation; /*!< "Infomation" (sic). @ghidraAddress 0x3cfbf8 */
+extern NSString *g_pLocalizedNewVersionAvailable;  /*!< @ghidraAddress 0x3cfc18 */
+extern NSString *g_pLocalizedLoadingMixed;         /*!< "Loading...". @ghidraAddress 0x3cfca8 */
+extern NSString *g_pLocalizedLoadingUpper;         /*!< "LOADING...". @ghidraAddress 0x3cfcb0 */
+extern NSString *g_pLocalizedNo;                   /*!< "NO". @ghidraAddress 0x3cfcd0 */
+extern NSString *g_pLocalizedPacks;                /*!< "Packs". @ghidraAddress 0x3cfce8 */
+extern NSString *g_pLocalizedProcessing;           /*!< "Processing...". @ghidraAddress 0x3cfd00 */
+extern NSString *g_pLocalizedPurchaseCancelled;    /*!< @ghidraAddress 0x3cfd08 */
+extern NSString *g_pLocalizedPushUpToShowMore;     /*!< @ghidraAddress 0x3cfd18 */
+extern NSString *g_pLocalizedReflecBeatStore;      /*!< @ghidraAddress 0x3cfd20 */
+extern NSString *g_pLocalizedReflectedOnLimePoint; /*!< @ghidraAddress 0x3cfd28 */
+extern NSString *g_pLocalizedRestorePurchasesButton; /*!< @ghidraAddress 0x3cfd30 */
+extern NSString *g_pLocalizedInstallPacksButton;    /*!< "Install PACKs". @ghidraAddress 0x3cfd38 */
+extern NSString *g_pLocalizedInstallRestoredPacks;  /*!< @ghidraAddress 0x3cfd40 */
+extern NSString *g_pLocalizedRestorePurchasedPacks; /*!< @ghidraAddress 0x3cfd48 */
+extern NSString *g_pLocalizedRetry;                 /*!< "Retry". @ghidraAddress 0x3cfd50 */
+extern NSString *g_pLocalizedShowMore;              /*!< "SHOW MORE". @ghidraAddress 0x3cfd70 */
+extern NSString *g_pLocalizedSlash;                 /*!< "/". @ghidraAddress 0x3cfd78 */
+extern NSString *g_pLocalizedStore;                 /*!< "Store". @ghidraAddress 0x3cfd88 */
+extern NSString *g_pLocalizedMusicPacks;            /*!< "Music Packs". @ghidraAddress 0x3cfd90 */
+extern NSString *g_pLocalizedSequences;             /*!< "Sequences". @ghidraAddress 0x3cfd98 */
+extern NSString *g_pLocalizedPurchaseAdditionalSequences; /*!< @ghidraAddress 0x3cfda0 */
+extern NSString *g_pLocalizedSequenceRequirementFormat;   /*!< @ghidraAddress 0x3cfda8 */
+extern NSString *g_pLocalizedEnableLocationService;       /*!< @ghidraAddress 0x3cfdb0 */
+extern NSString *g_pLocalizedTookOverData;                /*!< @ghidraAddress 0x3cfdb8 */
+extern NSString *g_pLocalizedUpdateDataFound;             /*!< @ghidraAddress 0x3cfdc0 */
+extern NSString *g_pLocalizedYes;                         /*!< "YES". @ghidraAddress 0x3cfdd0 */
+extern NSString *g_pLocalizedLatestGameDataRequired;      /*!< @ghidraAddress 0x3cfdd8 */
+extern NSString *g_pLocalizedInsufficientPoints;          /*!< @ghidraAddress 0x3cfde0 */
+extern NSString
+    *g_pLocalizedHasBeenAddedFormat; /*!< "%@ has been added.". @ghidraAddress 0x3cfde8 */
+extern NSString *g_pLocalizedUnlockRequirement;    /*!< @ghidraAddress 0x3cfdf0 */
+extern NSString *g_pLocalizedUpdateToUnlockSong;   /*!< @ghidraAddress 0x3cfdf8 */
+extern NSString *g_pLocalizedAppInstalledReward;   /*!< @ghidraAddress 0x3cfe00 */
+extern NSString *g_pLocalizedLimePointAddedFormat; /*!< @ghidraAddress 0x3cfe08 */
+extern NSString *g_pLocalizedSearchMusic;          /*!< "Search music". @ghidraAddress 0x3cfe10 */
+/**
+ * @brief Seeds every localised UI string global above from the main bundle's localisation table.
+ * Run once at startup as a module initialiser.
+ * @ghidraAddress 0x10090
+ */
+void CacheLocalizedUIStrings(void);
 /**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90

@@ -1,0 +1,225 @@
+//
+//  engineglobals.mm
+//  REFLEC BEAT plus
+//
+//  Definitions for the shared engine globals declared in engineglobals.h, and the startup module
+//  initialiser that seeds the localised UI strings. Reconstructed from Ghidra project rb458,
+//  program rb458. @ghidraAddress values are relative to the program image base.
+//
+
+#import "engineglobals.h"
+
+#import <Foundation/Foundation.h>
+
+// The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
+// storage because they are assigned at load time, not compile time.
+NSString *g_pLocalizedAbort;
+NSString *g_pLocalizedAddToPlaylist;
+NSString *g_pLocalizedAll;
+NSString *g_pLocalizedBuyFormat;
+NSString *g_pLocalizedCancel;
+NSString *g_pLocalizedInAppPurchasesDisabled;
+NSString *g_pLocalizedCaution;
+NSString *g_pLocalizedFreeSpaceLow;
+NSString *g_pLocalizedClose;
+NSString *g_pLocalizedCreatePlaylist;
+NSString *g_pLocalizedDelete;
+NSString *g_pLocalizedDeleteSong;
+NSString *g_pLocalizedOpenInMap;
+NSString *g_pLocalizedDownload;
+NSString *g_pLocalizedDownloadFailed;
+NSString *g_pDownloadingMessageFormat;
+NSString *g_pLocalizedError;
+NSString *g_pLocalizedGameCenterConnectFailed;
+NSString *g_pLocalizedNoLeaderboardData;
+NSString *g_pLocalizedInfomation;
+NSString *g_pLocalizedInstall;
+NSString *g_pLocalizedInstalled;
+NSString *g_pLocalizedInstalling;
+NSString *g_pLocalizedNewVersionAvailable;
+NSString *g_pLocalizedLevel;
+NSString *g_pLocalizedLevel1;
+NSString *g_pLocalizedLevel2;
+NSString *g_pLocalizedLevel3;
+NSString *g_pLocalizedLevel4;
+NSString *g_pLocalizedLevel5;
+NSString *g_pLocalizedLevel6;
+NSString *g_pLocalizedLevel7;
+NSString *g_pLocalizedLevel8;
+NSString *g_pLocalizedLevel9;
+NSString *g_pLocalizedLevel10;
+NSString *g_pLocalizedLevel11;
+NSString *g_pLocalizedLevel12;
+NSString *g_pLocalizedLevel13;
+NSString *g_pLocalizedLevel14;
+NSString *g_pLocalizedLevel15;
+NSString *g_pLocalizedSpecial;
+NSString *g_pLocalizedLoadingMixed;
+NSString *g_pLocalizedLoadingUpper;
+NSString *g_pDeleteConfirmFormat;
+NSString *g_pLocalizedServerConnectFailed;
+NSString *g_pLocalizedNew;
+NSString *g_pLocalizedNo;
+NSString *g_pLocalizedNoPlaySongs;
+NSString *g_pLocalizedOK;
+NSString *g_pLocalizedPacks;
+NSString *g_pLocalizedPlaylist;
+NSString *g_pLocalizedPlaylistName;
+NSString *g_pLocalizedProcessing;
+NSString *g_pLocalizedPurchaseCancelled;
+NSString *g_pLocalizedPurchased;
+NSString *g_pLocalizedPushUpToShowMore;
+NSString *g_pLocalizedReflecBeatStore;
+NSString *g_pLocalizedReflectedOnLimePoint;
+NSString *g_pLocalizedRestorePurchasesButton;
+NSString *g_pLocalizedInstallPacksButton;
+NSString *g_pLocalizedInstallRestoredPacks;
+NSString *g_pLocalizedRestorePurchasedPacks;
+NSString *g_pLocalizedRetry;
+NSString *g_pLocalizedReturn;
+NSString *g_pLocalizedServerNoData;
+NSString *g_pLocalizedUpdateRequiredFormat;
+NSString *g_pLocalizedShowMore;
+NSString *g_pLocalizedSlash;
+NSString *g_pLocalizedSort;
+NSString *g_pLocalizedStore;
+NSString *g_pLocalizedMusicPacks;
+NSString *g_pLocalizedSequences;
+NSString *g_pLocalizedPurchaseAdditionalSequences;
+NSString *g_pLocalizedSequenceRequirementFormat;
+NSString *g_pLocalizedEnableLocationService;
+NSString *g_pLocalizedTookOverData;
+NSString *g_pLocalizedUpdateDataFound;
+NSString *g_pLocalizedSearchVersionMismatch;
+NSString *g_pLocalizedYes;
+NSString *g_pLocalizedLatestGameDataRequired;
+NSString *g_pLocalizedInsufficientPoints;
+NSString *g_pLocalizedHasBeenAddedFormat;
+NSString *g_pLocalizedUnlockRequirement;
+NSString *g_pLocalizedUpdateToUnlockSong;
+NSString *g_pLocalizedAppInstalledReward;
+NSString *g_pLocalizedLimePointAddedFormat;
+NSString *g_pLocalizedSearchMusic;
+
+namespace {
+// Looks a key up in the main bundle's localisation table, defaulting to an empty string. The bundle
+// is resolved once by the caller and shared across every lookup (the binary re-fetched it per call).
+NSString *Localize(NSBundle *bundle, NSString *key) {
+    return [bundle localizedStringForKey:key value:@"" table:nil];
+}
+} // namespace
+
+/** @ghidraAddress 0x10090 */
+__attribute__((constructor)) void CacheLocalizedUIStrings(void) {
+    @autoreleasepool {
+        NSBundle *bundle = [NSBundle mainBundle];
+        g_pLocalizedAbort = Localize(bundle, @"Abort");
+        g_pLocalizedAddToPlaylist = Localize(bundle, @"Add to playlist");
+        g_pLocalizedAll = Localize(bundle, @"All");
+        g_pLocalizedBuyFormat = Localize(bundle, @"BUY (%@)");
+        g_pLocalizedCancel = Localize(bundle, @"Cancel");
+        g_pLocalizedInAppPurchasesDisabled = Localize(bundle, @"In-app purchases are not allowed.");
+        g_pLocalizedCaution = Localize(bundle, @"Caution");
+        g_pLocalizedFreeSpaceLow = Localize(
+            bundle,
+            @"Free space of the storage area is low. May not work correctly when you play the game "
+            @"as it is.");
+        g_pLocalizedClose = Localize(bundle, @"Close");
+        g_pLocalizedCreatePlaylist = Localize(bundle, @"Create playlist");
+        g_pLocalizedDelete = Localize(bundle, @"Delete");
+        g_pLocalizedDeleteSong = Localize(bundle, @"DELETE SONG");
+        g_pLocalizedOpenInMap = Localize(bundle, @"Do you want to open in the 'map' this place?");
+        g_pLocalizedDownload = Localize(bundle, @"Download");
+        g_pLocalizedDownloadFailed =
+            Localize(bundle, @"Falied to download. Please check your network connection.");
+        g_pDownloadingMessageFormat = Localize(bundle, @"Downloading... %@");
+        g_pLocalizedError = Localize(bundle, @"Error");
+        g_pLocalizedGameCenterConnectFailed = Localize(bundle, @"Failed to connect GameCenter.");
+        g_pLocalizedNoLeaderboardData = Localize(bundle, @"No Leaderboard data");
+        g_pLocalizedInfomation = Localize(bundle, @"Infomation");
+        g_pLocalizedInstall = Localize(bundle, @"INSTALL");
+        g_pLocalizedInstalled = Localize(bundle, @"INSTALLED");
+        g_pLocalizedInstalling = Localize(bundle, @"INSTALLING");
+        g_pLocalizedNewVersionAvailable =
+            Localize(bundle, @"A new version is available. Do you want to move App Store?");
+        g_pLocalizedLevel = Localize(bundle, @"Level");
+        g_pLocalizedLevel1 = Localize(bundle, @"Level1");
+        g_pLocalizedLevel10 = Localize(bundle, @"Level10");
+        g_pLocalizedLevel11 = Localize(bundle, @"Level11");
+        g_pLocalizedLevel12 = Localize(bundle, @"Level12");
+        g_pLocalizedLevel13 = Localize(bundle, @"Level13");
+        g_pLocalizedLevel14 = Localize(bundle, @"Level14");
+        g_pLocalizedLevel15 = Localize(bundle, @"Level15");
+        g_pLocalizedLevel2 = Localize(bundle, @"Level2");
+        g_pLocalizedLevel3 = Localize(bundle, @"Level3");
+        g_pLocalizedLevel4 = Localize(bundle, @"Level4");
+        g_pLocalizedLevel5 = Localize(bundle, @"Level5");
+        g_pLocalizedLevel6 = Localize(bundle, @"Level6");
+        g_pLocalizedLevel7 = Localize(bundle, @"Level7");
+        g_pLocalizedLevel8 = Localize(bundle, @"Level8");
+        g_pLocalizedLevel9 = Localize(bundle, @"Level9");
+        g_pLocalizedSpecial = Localize(bundle, @"SPECIAL");
+        g_pLocalizedLoadingMixed = Localize(bundle, @"Loading...");
+        g_pLocalizedLoadingUpper = Localize(bundle, @"LOADING...");
+        g_pDeleteConfirmFormat = Localize(bundle, @"Do you want to delete %@ ?");
+        g_pLocalizedServerConnectFailed =
+            Localize(bundle, @"Can't connect to the server Please check your network connection.");
+        g_pLocalizedNew = Localize(bundle, @"New");
+        g_pLocalizedNo = Localize(bundle, @"NO");
+        g_pLocalizedNoPlaySongs = Localize(bundle, @"No play songs");
+        g_pLocalizedOK = Localize(bundle, @"OK");
+        g_pLocalizedPacks = Localize(bundle, @"Packs");
+        g_pLocalizedPlaylist = Localize(bundle, @"Playlist");
+        g_pLocalizedPlaylistName = Localize(bundle, @"PlaylistName");
+        g_pLocalizedProcessing = Localize(bundle, @"Processing...");
+        g_pLocalizedPurchaseCancelled = Localize(bundle, @"The purchase was cancelled...");
+        g_pLocalizedPurchased = Localize(bundle, @"Purchased");
+        g_pLocalizedPushUpToShowMore = Localize(bundle, @"Push up to show more");
+        g_pLocalizedReflecBeatStore = Localize(bundle, @"REFLEC BEAT Store");
+        g_pLocalizedReflectedOnLimePoint = Localize(bundle, @"reflected on the lime point score.");
+        g_pLocalizedRestorePurchasesButton = Localize(bundle, @"Restore purchases");
+        g_pLocalizedInstallPacksButton = Localize(bundle, @"Install PACKs");
+        g_pLocalizedInstallRestoredPacks =
+            Localize(bundle, @"To install restored PACKs, select 'OK'.");
+        g_pLocalizedRestorePurchasedPacks =
+            Localize(bundle, @"To restore purchased PACKs, select 'OK'.");
+        g_pLocalizedRetry = Localize(bundle, @"Retry");
+        g_pLocalizedReturn = Localize(bundle, @"Return");
+        g_pLocalizedServerNoData =
+            Localize(bundle, @"Server error occurred. Please try again later.");
+        g_pLocalizedUpdateRequiredFormat =
+            Localize(bundle,
+                     @"Ver. %2$@ or above is required to access %1$@. Please update to the latest "
+                     @"version.");
+        g_pLocalizedShowMore = Localize(bundle, @"SHOW MORE");
+        g_pLocalizedSlash = Localize(bundle, @"/");
+        g_pLocalizedSort = Localize(bundle, @"Sort ");
+        g_pLocalizedStore = Localize(bundle, @"Store");
+        g_pLocalizedMusicPacks = Localize(bundle, @"Music Packs");
+        g_pLocalizedSequences = Localize(bundle, @"Sequences");
+        g_pLocalizedPurchaseAdditionalSequences =
+            Localize(bundle, @"Purchase Additional Sequences?");
+        g_pLocalizedSequenceRequirementFormat =
+            Localize(bundle, @"%1$@ is required to purchase this Sequence. Purchase %2$@?");
+        g_pLocalizedEnableLocationService =
+            Localize(bundle,
+                     @"To display the current position From the 'Settings' app Please set to 'On' "
+                     @"position information service");
+        g_pLocalizedTookOverData = Localize(bundle, @"Took over the data");
+        g_pLocalizedUpdateDataFound =
+            Localize(bundle, @"Update data found. Do you want to download?");
+        g_pLocalizedSearchVersionMismatch =
+            Localize(bundle, @"Please update to the latest version.");
+        g_pLocalizedYes = Localize(bundle, @"YES");
+        g_pLocalizedLatestGameDataRequired =
+            Localize(bundle, @"The latest game data is required. Download will commence.");
+        g_pLocalizedInsufficientPoints = Localize(bundle, @"Insufficient Points.");
+        g_pLocalizedHasBeenAddedFormat = Localize(bundle, @"%@ has been added.");
+        g_pLocalizedUnlockRequirement = Localize(bundle, @"UnlockRequirement");
+        g_pLocalizedUpdateToUnlockSong =
+            Localize(bundle, @"This application must be updated to unlock this song.");
+        g_pLocalizedAppInstalledReward = Localize(bundle, @"AppInstalledReward");
+        g_pLocalizedLimePointAddedFormat = Localize(bundle, @"%d LimePoint has been Added.");
+        g_pLocalizedSearchMusic = Localize(bundle, @"Search music");
+    }
+}

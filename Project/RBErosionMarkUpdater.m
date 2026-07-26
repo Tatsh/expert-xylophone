@@ -9,9 +9,9 @@
 // Shared engine helpers and globals defined elsewhere in the binary.
 extern double g_dTranslucentAlpha;
 extern double g_dCustomizeLayoutMetric100;
-extern NSString *const g_pLocalizedOK;
-extern NSString *const g_pLocalizedCancel;
-extern NSString *const g_pLocalizedRetry;
+extern NSString *g_pLocalizedOK;
+extern NSString *g_pLocalizedCancel;
+extern NSString *g_pLocalizedRetry;
 BOOL IsPad(void);
 
 // Local declarations for the two sibling classes reconstructed separately. These members belong in
