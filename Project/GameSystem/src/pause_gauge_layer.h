@@ -21,11 +21,36 @@ class C_TEXTURE;
  * reconstructed. The trailing @c // +0xNN comments document the original member offsets for
  * reference only.
  */
+/**
+ * @brief One pause-gauge rectangle size: the width and height of a lane's gauge hit rectangle.
+ */
+struct PauseGaugeRectSize {
+    int nWidth = {};  // +0x00: the rectangle width.
+    int nHeight = {}; // +0x04: the rectangle height.
+};
+
+/**
+ * @brief One lane's pause-gauge geometry: the gauge-rectangle centre and its dimmed-lane flag.
+ *
+ * The trailing @c // +0xNN comments document the byte offsets within the 16-byte per-lane entry.
+ */
+struct PauseGaugeLaneGeometry {
+    float flCenterX = {};              // +0x00: the gauge rectangle's centre x.
+    float flCenterY = {};              // +0x04: the gauge rectangle's centre y.
+    unsigned char aReserved08[4] = {}; // +0x08: further per-lane state.
+    bool bDimmed = {};                 // +0x0c: whether the lane's gauge is drawn dimmed.
+    unsigned char aReserved0d[3] = {}; // +0x0d
+};
+
 class PauseGaugeLayer : public GameUiLayerBase {
 public:
-    // The number of sprite slots (a gauge slot and a parts slot) and the number of lane-slot ids.
+    using LaneGeometry = PauseGaugeLaneGeometry;
+
+    // The number of sprite slots (a gauge slot and a parts slot), the number of lane-slot ids, and
+    // the number of lanes the gauge draws a rectangle for.
     static constexpr int kSlotCount = 2;
     static constexpr int kLaneSlotCount = 13;
+    static constexpr int kLaneCount = 3;
 
     /**
      * @brief Constructs the pause-gauge layer: chains the UI-layer base, installs the task dispatch
@@ -67,6 +92,20 @@ public:
      */
     void OnFrame(void *pFrameArg) override;
 
+    /**
+     * @brief Hit-tests a point against a lane's pause-gauge rectangle.
+     *
+     * The rectangle is centred on the lane's geometry centre, sized from the per-device size table
+     * (the font-variant device uses the variant table, otherwise the default), with the width and
+     * height applied as round-toward-zero half-extents.
+     * @param flX The point x.
+     * @param flY The point y.
+     * @param nLaneIndex The lane to test.
+     * @return @c true when the point lies within the lane's gauge rectangle.
+     * @ghidraAddress 0x1512fc
+     */
+    bool CheckPointInRect(float flX, float flY, unsigned int nLaneIndex) const;
+
 private:
     /**
      * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the
@@ -82,10 +121,16 @@ private:
     int m_aLaneSlotId[kLaneSlotCount] = {};                // +0x70: the per-lane sprite-slot index.
     bool m_bCharging = {};                                 // +0xa4: whether the gauge is charging.
     unsigned long m_qwActiveMask = {}; // +0xa8: the packed active-lane mask (seeded 0x4ffffffff).
-    // +0xb0: the per-lane sprite geometry block (x/y and flags per lane) the render family uses.
-    unsigned char m_aSpriteBlock[0x30] = {};
-    int m_nThema = {}; // +0xe0: the cached UI theme.
+    LaneGeometry m_aLaneGeometry[kLaneCount] = {}; // +0xb0: the per-lane gauge centre and flag.
+    int m_nThema = {};                             // +0xe0: the cached UI theme.
 };
+
+// The per-lane gauge rectangle sizes, seeded at startup from the read-only source constants. The
+// font-variant device uses the variant table; every other device uses the default table.
+extern PauseGaugeRectSize
+    g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
+extern PauseGaugeRectSize
+    g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
 
 // code: language=C++
 // kate: hl C++;

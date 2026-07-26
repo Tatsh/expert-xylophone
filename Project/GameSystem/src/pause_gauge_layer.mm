@@ -93,6 +93,35 @@ PauseGaugeLayer::~PauseGaugeLayer() {
     }
 }
 
+// The per-lane gauge rectangle sizes, seeded by SeedPauseGaugeLayoutTable.
+PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
+PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
+
+namespace {
+// Rounds a rectangle dimension toward zero before halving it, matching the binary's
+// (n < 0 ? n + 1 : n) >> 1 half-extent computation for a signed size.
+int HalfExtent(int nSize) {
+    const int nRounded = nSize < 0 ? nSize + 1 : nSize;
+    return nRounded >> 1;
+}
+
+// Tests whether a coordinate lies within [center - halfExtent, center - halfExtent + size].
+bool AxisInRect(float flCoord, float flCenter, int nSize) {
+    const float flLow = flCenter - static_cast<float>(HalfExtent(nSize));
+    const float flHigh = static_cast<float>(nSize) + flLow;
+    return flLow <= flCoord && flCoord <= flHigh;
+}
+} // namespace
+
+/** @ghidraAddress 0x1512fc */
+bool PauseGaugeLayer::CheckPointInRect(float flX, float flY, unsigned int nLaneIndex) const {
+    const PauseGaugeRectSize &size = IsFontVariant() ? g_aPauseGaugeRectVariant[nLaneIndex] :
+                                                       g_aPauseGaugeRectDefault[nLaneIndex];
+    const PauseGaugeLaneGeometry &lane = m_aLaneGeometry[nLaneIndex];
+    return AxisInRect(flX, lane.flCenterX, size.nWidth) &&
+           AxisInRect(flY, lane.flCenterY, size.nHeight);
+}
+
 /** @ghidraAddress 0x1508b0 */
 void PauseGaugeLayer::OnFrame(void *pFrameArg) {
     (void)pFrameArg; // The pause gauge does no per-frame work; its sprites are rendered externally.
