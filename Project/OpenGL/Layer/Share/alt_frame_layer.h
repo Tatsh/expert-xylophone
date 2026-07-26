@@ -38,10 +38,26 @@ public:
      */
     void StartFadeOut(float flDuration);
 
+    /**
+     * @brief Sets the frame type, rebuilding the frame sprites when it changes.
+     *
+     * A no-op when the type is unchanged; otherwise it records the new type, clears the built flag,
+     * and rebuilds the frame sprites.
+     * @param nType The frame type.
+     * @ghidraAddress 0x17aba8
+     */
+    void SetFrameType(int nType);
+
     // The number of frame sprite batches the layer builds.
     static constexpr int kSpriteSlotCount = 3;
 
 private:
+    /**
+     * @brief (Re)builds the frame sprite batches for the current frame type. Reconstruction pending.
+     * @ghidraAddress 0x17a548
+     */
+    void BuildSprites();
+
     /**
      * @brief Constructs the layer: seeds the default frame type (32) and mode (5), and clears the
      * sprite batches, counts, and fade channel.

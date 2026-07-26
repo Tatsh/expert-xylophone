@@ -44,3 +44,13 @@ void AltFrameLayer::StartFadeOut(float flDuration) {
         m_bFadeDone = true;
     }
 }
+
+/** @ghidraAddress 0x17aba8 */
+void AltFrameLayer::SetFrameType(int nType) {
+    if (m_nFrameType == nType) {
+        return;
+    }
+    m_nFrameType = nType;
+    m_bReady = false;
+    BuildSprites();
+}
