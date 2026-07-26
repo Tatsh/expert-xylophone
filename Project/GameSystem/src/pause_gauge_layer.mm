@@ -98,6 +98,23 @@ PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @gh
 PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
 
 namespace {
+// The gauge rectangle sizes each device layout uses for every lane: the font-variant device draws
+// a 336x66 rectangle, every other device a 220x50 one.
+constexpr PauseGaugeRectSize kPauseGaugeRectVariant = {336, 66};
+constexpr PauseGaugeRectSize kPauseGaugeRectDefault = {220, 50};
+} // namespace
+
+/** @ghidraAddress 0x15145c */
+void SeedPauseGaugeLayoutTable(void) {
+    @autoreleasepool {
+        for (int nLane = 0; nLane < PauseGaugeLayer::kLaneCount; ++nLane) {
+            g_aPauseGaugeRectVariant[nLane] = kPauseGaugeRectVariant;
+            g_aPauseGaugeRectDefault[nLane] = kPauseGaugeRectDefault;
+        }
+    }
+}
+
+namespace {
 // Rounds a rectangle dimension toward zero before halving it, matching the binary's
 // (n < 0 ? n + 1 : n) >> 1 half-extent computation for a signed size.
 int HalfExtent(int nSize) {

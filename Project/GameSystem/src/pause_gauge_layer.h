@@ -130,6 +130,12 @@ extern PauseGaugeRectSize
 extern PauseGaugeRectSize
     g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
 
+/**
+ * @brief Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.
+ * @ghidraAddress 0x15145c
+ */
+void SeedPauseGaugeLayoutTable(void);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
