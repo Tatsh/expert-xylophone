@@ -46,6 +46,12 @@ public:
     float GetValue(unsigned int nSide) const;
 
     /**
+     * @brief Clears both sides' clear-gauge value slots to zero (a per-play reset).
+     * @ghidraAddress 0x175c70
+     */
+    void ClearValues();
+
+    /**
      * @brief Sets the gauge style (the sprite-layout variant), taken from the user's gauge-style
      * setting.
      * @param nStyle The gauge style.

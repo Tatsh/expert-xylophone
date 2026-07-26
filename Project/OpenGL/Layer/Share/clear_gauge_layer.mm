@@ -24,6 +24,13 @@ float ClearGaugeLayer::GetValue(unsigned int nSide) const {
     return m_aValues[nSide].flValue;
 }
 
+/** @ghidraAddress 0x175c70 */
+void ClearGaugeLayer::ClearValues() {
+    for (ValueSlot &slot : m_aValues) {
+        slot = ValueSlot{};
+    }
+}
+
 /** @ghidraAddress 0x175d68 */
 void ClearGaugeLayer::SetGaugeStyle(int nStyle) {
     m_nGaugeStyle = nStyle;
