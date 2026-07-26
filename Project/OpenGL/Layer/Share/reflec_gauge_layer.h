@@ -124,6 +124,14 @@ public:
     void SetMirrorSide(int nSide);
 
     /**
+     * @brief Begins the gauge fade-in, easing the gauge to fully opaque over @p flDuration (snapping
+     * to opaque and marking the fade done when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x18ad3c
+     */
+    void StartFadeIn(float flDuration);
+
+    /**
      * @brief Begins the gauge fade-out, easing the gauge to transparent over @p flDuration (snapping
      * to transparent and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.

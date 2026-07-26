@@ -154,14 +154,15 @@ void ReflecGaugeLayer::SetMirrorSide(int nSide) {
     m_nMirrorSide = nSide;
 }
 
-/** @ghidraAddress 0x18ad6c */
-void ReflecGaugeLayer::StartFadeOut(float flDuration) {
+/** @ghidraAddress 0x18ad3c */
+void ReflecGaugeLayer::StartFadeIn(float flDuration) {
     m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
-    m_fadeChannel.SetEnd(0.0f);
+    m_fadeChannel.SetEnd(1.0f);
     m_fadeChannel.SetDuration(flDuration);
     m_fadeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to opaque and marks the fade done.
     if (flDuration <= 0.0f) {
-        m_fadeChannel.SetCurrent(0.0f);
+        m_fadeChannel.SetCurrent(1.0f);
         m_bFadeDone = true;
     }
 }
