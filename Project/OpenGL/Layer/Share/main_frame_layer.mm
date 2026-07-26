@@ -1,12 +1,14 @@
 #include "main_frame_layer.h"
 
+#include "neSpriteInstancing.h"
+
 // The process-wide main-frame layer, created lazily by shared().
 static MainFrameLayer *g_pMainFrameLayer = nullptr; // @ghidraAddress 0x3dedb0
 
 namespace {
 
-// The layout fields the constructor seeds.
-constexpr int kDefaultLayoutWidth = 0x20;
+// The fields the constructor seeds: the default frame type and the sprite capacity.
+constexpr int kDefaultFrameType = 0x20;
 constexpr int kDefaultSpriteCapacity = 5;
 
 // The frame's fully-opaque alpha endpoint (255).
@@ -18,8 +20,8 @@ constexpr float kFrameAlphaTransparent = 0.0f;
 // The binary inlines this constructor into shared (0x17b5d4).
 MainFrameLayer::MainFrameLayer() {
     // The base constructor and the zero-initialised members clear the layer; the constructor then
-    // seeds the two non-zero layout defaults.
-    m_nLayoutWidth = kDefaultLayoutWidth;
+    // seeds the two non-zero defaults.
+    m_nFrameType = kDefaultFrameType;
     m_nSpriteCapacity = kDefaultSpriteCapacity;
 }
 
@@ -55,5 +57,12 @@ void MainFrameLayer::StartFadeOut(float flDuration) {
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(kFrameAlphaTransparent);
         m_bFadeDone = true;
+    }
+}
+
+/** @ghidraAddress 0x17c9a8 */
+void MainFrameLayer::SetMainFrameEnabled(bool bEnabled) {
+    if (m_pMainSprite != nullptr) {
+        m_pMainSprite->SetVisible(bEnabled);
     }
 }

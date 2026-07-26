@@ -8,6 +8,10 @@
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
+namespace ne {
+class C_SPRITE_INSTANCING;
+} // namespace ne
+
 /**
  * @brief The play-field main-frame layer (the frame graphics around the note field).
  *
@@ -44,6 +48,13 @@ public:
      */
     void StartFadeOut(float flDuration);
 
+    /**
+     * @brief Shows or hides the main frame sprite. A no-op when the sprite has not been built.
+     * @param bEnabled @c true to show the frame, @c false to hide it.
+     * @ghidraAddress 0x17c9a8
+     */
+    void SetMainFrameEnabled(bool bEnabled);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its default layout
@@ -51,9 +62,13 @@ private:
      */
     MainFrameLayer();
 
-    // +0x08..+0x47: the frame's sprite instancers and layout state, still being worked out.
-    unsigned char m_aReserved08[0x40] = {}; // +0x08
-    int m_nLayoutWidth = {};                // +0x48: a layout field the constructor seeds to 0x20.
+    // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
+    unsigned char m_aReserved08[0x20] = {};      // +0x08
+    ne::C_SPRITE_INSTANCING *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
+    // +0x30..+0x47: further layout state, still being worked out.
+    unsigned char m_aReserved30[0x18] = {}; // +0x30
+    int m_nFrameType = {};                  // +0x48: the frame type, seeded to 0x20 and set by
+                                            //        SetMainFrameType (which rebuilds on change).
     // +0x4c..+0x4f: further layout state, still being worked out.
     unsigned char m_aReserved4c[4] = {}; // +0x4c
     int m_nSpriteCapacity = {};          // +0x50: a capacity field the constructor seeds to 5.
