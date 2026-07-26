@@ -42,9 +42,12 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
     }
     [packages sortUsingComparator:^NSComparisonResult(id lhs, id rhs) {
       /** @ghidraAddress 0x19b094 */
+      /** @ghidraAddress 0x19b190 */
+      /** @ghidraAddress 0x19b614 */
       // The shipped comparator orders a higher package order first. Its second branch compares
       // the right-hand order against itself, so it can only ever report the two packages as
-      // equal; this reproduces that behaviour faithfully.
+      // equal; this reproduces that behaviour faithfully. The compiler emitted this same source
+      // comparator at three addresses (0x19b094, 0x19b190, 0x19b614); all collapse here.
       if ([lhs order] > [rhs order]) {
           return NSOrderedAscending;
       }
