@@ -57,6 +57,24 @@ public:
      */
     void StartFadeOut(float flDuration);
 
+    /**
+     * @brief Begins the marker fade-in on marker @p nMarkerIndex: eases the markers to opaque over
+     * @p flDuration (snapping to opaque and marking the colour dirty when the duration is
+     * non-positive) and resets the effect timer.
+     * @param flDuration The fade duration.
+     * @param nMarkerIndex The marker index to activate.
+     * @ghidraAddress 0x180400
+     */
+    void StartFadeIn(float flDuration, int nMarkerIndex);
+
+    /**
+     * @brief Sets the low-gauge danger/warning intensity (clamped to @c [0, 1] and mapped to the
+     * warning brightness range), marking the colour dirty.
+     * @param flLevel The normalised danger level.
+     * @ghidraAddress 0x180464
+     */
+    void SetDangerLevel(float flLevel);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its scales, and computing
@@ -78,10 +96,10 @@ private:
     LinearTween m_fadeChannel;           // +0x50: the marker fade channel.
     float m_flScaleX = {};               // +0x64: a scale the constructor seeds to 1.
     float m_flScaleY = {};               // +0x68: a scale the constructor seeds to 1.
-    int m_nReserved6c = {};              // +0x6c: an int the constructor zero-clears.
+    int m_nEffectTimer = {};             // +0x6c: the fade-in effect timer, reset by StartFadeIn.
     float m_aTransform[6] = {};          // +0x70: a six-float transform block seeded from a table.
     int m_nReserved88 = {};              // +0x88: an int the constructor zero-clears.
-    float m_flReserved8c = {};           // +0x8c: a float the constructor seeds to 1.
+    float m_flDangerBrightness = {};     // +0x8c: the low-gauge danger/warning brightness.
     int m_nMarkerCount = {};             // +0x90: the active marker count (6 for theme 0, else 4).
     unsigned char m_aReserved94[4] = {}; // +0x94: padding to the 0x98-byte allocation size.
 };

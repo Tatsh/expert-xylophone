@@ -75,13 +75,18 @@ const UvEntry &LookupUv(int nUvIndex) {
     return kUvTable[0];
 }
 
+// The danger/warning brightness maps a normalised level onto [kDangerBrightnessBase,
+// kDangerBrightnessBase + kDangerBrightnessRange] = [0.3, 1.0].
+constexpr float kDangerBrightnessRange = 0.7f;
+constexpr float kDangerBrightnessBase = 0.3f;
+
 } // namespace
 
 /** @ghidraAddress 0x17fc00 */
 ThemaMarkerLayer::ThemaMarkerLayer() {
     m_flScaleX = 1.0f;
     m_flScaleY = 1.0f;
-    m_flReserved8c = 1.0f;
+    m_flDangerBrightness = 1.0f;
 
     // Assign each marker group a non-overlapping index range within its batch, accumulating each
     // batch's total sprite capacity as it goes.
@@ -167,4 +172,26 @@ void ThemaMarkerLayer::StartFadeOut(float flDuration) {
         m_fadeChannel.SetCurrent(0.0f);
         m_bFadeColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x180400 */
+void ThemaMarkerLayer::StartFadeIn(float flDuration, int nMarkerIndex) {
+    m_nActiveMarker = nMarkerIndex;
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(1.0f);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to opaque and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(1.0f);
+        m_bFadeColorDirty = true;
+    }
+    m_nEffectTimer = 0;
+}
+
+/** @ghidraAddress 0x180464 */
+void ThemaMarkerLayer::SetDangerLevel(float flLevel) {
+    const float flClamped = flLevel < 0.0f ? 0.0f : (flLevel > 1.0f ? 1.0f : flLevel);
+    m_flDangerBrightness = flClamped * kDangerBrightnessRange + kDangerBrightnessBase;
+    m_bFadeColorDirty = true;
 }
