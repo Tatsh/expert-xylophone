@@ -194,6 +194,40 @@ public:
      */
     void UpdateStepShot();
 
+    /**
+     * @brief The state-machine approach step (state 1): tracks the note's lead-in until its path
+     * head time is reached, then links its path and advances it. Reconstruction pending.
+     * @ghidraAddress 0x131bc0
+     */
+    void UpdateStepApproach();
+
+    /**
+     * @brief The state-machine existing step (state 2): advances the note, reflects it off the play
+     * field, and judges its timing or miss. Reconstruction pending.
+     * @ghidraAddress 0x131e3c
+     */
+    void UpdateStepExisted();
+
+    /**
+     * @brief The state-machine long-touched step (state 3): follows the held long-note path and
+     * registers touches, scoring on completion. Reconstruction pending.
+     * @ghidraAddress 0x1324c4
+     */
+    void UpdateStepLongTouched();
+
+    /**
+     * @brief The state-machine slide-existing step (state 5): advances a slide note along its path.
+     * Reconstruction pending.
+     * @ghidraAddress 0x132be0
+     */
+    void UpdateStepSlideExisted();
+
+    /**
+     * @brief Dispatches one per-frame note update to the step handler for the note's current state.
+     * @ghidraAddress 0x131b64
+     */
+    void UpdateStep();
+
     /** @brief The note's index in its sheet. */
     int GetNoteIndex() const {
         return m_nNoteIndex;

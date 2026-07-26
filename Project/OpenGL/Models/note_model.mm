@@ -227,7 +227,14 @@ constexpr float kWaypointTimeOffset = -1500.0f;
 // The fade-out step's per-frame decay divisor (negative, so the timer counts down)
 // (@ghidraAddress 0x2fd050 = -300.0).
 constexpr float kFadeDecayDivisor = -300.0f;
-// The note-state-machine states the fade-out step reads and writes.
+// The note-state-machine states the per-frame dispatcher switches on. State 6 (transitional) and
+// any unlisted value do nothing; state 8 is the finished state the steps advance to.
+constexpr int kNoteStateApproach = 1;
+constexpr int kNoteStateExisting = 2;
+constexpr int kNoteStateLongTouched = 3;
+constexpr int kNoteStateShot = 4;
+constexpr int kNoteStateSlideExisting = 5;
+constexpr int kNoteStateFadeOut = 7;
 constexpr int kNoteStateFinished = 8;
 // The shot step's packed render draw flags: {bDrawFlag0 = 0, bDrawFlag1 = 1}.
 constexpr unsigned short kShotDrawFlags = 0x100;
@@ -280,6 +287,32 @@ void NoteModel::UpdateStepShot() {
     if (flCullY < offset.y) {
         m_nState = kNoteStateFinished;
         m_nSubState = 0;
+    }
+}
+
+/** @ghidraAddress 0x131b64 */
+void NoteModel::UpdateStep() {
+    switch (m_nState) {
+    case kNoteStateApproach:
+        UpdateStepApproach();
+        break;
+    case kNoteStateExisting:
+        UpdateStepExisted();
+        break;
+    case kNoteStateLongTouched:
+        UpdateStepLongTouched();
+        break;
+    case kNoteStateShot:
+        UpdateStepShot();
+        break;
+    case kNoteStateSlideExisting:
+        UpdateStepSlideExisted();
+        break;
+    case kNoteStateFadeOut:
+        UpdateStepFadeOut();
+        break;
+    default:
+        break;
     }
 }
 
