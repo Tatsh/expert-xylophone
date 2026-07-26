@@ -77,6 +77,12 @@ void MainFrameLayer::SetFrameType(int nType) {
     BuildSprites();
 }
 
+/** @ghidraAddress 0x17c864 */
+void MainFrameLayer::BuildGeometry() {
+    SetOverlayLayout();
+    Build3dVertices();
+}
+
 /** @ghidraAddress 0x17c4dc */
 void MainFrameLayer::SetMarker(int nMarker, int nDifficulty) {
     if (!m_bReady) {

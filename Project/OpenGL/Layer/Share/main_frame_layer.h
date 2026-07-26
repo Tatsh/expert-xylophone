@@ -77,7 +77,20 @@ public:
      */
     void SetMarker(int nMarker, int nDifficulty);
 
+    /**
+     * @brief Rebuilds the full frame geometry: the marker/difficulty overlay layout and the 3D frame
+     * vertices.
+     * @ghidraAddress 0x17c864
+     */
+    void BuildGeometry();
+
 private:
+    /**
+     * @brief Rebuilds the frame's 3D vertex mesh. Reconstruction pending.
+     * @ghidraAddress 0x17c16c
+     */
+    void Build3dVertices();
+
     /**
      * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
      * @ghidraAddress 0x17b654
