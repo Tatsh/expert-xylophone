@@ -346,6 +346,17 @@ extern const double g_PaletteColorGoldBlue;        /*!< @ghidraAddress 0x2ef658 
  */
 void InitializeUIColorPalette(void);
 /**
+ * @brief The gauge-parts scale table: the two per-side X scales (-8/9 and +8/9) that
+ * @c SyncGaugeValuesFromGameSystem applies to the sheet inset, plus a trailing 288 constant.
+ * @ghidraAddress 0x3dc5c0
+ */
+extern float g_aGaugePartsScale[3];
+/**
+ * @brief Seeds @c g_aGaugePartsScale. Run once at startup.
+ * @ghidraAddress 0x83cf0
+ */
+void InitializeGaugeAngleTable(void);
+/**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90
  */

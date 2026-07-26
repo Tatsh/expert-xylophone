@@ -55,6 +55,9 @@ const double g_PaletteColorGoldRed = 0.89803922176361084;
 const double g_PaletteColorGoldGreen = 0.71764707565307617;
 const double g_PaletteColorGoldBlue = 0.19215686619281769;
 
+// The gauge-parts scale table, seeded by InitializeGaugeAngleTable.
+float g_aGaugePartsScale[3];
+
 // The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
 // storage because they are assigned at load time, not compile time.
 NSString *g_pLocalizedAbort;
@@ -297,7 +300,20 @@ __attribute__((constructor)) void InitializeUiColorConstants(void) {
 namespace {
 // The dimming-cover overlay is black at half alpha.
 constexpr CGFloat kDimmingCoverAlpha = 0.5;
+// The gauge-parts scale table entries: the two per-side X scales (-/+ 8/9) and the trailing 288.
+constexpr float kGaugePartsScaleNegative = -0.88888889f;
+constexpr float kGaugePartsScalePositive = 0.88888889f;
+constexpr float kGaugePartsScaleTrailing = 288.0f;
 } // namespace
+
+/** @ghidraAddress 0x83cf0 */
+__attribute__((constructor)) void InitializeGaugeAngleTable(void) {
+    @autoreleasepool {
+        g_aGaugePartsScale[0] = kGaugePartsScaleNegative;
+        g_aGaugePartsScale[1] = kGaugePartsScalePositive;
+        g_aGaugePartsScale[2] = kGaugePartsScaleTrailing;
+    }
+}
 
 /** @ghidraAddress 0x55120 */
 __attribute__((constructor)) void InitializeUIColorPalette(void) {
