@@ -4,6 +4,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#include "texture_cache_control.h"
+
 namespace {
 
 // The media-timer scale: elapsed seconds are reported in milliseconds. @ghidraAddress 0x2eeea0
@@ -39,6 +41,21 @@ constexpr int kClearRank1 = 1;
 constexpr int kClearRank0 = 0;
 
 } // namespace
+
+// The texture-cache control singleton, lazily allocated by EnsureTextureCacheSingleton.
+TextureCacheControl *g_pTextureCacheControl = nullptr; // @ghidraAddress 0x3cff20
+
+/** @ghidraAddress 0x3198c */
+void EnsureTextureCacheSingleton(unsigned char firstByte) {
+    if (g_pTextureCacheControl != nullptr) {
+        return;
+    }
+    g_pTextureCacheControl = new TextureCacheControl();
+    g_pTextureCacheControl->nTag = firstByte;
+    g_pTextureCacheControl->pNext = nullptr;
+    g_pTextureCacheControl->nValue = 0;
+    g_pTextureCacheControl->pSpare = nullptr;
+}
 
 /** @ghidraAddress 0x14992c */
 int GetClearRank(float achievementRate) {
