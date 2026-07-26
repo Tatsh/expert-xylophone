@@ -120,6 +120,17 @@ public:
      */
     bool CheckPointInRect(float flX, float flY, unsigned int nLaneIndex) const;
 
+    /**
+     * @brief Emits the pause-gauge sprites for one lane (0 to 2).
+     *
+     * The dimmed lanes draw at half alpha; on the main frame with a non-Colette theme the gauge is
+     * drawn as a left arrow, a right arrow, and a centre element, otherwise as a single sprite. The
+     * Limelight and Colette themes additionally dim the 2P lane when no pastel bonus is active.
+     * @param nLaneIndex The lane to render.
+     * @ghidraAddress 0x151000
+     */
+    void RenderForLane(unsigned int nLaneIndex);
+
 private:
     /**
      * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the

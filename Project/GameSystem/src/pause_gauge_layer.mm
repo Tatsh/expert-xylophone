@@ -194,6 +194,70 @@ bool PauseGaugeLayer::CheckPointInRect(float flX, float flY, unsigned int nLaneI
            AxisInRect(flY, lane.flCenterY, size.nHeight);
 }
 
+namespace {
+// The two-player lane whose gauge dims when no pastel bonus is active on the Limelight/Colette
+// themes, and the slot-index bases the arrow and single-sprite emits use.
+constexpr unsigned int kSecondPlayerLane = 1;
+constexpr unsigned int kArrowSlotBase = 4;    // left/right arrow slot = lane + 4.
+constexpr unsigned int kCenterSlotBase = 7;   // centre element slot = lane + 7.
+constexpr unsigned int kSingleSlotBase = 1;   // single-sprite slot (main frame) = lane + 1.
+constexpr unsigned int kColetteSlotBase = 10; // single-sprite slot (Colette) = lane + 10.
+// The horizontal flip factors for the left and right arrows.
+constexpr float kArrowFlipLeft = 1.0f;
+constexpr float kArrowFlipRight = -1.0f;
+constexpr unsigned int kOpaqueAlpha = 0xff;
+} // namespace
+
+/** @ghidraAddress 0x151000 */
+void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
+    if (nLaneIndex > 2) {
+        return;
+    }
+    const PauseGaugeLaneGeometry &lane = m_aLaneGeometry[nLaneIndex];
+    // Dimmed lanes draw at half alpha.
+    unsigned int nAlpha = lane.bDimmed ? 0x80 : kOpaqueAlpha;
+
+    const int nThema = RBUserSettingData.sharedInstance.thema;
+    // The Limelight and Colette themes dim the 2P lane unless a pastel bonus is active.
+    unsigned int nLaneAlpha = nAlpha;
+    if (nThema == RBUserSettingDataThemeLimelight || nThema == RBUserSettingDataThemeColette) {
+        const bool bPastelBonus = GameSystem::GetGameSystem()->GetPastelBonusType() != 0;
+        nLaneAlpha = (bPastelBonus || nLaneIndex != kSecondPlayerLane) ? nAlpha : 0x80;
+    }
+
+    const S_VECTOR2 center{lane.flCenterX, lane.flCenterY};
+    unsigned int nSingleSlotBase = kSingleSlotBase;
+
+    // On the main frame with a non-Colette theme, the gauge is a left arrow, a right arrow, and a
+    // centre element; the alt frame and the Colette theme draw a single sprite instead.
+    if (!IsFontVariant() && nThema != RBUserSettingDataThemeColette) {
+        const unsigned int nArrowSlot = nLaneIndex + kArrowSlotBase;
+        const int nGaugeWidth = g_aPauseGaugeRectDefault[nLaneIndex].nWidth;
+        const int nHalfWidth = nGaugeWidth < 0 ? (nGaugeWidth + 1) >> 1 : nGaugeWidth >> 1;
+        const float flCenterInset = g_aPauseGaugeLayoutDefault[nArrowSlot].flSizeW;
+        nLaneAlpha &= 0xff;
+
+        const S_VECTOR2 leftArrow{center.x - static_cast<float>(nHalfWidth), center.y};
+        EmitSprite(kArrowFlipLeft, nArrowSlot, leftArrow, nLaneAlpha, kOpaqueAlpha);
+        const S_VECTOR2 rightArrow{center.x + static_cast<float>(nHalfWidth), center.y};
+        EmitSprite(kArrowFlipRight, nArrowSlot, rightArrow, nLaneAlpha, kOpaqueAlpha);
+        const S_VECTOR2 centerPos{flCenterInset + (center.x - static_cast<float>(nHalfWidth)),
+                                  center.y};
+        EmitSprite(static_cast<float>(nGaugeWidth) + flCenterInset * -2.0f,
+                   nLaneIndex + kCenterSlotBase,
+                   centerPos,
+                   nLaneAlpha,
+                   kOpaqueAlpha);
+        nSingleSlotBase = kSingleSlotBase;
+    } else if (!IsFontVariant()) {
+        // The Colette theme on the main frame draws a single sprite at its own slot base.
+        nSingleSlotBase = kColetteSlotBase;
+    }
+
+    nLaneAlpha &= 0xff;
+    EmitSprite(1.0f, nLaneIndex + nSingleSlotBase, center, nLaneAlpha, kOpaqueAlpha);
+}
+
 /** @ghidraAddress 0x1508b0 */
 void PauseGaugeLayer::OnFrame(void *pFrameArg) {
     (void)pFrameArg; // The pause gauge does no per-frame work; its sprites are rendered externally.

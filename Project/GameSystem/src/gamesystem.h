@@ -363,6 +363,10 @@ public:
     void SetPaused(bool value) {
         m_fPaused = value;
     }
+    /** @brief The pastel-bonus type for the current play (0 when no bonus is active). */
+    int GetPastelBonusType() const {
+        return m_nPastelBonusType;
+    }
     /**
      * @brief Stores the sheet-layer base position and recomputes its derived anchor points.
      * @ghidraAddress 0x12f33c
