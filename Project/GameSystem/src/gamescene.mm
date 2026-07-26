@@ -141,6 +141,31 @@ void ResumePlayTimerAndBgm(void) {
     }
 }
 
+/** @ghidraAddress 0x14af90 */
+void InitGameSceneModeNormal(GameScene *pScene) {
+    pScene->SetMode(0);
+    pScene->Init();
+    pScene->SetState(2);
+}
+
+/** @ghidraAddress 0x14afbc */
+void InitGameSceneModeAlt(GameScene *pScene) {
+    pScene->SetMode(1);
+    pScene->Init();
+    pScene->SetState(0x10);
+}
+
+/**
+ * @ghidraAddress 0x8c884
+ * @ghidraAddress 0x8c8a8
+ */
+void ResumeRenderLoopIfActive(void) {
+    GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
+    if (pScene != nullptr) {
+        InitGameSceneModeAlt(pScene);
+    }
+}
+
 /** @ghidraAddress 0x15139c */
 void HandlePauseResume(void) {
     // Resume play only when a scene is active, then play the pause-menu confirm effect.

@@ -15,6 +15,25 @@ public:
     int GetState() const {
         return m_nState;
     }
+
+    /**
+     * @brief Initialises the scene for the current play mode.
+     *
+     * A large routine that builds the scene's layers and play state; declared here so the
+     * mode-enter callbacks can run it. Reconstruction pending.
+     * @ghidraAddress 0x14a518
+     */
+    void Init();
+
+    /** @brief Sets the scene's play mode (0 normal, 1 alternate). */
+    void SetMode(int nMode) {
+        m_nMode = nMode;
+    }
+    /** @brief Sets the scene's state and clears its per-state sub-step. */
+    void SetState(int nState) {
+        m_nState = nState;
+        m_nStateSubStep = 0;
+    }
     /**
      * @brief Advances this scene from state 0x11 to 0x12.
      * @ghidraAddress 0x14aff8
@@ -64,7 +83,38 @@ private:
     // +0x54..+0x5f: further scene state, still being worked out.
     unsigned char m_aReserved54[0xc] = {}; // +0x54
     int m_nBgmVoiceHandle = {};            // +0x60: the active BGM voice handle, cleared on stop.
+    unsigned char m_aReserved64[0xc] = {}; // +0x64
+    int m_nMode = {};                      // +0x70: the play mode (0 normal, 1 alternate).
 };
+
+/**
+ * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
+ *
+ * Sets the scene's mode to normal, runs @c GameScene::Init, and advances it to state 2.
+ * @param pScene The game scene.
+ * @ghidraAddress 0x14af90
+ */
+void InitGameSceneModeNormal(GameScene *pScene);
+
+/**
+ * @brief Scene-mode-enter callback: enters alternate play mode and initialises the scene.
+ *
+ * Sets the scene's mode to alternate, runs @c GameScene::Init, and advances it to state 0x10.
+ * @param pScene The game scene.
+ * @ghidraAddress 0x14afbc
+ */
+void InitGameSceneModeAlt(GameScene *pScene);
+
+/**
+ * @brief Re-enters alternate play mode on the current scene when the game system has one active.
+ *
+ * A render-loop resume hook: when the game system holds a current scene, runs the alternate
+ * mode-enter callback on it; otherwise does nothing. The binary emits two byte-identical copies for
+ * two call sites.
+ * @ghidraAddress 0x8c884
+ * @ghidraAddress 0x8c8a8
+ */
+void ResumeRenderLoopIfActive(void);
 
 /**
  * @brief Resumes the play timer and background music after an interruption.
