@@ -107,3 +107,13 @@ void FullComboColetteLayer::ClearEffectFlags() {
         effect.m_bActive = false;
     }
 }
+
+/** @ghidraAddress 0x9b378 */
+bool FullComboColetteLayer::IsAnyEffectActive() const {
+    for (const EffectRecord &effect : m_aEffects) {
+        if (effect.m_bActive) {
+            return true;
+        }
+    }
+    return false;
+}

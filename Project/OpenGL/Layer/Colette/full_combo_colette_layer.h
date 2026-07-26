@@ -65,6 +65,13 @@ public:
      */
     void ClearEffectFlags();
 
+    /**
+     * @brief Whether any player colour's full-combo effect is currently active.
+     * @return @c true when at least one effect record's active flag is set.
+     * @ghidraAddress 0x9b378
+     */
+    bool IsAnyEffectActive() const;
+
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 3;
     // The number of player colours with a full-combo effect record.
