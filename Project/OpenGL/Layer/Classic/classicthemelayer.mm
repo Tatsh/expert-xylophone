@@ -105,3 +105,17 @@ void ClassicThemeLayer::InitializeScoreValuesFromTracker() {
             ScoreTracker::shared()->GetPlayRecordField10(static_cast<unsigned int>(nSide));
     }
 }
+
+/** @ghidraAddress 0x10a080 */
+void ClassicThemeLayer::StartGaugeValueFade(float flDuration) {
+    // The score-gauge block doubles as a value tween: [1] is the ramp start, [2] the elapsed time,
+    // and [3] the duration, ramping towards m_flScoreGaugeTarget.
+    m_aScoreGaugeBlock[1] = m_flScoreGaugeTarget;
+    m_aScoreGaugeBlock[2] = 0.0f;
+    m_aScoreGaugeBlock[3] = flDuration;
+    m_nScoreGaugeState = 0;
+    // A non-positive duration takes effect immediately: snap the target to zero.
+    if (flDuration <= 0.0f) {
+        m_flScoreGaugeTarget = 0.0f;
+    }
+}

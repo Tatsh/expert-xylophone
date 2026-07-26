@@ -67,6 +67,14 @@ public:
      */
     void InitializeScoreValuesFromTracker();
 
+    /**
+     * @brief Starts the score-gauge value animation, ramping the gauge from its current target over
+     * the given duration; a non-positive duration snaps the target to zero.
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x10a080
+     */
+    void StartGaugeValueFade(float flDuration);
+
 private:
     static constexpr int kBackgroundBatchCount = 3;
     static constexpr int kScoreValueCount = 2;
