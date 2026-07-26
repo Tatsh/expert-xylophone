@@ -93,7 +93,13 @@ public:
 
     /**
      * @brief The deleting destructor: unlinks and frees the buffer, then frees the node itself.
+     *
+     * The compiler emits this deleting-destructor body several times — the primary at @c 0x365d0 and
+     * the out-of-line thunks at @c 0x14a260 and @c 0x18be00 — each unlinking the base node and then
+     * freeing it; they all collapse to this one method.
      * @ghidraAddress 0x365d0
+     * @ghidraAddress 0x14a260
+     * @ghidraAddress 0x18be00
      */
     void DestroyAndFree();
 
