@@ -74,6 +74,10 @@ public:
     float GetSheetPosX() const {
         return m_flSheetPosX;
     }
+    /** @brief Returns the note sheet's near-plane y position (half-height reference). */
+    float GetSheetPosY() const {
+        return m_flSheetPosY;
+    }
     /** @brief Returns the far-plane x extent of the note sheet. */
     float GetSheetFarX() const {
         return m_flSheetFarX;

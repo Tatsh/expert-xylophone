@@ -16,6 +16,7 @@
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #import "soundeffectmanager.h"
+#include "sprite_uv_table.h"
 #include "touchmanager.h"
 
 namespace {
@@ -138,20 +139,6 @@ bool AxisInRect(float flCoord, float flCenter, int nSize) {
     return flLow <= flCoord && flCoord <= flHigh;
 }
 } // namespace
-
-namespace {
-// One UV-table record (the shared sprite UV atlas at 0x2efcc8, 16-byte stride): the UV origin and
-// UV size, indexed by a layout record's UV index.
-struct SpriteUvEntry {
-    float flOriginU = {};
-    float flOriginV = {};
-    float flSizeU = {};
-    float flSizeV = {};
-};
-} // namespace
-
-// The shared sprite UV atlas the layout records index. Read-only data embedded in the binary.
-extern const SpriteUvEntry g_aSpriteUvTable[]; // @ghidraAddress 0x2efcc8
 
 /** @ghidraAddress 0x150e8c */
 void PauseGaugeLayer::EmitSprite(float flFlip,

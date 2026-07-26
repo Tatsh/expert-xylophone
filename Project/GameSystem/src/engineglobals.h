@@ -80,6 +80,12 @@ extern float g_flPlayfieldNearLaneSlope;
  */
 extern float g_flPlayfieldNearLaneSlopeNeg;
 /**
+ * @brief The far-lane slope: the ratio of the far note row's offset to the field-centre row scale.
+ * Seeded by the play-field layout pass and used to place the far result-star rows.
+ * @ghidraAddress 0x3ce96c
+ */
+extern float g_flPlayfieldFarLaneSlope;
+/**
  * @brief The negative far-lane slope: the ratio of the far note row's offset to the field-centre row
  * scale, negated. Seeded by the play-field layout pass and used as a note's target travel line.
  * @ghidraAddress 0x3ce970
