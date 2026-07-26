@@ -65,12 +65,30 @@ public:
      */
     void SetFrameType(int nType);
 
+    /**
+     * @brief Sets the frame marker and difficulty, refreshing the overlay layout when either
+     * changes.
+     *
+     * Builds the sprites first if they are not yet built, records the new marker and difficulty, and
+     * re-lays-out the overlay only when one of them actually changed.
+     * @param nMarker The frame marker.
+     * @param nDifficulty The difficulty index shown on the frame.
+     * @ghidraAddress 0x17c4dc
+     */
+    void SetMarker(int nMarker, int nDifficulty);
+
 private:
     /**
      * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
      * @ghidraAddress 0x17b654
      */
     void BuildSprites();
+
+    /**
+     * @brief Re-lays-out the frame's marker/difficulty overlay sprites. Reconstruction pending.
+     * @ghidraAddress 0x17bd50
+     */
+    void SetOverlayLayout();
 
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its default layout
@@ -85,9 +103,8 @@ private:
     unsigned char m_aReserved30[0x18] = {}; // +0x30
     int m_nFrameType = {};                  // +0x48: the frame type, seeded to 0x20 and set by
                                             //        SetMainFrameType (which rebuilds on change).
-    // +0x4c..+0x4f: further layout state, still being worked out.
-    unsigned char m_aReserved4c[4] = {}; // +0x4c
-    int m_nSpriteCapacity = {};          // +0x50: a capacity field the constructor seeds to 5.
+    int m_nDifficulty = {};                 // +0x4c: the difficulty index shown on the frame.
+    int m_nMarker = {};                     // +0x50: the frame marker, seeded to 5.
     bool m_bReady = {}; // +0x54: cleared when the frame type changes (rebuild flag).
     unsigned char m_aReserved55[3] = {}; // +0x55
     LinearTween m_fadeChannel;           // +0x58: the frame alpha fade channel.

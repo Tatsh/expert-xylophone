@@ -7,9 +7,9 @@ static MainFrameLayer *g_pMainFrameLayer = nullptr; // @ghidraAddress 0x3dedb0
 
 namespace {
 
-// The fields the constructor seeds: the default frame type and the sprite capacity.
+// The fields the constructor seeds: the default frame type and the default marker.
 constexpr int kDefaultFrameType = 0x20;
-constexpr int kDefaultSpriteCapacity = 5;
+constexpr int kDefaultMarker = 5;
 
 // The frame's fully-opaque alpha endpoint (255).
 constexpr float kFrameAlphaOpaque = 255.0f;
@@ -22,7 +22,7 @@ MainFrameLayer::MainFrameLayer() {
     // The base constructor and the zero-initialised members clear the layer; the constructor then
     // seeds the two non-zero defaults.
     m_nFrameType = kDefaultFrameType;
-    m_nSpriteCapacity = kDefaultSpriteCapacity;
+    m_nMarker = kDefaultMarker;
 }
 
 /** @ghidraAddress 0x17b5d4 */
@@ -75,4 +75,22 @@ void MainFrameLayer::SetFrameType(int nType) {
     m_nFrameType = nType;
     m_bReady = false;
     BuildSprites();
+}
+
+/** @ghidraAddress 0x17c4dc */
+void MainFrameLayer::SetMarker(int nMarker, int nDifficulty) {
+    if (!m_bReady) {
+        BuildSprites();
+    }
+    // Record the new marker/difficulty; re-lay-out the overlay only when one of them changed.
+    bool bChanged = m_nMarker != nMarker;
+    if (bChanged) {
+        m_nMarker = nMarker;
+    }
+    if (m_nDifficulty != nDifficulty) {
+        m_nDifficulty = nDifficulty;
+    } else if (!bChanged) {
+        return;
+    }
+    SetOverlayLayout();
 }
