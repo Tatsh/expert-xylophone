@@ -17,37 +17,28 @@
 static constexpr int kIdlePriority = 9;
 
 namespace {
-// The sentinel's per-frame callback is a no-op (the list terminator carries no behaviour).
-void SentinelOnFrame(SortedListenerNode *, void *) {
+
+// The list's sentinel (also its head and tail terminator): a node whose per-frame callback does
+// nothing. Seeded by InitializeGlobalContainer.
+class ListenerListSentinel : public SortedListenerNode {
+public:
+    void OnFrame(void *) override {
+    }
+};
+
+ListenerListSentinel g_listenerListSentinel;
+
+// Registers the sentinel's teardown at process exit, matching the binary's __cxa_atexit call.
+void DestroyGlobalListenerContainer() {
+    g_listenerListSentinel.~ListenerListSentinel();
 }
 
-// Dispatch-table adapters that forward the plain node-pointer vtable slots to the node's methods:
-// the no-op callback (slot 0), the non-deleting destructor (slot 1), and the deleting one (slot 2).
-void SentinelDestroyNode(SortedListenerNode *pNode) {
-    pNode->Unlink();
-}
-void SentinelDeleteNode(SortedListenerNode *pNode) {
-    pNode->DestroyAndFree();
-}
-SortedListenerNodeVtable g_sentinelVtable = {
-    SentinelOnFrame, SentinelDestroyNode, SentinelDeleteNode};
-
-// The base node's dispatch table (@ghidraAddress 0x359530): a plain node carries a no-op per-frame
-// callback and the two node destructors; concrete listeners/tasks install their own table over it.
-void BaseOnFrame(SortedListenerNode *, void *) {
-}
-void BaseDestroyNode(SortedListenerNode *pNode) {
-    pNode->Unlink();
-}
-void BaseDeleteNode(SortedListenerNode *pNode) {
-    pNode->DestroyAndFree();
-}
-SortedListenerNodeVtable g_baseNodeVtable = {BaseOnFrame, BaseDestroyNode, BaseDeleteNode};
 } // namespace
 
 /** @ghidraAddress 0x36558 */
 SortedListenerNode::SortedListenerNode() {
-    m_pVtable = &g_baseNodeVtable;
+    // The compiler installs the vtable; this constructor self-links the node, seeds the idle
+    // priority, and clears the owned buffer and dead flag.
     m_pPrev = this;
     m_pNext = this;
     m_nPriority = kIdlePriority;
@@ -55,17 +46,28 @@ SortedListenerNode::SortedListenerNode() {
     m_bDead = false;
 }
 
-// The list's sentinel node (also its head/tail terminator), seeded by InitializeGlobalContainer.
-SortedListenerNode g_listenerListSentinel;
+/**
+ * @ghidraAddress 0x36580
+ * @ghidraAddress 0x365d0
+ * @ghidraAddress 0x14a260
+ * @ghidraAddress 0x18be00
+ */
+SortedListenerNode::~SortedListenerNode() {
+    Unlink();
+}
 
-// Registers the sentinel's teardown at process exit, matching the binary's __cxa_atexit call.
-static void DestroyGlobalListenerContainer() {
-    g_listenerListSentinel.Destroy();
+void SortedListenerNode::OnFrame(void *) {
+}
+
+void SortedListenerNode::Unlink() {
+    m_pNext->m_pPrev = m_pPrev;
+    m_pPrev->m_pNext = m_pNext;
+    delete[] m_pBuffer;
+    m_pBuffer = nullptr;
 }
 
 /** @ghidraAddress 0x366ac */
 void SortedListenerNode::InitializeGlobalContainer() {
-    g_listenerListSentinel.m_pVtable = &g_sentinelVtable;
     g_listenerListSentinel.m_nPriority = kIdlePriority;
     g_listenerListSentinel.m_pPrev = &g_listenerListSentinel;
     g_listenerListSentinel.m_pNext = &g_listenerListSentinel;
@@ -99,20 +101,6 @@ void SortedListenerNode::InsertSorted(int nPriority) {
     m_nPriority = nPriority;
 }
 
-/** @ghidraAddress 0x36580 */
-void SortedListenerNode::Unlink() {
-    m_pNext->m_pPrev = m_pPrev;
-    m_pPrev->m_pNext = m_pNext;
-    delete[] m_pBuffer;
-    m_pBuffer = nullptr;
-}
-
-/** @ghidraAddress 0x365d0 */
-void SortedListenerNode::DestroyAndFree() {
-    Unlink();
-    delete this;
-}
-
 /** @ghidraAddress 0x36628 */
 void DispatchListenerList(void *pFrameArg) {
     // Walk the list from the head. A live node gets its per-frame callback and the walk advances to
@@ -125,7 +113,7 @@ void DispatchListenerList(void *pFrameArg) {
             pNode = pNode->GetNext();
         } else {
             SortedListenerNode *pNext = pNode->GetNext();
-            pNode->Destroy();
+            delete pNode;
             pNode = pNext;
         }
     }

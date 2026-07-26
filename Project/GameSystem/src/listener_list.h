@@ -18,37 +18,46 @@
 //  program image base.
 //
 
-class SortedListenerNode;
-
-/**
- * @brief A listener node's dispatch table.
- *
- * The engine uses a custom slot layout: slot 0 is the per-frame callback, slot 1 the non-deleting
- * destructor, and slot 2 the deleting destructor.
- */
-struct SortedListenerNodeVtable {
-    void (*pfnOnFrame)(SortedListenerNode *pNode, void *pFrameArg); // slot 0 (+0x00): per-frame.
-    void (*pfnDestroyNode)(SortedListenerNode *pNode);              // slot 1 (+0x08): non-deleting.
-    void (*pfnDestroy)(SortedListenerNode *pNode);                  // slot 2 (+0x10): deleting.
-};
-
 /**
  * @brief One intrusive node in the engine's priority-sorted listener list.
  *
- * Its first slot is the dispatch table, through which the list invokes the per-frame callback and
- * the destructors. The prev/next links thread the circular list, and the priority is its sort key.
- * The trailing @c // +0xNN comments document the original member offsets for reference only.
+ * A polymorphic base: the compiler emits its vtable at offset 0, whose slots are the per-frame
+ * callback @c OnFrame (slot 0) and the two destructor variants the compiler generates for
+ * @c ~SortedListenerNode (the complete-object destructor at slot 1 and the deleting destructor at
+ * slot 2). The prev/next links thread the circular list and the priority is its sort key. Concrete
+ * listeners (the sentinel, the UI layers) derive from this and override @c OnFrame. The trailing
+ * @c // +0xNN comments document the original member offsets for reference only.
  * @ghidraAddress SortedListenerNode (engine listener-list node)
  */
 class SortedListenerNode {
 public:
     /**
-     * @brief Constructs an unlinked node: installs the base dispatch table, self-links the node
-     * (its prev and next point to itself), seeds the idle priority, and clears the owner and dead
-     * flag. Every concrete listener/task runs this base constructor before setting up its own state.
+     * @brief Constructs an unlinked node: self-links the node (its prev and next point to itself),
+     * seeds the idle priority, and clears the owned buffer and dead flag. Every concrete listener
+     * runs this base constructor before setting up its own state.
      * @ghidraAddress 0x36558
      */
     SortedListenerNode();
+
+    /**
+     * @brief Unlinks the node from its list and frees its owned buffer.
+     *
+     * The compiler emits this destructor as three bodies — the complete-object variant at
+     * @c 0x36580, the deleting variant at @c 0x365d0, and the out-of-line deleting thunks at
+     * @c 0x14a260 and @c 0x18be00 — which all collapse to this one virtual destructor.
+     * @ghidraAddress 0x36580
+     * @ghidraAddress 0x365d0
+     * @ghidraAddress 0x14a260
+     * @ghidraAddress 0x18be00
+     */
+    virtual ~SortedListenerNode();
+
+    /**
+     * @brief The node's per-frame callback (vtable slot 0). The base does nothing; concrete
+     * listeners override it.
+     * @param pFrameArg The opaque per-frame argument passed by the dispatcher.
+     */
+    virtual void OnFrame(void *pFrameArg);
 
     /** @brief The previous node in the list. */
     SortedListenerNode *GetPrev() const {
@@ -66,14 +75,6 @@ public:
     bool IsDead() const {
         return m_bDead;
     }
-    /** @brief Invokes the node's per-frame callback (dispatch-table slot 0). */
-    void OnFrame(void *pFrameArg) {
-        m_pVtable->pfnOnFrame(this, pFrameArg);
-    }
-    /** @brief Invokes the node's deleting destructor (dispatch-table slot 2). */
-    void Destroy() {
-        m_pVtable->pfnDestroy(this);
-    }
 
     /**
      * @brief Inserts (or re-positions) this node in the global listener list, ascending by
@@ -85,25 +86,6 @@ public:
     void InsertSorted(int nPriority);
 
     /**
-     * @brief Unlinks this node from its list and frees its owned buffer (the non-deleting
-     * destructor body).
-     * @ghidraAddress 0x36580
-     */
-    void Unlink();
-
-    /**
-     * @brief The deleting destructor: unlinks and frees the buffer, then frees the node itself.
-     *
-     * The compiler emits this deleting-destructor body several times — the primary at @c 0x365d0 and
-     * the out-of-line thunks at @c 0x14a260 and @c 0x18be00 — each unlinking the base node and then
-     * freeing it; they all collapse to this one method.
-     * @ghidraAddress 0x365d0
-     * @ghidraAddress 0x14a260
-     * @ghidraAddress 0x18be00
-     */
-    void DestroyAndFree();
-
-    /**
      * @brief Seeds the global listener-list sentinel into an empty self-linked list at the sentinel
      * priority and registers its teardown with @c atexit. Run once at startup.
      * @ghidraAddress 0x366ac
@@ -111,16 +93,16 @@ public:
     static void InitializeGlobalContainer();
 
 protected:
-    // The members are protected so the derived task/UI-layer classes (which embed this base at
-    // offset 0 and append their own fields from +0x49) can install their own dispatch table and
-    // reach the base state. The object is exactly 0x49 bytes; derived classes' fields follow.
-    SortedListenerNodeVtable *m_pVtable = {}; // +0x00: the node's dispatch table.
-    SortedListenerNode *m_pPrev = {};         // +0x08: the previous node.
-    SortedListenerNode *m_pNext = {};         // +0x10: the next node.
-    int m_nPriority = {};                     // +0x18: the sort key (the task state field).
-    unsigned char m_aReserved1c[0x24] = {};   // +0x1c: node-specific state.
-    unsigned char *m_pBuffer = {};            // +0x40: an owned heap buffer, freed on destruction.
-    bool m_bDead = {};                        // +0x48: set when the node should be destroyed.
+    // Unlinks the node from its circular list (shared by the destructor and re-insertion).
+    void Unlink();
+
+    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual methods).
+    SortedListenerNode *m_pPrev = {};       // +0x08: the previous node.
+    SortedListenerNode *m_pNext = {};       // +0x10: the next node.
+    int m_nPriority = {};                   // +0x18: the sort key (the task state field).
+    unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
+    unsigned char *m_pBuffer = {};          // +0x40: an owned heap buffer, freed on destruction.
+    bool m_bDead = {};                      // +0x48: set when the node should be destroyed.
 };
 
 // code: language=C++
