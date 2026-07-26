@@ -217,13 +217,13 @@ unsigned int TitleScreenLayerClassic::AdvanceGestureState(int inputCode) {
     return 0;
 }
 
+/** @ghidraAddress 0x149ff4 */
 void TitleScreenLayerClassic::CalculateFade(int nDeltaFrames) {
-    /** @ghidraAddress 0x149ff4 */
     m_fadeChannel.Advance(static_cast<float>(nDeltaFrames));
 }
 
+/** @ghidraAddress 0x152548 */
 void TitleScreenLayerClassic::AdvanceFadeValue(int nDeltaFrames) {
-    /** @ghidraAddress 0x152548 */
     m_fadeValueChannel.Advance(static_cast<float>(nDeltaFrames));
 }
 
