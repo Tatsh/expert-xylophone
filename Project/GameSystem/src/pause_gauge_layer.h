@@ -13,15 +13,6 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
- * @brief The pause-gauge layer: the per-lane gauge shown while the game is paused.
- *
- * A @c GameUiLayerBase subclass registered as a per-frame task. It owns two sprite instancers and a
- * parts texture, and charges a per-lane gauge while the game is held paused. The per-lane sprite
- * geometry block is modelled as a reserved region until the sprite-emit and render family is
- * reconstructed. The trailing @c // +0xNN comments document the original member offsets for
- * reference only.
- */
-/**
  * @brief One pause-gauge rectangle size: the width and height of a lane's gauge hit rectangle.
  */
 struct PauseGaugeRectSize {
@@ -42,6 +33,13 @@ struct PauseGaugeLaneGeometry {
     unsigned char aReserved0d[3] = {}; // +0x0d
 };
 
+/**
+ * @brief The pause-gauge layer: the per-lane gauge shown while the game is paused.
+ *
+ * A @c GameUiLayerBase subclass registered as a per-frame task. It owns two sprite instancers and a
+ * parts texture, and charges a per-lane gauge while the game is held paused. The trailing
+ * @c // +0xNN comments document the original member offsets for reference only.
+ */
 class PauseGaugeLayer : public GameUiLayerBase {
 public:
     using LaneGeometry = PauseGaugeLaneGeometry;
