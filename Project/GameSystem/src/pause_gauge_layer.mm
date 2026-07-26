@@ -75,6 +75,24 @@ void PauseGaugeLayer::LoadSprites() {
     m_nState = kStateLoaded;
 }
 
+/**
+ * @ghidraAddress 0x150a7c
+ * @ghidraAddress 0x150b00
+ */
+PauseGaugeLayer::~PauseGaugeLayer() {
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+        if (pSprite != nullptr) {
+            // The sprite nodes are owned by the scene graph; flag them for the scene walker.
+            pSprite->RequestDelete();
+            pSprite = nullptr;
+        }
+    }
+}
+
 /** @ghidraAddress 0x150e58 */
 void PauseGaugeLayer::SetCharging() {
     // Only the first entry into the charging state plays the sound; later frames are a no-op.

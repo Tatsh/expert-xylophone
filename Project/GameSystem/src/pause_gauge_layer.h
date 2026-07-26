@@ -36,6 +36,17 @@ public:
     PauseGaugeLayer();
 
     /**
+     * @brief Destroys the layer: releases the parts atlas and flags each owned sprite instancer for
+     * the scene walker to delete.
+     *
+     * The binary emits a non-deleting destructor body (@c 0x150a7c) and a deleting variant
+     * (@c 0x150b00) that runs it then frees the object; both are this destructor.
+     * @ghidraAddress 0x150a7c
+     * @ghidraAddress 0x150b00
+     */
+    ~PauseGaugeLayer() override;
+
+    /**
      * @brief Marks the gauge as charging on first entry, playing the charge-start sound effect.
      *
      * A no-op when it is already charging.
