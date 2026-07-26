@@ -136,11 +136,11 @@ private:
     float m_flGaugeY = {};          // +0x2c: the cached gauge Y coordinate (viewport height).
     bool m_bActive = {};            // +0x30: whether the guide is showing; cleared to hide.
     // +0x31..+0x33 is alignment padding before the animation clock.
-    unsigned char m_aPad31[3] = {};      // +0x31
-    float m_flClock = {};                // +0x34: the guide animation clock, advanced each frame.
-    int m_nTimer = {};                   // +0x38: the guide timer, reset on start/reset.
-    short m_nFadeState = {};             // +0x3c: the fade state (1 = fading in).
-    unsigned char m_aReserved3e[2] = {}; // +0x3e: alignment before the keyframe table.
+    unsigned char m_aPad31[3] = {}; // +0x31
+    float m_flClock = {};           // +0x34: the guide animation clock, advanced each frame.
+    float m_flStateTimer = {};      // +0x38: the phase state-machine timer, reset on start/reset.
+    short m_nFadeState = {};        // +0x3c: the fade state (1 = fading in).
+    unsigned char m_aReserved3e[2] = {};        // +0x3e: alignment before the keyframe table.
     Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40: the nine keyframe timings.
     int m_nStepHi0 = {};                        // +0xac: a trailing step index (14).
     int m_nStepHi1 = {};                        // +0xb0: a trailing step index (15).

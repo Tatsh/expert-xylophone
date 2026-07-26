@@ -248,7 +248,7 @@ void TutorialGuideLayer::Start() {
 void TutorialGuideLayer::Reset() {
     m_nFadeState = kFadeStateHidden;
     GameSystem::GetGameSystem()->SetTutorialPhase(0);
-    m_nTimer = 0;
+    m_flStateTimer = 0.0f;
 }
 
 /** @ghidraAddress 0x10b350 */
