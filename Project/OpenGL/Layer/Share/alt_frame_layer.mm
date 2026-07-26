@@ -15,6 +15,8 @@ namespace {
 // The frame type and mode the constructor seeds.
 constexpr int kDefaultFrameType = 0x20;
 constexpr int kDefaultFrameMode = 5;
+// The fully-opaque alpha endpoint the fade-in eases toward (a 0-to-255 alpha channel).
+constexpr float kFrameAlphaOpaque = 255.0f;
 } // namespace
 
 /** @ghidraAddress 0x17a4a4 */
@@ -31,6 +33,19 @@ AltFrameLayer *AltFrameLayer::shared() {
         g_pAltFrameLayer = new AltFrameLayer();
     }
     return g_pAltFrameLayer;
+}
+
+/** @ghidraAddress 0x17b054 */
+void AltFrameLayer::StartFadeIn(float flDuration) {
+    RenderMarkers();
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(kFrameAlphaOpaque);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(kFrameAlphaOpaque);
+        m_bFadeDone = true;
+    }
 }
 
 /** @ghidraAddress 0x17b0ac */

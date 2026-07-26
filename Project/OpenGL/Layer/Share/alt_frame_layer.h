@@ -31,6 +31,14 @@ public:
     static AltFrameLayer *shared();
 
     /**
+     * @brief Rebuilds the frame markers, then begins the frame fade-in, easing to opaque (255) over
+     * @p flDuration (snapping and marking the fade done when the duration is non-positive).
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x17b054
+     */
+    void StartFadeIn(float flDuration);
+
+    /**
      * @brief Begins the frame fade-out, easing to transparent over @p flDuration (snapping and
      * marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
@@ -57,6 +65,12 @@ private:
      * @ghidraAddress 0x17a548
      */
     void BuildSprites();
+
+    /**
+     * @brief Rebuilds the frame's marker overlay sprites. Reconstruction pending.
+     * @ghidraAddress 0x17a9d8
+     */
+    void RenderMarkers();
 
     /**
      * @brief Constructs the layer: seeds the default frame type (32) and mode (5), and clears the
