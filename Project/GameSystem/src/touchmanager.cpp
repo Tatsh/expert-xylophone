@@ -12,8 +12,6 @@
 
 #include "touchmanager.h"
 
-#include <new>
-
 #include "engineruntime.h"
 #include "gamesystem.h"
 
