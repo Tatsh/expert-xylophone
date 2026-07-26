@@ -6,6 +6,7 @@
 #pragma once
 
 #include "game_ui_layer_base.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_SPRITE_INSTANCING;
@@ -18,6 +19,21 @@ class C_TEXTURE;
 struct PauseGaugeRectSize {
     int nWidth = {};  // +0x00: the rectangle width.
     int nHeight = {}; // +0x04: the rectangle height.
+};
+
+/**
+ * @brief One pause-gauge sprite layout record: the sprite's anchor, size, and UV-table index.
+ *
+ * A 28-byte read-only record; the emitter reads the anchor, size, and UV index from it. The trailing
+ * @c // +0xNN comments document the byte offsets.
+ */
+struct PauseGaugeSpriteLayout {
+    unsigned char aReserved00[8] = {}; // +0x00: leading fields the emitter does not read.
+    float flAnchorX = {};              // +0x08: the sprite anchor x.
+    float flAnchorY = {};              // +0x0c: the sprite anchor y.
+    float flSizeW = {};                // +0x10: the sprite size width.
+    float flSizeH = {};                // +0x14: the sprite size height.
+    int nUvIndex = {};                 // +0x18: the index into the UV table.
 };
 
 /**
@@ -112,6 +128,26 @@ private:
      */
     void LoadSprites();
 
+    /**
+     * @brief Emits one gauge sprite into the next free slot of its lane's instancer.
+     *
+     * Reads the sprite's anchor, size, and UV from the layout and UV tables (the size for slot 0
+     * comes from the game-system viewport instead), and writes the position, colour, and horizontal
+     * flip through the instancer. A no-op when the slot index is out of range or the instancer is
+     * full.
+     * @param flFlip The horizontal flip/scale factor.
+     * @param nSlotIndex The layout-table slot index (below 13).
+     * @param position The sprite position.
+     * @param nColorRgb The packed RGB colour (the same value fills all three channels).
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x150e8c
+     */
+    void EmitSprite(float flFlip,
+                    unsigned int nSlotIndex,
+                    const S_VECTOR2 &position,
+                    unsigned int nColorRgb,
+                    unsigned int nAlpha);
+
     int m_nState = {};                                     // +0x4c: the layer's build/render state.
     ne::C_TEXTURE *m_pTexture = {};                        // +0x50: the pause-gauge parts atlas.
     ne::C_SPRITE_INSTANCING *m_apSprites[kSlotCount] = {}; // +0x58: the gauge and parts instancers.
@@ -129,6 +165,11 @@ extern PauseGaugeRectSize
     g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
 extern PauseGaugeRectSize
     g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
+
+// The pause-gauge sprite layout tables (up to 13 records each): the default table and the
+// alt-frame-device table. Read-only render configuration embedded in the binary.
+extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[];  // @ghidraAddress 0x308fe0
+extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[]; // @ghidraAddress 0x308e74
 
 /**
  * @brief Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.
