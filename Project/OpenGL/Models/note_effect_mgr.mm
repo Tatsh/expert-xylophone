@@ -40,6 +40,35 @@ RbffNoteRecord *NoteEffectMgr::GetActiveNoteRecord(int nIndex) {
     return m_pMusicSheet->GetNoteRecordByIndex(nIndex);
 }
 
+namespace {
+// The note-record flag bits the effect manager queries.
+constexpr unsigned int kNoteFlagScoreExcluded = 1u << 2;
+constexpr unsigned int kNoteFlag40 = 1u << 6;
+} // namespace
+
+/** @ghidraAddress 0x137a88 */
+bool NoteEffectMgr::IsNoteScoreExcluded(int nIndex) {
+    if (m_pMusicSheet != nullptr) {
+        RbffNoteRecord *pRecord = m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+        if (pRecord != nullptr) {
+            return (pRecord->GetFlags() & kNoteFlagScoreExcluded) != 0;
+        }
+    }
+    return false;
+}
+
+/** @ghidraAddress 0x137ab8 */
+bool NoteEffectMgr::IsNoteFlag40Set(int nIndex) {
+    if (m_pMusicSheet != nullptr) {
+        RbffNoteRecord *pRecord = m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+        // The binary omits the record null-check here; the record is guarded anyway.
+        if (pRecord != nullptr) {
+            return (pRecord->GetFlags() & kNoteFlag40) != 0;
+        }
+    }
+    return false;
+}
+
 /** @ghidraAddress 0x137018 */
 NoteModel *NoteEffectMgr::FindNoteByIndex(int nIndex) {
     // A valid in-range index maps straight to its pooled object (when the pool covers it).

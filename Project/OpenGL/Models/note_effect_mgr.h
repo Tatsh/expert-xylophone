@@ -57,6 +57,23 @@ public:
     RbffNoteRecord *GetActiveNoteRecord(int nIndex);
 
     /**
+     * @brief Whether the note at @p nIndex is excluded from scoring (flag bit 2 of its record).
+     * @param nIndex The note-record index.
+     * @return @c true when the note is excluded from scoring; @c false when it is not or has no
+     *         record.
+     * @ghidraAddress 0x137a88
+     */
+    bool IsNoteScoreExcluded(int nIndex);
+
+    /**
+     * @brief Whether the note at @p nIndex has record flag bit 6 (mask 0x40) set.
+     * @param nIndex The note-record index.
+     * @return @c true when the flag is set; @c false otherwise.
+     * @ghidraAddress 0x137ab8
+     */
+    bool IsNoteFlag40Set(int nIndex);
+
+    /**
      * @brief Grows the note-object pool and active-list arrays to hold at least @p nCount objects.
      *
      * A no-op when the current capacity already covers @p nCount. Otherwise it allocates new pool
