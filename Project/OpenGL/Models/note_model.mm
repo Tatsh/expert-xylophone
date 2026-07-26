@@ -68,7 +68,7 @@ NoteModel::NoteModel(void *pSheet) {
         entry.nSeedA = kSubEntrySeed;
         entry.nSeedD = kSubEntrySeed;
     }
-    m_bFontVariant = IsPad();
+    m_bIsPad = IsPad();
 }
 
 /** @ghidraAddress 0x131aa8 */

@@ -22,7 +22,7 @@ constexpr int kTutorialPhaseGuideActive = 7;
 // above this value as the fade-out path).
 constexpr short kFadeStateHidden = 0x100;
 
-// Sprite kinds above this index are the small tap glyphs, halved on the non-pad font variant.
+// Sprite kinds above this index are the small tap glyphs, halved on the phone (non-pad).
 constexpr unsigned int kTapGlyphKindBound = 4;
 
 // The gauge-anchored blend offsets (@ghidraAddress 0x2f8568 X, 0x301f94 Y): the sprite is recentred
@@ -143,7 +143,7 @@ void TutorialGuideLayer::EmitTutorialSpriteSlot(
     // X blend.
     if ((m_nFadeState & 0xff) != 0) {
         float flY;
-        if (GetFontVariant() == 0) {
+        if (!IsPad()) {
             pPosition[0] = (pPosition[0] + kGaugeBlendOffsetX) * kGaugeBlendHalf +
                            m_flGaugeX * kGaugeBlendHalf;
             flY = (pPosition[1] + kGaugeBlendOffsetY) * kGaugeBlendHalf;
@@ -159,7 +159,7 @@ void TutorialGuideLayer::EmitTutorialSpriteSlot(
     pInstancer->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
     pInstancer->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
 
-    // On the non-pad font variant the small tap glyphs draw at half scale.
+    // On the phone (non-pad) the small tap glyphs draw at half scale.
     if (!IsPad() && nSpriteKind > kTapGlyphKindBound) {
         flSizeX *= kGaugeBlendHalf;
         flSizeY *= kGaugeBlendHalf;

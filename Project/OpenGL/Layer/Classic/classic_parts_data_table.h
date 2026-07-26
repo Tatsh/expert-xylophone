@@ -75,8 +75,8 @@ extern PhoneLayoutRecord
 extern PhoneLayoutRecord
     g_aClassicSeparatorPhoneLandscape[kClassicSeparatorRecordCount]; // @ghidraAddress 0x3d8c40
 
-// The Classic phone-layout position-by-state tables: the state table is used when the font-variant
-// state flag is set, otherwise the landscape or portrait table (selected by the orientation flag).
+// The Classic phone-layout position-by-state tables: the state table is used on the iPad, otherwise
+// the landscape or portrait table (selected by the orientation flag).
 // Zero-initialised in the binary's @c __common segment and filled at runtime; the record count is
 // not bounds-checked by the accessor.
 extern PhoneLayoutRecord g_aClassicPositionPhoneState[];          // @ghidraAddress 0x3d8fd8

@@ -14,6 +14,6 @@
 GameUiLayerBase::GameUiLayerBase() {
     // The task-node base constructor ran first (self-linking the node); the compiler installs this
     // class's vtable. Cache the device presentation flags.
-    m_bFontVariant = IsPad();
+    m_bIsPad = ::IsPad();
     m_bHardwareType9 = GetIsHardwareType9Flag();
 }

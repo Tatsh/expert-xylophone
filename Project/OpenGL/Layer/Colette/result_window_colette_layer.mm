@@ -32,7 +32,7 @@ PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount] = {}; // @gh
 extern const UvPaletteEntry g_aColettePartUvPalette[]; // @ghidraAddress 0x2f39d8
 
 // The single Colette phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor mode):
-// the state record, and the portrait and default records (selected by the font-variant and
+// the state record, and the portrait and default records (selected by the is-pad flag and
 // orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRect g_ColetteCenterPositionPhoneState = {};    // @ghidraAddress 0x3d6620
 PhoneLayoutRect g_ColetteCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3d6630
@@ -199,7 +199,7 @@ PartsDataRecord *ResultWindowColetteLayer::getPartsData_Phone(int nIndex) const 
 /** @ghidraAddress 0x73e50 */
 void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
-    if (GetFontVariant()) {
+    if (IsPad()) {
         *pOutRect = g_ColetteCenterPositionPhoneState;
         (void)GameSystem::
             GetGameSystem(); // The binary tail-calls the singleton getter and discards it.

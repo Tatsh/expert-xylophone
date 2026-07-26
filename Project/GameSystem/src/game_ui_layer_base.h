@@ -12,7 +12,7 @@
  * title-screen layers).
  *
  * It derives from the engine's task node (@c SortedListenerNode, the priority-sorted per-frame
- * listener / @c ne::C_TASK) and appends the shared presentation flags: the font variant and whether
+ * listener / @c ne::C_TASK) and appends the shared presentation flags: the is-pad flag and whether
  * the device is the older type-9 hardware. Every concrete UI layer derives from this base and runs
  * its constructor first, then overrides the per-frame callback and initialises its own fields. The
  * trailing @c // +0xNN comments document the original member offsets for reference only.
@@ -20,10 +20,10 @@
 class GameUiLayerBase : public SortedListenerNode {
 public:
     /**
-     * @brief The font-variant identifier cached for the current device.
+     * @brief Whether the device is an iPad (cached from @c IsPad at construction).
      */
-    bool IsFontVariant() const {
-        return m_bFontVariant;
+    bool IsPad() const {
+        return m_bIsPad;
     }
 
     /**
@@ -36,12 +36,12 @@ public:
 protected:
     /**
      * @brief Constructs the UI-layer base: chains the task-node base constructor and caches the
-     * font-variant and hardware-type flags. (The compiler installs the vtable.)
+     * is-pad and hardware-type flags. (The compiler installs the vtable.)
      * @ghidraAddress 0x18bd9c
      */
     GameUiLayerBase();
 
-    bool m_bFontVariant = {};   // +0x49: the cached font variant for the current device.
+    bool m_bIsPad = {};         // +0x49: whether the device is an iPad (from IsPad()).
     bool m_bHardwareType9 = {}; // +0x4a: whether the device is the older type-9 hardware.
 };
 

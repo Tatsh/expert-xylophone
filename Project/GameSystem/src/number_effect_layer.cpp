@@ -109,10 +109,9 @@ void NumberEffectLayer::ResetOffsets() {
 
 /** @ghidraAddress 0x18a2d4 */
 void NumberEffectLayer::ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const {
-    // The pad (font-variant) device uses the portrait table; the phone uses the wide-variant
-    // landscape row.
+    // The iPad uses the portrait table; the phone uses the wide-variant landscape row.
     int nGravity;
-    if (GetFontVariant() != 0) {
+    if (IsPad()) {
         *pOut = kPortraitAnchor[nElement];
         nGravity = kPortraitGravity[nElement];
     } else {

@@ -65,7 +65,7 @@ public:
      *
      * The portrait (pad) layout uses its own base-offset table; the landscape (phone) layout picks
      * the wide-variant row. It copies the element's base offset, then applies a per-element
-     * viewport-relative gravity adjustment. The layout is chosen by the inherited font variant.
+     * viewport-relative gravity adjustment. The layout is chosen by the inherited is-pad flag.
      * @param nElement The element index.
      * @param pOut The output position.
      * @ghidraAddress 0x18a2d4
@@ -76,7 +76,7 @@ private:
     // The number of scroll-offset words the layer tracks.
     static constexpr int kOffsetCount = 2;
 
-    // +0x00..+0x07: the inherited PlayFieldLayerBase fields (font variant, hardware type, theme).
+    // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
     unsigned char m_aReserved08[0x28] = {}; // +0x08
     LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
     bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame

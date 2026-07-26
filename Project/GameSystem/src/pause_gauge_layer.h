@@ -111,7 +111,7 @@ public:
      * @brief Hit-tests a point against a lane's pause-gauge rectangle.
      *
      * The rectangle is centred on the lane's geometry centre, sized from the per-device size table
-     * (the font-variant device uses the variant table, otherwise the default), with the width and
+     * (the iPad uses the variant table, otherwise the default), with the width and
      * height applied as round-toward-zero half-extents.
      * @param flX The point x.
      * @param flY The point y.
@@ -201,7 +201,7 @@ private:
 };
 
 // The per-lane gauge rectangle sizes, seeded at startup from the read-only source constants. The
-// font-variant device uses the variant table; every other device uses the default table.
+// iPad uses the variant table; every other device uses the default table.
 extern PauseGaugeRectSize
     g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
 extern PauseGaugeRectSize

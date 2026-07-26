@@ -25,7 +25,7 @@ NoteEffectMgr::NoteEffectMgr() {
     for (long &nSlot : m_aActiveSlot) {
         nSlot = kActiveSlotNone;
     }
-    m_bFontVariant = IsPad();
+    m_bIsPad = IsPad();
 }
 
 /** @ghidraAddress 0x1373a0 */

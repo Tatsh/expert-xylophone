@@ -108,7 +108,7 @@ public:
     /**
      * @brief Resolves a phone-layout rectangle by index and state, offset relative to the viewport.
      *
-     * Selects the state table when the font-variant state flag is set, otherwise the portrait or
+     * Selects the state table on the iPad, otherwise the portrait or
      * landscape table by the orientation flag, copies the record's four floats to @p pOutRect, then
      * shifts the leading coordinate by the viewport's half or full width and height per the record's
      * anchor mode.

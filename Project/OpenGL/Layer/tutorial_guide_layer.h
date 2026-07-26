@@ -98,7 +98,7 @@ private:
      * Looks up the sprite kind's descriptor (target anchor, size, and UV-table index) and its UV
      * rectangle, optionally re-derives the Y position from the gauge coordinate when the guide is in
      * its gauge-anchored mode, then writes the sprite's position, anchor, size, UV rectangle, scale,
-     * and colour and advances the instancer's sprite count. On the non-pad font variant, sprite kinds
+     * and colour and advances the instancer's sprite count. On the phone (non-pad), sprite kinds
      * above the tap-glyph range draw at half size. Silently drops the sprite when the pool is full.
      * @param flSizeX The sprite's X scale.
      * @param flSizeY The sprite's Y scale.

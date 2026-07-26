@@ -201,7 +201,7 @@ public:
 private:
     /**
      * @brief Constructs the manager: zeroes the header, clears the per-note render sub-table, sets
-     * the six active-slot indices to the -1 empty marker, and seeds the font-variant flag.
+     * the six active-slot indices to the -1 empty marker, and seeds the is-pad flag.
      * @ghidraAddress 0x136bec
      */
     NoteEffectMgr();
@@ -236,7 +236,7 @@ private:
     };
     // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68
-    bool m_bFontVariant = {};                           // +0x158: the device font variant.
+    bool m_bIsPad = {};                                 // +0x158: whether the device is an iPad.
     unsigned char m_aReserved159[3] = {};               // +0x159
     int m_nThema = {};    // +0x15c: the active player theme, from the user settings.
     int m_nHitCount = {}; // +0x160: the accumulated hit (judged-note) count.

@@ -39,7 +39,7 @@ PhoneLayoutRecord
     g_aLimelightSeparatorPhonePortrait[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db960
 
 // The single Limelight phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
-// mode): the state record, and the portrait and default records (selected by the font-variant and
+// mode): the state record, and the portrait and default records (selected by the is-pad flag and
 // orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRect g_LimelightCenterPositionPhoneState = {};    // @ghidraAddress 0x3dbe60
 PhoneLayoutRect g_LimelightCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3dbe70
@@ -207,7 +207,7 @@ const PhoneLayoutRecord *LimelightResultLayer::getSeparator_Phone(int nIndex) co
 /** @ghidraAddress 0x123cc8 */
 void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
-    if (GetFontVariant()) {
+    if (IsPad()) {
         *pOutRect = g_LimelightCenterPositionPhoneState;
         (void)GameSystem::
             GetGameSystem(); // The binary tail-calls the singleton getter and discards it.

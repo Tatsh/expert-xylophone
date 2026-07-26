@@ -5,7 +5,8 @@
 
 /** @ghidraAddress 0x109d84 */
 PlayFieldLayerBase::PlayFieldLayerBase() {
-    m_bFontVariant = static_cast<unsigned char>(IsPad());
+    // ::IsPad is the free device query; the member IsPad() accessor would shadow it here.
+    m_bIsPad = ::IsPad();
     m_fIsHardwareType9 = GetIsHardwareType9Flag();
     m_nThema = static_cast<int>([RBUserSettingData sharedInstance].thema);
 }

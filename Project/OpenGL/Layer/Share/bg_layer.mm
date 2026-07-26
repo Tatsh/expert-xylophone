@@ -72,9 +72,6 @@ constexpr int kClearEffectInset = 0;
 constexpr int kThemeClearEffectA = 1;
 constexpr int kThemeClearEffectB = 2;
 
-// The font variant whose assets are authored at half size and so drawn doubled.
-constexpr unsigned char kDoubleScaleFontVariant = 0;
-
 // Packed sprite colours (byte order red, green, blue, alpha): the root container's opaque black, and
 // the white the background batches start at with zero alpha, which the fade fills in each frame.
 constexpr unsigned int kOpaqueBlack = 0xff000000;
@@ -101,8 +98,8 @@ constexpr const char *SelectClearEffectName(int nBackgroundId) {
 
 // Sizes a full-screen background sprite (index 0) from its bound texture: a quad centred vertically
 // on the play-field's full-height layout Y, whose pixel size is the used-image region (inset by
-// nInsetPixels per axis) divided by the texture's content scale and doubled on the primary screen
-// variant, with UVs mapping that used region within the power-of-two allocation.
+// nInsetPixels per axis) divided by the texture's content scale and doubled on the phone (non-pad),
+// with UVs mapping that used region within the power-of-two allocation.
 void ConfigureBackgroundSprite(ne::C_SPRITE_INSTANCING *pBatch,
                                ne::C_TEXTURE *pTexture,
                                int nInsetPixels,
@@ -211,10 +208,7 @@ void BgLayer::InitializeBackgroundLayer() {
     }
     m_pBackgroundBatch->SetRefCountedMember(m_pBackgroundTexture);
     if (ne::C_TEXTURE *pBound = m_pBackgroundBatch->GetBoundTexture()) {
-        ConfigureBackgroundSprite(m_pBackgroundBatch,
-                                  pBound,
-                                  kBackgroundInset,
-                                  GetFontVariant() == kDoubleScaleFontVariant);
+        ConfigureBackgroundSprite(m_pBackgroundBatch, pBound, kBackgroundInset, !IsPad());
     }
 
     // Build the clear-effect overlay batch as a child of the background batch, for the theme modes
@@ -228,10 +222,7 @@ void BgLayer::InitializeBackgroundLayer() {
         }
         m_pClearEffectBatch->SetRefCountedMember(m_pClearEffectTexture);
         if (ne::C_TEXTURE *pBound = m_pClearEffectBatch->GetBoundTexture()) {
-            ConfigureBackgroundSprite(m_pClearEffectBatch,
-                                      pBound,
-                                      kClearEffectInset,
-                                      GetFontVariant() == kDoubleScaleFontVariant);
+            ConfigureBackgroundSprite(m_pClearEffectBatch, pBound, kClearEffectInset, !IsPad());
         }
     }
 

@@ -107,7 +107,7 @@ PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @gh
 PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
 
 namespace {
-// The gauge rectangle sizes each device layout uses for every lane: the font-variant device draws
+// The gauge rectangle sizes each device layout uses for every lane: the iPad draws
 // a 336x66 rectangle, every other device a 220x50 one.
 constexpr PauseGaugeRectSize kPauseGaugeRectVariant = {336, 66};
 constexpr PauseGaugeRectSize kPauseGaugeRectDefault = {220, 50};
@@ -164,9 +164,8 @@ void PauseGaugeLayer::EmitSprite(float flFlip,
         return;
     }
     // The alt-frame device uses its own layout table.
-    const PauseGaugeSpriteLayout &layout = IsFontVariant() ?
-                                               g_aPauseGaugeLayoutAltFrame[nSlotIndex] :
-                                               g_aPauseGaugeLayoutDefault[nSlotIndex];
+    const PauseGaugeSpriteLayout &layout =
+        IsPad() ? g_aPauseGaugeLayoutAltFrame[nSlotIndex] : g_aPauseGaugeLayoutDefault[nSlotIndex];
     ne::C_SPRITE_INSTANCING *pSprite = m_apSprites[kLaneSlotGroup[nSlotIndex]];
 
     // Claim the next free sprite in the instancer, if any remain.
@@ -195,8 +194,8 @@ void PauseGaugeLayer::EmitSprite(float flFlip,
 
 /** @ghidraAddress 0x1512fc */
 bool PauseGaugeLayer::CheckPointInRect(float flX, float flY, unsigned int nLaneIndex) const {
-    const PauseGaugeRectSize &size = IsFontVariant() ? g_aPauseGaugeRectVariant[nLaneIndex] :
-                                                       g_aPauseGaugeRectDefault[nLaneIndex];
+    const PauseGaugeRectSize &size =
+        IsPad() ? g_aPauseGaugeRectVariant[nLaneIndex] : g_aPauseGaugeRectDefault[nLaneIndex];
     const PauseGaugeLaneGeometry &lane = m_aLaneGeometry[nLaneIndex];
     return AxisInRect(flX, lane.flCenterX, size.nWidth) &&
            AxisInRect(flY, lane.flCenterY, size.nHeight);
@@ -238,7 +237,7 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
 
     // On the main frame with a non-Colette theme, the gauge is a left arrow, a right arrow, and a
     // centre element; the alt frame and the Colette theme draw a single sprite instead.
-    if (!IsFontVariant() && nThema != RBUserSettingDataThemeColette) {
+    if (!IsPad() && nThema != RBUserSettingDataThemeColette) {
         const unsigned int nArrowSlot = nLaneIndex + kArrowSlotBase;
         const int nGaugeWidth = g_aPauseGaugeRectDefault[nLaneIndex].nWidth;
         const int nHalfWidth = nGaugeWidth < 0 ? (nGaugeWidth + 1) >> 1 : nGaugeWidth >> 1;
@@ -257,7 +256,7 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
                    nLaneAlpha,
                    kOpaqueAlpha);
         nSingleSlotBase = kSingleSlotBase;
-    } else if (!IsFontVariant()) {
+    } else if (!IsPad()) {
         // The Colette theme on the main frame draws a single sprite at its own slot base.
         nSingleSlotBase = kColetteSlotBase;
     }
@@ -319,7 +318,7 @@ void PauseGaugeLayer::ExecShow() {
     // Lay each menu lane's centre out from the viewport centre plus the layout record's offset (the
     // menu items occupy layout records 1 through 3, one per lane).
     const PauseGaugeSpriteLayout *pLayout =
-        IsFontVariant() ? g_aPauseGaugeLayoutAltFrame : g_aPauseGaugeLayoutDefault;
+        IsPad() ? g_aPauseGaugeLayoutAltFrame : g_aPauseGaugeLayoutDefault;
     for (unsigned int nLane = 0; nLane < kMenuItemCount; ++nLane) {
         const PauseGaugeSpriteLayout &item = pLayout[nLane + 1];
         m_aLaneGeometry[nLane].flCenterX = flWidth * 0.5f + item.flOffsetX;

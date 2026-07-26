@@ -35,7 +35,7 @@ class NoteModel {
 public:
     /**
      * @brief Constructs a note bound to its owning sheet: clears the play state, seeds every
-     * sub-entry slot to its empty defaults, zeroes the waypoint block, and stores the font variant.
+     * sub-entry slot to its empty defaults, zeroes the waypoint block, and stores the is-pad flag.
      * @param pSheet The owning note sheet.
      * @ghidraAddress 0x1319fc
      */
@@ -471,7 +471,7 @@ private:
     bool m_bMissProcessed = {}; // +0x5de: whether a passed/missed tap note was already handled.
     bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
-    bool m_bFontVariant = {};   // +0x5e1: the device font variant, set at construction.
+    bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
     unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.
 };
 

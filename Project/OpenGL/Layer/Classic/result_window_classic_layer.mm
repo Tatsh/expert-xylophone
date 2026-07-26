@@ -327,12 +327,11 @@ const PhoneLayoutRecord *ResultWindowClassicLayer::getSeparator_Phone(int nIndex
 /** @ghidraAddress 0x114e9c */
 void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
                                                         PhoneLayoutRect *pOutRect) const {
-    // The font-variant state flag selects the state table; otherwise the orientation flag selects
-    // the landscape or portrait table.
+    // The iPad uses the state table; the phone uses its landscape or portrait table by orientation.
     const PhoneLayoutRecord &record =
-        GetFontVariant() ? g_aClassicPositionPhoneState[nIndex] :
-                           (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
-                                          g_aClassicPositionPhoneStateLandscape[nIndex]);
+        IsPad() ? g_aClassicPositionPhoneState[nIndex] :
+                  (m_bPortrait ? g_aClassicPositionPhoneStatePortrait[nIndex] :
+                                 g_aClassicPositionPhoneStateLandscape[nIndex]);
     pOutRect->flX = record.flX;
     pOutRect->flY = record.flY;
     pOutRect->flWidth = record.flWidth;
@@ -345,7 +344,7 @@ void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
 /** @ghidraAddress 0x115008 */
 void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
-    if (GetFontVariant()) {
+    if (IsPad()) {
         *pOutRect = g_ClassicCenterPositionPhoneState;
         (void)GameSystem::
             GetGameSystem(); // The binary tail-calls the singleton getter and discards it.

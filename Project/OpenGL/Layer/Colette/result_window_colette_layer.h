@@ -85,7 +85,7 @@ public:
     /**
      * @brief Resolves the single phone-layout centre-position rectangle, offset by the viewport.
      *
-     * Copies the state, portrait, or default centre record (selected by the font-variant and
+     * Copies the state, portrait, or default centre record (selected by the is-pad flag and
      * orientation flags) to @p pOutRect. When the state flag is clear the leading coordinate is
      * shifted by half the viewport width and height.
      * @param pOutRect Receives the resolved rectangle.
