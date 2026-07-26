@@ -125,6 +125,15 @@ public:
     void CompactActiveNotes();
 
     /**
+     * @brief Walks every note record of the attached chart (a bounds/validation pass).
+     *
+     * Fetches each record by index from the bound chart; the fetched pointers are not consumed (the
+     * body that used them was inlined away), so this only exercises the record lookup.
+     * @ghidraAddress 0x1378e4
+     */
+    void IterateNoteRecords();
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */

@@ -40,6 +40,17 @@ RbffNoteRecord *NoteEffectMgr::GetActiveNoteRecord(int nIndex) {
     return m_pMusicSheet->GetNoteRecordByIndex(nIndex);
 }
 
+/** @ghidraAddress 0x1378e4 */
+void NoteEffectMgr::IterateNoteRecords() {
+    if (m_pMusicSheet == nullptr) {
+        return;
+    }
+    for (int nIndex = 0; nIndex < m_pMusicSheet->GetNoteCount(); ++nIndex) {
+        // The fetched record is deliberately discarded; only the lookup is exercised.
+        (void)m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+    }
+}
+
 namespace {
 // The note-record flag bits the effect manager queries.
 constexpr unsigned int kNoteFlagScoreExcluded = 1u << 2;
