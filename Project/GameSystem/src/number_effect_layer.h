@@ -25,6 +25,26 @@ public:
     void AdvanceFadeInterp(float flDeltaTime);
 
     /**
+     * @brief Starts a fade-in of the layer alpha to fully opaque over @p flDuration.
+     *
+     * The fade channel eases from the current alpha to 255; a non-positive duration snaps to opaque
+     * and marks the fade done immediately.
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x189e98
+     */
+    void StartFadeIn(float flDuration);
+
+    /**
+     * @brief Starts a fade-out of the layer alpha to fully transparent over @p flDuration.
+     *
+     * The fade channel eases from the current alpha to 0; a non-positive duration snaps to
+     * transparent and marks the fade done immediately.
+     * @param flDuration The fade duration.
+     * @ghidraAddress 0x189ec8
+     */
+    void StartFadeOut(float flDuration);
+
+    /**
      * @brief Sets the layer brightness, clamped to the range [0, 1].
      * @param flValue The brightness value.
      * @ghidraAddress 0x18a7a8

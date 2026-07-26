@@ -46,6 +46,11 @@ constexpr int kLandscapeGravity[kWideVariantCount][kAnchorElementCount] = {
 };
 } // namespace
 
+// The fully-opaque alpha the fade-in eases toward (a 0-to-255 alpha channel).
+namespace {
+constexpr float kOpaqueAlpha = 255.0f;
+} // namespace
+
 /** @ghidraAddress 0x189ef0 */
 void NumberEffectLayer::AdvanceFadeInterp(float flDeltaTime) {
     if (m_fadeChannel.GetElapsed() >= m_fadeChannel.GetDuration()) {
@@ -53,6 +58,32 @@ void NumberEffectLayer::AdvanceFadeInterp(float flDeltaTime) {
     }
     m_fadeChannel.Advance(flDeltaTime);
     m_bFadeActive = true;
+}
+
+/** @ghidraAddress 0x189e98 */
+void NumberEffectLayer::StartFadeIn(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(kOpaqueAlpha);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to opaque and marks the fade done.
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(kOpaqueAlpha);
+        m_bFadeActive = true;
+    }
+}
+
+/** @ghidraAddress 0x189ec8 */
+void NumberEffectLayer::StartFadeOut(float flDuration) {
+    m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
+    m_fadeChannel.SetEnd(0.0f);
+    m_fadeChannel.SetDuration(flDuration);
+    m_fadeChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to transparent and marks the fade done.
+    if (flDuration <= 0.0f) {
+        m_fadeChannel.SetCurrent(0.0f);
+        m_bFadeActive = true;
+    }
 }
 
 /** @ghidraAddress 0x18a7a8 */
