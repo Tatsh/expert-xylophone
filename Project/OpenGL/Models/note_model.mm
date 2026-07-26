@@ -316,6 +316,105 @@ void NoteModel::UpdateStep() {
     }
 }
 
+namespace {
+// The shot direction is clamped to this magnitude in each direction.
+constexpr int kMaxShotDirection = 2;
+// The spawn time is the play time converted to milliseconds, less a fixed lead-in.
+constexpr float kShotSpawnTimeScale = 1000.0f;
+constexpr float kShotSpawnTimeLeadIn = -1500.0f;
+// The colour returned when no note is active at the queried index.
+constexpr int kNoActiveNoteColor = 5;
+// The active-note colours dispatched by CheckShot.
+enum ShotColor {
+    kShotColorPlayer = 0, // The player-controlled note.
+    kShotColorCPU = 1,    // The CPU-controlled note.
+    kShotColorGhost = 2,  // The ghost (replay) note.
+    kShotColorInert = 3,  // A note that takes no shot action.
+};
+} // namespace
+
+/** @ghidraAddress 0x1335ec */
+void NoteModel::SetShotDirection(int nDirection) {
+    const float flSpawnTime =
+        PlayTimer::shared()->GetPlayTime() * kShotSpawnTimeScale + kShotSpawnTimeLeadIn;
+
+    // Clamp the requested direction to [-kMaxShotDirection, kMaxShotDirection] and take its
+    // magnitude for the waypoint count.
+    int nClamped = nDirection;
+    if (nClamped > kMaxShotDirection) {
+        nClamped = kMaxShotDirection;
+    }
+    if (nClamped < -kMaxShotDirection) {
+        nClamped = -kMaxShotDirection;
+    }
+    m_nDirectionSign = nClamped;
+    m_nWaypointCount = nClamped < 0 ? -nClamped : nClamped;
+
+    m_basePos = m_pos;
+    m_flSpawnTime = flSpawnTime;
+    SetRoute();
+
+    // Propagate the spawn position, spawn time, and route along the note's linked chain.
+    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    RbffNoteRecord *pRecord = m_pRecord;
+    while (pRecord != nullptr && pRecord->GetChainLink().GetNext() != -1) {
+        NoteModel *pLinked = pManager->FindNoteByIndex(pRecord->GetChainLink().GetNext());
+        if (pLinked == nullptr) {
+            break;
+        }
+        if (pLinked->GetState() != 0) {
+            pLinked->m_basePos = m_pos;
+            pLinked->m_flSpawnTime = flSpawnTime;
+            pLinked->SetRoute();
+        }
+        pRecord = pLinked->m_pRecord;
+    }
+}
+
+/** @ghidraAddress 0x1361b0 */
+int NoteModel::GetActiveNoteColor() const {
+    if (m_pRecord != nullptr && m_pRecord->GetStartTime() != -1) {
+        NoteModel *pNote =
+            static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(m_pRecord->GetStartTime());
+        if (pNote != nullptr) {
+            return pNote->GetRivalMode();
+        }
+    }
+    return kNoActiveNoteColor;
+}
+
+/** @ghidraAddress 0x133774 */
+void NoteModel::CheckShot() {
+    if (!m_bShotActive) {
+        return;
+    }
+    if (!m_bShotDecaying) {
+        m_bShotActive = false;
+        return;
+    }
+    // Decay the shot lifetime; once it runs out the note leaves its shot phase.
+    if (m_flShotDecayTimer <= 0.0f) {
+        m_bShotActive = false;
+    } else {
+        m_flShotDecayTimer -= PlayTimer::shared()->GetFrameDelta();
+    }
+    switch (GetActiveNoteColor()) {
+    case kShotColorPlayer:
+        CheckShotPlayer();
+        return;
+    case kShotColorCPU:
+        CheckShotCPU();
+        return;
+    case kShotColorGhost:
+        CheckShotGhost();
+        return;
+    case kShotColorInert:
+        return;
+    default:
+        assert(0);
+    }
+}
+
 /** @ghidraAddress 0x133578 */
 void NoteModel::UpdateNotePathLinks() {
     if (m_pRecord == nullptr) {

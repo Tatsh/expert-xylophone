@@ -236,6 +236,54 @@ public:
     void Init();
 
     /**
+     * @brief Sets the note's spawn geometry and route for the coming play, then propagates the same
+     * position, spawn time, and route along the note's linked chain. Reconstruction pending.
+     * @ghidraAddress 0x13498c
+     */
+    void SetRoute();
+
+    /**
+     * @brief Sets this note's shot direction (clamped to [-2, 2]) and propagates it, its spawn
+     * position, and its spawn time along the note's linked chain, re-routing each.
+     * @param nDirection The requested shot direction.
+     * @ghidraAddress 0x1335ec
+     */
+    void SetShotDirection(int nDirection);
+
+    /**
+     * @brief Returns the play colour of the note bound at this note's start index, or the
+     * no-active-note sentinel (5) when none is active.
+     * @return The active note's rival-mode colour, or 5.
+     * @ghidraAddress 0x1361b0
+     */
+    int GetActiveNoteColor() const;
+
+    /**
+     * @brief The shot-phase step: decays the shot lifetime timer and dispatches to the per-colour
+     * shot handler (player, CPU, or ghost) until the note leaves its shot phase.
+     * @ghidraAddress 0x133774
+     */
+    void CheckShot();
+
+    /**
+     * @brief The player-controlled shot handler. Reconstruction pending.
+     * @ghidraAddress 0x1361ec
+     */
+    void CheckShotPlayer();
+
+    /**
+     * @brief The CPU-controlled shot handler. Reconstruction pending.
+     * @ghidraAddress 0x136480
+     */
+    void CheckShotCPU();
+
+    /**
+     * @brief The ghost (replay) shot handler. Reconstruction pending.
+     * @ghidraAddress 0x13663c
+     */
+    void CheckShotGhost();
+
+    /**
      * @brief Activates each of the note's chain path-point links, clearing the perfect-hit flag.
      *
      * For each of the record's path points, activates the note at that path-point index through the
@@ -253,6 +301,11 @@ public:
     /** @brief The note-state-machine state. */
     int GetState() const {
         return m_nState;
+    }
+
+    /** @brief The note's rival-play mode (0 = player, 1 = CPU, 2 = ghost). */
+    int GetRivalMode() const {
+        return m_nRivalMode;
     }
 
     /**
@@ -293,7 +346,9 @@ private:
     S_VECTOR2 m_pos = {};           // +0x34: the current position.
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
-    unsigned char m_aReserved4c[8] = {};    // +0x4c: further animation state.
+    bool m_bShotActive = {};        // +0x4c: whether the note is in its shot (reflect) phase.
+    unsigned char m_aReserved4d[3] = {};    // +0x4d
+    float m_flShotDecayTimer = {};          // +0x50: the shot phase's decaying lifetime timer.
     float m_flShotSpeed = {};               // +0x54: the shot step's travel speed.
     float m_flShotProgress = {};            // +0x58: the shot step's travel progress.
     float m_flRenderX = {};                 // +0x5c: the note's render X coordinate.
@@ -313,11 +368,14 @@ private:
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
-    int m_nField4f4 = {};                    // +0x4f4: post-table state, still being worked out.
-    int m_nField4f8 = {};                    // +0x4f8: post-table state, still being worked out.
-    unsigned char m_aReserved4fc[0xc] = {};  // +0x4fc
-    void *m_pField508 = {};                  // +0x508: cleared on construction.
-    unsigned char m_aReserved510[0x10] = {}; // +0x510
+    int m_nField4f4 = {};                   // +0x4f4: post-table state, still being worked out.
+    int m_nField4f8 = {};                   // +0x4f8: post-table state, still being worked out.
+    unsigned char m_aReserved4fc[0xc] = {}; // +0x4fc
+    void *m_pField508 = {};                 // +0x508: cleared on construction.
+    unsigned char m_aReserved510[4] = {};   // +0x510
+    int m_nDirectionSign = {};              // +0x514: the shot direction, clamped to [-2, 2].
+    int m_nWaypointCount = {};              // +0x518: the shot's waypoint count (abs of direction).
+    unsigned char m_aReserved51c[4] = {};   // +0x51c
     // +0x520: the waypoint/path animation block, zeroed on construction. +0x594 holds the
     // waypoint-active flag that switches AdvanceNotePosition onto the interpolated path.
     unsigned char m_aWaypointBlock0[0x74] = {}; // +0x520
@@ -332,7 +390,8 @@ private:
     unsigned char m_aReserved5da = {}; // +0x5da
     bool m_bJustHit =
         {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
-    unsigned char m_aReserved5dc[3] = {}; // +0x5dc
+    bool m_bShotDecaying = {};            // +0x5dc: whether the shot phase runs its decay timer.
+    unsigned char m_aReserved5dd[2] = {}; // +0x5dd
     bool m_bTouched = {};                 // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
