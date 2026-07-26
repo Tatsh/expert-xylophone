@@ -32,6 +32,9 @@ constexpr int kVertexFlagMode = 1;
 constexpr float kGaugeQuantizeScale = 100.0f;
 constexpr float kGaugeMax = 5.0f;
 
+// The gauge value each side is seeded to in the full-just-reflec challenge mode.
+constexpr float kGaugeChallengeValue = 5.0f;
+
 // The affine map applied to the display brightness: value in [0, 1] maps to [kBrightnessBias,
 // kBrightnessBias + kBrightnessScale] = [0.3, 1.0] (@ghidraAddress 0x2fd008 and 0x2ee910).
 constexpr float kBrightnessScale = 0.7f;
@@ -177,5 +180,16 @@ void ReflecGaugeLayer::StartFadeOut(float flDuration) {
     if (flDuration <= 0.0f) {
         m_fadeChannel.SetCurrent(0.0f);
         m_bFadeDone = true;
+    }
+}
+
+/** @ghidraAddress 0x18a988 */
+void ReflecGaugeLayer::ResetSideGauges() {
+    // Each side clears to zero, except in the full-just-reflec challenge mode which seeds five.
+    const float flReset =
+        GameSystem::GetGameSystem()->GetFullJustReflec() ? kGaugeChallengeValue : 0.0f;
+    for (SideGauge &side : m_aSides) {
+        side = SideGauge{};
+        side.flValue = flReset;
     }
 }

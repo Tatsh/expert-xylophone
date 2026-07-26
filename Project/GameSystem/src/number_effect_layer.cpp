@@ -7,11 +7,30 @@
 
 #include "number_effect_layer.h"
 
+#include "bg_layer.h"
 #include "gamesystem.h"
+#include "neRender.h"
+#include "neSpriteInstancing.h"
+#include "neTexture.h"
 
 namespace {
-// The scroll-offset value the full-just-reflec challenge mode uses instead of zero.
-constexpr float kChallengeScrollOffset = 5.0f;
+// The gm_parts2 atlas the number glyphs draw from.
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
+
+// The device-dependent transform block the instancer builder seeds into @c m_aTransform. The phone
+// (non-pad) uses a mirror offset and the pad width; the pad uses its own shipped offsets
+// (@ghidraAddress 0x30fb00 = -103.0, 0x30fb08 = 206.0, 0x30fb0c = 96.0).
+constexpr float kMirrorOffset = -6.0f;    // 0xc0c00000
+constexpr float kTransformPadX = -103.0f; // @ghidraAddress 0x30fb00
+constexpr float kTransformPadZ = 206.0f;  // @ghidraAddress 0x30fb08
+constexpr float kTransformPhoneZ = 96.0f; // @ghidraAddress 0x30fb0c
+constexpr float kTransformPadW = 7.0f;    // 0x40e00000
+
+// The four instancer capacities (@ghidraAddress 0x30fb70): three of one, one of two.
+constexpr int kBatchCapacity[] = {1, 1, 1, 2};
+
+// The viewport width past which the wide-screen layout is used (@ghidraAddress 0x2f8558).
+constexpr float kWideScreenSplit = 320.0f;
 
 // The number of anchored elements and wide-layout variant rows.
 constexpr int kAnchorElementCount = 4;
@@ -96,17 +115,6 @@ void NumberEffectLayer::SetBrightness(float flValue) {
     m_flBrightness = flValue;
 }
 
-/** @ghidraAddress 0x18a988 */
-void NumberEffectLayer::ResetOffsets() {
-    // Each offset clears to zero, except in the full-just-reflec challenge mode which seeds five.
-    const float flReset =
-        GameSystem::GetGameSystem()->GetFullJustReflec() ? kChallengeScrollOffset : 0.0f;
-    for (ScrollOffset &offset : m_aScrollOffset) {
-        offset = ScrollOffset{};
-        offset.flOffset = flReset;
-    }
-}
-
 /** @ghidraAddress 0x18a2d4 */
 void NumberEffectLayer::ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const {
     // The iPad uses the portrait table; the phone uses the wide-variant landscape row.
@@ -115,28 +123,101 @@ void NumberEffectLayer::ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut)
         *pOut = kPortraitAnchor[nElement];
         nGravity = kPortraitGravity[nElement];
     } else {
-        *pOut = kLandscapeAnchor[m_nWideVariant][nElement];
-        nGravity = kLandscapeGravity[m_nWideVariant][nElement];
+        const int nVariant = m_bWideScreen ? 1 : 0;
+        *pOut = kLandscapeAnchor[nVariant][nElement];
+        nGravity = kLandscapeGravity[nVariant][nElement];
     }
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const float flWidth = pGameSystem->GetViewportWidth();
     const float flHeight = pGameSystem->GetViewportHeight();
     switch (nGravity) {
-    case kGravityCenterBoth:
+    case kGravityBottomCentre:
         pOut->x += flWidth * 0.5f;
         pOut->y += flHeight;
         break;
-    case kGravityCenterX:
+    case kGravityTopCentre:
         pOut->x += flWidth * 0.5f;
         break;
-    case kGravityRightEdge:
+    case kGravityTopRight:
         pOut->x += flWidth;
         break;
-    case kGravityCenterY:
+    case kGravityLeftCentre:
         pOut->y += flHeight * 0.5f;
         break;
+    case kGravityTopLeft:
     default:
         break;
     }
+}
+
+// The process-wide number-effect layer, created lazily by shared().
+static NumberEffectLayer *g_pNumberEffectLayer = nullptr; // @ghidraAddress 0x3df240
+
+/** @ghidraAddress 0x189ce0 */
+NumberEffectLayer *NumberEffectLayer::shared() {
+    if (g_pNumberEffectLayer == nullptr) {
+        g_pNumberEffectLayer = new NumberEffectLayer();
+    }
+    return g_pNumberEffectLayer;
+}
+
+/** @ghidraAddress 0x189d50 */
+void NumberEffectLayer::FreeInstance() {
+    if (g_pNumberEffectLayer != nullptr) {
+        delete g_pNumberEffectLayer;
+        g_pNumberEffectLayer = nullptr;
+    }
+}
+
+/** @ghidraAddress 0x189c70 */
+NumberEffectLayer::~NumberEffectLayer() {
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    // Each live instancer is flagged for deletion by the scene tree and detached from the layer.
+    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+        if (pSprite != nullptr) {
+            pSprite->RequestDelete();
+            pSprite = nullptr;
+        }
+    }
+}
+
+/** @ghidraAddress 0x189d9c */
+void NumberEffectLayer::CreateSpriteInstancers() {
+    if (m_bBuilt) {
+        return;
+    }
+
+    // Seed the device-dependent transform block: the phone mirrors, the pad uses its own offsets.
+    if (IsPad()) {
+        m_aTransform[0] = kTransformPadX;
+        m_aTransform[1] = kMirrorOffset;
+        m_aTransform[2] = kTransformPadZ;
+        m_aTransform[3] = kTransformPadW;
+    } else {
+        m_aTransform[0] = kMirrorOffset;
+        m_aTransform[1] = 0.0f;
+        m_aTransform[2] = kTransformPhoneZ;
+        m_aTransform[3] = 0.0f;
+    }
+
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
+    // The binary fetches the background layer and its render object here but discards both; the
+    // instancers register directly into the global scene tree instead.
+    (void)BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
+    for (int i = 0; i < kBatchCount; ++i) {
+        ne::C_SPRITE_INSTANCING *pSprite =
+            ne::CreateSpriteInstancer(static_cast<unsigned int>(kBatchCapacity[i]));
+        m_apSprites[i] = pSprite;
+        pSprite->RegisterGlobal();
+        pSprite->SetVisible(true);
+        pSprite->SetRefCountedMember(m_pTexture);
+        pSprite->SetSpriteCount(0);
+    }
+
+    // The wide-screen layout is used once the viewport is wider than the split threshold.
+    m_bWideScreen = GameSystem::GetGameSystem()->GetViewportWidth() > kWideScreenSplit;
 }

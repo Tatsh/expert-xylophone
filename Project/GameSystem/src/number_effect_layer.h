@@ -5,21 +5,52 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
-//  the program image base. The layer is not fully modelled yet, so only the fade channel and active
-//  flag (and reserved spans positioning them at their real offsets) are named.
+//  the program image base.
 //
 
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 #include "s_vector2.h"
 
+namespace ne {
+class C_SPRITE_INSTANCING;
+class C_TEXTURE;
+} // namespace ne
+
 /**
- * @brief The number-effect layer: a @c PlayFieldLayerBase-derived layer with a fade channel, a
- * brightness, and two scroll offsets. Only the fields the reconstructed methods touch are modelled.
+ * @brief The number-effect layer: a @c PlayFieldLayerBase-derived layer that draws the play-field
+ * number glyphs through four gm_parts2 sprite instancers, with a fade channel and a brightness.
  * @ghidraAddress NumberEffectLayer (engine layer, 0x78 bytes)
  */
 class NumberEffectLayer : public PlayFieldLayerBase {
 public:
+    // The number of sprite instancers the layer builds.
+    static constexpr int kBatchCount = 4;
+    // The number of words in the side-dependent transform block.
+    static constexpr int kTransformWordCount = 4;
+
+    /**
+     * @brief The process-wide number-effect layer, created on first use.
+     * @ghidraAddress 0x189ce0
+     */
+    static NumberEffectLayer *shared();
+
+    /**
+     * @brief Destroys and frees the process-wide number-effect layer, if it exists.
+     * @ghidraAddress 0x189d50
+     */
+    static void FreeInstance();
+
+    /**
+     * @brief Lazily builds the four gm_parts2 sprite instancers.
+     *
+     * Seeds the side-dependent transform block (mirrored on the left side), loads the atlas, creates
+     * and registers each instancer under the background layer, and sets the wide-screen flag from
+     * the viewport width. Guarded so it runs only once.
+     * @ghidraAddress 0x189d9c
+     */
+    void CreateSpriteInstancers();
+
     /**
      * @brief Advances the fade channel by @p flDeltaTime and raises the active flag.
      * @ghidraAddress 0x189ef0
@@ -54,13 +85,6 @@ public:
     void SetBrightness(float flValue);
 
     /**
-     * @brief Resets the two scroll offsets to zero, or to five in the full-just-reflec challenge
-     * mode.
-     * @ghidraAddress 0x18a988
-     */
-    void ResetOffsets();
-
-    /**
      * @brief Computes an element's screen-space anchor position for the current device layout.
      *
      * The portrait (pad) layout uses its own base-offset table; the landscape (phone) layout picks
@@ -73,23 +97,29 @@ public:
     void ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const;
 
 private:
-    // The number of scroll-offset words the layer tracks.
-    static constexpr int kOffsetCount = 2;
+    // Constructs the layer through the base constructor; every field is zero-initialised. The binary
+    // inlines this into the singleton getter rather than emitting a separate constructor.
+    NumberEffectLayer() = default;
+
+    /**
+     * @brief Destroys the layer: releases the atlas and requests deletion of the four instancers.
+     * @ghidraAddress 0x189c70
+     */
+    ~NumberEffectLayer();
 
     // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
-    unsigned char m_aReserved08[0x28] = {}; // +0x08
-    LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
+    ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
+    LinearTween m_fadeChannel;                              // +0x30 (five floats, ending at +0x44)
     bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame
     unsigned char m_aReserved45[0x0b] = {}; // +0x45
-    int m_nWideVariant = {};                // +0x50: the wide-layout variant row selector.
+    bool m_bWideScreen = {};                // +0x50: set when the viewport is wider than the split.
     unsigned char m_aReserved54[0x0c] = {}; // +0x54
     float m_flBrightness = {};              // +0x60: the layer brightness (0 to 1).
-    unsigned char m_aReserved64[0x20] = {}; // +0x64
-    // +0x84: the two scroll offsets, each occupying an 8-byte slot (the offset in the low word).
-    struct ScrollOffset {
-        float flOffset = {};
-        unsigned char aReserved04[4] = {};
-    } m_aScrollOffset[kOffsetCount] = {};
+    bool m_bBuilt = {};                     // +0x64: set once the instancers are built.
+    unsigned char m_aReserved65[3] = {};    // +0x65
+    // +0x68: the side-dependent transform block seeded when the instancers are built.
+    float m_aTransform[kTransformWordCount] = {};
 };
 
 // code: language=C++

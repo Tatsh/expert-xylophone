@@ -139,6 +139,13 @@ public:
      */
     void StartFadeOut(float flDuration);
 
+    /**
+     * @brief Resets both sides' gauge state, seeding the value to five in the full-just-reflec
+     * challenge mode and to zero otherwise.
+     * @ghidraAddress 0x18a988
+     */
+    void ResetSideGauges();
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
