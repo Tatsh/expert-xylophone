@@ -52,6 +52,16 @@ public:
     void InitializeBackgroundLayer();
 
     /**
+     * @brief Selects the background type, rebuilding the layer when it changes.
+     *
+     * A no-op when @p nBackgroundId already matches; otherwise stores the new id, clears the built
+     * guard, and rebuilds the layer.
+     * @param nBackgroundId The background index into the texture-name table.
+     * @ghidraAddress 0x1727e0
+     */
+    void SetBackgroundType(int nBackgroundId);
+
+    /**
      * @brief Begin fading the background in towards full opacity.
      *
      * Re-centres the background batches, then seeds the main fade tween from the current value

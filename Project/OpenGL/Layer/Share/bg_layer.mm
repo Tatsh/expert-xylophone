@@ -154,6 +154,16 @@ BgLayer *BgLayer::GetBackgroundLayer() {
     return g_pBackgroundLayer;
 }
 
+/** @ghidraAddress 0x1727e0 */
+void BgLayer::SetBackgroundType(int nBackgroundId) {
+    if (m_nBackgroundId == nBackgroundId) {
+        return;
+    }
+    m_nBackgroundId = nBackgroundId;
+    m_bBuilt = false;
+    InitializeBackgroundLayer();
+}
+
 /** @ghidraAddress 0x1720c4 */
 void BgLayer::InitializeBackgroundLayer() {
     if (m_bBuilt) {
