@@ -228,6 +228,23 @@ public:
      */
     void UpdateStep();
 
+    /**
+     * @brief Initialises the note for activation: seeds its full play state from its chart record
+     * before it enters the active list. Reconstruction pending.
+     * @ghidraAddress 0x134128
+     */
+    void Init();
+
+    /**
+     * @brief Activates each of the note's chain path-point links, clearing the perfect-hit flag.
+     *
+     * For each of the record's path points, activates the note at that path-point index through the
+     * owning manager and clears the note's perfect-hit flag. Does nothing without a chart record or
+     * an owning sheet.
+     * @ghidraAddress 0x133578
+     */
+    void UpdateNotePathLinks();
+
     /** @brief The note's index in its sheet. */
     int GetNoteIndex() const {
         return m_nNoteIndex;
@@ -312,7 +329,10 @@ private:
     unsigned char m_aReserved5d4[4] = {};       // +0x5d4
     // +0x5d8: the two render draw flags, packed as one 16-bit store {bDrawFlag0, bDrawFlag1}.
     unsigned short m_wDrawFlags = {};
-    unsigned char m_aReserved5da[5] = {}; // +0x5da
+    unsigned char m_aReserved5da = {}; // +0x5da
+    bool m_bJustHit =
+        {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
+    unsigned char m_aReserved5dc[3] = {}; // +0x5dc
     bool m_bTouched = {};                 // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.

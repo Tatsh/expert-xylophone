@@ -105,6 +105,23 @@ namespace {
 constexpr unsigned int kNoteStateFinishedBit = 0x8;
 } // namespace
 
+/** @ghidraAddress 0x136f98 */
+void NoteEffectMgr::ActivateNoteByIndex(int nChartIndex) {
+    if (m_pMusicSheet == nullptr) {
+        return;
+    }
+    if (m_pMusicSheet->GetNoteRecordByIndex(nChartIndex) == nullptr) {
+        return;
+    }
+    NoteModel *pNote = FindNoteByIndex(nChartIndex);
+    // Skip a note that is missing from the pool or already active (its state is non-zero).
+    if (pNote == nullptr || pNote->GetState() != 0) {
+        return;
+    }
+    pNote->Init();
+    InsertActiveNoteSorted(pNote);
+}
+
 /** @ghidraAddress 0x136f38 */
 void NoteEffectMgr::CompactActiveNotes() {
     int nSurvivors = 0;

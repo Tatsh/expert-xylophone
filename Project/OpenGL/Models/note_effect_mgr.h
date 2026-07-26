@@ -117,6 +117,17 @@ public:
     void InsertActiveNoteSorted(NoteModel *pNote);
 
     /**
+     * @brief Activates the chart note at @p nChartIndex: spawns its @c NoteModel and sorts it into
+     * the active list, unless it has no record or is already active.
+     *
+     * A no-op without a bound chart, when the index has no record, when no pooled object matches, or
+     * when the note is already active (its state is non-zero).
+     * @param nChartIndex The chart note index.
+     * @ghidraAddress 0x136f98
+     */
+    void ActivateNoteByIndex(int nChartIndex);
+
+    /**
      * @brief Removes finished notes from the active list, compacting the survivors to the front.
      *
      * A note survives while its state has any bit set other than the finished bit (bit 3).

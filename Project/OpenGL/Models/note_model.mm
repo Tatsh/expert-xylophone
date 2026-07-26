@@ -316,6 +316,24 @@ void NoteModel::UpdateStep() {
     }
 }
 
+/** @ghidraAddress 0x133578 */
+void NoteModel::UpdateNotePathLinks() {
+    if (m_pRecord == nullptr) {
+        return;
+    }
+    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    const short *pPathPoints = m_pRecord->GetPathPoints();
+    for (int nPoint = 0; nPoint < m_pRecord->GetPointCount(); ++nPoint) {
+        if (pManager == nullptr) {
+            continue;
+        }
+        // A path point maps to a chart note index (or the -1 sentinel when the array is absent).
+        const int nLinkIndex = pPathPoints != nullptr ? pPathPoints[nPoint] : -1;
+        pManager->ActivateNoteByIndex(nLinkIndex);
+        m_bJustHit = false;
+    }
+}
+
 /** @ghidraAddress 0x1336e4 */
 void NoteModel::AdvancePosition() {
     const float flDelta = PlayTimer::shared()->GetFrameDelta();
