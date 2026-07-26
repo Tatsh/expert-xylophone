@@ -9,8 +9,8 @@
 
 namespace ne {
 class C_SPRITE_INSTANCING;
+class C_TEXTURE;
 } // namespace ne
-class neTexture;
 
 /**
  * @brief The pause-gauge layer: the per-lane gauge shown while the game is paused.
@@ -28,6 +28,14 @@ public:
     static constexpr int kLaneSlotCount = 13;
 
     /**
+     * @brief Constructs the pause-gauge layer: chains the UI-layer base, installs the task dispatch
+     * table, clears the state and charging flag, seeds the active-lane mask, distributes the per-lane
+     * sprite-slot ids from the lane-group table, and loads the sprites.
+     * @ghidraAddress 0x1508b4
+     */
+    PauseGaugeLayer();
+
+    /**
      * @brief Marks the gauge as charging on first entry, playing the charge-start sound effect.
      *
      * A no-op when it is already charging.
@@ -42,8 +50,15 @@ public:
     void ClearCharging();
 
 private:
+    /**
+     * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the
+     * current theme.
+     * @ghidraAddress 0x150994
+     */
+    void LoadSprites();
+
     int m_nState = {};                                     // +0x4c: the layer's build/render state.
-    neTexture *m_pTexture = {};                            // +0x50: the pause-gauge parts atlas.
+    ne::C_TEXTURE *m_pTexture = {};                        // +0x50: the pause-gauge parts atlas.
     ne::C_SPRITE_INSTANCING *m_apSprites[kSlotCount] = {}; // +0x58: the gauge and parts instancers.
     int m_aSlotCapacity[kSlotCount] = {};                  // +0x68: each slot's sprite capacity.
     int m_aLaneSlotId[kLaneSlotCount] = {};                // +0x70: the per-lane sprite-slot index.
