@@ -13,6 +13,18 @@ extern "C" {
 #endif
 
 /**
+ * @brief The network API request-descriptor table, keyed by endpoint name (startup,
+ * v3_ssl_resource, v3_packlist); each value is @c {method: GET, param: [target]}. Seeded once at
+ * startup by @c InitializeApiRequestTable.
+ * @ghidraAddress 0x3dc270
+ */
+extern NSDictionary *g_pApiRequestTable;
+/**
+ * @brief Seeds @c g_pApiRequestTable. Run once at startup.
+ * @ghidraAddress 0x3394c
+ */
+void InitializeApiRequestTable(void);
+/**
  * @brief The macron-to-vowel katakana lookup table (89 entries).
  * @ghidraAddress 0x3dc258
  */

@@ -58,6 +58,9 @@ const double g_PaletteColorGoldBlue = 0.19215686619281769;
 // The gauge-parts scale table, seeded by InitializeGaugeAngleTable.
 float g_aGaugePartsScale[3];
 
+// The network API request table, seeded by InitializeApiRequestTable.
+NSDictionary *g_pApiRequestTable;
+
 // The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
 // storage because they are assigned at load time, not compile time.
 NSString *g_pLocalizedAbort;
@@ -305,6 +308,20 @@ constexpr float kGaugePartsScaleNegative = -0.88888889f;
 constexpr float kGaugePartsScalePositive = 0.88888889f;
 constexpr float kGaugePartsScaleTrailing = 288.0f;
 } // namespace
+
+/** @ghidraAddress 0x3394c */
+__attribute__((constructor)) void InitializeApiRequestTable(void) {
+    @autoreleasepool {
+        // Each endpoint is described by an HTTP method and a parameter list; every shipped endpoint
+        // is a GET whose only parameter is "target". The binary builds a separate descriptor
+        // instance per endpoint.
+        g_pApiRequestTable = @{
+            @"startup" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
+            @"v3_ssl_resource" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
+            @"v3_packlist" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
+        };
+    }
+}
 
 /** @ghidraAddress 0x83cf0 */
 __attribute__((constructor)) void InitializeGaugeAngleTable(void) {
