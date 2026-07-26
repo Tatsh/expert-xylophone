@@ -1,5 +1,6 @@
 #include "event_effect_layer.h"
 
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -16,6 +17,14 @@ constexpr const char *kTextureName = "00_texture/gm_event";
 constexpr float kEffectFinishedTimer = 5000.0f;
 
 } // namespace
+
+/** @ghidraAddress 0x1be594 */
+void EventEffectLayer::StartEffect() {
+    m_bActive = true;
+    m_flTimer = 0.0f;
+    m_bSoundFlag = true;
+    m_nMode = GameSystem::GetGameSystem()->GetPastelBonusType();
+}
 
 /** @ghidraAddress 0x1be5cc */
 void EventEffectLayer::FinishEffect() {

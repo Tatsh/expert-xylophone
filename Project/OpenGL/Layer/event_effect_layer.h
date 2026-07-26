@@ -45,6 +45,13 @@ public:
     static constexpr unsigned int kMainCapacity = 6;
 
     /**
+     * @brief Starts the event effect: arms the active and sound flags, resets the timer, and
+     * captures the current pastel-bonus mode from the game system.
+     * @ghidraAddress 0x1be594
+     */
+    void StartEffect();
+
+    /**
      * @brief Finishes the event effect by setting its timer to its full duration.
      * @ghidraAddress 0x1be5cc
      */
@@ -56,8 +63,10 @@ private:
     ne::C_SPRITE_INSTANCING *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
     int m_nSpriteCount = {}; // +0x20: the main instancer's initial sprite count.
     bool m_bBuilt = {};      // +0x24: set once the sprites are built.
-    // +0x25..+0x33 is further layer state (still being worked out) preceding the timer.
-    unsigned char m_aReserved25[0xf] = {}; // +0x25
+    // +0x25..+0x2f is further layer state (still being worked out) preceding the active flag.
+    unsigned char m_aReserved25[0xb] = {}; // +0x25
+    bool m_bActive = {};                   // +0x30: whether the effect is currently playing.
+    unsigned char m_aReserved31[3] = {};   // +0x31
     float m_flTimer = {};                  // +0x34: the effect animation timer, in frames.
     int m_nMode = {};                      // +0x38: a mode field the getter zero-clears.
     bool m_bSoundFlag = {};                // +0x3c: a sound flag the getter zero-clears.
