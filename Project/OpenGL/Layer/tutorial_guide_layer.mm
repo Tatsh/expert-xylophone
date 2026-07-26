@@ -22,8 +22,6 @@ constexpr int kTutorialPhaseGuideActive = 7;
 // above this value as the fade-out path).
 constexpr short kFadeStateHidden = 0x100;
 
-// The number of guide sprite kinds in the descriptor table.
-constexpr int kSpriteKindCount = 11;
 // Sprite kinds above this index are the small tap glyphs, halved on the non-pad font variant.
 constexpr unsigned int kTapGlyphKindBound = 4;
 
