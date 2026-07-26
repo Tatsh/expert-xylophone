@@ -208,7 +208,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     if (self != [MusicData class]) {
         return;
     }
-    /** @ghidraAddress 0x66a2c (InitializeGlobalDictionaries) */
+    /** @ghidraAddress 0x669e8 (InitializeGlobalDictionaries) */
     g_pMusicSortNameOverrides = [[NSMutableDictionary alloc] init];
     g_pArtistSortNameOverrides = [[NSMutableDictionary alloc] init];
     g_yomiGroups = @[
