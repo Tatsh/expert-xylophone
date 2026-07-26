@@ -102,3 +102,20 @@ void FullComboLimelightLayer::CreateFullComboLimelight(unsigned int nColor) {
     effect.m_nTimer = 0;
     effect.m_bFlag2 = false;
 }
+
+/** @ghidraAddress 0x122abc */
+void FullComboLimelightLayer::ClearEffectFlags() {
+    for (EffectRecord &effect : m_aEffects) {
+        effect.m_bActive = false;
+    }
+}
+
+/** @ghidraAddress 0x122ad8 */
+bool FullComboLimelightLayer::IsAnyEffectActive() const {
+    for (const EffectRecord &effect : m_aEffects) {
+        if (effect.m_bActive) {
+            return true;
+        }
+    }
+    return false;
+}
