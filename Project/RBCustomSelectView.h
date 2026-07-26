@@ -29,13 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Create the picker with the given frame and build its subviews.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
- * @ghidraAddress 0x687dc
+ * @ghidraAddress 0x1687dc
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the scroll view, the per-category item grids, and the preview button.
- * @ghidraAddress 0x688c0
+ * @ghidraAddress 0x1688c0
  */
 - (void)setupView;
 
@@ -46,27 +46,27 @@ NS_ASSUME_NONNULL_BEGIN
  * others, and the two iPad idioms use different offsets.
  * @param thema The current player theme.
  * @return The first grid's top offset within the scroll view.
- * @ghidraAddress 0x68850
+ * @ghidraAddress 0x168850
  */
 - (CGFloat)getCollectionViewStartY:(RBUserSettingDataTheme)thema;
 
 /**
  * @brief The vertical gap left between consecutive category grids, chosen by the iPad idiom.
  * @return The inter-grid margin.
- * @ghidraAddress 0x6889c
+ * @ghidraAddress 0x16889c
  */
 - (CGFloat)getCollectionViewMargin;
 
 /**
  * @brief Reload every category grid's item content.
- * @ghidraAddress 0x696d4
+ * @ghidraAddress 0x1696d4
  */
 - (void)reloadData;
 
 /**
  * @brief Start the game preview and play the decide sound effect.
  * @param sender The preview button that sent the action.
- * @ghidraAddress 0x69828
+ * @ghidraAddress 0x169828
  */
 - (void)prevButtonTap:(nullable id)sender;
 

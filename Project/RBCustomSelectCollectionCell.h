@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build the cell's background view, item button, and hidden selection overlay.
  * @param frame The cell's frame rectangle.
  * @return The initialised cell, or @c nil.
- * @ghidraAddress 0x6e320
+ * @ghidraAddress 0x16e320
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame;
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  *        @c selectedImageView and starts or clears its flash effect. The binary's accessors are
  *        @c isSelected and @c setIsSelected:, distinct from @c UICollectionViewCell's own
  *        @c selected pair.
- * @ghidraAddress 0x6e680
+ * @ghidraAddress 0x16e680
  */
 @property(nonatomic, assign, getter=isSelected, setter=setIsSelected:) BOOL itemSelected;
 

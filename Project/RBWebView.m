@@ -190,7 +190,7 @@ static NSString *const kDisableTouchCalloutScript =
     if (self.parentView) {
         if ([self.parentView respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-              /** @ghidraAddress 0x73cb0 */
+              /** @ghidraAddress 0x173cb0 */
               [self.parentView performSelector:@selector(webView:didFailLoadWithError:)
                                     withObject:webView
                                     withObject:error];

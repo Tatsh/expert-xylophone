@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The action the store pack cell's button performs for an extend-note item.
- * @ghidraAddress 0x793cc
+ * @ghidraAddress 0x1793cc
  */
 typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
     StoreExtendNoteButtonStateError = -1,       /*!< The item is in an inconsistent purchase
@@ -46,98 +46,98 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 
 /**
  * @brief The extend-note item's App Store product identifier.
- * @ghidraAddress 0x798f8 (getter)
- * @ghidraAddress 0x79908 (setter)
+ * @ghidraAddress 0x1798f8 (getter)
+ * @ghidraAddress 0x179908 (setter)
  */
 @property(nonatomic, assign) int pid;
 /**
  * @brief The extend-note chart identifier of the associated tune.
- * @ghidraAddress 0x79918 (getter)
- * @ghidraAddress 0x79928 (setter)
+ * @ghidraAddress 0x179918 (getter)
+ * @ghidraAddress 0x179928 (setter)
  */
 @property(nonatomic, assign) int extMusicID;
 /**
  * @brief The identifier of the pack that contains this extend note.
- * @ghidraAddress 0x79938 (getter)
- * @ghidraAddress 0x79948 (setter)
+ * @ghidraAddress 0x179938 (getter)
+ * @ghidraAddress 0x179948 (setter)
  */
 @property(nonatomic, assign) int packID;
 /**
  * @brief The containing pack's display name.
- * @ghidraAddress 0x79958 (getter)
- * @ghidraAddress 0x79968 (setter)
+ * @ghidraAddress 0x179958 (getter)
+ * @ghidraAddress 0x179968 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *packName;
 /**
  * @brief The extend-note item's comment text.
- * @ghidraAddress 0x799a0 (getter)
- * @ghidraAddress 0x799b0 (setter)
+ * @ghidraAddress 0x1799a0 (getter)
+ * @ghidraAddress 0x1799b0 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *comment;
 /**
  * @brief The extend-note item's price in the catalogue currency.
- * @ghidraAddress 0x799e8 (getter)
- * @ghidraAddress 0x799f8 (setter)
+ * @ghidraAddress 0x1799e8 (getter)
+ * @ghidraAddress 0x1799f8 (setter)
  */
 @property(nonatomic, assign) int price;
 /**
  * @brief The extend note's chart difficulty level.
- * @ghidraAddress 0x79a08 (getter)
- * @ghidraAddress 0x79a18 (setter)
+ * @ghidraAddress 0x179a08 (getter)
+ * @ghidraAddress 0x179a18 (setter)
  */
 @property(nonatomic, assign) int difficulty;
 /**
  * @brief The download URL for the extend-note file.
- * @ghidraAddress 0x79a28 (getter)
- * @ghidraAddress 0x79a38 (setter)
+ * @ghidraAddress 0x179a28 (getter)
+ * @ghidraAddress 0x179a38 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *extendNoteURL;
 /**
  * @brief The download URL for the tune archive that hosts the extend note.
- * @ghidraAddress 0x79a70 (getter)
- * @ghidraAddress 0x79a80 (setter)
+ * @ghidraAddress 0x179a70 (getter)
+ * @ghidraAddress 0x179a80 (setter)
  */
 @property(nonatomic, strong, nullable) NSString *extendURL;
 /**
  * @brief Whether the extend-note item is flagged as new in the catalogue.
- * @ghidraAddress 0x79ab8 (getter)
- * @ghidraAddress 0x79ac8 (setter)
+ * @ghidraAddress 0x179ab8 (getter)
+ * @ghidraAddress 0x179ac8 (setter)
  */
 @property(nonatomic, assign) BOOL isNew;
 /**
  * @brief An informational deep link associated with the item, when present.
- * @ghidraAddress 0x79ad8 (getter)
+ * @ghidraAddress 0x179ad8 (getter)
  */
 @property(nonatomic, readonly, strong, nullable) NSString *linkURL;
 /**
  * @brief The StoreKit product backing the extend-note item, once loaded.
- * @ghidraAddress 0x79ae8 (getter)
- * @ghidraAddress 0x79af8 (setter)
+ * @ghidraAddress 0x179ae8 (getter)
+ * @ghidraAddress 0x179af8 (setter)
  */
 @property(nonatomic, strong, nullable) SKProduct *product;
 
 /**
  * @brief Whether the extend-note item's containing pack has been purchased.
  * @return @c YES when the pack identifier is positive and its product is recorded as purchased.
- * @ghidraAddress 0x794d8
+ * @ghidraAddress 0x1794d8
  */
 @property(nonatomic, readonly) BOOL purchasedPack;
 /**
  * @brief Whether the extend-note item itself has been purchased.
  * @return @c YES when the item identifier is positive and its product is recorded as purchased.
- * @ghidraAddress 0x795c0
+ * @ghidraAddress 0x1795c0
  */
 @property(nonatomic, readonly) BOOL purchasedNote;
 /**
  * @brief Whether the tune archive that hosts the extend note is already downloaded.
  * @return @c YES when the tune is a purchased tune and its archive is present on disk.
- * @ghidraAddress 0x796a8
+ * @ghidraAddress 0x1796a8
  */
 @property(nonatomic, readonly) BOOL alreadyDownloadBin;
 /**
  * @brief Whether the extend-note file is already downloaded.
  * @return @c YES when the extend note is purchased and its file is present on disk.
- * @ghidraAddress 0x797e8
+ * @ghidraAddress 0x1797e8
  */
 @property(nonatomic, readonly) BOOL alreadyDownloadNote;
 
@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @param dictionary The catalogue dictionary to read.
  * @return The initialised item, or @c nil when the inherited initialiser rejects the @c Music
  * entry.
- * @ghidraAddress 0x77e58
+ * @ghidraAddress 0x177e58
  */
 - (nullable instancetype)initWithDictionary:(nullable NSDictionary *)dictionary;
 
@@ -162,7 +162,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * nested @c Music sub-dictionary.
  * @param dictionary The flat catalogue dictionary to read.
  * @return The initialised item, or @c nil when the superclass initialiser fails.
- * @ghidraAddress 0x781f4
+ * @ghidraAddress 0x1781f4
  */
 - (nullable instancetype)initWithExtendDictionary:(nullable NSDictionary *)dictionary;
 
@@ -174,7 +174,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @param product The StoreKit product to wrap.
  * @return The initialised item, or @c nil when @p product is @c nil or the superclass initialiser
  * fails.
- * @ghidraAddress 0x7858c
+ * @ghidraAddress 0x17858c
  */
 - (nullable instancetype)initWithProduct:(nullable SKProduct *)product;
 
@@ -182,7 +182,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @brief Build an extend-note item from a bare extend-note identifier.
  * @param extendNoteID The extend-note item identifier to store as the product identifier.
  * @return The initialised item, or @c nil when the superclass initialiser fails.
- * @ghidraAddress 0x786d8
+ * @ghidraAddress 0x1786d8
  */
 - (nullable instancetype)initWithExtendNoteID:(int)extendNoteID;
 
@@ -197,14 +197,14 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * through ten and medium and hard to one through eleven.
  * @param dictionary The catalogue dictionary to read.
  * @return @c YES when the entry's @c PID matched the item's identifier.
- * @ghidraAddress 0x7875c
+ * @ghidraAddress 0x17875c
  */
 - (BOOL)setDictionary:(nullable NSDictionary *)dictionary;
 
 /**
  * @brief Whether the extend-note file is already present on disk.
  * @return @c YES when the extend note's purchased file exists.
- * @ghidraAddress 0x78ff0
+ * @ghidraAddress 0x178ff0
  */
 - (BOOL)extFileExist;
 
@@ -212,7 +212,7 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @brief The tint colour for the pack cell's action button.
  * @return A dark-blue colour for a not-purchased pack, purple for a purchased pack whose note is
  * not purchased, blue while the item is downloading, and grey once it is installed or in error.
- * @ghidraAddress 0x79078
+ * @ghidraAddress 0x179078
  */
 - (nullable UIColor *)getButtonColor;
 
@@ -221,14 +221,14 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @return The more-info label for a not-purchased pack, a formatted "buy for the price" title for a
  * purchased pack whose note is not purchased, the download label while downloading, the installed
  * label once complete, and the error label otherwise.
- * @ghidraAddress 0x791fc
+ * @ghidraAddress 0x1791fc
  */
 - (nullable NSString *)getButtonName;
 
 /**
  * @brief The action the pack cell's button should perform for the item.
  * @return The current button state.
- * @ghidraAddress 0x793cc
+ * @ghidraAddress 0x1793cc
  */
 - (StoreExtendNoteButtonState)getButtonState;
 

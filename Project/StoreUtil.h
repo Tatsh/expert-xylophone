@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param offset The one-based catalogue offset of the first item to fetch.
  * @param limit The maximum number of items to fetch.
  * @return The extend-note list endpoint URL.
- * @ghidraAddress 0x87484
+ * @ghidraAddress 0x187484
  */
 + (nullable NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit;
 

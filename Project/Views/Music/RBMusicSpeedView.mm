@@ -260,7 +260,7 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
         __weak RBMusicSpeedView *weakSelf = self;
         [UIView animateWithDuration:g_dMascotMessageAnimDuration
                          animations:^{
-                           /** @ghidraAddress 0xef4c */
+                           /** @ghidraAddress 0x10ef4c */
                            RBMusicSpeedView *strongSelf = weakSelf;
                            CGFloat barWidth = strongSelf.barBase.bounds.size.width;
                            // Yes, the binary reads the marker's centre here and discards it.

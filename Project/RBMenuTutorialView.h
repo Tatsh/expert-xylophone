@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
  *        iPad idiom.
  * @param frame The view's frame rectangle.
  * @return The initialised overlay, or @c nil.
- * @ghidraAddress 0x37b0c
+ * @ghidraAddress 0x137b0c
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame;
 
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build the overlay content: the dimming base view and its eight grey spotlight layers, the
  *        message artwork window and message layer, the pastel speech-bubble layer, the bouncing
  *        cursor image, the pulsing touch-marker image, and the full-cover tap target.
- * @ghidraAddress 0x37bfc
+ * @ghidraAddress 0x137bfc
  */
 - (void)setupView;
 

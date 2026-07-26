@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign) BOOL m_IsAnimation;
 /**
  * @brief The plotted values, each a boxed @c float, ordered left to right.
- * @ghidraAddress 0x7234 (getter)
+ * @ghidraAddress 0x107234 (getter)
  * @ghidraAddress 0x7244 (setter)
  */
 @property(nonatomic, strong, nullable) NSMutableArray *dataArray;

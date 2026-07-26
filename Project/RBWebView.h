@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param frame The view's frame rectangle.
  * @param superView The object notified of load completion and failure, held weakly. May be @c nil.
  * @return The initialised view, or @c nil.
- * @ghidraAddress 0x72af8
+ * @ghidraAddress 0x172af8
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame superView:(nullable id)superView;
 
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Convenience forwarder to @c setIsUseGrayView:.
  * @param useGrayView @c YES to show @c grayView while a page loads.
- * @ghidraAddress 0x72ff0
+ * @ghidraAddress 0x172ff0
  */
 - (void)setUseGrayView:(BOOL)useGrayView;
 
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param redirectResponse The redirect response, if any (unused).
  * @param fromDataSource The originating data source (unused).
  * @return The (mutated) request to send.
- * @ghidraAddress 0x72ffc
+ * @ghidraAddress 0x172ffc
  */
 - (nullable id)uiWebView:(nullable id)uiWebView
                 resource:(nullable id)resource

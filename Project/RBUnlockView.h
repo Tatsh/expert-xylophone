@@ -37,42 +37,42 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Create the picker with the given frame and build its subviews.
  * @param frame The view's frame rectangle.
  * @return The initialised view, or @c nil.
- * @ghidraAddress 0x94284
+ * @ghidraAddress 0x194284
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the reward banner button, the lime-point count label and its backdrop, the package
  * scroll view, and the loading spinner, then reload the package list.
- * @ghidraAddress 0x94314
+ * @ghidraAddress 0x194314
  */
 - (void)setupView;
 
 /**
  * @brief Rebuild the scroll view's contents: the reward banner button (when a banner is available)
  * and one @c RBUnlockCollectionView per unlock package, sizing the scroll content to fit.
- * @ghidraAddress 0x94ba0
+ * @ghidraAddress 0x194ba0
  */
 - (void)reloadData;
 
 /**
  * @brief Request the unlock catalogue from the server, spinning the loading indicator until it
  * arrives.
- * @ghidraAddress 0x955e0
+ * @ghidraAddress 0x1955e0
  */
 - (void)request;
 
 /**
  * @brief The customize picker's item view, exposed for the tutorial highlight.
  * @return The package scroll view.
- * @ghidraAddress 0x973b4
+ * @ghidraAddress 0x1973b4
  */
 - (nullable UIScrollView *)getUnlockItemView;
 
 /**
  * @brief Forward the parent-view reference; stored as @c parentCustomView.
  * @param parentView The customize popup that owns this picker.
- * @ghidraAddress 0x942f8
+ * @ghidraAddress 0x1942f8
  */
 - (void)setParentView:(nullable RBCustomView *)parentView;
 

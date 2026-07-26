@@ -135,7 +135,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 #pragma mark - Lifecycle
 
 - (instancetype)initWithFrame:(CGRect)frame {
-    /** @ghidraAddress 0x37b0c */
+    /** @ghidraAddress 0x137b0c */
     self = [super initWithFrame:frame];
     if (self) {
         self.exclusiveTouch = YES;
@@ -160,7 +160,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 #pragma mark - Layout
 
 - (void)setupView {
-    /** @ghidraAddress 0x37bfc */
+    /** @ghidraAddress 0x137bfc */
     self.alpha = 0.0;
     self.backgroundColor = UIColor.clearColor;
     self.autoresizingMask = kAutoresizingMaskFlexibleAll;

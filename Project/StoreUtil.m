@@ -188,7 +188,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     return -1;
 }
 
-/** @ghidraAddress 0x87484 */
+/** @ghidraAddress 0x187484 */
 + (NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit {
     return [NetworkUtil extendNoteListURL:offset limit:limit];
 }

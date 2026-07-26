@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Creates the speed sub-view for a page of the host's setting scroll.
  * @param frame The page frame inside the host's setting scroll view.
  * @param MusicSelectedBase The hosting music-detail view the selection is reported back to.
- * @ghidraAddress 0xdf74
+ * @ghidraAddress 0x10df74
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame
                      MusicSelectedBase:(nullable RBMusicView *)MusicSelectedBase;
@@ -32,52 +32,52 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)SetupView;
 
 /**
- * @brief Maps a tap along the speed bar to a speed step and commits it. @ghidraAddress 0xeb9c
+ * @brief Maps a tap along the speed bar to a speed step and commits it. @ghidraAddress 0x10eb9c
  * @param tap The tap gesture recogniser.
  */
 - (void)tap:(nullable UITapGestureRecognizer *)tap;
 
 /**
  * @brief Clamps the given step to 0 through 10, stores it, plays the change sound effect, animates
- *        the marker, and refreshes the host's decide button. @ghidraAddress 0xeda0
+ *        the marker, and refreshes the host's decide button. @ghidraAddress 0x10eda0
  * @param SelectSpeed The candidate speed step.
  */
 - (void)SelectSpeed:(int)SelectSpeed;
 
 /**
  * @brief The selected speed step, 0 through 10.
- * @ghidraAddress 0xf0d0 (getter)
- * @ghidraAddress 0xf0e0 (setter)
+ * @ghidraAddress 0x10f0d0 (getter)
+ * @ghidraAddress 0x10f0e0 (setter)
  */
 @property(nonatomic, assign) int speed;
 /**
  * @brief The slider style flag, seeded to 0 by the initialiser.
- * @ghidraAddress 0xf1fc (getter)
- * @ghidraAddress 0xf20c (setter)
+ * @ghidraAddress 0x10f1fc (getter)
+ * @ghidraAddress 0x10f20c (setter)
  */
 @property(nonatomic, assign) int sliderType;
 /**
  * @brief The draggable marker drawn over the bar at the current speed. @c strong.
- * @ghidraAddress 0xf124 (getter)
- * @ghidraAddress 0xf134 (setter)
+ * @ghidraAddress 0x10f124 (getter)
+ * @ghidraAddress 0x10f134 (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *selectedImage;
 /**
  * @brief The horizontal speed bar image. @c strong.
- * @ghidraAddress 0xf16c (getter)
- * @ghidraAddress 0xf17c (setter)
+ * @ghidraAddress 0x10f16c (getter)
+ * @ghidraAddress 0x10f17c (setter)
  */
 @property(strong, nonatomic, nullable) UIImageView *sliderView;
 /**
  * @brief The transparent container the marker is centred within. @c strong.
- * @ghidraAddress 0xf1b4 (getter)
- * @ghidraAddress 0xf1c4 (setter)
+ * @ghidraAddress 0x10f1b4 (getter)
+ * @ghidraAddress 0x10f1c4 (setter)
  */
 @property(strong, nonatomic, nullable) UIView *barBase;
 /**
  * @brief The hosting music-detail view the selection is reported back to. @c weak.
- * @ghidraAddress 0xf0f0 (getter)
- * @ghidraAddress 0xf110 (setter)
+ * @ghidraAddress 0x10f0f0 (getter)
+ * @ghidraAddress 0x10f110 (setter)
  */
 @property(weak, nonatomic, nullable) RBMusicView *musicSelectedBase;
 

@@ -289,7 +289,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
             [bannerDownloader
                 startDownloadWithProceed:nil
                                  success:^(ImageDownloader *downloader) {
-                                   /** @ghidraAddress 0x95390 */
+                                   /** @ghidraAddress 0x195390 */
                                    [self.rewardButton setImage:[downloader getImage]
                                                       forState:UIControlStateNormal];
                                    if (!IsPad()) {
@@ -342,7 +342,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         startDownloadingWithProceed:^{
         }
         success:^(Downloader *downloader) {
-          /** @ghidraAddress 0x95858 */
+          /** @ghidraAddress 0x195858 */
           NSDictionary *json = [downloader getDataInJSON];
 
           // On the Limelight theme, take the first reward banner and normalise its URL for the
@@ -385,7 +385,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                                             waitUntilDone:YES];
           } else {
               [RewardNetwork getAdStatusWithBlock:^(NSInteger status, NSError *error) {
-                /** @ghidraAddress 0x96114 */
+                /** @ghidraAddress 0x196114 */
                 if (error) {
                     [AppDelegate ApplilinkInitialize];
                     weakSelf.rewardBannerUrl = nil;
@@ -407,7 +407,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
           }
         }
         failure:^(Downloader *downloader) {
-          /** @ghidraAddress 0x963ac */
+          /** @ghidraAddress 0x1963ac */
           // Dispatch the stop-indicator/show-error handler to the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf.activityIndicatorView stopAnimating];
@@ -444,7 +444,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         startDownloadingWithProceed:^{
         }
         success:^(Downloader *downloader) {
-          /** @ghidraAddress 0x96be0 */
+          /** @ghidraAddress 0x196be0 */
           NSDictionary *json = [downloader getDataInJSON];
           NSString *responseNonce = json[kRewardCheckNonceEchoKey];
           NSArray *rewardList = json[kRewardListKey];
@@ -460,14 +460,14 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
               [[RBExperienceData sharedInstance] addPoint:totalPoints];
               [[RBExperienceData sharedInstance] save];
               dispatch_async(dispatch_get_main_queue(), ^{
-                /** @ghidraAddress 0x97168 */
+                /** @ghidraAddress 0x197168 */
                 weakSelf.alertView = [UIAlertView showAddLimepointByApplilink:totalPoints:nil];
                 [weakSelf reloadData];
               });
           }
         }
         failure:^(Downloader *downloader) {
-          /** @ghidraAddress 0x96530 */
+          /** @ghidraAddress 0x196530 */
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf.activityIndicatorView stopAnimating];
           });
@@ -592,7 +592,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
             DISPATCH_TIME_NOW,
             (int64_t)((double)((float)step * kProgressTickFraction) * kNanosecondsPerSecond));
         dispatch_after(when, dispatch_get_main_queue(), ^{
-          /** @ghidraAddress 0x98720 */
+          /** @ghidraAddress 0x198720 */
           [self.progressOverlayView setProgress:(float)step * kProgressIncrement];
           if (self.progressOverlayView.progress >= 1.0) {
               [self.progressOverlayView displayOperationDidFinishAnimation];
