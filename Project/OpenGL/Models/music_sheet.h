@@ -198,6 +198,13 @@ public:
 
 private:
     /**
+     * @brief Initialises the path-node region: reserves a one-node path buffer and zeroes the parse
+     * counter/timing block. Called by the constructor.
+     * @ghidraAddress 0x12f6f4
+     */
+    void InitPathNodeRegion();
+
+    /**
      * @brief Parses a legacy (version 6 and 7) note-chart word stream into the record pool and links
      * long notes.
      *

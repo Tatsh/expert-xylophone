@@ -210,13 +210,37 @@ constexpr int kMinLegacyVersion = 6;
 
 } // namespace
 
+/** @ghidraAddress 0x12f6f4 */
+void MusicSheet::InitPathNodeRegion() {
+    // The path-node array starts with room for one node and none read; the parse counter and timing
+    // block that follows it is zeroed. The member initialisers already zero these fields, so this
+    // reproduces the binary's explicit clears.
+    m_pathNodes.Reserve();
+    m_nChartEndTime = 0;
+    m_nSeedA = 0;
+    m_nNoteCount = 0;
+    m_nTempoEventCount = 0;
+    m_nFreeNoteCount = 0;
+    m_nSlideRecordCount = 0;
+    m_nChartEndTimeScaled = 0;
+    m_nField3c = 0;
+    m_nChartNoteCount = 0;
+    m_nChartNoteCountSide1 = 0;
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        m_aSideObjectCounts[nSide] = 0;
+        m_aPlayableCounts[nSide] = 0;
+        m_aSideCount[nSide] = 0;
+    }
+    m_nScrollTiming = 0;
+    m_nRemainTiming = 0;
+}
+
 /** @ghidraAddress 0x12f828 */
 MusicSheet::MusicSheet() {
     // The version starts unread; the parser fills it in. Every count, timing, and buffer pointer is
     // cleared by the member initialisers, matching the binary's field-by-field zeroing.
     m_nVersion = -1;
-    // The path-node array starts with room for one node and none read.
-    m_pathNodes.Reserve();
+    InitPathNodeRegion();
     m_pRecords = nullptr;
     m_pSlideRecords = nullptr;
     m_pSideIndexArray = nullptr;
