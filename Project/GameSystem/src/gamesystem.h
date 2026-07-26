@@ -94,6 +94,10 @@ public:
     float GetSheetRadiusHalf() const {
         return m_flSheetRadiusHalf;
     }
+    /** @brief Returns the note sheet's scaled radius, used as the slide-result sprite scale. */
+    float GetSheetRadiusScaled() const {
+        return m_flSheetRadiusScaled;
+    }
     /** @brief Returns the play-field scale. */
     float GetPlayfieldScale() const {
         return m_flPlayfieldScale;
