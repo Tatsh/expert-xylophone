@@ -92,6 +92,24 @@ private:
      */
     TutorialGuideLayer();
 
+    /**
+     * @brief Emits one guide sprite of a given kind into the instancer, if its pool is not full.
+     *
+     * Looks up the sprite kind's descriptor (target anchor, size, and UV-table index) and its UV
+     * rectangle, optionally re-derives the Y position from the gauge coordinate when the guide is in
+     * its gauge-anchored mode, then writes the sprite's position, anchor, size, UV rectangle, scale,
+     * and colour and advances the instancer's sprite count. On the non-pad font variant, sprite kinds
+     * above the tap-glyph range draw at half size. Silently drops the sprite when the pool is full.
+     * @param flSizeX The sprite's X scale.
+     * @param flSizeY The sprite's Y scale.
+     * @param nSpriteKind The sprite-kind descriptor index.
+     * @param pPosition The sprite's world position (its Y may be re-derived in gauge mode).
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x10cda4
+     */
+    void EmitTutorialSpriteSlot(
+        float flSizeX, float flSizeY, unsigned int nSpriteKind, float *pPosition, int nAlpha);
+
     // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
     struct Keyframe {
         float flStartX = {}; // +0x00
@@ -111,8 +129,12 @@ private:
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x18: the guide sprite instancer.
     int m_nSpriteCount = {};                 // +0x20: the instancer's initial sprite count.
     bool m_bBuilt = {};                      // +0x24: set once the tables are built.
-    unsigned char m_aReserved25[0xb] = {};   // +0x25: further layer state, still being worked out.
-    bool m_bActive = {}; // +0x30: whether the guide is showing; cleared to hide.
+    bool m_bPortrait = {}; // +0x25: whether the viewport is portrait (width <= height).
+    // +0x26..+0x27 is alignment padding before the cached gauge coordinates.
+    unsigned char m_aPad26[2] = {}; // +0x26
+    float m_flGaugeX = {};          // +0x28: the cached gauge X coordinate (viewport width).
+    float m_flGaugeY = {};          // +0x2c: the cached gauge Y coordinate (viewport height).
+    bool m_bActive = {};            // +0x30: whether the guide is showing; cleared to hide.
     // +0x31..+0x33 is alignment padding before the animation clock.
     unsigned char m_aPad31[3] = {};      // +0x31
     float m_flClock = {};                // +0x34: the guide animation clock, advanced each frame.

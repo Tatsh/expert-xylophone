@@ -1,9 +1,11 @@
 #include "tutorial_guide_layer.h"
 
+#include "deviceenvironment.h"
 #include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#import "s_vector2.h"
 
 // The process-wide tutorial-guide layer, created lazily by shared().
 static TutorialGuideLayer *g_pTutorialGuideLayer = nullptr; // @ghidraAddress 0x3dcae0
@@ -19,6 +21,62 @@ constexpr int kTutorialPhaseGuideActive = 7;
 // The fade state that marks the guide hidden/fading out (the Update dispatcher treats a state at or
 // above this value as the fade-out path).
 constexpr short kFadeStateHidden = 0x100;
+
+// The number of guide sprite kinds in the descriptor table.
+constexpr int kSpriteKindCount = 11;
+// Sprite kinds above this index are the small tap glyphs, halved on the non-pad font variant.
+constexpr unsigned int kTapGlyphKindBound = 4;
+
+// The gauge-anchored blend offsets (@ghidraAddress 0x2f8568 X, 0x301f94 Y): the sprite is recentred
+// between its position and the cached gauge coordinate.
+constexpr float kGaugeBlendOffsetX = -384.0f;
+constexpr float kGaugeBlendOffsetY = -680.0f;
+constexpr float kGaugeBlendHalf = 0.5f;
+
+// One guide sprite-kind descriptor (@ghidraAddress 0x3021e0, stride 0x18): the target instancer, the
+// anchor and size, and the index into the UV table below.
+struct SpriteKindDescriptor {
+    int nInstancer;
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeW;
+    float flSizeH;
+    int nUvIndex;
+};
+constexpr SpriteKindDescriptor kSpriteKinds[] = {
+    {0, 0.5f, 0.5f, 1.0f, 1.0f, 0},
+    {0, 0.5f, 0.5f, 1.0f, 1.0f, 0},
+    {0, 0.5f, 0.5f, 1.0f, 1.0f, 0},
+    {0, 0.5f, 0.5f, 1.0f, 1.0f, 0},
+    {0, 0.5f, 0.5f, 1.0f, 1.0f, 0},
+    {0, 8.0f, 8.0f, 16.0f, 16.0f, 3},
+    {0, 8.0f, 8.0f, 16.0f, 16.0f, 4},
+    {0, 8.0f, 8.0f, 16.0f, 16.0f, 5},
+    {0, 8.0f, 8.0f, 16.0f, 16.0f, 6},
+    {0, 68.0f, 144.0f, 136.0f, 144.0f, 1},
+    {0, 20.0f, 63.0f, 397.0f, 126.0f, 9},
+};
+
+// The UV rectangles the descriptors index (@ghidraAddress 0x2f8348, stride 0x10): UV origin and UV
+// size.
+struct UvRect {
+    float flOriginU;
+    float flOriginV;
+    float flSizeU;
+    float flSizeV;
+};
+constexpr UvRect kUvRects[] = {
+    {0.49023f, 0.07617f, 0.00098f, 0.00098f},
+    {0.35254f, 0.00195f, 0.13281f, 0.14062f},
+    {0.48730f, 0.00195f, 0.06641f, 0.07031f},
+    {0.48730f, 0.07422f, 0.01562f, 0.01562f},
+    {0.50293f, 0.07422f, 0.01562f, 0.01562f},
+    {0.48730f, 0.08984f, 0.01562f, 0.01562f},
+    {0.50293f, 0.08984f, 0.01562f, 0.01562f},
+    {0.55566f, 0.00195f, 0.07031f, 0.13281f},
+    {0.62793f, 0.00195f, 0.07031f, 0.13281f},
+    {0.35254f, 0.14453f, 0.38867f, 0.13086f},
+};
 
 // The nine keyframe timings (start X, end X, step index) the guide sweep uses (@ghidraAddress
 // 0x10b4bc onwards, in the constructor's immediate stores).
@@ -68,6 +126,49 @@ TutorialGuideLayer::TutorialGuideLayer() {
     // The base constructor runs first; every member is zero-initialised by its in-class initialiser,
     // matching the binary's explicit zero-clear of the texture, sprite, counts, flags, clock, and
     // coordinate table.
+}
+
+/** @ghidraAddress 0x10cda4 */
+void TutorialGuideLayer::EmitTutorialSpriteSlot(
+    float flSizeX, float flSizeY, unsigned int nSpriteKind, float *pPosition, int nAlpha) {
+    const SpriteKindDescriptor &kind = kSpriteKinds[nSpriteKind];
+    ne::C_SPRITE_INSTANCING *pInstancer = m_pSprite;
+    const int nIndex = pInstancer->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    const UvRect &uv = kUvRects[kind.nUvIndex];
+
+    // In the gauge-anchored mode (any non-zero fade state low byte) the sprite is recentred between
+    // its own position and the cached gauge coordinate; the portrait variant additionally halves the
+    // X blend.
+    if ((m_nFadeState & 0xff) != 0) {
+        float flY;
+        if (GetFontVariant() == 0) {
+            pPosition[0] = (pPosition[0] + kGaugeBlendOffsetX) * kGaugeBlendHalf +
+                           m_flGaugeX * kGaugeBlendHalf;
+            flY = (pPosition[1] + kGaugeBlendOffsetY) * kGaugeBlendHalf;
+        } else {
+            flY = pPosition[1] + kGaugeBlendOffsetY;
+        }
+        pPosition[1] = flY + m_flGaugeY * kGaugeBlendHalf;
+    }
+
+    pInstancer->SetSpritePosition(nIndex, S_VECTOR2{pPosition[0], pPosition[1]});
+    pInstancer->SetSpriteAnchor(nIndex, S_VECTOR2{kind.flAnchorX, kind.flAnchorY});
+    pInstancer->SetSpriteSize(nIndex, S_VECTOR2{kind.flSizeW, kind.flSizeH});
+    pInstancer->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pInstancer->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+
+    // On the non-pad font variant the small tap glyphs draw at half scale.
+    if (!IsPad() && nSpriteKind > kTapGlyphKindBound) {
+        flSizeX *= kGaugeBlendHalf;
+        flSizeY *= kGaugeBlendHalf;
+    }
+    pInstancer->SetSpriteScale(nIndex, flSizeX, flSizeY);
+    pInstancer->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(nAlpha));
+    pInstancer->SetSpriteCount(nIndex + 1);
 }
 
 /** @ghidraAddress 0x10b3b0 */
