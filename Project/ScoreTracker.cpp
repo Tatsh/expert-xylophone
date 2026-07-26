@@ -281,3 +281,11 @@ void ScoreTracker::SetJudgeScore3(unsigned int nSide) {
     SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus3, 3);
 }
+
+/** @ghidraAddress 0x1499d8 */
+bool ScoreTracker::IsSideAllNotesJudged(unsigned int nSide) const {
+    const PlayRecord &record = m_aRecords[nSide];
+    const int nJudged =
+        record.nCells[kCellGreat] + record.nCells[kCellGood] + record.nCells[kCellMiss];
+    return nJudged == m_nTotalNotes;
+}

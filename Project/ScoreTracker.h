@@ -160,6 +160,17 @@ public:
     void SetJudgeScore3(unsigned int nSide);
 
     /**
+     * @brief Whether every note on a side has been judged.
+     *
+     * Sums the side's three main judgement counters (cells 4, 5, and 6) and compares the total
+     * against the chart's note count.
+     * @param nSide The player side.
+     * @return @c true when the side's judged-note count equals the total note count.
+     * @ghidraAddress 0x1499d8
+     */
+    bool IsSideAllNotesJudged(unsigned int nSide) const;
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
