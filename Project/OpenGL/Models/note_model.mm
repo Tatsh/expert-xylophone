@@ -415,6 +415,88 @@ void NoteModel::CheckShot() {
     }
 }
 
+namespace {
+// The timing-window thresholds the note judge compares the signed time error against
+// (@ghidraAddress 0x308b64..0x308b78). The just window is [b6c, b64_narrow); a hit inside the
+// tighter [b74, b70) band grades early/late, otherwise far.
+constexpr float kJudgeWindowJustHigh = 153.0f; // 0x308b64
+constexpr float kJudgeWindowJustLow = -34.0f;  // 0x308b6c
+constexpr float kJudgeWindowNearHigh = 102.0f; // 0x308b70
+constexpr float kJudgeWindowNearLow = -102.0f; // 0x308b74
+constexpr float kMissWindowLow = -153.0f;      // 0x308b78
+// The narrow just-window high bound compared before the early/late/far split (0x308b68).
+constexpr float kJudgeWindowJustHighNarrow = -83.33333587646484f;
+// The note grades ResolveNoteHit records.
+enum NoteGrade {
+    kGradeJust = 0,      // A just (perfect) hit.
+    kGradeEarlyLate = 1, // An early or late hit.
+    kGradeFar = 2,       // A far (off) hit.
+};
+// The tap-only note kind that plays a sound and self-marks instead of resolving a hit.
+constexpr int kNoteKindTapOnly = 3;
+} // namespace
+
+/** Computes the current play-field judge clock. */
+float NoteModel::GetCurrentJudgeTime() const {
+    return PlayTimer::shared()->GetPlayTime() * kWaypointTimeScale + kWaypointTimeOffset;
+}
+
+/** @ghidraAddress 0x133a48 */
+void NoteModel::JudgeNoteTiming() {
+    if (!m_bTouched) {
+        return;
+    }
+    const float flError = GetHitTime() - GetCurrentJudgeTime();
+    unsigned int nGrade;
+    if (flError < kJudgeWindowJustHighNarrow && flError > kJudgeWindowJustLow) {
+        nGrade = kGradeJust;
+    } else {
+        // Inside the narrow near band grades early/late, otherwise far.
+        const bool bNear = flError > kJudgeWindowNearLow && flError < kJudgeWindowNearHigh;
+        nGrade = bNear ? kGradeEarlyLate : kGradeFar;
+    }
+    ResolveNoteHit(nGrade);
+}
+
+/** @ghidraAddress 0x133b1c */
+void NoteModel::CheckNoteMiss() {
+    if (m_bMissProcessed) {
+        return;
+    }
+    const float flNow = GetCurrentJudgeTime();
+    const float flHitTime = GetHitTime();
+    // The note has entered its miss window, is still before the late edge, and has reached its hit.
+    if (flHitTime + kMissWindowLow < flNow && flNow < flHitTime + kJudgeWindowJustHigh &&
+        flHitTime <= flNow) {
+        if (m_nKind != kNoteKindTapOnly) {
+            m_pos = S_VECTOR2{GetLaneX(), GetTargetLineY()};
+            ResolveNoteHit(m_nKind);
+            return;
+        }
+        PlayNoteTapSound();
+        m_bMissProcessed = true;
+    }
+}
+
+/** @ghidraAddress 0x133c8c */
+void NoteModel::UpdateNoteAutoTap() {
+    if (m_bMissProcessed) {
+        return;
+    }
+    const float flNow = GetCurrentJudgeTime();
+    const float flHitTime = GetHitTime();
+    if (flHitTime + kMissWindowLow < flNow && flNow < flHitTime + kJudgeWindowJustHigh &&
+        flHitTime <= flNow) {
+        if (m_nKind != kNoteKindTapOnly) {
+            m_pos = S_VECTOR2{GetLaneX(), GetTargetLineY()};
+            ResolveNoteHit(m_nKind);
+            return;
+        }
+        PlayNoteTapSound();
+        m_bMissProcessed = true;
+    }
+}
+
 /** @ghidraAddress 0x133578 */
 void NoteModel::UpdateNotePathLinks() {
     if (m_pRecord == nullptr) {

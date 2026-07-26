@@ -284,6 +284,48 @@ public:
     void CheckShotGhost();
 
     /**
+     * @brief Judges a touched note's timing accuracy and reports the resulting grade.
+     *
+     * Does nothing when the note is not the frame's touched note. Otherwise it grades the signed
+     * time error against the timing windows (0 = just, 1 = early/late, 2 = far) and resolves the hit.
+     * @ghidraAddress 0x133a48
+     */
+    void JudgeNoteTiming();
+
+    /**
+     * @brief Tests whether an untouched note has passed its hit window and, if so, misses it.
+     *
+     * Once the judge clock is inside the note's miss window and at or past its hit time, a tap-only
+     * note (kind 3) plays its miss sound and is marked processed, while any other note snaps to its
+     * lane target and resolves as a miss.
+     * @ghidraAddress 0x133b1c
+     */
+    void CheckNoteMiss();
+
+    /**
+     * @brief The auto-play tap: fires the note's tap once the judge clock reaches its hit window.
+     *
+     * The window test matches @c CheckNoteMiss; a tap-only note (kind 3) plays its tap sound and is
+     * marked processed, any other note snaps to its lane target and resolves its hit.
+     * @ghidraAddress 0x133c8c
+     */
+    void UpdateNoteAutoTap();
+
+    /**
+     * @brief Plays the note's tap/miss sound effect. Reconstruction pending.
+     * @ghidraAddress 0x133dfc
+     */
+    void PlayNoteTapSound();
+
+    /**
+     * @brief Records a note's judged grade and drives its post-hit effects and scoring.
+     * Reconstruction pending.
+     * @param nGrade The judged grade.
+     * @ghidraAddress 0x133ec0
+     */
+    void ResolveNoteHit(unsigned int nGrade);
+
+    /**
      * @brief Activates each of the note's chain path-point links, clearing the perfect-hit flag.
      *
      * For each of the record's path points, activates the note at that path-point index through the
@@ -333,6 +375,12 @@ public:
     static constexpr int kSubEntryCount = 16;
 
 private:
+    /**
+     * @brief Returns the current play-field judge clock: the play time scaled to the chart's
+     * millisecond range and offset by the lead-in.
+     */
+    float GetCurrentJudgeTime() const;
+
     void *m_pSheet = {};            // +0x00: the owning note manager (NoteEffectMgr).
     RbffNoteRecord *m_pRecord = {}; // +0x08: the parsed chart record, or null for a synthetic note.
     int m_nNoteIndex = {};          // +0x10: the note's index in its sheet.
@@ -390,11 +438,12 @@ private:
     unsigned char m_aReserved5da = {}; // +0x5da
     bool m_bJustHit =
         {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
-    bool m_bShotDecaying = {};            // +0x5dc: whether the shot phase runs its decay timer.
-    unsigned char m_aReserved5dd[2] = {}; // +0x5dd
-    bool m_bTouched = {};                 // +0x5df: the frame's nearest-hit winner flag.
-    bool m_bOwnSide = {};     // +0x5e0: the note's own side flag, used when it has no record.
-    bool m_bFontVariant = {}; // +0x5e1: the device font variant, set at construction.
+    bool m_bShotDecaying = {};         // +0x5dc: whether the shot phase runs its decay timer.
+    unsigned char m_aReserved5dd = {}; // +0x5dd
+    bool m_bMissProcessed = {}; // +0x5de: whether a passed/missed tap note was already handled.
+    bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
+    bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
+    bool m_bFontVariant = {};   // +0x5e1: the device font variant, set at construction.
     unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.
 };
 
