@@ -289,6 +289,14 @@ unsigned int C_SPRITE_INSTANCING::GetColorAlpha(int nIndex) const {
     return (m_pSpriteColorArray[nIndex] >> 24) & 0xff;
 }
 
+/** @ghidraAddress 0x17b1c8 */
+void C_SPRITE_INSTANCING::SetColorAlpha(int nIndex, unsigned char nAlpha) {
+    tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
+    // The colour is packed RGBA little-endian; the alpha is the high byte.
+    m_pSpriteColorArray[nIndex] =
+        (m_pSpriteColorArray[nIndex] & 0x00ffffff) | (static_cast<unsigned int>(nAlpha) << 24);
+}
+
 /** @ghidraAddress 0x5a0c4 */
 void C_SPRITE_INSTANCING::SetSpritePosition(int nIndex, const S_VECTOR2 &position) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));

@@ -160,6 +160,15 @@ public:
     unsigned int GetColorAlpha(int nIndex) const;
 
     /**
+     * @brief Set the alpha byte of sprite @p nIndex's packed colour, leaving RGB unchanged.
+     * @param nIndex The sprite slot.
+     * @param nAlpha The alpha byte.
+     * @ghidraAddress 0x17b1c8
+     * @ghidraAddress 0x17c9b8
+     */
+    void SetColorAlpha(int nIndex, unsigned char nAlpha);
+
+    /**
      * @brief Set sprite @p nIndex's world position: the point the anchor is translated to.
      * @ghidraAddress 0x5a0c4
      * @ghidraAddress 0x66f6c
