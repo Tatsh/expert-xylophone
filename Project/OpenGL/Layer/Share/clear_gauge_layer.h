@@ -30,12 +30,6 @@ public:
     ClearGaugeLayer();
 
     /**
-     * @brief Inserts this node into the priority-sorted engine listener list.
-     * @ghidraAddress 0x365e4
-     */
-    void InsertSortedListenerNode(int priority);
-
-    /**
      * @brief Sets a side's clear-gauge value, clamped to the range zero to one.
      * @param flValue The gauge value (clamped to @c [0, 1]).
      * @param nSide The player side.

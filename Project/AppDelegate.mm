@@ -40,6 +40,7 @@
 #import "gamescene.h"
 #import "gamesystem.h"
 #import "leveltables.h"
+#import "listener_list.h"
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
@@ -347,7 +348,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     ne::C_TEXTURE::EnsureCacheList();
     EnsureTextureCacheSingleton(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
-    clearGauge->InsertSortedListenerNode(kClearGaugeListenerPriority);
+    // The layer's listener-node sub-object overlays the start of the object (its vtable and list
+    // links); pass it to the free list-insert. The cast goes away once the play-field layers are
+    // formally reparented onto the listener-node base.
+    InsertSortedListenerNode(reinterpret_cast<SortedListenerNode *>(clearGauge),
+                             kClearGaugeListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
 
