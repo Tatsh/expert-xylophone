@@ -128,6 +128,16 @@ public:
     void ActivateNoteByIndex(int nChartIndex);
 
     /**
+     * @brief Dispatches a note judge/tap event to the shot-sound manager, queuing the manager's
+     * shot-sound slot at the event's priority.
+     * @param nPlaySide The note's play side (the binary computes and passes it, but the sound
+     * manager discards it).
+     * @param nPriority The judge-event priority (a lower number wins).
+     * @ghidraAddress 0x1372b8
+     */
+    void DispatchNoteJudgeEvent(int nPlaySide, unsigned int nPriority);
+
+    /**
      * @brief Removes finished notes from the active list, compacting the survivors to the front.
      *
      * A note survives while its state has any bit set other than the finished bit (bit 3).
@@ -191,7 +201,8 @@ private:
     // The empty marker held by an unused active-slot index.
     static constexpr long kActiveSlotNone = -1;
 
-    unsigned char m_aReserved00[8] = {}; // +0x00: header state, still being worked out.
+    int m_nShotSoundSlot = {}; // +0x00: the shot-sound slot id dispatched on a note judge.
+    unsigned char m_aReserved04[4] = {}; // +0x04: header state, still being worked out.
     NoteModel **m_ppNotePool = {};       // +0x08: the pooled NoteModel-object array.
     NoteModel **m_ppActiveList = {};     // +0x10: the active-note pointer array.
     int m_nNoteCount = {};               // +0x18: the active note count (the chart's note count).

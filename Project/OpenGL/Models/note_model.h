@@ -312,10 +312,16 @@ public:
     void UpdateNoteAutoTap();
 
     /**
-     * @brief Plays the note's tap/miss sound effect. Reconstruction pending.
+     * @brief Plays the note's tap/hit sound: its keysound, or a default sound from the sound table.
+     *
+     * A CPU/ghost note (rival mode non-zero) that is excluded from scoring stays silent unless the
+     * game is in the CPU full-combo mode; the dispatched judge event carries the resolved sound
+     * index and the note's play side.
+     * @param nSoundIndex The default sound index (0 to 2) for a note with no keysound.
+     * @param bUseAlt Whether to select the alternate keysound path.
      * @ghidraAddress 0x133dfc
      */
-    void PlayNoteTapSound();
+    void PlayNoteTapSound(int nSoundIndex, bool bUseAlt);
 
     /**
      * @brief Records a note's judged grade and drives its post-hit effects and scoring.

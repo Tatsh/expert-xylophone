@@ -159,6 +159,7 @@ jinja
 jsonnet
 jsonschema
 keta
+keysound
 konaminet
 korsk
 kuropastelkun

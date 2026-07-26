@@ -11,6 +11,7 @@
 #include "deviceenvironment.h"
 #include "music_sheet.h"
 #include "note_model.h"
+#include "shotsoundmanager.h"
 
 // The process-wide note manager, created lazily by shared().
 static NoteEffectMgr *g_pNoteEffectMgr = nullptr; // @ghidraAddress 0x3de050
@@ -120,6 +121,13 @@ void NoteEffectMgr::ActivateNoteByIndex(int nChartIndex) {
     }
     pNote->Init();
     InsertActiveNoteSorted(pNote);
+}
+
+/** @ghidraAddress 0x1372b8 */
+void NoteEffectMgr::DispatchNoteJudgeEvent(int nPlaySide, unsigned int nPriority) {
+    (void)
+        nPlaySide; // The binary computes and passes the play side, but the sound manager drops it.
+    ShotSoundManager::GetInstance()->SetPendingRetrigger(m_nShotSoundSlot, nPriority);
 }
 
 /** @ghidraAddress 0x136f38 */

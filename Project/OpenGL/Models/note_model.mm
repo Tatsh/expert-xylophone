@@ -434,7 +434,36 @@ enum NoteGrade {
 };
 // The tap-only note kind that plays a sound and self-marks instead of resolving a hit.
 constexpr int kNoteKindTapOnly = 3;
+// The highest default tap-sound index, and the fixed sound a rival (CPU/ghost) note plays.
+constexpr int kMaxDefaultSoundIndex = 2;
+constexpr int kRivalTapSoundIndex = 3;
 } // namespace
+
+/** @ghidraAddress 0x133dfc */
+void NoteModel::PlayNoteTapSound(int nSoundIndex, bool bUseAlt) {
+    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    if (m_nRivalMode == 0) {
+        assert(nSoundIndex <= kMaxDefaultSoundIndex);
+    } else {
+        // A CPU/ghost note stays silent when it is excluded from scoring, unless the game is in the
+        // CPU full-combo mode; the alternate path checks the flag-40 exclusion instead.
+        if (!GameSystem::GetGameSystem()->GetCpuFullCombo()) {
+            if (bUseAlt) {
+                if (pManager != nullptr && pManager->IsNoteFlag40Set(m_nNoteIndex)) {
+                    return;
+                }
+            } else if (pManager != nullptr && pManager->IsNoteScoreExcluded(m_nNoteIndex)) {
+                return;
+            }
+        }
+        // A rival note always plays the fixed rival tap sound.
+        nSoundIndex = kRivalTapSoundIndex;
+    }
+    if (pManager == nullptr) {
+        return;
+    }
+    pManager->DispatchNoteJudgeEvent(IsOnPlaySide(), nSoundIndex);
+}
 
 /** Computes the current play-field judge clock. */
 float NoteModel::GetCurrentJudgeTime() const {
@@ -473,7 +502,7 @@ void NoteModel::CheckNoteMiss() {
             ResolveNoteHit(m_nKind);
             return;
         }
-        PlayNoteTapSound();
+        PlayNoteTapSound(0, false);
         m_bMissProcessed = true;
     }
 }
@@ -492,7 +521,7 @@ void NoteModel::UpdateNoteAutoTap() {
             ResolveNoteHit(m_nKind);
             return;
         }
-        PlayNoteTapSound();
+        PlayNoteTapSound(0, false);
         m_bMissProcessed = true;
     }
 }
