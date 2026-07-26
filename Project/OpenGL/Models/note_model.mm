@@ -9,6 +9,7 @@
 #include "note_model.h"
 
 #include <cassert>
+#include <cstdlib>
 
 #include "Render/neRenderer.h"
 #include "Render/s_vector3.h"
@@ -520,6 +521,53 @@ bool NoteModel::CheckTouchHit(float flX, float flY, float *pOutDistanceSq) const
     }
     *pOutDistanceSq = flDistanceSq;
     return true;
+}
+
+namespace {
+// The per-combo emphasis probability, indexed by the combo count clamped to [0, 9]
+// (@ghidraAddress 0x308c14).
+constexpr float kEmphasisProbability[] = {
+    0.02f, 0.02f, 0.02f, 0.02f, 0.05f, 0.1f, 0.1f, 0.6f, 0.6f, 0.7f};
+constexpr int kEmphasisProbabilityMax = 9;
+// Folds a rand() result into the unit interval (@ghidraAddress 0x3014d0 = 1 / RAND_MAX).
+constexpr float kInverseRandMax = 1.0f / 2147483647.0f;
+// The versus game type: game type zero or two are the two-side versus modes.
+constexpr int kGameTypeVersusMask = 2;
+// The side value a recordless note reports when its own-side flag is unset.
+constexpr int kEmphasisNoSide = 3;
+} // namespace
+
+/** @ghidraAddress 0x136884 */
+bool NoteModel::ShouldEmphasize() const {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // A per-combo random chance emphasises the note outright.
+    const int nCombo = pGameSystem->GetComboCount();
+    const int nProbabilityIndex =
+        nCombo < 0 ? 0 : (nCombo > kEmphasisProbabilityMax ? kEmphasisProbabilityMax : nCombo);
+    if (static_cast<float>(rand()) * kInverseRandMax < kEmphasisProbability[nProbabilityIndex]) {
+        return true;
+    }
+
+    if ((pGameSystem->GetGameType() | kGameTypeVersusMask) == kGameTypeVersusMask) {
+        // Versus mode: determine the note's side (from its record, or the own-side fallback).
+        int nSide;
+        if (m_pRecord == nullptr) {
+            nSide = m_bOwnSide ? 0 : kEmphasisNoSide;
+        } else {
+            nSide = m_pRecord->GetSide();
+        }
+        // When the note's side differs from the local side (1 when the play colour is 0), emphasise
+        // it on the CPU full combo, falling back to the per-note flag.
+        if ((pGameSystem->GetPlayColor() == 0 ? 1 : 0) != nSide) {
+            if (pGameSystem->GetCpuFullCombo()) {
+                return true;
+            }
+            return m_bEmphasisFallback;
+        }
+    }
+    // Non-versus (or the play-colour side): emphasise on the user's full combo.
+    return pGameSystem->GetUserFullCombo();
 }
 
 /** @ghidraAddress 0x133a48 */

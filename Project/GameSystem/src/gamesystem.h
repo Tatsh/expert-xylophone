@@ -331,6 +331,14 @@ public:
     void SetNoteType(int value) {
         m_nNoteType = value;
     }
+    /** @brief Returns the current combo count. */
+    int GetComboCount() const {
+        return m_nComboCount;
+    }
+    /** @brief Stores the current combo count. */
+    void SetComboCount(int value) {
+        m_nComboCount = value;
+    }
     /** @brief Reports whether the CPU achieved a full combo. */
     bool GetCpuFullCombo() const {
         return m_fCpuFullCombo;

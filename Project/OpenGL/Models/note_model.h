@@ -306,6 +306,17 @@ public:
     bool CheckTouchHit(float flX, float flY, float *pOutDistanceSq) const;
 
     /**
+     * @brief Decides whether this note should be emphasised (highlighted).
+     *
+     * A per-combo random chance emphasises the note outright; otherwise, in versus mode, the note is
+     * emphasised when its side matches the local side and that side achieved a full combo (falling
+     * back to the per-note flag), and in non-versus mode when the user achieved a full combo.
+     * @return @c true when the note should be emphasised.
+     * @ghidraAddress 0x136884
+     */
+    bool ShouldEmphasize() const;
+
+    /**
      * @brief Judges a touched note's timing accuracy and reports the resulting grade.
      *
      * Does nothing when the note is not the frame's touched note. Otherwise it grades the signed
@@ -472,7 +483,9 @@ private:
     bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
-    unsigned char m_aReserved5e2[0x16] = {}; // +0x5e2: trailing state to the 0x5f8-byte size.
+    unsigned char m_aReserved5e2[0xa] = {}; // +0x5e2
+    bool m_bEmphasisFallback = {};          // +0x5ec: the versus-mode emphasis fallback flag.
+    unsigned char m_aReserved5ed[0xb] = {}; // +0x5ed: trailing state to the 0x5f8-byte size.
 };
 
 /**
