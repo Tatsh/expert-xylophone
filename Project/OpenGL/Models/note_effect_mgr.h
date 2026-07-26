@@ -128,6 +128,20 @@ public:
     void ActivateNoteByIndex(int nChartIndex);
 
     /**
+     * @brief Applies the current theme to the manager: caches the player theme from the user
+     * settings and the game system's shot type, then preloads that shot type's sound variants.
+     * @ghidraAddress 0x136c50
+     */
+    void ApplyTheme();
+
+    /**
+     * @brief Resets every pooled note's play state and clears the active list and counters (a full
+     * replay reset).
+     * @ghidraAddress 0x137124
+     */
+    void ResetAllNoteModels();
+
+    /**
      * @brief Dispatches a note judge/tap event to the shot-sound manager, queuing the manager's
      * shot-sound slot at the event's priority.
      * @param nPlaySide The note's play side (the binary computes and passes it, but the sound
@@ -223,8 +237,9 @@ private:
     // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68
     bool m_bFontVariant = {};                           // +0x158: the device font variant.
-    unsigned char m_aReserved159[7] = {};               // +0x159
-    int m_nHitCount = {};                 // +0x160: the accumulated hit (judged-note) count.
+    unsigned char m_aReserved159[3] = {};               // +0x159
+    int m_nThema = {};    // +0x15c: the active player theme, from the user settings.
+    int m_nHitCount = {}; // +0x160: the accumulated hit (judged-note) count.
     unsigned char m_aReserved164[4] = {}; // +0x164
 };
 

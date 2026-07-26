@@ -236,6 +236,13 @@ public:
     void Init();
 
     /**
+     * @brief Resets the note's play state to its pre-play defaults for a replay. Reconstruction
+     * pending.
+     * @ghidraAddress 0x131ae8
+     */
+    void ResetPlayState();
+
+    /**
      * @brief Sets the note's spawn geometry and route for the coming play, then propagates the same
      * position, spawn time, and route along the note's linked chain. Reconstruction pending.
      * @ghidraAddress 0x13498c

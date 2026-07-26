@@ -8,7 +8,9 @@
 
 #include "note_effect_mgr.h"
 
+#import "RBUserSettingData.h"
 #include "deviceenvironment.h"
+#include "gamesystem.h"
 #include "music_sheet.h"
 #include "note_model.h"
 #include "shotsoundmanager.h"
@@ -121,6 +123,30 @@ void NoteEffectMgr::ActivateNoteByIndex(int nChartIndex) {
     }
     pNote->Init();
     InsertActiveNoteSorted(pNote);
+}
+
+/** @ghidraAddress 0x136c50 */
+void NoteEffectMgr::ApplyTheme() {
+    m_nThema = static_cast<int>([RBUserSettingData sharedInstance].thema);
+    m_nShotSoundSlot = GameSystem::GetGameSystem()->GetShotType();
+    ShotSoundManager::GetInstance()->LoadSlotVariants(m_nShotSoundSlot);
+}
+
+/** @ghidraAddress 0x137124 */
+void NoteEffectMgr::ResetAllNoteModels() {
+    // Reset every pooled note to its pre-play defaults.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        NoteModel *pNote = m_ppNotePool[i];
+        if (pNote != nullptr) {
+            pNote->ResetPlayState();
+        }
+    }
+    // Clear the active list and the running counters.
+    for (int i = 0; i < m_nPoolCapacity; ++i) {
+        m_ppActiveList[i] = nullptr;
+    }
+    m_nActiveCount = 0;
+    m_nHitCount = 0;
 }
 
 /** @ghidraAddress 0x1372b8 */
