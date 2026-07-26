@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include "Random.h"
+#include "note_lane_slot.h"
 
 /** @ghidraAddress 0x14911c */
 void ShuffleIndices(int *pArray, int nCount) {
@@ -26,10 +27,8 @@ void ShuffleIndices(int *pArray, int nCount) {
 NoteLaneTracker::NoteLaneTracker() {
     m_pNoteData = nullptr;
     // Every lane slot starts free: its six time fields hold the out-of-range sentinel.
-    for (int nSlot = 0; nSlot < kSlotCount; ++nSlot) {
-        for (unsigned int &nTime : m_aSlots[nSlot].aTimes) {
-            nTime = kFreeTime;
-        }
+    for (NoteLaneSlot &slot : m_aSlots) {
+        slot.MarkFree();
     }
 }
 
@@ -47,34 +46,18 @@ void NoteLaneTracker::SetNoteData(unsigned int dwSeed) {
 }
 
 namespace {
-// A lane slot holds three occupancy pairs; pair p is {start = aTimes[p], end = aTimes[p + 3]}.
-// ReserveNoteLane extends pair 1; AssignNoteLane extends pair 2 for the chosen lane and pair 1 for
-// its neighbours and tail.
-constexpr int kSpanPairCount = 3;
+// The pair a lane's own occupancy uses (extended for neighbours and the tail), and the pair the
+// chosen lane's note span itself takes.
+constexpr int kNeighbourSpanPair = 1;
+constexpr int kChosenSpanPair = 2;
 // The chosen lane's trailing tail length: long by default, short for a short-tail note.
 constexpr int kLaneTailLong = 30;
 constexpr int kLaneTailShort = 10;
-
-// Extends lane slot occupancy pair @p nPair to include [nTimeStart, nTimeEnd].
-void ExtendSlotSpanPair(NoteLaneSlot &slot, int nPair, int nTimeStart, int nTimeEnd) {
-    unsigned int &nStart = slot.aTimes[nPair];
-    unsigned int &nEnd = slot.aTimes[nPair + kSpanPairCount];
-    // When the new span starts before the slot's recorded end, only push the end out; otherwise the
-    // slot was free (or ended earlier), so reset its start too.
-    if (nTimeStart < static_cast<int>(nEnd)) {
-        if (static_cast<int>(nEnd) < nTimeEnd) {
-            nEnd = nTimeEnd;
-        }
-    } else {
-        nStart = nTimeStart;
-        nEnd = nTimeEnd;
-    }
-}
 } // namespace
 
 /** @ghidraAddress 0x148dd8 */
 int NoteLaneTracker::AssignNoteLane(
-    int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneSkip) {
+    int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed) {
     if (nDuration < 1) {
         return -1;
     }
@@ -83,45 +66,35 @@ int NoteLaneTracker::AssignNoteLane(
 
     // Expire every lane's occupancy pairs whose end time has passed.
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
-        for (int p = 0; p < kSpanPairCount; ++p) {
-            if (static_cast<int>(pSlots[nLane].aTimes[p + kSpanPairCount]) < nTimeStart) {
-                pSlots[nLane].aTimes[p] = kFreeTime;
-                pSlots[nLane].aTimes[p + kSpanPairCount] = kFreeTime;
-            }
-        }
+        pSlots[nLane].ExpireBefore(nTimeStart);
     }
 
-    // Bucket the lanes by how many of their pairs overlap the note's span (0, 1, or 2+).
-    int aBucketCount[kSpanPairCount] = {};
-    int aBucketLanes[kSpanPairCount][kLaneCount] = {};
+    // Bucket the lanes by the highest assignment pair (1 or 2) that overlaps the note's span; a lane
+    // that overlaps neither goes in bucket 0.
+    int aBucketCount[NoteLaneSlot::kSpanPairCount] = {};
+    int aBucketLanes[NoteLaneSlot::kSpanPairCount][kLaneCount] = {};
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
-        int nOverlap = 0;
-        for (int p = 0; p < 2; ++p) {
-            if (static_cast<int>(pSlots[nLane].aTimes[p + kSpanPairCount]) >= nTimeStart &&
-                static_cast<int>(pSlots[nLane].aTimes[p]) <= nTimeEnd) {
-                nOverlap = p + 1;
-            }
-        }
+        const int nOverlap = pSlots[nLane].ComputeOverlapBucket(nTimeStart, nTimeEnd);
         aBucketLanes[nOverlap][aBucketCount[nOverlap]] = nLane;
         ++aBucketCount[nOverlap];
     }
 
-    // From the least-occupied bucket down, shuffle the candidates and pick the first lane the caller
-    // does not skip.
-    for (int nBucket = 0; nBucket < kSpanPairCount; ++nBucket) {
+    // From the least-occupied bucket up, shuffle the candidates and pick the first lane the caller
+    // allows (a nonzero @c pLaneAllowed entry).
+    for (int nBucket = 0; nBucket < NoteLaneSlot::kSpanPairCount; ++nBucket) {
         const int nCount = aBucketCount[nBucket];
         if (nCount <= 0) {
             continue;
         }
-        // Only enter this bucket when at least one candidate is not skipped.
-        bool bAnyFree = false;
+        // Only enter this bucket when at least one candidate lane is allowed.
+        bool bAnyAllowed = false;
         for (int k = 0; k < nCount; ++k) {
-            if (pLaneSkip[aBucketLanes[nBucket][k]] == 0) {
-                bAnyFree = true;
+            if (pLaneAllowed[aBucketLanes[nBucket][k]] != 0) {
+                bAnyAllowed = true;
                 break;
             }
         }
-        if (!bAnyFree) {
+        if (!bAnyAllowed) {
             continue;
         }
 
@@ -133,7 +106,7 @@ int NoteLaneTracker::AssignNoteLane(
         int nLane = 0;
         for (int k = 0; k < nCount; ++k) {
             nLane = aBucketLanes[nBucket][pOrder[k]];
-            if (pLaneSkip[nLane] != 0) {
+            if (pLaneAllowed[nLane] != 0) {
                 break;
             }
         }
@@ -141,15 +114,15 @@ int NoteLaneTracker::AssignNoteLane(
 
         // Reserve the chosen lane on pair 2, its neighbours on pair 1, then extend the chosen lane's
         // pair-1 span by the tail.
-        ExtendSlotSpanPair(pSlots[nLane], 2, nTimeStart, nTimeEnd);
+        pSlots[nLane].ExtendSpanPair(kChosenSpanPair, nTimeStart, nTimeEnd);
         if (nLane >= 1) {
-            ExtendSlotSpanPair(pSlots[nLane - 1], 1, nTimeStart, nTimeEnd);
+            pSlots[nLane - 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
         }
         if (nLane + 1 < kLaneCount) {
-            ExtendSlotSpanPair(pSlots[nLane + 1], 1, nTimeStart, nTimeEnd);
+            pSlots[nLane + 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
         }
         const int nTail = bShortTail != 0 ? kLaneTailShort : kLaneTailLong;
-        ExtendSlotSpanPair(pSlots[nLane], 1, nTimeEnd, nTail + nTimeEnd);
+        pSlots[nLane].ExtendSpanPair(kNeighbourSpanPair, nTimeEnd, nTail + nTimeEnd);
         return nLane;
     }
     return 0;
@@ -166,15 +139,15 @@ void NoteLaneTracker::ReserveNoteLane(
     const int nLaneIndex = nLane * 3;
     NoteLaneSlot *pPlayerSlots = &m_aSlots[nPlayer * kLaneCount];
 
-    ExtendSlotSpanPair(pPlayerSlots[nLaneIndex], 1, nTimeStart, nTimeEnd);
+    pPlayerSlots[nLaneIndex].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
     if (!bSpread) {
         return;
     }
     // Extend the adjacent lanes: the one before (when present) and the one after (within bounds).
     if (nLaneIndex > 0) {
-        ExtendSlotSpanPair(pPlayerSlots[nLaneIndex - 1], 1, nTimeStart, nTimeEnd);
+        pPlayerSlots[nLaneIndex - 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
     }
     if (nLaneIndex + 1 < kLaneCount) {
-        ExtendSlotSpanPair(pPlayerSlots[nLaneIndex + 1], 1, nTimeStart, nTimeEnd);
+        pPlayerSlots[nLaneIndex + 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);
     }
 }

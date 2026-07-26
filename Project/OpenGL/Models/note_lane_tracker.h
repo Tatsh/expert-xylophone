@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "note_lane_slot.h"
+
 class Random;
 
 /**
@@ -17,18 +19,6 @@ class Random;
  * @ghidraAddress 0x14911c
  */
 void ShuffleIndices(int *pArray, int nCount);
-
-/**
- * @brief One lane's occupancy slot: three start/end time pairs marking the spans the lane is in use.
- *
- * A polymorphic 32-byte record (its own one-slot vtable plus six 32-bit time fields). Freshly
- * initialised, every time is the free sentinel. The trailing @c // +0xNN comments document the byte
- * offsets.
- */
-struct NoteLaneSlot {
-    void *pVtable = {};          // +0x00: the slot's vtable.
-    unsigned int aTimes[6] = {}; // +0x08: three start/end time pairs (all the free sentinel).
-};
 
 /**
  * @brief Tracks per-lane occupancy while the chart parser assigns each note a play-field lane.
@@ -44,11 +34,9 @@ public:
     static constexpr int kPlayerCount = 2;
     static constexpr int kLaneCount = 7;
     static constexpr int kSlotCount = kPlayerCount * kLaneCount;
-    // The out-of-range time marking a lane slot free.
-    static constexpr unsigned int kFreeTime = 0xfffe7961;
 
     /**
-     * @brief Constructs the tracker: installs the vtables and marks every lane slot free.
+     * @brief Constructs the tracker: marks every lane slot free.
      * @ghidraAddress 0x148c78
      */
     NoteLaneTracker();
@@ -83,20 +71,21 @@ public:
     /**
      * @brief Assigns a note to the least-conflicting lane for its time span.
      *
-     * Expires lane slots whose span has passed, buckets the seven lanes by how many overlap the
-     * note's span, and among the least-occupied bucket shuffles the candidates and picks the first
-     * lane not flagged in @p pLaneSkip. The chosen lane (and, for a spread note, its neighbours) is
-     * then reserved, with the chosen lane taking an extra tail.
+     * Expires lane slots whose span has passed, buckets the seven lanes by the highest assignment
+     * pair that overlaps the note's span, and within the least-occupied bucket shuffles the
+     * candidates and picks the first lane the caller allows in @p pLaneAllowed. The chosen lane
+     * (and, for a spread note, its neighbours) is then reserved, with the chosen lane taking an
+     * extra tail.
      * @param nTimeStart The span start time.
      * @param nDuration The span duration.
      * @param nPlayer The player side.
      * @param bShortTail Whether the chosen lane takes the short tail rather than the long one.
-     * @param pLaneSkip A seven-entry table of per-lane skip flags.
+     * @param pLaneAllowed A seven-entry table of per-lane allowed flags (nonzero permits the lane).
      * @return The assigned lane index (0 to 6), or @c -1 when the span is empty.
      * @ghidraAddress 0x148dd8
      */
     int AssignNoteLane(
-        int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneSkip);
+        int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed);
 
 private:
     void *m_pVtable = {};                   // +0x00: the tracker's vtable.
