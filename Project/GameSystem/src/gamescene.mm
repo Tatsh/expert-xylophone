@@ -160,3 +160,11 @@ void ReleaseBgmAndVoice(void) {
     [[RBBGMManager getInstance] RelaseMusic];
     [[AudioManager sharedManager] releaseVoice];
 }
+
+/** @ghidraAddress 0x93b50 */
+void EnsureOrientationNotificationsEnabled(void) {
+    UIDevice *device = UIDevice.currentDevice;
+    while (!device.isGeneratingDeviceOrientationNotifications) {
+        [device beginGeneratingDeviceOrientationNotifications];
+    }
+}

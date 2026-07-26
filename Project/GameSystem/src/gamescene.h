@@ -91,6 +91,15 @@ void HandlePauseResume(void);
  */
 void ReleaseBgmAndVoice(void);
 
+/**
+ * @brief Ensures the device is generating orientation-change notifications.
+ *
+ * A scene-mode-enter callback that turns on @c UIDevice orientation notifications, looping until the
+ * device reports they are being generated.
+ * @ghidraAddress 0x93b50
+ */
+void EnsureOrientationNotificationsEnabled(void);
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
