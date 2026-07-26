@@ -181,6 +181,16 @@ public:
      */
     void SetSpritePositionXY(int nIndex, float x, float y);
     /**
+     * @brief Set only sprite @p nIndex's world-position X component.
+     * @ghidraAddress 0x180b04
+     */
+    void SetSpritePositionX(int nIndex, float x);
+    /**
+     * @brief Set only sprite @p nIndex's world-position Y component.
+     * @ghidraAddress 0x180ab4
+     */
+    void SetSpritePositionY(int nIndex, float y);
+    /**
      * @brief Set sprite @p nIndex's pixel size: the quad spans from the origin to (width, height).
      * @ghidraAddress 0x59fbc
      * @ghidraAddress 0x67020
