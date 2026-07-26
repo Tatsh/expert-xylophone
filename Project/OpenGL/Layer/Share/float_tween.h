@@ -24,10 +24,12 @@ public:
      * @param flDeltaTime The elapsed frame time.
      * @return The updated current value.
      *
-     * The compiler emits this tween utility at two addresses (the play and result screens each get a
-     * copy); both are byte-identical and collapse to this one method.
+     * The compiler emits this tween utility at three addresses (the play, result, and a further
+     * animation-channel screen each get a copy); all are byte-identical and collapse to this one
+     * method.
      * @ghidraAddress 0x12af38
      * @ghidraAddress 0x7b350
+     * @ghidraAddress 0x11c954
      */
     float Advance(float flDeltaTime);
 
