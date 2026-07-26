@@ -8,6 +8,8 @@
 
 #include "listener_list.h"
 
+#include "engineruntime.h"
+
 // The list's sentinel node (also its head/tail terminator), a namespace-scope object whose static
 // constructor seeds an empty self-linked list at priority 9. Defined in its owning translation unit.
 extern SortedListenerNode g_listenerListSentinel;
@@ -31,4 +33,22 @@ void InsertSortedListenerNode(SortedListenerNode *pNode, int nPriority) {
     pBefore->m_pNext = pNode;
     pNode->m_pNext->m_pPrev = pNode;
     pNode->m_nPriority = nPriority;
+}
+
+/** @ghidraAddress 0x36628 */
+void DispatchListenerList(void *pFrameArg) {
+    // Walk the list from the head. A live node gets its per-frame callback and the walk advances to
+    // its successor; a dead node is unlinked-and-destroyed (its successor is captured first, since
+    // the destructor splices the node out of the list).
+    for (SortedListenerNode *pNode = g_listenerListSentinel.GetNext();
+         pNode != &g_listenerListSentinel;) {
+        if (!pNode->IsDead()) {
+            pNode->OnFrame(pFrameArg);
+            pNode = pNode->GetNext();
+        } else {
+            SortedListenerNode *pNext = pNode->GetNext();
+            pNode->Destroy();
+            pNode = pNext;
+        }
+    }
 }

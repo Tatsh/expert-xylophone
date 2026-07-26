@@ -18,6 +18,20 @@
 //  program image base.
 //
 
+class SortedListenerNode;
+
+/**
+ * @brief A listener node's virtual dispatch table.
+ *
+ * The engine uses a custom (non-Itanium) slot layout: slot 0 is the per-frame callback and slot 2
+ * (vtable byte offset 0x10) is the destructor. Slot 1 is unused by the list dispatcher.
+ */
+struct SortedListenerNodeVtable {
+    void (*pfnOnFrame)(SortedListenerNode *pNode, void *pFrameArg); // slot 0 (+0x00).
+    void (*pfnReserved)();                                          // slot 1 (+0x08), unused here.
+    void (*pfnDestroy)(SortedListenerNode *pNode);                  // slot 2 (+0x10).
+};
+
 /**
  * @brief One intrusive node in the engine's priority-sorted listener list.
  *
@@ -45,19 +59,26 @@ public:
     bool IsDead() const {
         return m_bDead;
     }
+    /** @brief Invokes the node's per-frame callback (vtable slot 0). */
+    void OnFrame(void *pFrameArg) {
+        m_pVtable->pfnOnFrame(this, pFrameArg);
+    }
+    /** @brief Invokes the node's destructor (vtable slot 2). */
+    void Destroy() {
+        m_pVtable->pfnDestroy(this);
+    }
 
 private:
-    void *m_pVtable = {};             // +0x00: the node's vtable (callback slot 0, dtor slot 2).
-    SortedListenerNode *m_pPrev = {}; // +0x08: the previous node.
-    SortedListenerNode *m_pNext = {}; // +0x10: the next node.
-    int m_nPriority = {};             // +0x18: the sort key.
-    unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
-    void *m_pBuffer = {};                   // +0x40: an owned heap buffer, freed on destruction.
-    bool m_bDead = {};                      // +0x48: set when the node should be destroyed.
-    unsigned char m_aReserved49[7] = {};    // +0x49: trailing state.
+    SortedListenerNodeVtable *m_pVtable = {}; // +0x00: the node's dispatch table.
+    SortedListenerNode *m_pPrev = {};         // +0x08: the previous node.
+    SortedListenerNode *m_pNext = {};         // +0x10: the next node.
+    int m_nPriority = {};                     // +0x18: the sort key.
+    unsigned char m_aReserved1c[0x24] = {};   // +0x1c: node-specific state.
+    void *m_pBuffer = {};                     // +0x40: an owned heap buffer, freed on destruction.
+    bool m_bDead = {};                        // +0x48: set when the node should be destroyed.
+    unsigned char m_aReserved49[7] = {};      // +0x49: trailing state.
 
     friend void InsertSortedListenerNode(SortedListenerNode *pNode, int nPriority);
-    friend void DispatchListenerList(void *pFrameArg);
 };
 
 /**
