@@ -182,6 +182,16 @@ int NoteModel::GetSlidePointCount() const {
     return m_pRecord->GetSlidePointCount();
 }
 
+/** @ghidraAddress 0x1369f4 */
+int NoteModel::GetSlidePointJudge(int nIndex) const {
+    // The miss sentinel for a slide point past the note's slide-point count.
+    static constexpr int kSlidePointJudgeMiss = 5;
+    if (nIndex < m_pRecord->GetSlidePointCount()) {
+        return m_aSubEntries[nIndex].nSlidePointJudge;
+    }
+    return kSlidePointJudgeMiss;
+}
+
 /** @ghidraAddress 0x135310 */
 float NoteModel::GetTargetLineY() const {
     // A synthetic note (no record) uses its own-side flag as the hold kind: own side is kind 0, the

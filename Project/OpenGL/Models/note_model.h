@@ -140,6 +140,15 @@ public:
     int GetSlidePointCount() const;
 
     /**
+     * @brief Returns the judge result recorded for slide point @p nIndex of a slide (type 3) note,
+     * or the miss sentinel (5) when the index is past the slide-point count.
+     * @param nIndex The slide-point index.
+     * @return The per-point judge result, or 5 when out of range.
+     * @ghidraAddress 0x1369f4
+     */
+    int GetSlidePointJudge(int nIndex) const;
+
+    /**
      * @brief Returns the note's target Y line: the screen edge the note travels toward.
      *
      * The travel-line fraction is chosen by the note's hold kind (the record's hold kind, or the own-
@@ -247,9 +256,9 @@ private:
         int nIndex = {};                      // +0x04: the source note index (-1 = none).
         unsigned char aReserved08[0x30] = {}; // +0x08: per-segment state, still being worked out.
         int nSeedA = {};                      // +0x38: a seed value (constructed to 5).
-        int nSeedB = {};                      // +0x3c: a seed value (constructed to 0).
-        int nSeedC = {};                      // +0x40: a seed value (constructed to 0).
-        int nSeedD = {};                      // +0x44: a seed value (constructed to 5).
+        int nSlidePointJudge = {}; // +0x3c: the slide point's judge result (0 until judged).
+        int nSeedC = {};           // +0x40: a seed value (constructed to 0).
+        int nSeedD = {};           // +0x44: a seed value (constructed to 5).
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
