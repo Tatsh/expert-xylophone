@@ -78,6 +78,26 @@ int TexParamTypeToGl(TexParamType nType);
 class neGLESRenderer {
 public:
     /**
+     * @brief Constructs the render state: zeroes the scalar caches, loads identity model-view,
+     *        texture, and colour matrices, seeds the default blend function and white current
+     *        colour, and marks every buffer and texture binding unbound.
+     * @ghidraAddress 0x210ec
+     */
+    neGLESRenderer();
+
+    /**
+     * @brief Probes the live GL ES context capabilities into the render state and sets the initial
+     *        GL state.
+     *
+     * Scans the @c GL_EXTENSIONS string for @c GL_OES_matrix_palette (setting the flag and reading
+     * @c GL_MAX_VERTEX_UNITS_OES when present), reads @c GL_MAX_TEXTURE_SIZE, loads a default
+     * projection matrix, and sets the line width to one. (The binary returns a constant 1, discarded
+     * by the sole caller, so this is modelled as returning @c void.)
+     * @ghidraAddress 0x20f9c
+     */
+    void QueryCaps();
+
+    /**
      * @brief Clears the current GL buffers selected by the GL clear mask.
      * @ghidraAddress 0x21400
      */
@@ -390,9 +410,12 @@ private:
 neGLESRenderer *GetGlRenderer();
 /**
  * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
+ *
+ * On first call it allocates the render state, runs its constructor, stores it in the global, and
+ * probes the GL capabilities; subsequent calls are a no-op.
  * @ghidraAddress 0x20f5c
  */
-neGLESRenderer *EnsureGLRenderStateSingleton();
+void EnsureGLRenderStateSingleton();
 /**
  * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
  * @ghidraAddress 0x212a4

@@ -157,6 +157,15 @@ neGLESRenderer *GetGlRenderer() {
     return g_glesRenderer;
 }
 
+/** @ghidraAddress 0x20f5c */
+void EnsureGLRenderStateSingleton() {
+    if (g_glesRenderer != nullptr) {
+        return;
+    }
+    g_glesRenderer = new neGLESRenderer();
+    g_glesRenderer->QueryCaps();
+}
+
 /** @ghidraAddress 0x21a60 */
 void neGLESRenderer::GenTexture(unsigned int *pOutHandle) {
     glGenTextures(1, pOutHandle);
