@@ -63,6 +63,20 @@ public:
      */
     void StartFadeIn();
 
+    /**
+     * @brief Begins showing the guide: activates it, resets the animation clock, and advances the
+     * game system's tutorial phase to the guide-active phase.
+     * @ghidraAddress 0x10b70c
+     */
+    void Start();
+
+    /**
+     * @brief Resets the guide to its idle fade-out state: sets the fade state to hidden, clears the
+     * game system's tutorial phase, and resets the timer.
+     * @ghidraAddress 0x10b748
+     */
+    void Reset();
+
 private:
     // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
     struct Keyframe {
@@ -84,10 +98,13 @@ private:
     int m_nSpriteCount = {};                 // +0x20: the instancer's initial sprite count.
     bool m_bBuilt = {};                      // +0x24: set once the tables are built.
     unsigned char m_aReserved25[0xb] = {};   // +0x25: further layer state, still being worked out.
-    bool m_bActive = {};                   // +0x30: whether the guide is showing; cleared to hide.
-    unsigned char m_aReserved31[0xb] = {}; // +0x31: further layer state, still being worked out.
-    short m_nFadeState = {};               // +0x3c: the fade state (1 = fading in).
-    unsigned char m_aReserved3e[2] = {};   // +0x3e: alignment before the keyframe table.
+    bool m_bActive = {}; // +0x30: whether the guide is showing; cleared to hide.
+    // +0x31..+0x33 is alignment padding before the animation clock.
+    unsigned char m_aPad31[3] = {};      // +0x31
+    float m_flClock = {};                // +0x34: the guide animation clock, advanced each frame.
+    int m_nTimer = {};                   // +0x38: the guide timer, reset on start/reset.
+    short m_nFadeState = {};             // +0x3c: the fade state (1 = fading in).
+    unsigned char m_aReserved3e[2] = {}; // +0x3e: alignment before the keyframe table.
     Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40: the nine keyframe timings.
     int m_nStepHi0 = {};                        // +0xac: a trailing step index (14).
     int m_nStepHi1 = {};                        // +0xb0: a trailing step index (15).

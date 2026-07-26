@@ -139,6 +139,14 @@ public:
     void SetMenuTutorialActive(int value) {
         m_nMenuTutorialActive = value;
     }
+    /** @brief Returns the in-play tutorial-guide phase. */
+    int GetTutorialPhase() const {
+        return m_nTutorialPhase;
+    }
+    /** @brief Sets the in-play tutorial-guide phase. */
+    void SetTutorialPhase(int nPhase) {
+        m_nTutorialPhase = nPhase;
+    }
     /** @brief Reports whether this is the player's first play of the song. */
     bool GetIsFirstPlay() const {
         return m_fIsFirstPlay;
@@ -458,6 +466,7 @@ private:
     int m_nPlayerExp = {};               // +0x10c
     int m_nGainedExp = {};               // +0x110
     int m_nMenuTutorialActive = {};      // +0x12c
+    int m_nTutorialPhase = {};           // +0x130: the in-play tutorial-guide phase.
     float m_flPlayfieldScale = {};       // +0x134
     bool m_fCpuFullCombo = {};           // +0x138
     bool m_fUserFullCombo = {};          // +0x139

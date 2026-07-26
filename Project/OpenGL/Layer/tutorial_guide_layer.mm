@@ -1,5 +1,6 @@
 #include "tutorial_guide_layer.h"
 
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -11,6 +12,13 @@ namespace {
 
 // The atlas the guide draws from (@ghidraAddress 0x3ceb10).
 constexpr const char *kTextureName = "00_texture/gm_tutorial";
+
+// The game-system tutorial phase the guide sets while it is showing.
+constexpr int kTutorialPhaseGuideActive = 7;
+
+// The fade state that marks the guide hidden/fading out (the Update dispatcher treats a state at or
+// above this value as the fade-out path).
+constexpr short kFadeStateHidden = 0x100;
 
 // The nine keyframe timings (start X, end X, step index) the guide sweep uses (@ghidraAddress
 // 0x10b4bc onwards, in the constructor's immediate stores).
@@ -121,4 +129,18 @@ void TutorialGuideLayer::Stop() {
 /** @ghidraAddress 0x10b73c */
 void TutorialGuideLayer::StartFadeIn() {
     m_nFadeState = 1;
+}
+
+/** @ghidraAddress 0x10b70c */
+void TutorialGuideLayer::Start() {
+    m_bActive = true;
+    m_flClock = 0.0f;
+    GameSystem::GetGameSystem()->SetTutorialPhase(kTutorialPhaseGuideActive);
+}
+
+/** @ghidraAddress 0x10b748 */
+void TutorialGuideLayer::Reset() {
+    m_nFadeState = kFadeStateHidden;
+    GameSystem::GetGameSystem()->SetTutorialPhase(0);
+    m_nTimer = 0;
 }
