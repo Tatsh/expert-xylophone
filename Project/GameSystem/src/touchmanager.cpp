@@ -1,5 +1,5 @@
 //
-//  neTouchManager.cpp
+//  touchmanager.cpp
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458. The touch-input tracking manager the
@@ -10,11 +10,12 @@
 //  renders its NEON stores as folded vector temporaries).
 //
 
+#include "touchmanager.h"
+
 #include <new>
 
 #include "engineruntime.h"
 #include "gamesystem.h"
-#include "touchmanager.h"
 
 // The sentinel each fresh slot's position fields hold until a touch is registered: the bit pattern
 // 0x80000000, i.e. INT_MIN, which is also the representation of -0.0f the binary stores through its
