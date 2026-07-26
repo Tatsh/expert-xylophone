@@ -133,6 +133,13 @@ void ResumePlayTimerAndBgm(void);
 void HandlePauseResume(void);
 
 /**
+ * @brief The pause-menu Retry/Release action: transitions the active scene into its music-release
+ *        state and plays the confirm sound effect.
+ * @ghidraAddress 0x151434
+ */
+void HandlePauseMusicRelease(void);
+
+/**
  * @brief Fully releases the current music and voice resources.
  *
  * A no-op while the background music is still marked active (it must be stopped first); otherwise it

@@ -175,6 +175,16 @@ void HandlePauseResume(void) {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
 }
 
+/** @ghidraAddress 0x151434 */
+void HandlePauseMusicRelease(void) {
+    // Transition the active scene into its music-release state, then play the confirm effect.
+    GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
+    if (pScene != nullptr) {
+        pScene->EnterMusicReleaseState();
+    }
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
+}
+
 /** @ghidraAddress 0x14b2f8 */
 void ReleaseBgmAndVoice(void) {
     // The music must already be stopped (its playing flag cleared) before its resources are freed.
