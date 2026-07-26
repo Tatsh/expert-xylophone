@@ -210,6 +210,17 @@ public:
     }
 
     /**
+     * @brief Probes the live GL ES context for its capabilities and sets the initial GL state.
+     *
+     * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present, the
+     * @c GL_MAX_VERTEX_UNITS_OES limit), reads @c GL_MAX_TEXTURE_SIZE, loads a default projection
+     * matrix through matrix mode 2, and sets the line width to one. Run once by
+     * @c EnsureGLRenderStateSingleton after the render state is constructed.
+     * @ghidraAddress 0x20f9c
+     */
+    void QueryCaps();
+
+    /**
      * @brief Enable or disable one engine render capability, skipping the GL call when the cached
      *        state is already @p bEnable.
      * @param nState The engine enable-state index (0 through @c kEnableStateMax - 1).
@@ -364,7 +375,11 @@ private:
     unsigned char m_aReserved1dc[0x08] = {}; // +0x1dc
     bool m_aEnableStateFlags[0x24] = {};     // +0x1e4 per-capability enable cache
     bool m_aClientStateFlags[0x07] = {};     // +0x208 per-array client-state cache
-    unsigned char m_aReserved20f[0x45] = {}; // +0x20f
+    unsigned char m_aReserved20f[0x35] = {}; // +0x20f
+    int m_nMaxTextureSize = {};              // +0x244 GL capability: GL_MAX_TEXTURE_SIZE
+    unsigned char m_aReserved248[0x08] = {}; // +0x248
+    bool m_bHasMatrixPalette = {};           // +0x250 GL capability: GL_OES_matrix_palette present
+    unsigned char m_aReserved251[0x03] = {}; // +0x251
     int m_nMaxPaletteMatrices = {};          // +0x254 GL capability: max palette matrices per draw
 };
 

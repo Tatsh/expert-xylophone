@@ -147,6 +147,7 @@ instancer
 instancer's
 instancers
 instancetype
+integerv
 interitem
 interp
 ivar

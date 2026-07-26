@@ -1,6 +1,7 @@
 #include "neGLES.h"
 
 #include <cassert>
+#include <cstring>
 
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
@@ -619,4 +620,59 @@ void neGLESRenderer::UploadIndexBufferData(const void *pData, unsigned int nSize
     }
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER, nSize, pData, nUsage != 0 ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+}
+
+namespace {
+// The matrix-palette extension name scanned for in the GL_EXTENSIONS string.
+constexpr char kMatrixPaletteExtension[] = "GL_OES_matrix_palette";
+// The default palette-matrix count assumed before the real device limit is queried.
+constexpr int kDefaultMaxPaletteMatrices = 9;
+// The matrix mode used to load the projection matrix (1 model-view, 2 projection, 3 texture).
+constexpr int kMatrixModeProjection = 2;
+// The default orthographic projection: a diagonal scale of 2/65536 on x and y (mapping the engine's
+// 65536-unit space to the [-1, 1] clip range), identity on z and w.
+constexpr float kProjectionScale = 2.0f / 65536.0f;
+constexpr float kDefaultProjection[] = {
+    kProjectionScale,
+    0.0f,
+    0.0f,
+    0.0f, //
+    0.0f,
+    kProjectionScale,
+    0.0f,
+    0.0f, //
+    0.0f,
+    0.0f,
+    1.0f,
+    0.0f, //
+    0.0f,
+    0.0f,
+    0.0f,
+    1.0f, //
+};
+} // namespace
+
+/** @ghidraAddress 0x20f9c */
+void neGLESRenderer::QueryCaps() {
+    // Scan the space-separated extension list for the matrix-palette extension.
+    const char *pExtensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
+    for (const char *pSpace = strchr(pExtensions, ' '); pSpace != nullptr;
+         pSpace = strchr(pExtensions, ' ')) {
+        const size_t nLength = static_cast<size_t>(pSpace - pExtensions);
+        char aToken[128];
+        strncpy(aToken, pExtensions, nLength);
+        aToken[nLength] = '\0';
+        if (strncmp(aToken, kMatrixPaletteExtension, nLength) == 0) {
+            m_bHasMatrixPalette = true;
+        }
+        pExtensions = pSpace + 1;
+    }
+    // When the palette extension is present, default the count then read the real device limit.
+    if (m_bHasMatrixPalette) {
+        m_nMaxPaletteMatrices = kDefaultMaxPaletteMatrices;
+        glGetIntegerv(GL_MAX_VERTEX_UNITS_OES, &m_nMaxPaletteMatrices);
+    }
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &m_nMaxTextureSize);
+    SetMatrixMode(kMatrixModeProjection, kDefaultProjection);
+    glLineWidth(1.0f);
 }
