@@ -61,6 +61,15 @@ public:
     void SetTwoSideEnabled(bool bTwoSide);
 
     /**
+     * @brief Begins the reveal fade-in, easing the gauge to fully opaque over @p flDuration
+     * (snapping to opaque and marking the colour dirty immediately when the duration is
+     * non-positive).
+     * @param flDuration The fade duration, in frames.
+     * @ghidraAddress 0x175d78
+     */
+    void StartFadeIn(float flDuration);
+
+    /**
      * @brief Begins the reveal fade-out, easing the gauge to transparent over @p flDuration
      * (snapping to transparent and marking the colour dirty immediately when the duration is
      * non-positive).
