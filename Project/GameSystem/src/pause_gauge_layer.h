@@ -60,6 +60,13 @@ public:
      */
     void ClearCharging();
 
+    /**
+     * @brief The per-frame task callback: a no-op for the pause gauge (its rendering is driven
+     * externally).
+     * @ghidraAddress 0x1508b0
+     */
+    void OnFrame(void *pFrameArg) override;
+
 private:
     /**
      * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the

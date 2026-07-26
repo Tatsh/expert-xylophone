@@ -93,6 +93,11 @@ PauseGaugeLayer::~PauseGaugeLayer() {
     }
 }
 
+/** @ghidraAddress 0x1508b0 */
+void PauseGaugeLayer::OnFrame(void *pFrameArg) {
+    (void)pFrameArg; // The pause gauge does no per-frame work; its sprites are rendered externally.
+}
+
 /** @ghidraAddress 0x150e58 */
 void PauseGaugeLayer::SetCharging() {
     // Only the first entry into the charging state plays the sound; later frames are a no-op.
