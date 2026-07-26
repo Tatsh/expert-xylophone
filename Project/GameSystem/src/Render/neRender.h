@@ -67,6 +67,13 @@ public:
     }
 
     /**
+     * @brief Flags the node for deferred deletion by the scene walker on its next pass.
+     */
+    void RequestDelete() {
+        m_bDeleteRequest = true;
+    }
+
+    /**
      * @brief The node's parent in the scene graph, or @c nullptr when it is a root.
      */
     C_RENDER *GetParent() const {

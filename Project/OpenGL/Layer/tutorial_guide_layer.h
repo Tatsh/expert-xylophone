@@ -77,7 +77,21 @@ public:
      */
     void Reset();
 
+    /**
+     * @brief Tears the guide down: releases its atlas, flags its sprite instancer for deferred
+     * deletion, and clears the built guard.
+     * @ghidraAddress 0x10b350
+     */
+    void Release();
+
 private:
+    /**
+     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state
+     * (the texture, sprite, counts, flags, animation clock, and coordinate table).
+     * @ghidraAddress 0x10b308
+     */
+    TutorialGuideLayer();
+
     // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
     struct Keyframe {
         float flStartX = {}; // +0x00
@@ -115,6 +129,14 @@ private:
     CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0
     CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0
 };
+
+/**
+ * @brief Destroys the process-wide tutorial-guide layer singleton.
+ *
+ * Tears the layer down and frees it, clearing the singleton pointer. A no-op when no layer exists.
+ * @ghidraAddress 0x10b400
+ */
+void DestroyTutorialGuideLayerInstance();
 
 // code: language=C++
 // kate: hl C++;

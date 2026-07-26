@@ -63,6 +63,13 @@ constexpr int kEndColumnThreshold = 3;
 
 } // namespace
 
+/** @ghidraAddress 0x10b308 */
+TutorialGuideLayer::TutorialGuideLayer() {
+    // The base constructor runs first; every member is zero-initialised by its in-class initialiser,
+    // matching the binary's explicit zero-clear of the texture, sprite, counts, flags, clock, and
+    // coordinate table.
+}
+
 /** @ghidraAddress 0x10b3b0 */
 TutorialGuideLayer *TutorialGuideLayer::shared() {
     if (g_pTutorialGuideLayer == nullptr) {
@@ -143,4 +150,27 @@ void TutorialGuideLayer::Reset() {
     m_nFadeState = kFadeStateHidden;
     GameSystem::GetGameSystem()->SetTutorialPhase(0);
     m_nTimer = 0;
+}
+
+/** @ghidraAddress 0x10b350 */
+void TutorialGuideLayer::Release() {
+    if (m_pTexture != nullptr) {
+        m_pTexture->Release();
+        m_pTexture = nullptr;
+    }
+    if (m_pSprite != nullptr) {
+        // The sprite node is owned by the scene graph; flag it for the scene walker to delete.
+        m_pSprite->RequestDelete();
+        m_pSprite = nullptr;
+    }
+    m_bBuilt = false;
+}
+
+/** @ghidraAddress 0x10b400 */
+void DestroyTutorialGuideLayerInstance() {
+    if (g_pTutorialGuideLayer != nullptr) {
+        g_pTutorialGuideLayer->Release();
+        delete g_pTutorialGuideLayer;
+        g_pTutorialGuideLayer = nullptr;
+    }
 }
