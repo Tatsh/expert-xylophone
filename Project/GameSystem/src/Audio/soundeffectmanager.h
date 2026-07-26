@@ -34,6 +34,12 @@ public:
      */
     unsigned int PlayThemedSoundEffect(int slotID);
     /**
+     * @brief Plays the shared sound effect selected by the current game state (the BGM type).
+     * @return The play handle, or @c 0xffffffff when the selected shared slot is not loaded.
+     * @ghidraAddress 0x1ccb08
+     */
+    unsigned int PlayGameStateSoundEffect();
+    /**
      * @brief Loads the themed voice for the given identifier and immediately plays it.
      *
      * A thin wrapper that loads the voice data through @c LoadThemedVoiceData and then plays it

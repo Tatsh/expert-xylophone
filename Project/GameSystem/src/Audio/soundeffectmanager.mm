@@ -13,6 +13,7 @@
 #import "AudioManager.h"
 #import "NSFileManager+RB.h"
 #import "RBUserSettingData.h"
+#include "gamesystem.h"
 
 namespace {
 
@@ -161,6 +162,17 @@ unsigned int SoundEffectManager::PlayThemedSoundEffect(int slotID) {
     }
     return [AudioManager.sharedManager playSe:nil
                                    resourceId:m_aThemeResourceId[theme][slotID]
+                                       Volume:kSePlayVolume];
+}
+
+/** @ghidraAddress 0x1ccb08 */
+unsigned int SoundEffectManager::PlayGameStateSoundEffect() {
+    const int nSlot = GameSystem::GetGameSystem()->GetBgmType();
+    if (!m_aSharedLoaded[nSlot]) {
+        return 0xffffffff;
+    }
+    return [AudioManager.sharedManager playSe:nil
+                                   resourceId:m_aSharedResourceId[nSlot]
                                        Volume:kSePlayVolume];
 }
 
