@@ -10,13 +10,15 @@
 //
 
 #include "linear_tween.h"
+#include "playfieldlayerbase.h"
 #include "s_vector2.h"
 
 /**
- * @brief The number-effect layer, as far as its fade channel and active flag are concerned.
- * @ghidraAddress NumberEffectLayer (engine layer)
+ * @brief The number-effect layer: a @c PlayFieldLayerBase-derived layer with a fade channel, a
+ * brightness, and two scroll offsets. Only the fields the reconstructed methods touch are modelled.
+ * @ghidraAddress NumberEffectLayer (engine layer, 0x78 bytes)
  */
-class NumberEffectLayer {
+class NumberEffectLayer : public PlayFieldLayerBase {
 public:
     /**
      * @brief Advances the fade channel by @p flDeltaTime and raises the active flag.
@@ -59,11 +61,11 @@ public:
     void ResetOffsets();
 
     /**
-     * @brief Computes an element's screen-space anchor position for the current orientation.
+     * @brief Computes an element's screen-space anchor position for the current device layout.
      *
-     * Selects the portrait or landscape base-offset table (and, in landscape, the wide-variant row),
-     * copies the element's base offset, then applies a per-element viewport-relative gravity
-     * adjustment.
+     * The portrait (pad) layout uses its own base-offset table; the landscape (phone) layout picks
+     * the wide-variant row. It copies the element's base offset, then applies a per-element
+     * viewport-relative gravity adjustment. The layout is chosen by the inherited font variant.
      * @param nElement The element index.
      * @param pOut The output position.
      * @ghidraAddress 0x18a2d4
@@ -74,8 +76,8 @@ private:
     // The number of scroll-offset words the layer tracks.
     static constexpr int kOffsetCount = 2;
 
-    bool m_bPortrait = {};                  // +0x00: whether the layer is in the portrait layout.
-    unsigned char m_aReserved01[0x2f] = {}; // +0x01
+    // +0x00..+0x07: the inherited PlayFieldLayerBase fields (font variant, hardware type, theme).
+    unsigned char m_aReserved08[0x28] = {}; // +0x08
     LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
     bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame
     unsigned char m_aReserved45[0x0b] = {}; // +0x45
