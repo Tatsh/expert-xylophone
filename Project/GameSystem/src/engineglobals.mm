@@ -21,6 +21,40 @@ UIColor *g_pCachedWhiteColor;
 UIColor *g_pCachedOffWhiteColor;
 UIColor *g_pCachedBlueColor;
 
+// The palette colour pointers, seeded by InitializeUIColorPalette, and their per-channel component
+// constants (each n/255). The pointers live in mutable storage (assigned at load).
+UIColor *g_pPaletteDimmingCoverColor;
+UIColor *g_pPaletteWhiteColor;
+UIColor *g_pPaletteOpaqueBlackColor;
+UIColor *g_pPaletteGreenGrassColor;
+UIColor *g_pPaletteMagentaColor;
+UIColor *g_pPalettePurpleColor;
+UIColor *g_pPaletteDarkGreenColor;
+UIColor *g_pPaletteLeafGreenColor;
+UIColor *g_pPaletteGreenGrassColor2;
+UIColor *g_pPaletteMagentaColor2;
+UIColor *g_pPaletteLeafGreenColor2;
+UIColor *g_pPaletteSteelBlueColor;
+UIColor *g_pPaletteLeafGreenColor3;
+UIColor *g_pPaletteSteelBlueColor2;
+UIColor *g_pPaletteGoldColor;
+UIColor *g_pPaletteSteelBlueColor3;
+const double g_PaletteColorGreenGrassRed = 0.24705882370471954;
+const double g_PaletteColorGreenGrassGreen = 0.65490198135375977;
+const double g_PaletteColorMagentaRed = 0.99607843160629272;
+const double g_PaletteColorMagentaGreen = 0.12941177189350128;
+const double g_PaletteColorMagentaBlue = 0.97254902124404907;
+const double g_PaletteColorDarkGreenRed = 0.0078431377187371254;
+const double g_PaletteColorDarkGreenGreen = 0.43529412150382996;
+const double g_PaletteColorLeafGreenRed = 0.10196078568696976;
+const double g_PaletteColorLeafGreenGreen = 0.59215688705444336;
+const double g_PaletteColorSteelBlueRed = 0.52156865596771240;
+const double g_PaletteColorSteelBlueGreen = 0.67843139171600342;
+const double g_PaletteColorSteelBlueBlue = 0.85098040103912354;
+const double g_PaletteColorGoldRed = 0.89803922176361084;
+const double g_PaletteColorGoldGreen = 0.71764707565307617;
+const double g_PaletteColorGoldBlue = 0.19215686619281769;
+
 // The localised UI strings, seeded once at startup by CacheLocalizedUIStrings. They live in mutable
 // storage because they are assigned at load time, not compile time.
 NSString *g_pLocalizedAbort;
@@ -257,5 +291,72 @@ __attribute__((constructor)) void InitializeUiColorConstants(void) {
         g_pCachedWhiteColor = [UIColor colorWithWhite:1.0 alpha:1.0];
         g_pCachedOffWhiteColor = [UIColor colorWithWhite:kOffWhiteBrightness alpha:1.0];
         g_pCachedBlueColor = [UIColor colorWithRed:kBlueRed green:kBlueGreen blue:1.0 alpha:1.0];
+    }
+}
+
+namespace {
+// The dimming-cover overlay is black at half alpha.
+constexpr CGFloat kDimmingCoverAlpha = 0.5;
+} // namespace
+
+/** @ghidraAddress 0x55120 */
+__attribute__((constructor)) void InitializeUIColorPalette(void) {
+    @autoreleasepool {
+        g_pPaletteDimmingCoverColor = [UIColor colorWithRed:0.0
+                                                      green:0.0
+                                                       blue:0.0
+                                                      alpha:kDimmingCoverAlpha];
+        g_pPaletteWhiteColor = UIColor.whiteColor;
+        g_pPaletteOpaqueBlackColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+        g_pPaletteGreenGrassColor = [UIColor colorWithRed:g_PaletteColorGreenGrassRed
+                                                    green:g_PaletteColorGreenGrassGreen
+                                                     blue:0.0
+                                                    alpha:1.0];
+        g_pPaletteMagentaColor = [UIColor colorWithRed:g_PaletteColorMagentaRed
+                                                 green:g_PaletteColorMagentaGreen
+                                                  blue:g_PaletteColorMagentaBlue
+                                                 alpha:1.0];
+        g_pPalettePurpleColor = UIColor.purpleColor;
+        g_pPaletteDarkGreenColor = [UIColor colorWithRed:g_PaletteColorDarkGreenRed
+                                                   green:g_PaletteColorDarkGreenGreen
+                                                    blue:0.0
+                                                   alpha:1.0];
+        g_pPaletteLeafGreenColor = [UIColor colorWithRed:g_PaletteColorLeafGreenRed
+                                                   green:g_PaletteColorLeafGreenGreen
+                                                    blue:0.0
+                                                   alpha:1.0];
+        // The doubled entries reuse the same components as their base colours.
+        g_pPaletteGreenGrassColor2 = [UIColor colorWithRed:g_PaletteColorGreenGrassRed
+                                                     green:g_PaletteColorGreenGrassGreen
+                                                      blue:0.0
+                                                     alpha:1.0];
+        g_pPaletteMagentaColor2 = [UIColor colorWithRed:g_PaletteColorMagentaRed
+                                                  green:g_PaletteColorMagentaGreen
+                                                   blue:g_PaletteColorMagentaBlue
+                                                  alpha:1.0];
+        g_pPaletteLeafGreenColor2 = [UIColor colorWithRed:g_PaletteColorLeafGreenRed
+                                                    green:g_PaletteColorLeafGreenGreen
+                                                     blue:0.0
+                                                    alpha:1.0];
+        g_pPaletteSteelBlueColor = [UIColor colorWithRed:g_PaletteColorSteelBlueRed
+                                                   green:g_PaletteColorSteelBlueGreen
+                                                    blue:g_PaletteColorSteelBlueBlue
+                                                   alpha:1.0];
+        g_pPaletteLeafGreenColor3 = [UIColor colorWithRed:g_PaletteColorLeafGreenRed
+                                                    green:g_PaletteColorLeafGreenGreen
+                                                     blue:0.0
+                                                    alpha:1.0];
+        g_pPaletteSteelBlueColor2 = [UIColor colorWithRed:g_PaletteColorSteelBlueRed
+                                                    green:g_PaletteColorSteelBlueGreen
+                                                     blue:g_PaletteColorSteelBlueBlue
+                                                    alpha:1.0];
+        g_pPaletteGoldColor = [UIColor colorWithRed:g_PaletteColorGoldRed
+                                              green:g_PaletteColorGoldGreen
+                                               blue:g_PaletteColorGoldBlue
+                                              alpha:1.0];
+        g_pPaletteSteelBlueColor3 = [UIColor colorWithRed:g_PaletteColorSteelBlueRed
+                                                    green:g_PaletteColorSteelBlueGreen
+                                                     blue:g_PaletteColorSteelBlueBlue
+                                                    alpha:1.0];
     }
 }

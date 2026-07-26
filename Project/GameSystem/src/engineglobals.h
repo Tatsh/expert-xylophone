@@ -319,6 +319,33 @@ void InitializeSliderHeightConstant(void);
  */
 void InitializeUiColorConstants(void);
 /**
+ * @brief The dimming-cover overlay colour (black at half alpha), seeded by
+ * @c InitializeUIColorPalette.
+ * @ghidraAddress 0x3cff88
+ */
+extern UIColor *g_pPaletteDimmingCoverColor;
+// The per-channel palette colour components (each n/255), read by InitializeUIColorPalette. Doubles.
+extern const double g_PaletteColorGreenGrassRed;   /*!< @ghidraAddress 0x2ef5e8 */
+extern const double g_PaletteColorGreenGrassGreen; /*!< @ghidraAddress 0x2ef5f0 */
+extern const double g_PaletteColorMagentaRed;      /*!< @ghidraAddress 0x2ef5f8 */
+extern const double g_PaletteColorMagentaGreen;    /*!< @ghidraAddress 0x2ef600 */
+extern const double g_PaletteColorMagentaBlue;     /*!< @ghidraAddress 0x2ef608 */
+extern const double g_PaletteColorDarkGreenRed;    /*!< @ghidraAddress 0x2ef610 */
+extern const double g_PaletteColorDarkGreenGreen;  /*!< @ghidraAddress 0x2ef618 */
+extern const double g_PaletteColorLeafGreenRed;    /*!< @ghidraAddress 0x2ef620 */
+extern const double g_PaletteColorLeafGreenGreen;  /*!< @ghidraAddress 0x2ef628 */
+extern const double g_PaletteColorSteelBlueRed;    /*!< @ghidraAddress 0x2ef630 */
+extern const double g_PaletteColorSteelBlueGreen;  /*!< @ghidraAddress 0x2ef638 */
+extern const double g_PaletteColorSteelBlueBlue;   /*!< @ghidraAddress 0x2ef640 */
+extern const double g_PaletteColorGoldRed;         /*!< @ghidraAddress 0x2ef648 */
+extern const double g_PaletteColorGoldGreen;       /*!< @ghidraAddress 0x2ef650 */
+extern const double g_PaletteColorGoldBlue;        /*!< @ghidraAddress 0x2ef658 */
+/**
+ * @brief Seeds every @c g_pPalette* colour above. Run once at startup.
+ * @ghidraAddress 0x55120
+ */
+void InitializeUIColorPalette(void);
+/**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90
  */
