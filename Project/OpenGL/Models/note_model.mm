@@ -20,12 +20,22 @@
 #include "playtimer.h"
 #include "rbffnoterecord.h"
 
-// The near-lane slope and its negative, seeded by the play-field layout pass
-// (ComputePlayfieldLayoutY) and read here and by the effect layers. Both are the ratio of the
-// near-row offset to the field-centre row scale.
+// The near/far lane slopes, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and read
+// here and by the effect layers. Each is the ratio of a note row's offset to the field-centre row
+// scale.
 float g_flPlayfieldNearLaneSlope = {};    // @ghidraAddress 0x3ce95c
 float g_flPlayfieldNearLaneSlopeNeg = {}; // @ghidraAddress 0x3ce960
+float g_flPlayfieldFarLaneSlope = {};     // @ghidraAddress 0x3ce96c
 float g_flPlayfieldFarLaneSlopeNeg = {};  // @ghidraAddress 0x3ce970
+
+// The play-field gauge layout positions, seeded by the play-field layout pass and read by the gauge
+// sprite emitter. The centre split is subtracted from the portrait gauge positions; the four base-Y
+// values are the top and bottom band bases in the default and alternate gauge modes.
+int g_nPlayfieldCentreSplit = {}; // @ghidraAddress 0x3ce934
+int g_nGaugeAltTopBaseY = {};     // @ghidraAddress 0x3ce99c
+int g_nGaugeAltBottomBaseY = {};  // @ghidraAddress 0x3ce9a0
+int g_nGaugeTopBaseY = {};        // @ghidraAddress 0x3ce9a4
+int g_nGaugeBottomBaseY = {};     // @ghidraAddress 0x3ce9a8
 
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
 // by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the centre),

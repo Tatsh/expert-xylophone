@@ -7,6 +7,7 @@
 
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -57,6 +58,13 @@ public:
     static constexpr int kPartGroupCount = 6;
     // The number of player sides the gauge tracks.
     static constexpr int kSideCount = 2;
+
+    /** @brief A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame. */
+    struct GaugeSpriteDescriptor {
+        S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
+        S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
+        int nAtlasFrame = {};  // +0x10: the atlas-frame number indexing the shared sprite UV table.
+    };
 
     /**
      * @brief The process-wide Reflec gauge layer, created on first use.
@@ -146,6 +154,25 @@ public:
      */
     void ResetSideGauges();
 
+    /**
+     * @brief Emits the gauge base/frame sprite (kind 0) into a batch.
+     *
+     * Selects the sprite descriptor and atlas frame by orientation and gauge mode.
+     * @param nBatch The target sprite batch.
+     * @param nAlpha The sprite tint alpha.
+     * @ghidraAddress 0x18b034
+     */
+    void EmitBaseSprite(unsigned int nBatch, int nAlpha);
+
+    /**
+     * @brief Emits a gauge label sprite (kind 2) into the label batch.
+     * @param nSide The player side.
+     * @param nLabelIndex The label index.
+     * @param nAlpha The sprite tint alpha.
+     * @ghidraAddress 0x18b2cc
+     */
+    void EmitLabelSprite(unsigned int nSide, int nLabelIndex, int nAlpha);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
@@ -159,6 +186,19 @@ private:
         float flValue = {};  // +0x00: the side's gauge value.
         int nReserved4 = {}; // +0x04: trailing per-side state.
     };
+
+    /**
+     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position.
+     * @param descriptor The sprite anchor, size, and atlas frame.
+     * @param nBatch The target sprite batch.
+     * @param nSide The player side, selecting the position and rotation.
+     * @param nAlpha The sprite tint alpha.
+     * @ghidraAddress 0x18b380
+     */
+    void EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
+                         unsigned int nBatch,
+                         unsigned int nSide,
+                         int nAlpha);
 
     ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
     ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] =

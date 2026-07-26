@@ -4,10 +4,12 @@
 #include <cmath>
 
 #include "bg_layer.h"
+#include "engineglobals.h"
 #include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "sprite_uv_table.h"
 
 // The process-wide Reflec gauge layer, created lazily by shared().
 static ReflecGaugeLayer *g_pReflecGaugeLayer = nullptr; // @ghidraAddress 0x3df2c8
@@ -39,6 +41,48 @@ constexpr float kGaugeChallengeValue = 5.0f;
 // kBrightnessBias + kBrightnessScale] = [0.3, 1.0] (@ghidraAddress 0x2fd008 and 0x2ee910).
 constexpr float kBrightnessScale = 0.7f;
 constexpr float kBrightnessBias = 0.3f;
+
+// The maximum value of an opaque colour channel.
+constexpr unsigned int kColorMax = 255;
+
+// The batch the gauge label sprites are emitted into.
+constexpr unsigned int kLabelBatch = 2;
+
+// The base gauge quad's fixed screen X in each orientation/mode (@ghidraAddress 0x30fcb0 anchor for
+// portrait 190.0; the landscape modes use 200.0 and 0.0), and the field half-span subtracted from
+// each band Y (0x200 layout units).
+constexpr float kPortraitGaugeX = 190.0f;
+constexpr float kLandscapeGaugeX = 200.0f;
+constexpr float kLandscapeAltGaugeX = 0.0f;
+constexpr int kFieldHalfSpan = 0x200;
+// The portrait band Y bases (@ghidraAddress 0x30fcb0 region), before the layout-table centre split.
+constexpr int kPortraitBandBaseTop = 0x1d6;
+constexpr int kPortraitBandBaseBottom = 0x22a;
+
+// The gauge base/frame sprite descriptors, selected by orientation and gauge mode
+// (@ghidraAddress 0x30fc88 default, 0x30fc9c alternate, 0x30fcb0 portrait).
+constexpr ReflecGaugeLayer::GaugeSpriteDescriptor kBaseSpriteDefault = {
+    {80.0f, 20.0f}, {160.0f, 40.0f}, 0x88};
+constexpr ReflecGaugeLayer::GaugeSpriteDescriptor kBaseSpriteAlt = {
+    {178.0f, 19.0f}, {356.0f, 37.0f}, 0x83};
+constexpr ReflecGaugeLayer::GaugeSpriteDescriptor kBaseSpritePortrait = {
+    {84.0f, 20.0f}, {168.0f, 40.0f}, 0x113};
+
+// The per-colour-side gauge label descriptor: its anchor Y, size, and atlas frame. The anchor X is
+// taken from the per-index table below (@ghidraAddress 0x30fdf4).
+struct GaugeLabelSide {
+    float flAnchorY = {};
+    float flSizeX = {};
+    float flSizeY = {};
+    int nAtlasFrame = {};
+};
+constexpr GaugeLabelSide kLabelSideRecord[ReflecGaugeLayer::kSideCount] = {
+    {17.0f, 76.0f, 28.0f, 0x85},
+    {17.0f, 76.0f, 28.0f, 0x87},
+};
+
+// The gauge label anchor X by label index (@ghidraAddress 0x30fe18).
+constexpr float kLabelAnchorX[] = {173.0f, 106.0f, 39.0f, -28.0f, -95.0f, 54.0f, 1.0f, 10.0f};
 
 } // namespace
 
@@ -192,4 +236,97 @@ void ReflecGaugeLayer::ResetSideGauges() {
         side = SideGauge{};
         side.flValue = flReset;
     }
+}
+
+/** @ghidraAddress 0x18b380 */
+void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
+                                       unsigned int nBatch,
+                                       unsigned int nSide,
+                                       int nAlpha) {
+    ne::C_SPRITE_INSTANCING *pBatch = m_apSprites[nBatch];
+    const int nIndex = pBatch->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
+        return;
+    }
+
+    // Pick the quad's screen position and rotation by orientation and gauge mode.
+    S_VECTOR2 position{};
+    float flRotation = 0.0f;
+    // The play-field half-height, rounding toward zero, is the vertical span each band is offset by.
+    const int nHalfHeight =
+        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+    if (IsPad()) {
+        // Portrait: a fixed X with the two band Y positions taken from the layout table.
+        const float aBandY[kSideCount] = {
+            static_cast<float>(kPortraitBandBaseTop - g_nPlayfieldCentreSplit),
+            static_cast<float>(kPortraitBandBaseBottom - g_nPlayfieldCentreSplit),
+        };
+        position = S_VECTOR2{kPortraitGaugeX, aBandY[nSide]};
+    } else if (m_nGaugeStyle == 0) {
+        const float aBandY[kSideCount] = {
+            static_cast<float>(g_nGaugeTopBaseY + nHalfHeight - kFieldHalfSpan),
+            static_cast<float>(g_nGaugeBottomBaseY - nHalfHeight - kFieldHalfSpan),
+        };
+        position = S_VECTOR2{kLandscapeGaugeX, aBandY[nSide]};
+        // The 1P side mirrors when the mirror flag is set, flipping the X sign and half-turning.
+        if (nSide == 0 && m_nMirrorSide == 1) {
+            position.x = -position.x;
+            flRotation = static_cast<float>(M_PI);
+        }
+    } else {
+        const float aBandY[kSideCount] = {
+            static_cast<float>(g_nGaugeAltTopBaseY + nHalfHeight - kFieldHalfSpan),
+            static_cast<float>(g_nGaugeAltBottomBaseY - nHalfHeight - kFieldHalfSpan),
+        };
+        position = S_VECTOR2{kLandscapeAltGaugeX, aBandY[nSide]};
+        // Every quad half-turns here except the mirrored 1P side.
+        flRotation = static_cast<float>(M_PI);
+        if (m_nMirrorSide != 1 || nSide != 0) {
+            flRotation = 0.0f;
+        }
+    }
+
+    const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
+    pBatch->SetSpritePosition(nIndex, position);
+    pBatch->SetSpriteAnchor(nIndex, descriptor.anchor);
+    pBatch->SetSpriteSize(nIndex, descriptor.size);
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteScale(nIndex, 1.0f, 1.0f);
+    pBatch->SetSpriteColor(
+        nIndex, kColorMax, kColorMax, kColorMax, static_cast<unsigned int>(nAlpha));
+    pBatch->SetSpriteCount(nIndex + 1);
+}
+
+/** @ghidraAddress 0x18b034 */
+void ReflecGaugeLayer::EmitBaseSprite(unsigned int nBatch, int nAlpha) {
+    // The base descriptor is selected by orientation and gauge mode.
+    GaugeSpriteDescriptor descriptor;
+    if (IsPad()) {
+        descriptor = kBaseSpritePortrait;
+    } else if (m_nGaugeStyle == 0) {
+        descriptor = kBaseSpriteDefault;
+    } else {
+        descriptor = kBaseSpriteAlt;
+    }
+    EmitGaugeSprite(descriptor, nBatch, 0, nAlpha);
+}
+
+/** @ghidraAddress 0x18b2cc */
+void ReflecGaugeLayer::EmitLabelSprite(unsigned int nSide, int nLabelIndex, int nAlpha) {
+    // The label's colour side follows the active player, inverted for the non-1P side.
+    unsigned int nColor = static_cast<unsigned int>(GameSystem::GetGameSystem()->GetPlayColor());
+    if (nSide != 1) {
+        nColor = (nColor == 0) ? 1 : 0;
+    }
+
+    // The anchor X comes from the per-index table; the anchor Y, size, and frame from the
+    // per-colour-side record.
+    const GaugeLabelSide &side = kLabelSideRecord[nColor];
+    GaugeSpriteDescriptor descriptor;
+    descriptor.anchor = S_VECTOR2{kLabelAnchorX[nLabelIndex], side.flAnchorY};
+    descriptor.size = S_VECTOR2{side.flSizeX, side.flSizeY};
+    descriptor.nAtlasFrame = side.nAtlasFrame;
+    EmitGaugeSprite(descriptor, kLabelBatch, nSide, nAlpha);
 }

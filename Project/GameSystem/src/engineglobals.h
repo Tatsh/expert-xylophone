@@ -92,6 +92,28 @@ extern float g_flPlayfieldFarLaneSlope;
  */
 extern float g_flPlayfieldFarLaneSlopeNeg;
 /**
+ * @brief The play-field field-centre split, in layout units, subtracted from the portrait gauge
+ * positions. Seeded by the play-field layout pass.
+ * @ghidraAddress 0x3ce934
+ */
+extern int g_nPlayfieldCentreSplit;
+/**
+ * @brief The two gauge Y base positions used in the alternate (non-zero) gauge mode: the top band's
+ * base and the bottom band's base. Seeded by the play-field layout pass.
+ * @ghidraAddress 0x3ce99c
+ */
+extern int g_nGaugeAltTopBaseY;
+/** @brief The alternate-mode bottom-band gauge Y base. @ghidraAddress 0x3ce9a0 */
+extern int g_nGaugeAltBottomBaseY;
+/**
+ * @brief The two gauge Y base positions used in the default (mode-zero) gauge layout: the top band's
+ * base and the bottom band's base. Seeded by the play-field layout pass.
+ * @ghidraAddress 0x3ce9a4
+ */
+extern int g_nGaugeTopBaseY;
+/** @brief The default-mode bottom-band gauge Y base. @ghidraAddress 0x3ce9a8 */
+extern int g_nGaugeBottomBaseY;
+/**
  * @brief The per-decode-type Blowfish key table shared with the chart loader.
  * @ghidraAddress 0x35b7c8
  */
