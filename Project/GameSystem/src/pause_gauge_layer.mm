@@ -8,12 +8,15 @@
 
 #import "pause_gauge_layer.h"
 
+#include <cassert>
+
 #import "RBUserSettingData.h"
 #include "gamescene.h"
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #import "soundeffectmanager.h"
+#include "touchmanager.h"
 
 namespace {
 // The themed sound-effect slots the pause gauge plays: the charge-start effect and the menu-action
@@ -295,6 +298,102 @@ void PauseGaugeLayer::HandleExit() {
         pScene->EnterPauseExitState();
     }
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
+}
+
+namespace {
+// The pause-menu item indices, the background sprite's slot and alpha, and the touch-slot fields.
+constexpr unsigned int kMenuItemResume = 0;
+constexpr unsigned int kMenuItemExit = 1;
+constexpr unsigned int kMenuItemRelease = 2;
+constexpr unsigned int kMenuItemCount = 3;
+constexpr unsigned int kBackgroundSlot = 0;
+constexpr unsigned int kBackgroundAlpha = 0xb2;
+} // namespace
+
+/** @ghidraAddress 0x150bfc */
+void PauseGaugeLayer::ExecShow() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+
+    // Lay each menu lane's centre out from the viewport centre plus the layout record's offset (the
+    // menu items occupy layout records 1 through 3, one per lane).
+    const PauseGaugeSpriteLayout *pLayout =
+        IsFontVariant() ? g_aPauseGaugeLayoutAltFrame : g_aPauseGaugeLayoutDefault;
+    for (unsigned int nLane = 0; nLane < kMenuItemCount; ++nLane) {
+        const PauseGaugeSpriteLayout &item = pLayout[nLane + 1];
+        m_aLaneGeometry[nLane].flCenterX = flWidth * 0.5f + item.flOffsetX;
+        m_aLaneGeometry[nLane].flCenterY = flHeight * 0.5f + item.flOffsetY;
+    }
+
+    TouchManager *pTouches = TouchManager::FetchSharedSingleton();
+    if (m_nSelectedTouchId == kNoSelectedTouch) {
+        // No item is being dragged yet: find the first fresh touch that lands on a menu lane.
+        const int nActive = pTouches->GetActiveTouchCount();
+        for (int nSlot = 0; nSlot < nActive; ++nSlot) {
+            TouchPoint *pTouch = pTouches->GetActiveTouch(nSlot);
+            if (!pTouch->bIsNew) {
+                continue;
+            }
+            for (unsigned int nLane = 0; nLane < kMenuItemCount; ++nLane) {
+                if (CheckPointInRect(static_cast<float>(pTouch->nBeginX),
+                                     static_cast<float>(pTouch->nBeginY),
+                                     nLane)) {
+                    m_nSelectedTouchId = pTouch->nId;
+                    m_nSelectedLane = static_cast<int>(nLane);
+                    break;
+                }
+            }
+            if (m_nSelectedTouchId != kNoSelectedTouch) {
+                break;
+            }
+        }
+    } else {
+        // An item is being dragged: track its touch and highlight/commit it.
+        TouchPoint *pTouch = pTouches->FindTouchById(m_nSelectedTouchId);
+        if (pTouch == nullptr) {
+            // The touch vanished without lifting: clear the selection.
+            m_nSelectedTouchId = kNoSelectedTouch;
+            m_aLaneGeometry[static_cast<unsigned int>(m_nSelectedLane)].bDimmed = false;
+            m_nSelectedLane = kNoSelectedLane;
+        } else {
+            const unsigned int nLane = static_cast<unsigned int>(m_nSelectedLane);
+            const bool bInside = CheckPointInRect(static_cast<float>(pTouch->nCurrentX),
+                                                  static_cast<float>(pTouch->nCurrentY),
+                                                  nLane);
+            bool bHighlight = false;
+            if (bInside) {
+                if (pTouch->bEnded) {
+                    // Released on the item: run its action.
+                    if (nLane == kMenuItemRelease) {
+                        HandlePauseMusicRelease();
+                    } else if (nLane == kMenuItemExit) {
+                        HandleExit();
+                    } else {
+                        assert(nLane == kMenuItemResume);
+                        HandlePauseResume();
+                    }
+                } else {
+                    bHighlight = true;
+                }
+            }
+            m_aLaneGeometry[nLane].bDimmed = bHighlight;
+        }
+    }
+
+    // Re-emit the menu: clear each instancer, draw the dimmed background, then each lane.
+    for (ne::C_SPRITE_INSTANCING *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+    const S_VECTOR2 origin{0.0f, 0.0f};
+    EmitSprite(1.0f, kBackgroundSlot, origin, 0, kBackgroundAlpha);
+    RenderForLane(0);
+    RenderForLane(1);
+    RenderForLane(2);
+
+    if (!m_bCharging) {
+        m_nState = 1;
+    }
 }
 
 /** @ghidraAddress 0x1508b0 */

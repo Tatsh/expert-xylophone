@@ -28,12 +28,13 @@ struct PauseGaugeRectSize {
  * @c // +0xNN comments document the byte offsets.
  */
 struct PauseGaugeSpriteLayout {
-    unsigned char aReserved00[8] = {}; // +0x00: leading fields the emitter does not read.
-    float flAnchorX = {};              // +0x08: the sprite anchor x.
-    float flAnchorY = {};              // +0x0c: the sprite anchor y.
-    float flSizeW = {};                // +0x10: the sprite size width.
-    float flSizeH = {};                // +0x14: the sprite size height.
-    int nUvIndex = {};                 // +0x18: the index into the UV table.
+    float flOffsetX = {}; // +0x00: the menu-item x offset from the viewport centre.
+    float flOffsetY = {}; // +0x04: the menu-item y offset from the viewport centre.
+    float flAnchorX = {}; // +0x08: the sprite anchor x.
+    float flAnchorY = {}; // +0x0c: the sprite anchor y.
+    float flSizeW = {};   // +0x10: the sprite size width.
+    float flSizeH = {};   // +0x14: the sprite size height.
+    int nUvIndex = {};    // +0x18: the index into the UV table.
 };
 
 /**

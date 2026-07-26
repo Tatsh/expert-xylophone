@@ -86,6 +86,16 @@ public:
      */
     bool HasActiveTouch() const;
 
+    /** @brief The number of active touch slots at the head of the slot array. */
+    int GetActiveTouchCount() const {
+        return m_nActiveCount;
+    }
+
+    /** @brief Returns the active touch slot at @p nIndex (below @c GetActiveTouchCount). */
+    TouchPoint *GetActiveTouch(int nIndex) const {
+        return m_apSlots[nIndex];
+    }
+
 private:
     TouchPoint *m_apSlots[kSlotCount] = {}; // +0x00 the slot pointer array (active slots first)
     int m_nActiveCount = {};                // +0x100 number of active slots at the array head
