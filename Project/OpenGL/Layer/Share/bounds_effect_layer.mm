@@ -12,3 +12,13 @@
 void BoundsEffectLayer::SetEffectSize(float flSize) {
     m_flEffectSize = flSize;
 }
+
+/** @ghidraAddress 0x1754a8 */
+void BoundsEffectLayer::SetLaneLightFlag(float flValue, int nLane) {
+    const unsigned char nFlag = static_cast<unsigned char>(static_cast<int>(flValue));
+    if (nLane == 1) {
+        m_bLaneLight0 = nFlag;
+    } else {
+        m_bLaneLight1 = nFlag;
+    }
+}
