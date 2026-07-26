@@ -10,6 +10,9 @@
 
 #include <new>
 
+#include "gamesystem.h"
+#include "pause_gauge_layer.h"
+
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
 
@@ -20,6 +23,22 @@ PlayTask::PlayTask() {
     m_nState = 0;
     m_nPlayTime = 0;
     m_nInitialState = kInitialState;
+}
+
+/** @ghidraAddress 0x14b6e0 */
+bool PlayTask::RefreshPauseGaugeAndGetActiveFlag() {
+    if (!GameSystem::GetGameSystem()->GetPaused()) {
+        // Not paused: release any charge and report gameplay active.
+        if (m_pPauseGauge != nullptr) {
+            m_pPauseGauge->ClearCharging();
+        }
+        return true;
+    }
+    // Paused: charge the gauge unless it is being held down, and report gameplay inactive.
+    if (!m_bPauseGaugeHeld && m_pPauseGauge != nullptr) {
+        m_pPauseGauge->SetCharging();
+    }
+    return false;
 }
 
 /** @ghidraAddress 0x12ee88 */

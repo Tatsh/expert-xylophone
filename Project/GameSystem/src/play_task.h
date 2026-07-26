@@ -7,6 +7,8 @@
 
 #include "game_ui_layer_base.h"
 
+class PauseGaugeLayer;
+
 /**
  * @brief The gameplay task: the per-frame state machine that drives a play session from set-up
  * through the notes to the result screen and exit.
@@ -26,6 +28,16 @@ public:
      */
     static void GetInstance(PlayTask **ppOut);
 
+    /**
+     * @brief Ticks the pause gauge and reports whether gameplay is active this frame.
+     *
+     * When the game is not paused, releases any pause-gauge charge and returns true. When paused,
+     * charges the gauge (unless it is being held) and returns false.
+     * @return @c true when gameplay is active (unpaused), @c false when paused.
+     * @ghidraAddress 0x14b6e0
+     */
+    bool RefreshPauseGaugeAndGetActiveFlag();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch
@@ -36,9 +48,12 @@ private:
 
     int m_nState = {};    // +0x4c: the current state-machine state (dispatched each frame).
     int m_nPlayTime = {}; // +0x50: the accumulated play time, advanced by the frame delta.
-    // +0x54..+0x6f: further per-frame play sub-state (timers, flags, the score tracker, and the
-    // theme), still being worked out.
-    unsigned char m_aReserved54[0x1c] = {}; // +0x54
+    // +0x54..+0x63: further per-frame play sub-state (timers, the score tracker), still being worked
+    // out.
+    unsigned char m_aReserved54[0x10] = {}; // +0x54
+    bool m_bPauseGaugeHeld = {};            // +0x64: whether the pause gauge is being held down.
+    unsigned char m_aReserved65[0x03] = {}; // +0x65
+    PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
     int m_nInitialState = {};               // +0x70: the state the task starts in (2).
     // +0x74..+0x8f: trailing play state to the 0x90-byte object size, still being worked out.
     unsigned char m_aReserved74[0x1c] = {}; // +0x74
