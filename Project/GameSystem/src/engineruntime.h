@@ -94,6 +94,13 @@ float GetElapsedMediaTime(double *pStartTime);
  * @ghidraAddress 0x366f8
  */
 void StartMediaTimer(double *pStartTime);
+/**
+ * @brief Zeroes @p nSize bytes of @p pBuffer, guarding against a null pointer.
+ * @param pBuffer The buffer to clear, or @c nullptr to do nothing.
+ * @param nSize The number of bytes to clear.
+ * @ghidraAddress 0x12e900
+ */
+void ZeroMemoryIfNonNull(void *pBuffer, size_t nSize);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,7 @@
 #import "engineruntime.h"
 
+#include <strings.h>
+
 #import <QuartzCore/QuartzCore.h>
 
 namespace {
@@ -72,4 +74,11 @@ void StartMediaTimer(double *pStartTime) {
 /** @ghidraAddress 0x3671c */
 float GetElapsedMediaTime(double *pStartTime) {
     return static_cast<float>((CACurrentMediaTime() - *pStartTime) * kMediaTimeMillisScale);
+}
+
+/** @ghidraAddress 0x12e900 */
+void ZeroMemoryIfNonNull(void *pBuffer, size_t nSize) {
+    if (pBuffer != nullptr) {
+        bzero(pBuffer, nSize);
+    }
 }
