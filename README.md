@@ -23,9 +23,8 @@ Expert xylophone.
 
 ## Reconstruction progress
 
-The C and C++ engine reconstruction is tracked in
-[CXX_FUNCTIONS.md](CXX_FUNCTIONS.md), a per-function checklist of every routine's
-status and reconstructed signature.
+The C and C++ engine reconstruction is tracked in [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md), a
+per-function checklist of every routine's status and reconstructed signature.
 
 ## Installation
 
