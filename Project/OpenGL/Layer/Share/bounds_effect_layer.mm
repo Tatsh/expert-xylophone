@@ -15,10 +15,11 @@ void BoundsEffectLayer::SetEffectSize(float flSize) {
 
 /** @ghidraAddress 0x1754a8 */
 void BoundsEffectLayer::SetLaneLightFlag(float flValue, int nLane) {
-    const unsigned char nFlag = static_cast<unsigned char>(static_cast<int>(flValue));
+    // The binary truncates the float to an integer byte; the callers only ever pass 0.0 or 1.0.
+    const bool bFlag = static_cast<int>(flValue) != 0;
     if (nLane == 1) {
-        m_bLaneLight0 = nFlag;
+        m_bLaneLight0 = bFlag;
     } else {
-        m_bLaneLight1 = nFlag;
+        m_bLaneLight1 = bFlag;
     }
 }
