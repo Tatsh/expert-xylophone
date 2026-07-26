@@ -12,8 +12,9 @@
 
 #include "engineruntime.h"
 
-// The sentinel priority; every real listener sorts below it, so it always terminates the list.
-static constexpr int kSentinelPriority = 9;
+// The idle priority a freshly-constructed node carries; it is also the sentinel's terminating
+// priority, so an unlinked node sorts alongside the list terminator until it is inserted.
+static constexpr int kIdlePriority = 9;
 
 namespace {
 // The sentinel's per-frame callback is a no-op (the list terminator carries no behaviour).
@@ -30,7 +31,29 @@ void SentinelDeleteNode(SortedListenerNode *pNode) {
 }
 SortedListenerNodeVtable g_sentinelVtable = {
     SentinelOnFrame, SentinelDestroyNode, SentinelDeleteNode};
+
+// The base node's dispatch table (@ghidraAddress 0x359530): a plain node carries a no-op per-frame
+// callback and the two node destructors; concrete listeners/tasks install their own table over it.
+void BaseOnFrame(SortedListenerNode *, void *) {
+}
+void BaseDestroyNode(SortedListenerNode *pNode) {
+    pNode->Unlink();
+}
+void BaseDeleteNode(SortedListenerNode *pNode) {
+    pNode->DestroyAndFree();
+}
+SortedListenerNodeVtable g_baseNodeVtable = {BaseOnFrame, BaseDestroyNode, BaseDeleteNode};
 } // namespace
+
+/** @ghidraAddress 0x36558 */
+SortedListenerNode::SortedListenerNode() {
+    m_pVtable = &g_baseNodeVtable;
+    m_pPrev = this;
+    m_pNext = this;
+    m_nPriority = kIdlePriority;
+    m_pBuffer = nullptr;
+    m_bDead = false;
+}
 
 // The list's sentinel node (also its head/tail terminator), seeded by InitializeGlobalContainer.
 SortedListenerNode g_listenerListSentinel;
@@ -43,7 +66,7 @@ static void DestroyGlobalListenerContainer() {
 /** @ghidraAddress 0x366ac */
 void SortedListenerNode::InitializeGlobalContainer() {
     g_listenerListSentinel.m_pVtable = &g_sentinelVtable;
-    g_listenerListSentinel.m_nPriority = kSentinelPriority;
+    g_listenerListSentinel.m_nPriority = kIdlePriority;
     g_listenerListSentinel.m_pPrev = &g_listenerListSentinel;
     g_listenerListSentinel.m_pNext = &g_listenerListSentinel;
     g_listenerListSentinel.m_pBuffer = nullptr;

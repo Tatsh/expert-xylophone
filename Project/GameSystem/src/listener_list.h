@@ -42,6 +42,14 @@ struct SortedListenerNodeVtable {
  */
 class SortedListenerNode {
 public:
+    /**
+     * @brief Constructs an unlinked node: installs the base dispatch table, self-links the node
+     * (its prev and next point to itself), seeds the idle priority, and clears the owner and dead
+     * flag. Every concrete listener/task runs this base constructor before setting up its own state.
+     * @ghidraAddress 0x36558
+     */
+    SortedListenerNode();
+
     /** @brief The previous node in the list. */
     SortedListenerNode *GetPrev() const {
         return m_pPrev;
