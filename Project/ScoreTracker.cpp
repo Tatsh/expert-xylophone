@@ -258,6 +258,17 @@ void ScoreTracker::AddScore(
     SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), bSideMatch ? 1 : 0, nScore);
 }
 
+/** @ghidraAddress 0x149610 */
+void ScoreTracker::AddScoreDelta(int nPlayer, int nDelta) {
+    const unsigned int nSide = GameSystem::GetGameSystem()->GetPlayColor() == nPlayer ? 1 : 0;
+    int nScore = m_aRecords[nSide].nCells[kCellScore] + nDelta;
+    if (nScore < 0) {
+        nScore = 0;
+    }
+    m_aRecords[nSide].nCells[kCellScore] = nScore;
+    SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), nSide, nScore);
+}
+
 /** @ghidraAddress 0x149710 */
 void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];

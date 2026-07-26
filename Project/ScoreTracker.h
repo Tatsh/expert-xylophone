@@ -141,6 +141,17 @@ public:
     void AddScore(int nPlayer, int nPosX, int nPosY, int nJudge, int nBonusFlag, int nMode);
 
     /**
+     * @brief Adjusts a player's running score by a signed delta and refreshes its field display.
+     *
+     * The delta is added to the side's score cell, clamped at zero; the player-field score digits
+     * are then retargeted to the new value with no animation.
+     * @param nPlayer The scoring note's player index.
+     * @param nDelta The signed score delta.
+     * @ghidraAddress 0x149610
+     */
+    void AddScoreDelta(int nPlayer, int nDelta);
+
+    /**
      * @brief Adds the full-combo bonus to a side's score and fires its judge popup (grade 0).
      * @param nSide The player side.
      * @ghidraAddress 0x149710
