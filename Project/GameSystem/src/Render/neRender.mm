@@ -6,7 +6,8 @@
 namespace ne {
 
 // The process-wide scene-graph root. Its static constructor and atexit destructor registration are
-// the binary's InitializeGlobalSceneRoot (0x29ee0), emitted by the compiler for this global.
+// the binary's InitializeGlobalSceneRoot, emitted by the compiler for this global definition.
+/** @ghidraAddress 0x29ee0 */
 C_RENDER g_globalSceneRoot;
 
 /** @ghidraAddress 0x29b3c */
