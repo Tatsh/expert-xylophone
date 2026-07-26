@@ -49,12 +49,18 @@ constexpr GaugePart kGaugeParts[] = {
 // The additive-style vertex flag the gauge batches set.
 constexpr int kVertexFlagMode = 1;
 
+// The gauge fill brightness maps a normalised level onto [kGaugeFillBrightnessBase,
+// kGaugeFillBrightnessBase + kGaugeFillBrightnessRange] = [0.3, 1.0].
+constexpr float kGaugeFillBrightnessRange = 0.7f;
+constexpr float kGaugeFillBrightnessBase = 0.3f;
+
 } // namespace
 
 /** @ghidraAddress 0x83460 */
 PlayColorLayer::PlayColorLayer() {
-    // Seed the transform block's scales to 1 (offsets +0x90/+0x98/+0x9c in the binary).
-    m_flScaleX = 1.0f;
+    // Seed the gauge brightness to full and the transform block's scales to 1 (offsets
+    // +0x90/+0x98/+0x9c in the binary).
+    m_flGaugeBrightness = 1.0f;
     m_flScaleY = 1.0f;
     m_flScaleZ = 1.0f;
 
@@ -152,7 +158,7 @@ void PlayColorLayer::EmitGaugePartSprite(float flPosX,
 
 /** @ghidraAddress 0x8394c */
 void PlayColorLayer::StartShrinkAnimation(float flDuration) {
-    m_nShrinkStep = 0;
+    m_flAnimFrom = 0.0f;
     m_shrinkChannel.SetStart(m_shrinkChannel.GetCurrent());
     m_shrinkChannel.SetEnd(0.0f);
     m_shrinkChannel.SetDuration(flDuration);
@@ -160,8 +166,29 @@ void PlayColorLayer::StartShrinkAnimation(float flDuration) {
     // A non-positive duration snaps straight to empty and marks the colour dirty.
     if (flDuration <= 0.0f) {
         m_shrinkChannel.SetCurrent(0.0f);
-        m_bShrinkColorDirty = true;
+        m_bGaugeColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x83918 */
+void PlayColorLayer::StartGaugeGrowAnimation(float flDuration, float flFromValue) {
+    m_flAnimFrom = flFromValue;
+    m_shrinkChannel.SetStart(m_shrinkChannel.GetCurrent());
+    m_shrinkChannel.SetEnd(1.0f);
+    m_shrinkChannel.SetDuration(flDuration);
+    m_shrinkChannel.SetElapsed(0.0f);
+    // A non-positive duration snaps straight to full and marks the colour dirty.
+    if (flDuration <= 0.0f) {
+        m_shrinkChannel.SetCurrent(1.0f);
+        m_bGaugeColorDirty = true;
+    }
+}
+
+/** @ghidraAddress 0x83978 */
+void PlayColorLayer::SetGaugeFillLevel(float flLevel) {
+    const float flClamped = flLevel < 0.0f ? 0.0f : (flLevel > 1.0f ? 1.0f : flLevel);
+    m_flGaugeBrightness = flClamped * kGaugeFillBrightnessRange + kGaugeFillBrightnessBase;
+    m_bGaugeColorDirty = true;
 }
 
 /** @ghidraAddress 0x83c90 */
