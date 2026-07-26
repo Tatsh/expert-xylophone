@@ -10,9 +10,13 @@
 
 #include <new>
 
+#import <QuartzCore/QuartzCore.h>
+
+#import "RBBGMManager.h"
 #include "event_effect_layer.h"
 #include "gamesystem.h"
 #include "pause_gauge_layer.h"
+#include "playtimer.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
@@ -20,6 +24,9 @@ static constexpr int kInitialState = 2;
 // The play states this step selects between: the note-play wait state and the past-effect state.
 static constexpr int kStateWaitNotes = 5;
 static constexpr int kStatePastEffect = 6;
+
+// The playing state the preview resumes into.
+static constexpr int kStatePlaying = 0x11;
 
 /** @ghidraAddress 0x14a21c */
 PlayTask::PlayTask() {
@@ -57,6 +64,19 @@ void PlayTask::WaitForIntroThenStartNotes() {
     } else {
         EventEffectLayer::shared()->StartEffect();
         m_nState = kStatePastEffect;
+    }
+}
+
+/** @ghidraAddress 0x14cd90 */
+void PlayTask::ResumePreviewPlayback() {
+    m_nState = kStatePlaying;
+    if (GameSystem::GetGameSystem()->GetBgmPlaying()) {
+        [RBBGMManager.getInstance PlayMusic:0.0f];
+    }
+    // Un-pause the play timer, shifting its origin forward by the interval it spent paused.
+    PlayTimer *pTimer = PlayTimer::shared();
+    if (pTimer->IsPaused()) {
+        pTimer->Resume(CACurrentMediaTime());
     }
 }
 

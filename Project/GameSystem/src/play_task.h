@@ -55,6 +55,13 @@ private:
      */
     void WaitForIntroThenStartNotes();
 
+    /**
+     * @brief Resumes preview playback after an interruption: advances to the playing state, restarts
+     * the background music if it was playing, and un-pauses the play timer.
+     * @ghidraAddress 0x14cd90
+     */
+    void ResumePreviewPlayback();
+
     int m_nState = {};    // +0x4c: the current state-machine state (dispatched each frame).
     int m_nPlayTime = {}; // +0x50: the accumulated play time, advanced by the frame delta.
     // +0x54..+0x63: further per-frame play sub-state (timers, the score tracker), still being worked
