@@ -96,6 +96,25 @@ enum AnchorMode {
     kAnchorFullWidthFullHeight = 8, // x += viewportWidth, y += viewportHeight.
 };
 
+// The show tween's channels: an alpha fade-in plus four offset/scale channels. The offset/scale
+// channels ease from their current value toward one, holding the fixed start-scale in their duration
+// slot and the real per-channel duration (the base duration plus a stagger) in the elapsed slot,
+// which cascades the four channels in.
+constexpr float kShowTweenTarget = 1.0f;
+constexpr float kShowTweenStartScale = 300.0f; // @ghidraAddress 0x439600003f800000 (high word)
+constexpr float kShowStagger0 = -100.0f;       // @ghidraAddress 0x2fcfec
+constexpr float kShowStagger1 = 700.0f;        // @ghidraAddress 0x2fcff0
+constexpr float kShowStagger2 = 1500.0f;       // @ghidraAddress 0x2fcff4
+
+// The tween channel indices: the alpha fade and the four offset/scale channels.
+enum ResultTweenChannelIndex {
+    kTweenAlpha = 0,
+    kTweenChannel1 = 1,
+    kTweenChannel2 = 2,
+    kTweenChannel3 = 3,
+    kTweenChannel4 = 4,
+};
+
 } // namespace
 
 /** @ghidraAddress 0x73edc */
@@ -146,6 +165,55 @@ void ResultWindowColetteLayer::InitializeResultScreenFlags() {
     m_bBonusCueArmed = GameSystem::GetGameSystem()->GetResultBonusFeatureActive();
     m_flBonusCueTimer = 0.0f;
     m_bTwitterAvailable = [RBViewController hasTwitterAPI];
+}
+
+/** @ghidraAddress 0x740ec */
+void ResultWindowColetteLayer::StartShowTween(float flDuration) {
+    // The alpha channel fades from its current value to fully opaque over the duration; a
+    // non-positive duration snaps it opaque immediately.
+    ResultTweenChannel &alpha = m_aTween[kTweenAlpha];
+    alpha.flFrom = alpha.flCurrent;
+    alpha.flTo = kShowTweenTarget;
+    alpha.flDuration = flDuration;
+    alpha.flElapsed = 0.0f;
+    alpha.flReserved = 0.0f;
+    if (flDuration <= 0.0f) {
+        alpha.flCurrent = kShowTweenTarget;
+    }
+
+    // The four offset/scale channels each ease from their current value toward one, carrying the
+    // fixed start-scale in the duration slot and the staggered real duration in the elapsed slot, so
+    // the channels cascade in. The stagger order matches the binary (channel 2, 1, then 4 and 3).
+    const float aStaggered[] = {
+        flDuration + kShowStagger0, flDuration + kShowStagger1, flDuration + kShowStagger2};
+    const int aChannel[] = {kTweenChannel2, kTweenChannel1, kTweenChannel4, kTweenChannel3};
+    const float aElapsed[] = {aStaggered[0], aStaggered[1], aStaggered[2], aStaggered[2]};
+    for (int i = 0; i < 4; ++i) {
+        ResultTweenChannel &channel = m_aTween[aChannel[i]];
+        channel.flFrom = channel.flCurrent;
+        channel.flTo = kShowTweenTarget;
+        channel.flDuration = kShowTweenStartScale;
+        channel.flElapsed = aElapsed[i];
+        channel.flReserved = 0.0f;
+    }
+}
+
+/** @ghidraAddress 0x74190 */
+void ResultWindowColetteLayer::StartHideTween(float flDuration) {
+    // Every channel eases from its current value to zero over the duration; a non-positive duration
+    // snaps each to zero immediately.
+    for (ResultTweenChannel &channel : m_aTween) {
+        channel.flFrom = channel.flCurrent;
+        channel.flTo = 0.0f;
+        channel.flDuration = flDuration;
+        channel.flElapsed = 0.0f;
+        channel.flReserved = 0.0f;
+        if (flDuration <= 0.0f) {
+            channel.flCurrent = 0.0f;
+        }
+    }
+    // The panel is no longer active once it begins hiding.
+    m_bBonusCueArmed = false;
 }
 
 /** @ghidraAddress 0x73b4c */

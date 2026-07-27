@@ -17,6 +17,19 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
+ * @brief One result-panel display animation channel: a value easing from @c flFrom to @c flTo over
+ * @c flDuration, with the interpolated result held in @c flCurrent.
+ */
+struct ResultTweenChannel {
+    float flFrom = {};     // +0x00: the start value.
+    float flTo = {};       // +0x04: the target value.
+    float flDuration = {}; // +0x08: the tween duration.
+    float flElapsed = {};  // +0x0c: the elapsed time.
+    float flReserved = {}; // +0x10: an unused slot.
+    float flCurrent = {};  // +0x14: the current interpolated value.
+};
+
+/**
  * @brief The Colette-theme result-window layer.
  *
  * Draws the phone-layout result panel (score, rank, rate, per-side stats, and bonus rows) as a bank
@@ -30,6 +43,8 @@ class ResultWindowColetteLayer : public PlayFieldLayerBase {
 public:
     // The number of sprite-instancer slots the result window draws with.
     static constexpr int kSlotCount = 8;
+    // The number of open/close display animation channels.
+    static constexpr int kTweenChannelCount = 5;
 
     /**
      * @brief The process-wide Colette result-window layer, created on first use.
@@ -56,6 +71,15 @@ public:
      * @ghidraAddress 0x7ab54
      */
     void InitializeResultScreenFlags();
+
+    /**
+     * @brief Starts the result panel's show animation: keyframes the alpha channel to fully opaque
+     * and the four offset/scale channels in from their start values over @p flDuration, with a
+     * per-channel stagger that cascades them (snapping the alpha immediately when non-positive).
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x740ec
+     */
+    void StartShowTween(float flDuration);
 
     /**
      * @brief Starts the result panel's hide animation: keyframes each display animation channel from
@@ -406,11 +430,13 @@ private:
     int m_nGlyphBaseC = {};         // +0x74: glyph-table base index C (0x3a).
     float m_flPartsScale = {};      // +0x78: the parts-sprite scale (1.0).
     int m_nActive = {};             // +0x7c: set once the result screen is initialised and running.
-    // +0x80..+0x143: the panel's per-frame presentation state (page index, flick blend, handle,
-    // per-side statistics, fade alphas, bonus values, and side colours) that the render pass reads;
-    // the individual fields are still being worked out.
-    unsigned char m_aReserved80[0xc4] = {}; // +0x80
-    bool m_bBonusCueArmed = {};             // +0x144: whether the bonus voice cue is still pending.
+    // +0x80..+0xcb: further per-frame presentation state (page index, flick blend, handle, per-side
+    // statistics) that the render pass reads; the individual fields are still being worked out.
+    unsigned char m_aReserved80[0x4c] = {}; // +0x80
+    // +0xcc: the five open/close display animation channels (an alpha fade plus four offset/scale
+    // channels) the show and hide tweens keyframe.
+    ResultTweenChannel m_aTween[kTweenChannelCount] = {}; // +0xcc
+    bool m_bBonusCueArmed = {}; // +0x144: whether the bonus voice cue is still pending.
     // +0x145..+0x147 is alignment padding before the bonus-cue timer.
     unsigned char m_aPad145[3] = {}; // +0x145
     float m_flBonusCueTimer = {};    // +0x148: time accumulated toward the bonus voice cue.
