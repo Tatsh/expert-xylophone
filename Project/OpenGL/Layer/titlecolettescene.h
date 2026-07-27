@@ -6,6 +6,7 @@
 #pragma once
 
 #include "basescene.h"
+#include "s_vector2.h"
 
 #ifdef __OBJC__
 @class SePlayer;
@@ -39,6 +40,8 @@ public:
     // The number of cached title textures and the number of part sprite instancers the scene builds.
     static constexpr int kTextureCount = 4;
     static constexpr int kSpriteSlotCount = 0x68;
+    // The number of part anchor positions in the ring the title arranges its parts around.
+    static constexpr int kPartAnchorCount = 12;
 
     /**
      * @brief Constructs the scene: chains the scene base, installs the title dispatch table, and
@@ -138,9 +141,13 @@ private:
     int m_nTrailingIndex = {};               // +0x72c: a per-slot index (-1 when none is selected).
     unsigned char m_aReserved730[0x11] = {}; // +0x730
     bool m_bSeTriggered = {};                // +0x741: whether the title sound effect has fired.
-    // +0x742..+0x88f: the copied part-layout table and further trailing state.
-    unsigned char m_aReserved742[0x14e] = {}; // +0x742
-    SePlayer *m_pSePlayer = {};               // +0x890: the theme sound-effect player.
+    // +0x742..+0x7cb is trailing presentation state whose roles are still being worked out.
+    unsigned char m_aReserved742[0x8a] = {};        // +0x742
+    S_VECTOR2 m_aPartAnchor[kPartAnchorCount] = {}; // +0x7cc: the ring of part anchor positions,
+    // copied from the campaign anchor table at set-up.
+    // +0x82c..+0x88f is further trailing state.
+    unsigned char m_aReserved82c[0x64] = {}; // +0x82c
+    SePlayer *m_pSePlayer = {};              // +0x890: the theme sound-effect player.
 };
 
 /**
@@ -153,6 +160,14 @@ private:
  */
 extern const unsigned int g_aTitleCampaignLayoutDefault[];
 extern const unsigned int g_aTitleCampaignLayoutAltFrame[];
+
+/**
+ * @brief The ring of twelve part anchor positions the title arranges its campaign parts around.
+ *
+ * Copied into the scene's @c m_aPartAnchor at construction.
+ * @ghidraAddress 0x2fc2c0
+ */
+extern const S_VECTOR2 g_aTitleCampaignPartAnchor[];
 
 } // namespace rb
 

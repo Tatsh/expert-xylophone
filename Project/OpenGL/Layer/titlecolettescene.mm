@@ -25,9 +25,41 @@ constexpr int kStateLoad = 0;
 constexpr int kStateStartMusic = 1;
 constexpr int kStateMainLoop = 2;
 constexpr int kStateFinish = 3;
+
+// The fully-shown fade level the scene starts at, and the sentinel for no selected slot.
+constexpr float kInitialFadeBase = 1.0f;
+constexpr int kNoSlotIndex = -1;
 } // namespace
 
 namespace rb {
+
+/** @ghidraAddress 0x2fc2c0 */
+const S_VECTOR2 g_aTitleCampaignPartAnchor[] = {
+    {166.0f, 373.0f},
+    {229.0f, 283.0f},
+    {334.0f, 232.0f},
+    {438.0f, 232.0f},
+    {541.0f, 284.0f},
+    {606.0f, 374.0f},
+    {606.0f, 558.0f},
+    {541.0f, 651.0f},
+    {435.0f, 700.0f},
+    {331.0f, 704.0f},
+    {230.0f, 655.0f},
+    {165.0f, 560.0f},
+};
+
+/** @ghidraAddress 0x572e4 */
+TitleColetteScene::TitleColetteScene() {
+    // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
+    // every presentation field is otherwise zeroed by its member initialiser. Seed the two non-zero
+    // scalars and copy the part anchor ring into place.
+    m_flFadeBase = kInitialFadeBase;
+    m_nTrailingIndex = kNoSlotIndex;
+    for (int nPart = 0; nPart < kPartAnchorCount; ++nPart) {
+        m_aPartAnchor[nPart] = g_aTitleCampaignPartAnchor[nPart];
+    }
+}
 
 /** @ghidraAddress 0x57a64 */
 void TitleColetteScene::StartMusic() {
