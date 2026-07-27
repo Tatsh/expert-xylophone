@@ -38,6 +38,15 @@ public:
      */
     void SetTexture();
 
+    /**
+     * @brief Builds the glow sprite batch and binds its atlas on first use.
+     *
+     * Loads the @c gm_parts1 atlas, creates a two-sprite world batch attached under the background
+     * layer, makes it visible, and flags additive blend. Guarded so it runs only once.
+     * @ghidraAddress 0x1769f8
+     */
+    void InitializeSprites();
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and count
@@ -48,7 +57,10 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};          // +0x08: the effect atlas.
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the glow sprite instancer.
-    unsigned char m_aReserved18[0x1c] = {};  // +0x18: further header/count state.
+    unsigned char m_aReserved18[4] = {};     // +0x18
+    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[0x13] = {};  // +0x21: further header/count state.
     float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
     unsigned char m_aReserved3c[4] = {};     // +0x3c: trailing state to the 0x40-byte size.
 };

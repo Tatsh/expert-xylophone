@@ -8,6 +8,8 @@
 
 #include "note_glow_layer.h"
 
+#include "bg_layer.h"
+#include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 
@@ -17,6 +19,10 @@ constexpr float kInitialScale = 1.0f;
 
 // The atlas the glow sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+
+// The glow sprite batch holds two sprites and draws additively.
+constexpr int kSpriteCapacity = 2;
+constexpr int kAdditiveBlendMode = 1;
 } // namespace
 
 // The process-wide note-glow layer, created lazily by shared().
@@ -46,4 +52,23 @@ void NoteGlowLayer::SetTexture() {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
         m_pSprite->SetRefCountedMember(m_pTexture);
     }
+}
+
+/** @ghidraAddress 0x1769f8 */
+void NoteGlowLayer::InitializeSprites() {
+    if (m_bLoaded) {
+        return;
+    }
+
+    ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
+    m_nCapacity = kSpriteCapacity;
+    m_pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
+    pParent->AttachChild(m_pSprite);
+    m_pSprite->SetVisible(true);
+    m_pSprite->SetRefCountedMember(m_pTexture);
+    m_pSprite->SetSpriteCount(0);
+    m_pSprite->SetBlendMode(kAdditiveBlendMode);
+
+    m_bLoaded = true;
 }
