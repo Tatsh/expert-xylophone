@@ -179,6 +179,7 @@ malloc'd
 math
 matrixf
 matrixmath
+maru
 maxmaximizer
 memcpy
 memset

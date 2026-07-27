@@ -99,14 +99,27 @@ private:
     int m_nReadyDelay = {};                                      // +0x54: the start ready delay.
     ne::C_TEXTURE *m_apTextures[kTextureCount] = {};             // +0x58: the seven title textures.
     ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] = {}; // +0x90: the sprite instancers.
-    // +0xd0..+0x10f: per-slot presentation state (initial sprite counts, flags), still worked out.
-    unsigned char m_aReserved0d0[0x40] = {}; // +0xd0
+    int m_aSpriteCount[kSpriteSlotCount] = {}; // +0xd0: each instancer's live sprite count.
+    // +0xf0..+0x10f: further per-slot presentation state, still being worked out.
+    unsigned char m_aReserved0f0[0x20] = {}; // +0xf0
     LinearTween m_fadeChannel;               // +0x110: the title fade tween.
     unsigned char m_aReserved124[0x38] = {}; // +0x124: trailing state.
     int m_nTrailingIndex = {};               // +0x15c: a per-slot index (-1 when
                                              //         none is selected).
     unsigned char m_aReserved160[0x08] = {}; // +0x160: trailing state.
 };
+
+/**
+ * @brief The capacity (maximum sprite count) of each of the eight title-screen sprite instancers.
+ * @ghidraAddress 0x309454
+ */
+extern const unsigned int g_aTitleSpriteCapacity[TitleScreenLayer0::kSpriteSlotCount];
+
+/**
+ * @brief The cached-texture index each of the eight title-screen instancers binds (slot 7 binds none).
+ * @ghidraAddress 0x309384
+ */
+extern const unsigned int g_aTitleSpriteTextureIndex[TitleScreenLayer0::kSpriteSlotCount];
 
 // code: language=C++
 // kate: hl C++;
