@@ -12,6 +12,11 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "sprite_uv_table.h"
+
+// The score-gauge burst atlas UV table, indexed by the burst UV row. Read-only data embedded in the
+// binary (a distinct atlas from the shared sprite UV table).
+extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
 // The atlas the score-burst sprites draw from.
@@ -27,6 +32,17 @@ constexpr int kAdditiveBlendMode = 1;
 // set to one.
 constexpr int kTexParamOne = 1;
 constexpr int kTexParamValue = 1;
+
+// The burst sprite's fixed anchor and pixel size (@ghidraAddress 0x30e780 = 62.0; the anchor is
+// half of it).
+constexpr float kBurstAnchor = 31.0f;
+constexpr float kBurstSize = 62.0f;
+
+// The maximum value of an opaque colour channel.
+constexpr unsigned int kColorMax = 255;
+
+// The burst UV row for each effect index (@ghidraAddress 0x30e7b0).
+constexpr int kBurstUvRow[] = {0x49, 0x4a};
 } // namespace
 
 // The process-wide judgement-score layer, created lazily by shared().
@@ -46,6 +62,25 @@ JudgeScoreLayer::JudgeScoreLayer() {
     // default scale pair seeds to one.
     m_aScale[0] = kInitialScale;
     m_aScale[1] = kInitialScale;
+}
+
+/** @ghidraAddress 0x1856e0 */
+void JudgeScoreLayer::EmitBurstSprite(unsigned int nEffectIndex,
+                                      float flScale,
+                                      const S_VECTOR2 &position,
+                                      int nAlpha) {
+    const SpriteUvEntry &uv = g_aScoreGaugeUvTable[kBurstUvRow[nEffectIndex]];
+
+    m_pSprite->SetSpritePosition(m_nSlotCount, position);
+    m_pSprite->SetSpriteAnchor(m_nSlotCount, S_VECTOR2{kBurstAnchor, kBurstAnchor});
+    m_pSprite->SetSpriteSize(m_nSlotCount, S_VECTOR2{kBurstSize, kBurstSize});
+    m_pSprite->SetSpriteUvOrigin(m_nSlotCount, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    m_pSprite->SetSpriteUvSize(m_nSlotCount, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    m_pSprite->SetSpriteScale(m_nSlotCount, flScale, flScale);
+    m_pSprite->SetSpriteColor(
+        m_nSlotCount, kColorMax, kColorMax, kColorMax, static_cast<unsigned int>(nAlpha));
+
+    ++m_nSlotCount;
 }
 
 /** @ghidraAddress 0x1854bc */

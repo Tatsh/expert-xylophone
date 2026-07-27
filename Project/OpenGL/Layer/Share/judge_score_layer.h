@@ -6,6 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -52,17 +53,34 @@ private:
      */
     JudgeScoreLayer();
 
+    /**
+     * @brief Emits one score-gauge burst sprite into the batch's next slot.
+     *
+     * Looks up the burst's atlas UV by its effect index, positions it with a fixed 31-pixel anchor
+     * and size, applies the given scale, tints it opaque white at @p nAlpha, and advances the live
+     * slot count.
+     * @param nEffectIndex The burst effect index (selects the atlas UV row).
+     * @param flScale The uniform sprite scale.
+     * @param position The burst screen position.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x1856e0
+     */
+    void EmitBurstSprite(unsigned int nEffectIndex,
+                         float flScale,
+                         const S_VECTOR2 &position,
+                         int nAlpha);
+
     // One pooled score-burst effect record (20 bytes): its animation state.
     struct EffectRecord {
         unsigned char aReserved00[0x14] = {}; // +0x00: the burst's animation state.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {};          // +0x10: the score-burst sprite instancer.
-    unsigned char m_aReserved18[4] = {};              // +0x18
-    int m_nCapacity = {};                             // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                              // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};              // +0x21
+    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the score-burst sprite instancer.
+    int m_nSlotCount = {};                   // +0x18: the live sprite-slot count this frame.
+    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[3] = {};     // +0x21
     EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled burst records.
     float m_aScale[2] = {};                           // +0xa24: the default scale pair (one, one).
     unsigned char m_aReservedA2c[4] = {}; // +0xa2c: trailing state to the 0xa30-byte size.
