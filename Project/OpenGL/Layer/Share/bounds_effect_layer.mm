@@ -8,6 +8,31 @@
 
 #include "bounds_effect_layer.h"
 
+namespace {
+// The effect size the constructor seeds.
+constexpr float kInitialEffectSize = 1.0f;
+} // namespace
+
+// The process-wide bounds-effect layer, created lazily by shared().
+static BoundsEffectLayer *g_pBoundsEffectLayer = nullptr; // @ghidraAddress 0x3de9b0
+
+/** @ghidraAddress 0x17528c */
+BoundsEffectLayer *BoundsEffectLayer::shared() {
+    if (g_pBoundsEffectLayer == nullptr) {
+        g_pBoundsEffectLayer = new BoundsEffectLayer();
+    }
+    return g_pBoundsEffectLayer;
+}
+
+/** @ghidraAddress 0x175210 */
+BoundsEffectLayer::BoundsEffectLayer() {
+    // The base constructor and member initialisers clear the layer; both lane-light flags start on
+    // and the effect size seeds to one.
+    m_bLaneLight0 = true;
+    m_bLaneLight1 = true;
+    m_flEffectSize = kInitialEffectSize;
+}
+
 /** @ghidraAddress 0x1754c4 */
 void BoundsEffectLayer::SetEffectSize(float flSize) {
     m_flEffectSize = flSize;

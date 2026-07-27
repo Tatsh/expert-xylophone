@@ -19,6 +19,13 @@
 class BoundsEffectLayer : public PlayFieldLayerBase {
 public:
     /**
+     * @brief The process-wide bounds-effect layer, created on first use.
+     * @return The shared layer.
+     * @ghidraAddress 0x17528c
+     */
+    static BoundsEffectLayer *shared();
+
+    /**
      * @brief Sets the effect size from the user's bounds-effect-size setting.
      * @param flSize The effect size.
      * @ghidraAddress 0x1754c4
@@ -34,6 +41,13 @@ public:
     void SetLaneLightFlag(float flValue, int nLane);
 
 private:
+    /**
+     * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state, and
+     * seeds both lane-light flags on and the effect size to one.
+     * @ghidraAddress 0x175210
+     */
+    BoundsEffectLayer();
+
     unsigned char m_aReserved08[0x2fc] = {}; // +0x08: layer state, still being worked out.
     bool m_bLaneLight0 = {};                 // +0x304: the first lane's bounds-light flag.
     bool m_bLaneLight1 = {};                 // +0x305: the second lane's bounds-light flag.
