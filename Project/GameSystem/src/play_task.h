@@ -109,6 +109,14 @@ public:
     void ActivateDueNotes();
 
     /**
+     * @brief After the exit delay elapses, tears down the play field and returns to the music list:
+     * resets the play-field layers, releases the result textures, resets playback, shows the music
+     * list, flushes the texture cache, and advances to the exit state.
+     * @ghidraAddress 0x14c5bc
+     */
+    void ExitToMusicList();
+
+    /**
      * @brief Sets up the note-chart preview presentation: applies the note-manager theme, primes every
      * play-field layer to its shown state, loads the chart (or a synthetic default when no music is
      * selected), starts the play timer and background music, shows the preview, and advances to the

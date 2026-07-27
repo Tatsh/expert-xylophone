@@ -30,6 +30,7 @@
 #include "clear_gauge_layer.h"
 #include "colette_theme_layer.h"
 #include "deviceenvironment.h"
+#include "engineruntime.h"
 #include "event_effect_layer.h"
 #include "fade_overlay_layer.h"
 #include "full_combo_classic_layer.h"
@@ -81,6 +82,11 @@ static constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 
 
 // The note-play state BeginMusicPlaybackAndTimer advances to once the intro is done.
 static constexpr int kStateNotePlay = 8;
+
+// The exit state ExitToMusicList advances to, and the play-time threshold (in play time) it waits
+// past before tearing down.
+static constexpr int kStateExit = 1;
+static constexpr int kExitDelay = 0x5dc;
 
 // The play-ready state AdvanceToPlayReadyState advances to, and the gauge grow-animation from-value
 // (also the marker fade-in's marker value) it primes the layers with.
@@ -552,6 +558,25 @@ void PlayTask::SetupPreviewPlayback() {
     // Show the preview through the app's root view controller and advance to the playing state.
     [AppDelegate.appDelegate.viewController showPreview];
     m_nState = kStatePlaying;
+}
+
+/** @ghidraAddress 0x14c5bc */
+void PlayTask::ExitToMusicList() {
+    // Wait out the exit delay before tearing down.
+    if (m_nPlayTime <= kExitDelay) {
+        return;
+    }
+
+    ResetAllPlayFieldLayers();
+    ReleaseResultTexturesAndFrames();
+    ResetNotePlaybackState(false);
+
+    // Return to the music list and flush the texture cache.
+    [AppDelegate.appDelegate.viewController showMusicListView];
+    (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
+    ReleaseAllCachedTextures();
+
+    m_nState = kStateExit;
 }
 
 /** @ghidraAddress 0x14d23c */
