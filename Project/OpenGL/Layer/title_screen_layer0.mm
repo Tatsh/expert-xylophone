@@ -8,9 +8,14 @@
 
 #include "title_screen_layer0.h"
 
+#import "AppDelegate.h"
+#import "AudioManager.h"
 #import "RBBGMManager.h"
+#import "RBViewController.h"
+#include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "play_task.h"
 
 namespace {
 // The value the constructor seeds into the fade channel's base (the fully-shown fade level).
@@ -88,4 +93,19 @@ void TitleScreenLayer0::OnFrame(void *pFrameArg) {
 void TitleScreenLayer0::StartMusic() {
     m_nState = kStateRender;
     [RBBGMManager.getInstance PlayMusic:kTitleBgmFadeInTime];
+}
+
+/** @ghidraAddress 0x152450 */
+void TitleScreenLayer0::FinishAndOpenList() {
+    // Wait until the fade-out audio has fully stopped before tearing down.
+    if (![AudioManager.sharedManager isStart]) {
+        return;
+    }
+    ReleaseResources();
+    // Construct the gameplay task (its slot is the game system's leading scene pointer), then open
+    // the music list through the app's root view controller.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    PlayTask::GetInstance(reinterpret_cast<PlayTask **>(pGameSystem));
+    [AppDelegate.appDelegate.viewController showMusicListView];
+    MarkDead();
 }
