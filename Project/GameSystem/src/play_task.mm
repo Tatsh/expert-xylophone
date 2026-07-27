@@ -20,6 +20,8 @@
 #import "RBUserSettingData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
+#include "background_sprite_manager.h"
+#include "bg_layer.h"
 #include "classicthemelayer.h"
 #include "clear_gauge_layer.h"
 #include "colette_theme_layer.h"
@@ -28,7 +30,9 @@
 #include "full_combo_colette_layer.h"
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
+#include "judge_effect_layer.h"
 #include "leveltables.h"
+#include "limelight_effect_layer.h"
 #include "limelight_result_layer.h"
 #include "limelight_theme_layer.h"
 #include "main_frame_layer.h"
@@ -36,7 +40,9 @@
 #include "neTexture.h"
 #include "note_effect_mgr.h"
 #include "note_replay.h"
+#include "number_layer.h"
 #include "pause_gauge_layer.h"
+#include "playerfieldlayer.h"
 #include "playtimer.h"
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
@@ -55,6 +61,12 @@ static constexpr int kStatePlaying = 0x11;
 
 // The result-theme display state EnterResultThemeState advances to.
 static constexpr int kStateResultTheme = 0xb;
+
+// The gameplay-presentation state StartGameplayPresentation advances to, the intro-voice cue it
+// plays, and the fade-in duration (in milliseconds) it primes the layers with.
+static constexpr int kStatePresenting = 7;
+static constexpr int kIntroVoiceCue = 2;
+static constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 0x2f8540
 
 // The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or above
 // which the clear cue plays.
@@ -313,6 +325,31 @@ void PlayTask::EnterResultThemeState() {
     }
 
     m_nState = kStateResultTheme;
+}
+
+/** @ghidraAddress 0x14b86c */
+void PlayTask::StartGameplayPresentation() {
+    // Wait until play time has begun advancing.
+    if (m_nPlayTime <= 0) {
+        return;
+    }
+
+    // Play the intro-voice cue and run the active theme's intro layer.
+    SoundEffectManager::GetInstance()->PlayThemedVoice(kIntroVoiceCue);
+    if (m_nThema == kThemaColette) {
+        NumberLayer::shared()->SetReady();
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightEffectLayer::shared()->SetActiveAndResetCounter();
+    } else if (m_nThema == kThemaClassic) {
+        BackgroundSpriteManager::shared()->SetActiveAndResetCounter();
+    }
+
+    // Fade in the background, player-field score, and judge-effect layers together.
+    BgLayer::GetBackgroundLayer()->StartBackgroundFadeIn(kPresentationFadeInDuration);
+    PlayerFieldLayer::shared()->StartScoreFadeIn(kPresentationFadeInDuration);
+    JudgeEffectLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+
+    m_nState = kStatePresenting;
 }
 
 /** @ghidraAddress 0x14b818 */

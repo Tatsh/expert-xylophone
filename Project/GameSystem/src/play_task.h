@@ -65,6 +65,14 @@ public:
      */
     void EnterResultThemeState();
 
+    /**
+     * @brief Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
+     * runs the active theme's intro layer, and fades in the background, player-field score, and
+     * judge-effect layers, then advances to the presenting state.
+     * @ghidraAddress 0x14b86c
+     */
+    void StartGameplayPresentation();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch
