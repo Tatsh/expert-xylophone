@@ -415,25 +415,22 @@ void GameScene::ComputeResultBonusesAndExperience() {
         int nExp = pTables->GetCurrentExp();
         const float flRate = pTracker->GetPlayRecordRate(kResultSide);
         const bool bAllJudged = pTracker->IsSideAllNotesJudged(kResultSide);
-        const int nGained = ComputeLevelExpStep(flRate,
-                                                pTables,
-                                                pGameSystem->GetDifficultyLevel(),
-                                                bAllJudged,
-                                                pGameSystem->GetIsFirstPlay());
+        const int nGained = LevelTables::ComputeLevelExpStep(
+            flRate, pGameSystem->GetDifficultyLevel(), bAllJudged, pGameSystem->GetIsFirstPlay());
 
         // Publish the starting level/experience and the gained amount to the game system.
         pGameSystem->SetResultLevelExp(nLevel, nExp, nGained);
 
         // Roll the gained experience into the level, unlocking a new custom item for each level up,
         // until the next threshold is unreachable (the level cap).
-        unsigned int nThreshold = GetLevelExpThreshold(pTables, nLevel);
+        unsigned int nThreshold = LevelTables::GetLevelExpThreshold(nLevel);
         if (nThreshold != kNoLevelThreshold) {
             nExp += nGained;
             // The binary compares the experience against the threshold as signed values.
             while (nExp >= static_cast<int>(nThreshold)) {
                 nExp -= static_cast<int>(nThreshold);
                 ++nLevel;
-                nThreshold = GetLevelExpThreshold(pTables, nLevel);
+                nThreshold = LevelTables::GetLevelExpThreshold(nLevel);
                 RBUserSettingData.sharedInstance.newCustomItem = YES;
                 [RBUserSettingData.sharedInstance save];
                 if (nThreshold == kNoLevelThreshold) {
@@ -449,7 +446,7 @@ void GameScene::ComputeResultBonusesAndExperience() {
 
         // Persist the updated {level, experience} record.
         pTables->SetLevelExp(nLevel, nExp);
-        SavePlayerLevelData(pTables->GetLevelExpRecord());
+        LevelTables::SavePlayerLevelData(pTables->GetLevelExpRecord());
     }
 
     // Limelight theme: store the five shared bonuses and award their sum.

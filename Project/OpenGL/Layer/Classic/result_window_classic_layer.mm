@@ -1250,11 +1250,10 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nTrackIndexA = -1;
 
     // Copy the player level and experience from the game system and resolve the level-up threshold.
-    LevelTables *pTables = LevelTables::GetInstance();
     const int nLevel = pGameSystem->GetPlayerLevel();
     m_nPlayerLevel = nLevel;
     m_nPlayerExp = pGameSystem->GetPlayerExp();
-    const unsigned int nThreshold = GetLevelExpThreshold(pTables, nLevel);
+    const unsigned int nThreshold = LevelTables::GetLevelExpThreshold(nLevel);
     m_nExpThreshold = static_cast<int>(nThreshold);
     m_nLevelUpStep = 0;
     if (static_cast<int>(nThreshold) < 0) {

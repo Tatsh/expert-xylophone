@@ -272,7 +272,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.isSkipUpdate = NO;
     self.isUpdate = NO;
 
-    LevelTables::GetInstance()->LoadPlayerLevelData();
+    LevelTables::LoadPlayerLevelData(LevelTables::GetInstance()->GetLevelExpRecord());
 
     // Seed the GameSystem from the persisted user settings.
     RBUserSettingData *settings = RBUserSettingData.sharedInstance;

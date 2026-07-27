@@ -97,8 +97,7 @@ bool LevelTables::CheckThresholdReached(int category, int itemID) {
 }
 
 /** @ghidraAddress 0x1cc410 */
-unsigned int GetLevelExpThreshold(void *pUnused, int nLevel) {
-    (void)pUnused; // The binary passes a level-tables pointer here but never reads it.
+unsigned int LevelTables::GetLevelExpThreshold(int nLevel) {
     int nIndex = nLevel;
     if (nIndex > kExpTableMaxLevel) {
         nIndex = kExpTableMaxLevel;
@@ -110,7 +109,7 @@ unsigned int GetLevelExpThreshold(void *pUnused, int nLevel) {
 }
 
 /** @ghidraAddress 0x1cc438 */
-const LevelUnlockEntry *GetLevelUnlockEntry(int nLevel) {
+const LevelUnlockEntry *LevelTables::GetLevelUnlockEntry(int nLevel) {
     int nIndex = nLevel;
     if (nIndex > kUnlockMaxIndex) {
         nIndex = kUnlockMaxIndex;
@@ -122,8 +121,7 @@ const LevelUnlockEntry *GetLevelUnlockEntry(int nLevel) {
 }
 
 /** @ghidraAddress 0x1cc3b4 */
-int ComputeLevelExpStep(float flBase, void *pUnused, int nStep, int bAddHalf, int bAddOffset) {
-    (void)pUnused; // The binary passes a level-tables pointer here but never reads it.
+int LevelTables::ComputeLevelExpStep(float flBase, int nStep, int bAddHalf, int bAddOffset) {
     int nIndex = nStep;
     if (nIndex > kStepTableMaxLevel) {
         nIndex = kStepTableMaxLevel;
@@ -140,7 +138,7 @@ int ComputeLevelExpStep(float flBase, void *pUnused, int nStep, int bAddHalf, in
 }
 
 /** @ghidraAddress 0x1cc138 */
-NSData *MakeLevelCustomizeHash(int nLevel, int nExp) {
+NSData *LevelTables::MakeLevelCustomizeHash(int nLevel, int nExp) {
     // Build the fifty-six-byte record the hash covers: the head salt, a tag, the combined and
     // product values, the level and experience, and the tail salt, terminated by a null byte.
     unsigned char aRecord[0x38] = {};
@@ -160,7 +158,7 @@ NSData *MakeLevelCustomizeHash(int nLevel, int nExp) {
 }
 
 /** @ghidraAddress 0x1cbf18 */
-bool LoadPlayerLevelData(int *pOutLevelExp) {
+bool LevelTables::LoadPlayerLevelData(int *pOutLevelExp) {
     NSString *directory = GetApplicationSupportPath();
     NSString *path = [directory stringByAppendingPathComponent:kLevelListFileName];
 
