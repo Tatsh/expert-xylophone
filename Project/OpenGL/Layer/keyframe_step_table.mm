@@ -1,6 +1,6 @@
-#include "keyframe_step_table.h"
-
 #include <cstring>
+
+#include "tutorial_guide_layer.h"
 
 namespace {
 
@@ -11,8 +11,7 @@ constexpr int kGroupStride = 3;
 
 /** @ghidraAddress 0x10cd34 */
 unsigned int
-KeyframeStepTableLookup(float flTime, const void *pUnused, const float *pTable, int nEntries) {
-    (void)pUnused; // The binary keeps this argument but does not use it.
+TutorialGuideLayer::KeyframeStepTableLookup(float flTime, const float *pTable, int nEntries) {
 
     // Out of range below the first group's start, or above the last group's end, or empty.
     if (pTable[0] > flTime || nEntries < 1 || pTable[nEntries * kGroupStride - 2] < flTime) {

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "keyframe_step_table.h"
 #include "playfieldlayerbase.h"
 
 namespace ne {
@@ -97,6 +98,22 @@ private:
      * @ghidraAddress 0x10b308
      */
     TutorialGuideLayer();
+
+    /**
+     * @brief Looks up a keyframe step table by time, returning the value of the range that contains
+     * it.
+     *
+     * The table is a flat array of three-float groups @c {rangeStart, rangeEnd, value}, where each
+     * group's end equals the next group's start. The value is returned as its raw 32-bit
+     * representation (the binary returns it in an integer register); callers reinterpret it as
+     * needed.
+     * @param flTime The query time.
+     * @param pTable The keyframe table, three floats per group.
+     * @param nEntries The number of groups.
+     * @return The matching group's raw 32-bit value, or @c kKeyframeStepNoMatch when out of range.
+     * @ghidraAddress 0x10cd34
+     */
+    static unsigned int KeyframeStepTableLookup(float flTime, const float *pTable, int nEntries);
 
     /**
      * @brief Emits one guide sprite of a given kind into the instancer, if its pool is not full.
