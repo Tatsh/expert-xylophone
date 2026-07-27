@@ -46,6 +46,18 @@ public:
     void SetClearGaugeIcon(int nBottomBand, int nAlpha);
 
     /**
+     * @brief Appends the gauge's fill marker quad for one side, scaled by that side's gauge value.
+     *
+     * Chooses the marker's anchor, height, width, and atlas frame by orientation and gauge style,
+     * reads the side's stored gauge value through @c GetValue, and appends the quad to the second
+     * batch with both its pixel width and its atlas U span scaled by the value (a horizontal fill).
+     * @param nSide The player side, also selecting the gauge band.
+     * @param nAlpha The marker's alpha.
+     * @ghidraAddress 0x175eec
+     */
+    void SetClearGaugeMarker(unsigned int nSide, int nAlpha);
+
+    /**
      * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
      *
      * The shared low-level writer behind @c SetClearGaugeIcon, @c SetClearGaugeMarker, and

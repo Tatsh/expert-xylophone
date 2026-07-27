@@ -19,6 +19,9 @@ constexpr unsigned int kColorMax = 255;
 // The base gauge icon draws into the first sprite batch.
 constexpr unsigned int kIconBatch = 0;
 
+// The gauge fill marker draws into the second sprite batch.
+constexpr unsigned int kMarkerBatch = 1;
+
 // The phone (non-iPad) gauge sits at a fixed X, with its two bands on two literal rows.
 constexpr float kPhoneGaugeX = -190.0f;
 constexpr int kPhoneBandTopY = 0x1d6;    // 470
@@ -120,6 +123,47 @@ void ClearGaugeLayer::SetClearGaugeIcon(int nBottomBand, int nAlpha) {
                         nAlpha,
                         S_VECTOR2{uv.flOriginU, uv.flOriginV},
                         S_VECTOR2{uv.flSizeU, uv.flSizeV});
+}
+
+/** @ghidraAddress 0x175eec */
+void ClearGaugeLayer::SetClearGaugeMarker(unsigned int nSide, int nAlpha) {
+    // The marker's anchor, height, unfilled width, and atlas frame, chosen by orientation and style.
+    S_VECTOR2 anchor;
+    float flHeight;
+    float flWidthBase;
+    int nAtlasFrame;
+    if (!IsPad()) {
+        // Phone.
+        anchor = S_VECTOR2{50.0f, -4.0f};
+        flHeight = 4.0f;
+        flWidthBase = 100.0f;
+        nAtlasFrame = 0x11d;
+    } else if (m_nGaugeStyle == 0) {
+        // iPad, default style.
+        anchor = S_VECTOR2{216.0f, 11.0f};
+        flHeight = 22.0f;
+        flWidthBase = 360.0f;
+        nAtlasFrame = 0x9a;
+    } else {
+        // iPad, alternate style.
+        anchor = S_VECTOR2{48.0f, -11.0f};
+        flHeight = 4.0f;
+        flWidthBase = 100.0f;
+        nAtlasFrame = 0x9c;
+    }
+
+    // The bar fills horizontally: the pixel width and the atlas U span both scale by the value.
+    const float flValue = GetValue(nSide);
+    const SpriteUvEntry &uv = g_aSpriteUvTable[nAtlasFrame];
+    S_VECTOR2 quad[2];
+    quad[0] = anchor;
+    quad[1] = S_VECTOR2{flWidthBase * flValue, flHeight};
+    SetClearGaugeSprite(kMarkerBatch,
+                        static_cast<int>(nSide),
+                        quad,
+                        nAlpha,
+                        S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                        S_VECTOR2{uv.flSizeU * flValue, uv.flSizeV});
 }
 
 /** @ghidraAddress 0x1763d0 */
