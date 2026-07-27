@@ -6,6 +6,7 @@
 #include "engineglobals.h"
 #include "neSpriteInstancing.h"
 #include "s_vector2.h"
+#include "sprite_uv_table.h"
 
 // The process-wide clear-gauge layer, created lazily by shared().
 static ClearGaugeLayer *g_pClearGaugeLayer = nullptr; // @ghidraAddress 0x3deb38
@@ -14,6 +15,9 @@ namespace {
 
 // The fully opaque per-channel colour value the gauge always writes.
 constexpr unsigned int kColorMax = 255;
+
+// The base gauge icon draws into the first sprite batch.
+constexpr unsigned int kIconBatch = 0;
 
 // The phone (non-iPad) gauge sits at a fixed X, with its two bands on two literal rows.
 constexpr float kPhoneGaugeX = -190.0f;
@@ -85,6 +89,37 @@ void ClearGaugeLayer::StartFadeOut(float flDuration) {
         m_flFadeCurrent = 0.0f;
         m_bColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x175bc8 */
+void ClearGaugeLayer::SetClearGaugeIcon(int nBottomBand, int nAlpha) {
+    // The icon's anchor/size quad and its atlas frame, chosen by orientation and gauge style.
+    S_VECTOR2 quad[2];
+    int nAtlasFrame;
+    if (!IsPad()) {
+        // Phone.
+        quad[0] = S_VECTOR2{86.0f, 20.0f};
+        quad[1] = S_VECTOR2{168.0f, 40.0f};
+        nAtlasFrame = 0x11c;
+    } else if (m_nGaugeStyle == 0) {
+        // iPad, default style.
+        quad[0] = S_VECTOR2{231.0f, 17.0f};
+        quad[1] = S_VECTOR2{462.0f, 34.0f};
+        nAtlasFrame = 0x99;
+    } else {
+        // iPad, alternate style.
+        quad[0] = S_VECTOR2{80.0f, 20.0f};
+        quad[1] = S_VECTOR2{160.0f, 40.0f};
+        nAtlasFrame = 0x9b;
+    }
+
+    const SpriteUvEntry &uv = g_aSpriteUvTable[nAtlasFrame];
+    SetClearGaugeSprite(kIconBatch,
+                        nBottomBand,
+                        quad,
+                        nAlpha,
+                        S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                        S_VECTOR2{uv.flSizeU, uv.flSizeV});
 }
 
 /** @ghidraAddress 0x1763d0 */

@@ -34,6 +34,18 @@ public:
     ClearGaugeLayer();
 
     /**
+     * @brief Appends the gauge's base icon quad, choosing its size and atlas frame by layout.
+     *
+     * Selects a quad size and atlas frame from the current orientation and gauge style (three
+     * variants: phone, iPad default, and iPad alternate), then appends it to the first batch through
+     * @c SetClearGaugeSprite on the given band.
+     * @param nBottomBand Non-zero to place the icon on the lower gauge band, zero for the upper band.
+     * @param nAlpha The icon's alpha.
+     * @ghidraAddress 0x175bc8
+     */
+    void SetClearGaugeIcon(int nBottomBand, int nAlpha);
+
+    /**
      * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
      *
      * The shared low-level writer behind @c SetClearGaugeIcon, @c SetClearGaugeMarker, and
