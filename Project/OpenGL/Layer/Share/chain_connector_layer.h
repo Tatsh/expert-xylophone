@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -46,6 +48,25 @@ public:
      */
     void CreateSprites();
 
+    /**
+     * @brief Emits one connector sprite of the given type into the batch.
+     *
+     * Both types draw a fixed 14x16 quad anchored at (7, 0); the type only selects the UV-table
+     * entry. Appends a sprite at @p pPosition with the given rotation and y-scale (x-scale is unit),
+     * in opaque white modulated by @p nAlpha.
+     * @param nType The connector sprite type (0 or 1).
+     * @param pPosition The sprite position.
+     * @param nAlpha The sprite alpha.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleY The sprite y scale.
+     * @ghidraAddress 0x185b94
+     */
+    void CreateSprite(int nType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flRotation,
+                      float flScaleY);
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
@@ -61,7 +82,7 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the connector atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the connector sprite instancer.
-    unsigned char m_aReserved18[4] = {};        // +0x18
+    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
     unsigned char m_aReserved21[7] = {};        // +0x21
