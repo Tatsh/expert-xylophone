@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "listener_list.h"
+#include "ctask.h"
 
 namespace rb {
 
@@ -13,13 +13,13 @@ namespace rb {
  * @brief The base of the per-frame scenes and game UI layers (the clear gauge, score gauge, pause
  * gauge, title scenes, and the play scene).
  *
- * It derives from the engine's task node (@c SortedListenerNode, the priority-sorted per-frame
- * listener / @c ne::C_TASK) and appends the shared presentation flags: the is-pad flag and whether
+ * It derives from the engine's task node (@c ne::C_TASK, the priority-sorted per-frame
+ * listener) and appends the shared presentation flags: the is-pad flag and whether
  * the device is the older type-9 hardware. Every concrete scene/layer derives from this base and runs
  * its constructor first, then overrides the per-frame callback and initialises its own fields. The
  * trailing @c // +0xNN comments document the original member offsets for reference only.
  */
-class BaseScene : public SortedListenerNode {
+class BaseScene : public ne::C_TASK {
 public:
     /**
      * @brief Whether the device is an iPad (cached from @c IsPad at construction).

@@ -1,6 +1,6 @@
 /**
  * @file
- * The engine's global priority-sorted listener list and its intrusive node, @c SortedListenerNode.
+ * The engine's global priority-sorted listener list and its intrusive node, @c ne::C_TASK.
  */
 
 #pragma once
@@ -23,13 +23,15 @@
  *
  * A polymorphic base: the compiler emits its vtable at offset 0, whose slots are the per-frame
  * callback @c OnFrame (slot 0) and the two destructor variants the compiler generates for
- * @c ~SortedListenerNode (the complete-object destructor at slot 1 and the deleting destructor at
+ * @c ~C_TASK (the complete-object destructor at slot 1 and the deleting destructor at
  * slot 2). The prev/next links thread the circular list and the priority is its sort key. Concrete
  * listeners (the sentinel, the UI layers) derive from this and override @c OnFrame. The trailing
  * @c // +0xNN comments document the original member offsets for reference only.
- * @ghidraAddress SortedListenerNode (engine listener-list node)
+ * @ghidraAddress C_TASK (engine listener-list node)
  */
-class SortedListenerNode {
+namespace ne {
+
+class C_TASK {
 public:
     /**
      * @brief Constructs an unlinked node: self-links the node (its prev and next point to itself),
@@ -37,7 +39,7 @@ public:
      * runs this base constructor before setting up its own state.
      * @ghidraAddress 0x36558
      */
-    SortedListenerNode();
+    C_TASK();
 
     /**
      * @brief Unlinks the node from its list and frees its owned buffer.
@@ -50,7 +52,7 @@ public:
      * @ghidraAddress 0x14a260
      * @ghidraAddress 0x18be00
      */
-    virtual ~SortedListenerNode();
+    virtual ~C_TASK();
 
     /**
      * @brief The node's per-frame callback (vtable slot 0). The base does nothing; concrete
@@ -60,11 +62,11 @@ public:
     virtual void OnFrame(void *pFrameArg);
 
     /** @brief The previous node in the list. */
-    SortedListenerNode *GetPrev() const {
+    C_TASK *GetPrev() const {
         return m_pPrev;
     }
     /** @brief The next node in the list. */
-    SortedListenerNode *GetNext() const {
+    C_TASK *GetNext() const {
         return m_pNext;
     }
     /** @brief The node's priority (the list is kept ascending by this key). */
@@ -101,13 +103,15 @@ protected:
     void Unlink();
 
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual methods).
-    SortedListenerNode *m_pPrev = {};       // +0x08: the previous node.
-    SortedListenerNode *m_pNext = {};       // +0x10: the next node.
+    C_TASK *m_pPrev = {};                   // +0x08: the previous node.
+    C_TASK *m_pNext = {};                   // +0x10: the next node.
     int m_nPriority = {};                   // +0x18: the sort key (the task state field).
     unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
     unsigned char *m_pBuffer = {};          // +0x40: an owned heap buffer, freed on destruction.
     bool m_bDead = {};                      // +0x48: set when the node should be destroyed.
 };
+
+} // namespace ne
 
 // code: language=C++
 // kate: hl C++;

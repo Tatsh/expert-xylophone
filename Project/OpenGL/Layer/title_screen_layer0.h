@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "base_scene.h"
+#include "basescene.h"
 #include "linear_tween.h"
 
 namespace ne {

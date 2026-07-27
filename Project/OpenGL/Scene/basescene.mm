@@ -6,7 +6,7 @@
 //  @ghidraAddress values are relative to the program image base.
 //
 
-#include "base_scene.h"
+#include "basescene.h"
 
 #include "deviceenvironment.h"
 

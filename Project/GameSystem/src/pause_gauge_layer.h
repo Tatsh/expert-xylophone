@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "base_scene.h"
+#include "basescene.h"
 #include "s_vector2.h"
 
 namespace ne {

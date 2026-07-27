@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "base_scene.h"
+#include "basescene.h"
 
 namespace ne {
 class C_TEXTURE;

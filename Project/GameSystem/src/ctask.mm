@@ -6,7 +6,7 @@
 //  program rb458. @ghidraAddress values are relative to the program image base.
 //
 
-#include "listener_list.h"
+#include "ctask.h"
 
 #include <cstdlib>
 
@@ -20,7 +20,7 @@ namespace {
 
 // The list's sentinel (also its head and tail terminator): a node whose per-frame callback does
 // nothing. Seeded by InitializeGlobalContainer.
-class ListenerListSentinel : public SortedListenerNode {
+class ListenerListSentinel : public C_TASK {
 public:
     void OnFrame(void *) override {
     }
@@ -35,8 +35,10 @@ void DestroyGlobalListenerContainer() {
 
 } // namespace
 
+namespace ne {
+
 /** @ghidraAddress 0x36558 */
-SortedListenerNode::SortedListenerNode() {
+C_TASK::C_TASK() {
     // The compiler installs the vtable; this constructor self-links the node, seeds the idle
     // priority, and clears the owned buffer and dead flag.
     m_pPrev = this;
@@ -52,14 +54,14 @@ SortedListenerNode::SortedListenerNode() {
  * @ghidraAddress 0x14a260
  * @ghidraAddress 0x18be00
  */
-SortedListenerNode::~SortedListenerNode() {
+C_TASK::~C_TASK() {
     Unlink();
 }
 
-void SortedListenerNode::OnFrame(void *) {
+void C_TASK::OnFrame(void *) {
 }
 
-void SortedListenerNode::Unlink() {
+void C_TASK::Unlink() {
     m_pNext->m_pPrev = m_pPrev;
     m_pPrev->m_pNext = m_pNext;
     delete[] m_pBuffer;
@@ -67,7 +69,7 @@ void SortedListenerNode::Unlink() {
 }
 
 /** @ghidraAddress 0x366ac */
-void SortedListenerNode::InitializeGlobalContainer() {
+void C_TASK::InitializeGlobalContainer() {
     g_listenerListSentinel.m_nPriority = kIdlePriority;
     g_listenerListSentinel.m_pPrev = &g_listenerListSentinel;
     g_listenerListSentinel.m_pNext = &g_listenerListSentinel;
@@ -78,17 +80,17 @@ void SortedListenerNode::InitializeGlobalContainer() {
 
 // Run the container initialiser at load, as the binary's __mod_init_func entry does.
 __attribute__((constructor)) static void RunListenerContainerInit() {
-    SortedListenerNode::InitializeGlobalContainer();
+    C_TASK::InitializeGlobalContainer();
 }
 
 /** @ghidraAddress 0x365e4 */
-void SortedListenerNode::InsertSorted(int nPriority) {
+void C_TASK::InsertSorted(int nPriority) {
     // Unlink from the current position.
     m_pNext->m_pPrev = m_pPrev;
     m_pPrev->m_pNext = m_pNext;
     // Walk from the sentinel to the first node whose priority is not below the requested one.
-    SortedListenerNode *pBefore = &g_listenerListSentinel;
-    SortedListenerNode *pAfter = pBefore->m_pNext;
+    C_TASK *pBefore = &g_listenerListSentinel;
+    C_TASK *pAfter = pBefore->m_pNext;
     while (pAfter->m_nPriority < nPriority) {
         pBefore = pAfter;
         pAfter = pBefore->m_pNext;
@@ -106,15 +108,16 @@ void DispatchListenerList(void *pFrameArg) {
     // Walk the list from the head. A live node gets its per-frame callback and the walk advances to
     // its successor; a dead node is destroyed (its successor is captured first, since destruction
     // splices the node out of the list).
-    for (SortedListenerNode *pNode = g_listenerListSentinel.GetNext();
-         pNode != &g_listenerListSentinel;) {
+    for (C_TASK *pNode = g_listenerListSentinel.GetNext(); pNode != &g_listenerListSentinel;) {
         if (!pNode->IsDead()) {
             pNode->OnFrame(pFrameArg);
             pNode = pNode->GetNext();
         } else {
-            SortedListenerNode *pNext = pNode->GetNext();
+            C_TASK *pNext = pNode->GetNext();
             delete pNode;
             pNode = pNext;
         }
     }
 }
+
+} // namespace ne

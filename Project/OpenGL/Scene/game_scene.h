@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "base_scene.h"
+#include "basescene.h"
 
 #ifdef __OBJC__
 @class NSData;

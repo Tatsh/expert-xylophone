@@ -35,12 +35,12 @@
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
 #import "clear_gauge_layer.h"
+#import "ctask.h"
 #import "deviceenvironment.h"
 #import "engineruntime.h"
 #import "game_scene.h"
 #import "gamesystem.h"
 #import "leveltables.h"
-#import "listener_list.h"
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
@@ -351,7 +351,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     // The layer's listener-node sub-object overlays the start of the object (its vtable and list
     // links); pass it to the free list-insert. The cast goes away once the play-field layers are
     // formally reparented onto the listener-node base.
-    InsertSortedListenerNode(reinterpret_cast<SortedListenerNode *>(clearGauge),
+    InsertSortedListenerNode(reinterpret_cast<ne::C_TASK *>(clearGauge),
                              kClearGaugeListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
