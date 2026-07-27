@@ -30,6 +30,11 @@ public:
      */
     static TouchManager *FetchSharedSingleton();
     /**
+     * @brief Lazily constructs the global touch-manager singleton on first use.
+     * @ghidraAddress 0x17c44
+     */
+    static void EnsureSingleton();
+    /**
      * @brief Registers a new touch in the next free slot, assigning it the next rolling id and the
      *        owning view's key pair.
      * @param nX The touch x in view coordinates.
@@ -102,7 +107,7 @@ private:
     int m_nNextId = {};                     // +0x104 the next rolling id to assign
 };
 
-/** @brief The global touch-manager singleton, constructed by @c EnsureTouchManagerSingleton. */
+/** @brief The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
 extern TouchManager *g_pTouchManager;
 
 // code: language=C++

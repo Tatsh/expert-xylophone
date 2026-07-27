@@ -45,6 +45,7 @@
 #import "playtimer.h"
 #import "s_vector2.h"
 #import "sheetlayer.h"
+#import "touchmanager.h"
 
 // Private web-info-response helpers messaged from the startup-request success block and each other.
 @interface AppDelegate ()
@@ -344,7 +345,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     // Bring up the touch manager, texture caches, and the persistent clear-gauge render layer, then
     // start the view controller's 60 fps game loop.
-    EnsureTouchManagerSingleton();
+    TouchManager::EnsureSingleton();
     ne::C_TEXTURE::EnsureCacheList();
     EnsureTextureCacheSingleton(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();

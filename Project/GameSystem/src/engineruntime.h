@@ -38,11 +38,6 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
  */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind);
 /**
- * @brief Lazily constructs the global touch-manager singleton.
- * @ghidraAddress 0x17c44
- */
-void EnsureTouchManagerSingleton(void);
-/**
  * @brief Lazily allocates the texture-cache control singleton.
  * @ghidraAddress 0x3198c
  */

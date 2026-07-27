@@ -26,7 +26,7 @@ static constexpr int kFreeSlotId = -1;
 // The largest rolling id before it wraps back to zero.
 static constexpr int kMaxTouchId = 0x7fffffff;
 
-/** @brief The global touch-manager singleton, constructed by @c EnsureTouchManagerSingleton. */
+/** @brief The global touch-manager singleton, constructed by @c TouchManager::EnsureSingleton. */
 TouchManager *g_pTouchManager = nullptr;
 
 /** @ghidraAddress 0x17c90 */
@@ -198,7 +198,7 @@ bool TouchManager::HasActiveTouch() const {
 }
 
 /** @ghidraAddress 0x17c44 */
-void EnsureTouchManagerSingleton(void) {
+void TouchManager::EnsureSingleton() {
     if (g_pTouchManager == nullptr) {
         g_pTouchManager = new TouchManager;
     }
