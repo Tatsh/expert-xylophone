@@ -244,3 +244,31 @@ float TitleScreenLayerClassic::ComputeSwingParticleY(float flBaseX, float flBase
     const double radius = std::sqrt(dx * dx + dy * dy);
     return static_cast<float>(radius * std::sin(static_cast<float>(angle)) + kSwingOriginY);
 }
+
+void TitleScreenLayerClassic::UpdateFadeProgress(int nDeltaMs) {
+    /** @ghidraAddress 0x586b0 */
+    // Once the fade has run its full duration, hold the end value.
+    if (m_flFadeElapsed >= m_flFadeDuration) {
+        m_flFadeValue = m_flFadeTo;
+        return;
+    }
+
+    m_flFadeElapsed += static_cast<float>(nDeltaMs);
+    // The fade only advances once the start delay has elapsed.
+    if (m_flFadeElapsed < m_flFadeStartDelay) {
+        return;
+    }
+    if (m_flFadeElapsed > m_flFadeDuration) {
+        m_flFadeElapsed = m_flFadeDuration;
+    }
+
+    // A zero duration snaps straight to the end; otherwise ease across the post-delay span.
+    float flFraction;
+    if (m_flFadeDuration == 0.0f) {
+        flFraction = 1.0f;
+    } else {
+        flFraction =
+            (m_flFadeElapsed - m_flFadeStartDelay) / (m_flFadeDuration - m_flFadeStartDelay);
+    }
+    m_flFadeValue = m_flFadeFrom + flFraction * (m_flFadeTo - m_flFadeFrom);
+}

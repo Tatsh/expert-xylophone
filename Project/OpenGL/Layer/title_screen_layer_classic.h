@@ -70,6 +70,17 @@ public:
      */
     float ComputeSwingParticleY(float flBaseX, float flBaseY) const;
 
+    /**
+     * @brief Advances the title cross-fade timer and updates the interpolated fade factor.
+     *
+     * Accumulates the frame delta into the elapsed time; once it passes the start delay, the fade
+     * factor eases from its start to its end value across the remaining duration (snapping to the end
+     * value when the duration is zero or the timer has already completed).
+     * @param nDeltaMs The elapsed time this frame, in milliseconds.
+     * @ghidraAddress 0x586b0
+     */
+    void UpdateFadeProgress(int nDeltaMs);
+
 private:
     unsigned char m_aReserved00[0x54] = {};   // +0x000
     int m_nGestureTimer = {};                 // +0x054 timer rewound on a completed gesture
@@ -83,7 +94,16 @@ private:
     unsigned char m_aReserved124[0x3c] = {};  // +0x124
     int m_nSwipeState = {};                   // +0x160 hidden-swipe sequence state
     bool m_bSwipeTriggered = {};              // +0x164 latched when the swipe sequence completes
-    unsigned char m_aReserved165[0x5cb] = {}; // +0x165
+    unsigned char m_aReserved165[0x5a3] = {}; // +0x165
+    // +0x708: the title cross-fade block: from, to, duration, elapsed, start-delay, and the
+    // interpolated 0..1 fade factor the render pass consumes.
+    float m_flFadeFrom = {};                  // +0x708
+    float m_flFadeTo = {};                    // +0x70c
+    float m_flFadeDuration = {};              // +0x710
+    float m_flFadeElapsed = {};               // +0x714
+    float m_flFadeStartDelay = {};            // +0x718
+    float m_flFadeValue = {};                 // +0x71c
+    unsigned char m_aReserved720[0x10] = {};  // +0x720
     int m_nGestureState = {};                 // +0x730 flick-gesture sequence state
     bool m_bGestureTriggered = {};            // +0x734 latched when a flick sequence completes
     bool m_bSwingToggle = {};                 // +0x735 swing-direction toggle
