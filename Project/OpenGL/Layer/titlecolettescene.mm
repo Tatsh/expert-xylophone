@@ -17,12 +17,15 @@
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "SePlayer.h"
+#include "curve.h"
 #include "game_scene.h"
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "shotsoundmanager.h"
 #include "soundeffectmanager.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 
 namespace {
 // The dispatch states OnFrame selects between: load resources, start the music, run the main loop,
@@ -72,30 +75,35 @@ constexpr float kLandscapeOffsetY = -512.0f; // @ghidraAddress 0x2f8570
 constexpr float kLandscapeScale = 0.8f;      // @ghidraAddress 0x2f856c
 constexpr float kHalf = 0.5f;
 
-// The sound-effect part's landscape hit-box is nudged and grown relative to its sprite.
-constexpr float kSeHitOffsetX = -40.0f; // @ghidraAddress 0x2f8574
-constexpr float kSeHitOffsetY = -30.0f;
-constexpr float kSeHitGrowX = 80.0f; // @ghidraAddress 0x2f855c
-constexpr float kSeHitGrowY = 60.0f; // @ghidraAddress 0x2f8578
+// The corporate-logo part's landscape hit-box is nudged and grown relative to its sprite.
+constexpr float kCorporateHitOffsetX = -40.0f; // @ghidraAddress 0x2f8574
+constexpr float kCorporateHitOffsetY = -30.0f;
+constexpr float kCorporateHitGrowX = 80.0f; // @ghidraAddress 0x2f855c
+constexpr float kCorporateHitGrowY = 60.0f; // @ghidraAddress 0x2f8578
 
-// The part ids that carry a touch hit-box, and the hit-box slot each records into.
+// The part ids that carry a touch hit-box, and the hit-box slot each records into. The main loop's
+// hit-test cascade shows slot 0 (the corporate logo) starts the exit and slot 7 plays the
+// sound-effect jingle.
 enum TitlePartId {
-    kPartSoundEffect = 0x5d,
+    kPartCorporateLogo = 0x5d,
     kPartLetterF = 0x46,
     kPartLetterI = 0x49,
     kPartLetterG = 0x47,
     kPartLetterD = 0x44,
     kPartLetterA = 0x41,
-    kPartCorporateLogo = 0x62,
+    kPartSoundEffect = 0x62,
 };
 enum TitleHitBoxSlot {
-    kHitBoxSoundEffect = 0,
+    kHitBoxCorporateLogo = 0,
     kHitBoxLetterF = 1,
     kHitBoxLetterI = 2,
     kHitBoxLetterG = 3,
     kHitBoxLetterD = 4,
     kHitBoxLetterA = 5,
-    kHitBoxCorporateLogo = 7,
+    // Slot 6 is tested by the touch loop but never written by the emitter, so it stays a zero rect
+    // and its branch plays the themed voice cue.
+    kHitBoxVoiceCue = 6,
+    kHitBoxSoundEffect = 7,
 };
 
 // The title-logo swing pivot the particle rest positions are measured against, and the screen
@@ -146,6 +154,61 @@ enum TitleGestureStep {
     kGestureStepAltButtonB = 0x13,
     kGestureStepAltComplete = 0x14,
 };
+
+// The idle timer caps at this value and flags attract mode once it passes the attract threshold.
+constexpr int kIdleTimerCap = 6000;
+constexpr int kAttractThreshold = 0x492d;
+// The sound-effect timer flags the sound-effect-ready state past this value.
+constexpr int kSeReadyThreshold = 5000;
+// Below this idle time the shot-sound plays its softer variant; at or past it the louder one.
+constexpr int kShotSoftThreshold = 0x360a;
+
+// The swing animation steps by the phase velocity, rewinds by a full turn past the squared limit,
+// and idles toward zero by the reciprocal decay when released.
+constexpr int kSwingFullTurn = 0x168;
+constexpr double kSwingPhaseSquaredLimit = 129600.0; // @ghidraAddress 0x2f8580
+constexpr double kSwingIdleDecay = 1.1;              // @ghidraAddress 0x2f8588
+
+// The cycling glow phase wraps within [0, kGlowPhaseWrap); the exit fade accelerates it fivefold.
+constexpr float kGlowPhaseWrap = 1000.0f;      // @ghidraAddress 0x2f8540
+constexpr float kGlowPhaseWrapStep = -1000.0f; // @ghidraAddress 0x2f8544
+constexpr int kExitPhaseBoost = 5;
+
+// The background/logo/glow draw uses fully opaque white; the glow's alpha comes from a curve.
+constexpr float kFullColor = 255.0f; // @ghidraAddress 0x2eed00
+constexpr float kOne = 1.0f;
+
+// The glow alpha curve (pairs of {phase, alpha}) and its pair count.
+constexpr int kGlowCurvePairCount = 3;
+
+// The glow and glow-overlay part ids drawn on top of the logo (kPartCorporateLogo).
+constexpr unsigned int kPartGlow = 0x5e;
+constexpr unsigned int kPartGlowOverlay = 0x5f;
+
+// The flick classification threshold, in pixels.
+constexpr float kFlickThreshold = 25.0f;
+
+// The exit sound effect and the value the fade reaches to advance to the finish state.
+constexpr int kSoundEffectExit = 0x10;
+constexpr float kFadeComplete = 1.0f;
+
+// The sentinel that no touch is being tracked.
+constexpr int kNoTouch = -1;
+
+// The logo and glow draw position (seeded once through a guarded static in the binary).
+constexpr S_VECTOR2 kLogoPosition{389.0f, 823.0f};
+
+// The glow's alpha curve: a triangular pulse over the cycling phase, peaking at the midpoint.
+// @ghidraAddress 0x2f9940
+constexpr float kGlowAlphaCurve[] = {0.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f};
+
+// The exit cross-fade the corporate-logo tap starts: ease to fully hidden over its duration after a
+// start delay. Its four components come from a binary constant ({to, duration} then {elapsed,
+// start-delay} after a NEON lane swap).
+constexpr float kExitFadeTo = 1.0f;
+constexpr float kExitFadeDuration = 2700.0f;
+constexpr float kExitFadeElapsed = 0.0f;
+constexpr float kExitFadeStartDelay = 2400.0f;
 } // namespace
 
 namespace rb {
@@ -263,20 +326,20 @@ void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
     case kPartLetterI:
         nSlot = kHitBoxLetterI;
         break;
-    case kPartCorporateLogo:
-        nSlot = kHitBoxCorporateLogo;
-        break;
     case kPartSoundEffect:
-        // The sound-effect part in the landscape layout uses a nudged, grown hit-box; the portrait
+        nSlot = kHitBoxSoundEffect;
+        break;
+    case kPartCorporateLogo:
+        // The corporate-logo part in the landscape layout uses a nudged, grown hit-box; the portrait
         // layout uses the plain rectangle.
         if (!IsPad()) {
-            m_aHitBox[kHitBoxSoundEffect] = TitleHitRect{flLeft + kSeHitOffsetX,
-                                                         flTop + kSeHitOffsetY,
-                                                         layout.flWidth + kSeHitGrowX,
-                                                         layout.flHeight + kSeHitGrowY};
+            m_aHitBox[kHitBoxCorporateLogo] = TitleHitRect{flLeft + kCorporateHitOffsetX,
+                                                           flTop + kCorporateHitOffsetY,
+                                                           layout.flWidth + kCorporateHitGrowX,
+                                                           layout.flHeight + kCorporateHitGrowY};
             return;
         }
-        nSlot = kHitBoxSoundEffect;
+        nSlot = kHitBoxCorporateLogo;
         break;
     default:
         // The remaining parts carry no hit-box.
@@ -504,6 +567,276 @@ void TitleColetteScene::UpdateFadeProgress(int nDeltaMs) {
             (m_flFadeElapsed - m_flFadeStartDelay) / (m_flFadeDuration - m_flFadeStartDelay);
     }
     m_flFadeValue = m_flFadeFrom + flFraction * (m_flFadeTo - m_flFadeFrom);
+}
+
+bool TitleColetteScene::IsInsideHitBox(float flX, float flY, const TitleHitRect &box) {
+    return box.x <= flX && flX <= box.x + box.width && box.y <= flY && flY <= box.y + box.height;
+}
+
+/** @ghidraAddress 0x57ad8 */
+void TitleColetteScene::RunMainLoop(void *pFrameArg) {
+    const int nDeltaMs = static_cast<int>(reinterpret_cast<long>(pFrameArg));
+
+    // Cache the viewport size and advance the idle timer, capping it and arming attract mode.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flViewportWidth = pGameSystem->GetViewportWidth();
+    m_flViewportHeight = pGameSystem->GetViewportHeight();
+    m_nIdleTimer += nDeltaMs;
+    if (m_nIdleTimer > kAttractThreshold) {
+        m_nIdleTimer = kIdleTimerCap;
+        m_bAttractMode = true;
+    }
+
+    // In the Hinabita campaign, advance the sound-effect timer (arming the ready flag), and once the
+    // sound effect has fired, accumulate the elapsed time since.
+    if (m_bHinabitaMode) {
+        m_nSeTimer += nDeltaMs;
+        if (m_nSeTimer > kSeReadyThreshold) {
+            m_bSeReady = true;
+        }
+        if (!m_bSeTriggered) {
+            m_nSeAccumulator = 0;
+        } else {
+            m_nSeAccumulator += nDeltaMs;
+        }
+    }
+
+    // Drive the logo swing: while held (m_bSwingToggle) the phase steps by the velocity and rewinds a
+    // full turn past the squared limit; when released it idles back toward zero. A non-zero phase
+    // rotates each of the twelve swing particles into its animated position.
+    if (m_bSwingToggle) {
+        m_nSwingPhase += m_nSwingDelta;
+        if (kSwingPhaseSquaredLimit <=
+            static_cast<double>(m_nSwingPhase) * static_cast<double>(m_nSwingPhase)) {
+            m_nSwingPhase -= kSwingFullTurn;
+        }
+    } else if (m_nSwingPhase != 0) {
+        m_nSwingPhase = static_cast<int>(static_cast<double>(m_nSwingPhase) / kSwingIdleDecay);
+    }
+    if (m_nSwingPhase != 0) {
+        for (int nPart = 0; nPart < kPartAnchorCount; ++nPart) {
+            const S_VECTOR2 &anchor = m_aPartAnchor[nPart];
+            m_aSwingParticle[nPart].x = ComputeSwingParticleX(anchor.x, anchor.y);
+            m_aSwingParticle[nPart].y = ComputeSwingParticleY(m_aSwingParticle[nPart].x, anchor.y);
+        }
+    }
+
+    // Clear every part instancer's sprite count before rebuilding this frame.
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+
+    // Tick the intro/ready timer; when it expires, play the intro voice.
+    if (m_nReadyDelay > 0) {
+        m_nReadyDelay -= nDeltaMs;
+        if (m_nReadyDelay < 1) {
+            SoundEffectManager::GetInstance()->PlayThemedVoice(0);
+        }
+    }
+
+    // Advance the reveal fade, then emit the background, the part sprites, the logo, the pulsing
+    // glow, and the glow overlay.
+    UpdateFadeProgress(nDeltaMs);
+    EmitPartSprite(kBackgroundPartId,
+                   0xff,
+                   S_VECTOR2{m_flViewportWidth * 0.5f, m_flViewportHeight * 0.5f},
+                   S_VECTOR2{kOne, kOne},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+    RenderSprites();
+    EmitPartSprite(kPartCorporateLogo,
+                   0xff,
+                   kLogoPosition,
+                   S_VECTOR2{kOne, kOne},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+
+    // Advance the cycling glow phase (fivefold while exiting), wrapping it into range.
+    m_flGlowPhase += static_cast<float>(nDeltaMs);
+    if (m_bExiting) {
+        m_flGlowPhase += static_cast<float>(nDeltaMs * kExitPhaseBoost);
+    }
+    while (m_flGlowPhase >= kGlowPhaseWrap) {
+        m_flGlowPhase += kGlowPhaseWrapStep;
+    }
+    const float flGlowAlpha =
+        CalculateCurveInterpolation(kGlowAlphaCurve, kGlowCurvePairCount, m_flGlowPhase);
+    EmitPartSprite(kPartGlow,
+                   static_cast<unsigned int>(flGlowAlpha * kFullColor),
+                   kLogoPosition,
+                   S_VECTOR2{kOne, kOne},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+    EmitPartSprite(kPartGlowOverlay,
+                   0xff,
+                   kLogoPosition,
+                   S_VECTOR2{kOne, kOne},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+
+    // The Hinabita campaign draws an extra portrait layer in portrait orientation.
+    if (m_bHinabitaMode && RBCampaignData.sharedInstance.isCampaignHinabita201703 &&
+        m_flViewportWidth < m_flViewportHeight) {
+        RenderCampaignPortrait();
+    }
+
+    // Handle touch input unless the exit is already running.
+    if (!m_bExiting) {
+        ProcessTitleTouch();
+    }
+
+    // Once the exit fade reaches fully hidden, advance to the finish state.
+    if (m_bExiting && m_flFadeValue >= kFadeComplete) {
+        m_nState = kStateFinish;
+    }
+}
+
+void TitleColetteScene::BeginExit() {
+    // Seed the exit cross-fade from the current value, stop the music, mark the scene exiting, play
+    // the exit sound, and fade the corporate button in.
+    m_flFadeFrom = m_flFadeValue;
+    m_flFadeTo = kExitFadeTo;
+    m_flFadeDuration = kExitFadeDuration;
+    m_flFadeElapsed = kExitFadeElapsed;
+    m_flFadeStartDelay = kExitFadeStartDelay;
+    [RBBGMManager.getInstance StopMusic:1.0f];
+    m_bExiting = true;
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectExit);
+    [AppDelegate.appDelegate.viewController fadeCorporateButton:0.0f];
+}
+
+void TitleColetteScene::ProcessTitleTouch() {
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+
+    if (m_nActiveTouchId != kNoTouch) {
+        // A touch is being tracked: on its release, classify the flick direction into the gesture
+        // state machine (a flick must exceed the pixel threshold on its dominant axis).
+        TouchPoint *pTouch = pTouchManager->FindTouchById(m_nActiveTouchId);
+        if (pTouch == nullptr) {
+            m_nActiveTouchId = kNoTouch;
+            return;
+        }
+        if (!pTouch->bEnded) {
+            return;
+        }
+        m_nActiveTouchId = kNoTouch;
+        const float flDx = static_cast<float>(pTouch->nCurrentX - pTouch->nBeginX);
+        const float flDy = static_cast<float>(pTouch->nCurrentY - pTouch->nBeginY);
+        const float flAbsX = flDx <= 0.0f ? -flDx : flDx;
+        const float flAbsY = flDy <= 0.0f ? -flDy : flDy;
+
+        // Classify the flick into the swipe sequence, advancing the gesture state to the next step.
+        // A flick under the pixel threshold on the dominant axis is ignored.
+        int nNextStep;
+        if (flAbsX <= flAbsY) {
+            if (flDy <= kFlickThreshold) {
+                // Upward flick: advances the first up (from idle) then the second.
+                if (-kFlickThreshold <= flDy) {
+                    return;
+                }
+                if (m_nGestureState != kGestureStepUp1) {
+                    if (m_nGestureState != kGestureStepNone) {
+                        return;
+                    }
+                    m_nGestureState = kGestureStepUp1;
+                }
+                nNextStep = kGestureStepUp2;
+            } else {
+                // Downward flick: advances the first down (after the ups) then the second.
+                if (m_nGestureState != kGestureStepDown1) {
+                    if (m_nGestureState != kGestureStepUp2) {
+                        return;
+                    }
+                    m_nGestureState = kGestureStepDown1;
+                }
+                nNextStep = kGestureStepDown2;
+            }
+        } else if (flDx <= kFlickThreshold) {
+            if (-kFlickThreshold <= flDx) {
+                return;
+            }
+            // Leftward flick: the second left (after a right) or the first left (after the downs).
+            if (m_nGestureState == kGestureStepRight1) {
+                nNextStep = kGestureStepLeft2;
+            } else {
+                if (m_nGestureState != kGestureStepDown2) {
+                    return;
+                }
+                nNextStep = kGestureStepLeft1;
+            }
+        } else if (m_nGestureState == kGestureStepLeft2) {
+            // Rightward flick: the second right (after the second left).
+            nNextStep = kGestureStepRight2;
+        } else {
+            // Rightward flick: the first right (after the first left).
+            if (m_nGestureState != kGestureStepLeft1) {
+                return;
+            }
+            nNextStep = kGestureStepRight1;
+        }
+        m_nGestureState = nNextStep;
+        return;
+    }
+
+    // No touch tracked: adopt the first fresh touch this frame and hit-test it against the menu.
+    if (pTouchManager->GetActiveTouchCount() <= 0) {
+        return;
+    }
+    // A pending terms-of-service update pre-empts everything.
+    if (AppDelegate.appDelegate.needUpdateTerms) {
+        [AppDelegate.appDelegate showTerms];
+        return;
+    }
+    for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
+        TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
+        if (!pTouch->bIsNew) {
+            continue;
+        }
+        m_nActiveTouchId = pTouch->nId;
+        const float flX = static_cast<float>(pTouch->nCurrentX);
+        const float flY = static_cast<float>(pTouch->nCurrentY);
+
+        // The corporate-logo box (only while fully shown) starts the exit.
+        if (m_flFadeValue == 0.0f && IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxCorporateLogo])) {
+            BeginExit();
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterD])) {
+            if (m_nGestureState == kGestureStepAltRight1) {
+                m_nGestureState = kGestureStepAltLeft2;
+            } else if (m_nGestureState == kGestureStepDown2) {
+                m_nGestureState = kGestureStepAltLeft1;
+            }
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterA])) {
+            if (m_nGestureState == kGestureStepAltLeft2) {
+                m_nGestureState = kGestureStepAltRight2;
+            } else if (m_nGestureState == kGestureStepAltLeft1) {
+                m_nGestureState = kGestureStepAltRight1;
+            }
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterI])) {
+            AdvanceGestureState(kGestureButtonA);
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterG])) {
+            if (m_nGestureState == kGestureStepAltRight2) {
+                m_nGestureState = kGestureStepAltButtonB;
+            } else if (m_nGestureState == kGestureStepRight2) {
+                m_nGestureState = kGestureStepButtonB;
+            }
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxLetterF])) {
+            if (m_nIdleTimer < kShotSoftThreshold && !m_bAttractMode) {
+                ShotSoundManager::GetInstance()->PlaySlot(
+                    1, GameSystem::GetGameSystem()->GetShotType(), 2);
+            } else {
+                ShotSoundManager::GetInstance()->PlaySlot(
+                    1, GameSystem::GetGameSystem()->GetShotType(), 0);
+            }
+        } else if (IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxVoiceCue])) {
+            SoundEffectManager::GetInstance()->PlayThemedVoice(0);
+        } else if (m_bSeReady && IsInsideHitBox(flX, flY, m_aHitBox[kHitBoxSoundEffect])) {
+            // The sound-effect box (once ready) fires the SE jingle and resets the accumulator.
+            m_bSeTriggered = true;
+            m_nSeAccumulator = 0;
+            [m_pSePlayer sePlay];
+        }
+        break;
+    }
 }
 
 /** @ghidraAddress 0x57a64 */

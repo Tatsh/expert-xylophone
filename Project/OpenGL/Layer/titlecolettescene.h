@@ -122,6 +122,27 @@ private:
     void RunMainLoop(void *pFrameArg);
 
     /**
+     * @brief The main loop's touch pass: tracks one touch, hit-tests the menu boxes on a fresh touch,
+     * and classifies a flick into the hidden-gesture state machine on release.
+     */
+    void ProcessTitleTouch();
+
+    /**
+     * @brief Begins the corporate-logo exit: seeds the exit cross-fade, stops the BGM, plays the exit
+     * sound, marks the scene exiting, and fades the corporate button in.
+     */
+    void BeginExit();
+
+    /**
+     * @brief Whether a point lies within a hit-box rectangle (corner to corner plus extent).
+     * @param flX The point X.
+     * @param flY The point Y.
+     * @param box The hit-box rectangle.
+     * @return @c true when the point is inside.
+     */
+    static bool IsInsideHitBox(float flX, float flY, const TitleHitRect &box);
+
+    /**
      * @brief State 3: once the audio has fully started, tears down the scene and opens the music
      * list.
      * @ghidraAddress 0x58478
@@ -214,7 +235,10 @@ private:
 
     unsigned char m_aReserved4b[1] = {}; // +0x4b
     int m_nState = {};                   // +0x4c: the dispatch state.
-    unsigned char m_aReserved50[4] = {}; // +0x50
+    bool m_bAttractMode = {};            // +0x50: set once the idle timer reaches the attract cap.
+    bool m_bSeReady = {};                // +0x51: set once the sound-effect timer passes its ready
+                                         //        threshold, arming the sound-effect hit-box.
+    unsigned char m_aReserved52[2] = {}; // +0x52
     int m_nIdleTimer = {};               // +0x54: the idle/attract timer, reset on load.
     int m_nReadyDelay = {};              // +0x58: the start ready-delay timer (seeded to 0x708).
     int m_nSeTimer = {};                 // +0x5c: the sound-effect timer, reset on load.
@@ -227,23 +251,26 @@ private:
     unsigned char m_aReserved568[0x1a0] = {}; // +0x568
     // +0x708: the title cross-fade block seeded at load: from, to, duration, elapsed, start-delay,
     // and the interpolated fade value the emitter consumes (as one minus the value, a reveal).
-    float m_flFadeFrom = {};                // +0x708
-    float m_flFadeTo = {};                  // +0x70c
-    float m_flFadeDuration = {};            // +0x710
-    float m_flFadeElapsed = {};             // +0x714
-    float m_flFadeStartDelay = {};          // +0x718
-    float m_flFadeValue = {};               // +0x71c: seeded to 1.0 (fully hidden; reveal zero).
-    unsigned char m_aReserved720[0xc] = {}; // +0x720
-    int m_nActiveTouchId = {};              // +0x72c: the tracked touch id (-1 when none).
-    int m_nGestureState = {};               // +0x730: the flick-gesture sequence state.
-    bool m_bGestureTriggered = {};          // +0x734: latched when a flick sequence completes.
-    bool m_bSwingToggle = {};               // +0x735: the swing-direction toggle.
-    unsigned char m_aReserved736[2] = {};   // +0x736
-    int m_nSwingDelta = {};                 // +0x738: the resulting swing delta (+1 or -1).
-    int m_nSwingPhase = {};                 // +0x73c: the accumulated swing phase, in degrees.
-    bool m_bHinabitaMode = {};              // +0x740: the hidden Hinabita campaign toggle.
-    bool m_bSeTriggered = {};               // +0x741: whether the title sound effect has fired.
-    unsigned char m_aReserved742[2] = {};   // +0x742
+    float m_flFadeFrom = {};              // +0x708
+    float m_flFadeTo = {};                // +0x70c
+    float m_flFadeDuration = {};          // +0x710
+    float m_flFadeElapsed = {};           // +0x714
+    float m_flFadeStartDelay = {};        // +0x718
+    float m_flFadeValue = {};             // +0x71c: seeded to 1.0 (fully hidden; reveal zero).
+    bool m_bExiting = {};                 // +0x720: set when the corporate-logo exit is running.
+    unsigned char m_aReserved721[7] = {}; // +0x721
+    float m_flGlowPhase = {};             // +0x728: the cycling glow-pulse phase.
+    int m_nActiveTouchId = {};            // +0x72c: the tracked touch id (-1 when none).
+    int m_nGestureState = {};             // +0x730: the flick-gesture sequence state.
+    bool m_bGestureTriggered = {};        // +0x734: latched when a flick sequence completes.
+    // +0x735: the swing-direction toggle, also read as the "actively swinging" flag.
+    bool m_bSwingToggle = {};             // +0x735
+    unsigned char m_aReserved736[2] = {}; // +0x736
+    int m_nSwingDelta = {};               // +0x738: the resulting swing delta (+1 or -1).
+    int m_nSwingPhase = {};               // +0x73c: the accumulated swing phase, in degrees.
+    bool m_bHinabitaMode = {};            // +0x740: the hidden Hinabita campaign toggle.
+    bool m_bSeTriggered = {};             // +0x741: whether the title sound effect has fired.
+    unsigned char m_aReserved742[2] = {}; // +0x742
     float m_flViewportWidth = {};  // +0x744: the viewport width, cached from the game system.
     float m_flViewportHeight = {}; // +0x748: the viewport height.
     // +0x74c: the eight part hit-box rectangles the emitter records for touch testing (the corporate
@@ -251,9 +278,10 @@ private:
     TitleHitRect m_aHitBox[kHitBoxCount] = {};      // +0x74c
     S_VECTOR2 m_aPartAnchor[kPartAnchorCount] = {}; // +0x7cc: the ring of part anchor positions,
     // copied from the campaign anchor table at set-up.
-    // +0x82c..+0x88f is further trailing state.
-    unsigned char m_aReserved82c[0x64] = {}; // +0x82c
-    SePlayer *m_pSePlayer = {};              // +0x890: the theme sound-effect player.
+    // +0x82c: each swing particle's animated position, rotated from its anchor by the swing phase.
+    S_VECTOR2 m_aSwingParticle[kPartAnchorCount] = {}; // +0x82c
+    unsigned char m_aReserved88c[4] = {};              // +0x88c
+    SePlayer *m_pSePlayer = {};                        // +0x890: the theme sound-effect player.
 };
 
 /**
