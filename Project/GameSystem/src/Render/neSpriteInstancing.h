@@ -29,10 +29,18 @@ public:
      *
      * Allocates the per-sprite attribute arrays and the per-frame vertex scratch, then builds and
      * uploads the static quad vertex and index buffers (four vertices and six indices per sprite).
+     * The binary emits two near-identical constructors that differ only by draw mode: the screen-space
+     * batch (@c InitSpriteInstancer) installs the axis-aligned render path and nearest-filter texture
+     * parameters, while the world-space batch (@c InitWorldSpriteBatch) installs the camera-composed
+     * render path, sets the batch flag, and uses linear-filter parameters. They are unified here with
+     * the @p bWorldSpace selector.
      * @param nCapacity The maximum number of sprites the batch can draw.
+     * @param bWorldSpace Whether to build the world-space (camera-composed) batch rather than the
+     *        screen-space one.
+     * @ghidraAddress 0x2f668
      * @ghidraAddress 0x3097c
      */
-    explicit C_SPRITE_INSTANCING(unsigned int nCapacity);
+    explicit C_SPRITE_INSTANCING(unsigned int nCapacity, bool bWorldSpace = false);
     ~C_SPRITE_INSTANCING() override;
 
     /**

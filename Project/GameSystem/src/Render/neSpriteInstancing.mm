@@ -140,7 +140,11 @@ constexpr int kSpriteIndexCount = 6;
 constexpr unsigned int kVertexScratchStride = 64;
 
 // The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap).
-constexpr int kDefaultTexParams[] = {1, 1, 7, 7};
+// The default texture parameters each construction mode seeds: the screen-space batch uses
+// nearest-filter min/mag (0, 0); the world-space batch uses linear-filter min/mag (1, 1). Both wrap
+// with the same mode (7, 7). @ghidraAddress 0x2eecf0 (screen) and 0x2eee00 (world).
+constexpr int kScreenTexParams[] = {0, 0, 7, 7};
+constexpr int kWorldTexParams[] = {1, 1, 7, 7};
 
 // One corner of a sprite's initial quad, as uploaded to the GL array buffer: a constant 1.0 and the
 // index of the sprite the corner belongs to. The trailing bytes are padding the binary leaves
@@ -150,11 +154,18 @@ struct InitialSpriteVertex {
     unsigned char nSpriteIndex;
 };
 
-/** @ghidraAddress 0x3097c */
-C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity) {
+/**
+ * @ghidraAddress 0x2f668
+ * @ghidraAddress 0x3097c
+ */
+C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity, bool bWorldSpace) {
     // The base C_RENDER constructor and the derived vtable are installed by the compiler; the nine
-    // attribute-array pointers and the remaining scalars are zero from their member initialisers.
+    // attribute-array pointers and the remaining scalars are zero from their member initialisers. The
+    // world-space batch additionally clears the batch flag (the screen-space one leaves it default).
     m_dwCapacity = nCapacity;
+    if (bWorldSpace) {
+        m_bBatchFlag = false;
+    }
 
     // Per-sprite attribute arrays. The five vec2 arrays are value-initialised to zero; the rotation
     // and scale arrays are filled in the build loop below, and the colour array by the caller.
@@ -213,10 +224,11 @@ C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity) {
         0);
     delete[] pVertexTemplate;
 
-    m_aTexParams[0] = kDefaultTexParams[0];
-    m_aTexParams[1] = kDefaultTexParams[1];
-    m_aTexParams[2] = kDefaultTexParams[2];
-    m_aTexParams[3] = kDefaultTexParams[3];
+    const int *pTexParams = bWorldSpace ? kWorldTexParams : kScreenTexParams;
+    m_aTexParams[0] = pTexParams[0];
+    m_aTexParams[1] = pTexParams[1];
+    m_aTexParams[2] = pTexParams[2];
+    m_aTexParams[3] = pTexParams[3];
 }
 
 // The deleting-destructor variant at 0x2fa70 (the D0 vtable thunk the compiler emits for
@@ -248,9 +260,14 @@ C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
     GetGlRenderer()->DeleteBuffer(m_dwIndexVbo);
 }
 
+/** @ghidraAddress 0x30804 */
+C_SPRITE_INSTANCING *CreateSpriteInstancer(unsigned int nCapacity) {
+    return new C_SPRITE_INSTANCING(nCapacity);
+}
+
 /** @ghidraAddress 0x31834 */
 C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity) {
-    return new C_SPRITE_INSTANCING(nCapacity);
+    return new C_SPRITE_INSTANCING(nCapacity, /*bWorldSpace=*/true);
 }
 
 /** @ghidraAddress 0x317dc */
