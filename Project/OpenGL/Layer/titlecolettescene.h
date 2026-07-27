@@ -7,6 +7,7 @@
 
 #include "basescene.h"
 #include "s_vector2.h"
+#include "title_part_layout.h"
 
 #ifdef __OBJC__
 @class SePlayer;
@@ -42,11 +43,13 @@ public:
     static constexpr int kSpriteSlotCount = 0x68;
     // The number of part anchor positions in the ring the title arranges its parts around.
     static constexpr int kPartAnchorCount = 12;
+    // The number of floats in the fade transform seeded at load.
+    static constexpr int kFadeTransformCount = 5;
 
     /**
      * @brief Constructs the scene: chains the scene base, installs the title dispatch table, and
-     * zero-clears the presentation state (seeding the fade base to 1.0, the trailing index to -1,
-     * the tint to opaque white, and copying the part-layout table into the per-sprite state).
+     * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to -1,
+     * and copying the part anchor ring into the per-sprite state).
      * @ghidraAddress 0x572e4
      */
     TitleColetteScene();
@@ -134,10 +137,11 @@ private:
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0x3c8: each instancer's seeded sprite count.
     // +0x568..+0x707: further per-sprite presentation state, still being worked out.
     unsigned char m_aReserved568[0x1a0] = {}; // +0x568
-    float m_aFadeTransform[4] = {};           // +0x708: the fade transform (copied from the base).
-    unsigned char m_aReserved718[4] = {};     // +0x718
-    float m_flFadeBase = {};                  // +0x71c: the fully-shown fade level (seeded to 1.0).
-    unsigned char m_aReserved720[0xc] = {};   // +0x720
+    // +0x708: the fade transform seeded at load: the fade base followed by a fixed drop-in offset
+    // (element 2 is 300, the rest zero).
+    float m_aFadeTransform[kFadeTransformCount] = {}; // +0x708
+    float m_flFadeBase = {};                 // +0x71c: the fully-shown fade level (seeded to 1.0).
+    unsigned char m_aReserved720[0xc] = {};  // +0x720
     int m_nTrailingIndex = {};               // +0x72c: a per-slot index (-1 when none is selected).
     unsigned char m_aReserved730[0x11] = {}; // +0x730
     bool m_bSeTriggered = {};                // +0x741: whether the title sound effect has fired.
@@ -151,15 +155,16 @@ private:
 };
 
 /**
- * @brief The 104-entry per-sprite part-layout table selecting each part's texture and z-order.
+ * @brief The 104-record per-sprite part-layout table binding each part's texture and placement.
  *
  * Two variants live in the binary's read-only data: the default table and the alternate (iPad)
- * table. A layout entry's texture index of 5 marks a sprite that binds no texture.
+ * table. A record's texture index of 5 marks a part that binds no texture. @c LoadResources reads
+ * the texture index; the placement fields are used when the parts are drawn.
  * @ghidraAddress 0x2f8f80
- * @ghidraAddress 0x2f85c0
  */
-extern const unsigned int g_aTitleCampaignLayoutDefault[];
-extern const unsigned int g_aTitleCampaignLayoutAltFrame[];
+extern const TitlePartLayoutRecord g_aTitleCampaignLayoutDefault[];
+/** @ghidraAddress 0x2f85c0 */
+extern const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[];
 
 /**
  * @brief The ring of twelve part anchor positions the title arranges its campaign parts around.
