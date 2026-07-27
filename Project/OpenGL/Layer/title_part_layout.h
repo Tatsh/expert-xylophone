@@ -1,0 +1,36 @@
+/**
+ * @file
+ * The binary-resident part-layout tables for the parts-based title screen, @c TitleScreenLayer2.
+ */
+
+#pragma once
+
+/**
+ * @brief One title-part layout record: the cached-texture index the part binds and its placement
+ * rectangle. A 24-byte record; @c TitleScreenLayer2::LoadResources reads the texture index to bind
+ * each part instancer's texture.
+ */
+struct TitlePartLayoutRecord {
+    int nTextureIndex; // +0x00: the index into the layer's cached textures (4 = bind none).
+    float flPosX;      // +0x04: the part's X position.
+    float flPosY;      // +0x08: the part's Y position.
+    float flWidth;     // +0x0c: the part's width.
+    float flHeight;    // +0x10: the part's height.
+    float flExtra;     // +0x14: a further per-part layout value.
+};
+
+/**
+ * @brief The default-device part-layout table (0x53 records).
+ * @ghidraAddress 0x309d48
+ */
+extern const TitlePartLayoutRecord g_aTitle2PartLayoutDefault[];
+
+/**
+ * @brief The alt-frame (iPad) part-layout table (0x53 records).
+ * @ghidraAddress 0x309580
+ */
+extern const TitlePartLayoutRecord g_aTitle2PartLayoutAltFrame[];
+
+// code: language=C++
+// kate: hl C++;
+// vim: set ft=cpp :
