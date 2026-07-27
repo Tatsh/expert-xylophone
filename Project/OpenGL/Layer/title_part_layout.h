@@ -11,12 +11,14 @@
  * each part instancer's texture.
  */
 struct TitlePartLayoutRecord {
-    int nTextureIndex; // +0x00: the index into the layer's cached textures (4 = bind none).
+    int nTextureIndex; // +0x00: the cached-texture index the part binds, doubling as its render-type
+                       // selector (0 background, 1 lettered part, 3 logo); an index of 4 or 5 binds
+                       // no texture.
     float flPosX;      // +0x04: the part's X position.
     float flPosY;      // +0x08: the part's Y position.
     float flWidth;     // +0x0c: the part's width.
     float flHeight;    // +0x10: the part's height.
-    float flExtra;     // +0x14: a further per-part layout value.
+    int nUvIndex;      // +0x14: the index into the part's UV-rectangle table.
 };
 
 /**

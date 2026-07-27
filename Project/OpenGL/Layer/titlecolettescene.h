@@ -7,6 +7,8 @@
 
 #include "basescene.h"
 #include "s_vector2.h"
+#include "s_vector3.h"
+#include "sprite_uv_table.h"
 #include "title_part_layout.h"
 
 #ifdef __OBJC__
@@ -21,6 +23,19 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 namespace rb {
+
+/**
+ * @brief A title-part touch hit-box: the top-left corner and the extent, in layout coordinates.
+ *
+ * The emitter records one of these per touchable part; the main loop hit-tests a flick or tap
+ * against @c x <= p <= x + width on each axis.
+ */
+struct TitleHitRect {
+    float x = {};      // +0x00: the left edge.
+    float y = {};      // +0x04: the top edge.
+    float width = {};  // +0x08: the horizontal extent.
+    float height = {}; // +0x0c: the vertical extent.
+};
 
 /**
  * @brief The theme-2 (Colette) title-screen scene: the campaign parts-based title shown before the
@@ -45,6 +60,8 @@ public:
     static constexpr int kPartAnchorCount = 12;
     // The number of floats in the fade transform seeded at load.
     static constexpr int kFadeTransformCount = 5;
+    // The number of touchable part hit-box rectangles the emitter records.
+    static constexpr int kHitBoxCount = 8;
 
     /**
      * @brief Constructs the scene: chains the scene base, installs the title dispatch table, and
@@ -125,6 +142,37 @@ private:
      */
     void RenderCampaignPortrait();
 
+    /**
+     * @brief Emits one title part's sprite into its instancer slot and records its hit-box rect.
+     *
+     * Appends one quad to part @p nPartId's sprite instancer (doing nothing once the instancer is
+     * full). The background part (id 0) fills the screen from its texture; the other parts take their
+     * placement from the platform layout table and their UV rectangle from the type-specific atlas
+     * table, recentring the landscape layout around the viewport. The colour is the passed tint faded
+     * out by the scene's fade level, and the lettered/logo parts whose ids gate a touch also store
+     * their anchor rectangle into the layer's hit-box table.
+     * @param nPartId The part index (0 background; the lettered and logo part ids otherwise).
+     * @param nAlpha The base alpha, scaled by the fade.
+     * @param position The part centre position.
+     * @param scale The part scale.
+     * @param flRotation The part rotation, in radians.
+     * @param color The tint (each channel 0 to 255, scaled by the fade).
+     * @ghidraAddress 0x599e0
+     */
+    void EmitPartSprite(unsigned int nPartId,
+                        unsigned int nAlpha,
+                        const S_VECTOR2 &position,
+                        const S_VECTOR2 &scale,
+                        float flRotation,
+                        const S_VECTOR3 &color);
+
+    // Records a touchable part's hit-box (its draw position offset by the layout anchor, sized by the
+    // layout extent) into the layer's hit-box table. The sound-effect part in the landscape layout
+    // uses a nudged and grown rectangle. Parts without a hit-box are ignored.
+    void RecordPartHitBox(unsigned int nPartId,
+                          const S_VECTOR2 &drawPosition,
+                          const TitlePartLayoutRecord &layout);
+
     unsigned char m_aReserved4b[1] = {}; // +0x4b
     int m_nState = {};                   // +0x4c: the dispatch state.
     unsigned char m_aReserved50[4] = {}; // +0x50
@@ -145,8 +193,12 @@ private:
     int m_nTrailingIndex = {};               // +0x72c: a per-slot index (-1 when none is selected).
     unsigned char m_aReserved730[0x11] = {}; // +0x730
     bool m_bSeTriggered = {};                // +0x741: whether the title sound effect has fired.
-    // +0x742..+0x7cb is trailing presentation state whose roles are still being worked out.
-    unsigned char m_aReserved742[0x8a] = {};        // +0x742
+    unsigned char m_aReserved742[2] = {};    // +0x742
+    float m_flViewportWidth = {};  // +0x744: the viewport width, cached from the game system.
+    float m_flViewportHeight = {}; // +0x748: the viewport height.
+    // +0x74c: the eight part hit-box rectangles the emitter records for touch testing (the corporate
+    // logo, the lettered parts, and the sound-effect part).
+    TitleHitRect m_aHitBox[kHitBoxCount] = {};      // +0x74c
     S_VECTOR2 m_aPartAnchor[kPartAnchorCount] = {}; // +0x7cc: the ring of part anchor positions,
     // copied from the campaign anchor table at set-up.
     // +0x82c..+0x88f is further trailing state.
@@ -158,13 +210,30 @@ private:
  * @brief The 104-record per-sprite part-layout table binding each part's texture and placement.
  *
  * Two variants live in the binary's read-only data: the default table and the alternate (iPad)
- * table. A record's texture index of 5 marks a part that binds no texture. @c LoadResources reads
- * the texture index; the placement fields are used when the parts are drawn.
+ * table. A record's texture index of 4 or 5 marks a part that binds no texture. @c LoadResources
+ * reads the texture index; the placement fields and UV index are used when the parts are drawn.
  * @ghidraAddress 0x2f8f80
  */
 extern const TitlePartLayoutRecord g_aTitleCampaignLayoutDefault[];
 /** @ghidraAddress 0x2f85c0 */
 extern const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[];
+
+/**
+ * @brief The part UV-rectangle tables, selected by a part's render type and the orientation.
+ *
+ * The default table serves the background and any non-typed part; the lettered-part (type 1) and
+ * logo (type 3) parts each have a phone and an iPad table.
+ * @ghidraAddress 0x2f7908
+ */
+extern const SpriteUvEntry g_aTitlePartUvDefault[];
+/** @ghidraAddress 0x2f7ef8 */
+extern const SpriteUvEntry g_aTitlePartUvLetterPhone[];
+/** @ghidraAddress 0x2f7b68 */
+extern const SpriteUvEntry g_aTitlePartUvLetterPad[];
+/** @ghidraAddress 0x2f82e8 */
+extern const SpriteUvEntry g_aTitlePartUvLogoPhone[];
+/** @ghidraAddress 0x2f8288 */
+extern const SpriteUvEntry g_aTitlePartUvLogoPad[];
 
 /**
  * @brief The ring of twelve part anchor positions the title arranges its campaign parts around.

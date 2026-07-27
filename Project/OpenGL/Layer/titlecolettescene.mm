@@ -58,6 +58,43 @@ static NSString *const kTitleSeFormat = @"Sounds/%@/SE/SD_SE_%@";
 static NSString *const kTitleSeType = @"m4a";
 // The part name spliced into the theme sound-effect path (@ghidraAddress 0x35dca8).
 static NSString *const kTitleSePartName = @"JUMP";
+
+// The background part fills the screen from its texture; the logo parts carry a distinct render type.
+constexpr unsigned int kBackgroundPartId = 0;
+constexpr int kPartTypeLogo = 3;
+
+// The landscape layout recentres each part around the viewport: it offsets by half the design
+// resolution, scales to 0.8, halves, and adds the viewport centre.
+constexpr float kLandscapeOffsetX = -384.0f; // @ghidraAddress 0x2f8568
+constexpr float kLandscapeOffsetY = -512.0f; // @ghidraAddress 0x2f8570
+constexpr float kLandscapeScale = 0.8f;      // @ghidraAddress 0x2f856c
+constexpr float kHalf = 0.5f;
+
+// The sound-effect part's landscape hit-box is nudged and grown relative to its sprite.
+constexpr float kSeHitOffsetX = -40.0f; // @ghidraAddress 0x2f8574
+constexpr float kSeHitOffsetY = -30.0f;
+constexpr float kSeHitGrowX = 80.0f; // @ghidraAddress 0x2f855c
+constexpr float kSeHitGrowY = 60.0f; // @ghidraAddress 0x2f8578
+
+// The part ids that carry a touch hit-box, and the hit-box slot each records into.
+enum TitlePartId {
+    kPartSoundEffect = 0x5d,
+    kPartLetterF = 0x46,
+    kPartLetterI = 0x49,
+    kPartLetterG = 0x47,
+    kPartLetterD = 0x44,
+    kPartLetterA = 0x41,
+    kPartCorporateLogo = 0x62,
+};
+enum TitleHitBoxSlot {
+    kHitBoxSoundEffect = 0,
+    kHitBoxLetterF = 1,
+    kHitBoxLetterI = 2,
+    kHitBoxLetterG = 3,
+    kHitBoxLetterD = 4,
+    kHitBoxLetterA = 5,
+    kHitBoxCorporateLogo = 7,
+};
 } // namespace
 
 namespace rb {
@@ -148,6 +185,135 @@ void TitleColetteScene::LoadResources() {
     m_pSePlayer = [[SePlayer alloc] initWithPath:sePath];
 
     m_nState = kStateStartMusic;
+}
+
+void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
+                                         const S_VECTOR2 &drawPosition,
+                                         const TitlePartLayoutRecord &layout) {
+    // The hit-box's top-left corner is the draw position offset back by the layout anchor.
+    const float flLeft = drawPosition.x - layout.flPosX;
+    const float flTop = drawPosition.y - layout.flPosY;
+
+    int nSlot;
+    switch (nPartId) {
+    case kPartLetterA:
+        nSlot = kHitBoxLetterA;
+        break;
+    case kPartLetterD:
+        nSlot = kHitBoxLetterD;
+        break;
+    case kPartLetterF:
+        nSlot = kHitBoxLetterF;
+        break;
+    case kPartLetterG:
+        nSlot = kHitBoxLetterG;
+        break;
+    case kPartLetterI:
+        nSlot = kHitBoxLetterI;
+        break;
+    case kPartCorporateLogo:
+        nSlot = kHitBoxCorporateLogo;
+        break;
+    case kPartSoundEffect:
+        // The sound-effect part in the landscape layout uses a nudged, grown hit-box; the portrait
+        // layout uses the plain rectangle.
+        if (!IsPad()) {
+            m_aHitBox[kHitBoxSoundEffect] = TitleHitRect{flLeft + kSeHitOffsetX,
+                                                         flTop + kSeHitOffsetY,
+                                                         layout.flWidth + kSeHitGrowX,
+                                                         layout.flHeight + kSeHitGrowY};
+            return;
+        }
+        nSlot = kHitBoxSoundEffect;
+        break;
+    default:
+        // The remaining parts carry no hit-box.
+        return;
+    }
+    m_aHitBox[nSlot] = TitleHitRect{flLeft, flTop, layout.flWidth, layout.flHeight};
+}
+
+/** @ghidraAddress 0x599e0 */
+void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
+                                       unsigned int nAlpha,
+                                       const S_VECTOR2 &position,
+                                       const S_VECTOR2 &scale,
+                                       float flRotation,
+                                       const S_VECTOR3 &color) {
+    if (nPartId >= static_cast<unsigned int>(kSpriteSlotCount)) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING_2D *pSprite = m_apSprites[nPartId];
+    const int nIndex = pSprite->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pSprite->GetCapacity())) {
+        return;
+    }
+
+    if (nPartId == kBackgroundPartId) {
+        // The background fills the screen from its texture: the quad is the image size divided by
+        // the texture scale, anchored at its centre, with the UV covering the image within its
+        // power-of-two allocation.
+        const ne::C_TEXTURE *pTexture = pSprite->GetBoundTexture();
+        const float flScale = pTexture->GetScale();
+        const float flQuadWidth = static_cast<float>(pTexture->GetImageWidth()) / flScale;
+        const float flQuadHeight = static_cast<float>(pTexture->GetImageHeight()) / flScale;
+        pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{flQuadWidth * kHalf, flQuadHeight * kHalf});
+        pSprite->SetSpriteSize(nIndex, S_VECTOR2{flQuadWidth, flQuadHeight});
+        pSprite->SetSpriteUvOrigin(nIndex, S_VECTOR2{0.0f, 0.0f});
+        pSprite->SetSpriteUvSize(
+            nIndex,
+            S_VECTOR2{static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetAllocWidth(),
+                      static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetAllocHeight()});
+        pSprite->SetSpritePosition(nIndex, position);
+        pSprite->SetSpriteScale(nIndex, flScale, flScale);
+    } else {
+        // The other parts take their placement from the platform layout table and their UV rectangle
+        // from the type-specific atlas table.
+        const bool bIsPad = IsPad();
+        const TitlePartLayoutRecord &layout =
+            (bIsPad ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault)[nPartId];
+        const SpriteUvEntry *pUvTable;
+        if (layout.nTextureIndex == kPartTypeLogo) {
+            pUvTable = bIsPad ? g_aTitlePartUvLogoPad : g_aTitlePartUvLogoPhone;
+        } else {
+            pUvTable = bIsPad ? g_aTitlePartUvLetterPad : g_aTitlePartUvLetterPhone;
+        }
+        const SpriteUvEntry &uv = pUvTable[layout.nUvIndex];
+
+        pSprite->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+        pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+
+        // The landscape layout recentres the part around the viewport; the portrait layout draws it
+        // at the caller's position directly.
+        S_VECTOR2 drawPosition = position;
+        S_VECTOR2 drawScale = scale;
+        if (!bIsPad) {
+            drawPosition.x = (position.x + kLandscapeOffsetX) * kLandscapeScale * kHalf +
+                             m_flViewportWidth * kHalf;
+            drawPosition.y = (position.y + kLandscapeOffsetY) * kLandscapeScale * kHalf +
+                             m_flViewportHeight * kHalf;
+            drawScale.width = scale.width * kHalf;
+            drawScale.height = scale.height * kHalf;
+        }
+        pSprite->SetSpritePosition(nIndex, drawPosition);
+        pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{layout.flPosX, layout.flPosY});
+        pSprite->SetSpriteSize(nIndex, S_VECTOR2{layout.flWidth, layout.flHeight});
+        pSprite->SetSpriteScale(nIndex, drawScale.width, drawScale.height);
+
+        // The touchable parts record their hit-box (top-left corner and extent) for the main loop.
+        RecordPartHitBox(nPartId, drawPosition, layout);
+    }
+
+    pSprite->SetSpriteRotation(nIndex, flRotation);
+    // The tint fades out with the scene's reveal: colours darken and the alpha drops as the fade
+    // level rises toward one.
+    const float flReveal = 1.0f - m_flFadeBase;
+    pSprite->SetSpriteColor(nIndex,
+                            static_cast<unsigned int>(flReveal * color.r),
+                            static_cast<unsigned int>(flReveal * color.g),
+                            static_cast<unsigned int>(flReveal * color.b),
+                            static_cast<unsigned int>(static_cast<float>(nAlpha) * flReveal));
+    pSprite->SetSpriteCount(nIndex + 1);
 }
 
 /** @ghidraAddress 0x57a64 */
