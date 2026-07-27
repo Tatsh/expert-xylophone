@@ -49,6 +49,15 @@ public:
     void InitializeResultWindowSprites();
 
     /**
+     * @brief Starts the result panel's hide animation: keyframes each display animation channel from
+     * its current shown value toward zero over @p flDuration (snapping immediately when
+     * non-positive) and clears the panel-active flag.
+     * @param flDuration The animation duration.
+     * @ghidraAddress 0x74190
+     */
+    void StartHideTween(float flDuration);
+
+    /**
      * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
      *
      * Looks up a @c PhoneAnchorRecord from one of two runtime-filled tables (selected by the

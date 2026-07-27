@@ -81,6 +81,13 @@ public:
      */
     void AdvanceToPlayReadyState();
 
+    /**
+     * @brief Resets and hides every play-field render layer (end of song or teardown): fades out the
+     * shared layers and resets the active theme's full-combo, effect, and result layers.
+     * @ghidraAddress 0x14d23c
+     */
+    void ResetAllPlayFieldLayers();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch

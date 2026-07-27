@@ -26,6 +26,7 @@
 #include "clear_gauge_layer.h"
 #include "colette_theme_layer.h"
 #include "event_effect_layer.h"
+#include "fade_overlay_layer.h"
 #include "full_combo_classic_layer.h"
 #include "full_combo_colette_layer.h"
 #include "full_combo_limelight_layer.h"
@@ -51,6 +52,7 @@
 #include "result_window_colette_layer.h"
 #include "soundeffectmanager.h"
 #include "thema_marker_layer.h"
+#include "tutorial_guide_layer.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
@@ -392,6 +394,45 @@ void PlayTask::AdvanceToPlayReadyState() {
     ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePlayReady;
+}
+
+/** @ghidraAddress 0x14d23c */
+void PlayTask::ResetAllPlayFieldLayers() {
+    // Fade out the shared play-field layers immediately.
+    PlayerFieldLayer::shared()->StartScoreFadeOut(0.0f);
+    JudgeEffectLayer::shared()->StartFadeOut(0.0f);
+    BgLayer::GetBackgroundLayer()->StartBackgroundFadeOut(0.0f);
+    ReflecGaugeLayer::shared()->StartFadeOut(0.0f);
+    ClearGaugeLayer::shared()->StartFadeOut(0.0f);
+    ThemaMarkerLayer::shared()->StartFadeOut(0.0f);
+    PlayColorLayer::shared()->StartShrinkAnimation(0.0f);
+    FadeOverlayLayer::shared()->StartFadeOut(0.0f);
+    if (m_bIsPad) {
+        AltFrameLayer::shared()->StartFadeOut(0.0f);
+    } else {
+        MainFrameLayer::shared()->StartFadeOut(0.0f);
+    }
+
+    // Reset the active theme's full-combo, effect, and result layers.
+    if (m_nThema == kThemaColette) {
+        FullComboColetteLayer::shared()->ClearEffectFlags();
+        NumberLayer::shared()->ClearReady();
+        ColetteThemeLayer::shared()->StartFadeOut(0.0f);
+        ResultWindowColetteLayer::shared()->StartHideTween(0.0f);
+        EventEffectLayer::shared()->FinishEffect();
+        TutorialGuideLayer::shared()->Stop();
+    } else if (m_nThema == kThemaLimelight) {
+        FullComboLimelightLayer::shared()->ClearEffectFlags();
+        LimelightEffectLayer::shared()->SetInactive();
+        LimelightThemeLayer::shared()->StartGradeAnimation(0.0f);
+        LimelightResultLayer::shared()->ResetResultBonusAnimations(0.0f);
+        EventEffectLayer::shared()->FinishEffect();
+    } else if (m_nThema == kThemaClassic) {
+        FullComboClassicLayer::shared()->ClearEffectFlags();
+        BackgroundSpriteManager::shared()->SetInactive();
+        ClassicThemeLayer::shared()->StartGaugeValueFade(0.0f);
+        ResultWindowClassicLayer::shared()->ResetResultScoreAnimations(0.0f);
+    }
 }
 
 /** @ghidraAddress 0x14b818 */
