@@ -260,8 +260,10 @@ constexpr int kDefaultPlayColor = 0;
 
 - (void)Task {
     /** @ghidraAddress 0x8af3c */
-    float elapsed = GetElapsedMediaTime(reinterpret_cast<double *>(&m_TaskTime));
-    StartMediaTimer(reinterpret_cast<double *>(&m_TaskTime));
+    float elapsed = GetElapsedMediaTime(&m_TaskTime.m_flTime);
+    StartMediaTimer(&m_TaskTime.m_flTime);
+    // The per-frame listener callback (ne::C_TASK::OnFrame) takes its frame-delta count as the
+    // opaque void* argument, so the elapsed whole-frame count is passed packed into the pointer.
     auto elapsedFrames = static_cast<uintptr_t>(static_cast<int>(elapsed));
     DispatchListenerList(reinterpret_cast<void *>(elapsedFrames));
     TouchManager::FetchSharedSingleton()->CompactTouchList();
@@ -270,14 +272,14 @@ constexpr int kDefaultPlayColor = 0;
 - (void)Draw {
     /** @ghidraAddress 0x8af88 */
     neGLESRenderer *renderer = GetGlRenderer();
-    float elapsed = GetElapsedMediaTime(reinterpret_cast<double *>(&m_RenderTime));
+    float elapsed = GetElapsedMediaTime(&m_RenderTime.m_flTime);
     if (elapsed < kMaxRenderFrameElapsed) {
         [self.glView BeginRender];
         renderer->ClearBuffers(kClearColor);
         RenderGlobalSceneTree();
         [self.glView Present];
     }
-    StartMediaTimer(reinterpret_cast<double *>(&m_RenderTime));
+    StartMediaTimer(&m_RenderTime.m_flTime);
 }
 
 - (void)LayoutedGLView:(neGLView *)glView {
@@ -463,8 +465,8 @@ constexpr int kDefaultPlayColor = 0;
 - (void)CreateTimer {
     /** @ghidraAddress 0x8b2a0 */
     if (!m_IsResume && m_IsLoop) {
-        StartMediaTimer(reinterpret_cast<double *>(&m_TaskTime));
-        StartMediaTimer(reinterpret_cast<double *>(&m_RenderTime));
+        StartMediaTimer(&m_TaskTime.m_flTime);
+        StartMediaTimer(&m_RenderTime.m_flTime);
         [self CreateDisplayLinkTimer];
     }
 }

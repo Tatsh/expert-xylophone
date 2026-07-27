@@ -416,8 +416,7 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
     pRenderer->BindTexture2d(m_pTexture->GetGLHandle());
     pRenderer->SetGlClientState(kClientTexCoord, 1);
     auto *pScratch = static_cast<unsigned char *>(m_pVertexScratch);
-    pRenderer->SetTexCoordPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexUvOffset,
-                                  kVertexStride);
+    pRenderer->SetTexCoordPointer(pScratch + kVertexUvOffset, kVertexStride);
     for (int nParam = 0; nParam < kTextureParamCount; ++nParam) {
         UpdateTextureParameterIfChanged(m_pTexture, pRenderer, nParam, m_aTexParams[nParam]);
     }
@@ -481,6 +480,7 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
+    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);
@@ -659,6 +659,7 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
+    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);

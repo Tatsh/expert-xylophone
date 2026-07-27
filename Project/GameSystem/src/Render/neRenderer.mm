@@ -201,8 +201,8 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
     pRayOrigin->x = 0.0f;
     pRayOrigin->y = 0.0f;
     pRayOrigin->z = 0.0f;
-    TransformPointByMatrix(reinterpret_cast<float *>(pRayOrigin), invViewMatrix);
-    TransformPointByMatrix(reinterpret_cast<float *>(&nearPoint), invViewMatrix);
+    TransformPointByMatrix(pRayOrigin, invViewMatrix);
+    TransformPointByMatrix(&nearPoint, invViewMatrix);
 
     // The ray direction is the normalised vector from the origin to the near point.
     *pRayDir = nearPoint;

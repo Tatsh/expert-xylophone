@@ -233,6 +233,7 @@ void C_DRAW_POLYGON_3D::SetPos(int nIndex, S_VECTOR3 position) {
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     auto *pVertex = static_cast<unsigned char *>(m_pVertexArray) +
                     (m_nPositionOffset + m_nVertexStride * nIndex);
+    // The vertex field lives at a byte offset in the interleaved buffer; view it as floats.
     auto *pPosition = reinterpret_cast<float *>(pVertex);
     pPosition[0] = position.x;
     pPosition[1] = position.y;
@@ -275,6 +276,7 @@ void C_DRAW_POLYGON_3D::SetUV(int nIndex, float flU, float flV) {
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     auto *pVertex =
         static_cast<unsigned char *>(m_pVertexArray) + (m_nUvOffset + m_nVertexStride * nIndex);
+    // The UV field lives at a byte offset in the interleaved buffer; view it as shorts.
     auto *pUv = reinterpret_cast<short *>(pVertex);
     // The U maps directly and the V is flipped, both to signed 16-bit fixed point.
     pUv[0] = static_cast<short>(static_cast<int>(flU * kUvFixedPointScale));

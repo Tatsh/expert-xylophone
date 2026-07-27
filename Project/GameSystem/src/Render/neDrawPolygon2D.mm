@@ -228,6 +228,7 @@ void C_DRAW_POLYGON_2D::SetPos(int nIndex, S_VECTOR2 position) {
     assert(nIndex >= 0 && nIndex < m_nVertexCount);
     auto *pVertex = static_cast<unsigned char *>(m_pVertexArray) +
                     (m_nPositionOffset + m_nVertexStride * nIndex);
+    // The vertex field lives at a byte offset in the interleaved buffer; view it as floats.
     auto *pPosition = reinterpret_cast<float *>(pVertex);
     pPosition[0] = position.x;
     pPosition[1] = position.y;
@@ -276,6 +277,7 @@ void C_DRAW_POLYGON_2D::SetUV(int nIndex, float flU, float flV) {
     // The texcoord slot sits at the format-derived offset within the interleaved vertex.
     unsigned char *pVertex =
         static_cast<unsigned char *>(m_pVertexArray) + nIndex * m_nVertexStride + m_nTexcoordOffset;
+    // The UV field lives at a byte offset in the interleaved buffer; view it as shorts.
     short *pTexcoord = reinterpret_cast<short *>(pVertex);
     // The vertical coordinate is stored flipped; both channels are scaled to the signed 16-bit range.
     pTexcoord[0] = static_cast<short>(flU * kTexcoordScaleU);

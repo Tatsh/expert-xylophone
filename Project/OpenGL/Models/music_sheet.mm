@@ -270,6 +270,8 @@ int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem
     m_nVersion = static_cast<int>(pWords[1]);
     const auto *pStream = static_cast<const unsigned char *>(pBytes) + 16;
 
+    // The parsers read the post-header byte stream as arrays of words; the cast reinterprets the raw
+    // chart bytes as the word type each format parser consumes.
     bool bParsed;
     if (static_cast<unsigned int>(m_nVersion - kMinModernVersion) < kModernVersionSpan) {
         bParsed = ParseNotesV10(reinterpret_cast<const unsigned long *>(pStream)) != 0;
@@ -579,6 +581,7 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
     // The first path node is the chart's implicit start node.
     m_pathNodes.Append(NotePathPoint{static_cast<int>(pStream[0]), 0});
 
+    // Walk the note records as a raw byte cursor past the four-word header.
     const auto *pCursor = reinterpret_cast<const unsigned char *>(pStream + 4);
     m_pRecords = new RbffNoteRecord[nNoteCount];
     for (unsigned int i = 0; i < nNoteCount; ++i) {
@@ -660,6 +663,7 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
 
 /** @ghidraAddress 0x12fdf4 */
 int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
+    // Read the header fields as a raw byte cursor over the chart stream.
     const auto *pHeader = reinterpret_cast<const unsigned char *>(pStream);
     const auto readHeaderInt = [pHeader](int nOffset) {
         int value;

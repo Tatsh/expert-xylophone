@@ -506,14 +506,14 @@ float *InvertMatrix4x4(float *pMatrix) {
 }
 
 /** @ghidraAddress 0x20db0 */
-void TransformPointByMatrix(float *pPoint, float *pMatrix) {
+void TransformPointByMatrix(S_VECTOR3 *pPoint, const float *pMatrix) {
     // Transform a 3D point by a column-major matrix with the perspective divide: the point is taken
     // as (x, y, z, 1), transformed, then divided by the resulting homogeneous w (assumed non-zero).
-    const float x = pPoint[0];
-    const float y = pPoint[1];
-    const float z = pPoint[2];
+    const float x = pPoint->x;
+    const float y = pPoint->y;
+    const float z = pPoint->z;
     const float flInvW = 1.0f / (pMatrix[15] + x * pMatrix[3] + y * pMatrix[7] + z * pMatrix[11]);
-    pPoint[0] = flInvW * (pMatrix[12] + x * pMatrix[0] + y * pMatrix[4] + z * pMatrix[8]);
-    pPoint[1] = flInvW * (pMatrix[13] + x * pMatrix[1] + y * pMatrix[5] + z * pMatrix[9]);
-    pPoint[2] = flInvW * (pMatrix[14] + x * pMatrix[2] + y * pMatrix[6] + z * pMatrix[10]);
+    pPoint->x = flInvW * (pMatrix[12] + x * pMatrix[0] + y * pMatrix[4] + z * pMatrix[8]);
+    pPoint->y = flInvW * (pMatrix[13] + x * pMatrix[1] + y * pMatrix[5] + z * pMatrix[9]);
+    pPoint->z = flInvW * (pMatrix[14] + x * pMatrix[2] + y * pMatrix[6] + z * pMatrix[10]);
 }

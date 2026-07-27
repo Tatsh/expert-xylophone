@@ -155,6 +155,7 @@ NSData *MakeLevelCustomizeHash(int nLevel, int nExp) {
     std::memcpy(&aRecord[0x1e], &nExp, sizeof(nExp));
     std::memcpy(&aRecord[0x22], kHashSaltTail, sizeof(kHashSaltTail));
     aRecord[0x37] = 0;
+    // Hash the assembled byte record as a C string (the MD5 helper takes const char *).
     return Md5StringToData(reinterpret_cast<const char *>(aRecord));
 }
 

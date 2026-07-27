@@ -492,6 +492,7 @@ void neGLESRenderer::ClearColorPointer(int nStride, int nColorOffset, int nBindi
         m_nColorBufferBinding = m_nArrayBufferBound;
         m_nColorStride = kResetStrideSentinel;
         m_pColorPointer = nullptr;
+        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a pointer.
         glColorPointer(kColorComponentCount,
                        GL_UNSIGNED_BYTE,
                        nStride,
@@ -506,6 +507,7 @@ void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
         m_anTexCoordBufferBinding[nUnit] = m_nArrayBufferBound;
         m_apTexCoordPointer[nUnit] = nullptr;
         m_anTexCoordStride[nUnit] = kResetStrideSentinel;
+        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a pointer.
         glTexCoordPointer(2,
                           GL_SHORT,
                           nStride,
