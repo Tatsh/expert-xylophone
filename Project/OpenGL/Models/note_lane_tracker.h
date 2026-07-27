@@ -10,17 +10,6 @@
 class Random;
 
 /**
- * @brief Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
- *
- * Ties are broken with the C library @c rand rather than the engine generator. (The binary takes an
- * ignored leading register argument, dropped here.)
- * @param pArray The int array to shuffle in place.
- * @param nCount The element count.
- * @ghidraAddress 0x14911c
- */
-void ShuffleIndices(int *pArray, int nCount);
-
-/**
  * @brief Tracks per-lane occupancy while the chart parser assigns each note a play-field lane.
  *
  * Holds a lane slot for each of the two players' seven lanes and an attached @c Random used to pick
@@ -98,6 +87,17 @@ public:
         int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed);
 
 private:
+    /**
+     * @brief Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
+     *
+     * Ties are broken with the C library @c rand rather than the engine generator. (The binary takes
+     * an ignored leading register argument, dropped here.)
+     * @param pArray The int array to shuffle in place.
+     * @param nCount The element count.
+     * @ghidraAddress 0x14911c
+     */
+    static void ShuffleIndices(int *pArray, int nCount);
+
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
     Random *m_pNoteData = {};               // +0x08: the attached lane-picking generator.
     NoteLaneSlot m_aSlots[kSlotCount] = {}; // +0x10: the per-player, per-lane occupancy slots.

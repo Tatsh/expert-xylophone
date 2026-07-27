@@ -14,7 +14,7 @@
 #include "note_lane_slot.h"
 
 /** @ghidraAddress 0x14911c */
-void ShuffleIndices(int *pArray, int nCount) {
+void NoteLaneTracker::ShuffleIndices(int *pArray, int nCount) {
     for (int i = 0; i < nCount; ++i) {
         const int nSwap = nCount != 0 ? std::rand() % nCount : 0;
         const int nTemp = pArray[i];
