@@ -6,7 +6,7 @@
 //  rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
-#include "title_screen_layer0.h"
+#include "titleclassicscene.h"
 
 #import "AppDelegate.h"
 #import "AudioManager.h"
