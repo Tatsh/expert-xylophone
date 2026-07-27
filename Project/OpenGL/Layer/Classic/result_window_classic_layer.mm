@@ -9,10 +9,16 @@
 #include "neTexture.h"
 #include "polygon2d_trail.h"
 #import "s_vector2.h"
+#include "soundeffectmanager.h"
 #include "vectormath.h"
 
 // The process-wide Classic result-window layer, created lazily by shared().
 static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddress 0x3dd2f8
+
+// The gesture hold-release timeout, in milliseconds (@ghidraAddress 0x302d5c), and the themed voice
+// the release cue plays.
+static constexpr float kGestureHoldTimeout = 3300.0f;
+static constexpr int kGestureReleaseVoiceId = 7;
 
 // The Classic pad parts table (declared in classic_parts_data_table.h): zero-initialised here to
 // match the binary's __common segment, filled at runtime.
@@ -1218,4 +1224,16 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
         pTrail->Reset();
     }
     m_bScoreAnimActive = false;
+}
+
+/** @ghidraAddress 0x11738c */
+void ResultWindowClassicLayer::UpdateGestureHoldTimer(float flDeltaTime) {
+    if (!m_bScoreAnimActive) {
+        return;
+    }
+    m_flGestureHoldTimer += flDeltaTime;
+    if (m_flGestureHoldTimer > kGestureHoldTimeout) {
+        m_bScoreAnimActive = false;
+        SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kGestureReleaseVoiceId);
+    }
 }

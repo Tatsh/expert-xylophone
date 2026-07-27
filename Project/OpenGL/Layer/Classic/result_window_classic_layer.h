@@ -47,6 +47,17 @@ public:
     void ResetResultScoreAnimations(float flStartTime);
 
     /**
+     * @brief Counts a gesture hold-timer down and fires the release cue when it expires.
+     *
+     * A no-op while the score/gesture-active flag is clear. Otherwise it accumulates the frame delta
+     * into the hold timer and, once the timer passes the hold timeout, clears the active flag and
+     * plays the themed release voice.
+     * @param flDeltaTime The elapsed time since the last frame, in milliseconds.
+     * @ghidraAddress 0x11738c
+     */
+    void UpdateGestureHoldTimer(float flDeltaTime);
+
+    /**
      * @brief Whether a customize-character texture swap is pending.
      * @return The reload flag.
      * @ghidraAddress 0x11c590
@@ -539,9 +550,13 @@ private:
     // +0xb8..+0x12f: the five result-score/effect display animation channels.
     ResultBonusAnimChannel m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
     Polygon2dTrail *m_apTrails[kTrailCount] = {};                      // +0x130: the ribbon trails.
-    bool m_bScoreAnimActive = {}; // +0x150: set while the score animation is running.
-    // +0x151..+0x1b4: further layer state, still being worked out.
-    unsigned char m_aReserved151[0x64] = {}; // +0x151
+    bool m_bScoreAnimActive =
+        {}; // +0x150: set while the score animation (and gesture hold) is active.
+    // +0x151..+0x153 is alignment padding before the gesture-hold timer.
+    unsigned char m_aPad151[3] = {}; // +0x151
+    float m_flGestureHoldTimer = {}; // +0x154: accumulates toward the gesture-hold release timeout.
+    // +0x158..+0x1b4: further layer state, still being worked out.
+    unsigned char m_aReserved158[0x5d] = {}; // +0x158
     bool m_bPortrait = {}; // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1bf: trailing layer state, still being worked out.
     unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
