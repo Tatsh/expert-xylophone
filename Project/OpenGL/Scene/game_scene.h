@@ -86,6 +86,39 @@ public:
      * @ghidraAddress 0x14b010
      */
     void PausePlayTimerAndBgm();
+
+    /**
+     * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
+     *
+     * Sets the mode to normal, runs @c Init, and advances to state 2.
+     * @ghidraAddress 0x14af90
+     */
+    void EnterModeNormal();
+    /**
+     * @brief Scene-mode-enter callback: enters alternate play mode and initialises the scene.
+     *
+     * Sets the mode to alternate, runs @c Init, and advances to state 0x10.
+     * @ghidraAddress 0x14afbc
+     */
+    void EnterModeAlt();
+
+    /**
+     * @brief Resumes the play timer and background music after an interruption.
+     *
+     * The counterpart to @c PausePlayTimerAndBgm; a no-op unless the game is paused. Acts only on the
+     * game-system and play-timer singletons, so it takes no scene.
+     * @ghidraAddress 0x14b144
+     */
+    static void ResumePlayTimerAndBgm();
+    /**
+     * @brief Re-enters alternate play mode on the current scene when the game system has one active.
+     *
+     * A render-loop resume hook: when the game system holds a current scene, runs the alternate
+     * mode-enter callback on it; otherwise does nothing.
+     * @ghidraAddress 0x8c884
+     * @ghidraAddress 0x8c8a8
+     */
+    static void ResumeRenderLoopIfActive();
     /**
      * @brief Resets the scene's state field to zero.
      * @ghidraAddress 0x14a510
@@ -318,44 +351,6 @@ private:
                                             //        Colette), selecting the full-combo layer.
     unsigned char m_aReserved8c[4] = {};    // +0x8c: trailing play state to the 0x90-byte size.
 };
-
-/**
- * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
- *
- * Sets the scene's mode to normal, runs @c GameScene::Init, and advances it to state 2.
- * @param pScene The game scene.
- * @ghidraAddress 0x14af90
- */
-void InitGameSceneModeNormal(GameScene *pScene);
-
-/**
- * @brief Scene-mode-enter callback: enters alternate play mode and initialises the scene.
- *
- * Sets the scene's mode to alternate, runs @c GameScene::Init, and advances it to state 0x10.
- * @param pScene The game scene.
- * @ghidraAddress 0x14afbc
- */
-void InitGameSceneModeAlt(GameScene *pScene);
-
-/**
- * @brief Re-enters alternate play mode on the current scene when the game system has one active.
- *
- * A render-loop resume hook: when the game system holds a current scene, runs the alternate
- * mode-enter callback on it; otherwise does nothing. The binary emits two byte-identical copies for
- * two call sites.
- * @ghidraAddress 0x8c884
- * @ghidraAddress 0x8c8a8
- */
-void ResumeRenderLoopIfActive(void);
-
-/**
- * @brief Resumes the play timer and background music after an interruption.
- *
- * The counterpart to @c GameScene::PausePlayTimerAndBgm; a no-op unless the game is paused. Unlike
- * the pause side it takes no scene, since it acts only on the game-system and play-timer singletons.
- * @ghidraAddress 0x14b144
- */
-void ResumePlayTimerAndBgm(void);
 
 /**
  * @brief Ensures the device is generating orientation-change notifications.

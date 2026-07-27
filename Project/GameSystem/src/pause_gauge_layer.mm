@@ -297,7 +297,7 @@ void PauseGaugeLayer::HandleExit() {
 void PauseGaugeLayer::HandleResume() {
     // Resume play only when a scene is active, then play the pause-menu confirm effect.
     if (GameSystem::GetGameSystem()->GetCurrentScene() != nullptr) {
-        rb::ResumePlayTimerAndBgm();
+        rb::GameScene::ResumePlayTimerAndBgm();
     }
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
 }

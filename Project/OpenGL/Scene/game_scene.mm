@@ -982,21 +982,21 @@ void GameScene::ResetNotePlaybackState(bool bApplyGhost) {
 }
 
 /** @ghidraAddress 0x14af90 */
-void InitGameSceneModeNormal(GameScene *pScene) {
-    pScene->SetMode(0);
-    pScene->Init();
-    pScene->SetState(2);
+void GameScene::EnterModeNormal() {
+    SetMode(0);
+    Init();
+    SetState(2);
 }
 
 /** @ghidraAddress 0x14afbc */
-void InitGameSceneModeAlt(GameScene *pScene) {
-    pScene->SetMode(1);
-    pScene->Init();
-    pScene->SetState(0x10);
+void GameScene::EnterModeAlt() {
+    SetMode(1);
+    Init();
+    SetState(0x10);
 }
 
 /** @ghidraAddress 0x14b144 */
-void ResumePlayTimerAndBgm(void) {
+void GameScene::ResumePlayTimerAndBgm() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     // Nothing to resume unless the game is paused.
     if (!pGameSystem->GetPaused()) {
@@ -1019,10 +1019,10 @@ void ResumePlayTimerAndBgm(void) {
  * @ghidraAddress 0x8c884
  * @ghidraAddress 0x8c8a8
  */
-void ResumeRenderLoopIfActive(void) {
+void GameScene::ResumeRenderLoopIfActive() {
     GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
     if (pScene != nullptr) {
-        InitGameSceneModeAlt(pScene);
+        pScene->EnterModeAlt();
     }
 }
 
