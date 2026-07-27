@@ -2115,11 +2115,11 @@ static BOOL g_bRandamIntSeeded = NO;
         [self searchBar:self.searchBar textDidChange:@""];
         [UIView animateWithDuration:g_dMascotMessageAnimDuration
             animations:^{
-              /** @ghidraAddress 0xb1224 */
+              /** @ghidraAddress 0xb1150 */
               [self layoutSearchBarActive:NO];
             }
             completion:^(BOOL finished) {
-              /** @ghidraAddress 0xb1544 */
+              /** @ghidraAddress 0xb1670 */
               [self.searchMascot setImage:nil];
             }];
     }
