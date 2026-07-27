@@ -170,4 +170,32 @@ void TitleLimelightScene::FinishAndOpenList() {
     MarkDead();
 }
 
+/** @ghidraAddress 0x154380 */
+void TitleLimelightScene::AdvanceFadeValue(int nDeltaFrames) {
+    // Past the fade duration, snap to the end value.
+    if (m_flFadeElapsed >= m_flFadeDuration) {
+        m_flFadeValue = m_flFadeEnd;
+        return;
+    }
+
+    // Accumulate the elapsed frames, clamping to the duration.
+    m_flFadeElapsed += static_cast<float>(nDeltaFrames);
+    if (m_flFadeElapsed < m_flFadeStartDelay) {
+        return;
+    }
+    if (m_flFadeElapsed > m_flFadeDuration) {
+        m_flFadeElapsed = m_flFadeDuration;
+    }
+
+    // Interpolate from the start to the end value over the span past the start delay.
+    float flProgress;
+    if (m_flFadeDuration == 0.0f) {
+        flProgress = 1.0f;
+    } else {
+        flProgress =
+            (m_flFadeElapsed - m_flFadeStartDelay) / (m_flFadeDuration - m_flFadeStartDelay);
+    }
+    m_flFadeValue = m_flFadeStart + flProgress * (m_flFadeEnd - m_flFadeStart);
+}
+
 } // namespace rb

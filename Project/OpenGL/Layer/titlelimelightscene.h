@@ -93,6 +93,17 @@ private:
      */
     void FinishAndOpenList();
 
+    /**
+     * @brief Advances the fade curve one frame toward its target value.
+     *
+     * While the elapsed time is below the duration, accumulates the frame delta and, once past the
+     * start delay, sets the fade value by linearly interpolating from the start to the end value over
+     * the remaining span. Past the duration, snaps the fade value to the end.
+     * @param nDeltaFrames The elapsed frame count.
+     * @ghidraAddress 0x154380
+     */
+    void AdvanceFadeValue(int nDeltaFrames);
+
     unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.
     int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
@@ -107,7 +118,7 @@ private:
     float m_flFadeEnd = {};                   // +0x5a4: the fade curve's end value.
     float m_flFadeDuration = {};              // +0x5a8: the fade curve's duration, in milliseconds.
     float m_flFadeElapsed = {};               // +0x5ac: the fade curve's elapsed time.
-    unsigned char m_aReserved5b0[4] = {};     // +0x5b0: the fade start delay.
+    float m_flFadeStartDelay = {};            // +0x5b0: the delay before the fade curve begins.
     float m_flFadeValue = {};                 // +0x5b4: the current fade value (seeded to 1.0).
     unsigned char m_aReserved5b8[0xc] = {};   // +0x5b8: trailing presentation state.
     int m_nTrailingIndex = {};               // +0x5c4: a per-slot index (-1 when none is selected).
