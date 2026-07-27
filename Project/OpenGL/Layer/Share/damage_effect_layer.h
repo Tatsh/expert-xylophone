@@ -45,6 +45,18 @@ public:
     void InitializeSprites();
 
     /**
+     * @brief Spawns a bounds-damage effect for a player colour at a screen position.
+     *
+     * Claims the first inactive pooled record and fills its colour, position, and reset timer. A full
+     * pool drops the effect.
+     * @param nColor The player colour (0 or 1).
+     * @param flPosX The effect's screen x.
+     * @param flPosY The effect's screen y.
+     * @ghidraAddress 0x174190
+     */
+    void CreateBoundsDamage(int nColor, float flPosX, float flPosY);
+
+    /**
      * @brief Sets one lane's damage-effect display value.
      * @param nLane The player lane (0 or 1).
      * @param flValue The display value.
@@ -74,11 +86,14 @@ private:
      */
     DamageEffectLayer();
 
-    // One pooled per-hit effect record (20 bytes): an active flag and its animation state.
+    // One pooled per-hit effect record (20 bytes): an active flag, colour, position, and timer.
     struct EffectRecord {
-        bool bActive = {};                   // +0x00: whether the record holds a live effect.
-        unsigned char aReserved01[7] = {};   // +0x01
-        unsigned char aReserved08[0xc] = {}; // +0x08: the effect's animation state.
+        bool bActive = {};                 // +0x00: whether the record holds a live effect.
+        unsigned char aReserved01[3] = {}; // +0x01
+        int nColor = {};                   // +0x04: the effect's player colour.
+        float flPosX = {};                 // +0x08: the effect's screen x.
+        float flPosY = {};                 // +0x0c: the effect's screen y.
+        int nTimer = {};                   // +0x10: the effect's animation timer.
     };
 
     ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the bound effect atlas.

@@ -8,6 +8,8 @@
 
 #include "damage_effect_layer.h"
 
+#include <cassert>
+
 #import "RBUserSettingData.h"
 #include "bg_layer.h"
 #include "neRender.h"
@@ -81,6 +83,22 @@ void DamageEffectLayer::SetBoundsDamageStyle() {
         m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kEffectTextureNames[m_nStyle]);
     }
     m_pSprite->SetRefCountedMember(m_pTexture);
+}
+
+/** @ghidraAddress 0x174190 */
+void DamageEffectLayer::CreateBoundsDamage(int nColor, float flPosX, float flPosY) {
+    assert(nColor >= 0 && nColor < kLaneCount);
+    // Claim the first inactive pooled record; a full pool drops the effect.
+    for (EffectRecord &effect : m_aEffects) {
+        if (!effect.bActive) {
+            effect.nColor = nColor;
+            effect.bActive = true;
+            effect.flPosX = flPosX;
+            effect.flPosY = flPosY;
+            effect.nTimer = 0;
+            return;
+        }
+    }
 }
 
 /** @ghidraAddress 0x174224 */
