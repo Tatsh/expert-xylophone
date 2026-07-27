@@ -9,6 +9,7 @@
 #include "play_task.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <new>
 
 #import <QuartzCore/QuartzCore.h>
@@ -22,6 +23,7 @@
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
+#import "ReplayData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
 #include "background_sprite_manager.h"
@@ -88,6 +90,11 @@ static constexpr int kStateNotePlay = 8;
 // past before tearing down.
 static constexpr int kStateExit = 1;
 static constexpr int kExitDelay = 0x5dc;
+
+// The bind state ReloadMusicForRestart advances to, and the ghost style that seeds the RNG from a
+// saved replay.
+static constexpr int kStateBindChart = 2;
+static constexpr int kGhostStyleReplay = 1;
 
 // The play-ready state AdvanceToPlayReadyState advances to, and the gauge grow-animation from-value
 // (also the marker fade-in's marker value) it primes the layers with.
@@ -644,6 +651,31 @@ void PlayTask::ExitToMusicList() {
     ReleaseAllCachedTextures();
 
     m_nState = kStateExit;
+}
+
+/** @ghidraAddress 0x14c690 */
+void PlayTask::ReloadMusicForRestart() {
+    // Wait out the exit delay before restarting.
+    if (m_nPlayTime <= kExitDelay) {
+        return;
+    }
+
+    ResetAllPlayFieldLayers();
+    ShutdownNoteEffectSystem();
+
+    // Reseed the RNG for the new play; when the ghost is enabled and a replay is loaded, reuse the
+    // replay's recorded seed so the ghost re-plays identically.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    pGameSystem->SetRandSeed(static_cast<unsigned int>(rand()));
+    if (RBUserSettingData.sharedInstance.ghostStyle == kGhostStyleReplay) {
+        ReplayData *pReplay = AppDelegate.appDelegate.replayData;
+        if (pReplay != nil) {
+            pGameSystem->SetRandSeed(pReplay.seed.unsignedIntValue);
+        }
+    }
+
+    LoadMusicAndSheet();
+    m_nState = kStateBindChart;
 }
 
 /** @ghidraAddress 0x14d23c */

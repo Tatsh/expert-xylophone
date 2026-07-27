@@ -117,6 +117,14 @@ public:
     void ExitToMusicList();
 
     /**
+     * @brief After the exit delay elapses, reloads the music and sheet for a restart (retry): resets
+     * the play-field layers, shuts down the note-effect system, reseeds the RNG (from the replay when
+     * the ghost is enabled), rebinds the chart, and advances to the load state.
+     * @ghidraAddress 0x14c690
+     */
+    void ReloadMusicForRestart();
+
+    /**
      * @brief Sets up the note-chart preview presentation: applies the note-manager theme, primes every
      * play-field layer to its shown state, loads the chart (or a synthetic default when no music is
      * selected), starts the play timer and background music, shows the preview, and advances to the
