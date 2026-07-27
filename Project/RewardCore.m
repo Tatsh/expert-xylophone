@@ -106,11 +106,12 @@ static dispatch_queue_t gRewardCoreQueue;
 
 #pragma mark Singleton
 
-// @ghidraAddress 0x2079d0 (dispatch_once body at 0x207a14, AllocRewardCoreSingleton at 0x207930).
+// @ghidraAddress 0x2079d0
 + (instancetype)sharedInstance {
     static RewardCore *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+      /** @ghidraAddress 0x207a14 */
       instance = [[RewardCore alloc] init];
       instance.initializeFlg = 0;
     });
