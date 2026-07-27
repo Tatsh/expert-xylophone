@@ -7,6 +7,7 @@ adid
 advertisable
 akhuta
 allseasons
+Ångström
 anim
 apiurl
 appli
@@ -27,7 +28,6 @@ autoreleasepool
 autoresizes
 autoresizing
 autoreverses
-avbus
 avsemixer
 baet
 battlestart
@@ -67,7 +67,6 @@ conn
 constexpr
 contoller
 cooldown
-copious
 copysign
 coveragerc
 cplusplus
@@ -128,11 +127,10 @@ fram
 fullcombo
 fullwidth
 gamecenter
-gamescene
 gamesystem
 ghidra
+ghidra's
 gles
-glext
 grage
 halfwidth
 handakuten
@@ -142,14 +140,11 @@ hira
 hnbt
 howtoplay
 ibgm
-iexp
 ifdef
 ifndef
 ifrm
 igles
-iidx
 immediates
-imusic
 infomation
 initalize
 initilize
@@ -161,7 +156,6 @@ instancetype
 integerv
 interitem
 interp
-iobj
 ishot
 ithm
 ivar
@@ -209,14 +203,12 @@ musicinfo
 musicselect
 mypy
 nbobhfs
-necamera
 nekomata
 nolist
 nonatomic
 nonnull
 noparam
 notelist
-notemodel
 nsascii
 nsec
 nshttp
@@ -368,4 +360,3 @@ youwin
 yukky
 ziparchive
 zizmor
-Ångström
