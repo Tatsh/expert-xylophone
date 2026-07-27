@@ -40,15 +40,17 @@ public:
     }
 
 private:
-    double m_dBaseTime = {};   // +0x00: the timing origin; a resume adds the paused interval to it.
-    char m_reserved08[8] = {}; // +0x08: further timing state, still being worked out.
-    float m_flPlayTime = {};   // +0x10: the current play time, in scaled units.
-    float m_flFrameDelta = {}; // +0x14: the per-frame time step.
-    int m_nOsVersionTier = {}; // +0x1c
+    double m_dBaseTime = {}; // +0x00: the timing origin; a resume adds the paused interval to it.
+    double m_dLastTime = {}; // +0x08: the media time of the last update, seeded at playback start.
+    float m_flPlayTime = {}; // +0x10: the current play time, in scaled units.
+    float m_flFrameDelta = {};       // +0x14: the per-frame time step.
+    bool m_bRunning = {};            // +0x18: set while playback is running (cleared when paused).
+    char m_reserved19[3] = {};       // +0x19: alignment padding before the OS-version tier.
+    int m_nOsVersionTier = {};       // +0x1c
     float m_flDelayFrameOffset = {}; // +0x20
-    // +0x24..+0x2f: further timing state, still being worked out.
-    char m_reserved24[0xc] = {}; // +0x24
-    bool m_bPaused = {};         // +0x30: set while the play timer is paused.
+    char m_reserved24[4] = {};       // +0x24: further timing state, still being worked out.
+    double m_dAccumulated = {};      // +0x28: an accumulated-time field, cleared at playback start.
+    bool m_bPaused = {};             // +0x30: set while the play timer is paused.
     // +0x31..+0x37 is alignment padding before the pause timestamp.
     char m_reserved31[7] = {};     // +0x31
     double m_dPauseMediaTime = {}; // +0x38: the media time captured when the timer paused.
@@ -82,6 +84,23 @@ public:
     void Resume(double dMediaTime) {
         m_bPaused = false;
         m_dBaseTime += dMediaTime - m_dPauseMediaTime;
+    }
+
+    /**
+     * @brief Starts (or restarts) playback timing from the given media time: seeds the timing origin
+     * and last-update time, zeroes the play time, frame delta, and accumulated time, sets the running
+     * flag, and clears the paused flag.
+     * @param dMediaTime The current media time to time from.
+     * @param bRunning Whether playback is actually running (a preview with no music leaves it clear).
+     */
+    void StartPlayback(double dMediaTime, bool bRunning) {
+        m_bRunning = bRunning;
+        m_dAccumulated = 0.0;
+        m_dBaseTime = dMediaTime;
+        m_flPlayTime = 0.0f;
+        m_dLastTime = dMediaTime;
+        m_flFrameDelta = 0.0f;
+        m_bPaused = false;
     }
 
     /**

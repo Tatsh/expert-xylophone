@@ -88,6 +88,21 @@ public:
      */
     void ResetAllPlayFieldLayers();
 
+    /**
+     * @brief Loads the selected difficulty's note sheet and music, binding them for playback.
+     * @ghidraAddress 0x14ab94
+     */
+    void LoadMusicAndSheet();
+
+    /**
+     * @brief Sets up the note-chart preview presentation: applies the note-manager theme, primes every
+     * play-field layer to its shown state, loads the chart (or a synthetic default when no music is
+     * selected), starts the play timer and background music, shows the preview, and advances to the
+     * playing state.
+     * @ghidraAddress 0x14c848
+     */
+    void SetupPreviewPlayback();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch

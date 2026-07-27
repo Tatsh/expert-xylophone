@@ -11,6 +11,7 @@
 #include <new>
 
 #import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
 
 #import "AppDelegate.h"
 #import "RBBGMManager.h"
@@ -18,6 +19,7 @@
 #import "RBExperienceData.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
+#import "RBViewController.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
 #include "background_sprite_manager.h"
@@ -42,6 +44,7 @@
 #include "note_effect_mgr.h"
 #include "note_replay.h"
 #include "note_result_layer.h"
+#include "number_effect_layer.h"
 #include "number_layer.h"
 #include "pause_gauge_layer.h"
 #include "play_color_layer.h"
@@ -394,6 +397,66 @@ void PlayTask::AdvanceToPlayReadyState() {
     ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePlayReady;
+}
+
+/** @ghidraAddress 0x14c848 */
+void PlayTask::SetupPreviewPlayback() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // Apply the current theme to the note manager and build the note-result layout.
+    NoteEffectMgr::shared()->ApplyTheme();
+    NoteResultLayer::shared()->BuildQuadPositions();
+
+    // Prime the on-screen frame (the alternate frame on iPad, the main frame elsewhere), shown at
+    // once; the main frame is also enabled.
+    if (m_bIsPad) {
+        AltFrameLayer::shared()->StartFadeIn(0.0f);
+    } else {
+        MainFrameLayer::shared()->StartFadeIn(0.0f);
+        MainFrameLayer::shared()->SetMainFrameEnabled(false);
+    }
+
+    // Prime the thema-marker, play-colour gauge, and gauge/background/score/judge layers to their
+    // fully-shown state.
+    ThemaMarkerLayer::shared()->StartFadeIn(0.0f, 0.0f);
+    ThemaMarkerLayer::shared()->RenderThemaMarkerFrame();
+    ThemaMarkerLayer::shared()->SetDangerLevel(1.0f);
+    PlayColorLayer::shared()->StartGaugeGrowAnimation(0.0f, 0.0f);
+    PlayColorLayer::shared()->SyncGaugeValuesFromGameSystem();
+    PlayColorLayer::shared()->SetGaugeFillLevel(1.0f);
+    ReflecGaugeLayer::shared()->StartFadeIn(0.0f);
+    ClearGaugeLayer::shared()->StartFadeIn(0.0f);
+    BgLayer::GetBackgroundLayer()->StartBackgroundFadeIn(0.0f);
+    PlayerFieldLayer::shared()->StartScoreFadeIn(0.0f);
+    JudgeEffectLayer::shared()->StartFadeIn(0.0f);
+    NumberEffectLayer::shared()->CreateSpriteInstancers();
+    NumberEffectLayer::shared()->StartFadeIn(0.0f);
+    NumberEffectLayer::shared()->SetBrightness(pGameSystem->GetBackgroundBrightness());
+
+    // Load the selected chart, or a synthetic default when no music is selected.
+    const bool bHasMusic = [AppDelegate.appDelegate musicData] != nil;
+    if (bHasMusic) {
+        LoadMusicAndSheet();
+    } else {
+        BuildChartReaderFromGameSystem();
+    }
+    m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
+
+    // Start the play timer, beginning the background music when there is a chart and it is not already
+    // playing.
+    PlayTimer *pTimer = PlayTimer::shared();
+    bool bRunning = false;
+    if (bHasMusic && !pGameSystem->GetBgmPlaying()) {
+        [RBBGMManager.getInstance PlayMusic:0.0f];
+        GameSystem::GetGameSystem()->SetBgmPlaying(true);
+        [UIViewController attemptRotationToDeviceOrientation];
+        bRunning = true;
+    }
+    pTimer->StartPlayback(CACurrentMediaTime(), bRunning);
+
+    // Show the preview through the app's root view controller and advance to the playing state.
+    [AppDelegate.appDelegate.viewController showPreview];
+    m_nState = kStatePlaying;
 }
 
 /** @ghidraAddress 0x14d23c */
