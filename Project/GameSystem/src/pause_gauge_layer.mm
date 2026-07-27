@@ -39,6 +39,13 @@ constexpr int kLaneSlotGroup[PauseGaugeLayer::kLaneSlotCount] = {
 // The theme code for which the parts slot binds the shared parts atlas (the second, parts, slot).
 constexpr int kPartsSlot = 1;
 
+// The pause-scene states TaskExecute dispatches on: load the sprites, open the menu, run the
+// per-frame show step, then die.
+constexpr int kStateLoad = 0;
+constexpr int kStateShowMenu = 1;
+constexpr int kStateExecShow = 2;
+constexpr int kStateDie = 3;
+
 // The build state the sprite loader leaves the layer in.
 constexpr int kStateLoaded = 1;
 
@@ -379,6 +386,26 @@ void PauseGaugeLayer::ExecShow() {
 
     if (!m_bCharging) {
         m_nState = 1;
+    }
+}
+
+/** @ghidraAddress 0x150b38 */
+void PauseGaugeLayer::TaskExecute() {
+    switch (m_nState) {
+    case kStateLoad:
+        LoadSprites();
+        return;
+    case kStateShowMenu:
+        ShowPauseMenu();
+        return;
+    case kStateExecShow:
+        ExecShow();
+        return;
+    case kStateDie:
+        MarkDead();
+        return;
+    default:
+        assert(0);
     }
 }
 

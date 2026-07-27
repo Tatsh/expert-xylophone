@@ -160,6 +160,15 @@ public:
      */
     void ExecShow();
 
+    /**
+     * @brief The pause-scene state-machine step: dispatches on the layer state.
+     *
+     * State 0 loads the sprites, state 1 opens the pause menu, state 2 runs the per-frame show step,
+     * and state 3 flags the layer dead so the next dispatch destroys it.
+     * @ghidraAddress 0x150b38
+     */
+    void TaskExecute();
+
 private:
     /**
      * @brief Loads the pause-gauge parts atlas and builds one sprite instancer per slot for the

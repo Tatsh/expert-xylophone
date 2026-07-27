@@ -75,6 +75,10 @@ public:
     bool IsDead() const {
         return m_bDead;
     }
+    /** @brief Flags the node dead, so the next dispatch destroys it. */
+    void MarkDead() {
+        m_bDead = true;
+    }
 
     /**
      * @brief Inserts (or re-positions) this node in the global listener list, ascending by
