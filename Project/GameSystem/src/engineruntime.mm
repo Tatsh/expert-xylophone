@@ -6,6 +6,7 @@
 
 #include "customize_variant_tables.h"
 #include "neTexture.h"
+#include "ne_c_time.h"
 #include "texture_cache_control.h"
 
 namespace {
@@ -119,13 +120,13 @@ NSString *_Nullable GetCustomizeFrameImagePath(int kind) {
 }
 
 /** @ghidraAddress 0x366f8 */
-void StartMediaTimer(double *pStartTime) {
-    *pStartTime = CACurrentMediaTime();
+void C_TIME::Start() {
+    m_flTime = CACurrentMediaTime();
 }
 
 /** @ghidraAddress 0x3671c */
-float GetElapsedMediaTime(double *pStartTime) {
-    return static_cast<float>((CACurrentMediaTime() - *pStartTime) * kMediaTimeMillisScale);
+float C_TIME::GetElapsedMillis() const {
+    return static_cast<float>((CACurrentMediaTime() - m_flTime) * kMediaTimeMillisScale);
 }
 
 /** @ghidraAddress 0x12e900 */

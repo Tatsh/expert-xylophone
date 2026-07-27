@@ -179,8 +179,8 @@ constexpr int kDefaultPlayColor = 0;
 @end
 
 @implementation RBViewController {
-    // The task and render media timers. Their bytes are read and written as a C_TIME through the
-    // engine's media-timer helpers; each is stored inline in the instance, not as an object.
+    // The task and render media timers, each a C_TIME stored inline in the instance and stamped and
+    // read through its Start and GetElapsedMillis members.
     float m_LoopTime;              // +0x08
     C_TIME m_TaskTime;             // +0x10
     C_TIME m_RenderTime;           // +0x18
@@ -261,8 +261,8 @@ constexpr int kDefaultPlayColor = 0;
 
 - (void)Task {
     /** @ghidraAddress 0x8af3c */
-    float elapsed = GetElapsedMediaTime(&m_TaskTime.m_flTime);
-    StartMediaTimer(&m_TaskTime.m_flTime);
+    float elapsed = m_TaskTime.GetElapsedMillis();
+    m_TaskTime.Start();
     // The per-frame listener callback (ne::C_TASK::OnFrame) takes its frame-delta count as the
     // opaque void* argument, so the elapsed whole-frame count is passed packed into the pointer.
     auto elapsedFrames = static_cast<uintptr_t>(static_cast<int>(elapsed));
@@ -273,14 +273,14 @@ constexpr int kDefaultPlayColor = 0;
 - (void)Draw {
     /** @ghidraAddress 0x8af88 */
     neGLESRenderer *renderer = neGLESRenderer::GetShared();
-    float elapsed = GetElapsedMediaTime(&m_RenderTime.m_flTime);
+    float elapsed = m_RenderTime.GetElapsedMillis();
     if (elapsed < kMaxRenderFrameElapsed) {
         [self.glView BeginRender];
         renderer->ClearBuffers(kClearColor);
         RenderGlobalSceneTree();
         [self.glView Present];
     }
-    StartMediaTimer(&m_RenderTime.m_flTime);
+    m_RenderTime.Start();
 }
 
 - (void)LayoutedGLView:(neGLView *)glView {
@@ -466,8 +466,8 @@ constexpr int kDefaultPlayColor = 0;
 - (void)CreateTimer {
     /** @ghidraAddress 0x8b2a0 */
     if (!m_IsResume && m_IsLoop) {
-        StartMediaTimer(&m_TaskTime.m_flTime);
-        StartMediaTimer(&m_RenderTime.m_flTime);
+        m_TaskTime.Start();
+        m_RenderTime.Start();
         [self CreateDisplayLinkTimer];
     }
 }

@@ -75,16 +75,6 @@ void CreateTitleLayerForTheme(void);
  */
 void DispatchListenerList(void *pFrameArg);
 /**
- * @brief Returns the elapsed time since the timer was last started, in milliseconds, as a float.
- * @ghidraAddress 0x3671c
- */
-float GetElapsedMediaTime(double *pStartTime);
-/**
- * @brief Records the current media time as a timer start value.
- * @ghidraAddress 0x366f8
- */
-void StartMediaTimer(double *pStartTime);
-/**
  * @brief Zeroes @p nSize bytes of @p pBuffer, guarding against a null pointer.
  * @param pBuffer The buffer to clear, or @c nullptr to do nothing.
  * @param nSize The number of bytes to clear.
