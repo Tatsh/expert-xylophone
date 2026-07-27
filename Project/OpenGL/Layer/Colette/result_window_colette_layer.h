@@ -70,6 +70,20 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
+     * @brief Resolves a non-phone anchor-box position by index, offset relative to the play field.
+     *
+     * The non-phone counterpart of @c getPosition_Phone using 20-byte @c AnchorBoxRecord entries.
+     * Selects one of three tables — the pad table when the layer is on an iPad, otherwise the
+     * portrait or default table by the orientation flag — copies the record's leading 16-byte box
+     * into @p pOutRect, then shifts the box origin by the play-field viewport's half or full width
+     * and height according to the record's anchor mode.
+     * @param nIndex The record index.
+     * @param pOutRect Receives the resolved box.
+     * @ghidraAddress 0x73ce4
+     */
+    void getPosition(int nIndex, PhoneLayoutRect *pOutRect) const;
+
+    /**
      * @brief Returns a result-window parts descriptor by index.
      *
      * Selects the pad or phone parts table by the current device kind and returns the record at

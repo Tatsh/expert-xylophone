@@ -4,6 +4,7 @@
 
 #include "../Classic/classic_parts_data_table.h"
 #include "../Limelight/limelight_parts_data_table.h"
+#include "anchor_box_table.h"
 #import "deviceenvironment.h"
 #import "gamesystem.h"
 #include "neSpriteInstancing.h"
@@ -20,6 +21,12 @@ static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddr
 // to match the binary's __common segment, filled at runtime by the result-layout-table initialisers.
 PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount] = {}; // @ghidraAddress 0x3d4d50
 PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghidraAddress 0x3d5530
+
+// The non-phone anchor-box tables (declared in anchor_box_table.h): zero-initialised here to match
+// the binary's __common segment, filled at runtime by the result-layout-table initialisers.
+AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount] = {};      // @ghidraAddress 0x3d6530
+AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount] = {}; // @ghidraAddress 0x3d6580
+AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount] = {};  // @ghidraAddress 0x3d65d0
 
 // The Colette parts tables (declared in parts_data_table.h): zero-initialised here to match the
 // binary's __common segment, filled at runtime.
@@ -174,6 +181,56 @@ void ResultWindowColetteLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosi
     case kAnchorFullWidthFullHeight:
         pOutPosition->x += flWidth;
         pOutPosition->y += flHeight;
+        break;
+    default:
+        break;
+    }
+}
+
+/** @ghidraAddress 0x73ce4 */
+void ResultWindowColetteLayer::getPosition(int nIndex, PhoneLayoutRect *pOutRect) const {
+    // Select the pad table on an iPad, otherwise the portrait or default table by orientation.
+    const AnchorBoxRecord &record = IsPad()     ? g_aAnchorBoxPad[nIndex] :
+                                    m_bPortrait ? g_aAnchorBoxPortrait[nIndex] :
+                                                  g_aAnchorBoxDefault[nIndex];
+    // Copy the record's leading 16-byte box.
+    pOutRect->flX = record.flX;
+    pOutRect->flY = record.flY;
+    pOutRect->flWidth = record.flWidth;
+    pOutRect->flHeight = record.flHeight;
+
+    // Offset the box origin by half or full viewport dimensions per the record's anchor mode.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    switch (record.nAnchorMode) {
+    case kAnchorHalfHeight:
+        pOutRect->flY += flHeight * 0.5f;
+        break;
+    case kAnchorFullHeight:
+        pOutRect->flY += flHeight;
+        break;
+    case kAnchorHalfWidth:
+        pOutRect->flX += flWidth * 0.5f;
+        break;
+    case kAnchorHalfWidthHalfHeight:
+        pOutRect->flX += flWidth * 0.5f;
+        pOutRect->flY += flHeight * 0.5f;
+        break;
+    case kAnchorHalfWidthFullHeight:
+        pOutRect->flX += flWidth * 0.5f;
+        pOutRect->flY += flHeight;
+        break;
+    case kAnchorFullWidth:
+        pOutRect->flX += flWidth;
+        break;
+    case kAnchorFullWidthHalfHeight:
+        pOutRect->flX += flWidth;
+        pOutRect->flY += flHeight * 0.5f;
+        break;
+    case kAnchorFullWidthFullHeight:
+        pOutRect->flX += flWidth;
+        pOutRect->flY += flHeight;
         break;
     default:
         break;
