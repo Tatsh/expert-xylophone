@@ -4,6 +4,7 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 
 // The process-wide event-notification effect layer, created lazily by shared().
 static EventEffectLayer *g_pEventEffectLayer = nullptr; // @ghidraAddress 0x3df4a8
@@ -15,6 +16,11 @@ constexpr const char *kTextureName = "00_texture/gm_event";
 
 // The timer value that marks the event effect fully finished.
 constexpr float kEffectFinishedTimer = 5000.0f;
+
+// The background quad's single slot, and the bit shift that packs its alpha into the colour's high
+// byte (opaque black tinted by alpha).
+constexpr int kBackgroundSlot = 0;
+constexpr unsigned int kAlphaShift = 24;
 
 } // namespace
 
@@ -63,4 +69,19 @@ void EventEffectLayer::CreateEventEffectSprites() {
     m_pMainSprite->SetSpriteCount(m_nSpriteCount);
 
     m_bBuilt = true;
+}
+
+/** @ghidraAddress 0x1be9b4 */
+void EventEffectLayer::SetEventBackgroundQuad(int nAlpha) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // Rebuild the single background sprite: opaque black scaled by the alpha (high byte), sized to
+    // the whole viewport.
+    m_pRootSprite->SetSpriteCount(0);
+    m_pRootSprite->SetSpriteColor(kBackgroundSlot,
+                                  static_cast<unsigned int>(nAlpha) << kAlphaShift);
+    m_pRootSprite->SetSpriteSize(
+        kBackgroundSlot,
+        S_VECTOR2{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()});
+    m_pRootSprite->SetSpriteCount(1);
 }

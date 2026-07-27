@@ -57,6 +57,16 @@ public:
      */
     void FinishEffect();
 
+    /**
+     * @brief Sets the full-screen background quad's colour and size in the root instancer.
+     *
+     * Sizes the single background sprite to the current viewport and sets its colour to opaque black
+     * scaled by @p nAlpha (packed into the colour's high byte).
+     * @param nAlpha The background alpha (0 through 255).
+     * @ghidraAddress 0x1be9b4
+     */
+    void SetEventBackgroundQuad(int nAlpha);
+
 private:
     ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_event atlas.
     ne::C_SPRITE_INSTANCING *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
