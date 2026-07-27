@@ -165,6 +165,27 @@ public:
      */
     void MarkTouched();
 
+    /** @brief Returns the note's assigned colour kind (0 through 3). */
+    int GetColorKind() const {
+        return m_nKind;
+    }
+    /** @brief Sets the note's assigned colour kind. */
+    void SetColorKind(int nKind) {
+        m_nKind = nKind;
+    }
+    /**
+     * @brief Whether the note carries a pre-assigned (locked) colour, kept instead of a random one.
+     *
+     * A colour-lock state at or below @c kColorLockThreshold is itself the assigned colour.
+     */
+    bool IsColorLocked() const {
+        return m_nColorLockState <= kColorLockThreshold;
+    }
+    /** @brief The pre-assigned colour a locked note carries (its colour-lock state value). */
+    int GetLockedColor() const {
+        return m_nColorLockState;
+    }
+
     /**
      * @brief Advances the note's position by one frame: saves the previous position, then either
      * follows its active waypoint or integrates its velocity over the frame delta.
@@ -413,6 +434,9 @@ public:
     /** @brief The number of per-note sub-entry (hold/slide segment) slots. */
     static constexpr int kSubEntryCount = 16;
 
+    /** @brief A colour-lock state at or below this leaves the note open to random colour assignment. */
+    static constexpr int kColorLockThreshold = 3;
+
 private:
     /**
      * @brief Returns the current play-field judge clock: the play time scaled to the chart's
@@ -483,7 +507,9 @@ private:
     bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
-    unsigned char m_aReserved5e2[0xa] = {}; // +0x5e2
+    unsigned char m_aReserved5e2[6] = {}; // +0x5e2
+    int m_nColorLockState =
+        {}; // +0x5e8: >3 leaves the note's colour open to the random assignment.
     bool m_bEmphasisFallback = {};          // +0x5ec: the versus-mode emphasis fallback flag.
     unsigned char m_aReserved5ed[0xb] = {}; // +0x5ed: trailing state to the 0x5f8-byte size.
 };

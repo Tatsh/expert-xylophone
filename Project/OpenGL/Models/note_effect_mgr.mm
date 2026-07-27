@@ -8,11 +8,14 @@
 
 #include "note_effect_mgr.h"
 
+#include <cstdlib>
+
 #import "RBUserSettingData.h"
 #include "deviceenvironment.h"
 #include "gamesystem.h"
 #include "music_sheet.h"
 #include "note_model.h"
+#include "rbffnoterecord.h"
 #include "shotsoundmanager.h"
 
 // The process-wide note manager, created lazily by shared().
@@ -81,6 +84,122 @@ bool NoteEffectMgr::IsNoteFlag40Set(int nIndex) {
         }
     }
     return false;
+}
+
+namespace {
+// Folds a rand() result into the unit interval (@ghidraAddress 0x3014d0 = 1 / RAND_MAX).
+constexpr float kInverseRandMax = 1.0f / 2147483647.0f;
+
+// The colour-spread lerp table, indexed by the combo count (@ghidraAddress 0x308c4c). Consecutive
+// entries are the lo/hi endpoints a random factor interpolates between to pick the grey-note
+// proportion; higher combos skew towards more grey (colour zero).
+constexpr float kColorSpreadByCombo[] = {
+    0.45f, 0.525f, 0.525f, 0.575f, 0.575f, 0.63f, 0.63f, 0.70f, 0.70f, 0.73f, 0.73f,
+    0.77f, 0.77f,  0.80f,  0.80f,  0.83f,  0.83f, 0.85f, 0.85f, 0.91f, 1.0f,  1.0f,
+};
+
+// The four note colours the random assignment draws from.
+constexpr int kNoteColorCount = 4;
+// The number of player sides the full-combo colour-count pass walks.
+constexpr int kSideCount = 2;
+// The two-side versus game types: type zero or two.
+constexpr int kGameTypeVersusA = 2;
+constexpr int kGameTypeVersusB = 0;
+// The colour full-combo notes are forced to.
+constexpr int kFullComboColor = 0;
+} // namespace
+
+/** @ghidraAddress 0x1373c0 */
+void NoteEffectMgr::AssignNoteColors() {
+    if (m_pMusicSheet == nullptr) {
+        return;
+    }
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const int nCombo = pGameSystem->GetComboCount();
+
+    // Interpolate the grey-note proportion between the combo band's lo/hi endpoints by a random
+    // factor, then clamp it to the unit interval.
+    const int nSpreadIndex = nCombo < 0 ? 0 : nCombo;
+    const float flLo = kColorSpreadByCombo[nSpreadIndex * 2];
+    const float flHi = kColorSpreadByCombo[nSpreadIndex * 2 + 1];
+    float flGreyProportion = flLo + (flHi - flLo) * static_cast<float>(rand()) * kInverseRandMax;
+    if (flGreyProportion > 1.0f) {
+        flGreyProportion = 1.0f;
+    }
+    if (flGreyProportion <= 0.0f) {
+        flGreyProportion = 0.0f;
+    }
+
+    // The four colours partition the unit interval as {grey², up to grey, up to grey + remainder,
+    // else the fourth}: grey² is colour 0, the next band colour 1, then 2, then 3.
+    const float flThreshold0 = flGreyProportion * flGreyProportion;
+    const float flThreshold1 = flThreshold0 + (flGreyProportion - flThreshold0);
+    const float flThreshold2 = (flGreyProportion - flThreshold0) + flThreshold1;
+
+    for (int nIndex = 0; nIndex < m_nNoteCount; ++nIndex) {
+        NoteModel *pNote = FindNoteByIndex(nIndex);
+        // A note carrying a locked colour keeps that colour; otherwise it draws a random one from
+        // the colour bands. A missing note object still consumes no random draw only when locked.
+        if (pNote != nullptr && pNote->IsColorLocked()) {
+            pNote->SetColorKind(pNote->GetLockedColor());
+            continue;
+        }
+        const float flRoll = static_cast<float>(rand()) * kInverseRandMax;
+        int nColor;
+        if (flRoll < flThreshold0) {
+            nColor = 0;
+        } else if (flRoll < flThreshold1) {
+            nColor = 1;
+        } else if (flRoll < flThreshold2) {
+            nColor = 2;
+        } else {
+            nColor = 3;
+        }
+        if (pNote != nullptr) {
+            pNote->SetColorKind(nColor);
+        }
+    }
+
+    // When either player achieved a full combo, force every note on the matching side to colour
+    // zero.
+    const bool bUserFullCombo = pGameSystem->GetUserFullCombo();
+    const bool bCpuFullCombo = pGameSystem->GetCpuFullCombo();
+    if (bUserFullCombo || bCpuFullCombo) {
+        const int nPlayColor = pGameSystem->GetPlayColor();
+        const int nGameType = pGameSystem->GetGameType();
+        for (int nIndex = 0; nIndex < m_nNoteCount; ++nIndex) {
+            RbffNoteRecord *pRecord = m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+            NoteModel *pNote = FindNoteByIndex(nIndex);
+            if (pRecord == nullptr || pNote == nullptr) {
+                continue;
+            }
+            if (nGameType != kGameTypeVersusA && nGameType != kGameTypeVersusB) {
+                continue;
+            }
+            const int nSide = pRecord->GetSide();
+            if (nPlayColor == nSide && bUserFullCombo) {
+                pNote->SetColorKind(kFullComboColor);
+            }
+            if ((nPlayColor == 0 ? 1 : 0) == nSide && bCpuFullCombo) {
+                pNote->SetColorKind(kFullComboColor);
+            }
+        }
+    }
+
+    // The binary then re-tallies the per-colour counts for each side, but discards the totals; the
+    // pass is kept only for its record and note lookups.
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        int aColorCount[kNoteColorCount] = {};
+        for (int nIndex = 0; nIndex < m_nNoteCount; ++nIndex) {
+            RbffNoteRecord *pRecord = m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+            NoteModel *pNote = FindNoteByIndex(nIndex);
+            if (pRecord != nullptr && pNote != nullptr && nSide == pRecord->GetSide()) {
+                ++aColorCount[pNote->GetColorKind()];
+            }
+        }
+        (void)aColorCount; // The tallies are computed but discarded, matching the binary.
+    }
 }
 
 /** @ghidraAddress 0x137018 */

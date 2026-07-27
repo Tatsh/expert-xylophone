@@ -169,6 +169,16 @@ public:
     void IterateNoteRecords();
 
     /**
+     * @brief Assigns each active note a randomised colour, then locks the full-combo colours.
+     *
+     * A per-combo probability picks the proportion of the four colours; each unlocked note draws its
+     * colour from that distribution. When the user or CPU achieved a full combo, every note on the
+     * matching side is then forced to colour zero.
+     * @ghidraAddress 0x1373c0
+     */
+    void AssignNoteColors();
+
+    /**
      * @brief The active note count (the loaded chart's note count).
      * @ghidraAddress 0x13719c
      */
