@@ -48,6 +48,9 @@ constexpr unsigned int kColorMax = 255;
 // The batch the gauge label sprites are emitted into.
 constexpr unsigned int kLabelBatch = 2;
 
+// The batch the gauge icon sprites are emitted into.
+constexpr unsigned int kIconBatch = 3;
+
 // The base gauge quad's fixed screen X in each orientation/mode (@ghidraAddress 0x30fcb0 anchor for
 // portrait 190.0; the landscape modes use 200.0 and 0.0), and the field half-span subtracted from
 // each band Y (0x200 layout units).
@@ -85,6 +88,13 @@ constexpr GaugeLabelSide kLabelSideRecord[ReflecGaugeLayer::kSideCount] = {
 constexpr float kLabelAnchorX[] = {173.0f, 106.0f, 39.0f, -28.0f, -95.0f, 54.0f, 1.0f, 10.0f};
 
 } // namespace
+
+// The gauge icon descriptor tables, indexed by icon index (landscape and portrait variants). Each is
+// a 20-byte GaugeSpriteDescriptor. Read-only data embedded in the binary.
+extern const ReflecGaugeLayer::GaugeSpriteDescriptor
+    g_aGaugeIconLandscape[]; // @ghidraAddress 0x30fea4
+extern const ReflecGaugeLayer::GaugeSpriteDescriptor
+    g_aGaugeIconPortrait[]; // @ghidraAddress 0x30fe2c
 
 /** @ghidraAddress 0x18a7d0 */
 ReflecGaugeLayer::ReflecGaugeLayer() {
@@ -337,4 +347,12 @@ void ReflecGaugeLayer::EmitLabelSprite(unsigned int nSide, int nLabelIndex, int 
     descriptor.size = S_VECTOR2{side.flSizeX, side.flSizeY};
     descriptor.nAtlasFrame = side.nAtlasFrame;
     EmitGaugeSprite(descriptor, kLabelBatch, nSide, nAlpha);
+}
+
+/** @ghidraAddress 0x18b0dc */
+void ReflecGaugeLayer::EmitIconSprite(unsigned int nSide, int nIconIndex, int nAlpha) {
+    // The phone (portrait) uses its own icon table; the landscape build uses the other.
+    const GaugeSpriteDescriptor &descriptor =
+        IsPad() ? g_aGaugeIconPortrait[nIconIndex] : g_aGaugeIconLandscape[nIconIndex];
+    EmitGaugeSprite(descriptor, kIconBatch, nSide, nAlpha);
 }

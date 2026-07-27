@@ -182,6 +182,15 @@ public:
      */
     void EmitLabelSprite(unsigned int nSide, int nLabelIndex, int nAlpha);
 
+    /**
+     * @brief Emits a gauge icon sprite (batch 3) from the orientation-specific icon table.
+     * @param nSide The player side.
+     * @param nIconIndex The icon index into the icon descriptor table.
+     * @param nAlpha The sprite tint alpha.
+     * @ghidraAddress 0x18b0dc
+     */
+    void EmitIconSprite(unsigned int nSide, int nIconIndex, int nAlpha);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
