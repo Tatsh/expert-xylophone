@@ -1110,6 +1110,9 @@ EXCLUDED_ADDRS = {
                 # block helpers do not belong on the C/C++ checklist.
     '0x20f48',  # GetAlwaysTrue — the IMP of -[<VC> prefersStatusBarHidden] (returns YES); an
                 # Objective-C method, tracked on the ObjC side, not the C/C++ checklist.
+    '0x88fb8',  # GetAlwaysTrue — a second such IMP (type encoding B16@0:8, referenced only from an
+                # ObjC method-list in __data at 0x388298); an Objective-C BOOL accessor returning
+                # YES, tracked on the ObjC side, not the C/C++ checklist.
     '0x366f0',  # ReturnZeroStub — the IMP of -[<class> canBecomeFirstResponder] (returns NO); an
                 # Objective-C method, tracked on the ObjC side, not the C/C++ checklist.
     '0x1c3ccc', # InitializeGregorianCalendar — a dispatch_once block inside SSZipArchive.m's
