@@ -4,6 +4,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#include "customize_variant_tables.h"
 #include "texture_cache_control.h"
 
 namespace {
@@ -72,6 +73,39 @@ int GetClearRank(float achievementRate) {
         return kClearRank2;
     }
     return achievementRate >= kClearRankThreshold1 ? kClearRank1 : kClearRank0;
+}
+
+/** @ghidraAddress 0x54ee0 */
+NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantIndex) {
+    // Each handled category formats a path with its variant token; the music item has no variant,
+    // and every other category (6, 8, 9) returns nil.
+    switch (assetType) {
+    case kCustomizeKindBgm:
+        return [NSString
+            stringWithFormat:@"04_customize/cus_ibgm_%@", g_aCustomizeBgmVariants[variantIndex]];
+    case kCustomizeKindShot:
+        return [NSString
+            stringWithFormat:@"04_customize/cus_ishot_%@", g_aCustomizeShotVariants[variantIndex]];
+    case kCustomizeKindExplosion:
+        return [NSString stringWithFormat:@"04_customize/cus_iexp_%@",
+                                          g_aCustomizeExplosionVariants[variantIndex]];
+    case kCustomizeKindFrame:
+        return [NSString
+            stringWithFormat:@"04_customize/cus_ifrm_%@", g_aCustomizeFrameVariants[variantIndex]];
+    case kCustomizeKindBackground:
+        return [NSString stringWithFormat:@"04_customize/cus_ibg_%@",
+                                          g_aCustomizeBackgroundVariants[variantIndex]];
+    case kCustomizeKindObject:
+        return [NSString
+            stringWithFormat:@"04_customize/cus_iobj_%@", g_aCustomizeObjectVariants[variantIndex]];
+    case kCustomizeKindMusic:
+        return [NSString stringWithFormat:@"04_customize/cus_imusic"];
+    case kCustomizeKindThema:
+        return [NSString
+            stringWithFormat:@"04_customize/cus_ithm_%@", g_aCustomizeThemaVariants[variantIndex]];
+    default:
+        return nil;
+    }
 }
 
 /** @ghidraAddress 0x550dc */

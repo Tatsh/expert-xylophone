@@ -136,11 +136,15 @@ hinabita
 hira
 hnbt
 howtoplay
+ibgm
+iexp
 ifdef
 ifndef
+ifrm
 igles
 iidx
 immediates
+imusic
 infomation
 initalize
 initilize
@@ -152,6 +156,9 @@ instancetype
 integerv
 interitem
 interp
+iobj
+ishot
+ithm
 ivar
 ivars
 iwyu
