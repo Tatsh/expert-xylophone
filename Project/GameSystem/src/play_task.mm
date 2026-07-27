@@ -16,10 +16,13 @@
 #import "RBBGMManager.h"
 #import "RBBonusData.h"
 #import "RBExperienceData.h"
+#import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
+#include "classicthemelayer.h"
 #include "clear_gauge_layer.h"
+#include "colette_theme_layer.h"
 #include "event_effect_layer.h"
 #include "full_combo_classic_layer.h"
 #include "full_combo_colette_layer.h"
@@ -27,6 +30,7 @@
 #include "gamesystem.h"
 #include "leveltables.h"
 #include "limelight_result_layer.h"
+#include "limelight_theme_layer.h"
 #include "main_frame_layer.h"
 #include "music_sheet.h"
 #include "neTexture.h"
@@ -48,6 +52,15 @@ static constexpr int kStatePastEffect = 6;
 
 // The playing state the preview resumes into.
 static constexpr int kStatePlaying = 0x11;
+
+// The result-theme display state EnterResultThemeState advances to.
+static constexpr int kStateResultTheme = 0xb;
+
+// The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or above
+// which the clear cue plays.
+static constexpr int kResultVoiceCue = 0x13;
+static constexpr int kClearCueSoundEffect = 8;
+static constexpr float kClearRateThreshold = 0.7f; // @ghidraAddress 0x2fd008
 
 // The theme identifiers selecting the full-combo layer whose effect flags a playback reset clears.
 static constexpr int kThemaClassic = 0;
@@ -276,6 +289,30 @@ void PlayTask::ComputeResultBonusesAndExperience() {
                               bonuses.flFirstPlay + flEarlyPlay + flHotMusic];
         [RBExperienceData.sharedInstance save];
     }
+}
+
+/** @ghidraAddress 0x14be88 */
+void PlayTask::EnterResultThemeState() {
+    // Initialise the active theme's grade/score-gauge display state.
+    if (m_nThema == kThemaColette) {
+        ColetteThemeLayer::shared()->ResetGradeDisplayState();
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightThemeLayer::shared()->InitializeGradeDisplayState();
+    } else if (m_nThema == kThemaClassic) {
+        ClassicThemeLayer::shared()->InitializeScoreGaugeState();
+    }
+
+    // Start the result-voice cue.
+    SoundEffectManager::GetInstance()->PlayThemedVoice(kResultVoiceCue);
+
+    // Play the clear cue when the play cleared: the achievement rate reached the clear threshold, or
+    // this is a tutorial play.
+    if (ScoreTracker::shared()->GetPlayRecordRate(kResultSide) >= kClearRateThreshold ||
+        [RBTutorialManager isTutorialPlay]) {
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kClearCueSoundEffect);
+    }
+
+    m_nState = kStateResultTheme;
 }
 
 /** @ghidraAddress 0x14b818 */

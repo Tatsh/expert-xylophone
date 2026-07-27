@@ -57,6 +57,14 @@ public:
      */
     void ComputeResultBonusesAndExperience();
 
+    /**
+     * @brief Enters the result-theme display state: initialises the active theme's grade/score-gauge
+     * display, starts the result-voice cue, plays the clear cue when the play cleared (rate at or
+     * above the clear threshold, or a tutorial play), and advances to the result-theme state.
+     * @ghidraAddress 0x14be88
+     */
+    void EnterResultThemeState();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch
