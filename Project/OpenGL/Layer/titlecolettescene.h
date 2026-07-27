@@ -58,15 +58,13 @@ public:
     static constexpr int kSpriteSlotCount = 0x68;
     // The number of part anchor positions in the ring the title arranges its parts around.
     static constexpr int kPartAnchorCount = 12;
-    // The number of floats in the fade transform seeded at load.
-    static constexpr int kFadeTransformCount = 5;
     // The number of touchable part hit-box rectangles the emitter records.
     static constexpr int kHitBoxCount = 8;
 
     /**
      * @brief Constructs the scene: chains the scene base, installs the title dispatch table, and
-     * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to -1,
-     * and copying the part anchor ring into the per-sprite state).
+     * zero-clears the presentation state (seeding the fade fully hidden and the tracked touch id to
+     * -1, and copying the part anchor ring into the per-sprite state).
      * @ghidraAddress 0x572e4
      */
     TitleColetteScene();
@@ -173,27 +171,79 @@ private:
                           const S_VECTOR2 &drawPosition,
                           const TitlePartLayoutRecord &layout);
 
+    /**
+     * @brief Advances the flick-gesture state machine, toggling the swing direction when the main
+     * sequence completes and the hidden Hinabita mode when the alternate sequence completes.
+     * @param nInputCode The directional gesture id.
+     * @return The played sound handle after the swing toggle, or @c 0 otherwise. (Only the caller's
+     * completion call with @p nInputCode 4 uses the result; on the partial-step paths the binary
+     * leaves its object pointer in the return register, which no caller reads.)
+     * @ghidraAddress 0x597a8
+     */
+    unsigned int AdvanceGestureState(int nInputCode);
+
+    /**
+     * @brief Rotates a swing-particle rest position around the logo pivot by the current swing phase
+     * and returns its screen X coordinate.
+     * @param flBaseX The particle's rest X.
+     * @param flBaseY The particle's rest Y.
+     * @return The rotated screen X coordinate.
+     * @ghidraAddress 0x58570
+     */
+    float ComputeSwingParticleX(float flBaseX, float flBaseY) const;
+
+    /**
+     * @brief The Y counterpart of @c ComputeSwingParticleX.
+     * @param flBaseX The particle's rest X.
+     * @param flBaseY The particle's rest Y.
+     * @return The rotated screen Y coordinate.
+     * @ghidraAddress 0x58610
+     */
+    float ComputeSwingParticleY(float flBaseX, float flBaseY) const;
+
+    /**
+     * @brief Advances the title cross-fade timer and updates the interpolated fade value.
+     *
+     * Accumulates the frame delta into the elapsed time; once it passes the start delay, the fade
+     * value eases from its start to its end across the remaining duration (snapping to the end value
+     * when the duration is zero or the timer has already completed).
+     * @param nDeltaMs The elapsed time this frame, in milliseconds.
+     * @ghidraAddress 0x586b0
+     */
+    void UpdateFadeProgress(int nDeltaMs);
+
     unsigned char m_aReserved4b[1] = {}; // +0x4b
     int m_nState = {};                   // +0x4c: the dispatch state.
     unsigned char m_aReserved50[4] = {}; // +0x50
-    int m_nFadeTimer = {};               // +0x54: the fade/scroll timer, reset on load.
+    int m_nIdleTimer = {};               // +0x54: the idle/attract timer, reset on load.
     int m_nReadyDelay = {};              // +0x58: the start ready-delay timer (seeded to 0x708).
-    int m_nScrollTimer = {};             // +0x5c: a second scroll timer, reset on load.
-    unsigned char m_aReserved60[8] = {}; // +0x60
+    int m_nSeTimer = {};                 // +0x5c: the sound-effect timer, reset on load.
+    int m_nSeAccumulator = {}; // +0x60: accumulates while the sound-effect part is active.
+    unsigned char m_aReserved64[4] = {};             // +0x64
     ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x68: bg, parts, parts_eff, and campaign.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x88: the 104 part sprites.
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0x3c8: each instancer's seeded sprite count.
     // +0x568..+0x707: further per-sprite presentation state, still being worked out.
     unsigned char m_aReserved568[0x1a0] = {}; // +0x568
-    // +0x708: the fade transform seeded at load: the fade base followed by a fixed drop-in offset
-    // (element 2 is 300, the rest zero).
-    float m_aFadeTransform[kFadeTransformCount] = {}; // +0x708
-    float m_flFadeBase = {};                 // +0x71c: the fully-shown fade level (seeded to 1.0).
-    unsigned char m_aReserved720[0xc] = {};  // +0x720
-    int m_nTrailingIndex = {};               // +0x72c: a per-slot index (-1 when none is selected).
-    unsigned char m_aReserved730[0x11] = {}; // +0x730
-    bool m_bSeTriggered = {};                // +0x741: whether the title sound effect has fired.
-    unsigned char m_aReserved742[2] = {};    // +0x742
+    // +0x708: the title cross-fade block seeded at load: from, to, duration, elapsed, start-delay,
+    // and the interpolated fade value the emitter consumes (as one minus the value, a reveal).
+    float m_flFadeFrom = {};                // +0x708
+    float m_flFadeTo = {};                  // +0x70c
+    float m_flFadeDuration = {};            // +0x710
+    float m_flFadeElapsed = {};             // +0x714
+    float m_flFadeStartDelay = {};          // +0x718
+    float m_flFadeValue = {};               // +0x71c: seeded to 1.0 (fully hidden; reveal zero).
+    unsigned char m_aReserved720[0xc] = {}; // +0x720
+    int m_nActiveTouchId = {};              // +0x72c: the tracked touch id (-1 when none).
+    int m_nGestureState = {};               // +0x730: the flick-gesture sequence state.
+    bool m_bGestureTriggered = {};          // +0x734: latched when a flick sequence completes.
+    bool m_bSwingToggle = {};               // +0x735: the swing-direction toggle.
+    unsigned char m_aReserved736[2] = {};   // +0x736
+    int m_nSwingDelta = {};                 // +0x738: the resulting swing delta (+1 or -1).
+    int m_nSwingPhase = {};                 // +0x73c: the accumulated swing phase, in degrees.
+    bool m_bHinabitaMode = {};              // +0x740: the hidden Hinabita campaign toggle.
+    bool m_bSeTriggered = {};               // +0x741: whether the title sound effect has fired.
+    unsigned char m_aReserved742[2] = {};   // +0x742
     float m_flViewportWidth = {};  // +0x744: the viewport width, cached from the game system.
     float m_flViewportHeight = {}; // +0x748: the viewport height.
     // +0x74c: the eight part hit-box rectangles the emitter records for touch testing (the corporate

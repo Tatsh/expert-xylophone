@@ -8,6 +8,8 @@
 
 #include "titlecolettescene.h"
 
+#include <cmath>
+
 #import "AppDelegate.h"
 #import "AudioManager.h"
 #import "RBBGMManager.h"
@@ -30,9 +32,9 @@ constexpr int kStateStartMusic = 1;
 constexpr int kStateMainLoop = 2;
 constexpr int kStateFinish = 3;
 
-// The fully-shown fade level the scene starts at, and the sentinel for no selected slot.
-constexpr float kInitialFadeBase = 1.0f;
-constexpr int kNoSlotIndex = -1;
+// The scene starts fully hidden (fade value one, reveal zero), with no touch tracked.
+constexpr float kInitialFadeValue = 1.0f;
+constexpr int kNoTouchId = -1;
 
 // The three shared title texture base names; the fourth cached texture is the campaign-specific one.
 constexpr const char *kTitleTextureNames[] = {
@@ -50,8 +52,8 @@ constexpr int kNoTextureIndex = 5;
 constexpr int kTitleVoiceId = 0;
 // The start ready-delay timer, in milliseconds.
 constexpr int kReadyDelay = 0x708;
-// The fixed drop-in offset seeded into the fade transform's third element.
-constexpr float kFadeDropOffset = 300.0f;
+// The reveal cross-fade duration, in milliseconds.
+constexpr float kFadeDuration = 300.0f;
 
 // The theme sound-effect path format and its two components' file type.
 static NSString *const kTitleSeFormat = @"Sounds/%@/SE/SD_SE_%@";
@@ -95,6 +97,55 @@ enum TitleHitBoxSlot {
     kHitBoxLetterA = 5,
     kHitBoxCorporateLogo = 7,
 };
+
+// The title-logo swing pivot the particle rest positions are measured against, and the screen
+// origin their rotated positions are offset back to.
+constexpr double kSwingPivotX = -384.0;
+constexpr double kSwingPivotY = -466.0;
+constexpr double kSwingOriginX = 384.0;
+constexpr double kSwingOriginY = 466.0;
+// The swing phase, in degrees, is scaled to radians before rotating.
+constexpr double kSwingPhaseRadiansPerDegree = M_PI / 180.0;
+
+// The themed sound-effect slots the completed gesture sequences fire.
+constexpr int kSoundEffectTitleSecret = 0xd;
+constexpr int kSoundEffectTitleSwing = 0xe;
+// The idle timer value a completed gesture rewinds to.
+constexpr int kReplayTimerValue = 0x24fa;
+
+// The directional gesture inputs the touch handling classifies from flick direction. The main
+// sequence is the Konami code; the alternate branch is left/right/left/right then B, A.
+enum TitleGestureInput {
+    kGestureUp = 0,
+    kGestureDown = 1,
+    kGestureLeft = 2,
+    kGestureRight = 3,
+    kGestureButtonA = 4,
+    kGestureButtonB = 5,
+    kGestureAltLeft = 6,
+    kGestureAltRight = 7,
+};
+
+// The progress steps through the gesture sequences.
+enum TitleGestureStep {
+    kGestureStepNone = 0,
+    kGestureStepUp1 = 1,
+    kGestureStepUp2 = 2,
+    kGestureStepDown1 = 3,
+    kGestureStepDown2 = 4,
+    kGestureStepLeft1 = 5,
+    kGestureStepRight1 = 6,
+    kGestureStepLeft2 = 7,
+    kGestureStepRight2 = 8,
+    kGestureStepButtonB = 9,
+    kGestureStepComplete = 10,
+    kGestureStepAltLeft1 = 0xf,
+    kGestureStepAltRight1 = 0x10,
+    kGestureStepAltLeft2 = 0x11,
+    kGestureStepAltRight2 = 0x12,
+    kGestureStepAltButtonB = 0x13,
+    kGestureStepAltComplete = 0x14,
+};
 } // namespace
 
 namespace rb {
@@ -119,9 +170,10 @@ const S_VECTOR2 g_aTitleCampaignPartAnchor[] = {
 TitleColetteScene::TitleColetteScene() {
     // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
     // every presentation field is otherwise zeroed by its member initialiser. Seed the two non-zero
-    // scalars and copy the part anchor ring into place.
-    m_flFadeBase = kInitialFadeBase;
-    m_nTrailingIndex = kNoSlotIndex;
+    // scalars (the fade starts fully hidden and no touch is tracked) and copy the part anchor ring
+    // into place.
+    m_flFadeValue = kInitialFadeValue;
+    m_nActiveTouchId = kNoTouchId;
     for (int nPart = 0; nPart < kPartAnchorCount; ++nPart) {
         m_aPartAnchor[nPart] = g_aTitleCampaignPartAnchor[nPart];
     }
@@ -129,8 +181,8 @@ TitleColetteScene::TitleColetteScene() {
 
 /** @ghidraAddress 0x57558 */
 void TitleColetteScene::LoadResources() {
-    m_nFadeTimer = 0;
-    m_nScrollTimer = 0;
+    m_nIdleTimer = 0;
+    m_nSeTimer = 0;
 
     // Resolve the campaign-specific title texture name: when a campaign is active its name prefixes
     // the base path, otherwise the bare fallback is used.
@@ -168,13 +220,13 @@ void TitleColetteScene::LoadResources() {
     m_nReadyDelay = kReadyDelay;
     ShotSoundManager::GetInstance()->LoadSlotVariants(GameSystem::GetGameSystem()->GetShotType());
 
-    // Seed the fade transform: element zero from the fade base, element two the fixed drop-in offset,
-    // the rest zero.
-    m_aFadeTransform[0] = m_flFadeBase;
-    m_aFadeTransform[1] = 0.0f;
-    m_aFadeTransform[2] = kFadeDropOffset;
-    m_aFadeTransform[3] = 0.0f;
-    m_aFadeTransform[4] = 0.0f;
+    // Seed the reveal cross-fade: ease from the current value to zero (fully shown) over the fade
+    // duration, with no start delay.
+    m_flFadeFrom = m_flFadeValue;
+    m_flFadeTo = 0.0f;
+    m_flFadeDuration = kFadeDuration;
+    m_flFadeElapsed = 0.0f;
+    m_flFadeStartDelay = 0.0f;
 
     // Create the theme's sound-effect player from the theme-named SE path.
     const RBUserSettingDataTheme themaID = RBUserSettingData.sharedInstance.thema;
@@ -305,15 +357,153 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
     }
 
     pSprite->SetSpriteRotation(nIndex, flRotation);
-    // The tint fades out with the scene's reveal: colours darken and the alpha drops as the fade
-    // level rises toward one.
-    const float flReveal = 1.0f - m_flFadeBase;
+    // The tint is scaled by the reveal (one minus the fade value): as the fade eases toward zero the
+    // parts brighten in and the alpha rises.
+    const float flReveal = 1.0f - m_flFadeValue;
     pSprite->SetSpriteColor(nIndex,
                             static_cast<unsigned int>(flReveal * color.r),
                             static_cast<unsigned int>(flReveal * color.g),
                             static_cast<unsigned int>(flReveal * color.b),
                             static_cast<unsigned int>(static_cast<float>(nAlpha) * flReveal));
     pSprite->SetSpriteCount(nIndex + 1);
+}
+
+/** @ghidraAddress 0x597a8 */
+unsigned int TitleColetteScene::AdvanceGestureState(int nInputCode) {
+    switch (nInputCode) {
+    case kGestureUp:
+        if (m_nGestureState != kGestureStepUp1) {
+            if (m_nGestureState != kGestureStepNone) {
+                break;
+            }
+            m_nGestureState = kGestureStepUp1;
+        }
+        m_nGestureState = kGestureStepUp2;
+        break;
+    case kGestureDown:
+        if (m_nGestureState != kGestureStepDown1) {
+            if (m_nGestureState != kGestureStepUp2) {
+                break;
+            }
+            m_nGestureState = kGestureStepDown1;
+        }
+        m_nGestureState = kGestureStepDown2;
+        break;
+    case kGestureLeft:
+        if (m_nGestureState == kGestureStepRight1) {
+            m_nGestureState = kGestureStepLeft2;
+        } else if (m_nGestureState == kGestureStepDown2) {
+            m_nGestureState = kGestureStepLeft1;
+        }
+        break;
+    case kGestureRight:
+        if (m_nGestureState == kGestureStepLeft2) {
+            m_nGestureState = kGestureStepRight2;
+        } else if (m_nGestureState == kGestureStepLeft1) {
+            m_nGestureState = kGestureStepRight1;
+        }
+        break;
+    case kGestureButtonA:
+        if (m_nGestureState == kGestureStepAltButtonB) {
+            // Completing the alternate branch toggles the hidden Hinabita campaign mode.
+            m_nGestureState = kGestureStepAltComplete;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
+            m_bGestureTriggered = true;
+            m_bHinabitaMode = !m_bHinabitaMode;
+            [RBCampaignData.sharedInstance setHinabitaMode:m_bHinabitaMode];
+            m_nIdleTimer = kReplayTimerValue;
+            m_nSeTimer = 0;
+            m_nSeAccumulator = 0;
+            m_nGestureState = kGestureStepNone;
+            return 0;
+        }
+        if (m_nGestureState == kGestureStepButtonB) {
+            // Completing the main code toggles the swing direction and returns the sound handle.
+            m_nGestureState = kGestureStepComplete;
+            const unsigned int nHandle =
+                SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSwing);
+            m_bGestureTriggered = true;
+            m_nIdleTimer = kReplayTimerValue;
+            const bool bWasSet = m_bSwingToggle;
+            m_bSwingToggle = !m_bSwingToggle;
+            m_nSwingDelta = bWasSet ? -1 : 1;
+            m_nGestureState = kGestureStepNone;
+            return nHandle;
+        }
+        break;
+    case kGestureButtonB:
+        if (m_nGestureState == kGestureStepAltRight2) {
+            m_nGestureState = kGestureStepAltButtonB;
+        } else if (m_nGestureState == kGestureStepRight2) {
+            m_nGestureState = kGestureStepButtonB;
+        }
+        break;
+    case kGestureAltLeft:
+        if (m_nGestureState == kGestureStepAltRight1) {
+            m_nGestureState = kGestureStepAltLeft2;
+        } else if (m_nGestureState == kGestureStepDown2) {
+            m_nGestureState = kGestureStepAltLeft1;
+        }
+        break;
+    case kGestureAltRight:
+        if (m_nGestureState == kGestureStepAltLeft2) {
+            m_nGestureState = kGestureStepAltRight2;
+        } else if (m_nGestureState == kGestureStepAltLeft1) {
+            m_nGestureState = kGestureStepAltRight1;
+        }
+        break;
+    default:
+        break;
+    }
+    // No sound handle was produced this step. (On these paths the binary leaves its object pointer
+    // in the return register; no caller reads it, so a plain 0 is faithful to observed behaviour.)
+    return 0;
+}
+
+/** @ghidraAddress 0x58570 */
+float TitleColetteScene::ComputeSwingParticleX(float flBaseX, float flBaseY) const {
+    const double dx = flBaseX + kSwingPivotX;
+    const double dy = flBaseY + kSwingPivotY;
+    const double angle = std::atan2(dy, dx) + m_nSwingPhase * kSwingPhaseRadiansPerDegree;
+    const double radius = std::sqrt(dx * dx + dy * dy);
+    return static_cast<float>(radius * std::cos(static_cast<float>(angle)) + kSwingOriginX);
+}
+
+/** @ghidraAddress 0x58610 */
+float TitleColetteScene::ComputeSwingParticleY(float flBaseX, float flBaseY) const {
+    const double dx = flBaseX + kSwingPivotX;
+    const double dy = flBaseY + kSwingPivotY;
+    const double angle = std::atan2(dy, dx) + m_nSwingPhase * kSwingPhaseRadiansPerDegree;
+    const double radius = std::sqrt(dx * dx + dy * dy);
+    return static_cast<float>(radius * std::sin(static_cast<float>(angle)) + kSwingOriginY);
+}
+
+/** @ghidraAddress 0x586b0 */
+void TitleColetteScene::UpdateFadeProgress(int nDeltaMs) {
+    // Once the fade has run its full duration, hold the end value.
+    if (m_flFadeElapsed >= m_flFadeDuration) {
+        m_flFadeValue = m_flFadeTo;
+        return;
+    }
+
+    m_flFadeElapsed += static_cast<float>(nDeltaMs);
+    // The fade only advances once the start delay has elapsed.
+    if (m_flFadeElapsed < m_flFadeStartDelay) {
+        return;
+    }
+    if (m_flFadeElapsed > m_flFadeDuration) {
+        m_flFadeElapsed = m_flFadeDuration;
+    }
+
+    // A zero duration snaps straight to the end; otherwise ease across the post-delay span.
+    float flFraction;
+    if (m_flFadeDuration == 0.0f) {
+        flFraction = 1.0f;
+    } else {
+        flFraction =
+            (m_flFadeElapsed - m_flFadeStartDelay) / (m_flFadeDuration - m_flFadeStartDelay);
+    }
+    m_flFadeValue = m_flFadeFrom + flFraction * (m_flFadeTo - m_flFadeFrom);
 }
 
 /** @ghidraAddress 0x57a64 */

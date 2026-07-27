@@ -4,10 +4,13 @@
 //  title_screen_layer_classic.h
 //  REFLEC BEAT plus
 //
-//  The classic title screen layer, as far as its hidden-gesture state machines and swing-particle
-//  rendering observe it. The class is not fully modelled yet: only the fields those routines touch
-//  are named, with the surrounding object modelled as reserved spans so the named fields land at
-//  their real offsets.
+//  The interactive title screen layer, as far as its hidden Konami-code swipe state machine and its
+//  two fade channels observe it. This is the 0x898-byte gesture layer driven by ProcessTitleLayer /
+//  RenderTitleScreenFrame, distinct from both the 0x168 rb::TitleClassicScene and the 0x898
+//  rb::TitleColetteScene (whose swing/gesture/fade helpers were previously misattributed here and now
+//  live on TitleColetteScene). The class is not fully modelled yet: only the fields the reconstructed
+//  routines touch are named, with the surrounding object modelled as reserved spans so the named
+//  fields land at their real offsets.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
@@ -16,11 +19,11 @@
 #include "linear_tween.h"
 
 /**
- * @brief The classic title screen layer, as far as its hidden-gesture state machines and
- * swing-particle rendering observe it.
+ * @brief The interactive title screen layer, as far as its hidden-swipe state machine and fade
+ * channels observe it.
  *
- * Only the timer, swipe-sequence, flick-gesture, and swing fields are named; the rest of the
- * 0x898-byte object is reserved padding until the full class is modelled.
+ * Only the two fade channels and the swipe-sequence fields are named; the rest of the 0x898-byte
+ * object is reserved padding until the full class is modelled.
  * @ghidraAddress TitleScreenLayerClassic (engine layer, 0x898 bytes)
  */
 class TitleScreenLayerClassic {
@@ -33,16 +36,6 @@ public:
      */
     void AdvanceSwipeState(int iSwipeEvent);
     /**
-     * @brief Advances the flick-gesture state machine, toggling the hidden Hinabita mode when
-     * sequence A completes and the swing direction when sequence B completes.
-     * @param inputCode The directional gesture id.
-     * @return The played sound handle after the swing toggle, or @c 0 otherwise. (Only the caller's
-     * completion call, @c inputCode 4, uses the result; the binary leaves its object pointer in the
-     * return register on the partial-step paths, which no caller reads.)
-     * @ghidraAddress 0x597a8
-     */
-    unsigned int AdvanceGestureState(int inputCode);
-    /**
      * @brief Advances the title fade channel by @p nDeltaFrames.
      * @ghidraAddress 0x149ff4
      */
@@ -52,66 +45,16 @@ public:
      * @ghidraAddress 0x152548
      */
     void AdvanceFadeValue(int nDeltaFrames);
-    /**
-     * @brief Rotates a swing-particle rest position around the logo pivot by the current swing
-     * phase and returns its screen X coordinate.
-     * @param flBaseX The particle's rest x.
-     * @param flBaseY The particle's rest y.
-     * @return The rotated screen x coordinate.
-     * @ghidraAddress 0x58570
-     */
-    float ComputeSwingParticleX(float flBaseX, float flBaseY) const;
-    /**
-     * @brief The Y counterpart of @c ComputeSwingParticleX.
-     * @param flBaseX The particle's rest x.
-     * @param flBaseY The particle's rest y.
-     * @return The rotated screen y coordinate.
-     * @ghidraAddress 0x58610
-     */
-    float ComputeSwingParticleY(float flBaseX, float flBaseY) const;
-
-    /**
-     * @brief Advances the title cross-fade timer and updates the interpolated fade factor.
-     *
-     * Accumulates the frame delta into the elapsed time; once it passes the start delay, the fade
-     * factor eases from its start to its end value across the remaining duration (snapping to the end
-     * value when the duration is zero or the timer has already completed).
-     * @param nDeltaMs The elapsed time this frame, in milliseconds.
-     * @ghidraAddress 0x586b0
-     */
-    void UpdateFadeProgress(int nDeltaMs);
 
 private:
-    unsigned char m_aReserved00[0x54] = {};   // +0x000
-    int m_nGestureTimer = {};                 // +0x054 timer rewound on a completed gesture
-    unsigned char m_aReserved58[0x04] = {};   // +0x058
-    int m_nTimerClear1 = {};                  // +0x05c cleared on the Hinabita toggle
-    int m_nTimerClear2 = {};                  // +0x060 cleared on the Hinabita toggle
-    unsigned char m_aReserved64[0x60] = {};   // +0x064
+    unsigned char m_aReserved00[0xc4] = {};   // +0x000
     LinearTween m_fadeChannel;                // +0x0c4 title fade tween
     unsigned char m_aReserved0d8[0x38] = {};  // +0x0d8
     LinearTween m_fadeValueChannel;           // +0x110 secondary title fade/tween
     unsigned char m_aReserved124[0x3c] = {};  // +0x124
     int m_nSwipeState = {};                   // +0x160 hidden-swipe sequence state
     bool m_bSwipeTriggered = {};              // +0x164 latched when the swipe sequence completes
-    unsigned char m_aReserved165[0x5a3] = {}; // +0x165
-    // +0x708: the title cross-fade block: from, to, duration, elapsed, start-delay, and the
-    // interpolated 0..1 fade factor the render pass consumes.
-    float m_flFadeFrom = {};                  // +0x708
-    float m_flFadeTo = {};                    // +0x70c
-    float m_flFadeDuration = {};              // +0x710
-    float m_flFadeElapsed = {};               // +0x714
-    float m_flFadeStartDelay = {};            // +0x718
-    float m_flFadeValue = {};                 // +0x71c
-    unsigned char m_aReserved720[0x10] = {};  // +0x720
-    int m_nGestureState = {};                 // +0x730 flick-gesture sequence state
-    bool m_bGestureTriggered = {};            // +0x734 latched when a flick sequence completes
-    bool m_bSwingToggle = {};                 // +0x735 swing-direction toggle
-    unsigned char m_aReserved736[0x02] = {};  // +0x736
-    int m_nSwingDelta = {};                   // +0x738 resulting swing delta (+1 or -1)
-    int m_nSwingPhase = {};                   // +0x73c accumulated swing phase, in degrees
-    bool m_bHinabitaMode = {};                // +0x740 hidden Hinabita campaign toggle
-    unsigned char m_aReserved741[0x157] = {}; // +0x741 remainder of the object
+    unsigned char m_aReserved165[0x733] = {}; // +0x165 remainder of the object
 };
 
 // code: language=C++
