@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -45,6 +47,58 @@ public:
      */
     void LoadNoteTrailSprites();
 
+    // The judge grades a queued result mark may carry (asserted by Create); the most marks the queue
+    // holds in one frame; and the number of result sprite graphics CreateSprite can emit.
+    static constexpr int kJudgeMax = 4;
+    static constexpr int kMaxResults = 40;
+    static constexpr int kResultSpriteTypeCount = 6;
+
+    /**
+     * @brief Queues a note-trail result mark at (@p flX, @p flY) for the current frame.
+     *
+     * Finds the first free slot in the queue (up to @c kMaxResults marks) and stores the judge and
+     * position; drops the mark when the queue is full.
+     * @param nJudge The mark's judge grade (0 through @c kJudgeMax - 1).
+     * @param flX The mark X.
+     * @param flY The mark Y.
+     * @ghidraAddress 0x184800
+     */
+    void Create(int nJudge, float flX, float flY);
+
+    /**
+     * @brief Advances the layer one frame: steps the two spin phases (wrapping each into range),
+     * then emits every queued result mark's spinning sprite and clears the queue.
+     *
+     * The first spin phase drives the sprite rotation; the second selects the spin frame (0 through
+     * 3) for judge-0 marks. Judge-1 and judge-2 marks emit fixed sprite graphics 4 and 5. Every
+     * sprite is scaled by the game system's scaled sheet radius. Finishes by publishing the frame's
+     * sprite count to the batch.
+     * @param flDeltaSeconds The frame delta in seconds.
+     * @ghidraAddress 0x1848b0
+     */
+    void Update(float flDeltaSeconds);
+
+    /**
+     * @brief Emits one result sprite into the batch at the running write index.
+     *
+     * Both graphics draw a fixed 58-anchored, 116-square quad; the type only selects the UV rect.
+     * Writes the sprite's position, anchor, size, UV rect, rotation, scale, and colour (opaque white
+     * modulated by @p nAlpha), then advances the write index.
+     * @param nSpriteType The sprite graphic to emit (0 through @c kResultSpriteTypeCount - 1).
+     * @param pPosition The sprite position.
+     * @param nAlpha The sprite alpha.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScaleX The sprite X scale.
+     * @param flScaleY The sprite Y scale.
+     * @ghidraAddress 0x184a48
+     */
+    void CreateSprite(unsigned int nSpriteType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flRotation,
+                      float flScaleX,
+                      float flScaleY);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -52,15 +106,20 @@ private:
      */
     NoteTrailLayer();
 
+    // One queued result mark (16 bytes): whether the slot is in use, its judge, and its position.
+    struct ResultMark {
+        bool bActive = {};       // +0x00: whether the slot holds a queued mark.
+        int nJudge = {};         // +0x04: the mark's judge grade.
+        S_VECTOR2 position = {}; // +0x08: the mark position.
+    };
+
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-trail sprite instancer.
-    int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.
+    int m_nSpriteCount = {};                    // +0x18: the instancer's live sprite count.
     bool m_bBuilt = {};                         // +0x1c: set once the sprite is built.
-    // +0x1d..+0x1f is alignment padding before the per-trail records.
-    // unsigned char m_aPad1d[3]; // +0x1d (alignment padding, compiler-inserted)
-    // +0x20..+0x2af: the per-trail records, still being worked out, kept as a reserved span to
-    // preserve the 0x2b0-byte allocation size.
-    unsigned char m_aTrailRecords[0x290] = {}; // +0x20
+    float m_flSpinPhaseA = {};                  // +0x20: the rotation spin phase, wrapped to 3000.
+    float m_flSpinPhaseB = {}; // +0x24: the frame-select spin phase, wrapped to 400/3.
+    ResultMark m_aResults[kMaxResults] = {}; // +0x28: the per-frame result-mark queue (to 0x2a8).
 };
 
 // code: language=C++
