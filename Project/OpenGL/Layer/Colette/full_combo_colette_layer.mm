@@ -218,12 +218,12 @@ void FullComboColetteLayer::CreateFullComboColette(unsigned int nColor) {
 }
 
 /** @ghidraAddress 0x9c264 */
-void FullComboColetteLayer::CreateColetteSprite(int nType,
-                                                const S_VECTOR2 *pPosition,
-                                                unsigned int nAlpha,
-                                                float flScaleX,
-                                                float flScaleY,
-                                                float flRotation) {
+void FullComboColetteLayer::CreateSprite(int nType,
+                                         const S_VECTOR2 *pPosition,
+                                         unsigned int nAlpha,
+                                         float flScaleX,
+                                         float flScaleY,
+                                         float flRotation) {
     assert(nType >= 0);
     assert(nType < kColetteFullComboSpriteTypeCount);
 

@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -47,6 +49,30 @@ public:
      * @ghidraAddress 0x10f3f4
      */
     void CreateFullComboClassic(unsigned int nColor);
+
+    /**
+     * @brief Emits one full-combo sprite of the given object and geometry type.
+     *
+     * The object type selects the target sprite batch (and its slot counter); the geometry type
+     * indexes the descriptor table for the anchor, size, and UV-table index. While the batch has
+     * free capacity, appends a sprite at @p pPosition with the given scale, rotation, and alpha. The
+     * colour is always opaque white modulated by @p nAlpha. A no-op when the batch is full.
+     * @param nObjType The sprite object type (0 through 2), selecting the batch.
+     * @param nType The sprite geometry type (0 through 15).
+     * @param pPosition The sprite position.
+     * @param nAlpha The sprite alpha.
+     * @param flScaleX The sprite x scale.
+     * @param flScaleY The sprite y scale.
+     * @param flRotation The sprite rotation, in radians.
+     * @ghidraAddress 0x10fe88
+     */
+    void CreateSprite(int nObjType,
+                      int nType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flScaleX,
+                      float flScaleY,
+                      float flRotation);
 
     /**
      * @brief Clears every player colour's full-combo effect active flag.

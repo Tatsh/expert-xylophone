@@ -73,12 +73,12 @@ public:
      * @param flRotation The sprite rotation, in radians.
      * @ghidraAddress 0x9c264
      */
-    void CreateColetteSprite(int nType,
-                             const S_VECTOR2 *pPosition,
-                             unsigned int nAlpha,
-                             float flScaleX,
-                             float flScaleY,
-                             float flRotation);
+    void CreateSprite(int nType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flScaleX,
+                      float flScaleY,
+                      float flRotation);
 
     /**
      * @brief Clears every player colour's full-combo effect active flag.
