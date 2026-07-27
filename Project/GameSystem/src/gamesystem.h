@@ -98,6 +98,10 @@ public:
     float GetSheetInsetHalfY() const {
         return m_flSheetInsetHalfY;
     }
+    /** @brief Returns the note sheet's radius. */
+    float GetSheetRadius() const {
+        return m_flSheetRadius;
+    }
     /** @brief Returns the note sheet's half radius, the off-screen cull margin below the field. */
     float GetSheetRadiusHalf() const {
         return m_flSheetRadiusHalf;

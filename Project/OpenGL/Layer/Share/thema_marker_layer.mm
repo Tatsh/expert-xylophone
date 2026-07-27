@@ -2,6 +2,8 @@
 
 #import "RBUserSettingData.h"
 #include "bg_layer.h"
+#include "engineglobals.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -65,6 +67,17 @@ constexpr int kClassicThema = 0;
 
 // The batch that draws in 3D (its vertex flag is set), and the additive-style vertex flag value.
 constexpr int k3dBatch = 1;
+
+// The bitmask of marker groups (0, 2, and 4) whose Y is mirrored by the play side; the others take
+// the opposite mirror selector.
+constexpr unsigned int kSideMirroredGroupMask = 0x15;
+// The first marker group of the tall band (groups 4 and 5, double-height) and of the mid band
+// (groups 2 and 3, single-height); groups 0 and 1 set only the Y position.
+constexpr int kTallBandFirstGroup = 4;
+constexpr int kMidBandFirstGroup = 2;
+constexpr int kBandGroupSpan = 2;
+// The two mirrored Y positions, indexed by the side selector.
+constexpr int kMirrorSlotCount = 2;
 
 const UvEntry &LookupUv(int nUvIndex) {
     for (const UvEntry &entry : kUvTable) {
@@ -194,4 +207,49 @@ void ThemaMarkerLayer::SetDangerLevel(float flLevel) {
     const float flClamped = flLevel < 0.0f ? 0.0f : (flLevel > 1.0f ? 1.0f : flLevel);
     m_flDangerBrightness = flClamped * kDangerBrightnessRange + kDangerBrightnessBase;
     m_bFadeColorDirty = true;
+}
+
+/** @ghidraAddress 0x1801d4 */
+void ThemaMarkerLayer::RenderThemaMarkerFrame() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const int nPlaySide = pGameSystem->GetPlayColor();
+
+    // The two mirrored Y positions: the near-lane slope (and its negative) scaled by the sheet-inset
+    // half-height.
+    const float flInsetHalfY = pGameSystem->GetSheetInsetHalfY();
+    const float aMirroredY[kMirrorSlotCount] = {g_flPlayfieldNearLaneSlope * flInsetHalfY,
+                                                g_flPlayfieldNearLaneSlopeNeg * flInsetHalfY};
+
+    const float flWidth = pGameSystem->GetSheetPosX();
+    const float flRadius = pGameSystem->GetSheetRadius();
+
+    for (int nGroup = 0; nGroup < m_nMarkerCount; ++nGroup) {
+        const int nBaseIndex = m_aMarkerBaseIndex[nGroup];
+        ne::C_SPRITE_INSTANCING *pBatch = m_apSprites[kMarkerBatch[nGroup]];
+
+        // Groups 0, 2, and 4 mirror by the play side; the others take the opposite selector.
+        float flY = 0.0f;
+        if (nGroup < static_cast<int>(kMarkerLayoutCount)) {
+            const bool bSideMirrored = ((1u << nGroup) & kSideMirroredGroupMask) != 0;
+            const int nSel = bSideMirrored ? (nPlaySide == 0 ? 1 : 0) : (nPlaySide == 1 ? 1 : 0);
+            flY = aMirroredY[nSel];
+        }
+
+        for (int nSprite = 0; nSprite < kMarkerSpriteCount[nGroup]; ++nSprite) {
+            const int nIndex = nBaseIndex + nSprite;
+            pBatch->SetSpritePositionY(nIndex, flY);
+            // The tall band (groups 4, 5) is double-height with a bottom-centred anchor; the mid band
+            // (groups 2, 3) is single-height with a centred anchor; the top band (groups 0, 1) keeps
+            // its built size.
+            if (nGroup - kTallBandFirstGroup < kBandGroupSpan &&
+                nGroup - kTallBandFirstGroup >= 0) {
+                pBatch->SetSpriteSize(nIndex, S_VECTOR2{flWidth, flRadius + flRadius});
+                pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{flWidth * 0.5f, flRadius});
+            } else if (nGroup - kMidBandFirstGroup < kBandGroupSpan &&
+                       nGroup - kMidBandFirstGroup >= 0) {
+                pBatch->SetSpriteSize(nIndex, S_VECTOR2{flWidth, flRadius});
+                pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{flWidth * 0.5f, flRadius * 0.5f});
+            }
+        }
+    }
 }
