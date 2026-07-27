@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -44,6 +46,64 @@ public:
      */
     void LoadNoteChargeSprites();
 
+    // The player colours a charge/particle may carry (asserted by Create/CreateParticle), the number
+    // of pooled charge records and burst particles, and the number of sprite graphics CreateSprite
+    // can emit.
+    static constexpr int kPlayerColorMax = 2;
+    static constexpr int kChargeCount = 0x20;
+    static constexpr int kParticleCount = 0x100;
+    static constexpr int kSpriteTypeCount = 8;
+
+    /**
+     * @brief Queues a charge record for a player colour at the given position and geometry.
+     *
+     * Finds the first free charge slot (up to @c kChargeCount) and stores the colour and the four
+     * geometry floats; drops the charge when the pool is full.
+     * @param nColor The player colour (0 or 1).
+     * @param flX The charge X.
+     * @param flY The charge Y.
+     * @param flA A geometry parameter.
+     * @param flB A geometry parameter.
+     * @ghidraAddress 0x180cf4
+     */
+    void Create(int nColor, float flX, float flY, float flA, float flB);
+
+    /**
+     * @brief Spawns a burst particle for a player colour near the given position.
+     *
+     * Finds the first free particle slot (up to @c kParticleCount), stores the colour and an offset
+     * position (each axis offset by a random value in [-32, 32)), and seeds a randomised lifetime
+     * (longer for colour 1).
+     * @param nColor The player colour (0 or 1).
+     * @param pPosition The base spawn position.
+     * @ghidraAddress 0x180d8c
+     */
+    void CreateParticle(int nColor, const S_VECTOR2 *pPosition);
+
+    /**
+     * @brief Advances the layer one frame: steps the two spin phases, emits each active charge (plus
+     * a phase-driven number of burst particles), then ages and emits each active particle, clearing
+     * both pools' spent entries.
+     * @param flDeltaSeconds The frame delta in seconds.
+     * @ghidraAddress 0x180ed4
+     */
+    void Update(float flDeltaSeconds);
+
+    /**
+     * @brief Emits one charge sprite of the given type into the batch at the running write index.
+     * @param nType The sprite graphic (0 through @c kSpriteTypeCount - 1).
+     * @param pPosition The sprite position.
+     * @param nAlpha The sprite alpha.
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScale The sprite scale (applied to both axes).
+     * @ghidraAddress 0x181140
+     */
+    void CreateSprite(int nType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flRotation,
+                      float flScale);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, zero-clearing its record tables,
@@ -52,15 +112,37 @@ private:
      */
     NoteChargeLayer();
 
+    // One pooled charge record (24 bytes): its colour, position, and geometry.
+    struct ChargeRecord {
+        bool bActive = {};       // +0x00: whether the slot holds a live charge.
+        int nColor = {};         // +0x04: the player colour.
+        S_VECTOR2 position = {}; // +0x08: the charge position.
+        float flA = {};          // +0x10: the sprite rotation.
+        float flB = {};          // +0x14: the alpha-weight geometry parameter.
+    };
+
+    // One pooled burst particle (24 bytes): its colour, lifetime-slot sprite type, position, and age.
+    struct BurstParticle {
+        bool bActive = {};       // +0x00: whether the slot holds a live particle.
+        int nColor = {};         // +0x04: the player colour.
+        int nSpriteType = {};    // +0x08: the sprite type (a randomised lifetime slot 2 through 7).
+        S_VECTOR2 position = {}; // +0x0c: the particle position.
+        float flAge = {};        // +0x14: the elapsed age.
+    };
+
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-charge sprite instancer.
-    // +0x18..+0x1b: further state, still being worked out, preceding the capacity.
-    unsigned char m_aReserved18[4] = {}; // +0x18
+    int m_nSpriteCount = {};                    // +0x18: the instancer's live sprite count.
     int m_nSpriteCapacity = {}; // +0x1c: the accumulated instancer capacity (sprite count).
     bool m_bBuilt = {};         // +0x20: set once the sprite is built.
-    // +0x21..+0x1b37: the per-charge record tables, still being worked out, kept as a reserved span
-    // to preserve the 0x1b38-byte allocation size.
-    unsigned char m_aChargeRecords[0x1b17] = {}; // +0x21
+    // +0x21..+0x23 is alignment padding before the spin phases.
+    unsigned char m_aReserved21[3] = {};        // +0x21
+    float m_flSpinPhaseA = {};                  // +0x24: a spin phase, wrapped to 400/3.
+    float m_flSpinPhaseB = {};                  // +0x28: a spin phase, wrapped to 50/3.
+    ChargeRecord m_aCharges[kChargeCount] = {}; // +0x2c: the pooled charge records.
+    BurstParticle m_aParticles[kParticleCount] =
+        {};                                  // +0x32c: the pooled burst particles (to 0x1b2c).
+    unsigned char m_aReservedTail[0xc] = {}; // +0x1b2c: trailing state to the 0x1b38 size.
 };
 
 // code: language=C++
