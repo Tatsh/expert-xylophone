@@ -104,6 +104,17 @@ private:
     void BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet);
 
     /**
+     * @brief Stops and reloads the background music with a result-screen (non-looping) track, then
+     * loads the themed result voice data.
+     *
+     * The receiver is unused; the method is a member only because the binary threads the task pointer
+     * through its caller.
+     * @param musicData The result-track music resource data.
+     * @ghidraAddress 0x14fbd4
+     */
+    void LoadResultBgmForMusic(NSData *musicData);
+
+    /**
      * @brief Tears down the active note chart: resets playback, clears the note-effect manager's
      * chart, and destroys the owned chart object.
      * @ghidraAddress 0x14ab4c

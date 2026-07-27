@@ -33,6 +33,7 @@
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
 #include "result_window_colette_layer.h"
+#include "soundeffectmanager.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
@@ -53,6 +54,9 @@ static constexpr int kThemaColette = 2;
 static constexpr int kResultTextSlot0 = 2;
 static constexpr int kResultTextSlot1 = 3;
 static constexpr int kResultTextSlot2 = 4;
+
+// The themed voice bank the result screen loads.
+static constexpr int kResultVoiceId = 2;
 
 /** @ghidraAddress 0x14a21c */
 PlayTask::PlayTask() {
@@ -187,6 +191,16 @@ void PlayTask::BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet) {
     // Seed the score tracker's total-note count from the chart, then reset playback with the ghost.
     ScoreTracker::shared()->SetTotalNotes(m_pMusicSheet->GetChartNoteCount());
     ResetNotePlaybackState(true);
+}
+
+/** @ghidraAddress 0x14fbd4 */
+void PlayTask::LoadResultBgmForMusic(NSData *musicData) {
+    // Swap the background music to the result track: stop, release, then load it non-looping.
+    [RBBGMManager.getInstance StopMusic:0.0f];
+    [RBBGMManager.getInstance RelaseMusic];
+    [RBBGMManager.getInstance LoadMusic:musicData Loop:NO];
+    // Load the themed result voice bank (voice id 2 = result).
+    SoundEffectManager::GetInstance()->LoadThemedVoiceData(kResultVoiceId);
 }
 
 /** @ghidraAddress 0x14ab4c */
