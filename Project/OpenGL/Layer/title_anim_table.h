@@ -1560,8 +1560,8 @@ constexpr float g_aTitleAnim10Scale[] = {
     12283.3330078125f, 1.0f,
 };
 
-// Window 11 (0x353.. halved) scale 12x2 / alpha 12x0x10. @ghidraAddress 0x2fbc00
-constexpr float g_aTitleAnim11Scale[] = {
+// Window 11 (0x353.. halved) alpha 12x2. @ghidraAddress 0x2fbc00
+constexpr float g_aTitleAnim11Alpha[] = {
     1733.3333740234375f,
     0.0f,
     4233.33349609375f,
@@ -1613,7 +1613,7 @@ constexpr float g_aTitleAnim11Scale[] = {
 };
 
 // @ghidraAddress 0x2fbcc0
-constexpr float g_aTitleAnim11Alpha[] = {
+constexpr float g_aTitleAnim11Scale[] = {
     866.6666870117188f,
     0.0f,
     983.3333129882812f,
@@ -2000,8 +2000,8 @@ constexpr float g_aTitleAnim11Alpha[] = {
     1.0f,
 };
 
-// Window 12 (>0x1816) scale 12x4 / alpha 12x0x15. @ghidraAddress 0x2fc320
-constexpr float g_aTitleAnim12Scale[] = {
+// Window 12 (>0x1816) alpha 12x4. @ghidraAddress 0x2fc320
+constexpr float g_aTitleAnim12Alpha[] = {
     8183.33349609375f, 1.0f, 11616.6669921875f, 1.0f, 12116.6669921875f, 0.0f,
     12283.3330078125f, 1.0f, 8250.0f,           1.0f, 11616.6669921875f, 1.0f,
     12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f, 8316.6669921875f,  1.0f,
@@ -2021,7 +2021,7 @@ constexpr float g_aTitleAnim12Scale[] = {
 };
 
 // @ghidraAddress 0x2fc4a0
-constexpr float g_aTitleAnim12Alpha[] = {
+constexpr float g_aTitleAnim12Scale[] = {
     6183.33349609375f, 0.0f,
     6300.0f,           1.100000023841858f,
     6350.0f,           1.0f,
@@ -2276,8 +2276,8 @@ constexpr float g_aTitleAnim12Alpha[] = {
     12500.0f,          1.0f,
 };
 
-// Window 13 (>0xa6 tail) alpha 2x0xa. @ghidraAddress 0x2fcc80
-constexpr float g_aTitleAnim13Alpha[] = {
+// Window 13 (>0xa6 tail) rotation curve, 2 sprites x 0xa knots. @ghidraAddress 0x2fcc80
+constexpr float g_aTitleAnim13Rotation[] = {
     316.6666564941406f,
     0.7853981852531433f,
     333.3333435058594f,
@@ -2300,12 +2300,33 @@ constexpr float g_aTitleAnim13Alpha[] = {
     0.0f,
 };
 
-// Window 13 scale (inline 2-knot). @ghidraAddress 0x2f8520
-constexpr float g_aTitleAnim13Scale[] = {166.6666717529297f, 0.0f, 883.3333129882812f, 1.0f};
+// Window 13 alpha (inline 2-knot). @ghidraAddress 0x2f8520
+constexpr float g_aTitleAnim13Alpha[] = {166.6666717529297f, 0.0f, 883.3333129882812f, 1.0f};
 
 // Window 14 (final) scale (inline 2-knot). @ghidraAddress 0x2f8530
 constexpr float g_aTitleAnim14[] = {1766.6666259765625f, 0.0f, 2283.333251953125f, 1.0f};
 
+// Window 1 sprite positions (2 entries). @ghidraAddress 0x2f8500
+constexpr float g_aTitleAnim01Pos[][2] = {{390.0f, 467.0f}, {390.0f, 467.0f}};
+
+// Window 6 sprite positions; the loop uses entries 1 through 6. @ghidraAddress 0x2fab40
+constexpr float g_aTitleAnim06Pos[][2] = {
+    {711.0f, 489.0f},
+    {281.0f, 548.0f},
+    {338.0f, 561.0f},
+    {366.0f, 547.0f},
+    {396.0f, 556.0f},
+    {438.0f, 556.0f},
+    {488.0f, 548.0f},
+};
+
+// Window 13 sprite positions (2 entries). @ghidraAddress 0x2f8510
+constexpr float g_aTitleAnim13Pos[][2] = {{392.0f, 465.0f}, {379.0f, 466.0f}};
+
+// The standalone attract hint sprite position. @ghidraAddress 0x2f8548
+constexpr float g_aTitleHintPos[] = {390.0f, 467.0f};
+// The standalone logo sprite position. @ghidraAddress 0x2f8550
+constexpr float g_aTitleLogoPos[] = {384.0f, 619.0f};
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

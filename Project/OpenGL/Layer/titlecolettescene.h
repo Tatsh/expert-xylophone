@@ -162,6 +162,26 @@ private:
     void RenderCampaignPortrait();
 
     /**
+     * @brief Emits one animated part sprite of a standard timeline window for the current clock.
+     *
+     * Positions the part from the swung particle table when the swing is active, otherwise from the
+     * campaign anchor ring, curve-interpolates a uniform scale and an alpha (scaled to 0-255) from
+     * the given keyframe tables, and appends the sprite at full white.
+     * @param nPartId The part index to emit.
+     * @param nPosIndex The index into the anchor and swing-particle tables.
+     * @param pScaleTable The uniform-scale keyframe table.
+     * @param nScaleKnots The scale table's knot count.
+     * @param pAlphaTable The alpha keyframe table.
+     * @param nAlphaKnots The alpha table's knot count.
+     */
+    void EmitAnimatedPart(unsigned int nPartId,
+                          int nPosIndex,
+                          const float *pScaleTable,
+                          int nScaleKnots,
+                          const float *pAlphaTable,
+                          int nAlphaKnots);
+
+    /**
      * @brief Emits one title part's sprite into its instancer slot and records its hit-box rect.
      *
      * Appends one quad to part @p nPartId's sprite instancer (doing nothing once the instancer is

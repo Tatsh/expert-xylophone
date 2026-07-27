@@ -25,6 +25,7 @@
 #include "neTexture.h"
 #include "shotsoundmanager.h"
 #include "soundeffectmanager.h"
+#include "title_anim_table.h"
 #include "touch_point.h"
 #include "touchmanager.h"
 
@@ -199,6 +200,15 @@ constexpr float kPortraitRowRise = 80.0f;       // @ghidraAddress 0x2f855c
 constexpr float kPortraitBaseY = 1020.0f;       // @ghidraAddress 0x2f8560
 constexpr float kPortraitCentreX = 384.0f;      // @ghidraAddress 0x2f8550
 constexpr float kPortraitMainX = 389.0f;
+
+// The attract intro animation (window one): two sprites (part ids one and two) with six-knot scale
+// and alpha curves laid out twelve floats apart.
+constexpr int kAnim01Count = 2;
+constexpr int kAnim01Stride = 12;
+constexpr unsigned int kAnim01Base = 1;
+// The standalone attract-hint and title-logo sprite part ids.
+constexpr unsigned int kPartAttractHint = 0x4b;
+constexpr unsigned int kPartTitleLogo = 0x60;
 
 // The exit sound effect and the value the fade reaches to advance to the finish state.
 constexpr int kSoundEffectExit = 0x10;
@@ -935,6 +945,166 @@ void TitleColetteScene::RenderCampaignPortrait() {
             m_nSeAccumulator = 0;
         }
     }
+}
+
+void TitleColetteScene::EmitAnimatedPart(unsigned int nPartId,
+                                         int nPosIndex,
+                                         const float *pScaleTable,
+                                         int nScaleKnots,
+                                         const float *pAlphaTable,
+                                         int nAlphaKnots) {
+    // While the logo swing is active the part follows its swung position, otherwise its anchor ring
+    // rest position.
+    const S_VECTOR2 &position =
+        m_nSwingPhase != 0 ? m_aSwingParticle[nPosIndex] : m_aPartAnchor[nPosIndex];
+    const float flTime = static_cast<float>(m_nIdleTimer);
+    const float flScale = CalculateCurveInterpolation(pScaleTable, nScaleKnots, flTime);
+    const int nAlpha = static_cast<int>(
+        CalculateCurveInterpolation(pAlphaTable, nAlphaKnots, flTime) * kFullColor);
+    EmitPartSprite(nPartId,
+                   static_cast<unsigned int>(nAlpha),
+                   position,
+                   S_VECTOR2{flScale, flScale},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+}
+
+/** @ghidraAddress 0x5872c */
+void TitleColetteScene::RenderSprites() {
+    const int nClock = m_nIdleTimer;
+
+    // The attract intro plays only before attract mode latches: two sprites from a dedicated
+    // position table with six-knot scale and alpha curves.
+    if (!m_bAttractMode) {
+        for (int nSprite = 0; nSprite < kAnim01Count; ++nSprite) {
+            const float flTime = static_cast<float>(m_nIdleTimer);
+            const float flScale = CalculateCurveInterpolation(
+                &g_aTitleAnim01Scale[nSprite * kAnim01Stride], 6, flTime);
+            const int nAlpha =
+                static_cast<int>(CalculateCurveInterpolation(
+                                     &g_aTitleAnim01Alpha[nSprite * kAnim01Stride], 6, flTime) *
+                                 kFullColor);
+            EmitPartSprite(kAnim01Base + static_cast<unsigned int>(nSprite),
+                           static_cast<unsigned int>(nAlpha),
+                           S_VECTOR2{g_aTitleAnim01Pos[nSprite][0], g_aTitleAnim01Pos[nSprite][1]},
+                           S_VECTOR2{flScale, flScale},
+                           0.0f,
+                           S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        }
+    }
+
+    // The standard timeline windows: each spans a timer range and animates a run of parts through
+    // the shared per-sprite path.
+    if (static_cast<unsigned int>(nClock - 0x353) < 0xa6a) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x3 + i, i, &g_aTitleAnim02Scale[i * 6], 3, &g_aTitleAnim02Alpha[i * 4], 2);
+        }
+    }
+    if (static_cast<unsigned int>(m_nIdleTimer - 0x1a0b) < 0x960) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0xf + i, i, &g_aTitleAnim03Scale[i * 6], 3, &g_aTitleAnim03Alpha[i * 4], 2);
+        }
+    }
+    if (static_cast<unsigned int>(m_nIdleTimer - 0x2f45) < 0x6e6) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x1b + i, i, &g_aTitleAnim04Scale[i * 6], 3, &g_aTitleAnim04Alpha[i * 4], 2);
+        }
+    }
+    if (m_nIdleTimer > 0xa6) {
+        for (int i = 0; i < 10; ++i) {
+            EmitAnimatedPart(
+                0x4a + i, i, &g_aTitleAnim05Scale[i * 0x3a], 0x1d, &g_aTitleAnim05Alpha[i * 4], 2);
+        }
+    }
+
+    // Window 6: six parts with a single seven-knot scale curve, from a dedicated position table.
+    if (static_cast<unsigned int>(m_nIdleTimer - 0xa7) < 0x1a0b) {
+        for (int i = 0; i < 6; ++i) {
+            const float flScale = CalculateCurveInterpolation(
+                &g_aTitleAnim06Curve[i * 0xe], 7, static_cast<float>(m_nIdleTimer));
+            EmitPartSprite(0x55 + static_cast<unsigned int>(i),
+                           0xff,
+                           S_VECTOR2{g_aTitleAnim06Pos[i + 1][0], g_aTitleAnim06Pos[i + 1][1]},
+                           S_VECTOR2{flScale, flScale},
+                           0.0f,
+                           S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        }
+    }
+
+    if (m_nIdleTimer > 0xa6) {
+        for (int i = 0; i < 6; ++i) {
+            EmitAnimatedPart(
+                0x5c + i, i, &g_aTitleAnim07Scale[i * 0x2a], 0x15, &g_aTitleAnim07Alpha[i * 4], 2);
+        }
+    }
+
+    // Window 9 through 12: further standard windows over their own timer ranges.
+    if (static_cast<unsigned int>(m_nIdleTimer - 0x353) < 0x127d) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x33 + i, i, &g_aTitleAnim09Scale[i * 10], 5, &g_aTitleAnim09Alpha[i * 0xc], 6);
+        }
+    }
+    if (static_cast<unsigned int>(m_nIdleTimer - 0x1817) < 0x1953) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x33 + i, i, &g_aTitleAnim10Scale[i * 0x10], 8, &g_aTitleAnim10Alpha[i * 0x10], 8);
+        }
+    }
+    if ((static_cast<unsigned int>(m_nIdleTimer - 0x353) >> 1) < 0xdff) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x27 + i, i, &g_aTitleAnim11Scale[i * 0x20], 0x10, &g_aTitleAnim11Alpha[i * 4], 2);
+        }
+    }
+    if (m_nIdleTimer > 0x1816) {
+        for (int i = 0; i < 12; ++i) {
+            EmitAnimatedPart(
+                0x27 + i, i, &g_aTitleAnim12Scale[i * 0x2a], 0x15, &g_aTitleAnim12Alpha[i * 8], 4);
+        }
+    }
+
+    // Window 13: two sprites from a dedicated position table, drawn at fixed scale with a rotation
+    // curve and a shared two-knot alpha curve.
+    if (m_nIdleTimer > 0xa6) {
+        for (int i = 0; i < 2; ++i) {
+            const float flTime = static_cast<float>(m_nIdleTimer);
+            const float flRotation =
+                CalculateCurveInterpolation(&g_aTitleAnim13Rotation[i * 0x14], 0xa, flTime);
+            const int nAlpha = static_cast<int>(
+                CalculateCurveInterpolation(g_aTitleAnim13Alpha, 2, flTime) * kFullColor);
+            EmitPartSprite(0x3f + static_cast<unsigned int>(i),
+                           static_cast<unsigned int>(nAlpha),
+                           S_VECTOR2{g_aTitleAnim13Pos[i][0], g_aTitleAnim13Pos[i][1]},
+                           S_VECTOR2{kOne, kOne},
+                           flRotation,
+                           S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        }
+    }
+
+    // The standalone attract hint sprite, shown only in attract mode.
+    if (m_bAttractMode) {
+        EmitPartSprite(kPartAttractHint,
+                       0xff,
+                       S_VECTOR2{g_aTitleHintPos[0], g_aTitleHintPos[1]},
+                       S_VECTOR2{kOne, kOne},
+                       0.0f,
+                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
+    }
+
+    // The standalone logo sprite (window 14), always drawn, with a two-knot alpha curve.
+    const int nLogoAlpha = static_cast<int>(
+        CalculateCurveInterpolation(g_aTitleAnim14, 2, static_cast<float>(m_nIdleTimer)) *
+        kFullColor);
+    EmitPartSprite(kPartTitleLogo,
+                   static_cast<unsigned int>(nLogoAlpha),
+                   S_VECTOR2{g_aTitleLogoPos[0], g_aTitleLogoPos[1]},
+                   S_VECTOR2{kOne, kOne},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
 }
 
 /** @ghidraAddress 0x57a64 */
