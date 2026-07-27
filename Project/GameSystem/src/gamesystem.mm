@@ -8,6 +8,11 @@
 
 #include "gamesystem.h"
 
+#import <UIKit/UIKit.h>
+
+#include "deviceenvironment.h"
+#include "engineglobals.h"
+
 // The process-wide game-system singleton, created lazily by GetGameSystem().
 static GameSystem *g_pGameSystem = nullptr; // @ghidraAddress 0x3de010
 
@@ -26,6 +31,30 @@ constexpr float kDefaultShotVolume = 1.0f;
 constexpr float kDefaultBackgroundBrightness = 1.0f;
 constexpr float kDefaultRivalAlpha = 1.0f;
 constexpr float kDefaultPlayfieldScale = 2.0f;
+
+// The per-step zoom increment the tablet sheet scale adds per scale step (@ghidraAddress 0x2ec778).
+constexpr double kTabletScaleStep = 0.1;
+
+// The sheet margins: the phone left/right margin, the tablet left/right margin, and the shared
+// top/bottom margin.
+constexpr float kPhoneSheetMarginX = 24.0f;  // @ghidraAddress 0x41c00000
+constexpr float kTabletSheetMarginX = 64.0f; // @ghidraAddress 0x2ef184
+constexpr float kSheetMarginY = 22.0f;       // @ghidraAddress 0x41b00000
+
+// The tablet sheet-position x and the notch inset subtracted from the field height for its y.
+constexpr float kTabletSheetPosX = 640.0f;  // @ghidraAddress 0x44200000
+constexpr int kTabletSheetPosYInset = 0x2c; // 44 points.
+
+// The screen-dimension buckets the phone layout clamps the effective width/height to: the tall
+// (4"/4.7") height and the narrow (3.5"/4") width, in points.
+constexpr int kScreenTall = 0x238;   // 568.
+constexpr int kScreenNarrow = 0x140; // 320.
+
+// The phone sheet-position insets: the fixed x inset (48 points), and the two y insets summed into
+// the scaled height (@ghidraAddress 0x2fedf4 = -48.0, 0x2fedf8 = -50.0).
+constexpr int kPhoneSheetPosXInset = 0x30; // 48 points.
+constexpr float kPhoneSheetPosYInsetA = -48.0f;
+constexpr float kPhoneSheetPosYInsetB = -50.0f;
 
 } // namespace
 
@@ -83,4 +112,48 @@ void GameSystem::SetSheetMargins(float flLeft, float flTop, float flRight, float
     m_flSheetMarginBottom = flBottom;
     m_flSheetFarX = m_flSheetPosX + flLeft + flRight;
     m_flSheetFarY = m_flSheetPosY + flTop + flBottom;
+}
+
+/** @ghidraAddress 0x8ef60 */
+void GameSystem::ConfigureSheetLayerForScreen(int nScaleStep) {
+    if (IsPad()) {
+        // Tablet: the sheet scale grows one zoom step at a time; the sheet is centred at a fixed x
+        // and positioned just above the notch inset, with the wider variant left/right margin.
+        m_flPlayfieldScale =
+            static_cast<float>(static_cast<double>(nScaleStep) * kTabletScaleStep + 1.0);
+        ComputePlayfieldLayoutY(m_flPlayfieldScale);
+
+        S_VECTOR2 position{kTabletSheetPosX,
+                           static_cast<float>(g_nPlayfieldFieldHeight - kTabletSheetPosYInset)};
+        SetSheetLayerPosition(&position);
+        SetSheetMargins(kTabletSheetMarginX, kSheetMarginY, kTabletSheetMarginX, kSheetMarginY);
+        return;
+    }
+
+    // Phone: the sheet is drawn at unit scale.
+    m_flPlayfieldScale = 1.0f;
+    ComputePlayfieldLayoutY(1.0f);
+
+    // Clamp the screen bounds into the supported point buckets. The width axis and the height axis
+    // are each clamped to the tall bucket independently; the landscape/portrait comparison then picks
+    // which clamped pair to use, so a portrait screen reads its long side as the "long" dimension.
+    const CGRect bounds = UIScreen.mainScreen.bounds;
+    const int nWidth = static_cast<int>(bounds.size.width);
+    const int nHeight = static_cast<int>(bounds.size.height);
+    const int nWidthClampedLong = nWidth > kScreenTall ? kScreenTall : nWidth;
+    const int nWidthClampedShort = nWidth > kScreenTall ? kScreenNarrow : nHeight;
+    const int nHeightClampedLong = nHeight > kScreenTall ? kScreenTall : nHeight;
+    const int nHeightClampedShort = nHeight > kScreenTall ? kScreenNarrow : nWidth;
+    const bool bLandscape = bounds.size.width >= bounds.size.height;
+    const int nEffectiveWidth = bLandscape ? nWidthClampedLong : nHeightClampedLong;
+    const int nEffectiveHeight = bLandscape ? nWidthClampedShort : nHeightClampedShort;
+
+    SetSheetMargins(kPhoneSheetMarginX, kSheetMarginY, kPhoneSheetMarginX, kSheetMarginY);
+
+    // Centre the sheet: x spans the narrow dimension inset by 48 points; y is the tall dimension
+    // scaled and shifted up by the two fixed insets.
+    S_VECTOR2 position{static_cast<float>(nEffectiveHeight * 2 - kPhoneSheetPosXInset),
+                       static_cast<float>(nEffectiveWidth * 2) * m_flPlayfieldScale +
+                           kPhoneSheetPosYInsetA + kPhoneSheetPosYInsetB};
+    SetSheetLayerPosition(&position);
 }
