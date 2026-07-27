@@ -425,6 +425,16 @@ public:
      */
     void ResetBinding();
 
+    /**
+     * @brief Resets the note's play state for a new play or retry.
+     *
+     * Clears the state and sub-state, marks the note index unassigned, sets the kind fields to the
+     * none sentinel, re-seeds the first ten sub-entries to their empty defaults, and resets the
+     * colour-lock and emphasis flags.
+     * @ghidraAddress 0x131ae8
+     */
+    void ResetPlayState();
+
     /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
     static constexpr int kNoSideSentinel = 3;
 
@@ -458,13 +468,16 @@ private:
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
     bool m_bShotActive = {};        // +0x4c: whether the note is in its shot (reflect) phase.
-    unsigned char m_aReserved4d[3] = {};    // +0x4d
-    float m_flShotDecayTimer = {};          // +0x50: the shot phase's decaying lifetime timer.
-    float m_flShotSpeed = {};               // +0x54: the shot step's travel speed.
-    float m_flShotProgress = {};            // +0x58: the shot step's travel progress.
-    float m_flRenderX = {};                 // +0x5c: the note's render X coordinate.
-    float m_flRenderY = {};                 // +0x60: the note's render Y coordinate.
-    unsigned char m_aReserved64[0x10] = {}; // +0x64: further animation/long-note state.
+    unsigned char m_aReserved4d[3] = {}; // +0x4d
+    float m_flShotDecayTimer = {};       // +0x50: the shot phase's decaying lifetime timer.
+    float m_flShotSpeed = {};            // +0x54: the shot step's travel speed.
+    float m_flShotProgress = {};         // +0x58: the shot step's travel progress.
+    float m_flRenderX = {};              // +0x5c: the note's render X coordinate.
+    float m_flRenderY = {};              // +0x60: the note's render Y coordinate.
+    unsigned char m_aReserved64[4] = {}; // +0x64
+    int m_nActiveKind = {};              // +0x68: the active segment kind (5 = none).
+    int m_nActiveIndex = {};             // +0x6c: the active segment index (-1 = none).
+    int m_nActiveKind2 = {};             // +0x70: a second active segment kind (5 = none).
 
     // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
     // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
@@ -483,7 +496,8 @@ private:
     int m_nField4f8 = {};                   // +0x4f8: post-table state, still being worked out.
     unsigned char m_aReserved4fc[0xc] = {}; // +0x4fc
     void *m_pField508 = {};                 // +0x508: cleared on construction.
-    unsigned char m_aReserved510[4] = {};   // +0x510
+    bool m_bPlayStateFlag510 = {};          // +0x510: a play-state flag cleared on a play reset.
+    unsigned char m_aReserved511[3] = {};   // +0x511
     int m_nDirectionSign = {};              // +0x514: the shot direction, clamped to [-2, 2].
     int m_nWaypointCount = {};              // +0x518: the shot's waypoint count (abs of direction).
     unsigned char m_aReserved51c[4] = {};   // +0x51c

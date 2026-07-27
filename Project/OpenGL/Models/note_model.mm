@@ -66,6 +66,11 @@ namespace {
 constexpr int kSubEntryKindNone = 5;
 constexpr int kSubEntryIndexNone = -1;
 constexpr int kSubEntrySeed = 5;
+
+// The number of sub-entries a play reset re-seeds (the active hold/slide segments).
+constexpr int kResetSubEntryCount = 10;
+// The colour-lock state a play reset restores (the none sentinel, leaving the note open).
+constexpr int kColorLockReset = 5;
 } // namespace
 
 /** @ghidraAddress 0x1319fc */
@@ -95,6 +100,29 @@ void NoteModel::SetNoteIndex(int nIndex) {
 void NoteModel::ResetBinding() {
     m_nNoteIndex = -1;
     m_pRecord = nullptr;
+}
+
+/** @ghidraAddress 0x131ae8 */
+void NoteModel::ResetPlayState() {
+    m_nState = 0;
+    m_nSubState = 0;
+    m_nActiveIndex = kSubEntryIndexNone;
+    m_nJudgeGrade = kSubEntryKindNone;
+    m_nActiveKind = kSubEntryKindNone;
+    m_nActiveKind2 = kSubEntryKindNone;
+
+    // Re-seed the active sub-entries to their empty defaults (clearing each record's coordinates).
+    for (int i = 0; i < kResetSubEntryCount; ++i) {
+        m_aSubEntries[i] = SubEntry{};
+        m_aSubEntries[i].nKind = kSubEntryKindNone;
+        m_aSubEntries[i].nIndex = kSubEntryIndexNone;
+        m_aSubEntries[i].nSeedA = kSubEntrySeed;
+        m_aSubEntries[i].nSeedD = kSubEntrySeed;
+    }
+
+    m_bPlayStateFlag510 = false;
+    m_nColorLockState = kColorLockReset;
+    m_bEmphasisFallback = false;
 }
 
 /** @ghidraAddress 0x135e84 */
