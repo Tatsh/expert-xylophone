@@ -350,10 +350,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     ne::C_TEXTURE::EnsureCacheControl(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
     // The layer's listener-node sub-object overlays the start of the object (its vtable and list
-    // links); pass it to the free list-insert. The cast goes away once the play-field layers are
-    // formally reparented onto the listener-node base.
-    InsertSortedListenerNode(reinterpret_cast<ne::C_TASK *>(clearGauge),
-                             kClearGaugeListenerPriority);
+    // links); treat it as its C_TASK base to insert it into the sorted listener list. The cast goes
+    // away once the play-field layers are formally reparented onto the listener-node base.
+    reinterpret_cast<ne::C_TASK *>(clearGauge)->InsertSorted(kClearGaugeListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
 
