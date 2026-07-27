@@ -404,6 +404,18 @@ public:
         m_nPlayerExp = nExp;
         m_nGainedExp = nGained;
     }
+    /** @brief The player's level, as stored for the result screen. */
+    int GetPlayerLevel() const {
+        return m_nPlayerLevel;
+    }
+    /** @brief The player's current experience, as stored for the result screen. */
+    int GetPlayerExp() const {
+        return m_nPlayerExp;
+    }
+    /** @brief The experience gained this play, as stored for the result screen. */
+    int GetGainedExp() const {
+        return m_nGainedExp;
+    }
     /**
      * @brief Stores the sheet-layer base position and recomputes its derived anchor points.
      * @ghidraAddress 0x12f33c

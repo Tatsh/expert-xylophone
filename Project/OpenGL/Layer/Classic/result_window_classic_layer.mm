@@ -2,9 +2,11 @@
 
 #include <cassert>
 
+#import "RBViewController.h"
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
 #import "gamesystem.h"
+#include "leveltables.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "polygon2d_trail.h"
@@ -1224,6 +1226,58 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
         pTrail->Reset();
     }
     m_bScoreAnimActive = false;
+}
+
+/** @ghidraAddress 0x11541c */
+void ResultWindowClassicLayer::ResetScoreDisplayState() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // A single-player game type (0 or 2) is offline; every other type is a networked play.
+    m_nNetworkPlay = (pGameSystem->GetGameType() | 2) == 2 ? 0 : 1;
+
+    // Clear the per-round display counters and reset every music-track index sentinel to -1.
+    m_nDisplayCounterA = 0;
+    m_nDisplayCounterB = 0;
+    m_bDisplayFlagC = false;
+    m_bCustomizePending = false;
+    m_nUnlockStep = 0;
+    m_nTrackIndexB = -1;
+    m_nTrackIndexC = -1;
+    m_bUnlockFlag = false;
+    m_nUnlockCounter = 0;
+    m_nTrackIndexD = -1;
+    m_nTrackIndexE = -1;
+    m_nTrackIndexA = -1;
+
+    // Copy the player level and experience from the game system and resolve the level-up threshold.
+    LevelTables *pTables = LevelTables::GetInstance();
+    const int nLevel = pGameSystem->GetPlayerLevel();
+    m_nPlayerLevel = nLevel;
+    m_nPlayerExp = pGameSystem->GetPlayerExp();
+    const unsigned int nThreshold = GetLevelExpThreshold(pTables, nLevel);
+    m_nExpThreshold = static_cast<int>(nThreshold);
+    m_nLevelUpStep = 0;
+    if (static_cast<int>(nThreshold) < 0) {
+        // The level cap has no threshold; no experience is gained toward the next level.
+        m_bReachedCap = false;
+    } else {
+        m_nGainedExp = pGameSystem->GetGainedExp();
+    }
+
+    // When no customize swap is pending, kick off the main-asset load; otherwise consume the pending
+    // flag and seed the resolved track index from the player level.
+    if (!m_bCustomizePending) {
+        BeginCustomizeMainAsset();
+    } else {
+        m_bCustomizePending = false;
+        m_nTrackIndexC = m_nPlayerLevel;
+    }
+
+    // Arm the score/gesture-active flag from the result-bonus feature, reset the hold timer, and
+    // record whether the Twitter share API is available.
+    m_bScoreAnimActive = pGameSystem->GetResultBonusFeatureActive();
+    m_flGestureHoldTimer = 0.0f;
+    m_bTwitterAvailable = [RBViewController hasTwitterAPI];
 }
 
 /** @ghidraAddress 0x11738c */

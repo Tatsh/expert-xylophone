@@ -58,6 +58,18 @@ public:
     void UpdateGestureHoldTimer(float flDeltaTime);
 
     /**
+     * @brief Resets the result-screen score/level display block to its per-round defaults.
+     *
+     * Sets the networked-play flag from the game type, clears the display counters and sentinels
+     * (the music-track indices to -1), copies the player level and experience from the game system,
+     * resolves the level-up threshold and gained experience, kicks off the customize asset load when
+     * none is pending, arms the score/gesture-active flag from the result-bonus feature, and records
+     * whether the Twitter share API is available.
+     * @ghidraAddress 0x11541c
+     */
+    void ResetScoreDisplayState();
+
+    /**
      * @brief Whether a customize-character texture swap is pending.
      * @return The reload flag.
      * @ghidraAddress 0x11c590
@@ -517,6 +529,13 @@ public:
     static constexpr int kPositionRecordCount = 82;
 
 private:
+    /**
+     * @brief Begins loading the customize-character main asset for the result screen. Reconstruction
+     * pending.
+     * @ghidraAddress 0x11c66c
+     */
+    void BeginCustomizeMainAsset();
+
     // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
     // full; the shared low-level emit behind the part helpers.
     // @ghidraAddress 0x116808
@@ -540,9 +559,11 @@ private:
     // unsigned char m_aPad59[3]; // +0x59 (alignment padding, compiler-inserted)
     unsigned int m_nDefaultAlpha = {}; // +0x5c: the default sprite alpha (255).
     float m_flDefaultScale = {};       // +0x60: the default sprite scale (1.0).
-    // +0x64..+0x70: further layer state (transform vectors and per-cell fields) still being worked
+    int m_nNetworkPlay =
+        {}; // +0x64: set for a networked/online play (game type not single-player).
+    // +0x68..+0x70: further layer state (transform vectors and per-cell fields) still being worked
     // out, kept as a reserved span to preserve the allocation size.
-    unsigned char m_aReserved64[0xd] = {}; // +0x64
+    unsigned char m_aReserved68[9] = {}; // +0x68
     bool m_bCustomizeReloadFlag =
         {}; // +0x71: set when a customize-character texture swap is pending.
     // +0x72..+0xb7: further layer state, still being worked out.
@@ -555,9 +576,40 @@ private:
     // +0x151..+0x153 is alignment padding before the gesture-hold timer.
     unsigned char m_aPad151[3] = {}; // +0x151
     float m_flGestureHoldTimer = {}; // +0x154: accumulates toward the gesture-hold release timeout.
-    // +0x158..+0x1b4: further layer state, still being worked out.
-    unsigned char m_aReserved158[0x5d] = {}; // +0x158
-    bool m_bPortrait = {}; // +0x1b5: selects the portrait position/separator tables.
+    // +0x158..+0x15f: further layer state, still being worked out.
+    unsigned char m_aReserved158[8] = {}; // +0x158
+    int m_nPlayerLevel = {};  // +0x160: the player's level, copied from the game system.
+    int m_nPlayerExp = {};    // +0x164: the player's experience, from the game system.
+    int m_nGainedExp = {};    // +0x168: the experience gained this play (when levelling).
+    int m_nExpThreshold = {}; // +0x16c: the level-up experience threshold.
+    bool m_bReachedCap = {};  // +0x170: set when the level cap is reached (no threshold).
+    // +0x171..+0x173 is alignment padding.
+    unsigned char m_aPad171[3] = {}; // +0x171
+    int m_nDisplayCounterA = {};     // +0x174: a per-round display counter, reset to zero.
+    int m_nDisplayCounterB = {};     // +0x178: a second per-round display counter.
+    bool m_bDisplayFlagC = {};       // +0x17c: a per-round display flag, reset to zero.
+    // +0x17d..+0x17f is alignment padding.
+    unsigned char m_aPad17d[3] = {}; // +0x17d
+    int m_nLevelUpStep = {};         // +0x180: the level-up animation step.
+    int m_nTrackIndexA = {};         // +0x184: a music-track index sentinel (-1 when unset).
+    bool m_bCustomizePending = {};   // +0x188: whether a customize asset swap is pending.
+    // +0x189..+0x18b is alignment padding.
+    unsigned char m_aPad189[3] = {}; // +0x189
+    int m_nUnlockStep = {};          // +0x18c: the unlock-progression step.
+    int m_nTrackIndexB = {};         // +0x190: a second music-track index sentinel (-1).
+    int m_nTrackIndexC = {};         // +0x194: the resolved music-track index (-1 when unset).
+    // +0x198..+0x19f: further progression state, still being worked out.
+    unsigned char m_aReserved198[8] = {}; // +0x198
+    bool m_bUnlockFlag = {};              // +0x1a0: an unlock-state flag, reset to zero.
+    // +0x1a1..+0x1a3 is alignment padding.
+    unsigned char m_aPad1a1[3] = {}; // +0x1a1
+    int m_nUnlockCounter = {};       // +0x1a4: an unlock counter, reset to zero.
+    int m_nTrackIndexD = {};         // +0x1a8: a music-track index sentinel (-1).
+    // +0x1ac..+0x1af: further progression state, still being worked out.
+    unsigned char m_aReserved1ac[4] = {}; // +0x1ac
+    int m_nTrackIndexE = {};              // +0x1b0: a music-track index sentinel (-1).
+    bool m_bTwitterAvailable = {};        // +0x1b4: whether the Twitter share API is available.
+    bool m_bPortrait = {};                // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1bf: trailing layer state, still being worked out.
     unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
 };
