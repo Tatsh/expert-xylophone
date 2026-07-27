@@ -45,6 +45,16 @@ public:
      */
     void RefreshThema();
 
+    /**
+     * @brief The base layer-release hook: releases nothing.
+     *
+     * A concrete layer's destructor releases its own resources and then chains this empty base hook.
+     * The base holds only value fields, so it has nothing to release.
+     * @ghidraAddress 0x109e00
+     */
+    void ReleaseResources() {
+    }
+
 protected:
     /**
      * @brief Constructs the layer base from the current device and settings.
