@@ -6,11 +6,26 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING;
 } // namespace ne
+
+/**
+ * @brief One Classic-theme sprite-kind transform record (a 20-byte entry): the sprite's anchor, its
+ * size, and the atlas-frame index it draws from.
+ */
+struct ClassicThemeSpriteTransform {
+    S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
+    S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
+    int nUvIndex = {};     // +0x10: the atlas-frame index into the shared sprite UV table.
+};
+
+// The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.
+extern const ClassicThemeSpriteTransform
+    g_aClassicThemeSpriteTransforms[]; // @ghidraAddress 0x301c60
 
 /**
  * @brief The Classic-theme play-field background layer.
@@ -53,6 +68,30 @@ public:
      * @ghidraAddress 0x10a0a0
      */
     void SetColor(int nColor);
+
+    /**
+     * @brief Populates one sprite slot in a batch from the per-kind transform and UV tables.
+     *
+     * Positions the slot (offsetting Y by the play-field half-height), copies the sprite kind's
+     * anchor and size, looks up its atlas UV, applies the given scale and rotation, and tints it
+     * black on batch zero or white otherwise, then advances the batch's live slot count. A full
+     * batch is left untouched.
+     * @param nBatch The target batch (also selects the tint: batch zero is black).
+     * @param nSpriteKind The sprite kind, indexing the transform table.
+     * @param position The slot's screen position.
+     * @param flScaleX The slot's X scale.
+     * @param flScaleY The slot's Y scale.
+     * @param flRotation The slot's rotation, in radians.
+     * @param nAlpha The slot's colour alpha.
+     * @ghidraAddress 0x10a644
+     */
+    void ConfigureSpriteSlot(int nBatch,
+                             int nSpriteKind,
+                             const S_VECTOR2 &position,
+                             float flScaleX,
+                             float flScaleY,
+                             float flRotation,
+                             int nAlpha);
 
     /**
      * @brief Initialises the result-screen score-gauge display block, then seeds its per-side score

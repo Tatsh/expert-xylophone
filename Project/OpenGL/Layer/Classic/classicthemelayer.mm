@@ -2,15 +2,27 @@
 
 #include "ScoreTracker.h"
 #include "bg_layer.h"
+#include "engineglobals.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "sprite_uv_table.h"
 
 // The background texture the Classic-theme batches all draw from.
 static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
 // The sprite capacities (maximum sprite counts) for the three Classic-theme background batches.
 static const int g_anClassicThemeBatchCapacities[] = {1, 7, 30}; // @ghidraAddress 0x301970
+
+// The per-sprite-kind transform table: each kind's anchor, size, and atlas-frame index.
+// @ghidraAddress 0x301c60
+const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[] = {
+    {{384.0f, 512.0f}, {768.0f, 1024.0f}, 0},
+    {{145.0f, 53.0f}, {290.0f, 106.0f}, 9},
+    {{145.0f, 53.0f}, {290.0f, 106.0f}, 10},
+    {{188.0f, 53.0f}, {376.0f, 106.0f}, 11},
+    {{14.0f, 14.0f}, {28.0f, 28.0f}, 12},
+};
 
 // The process-wide Classic-theme layer, created lazily by shared().
 static ClassicThemeLayer *g_pClassicThemeLayer = nullptr; // @ghidraAddress 0x3de7b8
@@ -29,6 +41,9 @@ constexpr float kScoreGaugeInitial[] = {-500.0f, 1.0f, 1.0f, 0.0f};
 
 // The score gauge's full target value.
 constexpr float kScoreGaugeFullTarget = 1.0f;
+
+// The maximum value of an opaque colour channel.
+constexpr unsigned int kColorMax = 255;
 
 } // namespace
 
@@ -84,6 +99,42 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
 /** @ghidraAddress 0x10a0a0 */
 void ClassicThemeLayer::SetColor(int nColor) {
     m_nColor = nColor;
+}
+
+/** @ghidraAddress 0x10a644 */
+void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
+                                            int nSpriteKind,
+                                            const S_VECTOR2 &position,
+                                            float flScaleX,
+                                            float flScaleY,
+                                            float flRotation,
+                                            int nAlpha) {
+    ne::C_SPRITE_INSTANCING *pBatch = m_apSpriteBatch[nBatch];
+    const int nIndex = m_anSpriteCount[nBatch];
+    if (nIndex >= g_anClassicThemeBatchCapacities[nBatch]) {
+        return;
+    }
+
+    const ClassicThemeSpriteTransform &transform = g_aClassicThemeSpriteTransforms[nSpriteKind];
+    const SpriteUvEntry &uv = g_aSpriteUvTable[transform.nUvIndex];
+
+    // The slot sits at the given position, offset down by the play-field half-height (rounding
+    // toward zero).
+    const int nHalfHeight =
+        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+    pBatch->SetSpritePositionXY(nIndex, position.x, position.y + static_cast<float>(nHalfHeight));
+    pBatch->SetSpriteAnchor(nIndex, transform.anchor);
+    pBatch->SetSpriteSize(nIndex, transform.size);
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteScale(nIndex, flScaleX, flScaleY);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+
+    // Batch zero is tinted black; the others opaque white.
+    const unsigned int nChannel = nBatch == 0 ? 0 : kColorMax;
+    pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, static_cast<unsigned int>(nAlpha));
+
+    ++m_anSpriteCount[nBatch];
 }
 
 /** @ghidraAddress 0x10a01c */
