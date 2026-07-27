@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-chart reader/parser, @c MusicSheet.
+ * The note-chart reader/parser, @c CMusicSheet2.
  */
 
 #pragma once
@@ -27,14 +27,16 @@ using SheetPathNode = NotePathPoint;
  * trailing @c // +0xNN comments document the original offsets for reference only, and access is
  * always through the named members.
  */
-class MusicSheet {
+namespace rb {
+
+class CMusicSheet2 {
 public:
     /**
      * @brief Constructs an empty note-chart reader: marks the version unread, allocates a one-node
      * path buffer, and clears every count, timing, and buffer pointer.
      * @ghidraAddress 0x12f828
      */
-    MusicSheet();
+    CMusicSheet2();
 
     /**
      * @brief Frees every buffer the chart owns: the two note-index arrays, the note-record pool
@@ -47,7 +49,7 @@ public:
      * @ghidraAddress 0x12f874
      * @ghidraAddress 0x12f938
      */
-    virtual ~MusicSheet();
+    virtual ~CMusicSheet2();
 
     /**
      * @brief Returns the note record at @p nIndex, or null when the index is out of range.
@@ -277,6 +279,8 @@ private:
     int m_nIndexCount = {};                // +0x90: the active note-index count.
     unsigned char m_aTailPad[4] = {};      // +0x94: trailing padding.
 };
+
+} // namespace rb
 
 // code: language=C++
 // kate: hl C++;

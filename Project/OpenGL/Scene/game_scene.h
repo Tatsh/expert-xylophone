@@ -13,10 +13,11 @@
 typedef struct objc_object NSData;
 #endif
 
-class MusicSheet;
 class PauseGaugeLayer;
 
 namespace rb {
+
+class CMusicSheet2;
 
 /**
  * @brief The gameplay scene: the per-frame state machine that drives a play session from set-up
@@ -257,7 +258,7 @@ private:
      * @param pMusicSheet The parsed chart to bind (ownership passes to the scene).
      * @ghidraAddress 0x14fcd8
      */
-    void BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet);
+    void BindMusicSheetToNoteMgr(CMusicSheet2 *pMusicSheet);
 
     /**
      * @brief Stops and reloads the background music with a result-screen (non-looping) track, then
@@ -290,7 +291,7 @@ private:
                                          //        frame).
     int m_nPlayTime = {};                // +0x50: the accumulated play time.
     int m_nPlayCursor = {};              // +0x54: the play cursor, cleared on a playback reset.
-    MusicSheet *m_pMusicSheet = {};      // +0x58: the owned active note chart, or null.
+    CMusicSheet2 *m_pMusicSheet = {};    // +0x58: the owned active note chart, or null.
     unsigned char m_aReserved5c[4] = {}; // +0x5c
     float m_flFirstPathSpeed = {};       // +0x60: the chart's first path speed, cached at set-up,
                                          //        reset to 0 when the BGM stops.

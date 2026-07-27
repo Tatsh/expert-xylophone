@@ -307,7 +307,7 @@ void NoteEffectMgr::InsertActiveNoteSorted(NoteModel *pNote) {
 }
 
 /** @ghidraAddress 0x137a4c */
-void NoteEffectMgr::SetActiveMusicSheet(MusicSheet *pMusicSheet) {
+void NoteEffectMgr::SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet) {
     m_pMusicSheet = pMusicSheet;
     if (pMusicSheet == nullptr) {
         ResetAllNoteSubEntries();

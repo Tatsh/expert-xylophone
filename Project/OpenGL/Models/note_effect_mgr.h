@@ -5,9 +5,12 @@
 
 #pragma once
 
-class MusicSheet;
 class NoteModel;
 class RbffNoteRecord;
+
+namespace rb {
+class CMusicSheet2;
+}
 
 /**
  * @brief The process-wide note manager: it owns the active chart, the live note render/effect
@@ -106,7 +109,7 @@ public:
      * @param pMusicSheet The parsed chart, or @c nullptr to clear.
      * @ghidraAddress 0x137a4c
      */
-    void SetActiveMusicSheet(MusicSheet *pMusicSheet);
+    void SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet);
 
     /**
      * @brief Appends a newly-activated note to the active list and insertion-sorts it into hit-time
@@ -226,16 +229,16 @@ private:
     static constexpr long kActiveSlotNone = -1;
 
     int m_nShotSoundSlot = {}; // +0x00: the shot-sound slot id dispatched on a note judge.
-    unsigned char m_aReserved04[4] = {}; // +0x04: header state, still being worked out.
-    NoteModel **m_ppNotePool = {};       // +0x08: the pooled NoteModel-object array.
-    NoteModel **m_ppActiveList = {};     // +0x10: the active-note pointer array.
-    int m_nNoteCount = {};               // +0x18: the active note count (the chart's note count).
-    int m_nPoolCapacity = {};            // +0x1c: the note-object pool/array capacity.
-    int m_nActiveCount = {};             // +0x20: the number of active notes.
-    unsigned char m_aReserved24[4] = {}; // +0x24
-    MusicSheet *m_pMusicSheet = {};      // +0x28: the bound active chart, or null.
-    int m_nDensityTier = {};             // +0x30: the note-density tier (0, 1, or 2).
-    unsigned char m_aReserved34[4] = {}; // +0x34
+    unsigned char m_aReserved04[4] = {};  // +0x04: header state, still being worked out.
+    NoteModel **m_ppNotePool = {};        // +0x08: the pooled NoteModel-object array.
+    NoteModel **m_ppActiveList = {};      // +0x10: the active-note pointer array.
+    int m_nNoteCount = {};                // +0x18: the active note count (the chart's note count).
+    int m_nPoolCapacity = {};             // +0x1c: the note-object pool/array capacity.
+    int m_nActiveCount = {};              // +0x20: the number of active notes.
+    unsigned char m_aReserved24[4] = {};  // +0x24
+    rb::CMusicSheet2 *m_pMusicSheet = {}; // +0x28: the bound active chart, or null.
+    int m_nDensityTier = {};              // +0x30: the note-density tier (0, 1, or 2).
+    unsigned char m_aReserved34[4] = {};  // +0x34
     // +0x38..+0x60: the six active-slot note indices, seeded to the -1 empty marker.
     long m_aActiveSlot[6] = {}; // +0x38
 

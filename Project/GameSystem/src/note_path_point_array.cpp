@@ -3,7 +3,7 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458. The growable path-point array the
-//  MusicSheet chart parsers append to. Pure C++, so a .cpp at the GameSystem source root.
+//  CMusicSheet2 chart parsers append to. Pure C++, so a .cpp at the GameSystem source root.
 //
 
 #include "note_path_point_array.h"

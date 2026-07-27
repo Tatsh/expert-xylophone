@@ -912,7 +912,7 @@ void GameScene::ReleaseResultTexturesAndFrames() {
 /** @ghidraAddress 0x14facc */
 void GameScene::BuildChartReaderFromGameSystem() {
     // Build a synthetic default chart (the auto-play preview path, when no music is selected).
-    MusicSheet *pSheet = new MusicSheet();
+    CMusicSheet2 *pSheet = new CMusicSheet2();
     pSheet->BuildDefaultNoteChart(GameSystem::GetGameSystem());
     BindMusicSheetToNoteMgr(pSheet);
 }
@@ -920,13 +920,13 @@ void GameScene::BuildChartReaderFromGameSystem() {
 /** @ghidraAddress 0x14fb24 */
 void GameScene::LoadNoteSheet(NSData *sheetData) {
     // Parse the selected difficulty's sheet data into a fresh chart and bind it.
-    MusicSheet *pSheet = new MusicSheet();
+    CMusicSheet2 *pSheet = new CMusicSheet2();
     pSheet->ParseNoteChartFile(sheetData.bytes, GameSystem::GetGameSystem());
     BindMusicSheetToNoteMgr(pSheet);
 }
 
 /** @ghidraAddress 0x14fcd8 */
-void GameScene::BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet) {
+void GameScene::BindMusicSheetToNoteMgr(CMusicSheet2 *pMusicSheet) {
     // Tear down any previous chart, store the new one, and hand it to the note-effect manager.
     ShutdownNoteEffectSystem();
     m_pMusicSheet = pMusicSheet;

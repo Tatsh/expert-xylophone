@@ -2,7 +2,7 @@
 //  music_sheet.mm
 //  REFLEC BEAT plus
 //
-//  The note-chart reader/parser (MusicSheet). Reconstructed from Ghidra project rb458, program
+//  The note-chart reader/parser (CMusicSheet2). Reconstructed from Ghidra project rb458, program
 //  rb458. @ghidraAddress values are relative to the program image base.
 //
 
@@ -210,8 +210,10 @@ constexpr int kMinLegacyVersion = 6;
 
 } // namespace
 
+namespace rb {
+
 /** @ghidraAddress 0x12f6f4 */
-void MusicSheet::InitPathNodeRegion() {
+void CMusicSheet2::InitPathNodeRegion() {
     // The path-node array starts with room for one node and none read; the parse counter and timing
     // block that follows it is zeroed. The member initialisers already zero these fields, so this
     // reproduces the binary's explicit clears.
@@ -236,7 +238,7 @@ void MusicSheet::InitPathNodeRegion() {
 }
 
 /** @ghidraAddress 0x12f828 */
-MusicSheet::MusicSheet() {
+CMusicSheet2::CMusicSheet2() {
     // The version starts unread; the parser fills it in. Every count, timing, and buffer pointer is
     // cleared by the member initialisers, matching the binary's field-by-field zeroing.
     m_nVersion = -1;
@@ -250,7 +252,7 @@ MusicSheet::MusicSheet() {
 }
 
 /** @ghidraAddress 0x12f970 */
-int MusicSheet::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem) {
+int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem) {
     // Only parse into an empty reader.
     if (m_pRecords != nullptr) {
         return 0;
@@ -299,7 +301,7 @@ constexpr float kDefaultEndGrid = 2000.0f;
 } // namespace
 
 /** @ghidraAddress 0x130af8 */
-unsigned long MusicSheet::BuildDefaultNoteChart(GameSystem *pGameSystem) {
+unsigned long CMusicSheet2::BuildDefaultNoteChart(GameSystem *pGameSystem) {
     if (m_pRecords != nullptr) {
         return 0;
     }
@@ -360,7 +362,7 @@ constexpr int kIndexArraySentinel = 0x7fffffff;
 } // namespace
 
 /** @ghidraAddress 0x13029c */
-unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
+unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     // perSideCounters[side]: note index; [side+2]: playable+slide index count; [side+4]: side-object
     // count; [side+6]: non-slide-tail (playable) count.
     int perSideCounters[8] = {};
@@ -566,7 +568,7 @@ unsigned long MusicSheet::InstallParsedNotes(GameSystem *pGameSystem) {
 }
 
 /** @ghidraAddress 0x12fa34 */
-int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
+int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
     // The header carries the note count and chart end time; the note records follow it.
     const unsigned int nNoteCount = pStream[1];
     m_nChartEndTime = static_cast<int>(pStream[2]);
@@ -657,7 +659,7 @@ int MusicSheet::ParseNoteChartData(const unsigned int *pStream) {
 }
 
 /** @ghidraAddress 0x12fdf4 */
-int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
+int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
     const auto *pHeader = reinterpret_cast<const unsigned char *>(pStream);
     const auto readHeaderInt = [pHeader](int nOffset) {
         int value;
@@ -783,7 +785,7 @@ int MusicSheet::ParseNotesV10(const unsigned long *pStream) {
  * @ghidraAddress 0x12f874
  * @ghidraAddress 0x12f938
  */
-MusicSheet::~MusicSheet() {
+CMusicSheet2::~CMusicSheet2() {
     delete[] m_pIndexArrayB;
     m_pIndexArrayB = nullptr;
     delete[] m_pSideIndexArray;
@@ -803,7 +805,7 @@ MusicSheet::~MusicSheet() {
 }
 
 /** @ghidraAddress 0x130d64 */
-bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
+bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
     // Scan the note records for one on the target lane whose end time is near the query time.
     for (int i = 0; i < m_nNoteCount; ++i) {
         const RbffNoteRecord &record = m_pRecords[i];
@@ -847,7 +849,7 @@ bool MusicSheet::CheckNoteNearTime(int nTime, int nTarget) {
 }
 
 /** @ghidraAddress 0x1309a8 */
-void MusicSheet::ResolveNoteScrollSpeeds() {
+void CMusicSheet2::ResolveNoteScrollSpeeds() {
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         // Seed both speeds from the first path node.
@@ -876,7 +878,7 @@ void MusicSheet::ResolveNoteScrollSpeeds() {
 }
 
 /** @ghidraAddress 0x131294 */
-int MusicSheet::CalculateChartTiming() {
+int CMusicSheet2::CalculateChartTiming() {
     int aPerSideEndTime[kSideCount] = {};
     bool aSideSeen[kSideCount] = {};
 
@@ -932,13 +934,13 @@ int MusicSheet::CalculateChartTiming() {
 }
 
 /** @ghidraAddress 0x12f604 */
-SheetPathNode *MusicSheet::GetSheetPathNode(int nIndex) {
+SheetPathNode *CMusicSheet2::GetSheetPathNode(int nIndex) {
     assert(nIndex >= 0 && nIndex < m_pathNodes.GetCount());
     return &m_pathNodes[nIndex];
 }
 
 /** @ghidraAddress 0x1316b4 */
-float MusicSheet::GetFirstPathSpeed() {
+float CMusicSheet2::GetFirstPathSpeed() {
     if (m_pathNodes.GetCount() == 0) {
         return kDefaultPathSpeed;
     }
@@ -949,7 +951,7 @@ float MusicSheet::GetFirstPathSpeed() {
 
 /** @ghidraAddress 0x131704 */
 RbffNoteRecord *
-MusicSheet::FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex) {
+CMusicSheet2::FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nStartIndex) {
     for (int i = nStartIndex; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         if (record.GetLane() != nLane) {
@@ -966,7 +968,7 @@ MusicSheet::FindNoteInTimeRange(int nLane, int nTimeStart, int nTimeEnd, int nSt
 }
 
 /** @ghidraAddress 0x131760 */
-RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int nStartIndex) {
+RbffNoteRecord *CMusicSheet2::FindChainNote(int nLane, int nTime, int nField, int nStartIndex) {
     int nBestEndTime = -1;
     for (int i = nStartIndex; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
@@ -993,7 +995,7 @@ RbffNoteRecord *MusicSheet::FindChainNote(int nLane, int nTime, int nField, int 
 }
 
 /** @ghidraAddress 0x130e68 */
-void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
+void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
     AssignGreenTargets();
 
     const unsigned int dwSeed = pGameSystem->GetRandSeed();
@@ -1105,7 +1107,7 @@ void MusicSheet::AssignChartLanes(GameSystem *pGameSystem) {
 }
 
 /** @ghidraAddress 0x131450 */
-void MusicSheet::AssignGreenTargets() {
+void CMusicSheet2::AssignGreenTargets() {
     // First pass: record each hold note's or colour-resolved note's chosen target and mark its slot.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
@@ -1189,7 +1191,7 @@ void MusicSheet::AssignGreenTargets() {
 }
 
 /** @ghidraAddress 0x130cbc */
-RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
+RbffNoteRecord *CMusicSheet2::GetChainLastNote(const RbffNoteRecord *pNote) {
     // The start note must be a chain note and must not already be the chain's tail.
     assert((pNote->GetFlags() & kNoteFlagLongHead) != 0);
     assert(!pNote->GetChainLink().IsTail());
@@ -1202,10 +1204,12 @@ RbffNoteRecord *MusicSheet::GetChainLastNote(const RbffNoteRecord *pNote) {
 }
 
 /** @ghidraAddress 0x13183c */
-RbffNoteRecord *MusicSheet::GetNoteRecordByIndex(int nIndex) {
+RbffNoteRecord *CMusicSheet2::GetNoteRecordByIndex(int nIndex) {
     if (nIndex < 0 || nIndex >= m_nNoteCount) {
         return nullptr;
     }
     // The pool is a contiguous array of records; kNoteRecordStride equals sizeof(RbffNoteRecord).
     return &m_pRecords[nIndex];
 }
+
+} // namespace rb

@@ -4,7 +4,7 @@
 //  note_path_point_array.h
 //  REFLEC BEAT plus
 //
-//  A small growable array of note-chart path points used by the MusicSheet chart parsers. Each
+//  A small growable array of note-chart path points used by the CMusicSheet2 chart parsers. Each
 //  entry is an 8-byte pair of ints (a path point). The array grows by a fixed step when full.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
