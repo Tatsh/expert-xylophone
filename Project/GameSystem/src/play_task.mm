@@ -54,6 +54,7 @@
 #include "play_color_layer.h"
 #include "playerfieldlayer.h"
 #include "playtimer.h"
+#include "rbffnoterecord.h"
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
 #include "result_window_colette_layer.h"
@@ -145,6 +146,20 @@ static constexpr int kPastelBonusBlack = 2;
 
 // The last playable level: reaching its threshold stops the level-up unlock loop.
 static constexpr unsigned int kNoLevelThreshold = 0xffffffff;
+
+// The note-spawn scan converts the timer's play time to a scroll line (×1000) and looks 1500 units
+// ahead; a note whose time is within the line spawns.
+static constexpr float kNoteLineScale = 1000.0f;       // @ghidraAddress 0x2f8540
+static constexpr float kNoteSpawnLookahead = -1500.0f; // @ghidraAddress 0x308b60
+
+// The dwFlags bit marking a head note that is paired with a tail; the pair must also be due before
+// the head spawns.
+static constexpr unsigned int kNoteHasPairFlag = 1u << 3;
+
+// The head-note sentinel start time (an unpaired note), and how many consecutive not-yet-due notes
+// end the scan.
+static constexpr int kHeadNoteStartTime = -1;
+static constexpr int kNotDueScanLimit = 10;
 
 namespace {
 // The five result bonuses shared by the Limelight and Colette themes.
@@ -468,6 +483,58 @@ void PlayTask::BeginMusicPlaybackAndTimer() {
     }
 
     m_nState = kStateNotePlay;
+}
+
+/** @ghidraAddress 0x14d4d8 */
+void PlayTask::ActivateDueNotes() {
+    NoteEffectMgr *pMgr = NoteEffectMgr::shared();
+    PlayTimer *pTimer = PlayTimer::shared();
+
+    // The scroll line the notes are measured against: the play time scaled up, offset by the
+    // lookahead so notes spawn shortly before they reach the line.
+    const float flLine = pTimer->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
+
+    int nLastSpawned = m_nPlayCursor;
+    int nNotDue = 0;
+    for (int nIndex = m_nPlayCursor; nIndex < m_pMusicSheet->GetNoteCount(); ++nIndex) {
+        RbffNoteRecord *pRecord = m_pMusicSheet->GetNoteRecordByIndex(nIndex);
+        if (pRecord == nullptr) {
+            continue;
+        }
+
+        // A note not yet at the line does not spawn; stop scanning after enough of them in a row.
+        if (static_cast<float>(pRecord->GetTimeA()) > flLine) {
+            if (nNotDue >= kNotDueScanLimit) {
+                break;
+            }
+            ++nNotDue;
+            continue;
+        }
+
+        // Only head notes spawn here. A head paired with a tail (flag bit set and a chain-link timing
+        // selector) waits until its tail is also due.
+        if (pRecord->GetStartTime() != kHeadNoteStartTime) {
+            continue;
+        }
+        const NoteChainLink &link = pRecord->GetChainLink();
+        const bool bHasPair = (pRecord->GetFlags() & kNoteHasPairFlag) != 0 && link.nTimingSel != 0;
+        if (bHasPair) {
+            RbffNoteRecord *pPair = m_pMusicSheet->GetNoteRecordByIndex(link.nNoteIndex);
+            if (static_cast<float>(pPair->GetTimeA()) > flLine) {
+                continue;
+            }
+        }
+
+        pMgr->ActivateNoteByIndex(nIndex);
+        if (nNotDue < 1) {
+            nLastSpawned = nIndex;
+        }
+    }
+
+    // Advance the cursor past the notes spawned this pass.
+    if (nLastSpawned >= m_nPlayCursor) {
+        m_nPlayCursor = nLastSpawned;
+    }
 }
 
 /** @ghidraAddress 0x14ab94 */
