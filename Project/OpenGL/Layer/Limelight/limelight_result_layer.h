@@ -38,10 +38,10 @@ public:
     static LimelightResultLayer *shared();
 
     /**
-     * @brief Resets the theme-select state and refreshes the current theme.
+     * @brief Clears the five result-bonus display values and refreshes the current theme.
      *
-     * Clears the two theme-select state words and the state counter, then re-reads the user's current
-     * theme (through the base layer's theme refresh).
+     * Zeroes the clear, miss, rank, first-play, and experience bonus fields, then re-reads the user's
+     * current theme (through the base layer's theme refresh).
      * @ghidraAddress 0x123da4
      */
     void ResetThemeSelectState();
@@ -344,6 +344,16 @@ public:
      */
     void RenderRatingValue(float flValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
+    /** @brief Stores the five result-bonus display values computed at the end of a play. */
+    void SetResultBonuses(
+        float flClear, float flMiss, float flRank, float flFirstPlay, float flExperience) {
+        m_flClearBonus = flClear;
+        m_flMissBonus = flMiss;
+        m_flRankBonus = flRank;
+        m_flFirstPlayBonus = flFirstPlay;
+        m_flExperienceBonus = flExperience;
+    }
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 
@@ -410,12 +420,16 @@ private:
     float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
     // +0x144..+0x14f: further presentation state, still being worked out.
     unsigned char m_aReserved144[0xc] = {}; // +0x144
-    // +0x150 and +0x158: two theme-select state words the reset clears.
-    unsigned long m_uThemeSelectState0 = {}; // +0x150
-    unsigned long m_uThemeSelectState1 = {}; // +0x158
-    int m_nThemeSelectState = {}; // +0x160: a theme-select state counter the reset zeroes.
-    int m_nResultScore = {};      // +0x164: the result score value seeded from the scene.
-    int m_nResultScoreHi = {};    // +0x168: the second result score value seeded from the scene.
+    // +0x150..+0x163: the five result-bonus display values, computed by
+    // PlayTask::ComputeResultBonusesAndExperience and cleared together by ResetThemeSelectState.
+    float m_flClearBonus = {};     // +0x150: the clear bonus.
+    float m_flMissBonus = {};      // +0x154: the miss (full-combo/miss1/miss2) bonus.
+    float m_flRankBonus = {};      // +0x158: the rank (B/A/AA/AAA/AAAP) bonus.
+    float m_flFirstPlayBonus = {}; // +0x15c: the first-play bonus (plus any pastel field bonus).
+    float m_flExperienceBonus =
+        {};                    // +0x160: the experience-point total shown on the result screen.
+    int m_nResultScore = {};   // +0x164: the result score value seeded from the scene.
+    int m_nResultScoreHi = {}; // +0x168: the second result score value seeded from the scene.
     // unsigned char m_aReserved16c[4]; // +0x16c (trailing pad to the 0x170-byte allocation)
 
     /**

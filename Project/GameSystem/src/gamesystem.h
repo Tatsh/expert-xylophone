@@ -387,6 +387,12 @@ public:
     int GetPastelBonusType() const {
         return m_nPastelBonusType;
     }
+    /** @brief Stores the player's level, current experience, and experience gained this play. */
+    void SetResultLevelExp(int nLevel, int nExp, int nGained) {
+        m_nPlayerLevel = nLevel;
+        m_nPlayerExp = nExp;
+        m_nGainedExp = nGained;
+    }
     /**
      * @brief Stores the sheet-layer base position and recomputes its derived anchor points.
      * @ghidraAddress 0x12f33c

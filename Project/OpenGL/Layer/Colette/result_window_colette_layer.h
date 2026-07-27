@@ -103,6 +103,23 @@ public:
      */
     void UpdateBonusSoundCueTimer(float flDeltaTime);
 
+    /** @brief Stores the seven result-bonus display values computed at the end of a play. */
+    void SetResultBonuses(float flClear,
+                          float flMiss,
+                          float flRank,
+                          float flFirstPlay,
+                          float flHotMusic,
+                          float flEarlyPlay,
+                          float flExperience) {
+        m_flClearBonus = flClear;
+        m_flMissBonus = flMiss;
+        m_flRankBonus = flRank;
+        m_flFirstPlayBonus = flFirstPlay;
+        m_flHotMusicBonus = flHotMusic;
+        m_flEarlyPlayBonus = flEarlyPlay;
+        m_flExperienceBonus = flExperience;
+    }
+
 private:
     /**
      * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
@@ -363,8 +380,20 @@ private:
     // +0x145..+0x147 is alignment padding before the bonus-cue timer.
     unsigned char m_aPad145[3] = {}; // +0x145
     float m_flBonusCueTimer = {};    // +0x148: time accumulated toward the bonus voice cue.
-    // +0x14c..+0x17f: further presentation state, still being worked out.
-    unsigned char m_aReserved14c[0x34] = {}; // +0x14c
+    // +0x14c..+0x157: further presentation state, still being worked out.
+    unsigned char m_aReserved14c[0xc] = {}; // +0x14c
+    // +0x158..+0x173: the seven result-bonus display values, computed by
+    // PlayTask::ComputeResultBonusesAndExperience.
+    float m_flClearBonus = {};     // +0x158: the clear bonus.
+    float m_flMissBonus = {};      // +0x15c: the miss (full-combo/miss1/miss2) bonus.
+    float m_flRankBonus = {};      // +0x160: the rank (B/A/AA/AAA/AAAP) bonus.
+    float m_flFirstPlayBonus = {}; // +0x164: the first-play bonus (plus any pastel field bonus).
+    float m_flHotMusicBonus = {};  // +0x168: the hot-music bonus.
+    float m_flEarlyPlayBonus = {}; // +0x16c: the early-play bonus.
+    float m_flExperienceBonus =
+        {}; // +0x170: the experience-point total shown on the result screen.
+    // +0x174..+0x17f: trailing presentation state to the allocation size.
+    unsigned char m_aReserved174[0xc] = {}; // +0x174
 };
 
 // code: language=Objective-C++

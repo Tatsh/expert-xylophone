@@ -905,8 +905,11 @@ void LimelightResultLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
 
 /** @ghidraAddress 0x123da4 */
 void LimelightResultLayer::ResetThemeSelectState() {
-    m_nThemeSelectState = 0;
-    m_uThemeSelectState0 = 0;
-    m_uThemeSelectState1 = 0;
+    // Clear the five result-bonus display values (the binary bulk-zeroes the 0x150..0x164 span).
+    m_flExperienceBonus = 0.0f;
+    m_flClearBonus = 0.0f;
+    m_flMissBonus = 0.0f;
+    m_flRankBonus = 0.0f;
+    m_flFirstPlayBonus = 0.0f;
     RefreshThema();
 }

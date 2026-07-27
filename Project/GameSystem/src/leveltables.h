@@ -58,20 +58,41 @@ public:
     /** @brief The number of unlock categories. */
     static constexpr int kCategoryCount = 5;
 
+    /** @brief The player's current level (the first word of the {level, experience} record). */
+    int GetCurrentLevel() const {
+        return m_nCurrentLevel;
+    }
+    /** @brief The player's current experience (the second word of the record). */
+    int GetCurrentExp() const {
+        return m_nCurrentExp;
+    }
+    /** @brief Sets the player's current {level, experience} record. */
+    void SetLevelExp(int nLevel, int nExp) {
+        m_nCurrentLevel = nLevel;
+        m_nCurrentExp = nExp;
+    }
+    /** @brief The address of the {level, experience} record, for the level-progression helpers. */
+    int *GetLevelExpRecord() {
+        return &m_nCurrentLevel;
+    }
+
 private:
     int m_nCurrentLevel = {};                   // +0x00: the player's current level.
+    int m_nCurrentExp = {};                     // +0x04: the player's current experience.
     int *m_apUnlockLevels[kCategoryCount] = {}; // +0x08: per-category item unlock-level arrays.
 };
 
 /**
  * @brief Returns the cumulative experience required to reach a level.
  *
- * Clamps @p nLevel to the experience table's bounds.
+ * Clamps @p nLevel to the experience table's bounds. The first parameter is a level-tables pointer
+ * the binary passes but never dereferences.
+ * @param pUnused A level-tables pointer, unused.
  * @param nLevel The level (0 through 30).
  * @return The cumulative experience threshold for the level.
  * @ghidraAddress 0x1cc410
  */
-unsigned int GetLevelExpThreshold(int nLevel);
+unsigned int GetLevelExpThreshold(void *pUnused, int nLevel);
 
 /**
  * @brief Returns the packed unlock entry for a level.
@@ -87,17 +108,19 @@ const struct LevelUnlockEntry *GetLevelUnlockEntry(int nLevel);
 /**
  * @brief Computes the level and experience gain step scaled by a per-level factor.
  *
- * Clamps @p nLevel to the step table's bounds, then returns
- * @c (flBase + (bAddHalf ? 0.5 : 0)) * stepTable[nLevel], plus a fixed base offset when @p bAddOffset
- * is set, truncated to an integer.
- * @param nLevel The level (0 through 9).
- * @param bAddHalf Whether to bias the base by half a step.
+ * Clamps @p nStep to the step table's bounds, then returns
+ * @c (flBase + (bAddHalf ? 0.5 : 0)) * stepTable[nStep], plus a fixed base offset when @p bAddOffset
+ * is set, truncated to an integer. The second parameter is a level-tables pointer the binary passes
+ * but never dereferences.
  * @param flBase The base multiplier.
+ * @param pUnused A level-tables pointer, unused.
+ * @param nStep The step index (0 through 9).
+ * @param bAddHalf Whether to bias the base by half a step.
  * @param bAddOffset Whether to add the fixed pixel base offset.
  * @return The scaled step value.
  * @ghidraAddress 0x1cc3b4
  */
-int ComputeLevelExpStep(int nLevel, bool bAddHalf, float flBase, bool bAddOffset);
+int ComputeLevelExpStep(float flBase, void *pUnused, int nStep, int bAddHalf, int bAddOffset);
 
 /**
  * @brief Builds the validation hash of a saved level record from its level and experience.
@@ -119,6 +142,18 @@ NSData *MakeLevelCustomizeHash(int nLevel, int nExp);
  * @ghidraAddress 0x1cbf18
  */
 bool LoadPlayerLevelData(int *pOutLevelExp);
+
+/**
+ * @brief Saves the player's level and experience to the @c lelist plist with an anti-tamper hash.
+ *
+ * Writes the @c lelist plist in the application-support directory holding the level, the experience,
+ * and the validation hash from @c MakeLevelCustomizeHash, so @c LoadPlayerLevelData can re-validate
+ * it.
+ * @param pLevelExp The {level, experience} pair to persist.
+ * @return @c YES on a successful write.
+ * @ghidraAddress 0x1cc1dc
+ */
+bool SavePlayerLevelData(const int *pLevelExp);
 
 // code: language=C++
 // kate: hl C++;

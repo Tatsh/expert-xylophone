@@ -45,6 +45,18 @@ public:
      */
     bool RefreshPauseGaugeAndGetActiveFlag();
 
+    /**
+     * @brief Computes the result-screen bonuses and awards experience, per active theme.
+     *
+     * For the Classic theme it advances the player level/experience progression (unlocking new custom
+     * items for each level gained) and stores the results on the game system. For the Limelight and
+     * Colette themes it accumulates the clear, miss, rank, first-play, and pastel-field bonuses (plus
+     * early-play and hot-music bonuses for Colette), stores each component on the active result layer,
+     * adds the total to the player's experience, and saves.
+     * @ghidraAddress 0x14f0dc
+     */
+    void ComputeResultBonusesAndExperience();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch

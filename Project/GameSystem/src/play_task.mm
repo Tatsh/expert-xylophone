@@ -12,7 +12,10 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "AppDelegate.h"
 #import "RBBGMManager.h"
+#import "RBBonusData.h"
+#import "RBExperienceData.h"
 #import "RBUserSettingData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
@@ -22,6 +25,7 @@
 #include "full_combo_colette_layer.h"
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
+#include "leveltables.h"
 #include "limelight_result_layer.h"
 #include "main_frame_layer.h"
 #include "music_sheet.h"
@@ -58,6 +62,100 @@ static constexpr int kResultTextSlot2 = 4;
 // The themed voice bank the result screen loads.
 static constexpr int kResultVoiceId = 2;
 
+// The player side the result bonuses are computed for (the single-player side).
+static constexpr unsigned int kResultSide = 1;
+
+// The score-record cell holding the miss count, and its values: full-combo (0), one miss (1), two or
+// more misses (2).
+static constexpr unsigned int kMissCell = 6;
+static constexpr int kMissFullCombo = 0;
+static constexpr int kMissOne = 1;
+static constexpr int kMissTwo = 2;
+
+// The minimum clear rank (of the B/A/AA/AAA/AAAP ladder) that earns the clear bonus.
+static constexpr int kMinClearRank = 2;
+
+// The clear ranks, in ladder order, selecting the rank bonus.
+static constexpr int kRankB = 1;
+static constexpr int kRankA = 2;
+static constexpr int kRankAA = 3;
+static constexpr int kRankAAA = 4;
+static constexpr int kRankAAAP = 5;
+
+// The pastel-field bonus types (the field-10 statistic must be zero for either to apply).
+static constexpr int kPastelBonusNormal = 1;
+static constexpr int kPastelBonusBlack = 2;
+
+// The last playable level: reaching its threshold stops the level-up unlock loop.
+static constexpr unsigned int kNoLevelThreshold = 0xffffffff;
+
+namespace {
+// The five result bonuses shared by the Limelight and Colette themes.
+struct SharedResultBonuses {
+    float flClear = 0.0f;
+    float flMiss = 0.0f;
+    float flRank = 0.0f;
+    float flFirstPlay = 0.0f; // Includes the pastel-field bonus when one applies.
+};
+
+// Accumulates the clear, miss, rank, and first-play (plus pastel-field) bonuses common to the
+// Limelight and Colette result screens.
+SharedResultBonuses ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker) {
+    RBBonusData *pBonus = RBBonusData.sharedInstance;
+    SharedResultBonuses out;
+
+    // Clear bonus: earned once the clear rank reaches A.
+    if (pTracker->GetPlayRecordRank(kResultSide) >= kMinClearRank) {
+        out.flClear = pBonus.clearBonus;
+    }
+
+    // Miss bonus: a full combo, a single miss, or two-or-more misses each earn a different bonus.
+    const int nMisses = pTracker->GetPlayRecordCell(kResultSide, kMissCell);
+    if (nMisses == kMissTwo) {
+        out.flMiss = pBonus.miss2Bonus;
+    } else if (nMisses == kMissOne) {
+        out.flMiss = pBonus.miss1Bonus;
+    } else if (nMisses == kMissFullCombo) {
+        out.flMiss = pBonus.fullComboBonus;
+    }
+
+    // Rank bonus: one bonus per clear-rank tier.
+    switch (pTracker->GetPlayRecordRank(kResultSide)) {
+    case kRankB:
+        out.flRank = pBonus.rankBBonus;
+        break;
+    case kRankA:
+        out.flRank = pBonus.rankABonus;
+        break;
+    case kRankAA:
+        out.flRank = pBonus.rankAABonus;
+        break;
+    case kRankAAA:
+        out.flRank = pBonus.rankAAABonus;
+        break;
+    case kRankAAAP:
+        out.flRank = pBonus.rankAAAPBonus;
+        break;
+    default:
+        break;
+    }
+
+    // First-play bonus, plus a pastel-field bonus when the field-10 statistic is zero.
+    if (pGameSystem->GetIsFirstPlay()) {
+        out.flFirstPlay = pBonus.firstPlayBonus;
+    }
+    if (pTracker->GetPlayRecordField10(kResultSide) == 0) {
+        if (pGameSystem->GetPastelBonusType() == kPastelBonusNormal) {
+            out.flFirstPlay += pBonus.pastelBonus;
+        } else if (pGameSystem->GetPastelBonusType() == kPastelBonusBlack) {
+            out.flFirstPlay += pBonus.blackPastelBonus;
+        }
+    }
+
+    return out;
+}
+} // namespace
+
 /** @ghidraAddress 0x14a21c */
 PlayTask::PlayTask() {
     // The UI-layer base constructor ran first and the compiler installed the vtable; seed the play
@@ -81,6 +179,103 @@ bool PlayTask::RefreshPauseGaugeAndGetActiveFlag() {
         m_pPauseGauge->SetCharging();
     }
     return false;
+}
+
+/** @ghidraAddress 0x14f0dc */
+void PlayTask::ComputeResultBonusesAndExperience() {
+    // Classic theme: advance the level/experience progression and unlock custom items.
+    if (m_nThema == kThemaClassic) {
+        LevelTables *pTables = LevelTables::GetInstance();
+        GameSystem *pGameSystem = GameSystem::GetGameSystem();
+        ScoreTracker *pTracker = ScoreTracker::shared();
+
+        int nLevel = pTables->GetCurrentLevel();
+        int nExp = pTables->GetCurrentExp();
+        const float flRate = pTracker->GetPlayRecordRate(kResultSide);
+        const bool bAllJudged = pTracker->IsSideAllNotesJudged(kResultSide);
+        const int nGained = ComputeLevelExpStep(flRate,
+                                                pTables,
+                                                pGameSystem->GetDifficultyLevel(),
+                                                bAllJudged,
+                                                pGameSystem->GetIsFirstPlay());
+
+        // Publish the starting level/experience and the gained amount to the game system.
+        pGameSystem->SetResultLevelExp(nLevel, nExp, nGained);
+
+        // Roll the gained experience into the level, unlocking a new custom item for each level up,
+        // until the next threshold is unreachable (the level cap).
+        unsigned int nThreshold = GetLevelExpThreshold(pTables, nLevel);
+        if (nThreshold != kNoLevelThreshold) {
+            nExp += nGained;
+            // The binary compares the experience against the threshold as signed values.
+            while (nExp >= static_cast<int>(nThreshold)) {
+                nExp -= static_cast<int>(nThreshold);
+                ++nLevel;
+                nThreshold = GetLevelExpThreshold(pTables, nLevel);
+                RBUserSettingData.sharedInstance.newCustomItem = YES;
+                [RBUserSettingData.sharedInstance save];
+                if (nThreshold == kNoLevelThreshold) {
+                    break;
+                }
+            }
+            if (nThreshold == kNoLevelThreshold) {
+                nExp = 0;
+            }
+        } else {
+            nExp = 0;
+        }
+
+        // Persist the updated {level, experience} record.
+        pTables->SetLevelExp(nLevel, nExp);
+        SavePlayerLevelData(pTables->GetLevelExpRecord());
+    }
+
+    // Limelight theme: store the five shared bonuses and award their sum.
+    if (m_nThema == kThemaLimelight) {
+        GameSystem *pGameSystem = GameSystem::GetGameSystem();
+        ScoreTracker *pTracker = ScoreTracker::shared();
+        const SharedResultBonuses bonuses = ComputeSharedResultBonuses(pGameSystem, pTracker);
+
+        RBExperienceData *pExperience = RBExperienceData.sharedInstance;
+        const float flExperience = [pExperience getPoint];
+        LimelightResultLayer::shared()->SetResultBonuses(
+            bonuses.flClear, bonuses.flMiss, bonuses.flRank, bonuses.flFirstPlay, flExperience);
+
+        [pExperience
+            addPoint:bonuses.flClear + bonuses.flMiss + bonuses.flRank + bonuses.flFirstPlay];
+        [RBExperienceData.sharedInstance save];
+    }
+
+    // Colette theme: the shared bonuses plus early-play and hot-music bonuses.
+    if (m_nThema == kThemaColette) {
+        GameSystem *pGameSystem = GameSystem::GetGameSystem();
+        ScoreTracker *pTracker = ScoreTracker::shared();
+        RBBonusData *pBonus = RBBonusData.sharedInstance;
+        const SharedResultBonuses bonuses = ComputeSharedResultBonuses(pGameSystem, pTracker);
+
+        float flEarlyPlay = 0.0f;
+        if ([AppDelegate.appDelegate isEnableEarlyBonus]) {
+            flEarlyPlay = pBonus.earlyPlayBonus;
+        }
+        float flHotMusic = 0.0f;
+        if ([AppDelegate.appDelegate isEnableHotBonus]) {
+            flHotMusic = pBonus.hotMusicBonus;
+        }
+
+        RBExperienceData *pExperience = RBExperienceData.sharedInstance;
+        const float flExperience = [pExperience getPoint];
+        ResultWindowColetteLayer::shared()->SetResultBonuses(bonuses.flClear,
+                                                             bonuses.flMiss,
+                                                             bonuses.flRank,
+                                                             bonuses.flFirstPlay,
+                                                             flHotMusic,
+                                                             flEarlyPlay,
+                                                             flExperience);
+
+        [pExperience addPoint:bonuses.flClear + bonuses.flMiss + bonuses.flRank +
+                              bonuses.flFirstPlay + flEarlyPlay + flHotMusic];
+        [RBExperienceData.sharedInstance save];
+    }
 }
 
 /** @ghidraAddress 0x14b818 */
