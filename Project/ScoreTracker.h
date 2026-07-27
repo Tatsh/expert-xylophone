@@ -161,6 +161,18 @@ public:
     void AddScoreDelta(int nPlayer, int nDelta);
 
     /**
+     * @brief Applies a shot-note judgement to a player's lane and fires its score/judge effects.
+     *
+     * Maps the player side to a lane slot, then: on the no-score path (judge flag bit 0) only bumps
+     * the lane's hit counter; otherwise adds ten to the lane's score, bumps the hit counter, retargets
+     * the player-field score digits, and fires a judge effect.
+     * @param nPlayerSide The player side selector.
+     * @param nJudgeFlags The judgement flags (bit 0 marks the no-score path).
+     * @ghidraAddress 0x149678
+     */
+    void AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags);
+
+    /**
      * @brief Adds the full-combo bonus to a side's score and fires its judge popup (grade 0).
      * @param nSide The player side.
      * @ghidraAddress 0x149710

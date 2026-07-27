@@ -75,6 +75,14 @@ constexpr int kGradeTier2 = 2;
 constexpr int kGradeTier1 = 1;
 constexpr int kGradeTier0 = 0;
 
+// The record cell holding a lane's judged-note (hit) count.
+constexpr int kCellHitCount = 7;
+// The fixed score a shot-note lane judgement adds.
+constexpr int kLaneJudgeScore = 10;
+// The lane slot a note with no play side maps to (past the two named sides; the binary reads the
+// scratch record there faithfully).
+constexpr unsigned int kNoSideLaneSlot = 3;
+
 // The leading-side indicator stored in each record's trailing field.
 enum LeadingSide {
     kLeadingSideFirst = 0,  // The first side leads.
@@ -267,6 +275,35 @@ void ScoreTracker::AddScoreDelta(int nPlayer, int nDelta) {
     }
     m_aRecords[nSide].nCells[kCellScore] = nScore;
     SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), nSide, nScore);
+}
+
+/** @ghidraAddress 0x149678 */
+void ScoreTracker::AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags) {
+    // Map the player side to a lane slot: side 0 -> 1, side 1 -> 0, anything else -> the 3 (no-side)
+    // slot. The no-side slot reads one record past the two named sides, reproduced faithfully.
+    unsigned int nSlot;
+    if (nPlayerSide == 0) {
+        nSlot = 1;
+    } else if (nPlayerSide == 1) {
+        nSlot = 0;
+    } else {
+        nSlot = kNoSideLaneSlot;
+    }
+
+    PlayRecord &record = m_aRecords[nSlot];
+    // The no-score path (a bit-0 flag) only advances the lane's hit counter.
+    if ((nJudgeFlags & 1) != 0) {
+        ++record.nCells[kCellHitCount];
+        return;
+    }
+
+    // Otherwise add the fixed lane score, bump the hit counter, repaint the digits, and fire the
+    // judge effect.
+    record.nCells[kCellScore] += kLaneJudgeScore;
+    ++record.nCells[kCellHitCount];
+    SetScoreDigitTarget(
+        kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSlot, record.nCells[kCellScore]);
+    JudgeEffectLayer::shared()->TriggerJudgeEffect(nSlot, kLaneJudgeScore, 1);
 }
 
 /** @ghidraAddress 0x149710 */
