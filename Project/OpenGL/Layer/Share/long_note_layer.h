@@ -40,6 +40,17 @@ public:
     static LongNoteLayer *shared();
 
     /**
+     * @brief Builds the three gm_parts1 particle sprite batches on first use.
+     *
+     * Loads the atlas, creates each batch sized to its seeded capacity, attaches them under the
+     * background layer, makes them visible, flags additive blend on the outer two, seeds two texture
+     * parameters on the middle batch (non-tutorial build), and resets the shared particle active
+     * index. Guarded so it runs only once.
+     * @ghidraAddress 0x188954
+     */
+    void CreateSpriteBatches();
+
+    /**
      * @brief Spawns a particle from the pool with a position, scale, and kind.
      *
      * Scans the pool from the shared active index for a free slot; on finding one it stores the
@@ -76,7 +87,10 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the particle atlas.
     ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
-    unsigned char m_aReserved28[0x28] = {};                 // +0x28: batch counters and header.
+    unsigned char m_aReserved28[0xc] = {};                  // +0x28
+    int m_anBatchCapacity[kBatchCount] = {};                // +0x34: each batch's sprite capacity.
+    bool m_bBuilt = {};                         // +0x40: set once the batches are built.
+    unsigned char m_aReserved41[0xf] = {};      // +0x41
     Particle m_aParticles[kParticleCount] = {}; // +0x50: the pooled particles (to 0x1c50).
 };
 
