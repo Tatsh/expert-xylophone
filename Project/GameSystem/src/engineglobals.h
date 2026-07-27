@@ -509,6 +509,19 @@ extern CGPoint g_aTwitterImageDrawPos[8];
  */
 void InitializeParticleOffsetTable(void);
 /**
+ * @brief The setting-screen layout table: a cache of the panel and per-theme button-column geometry
+ * points, most derived by offsetting a template point by the base panel origin/size. The button-
+ * column origins live at @c [8]/@c [10] and the step gaps at @c [14]/@c [17] (read by @c RBSettingView).
+ * Seeded once at startup by @c InitializeSettingLayoutGlobals.
+ * @ghidraAddress 0x3dc850
+ */
+extern CGPoint g_aSettingLayout[26];
+/**
+ * @brief Seeds @c g_aSettingLayout. Run once at startup.
+ * @ghidraAddress 0xec450
+ */
+void InitializeSettingLayoutGlobals(void);
+/**
  * @brief The extend-note view's difficulty-number image centre offset, per device (the same {x, y}
  * pair pattern used by the music-detail view). Seeded by @c InitializeIdentityTransformGlobals.
  * @ghidraAddress 0x3dc2a0

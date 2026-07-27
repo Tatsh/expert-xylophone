@@ -70,6 +70,9 @@ CGPoint g_extendNoteNumberOffsetPhone;
 // The Twitter share-image element draw positions, seeded by InitializeParticleOffsetTable.
 CGPoint g_aTwitterImageDrawPos[8];
 
+// The setting-screen layout table, seeded by InitializeSettingLayoutGlobals.
+CGPoint g_aSettingLayout[26];
+
 // The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
@@ -505,6 +508,65 @@ __attribute__((constructor)) void InitializeCGAffineTransformGlobals(void) {
         // The pad layout nudges the number image by (6, 12); the phone layout by (2, 10).
         g_difficultyNumberOffsetPad = CGPointMake(6.0, 12.0);
         g_difficultyNumberOffsetPhone = CGPointMake(2.0, 10.0);
+    }
+}
+
+namespace {
+// The base panel origin and size the derived setting-layout points are offset from
+// (@ghidraAddress 0x301710 and 0x301720).
+constexpr CGFloat kSettingPanelOriginX = 112.0;
+constexpr CGFloat kSettingPanelOriginY = 186.0;
+constexpr CGFloat kSettingPanelWidth = 179.0;
+constexpr CGFloat kSettingPanelHeight = 160.0;
+
+// The two derived button-column X positions, each a template X minus the panel origin X.
+constexpr CGFloat kSettingColumnLeftTemplateX = 257.0;  // @ghidraAddress 0x301288
+constexpr CGFloat kSettingColumnRightTemplateX = 294.0; // @ghidraAddress 0x3016f0
+
+// The per-row template Y positions the derived points offset by the panel height.
+constexpr CGFloat kSettingRowTemplateY[] = {462.0, 358.0, 566.0, 486.0, 382.0, 590.0};
+} // namespace
+
+/** @ghidraAddress 0xec450 */
+__attribute__((constructor)) void InitializeSettingLayoutGlobals(void) {
+    @autoreleasepool {
+        // The base panel rectangle: its origin (slot 0) and size (slot 1).
+        g_aSettingLayout[0] = CGPointMake(kSettingPanelOriginX, kSettingPanelOriginY);
+        g_aSettingLayout[1] = CGPointMake(kSettingPanelWidth, kSettingPanelHeight);
+
+        // The left column's three derived points share the panel-relative X; the Y of each is a
+        // template row position minus the panel height.
+        const CGFloat flLeftX = kSettingColumnLeftTemplateX - kSettingPanelOriginX;
+        g_aSettingLayout[2] = CGPointMake(flLeftX, kSettingRowTemplateY[0] - kSettingPanelHeight);
+        g_aSettingLayout[3] = CGPointMake(flLeftX, kSettingRowTemplateY[1] - kSettingPanelHeight);
+        g_aSettingLayout[4] = CGPointMake(flLeftX, kSettingRowTemplateY[2] - kSettingPanelHeight);
+
+        // The right column's three derived points.
+        const CGFloat flRightX = kSettingColumnRightTemplateX - kSettingPanelOriginX;
+        g_aSettingLayout[5] = CGPointMake(flRightX, kSettingRowTemplateY[3] - kSettingPanelHeight);
+        g_aSettingLayout[6] = CGPointMake(flRightX, kSettingRowTemplateY[4] - kSettingPanelHeight);
+        g_aSettingLayout[7] = CGPointMake(flRightX, kSettingRowTemplateY[5] - kSettingPanelHeight);
+
+        // The per-theme button-column origins (slots 8 through 10) and step gaps (slots 14 through
+        // 19), copied verbatim from the template pool; some rows repeat across themes.
+        g_aSettingLayout[8] = CGPointMake(13.0, 30.0);
+        g_aSettingLayout[9] = CGPointMake(13.0, 30.0);
+        g_aSettingLayout[10] = CGPointMake(13.0, 10.0);
+        g_aSettingLayout[11] = CGPointMake(5.0, 14.0);
+        g_aSettingLayout[12] = CGPointMake(5.0, 14.0);
+        g_aSettingLayout[13] = CGPointMake(5.0, 5.0);
+        g_aSettingLayout[14] = CGPointMake(0.0, 26.0);
+        g_aSettingLayout[15] = CGPointMake(0.0, 26.0);
+        g_aSettingLayout[16] = CGPointMake(0.0, 2.0);
+        g_aSettingLayout[17] = CGPointMake(0.0, 13.0);
+        g_aSettingLayout[18] = CGPointMake(0.0, 13.0);
+        g_aSettingLayout[19] = CGPointMake(0.0, 4.0);
+        g_aSettingLayout[20] = CGPointMake(0.0, 30.0);
+        g_aSettingLayout[21] = CGPointMake(0.0, 30.0);
+        g_aSettingLayout[22] = CGPointMake(0.0, 10.0);
+        g_aSettingLayout[23] = CGPointMake(0.0, 10.0);
+        g_aSettingLayout[24] = CGPointMake(0.0, 10.0);
+        g_aSettingLayout[25] = CGPointMake(0.0, 5.0);
     }
 }
 
