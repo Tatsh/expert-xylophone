@@ -28,6 +28,9 @@ public:
     static constexpr int kBatchCount = 2;
     // The number of part groups whose sprites the layer emits.
     static constexpr int kPartGroupCount = 10;
+    // The number of across-field gauge X positions and toward-edge gauge Y positions.
+    static constexpr int kGaugeLaneXCount = 3;
+    static constexpr int kGaugeLaneYCount = 2;
 
     /**
      * @brief The process-wide play-colour layer, created on first use.
@@ -104,6 +107,26 @@ public:
      */
     void SetPlayColorValue(int nValue);
 
+    /**
+     * @brief Resyncs the gauge part positions from the current game-system sheet layout.
+     *
+     * Scales the sheet-inset half-width into the three across-field gauge X positions and the
+     * sheet-inset half-height by the far-lane slopes into the two toward-edge gauge Y positions.
+     * @ghidraAddress 0x837e8
+     */
+    void SyncGaugeValuesFromGameSystem();
+
+    /**
+     * @brief Advances the gauge animation and emits every gauge-part sprite for the frame.
+     *
+     * Advances the fill tween and the glow-pulse clock, resets both batches' sprite counts, then for
+     * each play side emits the layered base-fill, highlight, and glow part sprites at each lane
+     * position, with alpha driven by the fill level and brightness.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x839b8
+     */
+    void Update(float flDeltaTime);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor, seeding its transform scales, and
@@ -118,19 +141,23 @@ private:
     int m_aBatchBaseIndex[kBatchCount] = {};    // +0x20: unused per-batch base index.
     int m_aBatchCapacity[kBatchCount] = {};     // +0x28: each batch's sprite capacity.
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x30: each part group's base index.
-    unsigned char m_aReserved58[0x18] = {};     // +0x58: further state, still being worked out.
-    bool m_bBuilt = {};                         // +0x70: set once the batches are built.
+    // +0x58..+0x63: the three across-field gauge X positions, re-synced from the game system's
+    // sheet-inset half-width each set-up.
+    float m_aGaugePosX[kGaugeLaneXCount] = {}; // +0x58
+    // +0x64..+0x6b: the two toward-edge gauge Y positions, re-synced from the sheet-inset half-height.
+    float m_aGaugePosY[kGaugeLaneYCount] = {}; // +0x64
+    float m_flGlowPhase = {};                  // +0x6c: the pulsing glow rotation phase.
+    bool m_bBuilt = {};                        // +0x70: set once the batches are built.
     bool m_bGaugeColorDirty = {}; // +0x71: set when a gauge animation snaps or the fill is set.
     // +0x72..+0x73 is alignment padding before the shrink-animation block.
     unsigned char m_aPad72[2] = {}; // +0x72
     float m_flAnimFrom = {};        // +0x74: the shrink/grow animation's cached from-value.
-    LinearTween m_shrinkChannel;    // +0x78: the shared gauge shrink/grow channel.
-    // +0x8c..+0x8f: further animation state, still being worked out.
-    unsigned char m_aReserved8c[4] = {}; // +0x8c
-    float m_flGaugeBrightness = {};      // +0x90: the gauge fill brightness, seeded to 1 (full).
-    int m_nPlayColorValue = {};          // +0x94: the theme-indexed play-colour value.
-    float m_flScaleY = {};               // +0x98: a scale the constructor seeds to 1.
-    float m_flScaleZ = {};               // +0x9c: a scale the constructor seeds to 1.
+    LinearTween m_shrinkChannel;    // +0x78: the shared gauge shrink/grow channel (fill at +0x88).
+    float m_flPulseClock = {};      // +0x8c: the wrapping clock driving the glow phase.
+    float m_flGaugeBrightness = {}; // +0x90: the gauge fill brightness, seeded to 1 (full).
+    int m_nPlayColorValue = {};     // +0x94: the theme-indexed play-colour value.
+    float m_flScaleY = {};          // +0x98: a scale the constructor seeds to 1.
+    float m_flScaleZ = {};          // +0x9c: a scale the constructor seeds to 1.
 };
 
 // code: language=C++
