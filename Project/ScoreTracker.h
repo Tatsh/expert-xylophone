@@ -203,6 +203,14 @@ public:
     bool IsSideAllNotesJudged(unsigned int nSide) const;
 
     /**
+     * @brief Sets the chart's total note count (the clear-rate denominator).
+     * @param nTotalNotes The total note count.
+     */
+    void SetTotalNotes(int nTotalNotes) {
+        m_nTotalNotes = nTotalNotes;
+    }
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc

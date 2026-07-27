@@ -7,6 +7,13 @@
 
 #include "game_ui_layer_base.h"
 
+#ifdef __OBJC__
+@class NSData;
+#else
+typedef struct objc_object NSData;
+#endif
+
+class MusicSheet;
 class PauseGaugeLayer;
 
 /**
@@ -62,18 +69,63 @@ private:
      */
     void ResumePreviewPlayback();
 
-    int m_nState = {};    // +0x4c: the current state-machine state (dispatched each frame).
-    int m_nPlayTime = {}; // +0x50: the accumulated play time, advanced by the frame delta.
-    // +0x54..+0x63: further per-frame play sub-state (timers, the score tracker), still being worked
-    // out.
-    unsigned char m_aReserved54[0x10] = {}; // +0x54
-    bool m_bPauseGaugeHeld = {};            // +0x64: whether the pause gauge is being held down.
+    /**
+     * @brief Allocates a default note chart, seeds it from the game system, and binds it as the
+     * active chart (used for the auto-play preview, when there is no selected music).
+     * @ghidraAddress 0x14facc
+     */
+    void BuildChartReaderFromGameSystem();
+
+    /**
+     * @brief Parses a difficulty's note-sheet data into a fresh chart and binds it as the active
+     * chart.
+     * @param sheetData The sheet @c NSData for the selected difficulty.
+     * @ghidraAddress 0x14fb24
+     */
+    void LoadNoteSheet(NSData *sheetData);
+
+    /**
+     * @brief Binds a parsed chart as the active chart: tears down the previous chart, stores the new
+     * one, hands it to the note-effect manager, seeds the score tracker's note count, and resets
+     * playback.
+     * @param pMusicSheet The parsed chart to bind (ownership passes to the task).
+     * @ghidraAddress 0x14fcd8
+     */
+    void BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet);
+
+    /**
+     * @brief Tears down the active note chart: resets playback, clears the note-effect manager's
+     * chart, and destroys the owned chart object.
+     * @ghidraAddress 0x14ab4c
+     */
+    void ShutdownNoteEffectSystem();
+
+    /**
+     * @brief Resets note-playback state at the start of a (re)play: resets the note models, applies
+     * the replay ghost when enabled, reassigns note colours, clears the play cursor, and resets the
+     * gauge, score, and full-combo layers.
+     * @param bApplyGhost Whether to apply the ghost/replay data.
+     * @ghidraAddress 0x14d3b4
+     */
+    void ResetNotePlaybackState(bool bApplyGhost);
+
+    int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
+                                         //        frame).
+    int m_nPlayTime = {};                // +0x50: the accumulated play time.
+    int m_nPlayCursor = {};              // +0x54: the play cursor, cleared on a playback reset.
+    MusicSheet *m_pMusicSheet = {};      // +0x58: the owned active note chart, or null.
+    unsigned char m_aReserved5c[4] = {}; // +0x5c
+    float m_flFirstPathSpeed = {};       // +0x60: the chart's first path speed, cached at set-up.
+    bool m_bPauseGaugeHeld = {};         // +0x64: whether the pause gauge is being held down.
     unsigned char m_aReserved65[0x03] = {}; // +0x65
     PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
     int m_nInitialState = {};               // +0x70: the state the task starts in (2).
     unsigned char m_aReserved74[8] = {};    // +0x74
     float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
-    unsigned char m_aReserved80[0x10] = {}; // +0x80: trailing play state to the 0x90-byte size.
+    unsigned char m_aReserved80[8] = {};    // +0x80
+    int m_nThema = {};                      // +0x88: the active theme (0 Classic, 1 Limelight, 2
+                                            //        Colette), selecting the full-combo layer.
+    unsigned char m_aReserved8c[4] = {};    // +0x8c: trailing play state to the 0x90-byte size.
 };
 
 // code: language=C++
