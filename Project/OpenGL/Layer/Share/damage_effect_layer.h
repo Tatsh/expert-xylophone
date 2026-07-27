@@ -28,6 +28,13 @@ public:
     static constexpr int kLaneCount = 2;
 
     /**
+     * @brief The process-wide damage-effect layer, created on first use.
+     * @return The shared layer.
+     * @ghidraAddress 0x173f7c
+     */
+    static DamageEffectLayer *shared();
+
+    /**
      * @brief Sets one lane's damage-effect display value.
      * @param nLane The player lane (0 or 1).
      * @param flValue The display value.
@@ -50,6 +57,13 @@ public:
     void SetBoundsDamageStyle();
 
 private:
+    /**
+     * @brief Constructs the layer: chains the base constructor, clears the sprite/texture header and
+     * the pooled effect records, and seeds the two lane values and the effect size to one.
+     * @ghidraAddress 0x173f10
+     */
+    DamageEffectLayer();
+
     // One pooled per-hit effect record (20 bytes): an active flag and its animation state.
     struct EffectRecord {
         bool bActive = {};                   // +0x00: whether the record holds a live effect.

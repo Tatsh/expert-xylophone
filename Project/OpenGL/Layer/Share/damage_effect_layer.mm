@@ -16,7 +16,32 @@ namespace {
 // The effect atlas for each bounds-effect style (default, limelight, colette).
 constexpr const char *kEffectTextureNames[] = {
     "00_texture/gm_eff", "00_texture/gm_eff_limelight", "00_texture/gm_eff_colette"};
+
+// The lane display value and effect size the constructor seeds.
+constexpr float kInitialLaneValue = 1.0f;
+constexpr float kInitialEffectSize = 1.0f;
 } // namespace
+
+// The process-wide damage-effect layer, created lazily by shared().
+static DamageEffectLayer *g_pDamageEffectLayer = nullptr; // @ghidraAddress 0x3de810
+
+/** @ghidraAddress 0x173f7c */
+DamageEffectLayer *DamageEffectLayer::shared() {
+    if (g_pDamageEffectLayer == nullptr) {
+        g_pDamageEffectLayer = new DamageEffectLayer();
+    }
+    return g_pDamageEffectLayer;
+}
+
+/** @ghidraAddress 0x173f10 */
+DamageEffectLayer::DamageEffectLayer() {
+    // The base constructor and the member initialisers clear the header and pooled records; the
+    // lane values and effect size seed to one.
+    for (float &flValue : m_aLaneValue) {
+        flValue = kInitialLaneValue;
+    }
+    m_flEffectSize = kInitialEffectSize;
+}
 
 /** @ghidraAddress 0x1740cc */
 void DamageEffectLayer::SetBoundsDamageStyle() {
