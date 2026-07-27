@@ -17,6 +17,7 @@
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "SePlayer.h"
+#include "campaign_portrait_table.h"
 #include "curve.h"
 #include "game_scene.h"
 #include "gamesystem.h"
@@ -187,6 +188,17 @@ constexpr unsigned int kPartGlowOverlay = 0x5f;
 
 // The flick classification threshold, in pixels.
 constexpr float kFlickThreshold = 25.0f;
+
+// The Hinabita campaign portrait layer: the main portrait plus five sub-characters, fit-scaled to
+// the screen against a reference width, arranged on a row that rises with the fit.
+constexpr int kCampaignPortraitCount = 6;
+constexpr unsigned int kPartCampaignMain = 0x62;
+constexpr unsigned int kCampaignSubColor = 128;
+constexpr float kPortraitFitReference = 320.0f; // @ghidraAddress 0x2f8558
+constexpr float kPortraitRowRise = 80.0f;       // @ghidraAddress 0x2f855c
+constexpr float kPortraitBaseY = 1020.0f;       // @ghidraAddress 0x2f8560
+constexpr float kPortraitCentreX = 384.0f;      // @ghidraAddress 0x2f8550
+constexpr float kPortraitMainX = 389.0f;
 
 // The exit sound effect and the value the fade reaches to advance to the finish state.
 constexpr int kSoundEffectExit = 0x10;
@@ -836,6 +848,92 @@ void TitleColetteScene::ProcessTitleTouch() {
             [m_pSePlayer sePlay];
         }
         break;
+    }
+}
+
+/** @ghidraAddress 0x59474 */
+void TitleColetteScene::RenderCampaignPortrait() {
+    // The characters fit-scale to the screen: full size on iPad, else the min screen dimension over
+    // the reference width.
+    float flFit;
+    if (IsPad()) {
+        flFit = 1.0f;
+    } else {
+        const float flMin =
+            m_flViewportWidth < m_flViewportHeight ? m_flViewportWidth : m_flViewportHeight;
+        flFit = flMin / kPortraitFitReference;
+    }
+
+    // Build the six character anchor positions. The iPad uses the fixed table; the phone places the
+    // main portrait at a scaled Y and eases each sub-character's X toward the screen centre.
+    S_VECTOR2 aAnchor[kCampaignPortraitCount];
+    if (IsPad()) {
+        for (int nChar = 0; nChar < kCampaignPortraitCount; ++nChar) {
+            aAnchor[nChar] = S_VECTOR2{g_aCampaignPortraitPadAnchor[nChar][0],
+                                       g_aCampaignPortraitPadAnchor[nChar][1]};
+        }
+    } else {
+        // The shared row Y rises from the base by the fit scale; every character sits on it.
+        const float flRowY = flFit * kPortraitRowRise + kPortraitBaseY;
+        aAnchor[0] = S_VECTOR2{kPortraitMainX, flRowY};
+        for (int nSub = 1; nSub < kCampaignPortraitCount; ++nSub) {
+            const float flBaseX = g_aCampaignPortraitPhoneBaseX[nSub - 1];
+            aAnchor[nSub] =
+                S_VECTOR2{kPortraitCentreX - flFit * (kPortraitCentreX - flBaseX), flRowY};
+        }
+    }
+
+    if (!m_bSeReady) {
+        // Entrance animation: the main portrait fades and pops in over the sound-effect timer, then
+        // the five sub-characters follow with their own staggered curves.
+        const float flTime = static_cast<float>(m_nSeTimer);
+        const int nMainAlpha = static_cast<int>(
+            CalculateCurveInterpolation(g_aCampaignPortraitEntranceAlpha[0], 4, flTime) *
+            kFullColor);
+        const float flMainScale =
+            CalculateCurveInterpolation(g_aCampaignPortraitEntranceScale[0], 6, flTime);
+        EmitPartSprite(kPartCampaignMain,
+                       static_cast<unsigned int>(nMainAlpha),
+                       aAnchor[0],
+                       S_VECTOR2{flFit, flFit * flMainScale},
+                       0.0f,
+                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        for (int nSub = 1; nSub < kCampaignPortraitCount; ++nSub) {
+            const int nAlpha = static_cast<int>(
+                CalculateCurveInterpolation(g_aCampaignPortraitEntranceAlpha[nSub], 4, flTime) *
+                kFullColor);
+            const float flScale =
+                CalculateCurveInterpolation(g_aCampaignPortraitEntranceScale[nSub], 6, flTime);
+            EmitPartSprite(kPartCampaignMain + static_cast<unsigned int>(nSub),
+                           static_cast<unsigned int>(nAlpha),
+                           aAnchor[nSub],
+                           S_VECTOR2{flFit, flFit * flScale},
+                           0.0f,
+                           S_VECTOR3{kCampaignSubColor, kCampaignSubColor, kCampaignSubColor});
+        }
+    } else if (!m_bSeTriggered) {
+        // Shown and idle: the main portrait draws statically at full size.
+        EmitPartSprite(kPartCampaignMain,
+                       0xff,
+                       aAnchor[0],
+                       S_VECTOR2{flFit, flFit},
+                       0.0f,
+                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
+    } else {
+        // Shown and reacting to a sound-effect hit: the main portrait plays the reaction squash over
+        // the reaction timer; when it finishes the reaction flag and timer reset.
+        const float flTime = static_cast<float>(m_nSeAccumulator);
+        const float flScale = CalculateCurveInterpolation(g_aCampaignPortraitReaction, 6, flTime);
+        EmitPartSprite(kPartCampaignMain,
+                       0xff,
+                       aAnchor[0],
+                       S_VECTOR2{flFit, flFit * flScale},
+                       0.0f,
+                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        if (flTime > kCampaignPortraitReactionEnd) {
+            m_bSeTriggered = false;
+            m_nSeAccumulator = 0;
+        }
     }
 }
 
