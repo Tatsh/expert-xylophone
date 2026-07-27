@@ -56,6 +56,16 @@ public:
      */
     void SetFrameType(int nType);
 
+    /**
+     * @brief Advances the frame fade one frame and applies the faded alpha to every sprite slot.
+     *
+     * When ready, advances the fade channel toward its end value, writes the eased alpha to each
+     * live slot of the three batches, and keeps the two overlay batches visible.
+     * @param flDelta The frame delta.
+     * @ghidraAddress 0x17b0d4
+     */
+    void Process(float flDelta);
+
     // The number of frame sprite batches the layer builds.
     static constexpr int kSpriteSlotCount = 3;
 

@@ -44,6 +44,16 @@ public:
         return m_flCurrent;
     }
 
+    /** @brief The interpolation start value. */
+    float GetStart() const {
+        return m_flStart;
+    }
+
+    /** @brief The interpolation end value. */
+    float GetEnd() const {
+        return m_flEnd;
+    }
+
     /** @brief Sets the interpolation start value. */
     void SetStart(float flStart) {
         m_flStart = flStart;

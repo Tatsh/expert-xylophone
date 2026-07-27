@@ -8,6 +8,9 @@
 
 #include "alt_frame_layer.h"
 
+#include "neRender.h"
+#include "neSpriteInstancing.h"
+
 // The process-wide alternate-frame layer, created lazily by shared().
 static AltFrameLayer *g_pAltFrameLayer = nullptr; // @ghidraAddress 0x3deda8
 
@@ -68,4 +71,44 @@ void AltFrameLayer::SetFrameType(int nType) {
     m_nFrameType = nType;
     m_bReady = false;
     BuildSprites();
+}
+
+/** @ghidraAddress 0x17b0d4 */
+void AltFrameLayer::Process(float flDelta) {
+    if (!m_bReady) {
+        return;
+    }
+
+    const float flDuration = m_fadeChannel.GetDuration();
+    bool bApply;
+    if (flDuration > m_fadeChannel.GetElapsed()) {
+        // Advance the fade toward its end, clamping the elapsed time to the duration.
+        float flElapsed = m_fadeChannel.GetElapsed() + flDelta;
+        if (flElapsed > flDuration) {
+            flElapsed = flDuration;
+        }
+        m_fadeChannel.SetElapsed(flElapsed);
+        const float flFraction = flDuration == 0.0f ? 1.0f : flElapsed / flDuration;
+        m_fadeChannel.SetCurrent(m_fadeChannel.GetStart() +
+                                 flFraction * (m_fadeChannel.GetEnd() - m_fadeChannel.GetStart()));
+        bApply = true;
+    } else {
+        // The fade is complete; only apply the final alpha once (on the frame the flag latches).
+        bApply = m_bFadeDone;
+    }
+
+    if (bApply) {
+        m_bFadeDone = false;
+        const auto nAlpha =
+            static_cast<unsigned char>(static_cast<int>(m_fadeChannel.GetCurrent()));
+        for (int nBatch = 0; nBatch < kSpriteSlotCount; ++nBatch) {
+            for (int nSlot = 0; nSlot < m_aSpriteCounts[nBatch]; ++nSlot) {
+                m_apSprites[nBatch]->SetColorAlpha(nSlot, nAlpha);
+            }
+        }
+    }
+
+    // Keep the two overlay batches visible.
+    m_apSprites[1]->SetVisible(true);
+    m_apSprites[2]->SetVisible(true);
 }
