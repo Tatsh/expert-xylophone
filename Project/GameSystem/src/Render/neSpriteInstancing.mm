@@ -309,6 +309,12 @@ void C_SPRITE_INSTANCING::SetSpritePositionXY(int nIndex, float x, float y) {
     m_pSpritePositionArray[nIndex] = S_VECTOR2{x, y};
 }
 
+/** @ghidraAddress 0x189c14 */
+void C_SPRITE_INSTANCING::SetVertexPosition(int nSlot, const S_VECTOR2 &position) {
+    tempAssert(nSlot >= 0 && nSlot < static_cast<int>(m_dwCapacity));
+    m_pSpritePositionArray[nSlot] = position;
+}
+
 /** @ghidraAddress 0x180b04 */
 void C_SPRITE_INSTANCING::SetSpritePositionX(int nIndex, float x) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));

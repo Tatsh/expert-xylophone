@@ -181,6 +181,15 @@ public:
      */
     void SetSpritePositionXY(int nIndex, float x, float y);
     /**
+     * @brief Write sprite @p nSlot's world position from a vector, bounds-checking the slot index
+     * against the capacity (asserting when out of range).
+     *
+     * The same position store as @c SetSpritePosition, but reached through the checked entry point
+     * the star-effect emitter uses.
+     * @ghidraAddress 0x189c14
+     */
+    void SetVertexPosition(int nSlot, const S_VECTOR2 &position);
+    /**
      * @brief Set only sprite @p nIndex's world-position X component.
      * @ghidraAddress 0x180b04
      */

@@ -229,7 +229,7 @@ void NoteResultLayer::EmitStarSprite(float flSize,
                                      const StarSpriteDescriptor &descriptor) {
     const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
 
-    m_pSprites->SetSpritePosition(m_nSpriteCount, position);
+    m_pSprites->SetVertexPosition(m_nSpriteCount, position);
     m_pSprites->SetSpriteAnchor(m_nSpriteCount, descriptor.anchor);
     m_pSprites->SetSpriteSize(m_nSpriteCount, descriptor.size);
     m_pSprites->SetSpriteUvOrigin(m_nSpriteCount, S_VECTOR2{uv.flOriginU, uv.flOriginV});
