@@ -98,6 +98,15 @@ public:
     void ResetLaneGaugeState();
 
     /**
+     * @brief The per-frame gauge-state tick: does nothing.
+     *
+     * The per-frame render pass calls this on the shared tracker; the body is empty in the binary.
+     * @ghidraAddress 0x149320
+     */
+    void TickGaugeState() {
+    }
+
+    /**
      * @brief Stores a side's lane gauge value and repaints its background band, arming the
      * low-gauge warning on the 2P side when the danger state changes.
      * @param flValue The gauge value.
