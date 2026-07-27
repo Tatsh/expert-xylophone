@@ -73,6 +73,14 @@ public:
      */
     void StartGameplayPresentation();
 
+    /**
+     * @brief Waits for the intro delay to elapse, then primes all play-field layers (note-result
+     * layout, frame, thema marker, play-colour gauge grow, and the reflec and clear gauges) and
+     * advances to the play-ready state.
+     * @ghidraAddress 0x14b734
+     */
+    void AdvanceToPlayReadyState();
+
 private:
     /**
      * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch
@@ -169,7 +177,8 @@ private:
     unsigned char m_aReserved65[0x03] = {}; // +0x65
     PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
     int m_nInitialState = {};               // +0x70: the state the task starts in (2).
-    unsigned char m_aReserved74[8] = {};    // +0x74
+    float m_flPresentationDelay = {};       // +0x74: the play-ready intro threshold, in play time.
+    unsigned char m_aReserved78[4] = {};    // +0x78
     float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
     unsigned char m_aReserved80[8] = {};    // +0x80
     int m_nThema = {};                      // +0x88: the active theme (0 Classic, 1 Limelight, 2

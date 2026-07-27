@@ -40,14 +40,17 @@
 #include "neTexture.h"
 #include "note_effect_mgr.h"
 #include "note_replay.h"
+#include "note_result_layer.h"
 #include "number_layer.h"
 #include "pause_gauge_layer.h"
+#include "play_color_layer.h"
 #include "playerfieldlayer.h"
 #include "playtimer.h"
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
 #include "result_window_colette_layer.h"
 #include "soundeffectmanager.h"
+#include "thema_marker_layer.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
@@ -67,6 +70,11 @@ static constexpr int kStateResultTheme = 0xb;
 static constexpr int kStatePresenting = 7;
 static constexpr int kIntroVoiceCue = 2;
 static constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 0x2f8540
+
+// The play-ready state AdvanceToPlayReadyState advances to, and the gauge grow-animation from-value
+// (also the marker fade-in's marker value) it primes the layers with.
+static constexpr int kStatePlayReady = 4;
+static constexpr float kGaugeGrowFromValue = 450.0f; // @ghidraAddress 0x308dd8
 
 // The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or above
 // which the clear cue plays.
@@ -350,6 +358,40 @@ void PlayTask::StartGameplayPresentation() {
     JudgeEffectLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePresenting;
+}
+
+/** @ghidraAddress 0x14b734 */
+void PlayTask::AdvanceToPlayReadyState() {
+    // Wait until play time passes the presentation intro threshold.
+    if (static_cast<float>(m_nPlayTime) <= m_flPresentationDelay) {
+        return;
+    }
+
+    // Build the note-result layout for the current chart.
+    NoteResultLayer::shared()->BuildQuadPositions();
+
+    // Build and fade in the on-screen frame (the alternate frame on iPad, the main frame elsewhere).
+    if (m_bIsPad) {
+        AltFrameLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+    } else {
+        MainFrameLayer::shared()->BuildGeometry();
+        MainFrameLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+    }
+
+    // Fade in and rebuild the thema-marker frame.
+    ThemaMarkerLayer::shared()->StartFadeIn(kPresentationFadeInDuration, kGaugeGrowFromValue);
+    ThemaMarkerLayer::shared()->RenderThemaMarkerFrame();
+
+    // Grow the play-colour gauge and resync its part positions.
+    PlayColorLayer::shared()->StartGaugeGrowAnimation(kPresentationFadeInDuration,
+                                                      kGaugeGrowFromValue);
+    PlayColorLayer::shared()->SyncGaugeValuesFromGameSystem();
+
+    // Fade in the reflec and clear gauges.
+    ReflecGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+    ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+
+    m_nState = kStatePlayReady;
 }
 
 /** @ghidraAddress 0x14b818 */

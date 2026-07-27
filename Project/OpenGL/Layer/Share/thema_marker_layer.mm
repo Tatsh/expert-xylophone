@@ -162,7 +162,7 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
 
 /** @ghidraAddress 0x180438 */
 void ThemaMarkerLayer::StartFadeOut(float flDuration) {
-    m_nActiveMarker = 0;
+    m_flActiveMarker = 0.0f;
     m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
     m_fadeChannel.SetEnd(0.0f);
     m_fadeChannel.SetDuration(flDuration);
@@ -175,8 +175,8 @@ void ThemaMarkerLayer::StartFadeOut(float flDuration) {
 }
 
 /** @ghidraAddress 0x180400 */
-void ThemaMarkerLayer::StartFadeIn(float flDuration, int nMarkerIndex) {
-    m_nActiveMarker = nMarkerIndex;
+void ThemaMarkerLayer::StartFadeIn(float flDuration, float flMarker) {
+    m_flActiveMarker = flMarker;
     m_fadeChannel.SetStart(m_fadeChannel.GetCurrent());
     m_fadeChannel.SetEnd(1.0f);
     m_fadeChannel.SetDuration(flDuration);

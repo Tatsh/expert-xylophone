@@ -58,14 +58,14 @@ public:
     void StartFadeOut(float flDuration);
 
     /**
-     * @brief Begins the marker fade-in on marker @p nMarkerIndex: eases the markers to opaque over
-     * @p flDuration (snapping to opaque and marking the colour dirty when the duration is
+     * @brief Begins the marker fade-in, selecting the active marker value: eases the markers to
+     * opaque over @p flDuration (snapping to opaque and marking the colour dirty when the duration is
      * non-positive) and resets the effect timer.
      * @param flDuration The fade duration.
-     * @param nMarkerIndex The marker index to activate.
+     * @param flMarker The active marker value to store.
      * @ghidraAddress 0x180400
      */
-    void StartFadeIn(float flDuration, int nMarkerIndex);
+    void StartFadeIn(float flDuration, float flMarker);
 
     /**
      * @brief Sets the low-gauge danger/warning intensity (clamped to @c [0, 1] and mapped to the
@@ -74,6 +74,12 @@ public:
      * @ghidraAddress 0x180464
      */
     void SetDangerLevel(float flLevel);
+
+    /**
+     * @brief Rebuilds and emits the marker frame's sprites for the current active marker.
+     * @ghidraAddress 0x1801d4
+     */
+    void RenderThemaMarkerFrame();
 
 private:
     /**
@@ -90,9 +96,9 @@ private:
     int m_aMarkerBaseIndex[kMarkerLayoutCount] = {}; // +0x30: each marker group's base index.
     bool m_bBuilt = {};                              // +0x48: set once the sprites are built.
     bool m_bFadeColorDirty = {};                     // +0x49: set when the fade snaps or advances.
-    // +0x4a..+0x4b is alignment padding before the active-marker index.
+    // +0x4a..+0x4b is alignment padding before the active-marker value.
     unsigned char m_aPad4a[2] = {};      // +0x4a
-    int m_nActiveMarker = {};            // +0x4c: the active marker index.
+    float m_flActiveMarker = {};         // +0x4c: the active marker value the fade-in selects.
     LinearTween m_fadeChannel;           // +0x50: the marker fade channel.
     float m_flScaleX = {};               // +0x64: a scale the constructor seeds to 1.
     float m_flScaleY = {};               // +0x68: a scale the constructor seeds to 1.
