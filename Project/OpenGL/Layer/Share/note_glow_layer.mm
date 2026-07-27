@@ -8,6 +8,8 @@
 
 #include "note_glow_layer.h"
 
+#include <cassert>
+
 #include "bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -71,4 +73,14 @@ void NoteGlowLayer::InitializeSprites() {
     m_pSprite->SetBlendMode(kAdditiveBlendMode);
 
     m_bLoaded = true;
+}
+
+/** @ghidraAddress 0x176ad8 */
+void NoteGlowLayer::CreateEffect(unsigned int nColor) {
+    if (!m_bLoaded) {
+        InitializeSprites();
+    }
+    assert(static_cast<int>(nColor) >= 0 && static_cast<int>(nColor) < kColorCount);
+    m_aEffects[nColor].bActive = true;
+    m_aEffects[nColor].nTimer = 0;
 }

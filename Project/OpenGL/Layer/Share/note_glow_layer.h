@@ -47,7 +47,27 @@ public:
      */
     void InitializeSprites();
 
+    /**
+     * @brief Triggers the glow effect for one player colour.
+     *
+     * Builds the sprite batch on first use, then activates the colour's effect slot and resets its
+     * timer.
+     * @param nColor The player colour (0 or 1).
+     * @ghidraAddress 0x176ad8
+     */
+    void CreateEffect(unsigned int nColor);
+
+    // The number of player colours the glow tracks.
+    static constexpr int kColorCount = 2;
+
 private:
+    /** @brief One per-colour glow effect slot: its active flag and animation timer. */
+    struct EffectSlot {
+        bool bActive = {};                 // +0x00: whether the colour's glow is animating.
+        unsigned char aReserved01[3] = {}; // +0x01
+        int nTimer = {};                   // +0x04: the glow's animation timer.
+    };
+
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and count
      * state, and seeds the default scale pair to one.
@@ -60,7 +80,8 @@ private:
     unsigned char m_aReserved18[4] = {};     // +0x18
     int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[0x13] = {};  // +0x21: further header/count state.
+    unsigned char m_aReserved21[3] = {};     // +0x21
+    EffectSlot m_aEffects[kColorCount] = {}; // +0x24: the two per-colour glow slots (stride 8).
     float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
     unsigned char m_aReserved3c[4] = {};     // +0x3c: trailing state to the 0x40-byte size.
 };
