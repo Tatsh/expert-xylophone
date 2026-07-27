@@ -37,7 +37,7 @@
 #import "clear_gauge_layer.h"
 #import "deviceenvironment.h"
 #import "engineruntime.h"
-#import "gamescene.h"
+#import "game_scene.h"
 #import "gamesystem.h"
 #import "leveltables.h"
 #import "listener_list.h"
@@ -53,8 +53,8 @@
 - (void)setPreWebInfoURL:(nullable NSString *)preWebInfoURL;
 @end
 
-// GameScene state-machine value referenced at launch. The state enum lives with the GameScene class
-// (neEngineBridge.h); only the value used here is named.
+// rb::GameScene state-machine value referenced at launch. The state enum lives with the
+// rb::GameScene class; only the value used here is named.
 enum { kGameSceneStateMusicSelect = 1 };
 
 // Note-sheet layout geometry, recovered from the launch decompile. Float DAT_ values were read from
@@ -407,7 +407,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     GameSystem *gameSystem = GameSystem::GetGameSystem();
-    GameScene *scene = gameSystem->GetCurrentScene();
+    rb::GameScene *scene = gameSystem->GetCurrentScene();
     if (scene) {
         scene->AdvanceGameSceneStateFrom11();
     }
@@ -434,7 +434,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     GameSystem *gameSystem = GameSystem::GetGameSystem();
-    GameScene *scene = gameSystem->GetCurrentScene();
+    rb::GameScene *scene = gameSystem->GetCurrentScene();
     if (scene) {
         scene->PausePlayTimerAndBgm();
     }
@@ -595,7 +595,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     // While the app is active on the music-select (or earlier) screen, surface the queued push view.
     GameSystem *gameSystem = GameSystem::GetGameSystem();
-    GameScene *scene = gameSystem->GetCurrentScene();
+    rb::GameScene *scene = gameSystem->GetCurrentScene();
     if (scene && application.applicationState == UIApplicationStateActive &&
         scene->GetState() <= kGameSceneStateMusicSelect && self.pushList.count > 0 &&
         self.viewController && self.viewController.musicMenuView) {
@@ -795,7 +795,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
       [strongSelf showTitle];
       [strongSelf.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
       [strongSelf.viewController StartLoop];
-      GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
+      rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
       if (scene) {
           scene->ClearLayerStateField();
           scene->AdvanceGameSceneStateFrom11();

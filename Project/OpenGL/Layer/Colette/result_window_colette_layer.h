@@ -392,7 +392,7 @@ private:
     // +0x14c..+0x157: further presentation state, still being worked out.
     unsigned char m_aReserved14c[0xc] = {}; // +0x14c
     // +0x158..+0x173: the seven result-bonus display values, computed by
-    // PlayTask::ComputeResultBonusesAndExperience.
+    // rb::GameScene::ComputeResultBonusesAndExperience.
     float m_flClearBonus = {};     // +0x158: the clear bonus.
     float m_flMissBonus = {};      // +0x15c: the miss (full-combo/miss1/miss2) bonus.
     float m_flRankBonus = {};      // +0x160: the rank (B/A/AA/AAA/AAAP) bonus.

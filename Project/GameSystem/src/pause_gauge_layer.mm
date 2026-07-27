@@ -11,7 +11,7 @@
 #include <cassert>
 
 #import "RBUserSettingData.h"
-#include "gamescene.h"
+#include "game_scene.h"
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -286,7 +286,7 @@ void PauseGaugeLayer::HandleExit() {
         GameSystem::GetGameSystem()->GetPastelBonusType() != 0) {
         return;
     }
-    GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
+    rb::GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
     if (pScene != nullptr) {
         pScene->EnterPauseExitState();
     }

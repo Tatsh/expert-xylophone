@@ -6,10 +6,13 @@
 #pragma once
 
 #include "Render/s_vector2.h"
-#include "gamescene.h"
 
 namespace ne {
 class C_TEXTURE;
+}
+
+namespace rb {
+class GameScene;
 }
 
 /**
@@ -425,8 +428,17 @@ public:
      */
     void SetSheetMargins(float flLeft, float flTop, float flRight, float flBottom);
     /** @brief Returns the active game scene, or @c nullptr when none is running. */
-    GameScene *GetCurrentScene() const {
+    rb::GameScene *GetCurrentScene() const {
         return m_pCurrentScene;
+    }
+    /**
+     * @brief Returns the address of the leading scene slot, the play scene's singleton cache.
+     *
+     * @c rb::GameScene::GetInstance lazily constructs the play scene into this slot; it is the same
+     * field as @c GetCurrentScene reads.
+     */
+    rb::GameScene **GetCurrentSceneSlot() {
+        return &m_pCurrentScene;
     }
     /**
      * @brief Returns the global GameSystem singleton, constructing it on first use.
@@ -441,7 +453,7 @@ private:
      */
     GameSystem();
 
-    GameScene *m_pCurrentScene = {};     // +0x00: the active game scene, or null when none runs.
+    rb::GameScene *m_pCurrentScene = {}; // +0x00: the active game scene, or null when none runs.
     double m_dScreenX = {};              // +0x08
     double m_dScreenY = {};              // +0x10
     double m_dScreenWidth = {};          // +0x18

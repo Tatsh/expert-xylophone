@@ -1,11 +1,11 @@
 /**
  * @file
- * The gameplay task, @c PlayTask.
+ * The gameplay scene, @c rb::GameScene (RTTI @c N2rb9GameSceneE).
  */
 
 #pragma once
 
-#include "game_ui_layer_base.h"
+#include "base_scene.h"
 
 #ifdef __OBJC__
 @class NSData;
@@ -16,24 +16,92 @@ typedef struct objc_object NSData;
 class MusicSheet;
 class PauseGaugeLayer;
 
+namespace rb {
+
 /**
- * @brief The gameplay task: the per-frame state machine that drives a play session from set-up
+ * @brief The gameplay scene: the per-frame state machine that drives a play session from set-up
  * through the notes to the result screen and exit.
  *
- * A process-wide singleton registered in the engine task list at priority 1. It derives from
- * @c GameUiLayerBase (and thus the @c ne::C_TASK node) and overrides the per-frame callback with its
- * state-machine dispatch. The trailing @c // +0xNN comments document the original member offsets for
- * reference only; the tail sub-state fields between the recovered members are still being worked out.
+ * A process-wide singleton registered in the engine task list at priority 1, cached in the game
+ * system's leading scene pointer (@c GameSystem::GetCurrentScene). It derives from @c rb::BaseScene
+ * (and thus the @c ne::C_TASK node) and overrides the per-frame callback with its state-machine
+ * dispatch. The trailing @c // +0xNN comments document the original member offsets for reference
+ * only; the tail sub-state fields between the recovered members are still being worked out.
  */
-class PlayTask : public GameUiLayerBase {
+class GameScene : public BaseScene {
 public:
+    /** @brief Returns the scene's current state. */
+    int GetState() const {
+        return m_nState;
+    }
+    /** @brief Sets the scene's play mode (0 normal, 1 alternate). */
+    void SetMode(int nMode) {
+        m_nMode = nMode;
+    }
+    /** @brief Sets the scene's state and clears its accumulated play time. */
+    void SetState(int nState) {
+        m_nState = nState;
+        m_nPlayTime = 0;
+    }
+
     /**
-     * @brief Returns the singleton gameplay task, constructing it (and registering it in the task
+     * @brief Returns the singleton gameplay scene, constructing it (and registering it in the task
      * list at priority 1) on first use.
-     * @param ppOut The caller-held slot that holds, and receives, the singleton pointer.
+     * @param ppOut The caller-held slot that holds, and receives, the singleton pointer (the game
+     *        system's leading scene pointer).
      * @ghidraAddress 0x12ee88
      */
-    static void GetInstance(PlayTask **ppOut);
+    static void GetInstance(GameScene **ppOut);
+
+    /**
+     * @brief Initialises the scene for the current play mode: builds every play-field layer, seeds the
+     * play state, and binds the chart.
+     * @ghidraAddress 0x14a518
+     */
+    void Init();
+
+    /**
+     * @brief Advances this scene from state 0x11 to 0x12.
+     * @ghidraAddress 0x14aff8
+     */
+    void AdvanceGameSceneStateFrom11();
+    /**
+     * @brief Sets this scene's state to 0x13.
+     * @ghidraAddress 0x14afec
+     */
+    void SetGameSceneState13();
+    /**
+     * @brief Pauses the play timer and background music when this scene is interrupted.
+     * @ghidraAddress 0x14b010
+     */
+    void PausePlayTimerAndBgm();
+    /**
+     * @brief Resets the scene's state field to zero.
+     * @ghidraAddress 0x14a510
+     */
+    void ClearLayerStateField();
+
+    /**
+     * @brief Stops the background music and re-enables device auto-rotation, once, when the scene is
+     * torn down or interrupted.
+     * @ghidraAddress 0x14b228
+     */
+    void StopBgmAndAllowRotation();
+
+    /**
+     * @brief Transitions the scene into the pause-exit state: stops the BGM, resumes the play timer,
+     * starts the fade-in overlay, and advances to state 0xe.
+     * @ghidraAddress 0x14b1ec
+     */
+    void EnterPauseExitState();
+
+    /**
+     * @brief Transitions the scene into the music-release state: stops the BGM, releases the music
+     * and voice resources, resumes the play timer, starts the fade-in overlay, and advances to state
+     * 0xd.
+     * @ghidraAddress 0x14b2b8
+     */
+    void EnterMusicReleaseState();
 
     /**
      * @brief Ticks the pause gauge and reports whether gameplay is active this frame.
@@ -135,11 +203,11 @@ public:
 
 private:
     /**
-     * @brief Constructs the task: chains the UI-layer base constructor, installs the play dispatch
-     * table, zero-clears the play state, and seeds the initial state to 2.
+     * @brief Constructs the scene: chains the scene-base constructor, installs the play dispatch
+     * table, zero-clears the play state, and seeds the initial mode to 2.
      * @ghidraAddress 0x14a21c
      */
-    PlayTask();
+    GameScene();
 
     /**
      * @brief The play state that waits out the intro ready-delay, then starts the notes.
@@ -186,7 +254,7 @@ private:
      * @brief Binds a parsed chart as the active chart: tears down the previous chart, stores the new
      * one, hands it to the note-effect manager, seeds the score tracker's note count, and resets
      * playback.
-     * @param pMusicSheet The parsed chart to bind (ownership passes to the task).
+     * @param pMusicSheet The parsed chart to bind (ownership passes to the scene).
      * @ghidraAddress 0x14fcd8
      */
     void BindMusicSheetToNoteMgr(MusicSheet *pMusicSheet);
@@ -195,7 +263,7 @@ private:
      * @brief Stops and reloads the background music with a result-screen (non-looping) track, then
      * loads the themed result voice data.
      *
-     * The receiver is unused; the method is a member only because the binary threads the task pointer
+     * The receiver is unused; the method is a member only because the binary threads the scene pointer
      * through its caller.
      * @param musicData The result-track music resource data.
      * @ghidraAddress 0x14fbd4
@@ -224,11 +292,13 @@ private:
     int m_nPlayCursor = {};              // +0x54: the play cursor, cleared on a playback reset.
     MusicSheet *m_pMusicSheet = {};      // +0x58: the owned active note chart, or null.
     unsigned char m_aReserved5c[4] = {}; // +0x5c
-    float m_flFirstPathSpeed = {};       // +0x60: the chart's first path speed, cached at set-up.
+    float m_flFirstPathSpeed = {};       // +0x60: the chart's first path speed, cached at set-up,
+                                         //        reset to 0 when the BGM stops.
     bool m_bPauseGaugeHeld = {};         // +0x64: whether the pause gauge is being held down.
     unsigned char m_aReserved65[0x03] = {}; // +0x65
     PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
-    int m_nInitialState = {};               // +0x70: the state the task starts in (2).
+    int m_nMode = {};                       // +0x70: the play mode (0 normal, 1 alternate; the
+                                            //        constructor seeds 2).
     float m_flPresentationDelay = {};       // +0x74: the play-ready intro threshold, in play time.
     unsigned char m_aReserved78[4] = {};    // +0x78
     float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
@@ -237,6 +307,78 @@ private:
                                             //        Colette), selecting the full-combo layer.
     unsigned char m_aReserved8c[4] = {};    // +0x8c: trailing play state to the 0x90-byte size.
 };
+
+/**
+ * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
+ *
+ * Sets the scene's mode to normal, runs @c GameScene::Init, and advances it to state 2.
+ * @param pScene The game scene.
+ * @ghidraAddress 0x14af90
+ */
+void InitGameSceneModeNormal(GameScene *pScene);
+
+/**
+ * @brief Scene-mode-enter callback: enters alternate play mode and initialises the scene.
+ *
+ * Sets the scene's mode to alternate, runs @c GameScene::Init, and advances it to state 0x10.
+ * @param pScene The game scene.
+ * @ghidraAddress 0x14afbc
+ */
+void InitGameSceneModeAlt(GameScene *pScene);
+
+/**
+ * @brief Re-enters alternate play mode on the current scene when the game system has one active.
+ *
+ * A render-loop resume hook: when the game system holds a current scene, runs the alternate
+ * mode-enter callback on it; otherwise does nothing. The binary emits two byte-identical copies for
+ * two call sites.
+ * @ghidraAddress 0x8c884
+ * @ghidraAddress 0x8c8a8
+ */
+void ResumeRenderLoopIfActive(void);
+
+/**
+ * @brief Resumes the play timer and background music after an interruption.
+ *
+ * The counterpart to @c GameScene::PausePlayTimerAndBgm; a no-op unless the game is paused. Unlike
+ * the pause side it takes no scene, since it acts only on the game-system and play-timer singletons.
+ * @ghidraAddress 0x14b144
+ */
+void ResumePlayTimerAndBgm(void);
+
+/**
+ * @brief The pause-menu Resume action: resumes play when a scene is active and plays the confirm
+ *        sound effect.
+ * @ghidraAddress 0x15139c
+ */
+void HandlePauseResume(void);
+
+/**
+ * @brief The pause-menu Retry/Release action: transitions the active scene into its music-release
+ *        state and plays the confirm sound effect.
+ * @ghidraAddress 0x151434
+ */
+void HandlePauseMusicRelease(void);
+
+/**
+ * @brief Fully releases the current music and voice resources.
+ *
+ * A no-op while the background music is still marked active (it must be stopped first); otherwise it
+ * stops and releases the music and releases the audio manager's voices.
+ * @ghidraAddress 0x14b2f8
+ */
+void ReleaseBgmAndVoice(void);
+
+/**
+ * @brief Ensures the device is generating orientation-change notifications.
+ *
+ * A scene-mode-enter callback that turns on @c UIDevice orientation notifications, looping until the
+ * device reports they are being generated.
+ * @ghidraAddress 0x93b50
+ */
+void EnsureOrientationNotificationsEnabled(void);
+
+} // namespace rb
 
 // code: language=C++
 // kate: hl C++;

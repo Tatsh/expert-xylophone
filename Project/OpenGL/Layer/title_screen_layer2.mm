@@ -12,10 +12,10 @@
 #import "AudioManager.h"
 #import "RBBGMManager.h"
 #import "RBViewController.h"
+#include "game_scene.h"
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
-#include "play_task.h"
 #include "shotsoundmanager.h"
 #include "soundeffectmanager.h"
 #include "title_part_layout.h"
@@ -161,10 +161,9 @@ void TitleScreenLayer2::FinishAndOpenList() {
         return;
     }
     ReleaseResources();
-    // Construct the gameplay task (its slot is the game system's leading scene pointer), then open
-    // the music list through the app's root view controller.
-    GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    PlayTask::GetInstance(reinterpret_cast<PlayTask **>(pGameSystem));
+    // Construct the gameplay scene into the game system's leading scene slot, then open the music
+    // list through the app's root view controller.
+    rb::GameScene::GetInstance(GameSystem::GetGameSystem()->GetCurrentSceneSlot());
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();
 }
