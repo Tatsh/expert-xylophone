@@ -186,6 +186,25 @@ public:
         return m_nColorLockState;
     }
 
+    /** @brief Stamps the note with a replay's recorded judge, JR flag, and long-note rate. */
+    void SetReplayResult(int nJudge, bool bJustReflec, float flLongRate) {
+        m_nColorLockState = nJudge;
+        m_bEmphasisFallback = bJustReflec;
+        m_flLongRate = flLongRate;
+    }
+    /** @brief Sets slide sub-point @p nIndex's recorded judge result. */
+    void SetSlidePointJudge(int nIndex, int nJudge) {
+        m_aSubEntries[nIndex].nSlidePointJudge = nJudge;
+    }
+    /** @brief Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot). */
+    void SetSlideReplayJudge(int nIndex, int nJudge) {
+        m_aSubEntries[nIndex].nSeedD = nJudge;
+    }
+    /** @brief The note's recorded judge result (from a replay). */
+    int GetRecordedJudge() const {
+        return m_nColorLockState;
+    }
+
     /**
      * @brief Advances the note's position by one frame: saves the previous position, then either
      * follows its active waypoint or integrates its velocity over the frame delta.
@@ -523,9 +542,12 @@ private:
     bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
     unsigned char m_aReserved5e2[6] = {}; // +0x5e2
     int m_nColorLockState =
-        {}; // +0x5e8: >3 leaves the note's colour open to the random assignment.
-    bool m_bEmphasisFallback = {};          // +0x5ec: the versus-mode emphasis fallback flag.
-    unsigned char m_aReserved5ed[0xb] = {}; // +0x5ed: trailing state to the 0x5f8-byte size.
+        {}; // +0x5e8: the recorded/assigned note result: the replay ghost stores the recorded judge
+    //         here, and the random colour pass leaves it open when it is above the threshold.
+    bool m_bEmphasisFallback = {};        // +0x5ec: the versus-mode emphasis fallback / JR flag.
+    unsigned char m_aReserved5ed[3] = {}; // +0x5ed
+    float m_flLongRate = {};              // +0x5f0: the recorded long-note rate (from the replay).
+    unsigned char m_aReserved5f4[4] = {}; // +0x5f4: trailing state to the 0x5f8-byte size.
 };
 
 /**
