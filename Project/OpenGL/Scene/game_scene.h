@@ -358,20 +358,6 @@ void ResumeRenderLoopIfActive(void);
 void ResumePlayTimerAndBgm(void);
 
 /**
- * @brief The pause-menu Resume action: resumes play when a scene is active and plays the confirm
- *        sound effect.
- * @ghidraAddress 0x15139c
- */
-void HandlePauseResume(void);
-
-/**
- * @brief The pause-menu Retry/Release action: transitions the active scene into its music-release
- *        state and plays the confirm sound effect.
- * @ghidraAddress 0x151434
- */
-void HandlePauseMusicRelease(void);
-
-/**
  * @brief Ensures the device is generating orientation-change notifications.
  *
  * A scene-mode-enter callback that turns on @c UIDevice orientation notifications, looping until the

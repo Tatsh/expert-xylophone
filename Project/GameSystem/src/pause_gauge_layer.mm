@@ -293,6 +293,25 @@ void PauseGaugeLayer::HandleExit() {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
 }
 
+/** @ghidraAddress 0x15139c */
+void PauseGaugeLayer::HandleResume() {
+    // Resume play only when a scene is active, then play the pause-menu confirm effect.
+    if (GameSystem::GetGameSystem()->GetCurrentScene() != nullptr) {
+        rb::ResumePlayTimerAndBgm();
+    }
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
+}
+
+/** @ghidraAddress 0x151434 */
+void PauseGaugeLayer::HandleMusicRelease() {
+    // Transition the active scene into its music-release state, then play the confirm effect.
+    rb::GameScene *pScene = GameSystem::GetGameSystem()->GetCurrentScene();
+    if (pScene != nullptr) {
+        pScene->EnterMusicReleaseState();
+    }
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectPauseConfirm);
+}
+
 namespace {
 // The pause-menu item indices, the background sprite's slot and alpha, and the touch-slot fields.
 constexpr unsigned int kMenuItemResume = 0;
@@ -359,12 +378,12 @@ void PauseGaugeLayer::ExecShow() {
                 if (pTouch->bEnded) {
                     // Released on the item: run its action.
                     if (nLane == kMenuItemRelease) {
-                        HandlePauseMusicRelease();
+                        HandleMusicRelease();
                     } else if (nLane == kMenuItemExit) {
                         HandleExit();
                     } else {
                         assert(nLane == kMenuItemResume);
-                        HandlePauseResume();
+                        HandleResume();
                     }
                 } else {
                     bHighlight = true;

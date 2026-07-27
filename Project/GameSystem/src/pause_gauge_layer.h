@@ -151,6 +151,20 @@ public:
     void HandleExit();
 
     /**
+     * @brief The pause-menu Resume action: resumes play when a scene is active and plays the confirm
+     *        sound effect.
+     * @ghidraAddress 0x15139c
+     */
+    static void HandleResume();
+
+    /**
+     * @brief The pause-menu Retry/Release action: transitions the active scene into its music-release
+     *        state and plays the confirm sound effect.
+     * @ghidraAddress 0x151434
+     */
+    static void HandleMusicRelease();
+
+    /**
      * @brief The pause-scene per-frame show step: lays out the menu items, updates the touch-drag
      * selection, and re-emits the gauge sprites.
      *
