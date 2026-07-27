@@ -101,7 +101,7 @@ PauseGaugeLayer::~PauseGaugeLayer() {
         m_pTexture->Release();
         m_pTexture = nullptr;
     }
-    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             // The sprite nodes are owned by the scene graph; flag them for the scene walker.
             pSprite->RequestDelete();
@@ -160,7 +160,7 @@ void PauseGaugeLayer::EmitSprite(float flFlip,
     // The alt-frame device uses its own layout table.
     const PauseGaugeSpriteLayout &layout =
         IsPad() ? g_aPauseGaugeLayoutAltFrame[nSlotIndex] : g_aPauseGaugeLayoutDefault[nSlotIndex];
-    ne::C_SPRITE_INSTANCING *pSprite = m_apSprites[kLaneSlotGroup[nSlotIndex]];
+    ne::C_SPRITE_INSTANCING_2D *pSprite = m_apSprites[kLaneSlotGroup[nSlotIndex]];
 
     // Claim the next free sprite in the instancer, if any remain.
     const int nIndex = pSprite->GetSpriteCount();
@@ -262,7 +262,7 @@ void PauseGaugeLayer::RenderForLane(unsigned int nLaneIndex) {
 /** @ghidraAddress 0x150ba8 */
 void PauseGaugeLayer::ShowPauseMenu() {
     // Reset every instancer's live sprite count before (re-)emitting.
-    for (ne::C_SPRITE_INSTANCING *pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
     // The menu only opens once the gauge has fully charged.
@@ -375,7 +375,7 @@ void PauseGaugeLayer::ExecShow() {
     }
 
     // Re-emit the menu: clear each instancer, draw the dimmed background, then each lane.
-    for (ne::C_SPRITE_INSTANCING *pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
     const S_VECTOR2 origin{0.0f, 0.0f};

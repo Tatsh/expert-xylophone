@@ -67,7 +67,7 @@ void LongNoteLayer::CreateSpriteBatches() {
     ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
     for (int i = 0; i < kBatchCount; ++i) {
-        ne::C_SPRITE_INSTANCING *pSprite =
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_anBatchCapacity[i]));
         m_apSprites[i] = pSprite;
         pParent->AttachChild(pSprite);

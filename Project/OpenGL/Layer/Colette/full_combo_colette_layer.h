@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -92,7 +92,7 @@ private:
     ne::C_TEXTURE *m_pTexture0 = {}; // +0x10: the gm_parts2 atlas.
     ne::C_TEXTURE *m_pTexture1 = {}; // +0x18: a second gm_parts2 handle.
     ne::C_TEXTURE *m_pTexture2 = {}; // +0x20: a third gm_parts2 handle.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
         {};                                     // +0x28: the per-slot sprite batches.
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x40: each slot's initial count.
     bool m_bBuilt = {};                         // +0x4c: set once the sprites are built.

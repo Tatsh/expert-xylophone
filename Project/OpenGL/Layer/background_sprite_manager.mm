@@ -51,7 +51,7 @@ void BackgroundSpriteManager::BuildBackgroundSpriteNodes() {
     // visible, bind the atlas, seed its sprite count, and flag additive blend on the outer two slots
     // (every slot but the middle one).
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);
         pSprite->SetRefCountedMember(m_pTexture);

@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -52,8 +52,8 @@ private:
      */
     NoteChargeLayer();
 
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the note-charge sprite instancer.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-charge sprite instancer.
     // +0x18..+0x1b: further state, still being worked out, preceding the capacity.
     unsigned char m_aReserved18[4] = {}; // +0x18
     int m_nSpriteCapacity = {}; // +0x1c: the accumulated instancer capacity (sprite count).

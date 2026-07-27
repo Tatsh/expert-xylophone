@@ -373,7 +373,7 @@ void ResultWindowClassicLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -619,7 +619,7 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
 /** @ghidraAddress 0x115348 */
 void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
                                                                   ne::C_TEXTURE *pTexture) {
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -688,7 +688,7 @@ void ResultWindowClassicLayer::BlitInstancerTextureSlot(unsigned int nSlot,
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -720,7 +720,7 @@ void ResultWindowClassicLayer::RenderSpriteInstancerSlotScaled(unsigned int nSlo
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -760,7 +760,7 @@ void ResultWindowClassicLayer::RenderSpriteInstancerSlotHalfScale(unsigned int n
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }

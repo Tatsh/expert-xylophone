@@ -15,7 +15,7 @@ struct PhoneLayoutRect;
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -416,7 +416,7 @@ private:
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
         {};                // +0x28: the per-slot sprite batches.
     bool m_bBuilt = {};    // +0x68: set once the sprites are built.
     bool m_bPortrait = {}; // +0x69: selects the portrait phone anchor-position table.

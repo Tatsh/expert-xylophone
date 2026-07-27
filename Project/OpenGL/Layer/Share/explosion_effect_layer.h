@@ -8,7 +8,7 @@
 #include "playfieldlayerbase.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -93,12 +93,12 @@ private:
     };
 
     // +0x08: the two world-space sprite instancers, one per bank.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kBankCount] = {}; // +0x08
-    int m_aSpriteCount[kBankCount] = {};                   // +0x18: each bank's live sprite count.
-    int m_aSpriteCapacity[kBankCount] = {};                // +0x20: each instancer's capacity.
-    bool m_bBuilt = {};                                    // +0x28: set once the sprites are built.
-    unsigned char m_aPad29[3] = {};                        // +0x29
-    int m_aEffectType[kBankCount] = {}; // +0x2c: each bank's current explosion texture type.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBankCount] = {}; // +0x08
+    int m_aSpriteCount[kBankCount] = {};    // +0x18: each bank's live sprite count.
+    int m_aSpriteCapacity[kBankCount] = {}; // +0x20: each instancer's capacity.
+    bool m_bBuilt = {};                     // +0x28: set once the sprites are built.
+    unsigned char m_aPad29[3] = {};         // +0x29
+    int m_aEffectType[kBankCount] = {};     // +0x2c: each bank's current explosion texture type.
     EffectEntry m_aBanks[kBankCount][kSlotsPerBank] = {}; // +0x34: the two effect-slot banks.
     unsigned char m_aPlayColorAlpha[kBankCount] = {}; // +0x32c: per-lane play-colour alpha bytes.
     // +0x32e..+0x32f is alignment padding before the effect size.

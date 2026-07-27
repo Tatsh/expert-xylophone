@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -126,9 +126,9 @@ private:
     unsigned char m_aReserved08[8] =
         {};                         // +0x08: transient state; the low byte is cleared each call.
     ne::C_TEXTURE *m_pTexture = {}; // +0x10: the gm_tutorial atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x18: the guide sprite instancer.
-    int m_nSpriteCount = {};                 // +0x20: the instancer's initial sprite count.
-    bool m_bBuilt = {};                      // +0x24: set once the tables are built.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x18: the guide sprite instancer.
+    int m_nSpriteCount = {};                    // +0x20: the instancer's initial sprite count.
+    bool m_bBuilt = {};                         // +0x24: set once the tables are built.
     bool m_bPortrait = {}; // +0x25: whether the viewport is portrait (width <= height).
     // +0x26..+0x27 is alignment padding before the cached gauge coordinates.
     unsigned char m_aPad26[2] = {}; // +0x26

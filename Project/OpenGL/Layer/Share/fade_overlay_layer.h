@@ -9,7 +9,7 @@
 #include "s_vector2.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -78,9 +78,9 @@ private:
      */
     void EmitQuad(const S_VECTOR2 &size, unsigned int nAlpha);
 
-    ne::C_SPRITE_INSTANCING *m_pInstancer = {}; // +0x08: the one-quad sprite instancer.
-    int m_nSlotCount = {};                      // +0x10: the slots emitted this frame.
-    bool m_bInstancerCreated = {};              // +0x14: set once the instancer exists.
+    ne::C_SPRITE_INSTANCING_2D *m_pInstancer = {}; // +0x08: the one-quad sprite instancer.
+    int m_nSlotCount = {};                         // +0x10: the slots emitted this frame.
+    bool m_bInstancerCreated = {};                 // +0x14: set once the instancer exists.
     // +0x15..+0x17 is alignment padding before the tween block.
     float m_flFadeStart = {};    // +0x18: the alpha the current tween starts from.
     float m_flFadeTarget = {};   // +0x1c: the alpha the current tween ends at.

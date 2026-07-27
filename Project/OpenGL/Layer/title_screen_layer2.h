@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -98,7 +98,7 @@ private:
     int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
     int m_nReadyDelay = {};                          // +0x54: the start ready delay.
     ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x58: the three title textures.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
         {};                                    // +0x70: the part sprite instancers.
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0x308: each instancer's live sprite count.
     // +0x454..+0x59f: further per-part presentation state, still being worked out.

@@ -158,7 +158,7 @@ struct InitialSpriteVertex {
  * @ghidraAddress 0x2f668
  * @ghidraAddress 0x3097c
  */
-C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity, bool bWorldSpace) {
+C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWorldSpace) {
     // The base C_RENDER constructor and the derived vtable are installed by the compiler; the nine
     // attribute-array pointers and the remaining scalars are zero from their member initialisers. The
     // world-space batch additionally clears the batch flag (the screen-space one leaves it default).
@@ -239,7 +239,7 @@ C_SPRITE_INSTANCING::C_SPRITE_INSTANCING(unsigned int nCapacity, bool bWorldSpac
  * @ghidraAddress 0x2f968
  * @ghidraAddress 0x2fa70
  */
-C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
+C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     // Release the texture reference, free the per-sprite arrays and the vertex scratch, and delete
     // the GL index buffer; the compiler chains to the C_RENDER base destructor. (The binary guards
     // each free with the engine's safe-delete pattern; delete[] on a null pointer is a no-op.)
@@ -261,17 +261,17 @@ C_SPRITE_INSTANCING::~C_SPRITE_INSTANCING() {
 }
 
 /** @ghidraAddress 0x30804 */
-C_SPRITE_INSTANCING *CreateSpriteInstancer(unsigned int nCapacity) {
-    return new C_SPRITE_INSTANCING(nCapacity);
+C_SPRITE_INSTANCING_2D *CreateSpriteInstancer(unsigned int nCapacity) {
+    return new C_SPRITE_INSTANCING_2D(nCapacity);
 }
 
 /** @ghidraAddress 0x31834 */
-C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity) {
-    return new C_SPRITE_INSTANCING(nCapacity, /*bWorldSpace=*/true);
+C_SPRITE_INSTANCING_2D *CreateWorldSpriteBatch(unsigned int nCapacity) {
+    return new C_SPRITE_INSTANCING_2D(nCapacity, /*bWorldSpace=*/true);
 }
 
 /** @ghidraAddress 0x317dc */
-void C_SPRITE_INSTANCING::SetRefCountedMember(C_TEXTURE *pTexture) {
+void C_SPRITE_INSTANCING_2D::SetRefCountedMember(C_TEXTURE *pTexture) {
     if (m_pTexture != nullptr) {
         m_pTexture->Release();
         m_pTexture = nullptr;
@@ -283,31 +283,31 @@ void C_SPRITE_INSTANCING::SetRefCountedMember(C_TEXTURE *pTexture) {
 }
 
 /** @ghidraAddress 0x318c0 */
-unsigned int C_SPRITE_INSTANCING::GetColorRed(int nIndex) const {
+unsigned int C_SPRITE_INSTANCING_2D::GetColorRed(int nIndex) const {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     return m_pSpriteColorArray[nIndex] & 0xff;
 }
 
 /** @ghidraAddress 0x31904 */
-unsigned int C_SPRITE_INSTANCING::GetColorGreen(int nIndex) const {
+unsigned int C_SPRITE_INSTANCING_2D::GetColorGreen(int nIndex) const {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     return (m_pSpriteColorArray[nIndex] >> 8) & 0xff;
 }
 
 /** @ghidraAddress 0x31948 */
-unsigned int C_SPRITE_INSTANCING::GetColorBlue(int nIndex) const {
+unsigned int C_SPRITE_INSTANCING_2D::GetColorBlue(int nIndex) const {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     return (m_pSpriteColorArray[nIndex] >> 16) & 0xff;
 }
 
 /** @ghidraAddress 0x3187c */
-unsigned int C_SPRITE_INSTANCING::GetColorAlpha(int nIndex) const {
+unsigned int C_SPRITE_INSTANCING_2D::GetColorAlpha(int nIndex) const {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     return (m_pSpriteColorArray[nIndex] >> 24) & 0xff;
 }
 
 /** @ghidraAddress 0x17b1c8 */
-void C_SPRITE_INSTANCING::SetColorAlpha(int nIndex, unsigned char nAlpha) {
+void C_SPRITE_INSTANCING_2D::SetColorAlpha(int nIndex, unsigned char nAlpha) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     // The colour is packed RGBA little-endian; the alpha is the high byte.
     m_pSpriteColorArray[nIndex] =
@@ -315,81 +315,81 @@ void C_SPRITE_INSTANCING::SetColorAlpha(int nIndex, unsigned char nAlpha) {
 }
 
 /** @ghidraAddress 0x5a0c4 */
-void C_SPRITE_INSTANCING::SetSpritePosition(int nIndex, const S_VECTOR2 &position) {
+void C_SPRITE_INSTANCING_2D::SetSpritePosition(int nIndex, const S_VECTOR2 &position) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nIndex] = position;
 }
 
 /** @ghidraAddress 0x83c98 */
-void C_SPRITE_INSTANCING::SetSpritePositionXY(int nIndex, float x, float y) {
+void C_SPRITE_INSTANCING_2D::SetSpritePositionXY(int nIndex, float x, float y) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nIndex] = S_VECTOR2{x, y};
 }
 
 /** @ghidraAddress 0x189c14 */
-void C_SPRITE_INSTANCING::SetVertexPosition(int nSlot, const S_VECTOR2 &position) {
+void C_SPRITE_INSTANCING_2D::SetVertexPosition(int nSlot, const S_VECTOR2 &position) {
     tempAssert(nSlot >= 0 && nSlot < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nSlot] = position;
 }
 
 /** @ghidraAddress 0x180b04 */
-void C_SPRITE_INSTANCING::SetSpritePositionX(int nIndex, float x) {
+void C_SPRITE_INSTANCING_2D::SetSpritePositionX(int nIndex, float x) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nIndex].x = x;
 }
 
 /** @ghidraAddress 0x180ab4 */
-void C_SPRITE_INSTANCING::SetSpritePositionY(int nIndex, float y) {
+void C_SPRITE_INSTANCING_2D::SetSpritePositionY(int nIndex, float y) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpritePositionArray[nIndex].y = y;
 }
 
 /** @ghidraAddress 0x59fbc */
-void C_SPRITE_INSTANCING::SetSpriteSize(int nIndex, const S_VECTOR2 &size) {
+void C_SPRITE_INSTANCING_2D::SetSpriteSize(int nIndex, const S_VECTOR2 &size) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteSizeArray[nIndex] = size;
 }
 
 /** @ghidraAddress 0x59f64 */
-void C_SPRITE_INSTANCING::SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor) {
+void C_SPRITE_INSTANCING_2D::SetSpriteAnchor(int nIndex, const S_VECTOR2 &anchor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteAnchorArray[nIndex] = anchor;
 }
 
 /** @ghidraAddress 0x5a014 */
-void C_SPRITE_INSTANCING::SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin) {
+void C_SPRITE_INSTANCING_2D::SetSpriteUvOrigin(int nIndex, const S_VECTOR2 &uvOrigin) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteUvOriginArray[nIndex] = uvOrigin;
 }
 
 /** @ghidraAddress 0x5a06c */
-void C_SPRITE_INSTANCING::SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize) {
+void C_SPRITE_INSTANCING_2D::SetSpriteUvSize(int nIndex, const S_VECTOR2 &uvSize) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteUvSizeArray[nIndex] = uvSize;
 }
 
 /** @ghidraAddress 0x5a174 */
-void C_SPRITE_INSTANCING::SetSpriteRotation(int nIndex, float flRotation) {
+void C_SPRITE_INSTANCING_2D::SetSpriteRotation(int nIndex, float flRotation) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteRotationArray[nIndex] = flRotation;
 }
 
 /** @ghidraAddress 0x5a11c */
-void C_SPRITE_INSTANCING::SetSpriteScale(int nIndex, float flScaleX, float flScaleY) {
+void C_SPRITE_INSTANCING_2D::SetSpriteScale(int nIndex, float flScaleX, float flScaleY) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteScaleXArray[nIndex] = flScaleX;
     m_pSpriteScaleYArray[nIndex] = flScaleY;
 }
 
 /** @ghidraAddress 0x5a1c0 */
-void C_SPRITE_INSTANCING::SetSpriteColor(
+void C_SPRITE_INSTANCING_2D::SetSpriteColor(
     int nIndex, unsigned int nRed, unsigned int nGreen, unsigned int nBlue, unsigned int nAlpha) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteColorArray[nIndex] =
         (nRed & 0xff) | ((nGreen & 0xff) << 8) | ((nBlue & 0xff) << 16) | (nAlpha << 24);
 }
 
-void C_SPRITE_INSTANCING::SetSpriteColor(int nIndex, unsigned int nColor) {
+void C_SPRITE_INSTANCING_2D::SetSpriteColor(int nIndex, unsigned int nColor) {
     tempAssert(nIndex >= 0 && nIndex < static_cast<int>(m_dwCapacity));
     m_pSpriteColorArray[nIndex] = nColor;
 }
@@ -406,7 +406,7 @@ static void ResetRenderState(neGLESRenderer *pRenderer) {
 
 // Binds the batch's texture (or disables texturing when it has none) and points the texture-unit's
 // coordinate array into the vertex scratch. Shared by both draw paths.
-void C_SPRITE_INSTANCING::BindPassTexture(neGLESRenderer *pRenderer) {
+void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
     if (m_pTexture == nullptr) {
         pRenderer->SetGlEnableState(kEnableTexture2d, 0);
         pRenderer->SetGlClientState(kClientTexCoord, 0);
@@ -424,7 +424,7 @@ void C_SPRITE_INSTANCING::BindPassTexture(neGLESRenderer *pRenderer) {
 }
 
 /** @ghidraAddress 0x2faa8 */
-void C_SPRITE_INSTANCING::Render() {
+void C_SPRITE_INSTANCING_2D::Render() {
     neGLESRenderer *pRenderer = GetGlRenderer();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
@@ -465,14 +465,14 @@ void C_SPRITE_INSTANCING::Render() {
 // The slow path: one draw per sprite carries its own translation*rotation*scale matrix through the
 // palette-matrix slot. Quads are built in local space around the sprite anchor and flushed in
 // batches of nMaxPerBatch.
-void C_SPRITE_INSTANCING::RenderWithMatrices(neGLESRenderer *pRenderer, int nMaxPerBatch) {
+void C_SPRITE_INSTANCING_2D::RenderWithMatrices(neGLESRenderer *pRenderer, int nMaxPerBatch) {
     // The screen-space path composes each sprite against the parent's world matrix directly.
     EmitMatrixSprites(pRenderer, nMaxPerBatch, GetParent()->GetWorldMatrix());
 }
 
-void C_SPRITE_INSTANCING::EmitMatrixSprites(neGLESRenderer *pRenderer,
-                                            int nMaxPerBatch,
-                                            const float *pComposeMatrix) {
+void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
+                                               int nMaxPerBatch,
+                                               const float *pComposeMatrix) {
     auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     // Point the fixed vertex/colour/texture arrays into the scratch and enable the arrays the
     // per-instance-matrix path needs (weight and matrix-index arrays plus the palette).
@@ -540,7 +540,7 @@ void C_SPRITE_INSTANCING::EmitMatrixSprites(neGLESRenderer *pRenderer,
 }
 
 /** @ghidraAddress 0x30dc0 */
-void C_SPRITE_INSTANCING::RenderWorldSpace() {
+void C_SPRITE_INSTANCING_2D::RenderWorldSpace() {
     neGLESRenderer *pRenderer = GetGlRenderer();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
@@ -574,7 +574,7 @@ void C_SPRITE_INSTANCING::RenderWorldSpace() {
 
 // Builds the per-sprite transform matrix for the slow path: a translation of the anchor to the
 // sprite position, composed with any rotation about the anchor and any non-unit scale.
-void C_SPRITE_INSTANCING::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
+void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     const S_VECTOR2 &position = m_pSpritePositionArray[nSprite];
     const S_VECTOR2 &anchor = m_pSpriteAnchorArray[nSprite];
     const float flRotation = m_pSpriteRotationArray[nSprite];
@@ -612,7 +612,7 @@ void C_SPRITE_INSTANCING::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
 
 // The fast path: every live sprite is an axis-aligned quad, so world positions are baked straight
 // into the scratch and a single indexed draw covers the whole batch under the node's world matrix.
-void C_SPRITE_INSTANCING::RenderAxisAligned(neGLESRenderer *pRenderer) {
+void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     int nQueued = 0;
     for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {

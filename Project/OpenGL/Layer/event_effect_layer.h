@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -68,9 +68,9 @@ public:
     void SetEventBackgroundQuad(int nAlpha);
 
 private:
-    ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_event atlas.
-    ne::C_SPRITE_INSTANCING *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
-    ne::C_SPRITE_INSTANCING *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
+    ne::C_TEXTURE *m_pTexture = {};                 // +0x08: the gm_event atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
+    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
     int m_nSpriteCount = {}; // +0x20: the main instancer's initial sprite count.
     bool m_bBuilt = {};      // +0x24: set once the sprites are built.
     // +0x25..+0x2f is further layer state (still being worked out) preceding the active flag.

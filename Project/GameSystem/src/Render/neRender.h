@@ -12,7 +12,7 @@ namespace ne {
  *
  * Every drawable in the engine is a @c C_RENDER: nodes form a parent/child/sibling tree that is
  * walked to compose local and world transforms and to emit draw calls. Concrete leaves such as
- * @c C_SPRITE_INSTANCING derive from it. The class is polymorphic (it carries a vtable), so it is
+ * @c C_SPRITE_INSTANCING_2D derive from it. The class is polymorphic (it carries a vtable), so it is
  * modelled with a virtual destructor.
  *
  * The trailing @c // +0xNN comments document the original 32-bit member offsets for reference only;
@@ -31,7 +31,7 @@ public:
      * @brief Render this node.
      *
      * The base node is not drawable and does nothing; drawable subclasses such as
-     * @c C_SPRITE_INSTANCING override this to emit their draw calls. Invoked by the scene-tree
+     * @c C_SPRITE_INSTANCING_2D override this to emit their draw calls. Invoked by the scene-tree
      * render walk. This is the first virtual slot, before the destructor.
      * @ghidraAddress 0x29edc
      */

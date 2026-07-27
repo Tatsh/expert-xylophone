@@ -10,7 +10,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -121,8 +121,8 @@ private:
     MainFrameLayer();
 
     // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
-    unsigned char m_aReserved08[0x20] = {};      // +0x08
-    ne::C_SPRITE_INSTANCING *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
+    unsigned char m_aReserved08[0x20] = {};         // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
     // +0x30..+0x47: further layout state, still being worked out.
     unsigned char m_aReserved30[0x18] = {}; // +0x30
     int m_nFrameType = {};                  // +0x48: the frame type, seeded to 0x20 and set by

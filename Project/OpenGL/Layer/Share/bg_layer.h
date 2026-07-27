@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_RENDER;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -120,11 +120,11 @@ private:
     // Re-centre the built background batches on the play-field's full-height layout Y.
     void RecenterBackgroundSprites();
 
-    ne::C_SPRITE_INSTANCING *m_pRootSprite = {};       // +0x08: root container node.
-    ne::C_TEXTURE *m_pBackgroundTexture = {};          // +0x10: the background image texture.
-    ne::C_TEXTURE *m_pClearEffectTexture = {};         // +0x18: the clear-effect overlay texture.
-    ne::C_SPRITE_INSTANCING *m_pBackgroundBatch = {};  // +0x20: draws the background image.
-    ne::C_SPRITE_INSTANCING *m_pClearEffectBatch = {}; // +0x28: draws the clear-effect overlay.
+    ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {};      // +0x08: root container node.
+    ne::C_TEXTURE *m_pBackgroundTexture = {};            // +0x10: the background image texture.
+    ne::C_TEXTURE *m_pClearEffectTexture = {};           // +0x18: the clear-effect overlay texture.
+    ne::C_SPRITE_INSTANCING_2D *m_pBackgroundBatch = {}; // +0x20: draws the background image.
+    ne::C_SPRITE_INSTANCING_2D *m_pClearEffectBatch = {}; // +0x28: draws the clear-effect overlay.
     int m_nSpriteCapacity = {};  // +0x30: sprite capacity and count of the background batches.
     bool m_bBuilt = {};          // +0x34: whether the subtree has been built.
     int m_nBackgroundId = {};    // +0x38: selected background (index into the texture-name table).

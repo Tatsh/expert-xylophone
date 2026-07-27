@@ -10,7 +10,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -119,10 +119,10 @@ private:
     static constexpr int kScoreValueCount = 2;
     static constexpr int kScoreGaugeBlockCount = 4;
 
-    ne::C_TEXTURE *m_pTexture = {};                                       // +0x08
-    ne::C_SPRITE_INSTANCING *m_apSpriteBatch[kBackgroundBatchCount] = {}; // +0x10
-    int m_anSpriteCount[kBackgroundBatchCount] = {};                      // +0x28
-    bool m_fInitialized = {};                                             // +0x34
+    ne::C_TEXTURE *m_pTexture = {};                                          // +0x08
+    ne::C_SPRITE_INSTANCING_2D *m_apSpriteBatch[kBackgroundBatchCount] = {}; // +0x10
+    int m_anSpriteCount[kBackgroundBatchCount] = {};                         // +0x28
+    bool m_fInitialized = {};                                                // +0x34
     // +0x35..+0x37 is alignment padding before the colour index.
     unsigned char m_aPad35[3] = {}; // +0x35
     int m_nColor = {};              // +0x38: the theme colour index (defaults to one).

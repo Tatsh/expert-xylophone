@@ -139,7 +139,7 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
     // Build the two sprite batches, each sized to hold all the marker groups routed to it; mark the
     // 3D batch's vertex flag.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
-        ne::C_SPRITE_INSTANCING *pSprite =
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchCapacity[nBatch]));
         m_apSprites[nBatch] = pSprite;
         pParent->AttachChild(pSprite);
@@ -157,7 +157,7 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
         const MarkerLayout &layout = kMarkerLayout[nMarker];
         const UvEntry &uv = LookupUv(layout.nUvIndex);
-        ne::C_SPRITE_INSTANCING *pSprite = m_apSprites[kMarkerBatch[nMarker]];
+        ne::C_SPRITE_INSTANCING_2D *pSprite = m_apSprites[kMarkerBatch[nMarker]];
         const int nBaseIndex = m_aMarkerBaseIndex[nMarker];
         for (int nSprite = 0; nSprite < kMarkerSpriteCount[nMarker]; ++nSprite) {
             const int nIndex = nBaseIndex + nSprite;
@@ -225,7 +225,7 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
 
     for (int nGroup = 0; nGroup < m_nMarkerCount; ++nGroup) {
         const int nBaseIndex = m_aMarkerBaseIndex[nGroup];
-        ne::C_SPRITE_INSTANCING *pBatch = m_apSprites[kMarkerBatch[nGroup]];
+        ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[kMarkerBatch[nGroup]];
 
         // Groups 0, 2, and 4 mirror by the play side; the others take the opposite selector.
         float flY = 0.0f;

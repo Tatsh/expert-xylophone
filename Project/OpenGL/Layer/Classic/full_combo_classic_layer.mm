@@ -58,7 +58,7 @@ void FullComboClassicLayer::InitializeBackgroundSprites() {
     // visible, bind the atlas, clear its sprite count, put it in additive blend, and enable its two
     // texture-environment parameters.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacity);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacity);
         m_apSprites[nSlot] = pSprite;
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);

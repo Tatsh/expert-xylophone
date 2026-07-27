@@ -10,7 +10,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -101,7 +101,8 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};         // +0x08: the frame atlas.
     unsigned char m_aReserved10[0x10] = {}; // +0x10: further texture/handle state.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] = {}; // +0x20: the frame sprite batches.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
+        {};                                     // +0x20: the frame sprite batches.
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x38: each batch's initial sprite count.
     int m_nFrameType = {};                      // +0x44: the frame type (default 32).
     int m_nFrameMode = {};                      // +0x48: the frame mode/kind (default 5).

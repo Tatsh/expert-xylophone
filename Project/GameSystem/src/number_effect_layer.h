@@ -13,7 +13,7 @@
 #include "s_vector2.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -108,9 +108,9 @@ private:
     ~NumberEffectLayer();
 
     // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
-    ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
-    LinearTween m_fadeChannel;                              // +0x30 (five floats, ending at +0x44)
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
+    LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
     bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame
     unsigned char m_aReserved45[0x0b] = {}; // +0x45
     bool m_bWideScreen = {};                // +0x50: set when the viewport is wider than the split.

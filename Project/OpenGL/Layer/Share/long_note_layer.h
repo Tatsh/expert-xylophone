@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 // The shared particle active index, reset when the layer is constructed and advanced as particles
@@ -85,10 +85,10 @@ private:
         float flScaleY = {};               // +0x18: the particle Y scale.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the particle atlas.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
-    unsigned char m_aReserved28[0xc] = {};                  // +0x28
-    int m_anBatchCapacity[kBatchCount] = {};                // +0x34: each batch's sprite capacity.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the particle atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
+    unsigned char m_aReserved28[0xc] = {};                     // +0x28
+    int m_anBatchCapacity[kBatchCount] = {};    // +0x34: each batch's sprite capacity.
     bool m_bBuilt = {};                         // +0x40: set once the batches are built.
     unsigned char m_aReserved41[0xf] = {};      // +0x41
     Particle m_aParticles[kParticleCount] = {}; // +0x50: the pooled particles (to 0x1c50).

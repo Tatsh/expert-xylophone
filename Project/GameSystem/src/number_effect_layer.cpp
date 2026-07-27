@@ -177,7 +177,7 @@ NumberEffectLayer::~NumberEffectLayer() {
         m_pTexture = nullptr;
     }
     // Each live instancer is flagged for deletion by the scene tree and detached from the layer.
-    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
             pSprite = nullptr;
@@ -209,7 +209,7 @@ void NumberEffectLayer::CreateSpriteInstancers() {
     // instancers register directly into the global scene tree instead.
     (void)BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     for (int i = 0; i < kBatchCount; ++i) {
-        ne::C_SPRITE_INSTANCING *pSprite =
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateSpriteInstancer(static_cast<unsigned int>(kBatchCapacity[i]));
         m_apSprites[i] = pSprite;
         pSprite->RegisterGlobal();

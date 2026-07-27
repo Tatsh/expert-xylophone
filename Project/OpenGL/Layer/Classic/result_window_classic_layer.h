@@ -16,7 +16,7 @@ class Polygon2dTrail;
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -522,7 +522,7 @@ private:
 
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x08: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x10: the result-parts atlas.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] =
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
         {};                    // +0x18: the per-slot sprite batches.
     bool m_bSpritesBuilt = {}; // +0x58: set once the set is built.
     // +0x59..+0x5b is alignment padding before the default alpha.

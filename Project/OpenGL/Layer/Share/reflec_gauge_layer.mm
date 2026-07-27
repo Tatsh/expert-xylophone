@@ -131,7 +131,7 @@ void ReflecGaugeLayer::CreateGaugeSliderSprites() {
     // background layer's render object, make it visible, bind the atlas, and clear its frame index;
     // the third batch also sets its vertex flag.
     for (int i = 0; i < kBatchCount; ++i) {
-        ne::C_SPRITE_INSTANCING *pSprite =
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchCapacity[i]));
         m_apSprites[i] = pSprite;
         BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
@@ -261,7 +261,7 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
                                        unsigned int nBatch,
                                        unsigned int nSide,
                                        int nAlpha) {
-    ne::C_SPRITE_INSTANCING *pBatch = m_apSprites[nBatch];
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
     const int nIndex = pBatch->GetSpriteCount();
     if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
         return;

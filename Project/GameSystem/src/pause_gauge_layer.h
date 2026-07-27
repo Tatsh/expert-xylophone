@@ -9,7 +9,7 @@
 #include "s_vector2.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -197,12 +197,13 @@ private:
                     unsigned int nColorRgb,
                     unsigned int nAlpha);
 
-    int m_nState = {};                                     // +0x4c: the layer's build/render state.
-    ne::C_TEXTURE *m_pTexture = {};                        // +0x50: the pause-gauge parts atlas.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSlotCount] = {}; // +0x58: the gauge and parts instancers.
-    int m_aSlotCapacity[kSlotCount] = {};                  // +0x68: each slot's sprite capacity.
-    int m_aLaneSlotId[kLaneSlotCount] = {};                // +0x70: the per-lane sprite-slot index.
-    bool m_bCharging = {};                                 // +0xa4: whether the gauge is charging.
+    int m_nState = {};              // +0x4c: the layer's build/render state.
+    ne::C_TEXTURE *m_pTexture = {}; // +0x50: the pause-gauge parts atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSlotCount] =
+        {};                                 // +0x58: the gauge and parts instancers.
+    int m_aSlotCapacity[kSlotCount] = {};   // +0x68: each slot's sprite capacity.
+    int m_aLaneSlotId[kLaneSlotCount] = {}; // +0x70: the per-lane sprite-slot index.
+    bool m_bCharging = {};                  // +0xa4: whether the gauge is charging.
     int m_nSelectedTouchId = {}; // +0xa8: the id of the touch dragging a menu item (-1 when none).
     int m_nSelectedLane = {};    // +0xac: the selected menu lane (4 when none is selected).
     LaneGeometry m_aLaneGeometry[kLaneCount] = {}; // +0xb0: the per-lane gauge centre and flag.

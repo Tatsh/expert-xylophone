@@ -10,7 +10,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -101,10 +101,10 @@ public:
     void SetScorePosition(float flValue, int nSide);
 
 private:
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the score-number atlas (gm_parts2).
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the score-number sprite instancer.
-    int m_nSpriteCount = {};                 // +0x18: the instancer's initial sprite count.
-    bool m_bBuilt = {};                      // +0x1c: set once the score sprite is built.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the score-number atlas (gm_parts2).
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the score-number sprite instancer.
+    int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.
+    bool m_bBuilt = {};                         // +0x1c: set once the score sprite is built.
     int m_nScoreSideFlag = {}; // +0x20: the side/layout flag indexing the score X-alignment table.
     LinearTween m_fadeChannel; // +0x24: the score display's fade channel.
     float m_aScorePosition[kSideCount] = {};         // +0x38: each side's score-display position.

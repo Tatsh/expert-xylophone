@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -75,15 +75,15 @@ private:
      */
     NoteGlowLayer();
 
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the effect atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the glow sprite instancer.
-    unsigned char m_aReserved18[4] = {};     // +0x18
-    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};     // +0x21
-    EffectSlot m_aEffects[kColorCount] = {}; // +0x24: the two per-colour glow slots (stride 8).
-    float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
-    unsigned char m_aReserved3c[4] = {};     // +0x3c: trailing state to the 0x40-byte size.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the effect atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the glow sprite instancer.
+    unsigned char m_aReserved18[4] = {};        // +0x18
+    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[3] = {};        // +0x21
+    EffectSlot m_aEffects[kColorCount] = {};    // +0x24: the two per-colour glow slots (stride 8).
+    float m_aScale[2] = {};                     // +0x34: the default scale pair (one, one).
+    unsigned char m_aReserved3c[4] = {};        // +0x3c: trailing state to the 0x40-byte size.
 };
 
 // code: language=C++

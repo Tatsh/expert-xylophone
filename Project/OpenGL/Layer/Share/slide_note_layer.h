@@ -8,7 +8,7 @@
 #include "playfieldlayerbase.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -65,11 +65,11 @@ public:
     void BuildSprites();
 
 private:
-    ne::C_TEXTURE *m_pTexture = {};                         // +0x08: the slide-trail atlas.
-    ne::C_SPRITE_INSTANCING *m_apBatches[kBatchCount] = {}; // +0x10: the trail sprite batches.
-    int m_anBatchCount[kBatchCount] = {};                   // +0x28: each batch's sprite count.
-    bool m_bBuilt = {};                                     // +0x34: whether the sprites are built.
-    unsigned char m_aReserved35[3] = {};                    // +0x35
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the slide-trail atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apBatches[kBatchCount] = {}; // +0x10: the trail sprite batches.
+    int m_anBatchCount[kBatchCount] = {};                      // +0x28: each batch's sprite count.
+    bool m_bBuilt = {};                         // +0x34: whether the sprites are built.
+    unsigned char m_aReserved35[3] = {};        // +0x35
     float m_flLastClock = {};                   // +0x38: the last sample clock (-1 when invalid).
     unsigned char m_aReserved3c[4] = {};        // +0x3c
     SlideNoteTrail m_aTrails[kTrailCount] = {}; // +0x40: the slide-trail record pool.

@@ -11,7 +11,7 @@ struct S_VECTOR2;
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -119,10 +119,10 @@ private:
         S_VECTOR2 position = {}; // +0x08
     };
 
-    ne::C_TEXTURE *m_pTexture = {};         // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING *m_pBatch = {}; // +0x10: the result sprite batch.
-    int m_nWriteIndex = {};                 // +0x18: the running sprite write index for a frame.
-    bool m_bBuilt = {};                     // +0x1c: set once the batch is built.
+    ne::C_TEXTURE *m_pTexture = {};            // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pBatch = {}; // +0x10: the result sprite batch.
+    int m_nWriteIndex = {};                    // +0x18: the running sprite write index for a frame.
+    bool m_bBuilt = {};                        // +0x1c: set once the batch is built.
     float m_flSpinPhaseA = {}; // +0x20: the first spin phase, wrapped to (-3000, 3000].
     float m_flSpinPhaseB = {}; // +0x24: the second spin phase, wrapped to [-400/3, 400/3).
     ResultMark m_aResults[kMaxResults] = {}; // +0x28: the per-frame result-mark queue.

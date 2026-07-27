@@ -130,7 +130,7 @@ TutorialGuideLayer::TutorialGuideLayer() {
 void TutorialGuideLayer::EmitTutorialSpriteSlot(
     float flSizeX, float flSizeY, unsigned int nSpriteKind, float *pPosition, int nAlpha) {
     const SpriteKindDescriptor &kind = kSpriteKinds[nSpriteKind];
-    ne::C_SPRITE_INSTANCING *pInstancer = m_pSprite;
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_pSprite;
     const int nIndex = pInstancer->GetSpriteCount();
     if (nIndex >= static_cast<int>(pInstancer->GetCapacity())) {
         return;

@@ -57,7 +57,7 @@ void NoteBodyLayer::LoadNoteBodySprites() {
     // visible, bind the atlas, clear its sprite count, flag additive blend on the outer two, and,
     // except on the tutorial hardware, enable each batch's two texture-environment parameters.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
         m_apSprites[nBatch] = pSprite;
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);

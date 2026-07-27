@@ -53,7 +53,7 @@ void SlideNoteLayer::BuildSprites() {
     ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTrailTextureName);
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
-        ne::C_SPRITE_INSTANCING *pBatch = ne::CreateWorldSpriteBatch(kBatchCapacity);
+        ne::C_SPRITE_INSTANCING_2D *pBatch = ne::CreateWorldSpriteBatch(kBatchCapacity);
         m_apBatches[nBatch] = pBatch;
         pParent->AttachChild(pBatch);
         pBatch->SetVisible(true);

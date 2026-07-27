@@ -137,7 +137,7 @@ void PlayColorLayer::BuildGaugePartsSpriteBatches() {
     // Build the two batches, each sized to hold all the part groups routed to it, and set the
     // additive-style vertex flag on each.
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
-        ne::C_SPRITE_INSTANCING *pSprite =
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchCapacity[nBatch]));
         m_apSprites[nBatch] = pSprite;
         pParent->AttachChild(pSprite);
@@ -177,7 +177,7 @@ void PlayColorLayer::EmitGaugePartSprite(float flPosX,
         nPartIndex >= static_cast<unsigned int>(kPartGroupCount)) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pBatch = m_apSprites[nBatchIndex];
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatchIndex];
     const int nIndex = pBatch->GetSpriteCount();
     if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
         return;
@@ -293,7 +293,7 @@ void PlayColorLayer::Update(float flDeltaTime) {
     const float flPartScale = GameSystem::GetGameSystem()->GetSheetRadiusScaled();
 
     // Reset both batches' sprite counts before re-emitting.
-    for (ne::C_SPRITE_INSTANCING *pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
 

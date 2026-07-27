@@ -76,7 +76,7 @@ void ClassicThemeLayer::InitializeBackgroundSceneNodes() {
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(g_szGmParts2TextureKey);
 
     for (int nBatchIndex = 0; nBatchIndex < kBackgroundBatchCount; ++nBatchIndex) {
-        ne::C_SPRITE_INSTANCING *pBatch =
+        ne::C_SPRITE_INSTANCING_2D *pBatch =
             ne::CreateWorldSpriteBatch(g_anClassicThemeBatchCapacities[nBatchIndex]);
         pRootNode->AttachChild(pBatch);
         pBatch->SetVisible(true);
@@ -109,7 +109,7 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
                                             float flScaleY,
                                             float flRotation,
                                             int nAlpha) {
-    ne::C_SPRITE_INSTANCING *pBatch = m_apSpriteBatch[nBatch];
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSpriteBatch[nBatch];
     const int nIndex = m_anSpriteCount[nBatch];
     if (nIndex >= g_anClassicThemeBatchCapacities[nBatch]) {
         return;

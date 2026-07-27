@@ -83,7 +83,7 @@ void TitleLimelightScene::ReleaseResources() {
         }
     }
     // The part instancers are owned by the scene graph; flag each for the scene walker and null it.
-    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
             pSprite = nullptr;
@@ -126,7 +126,7 @@ void TitleLimelightScene::LoadResources() {
     const TitlePartLayoutRecord *pLayout =
         IsPad() ? g_aTitle2PartLayoutAltFrame : g_aTitle2PartLayoutDefault;
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateSpriteInstancer(1);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateSpriteInstancer(1);
         pSprite->RegisterGlobal();
         pSprite->SetVisible(true);
         if (pLayout[nSlot].nTextureIndex != kUntexturedTextureIndex) {

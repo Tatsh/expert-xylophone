@@ -12,7 +12,7 @@ struct PartsDataRecord;
 struct PhoneLayoutRect;
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -372,7 +372,8 @@ private:
                                               //        parts slot.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the texture bound to the overlay slot; not
                                               //        set by the sprite builder.
-    ne::C_SPRITE_INSTANCING *m_apSlots[kSlotCount] = {}; // +0x28: the eight sprite-instancer nodes.
+    ne::C_SPRITE_INSTANCING_2D *m_apSlots[kSlotCount] =
+        {};                // +0x28: the eight sprite-instancer nodes.
     bool m_bBuilt = {};    // +0x68: whether the sprite instancers have been built.
     bool m_bPortrait = {}; // +0x69: selects the portrait anchor-position table.
     // +0x6a..+0x6b is alignment padding before the glyph-table base indices.

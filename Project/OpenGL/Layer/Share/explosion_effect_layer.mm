@@ -74,7 +74,7 @@ void ExplosionEffectLayer::InitializeSprites() {
 
     for (int nBank = 0; nBank < kBankCount; ++nBank) {
         m_aSpriteCapacity[nBank] = kSpriteCapacity;
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
         m_apSprites[nBank] = pSprite;
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);

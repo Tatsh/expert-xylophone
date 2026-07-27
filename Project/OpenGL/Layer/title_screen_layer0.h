@@ -10,7 +10,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -95,12 +95,12 @@ private:
      */
     void FinishAndOpenList();
 
-    unsigned char m_aReserved4b[1] = {};                         // +0x4b
-    int m_nState = {};                                           // +0x4c: the dispatch state.
-    int m_nFadeTimer = {};                                       // +0x50: the fade/ready timer.
-    int m_nReadyDelay = {};                                      // +0x54: the start ready delay.
-    ne::C_TEXTURE *m_apTextures[kTextureCount] = {};             // +0x58: the seven title textures.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kSpriteSlotCount] = {}; // +0x90: the sprite instancers.
+    unsigned char m_aReserved4b[1] = {};             // +0x4b
+    int m_nState = {};                               // +0x4c: the dispatch state.
+    int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
+    int m_nReadyDelay = {};                          // +0x54: the start ready delay.
+    ne::C_TEXTURE *m_apTextures[kTextureCount] = {}; // +0x58: the seven title textures.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x90: the sprite instancers.
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0xd0: each instancer's live sprite count.
     // +0xf0..+0x10f: further per-slot presentation state, still being worked out.
     unsigned char m_aReserved0f0[0x20] = {}; // +0xf0

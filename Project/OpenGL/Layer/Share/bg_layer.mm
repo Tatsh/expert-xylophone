@@ -100,7 +100,7 @@ constexpr const char *SelectClearEffectName(int nBackgroundId) {
 // on the play-field's full-height layout Y, whose pixel size is the used-image region (inset by
 // nInsetPixels per axis) divided by the texture's content scale and doubled on the phone (non-pad),
 // with UVs mapping that used region within the power-of-two allocation.
-void ConfigureBackgroundSprite(ne::C_SPRITE_INSTANCING *pBatch,
+void ConfigureBackgroundSprite(ne::C_SPRITE_INSTANCING_2D *pBatch,
                                ne::C_TEXTURE *pTexture,
                                int nInsetPixels,
                                bool bDoubleScale) {

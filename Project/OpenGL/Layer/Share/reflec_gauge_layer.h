@@ -11,7 +11,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -219,7 +219,7 @@ private:
                          int nAlpha);
 
     ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING *m_apSprites[kBatchCount] =
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
         {};                                     // +0x10: the per-batch sprite instancers.
     int m_aBatchCapacity[kBatchCount] = {};     // +0x30: each batch's sprite capacity.
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x40: each part group's base index.

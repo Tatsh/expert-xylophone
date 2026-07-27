@@ -76,7 +76,7 @@ void FullComboColetteLayer::InitializeBackgroundSpriteLayers() {
     // visible, bind its mapped atlas, clear its sprite count, put the middle slot in additive blend,
     // and enable each slot's two texture-environment parameters.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         m_apSprites[nSlot] = pSprite;
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);

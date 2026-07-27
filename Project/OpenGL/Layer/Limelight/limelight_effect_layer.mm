@@ -62,7 +62,7 @@ void LimelightEffectLayer::InitializeBackgroundSprites() {
     // Build one sprite instancer per slot, attach it under the background render object, make it
     // visible, bind its atlas, seed its sprite count, and flag additive blend where requested.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);
         pSprite->SetRefCountedMember(apTextureFields[kSlotTextureField[nSlot]]);

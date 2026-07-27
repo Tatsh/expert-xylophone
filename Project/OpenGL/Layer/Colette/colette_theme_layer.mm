@@ -87,7 +87,7 @@ void ColetteThemeLayer::CreateFcEffectSprites() {
     // visible. The first slot binds no texture; the rest bind their mapped atlas. Seed each slot's
     // sprite count and flag additive blend on the last slot.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);
         if (nSlot != 0) {

@@ -237,7 +237,7 @@ void ResultWindowColetteLayer::renderSpriteInstanceFromSlot(int nSlot,
     if (nSlot < 0 || nSlot >= kSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -278,7 +278,7 @@ void ResultWindowColetteLayer::appendSpriteToSlot(int nSlot,
     if (nSlot < 0 || nSlot >= kSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -314,7 +314,7 @@ void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
     if (nSlot < 0 || nSlot >= kSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -336,7 +336,7 @@ void ResultWindowColetteLayer::appendSpriteToSlotRgba(int nSlot,
 
 /** @ghidraAddress 0x74018 */
 void ResultWindowColetteLayer::applySpriteInstancerTexture(int nSlot, ne::C_TEXTURE *pTexture) {
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -367,7 +367,7 @@ void ResultWindowColetteLayer::blitSpriteInstanceHalfScale(int nSlot,
     if (nSlot < 0 || nSlot >= kSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -407,7 +407,7 @@ void ResultWindowColetteLayer::renderSpriteInstanceScaled(int nSlot,
     if (nSlot < 0 || nSlot >= kSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSlots[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSlots[nSlot];
     if (pInstancer == nullptr) {
         return;
     }

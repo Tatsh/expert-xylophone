@@ -1,6 +1,6 @@
 /**
  * @file
- * The batched sprite draw node, @c ne::C_SPRITE_INSTANCING.
+ * The batched sprite draw node, @c ne::C_SPRITE_INSTANCING_2D.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ namespace ne {
 class C_TEXTURE;
 
 /**
- * @brief A batched sprite draw node (RTTI @c ne::C_SPRITE_INSTANCING).
+ * @brief A batched sprite draw node (RTTI @c ne::C_SPRITE_INSTANCING_2D).
  *
  * A single node draws up to @c m_dwCapacity sprites of one texture in one instanced draw call; the
  * per-sprite position, size, anchor, UV-origin, UV-size, rotation, scale, and colour arrays are
@@ -22,7 +22,7 @@ class C_TEXTURE;
  * transform. The trailing @c // +0xNN comments document the original 32-bit offsets for reference
  * only; state is reached through the accessors, never through those offsets.
  */
-class C_SPRITE_INSTANCING : public C_RENDER {
+class C_SPRITE_INSTANCING_2D : public C_RENDER {
 public:
     /**
      * @brief Constructs a sprite batch that can draw up to @p nCapacity sprites.
@@ -40,8 +40,8 @@ public:
      * @ghidraAddress 0x2f668
      * @ghidraAddress 0x3097c
      */
-    explicit C_SPRITE_INSTANCING(unsigned int nCapacity, bool bWorldSpace = false);
-    ~C_SPRITE_INSTANCING() override;
+    explicit C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWorldSpace = false);
+    ~C_SPRITE_INSTANCING_2D() override;
 
     /**
      * @brief Draws every live sprite of the batch (the @c C_RENDER vtable render slot).
@@ -302,7 +302,7 @@ private:
     int m_nBlendMode = {};                  // +0x150
     bool m_bBatchFlag = {};                 // +0x154
     // +0x158: an 8-byte member present in the binary's 0x160-byte object but read or written by no
-    // C_SPRITE_INSTANCING method (verified by an exhaustive whole-binary cross-reference of +0x158
+    // C_SPRITE_INSTANCING_2D method (verified by an exhaustive whole-binary cross-reference of +0x158
     // accesses). The sibling render-node subclasses (RenderPolygon2dMesh / RenderPolygon3dMesh) keep
     // a live mesh-texture member here; this batch node holds its texture at m_pTexture (+0x138)
     // instead, leaving this slot of the shared node layout unused. It is kept so the object matches
@@ -319,7 +319,7 @@ private:
  * @return The new sprite batch node.
  * @ghidraAddress 0x31834
  */
-C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
+C_SPRITE_INSTANCING_2D *CreateWorldSpriteBatch(unsigned int nCapacity);
 
 /**
  * @brief Allocate and initialise a screen-space sprite batch node.
@@ -330,7 +330,7 @@ C_SPRITE_INSTANCING *CreateWorldSpriteBatch(unsigned int nCapacity);
  * @return The new sprite batch node.
  * @ghidraAddress 0x30804
  */
-C_SPRITE_INSTANCING *CreateSpriteInstancer(unsigned int nCapacity);
+C_SPRITE_INSTANCING_2D *CreateSpriteInstancer(unsigned int nCapacity);
 
 } // namespace ne
 

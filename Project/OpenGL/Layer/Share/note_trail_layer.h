@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
@@ -52,10 +52,10 @@ private:
      */
     NoteTrailLayer();
 
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the gm_parts1 atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the note-trail sprite instancer.
-    int m_nSpriteCount = {};                 // +0x18: the instancer's initial sprite count.
-    bool m_bBuilt = {};                      // +0x1c: set once the sprite is built.
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the note-trail sprite instancer.
+    int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.
+    bool m_bBuilt = {};                         // +0x1c: set once the sprite is built.
     // +0x1d..+0x1f is alignment padding before the per-trail records.
     // unsigned char m_aPad1d[3]; // +0x1d (alignment padding, compiler-inserted)
     // +0x20..+0x2af: the per-trail records, still being worked out, kept as a reserved span to

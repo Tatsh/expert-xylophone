@@ -106,7 +106,7 @@ void TitleClassicScene::ReleaseResources() {
         }
     }
     // The sprite instancers are owned by the scene graph; flag each for the scene walker and null it.
-    for (ne::C_SPRITE_INSTANCING *&pSprite : m_apSprites) {
+    for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
             pSprite = nullptr;
@@ -146,7 +146,8 @@ void TitleClassicScene::LoadResources() {
     // Build the eight sprite instancers: register each in the global scene tree, make it visible,
     // bind its texture (except the last slot), seed its sprite count, and set its blend/texture modes.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
-        ne::C_SPRITE_INSTANCING *pSprite = ne::CreateSpriteInstancer(g_aTitleSpriteCapacity[nSlot]);
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
+            ne::CreateSpriteInstancer(g_aTitleSpriteCapacity[nSlot]);
         pSprite->RegisterGlobal();
         pSprite->SetVisible(true);
         if (nSlot != kUntexturedSlot) {

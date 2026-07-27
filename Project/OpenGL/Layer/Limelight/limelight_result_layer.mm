@@ -294,7 +294,7 @@ void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }
@@ -386,7 +386,7 @@ void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
     if (nSlot >= kSpriteSlotCount) {
         return;
     }
-    ne::C_SPRITE_INSTANCING *pInstancer = m_apSprites[nSlot];
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nSlot];
     if (pInstancer == nullptr) {
         return;
     }

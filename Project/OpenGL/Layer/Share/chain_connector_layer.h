@@ -9,7 +9,7 @@
 
 namespace ne {
 class C_TEXTURE;
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 // The shared chain-connector draw count, reset when the layer is constructed.
@@ -59,12 +59,12 @@ private:
         unsigned char aReserved00[0x18] = {}; // +0x00: the connector's animation state.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the connector atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the connector sprite instancer.
-    unsigned char m_aReserved18[4] = {};     // +0x18
-    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[7] = {};     // +0x21
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the connector atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the connector sprite instancer.
+    unsigned char m_aReserved18[4] = {};        // +0x18
+    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[7] = {};        // +0x21
     ChainRecord m_aChains[kChainRecordCount] =
         {}; // +0x28: the pooled connector records (to 0xc28).
 };

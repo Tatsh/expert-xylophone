@@ -9,7 +9,7 @@
 #include "s_vector2.h"
 
 namespace ne {
-class C_SPRITE_INSTANCING;
+class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
 } // namespace ne
 
@@ -137,8 +137,8 @@ private:
         int nNumber = {};               // +0x0c: the numeric label drawn beside the quad.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};           // +0x08: the gm_parts2 atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprites = {}; // +0x10: the result sprite instancer.
+    ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_parts2 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprites = {}; // +0x10: the result sprite instancer.
     int m_nSpriteCount = {}; // +0x18: the instancer's live sprite count this frame.
     S_VECTOR2 m_aQuadPos[kPositionCount] = {}; // +0x1c: each quad's screen position.
     int m_nState = {};                         // +0x7c: the layer's animation state.
