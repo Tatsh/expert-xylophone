@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
@@ -63,6 +65,30 @@ public:
      * @ghidraAddress 0x95ae0
      */
     void BuildSprites();
+
+    /**
+     * @brief Emits one trail sprite of the given type into its batch.
+     *
+     * Looks up the sprite type's batch, anchor, size, and UV-table index from the layout table, then
+     * appends a sprite at @p pPosition with the given alpha, rotation, and scale. The head/tail types
+     * (below @c kSlideNoteGlowTypeBase) size to the layout height and scale both axes by @p flScale;
+     * the glow types (@c kSlideNoteGlowTypeBase and up) take their height from @p flLength, scale x by
+     * @p flScale, and draw at unit y-scale. The colour is always opaque white modulated by @p nAlpha.
+     * @param nType The sprite type (0 through 15).
+     * @param pPosition The sprite position.
+     * @param nAlpha The sprite alpha.
+     * @param flLength The sprite height for the glow types (unused by the head/tail types).
+     * @param flRotation The sprite rotation, in radians.
+     * @param flScale The sprite scale factor (applied to both axes for the head/tail types, x only
+     *        for the glow types).
+     * @ghidraAddress 0x96164
+     */
+    void CreateSprite(int nType,
+                      const S_VECTOR2 *pPosition,
+                      unsigned int nAlpha,
+                      float flLength,
+                      float flRotation,
+                      float flScale);
 
 private:
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the slide-trail atlas.

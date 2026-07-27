@@ -8,16 +8,46 @@
 
 #include "slide_note_layer.h"
 
+#include <cassert>
+
 #include "bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
+#include "slide_note_sprite_table.h"
+#include "sprite_uv_table.h"
 
 // The process-wide slide-note layer, created lazily by shared().
 static SlideNoteLayer *g_pSlideNoteLayer = nullptr; // @ghidraAddress 0x3dc658
 
 // The number of active slide-note trails, shared with the trail animator.
 int g_nActiveSlideTrailCount = 0; // @ghidraAddress 0x3dc650
+
+// The sprite-UV atlas the slide-note sprite types index (shared with the score-gauge layer).
+extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
+
+// The slide-note sprite-type layout table (declared in slide_note_sprite_table.h): read-only ROM
+// data giving each type's batch, anchor, size, and UV-table index.
+const SlideNoteSpriteType g_aSlideNoteSpriteTypes[kSlideNoteSpriteTypeCount] = {
+    // {batchIndex, anchorX, anchorY, sizeW, sizeH, uvIndex}
+    {0, 0.0f, 29.0f, 0.0f, 58.0f, 59},    // 0: head cap.
+    {0, 0.0f, 29.0f, 27.0f, 58.0f, 60},   // 1: head body.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 65},  // 2.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 66},  // 3.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 67},  // 4.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 68},  // 5.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 69},  // 6.
+    {1, 31.0f, 31.0f, 62.0f, 62.0f, 70},  // 7.
+    {1, 31.0f, 31.0f, 62.0f, 31.0f, 39},  // 8.
+    {1, 31.0f, 31.0f, 62.0f, 31.0f, 40},  // 9.
+    {2, 31.0f, 31.0f, 62.0f, 62.0f, 62},  // 10.
+    {2, 31.0f, 31.0f, 62.0f, 62.0f, 63},  // 11.
+    {2, 31.0f, 31.0f, 62.0f, 62.0f, 64},  // 12.
+    {2, 50.0f, 55.0f, 100.0f, 88.0f, 43}, // 13.
+    {2, 50.0f, 55.0f, 100.0f, 88.0f, 44}, // 14.
+    {0, 40.0f, 0.0f, 80.0f, 18.0f, 61},   // 15: glow.
+};
 
 namespace {
 // The invalid-clock sentinel the layer starts with (no sample taken yet).
@@ -80,4 +110,43 @@ SlideNoteLayer *SlideNoteLayer::shared() {
         g_pSlideNoteLayer = new SlideNoteLayer();
     }
     return g_pSlideNoteLayer;
+}
+
+/** @ghidraAddress 0x96164 */
+void SlideNoteLayer::CreateSprite(int nType,
+                                  const S_VECTOR2 *pPosition,
+                                  unsigned int nAlpha,
+                                  float flLength,
+                                  float flRotation,
+                                  float flScale) {
+    assert(nType >= 0);
+    assert(nType < kSlideNoteSpriteTypeCount);
+
+    const SlideNoteSpriteType &spriteType = g_aSlideNoteSpriteTypes[nType];
+    const SpriteUvEntry &uv = g_aScoreGaugeUvTable[spriteType.nUvIndex];
+
+    // Claim the next free sprite in the type's batch.
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apBatches[spriteType.nBatchIndex];
+    const int nIndex = m_anBatchCount[spriteType.nBatchIndex];
+
+    pBatch->SetSpritePosition(nIndex, *pPosition);
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{spriteType.flAnchorX, spriteType.flAnchorY});
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, nAlpha);
+
+    // The head/tail types size to the layout height and scale both axes; the glow types (0xf and up)
+    // take their height from the length argument and draw at unit y-scale.
+    float flScaleY;
+    if (nType < kSlideNoteGlowTypeBase) {
+        pBatch->SetSpriteSize(nIndex, S_VECTOR2{spriteType.flSizeW, spriteType.flSizeH});
+        flScaleY = flScale;
+    } else {
+        pBatch->SetSpriteSize(nIndex, S_VECTOR2{spriteType.flSizeW, flLength});
+        flScaleY = 1.0f;
+    }
+    pBatch->SetSpriteScale(nIndex, flScale, flScaleY);
+
+    ++m_anBatchCount[spriteType.nBatchIndex];
 }
