@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_SPRITE_INSTANCING_2D;
 class C_TEXTURE;
@@ -25,9 +27,33 @@ class ClearGaugeLayer : public PlayFieldLayerBase {
 public:
     // The number of player sides the gauge tracks.
     static constexpr int kSideCount = 2;
+    // The number of sprite batches the gauge draws through.
+    static constexpr int kBatchCount = 8;
 
     /** @brief Constructs the clear-gauge render layer. */
     ClearGaugeLayer();
+
+    /**
+     * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
+     *
+     * The shared low-level writer behind @c SetClearGaugeIcon, @c SetClearGaugeMarker, and
+     * @c SetClearGaugeDigits. It places the quad using the play-field gauge base rows (mirroring the
+     * X and half-turning the quad on the two-side layout), writes the caller's anchor, size, and
+     * atlas rectangle, and appends it to batch @p nBatch. Nothing is written once the batch is full.
+     * @param nBatch The sprite batch to append to.
+     * @param nBottomBand Non-zero to place the quad on the lower gauge band, zero for the upper band.
+     * @param pQuad The quad's anchor (@c pQuad[0]) and size (@c pQuad[1]), in that order.
+     * @param nAlpha The quad's alpha.
+     * @param uvOrigin The atlas rectangle origin.
+     * @param uvSize The atlas rectangle size.
+     * @ghidraAddress 0x1763d0
+     */
+    void SetClearGaugeSprite(unsigned int nBatch,
+                             int nBottomBand,
+                             const S_VECTOR2 *pQuad,
+                             int nAlpha,
+                             S_VECTOR2 uvOrigin,
+                             S_VECTOR2 uvSize);
 
     /**
      * @brief Sets a side's clear-gauge value, clamped to the range zero to one.
@@ -92,11 +118,12 @@ public:
     static ClearGaugeLayer *shared();
 
 private:
-    // +0x08..+0x11f: the gauge's texture, its eight sprite batches, their capacity table, and the
-    // per-slot sprite index bookkeeping the factory seeds; individual fields are still being worked
-    // out.
-    unsigned char m_aLayerState08[0x110] = {}; // +0x08
-    bool m_bBuilt = {}; // +0x118: whether the sprite batches have been built.
+    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
+    // +0x50..+0x11f: the batches' per-slot capacity/count table and the sprite-index bookkeeping the
+    // factory seeds; individual fields are still being worked out.
+    unsigned char m_aLayerState50[0xd0] = {}; // +0x50
+    bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.
     // +0x119..+0x11f is alignment padding before the fade-tween block.
     unsigned char m_aPad119[7] = {}; // +0x119
     float m_flFadeFrom = {};         // +0x120: the reveal fade's start value.

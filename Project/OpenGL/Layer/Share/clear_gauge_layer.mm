@@ -1,9 +1,29 @@
 #include "clear_gauge_layer.h"
 
 #include <cassert>
+#include <cmath>
+
+#include "engineglobals.h"
+#include "neSpriteInstancing.h"
+#include "s_vector2.h"
 
 // The process-wide clear-gauge layer, created lazily by shared().
 static ClearGaugeLayer *g_pClearGaugeLayer = nullptr; // @ghidraAddress 0x3deb38
+
+namespace {
+
+// The fully opaque per-channel colour value the gauge always writes.
+constexpr unsigned int kColorMax = 255;
+
+// The phone (non-iPad) gauge sits at a fixed X, with its two bands on two literal rows.
+constexpr float kPhoneGaugeX = -190.0f;
+constexpr int kPhoneBandTopY = 0x1d6;    // 470
+constexpr int kPhoneBandBottomY = 0x22a; // 554
+
+// The iPad gauge sits out at a fixed X (mirrored to the negative side in the two-side layout).
+constexpr float kPadGaugeX = 200.0f;
+
+} // namespace
 
 /** @ghidraAddress 0x175c90 */
 void ClearGaugeLayer::SetValue(float flValue, unsigned int nSide) {
@@ -65,6 +85,67 @@ void ClearGaugeLayer::StartFadeOut(float flDuration) {
         m_flFadeCurrent = 0.0f;
         m_bColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x1763d0 */
+void ClearGaugeLayer::SetClearGaugeSprite(unsigned int nBatch,
+                                          int nBottomBand,
+                                          const S_VECTOR2 *pQuad,
+                                          int nAlpha,
+                                          S_VECTOR2 uvOrigin,
+                                          S_VECTOR2 uvSize) {
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
+    const int nIndex = pBatch->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
+        return;
+    }
+
+    // Pick the quad's screen position and rotation by orientation, band, and gauge style.
+    S_VECTOR2 position{};
+    float flRotation = 0.0f;
+    if (!IsPad()) {
+        // Phone: a fixed X with the two bands on two literal rows.
+        position.x = kPhoneGaugeX;
+        const int nBandY = (nBottomBand != 0) ? kPhoneBandBottomY : kPhoneBandTopY;
+        position.y = static_cast<float>(nBandY - g_nPlayfieldCentreSplit);
+    } else if (nBottomBand != 0) {
+        // iPad lower band: the alternate style centres on X zero, the default style sits out at X.
+        if (m_nGaugeStyle == 0) {
+            position.x = 0.0f;
+            position.y = static_cast<float>(g_nGaugeAltBottomBaseY - g_nPlayfieldCentreSplit);
+        } else {
+            position.x = kPadGaugeX;
+            position.y = static_cast<float>(g_nGaugeBottomBaseY - g_nPlayfieldCentreSplit);
+        }
+    } else if (m_nGaugeStyle == 0) {
+        // iPad upper band, alternate style: centred on X zero, half-turned in the two-side layout.
+        position.x = 0.0f;
+        position.y = static_cast<float>(g_nGaugeAltTopBaseY - g_nPlayfieldCentreSplit);
+        if (m_nTwoSideEnabled == 1) {
+            flRotation = static_cast<float>(M_PI);
+        }
+    } else {
+        // iPad upper band, default style: sits out at X, mirroring the X and half-turning in the
+        // two-side layout.
+        position.y = static_cast<float>(g_nGaugeTopBaseY - g_nPlayfieldCentreSplit);
+        if (m_nTwoSideEnabled == 1) {
+            position.x = -kPadGaugeX;
+            flRotation = static_cast<float>(M_PI);
+        } else {
+            position.x = kPadGaugeX;
+        }
+    }
+
+    pBatch->SetSpriteAnchor(nIndex, pQuad[0]);
+    pBatch->SetSpriteSize(nIndex, pQuad[1]);
+    pBatch->SetSpriteUvOrigin(nIndex, uvOrigin);
+    pBatch->SetSpriteUvSize(nIndex, uvSize);
+    pBatch->SetSpritePosition(nIndex, position);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteScale(nIndex, 1.0f, 1.0f);
+    pBatch->SetSpriteColor(
+        nIndex, kColorMax, kColorMax, kColorMax, static_cast<unsigned int>(nAlpha));
+    pBatch->SetSpriteCount(nIndex + 1);
 }
 
 /** @ghidraAddress 0x175aac */
