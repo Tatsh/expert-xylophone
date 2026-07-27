@@ -8,12 +8,14 @@
 
 #include "play_task.h"
 
+#include <cassert>
 #include <new>
 
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
 #import "AppDelegate.h"
+#import "MusicData.h"
 #import "RBBGMManager.h"
 #import "RBBonusData.h"
 #import "RBExperienceData.h"
@@ -27,6 +29,7 @@
 #include "classicthemelayer.h"
 #include "clear_gauge_layer.h"
 #include "colette_theme_layer.h"
+#include "deviceenvironment.h"
 #include "event_effect_layer.h"
 #include "fade_overlay_layer.h"
 #include "full_combo_classic_layer.h"
@@ -102,6 +105,13 @@ static constexpr int kResultVoiceId = 2;
 
 // The player side the result bonuses are computed for (the single-player side).
 static constexpr unsigned int kResultSide = 1;
+
+// The difficulties the chart loader selects a sheet and music track for. Special reuses the basic
+// chart.
+static constexpr int kDifficultyBasic = 0;
+static constexpr int kDifficultyMedium = 1;
+static constexpr int kDifficultyHard = 2;
+static constexpr int kDifficultySpecial = 3;
 
 // The score-record cell holding the miss count, and its values: full-combo (0), one miss (1), two or
 // more misses (2).
@@ -397,6 +407,44 @@ void PlayTask::AdvanceToPlayReadyState() {
     ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePlayReady;
+}
+
+namespace {
+// The chart loader uses the full-detail sheet (rather than the light one) only on iPad and only for
+// the single-player game types (0 and 2); every other case takes the light sheet.
+bool UsesFullDetailSheet(GameSystem *pGameSystem) {
+    return IsPad() && (pGameSystem->GetGameType() | 2) == 2;
+}
+} // namespace
+
+/** @ghidraAddress 0x14ab94 */
+void PlayTask::LoadMusicAndSheet() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    MusicData *pMusicData = [AppDelegate.appDelegate musicData];
+    const bool bFullSheet = UsesFullDetailSheet(pGameSystem);
+
+    NSData *pSheet = nil;
+    NSData *pMusic = nil;
+    switch (pGameSystem->GetDifficulty()) {
+    case kDifficultyBasic:
+    case kDifficultySpecial:
+        pSheet = bFullSheet ? pMusicData.sheetBasic : pMusicData.sheetBasicLight;
+        pMusic = pMusicData.musicBasic;
+        break;
+    case kDifficultyMedium:
+        pSheet = bFullSheet ? pMusicData.sheetMedium : pMusicData.sheetMediumLight;
+        pMusic = pMusicData.musicMedium;
+        break;
+    case kDifficultyHard:
+        pSheet = bFullSheet ? pMusicData.sheetHard : pMusicData.sheetHardLight;
+        pMusic = pMusicData.musicHard;
+        break;
+    default:
+        assert(0);
+    }
+
+    LoadNoteSheet(pSheet);
+    LoadResultBgmForMusic(pMusic);
 }
 
 /** @ghidraAddress 0x14c848 */
