@@ -913,3 +913,20 @@ void LimelightResultLayer::ResetThemeSelectState() {
     m_flFirstPlayBonus = 0.0f;
     RefreshThema();
 }
+
+/** @ghidraAddress 0x124000 */
+void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
+    // Each channel eases from its current shown value toward zero over the start time; a non-positive
+    // start time snaps the target to zero immediately.
+    for (ResultBonusAnimChannel &channel : m_aBonusAnimChannels) {
+        channel.flStart = channel.flCurrent;
+        channel.flTarget = 0.0f;
+        channel.flDuration = flStartTime;
+        channel.flElapsed = 0.0f;
+        channel.flReserved = 0.0f;
+        if (flStartTime <= 0.0f) {
+            channel.flCurrent = 0.0f;
+        }
+    }
+    m_bBonusCueArmed = false;
+}

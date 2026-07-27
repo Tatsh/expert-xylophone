@@ -18,6 +18,19 @@ class C_SPRITE_INSTANCING;
 } // namespace ne
 
 /**
+ * @brief One result-screen bonus/EX display animation channel: eases a shown value from a start to a
+ * target over a duration. A 24-byte record (six floats).
+ */
+struct ResultBonusAnimChannel {
+    float flStart = {};    // +0x00: the animation's start value.
+    float flTarget = {};   // +0x04: the animation's target value.
+    float flDuration = {}; // +0x08: the animation's duration.
+    float flElapsed = {};  // +0x0c: the animation's elapsed time.
+    float flReserved = {}; // +0x10: a further per-channel value.
+    float flCurrent = {};  // +0x14: the current (shown) value.
+};
+
+/**
  * @brief The Limelight-theme result-window layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It draws the
@@ -30,12 +43,24 @@ class C_SPRITE_INSTANCING;
  */
 class LimelightResultLayer : public PlayFieldLayerBase {
 public:
+    // The number of result-screen bonus/EX display animation channels.
+    static constexpr int kBonusAnimCount = 5;
+
     /**
      * @brief The process-wide Limelight result-window layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x123d54
      */
     static LimelightResultLayer *shared();
+
+    /**
+     * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
+     * easing from its current shown value to zero over @p flStartTime (snapping to zero immediately
+     * when @p flStartTime is non-positive), and disarms the bonus voice cue.
+     * @param flStartTime The animation base start time.
+     * @ghidraAddress 0x124000
+     */
+    void ResetResultBonusAnimations(float flStartTime);
 
     /**
      * @brief Clears the five result-bonus display values and refreshes the current theme.
@@ -411,10 +436,11 @@ private:
     // unsigned char m_aPad6a[2]; // +0x6a (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
-    // +0x74..+0x13b: the remaining per-frame presentation state (tweens, slide timer, frame index),
-    // still being worked out, kept as a reserved span to preserve the allocation size.
-    unsigned char m_aReserved74[0xc8] = {}; // +0x74
-    bool m_bBonusCueArmed = {};             // +0x13c: whether the bonus voice cue is still pending.
+    // +0x74..+0xc3: further per-frame presentation state, still being worked out.
+    unsigned char m_aReserved74[0x50] = {};                            // +0x74
+    ResultBonusAnimChannel m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
+                                                                       //        animation channels.
+    bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
     // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
     unsigned char m_aPad13d[3] = {}; // +0x13d
     float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
