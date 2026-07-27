@@ -8,6 +8,7 @@
 
 #include "title_screen_layer0.h"
 
+#import "RBBGMManager.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 
@@ -24,6 +25,9 @@ constexpr int kStateLoad = 0;
 constexpr int kStateStartMusic = 1;
 constexpr int kStateRender = 2;
 constexpr int kStateFinish = 3;
+
+// The fade-in time, in seconds, the title BGM begins playing with.
+constexpr float kTitleBgmFadeInTime = 0.3f;
 } // namespace
 
 /** @ghidraAddress 0x1514b4 */
@@ -78,4 +82,10 @@ void TitleScreenLayer0::OnFrame(void *pFrameArg) {
     default:
         return;
     }
+}
+
+/** @ghidraAddress 0x1518c8 */
+void TitleScreenLayer0::StartMusic() {
+    m_nState = kStateRender;
+    [RBBGMManager.getInstance PlayMusic:kTitleBgmFadeInTime];
 }
