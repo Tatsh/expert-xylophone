@@ -72,6 +72,7 @@ cplusplus
 creater
 cryptor
 cstring
+dakuten
 dashcam
 datas
 dcmake
@@ -129,6 +130,7 @@ gles
 glext
 grage
 halfwidth
+handakuten
 handoff
 hinabita
 hira

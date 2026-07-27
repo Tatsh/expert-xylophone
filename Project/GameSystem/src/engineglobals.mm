@@ -73,6 +73,12 @@ CGPoint g_aTwitterImageDrawPos[8];
 // The network API request table, seeded by InitializeApiRequestTable.
 NSDictionary *g_pApiRequestTable;
 
+// The three katakana normalisation lookup tables, seeded by InitializeGlobalLookupTables. They live
+// in mutable storage because they are assigned at load time, not compile time.
+NSDictionary *g_pMacronToVowelTable;
+NSDictionary *g_pLowerToUpperTable;
+NSDictionary *g_pVoiceToVoicelessTable;
+
 // The per-difficulty score-validation bounds, seeded by BuildGaugeThresholdArrays.
 NSArray *g_pScoreMinThresholds;
 NSArray *g_pScoreMaxThresholds;
@@ -345,6 +351,150 @@ __attribute__((constructor)) void InitializeApiRequestTable(void) {
             @"startup" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
             @"v3_ssl_resource" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
             @"v3_packlist" : @{@"method" : @"GET", @"param" : @[ @"target" ]},
+        };
+    }
+}
+
+/** @ghidraAddress 0x2ac00 */
+__attribute__((constructor)) void InitializeGlobalLookupTables(void) {
+    @autoreleasepool {
+        // Small katakana fold to their full-size form (used to normalise a reading before matching).
+        g_pLowerToUpperTable = @{
+            @"ァ" : @"ア",
+            @"ィ" : @"イ",
+            @"ゥ" : @"ウ",
+            @"ェ" : @"エ",
+            @"ォ" : @"オ",
+            @"ャ" : @"ヤ",
+            @"ュ" : @"ユ",
+            @"ョ" : @"ヨ",
+            @"ヮ" : @"ワ",
+            @"ッ" : @"ツ",
+            @"ヶ" : @"ケ",
+        };
+
+        // Each katakana maps to the bare vowel of its row, so a prolonged-sound mark (ー) following
+        // it can be resolved to that vowel; ン maps to itself. The first five entries are the small
+        // vowels, so a small vowel resolves to its own row too.
+        g_pMacronToVowelTable = @{
+            @"ァ" : @"ア",
+            @"ア" : @"ア",
+            @"ヵ" : @"ア",
+            @"カ" : @"ア",
+            @"ガ" : @"ア",
+            @"サ" : @"ア",
+            @"ザ" : @"ア",
+            @"タ" : @"ア",
+            @"ダ" : @"ア",
+            @"ナ" : @"ア",
+            @"ハ" : @"ア",
+            @"バ" : @"ア",
+            @"パ" : @"ア",
+            @"マ" : @"ア",
+            @"ャ" : @"ア",
+            @"ヤ" : @"ア",
+            @"ラ" : @"ア",
+            @"ヮ" : @"ア",
+            @"ワ" : @"ア",
+            @"ヷ" : @"ア",
+            @"ィ" : @"イ",
+            @"イ" : @"イ",
+            @"キ" : @"イ",
+            @"ギ" : @"イ",
+            @"シ" : @"イ",
+            @"ジ" : @"イ",
+            @"チ" : @"イ",
+            @"ヂ" : @"イ",
+            @"ニ" : @"イ",
+            @"ヒ" : @"イ",
+            @"ビ" : @"イ",
+            @"ピ" : @"イ",
+            @"ミ" : @"イ",
+            @"リ" : @"イ",
+            @"ヰ" : @"イ",
+            @"ヸ" : @"イ",
+            @"ゥ" : @"ウ",
+            @"ウ" : @"ウ",
+            @"ク" : @"ウ",
+            @"グ" : @"ウ",
+            @"ス" : @"ウ",
+            @"ズ" : @"ウ",
+            @"ッ" : @"ウ",
+            @"ツ" : @"ウ",
+            @"ヅ" : @"ウ",
+            @"ヌ" : @"ウ",
+            @"フ" : @"ウ",
+            @"ブ" : @"ウ",
+            @"プ" : @"ウ",
+            @"ム" : @"ウ",
+            @"ュ" : @"ウ",
+            @"ユ" : @"ウ",
+            @"ル" : @"ウ",
+            @"ェ" : @"エ",
+            @"エ" : @"エ",
+            @"ヶ" : @"エ",
+            @"ケ" : @"エ",
+            @"ゲ" : @"エ",
+            @"セ" : @"エ",
+            @"ゼ" : @"エ",
+            @"テ" : @"エ",
+            @"デ" : @"エ",
+            @"ネ" : @"エ",
+            @"ヘ" : @"エ",
+            @"ベ" : @"エ",
+            @"ペ" : @"エ",
+            @"メ" : @"エ",
+            @"レ" : @"エ",
+            @"ヱ" : @"エ",
+            @"ヹ" : @"エ",
+            @"ォ" : @"オ",
+            @"オ" : @"オ",
+            @"コ" : @"オ",
+            @"ゴ" : @"オ",
+            @"ソ" : @"オ",
+            @"ゾ" : @"オ",
+            @"ト" : @"オ",
+            @"ド" : @"オ",
+            @"ノ" : @"オ",
+            @"ホ" : @"オ",
+            @"ボ" : @"オ",
+            @"ポ" : @"オ",
+            @"モ" : @"オ",
+            @"ョ" : @"オ",
+            @"ヨ" : @"オ",
+            @"ロ" : @"オ",
+            @"ヲ" : @"オ",
+            @"ヺ" : @"オ",
+            @"ン" : @"ン",
+        };
+
+        // Voiced and semi-voiced katakana fold to their base kana (dropping the dakuten/handakuten).
+        g_pVoiceToVoicelessTable = @{
+            @"ガ" : @"カ",
+            @"ギ" : @"キ",
+            @"グ" : @"ク",
+            @"ゲ" : @"ケ",
+            @"ゴ" : @"コ",
+            @"ザ" : @"サ",
+            @"ジ" : @"シ",
+            @"ズ" : @"ス",
+            @"ゼ" : @"セ",
+            @"ゾ" : @"ソ",
+            @"ダ" : @"タ",
+            @"ヂ" : @"チ",
+            @"ヅ" : @"ツ",
+            @"デ" : @"テ",
+            @"ド" : @"ト",
+            @"バ" : @"ハ",
+            @"ビ" : @"ヒ",
+            @"ブ" : @"フ",
+            @"ベ" : @"ヘ",
+            @"ボ" : @"ホ",
+            @"パ" : @"ハ",
+            @"ピ" : @"ヒ",
+            @"プ" : @"フ",
+            @"ペ" : @"ヘ",
+            @"ポ" : @"ホ",
         };
     }
 }

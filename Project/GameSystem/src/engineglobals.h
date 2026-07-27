@@ -41,20 +41,32 @@ extern NSDictionary *g_pApiRequestTable;
  */
 void InitializeApiRequestTable(void);
 /**
- * @brief The macron-to-vowel katakana lookup table (89 entries).
+ * @brief The macron-to-vowel katakana lookup table (89 entries): each katakana maps to its vowel-row
+ * representative (ア, イ, ウ, エ, オ, or ン for @c ン), used to resolve a prolonged-sound mark to the
+ * preceding character's vowel when building a reading key. Seeded once at startup by
+ * @c InitializeGlobalLookupTables.
  * @ghidraAddress 0x3dc258
  */
-extern NSDictionary *const g_pMacronToVowelTable;
+extern NSDictionary *g_pMacronToVowelTable;
 /**
- * @brief The small-kana-to-large-kana lookup table (11 entries).
+ * @brief The small-kana-to-large-kana lookup table (11 entries): ァィゥェォ→アイウエオ, ャュョ→ヤユヨ,
+ * ヮ→ワ, ッ→ツ, and ヶ→ケ. Seeded once at startup by @c InitializeGlobalLookupTables.
  * @ghidraAddress 0x3dc260
  */
-extern NSDictionary *const g_pLowerToUpperTable;
+extern NSDictionary *g_pLowerToUpperTable;
 /**
- * @brief The voiced-kana-to-voiceless-kana lookup table (25 entries).
+ * @brief The voiced-kana-to-voiceless-kana lookup table (25 entries): each voiced or semi-voiced
+ * katakana (ガ, パ, …) maps to its base kana (カ, ハ, …). Seeded once at startup by
+ * @c InitializeGlobalLookupTables.
  * @ghidraAddress 0x3dc268
  */
-extern NSDictionary *const g_pVoiceToVoicelessTable;
+extern NSDictionary *g_pVoiceToVoicelessTable;
+/**
+ * @brief Seeds the three katakana normalisation lookup tables (@c g_pLowerToUpperTable,
+ * @c g_pMacronToVowelTable, and @c g_pVoiceToVoicelessTable). Run once at startup.
+ * @ghidraAddress 0x2ac00
+ */
+void InitializeGlobalLookupTables(void);
 /**
  * @brief The device screen height, in points, used to centre the variant (wide-font) layout.
  * @ghidraAddress 0x3c8834
