@@ -308,7 +308,7 @@ constexpr int kDefaultPlayColor = 0;
     ne::Viewport *orthoViewport =
         CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
     SetCurrentProjection(orthoViewport);
-    ReleaseViewportCamera(orthoViewport);
+    orthoViewport->Release();
 
     float fovY =
         static_cast<float>(gameSystem->GetSheetWidth() / kSheetFovReferenceWidth * kSheetFovScale);
@@ -341,7 +341,7 @@ constexpr int kDefaultPlayColor = 0;
         ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
-        ReleaseViewportCamera(viewport);
+        viewport->Release();
     } else {
         // Landscape: either a flat perspective or a 3D-tilt projection depending on whether the
         // sheet still fits when tilted.
@@ -412,7 +412,7 @@ constexpr int kDefaultPlayColor = 0;
             ne::CameraNode *camera = CreateCameraFromMatrix(viewMatrix);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
-            ReleaseViewportCamera(viewport);
+            viewport->Release();
         } else {
             gameSystem->SetSheetLayerFlags(0);
             ne::Viewport *viewport = CreatePerspectiveViewport(
@@ -425,7 +425,7 @@ constexpr int kDefaultPlayColor = 0;
             ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
-            ReleaseViewportCamera(viewport);
+            viewport->Release();
         }
     }
 

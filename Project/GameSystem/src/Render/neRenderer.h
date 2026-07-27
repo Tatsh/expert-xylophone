@@ -17,7 +17,7 @@ namespace ne {
  * rectangle.
  *
  * Built by @c CreateOrthoViewport or @c CreatePerspectiveViewport and shared by reference count;
- * @c ReleaseViewportCamera drops a reference and destroys the viewport at zero. The trailing
+ * @c Release drops a reference and destroys the viewport at zero. The trailing
  * @c // +0xNN comments document the original 32-bit member offsets for reference only.
  * @ghidraAddress ne::Viewport (engine class, refcount at +0x0)
  */
@@ -68,6 +68,30 @@ public:
     int ReleaseRef() {
         return --m_nRefCount;
     }
+    /**
+     * @brief Drops a reference and destroys the viewport once the last reference is released.
+     * @ghidraAddress 0x29900
+     */
+    void Release();
+
+    /**
+     * @brief Pushes the viewport's GL rectangle and projection matrix to the renderer.
+     * @param pRenderer The renderer to apply them to.
+     * @ghidraAddress 0x29a80
+     */
+    void ApplyToRenderer(neGLESRenderer *pRenderer);
+
+    /**
+     * @brief Projects a world-space homogeneous point to screen (pixel) coordinates.
+     *
+     * Applies the projection matrix, performs the perspective divide, and maps the clip-space result
+     * into the pixel rectangle (with the Y axis flipped to a top-left origin). The point's @c x and
+     * @c y are overwritten with the screen coordinates; @c z and @c w are left as the projection
+     * multiply produced them.
+     * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
+     * @ghidraAddress 0x29abc
+     */
+    void ProjectWorldToScreen(float *pVec4);
 
     /**
      * @brief The column-major 4x4 projection matrix.
@@ -170,6 +194,18 @@ public:
     int ReleaseRef() {
         return --m_nRefCount;
     }
+    /**
+     * @brief Drops a reference and destroys the camera node once the last reference is released.
+     * @ghidraAddress 0x21f58
+     */
+    void Release();
+
+    /**
+     * @brief Transforms a 4-vector in place by the camera's view matrix.
+     * @param pVec4 The 4-vector, transformed in place.
+     * @ghidraAddress 0x22058
+     */
+    void TransformVector4(float *pVec4);
 
     /**
      * @brief The column-major 4x4 view (world-to-camera) matrix.
@@ -220,13 +256,6 @@ extern ne::CameraNode *g_pCurrentModelNode;
  */
 void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera);
 /**
- * @brief Pushes a camera's viewport rectangle and projection matrix to the renderer.
- * @param pCamera The camera whose viewport and projection are applied.
- * @param pRenderer The renderer to apply them to.
- * @ghidraAddress 0x29a80
- */
-void ApplyCameraToRenderer(ne::Viewport *pCamera, neGLESRenderer *pRenderer);
-/**
  * @brief Installs the given viewport as the current projection (retaining it and releasing the
  *        previous one).
  * @ghidraAddress 0x29f1c
@@ -244,12 +273,6 @@ void SetActiveViewCamera(ne::Viewport *pViewport);
  * @ghidraAddress 0x29fac
  */
 void SetCurrentModelNode(ne::CameraNode *pCamera);
-/**
- * @brief Releases a viewport created by one of the viewport constructors (decrements its
- *        reference count and destroys it at zero).
- * @ghidraAddress 0x29900
- */
-void ReleaseViewportCamera(ne::Viewport *pViewport);
 /**
  * @brief Creates an orthographic viewport for the given view rectangle.
  * @ghidraAddress 0x2991c
@@ -278,17 +301,6 @@ ne::CameraNode *CreateCameraFromMatrix(float *pMatrix);
  * @ghidraAddress 0x21f74
  */
 ne::CameraNode *CreateLookAtCamera(S_VECTOR3 *pEye, S_VECTOR3 *pTarget, S_VECTOR3 *pUp);
-/**
- * @brief Releases a camera node created by one of the camera-node constructors (decrements its
- *        reference count and destroys it at zero).
- * @ghidraAddress 0x21f58
- */
-void ReleaseCameraNode(ne::CameraNode *pCamera);
-/**
- * @brief Transforms a 4-vector in place by a camera node's view matrix.
- * @ghidraAddress 0x22058
- */
-void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4);
 
 /**
  * @brief Computes a world-space picking ray from a normalised screen point (a perspective
@@ -304,19 +316,6 @@ void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4);
  * @ghidraAddress 0x29ff4
  */
 void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VECTOR3 *pRayDir);
-
-/**
- * @brief Projects a world-space homogeneous point to screen (pixel) coordinates through a viewport.
- *
- * Applies the viewport's projection matrix, performs the perspective divide, and maps the clip-space
- * result into the viewport's pixel rectangle (with the Y axis flipped to a top-left origin). The
- * point's @c x and @c y are overwritten with the screen coordinates; @c z and @c w are left as they
- * are after the projection multiply.
- * @param pViewport The viewport whose projection matrix and pixel size define the mapping.
- * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
- * @ghidraAddress 0x29abc
- */
-void ProjectWorldToScreen(ne::Viewport *pViewport, float *pVec4);
 
 /**
  * @brief Projects a world-space point to screen coordinates through the current camera globals.

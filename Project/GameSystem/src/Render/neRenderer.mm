@@ -67,24 +67,21 @@ ne::Viewport *CreatePerspectiveViewport(float fovY,
 }
 
 /** @ghidraAddress 0x29900 */
-void ReleaseViewportCamera(ne::Viewport *pViewport) {
+void ne::Viewport::Release() {
     // The binary decrements the count before its now-redundant null check, so this runs on a live
     // viewport; the viewport is destroyed once the last reference is dropped.
-    const int nCount = pViewport->ReleaseRef();
-    if (pViewport != nullptr && nCount == 0) {
-        delete pViewport;
+    const int nCount = ReleaseRef();
+    if (nCount == 0) {
+        delete this;
     }
 }
 
 /** @ghidraAddress 0x29a80 */
-void ApplyCameraToRenderer(ne::Viewport *pCamera, neGLESRenderer *pRenderer) {
+void ne::Viewport::ApplyToRenderer(neGLESRenderer *pRenderer) {
     // The engine matrix-mode index for the projection matrix (SetMatrixMode maps 1 to GL_PROJECTION).
     constexpr int kMatrixModeProjection = 1;
-    pRenderer->SetViewport(pCamera->GetViewX(),
-                           pCamera->GetViewY(),
-                           pCamera->GetViewWidth(),
-                           pCamera->GetViewHeight());
-    pRenderer->SetMatrixMode(kMatrixModeProjection, pCamera->GetProjectionMatrix());
+    pRenderer->SetViewport(GetViewX(), GetViewY(), GetViewWidth(), GetViewHeight());
+    pRenderer->SetMatrixMode(kMatrixModeProjection, GetProjectionMatrix());
 }
 
 /** @ghidraAddress 0x29e70 */
@@ -93,18 +90,18 @@ void SetCurrentCamera(neGLESRenderer *pRenderer, ne::Viewport *pCamera) {
         return;
     }
     if (g_pCurrentAppliedCamera != nullptr) {
-        ReleaseViewportCamera(g_pCurrentAppliedCamera);
+        g_pCurrentAppliedCamera->Release();
     }
     pCamera->AddRef();
     g_pCurrentAppliedCamera = pCamera;
-    ApplyCameraToRenderer(pCamera, pRenderer);
+    pCamera->ApplyToRenderer(pRenderer);
 }
 
 /** @ghidraAddress 0x29f1c */
 void SetCurrentProjection(ne::Viewport *pViewport) {
     if (g_pCurrentProjection != pViewport) {
         if (g_pCurrentProjection != nullptr) {
-            ReleaseViewportCamera(g_pCurrentProjection);
+            g_pCurrentProjection->Release();
         }
         pViewport->AddRef();
         g_pCurrentProjection = pViewport;
@@ -115,7 +112,7 @@ void SetCurrentProjection(ne::Viewport *pViewport) {
 void SetActiveViewCamera(ne::Viewport *pViewport) {
     if (g_pActiveViewCamera != pViewport) {
         if (g_pActiveViewCamera != nullptr) {
-            ReleaseViewportCamera(g_pActiveViewCamera);
+            g_pActiveViewCamera->Release();
         }
         pViewport->AddRef();
         g_pActiveViewCamera = pViewport;
@@ -158,11 +155,11 @@ ne::CameraNode *CreateCameraFromMatrix(float *pMatrix) {
 }
 
 /** @ghidraAddress 0x21f58 */
-void ReleaseCameraNode(ne::CameraNode *pCamera) {
+void ne::CameraNode::Release() {
     // As with the viewport, the count is decremented before the now-redundant null check.
-    const int nCount = pCamera->ReleaseRef();
-    if (pCamera != nullptr && nCount == 0) {
-        delete pCamera;
+    const int nCount = ReleaseRef();
+    if (nCount == 0) {
+        delete this;
     }
 }
 
@@ -170,7 +167,7 @@ void ReleaseCameraNode(ne::CameraNode *pCamera) {
 void SetCurrentModelNode(ne::CameraNode *pCamera) {
     if (g_pCurrentModelNode != pCamera) {
         if (g_pCurrentModelNode != nullptr) {
-            ReleaseCameraNode(g_pCurrentModelNode);
+            g_pCurrentModelNode->Release();
         }
         pCamera->AddRef();
         g_pCurrentModelNode = pCamera;
@@ -178,8 +175,8 @@ void SetCurrentModelNode(ne::CameraNode *pCamera) {
 }
 
 /** @ghidraAddress 0x22058 */
-void TransformVector4ByCamera(ne::CameraNode *pCamera, float *pVec4) {
-    MultiplyVector4ByMatrixInPlace(pVec4, pCamera->GetViewMatrix());
+void ne::CameraNode::TransformVector4(float *pVec4) {
+    MultiplyVector4ByMatrixInPlace(pVec4, GetViewMatrix());
 }
 
 /** @ghidraAddress 0x29ff4 */
@@ -211,21 +208,21 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
 }
 
 /** @ghidraAddress 0x29abc */
-void ProjectWorldToScreen(ne::Viewport *pViewport, float *pVec4) {
+void ne::Viewport::ProjectWorldToScreen(float *pVec4) {
     // The matrix helper only reads its matrix argument, so casting away the accessor's constness is
     // safe here.
-    MultiplyVector4ByMatrixInPlace(pVec4, const_cast<float *>(pViewport->GetProjectionMatrix()));
+    MultiplyVector4ByMatrixInPlace(pVec4, const_cast<float *>(GetProjectionMatrix()));
     // Perspective divide, then map clip space into the pixel rectangle; the Y axis is negated so the
     // origin is top-left.
     const float x = pVec4[0];
     const float y = pVec4[1];
     const float w = pVec4[3];
-    pVec4[0] = static_cast<float>(pViewport->GetViewWidth()) * (x / w + 1.0f) * 0.5f;
-    pVec4[1] = static_cast<float>(pViewport->GetViewHeight()) * (y / w - 1.0f) * -0.5f;
+    pVec4[0] = static_cast<float>(GetViewWidth()) * (x / w + 1.0f) * 0.5f;
+    pVec4[1] = static_cast<float>(GetViewHeight()) * (y / w - 1.0f) * -0.5f;
 }
 
 /** @ghidraAddress 0x2a158 */
 void ProjectWorldToScreenCurrent(float *pVec4) {
-    TransformVector4ByCamera(g_pCurrentModelNode, pVec4);
-    ProjectWorldToScreen(g_pActiveViewCamera, pVec4);
+    g_pCurrentModelNode->TransformVector4(pVec4);
+    g_pActiveViewCamera->ProjectWorldToScreen(pVec4);
 }
