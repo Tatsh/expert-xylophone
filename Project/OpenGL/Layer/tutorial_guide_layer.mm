@@ -266,7 +266,7 @@ void TutorialGuideLayer::Release() {
 }
 
 /** @ghidraAddress 0x10b400 */
-void DestroyTutorialGuideLayerInstance() {
+void TutorialGuideLayer::destroyShared() {
     if (g_pTutorialGuideLayer != nullptr) {
         g_pTutorialGuideLayer->Release();
         delete g_pTutorialGuideLayer;

@@ -40,6 +40,12 @@ public:
     static TutorialGuideLayer *shared();
 
     /**
+     * @brief Releases and destroys the process-wide tutorial-guide layer, if it exists.
+     * @ghidraAddress 0x10b400
+     */
+    static void destroyShared();
+
+    /**
      * @brief Lazily builds the guide's sprite and its keyframe and coordinate tables.
      *
      * Loads the tutorial atlas, creates the 20-sprite instancer (registered in the global scene
@@ -151,14 +157,6 @@ private:
     CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0
     CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0
 };
-
-/**
- * @brief Destroys the process-wide tutorial-guide layer singleton.
- *
- * Tears the layer down and frees it, clearing the singleton pointer. A no-op when no layer exists.
- * @ghidraAddress 0x10b400
- */
-void DestroyTutorialGuideLayerInstance();
 
 // code: language=C++
 // kate: hl C++;
