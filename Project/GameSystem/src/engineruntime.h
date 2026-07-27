@@ -38,11 +38,6 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
  */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind);
 /**
- * @brief Lazily allocates the texture-cache control singleton.
- * @ghidraAddress 0x3198c
- */
-void EnsureTextureCacheSingleton(unsigned char firstByte);
-/**
  * @brief Reloads every cached texture from its stored image name after a context loss.
  * @ghidraAddress 0x33e5c
  */

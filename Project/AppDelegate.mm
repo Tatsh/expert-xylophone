@@ -347,7 +347,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     // start the view controller's 60 fps game loop.
     TouchManager::EnsureSingleton();
     ne::C_TEXTURE::EnsureCacheList();
-    EnsureTextureCacheSingleton(0);
+    ne::C_TEXTURE::EnsureCacheControl(0);
     ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
     // The layer's listener-node sub-object overlays the start of the object (its vtable and list
     // links); pass it to the free list-insert. The cast goes away once the play-field layers are

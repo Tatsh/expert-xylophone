@@ -258,6 +258,15 @@ public:
      */
     static C_TEXTURE **GetCacheList();
 
+    /**
+     * @brief Lazily allocates the texture-cache control singleton, seeding its tag from @p nTag.
+     *
+     * A no-op once the control block exists.
+     * @param nTag The tag byte stored in the freshly allocated control block.
+     * @ghidraAddress 0x3198c
+     */
+    static void EnsureCacheControl(unsigned char nTag);
+
 private:
     // +0x00: implicit vtable pointer (from the virtual destructor above).
     int m_nRefCount = {};          // +0x08

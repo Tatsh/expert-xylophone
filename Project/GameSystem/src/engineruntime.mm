@@ -5,6 +5,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "customize_variant_tables.h"
+#include "neTexture.h"
 #include "texture_cache_control.h"
 
 namespace {
@@ -43,16 +44,16 @@ constexpr int kClearRank0 = 0;
 
 } // namespace
 
-// The texture-cache control singleton, lazily allocated by EnsureTextureCacheSingleton.
+// The texture-cache control singleton, lazily allocated by C_TEXTURE::EnsureCacheControl.
 TextureCacheControl *g_pTextureCacheControl = nullptr; // @ghidraAddress 0x3cff20
 
 /** @ghidraAddress 0x3198c */
-void EnsureTextureCacheSingleton(unsigned char firstByte) {
+void ne::C_TEXTURE::EnsureCacheControl(unsigned char nTag) {
     if (g_pTextureCacheControl != nullptr) {
         return;
     }
     g_pTextureCacheControl = new TextureCacheControl();
-    g_pTextureCacheControl->nTag = firstByte;
+    g_pTextureCacheControl->nTag = nTag;
     g_pTextureCacheControl->pNext = nullptr;
     g_pTextureCacheControl->nValue = 0;
     g_pTextureCacheControl->pSpare = nullptr;
