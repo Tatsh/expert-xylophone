@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 
+#include "clear_gauge_digit_table.h"
 #include "engineglobals.h"
 #include "neSpriteInstancing.h"
 #include "s_vector2.h"
@@ -21,6 +22,26 @@ constexpr unsigned int kIconBatch = 0;
 
 // The gauge fill marker draws into the second sprite batch.
 constexpr unsigned int kMarkerBatch = 1;
+
+// The separator and percent-sign labels draw into the sixth and eighth sprite batches.
+constexpr unsigned int kSeparatorBatch = 5;
+constexpr unsigned int kPercentBatch = 7;
+
+// The gauge value (zero to one) scales to a per-mille percentage, so a full gauge reads 100.0.
+constexpr float kPercentScale = 1000.0f;
+// At or above this per-mille reading (seventy percent) the high-value glyph variants are used.
+constexpr float kHighValueThreshold = 700.0f;
+// The high-value glyph variants sit ten entries past the normal ones in each digit bank.
+constexpr int kHighValueGlyphOffset = 10;
+// The small fractional digits sit twenty entries past the large digits in each glyph table.
+constexpr int kFractionalGlyphOffset = 20;
+// The iPad default gauge style recentres each glyph horizontally by this offset.
+constexpr float kPadDefaultStyleShiftX = -181.0f;
+
+// The four digit places drawn, most significant first.
+enum DigitPlace { kDigitThousands, kDigitHundreds, kDigitTens, kDigitOnes, kDigitPlaceCount };
+// The tens place and everything below it always draw, even as leading zeros.
+constexpr int kFirstAlwaysDrawnPlace = kDigitTens;
 
 // The phone (non-iPad) gauge sits at a fixed X, with its two bands on two literal rows.
 constexpr float kPhoneGaugeX = -190.0f;
@@ -197,6 +218,82 @@ void ClearGaugeLayer::SetClearGaugeMarker(unsigned int nSide, int nAlpha) {
                         nAlpha,
                         S_VECTOR2{uv.flOriginU, uv.flOriginV},
                         S_VECTOR2{uv.flSizeU * flValue, uv.flSizeV});
+}
+
+void ClearGaugeLayer::EmitGlyph(const GaugeGlyphDesc &glyph,
+                                unsigned int nBatch,
+                                unsigned int nSide,
+                                int nAlpha,
+                                const float *pAnchorX) {
+    // The digits override the descriptor's anchor X with a per-position value; the labels keep it.
+    float flAnchorX = (pAnchorX != nullptr) ? *pAnchorX : glyph.flAnchorX;
+    // The iPad default style recentres every glyph horizontally.
+    if (IsPad() && m_nGaugeStyle == 0) {
+        flAnchorX += kPadDefaultStyleShiftX;
+    }
+
+    const SpriteUvEntry &uv = g_aSpriteUvTable[glyph.nAtlasFrame];
+    S_VECTOR2 quad[2];
+    quad[0] = S_VECTOR2{flAnchorX, glyph.flAnchorY};
+    quad[1] = S_VECTOR2{glyph.flSizeX, glyph.flSizeY};
+    SetClearGaugeSprite(nBatch,
+                        static_cast<int>(nSide),
+                        quad,
+                        nAlpha,
+                        S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                        S_VECTOR2{uv.flSizeU, uv.flSizeV});
+}
+
+/** @ghidraAddress 0x176000 */
+void ClearGaugeLayer::SetClearGaugeDigits(unsigned int nSide, int nAlpha) {
+    // The gauge value becomes a per-mille percentage (a full gauge reads 100.0), split into a
+    // hundreds-of-percent thousands digit down to a fractional ones digit.
+    const float flPercent = GetValue(nSide) * kPercentScale;
+    const bool bHighValue = flPercent >= kHighValueThreshold;
+    const int nThousands = static_cast<int>(flPercent * 0.001f);
+    float flRemainder = flPercent - static_cast<float>(nThousands * 1000);
+    const int nHundreds = static_cast<int>(flRemainder * 0.01f);
+    flRemainder -= static_cast<float>(nHundreds * 100);
+    const int nTens = static_cast<int>(flRemainder * 0.1f);
+    flRemainder -= static_cast<float>(nTens * 10);
+    const int nOnes = static_cast<int>(flRemainder);
+    const int aDigits[kDigitPlaceCount] = {nThousands, nHundreds, nTens, nOnes};
+
+    // The two fixed labels: a separator and the percent sign, in the high-value variant above 70%.
+    const int nLabelVariant = bHighValue ? 1 : 0;
+    const bool bIsPad = IsPad();
+    const GaugeGlyphDesc &separator =
+        (bIsPad ? g_aGaugeLabelSeparatorPad : g_aGaugeLabelSeparatorPhone)[nLabelVariant];
+    const GaugeGlyphDesc &percent =
+        (bIsPad ? g_aGaugeLabelPercentPad : g_aGaugeLabelPercentPhone)[nLabelVariant];
+    EmitGlyph(separator, kSeparatorBatch, nSide, nAlpha, nullptr);
+    EmitGlyph(percent, kPercentBatch, nSide, nAlpha, nullptr);
+
+    // The four digits, suppressing leading zeros above the tens place.
+    const GaugeGlyphDesc *pGlyphTable = bIsPad ? g_aGaugeDigitGlyphPad : g_aGaugeDigitGlyphPhone;
+    bool bDrawing = false;
+    for (int nPlace = 0; nPlace < kDigitPlaceCount; ++nPlace) {
+        const int nDigit = aDigits[nPlace];
+        if (nPlace >= kFirstAlwaysDrawnPlace || nDigit != 0) {
+            bDrawing = true;
+        }
+        if (!bDrawing) {
+            continue;
+        }
+        // The ones digit is the small fractional glyph; the high-value bank sits ten entries on.
+        int nGlyphIndex = nDigit;
+        if (nPlace == kDigitOnes) {
+            nGlyphIndex += kFractionalGlyphOffset;
+        }
+        if (bHighValue) {
+            nGlyphIndex += kHighValueGlyphOffset;
+        }
+        EmitGlyph(pGlyphTable[nGlyphIndex],
+                  static_cast<unsigned int>(g_aGaugeDigitBatch[nPlace]),
+                  nSide,
+                  nAlpha,
+                  &g_aGaugeDigitAnchorX[nPlace]);
+    }
 }
 
 /** @ghidraAddress 0x1763d0 */

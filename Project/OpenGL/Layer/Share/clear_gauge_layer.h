@@ -7,6 +7,7 @@
 
 #include "playfieldlayerbase.h"
 
+struct GaugeGlyphDesc;
 struct S_VECTOR2;
 
 namespace ne {
@@ -70,9 +71,16 @@ public:
     void SetClearGaugeMarker(unsigned int nSide, int nAlpha);
 
     /**
-     * @brief Appends the gauge's percentage digits for one side.
+     * @brief Appends the gauge's percentage readout for one side: two labels and up to four digits.
+     *
+     * Reads the side's gauge value, scales it into a per-mille percentage (so a full gauge reads as
+     * @c 100.0), and appends the two fixed labels (a separator and the percent sign) plus the
+     * thousands, hundreds, tens, and ones digits, suppressing leading zeros above the tens place. The
+     * glyphs come from the platform's label and digit tables, switching to a high-value variant at or
+     * above seventy percent, with each digit positioned by its place and the iPad default style
+     * recentred horizontally.
      * @param nSide The player side, also selecting the gauge band.
-     * @param nAlpha The digits' alpha.
+     * @param nAlpha The readout's alpha.
      * @ghidraAddress 0x176000
      */
     void SetClearGaugeDigits(unsigned int nSide, int nAlpha);
@@ -162,6 +170,15 @@ public:
     static ClearGaugeLayer *shared();
 
 private:
+    // Appends one label or digit glyph: builds the quad from the descriptor (overriding its anchor X
+    // when @p pAnchorX is given and recentring the iPad default style), resolves the atlas frame, and
+    // emits it into @p nBatch on @p nSide's band.
+    void EmitGlyph(const GaugeGlyphDesc &glyph,
+                   unsigned int nBatch,
+                   unsigned int nSide,
+                   int nAlpha,
+                   const float *pAnchorX);
+
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
     // +0x50..+0x11f: the batches' per-slot capacity/count table and the sprite-index bookkeeping the
