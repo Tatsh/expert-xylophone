@@ -104,11 +104,70 @@ extern float g_flPlayfieldFarLaneSlope;
  */
 extern float g_flPlayfieldFarLaneSlopeNeg;
 /**
+ * @brief The play-field field height, in 1024-scaled layout units (the base scale times 1024). Every
+ * other layout coordinate is derived from it. Seeded by the play-field layout pass.
+ * @ghidraAddress 0x3ce930
+ */
+extern int g_nPlayfieldFieldHeight;
+/**
  * @brief The play-field field-centre split, in layout units, subtracted from the portrait gauge
  * positions. Seeded by the play-field layout pass.
  * @ghidraAddress 0x3ce934
  */
 extern int g_nPlayfieldCentreSplit;
+/** @brief The half-height layout row (field height minus 0x200). @ghidraAddress 0x3ce938 */
+extern int g_nPlayfieldHalfHeightY;
+/** @brief The near-HUD row at field height minus 0x16. @ghidraAddress 0x3ce93c */
+extern int g_nPlayfieldRow16;
+/** @brief The near-HUD row at field height minus 0x2c. @ghidraAddress 0x3ce940 */
+extern int g_nPlayfieldRow2c;
+/** @brief The near-HUD row at field height minus 0x36. @ghidraAddress 0x3ce944 */
+extern int g_nPlayfieldRow36;
+/** @brief The near-HUD row at field height minus 0x6c. @ghidraAddress 0x3ce948 */
+extern int g_nPlayfieldRow6c;
+/** @brief The field-centre row scale (centre split minus 0x36), the slope denominator.
+ * @ghidraAddress 0x3ce94c */
+extern float g_flPlayfieldRowScale;
+/** @brief The near note row's top offset constant (0x97). @ghidraAddress 0x3ce950 */
+extern int g_nPlayfieldNearRowTop;
+/** @brief The near note row at field height minus 0x97. @ghidraAddress 0x3ce954 */
+extern int g_nPlayfieldNearRowBottom;
+/** @brief The near note row at field height minus 0x12e. @ghidraAddress 0x3ce958 */
+extern int g_nPlayfieldRow12e;
+/** @brief The far note row's top offset constant (0x15e). @ghidraAddress 0x3ce964 */
+extern int g_nPlayfieldFarRowTop;
+/** @brief The far note row at field height minus 0x15e. @ghidraAddress 0x3ce968 */
+extern int g_nPlayfieldFarRowBottom;
+/** @brief The mid note row's top offset constant (0xfa). @ghidraAddress 0x3ce974 */
+extern int g_nPlayfieldMidRowTop;
+/** @brief The mid note row at field height minus 0xfa. @ghidraAddress 0x3ce978 */
+extern int g_nPlayfieldMidRowBottom;
+/** @brief The mid-lane slope: the mid row offset over the row scale. @ghidraAddress 0x3ce97c */
+extern float g_flPlayfieldMidLaneSlope;
+/** @brief The negative mid-lane slope. @ghidraAddress 0x3ce980 */
+extern float g_flPlayfieldMidLaneSlopeNeg;
+/** @brief The gauge row's top offset (centre split minus 0x3e). @ghidraAddress 0x3ce984 */
+extern int g_nPlayfieldGaugeRowTop;
+/** @brief The gauge row's bottom offset (field height minus the top). @ghidraAddress 0x3ce988 */
+extern int g_nPlayfieldGaugeRowBottom;
+/** @brief The extra-lane slope: a fixed -62 offset over the row scale. @ghidraAddress 0x3ce98c */
+extern float g_flPlayfieldExtraLaneSlope;
+/** @brief The negative extra-lane slope. @ghidraAddress 0x3ce990 */
+extern float g_flPlayfieldExtraLaneSlopeNeg;
+/** @brief The result row at field height minus 0xe4. @ghidraAddress 0x3ce994 */
+extern int g_nPlayfieldRowE4;
+/** @brief The result row at field height minus 0x192. @ghidraAddress 0x3ce998 */
+extern int g_nPlayfieldRow192;
+/**
+ * @brief Recomputes the whole play-field vertical layout table from a base scale factor.
+ *
+ * Scales the input by 1024 into the field height, then derives the field centre, every fixed note and
+ * HUD row, the near, far, mid, and extra lane slopes, and the two gauge base bands from it. Run
+ * whenever the play-field height changes.
+ * @param flScale The base field-height scale factor.
+ * @ghidraAddress 0x55488
+ */
+void ComputePlayfieldLayoutY(float flScale);
 /**
  * @brief The two gauge Y base positions used in the alternate (non-zero) gauge mode: the top band's
  * base and the bottom band's base. Seeded by the play-field layout pass.

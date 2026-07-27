@@ -38,6 +38,33 @@ int g_nGaugeAltBottomBaseY = {};  // @ghidraAddress 0x3ce9a0
 int g_nGaugeTopBaseY = {};        // @ghidraAddress 0x3ce9a4
 int g_nGaugeBottomBaseY = {};     // @ghidraAddress 0x3ce9a8
 
+// The rest of the play-field vertical layout table (@ghidraAddress 0x3ce930..0x3ce998 and 0x3d0008),
+// all derived from the field height by the play-field layout pass and read by the note, gauge, and
+// background layers.
+int g_nPlayfieldFieldHeight = {};          // @ghidraAddress 0x3ce930
+int g_nPlayfieldHalfHeightY = {};          // @ghidraAddress 0x3ce938
+int g_nPlayfieldFullHeightY = {};          // @ghidraAddress 0x3d0008
+int g_nPlayfieldRow16 = {};                // @ghidraAddress 0x3ce93c
+int g_nPlayfieldRow2c = {};                // @ghidraAddress 0x3ce940
+int g_nPlayfieldRow36 = {};                // @ghidraAddress 0x3ce944
+int g_nPlayfieldRow6c = {};                // @ghidraAddress 0x3ce948
+float g_flPlayfieldRowScale = {};          // @ghidraAddress 0x3ce94c
+int g_nPlayfieldNearRowTop = {};           // @ghidraAddress 0x3ce950
+int g_nPlayfieldNearRowBottom = {};        // @ghidraAddress 0x3ce954
+int g_nPlayfieldRow12e = {};               // @ghidraAddress 0x3ce958
+int g_nPlayfieldFarRowTop = {};            // @ghidraAddress 0x3ce964
+int g_nPlayfieldFarRowBottom = {};         // @ghidraAddress 0x3ce968
+int g_nPlayfieldMidRowTop = {};            // @ghidraAddress 0x3ce974
+int g_nPlayfieldMidRowBottom = {};         // @ghidraAddress 0x3ce978
+float g_flPlayfieldMidLaneSlope = {};      // @ghidraAddress 0x3ce97c
+float g_flPlayfieldMidLaneSlopeNeg = {};   // @ghidraAddress 0x3ce980
+int g_nPlayfieldGaugeRowTop = {};          // @ghidraAddress 0x3ce984
+int g_nPlayfieldGaugeRowBottom = {};       // @ghidraAddress 0x3ce988
+float g_flPlayfieldExtraLaneSlope = {};    // @ghidraAddress 0x3ce98c
+float g_flPlayfieldExtraLaneSlopeNeg = {}; // @ghidraAddress 0x3ce990
+int g_nPlayfieldRowE4 = {};                // @ghidraAddress 0x3ce994
+int g_nPlayfieldRow192 = {};               // @ghidraAddress 0x3ce998
+
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
 // by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the centre),
 // a lane spread span, and the two wide-lane fractions for the alternate lane kind. The leading span
@@ -71,7 +98,91 @@ constexpr int kSubEntrySeed = 5;
 constexpr int kResetSubEntryCount = 10;
 // The colour-lock state a play reset restores (the none sentinel, leaving the note open).
 constexpr int kColorLockReset = 5;
+
+// The play-field layout pass scales its input by 1024 (a 10-bit scroll scale) and derives every row
+// from the resulting field height.
+constexpr float kPlayfieldHeightScale = 1024.0f;
+constexpr int kPlayfieldHalfHeightOffset = 0x200; // half a 1024-unit field
+constexpr int kPlayfieldFullHeightOffset = 0x400; // a full 1024-unit field
+// The fixed pixel row offsets subtracted from the field height for the various note and HUD rows.
+constexpr int kPlayfieldRowOffset16 = 0x16;
+constexpr int kPlayfieldRowOffset2c = 0x2c;
+constexpr int kPlayfieldRowOffset36 = 0x36;
+constexpr int kPlayfieldRowOffset6c = 0x6c;
+constexpr int kPlayfieldNearRowOffset = 0x97;
+constexpr int kPlayfieldRowOffset12e = 0x12e;
+constexpr int kPlayfieldFarRowOffset = 0x15e;
+constexpr int kPlayfieldMidRowOffset = 0xfa;
+constexpr int kPlayfieldGaugeRowOffset = 0x3e;
+constexpr int kPlayfieldRowOffsetE4 = 0xe4;
+constexpr int kPlayfieldRowOffset192 = 0x192;
+constexpr int kPlayfieldGaugeAltBaseY = 0x120;
+constexpr int kPlayfieldGaugeBaseY = 0x1ce;
+// The fixed extra-lane slope numerator (a -62 offset). @ghidraAddress 0x2ef660
+constexpr float kPlayfieldExtraLaneOffset = -62.0f;
 } // namespace
+
+/** @ghidraAddress 0x55488 */
+void ComputePlayfieldLayoutY(float flScale) {
+    // The field height is the base scale in 1024-unit scroll space; its half (rounded toward zero) is
+    // the field centre.
+    const int nHeight = static_cast<int>(flScale * kPlayfieldHeightScale);
+    g_nPlayfieldFieldHeight = nHeight;
+    const int nRounded = nHeight < 0 ? nHeight + 1 : nHeight;
+    g_nPlayfieldCentreSplit = nRounded >> 1;
+
+    // The half- and full-height rows and the near-HUD rows are fixed pixel offsets below the top.
+    g_nPlayfieldHalfHeightY = nHeight - kPlayfieldHalfHeightOffset;
+    g_nPlayfieldFullHeightY = nHeight - kPlayfieldFullHeightOffset;
+    g_nPlayfieldRow16 = nHeight - kPlayfieldRowOffset16;
+    g_nPlayfieldRow2c = nHeight - kPlayfieldRowOffset2c;
+    g_nPlayfieldRow36 = nHeight - kPlayfieldRowOffset36;
+    g_nPlayfieldRow6c = nHeight - kPlayfieldRowOffset6c;
+
+    // The field-centre row scale is the slope denominator for every angled lane.
+    g_flPlayfieldRowScale = static_cast<float>(g_nPlayfieldCentreSplit - kPlayfieldRowOffset36);
+
+    // The near note row: its top constant, its bottom offset, and the derived near-lane slope.
+    g_nPlayfieldNearRowTop = kPlayfieldNearRowOffset;
+    g_nPlayfieldNearRowBottom = nHeight - kPlayfieldNearRowOffset;
+    g_nPlayfieldRow12e = nHeight - kPlayfieldRowOffset12e;
+    g_flPlayfieldNearLaneSlope =
+        static_cast<float>(kPlayfieldNearRowOffset - g_nPlayfieldCentreSplit) /
+        g_flPlayfieldRowScale;
+    g_flPlayfieldNearLaneSlopeNeg = -g_flPlayfieldNearLaneSlope;
+
+    // The far note row and its slope.
+    g_nPlayfieldFarRowTop = kPlayfieldFarRowOffset;
+    g_nPlayfieldFarRowBottom = nHeight - kPlayfieldFarRowOffset;
+    g_flPlayfieldFarLaneSlope =
+        static_cast<float>(kPlayfieldFarRowOffset - g_nPlayfieldCentreSplit) /
+        g_flPlayfieldRowScale;
+    g_flPlayfieldFarLaneSlopeNeg = -g_flPlayfieldFarLaneSlope;
+
+    // The mid note row and its slope.
+    g_nPlayfieldMidRowTop = kPlayfieldMidRowOffset;
+    g_nPlayfieldMidRowBottom = nHeight - kPlayfieldMidRowOffset;
+    g_flPlayfieldMidLaneSlope =
+        static_cast<float>(kPlayfieldMidRowOffset - g_nPlayfieldCentreSplit) /
+        g_flPlayfieldRowScale;
+    g_flPlayfieldMidLaneSlopeNeg = -g_flPlayfieldMidLaneSlope;
+
+    // The gauge row (centre split minus a fixed offset, mirrored to the bottom).
+    g_nPlayfieldGaugeRowTop = g_nPlayfieldCentreSplit - kPlayfieldGaugeRowOffset;
+    g_nPlayfieldGaugeRowBottom = nHeight - g_nPlayfieldGaugeRowTop;
+
+    // The extra-lane slope from the fixed -62 numerator.
+    g_flPlayfieldExtraLaneSlope = kPlayfieldExtraLaneOffset / g_flPlayfieldRowScale;
+    g_flPlayfieldExtraLaneSlopeNeg = -g_flPlayfieldExtraLaneSlope;
+
+    // The result rows and the two gauge base bands (alternate and default modes).
+    g_nPlayfieldRowE4 = nHeight - kPlayfieldRowOffsetE4;
+    g_nPlayfieldRow192 = nHeight - kPlayfieldRowOffset192;
+    g_nGaugeAltTopBaseY = kPlayfieldGaugeAltBaseY;
+    g_nGaugeAltBottomBaseY = nHeight - kPlayfieldGaugeAltBaseY;
+    g_nGaugeTopBaseY = kPlayfieldGaugeBaseY;
+    g_nGaugeBottomBaseY = nHeight - kPlayfieldGaugeBaseY;
+}
 
 /** @ghidraAddress 0x1319fc */
 NoteModel::NoteModel(void *pSheet) {
