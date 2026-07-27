@@ -93,6 +93,15 @@ public:
      */
     float GetValue(int nColor) const;
     /**
+     * @brief Returns the opposing side's gauge value for the given player colour.
+     *
+     * Maps the colour to the side that does not match the current play side and reads that side's
+     * value.
+     * @param nColor The player colour (0 or 1).
+     * @ghidraAddress 0x18ac38
+     */
+    float GetAnotherValue(int nColor) const;
+    /**
      * @brief Sets the gauge value for the given player colour.
      *
      * Maps the colour to a side and stores the quantised, clamped value there.

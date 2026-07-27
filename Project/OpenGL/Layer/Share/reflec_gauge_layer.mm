@@ -167,6 +167,14 @@ float ReflecGaugeLayer::GetValue(int nColor) const {
     return GetValueBySide(nSide);
 }
 
+/** @ghidraAddress 0x18ac38 */
+float ReflecGaugeLayer::GetAnotherValue(int nColor) const {
+    assert(nColor >= 0 && nColor < kSideCount);
+    // The colour selects the opposing side: the one that does not match the current play side.
+    const unsigned int nSide = GameSystem::GetGameSystem()->GetPlayColor() != nColor ? 1 : 0;
+    return GetValueBySide(nSide);
+}
+
 /** @ghidraAddress 0x18a9d8 */
 void ReflecGaugeLayer::SetValue(float flValue, int nColor) {
     assert(nColor >= 0 && nColor < kSideCount);
