@@ -8,6 +8,10 @@
 #include "Render/s_vector2.h"
 #include "gamescene.h"
 
+namespace ne {
+class C_TEXTURE;
+}
+
 /**
  * The global game-system singleton. Its setters are compiled inline in the binary as writes to the
  * named fields below; the 32-bit offset comments are documentation only.
@@ -437,30 +441,35 @@ private:
     float m_flViewportHeight = {};       // +0x30
     bool m_fBackgroundFadeComplete = {}; // +0x34
     bool m_fUse3dTiltProjection = {};    // +0x35
-    void *m_pMusicNameTexture = {};      // +0x48
-    float m_flSheetPosX = {};            // +0x58
-    float m_flSheetPosY = {};            // +0x5c
-    float m_flSheetMarginLeft = {};      // +0x60
-    float m_flSheetMarginTop = {};       // +0x64
-    float m_flSheetMarginRight = {};     // +0x68
-    float m_flSheetMarginBottom = {};    // +0x6c
-    float m_flSheetRadius = {};          // +0x70
-    float m_flCameraTargetX = {};        // +0x74
-    float m_flCameraTargetY = {};        // +0x78
-    float m_flSheetFarX = {};            // +0x7c
-    float m_flSheetFarY = {};            // +0x80
-    float m_flSheetInsetX = {};          // +0x84
-    float m_flSheetInsetY = {};          // +0x88
-    float m_flSheetInsetHalfX = {};      // +0x8c
-    float m_flSheetInsetHalfY = {};      // +0x90
-    float m_flSheetRadiusHalf = {};      // +0x94
-    float m_flSheetDiameterSq = {};      // +0x98
-    float m_flSheetRadiusScaled = {};    // +0x9c
-    float m_flSheetWidth = {};           // +0xa0
-    float m_flSheetHeight = {};          // +0xa4
-    float m_flCameraPitchHeight = {};    // +0xa8
-    bool m_fBgmPlaying = {};             // +0xac
-    bool m_fPaused = {};                 // +0xad: set while the game is paused or interrupted.
+    ne::C_TEXTURE *m_pResultTextTexture1 = {}; // +0x40: a cached result-screen text texture, bound
+                                               //        to a result-window instancer slot and
+                                               //        released with its two siblings at teardown.
+    ne::C_TEXTURE *m_pMusicNameTexture = {};   // +0x48: the rendered music-name text texture.
+    ne::C_TEXTURE *m_pResultTextTexture2 = {}; // +0x50: a second cached result-screen text texture,
+                                               //        released with its siblings at teardown.
+    float m_flSheetPosX = {};                  // +0x58
+    float m_flSheetPosY = {};                  // +0x5c
+    float m_flSheetMarginLeft = {};            // +0x60
+    float m_flSheetMarginTop = {};             // +0x64
+    float m_flSheetMarginRight = {};           // +0x68
+    float m_flSheetMarginBottom = {};          // +0x6c
+    float m_flSheetRadius = {};                // +0x70
+    float m_flCameraTargetX = {};              // +0x74
+    float m_flCameraTargetY = {};              // +0x78
+    float m_flSheetFarX = {};                  // +0x7c
+    float m_flSheetFarY = {};                  // +0x80
+    float m_flSheetInsetX = {};                // +0x84
+    float m_flSheetInsetY = {};                // +0x88
+    float m_flSheetInsetHalfX = {};            // +0x8c
+    float m_flSheetInsetHalfY = {};            // +0x90
+    float m_flSheetRadiusHalf = {};            // +0x94
+    float m_flSheetDiameterSq = {};            // +0x98
+    float m_flSheetRadiusScaled = {};          // +0x9c
+    float m_flSheetWidth = {};                 // +0xa0
+    float m_flSheetHeight = {};                // +0xa4
+    float m_flCameraPitchHeight = {};          // +0xa8
+    bool m_fBgmPlaying = {};                   // +0xac
+    bool m_fPaused = {}; // +0xad: set while the game is paused or interrupted.
     // +0xae..+0xaf is alignment padding before the game type.
     int m_nGameType = {};                // +0xb0
     int m_nPlayerColor = {};             // +0xb4

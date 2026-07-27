@@ -57,6 +57,18 @@ public:
     void InitializePhoneSpriteInstancers();
 
     /**
+     * @brief Binds a texture to one phone sprite instancer and rescales all its slots to the
+     * texture's dimensions.
+     *
+     * With a null texture, or a zero-capacity instancer, only the instancer's texture is set (no slot
+     * rescale).
+     * @param nPhoneIndex The phone-instancer index.
+     * @param pTexture The texture to bind, or null to clear it.
+     * @ghidraAddress 0x123e8c
+     */
+    void SetPhoneInstancerTextureAndScale(unsigned int nPhoneIndex, ne::C_TEXTURE *pTexture);
+
+    /**
      * @brief Returns the result-window parts descriptor at @p nIndex.
      *
      * Selects the pad or phone parts table by the current device kind.

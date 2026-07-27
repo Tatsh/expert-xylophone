@@ -66,6 +66,16 @@ public:
      */
     void Process(float flDelta);
 
+    /**
+     * @brief Binds a texture to the frame's mesh sprite instancer and recomputes its UV offsets and
+     * scale from the texture's dimensions.
+     *
+     * With a null texture, every slot's UV origin, size, tex-size, and centre are zeroed instead.
+     * @param pTexture The frame texture, or null to clear it.
+     * @ghidraAddress 0x17aecc
+     */
+    void SetAltFrameTexture(ne::C_TEXTURE *pTexture);
+
     // The number of frame sprite batches the layer builds.
     static constexpr int kSpriteSlotCount = 3;
 

@@ -15,18 +15,24 @@
 #import "RBBGMManager.h"
 #import "RBUserSettingData.h"
 #include "ScoreTracker.h"
+#include "alt_frame_layer.h"
 #include "clear_gauge_layer.h"
 #include "event_effect_layer.h"
 #include "full_combo_classic_layer.h"
 #include "full_combo_colette_layer.h"
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
+#include "limelight_result_layer.h"
+#include "main_frame_layer.h"
 #include "music_sheet.h"
+#include "neTexture.h"
 #include "note_effect_mgr.h"
 #include "note_replay.h"
 #include "pause_gauge_layer.h"
 #include "playtimer.h"
 #include "reflec_gauge_layer.h"
+#include "result_window_classic_layer.h"
+#include "result_window_colette_layer.h"
 
 // The initial state the constructor seeds; the state machine advances from here on the first frame.
 static constexpr int kInitialState = 2;
@@ -42,6 +48,11 @@ static constexpr int kStatePlaying = 0x11;
 static constexpr int kThemaClassic = 0;
 static constexpr int kThemaLimelight = 1;
 static constexpr int kThemaColette = 2;
+
+// The three result-window text-instancer slots whose textures are cleared at teardown.
+static constexpr int kResultTextSlot0 = 2;
+static constexpr int kResultTextSlot1 = 3;
+static constexpr int kResultTextSlot2 = 4;
 
 /** @ghidraAddress 0x14a21c */
 PlayTask::PlayTask() {
@@ -102,6 +113,50 @@ void PlayTask::GetInstance(PlayTask **ppOut) {
         // Register the task in the engine's per-frame list at priority 1.
         pTask->InsertSorted(1);
         *ppOut = pTask;
+    }
+}
+
+/** @ghidraAddress 0x14f9a4 */
+void PlayTask::ReleaseResultTexturesAndFrames() {
+    // Clear the on-screen frame's bound texture: the alternate frame on iPad, the main frame
+    // elsewhere.
+    if (m_bIsPad) {
+        AltFrameLayer::shared()->SetAltFrameTexture(nullptr);
+    } else {
+        MainFrameLayer::shared()->SetMainFrameTexture(nullptr);
+    }
+
+    // Clear the active theme result layer's three text-instancer textures (slots 2, 3, and 4).
+    if (m_nThema == kThemaColette) {
+        ResultWindowColetteLayer::shared()->applySpriteInstancerTexture(kResultTextSlot0, nullptr);
+        ResultWindowColetteLayer::shared()->applySpriteInstancerTexture(kResultTextSlot1, nullptr);
+        ResultWindowColetteLayer::shared()->applySpriteInstancerTexture(kResultTextSlot2, nullptr);
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightResultLayer::shared()->SetPhoneInstancerTextureAndScale(kResultTextSlot0, nullptr);
+        LimelightResultLayer::shared()->SetPhoneInstancerTextureAndScale(kResultTextSlot1, nullptr);
+        LimelightResultLayer::shared()->SetPhoneInstancerTextureAndScale(kResultTextSlot2, nullptr);
+    } else if (m_nThema == kThemaClassic) {
+        ResultWindowClassicLayer::shared()->SetInstancerTextureAndRefreshSlots(kResultTextSlot0,
+                                                                               nullptr);
+        ResultWindowClassicLayer::shared()->SetInstancerTextureAndRefreshSlots(kResultTextSlot1,
+                                                                               nullptr);
+        ResultWindowClassicLayer::shared()->SetInstancerTextureAndRefreshSlots(kResultTextSlot2,
+                                                                               nullptr);
+    }
+
+    // Release and null the three cached result-screen text textures on the game system.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    if (pGameSystem->m_pResultTextTexture1 != nullptr) {
+        pGameSystem->m_pResultTextTexture1->Release();
+        pGameSystem->m_pResultTextTexture1 = nullptr;
+    }
+    if (pGameSystem->m_pMusicNameTexture != nullptr) {
+        pGameSystem->m_pMusicNameTexture->Release();
+        pGameSystem->m_pMusicNameTexture = nullptr;
+    }
+    if (pGameSystem->m_pResultTextTexture2 != nullptr) {
+        pGameSystem->m_pResultTextTexture2->Release();
+        pGameSystem->m_pResultTextTexture2 = nullptr;
     }
 }
 

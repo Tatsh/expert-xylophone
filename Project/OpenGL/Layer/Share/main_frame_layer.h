@@ -9,6 +9,7 @@
 #include "playfieldlayerbase.h"
 
 namespace ne {
+class C_TEXTURE;
 class C_SPRITE_INSTANCING;
 } // namespace ne
 
@@ -83,6 +84,16 @@ public:
      * @ghidraAddress 0x17c864
      */
     void BuildGeometry();
+
+    /**
+     * @brief Binds a texture to the frame mesh's sprite instancer and recomputes the mesh UV offsets
+     * and scale from the texture's dimensions.
+     *
+     * With a null texture the mesh is left unchanged (only the instancer's texture is cleared).
+     * @param pTexture The frame texture, or null to clear it.
+     * @ghidraAddress 0x17c55c
+     */
+    void SetMainFrameTexture(ne::C_TEXTURE *pTexture);
 
 private:
     /**

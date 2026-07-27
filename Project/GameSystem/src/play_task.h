@@ -70,6 +70,16 @@ private:
     void ResumePreviewPlayback();
 
     /**
+     * @brief Releases the result-screen textures and clears the frame textures at teardown.
+     *
+     * Clears the on-screen frame's bound texture (the alternate frame on iPad, the main frame
+     * elsewhere), clears the active theme result layer's three text-instancer textures, and releases
+     * the three cached result-text textures held on the game system.
+     * @ghidraAddress 0x14f9a4
+     */
+    void ReleaseResultTexturesAndFrames();
+
+    /**
      * @brief Allocates a default note chart, seeds it from the game system, and binds it as the
      * active chart (used for the auto-play preview, when there is no selected music).
      * @ghidraAddress 0x14facc
