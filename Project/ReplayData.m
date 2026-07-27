@@ -51,8 +51,23 @@ static NSString *const kTempDataPathFormat = @"%@/tmp.data";
 static NSString *const kReplayCipherPassphrase = @"REFLECBEATplus";
 
 // The default replay version applied when a loaded or saved replay carries none.
-// @ghidraAddress 0x3dc9f0 (g_pReplayDataDefaultVersion, boxed on demand)
 static const int kDefaultReplayVersion = 10000;
+
+// The default replay version boxed once at load time and applied when a loaded or saved replay
+// carries no version. The load and save paths use their own cached box.
+static NSNumber *g_pReplayDataDefaultVersion = nil;     // @ghidraAddress 0x3dc9f0
+static NSNumber *g_pReplayDataDefaultVersionSave = nil; // @ghidraAddress 0x3dc9f8
+
+/**
+ * @ghidraAddress 0x10708c
+ * Boxes the two default replay-version numbers once at load time.
+ */
+__attribute__((constructor)) static void InitializeDefaultReplayVersions(void) {
+    @autoreleasepool {
+        g_pReplayDataDefaultVersion = [NSNumber numberWithInt:kDefaultReplayVersion];
+        g_pReplayDataDefaultVersionSave = [NSNumber numberWithInt:kDefaultReplayVersion];
+    }
+}
 
 // The first difficulty index treated as an advanced chart. Advanced difficulties are folded back
 // into the basic range by subtracting @c kAdvancedDifficultyOffset before a path is formed.
@@ -228,7 +243,7 @@ static const NSUInteger kReplayEncodeCapacity = 128;
         return nil;
     }
     if (!replayData.version) {
-        replayData.version = [NSNumber numberWithInt:kDefaultReplayVersion];
+        replayData.version = g_pReplayDataDefaultVersion;
     }
     return replayData;
 }
@@ -244,7 +259,7 @@ static const NSUInteger kReplayEncodeCapacity = 128;
             [NSNumber numberWithInt:replayData.diff.intValue - kAdvancedDifficultyOffset];
     }
     if (!replayData.version) {
-        replayData.version = [NSNumber numberWithInt:kDefaultReplayVersion];
+        replayData.version = g_pReplayDataDefaultVersionSave;
     }
     NSData *archive = [NSKeyedArchiver archivedDataWithRootObject:replayData];
     NSData *enciphered = [ReplayData encode:archive];
