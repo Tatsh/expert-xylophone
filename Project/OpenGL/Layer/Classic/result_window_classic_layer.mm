@@ -1197,3 +1197,25 @@ void ResultWindowClassicLayer::InitSpriteSetsLazy() {
 
     m_bSpritesBuilt = true;
 }
+
+/** @ghidraAddress 0x1170c0 */
+void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
+    // Each channel eases from its current shown value toward zero over the start time; a non-positive
+    // start time snaps the target to zero immediately.
+    for (ResultBonusAnimChannel &channel : m_aScoreAnimChannels) {
+        channel.flStart = channel.flCurrent;
+        channel.flTarget = 0.0f;
+        channel.flDuration = flStartTime;
+        channel.flElapsed = 0.0f;
+        channel.flReserved = 0.0f;
+        if (flStartTime <= 0.0f) {
+            channel.flCurrent = 0.0f;
+        }
+    }
+
+    // Reset the four ribbon trails, then clear the score-animation active flag.
+    for (Polygon2dTrail *pTrail : m_apTrails) {
+        pTrail->Reset();
+    }
+    m_bScoreAnimActive = false;
+}

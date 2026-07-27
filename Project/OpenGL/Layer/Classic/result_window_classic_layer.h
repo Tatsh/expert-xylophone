@@ -6,6 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
+#include "result_bonus_anim_channel.h"
 
 struct PartsDataRecord;
 struct PhoneLayoutRecord;
@@ -34,6 +35,16 @@ public:
      * @ghidraAddress 0x1151fc
      */
     static ResultWindowClassicLayer *shared();
+
+    /**
+     * @brief Resets the five result-score/effect display animation channels to their zeroed initial
+     * state, each easing from its current shown value to zero over @p flStartTime (snapping
+     * immediately when non-positive), resets the four ribbon trails, and clears the score-animation
+     * active flag.
+     * @param flStartTime The animation base start time.
+     * @ghidraAddress 0x1170c0
+     */
+    void ResetResultScoreAnimations(float flStartTime);
 
     /**
      * @brief Whether a customize-character texture swap is pending.
@@ -489,6 +500,8 @@ public:
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
     static constexpr int kTrailCount = 4;
+    // The number of result-score/effect display animation channels.
+    static constexpr int kScoreAnimCount = 5;
     // The number of phone-layout position records.
     static constexpr int kPositionRecordCount = 82;
 
@@ -521,11 +534,14 @@ private:
     unsigned char m_aReserved64[0xd] = {}; // +0x64
     bool m_bCustomizeReloadFlag =
         {}; // +0x71: set when a customize-character texture swap is pending.
-    // +0x72..+0x12f: further layer state, still being worked out.
-    unsigned char m_aReserved72[0xbe] = {};       // +0x72
-    Polygon2dTrail *m_apTrails[kTrailCount] = {}; // +0x130: the ribbon trails.
-    // +0x150..+0x1b4: further layer state, still being worked out.
-    unsigned char m_aReserved150[0x65] = {}; // +0x150
+    // +0x72..+0xb7: further layer state, still being worked out.
+    unsigned char m_aReserved72[0x46] = {}; // +0x72
+    // +0xb8..+0x12f: the five result-score/effect display animation channels.
+    ResultBonusAnimChannel m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
+    Polygon2dTrail *m_apTrails[kTrailCount] = {};                      // +0x130: the ribbon trails.
+    bool m_bScoreAnimActive = {}; // +0x150: set while the score animation is running.
+    // +0x151..+0x1b4: further layer state, still being worked out.
+    unsigned char m_aReserved151[0x64] = {}; // +0x151
     bool m_bPortrait = {}; // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1bf: trailing layer state, still being worked out.
     unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
