@@ -94,6 +94,39 @@ void ClearGaugeLayer::StartFadeOut(float flDuration) {
     }
 }
 
+/** @ghidraAddress 0x175dd4 */
+void ClearGaugeLayer::Process(float flDelta) {
+    // Advance the reveal fade toward its target over its duration, only while it is still running.
+    if (m_flFadeElapsed < m_flFadeDuration) {
+        float flElapsed = m_flFadeElapsed + flDelta;
+        if (flElapsed > m_flFadeDuration) {
+            flElapsed = m_flFadeDuration;
+        }
+        m_flFadeElapsed = flElapsed;
+        const float flFraction = (m_flFadeDuration == 0.0f) ? 1.0f : (flElapsed / m_flFadeDuration);
+        m_flFadeCurrent = m_flFadeFrom + flFraction * (m_flFadeTo - m_flFadeFrom);
+        m_bColorDirty = true;
+    }
+
+    // Clear every batch's sprite count before rebuilding this frame's quads.
+    for (ne::C_SPRITE_INSTANCING_2D *pBatch : m_apSprites) {
+        pBatch->SetSpriteCount(0);
+    }
+
+    // Rebuild each drawn side: the first side only draws when the two-side gauge is enabled.
+    for (unsigned int nSide = 0; nSide < kSideCount; ++nSide) {
+        if (m_nTwoSideEnabled == 0 && nSide == 0) {
+            continue;
+        }
+        const int nFadeAlpha = static_cast<int>(m_flFadeCurrent * kColorMax);
+        const int nAlpha =
+            static_cast<int>(static_cast<float>(nFadeAlpha) * m_aSideAlphaScale[nSide]);
+        SetClearGaugeIcon(static_cast<int>(nSide), nAlpha);
+        SetClearGaugeMarker(nSide, nAlpha);
+        SetClearGaugeDigits(nSide, nAlpha);
+    }
+}
+
 /** @ghidraAddress 0x175bc8 */
 void ClearGaugeLayer::SetClearGaugeIcon(int nBottomBand, int nAlpha) {
     // The icon's anchor/size quad and its atlas frame, chosen by orientation and gauge style.

@@ -34,6 +34,18 @@ public:
     ClearGaugeLayer();
 
     /**
+     * @brief Advances the reveal fade and rebuilds the gauge's sprite batches for the frame.
+     *
+     * Eases the reveal fade toward its target over its duration (marking the colour dirty), clears
+     * every batch's sprite count, and then for each drawn side (the first side only when the
+     * two-side gauge is enabled) appends its icon, fill marker, and digits at an alpha taken from the
+     * current fade value scaled by the side's alpha multiplier.
+     * @param flDelta The frame's elapsed time, in frames.
+     * @ghidraAddress 0x175dd4
+     */
+    void Process(float flDelta);
+
+    /**
      * @brief Appends the gauge's base icon quad, choosing its size and atlas frame by layout.
      *
      * Selects a quad size and atlas frame from the current orientation and gauge style (three
@@ -56,6 +68,14 @@ public:
      * @ghidraAddress 0x175eec
      */
     void SetClearGaugeMarker(unsigned int nSide, int nAlpha);
+
+    /**
+     * @brief Appends the gauge's percentage digits for one side.
+     * @param nSide The player side, also selecting the gauge band.
+     * @param nAlpha The digits' alpha.
+     * @ghidraAddress 0x176000
+     */
+    void SetClearGaugeDigits(unsigned int nSide, int nAlpha);
 
     /**
      * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
@@ -156,9 +176,10 @@ private:
     float m_flFadeElapsed = {};      // +0x12c: the reveal fade's elapsed time, in frames.
     float m_flFadeCurrent = {};      // +0x130: the reveal fade's current value.
     bool m_bColorDirty = {};         // +0x134: set when the fade advances.
-    // +0x135..+0x13f is alignment padding before the gauge-style field.
-    unsigned char m_aPad135[11] = {}; // +0x135
-    int m_nGaugeStyle = {};           // +0x140: the gauge style / sprite-layout variant.
+    // +0x135..+0x137 is alignment padding before the per-side alpha-scale floats.
+    unsigned char m_aPad135[3] = {};              // +0x135
+    float m_aSideAlphaScale[kSideCount] = {1, 1}; // +0x138: each side's alpha multiplier (from 1).
+    int m_nGaugeStyle = {}; // +0x140: the gauge style / sprite-layout variant.
     // Each side's clear-gauge value occupies an eight-byte slot (the float followed by four unused
     // bytes), so the two sides sit at +0x144 and +0x14c.
     struct ValueSlot {
