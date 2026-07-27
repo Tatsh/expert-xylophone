@@ -21,7 +21,7 @@
 /**
  * @brief The engine render-kind that selects a GL framebuffer attachment point.
  *
- * Passed to @c AttachRenderbufferToFramebuffer; @c neGLES::RenderKindToGLRenderKind maps the kind
+ * Passed to @c AttachRenderbufferToFramebuffer; @c neGLESRenderer::RenderKindToGl maps the kind
  * to its GL attachment enum (colour, depth, or stencil).
  * @ghidraAddress neGLES::RenderKind (engine enumeration)
  */
@@ -31,16 +31,6 @@ enum RenderKind {
     RENDER_KIND_STENCIL = 2, /*!< The stencil attachment (@c GL_STENCIL_ATTACHMENT_OES). */
     RENDER_KIND_MAX = 3,     /*!< The number of render kinds. */
 };
-
-/**
- * @brief Maps a render kind to its GL framebuffer-attachment enum.
- *
- * Asserts the kind is in range; colour, depth, and stencil map to consecutive attachment enums.
- * @param nKind The render kind.
- * @return The GL attachment enum for @p nKind.
- * @ghidraAddress 0x2131c
- */
-int RenderKindToGLRenderKind(RenderKind nKind);
 
 /**
  * @brief The engine texture-parameter type that selects a GL sampler parameter name.
@@ -73,8 +63,8 @@ int TexParamTypeToGl(TexParamType nType);
 // modelled, and the rest of the 0x258-byte object is reserved until the full engine class is
 // reconstructed. GL object names are @c GLuint and the size-out arguments are @c GLint, spelled as
 // their C-safe equivalents so this header need not import the OpenGL ES headers. The application
-// layer only ever holds a @c neGLESRenderer* obtained from @c GetGlRenderer() /
-// @c EnsureGLRenderStateSingleton().
+// layer only ever holds a @c neGLESRenderer* obtained from @c neGLESRenderer::GetShared() /
+// @c neGLESRenderer::EnsureShared().
 class neGLESRenderer {
 public:
     /**
@@ -85,6 +75,39 @@ public:
      * @ghidraAddress 0x210ec
      */
     neGLESRenderer();
+
+    /**
+     * @brief Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
+     * @ghidraAddress 0x20f50
+     */
+    static neGLESRenderer *GetShared();
+    /**
+     * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
+     *
+     * On first call it allocates the render state, runs its constructor, stores it in the global, and
+     * probes the GL capabilities; subsequent calls are a no-op.
+     * @ghidraAddress 0x20f5c
+     */
+    static void EnsureShared();
+    /**
+     * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
+     * @ghidraAddress 0x212a4
+     */
+    static unsigned int GetRenderbufferTarget();
+    /**
+     * @brief Returns @c true when the bound framebuffer is complete.
+     * @ghidraAddress 0x213b4
+     */
+    static bool IsFramebufferComplete();
+    /**
+     * @brief Maps a render kind to its GL framebuffer-attachment enum.
+     *
+     * Asserts the kind is in range; colour, depth, and stencil map to consecutive attachment enums.
+     * @param nKind The render kind.
+     * @return The GL attachment enum for @p nKind.
+     * @ghidraAddress 0x2131c
+     */
+    static int RenderKindToGl(RenderKind nKind);
 
     /**
      * @brief Clears the current GL buffers selected by the GL clear mask.
@@ -224,7 +247,7 @@ public:
      * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present, the
      * @c GL_MAX_VERTEX_UNITS_OES limit), reads @c GL_MAX_TEXTURE_SIZE, loads a default projection
      * matrix through matrix mode 2, and sets the line width to one. Run once by
-     * @c EnsureGLRenderStateSingleton after the render state is constructed.
+     * @c EnsureShared after the render state is constructed.
      * @ghidraAddress 0x20f9c
      */
     void QueryCaps();
@@ -412,30 +435,6 @@ private:
     unsigned char m_aReserved251[0x03] = {}; // +0x251
     int m_nMaxPaletteMatrices = {};          // +0x254 GL capability: max palette matrices per draw
 };
-
-/**
- * @brief Returns the global OpenGL ES renderer, or @c nullptr when it has not been created.
- * @ghidraAddress 0x20f50
- */
-neGLESRenderer *GetGlRenderer();
-/**
- * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
- *
- * On first call it allocates the render state, runs its constructor, stores it in the global, and
- * probes the GL capabilities; subsequent calls are a no-op.
- * @ghidraAddress 0x20f5c
- */
-void EnsureGLRenderStateSingleton();
-/**
- * @brief Returns the @c GL_RENDERBUFFER_OES bind target constant (0x8d41).
- * @ghidraAddress 0x212a4
- */
-unsigned int GetGLRenderbufferTarget();
-/**
- * @brief Returns @c true when the bound framebuffer is complete.
- * @ghidraAddress 0x213b4
- */
-bool CheckFramebufferComplete();
 
 // code: language=C++
 // kate: hl C++;

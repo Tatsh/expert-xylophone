@@ -208,7 +208,7 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWor
 
     // Upload the index and vertex templates to GL element and array buffers, then free the
     // temporaries.
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     pRenderer->GenBuffer(&m_dwIndexVbo);
     pRenderer->BindIndexBuffer(m_dwIndexVbo);
     pRenderer->UploadIndexBufferData(
@@ -257,7 +257,7 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     delete[] m_pSpriteScaleYArray;
     delete[] m_pSpriteColorArray;
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
-    GetGlRenderer()->DeleteBuffer(m_dwIndexVbo);
+    neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
 
 /** @ghidraAddress 0x30804 */
@@ -424,7 +424,7 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
 
 /** @ghidraAddress 0x2faa8 */
 void C_SPRITE_INSTANCING_2D::Render() {
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
 
@@ -541,7 +541,7 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
 
 /** @ghidraAddress 0x30dc0 */
 void C_SPRITE_INSTANCING_2D::RenderWorldSpace() {
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
 

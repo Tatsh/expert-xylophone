@@ -18,17 +18,6 @@ enum {
 // Maps an engine texture format (1..3) to its unsized GL ES 1.1 pixel format.
 constexpr GLenum kEngineFormatToGl[] = {GL_RGBA, GL_RGB, GL_LUMINANCE_ALPHA};
 
-// The framebuffer attachment points are spaced 0x20 apart starting at the colour attachment, and
-// there are three of them (colour, depth, stencil).
-constexpr int kRenderKindAttachmentStride = 0x20;
-constexpr int kRenderKindMax = 3;
-
-// Maps a render-kind to its GL framebuffer attachment enum, computed inline as the binary does.
-int RenderKindToGLRenderKind(RenderKind nRenderKind) {
-    assert(nRenderKind >= 0 && nRenderKind < kRenderKindMax);
-    return GL_COLOR_ATTACHMENT0_OES + static_cast<int>(nRenderKind) * kRenderKindAttachmentStride;
-}
-
 // Maps an engine primitive index (0..6) to its GL ES draw mode.
 constexpr GLenum kPrimitiveToGlMode[] = {
     GL_POINTS,         //
@@ -149,16 +138,16 @@ constexpr int kTexParamValueMax = 8;
 
 } // namespace
 
-// The global OpenGL ES render-state singleton, created lazily by EnsureGLRenderStateSingleton.
+// The global OpenGL ES render-state singleton, created lazily by neGLESRenderer::EnsureShared.
 neGLESRenderer *g_glesRenderer = nullptr; // @ghidraAddress 0x3dc250
 
 /** @ghidraAddress 0x20f50 */
-neGLESRenderer *GetGlRenderer() {
+neGLESRenderer *neGLESRenderer::GetShared() {
     return g_glesRenderer;
 }
 
 /** @ghidraAddress 0x20f5c */
-void EnsureGLRenderStateSingleton() {
+void neGLESRenderer::EnsureShared() {
     if (g_glesRenderer != nullptr) {
         return;
     }
@@ -240,24 +229,22 @@ void neGLESRenderer::GetRenderbufferHeight(int *pOutHeight) {
 /** @ghidraAddress 0x21380 */
 void neGLESRenderer::AttachRenderbufferToFramebuffer(RenderKind nRenderKind,
                                                      unsigned int dwRenderbuffer) {
-    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES,
-                                 RenderKindToGLRenderKind(nRenderKind),
-                                 GL_RENDERBUFFER_OES,
-                                 dwRenderbuffer);
+    glFramebufferRenderbufferOES(
+        GL_FRAMEBUFFER_OES, RenderKindToGl(nRenderKind), GL_RENDERBUFFER_OES, dwRenderbuffer);
 }
 
 /** @ghidraAddress 0x212a4 */
-unsigned int GetGLRenderbufferTarget() {
+unsigned int neGLESRenderer::GetRenderbufferTarget() {
     return GL_RENDERBUFFER_OES;
 }
 
 /** @ghidraAddress 0x213b4 */
-bool CheckFramebufferComplete() {
+bool neGLESRenderer::IsFramebufferComplete() {
     return glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) == GL_FRAMEBUFFER_COMPLETE_OES;
 }
 
 /** @ghidraAddress 0x2131c */
-int RenderKindToGLRenderKind(RenderKind nKind) {
+int neGLESRenderer::RenderKindToGl(RenderKind nKind) {
     assert(nKind >= 0 && nKind < RENDER_KIND_MAX);
     // The colour, depth, and stencil attachment enums are consecutive; the binary computes them
     // inline as GL_COLOR_ATTACHMENT0_OES + kind * (GL_DEPTH_ATTACHMENT_OES - GL_COLOR_ATTACHMENT0_OES).

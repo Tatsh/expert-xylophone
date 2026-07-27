@@ -52,7 +52,7 @@ C_TEXTURE::~C_TEXTURE() {
         m_pSourcePath = nullptr;
     }
     if (m_nGLHandle != 0) {
-        GetGlRenderer()->DeleteTexture(m_nGLHandle);
+        neGLESRenderer::GetShared()->DeleteTexture(m_nGLHandle);
     }
 }
 
@@ -208,7 +208,7 @@ void C_TEXTURE::InitializeTexture2d(int nWidth, int nHeight, int nFormat, void *
     m_nAllocHeight = nHeight;
     m_nFormat = nFormat;
 
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     pRenderer->GenTexture(&m_nGLHandle);
     pRenderer->BindTexture2d(m_nGLHandle);
 
@@ -291,7 +291,7 @@ void C_TEXTURE::ReleaseGLHandle() {
     // Guarded by the source path so only reloadable entries drop their handle; the handle is zeroed
     // after deletion to guard against a double free on the next teardown.
     if (m_pSourcePath != nullptr && m_nGLHandle != 0) {
-        GetGlRenderer()->DeleteTexture(m_nGLHandle);
+        neGLESRenderer::GetShared()->DeleteTexture(m_nGLHandle);
         m_nGLHandle = 0;
     }
 }

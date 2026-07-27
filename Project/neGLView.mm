@@ -66,9 +66,9 @@ static neGLView *g_pGLView = nil;
         return nil;
     }
 
-    EnsureGLRenderStateSingleton();
-    m_GLInterface = GetGlRenderer();
-    m_RenderBufferID = GetGLRenderbufferTarget();
+    neGLESRenderer::EnsureShared();
+    m_GLInterface = neGLESRenderer::GetShared();
+    m_RenderBufferID = neGLESRenderer::GetRenderbufferTarget();
 
     self.opaque = YES;
     self.backgroundColor = UIColor.blackColor;
@@ -107,7 +107,8 @@ static neGLView *g_pGLView = nil;
                            fromDrawable:static_cast<CAEAGLLayer *>(self.layer)];
     m_GLInterface->GetRenderbufferWidth(&m_FrontBufferWidth);
     m_GLInterface->GetRenderbufferHeight(&m_FrontBufferHeight);
-    CheckFramebufferComplete(); // The completeness check is issued for its GL side effect only.
+    neGLESRenderer::
+        IsFramebufferComplete(); // The completeness check is issued for its GL side effect only.
 
     if ([self.delegate respondsToSelector:@selector(LayoutedGLView:)]) {
         [self.delegate LayoutedGLView:self];

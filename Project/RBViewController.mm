@@ -7,7 +7,8 @@
 //  music-select menu, runs the task/draw loop from a CADisplayLink, and owns the preview,
 //  gameplay, playlist-popover, corporate-button, Twitter, and iTunes-store flows. It is
 //  Objective-C++ because the loop, projection, and preview paths call directly into the C++ game
-//  engine (GetGameSystem, GetGlRenderer, the projection-matrix helpers, and the media timers).
+//  engine (GetGameSystem, neGLESRenderer::GetShared, the projection-matrix helpers, and the media
+//  timers).
 //
 //  The heavy projection method (UpdateProjection) and the preview/gameplay setup follow the arm64
 //  disassembly; the field writes go through the engine bridge's named GameSystem accessors rather
@@ -271,7 +272,7 @@ constexpr int kDefaultPlayColor = 0;
 
 - (void)Draw {
     /** @ghidraAddress 0x8af88 */
-    neGLESRenderer *renderer = GetGlRenderer();
+    neGLESRenderer *renderer = neGLESRenderer::GetShared();
     float elapsed = GetElapsedMediaTime(&m_RenderTime.m_flTime);
     if (elapsed < kMaxRenderFrameElapsed) {
         [self.glView BeginRender];
@@ -293,7 +294,7 @@ constexpr int kDefaultPlayColor = 0;
     // orthographic viewport sized to the drawable, then a perspective (or 3D-tilt) projection for
     // the note sheet, following the arm64 disassembly. The camera helpers take a viewport for the
     // active-camera slot and an ne::CameraNode for the model node.
-    neGLESRenderer *renderer = GetGlRenderer();
+    neGLESRenderer *renderer = neGLESRenderer::GetShared();
     int viewW = [self.glView GetFrontBufferWidth];
     int viewH = [self.glView GetFrontBufferHeight];
     float scaleFactor = static_cast<float>(self.glView.contentScaleFactor);

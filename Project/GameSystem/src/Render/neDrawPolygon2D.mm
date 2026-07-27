@@ -140,7 +140,7 @@ C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
     m_pBoneScale = nullptr;
 
     // Delete the GL buffer objects this mesh owns.
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     if (!m_bVertexBufferExternal) {
         pRenderer->DeleteBuffer(m_dwVertexVbo);
     }
@@ -151,7 +151,7 @@ C_DRAW_POLYGON_2D::~C_DRAW_POLYGON_2D() {
 
 /** @ghidraAddress 0x27568 */
 void C_DRAW_POLYGON_2D::AllocateBuffers() {
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     unsigned int nStride = 0;
     m_nVertexStride = 0;
 
@@ -356,7 +356,7 @@ void C_DRAW_POLYGON_2D::Render() {
     if (static_cast<int>(m_nDrawIndexCount) < kMinDrawIndexCount) {
         return;
     }
-    neGLESRenderer *pRenderer = GetGlRenderer();
+    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     SetCurrentCamera(pRenderer, g_pCurrentProjection);
 
     // Build the model matrix (translate, then optional Z rotation and uniform scale) and compose it
