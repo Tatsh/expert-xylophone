@@ -1,23 +1,25 @@
 /**
  * @file
- * The C_TASK-derived game UI layer base, @c GameUiLayerBase.
+ * The scene base, @c rb::BaseScene (RTTI @c N2rb9BaseSceneE).
  */
 
 #pragma once
 
 #include "listener_list.h"
 
+namespace rb {
+
 /**
- * @brief The base of the per-frame game UI layers (the clear gauge, score gauge, pause gauge, and
- * title-screen layers).
+ * @brief The base of the per-frame scenes and game UI layers (the clear gauge, score gauge, pause
+ * gauge, title scenes, and the play scene).
  *
  * It derives from the engine's task node (@c SortedListenerNode, the priority-sorted per-frame
  * listener / @c ne::C_TASK) and appends the shared presentation flags: the is-pad flag and whether
- * the device is the older type-9 hardware. Every concrete UI layer derives from this base and runs
+ * the device is the older type-9 hardware. Every concrete scene/layer derives from this base and runs
  * its constructor first, then overrides the per-frame callback and initialises its own fields. The
  * trailing @c // +0xNN comments document the original member offsets for reference only.
  */
-class GameUiLayerBase : public SortedListenerNode {
+class BaseScene : public SortedListenerNode {
 public:
     /**
      * @brief Whether the device is an iPad (cached from @c IsPad at construction).
@@ -35,15 +37,17 @@ public:
 
 protected:
     /**
-     * @brief Constructs the UI-layer base: chains the task-node base constructor and caches the
-     * is-pad and hardware-type flags. (The compiler installs the vtable.)
+     * @brief Constructs the scene base: chains the task-node base constructor and caches the is-pad
+     * and hardware-type flags. (The compiler installs the vtable.)
      * @ghidraAddress 0x18bd9c
      */
-    GameUiLayerBase();
+    BaseScene();
 
     bool m_bIsPad = {};         // +0x49: whether the device is an iPad (from IsPad()).
     bool m_bHardwareType9 = {}; // +0x4a: whether the device is the older type-9 hardware.
 };
+
+} // namespace rb
 
 // code: language=C++
 // kate: hl C++;

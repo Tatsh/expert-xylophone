@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "game_ui_layer_base.h"
+#include "base_scene.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -16,7 +16,7 @@ class C_SPRITE_INSTANCING;
  * @brief The parts-based title-screen scene layer used for the themes other than 0 (Classic) and 2
  * (Colette).
  *
- * A @c GameUiLayerBase-derived per-frame task created by @c CreateTitleLayerForTheme's fall-through
+ * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme's fall-through
  * branch. Its per-frame callback is a small state machine (@c DispatchTitleScreen2State): load the
  * title resources and start the BGM, wait for the start music, render and animate the parts, then
  * finish and open the music list. It is a larger (0x628-byte) layer than @c TitleScreenLayer0,
@@ -25,7 +25,7 @@ class C_SPRITE_INSTANCING;
  * preserve the object layout.
  * @ghidraAddress TitleScreenLayer2 (engine layer, 0x628 bytes)
  */
-class TitleScreenLayer2 : public GameUiLayerBase {
+class TitleScreenLayer2 : public rb::BaseScene {
 public:
     // The number of cached title textures and the number of part sprite instancers the layer builds.
     static constexpr int kTextureCount = 3;

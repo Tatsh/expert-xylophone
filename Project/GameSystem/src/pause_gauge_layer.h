@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "game_ui_layer_base.h"
+#include "base_scene.h"
 #include "s_vector2.h"
 
 namespace ne {
@@ -53,11 +53,11 @@ struct PauseGaugeLaneGeometry {
 /**
  * @brief The pause-gauge layer: the per-lane gauge shown while the game is paused.
  *
- * A @c GameUiLayerBase subclass registered as a per-frame task. It owns two sprite instancers and a
+ * A @c rb::BaseScene subclass registered as a per-frame task. It owns two sprite instancers and a
  * parts texture, and charges a per-lane gauge while the game is held paused. The trailing
  * @c // +0xNN comments document the original member offsets for reference only.
  */
-class PauseGaugeLayer : public GameUiLayerBase {
+class PauseGaugeLayer : public rb::BaseScene {
 public:
     using LaneGeometry = PauseGaugeLaneGeometry;
 

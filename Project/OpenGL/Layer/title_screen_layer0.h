@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "game_ui_layer_base.h"
+#include "base_scene.h"
 #include "linear_tween.h"
 
 namespace ne {
@@ -17,7 +17,7 @@ class C_SPRITE_INSTANCING;
  * @brief The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown before
  * the music list.
  *
- * A @c GameUiLayerBase-derived per-frame task created by @c CreateTitleLayerForTheme for theme 0. Its
+ * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme for theme 0. Its
  * per-frame callback is a small state machine (@c DispatchTitleScreenState): load the title textures
  * and sprites and start the BGM, wait for the start music, render and animate the title, then finish
  * and open the music list. The Ghidra name @c ScoreGaugeLayer for its constructor is a misnomer; the
@@ -27,7 +27,7 @@ class C_SPRITE_INSTANCING;
  * worked out are reserved to preserve the object layout.
  * @ghidraAddress TitleScreenLayer0 (engine layer, 0x168 bytes)
  */
-class TitleScreenLayer0 : public GameUiLayerBase {
+class TitleScreenLayer0 : public rb::BaseScene {
 public:
     // The number of cached title textures and the number of sprite instancers the layer builds.
     static constexpr int kTextureCount = 7;
