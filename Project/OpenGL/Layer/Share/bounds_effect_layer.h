@@ -7,6 +7,11 @@
 
 #include "playfieldlayerbase.h"
 
+namespace ne {
+class C_TEXTURE;
+class C_SPRITE_INSTANCING;
+} // namespace ne
+
 /**
  * @brief The play-field bounds (edge) effect layer.
  *
@@ -18,12 +23,44 @@
  */
 class BoundsEffectLayer : public PlayFieldLayerBase {
 public:
+    // The number of player-colour effect banks and the records per bank.
+    static constexpr int kBankCount = 2;
+    static constexpr int kRecordsPerBank = 23;
+
     /**
      * @brief The process-wide bounds-effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x17528c
      */
     static BoundsEffectLayer *shared();
+
+    /**
+     * @brief Builds the effect sprite batch and binds the style's atlas on first use.
+     *
+     * Reads the user's bounds-effect style, loads the matching atlas, creates the 0x5c-capacity world
+     * sprite batch, attaches it under the background layer, makes it visible, and flags additive
+     * blend. Guarded so it runs only once.
+     * @ghidraAddress 0x1752dc
+     */
+    void InitializeSprites();
+
+    /**
+     * @brief Refreshes the theme, re-reads the bounds-effect style, and rebinds the matching atlas.
+     * @ghidraAddress 0x1753e4
+     */
+    void SetStyle();
+
+    /**
+     * @brief Spawns a bounds effect for a colour bank at a screen position.
+     *
+     * Builds the sprite batch on first use, then claims the first inactive record in the colour's
+     * bank and fills its reset timer and position. A full bank drops the effect.
+     * @param nColor The player colour bank (0 or 1).
+     * @param flPosX The effect's screen x.
+     * @param flPosY The effect's screen y.
+     * @ghidraAddress 0x1754cc
+     */
+    void CreateBoundsEffect(unsigned int nColor, float flPosX, float flPosY);
 
     /**
      * @brief Sets the effect size from the user's bounds-effect-size setting.
@@ -48,12 +85,28 @@ private:
      */
     BoundsEffectLayer();
 
-    unsigned char m_aReserved08[0x2fc] = {}; // +0x08: layer state, still being worked out.
-    bool m_bLaneLight0 = {};                 // +0x304: the first lane's bounds-light flag.
-    bool m_bLaneLight1 = {};                 // +0x305: the second lane's bounds-light flag.
-    unsigned char m_aReserved306[2] = {};    // +0x306
-    float m_flEffectSize = {};               // +0x308: the user's effect size.
-    unsigned char m_aReserved30c[4] = {};    // +0x30c: trailing state to the 0x310-byte size.
+    /** @brief One pooled bounds-effect record (16 bytes): its active flag, timer, and position. */
+    struct EffectRecord {
+        bool bActive = {};                 // +0x00: whether the record holds a live effect.
+        unsigned char aReserved01[3] = {}; // +0x01
+        int nTimer = {};                   // +0x04: the effect's animation timer.
+        float flPosX = {};                 // +0x08: the effect's screen x.
+        float flPosY = {};                 // +0x0c: the effect's screen y.
+    };
+
+    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the bound effect atlas.
+    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the effect sprite instancer.
+    unsigned char m_aReserved18[4] = {};     // +0x18
+    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[3] = {};     // +0x21
+    // +0x24: the two per-colour effect banks (each kRecordsPerBank records, stride 0x170 per bank).
+    EffectRecord m_aEffects[kBankCount][kRecordsPerBank] = {};
+    bool m_bLaneLight0 = {};              // +0x304: the first lane's bounds-light flag.
+    bool m_bLaneLight1 = {};              // +0x305: the second lane's bounds-light flag.
+    unsigned char m_aReserved306[2] = {}; // +0x306
+    float m_flEffectSize = {};            // +0x308: the user's effect size.
+    int m_nStyle = {};                    // +0x30c: the bounds-effect style (0/1/2).
 };
 
 // code: language=C++
