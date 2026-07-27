@@ -8,6 +8,20 @@
 
 #include "chain_connector_layer.h"
 
+#include "bg_layer.h"
+#include "neRender.h"
+#include "neSpriteInstancing.h"
+#include "neTexture.h"
+
+namespace {
+// The atlas the connector sprites draw from.
+constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+
+// The connector sprite batch draws additively; the non-tutorial build seeds two texture parameters.
+constexpr int kAdditiveBlendMode = 1;
+constexpr int kTexParamValue = 1;
+} // namespace
+
 // The shared connector draw count, reset when the layer is constructed.
 int g_nChainConnectorDrawCount = {}; // @ghidraAddress 0x3def48
 
@@ -26,5 +40,30 @@ ChainConnectorLayer *ChainConnectorLayer::shared() {
 ChainConnectorLayer::ChainConnectorLayer() {
     // The base constructor and member initialisers clear the sprite header and pooled records; the
     // shared connector draw count resets to zero.
+    g_nChainConnectorDrawCount = 0;
+}
+
+/** @ghidraAddress 0x185894 */
+void ChainConnectorLayer::CreateSprites() {
+    if (m_bLoaded) {
+        return;
+    }
+
+    ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
+    m_pSprite = ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_nCapacity));
+    pParent->AttachChild(m_pSprite);
+    m_pSprite->SetVisible(true);
+    m_pSprite->SetRefCountedMember(m_pTexture);
+    m_pSprite->SetSpriteCount(0);
+    m_pSprite->SetBlendMode(kAdditiveBlendMode);
+
+    // A non-tutorial build seeds two texture parameters.
+    if (!IsHardwareType9()) {
+        m_pSprite->SetTexParam(1, kTexParamValue);
+        m_pSprite->SetTexParam(0, kTexParamValue);
+    }
+
+    m_bLoaded = true;
     g_nChainConnectorDrawCount = 0;
 }

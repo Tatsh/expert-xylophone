@@ -36,6 +36,16 @@ public:
      */
     static ChainConnectorLayer *shared();
 
+    /**
+     * @brief Builds the gm_parts1 connector sprite batch and binds its atlas on first use.
+     *
+     * Creates the world sprite batch sized to the layer's capacity, attaches it under the background
+     * layer, makes it visible, flags additive blend, (on a non-tutorial build) seeds two texture
+     * parameters, and resets the shared connector draw count. Guarded so it runs only once.
+     * @ghidraAddress 0x185894
+     */
+    void CreateSprites();
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
@@ -51,7 +61,10 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};          // +0x08: the connector atlas.
     ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the connector sprite instancer.
-    unsigned char m_aReserved18[0x10] = {};  // +0x18: further header/count state.
+    unsigned char m_aReserved18[4] = {};     // +0x18
+    int m_nCapacity = {};                    // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                     // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[7] = {};     // +0x21
     ChainRecord m_aChains[kChainRecordCount] =
         {}; // +0x28: the pooled connector records (to 0xc28).
 };
