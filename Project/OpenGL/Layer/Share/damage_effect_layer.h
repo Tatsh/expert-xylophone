@@ -35,6 +35,16 @@ public:
     static DamageEffectLayer *shared();
 
     /**
+     * @brief Builds the effect sprite batch and binds the style's atlas on first use.
+     *
+     * Reads the user's bounds-effect style, loads the matching atlas (default / limelight /
+     * colette), creates the world sprite batch sized to the layer's capacity, attaches it under the
+     * background layer, makes it visible, and flags additive blend. Guarded so it runs only once.
+     * @ghidraAddress 0x173fcc
+     */
+    void InitializeSprites();
+
+    /**
      * @brief Sets one lane's damage-effect display value.
      * @param nLane The player lane (0 or 1).
      * @param flValue The display value.
@@ -71,9 +81,12 @@ private:
         unsigned char aReserved08[0xc] = {}; // +0x08: the effect's animation state.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};          // +0x08: the bound effect atlas.
-    ne::C_SPRITE_INSTANCING *m_pSprite = {}; // +0x10: the effect sprite instancer.
-    unsigned char m_aReserved18[0xc] = {};   // +0x18: further header state (a listener node etc.).
+    ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the bound effect atlas.
+    ne::C_SPRITE_INSTANCING *m_pSprite = {};          // +0x10: the effect sprite instancer.
+    unsigned char m_aReserved18[4] = {};              // +0x18
+    int m_nCapacity = {};                             // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                              // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[3] = {};              // +0x21
     EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled effect records.
     float m_aLaneValue[kLaneCount] = {};              // +0x2a4: the per-lane display values (1).
     float m_flEffectSize = {};                        // +0x2ac: the user's effect size (1).
