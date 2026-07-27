@@ -55,6 +55,16 @@ public:
     static void GetInstance(GameScene **ppOut);
 
     /**
+     * @brief Fully releases the current music and voice resources.
+     *
+     * A no-op while the background music is still marked active (it must be stopped first); otherwise
+     * it stops and releases the music and releases the audio manager's voices. Takes no scene, acting
+     * only on the music and audio singletons, but belongs to the scene's music lifecycle.
+     * @ghidraAddress 0x14b2f8
+     */
+    static void ReleaseBgmAndVoice();
+
+    /**
      * @brief Initialises the scene for the current play mode: builds every play-field layer, seeds the
      * play state, and binds the chart.
      * @ghidraAddress 0x14a518
@@ -360,15 +370,6 @@ void HandlePauseResume(void);
  * @ghidraAddress 0x151434
  */
 void HandlePauseMusicRelease(void);
-
-/**
- * @brief Fully releases the current music and voice resources.
- *
- * A no-op while the background music is still marked active (it must be stopped first); otherwise it
- * stops and releases the music and releases the audio manager's voices.
- * @ghidraAddress 0x14b2f8
- */
-void ReleaseBgmAndVoice(void);
 
 /**
  * @brief Ensures the device is generating orientation-change notifications.

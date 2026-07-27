@@ -1049,7 +1049,7 @@ void HandlePauseMusicRelease(void) {
 }
 
 /** @ghidraAddress 0x14b2f8 */
-void ReleaseBgmAndVoice(void) {
+void GameScene::ReleaseBgmAndVoice() {
     // The music must already be stopped (its playing flag cleared) before its resources are freed.
     if (GameSystem::GetGameSystem()->GetBgmPlaying()) {
         return;
