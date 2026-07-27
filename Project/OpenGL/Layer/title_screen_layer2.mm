@@ -2,7 +2,7 @@
 //  title_screen_layer2.mm
 //  REFLEC BEAT plus
 //
-//  The parts-based title-screen scene layer (TitleScreenLayer2). Reconstructed from Ghidra project
+//  The parts-based title-screen scene layer (TitleLimelightScene). Reconstructed from Ghidra project
 //  rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
@@ -37,7 +37,7 @@ constexpr int kStateFinish = 3;
 constexpr float kTitleBgmFadeInTime = 0.3f;
 
 // The three title textures, in load order (indices into m_apTextures).
-constexpr const char *kTitleTextureNames[TitleScreenLayer2::kTextureCount] = {
+constexpr const char *kTitleTextureNames[TitleLimelightScene::kTextureCount] = {
     "00_texture/ti_bg",
     "00_texture/ti_parts",
     "00_texture/ti_parts_eff",
@@ -55,8 +55,10 @@ constexpr float kTitleFadeDuration = 500.0f;
 constexpr int kTitleVoiceId = 0;
 } // namespace
 
+namespace rb {
+
 /** @ghidraAddress 0x152de8 */
-TitleScreenLayer2::TitleScreenLayer2() {
+TitleLimelightScene::TitleLimelightScene() {
     // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
     // the presentation state is otherwise zero-initialised by the member initialisers.
     m_flFadeValue = kInitialFadeValue;
@@ -67,12 +69,12 @@ TitleScreenLayer2::TitleScreenLayer2() {
  * @ghidraAddress 0x152e90
  * @ghidraAddress 0x152f4c
  */
-TitleScreenLayer2::~TitleScreenLayer2() {
+TitleLimelightScene::~TitleLimelightScene() {
     ReleaseResources();
 }
 
 /** @ghidraAddress 0x152edc */
-void TitleScreenLayer2::ReleaseResources() {
+void TitleLimelightScene::ReleaseResources() {
     // Release and null each cached texture.
     for (ne::C_TEXTURE *&pTexture : m_apTextures) {
         if (pTexture != nullptr) {
@@ -90,7 +92,7 @@ void TitleScreenLayer2::ReleaseResources() {
 }
 
 /** @ghidraAddress 0x152f84 */
-void TitleScreenLayer2::OnFrame(void *pFrameArg) {
+void TitleLimelightScene::OnFrame(void *pFrameArg) {
     switch (m_nState) {
     case kStateLoad:
         LoadResources();
@@ -110,7 +112,7 @@ void TitleScreenLayer2::OnFrame(void *pFrameArg) {
 }
 
 /** @ghidraAddress 0x152fc8 */
-void TitleScreenLayer2::LoadResources() {
+void TitleLimelightScene::LoadResources() {
     m_nFadeTimer = 0;
 
     // Load the three title textures.
@@ -149,13 +151,13 @@ void TitleScreenLayer2::LoadResources() {
 }
 
 /** @ghidraAddress 0x153190 */
-void TitleScreenLayer2::StartMusic() {
+void TitleLimelightScene::StartMusic() {
     m_nState = kStateRender;
     [RBBGMManager.getInstance PlayMusic:kTitleBgmFadeInTime];
 }
 
 /** @ghidraAddress 0x154288 */
-void TitleScreenLayer2::FinishAndOpenList() {
+void TitleLimelightScene::FinishAndOpenList() {
     // Wait until the fade-out audio has fully stopped before tearing down.
     if (![AudioManager.sharedManager isStart]) {
         return;
@@ -167,3 +169,5 @@ void TitleScreenLayer2::FinishAndOpenList() {
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();
 }
+
+} // namespace rb

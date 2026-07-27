@@ -1,13 +1,13 @@
 /**
  * @file
- * The binary-resident part-layout tables for the parts-based title screen, @c TitleScreenLayer2.
+ * The binary-resident part-layout tables for the parts-based title screen, @c TitleLimelightScene.
  */
 
 #pragma once
 
 /**
  * @brief One title-part layout record: the cached-texture index the part binds and its placement
- * rectangle. A 24-byte record; @c TitleScreenLayer2::LoadResources reads the texture index to bind
+ * rectangle. A 24-byte record; @c TitleLimelightScene::LoadResources reads the texture index to bind
  * each part instancer's texture.
  */
 struct TitlePartLayoutRecord {

@@ -2,7 +2,7 @@
 //  title_screen_layer0.mm
 //  REFLEC BEAT plus
 //
-//  The theme-0 title-screen scene layer (TitleScreenLayer0). Reconstructed from Ghidra project
+//  The theme-0 title-screen scene layer (TitleClassicScene). Reconstructed from Ghidra project
 //  rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
@@ -37,7 +37,7 @@ constexpr int kStateFinish = 3;
 constexpr float kTitleBgmFadeInTime = 0.3f;
 
 // The seven title textures, in load order (indices into m_apTextures).
-constexpr const char *kTitleTextureNames[TitleScreenLayer0::kTextureCount] = {
+constexpr const char *kTitleTextureNames[TitleClassicScene::kTextureCount] = {
     "00_texture/ti_bg",
     "00_texture/ti_star",
     "00_texture/ti_start",
@@ -73,13 +73,15 @@ constexpr int kTitleVoiceId = 0;
 
 // The eight title-screen instancer capacities and texture indices live in the binary's read-only
 // data; only the pointers are referenced here.
-const unsigned int g_aTitleSpriteCapacity[TitleScreenLayer0::kSpriteSlotCount] = {
+const unsigned int g_aTitleSpriteCapacity[rb::TitleClassicScene::kSpriteSlotCount] = {
     1, 4, 2, 1, 1, 1, 1, 1};
-const unsigned int g_aTitleSpriteTextureIndex[TitleScreenLayer0::kSpriteSlotCount] = {
+const unsigned int g_aTitleSpriteTextureIndex[rb::TitleClassicScene::kSpriteSlotCount] = {
     0, 1, 5, 6, 3, 2, 4, 8};
 
+namespace rb {
+
 /** @ghidraAddress 0x1514b4 */
-TitleScreenLayer0::TitleScreenLayer0() {
+TitleClassicScene::TitleClassicScene() {
     // The UI-layer base constructor ran first and the compiler installed the title dispatch vtable;
     // the presentation state is otherwise zero-initialised by the member initialisers.
     m_fadeChannel.SetCurrent(kInitialFadeBase);
@@ -90,12 +92,12 @@ TitleScreenLayer0::TitleScreenLayer0() {
  * @ghidraAddress 0x151580
  * @ghidraAddress 0x151640
  */
-TitleScreenLayer0::~TitleScreenLayer0() {
+TitleClassicScene::~TitleClassicScene() {
     ReleaseResources();
 }
 
 /** @ghidraAddress 0x1515cc */
-void TitleScreenLayer0::ReleaseResources() {
+void TitleClassicScene::ReleaseResources() {
     // Release and null each cached texture.
     for (ne::C_TEXTURE *&pTexture : m_apTextures) {
         if (pTexture != nullptr) {
@@ -113,7 +115,7 @@ void TitleScreenLayer0::ReleaseResources() {
 }
 
 /** @ghidraAddress 0x151678 */
-void TitleScreenLayer0::OnFrame(void *pFrameArg) {
+void TitleClassicScene::OnFrame(void *pFrameArg) {
     switch (m_nState) {
     case kStateLoad:
         LoadResources();
@@ -133,7 +135,7 @@ void TitleScreenLayer0::OnFrame(void *pFrameArg) {
 }
 
 /** @ghidraAddress 0x1516bc */
-void TitleScreenLayer0::LoadResources() {
+void TitleClassicScene::LoadResources() {
     m_nFadeTimer = 0;
 
     // Load the seven title textures.
@@ -177,13 +179,13 @@ void TitleScreenLayer0::LoadResources() {
 }
 
 /** @ghidraAddress 0x1518c8 */
-void TitleScreenLayer0::StartMusic() {
+void TitleClassicScene::StartMusic() {
     m_nState = kStateRender;
     [RBBGMManager.getInstance PlayMusic:kTitleBgmFadeInTime];
 }
 
 /** @ghidraAddress 0x152450 */
-void TitleScreenLayer0::FinishAndOpenList() {
+void TitleClassicScene::FinishAndOpenList() {
     // Wait until the fade-out audio has fully stopped before tearing down.
     if (![AudioManager.sharedManager isStart]) {
         return;
@@ -195,3 +197,5 @@ void TitleScreenLayer0::FinishAndOpenList() {
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();
 }
+
+} // namespace rb

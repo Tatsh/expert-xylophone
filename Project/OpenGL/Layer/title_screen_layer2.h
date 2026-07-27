@@ -1,6 +1,6 @@
 /**
  * @file
- * The parts-based title-screen scene layer, @c TitleScreenLayer2.
+ * The parts-based title-screen scene layer, @c TitleLimelightScene.
  */
 
 #pragma once
@@ -19,13 +19,15 @@ class C_SPRITE_INSTANCING;
  * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme's fall-through
  * branch. Its per-frame callback is a small state machine (@c DispatchTitleScreen2State): load the
  * title resources and start the BGM, wait for the start music, render and animate the parts, then
- * finish and open the music list. It is a larger (0x628-byte) layer than @c TitleScreenLayer0,
+ * finish and open the music list. It is a larger (0x628-byte) layer than @c rb::TitleClassicScene,
  * drawing the title from many part sprites. The trailing @c // +0xNN comments document the original
  * member offsets for reference only; the spans whose roles are still being worked out are reserved to
  * preserve the object layout.
- * @ghidraAddress TitleScreenLayer2 (engine layer, 0x628 bytes)
+ * @ghidraAddress TitleLimelightScene (engine layer, 0x628 bytes)
  */
-class TitleScreenLayer2 : public rb::BaseScene {
+namespace rb {
+
+class TitleLimelightScene : public BaseScene {
 public:
     // The number of cached title textures and the number of part sprite instancers the layer builds.
     static constexpr int kTextureCount = 3;
@@ -36,7 +38,7 @@ public:
      * zero-clears the presentation state (seeding the fade value to 1.0 and the trailing index to -1).
      * @ghidraAddress 0x152de8
      */
-    TitleScreenLayer2();
+    TitleLimelightScene();
 
     /**
      * @brief Destroys the layer: releases its cached textures and part sprite instancers, then runs
@@ -47,7 +49,7 @@ public:
      * @ghidraAddress 0x152e90
      * @ghidraAddress 0x152f4c
      */
-    ~TitleScreenLayer2() override;
+    ~TitleLimelightScene() override;
 
     /**
      * @brief The per-frame task callback: dispatches on the layer state.
@@ -111,6 +113,8 @@ private:
     int m_nTrailingIndex = {};               // +0x5c4: a per-slot index (-1 when none is selected).
     unsigned char m_aReserved5c8[0x60] = {}; // +0x5c8: trailing presentation state.
 };
+
+} // namespace rb
 
 // code: language=C++
 // kate: hl C++;

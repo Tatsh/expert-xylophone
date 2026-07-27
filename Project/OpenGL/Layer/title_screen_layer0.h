@@ -1,6 +1,6 @@
 /**
  * @file
- * The theme-0 title-screen scene layer, @c TitleScreenLayer0.
+ * The theme-0 title-screen scene layer, @c TitleClassicScene.
  */
 
 #pragma once
@@ -25,9 +25,11 @@ class C_SPRITE_INSTANCING;
  * the interactive @c TitleScreenLayerClassic gesture layer. The trailing @c // +0xNN comments
  * document the original member offsets for reference only; the spans whose roles are still being
  * worked out are reserved to preserve the object layout.
- * @ghidraAddress TitleScreenLayer0 (engine layer, 0x168 bytes)
+ * @ghidraAddress TitleClassicScene (engine layer, 0x168 bytes)
  */
-class TitleScreenLayer0 : public rb::BaseScene {
+namespace rb {
+
+class TitleClassicScene : public BaseScene {
 public:
     // The number of cached title textures and the number of sprite instancers the layer builds.
     static constexpr int kTextureCount = 7;
@@ -38,7 +40,7 @@ public:
      * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to -1).
      * @ghidraAddress 0x1514b4
      */
-    TitleScreenLayer0();
+    TitleClassicScene();
 
     /**
      * @brief Destroys the layer: releases its cached textures and sprite instancers, then runs the
@@ -49,7 +51,7 @@ public:
      * @ghidraAddress 0x151580
      * @ghidraAddress 0x151640
      */
-    ~TitleScreenLayer0() override;
+    ~TitleClassicScene() override;
 
     /**
      * @brief The per-frame task callback: dispatches on the layer state.
@@ -109,17 +111,19 @@ private:
     unsigned char m_aReserved160[0x08] = {}; // +0x160: trailing state.
 };
 
+} // namespace rb
+
 /**
  * @brief The capacity (maximum sprite count) of each of the eight title-screen sprite instancers.
  * @ghidraAddress 0x309454
  */
-extern const unsigned int g_aTitleSpriteCapacity[TitleScreenLayer0::kSpriteSlotCount];
+extern const unsigned int g_aTitleSpriteCapacity[rb::TitleClassicScene::kSpriteSlotCount];
 
 /**
  * @brief The cached-texture index each of the eight title-screen instancers binds (slot 7 binds none).
  * @ghidraAddress 0x309384
  */
-extern const unsigned int g_aTitleSpriteTextureIndex[TitleScreenLayer0::kSpriteSlotCount];
+extern const unsigned int g_aTitleSpriteTextureIndex[rb::TitleClassicScene::kSpriteSlotCount];
 
 // code: language=C++
 // kate: hl C++;
