@@ -4,6 +4,7 @@
 
 #include "../Classic/classic_parts_data_table.h"
 #include "../Colette/phone_anchor_table.h"
+#import "RBViewController.h"
 #include "deviceenvironment.h"
 #import "gamesystem.h"
 #include "limelight_parts_data_table.h"
@@ -132,6 +133,14 @@ LimelightResultLayer *LimelightResultLayer::shared() {
         g_pLimelightResultLayer = new LimelightResultLayer();
     }
     return g_pLimelightResultLayer;
+}
+
+/** @ghidraAddress 0x12ab60 */
+void LimelightResultLayer::InitializePhoneResultLayer() {
+    m_nActive = 1;
+    m_bBonusCueArmed = GameSystem::GetGameSystem()->GetResultBonusFeatureActive();
+    m_flBonusCueTimer = 0.0f;
+    m_bTwitterAvailable = [RBViewController hasTwitterAPI];
 }
 
 /** @ghidraAddress 0x123db0 */

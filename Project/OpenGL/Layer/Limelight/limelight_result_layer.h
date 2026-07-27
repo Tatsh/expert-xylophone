@@ -42,6 +42,15 @@ public:
     static LimelightResultLayer *shared();
 
     /**
+     * @brief Initialises the phone (portrait) result-window state at the start of the result screen.
+     *
+     * Marks the layer active, arms the bonus voice cue when the game system's result-bonus feature is
+     * set, resets the bonus-cue timer, and records whether the Twitter share API is available.
+     * @ghidraAddress 0x12ab60
+     */
+    void InitializePhoneResultLayer();
+
+    /**
      * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
      * easing from its current shown value to zero over @p flStartTime (snapping to zero immediately
      * when @p flStartTime is non-positive), and disarms the bonus voice cue.
@@ -424,16 +433,20 @@ private:
     // unsigned char m_aPad6a[2]; // +0x6a (alignment padding, compiler-inserted)
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
-    // +0x74..+0xc3: further per-frame presentation state, still being worked out.
-    unsigned char m_aReserved74[0x50] = {};                            // +0x74
+    int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
+    // +0x78..+0xc3: further per-frame presentation state, still being worked out.
+    unsigned char m_aReserved78[0x4c] = {};                            // +0x78
     ResultBonusAnimChannel m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
                                                                        //        animation channels.
     bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
     // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
     unsigned char m_aPad13d[3] = {}; // +0x13d
     float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
-    // +0x144..+0x14f: further presentation state, still being worked out.
-    unsigned char m_aReserved144[0xc] = {}; // +0x144
+    // +0x144..+0x14b: further presentation state, still being worked out.
+    unsigned char m_aReserved144[8] = {}; // +0x144
+    bool m_bTwitterAvailable = {};        // +0x14c: whether the Twitter share API is available.
+    // +0x14d..+0x14f is alignment padding before the bonus values.
+    unsigned char m_aPad14d[3] = {}; // +0x14d
     // +0x150..+0x163: the five result-bonus display values, computed by
     // rb::GameScene::ComputeResultBonusesAndExperience and cleared together by ResetThemeSelectState.
     float m_flClearBonus = {};     // +0x150: the clear bonus.

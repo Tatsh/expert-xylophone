@@ -49,6 +49,15 @@ public:
     void InitializeResultWindowSprites();
 
     /**
+     * @brief Initialises the result-screen state flags at the start of the result screen.
+     *
+     * Marks the panel active, arms the bonus voice cue when the game system's result-bonus feature is
+     * set, resets the bonus-cue timer, and records whether the Twitter share API is available.
+     * @ghidraAddress 0x7ab54
+     */
+    void InitializeResultScreenFlags();
+
+    /**
      * @brief Starts the result panel's hide animation: keyframes each display animation channel from
      * its current shown value toward zero over @p flDuration (snapping immediately when
      * non-positive) and clears the panel-active flag.
@@ -396,16 +405,20 @@ private:
     int m_nGlyphBaseB = {};         // +0x70: glyph-table base index B (0x45).
     int m_nGlyphBaseC = {};         // +0x74: glyph-table base index C (0x3a).
     float m_flPartsScale = {};      // +0x78: the parts-sprite scale (1.0).
-    // +0x7c..+0x143: the panel's per-frame presentation state (page index, flick blend, handle,
+    int m_nActive = {};             // +0x7c: set once the result screen is initialised and running.
+    // +0x80..+0x143: the panel's per-frame presentation state (page index, flick blend, handle,
     // per-side statistics, fade alphas, bonus values, and side colours) that the render pass reads;
     // the individual fields are still being worked out.
-    unsigned char m_aReserved7c[0xc8] = {}; // +0x7c
+    unsigned char m_aReserved80[0xc4] = {}; // +0x80
     bool m_bBonusCueArmed = {};             // +0x144: whether the bonus voice cue is still pending.
     // +0x145..+0x147 is alignment padding before the bonus-cue timer.
     unsigned char m_aPad145[3] = {}; // +0x145
     float m_flBonusCueTimer = {};    // +0x148: time accumulated toward the bonus voice cue.
-    // +0x14c..+0x157: further presentation state, still being worked out.
-    unsigned char m_aReserved14c[0xc] = {}; // +0x14c
+    // +0x14c..+0x153: further presentation state, still being worked out.
+    unsigned char m_aReserved14c[8] = {}; // +0x14c
+    bool m_bTwitterAvailable = {};        // +0x154: whether the Twitter share API is available.
+    // +0x155..+0x157 is alignment padding before the bonus values.
+    unsigned char m_aPad155[3] = {}; // +0x155
     // +0x158..+0x173: the seven result-bonus display values, computed by
     // rb::GameScene::ComputeResultBonusesAndExperience.
     float m_flClearBonus = {};     // +0x158: the clear bonus.
