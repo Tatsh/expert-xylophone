@@ -30,6 +30,14 @@ public:
      */
     static NoteGlowLayer *shared();
 
+    /**
+     * @brief Refreshes the theme and rebinds the @c gm_parts1 atlas to the sprite instancer.
+     *
+     * A no-op until the sprite instancer has been built.
+     * @ghidraAddress 0x176a84
+     */
+    void SetTexture();
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and count
