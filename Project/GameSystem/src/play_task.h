@@ -95,6 +95,20 @@ public:
     void LoadMusicAndSheet();
 
     /**
+     * @brief Waits for the active theme's intro animation to finish, then starts the background music
+     * and the play timer, activates the due notes, and (in a tutorial) starts the guide, advancing to
+     * the note-play state.
+     * @ghidraAddress 0x14b914
+     */
+    void BeginMusicPlaybackAndTimer();
+
+    /**
+     * @brief Activates every note whose lead-in has been reached for the current play time.
+     * @ghidraAddress 0x14d4d8
+     */
+    void ActivateDueNotes();
+
+    /**
      * @brief Sets up the note-chart preview presentation: applies the note-manager theme, primes every
      * play-field layer to its shown state, loads the chart (or a synthetic default when no music is
      * selected), starts the play timer and background music, shows the preview, and advances to the

@@ -79,6 +79,9 @@ static constexpr int kStatePresenting = 7;
 static constexpr int kIntroVoiceCue = 2;
 static constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 0x2f8540
 
+// The note-play state BeginMusicPlaybackAndTimer advances to once the intro is done.
+static constexpr int kStateNotePlay = 8;
+
 // The play-ready state AdvanceToPlayReadyState advances to, and the gauge grow-animation from-value
 // (also the marker fade-in's marker value) it primes the layers with.
 static constexpr int kStatePlayReady = 4;
@@ -415,7 +418,51 @@ namespace {
 bool UsesFullDetailSheet(GameSystem *pGameSystem) {
     return IsPad() && (pGameSystem->GetGameType() | 2) == 2;
 }
+
+// Reports whether the active theme's intro animation is still playing, so gameplay must keep waiting.
+bool IsThemeIntroStillAnimating(int nThema) {
+    if (nThema == kThemaClassic) {
+        return BackgroundSpriteManager::shared()->IsActive();
+    }
+    if (nThema == kThemaLimelight) {
+        return LimelightEffectLayer::shared()->IsActive();
+    }
+    if (nThema == kThemaColette) {
+        return NumberLayer::shared()->IsReady();
+    }
+    return false;
+}
 } // namespace
+
+/** @ghidraAddress 0x14b914 */
+void PlayTask::BeginMusicPlaybackAndTimer() {
+    // Keep waiting until the active theme's intro animation has finished.
+    if (IsThemeIntroStillAnimating(m_nThema)) {
+        return;
+    }
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // Start the background music once, then start the play timer running from now.
+    if (!pGameSystem->GetBgmPlaying()) {
+        [RBBGMManager.getInstance PlayMusic:0.0f];
+        GameSystem::GetGameSystem()->SetBgmPlaying(true);
+        [UIViewController attemptRotationToDeviceOrientation];
+    }
+    PlayTimer::shared()->StartPlayback(CACurrentMediaTime(), true);
+
+    // Activate the due notes and cache the chart's first path speed.
+    ActivateDueNotes();
+    m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
+
+    // In a tutorial play, start the guide and fade it in.
+    if (pGameSystem->GetMenuTutorialActive() != 0) {
+        TutorialGuideLayer::shared()->Start();
+        TutorialGuideLayer::shared()->StartFadeIn();
+    }
+
+    m_nState = kStateNotePlay;
+}
 
 /** @ghidraAddress 0x14ab94 */
 void PlayTask::LoadMusicAndSheet() {

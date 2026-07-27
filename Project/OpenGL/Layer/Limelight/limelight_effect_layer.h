@@ -56,6 +56,11 @@ public:
      */
     void SetInactive();
 
+    /** @brief Whether the effect's intro animation is still active. */
+    bool IsActive() const {
+        return m_bActive;
+    }
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.

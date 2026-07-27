@@ -55,6 +55,11 @@ public:
      */
     void ClearReady();
 
+    /** @brief Whether the number display is ready to show (its intro is complete). */
+    bool IsReady() const {
+        return m_bReady;
+    }
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.

@@ -56,6 +56,11 @@ public:
      */
     void SetInactive();
 
+    /** @brief Whether the manager's intro animation is still active. */
+    bool IsActive() const {
+        return m_bActive;
+    }
+
 private:
     /**
      * @brief Constructs the manager, chaining the base constructor and zero-clearing its own state.
