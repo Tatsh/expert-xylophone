@@ -2346,7 +2346,7 @@ static BOOL g_bRandamIntSeeded = NO;
                 cell.artworkImageView.alpha = kArtworkFadeInStartAlpha;
                 [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
                     animations:^{
-                      /** @ghidraAddress 0xb3b30 */
+                      /** @ghidraAddress 0xb3c04 */
                       cell.artworkImageView.alpha = kAlphaOpaque;
                     }
                     completion:^(BOOL finished) {
