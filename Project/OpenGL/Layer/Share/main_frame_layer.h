@@ -95,6 +95,33 @@ public:
      */
     void SetMainFrameTexture(ne::C_TEXTURE *pTexture);
 
+    /**
+     * @brief Selects which of the layer's two sprite instancers @c EmitMainFrameSprite fills.
+     */
+    enum MainFrameInstancer {
+        MainFrameInstancerOverlay = 0, /*!< The marker/difficulty overlay sprite batch. */
+        MainFrameInstancerFrame = 1,   /*!< The single-slot 3D frame-mesh batch. */
+    };
+
+    /**
+     * @brief Appends one sprite to one of the layer's two instancers, at the given world position.
+     *
+     * A no-op when the instancer index is out of range, the sprite kind is out of range, or the
+     * target instancer is already full. The overlay instancer takes its size, anchor, and UV atlas
+     * frame from the shared overlay-layout table (indexed by @p nSpriteKind); the frame-mesh
+     * instancer takes only the position. Either way the sprite is drawn white with its alpha taken
+     * from the frame fade channel, and the instancer's active-sprite count is bumped.
+     * @param nInstancerIndex Which instancer to append to (@c MainFrameInstancer).
+     * @param nSpriteKind The overlay-layout table index (also the source of the UV frame).
+     * @param flX The sprite's world-position X.
+     * @param flY The sprite's world-position Y.
+     * @ghidraAddress 0x17c888
+     */
+    void EmitMainFrameSprite(unsigned int nInstancerIndex,
+                             unsigned int nSpriteKind,
+                             float flX,
+                             float flY);
+
 private:
     /**
      * @brief Rebuilds the frame's 3D vertex mesh. Reconstruction pending.
@@ -123,10 +150,11 @@ private:
     // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
     unsigned char m_aReserved08[0x20] = {};         // +0x08
     ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
-    // +0x30..+0x3f: further layout state, still being worked out.
-    unsigned char m_aReserved30[0x10] = {};        // +0x30
-    ne::C_SPRITE_INSTANCING_2D *m_pFrameMesh = {}; // +0x40: the frame mesh sprite instancer whose
-                                                   //        first slot carries the frame texture.
+    // +0x30..+0x37: further layout state, still being worked out.
+    unsigned char m_aReserved30[8] = {}; // +0x30
+    // +0x38, +0x40: the two instancers EmitMainFrameSprite fills, indexed by MainFrameInstancer.
+    // [MainFrameInstancerFrame] is the frame mesh whose first slot carries the frame texture.
+    ne::C_SPRITE_INSTANCING_2D *m_apInstancers[2] = {};
     int m_nFrameType = {};  // +0x48: the frame type, seeded to 0x20 and set by
                             //        SetMainFrameType (which rebuilds on change).
     int m_nDifficulty = {}; // +0x4c: the difficulty index shown on the frame.
