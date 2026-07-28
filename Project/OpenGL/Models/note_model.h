@@ -424,8 +424,16 @@ public:
 
     /**
      * @brief Records a note's judged grade and drives its post-hit effects and scoring.
-     * Reconstruction pending.
-     * @param nGrade The judged grade.
+     *
+     * A grade of zero latches the perfect-hit flag. A slide note (record type 3) stores the grade
+     * and enters its slide state, returning early for a non-scoring grade. A long note (record type
+     * 1) stores the grade, enters its held state, and clears the long-note-active flag. Every other
+     * (normal) note is marked scored and finished, spawns the hit burst, and — unless it is a rival
+     * note — adds its score, records the judged grade, and adds the per-grade gauge gain (from the
+     * chart's density-tier row), then notifies its chain-path links and the scoring subsystem. All
+     * paths finish by playing the note's tap sound. Screen positions are mirrored for a side-flipped
+     * note.
+     * @param nGrade The judged grade (0 = best/just).
      * @ghidraAddress 0x133ec0
      */
     void ResolveNoteHit(unsigned int nGrade);
@@ -519,10 +527,12 @@ private:
     float m_flShotProgress = {};         // +0x58: the shot step's travel progress.
     float m_flRenderX = {};              // +0x5c: the note's render X coordinate.
     float m_flRenderY = {};              // +0x60: the note's render Y coordinate.
-    unsigned char m_aReserved64[4] = {}; // +0x64
-    int m_nActiveKind = {};              // +0x68: the active segment kind (5 = none).
-    int m_nActiveIndex = {};             // +0x6c: the active segment index (-1 = none).
-    int m_nActiveKind2 = {};             // +0x70: a second active segment kind (5 = none).
+    int m_nLongGrade = {}; // +0x64: a held long note's stored timing grade (set when it is hit).
+    int m_nActiveKind =
+        {}; // +0x68: the active segment kind (5 = none); a resolved slide note stores
+            //        its timing grade here.
+    int m_nActiveIndex = {}; // +0x6c: the active segment index (-1 = none).
+    int m_nActiveKind2 = {}; // +0x70: a second active segment kind (5 = none).
 
     // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
     // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
@@ -554,12 +564,14 @@ private:
     bool m_bWaypointActive = {};                // +0x594
     unsigned char m_aWaypointBlock1[0x2b] = {}; // +0x595
     WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
-    unsigned char m_aReserved5c8[0x8] = {};     // +0x5c8
-    float m_flFadeTimer = {};                   // +0x5d0: the fade-out step's decaying timer.
-    unsigned char m_aReserved5d4[4] = {};       // +0x5d4
+    bool m_bLongNoteActive = {};          // +0x5c8: set while a long note is held, cleared when
+                                          //         the note is hit and finalised.
+    unsigned char m_aReserved5c9[7] = {}; // +0x5c9
+    float m_flFadeTimer = {};             // +0x5d0: the fade-out step's decaying timer.
+    unsigned char m_aReserved5d4[4] = {}; // +0x5d4
     // +0x5d8: the two render draw flags, packed as one 16-bit store {bDrawFlag0, bDrawFlag1}.
     unsigned short m_wDrawFlags = {};
-    unsigned char m_aReserved5da = {}; // +0x5da
+    bool m_bScored = {}; // +0x5da: set once a normal (non-held) note has been scored and finalised.
     bool m_bJustHit =
         {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
     bool m_bShotDecaying = {};  // +0x5dc: whether the shot phase runs its decay timer.

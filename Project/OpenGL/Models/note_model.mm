@@ -18,6 +18,7 @@
 #include "bounds_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
+#include "explosion_effect_layer.h"
 #include "gamesystem.h"
 #include "note_effect_mgr.h"
 #include "playtimer.h"
@@ -1056,6 +1057,115 @@ void NoteModel::UpdateNotePathLinks() {
         pManager->ActivateNoteByIndex(nLinkIndex);
         m_bJustHit = false;
     }
+}
+
+namespace {
+
+// The note-record types that take the held/slide resolution paths (every other type is a normal
+// tap note).
+constexpr int kNoteTypeSlide = 3;
+
+// The rival-play mode a scored note skips scoring for.
+constexpr int kRivalModeSpectate = 3;
+
+// The hold kind whose scored note counts as a hold-bonus hit in the score path.
+constexpr int kScoreHoldKind = 1;
+
+// The first non-scoring timing grade: a slide note judged at or worse than this is dropped without
+// a tap sound.
+constexpr int kGradeMiss = 3;
+
+// The per-density-tier, per-grade reflec-gauge gain the scored note adds (@ghidraAddress 0x308b84).
+// The row is the chart's density tier (0, 1, or 2); the column is the timing grade (0 through 3).
+constexpr int kGaugeGainGradeCount = 4;
+constexpr float kGaugeGainByTier[][kGaugeGainGradeCount] = {
+    {0.05f, 0.03f, 0.01f, 0.05f},
+    {0.04f, 0.02f, 0.01f, 0.04f},
+    {0.03f, 0.02f, 0.01f, 0.03f},
+};
+
+} // namespace
+
+/** @ghidraAddress 0x133ec0 */
+void NoteModel::ResolveNoteHit(unsigned int nGrade) {
+    if (nGrade == 0) {
+        m_bJustHit = true;
+    }
+
+    // The tap sound's grade: a slide note plays it as grade 0, every other path uses the real grade.
+    int nTapGrade = static_cast<int>(nGrade);
+
+    // The slide and long-note types take their own resolution paths.
+    if (m_pRecord != nullptr) {
+        const int nType = m_pRecord->GetType();
+        if (nType == kNoteTypeSlide) {
+            m_nState = kNoteStateSlideExisting;
+            m_nSubState = 0;
+            m_nActiveKind = static_cast<int>(nGrade);
+            nTapGrade = 0;
+            // A non-scoring slide grade (a miss or worse) stops here without even the tap sound.
+            if (static_cast<int>(nGrade) >= kGradeMiss) {
+                return;
+            }
+            PlayNoteTapSound(nTapGrade, false);
+            return;
+        }
+        if (nType == kNoteTypeHold) {
+            m_nLongGrade = static_cast<int>(nGrade);
+            m_nState = kNoteStateLongTouched;
+            m_nSubState = 0;
+            m_bLongNoteActive = false;
+            PlayNoteTapSound(nTapGrade, false);
+            return;
+        }
+    }
+
+    // A normal tap note: mark it scored and finished, then spawn the hit burst.
+    m_bScored = true;
+    m_nState = kNoteStateFinished;
+    m_nSubState = 0;
+
+    // The note's side (from the record, or its own-side flag when it has none) and its screen
+    // position, mirrored when the note is side-flipped.
+    const int nSide =
+        m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+    const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+    const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+    ExplosionEffectLayer::shared()->CreateExplosionEffect(static_cast<unsigned int>(nSide),
+                                                          static_cast<int>(nGrade),
+                                                          m_pos.x * flMirrorX,
+                                                          m_pos.y * flMirrorY);
+
+    if (m_nRivalMode != kRivalModeSpectate) {
+        ScoreTracker *pTracker = ScoreTracker::shared();
+        const int nScoreSide =
+            m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                     (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        pTracker->AddScore(nScoreSide,
+                           static_cast<int>(m_pos.x * flMirrorX),
+                           static_cast<int>(m_pos.y * flMirrorY),
+                           static_cast<int>(nGrade),
+                           0,
+                           nHoldKind == kScoreHoldKind);
+        m_nJudgeGrade = static_cast<int>(nGrade);
+
+        // Add the reflec-gauge gain for this grade at the chart's density tier.
+        ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+        const int nGaugeSide =
+            m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+        ReflecGaugeLayer::AddReflecGaugeValue(kGaugeGainByTier[nTier][nGrade], pGauge, nGaugeSide);
+    }
+
+    UpdateNotePathLinks();
+    if (m_pSheet != nullptr) {
+        const int nScoredSide =
+            m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nScoredSide);
+    }
+
+    PlayNoteTapSound(nTapGrade, false);
 }
 
 /** @ghidraAddress 0x1336e4 */

@@ -35,6 +35,14 @@ public:
     static NoteEffectMgr *shared();
 
     /**
+     * @brief The chart's note-density tier (0, 1, or 2), which selects the per-grade gauge-gain row.
+     * @return The density tier.
+     */
+    int GetDensityTier() const {
+        return m_nDensityTier;
+    }
+
+    /**
      * @brief Resets the per-note position cache: sets every render entry's cached position to the
      *        -1 empty marker.
      * @ghidraAddress 0x1373a0
