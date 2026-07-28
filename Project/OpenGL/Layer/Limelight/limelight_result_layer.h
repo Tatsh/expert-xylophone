@@ -19,6 +19,17 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
+ * @brief One phone result-panel touch/button record: the tracked touch id, a flags half-word, and an
+ * initialised byte. The constructor resets the id to the "none" sentinel and clears the flags.
+ */
+struct ResultButtonRecord {
+    int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
+    unsigned short nFlags = {};     // +0x04: the button's flags half-word.
+    bool bInitialised = {};         // +0x06: whether the button has been initialised.
+    unsigned char m_aPad07[1] = {}; // +0x07: alignment padding to the 8-byte stride.
+};
+
+/**
  * @brief The Limelight-theme result-window layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It draws the
@@ -33,6 +44,10 @@ class LimelightResultLayer : public PlayFieldLayerBase {
 public:
     // The number of result-screen bonus/EX display animation channels.
     static constexpr int kBonusAnimCount = 5;
+    // The number of phone result-panel touch/button records.
+    static constexpr int kButtonCount = 4;
+    // The number of result-step animation slots.
+    static constexpr int kStepAnimSlotCount = 2;
 
     /**
      * @brief The process-wide Limelight result-window layer, created on first use.
@@ -507,6 +522,14 @@ public:
     static constexpr int kSpriteSlotCount = 8;
 
 private:
+    /**
+     * @brief Constructs the layer: chains the base-layer constructor, then zero-clears its state and
+     * seeds the non-zero defaults — the default part alpha (255), the current-step and per-button
+     * touch-id "none" sentinels (-1), and the cleared flags. The binary inlines this into @c shared.
+     * @ghidraAddress 0x12abb4
+     */
+    LimelightResultLayer();
+
     // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
     // full; the shared low-level emit behind all the part helpers.
     // @ghidraAddress 0x12ac64
@@ -561,8 +584,20 @@ private:
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
     int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
-    // +0x78..+0xc3: further per-frame presentation state, still being worked out.
-    unsigned char m_aReserved78[0x4c] = {};                            // +0x78
+    unsigned char m_aReserved78[4] = {}; // +0x78: presentation state, still being worked out.
+    // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch id
+    // reset to -1, a flags half-word, and an initialised byte).
+    ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
+    // +0x9c: the current result step index, reset to -1 (the "none" sentinel).
+    int m_nCurrentStep = {};             // +0x9c
+    int m_nReservedA0 = {};              // +0xa0: presentation state, still being worked out.
+    int m_nReservedA4 = {};              // +0xa4: presentation state, still being worked out.
+    unsigned char m_aReservedA8[4] = {}; // +0xa8: presentation state, still being worked out.
+    // +0xac..+0xc3: the two result-step animation slots the constructor clears (three parallel int
+    // fields per slot at +0xac, +0xb4, and +0xbc, stride 4).
+    int m_aStepAnimA[kStepAnimSlotCount] = {};                         // +0xac
+    int m_aStepAnimB[kStepAnimSlotCount] = {};                         // +0xb4
+    int m_aStepAnimC[kStepAnimSlotCount] = {};                         // +0xbc
     ResultBonusAnimChannel m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
                                                                        //        animation channels.
     bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.

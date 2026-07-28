@@ -66,6 +66,12 @@ constexpr int kSlotTextureField[] = {0, 1, 4, 4, 4, 4, 4, 2};
 // The base scale the builder seeds before creating the batches.
 constexpr float kBaseScale = 0.7f;
 
+// The non-zero defaults the constructor seeds: the default part alpha, and the "none" sentinels for
+// the current result step and each button's tracked touch id.
+constexpr int kDefaultPartAlpha = 0xff;
+constexpr int kNoStep = -1;
+constexpr int kNoTouchId = -1;
+
 // The slot range whose members do not bind a texture: slots kFirstUntexturedSlot through
 // kFirstUntexturedSlot + kUntexturedSlotSpan - 1 (that is, slots 2 through 6).
 constexpr int kFirstUntexturedSlot = 2;
@@ -125,6 +131,18 @@ inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
 }
 
 } // namespace
+
+/** @ghidraAddress 0x12abb4 */
+LimelightResultLayer::LimelightResultLayer() {
+    // The base constructor and the zero-initialised members clear the layer; the constructor then
+    // seeds the non-zero defaults: the default part alpha, the current-step "none" sentinel, and each
+    // button's "none" touch id.
+    m_nDefaultAlpha = kDefaultPartAlpha;
+    m_nCurrentStep = kNoStep;
+    for (ResultButtonRecord &button : m_aButtons) {
+        button.nTouchId = kNoTouchId;
+    }
+}
 
 /** @ghidraAddress 0x123d54 */
 LimelightResultLayer *LimelightResultLayer::shared() {
