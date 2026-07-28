@@ -1269,6 +1269,21 @@ int PhoneStandalonePrefixFor(int nDigitPartBase) {
     }
 }
 
+// Resolves the under-digit prefix glyph for a phone digit-family base, or a supplied fallback for an
+// unlisted family (the leading digit's own part id).
+int PhoneUnderPrefixFor(int nDigitPartBase, int nFallbackPartId) {
+    switch (nDigitPartBase) {
+    case kPhoneFamilyRateBase:
+        return kPhoneRateUnderPrefix;
+    case kPhoneFamilyExpBase:
+        return kPhoneExpUnderPrefix;
+    case kPhoneFamilyBigBase:
+        return kPhoneBigUnderPrefix;
+    default:
+        return nFallbackPartId;
+    }
+}
+
 // The rank-family monospace digit base the number-pair renderer draws with, its slash separator
 // part id, and the number of digit slots each of the pair's numbers extracts.
 constexpr int kPairDigitBase = 0xe0;
@@ -1485,6 +1500,120 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
                                 leftColor.flGreen,
                                 leftColor.flBlue);
         position.x -= flDigitWidth;
+    }
+}
+
+namespace {
+
+// The phone number-pair renderer's digit family base, its slash separator glyph, the number of digit
+// slots each number extracts, and the phone glyph slot they draw into.
+constexpr int kPhonePairDigitBase = 0x10f;
+constexpr int kPhonePairSeparatorPart = 0x119;
+constexpr int kPhonePairDigitSlots = 4;
+constexpr int kPhonePairSlot = 1;
+
+// The centring constants the phone number-pair renderer applies to its cursor: a separator-width
+// fudge and the half factor (@ghidraAddress 0x40c00000 = 6, 0x3f000000 = 0.5), the separator's own
+// one-pixel advance (@ghidraAddress 0xbf800000 = -1), and the upright rotation and unit scale.
+constexpr float kPhonePairCentreFudge = 6.0f;
+constexpr float kPhonePairCentreHalf = 0.5f;
+constexpr float kPhonePairSeparatorGap = 1.0f;
+constexpr float kPhonePairRotation = 0.0f;
+constexpr float kPhonePairScale = 1.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x7a740 */
+void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
+                                                              int nRightValue,
+                                                              const S_VECTOR2 *pBasePosition,
+                                                              unsigned int nAlpha,
+                                                              int nLeftColorIndex,
+                                                              int nRightColorIndex) {
+    // The monospace digit width is the phone digit family's '0' glyph width from the phone parts
+    // table.
+    const float flDigitWidth = g_aColettePartsPhone[kPhonePairDigitBase].flWidth;
+
+    // Extract each number's four base-ten digits (least significant first) and its significant-digit
+    // count (at least one).
+    int aLeftDigits[kPhonePairDigitSlots] = {};
+    int nLeftTop = 0;
+    for (int nSlot = 0; nSlot < kPhonePairDigitSlots; ++nSlot) {
+        aLeftDigits[nSlot] = nLeftValue % 10;
+        if (aLeftDigits[nSlot] != 0) {
+            nLeftTop = nSlot + 1;
+        }
+        nLeftValue /= 10;
+    }
+    const int nLeftCount = nLeftTop != 0 ? nLeftTop : 1;
+
+    int aRightDigits[kPhonePairDigitSlots] = {};
+    int nRightTop = 0;
+    for (int nSlot = 0; nSlot < kPhonePairDigitSlots; ++nSlot) {
+        aRightDigits[nSlot] = nRightValue % 10;
+        if (aRightDigits[nSlot] != 0) {
+            nRightTop = nSlot + 1;
+        }
+        nRightValue /= 10;
+    }
+    const int nRightCount = nRightTop != 0 ? nRightTop : 1;
+
+    const ResultBonusColor &leftColor = g_aResultBonusColor[nLeftColorIndex];
+    const ResultBonusColor &rightColor = g_aResultBonusColor[nRightColorIndex];
+
+    // Seed the cursor centred on the base position: each number's pixel width (truncated to a whole
+    // pixel separately, as the binary does), plus one digit width and a separator-width fudge, halved.
+    // The y-coordinate is carried through from the base position.
+    const float flBaseY = pBasePosition->y;
+    const int nLeftWidth = static_cast<int>(static_cast<float>(nLeftCount) * flDigitWidth);
+    const int nRightWidth = static_cast<int>(static_cast<float>(nRightCount) * flDigitWidth);
+    float flCursorX = pBasePosition->x + (static_cast<float>(nLeftWidth + nRightWidth) +
+                                          flDigitWidth + kPhonePairCentreFudge) *
+                                             kPhonePairCentreHalf;
+
+    // The right number draws first (rightmost), in the right colour, stepping the cursor left per
+    // digit.
+    for (int nSlot = 0; nSlot < nRightCount; ++nSlot) {
+        flCursorX -= flDigitWidth;
+        RenderGlyphPartFromTable(kPhonePairSlot,
+                                 aRightDigits[nSlot] + kPhonePairDigitBase,
+                                 S_VECTOR2{flCursorX, flBaseY},
+                                 nAlpha,
+                                 static_cast<unsigned int>(rightColor.flRed),
+                                 static_cast<unsigned int>(rightColor.flGreen),
+                                 static_cast<unsigned int>(rightColor.flBlue),
+                                 kPhonePairRotation,
+                                 kPhonePairScale,
+                                 kPhonePairScale);
+    }
+
+    // The slash separator draws next, in the right colour, then the cursor steps past it by one pixel.
+    flCursorX -= flDigitWidth;
+    RenderGlyphPartFromTable(kPhonePairSlot,
+                             kPhonePairSeparatorPart,
+                             S_VECTOR2{flCursorX, flBaseY},
+                             nAlpha,
+                             static_cast<unsigned int>(rightColor.flRed),
+                             static_cast<unsigned int>(rightColor.flGreen),
+                             static_cast<unsigned int>(rightColor.flBlue),
+                             kPhonePairRotation,
+                             kPhonePairScale,
+                             kPhonePairScale);
+    flCursorX -= kPhonePairSeparatorGap;
+
+    // The left number draws last, in the left colour, continuing to step the cursor left per digit.
+    for (int nSlot = 0; nSlot < nLeftCount; ++nSlot) {
+        flCursorX -= flDigitWidth;
+        RenderGlyphPartFromTable(kPhonePairSlot,
+                                 aLeftDigits[nSlot] + kPhonePairDigitBase,
+                                 S_VECTOR2{flCursorX, flBaseY},
+                                 nAlpha,
+                                 static_cast<unsigned int>(leftColor.flRed),
+                                 static_cast<unsigned int>(leftColor.flGreen),
+                                 static_cast<unsigned int>(leftColor.flBlue),
+                                 kPhonePairRotation,
+                                 kPhonePairScale,
+                                 kPhonePairScale);
     }
 }
 
