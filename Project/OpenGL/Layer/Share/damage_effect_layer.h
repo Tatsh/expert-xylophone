@@ -80,6 +80,18 @@ public:
      */
     void SetBoundsDamageStyle();
 
+    /**
+     * @brief Advances and redraws every live damage effect for the frame.
+     *
+     * Resets the sprite count, then for each pooled record advances its animation timer; an effect
+     * past its lifetime is deactivated, otherwise its current animation frame's UV is selected (by
+     * colour and frame) and its sprite emitted at the record's position. Finally commits the sprite
+     * count to the instancer.
+     * @param flDelta The frame's elapsed time, in frames.
+     * @ghidraAddress 0x174240
+     */
+    void Process(float flDelta);
+
 private:
     /**
      * @brief Emits one bounds-damage sprite instance into the batch.

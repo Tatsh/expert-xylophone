@@ -56,6 +56,31 @@ constexpr float kAlphaByteScale = 255.0f;
 
 // The Colette theme id.
 constexpr int kThemaColette = 2;
+
+// The damage effect's lifetime (frames) and the per-frame divisor mapping the timer to an animation
+// frame; the frame is clamped to the last of the kAnimFrameCount frames (@ghidraAddress 0x2feff4 =
+// 500, 0x30bf20 = ~20.83).
+constexpr float kEffectLifetime = 500.0f;
+constexpr float kFrameDivisor = 20.8333f;
+constexpr int kAnimFrameCount = 24;
+constexpr int kLastAnimFrame = kAnimFrameCount - 1;
+
+// The damage animation UV table (@ghidraAddress 0x30bf40): kSpriteTypeMax colours of kAnimFrameCount
+// frame UV origins, indexed nColor * kAnimFrameCount + frame.
+constexpr S_VECTOR2 kBoundsDamageUv[] = {
+    {0.0f, 0.0f},           {0.0830078f, 0.0f},      {0.166016f, 0.0f},      {0.249023f, 0.0f},
+    {0.332031f, 0.0f},      {0.415039f, 0.0f},       {0.498047f, 0.0f},      {0.581055f, 0.0f},
+    {0.664062f, 0.0f},      {0.74707f, 0.0f},        {0.830078f, 0.0f},      {0.913086f, 0.0f},
+    {0.0f, 0.166016f},      {0.0830078f, 0.166016f}, {0.166016f, 0.166016f}, {0.249023f, 0.166016f},
+    {0.332031f, 0.166016f}, {0.415039f, 0.166016f},  {0.498047f, 0.166016f}, {0.581055f, 0.166016f},
+    {0.664062f, 0.166016f}, {0.74707f, 0.166016f},   {0.830078f, 0.166016f}, {0.913086f, 0.166016f},
+    {0.0f, 0.332031f},      {0.0830078f, 0.332031f}, {0.166016f, 0.332031f}, {0.249023f, 0.332031f},
+    {0.332031f, 0.332031f}, {0.415039f, 0.332031f},  {0.498047f, 0.332031f}, {0.581055f, 0.332031f},
+    {0.664062f, 0.332031f}, {0.74707f, 0.332031f},   {0.830078f, 0.332031f}, {0.913086f, 0.332031f},
+    {0.0f, 0.498047f},      {0.0830078f, 0.498047f}, {0.166016f, 0.498047f}, {0.249023f, 0.498047f},
+    {0.332031f, 0.498047f}, {0.415039f, 0.498047f},  {0.498047f, 0.498047f}, {0.581055f, 0.498047f},
+    {0.664062f, 0.498047f}, {0.74707f, 0.498047f},   {0.830078f, 0.498047f}, {0.913086f, 0.498047f},
+};
 } // namespace
 
 // The process-wide damage-effect layer, created lazily by shared().
@@ -174,4 +199,29 @@ void DamageEffectLayer::EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VEC
     pBatch->SetSpriteColor(
         nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(flAlphaScale * kAlphaByteScale));
     ++m_nSpriteCount;
+}
+
+/** @ghidraAddress 0x174240 */
+void DamageEffectLayer::Process(float flDelta) {
+    m_nSpriteCount = 0;
+    for (EffectRecord &effect : m_aEffects) {
+        if (!effect.bActive) {
+            continue;
+        }
+        effect.flTimer += flDelta;
+        if (effect.flTimer >= kEffectLifetime) {
+            effect.bActive = false;
+            continue;
+        }
+        // Map the timer to an animation frame (clamped to the last), select that colour and frame's
+        // UV, and emit the sprite at the record's position.
+        int nFrame = static_cast<int>(effect.flTimer / kFrameDivisor);
+        if (nFrame > kLastAnimFrame) {
+            nFrame = kLastAnimFrame;
+        }
+        const S_VECTOR2 &uv = kBoundsDamageUv[effect.nColor * kAnimFrameCount + nFrame];
+        const S_VECTOR2 position{effect.flPosX, effect.flPosY};
+        EmitSprite(effect.nColor, &uv, &position);
+    }
+    m_pSprite->SetSpriteCount(m_nSpriteCount);
 }
