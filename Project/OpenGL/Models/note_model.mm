@@ -26,6 +26,8 @@
 #include "playtimer.h"
 #include "rbffnoterecord.h"
 #include "reflec_gauge_layer.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 
 // The near/far lane slopes, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and read
 // here and by the effect layers. Each is the ratio of a note row's offset to the field-centre row
@@ -392,8 +394,6 @@ constexpr int kNoteStateShot = 4;
 constexpr int kNoteStateSlideExisting = 5;
 constexpr int kNoteStateFadeOut = 7;
 constexpr int kNoteStateFinished = 8;
-// The shot step's packed render draw flags: {bDrawFlag0 = 0, bDrawFlag1 = 1}.
-constexpr unsigned short kShotDrawFlags = 0x100;
 } // namespace
 
 /** @ghidraAddress 0x136960 */
@@ -500,8 +500,9 @@ void NoteModel::UpdateStepShot() {
     AddVector2(&offset, &m_pos);
     m_flRenderX = offset.x;
     m_flRenderY = offset.y;
-    // The two render draw flags, packed as {0, 1}.
-    m_wDrawFlags = kShotDrawFlags;
+    // The shot tail is drawn; the reflect-path flag stays clear.
+    m_bRenderReflectPath = false;
+    m_bRenderShotTail = true;
     // Finish the note once it has flown below the play field's cull margin.
     const float flCullY = GameSystem::GetGameSystem()->GetSheetInsetHalfY() +
                           GameSystem::GetGameSystem()->GetSheetRadiusHalf();
@@ -594,8 +595,8 @@ namespace {
 // The grace a hold head is given past its release time before the note is finalised as a miss
 // (@ghidraAddress 0x308b64 = 153).
 constexpr float kHoldReleaseGrace = 153.0f;
-// The ghost (replay) miss penalty scale: (1 - longRate) * 3 (@ghidraAddress 0x40400000 = 3.0).
-constexpr float kGhostMissPenaltyScale = 3.0f;
+// The miss penalty scale: a fractional shortfall times three (@ghidraAddress 0x40400000 = 3.0).
+constexpr float kMissPenaltyScale = 3.0f;
 // The player/CPU fixed miss penalty delta.
 constexpr int kMissScoreDelta = -3;
 // The rival mode of a ghost (replay) note.
@@ -685,10 +686,9 @@ void NoteModel::UpdateStepExisted() {
                                                          (m_bOwnSide ? 0 : kBoundsColorOwnSide);
                 const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
                 const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
-                const int nDelta =
-                    m_nRivalMode == kRivalModeGhost ?
-                        static_cast<int>((1.0f - m_flLongRate) * kGhostMissPenaltyScale) :
-                        kMissScoreDelta;
+                const int nDelta = m_nRivalMode == kRivalModeGhost ?
+                                       static_cast<int>((1.0f - m_flLongRate) * kMissPenaltyScale) :
+                                       kMissScoreDelta;
                 pTracker->AddScoreDelta(nSide,
                                         static_cast<int>(m_pos.x * flMirrorX),
                                         static_cast<int>(m_pos.y * flMirrorY),
@@ -792,6 +792,157 @@ void NoteModel::UpdateStepExisted() {
             m_flRenderX = m_pos.x;
             m_flRenderY = m_pos.y;
         }
+    }
+}
+
+namespace {
+// The synthetic-note hold length when it has no chart record (the achievement-rate hash scale, reused
+// as a nominal hold duration) (@ghidraAddress 0x2f8540 = 1000).
+constexpr float kSyntheticHoldLength = 1000.0f;
+// The release-window slack: a held note is released once the judge clock is within this of the note's
+// scheduled release (@ghidraAddress 0x308b68 = -83.333).
+constexpr float kReleaseWindowSlack = -83.333336f;
+} // namespace
+
+/** @ghidraAddress 0x1324c4 */
+void NoteModel::UpdateStepLongTouched() {
+    const float flJudgeTime =
+        PlayTimer::shared()->GetPlayTime() * kApproachTimeScale + kApproachTimeBias;
+
+    // The note's scheduled release time and hold length (from the record, or the synthetic fallback).
+    const float flReleaseTime =
+        m_pRecord != nullptr ? static_cast<float>(m_pRecord->GetTimeB() + m_pRecord->GetTimeA()) :
+                               (m_bOwnSide ? m_flSpawnTime + kSyntheticHitLead : 0.0f);
+    const float flHoldLength = m_pRecord != nullptr ?
+                                   static_cast<float>(m_pRecord->GetTargetCopy()) :
+                                   (m_bOwnSide ? kSyntheticHoldLength : 0.0f);
+
+    // While the hold is still running, track its render endpoint along the reversed velocity by the
+    // remaining fraction of the hold.
+    const float flRemaining = (flHoldLength + flReleaseTime) - flJudgeTime;
+    if (0.0f < flRemaining) {
+        S_VECTOR2 dirVec = m_velocity;
+        ScaleVector2(&dirVec, -1.0f);
+        NormalizeVector2(&dirVec);
+        const float flDenominator = m_pRecord != nullptr ?
+                                        static_cast<float>(m_pRecord->GetTargetCopy()) :
+                                        (m_bOwnSide ? kSyntheticHoldLength : 0.0f);
+        float flProgress = flRemaining / flDenominator;
+        if (1.0f < flProgress) {
+            flProgress = 1.0f;
+        }
+        m_flShotProgress = flProgress;
+        S_VECTOR2 offset = dirVec;
+        ScaleVector2(&offset, m_flShotSpeed * flProgress);
+        AddVector2(&offset, &m_pos);
+        m_flRenderX = offset.x;
+        m_flRenderY = offset.y;
+        m_bRenderReflectPath = true;
+    }
+
+    // Determine whether the held note is still touched this frame.
+    bool bTouched;
+    if (m_nRivalMode == 1 || m_nRivalMode == kRivalModeGhost) {
+        // A CPU or ghost note holds automatically.
+        bTouched = true;
+    } else if (m_nRivalMode == kRivalModeSpectate) {
+        return;
+    } else {
+        assert(m_nRivalMode == 0);
+        // A player note holds while any active touch stays within the sheet's release radius, or
+        // unconditionally while the game is paused.
+        if (GameSystem::GetGameSystem()->GetPaused()) {
+            bTouched = true;
+        } else {
+            const float flRadius = GameSystem::GetGameSystem()->GetSheetRadius() * 2.0f;
+            const float flRadiusSq = flRadius * flRadius;
+            bTouched = false;
+            TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+            NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+            for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
+                const S_VECTOR2 *pPoint =
+                    pManager->GetOrCacheNotePosition(pTouchManager->GetActiveTouch(i)->nId);
+                if (pPoint == nullptr) {
+                    continue;
+                }
+                const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+                const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+                const float flDx = m_pos.x * flMirrorX - pPoint->x;
+                const float flDy = m_pos.y * flMirrorY - pPoint->y;
+                if (flDx * flDx + flDy * flDy < flRadiusSq) {
+                    bTouched = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    // The note resolves once it is no longer touched or the judge clock passes its release slack.
+    const bool bResolved =
+        bTouched || (flHoldLength + flReleaseTime + kReleaseWindowSlack < flJudgeTime);
+    if (bResolved) {
+        // The held note ran its full course: finish it as a hit at its stored grade.
+        if (flHoldLength + flReleaseTime < flJudgeTime) {
+            m_nState = kNoteStateFinished;
+            m_nSubState = 0;
+            UpdateNotePathLinks();
+
+            ScoreTracker *pTracker = ScoreTracker::shared();
+            const int nSide = GetSide();
+            const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+            const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+            const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                         (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+            pTracker->AddScore(nSide,
+                               static_cast<int>(m_pos.x * flMirrorX),
+                               static_cast<int>(m_pos.y * flMirrorY),
+                               m_nLongGrade,
+                               0,
+                               nHoldKind == kScoreHoldKind);
+            m_nJudgeGrade = m_nLongGrade;
+
+            ExplosionEffectLayer::shared()->CreateExplosionEffect(static_cast<unsigned int>(nSide),
+                                                                  m_nLongGrade,
+                                                                  m_pos.x * flMirrorX,
+                                                                  m_pos.y * flMirrorY);
+
+            ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+            const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+            ReflecGaugeLayer::AddReflecGaugeValue(
+                kGaugeGainByTier[nTier][m_nLongGrade], pGauge, nSide);
+
+            static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+            PlayNoteTapSound(m_nLongGrade, true);
+        }
+        // Otherwise the note is still within its release grace: hold it another frame.
+    } else {
+        // The note was released early: enter the shot state, take the shortfall penalty, and score it
+        // as a miss.
+        m_nState = kNoteStateShot;
+        m_nSubState = 0;
+        UpdateNotePathLinks();
+
+        ScoreTracker *pTracker = ScoreTracker::shared();
+        const int nSide = GetSide();
+        const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+        const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+        pTracker->AddScoreDelta(nSide,
+                                static_cast<int>(m_pos.x * flMirrorX),
+                                static_cast<int>(m_pos.y * flMirrorY),
+                                static_cast<int>((1.0f - m_flShotProgress) * kMissPenaltyScale));
+
+        const int nBonus =
+            GameSystem::GetGameSystem()->GetFullJustReflec() ? 0 : (m_bShotResolved ? 1 : 0);
+        const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                     (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        pTracker->AddScore(nSide,
+                           static_cast<int>(m_pos.x * flMirrorX),
+                           static_cast<int>(m_pos.y * flMirrorY),
+                           kGradeMiss,
+                           nBonus,
+                           nHoldKind == kScoreHoldKind);
+        m_nJudgeGrade = kGradeMiss;
+        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
     }
 }
 

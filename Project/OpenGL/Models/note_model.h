@@ -272,8 +272,15 @@ public:
     void UpdateStepExisted();
 
     /**
-     * @brief The state-machine long-touched step (state 3): follows the held long-note path and
-     * registers touches, scoring on completion. Reconstruction pending.
+     * @brief The state-machine long-touched step (state 3): tracks a held long note.
+     *
+     * While the hold runs it moves the note's render endpoint along the reversed velocity by the
+     * remaining fraction of the hold. It then decides whether the note is still touched (a CPU or
+     * ghost note always is; a player note holds while an active touch stays within the sheet's
+     * release radius, or unconditionally while paused). Once the note is released or its release time
+     * passes, it either finishes as a hit at its stored grade (scoring the hit, spawning the burst,
+     * adding the gauge gain, and playing the tap sound) or, on an early release, enters the shot state
+     * and scores a miss with the hold-shortfall penalty.
      * @ghidraAddress 0x1324c4
      */
     void UpdateStepLongTouched();
@@ -593,8 +600,9 @@ private:
         {};                  // +0x5d0: the fade-out step's decaying timer, also the approach step's
                              //         appearance progress fraction.
     float m_flBornTime = {}; // +0x5d4: the note's spawn epoch, the approach progress's start time.
-    // +0x5d8: the two render draw flags, packed as one 16-bit store {bDrawFlag0, bDrawFlag1}.
-    unsigned short m_wDrawFlags = {};
+    bool m_bRenderReflectPath =
+        {};                      // +0x5d8: set while the note's held/shot render endpoint is live.
+    bool m_bRenderShotTail = {}; // +0x5d9: set by the shot step to draw the reflected tail.
     bool m_bScored = {}; // +0x5da: set once a normal (non-held) note has been scored and finalised.
     bool m_bJustHit =
         {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
