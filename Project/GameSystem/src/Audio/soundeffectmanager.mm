@@ -165,6 +165,26 @@ unsigned int SoundEffectManager::PlayThemedSoundEffect(int slotID) {
                                        Volume:kSePlayVolume];
 }
 
+/** @ghidraAddress 0x1cca20 */
+unsigned int SoundEffectManager::PlaySharedSoundEffect() {
+    // The current theme selects a shared slot: the Colette theme uses slot 15, the Limelight theme
+    // slot 1, and the Classic theme slot 0.
+    constexpr int kColetteSharedSlot = 15;
+    const RBUserSettingDataTheme theme = RBUserSettingData.sharedInstance.thema;
+    int nSlot;
+    if (theme == RBUserSettingDataThemeColette) {
+        nSlot = kColetteSharedSlot;
+    } else {
+        nSlot = theme == RBUserSettingDataThemeLimelight ? 1 : 0;
+    }
+    if (!m_aSharedLoaded[nSlot]) {
+        return 0xffffffff;
+    }
+    return [AudioManager.sharedManager playSe:nil
+                                   resourceId:m_aSharedResourceId[nSlot]
+                                       Volume:kSePlayVolume];
+}
+
 /** @ghidraAddress 0x1ccb08 */
 unsigned int SoundEffectManager::PlayGameStateSoundEffect() {
     const int nSlot = GameSystem::GetGameSystem()->GetBgmType();

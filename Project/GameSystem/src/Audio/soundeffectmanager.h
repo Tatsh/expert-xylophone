@@ -40,6 +40,15 @@ public:
      */
     unsigned int PlayGameStateSoundEffect();
     /**
+     * @brief Plays the shared sound effect selected by the current theme.
+     *
+     * Maps the current theme to a shared slot (the Colette theme to slot 15, the Limelight theme to
+     * slot 1, and the Classic theme to slot 0) and plays it.
+     * @return The play handle, or @c 0xffffffff when the selected shared slot is not loaded.
+     * @ghidraAddress 0x1cca20
+     */
+    unsigned int PlaySharedSoundEffect();
+    /**
      * @brief Loads the themed voice for the given identifier and immediately plays it.
      *
      * A thin wrapper that loads the voice data through @c LoadThemedVoiceData and then plays it
