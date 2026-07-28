@@ -1146,6 +1146,12 @@ EXCLUDED_ADDRS = {
     '0x16c750', # -showAlertNeedResourceUpdate: — an Objective-C method IMP (method_t at 0x3a09d8,
                 # type "v24@0:8@16") presenting the resource-update-required UIAlertController;
                 # reached only through the method_t, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16a7f4', # -showDownloadErrorWithDelegate: — an Objective-C method IMP (method_t at 0x3a08a0,
+                # type "v24@0:8@16") presenting the download-error UIAlertController with a delegate;
+                # data-only cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16aa0c', # -showTakeoverMessage — an Objective-C method IMP (method_t at 0x3a08b8, type
+                # "v24@0:8@16") presenting the data-takeover notice UIAlertController; data-only
+                # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
