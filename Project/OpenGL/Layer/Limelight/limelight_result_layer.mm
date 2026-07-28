@@ -481,6 +481,89 @@ void LimelightResultLayer::RenderPhonePercentValue(int nValue,
     }
 }
 
+namespace {
+
+// The fraction glyph banks and layout: the parts slot, the digit bank ('0'), the separating slash
+// glyph, the nominal per-digit width used to centre the run, the per-digit advance, the slash
+// advance, and the centring pad.
+constexpr unsigned int kFractionSlot = 1;
+constexpr unsigned int kFractionDigitBank = 0x39;
+constexpr unsigned int kFractionSlashGlyph = 0x46;
+constexpr float kFractionNominalWidth = 7.0f;
+constexpr float kFractionDigitInset = 6.0f;
+constexpr float kFractionDigitAdvance = 7.0f;
+constexpr float kFractionSlashInset = 7.0f;
+constexpr float kFractionSlashAdvance = 1.0f;
+constexpr float kFractionCentrePad = 2.0f;
+
+// Splits a value into up to four digits (ones first) and returns the significant-digit count (at
+// least one).
+inline int SplitFractionDigits(int nValue, int (&aDigits)[4]) {
+    int nSignificant = 0;
+    for (int i = 0; i < 4; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    return nSignificant < 1 ? 1 : nSignificant;
+}
+
+} // namespace
+
+/** @ghidraAddress 0x12a27c */
+void LimelightResultLayer::RenderPhoneFraction(int nNumerator,
+                                               int nDenominator,
+                                               const S_VECTOR2 *pPosition,
+                                               unsigned int nAlpha) {
+    int aNumerator[4] = {};
+    int aDenominator[4] = {};
+    const int nNumCount = SplitFractionDigits(nNumerator, aNumerator);
+    const int nDenCount = SplitFractionDigits(nDenominator, aDenominator);
+
+    // Centre the run: the numerator and denominator digits at the nominal width, plus the slash's
+    // advance and the centring pad, rounded and halved.
+    const int nHalfWidth = static_cast<int>(static_cast<float>(nNumCount) * kFractionNominalWidth +
+                                            static_cast<float>(nDenCount) * kFractionNominalWidth +
+                                            kFractionDigitInset + kFractionCentrePad);
+    float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f;
+    const float flY = pPosition->y;
+
+    // The denominator digits, right to left.
+    for (int i = 0; i < nDenCount; ++i) {
+        RenderPhoneResultSpriteById(kFractionSlot,
+                                    aDenominator[i] + kFractionDigitBank,
+                                    S_VECTOR2{flCursorX - kFractionDigitInset, flY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+        flCursorX -= kFractionDigitAdvance;
+    }
+
+    // The separating slash: unlike a digit, its inset folds into the running cursor before the
+    // slash's own one-pixel advance.
+    flCursorX -= kFractionSlashInset;
+    RenderPhoneResultSpriteById(
+        kFractionSlot, kFractionSlashGlyph, S_VECTOR2{flCursorX, flY}, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+    flCursorX -= kFractionSlashAdvance;
+
+    // The numerator digits, right to left.
+    for (int i = 0; i < nNumCount; ++i) {
+        RenderPhoneResultSpriteById(kFractionSlot,
+                                    aNumerator[i] + kFractionDigitBank,
+                                    S_VECTOR2{flCursorX - kFractionDigitInset, flY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+        flCursorX -= kFractionDigitAdvance;
+    }
+}
+
 /** @ghidraAddress 0x12ac64 */
 void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
                                               const S_VECTOR2 &anchor,

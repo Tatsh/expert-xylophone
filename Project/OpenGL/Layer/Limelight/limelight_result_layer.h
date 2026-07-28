@@ -186,6 +186,25 @@ public:
     void RenderPhonePercentValue(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Renders a fraction (@p nNumerator over @p nDenominator) in the phone result layout.
+     *
+     * Centres the whole run about @p pPosition using a nominal seven-pixel per-digit width, then
+     * draws the denominator digits right to left, a separating slash glyph, and the numerator digits,
+     * so the fraction reads numerator-slash-denominator left to right. Each digit steps the cursor
+     * left by seven pixels (drawn at a six-pixel inset); the slash steps by one (drawn at a
+     * seven-pixel inset).
+     * @param nNumerator The fraction's numerator (up to four digits).
+     * @param nDenominator The fraction's denominator (up to four digits).
+     * @param pPosition The centre position of the fraction.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12a27c
+     */
+    void RenderPhoneFraction(int nNumerator,
+                             int nDenominator,
+                             const S_VECTOR2 *pPosition,
+                             unsigned int nAlpha);
+
+    /**
      * @brief Emits one result-window part sprite by part id.
      *
      * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the
