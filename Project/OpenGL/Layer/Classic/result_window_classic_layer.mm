@@ -59,6 +59,10 @@ PhoneLayoutRect g_ClassicCenterPositionPhoneState = {};     // @ghidraAddress 0x
 PhoneLayoutRect g_ClassicCenterPositionPhonePortrait = {};  // @ghidraAddress 0x3d90e0
 PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x3d90f0
 
+// The fixed landscape offset the customize phone-overlay adds to its base position (zero-initialised
+// in the binary's __common segment, filled at runtime).
+static S_VECTOR2 g_classicCustomizeOverlayLandscapeOffset = {}; // @ghidraAddress 0x3d8058
+
 // The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
 // per result-window part, giving each part's placement offset, size, and UV-palette index.
 const PartsDataRecord g_aClassicPartsPhone[kClassicPhonePartsRecordCount] = {
@@ -770,6 +774,90 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
     return flResult;
 }
 
+namespace {
+// The phone-overlay slide constants.
+// The overlay slide duration (@ghidraAddress 0x2eedcc = 300).
+constexpr float kPhoneOverlaySlideDuration = 300.0f;
+// The upward Y travel applied to the overlay as it slides in (@ghidraAddress 0xc1a00000 = -20).
+constexpr float kPhoneOverlaySlideOffsetY = -20.0f;
+// The phone (portrait) overlay glyph slot, part id, and anchor-position index.
+constexpr unsigned int kPhoneOverlaySlot = 7;
+constexpr unsigned int kPhoneOverlayCharCode = 0x64;
+constexpr int kPhoneOverlayPositionIndex = 0x3c;
+// The iPad (landscape) overlay part id.
+constexpr unsigned int kPadOverlayPartId = 0xde;
+// The main customize asset instancer slot the scaled render targets.
+constexpr unsigned int kMainAssetRenderSlot = 5;
+} // namespace
+
+/** @ghidraAddress 0x119be8 */
+void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
+                                                           const S_VECTOR2 *pBasePos,
+                                                           unsigned int nScale) {
+    // Advance the slide timer: forward (clamped to the duration) while the direction flag is set,
+    // backward (clamped to zero) while it is clear. On reaching zero, kick off any queued main-asset
+    // load and clear the queue sentinel.
+    float flTimer;
+    if (m_bCustomizePending) {
+        flTimer = m_flPhoneOverlayTimer + static_cast<float>(nDeltaFrames);
+        if (flTimer >= kPhoneOverlaySlideDuration) {
+            flTimer = kPhoneOverlaySlideDuration;
+        }
+        m_flPhoneOverlayTimer = flTimer;
+    } else {
+        flTimer = m_flPhoneOverlayTimer - static_cast<float>(nDeltaFrames);
+        m_flPhoneOverlayTimer = flTimer;
+        if (flTimer <= 0.0f) {
+            m_flPhoneOverlayTimer = 0.0f;
+            flTimer = 0.0f;
+            if (m_nTrackIndexC != -1) {
+                BeginCustomizeMainAsset(static_cast<unsigned int>(m_nTrackIndexC));
+                m_nTrackIndexC = -1;
+            }
+        }
+    }
+
+    // Normalise the slide progress to the unit interval.
+    float flProgress = flTimer / kPhoneOverlaySlideDuration;
+    if (flProgress < 0.0f) {
+        flProgress = 0.0f;
+    } else if (flProgress > 1.0f) {
+        flProgress = 1.0f;
+    }
+
+    // The overlay eases upward as it appears; its base alpha scales with the progress.
+    S_VECTOR2 renderPos{pBasePos->x, pBasePos->y + (1.0f - flProgress) * kPhoneOverlaySlideOffsetY};
+    const float flAlphaBase = flProgress * static_cast<float>(nScale);
+    const unsigned int nGroupAlpha =
+        static_cast<unsigned int>(static_cast<int>(flAlphaBase * m_flMainAssetScale));
+
+    if (IsPad()) {
+        // The iPad overlay part draws at the base position shifted by the fixed landscape offset;
+        // the same shifted position feeds the final scaled render.
+        AddVector2(&renderPos, &g_classicCustomizeOverlayLandscapeOffset);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPhoneOverlaySlot, kPadOverlayPartId, renderPos, nGroupAlpha, false);
+    } else {
+        // The phone overlay glyph draws at its own anchor plus the eased position; the final scaled
+        // render then uses the eased position shifted by the phone anchor.
+        RenderSpriteWithPositionOffset(kPhoneOverlaySlot,
+                                       kPhoneOverlayCharCode,
+                                       kPhoneOverlayPositionIndex,
+                                       renderPos,
+                                       nGroupAlpha,
+                                       1.0f);
+        S_VECTOR2 anchorPos{};
+        getPosition_Phone(kPhoneOverlayPositionIndex, &anchorPos);
+        AddVector2(&renderPos, &anchorPos);
+    }
+
+    // The main-asset slot render at the eased position; its scale folds the group alpha and the
+    // inverse main-asset scale.
+    const unsigned int nRenderScale =
+        static_cast<unsigned int>(static_cast<int>(flAlphaBase * (1.0f - m_flMainAssetScale)));
+    RenderSpriteInstancerSlotScaled(kMainAssetRenderSlot, renderPos, nRenderScale);
+}
+
 /** @ghidraAddress 0x115348 */
 void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
                                                                   ne::C_TEXTURE *pTexture) {
@@ -1460,7 +1548,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_flExpAnimTimer = 0.0f;
     m_bExpAnimSettled = false;
     m_bCustomizePending = false;
-    m_nUnlockStep = 0;
+    m_flPhoneOverlayTimer = 0.0f;
     m_nMainAssetId = -1;
     m_nTrackIndexC = -1;
     m_bCustomizePreviewShown = false;

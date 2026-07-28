@@ -124,6 +124,23 @@ public:
     float AdvanceCustomizeOverlayProgress(int nDeltaFrames);
 
     /**
+     * @brief Advances and renders the customize phone-skin overlay for one frame.
+     *
+     * Runs the overlay's slide timer forward while the direction flag is set (clamped to the reveal
+     * duration) or backward while it is clear (clamped to zero, kicking off the queued main-asset
+     * load once it settles). It then renders the overlay group at an eased Y position (offset upward
+     * by the inverse progress) and an alpha scaled by the progress: the phone path draws through the
+     * position-offset glyph helper at a fixed anchor, the iPad path through the part-sprite helper at
+     * a fixed landscape offset, and both finish with the scaled main-asset slot render.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @param pBasePos The overlay group's base screen position.
+     * @param nScale The base alpha/size scale.
+     * @ghidraAddress 0x119be8
+     */
+    void
+    RenderCustomizePhoneOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, unsigned int nScale);
+
+    /**
      * @brief Resets the result-screen score/level display block to its per-round defaults.
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
@@ -698,10 +715,10 @@ private:
                                      //         (-1 when none is playing).
     bool m_bCustomizePending = {};   // +0x188: whether a customize asset swap is pending.
     // +0x189..+0x18b is alignment padding.
-    unsigned char m_aPad189[3] = {}; // +0x189
-    int m_nUnlockStep = {};          // +0x18c: the unlock-progression step.
-    int m_nMainAssetId = {};         // +0x190: the main customize asset id being shown.
-    int m_nTrackIndexC = {};         // +0x194: the resolved music-track index (-1 when unset).
+    unsigned char m_aPad189[3] = {};  // +0x189
+    float m_flPhoneOverlayTimer = {}; // +0x18c: the phone customize-overlay slide timer (0 to 300).
+    int m_nMainAssetId = {};          // +0x190: the main customize asset id being shown.
+    int m_nTrackIndexC = {};          // +0x194: the resolved music-track index (-1 when unset).
     // +0x198: a customize-asset sub-state byte cleared when the main asset loads.
     bool m_bMainAssetSubState = {}; // +0x198
     // +0x199..+0x19b is alignment padding.
