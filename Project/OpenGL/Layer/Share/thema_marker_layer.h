@@ -49,6 +49,17 @@ public:
     void LoadThemaMarkerSprites();
 
     /**
+     * @brief Re-applies the current theme to the already-built markers: refreshes the theme, reselects
+     * the marker count, reloads and re-binds the atlas to both batches, and re-emits every marker
+     * group's geometry.
+     *
+     * Unlike @c LoadThemaMarkerSprites this does not create the batches; it refreshes an existing
+     * layer after a theme change.
+     * @ghidraAddress 0x17fd1c
+     */
+    void SetupMarkers();
+
+    /**
      * @brief Begins the marker fade-out: resets the active marker index and eases the markers to
      * transparent over @p flDuration (snapping to transparent and marking the colour dirty when the
      * duration is non-positive).

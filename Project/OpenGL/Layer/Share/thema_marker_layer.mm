@@ -173,6 +173,44 @@ void ThemaMarkerLayer::LoadThemaMarkerSprites() {
     m_bBuilt = true;
 }
 
+/** @ghidraAddress 0x17fd1c */
+void ThemaMarkerLayer::SetupMarkers() {
+    RefreshThema();
+
+    // The Classic theme shows six marker groups; the others show four.
+    const int nThema = [RBUserSettingData.sharedInstance thema];
+    m_nMarkerCount = nThema == kClassicThema ? kClassicMarkerCount : kOtherMarkerCount;
+
+    // Reload the atlas and re-bind it to both existing batches.
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
+        if (pSprite != nullptr) {
+            pSprite->SetRefCountedMember(m_pTexture);
+        }
+    }
+
+    // Re-emit each marker group's sprites: the anchor and size from the layout table, the UV origin
+    // and size from the UV table, all white with zero alpha and a zero position.
+    for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
+        const MarkerLayout &layout = kMarkerLayout[nMarker];
+        const UvEntry &uv = LookupUv(layout.nUvIndex);
+        ne::C_SPRITE_INSTANCING_2D *pSprite = m_apSprites[kMarkerBatch[nMarker]];
+        const int nBaseIndex = m_aMarkerBaseIndex[nMarker];
+        for (int nSprite = 0; nSprite < kMarkerSpriteCount[nMarker]; ++nSprite) {
+            if (pSprite == nullptr) {
+                continue;
+            }
+            const int nIndex = nBaseIndex + nSprite;
+            pSprite->SetSpritePosition(nIndex, S_VECTOR2{0.0f, 0.0f});
+            pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{layout.flAnchorX, layout.flAnchorY});
+            pSprite->SetSpriteSize(nIndex, S_VECTOR2{layout.flSizeW, layout.flSizeH});
+            pSprite->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+            pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+            pSprite->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, 0);
+        }
+    }
+}
+
 /** @ghidraAddress 0x180438 */
 void ThemaMarkerLayer::StartFadeOut(float flDuration) {
     m_flActiveMarker = 0.0f;
