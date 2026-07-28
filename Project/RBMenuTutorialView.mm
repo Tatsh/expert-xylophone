@@ -22,8 +22,8 @@
 #import "soundeffectmanager.h"
 
 // The per-texture-type source rectangles into the tutorial artwork atlas, read by -getClipRect:.
-// @ghidraAddress 0x3de058 (g_pTutorialClipRect)
-extern "C" const CGRect g_pTutorialClipRect[];
+// Seeded at load time by SetupDialogLayoutCoordTable. @ghidraAddress 0x3de058 (g_pTutorialClipRect)
+extern "C" CGRect g_pTutorialClipRect[];
 
 // The tutorial message artwork atlas the per-step message and marker clips are cut from.
 static NSString *const kTutorialArtworkImageName = @"10_tutorial/tu_tex01";
