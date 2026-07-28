@@ -110,6 +110,19 @@ public:
      * @ghidraAddress 0x131868
      */
     static PlayTimer *shared();
+
+    /**
+     * @brief Advances the play clock for this frame, syncing to the BGM playback time.
+     *
+     * A no-op that zeroes the frame delta while paused. Otherwise it measures the wall-clock interval
+     * since the last update, and — when the timer is running (music-driven) — corrects the timing
+     * origin for any drift between the wall clock and the BGM's reported position, biased by an
+     * OS-version-tier latency offset. The per-frame step is the drift-corrected interval scaled to
+     * milliseconds, clamped to non-negative.
+     * @return This timer, or null when the timer is running but the BGM has not yet advanced.
+     * @ghidraAddress 0x1318a4
+     */
+    PlayTimer *Update();
 };
 
 /** @brief The engine play-timing singleton, constructed by @c PlayTimer::shared. */
