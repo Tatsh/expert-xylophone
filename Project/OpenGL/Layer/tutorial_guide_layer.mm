@@ -1,6 +1,7 @@
 #include "tutorial_guide_layer.h"
 
 #import "RBTutorialManager.h"
+#include "curve.h"
 #include "deviceenvironment.h"
 #include "gamesystem.h"
 #include "neRender.h"
@@ -356,6 +357,316 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
 
     GameSystem::GetGameSystem()->SetTutorialPhase(nNextPhase);
     m_flStateTimer = 0.0f;
+}
+
+namespace {
+// The element anchor ids the overlay highlights per tutorial phase: the music-info block during
+// phases 2 through 4, the centre panel at phase 5, and the score block at phase 1. These match
+// ResultWindowColetteLayer's element anchor ids.
+constexpr int kAnchorMusicInfo = 0x46;
+constexpr int kAnchorCentre = 1;
+constexpr int kAnchorScore = 5;
+
+// The half factor used throughout the overlay's midpoint maths.
+constexpr float kHalf = 0.5f;
+
+// The per-orientation phase-1 element nudges, in pixels.
+constexpr float kPhase1NudgePortraitBottom = -4.0f;
+constexpr float kPhase1NudgePhoneLeft = -10.0f;
+constexpr float kPhase1NudgePhoneRight = 10.0f;
+constexpr float kPhase1NudgePadLeft = -20.0f;
+constexpr float kPhase1NudgePadRight = 20.0f;
+
+// The arrow/box quad offsets, in pixels.
+constexpr float kArrowVerticalNudge = -10.0f;
+constexpr float kArrowTailOffset = 20.0f;
+constexpr float kBoxInset = 4.0f;
+
+// The phrase-anchor vertical offsets: the drop below the element when it is in the upper half, and
+// the rise above the element (phone versus iPad) when it is in the lower half. @ghidraAddress
+// 0x2eedd0, 0x2fcfec, 0x301f90.
+constexpr float kPhraseBelowOffset = 50.0f;     // 0x2eedd0
+constexpr float kHandOffsetLandscape = -100.0f; // 0x2fcfec
+constexpr float kHandOffsetPad = -240.0f;       // 0x301f90
+
+// The lazily-initialised per-device phrase-glyph offset tables (@ghidraAddress 0x3dd020 phone,
+// 0x3dd050 iPad), each four {x, y} pairs seeded from the shipped vector constants at 0x301f30 and
+// 0x301f50. Modelled as file-scope constants rather than the binary's guarded runtime copies. Only
+// entries 1 through 3 are read (the hand, the primary phrase, and the finish phrase).
+struct HandGlyphOffset {
+    float flX;
+    float flY;
+};
+constexpr HandGlyphOffset kHandOffsetsPhone[] = {
+    {0.0f, 0.0f}, {-68.0f, 0.0f}, {-90.0f, 106.0f}, {20.0f, -4.0f}}; // 0x301f30
+constexpr HandGlyphOffset kHandOffsetsPad[] = {
+    {0.0f, 0.0f}, {-180.0f, 40.0f}, {-180.0f, 240.0f}, {0.0f, 32.0f}}; // 0x301f50
+
+// The phrase-glyph offset-table entries: the pointer hand, the primary phrase, and the finish phrase.
+constexpr int kOffsetHand = 1;
+constexpr int kOffsetPrimary = 2;
+constexpr int kOffsetFinish = 3;
+
+// The overlay animation curves (@ghidraAddress 0x302118/128/138/160/188/1a0/1c0).
+constexpr float kHandScaleInCurve[] = {0.0f, 0.0f, 166.66667f, 1.0f}; // 0x302128 (n=2)
+constexpr float kHandAlphaInCurve[] = {0.0f, 0.0f, 166.66667f, 1.0f}; // 0x302118 (n=2)
+constexpr float kPhraseScaleCurve[] = {                               // 0x302138 (n=5)
+    0.0f,
+    0.0f,
+    150.0f,
+    1.1f,
+    200.0f,
+    1.0f,
+    233.33333f,
+    1.05f,
+    266.66667f,
+    1.0f};
+constexpr float kPhraseScaleHeldCurve[] = { // 0x302160 (n=5)
+    0.0f,
+    1.0f,
+    150.0f,
+    1.1f,
+    200.0f,
+    1.0f,
+    233.33333f,
+    1.05f,
+    266.66667f,
+    1.0f};
+constexpr float kFinishAlphaCurve[] = {
+    0.0f, 0.0f, 166.66667f, 0.0f, 250.0f, 1.0f}; // 0x302188 (n=3)
+constexpr float kHandSweepCurve[] = {            // 0x3021a0 (n=4)
+    0.0f,
+    0.8f,
+    166.66667f,
+    0.8f,
+    1500.0f,
+    0.2f,
+    1666.6667f,
+    0.2f};
+constexpr float kFinishSweepCurve[] = { // 0x3021c0 (n=4)
+    0.0f,
+    0.0f,
+    166.66667f,
+    1.0f,
+    1500.0f,
+    1.0f,
+    1666.6667f,
+    0.0f};
+
+// The alpha scale applied to the curve outputs (@ghidraAddress 0x2eed00 = 255).
+constexpr float kAlphaScale = 255.0f;
+
+// The half-opaque and fully-opaque sprite alphas.
+constexpr int kHalfAlpha = 0x80;
+constexpr int kFullAlpha = 0xff;
+
+// The phase bit masks that gate the animated phrase glyphs.
+constexpr int kPhaseMaskAnimatedHand = 0x26; // Phases 1, 2, and 5.
+constexpr int kPhaseMaskStaticHand = 0x18;   // Phases 3 and 4.
+
+// The phase-5 blink period, in milliseconds, and its half point (glyph swaps at the half period).
+constexpr int kBlinkPeriodMs = 1000;
+constexpr int kBlinkHalfMs = 500;
+
+// The sprite kinds the overlay emits.
+constexpr unsigned int kSpriteKindArrowTop = 1;
+constexpr unsigned int kSpriteKindArrowRight = 2;
+constexpr unsigned int kSpriteKindArrowBottom = 3;
+constexpr unsigned int kSpriteKindArrowLeft = 4;
+constexpr unsigned int kSpriteKindBoxTopLeft = 5;
+constexpr unsigned int kSpriteKindBoxTopRight = 6;
+constexpr unsigned int kSpriteKindBoxBottomLeft = 7;
+constexpr unsigned int kSpriteKindBoxBottomRight = 8;
+constexpr unsigned int kSpriteKindPhrasePrimary = 9;
+constexpr unsigned int kSpriteKindPhraseHand = 10;
+constexpr unsigned int kSpriteKindFinishPhraseBase = 0x16;
+constexpr unsigned int kSpriteKindFinishHand = 0xd;
+constexpr unsigned int kSpriteKindBlinkGlyphA = 0xc;
+constexpr unsigned int kSpriteKindBlinkGlyphB = 0xd;
+} // namespace
+
+/** @ghidraAddress 0x10c5f8 */
+void TutorialGuideLayer::RenderResultOverlay(float flDeltaTime) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flGaugeX = pGameSystem->GetViewportWidth();
+    m_flGaugeY = pGameSystem->GetViewportHeight();
+    m_pSprite->SetSpriteCount(0);
+
+    // Nothing to draw while the overlay is disabled.
+    if ((m_nFadeState & 0xff) == 0) {
+        return;
+    }
+    m_flClock += flDeltaTime;
+
+    // The overlay only runs while a tutorial phase is active.
+    if (pGameSystem->GetTutorialPhase() == 0) {
+        return;
+    }
+
+    const float flViewportWidth = pGameSystem->GetViewportWidth();
+    const float flViewportHeight = pGameSystem->GetViewportHeight();
+
+    // Resolve the highlighted element's bounds by phase.
+    S_VECTOR2 elemMin{0.0f, 0.0f};
+    S_VECTOR2 elemMax{0.0f, 0.0f};
+    const int nPhase = pGameSystem->GetTutorialPhase();
+    ResultWindowColetteLayer *pResult = ResultWindowColetteLayer::shared();
+    if (nPhase - 2U < 3) {
+        pResult->ComputeElementBounds(kAnchorMusicInfo, &elemMin, &elemMax);
+    } else if (nPhase == kTutorialPhaseComplete) {
+        pResult->ComputeElementBounds(kAnchorCentre, &elemMin, &elemMax);
+    } else if (nPhase == kTutorialPhaseHint1) {
+        pResult->ComputeElementBounds(kAnchorScore, &elemMin, &elemMax);
+        // The score block is nudged in per orientation.
+        if (!IsPad()) {
+            if (flViewportWidth < flViewportHeight) {
+                elemMax.y += kPhase1NudgePortraitBottom;
+            } else {
+                elemMin.x += kPhase1NudgePhoneLeft;
+                elemMax.x += kPhase1NudgePhoneRight;
+            }
+        } else {
+            elemMin.x += kPhase1NudgePadLeft;
+            elemMax.x += kPhase1NudgePadRight;
+        }
+    }
+
+    // The four bounding arrows point at the element's edge midpoints, and the four corner boxes sit
+    // just inside its corners.
+    S_VECTOR2 arrowTop{(elemMax.x + elemMin.x) * kHalf, elemMin.y * kHalf};
+    S_VECTOR2 arrowBottom{(elemMax.x + elemMin.x) * kHalf, (flViewportHeight + elemMax.y) * kHalf};
+    S_VECTOR2 arrowLeft{elemMin.x * kHalf, flViewportHeight * kHalf + kArrowVerticalNudge};
+    S_VECTOR2 arrowRight{(flViewportWidth + elemMax.x) * kHalf,
+                         flViewportHeight * kHalf + kArrowVerticalNudge};
+    S_VECTOR2 boxTopLeft{elemMin.x + kBoxInset, elemMin.y + kBoxInset};
+    S_VECTOR2 boxTopRight{elemMax.x - kBoxInset, elemMin.y + kBoxInset};
+    S_VECTOR2 boxBottomRight{elemMax.x - kBoxInset, elemMax.y - kBoxInset};
+    S_VECTOR2 boxBottomLeft{elemMin.x + kBoxInset, elemMax.y - kBoxInset};
+
+    // The phrase glyphs anchor above the element when it sits in the screen's upper half, and below
+    // it (with a larger drop on an iPad) when it sits in the lower half.
+    float flPhraseHandBaseY;
+    if ((elemMax.y + elemMin.y) * kHalf < flViewportHeight * kHalf) {
+        flPhraseHandBaseY = elemMax.y + kPhraseBelowOffset;
+    } else {
+        flPhraseHandBaseY = elemMin.y + (IsPad() ? kHandOffsetPad : kHandOffsetLandscape);
+    }
+    const float flPhraseHandBaseX = flViewportWidth * kHalf;
+
+    // The three phrase-glyph positions read from the per-device offset table.
+    const HandGlyphOffset *pOffsets = IsPad() ? kHandOffsetsPad : kHandOffsetsPhone;
+    S_VECTOR2 phraseHand{flPhraseHandBaseX + pOffsets[kOffsetHand].flX,
+                         flPhraseHandBaseY + pOffsets[kOffsetHand].flY};
+    S_VECTOR2 phrasePrimary{flPhraseHandBaseX + pOffsets[kOffsetPrimary].flX,
+                            flPhraseHandBaseY + pOffsets[kOffsetPrimary].flY};
+    S_VECTOR2 phraseFinish{flPhraseHandBaseX + pOffsets[kOffsetFinish].flX,
+                           flPhraseHandBaseY + pOffsets[kOffsetFinish].flY};
+
+    // Emit the four arrows and four corner boxes at half alpha.
+    EmitTutorialSpriteSlot(
+        elemMax.x - elemMin.x, elemMin.y, kSpriteKindArrowTop, &arrowTop.x, kHalfAlpha);
+    EmitTutorialSpriteSlot(elemMax.x - elemMin.x,
+                           flViewportHeight - elemMax.y,
+                           kSpriteKindArrowBottom,
+                           &arrowBottom.x,
+                           kHalfAlpha);
+    EmitTutorialSpriteSlot(elemMin.x,
+                           flViewportHeight + kArrowTailOffset,
+                           kSpriteKindArrowLeft,
+                           &arrowLeft.x,
+                           kHalfAlpha);
+    EmitTutorialSpriteSlot(flViewportWidth - elemMax.x,
+                           flViewportHeight + kArrowTailOffset,
+                           kSpriteKindArrowRight,
+                           &arrowRight.x,
+                           kHalfAlpha);
+    EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxTopLeft, &boxTopLeft.x, kHalfAlpha);
+    EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxTopRight, &boxTopRight.x, kHalfAlpha);
+    EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxBottomLeft, &boxBottomLeft.x, kHalfAlpha);
+    EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindBoxBottomRight, &boxBottomRight.x, kHalfAlpha);
+
+    // The animated phrase and its pointer hand: phases 1, 2, and 5 fade and scale the hand in;
+    // phases 3 and 4 draw it steady; the primary phrase scales along its own curve.
+    const int nPhaseNow = pGameSystem->GetTutorialPhase();
+    if (nPhaseNow < 6) {
+        if ((1 << nPhaseNow) & kPhaseMaskAnimatedHand) {
+            const float flHandScale =
+                CalculateCurveInterpolation(kHandScaleInCurve, 2, m_flStateTimer);
+            const float flHandScaleY =
+                CalculateCurveInterpolation(kHandScaleInCurve, 2, m_flStateTimer);
+            const float flHandAlpha =
+                CalculateCurveInterpolation(kHandAlphaInCurve, 2, m_flStateTimer);
+            EmitTutorialSpriteSlot(flHandScale,
+                                   flHandScaleY,
+                                   kSpriteKindPhraseHand,
+                                   &phraseHand.x,
+                                   static_cast<int>(flHandAlpha * kAlphaScale));
+            const float flPhraseScale =
+                CalculateCurveInterpolation(kPhraseScaleCurve, 5, m_flStateTimer);
+            const float flPhraseScaleY =
+                CalculateCurveInterpolation(kPhraseScaleCurve, 5, m_flStateTimer);
+            EmitTutorialSpriteSlot(flPhraseScale,
+                                   flPhraseScaleY,
+                                   kSpriteKindPhrasePrimary,
+                                   &phrasePrimary.x,
+                                   kFullAlpha);
+        } else if ((1 << nPhaseNow) & kPhaseMaskStaticHand) {
+            EmitTutorialSpriteSlot(1.0f, 1.0f, kSpriteKindPhraseHand, &phraseHand.x, kFullAlpha);
+            const float flPhraseScale =
+                CalculateCurveInterpolation(kPhraseScaleHeldCurve, 5, m_flStateTimer);
+            const float flPhraseScaleY =
+                CalculateCurveInterpolation(kPhraseScaleHeldCurve, 5, m_flStateTimer);
+            EmitTutorialSpriteSlot(flPhraseScale,
+                                   flPhraseScaleY,
+                                   kSpriteKindPhrasePrimary,
+                                   &phrasePrimary.x,
+                                   kFullAlpha);
+        }
+    }
+
+    // The finish phrase fades in over phases 1 through 5.
+    const int nPhaseFinish = pGameSystem->GetTutorialPhase();
+    if (nPhaseFinish - 1U < 5) {
+        const float flFinishAlpha =
+            CalculateCurveInterpolation(kFinishAlphaCurve, 3, m_flStateTimer);
+        EmitTutorialSpriteSlot(1.0f,
+                               1.0f,
+                               static_cast<unsigned int>(nPhaseFinish) +
+                                   kSpriteKindFinishPhraseBase,
+                               &phraseFinish.x,
+                               static_cast<int>(flFinishAlpha * kAlphaScale));
+    }
+
+    // A hand sweeps horizontally across the element along the sweep curve; at phase 3 an extra
+    // finish hand fades in at the sweep position.
+    const float flSweep = CalculateCurveInterpolation(kHandSweepCurve, 4, m_flStateTimer);
+    S_VECTOR2 sweepHand{elemMin.x + (elemMax.x - elemMin.x) * flSweep,
+                        (elemMax.y + elemMin.y) * kHalf};
+    if (pGameSystem->GetTutorialPhase() == kTutorialPhaseResult) {
+        const float flFinishSweepAlpha =
+            CalculateCurveInterpolation(kFinishSweepCurve, 4, m_flStateTimer);
+        EmitTutorialSpriteSlot(1.0f,
+                               1.0f,
+                               kSpriteKindFinishHand,
+                               &sweepHand.x,
+                               static_cast<int>(flFinishSweepAlpha * kAlphaScale));
+    }
+
+    // A blinking glyph in the final phase, nudged in on the phone portrait layout, alternating
+    // between two frames each half of the blink period.
+    S_VECTOR2 blinkGlyph;
+    if (flViewportHeight <= flViewportWidth) {
+        blinkGlyph = S_VECTOR2{elemMax.x, (elemMax.y + elemMin.y) * kHalf};
+    } else {
+        blinkGlyph = S_VECTOR2{elemMax.x - 9.0f, (elemMax.y + elemMin.y) * kHalf + 17.0f};
+    }
+    if (pGameSystem->GetTutorialPhase() == kTutorialPhaseComplete) {
+        const unsigned int nBlinkKind =
+            static_cast<int>(m_flStateTimer) % kBlinkPeriodMs < kBlinkHalfMs ?
+                kSpriteKindBlinkGlyphA :
+                kSpriteKindBlinkGlyphB;
+        EmitTutorialSpriteSlot(1.0f, 1.0f, nBlinkKind, &blinkGlyph.x, kFullAlpha);
+    }
 }
 
 /** @ghidraAddress 0x10b400 */
