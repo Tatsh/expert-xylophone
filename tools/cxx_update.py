@@ -1164,6 +1164,33 @@ EXCLUDED_ADDRS = {
     '0x16c964', # -showAddLimepointByApplilink:: — an Objective-C method IMP (method_t at 0x3a09f0,
                 # type "v28@0:8i16@20") presenting the Applilink limepoint-added UIAlertController;
                 # data-only cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x169c24', # -deleteAlertViewWithDelegate: — an Objective-C method IMP (method_t at 0x3a0828)
+                # presenting the delete-confirmation UIAlertController; data-only cross-references,
+                # objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16a084', # -showRestoreDownloadWithDelegate: — an Objective-C method IMP (method_t at
+                # 0x3a0858) presenting the restore-download confirmation UIAlertController; data-only
+                # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16a394', # -showRestoreMessageWithDelegate: — an Objective-C method IMP (method_t at 0x3a0870)
+                # presenting the restore-message confirmation UIAlertController; data-only
+                # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16c440', # -showDownloadWithDelegate: — an Objective-C method IMP (method_t at 0x3a09c0)
+                # presenting the download confirmation UIAlertController; data-only cross-references,
+                # objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16aec4', # -showMapWithTitle:delegate: — an Objective-C method IMP (method_t at 0x3a0900)
+                # presenting the titled map confirmation UIAlertController; data-only cross-
+                # references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16cbc0', # -showAlertNeedDownloadMusicNameList: — an Objective-C method IMP (method_t at
+                # 0x3a0a08) presenting the music-download-required confirmation UIAlertController;
+                # data-only cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16d114', # -showSelectPurchaseLimitTypeWithDelegate: — an Objective-C method IMP (method_t at
+                # 0x3a0a38) presenting the purchase-limit-type confirmation UIAlertController;
+                # data-only cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16bfec', # -showAlertUpdateForUnlock: — an Objective-C method IMP (method_t at 0x3a0990)
+                # presenting the update-for-unlock confirmation UIAlertController; data-only cross-
+                # references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16b66c', # -showSerialcodeDialog: — an Objective-C method IMP (method_t at 0x3a0948)
+                # presenting the serial-code entry UIAlertController; data-only cross-references,
+                # objc_msgSend-dispatched, ObjC-side not C/C++.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
