@@ -129,7 +129,15 @@ private:
     void RenderGradeMeterSprite(unsigned int nSide);
 
     /**
-     * @brief Draws a side's rank glyphs (rank AA and above). Reconstruction pending.
+     * @brief Draws one side's animated achievement-rate digit strip (the rank AA-and-above path).
+     *
+     * Once the reveal clock passes the digit reveal threshold it first draws the achievement-rate
+     * percentage digits. It then animates each of the seven strip glyphs in with its own scale,
+     * alpha, and horizontal-position curves, sampled at the reveal clock, positioning each glyph
+     * relative to the layer's layout origin. In single-side mode the far side is mirrored a half-turn
+     * across the field and the near side is nudged down; each glyph is emitted at the sampled scale,
+     * with alpha faded by the reveal channel.
+     * @param nSide The player side.
      * @ghidraAddress 0x120e50
      */
     void RenderGradeRankGlyphs(int nSide);
@@ -151,11 +159,22 @@ private:
     void EmitGradeMeterSlot(unsigned int nSide, const S_VECTOR2 *pUvOrigin, unsigned int nAlpha);
 
     /**
+     * @brief Draws one side's achievement-rate percentage digits. Reconstruction pending.
+     * @param flClock The digit animation clock (the reveal clock shifted by the digit reveal
+     * offset).
+     * @param nSide The player side.
+     * @ghidraAddress 0x121e14
+     */
+    void RenderGradeArDigits(float flClock, unsigned int nSide);
+
+    /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x120630
      */
     LimelightThemeLayer();
 
+    // +0x08 and +0x0c are the layer's layout size (384 x 680); the grade strip also reads them as
+    // the layout origin it positions the animated glyphs relative to.
     float m_flWidth = {};                 // +0x08: the layer's layout width (384).
     float m_flHeight = {};                // +0x0c: the layer's layout height (680).
     ne::C_TEXTURE *m_pPartsTexture = {};  // +0x10: the gm_parts2 atlas.

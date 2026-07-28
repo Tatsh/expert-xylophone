@@ -173,6 +173,90 @@ constexpr S_VECTOR2 kMeterNeedleUv[] = {
 constexpr int kMeterNeedleFrameCount = 30;
 constexpr int kMeterNeedleLastFrame = kMeterNeedleFrameCount - 1;
 
+// The number of glyphs in the animated achievement-rate rank strip, and the first grade sprite kind
+// the strip's glyphs occupy (kinds 1..7 in the grade sprite-layout table, the digit glyphs).
+constexpr int kRankGlyphCount = 7;
+constexpr int kRankGlyphFirstKind = 1;
+
+// The reveal-clock threshold past which the achievement-rate digits are drawn, and the offset added
+// to the reveal clock to form the digit animation clock (@ghidraAddress 0x305230, 0x305234).
+constexpr float kArDigitsRevealThreshold = 583.33331f;
+constexpr float kArDigitsClockOffset = -583.33331f;
+
+// The number of knots in the rank glyphs' scale, alpha, and position curves.
+constexpr int kRankScaleKnots = 4;
+constexpr int kRankAlphaKnots = 4;
+constexpr int kRankPositionKnots = 5;
+
+// The single-side mode's field-mirror geometry: the near side's downward Y nudge (the pastel base
+// size), the far side's mirrored Y origin and its downward offset, and its half-turn rotation
+// (@ghidraAddress 0x301f78 = 200, 0x3052c0 = -200, 0x2fe894 = pi).
+constexpr float kSingleSideNearNudgeY = 200.0f;
+constexpr float kSingleSideFarOriginY = -200.0f;
+constexpr float kSingleSideFarRotation = 3.1415927f;
+
+// The player side that draws near the bottom of the field in single-side mode.
+constexpr int kNearSide = 1;
+
+// Each rank glyph's per-frame scale curve ({time, scale} knots at @ghidraAddress 0x305434): a quick
+// overshoot settling to unity, staggered later for each successive glyph.
+constexpr float kRankScaleCurve[kRankGlyphCount][kRankScaleKnots * 2] = {
+    {183.33333f, 2.8f, 550.0f, 0.95f, 650.0f, 1.05f, 750.0f, 1.0f},
+    {250.0f, 2.8f, 616.66669f, 0.95f, 716.66669f, 1.05f, 816.66669f, 1.0f},
+    {316.66666f, 2.8f, 683.33331f, 0.95f, 783.33331f, 1.05f, 883.33331f, 1.0f},
+    {383.33334f, 2.8f, 750.0f, 0.95f, 850.0f, 1.05f, 950.0f, 1.0f},
+    {450.0f, 2.8f, 816.66669f, 0.95f, 916.66669f, 1.05f, 1016.6667f, 1.0f},
+    {516.66669f, 2.8f, 883.33331f, 0.95f, 983.33331f, 1.05f, 1083.3334f, 1.0f},
+    {583.33331f, 2.8f, 950.0f, 0.95f, 1050.0f, 1.05f, 1150.0f, 1.0f},
+};
+
+// Each rank glyph's per-frame alpha curve ({time, alpha} knots at @ghidraAddress 0x305514): a fade
+// in, a long hold, and a fade out, staggered per glyph.
+constexpr float kRankAlphaCurve[kRankGlyphCount][kRankAlphaKnots * 2] = {
+    {100.0f, 0.0f, 350.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {166.66667f, 0.0f, 416.66666f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {233.33333f, 0.0f, 483.33334f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {300.0f, 0.0f, 550.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {366.66666f, 0.0f, 616.66669f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {433.33334f, 0.0f, 683.33331f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {500.0f, 0.0f, 750.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+};
+
+// Each rank glyph's per-frame horizontal-position curve ({time, absoluteX} knots at @ghidraAddress
+// 0x305238 / the inline immediates in the layout pass): the glyph slides in from the right. The
+// binary precomputes these X values minus the layout origin into a static cache; because the origin
+// is constant, sampling the absolute-X curve and subtracting the origin is equivalent.
+constexpr float kRankPositionCurve[kRankGlyphCount][kRankPositionKnots * 2] = {
+    {100.0f, 598.0f, 300.0f, 409.0f, 433.33334f, 336.0f, 550.0f, 287.0f, 3100.0f, 127.0f},
+    {166.66667f, 821.0f, 366.66666f, 579.0f, 500.0f, 456.0f, 616.66669f, 367.0f, 3100.0f, 207.0f},
+    {233.33333f,
+     977.0f,
+     433.33334f,
+     692.0f,
+     566.66669f,
+     540.0f,
+     683.33331f,
+     427.0f,
+     3100.0f,
+     267.0f},
+    {100.0f, 1211.0f, 500.0f, 857.0f, 633.33331f, 660.0f, 750.0f, 506.0f, 3100.0f, 346.0f},
+    {166.66667f, 1444.0f, 233.33333f, 1025.0f, 700.0f, 784.0f, 816.66669f, 593.0f, 3100.0f, 433.0f},
+    {433.33334f,
+     1571.0f,
+     633.33331f,
+     1119.0f,
+     766.66669f,
+     855.0f,
+     883.33331f,
+     644.0f,
+     3100.0f,
+     484.0f},
+    {500.0f, 1595.0f, 700.0f, 1143.0f, 833.33331f, 879.0f, 950.0f, 668.0f, 3100.0f, 508.0f},
+};
+
+// Each rank glyph's fixed vertical position (@ghidraAddress 0x30523c): all seven share one Y.
+constexpr float kRankGlyphAbsoluteY = 653.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x120630 */
@@ -378,6 +462,55 @@ void LimelightThemeLayer::RenderGradeMeterSprite(unsigned int nSide) {
     const unsigned int nAlpha = m_flGradeRevealClock > kMeterFadeThreshold ? kChannelBlack : 0xff;
 
     EmitGradeMeterSlot(nSide, &kMeterNeedleUv[nFrame], nAlpha);
+}
+
+/** @ghidraAddress 0x120e50 */
+void LimelightThemeLayer::RenderGradeRankGlyphs(int nSide) {
+    // Once the reveal clock passes the digit threshold, draw the achievement-rate digits first.
+    if (m_flGradeRevealClock > kArDigitsRevealThreshold) {
+        RenderGradeArDigits(m_flGradeRevealClock + kArDigitsClockOffset,
+                            static_cast<unsigned int>(nSide));
+    }
+
+    const float flClock = m_flGradeRevealClock;
+    const float flOriginX = m_flWidth;
+    const float flOriginY = m_flHeight;
+    // Every glyph shares one vertical position, taken relative to the layout origin.
+    const float flGlyphY = kRankGlyphAbsoluteY - flOriginY;
+
+    for (int nGlyph = 0; nGlyph < kRankGlyphCount; ++nGlyph) {
+        const float flScale =
+            CalculateCurveInterpolation(kRankScaleCurve[nGlyph], kRankScaleKnots, flClock);
+        const float flAlpha =
+            CalculateCurveInterpolation(kRankAlphaCurve[nGlyph], kRankAlphaKnots, flClock);
+        // The position curve holds absolute X coordinates; the layout origin is subtracted to place
+        // the glyph (the binary precomputes the origin-relative values into a static cache).
+        const float flAbsoluteX =
+            CalculateCurveInterpolation(kRankPositionCurve[nGlyph], kRankPositionKnots, flClock);
+
+        S_VECTOR2 position{flAbsoluteX - flOriginX, flGlyphY};
+        float flRotation = 0.0f;
+        // In single-side mode the near side nudges down and the far side mirrors a half-turn across
+        // the field.
+        if (m_nSideCount == 1) {
+            if (nSide == kNearSide) {
+                position.y += kSingleSideNearNudgeY;
+            } else {
+                position.x = -position.x;
+                position.y = kSingleSideFarOriginY - position.y;
+                flRotation = kSingleSideFarRotation;
+            }
+        }
+
+        const unsigned int nAlpha = static_cast<unsigned int>(
+            static_cast<int>(flAlpha * m_gradeChannel.GetCurrent() * kAlphaByteScale));
+        EmitGradeSpriteSlot(flScale,
+                            flScale,
+                            flRotation,
+                            static_cast<unsigned int>(kRankGlyphFirstKind + nGlyph),
+                            &position,
+                            nAlpha);
+    }
 }
 
 /** @ghidraAddress 0x1208c4 */
