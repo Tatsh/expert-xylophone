@@ -1,19 +1,24 @@
 //
-//  number_effect_layer.cpp
+//  number_effect_layer.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458. Pure C++.
+//  Reconstructed from Ghidra project rb458, program rb458.
 //
 
 #include "number_effect_layer.h"
 
+#import "RBUserSettingData.h"
 #include "bg_layer.h"
+#include "game_scene.h"
 #include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
+#include "soundeffectmanager.h"
 #include "sprite_uv_table.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 
 namespace {
 // The gm_parts2 atlas the number glyphs draw from.
@@ -199,6 +204,138 @@ void NumberEffectLayer::EmitNumberSprite(
     pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
     pBatch->SetSpriteColor(nIndex, nColour, nColour, nColour, nAlpha);
     pBatch->SetSpriteCount(nIndex + 1);
+}
+
+namespace {
+// The two brightness-slider touch targets: the track and the draggable knob.
+constexpr int kSliderTargetTrack = 0;
+constexpr int kSliderTargetKnob = 1;
+
+// The slider hit-rectangle geometry, in atlas pixels. Each target's left inset and width vary by
+// device (the iPad rectangles are wider); the top inset and height are shared. @ghidraAddress
+// 0x2fedf8/0x30fb04/0x30fb10/0x30fb18 and the shared -25/50 constants.
+constexpr float kKnobLeftInsetPad = -50.0f;
+constexpr float kKnobLeftInsetPhone = -25.0f;
+constexpr float kKnobWidthPad = 100.0f;
+constexpr float kKnobWidthPhone = 50.0f;
+constexpr float kTrackLeftInsetPad = -178.0f;
+constexpr float kTrackLeftInsetPhone = -29.0f;
+constexpr float kTrackWidthPad = 356.0f;
+constexpr float kTrackWidthPhone = 145.0f;
+constexpr float kSliderTopInset = -25.0f;
+constexpr float kSliderHeight = 50.0f;
+
+// The themed sound effect played when a knob drag leaves the knob and cancels the adjustment.
+constexpr int kSliderCancelSoundEffect = 3;
+
+// A touch point lies inside a slider rectangle when it is within both spans (inclusive).
+inline bool
+IsInsideSliderRect(float flX, float flY, float flLeft, float flTop, float flWidth, float flHeight) {
+    return flLeft <= flX && flX <= flLeft + flWidth && flTop <= flY && flY <= flTop + flHeight;
+}
+} // namespace
+
+/** @ghidraAddress 0x189f40 */
+void NumberEffectLayer::ProcessBrightnessSliderTouch() {
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+
+    // The knob target is processed first, then the track.
+    for (int nTarget = kSliderTargetKnob; nTarget >= kSliderTargetTrack; --nTarget) {
+        // Resolve the target's hit rectangle from its element anchor and the device-dependent
+        // insets and width.
+        S_VECTOR2 anchor{0.0f, 0.0f};
+        ComputeAnchorPos(static_cast<unsigned int>(nTarget), &anchor);
+        float flLeftInset;
+        float flWidth;
+        if (nTarget == kSliderTargetKnob) {
+            flLeftInset = IsPad() ? kKnobLeftInsetPad : kKnobLeftInsetPhone;
+            flWidth = IsPad() ? kKnobWidthPad : kKnobWidthPhone;
+        } else {
+            flLeftInset = IsPad() ? kTrackLeftInsetPad : kTrackLeftInsetPhone;
+            flWidth = IsPad() ? kTrackWidthPad : kTrackWidthPhone;
+        }
+        const float flLeft = anchor.x + flLeftInset;
+        const float flTop = anchor.y + kSliderTopInset;
+
+        int &nTouchId = m_anSliderTouchId[nTarget];
+        if (nTouchId == -1) {
+            // Unclaimed: scan the freshly-pressed touches for one that lands inside the rectangle.
+            for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
+                TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
+                if (!pTouch->bIsNew) {
+                    continue;
+                }
+                if (IsInsideSliderRect(static_cast<float>(pTouch->nBeginX),
+                                       static_cast<float>(pTouch->nBeginY),
+                                       flLeft,
+                                       flTop,
+                                       flWidth,
+                                       kSliderHeight)) {
+                    nTouchId = pTouch->nId;
+                    if (nTarget == kSliderTargetKnob) {
+                        m_bSliderHeld = true;
+                    }
+                    break;
+                }
+            }
+            if (nTouchId == -1) {
+                continue;
+            }
+        }
+
+        // Claimed: track the touch.
+        TouchPoint *pTouch = pTouchManager->FindTouchById(nTouchId);
+        if (pTouch == nullptr) {
+            nTouchId = -1;
+            if (nTarget == kSliderTargetKnob) {
+                m_bSliderHeld = false;
+            }
+            continue;
+        }
+
+        if (nTarget == kSliderTargetKnob) {
+            // The knob stays held while the touch presses inside it. A touch that leaves the knob is
+            // simply not held; a touch released inside the knob cancels the adjustment, plays the
+            // cancel sound, clears the knob, and returns the play scene to its state.
+            const bool bInside = IsInsideSliderRect(static_cast<float>(pTouch->nCurrentX),
+                                                    static_cast<float>(pTouch->nCurrentY),
+                                                    flLeft,
+                                                    flTop,
+                                                    flWidth,
+                                                    kSliderHeight);
+            bool bHeld;
+            if (!bInside) {
+                bHeld = false;
+            } else if (!pTouch->bEnded) {
+                bHeld = true;
+            } else {
+                bHeld = false;
+                SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSliderCancelSoundEffect);
+                GameSystem::GetGameSystem()->GetCurrentScene()->SetGameSceneState13();
+                m_anSliderTouchId[kSliderTargetKnob] = -1;
+            }
+            m_bSliderHeld = bHeld;
+        } else {
+            // The track maps the touch's X to a normalised brightness (clamped to the unit interval),
+            // stores it, pushes it into the user settings and background layer, and saves.
+            S_VECTOR2 trackAnchor{0.0f, 0.0f};
+            ComputeAnchorPos(kSliderTargetTrack, &trackAnchor);
+            float flBrightness =
+                ((static_cast<float>(pTouch->nCurrentX) - trackAnchor.x) - m_aTransform[0]) /
+                m_aTransform[2];
+            if (flBrightness < 0.0f) {
+                flBrightness = 0.0f;
+            } else if (flBrightness >= 1.0f) {
+                flBrightness = 1.0f;
+            }
+            m_flBrightness = flBrightness;
+
+            [RBUserSettingData.sharedInstance resetBackgroundBrightness:flBrightness];
+            BgLayer::GetBackgroundLayer()->SetBackgroundBrightness(
+                RBUserSettingData.sharedInstance.backgroundBrighness);
+            [RBUserSettingData.sharedInstance save];
+        }
+    }
 }
 
 /** @ghidraAddress 0x18a4ac */

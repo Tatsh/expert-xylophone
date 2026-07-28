@@ -28,6 +28,8 @@ public:
     static constexpr int kBatchCount = 4;
     // The number of words in the side-dependent transform block.
     static constexpr int kTransformWordCount = 4;
+    // The number of brightness-slider touch targets (the track and the knob).
+    static constexpr int kSliderTargetCount = 2;
 
     /**
      * @brief The process-wide number-effect layer, created on first use.
@@ -151,7 +153,9 @@ private:
     float m_flCachedViewportWidth = {};  // +0x48: the last-seen viewport width (re-anchor trigger).
     float m_flCachedViewportHeight = {}; // +0x4c: the last-seen viewport height.
     bool m_bWideScreen = {};             // +0x50: set when the viewport is wider than the split.
-    unsigned char m_aReserved54[8] = {}; // +0x54
+    // +0x54/+0x58: the two slider touch targets' tracked touch ids (the track and the knob), each
+    // the "none" sentinel when unclaimed.
+    int m_anSliderTouchId[kSliderTargetCount] = {}; // +0x54
     bool m_bSliderHeld = {};             // +0x5c: set while the brightness slider is being dragged.
     unsigned char m_aReserved5d[3] = {}; // +0x5d
     float m_flBrightness = {};           // +0x60: the layer brightness (0 to 1).
