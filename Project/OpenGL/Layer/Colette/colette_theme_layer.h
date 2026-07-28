@@ -133,8 +133,12 @@ private:
     void EmitFcRankSprites(int nSide, int nColorVariant);
 
     /**
-     * @brief Emits the full-combo "result" (cleared-rank) sprite set for one player side.
-     * Reconstruction pending.
+     * @brief Emits the nine curve-animated result/high-rank full-combo sprites for one player side.
+     *
+     * Each of the nine sprites is placed at its fixed X column with its Y driven by a per-sprite
+     * position curve (built once with the layout height folded in), and sized and faded by its own
+     * scale and alpha curves sampled at the grade-reveal clock. The single-player mirror/shift layout
+     * matches the miss and rank bursts; in multiplayer the position curve drives the Y directly.
      * @param nSide The player side (0 or 1).
      * @ghidraAddress 0x188114
      */

@@ -154,6 +154,333 @@ constexpr int kRankSoundEffect = 10;
 // computes it (@ghidraAddress 0x2f85a0).
 constexpr double kRankMirrorRotation = 3.141592653589793;
 
+// The result/high-rank full-combo burst: the nine result sprites, their curve sizes, the slot base
+// they emit at, and the reference line their fixed base Y sits below (@ghidraAddress 0x30e804).
+constexpr int kResultSpriteCount = 9;
+constexpr int kResultAlphaCurvePairs = 2;
+constexpr int kResultAlphaCurveFloats = kResultAlphaCurvePairs * 2;
+constexpr int kResultScaleCurvePairs = 9;
+constexpr int kResultScaleCurveFloats = kResultScaleCurvePairs * 2;
+constexpr int kResultPosCurvePairs = 7;
+constexpr int kResultPosCurveFloats = kResultPosCurvePairs * 2;
+constexpr unsigned int kResultSpriteSlotBase = 0x11; // the result sprites emit at slots 0x11..0x19.
+constexpr float kResultReferenceY = 860.0f;
+
+ok The nine result sprites' alpha curves (two {time, value} pairs each). @ghidraAddress 0x30f17c constexpr float kResultAlphaCurve
+    [kResultSpriteCount][kResultAlphaCurveFloats] = {
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+        {2000f, 1f, 2333.3333f, 0f},
+};
+
+// The nine result sprites' scale curves (nine {time, value} pairs each). @ghidraAddress 0x30f20c
+constexpr float kResultScaleCurve[kResultSpriteCount][kResultScaleCurveFloats] = {
+    {633.3333f,
+     0f,
+     800f,
+     1.1f,
+     883.3333f,
+     1f,
+     966.6667f,
+     1.05f,
+     1016.6667f,
+     1f,
+     1066.6666f,
+     1.02f,
+     1100f,
+     1f,
+     1133.3334f,
+     1.02f,
+     1166.6666f,
+     1f},
+    {433.33334f,
+     0f,
+     600f,
+     1.1f,
+     683.3333f,
+     1f,
+     766.6667f,
+     1.05f,
+     816.6667f,
+     1f,
+     866.6667f,
+     1.02f,
+     900f,
+     1f,
+     933.3333f,
+     1.02f,
+     966.6667f,
+     1f},
+    {216.66667f,
+     0f,
+     383.33334f,
+     1.1f,
+     466.66666f,
+     1f,
+     550f,
+     1.05f,
+     600f,
+     1f,
+     650f,
+     1.02f,
+     683.3333f,
+     1f,
+     716.6667f,
+     1.02f,
+     750f,
+     1f},
+    {0f,
+     0f,
+     166.66667f,
+     1.1f,
+     250f,
+     1f,
+     333.33334f,
+     1.05f,
+     383.33334f,
+     1f,
+     433.33334f,
+     1.02f,
+     466.66666f,
+     1f,
+     500f,
+     1.02f,
+     533.3333f,
+     1f},
+    {133.33333f,
+     0f,
+     300f,
+     1.1f,
+     383.33334f,
+     1f,
+     466.66666f,
+     1.05f,
+     516.6667f,
+     1f,
+     566.6667f,
+     1.02f,
+     600f,
+     1f,
+     633.3333f,
+     1.02f,
+     666.6667f,
+     1f},
+    {333.33334f,
+     0f,
+     500f,
+     1.1f,
+     583.3333f,
+     1f,
+     666.6667f,
+     1.05f,
+     716.6667f,
+     1f,
+     766.6667f,
+     1.02f,
+     800f,
+     1f,
+     833.3333f,
+     1.02f,
+     866.6667f,
+     1f},
+    {516.6667f,
+     0f,
+     683.3333f,
+     1.1f,
+     766.6667f,
+     1f,
+     850f,
+     1.05f,
+     900f,
+     1f,
+     950f,
+     1.02f,
+     983.3333f,
+     1f,
+     1016.6667f,
+     1.02f,
+     1050f,
+     1f},
+    {733.3333f,
+     0f,
+     900f,
+     1.1f,
+     983.3333f,
+     1f,
+     1066.6666f,
+     1.05f,
+     1116.6666f,
+     1f,
+     1166.6666f,
+     1.02f,
+     1200f,
+     1f,
+     1233.3334f,
+     1.02f,
+     1266.6666f,
+     1f},
+    {950f,
+     0f,
+     1116.6666f,
+     1.1f,
+     1200f,
+     1f,
+     1283.3334f,
+     1.05f,
+     1333.3334f,
+     1f,
+     1383.3334f,
+     1.02f,
+     1416.6666f,
+     1f,
+     1450f,
+     1.02f,
+     1483.3334f,
+     1f},
+};
+
+// The nine result sprites' fixed X columns (@ghidraAddress 0x3defd8). Their base Y is 860 less
+// the layout height.
+constexpr float kResultSpriteX[kResultSpriteCount] = {
+    -190f, -128f, -76f, -31f, 37f, 109f, 157f, 183f, 209f};
+// The nine result sprites' position curves: seven {time, base-Y} pairs each. The Y values are
+// the sprite's Y before the layout height is subtracted at first use (@ghidraAddress 0x3df028,
+// built once from these constants). The odd (value) slots hold the base Y.
+constexpr float kResultPosCurveBase[kResultSpriteCount][kResultPosCurveFloats] = {
+    {916.6667f,
+     760f,
+     1100f,
+     900f,
+     1266.6666f,
+     800f,
+     1416.6666f,
+     900f,
+     1550f,
+     860f,
+     1666.6666f,
+     900f,
+     2333.3333f,
+     950f},
+    {716.6667f,
+     757f,
+     900f,
+     898f,
+     1066.6666f,
+     798f,
+     1216.6666f,
+     898f,
+     1350f,
+     858f,
+     1466.6666f,
+     898f,
+     2333.3333f,
+     948f},
+    {500f,
+     757f,
+     683.3333f,
+     898f,
+     850f,
+     798f,
+     1000f,
+     898f,
+     1133.3334f,
+     858f,
+     1250f,
+     898f,
+     2333.3333f,
+     948f},
+    {283.33334f,
+     757f,
+     466.66666f,
+     897f,
+     633.3333f,
+     797f,
+     783.3333f,
+     897f,
+     916.6667f,
+     857f,
+     1033.3334f,
+     897f,
+     2333.3333f,
+     947f},
+    {416.66666f,
+     758f,
+     600f,
+     898f,
+     766.6667f,
+     798f,
+     916.6667f,
+     898f,
+     1050f,
+     858f,
+     1166.6666f,
+     898f,
+     2333.3333f,
+     948f},
+    {616.6667f,
+     760f,
+     800f,
+     898f,
+     966.6667f,
+     798f,
+     1116.6666f,
+     898f,
+     1250f,
+     858f,
+     1366.6666f,
+     898f,
+     2333.3333f,
+     948f},
+    {800f,
+     806f,
+     983.3333f,
+     943f,
+     1150f,
+     843f,
+     1300f,
+     943f,
+     1433.3334f,
+     903f,
+     1550f,
+     943f,
+     2333.3333f,
+     993f},
+    {1016.6667f,
+     806f,
+     1200f,
+     943f,
+     1366.6666f,
+     843f,
+     1516.6666f,
+     943f,
+     1650f,
+     903f,
+     1766.6666f,
+     943f,
+     2333.3333f,
+     993f},
+    {1233.3334f,
+     806f,
+     1416.6666f,
+     943f,
+     1583.3334f,
+     843f,
+     1733.3334f,
+     943f,
+     1866.6666f,
+     903f,
+     1983.3334f,
+     943f,
+     2333.3333f,
+     993f},
+};
+
 // One rank medal's fixed placement: its X column and its base Y (before the layout height is
 // subtracted), from the load-once medal table (@ghidraAddress 0x3def60).
 struct RankMedalPlacement {
@@ -836,5 +1163,58 @@ void ColetteThemeLayer::EmitFcRankSprites(int nSide, int nColorVariant) {
                          &position,
                          static_cast<int>(flAlpha * flCurveScale * kFcAlphaByteScale));
         }
+    }
+}
+
+/** @ghidraAddress 0x188114 */
+void ColetteThemeLayer::EmitFcResultSprites(int nSide) {
+    // The position curves' Y values are the base Ys less the layout height, filled once. The table is
+    // [sprite][pair]{time, y}; only the odd (value) slots are height-adjusted.
+    static float aPosCurve[kResultSpriteCount][kResultPosCurveFloats];
+    static bool bPosCurveBuilt = false;
+    if (!bPosCurveBuilt) {
+        for (int nSprite = 0; nSprite < kResultSpriteCount; ++nSprite) {
+            for (int nFloat = 0; nFloat < kResultPosCurveFloats; ++nFloat) {
+                const float flValue = kResultPosCurveBase[nSprite][nFloat];
+                // Even slots are the curve times (kept as-is); odd slots are Y values offset by the
+                // layout height.
+                aPosCurve[nSprite][nFloat] = (nFloat & 1) ? flValue - m_flHeight : flValue;
+            }
+        }
+        bPosCurveBuilt = true;
+    }
+
+    const float flCurveScale = m_gradeChannel.GetCurrent();
+    const float flClock = m_flGradeRevealClock;
+
+    for (int nSprite = 0; nSprite < kResultSpriteCount; ++nSprite) {
+        const float flAlpha = CalculateCurveInterpolation(
+            kResultAlphaCurve[nSprite], kResultAlphaCurvePairs, flClock);
+        const float flScale = CalculateCurveInterpolation(
+            kResultScaleCurve[nSprite], kResultScaleCurvePairs, flClock);
+        const float flPosY =
+            CalculateCurveInterpolation(aPosCurve[nSprite], kResultPosCurvePairs, flClock);
+
+        S_VECTOR2 position{kResultSpriteX[nSprite], kResultReferenceY - m_flHeight};
+        float flRotation = 0.0f;
+        if (m_nSideCount == kSingleSide) {
+            if (nSide == kSecondSide) {
+                position.y = flPosY + kRankSecondSideShiftY;
+            } else {
+                position.x = -position.x;
+                position.y = kRankFirstSideReflectY - flPosY;
+                flRotation = kMissMirrorRotation;
+            }
+        } else {
+            // Multiplayer: the position curve drives the Y directly (from the base row).
+            position.y = flPosY - position.y;
+        }
+
+        EmitFcSprite(flScale,
+                     flScale,
+                     flRotation,
+                     kResultSpriteSlotBase + nSprite,
+                     &position,
+                     static_cast<int>(flAlpha * flCurveScale * kFcAlphaByteScale));
     }
 }
