@@ -1067,6 +1067,20 @@ void GameScene::ResetNotePlaybackState(bool bApplyGhost) {
     }
 }
 
+/** @ghidraAddress 0x14aec4 */
+void GameScene::LoadMusicNameAndFrameTexture() {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    MusicData *musicData = [AppDelegate appDelegate].musicData;
+    pGameSystem->LoadMusicNameTexture(musicData);
+
+    // The iPad build uses the wide alternate-frame layer; the phone build uses the main-frame layer.
+    if (IsPad()) {
+        AltFrameLayer::shared()->SetAltFrameTexture(pGameSystem->GetMusicNameTexture());
+    } else {
+        MainFrameLayer::shared()->SetMainFrameTexture(pGameSystem->GetMusicNameTexture());
+    }
+}
+
 /** @ghidraAddress 0x14af90 */
 void GameScene::EnterModeNormal() {
     SetMode(0);

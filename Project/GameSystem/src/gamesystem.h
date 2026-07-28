@@ -7,6 +7,12 @@
 
 #include "Render/s_vector2.h"
 
+#ifdef __OBJC__
+@class MusicData;
+#else
+typedef struct objc_object MusicData;
+#endif
+
 namespace ne {
 class C_TEXTURE;
 }
@@ -461,6 +467,19 @@ public:
      * @ghidraAddress 0x12edb4
      */
     static GameSystem *GetGameSystem();
+
+    /**
+     * @brief Renders the given song's music-name text into a texture and stores it in
+     * @c m_pMusicNameTexture. Reconstruction pending.
+     * @param pMusicData The current song's music-data object.
+     * @ghidraAddress 0x12f054
+     */
+    void LoadMusicNameTexture(MusicData *pMusicData);
+
+    /** @brief The rendered music-name text texture, loaded by @c LoadMusicNameTexture. */
+    ne::C_TEXTURE *GetMusicNameTexture() const {
+        return m_pMusicNameTexture;
+    }
 
 private:
     /**

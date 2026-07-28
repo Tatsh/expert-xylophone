@@ -72,6 +72,15 @@ public:
     void Init();
 
     /**
+     * @brief Loads the current song's music-name texture and installs it into the active frame layer.
+     *
+     * Renders the current song's name into the game system's music-name texture, then binds that
+     * texture into the alternate-frame layer on an iPad, or the main-frame layer on the phone.
+     * @ghidraAddress 0x14aec4
+     */
+    void LoadMusicNameAndFrameTexture();
+
+    /**
      * @brief Advances this scene from state 0x11 to 0x12.
      * @ghidraAddress 0x14aff8
      */
