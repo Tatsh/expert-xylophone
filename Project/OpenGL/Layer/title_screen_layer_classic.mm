@@ -13,10 +13,23 @@
 
 #import "title_screen_layer_classic.h"
 
+#import "gamesystem.h"
+#import "neSpriteInstancing.h"
+#import "neTexture.h"
+#import "s_vector2.h"
 #import "soundeffectmanager.h"
 
 // The themed sound-effect slot the completed Konami code fires (the secret/credits jingle).
 static constexpr int kSoundEffectTitleSecret = 0xd;
+
+// The maximum value of an opaque colour channel.
+static constexpr unsigned int kColorMax = 255;
+
+// The textured title sprite kinds (1..3 inclusive) bind and size from their instancer's texture; the
+// two backdrop kinds (0 and 4) draw a full-viewport quad from the game system instead.
+static constexpr unsigned int kTitleKindTexturedFirst = 1;
+static constexpr unsigned int kTitleKindTexturedLast = 3;
+static constexpr unsigned int kTitleKindBackdropWhite = 0;
 
 // The directional-swipe and button inputs the title touch handling classifies from flick direction
 // and the corner hit-boxes. The sequence is the Konami code: up, up, down, down, left, right, left,
@@ -106,4 +119,63 @@ void TitleScreenLayerClassic::CalculateFade(int nDeltaFrames) {
 /** @ghidraAddress 0x152548 */
 void TitleScreenLayerClassic::AdvanceFadeValue(int nDeltaFrames) {
     m_fadeValueChannel.Advance(static_cast<float>(nDeltaFrames));
+}
+
+/** @ghidraAddress 0x14a040 */
+void TitleScreenLayerClassic::SetTitleSprite(unsigned int nKind,
+                                             const S_VECTOR2 *pPosition,
+                                             float flScale,
+                                             int nAlpha) {
+    if (nKind >= kInstancerCount) {
+        return;
+    }
+
+    // The kind indexes both the instancer and (by identity) the slot table; a full instancer drops
+    // the sprite.
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apInstancers[nKind];
+    const int nSlot = pInstancer->GetSpriteCount();
+    if (nSlot >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    if (nKind >= kTitleKindTexturedFirst && nKind <= kTitleKindTexturedLast) {
+        // A textured sprite: size and place it from its instancer's bound texture.
+        ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+
+        // The texture's point size (its pixel size divided by the retina scale), truncated to whole
+        // pixels for the size and to a half-size centre for the anchor.
+        const int nPointWidth =
+            static_cast<int>(static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetScale());
+        const int nPointHeight =
+            static_cast<int>(static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetScale());
+
+        pInstancer->SetSpritePosition(nSlot, *pPosition);
+        pInstancer->SetSpriteAnchor(
+            nSlot,
+            S_VECTOR2{static_cast<float>(nPointWidth >> 1), static_cast<float>(nPointHeight >> 1)});
+        pInstancer->SetSpriteSize(
+            nSlot, S_VECTOR2{static_cast<float>(nPointWidth), static_cast<float>(nPointHeight)});
+        pInstancer->SetSpriteScale(nSlot, flScale, flScale);
+        pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{0.0f, 0.0f});
+        // The UV span is the source image's fraction of the allocated (power-of-two) texture.
+        pInstancer->SetSpriteUvSize(
+            nSlot,
+            S_VECTOR2{static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetAllocWidth(),
+                      static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetAllocHeight()});
+        pInstancer->SetSpriteColor(
+            nSlot, kColorMax, kColorMax, kColorMax, static_cast<unsigned int>(nAlpha));
+    } else {
+        // A backdrop quad: a full-viewport rectangle from the game system, pinned to the origin,
+        // white for kind 0 and black for kind 4. The caller's position and scale are unused here.
+        GameSystem *pGameSystem = GameSystem::GetGameSystem();
+        pInstancer->SetSpritePosition(nSlot, S_VECTOR2{0.0f, 0.0f});
+        pInstancer->SetSpriteAnchor(nSlot, S_VECTOR2{0.0f, 0.0f});
+        pInstancer->SetSpriteSize(
+            nSlot, S_VECTOR2{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()});
+        const unsigned int nChannel = nKind == kTitleKindBackdropWhite ? kColorMax : 0;
+        pInstancer->SetSpriteColor(
+            nSlot, nChannel, nChannel, nChannel, static_cast<unsigned int>(nAlpha));
+    }
+
+    pInstancer->SetSpriteCount(nSlot + 1);
 }

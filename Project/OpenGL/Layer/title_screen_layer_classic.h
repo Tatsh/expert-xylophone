@@ -18,6 +18,12 @@
 
 #include "linear_tween.h"
 
+struct S_VECTOR2;
+
+namespace ne {
+class C_SPRITE_INSTANCING_2D;
+} // namespace ne
+
 /**
  * @brief The interactive title screen layer, as far as its hidden-swipe state machine and fade
  * channels observe it.
@@ -28,6 +34,8 @@
  */
 class TitleScreenLayerClassic {
 public:
+    // The number of title-screen sprite instancers the layer positions.
+    static constexpr int kInstancerCount = 5;
     /**
      * @brief Advances the hidden-swipe state on a directional swipe, firing the secret effect and
      * latching the completion flag when the sequence completes.
@@ -47,7 +55,30 @@ public:
     void AdvanceFadeValue(int nDeltaFrames);
 
 private:
-    unsigned char m_aReserved00[0xc4] = {};   // +0x000
+    /**
+     * @brief Positions and fills one title-screen sprite instancer slot, if it has a free slot.
+     *
+     * A no-op for an out-of-range sprite kind or a full instancer. The three textured kinds (1..3)
+     * bind their instancer's texture and derive the sprite's anchor (half the point size), size, and
+     * UV span from the texture's pixel size, allocated size, and retina scale, drawing opaque white.
+     * The two backdrop kinds (0 and 4) draw a full-viewport quad sized from the game system, coloured
+     * white for kind 0 and black for kind 4. Either way the caller's position and scale are applied
+     * and the instancer's slot count is bumped.
+     * @param nKind The sprite kind, also the instancer index (0..4).
+     * @param pPosition The sprite's screen position.
+     * @param flScale The sprite's uniform scale.
+     * @param nAlpha The sprite's alpha.
+     * @ghidraAddress 0x14a040
+     */
+    void SetTitleSprite(unsigned int nKind, const S_VECTOR2 *pPosition, float flScale, int nAlpha);
+
+    unsigned char m_aReserved00[0x4c] = {}; // +0x000
+    int m_nState = {};                      // +0x04c the title state (2 = start selected)
+    int m_nElapsed = {};                    // +0x050 the title animation clock, advanced each frame
+    unsigned char m_aReserved54[0x1c] = {}; // +0x054
+    ne::C_SPRITE_INSTANCING_2D *m_apInstancers[kInstancerCount] =
+        {};                                   // +0x070 the five title sprite instancers
+    unsigned char m_aReserved98[0x2c] = {};   // +0x098
     LinearTween m_fadeChannel;                // +0x0c4 title fade tween
     unsigned char m_aReserved0d8[0x38] = {};  // +0x0d8
     LinearTween m_fadeValueChannel;           // +0x110 secondary title fade/tween
