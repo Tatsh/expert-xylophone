@@ -752,6 +752,28 @@ void GameScene::SetupPreviewPlayback() {
     m_nState = kStatePlaying;
 }
 
+/** @ghidraAddress 0x14ce34 */
+void GameScene::ClosePreviewAndReturnToList() {
+    ShutdownNoteEffectSystem();
+
+    // Stop the music and re-enable rotation only when a music is selected.
+    if ([AppDelegate.appDelegate musicData] != nil) {
+        StopBgmAndAllowRotation();
+    }
+    ResetAllPlayFieldLayers();
+
+    // Fade out and free the number-effect layer.
+    NumberEffectLayer::shared()->StartFadeOut(0.0f);
+    NumberEffectLayer::FreeInstance();
+
+    // Hide the preview through the app's root view controller and flush the texture cache.
+    [AppDelegate.appDelegate.viewController hidePreview];
+    (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
+    ReleaseAllCachedTextures();
+
+    m_nState = kStateExit;
+}
+
 /** @ghidraAddress 0x14c5bc */
 void GameScene::ExitToMusicList() {
     // Wait out the exit delay before tearing down.

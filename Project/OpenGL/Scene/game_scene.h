@@ -245,6 +245,17 @@ public:
      */
     void SetupPreviewPlayback();
 
+    /**
+     * @brief Closes the note-chart preview and returns to the music list.
+     *
+     * Shuts down the note-effect system, stops the background music and re-enables rotation when a
+     * music is selected, resets the play-field layers, fades out and frees the number-effect layer,
+     * hides the preview through the app's root view controller, flushes the texture cache, and
+     * advances to the exit state.
+     * @ghidraAddress 0x14ce34
+     */
+    void ClosePreviewAndReturnToList();
+
 private:
     /**
      * @brief Constructs the scene: chains the scene-base constructor, installs the play dispatch
