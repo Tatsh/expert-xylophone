@@ -215,3 +215,68 @@ void AltFrameLayer::RenderMarkers() {
         aSlotIndex[descriptor.nBatch] = nSlot + 1;
     }
 }
+
+namespace {
+// The batch index of the mesh instancer, whose sprite draws from the alt-frame mesh UV atlas rather
+// than the shared atlas.
+constexpr int kMeshBatch = 0;
+// The highlight sprite's fixed opaque-white colour (a packed 24-bit red-green-blue word with the
+// alpha left to the fade pass).
+constexpr unsigned int kHighlightColor = 0xffffff;
+// The first (and only) slot the highlight sprite occupies in its batch.
+constexpr int kHighlightSlot = 0;
+} // namespace
+
+/** @ghidraAddress 0x17abc4 */
+void AltFrameLayer::SetFrameMode(int nMode) {
+    m_nFrameMode = nMode;
+
+    // Select the marker and descriptor tables and the highlight sprite-kind row by lane-count tier,
+    // matching RenderMarkers' tier split. The descriptor is indexed by the mode plus the tier's
+    // highlight kind.
+    const AltFrameMarkerLayout *pMarker = nullptr;
+    const AltFrameSpriteDescriptor *pDescriptor = nullptr;
+    if (m_nFrameType < kFrameTypeMidThreshold) {
+        pMarker = &g_aAltFrameMarker4[m_nActiveLane];
+        pDescriptor = &g_aAltFrameDescriptor4[nMode + kActiveLaneKind4];
+    } else if (m_nFrameType < kFrameTypeHighThreshold) {
+        pMarker = &g_aAltFrameMarker6[m_nActiveLane];
+        pDescriptor = &g_aAltFrameDescriptor6[nMode + kActiveLaneKind6];
+    } else {
+        pMarker = &g_aAltFrameMarker9[m_nActiveLane];
+        pDescriptor = &g_aAltFrameDescriptor9[nMode + kActiveLaneKind9];
+    }
+
+    // The play-field half-height (rounded toward zero) offsets the highlight's base Y, as in
+    // RenderMarkers.
+    const int nHalfHeight =
+        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+
+    // The mesh sprite (batch zero) draws from the frame type's alt-frame mesh UV atlas (the
+    // mid-lane-count set up to frame type twelve, the high-lane-count set above); the overlay batches
+    // draw from the shared atlas. The descriptor's UV-frame index selects the record either way.
+    const SpriteUvEntry *pUvTable;
+    if (pDescriptor->nBatch != kMeshBatch) {
+        pUvTable = g_aSpriteUvTable;
+    } else if (m_nFrameType < kFrameTypeHighThreshold) {
+        pUvTable = g_aAltFrameMeshUvMid;
+    } else {
+        pUvTable = g_aAltFrameMeshUvHigh;
+    }
+    const SpriteUvEntry &uv = pUvTable[pDescriptor->nUvFrameIndex];
+
+    // Write the active lane's highlight into the first slot of its batch: position and rotation and
+    // scale from the marker layout, anchor and pixel size and atlas rectangle from the descriptor,
+    // opaque white.
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[pDescriptor->nBatch];
+    pBatch->SetSpritePosition(
+        kHighlightSlot, S_VECTOR2{pMarker->flX, pMarker->flY + static_cast<float>(nHalfHeight)});
+    pBatch->SetSpriteAnchor(kHighlightSlot,
+                            S_VECTOR2{pDescriptor->flAnchorX, pDescriptor->flAnchorY});
+    pBatch->SetSpriteSize(kHighlightSlot, S_VECTOR2{pDescriptor->flSizeX, pDescriptor->flSizeY});
+    pBatch->SetSpriteUvOrigin(kHighlightSlot, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(kHighlightSlot, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteRotation(kHighlightSlot, pMarker->flRotation);
+    pBatch->SetSpriteScale(kHighlightSlot, pMarker->flScaleX, pMarker->flScaleY);
+    pBatch->SetSpriteColor(kHighlightSlot, kHighlightColor);
+}

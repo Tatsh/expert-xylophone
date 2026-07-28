@@ -58,6 +58,31 @@ const AltFrameSpriteDescriptor g_aAltFrameDescriptor9[kAltFrameDescriptorCount9]
     {0, 0.0f, 0.0f, 14.0f, 100.0f, 5},
 }; // @ghidraAddress 0x30cca8
 
+// The alt-frame mesh (batch-0) UV atlases, one per lane-count tier. The first record is the empty
+// zero rectangle (an unused frame). Read-only ROM data.
+const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid] = {
+    {0.0f, 0.0f, 0.28515625f, 0.9980469f},
+    {0.30078125f, 0.0f, 0.28515625f, 0.9980469f},
+    {0.82421875f, 0.0f, 0.04296875f, 0.46875f},
+    {0.875f, 0.0f, 0.0390625f, 0.1953125f},
+    {0.59765625f, 0.95703125f, 0.00390625f, 0.04296875f},
+    {0.59765625f, 0.91015625f, 0.2890625f, 0.04296875f},
+    {0.59765625f, 0.86328125f, 0.28125f, 0.04296875f},
+}; // @ghidraAddress 0x2f19d8
+
+const SpriteUvEntry g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh] = {
+    {0.0f, 0.0f, 0.14257812f, 0.9980469f},
+    {0.70703125f, 0.001953125f, 0.14257812f, 0.9980469f},
+    {0.15039062f, 0.0f, 0.14257812f, 0.9980469f},
+    {0.8574219f, 0.001953125f, 0.14257812f, 0.9980469f},
+    {0.41210938f, 0.0f, 0.021484375f, 0.46875f},
+    {0.4375f, 0.0f, 0.02734375f, 0.1953125f},
+    {0.51953125f, 0.001953125f, 0.04296875f, 0.6074219f},
+    {0.56640625f, 0.001953125f, 0.04296875f, 0.6074219f},
+    {0.61328125f, 0.001953125f, 0.04296875f, 0.6074219f},
+    {0.66015625f, 0.001953125f, 0.04296875f, 0.6074219f},
+}; // @ghidraAddress 0x2f1a48
+
 namespace {
 
 // The marker X columns and the rotation of a sideways marker (@ghidraAddress 0x3fc90fdb = PI/2).

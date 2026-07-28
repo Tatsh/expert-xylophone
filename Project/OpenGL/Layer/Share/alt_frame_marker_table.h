@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "sprite_uv_table.h"
+
 /**
  * @brief One alt-frame lane-marker layout record: the sprite-kind row it draws from and its base
  * placement.
@@ -64,6 +66,18 @@ extern const AltFrameSpriteDescriptor
     g_aAltFrameDescriptor6[kAltFrameDescriptorCount6]; // @ghidraAddress 0x30cb88
 extern const AltFrameSpriteDescriptor
     g_aAltFrameDescriptor9[kAltFrameDescriptorCount9]; // @ghidraAddress 0x30cca8
+
+// The number of records in each alt-frame mesh UV atlas (the mid- and high-lane-count variants).
+constexpr int kAltFrameMeshUvCountMid = 7;
+constexpr int kAltFrameMeshUvCountHigh = 10;
+
+// The alt-frame mesh (batch-0) UV atlases: the texture rectangles for the frame-mesh sprite quad,
+// indexed by the active marker's descriptor UV-frame index. Two variants are selected by frame type
+// (the mid-lane-count set for frame types up to twelve, the high-lane-count set above). The batch-1
+// and batch-2 overlay sprites instead index the shared @c g_aSpriteUvTable. Read-only ROM data.
+extern const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid]; // @ghidraAddress 0x2f19d8
+extern const SpriteUvEntry
+    g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh]; // @ghidraAddress 0x2f1a48
 
 // code: language=C++
 // kate: hl C++;
