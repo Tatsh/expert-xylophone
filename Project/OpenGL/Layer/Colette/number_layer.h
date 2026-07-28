@@ -6,6 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -60,6 +61,28 @@ public:
         return m_bReady;
     }
 
+    /**
+     * @brief Appends one score-digit marker sprite to its batch at a world position, at the given
+     * scale and alpha.
+     *
+     * A no-op when the target batch is full. The anchor, size, and atlas frame come from the shared
+     * number-marker layout table (indexed by @p uMarkerIndex). The position is blended toward the
+     * screen centre from @p pPosition: the phone (non-iPad) layout averages the point with the field
+     * edge and adds half the cached viewport size on both axes; the iPad layout offsets only the Y.
+     * The sprite is drawn opaque white at @p iAlpha.
+     * @param uMarkerIndex The marker layout index (also the atlas-frame source).
+     * @param pPosition The sprite's world position (adjusted in place).
+     * @param iAlpha The sprite alpha (0 through 255).
+     * @param flScaleW The sprite's X scale.
+     * @param flScaleH The sprite's Y scale.
+     * @ghidraAddress 0x17e1b4
+     */
+    void EmitMarkerSprite(unsigned int uMarkerIndex,
+                          S_VECTOR2 *pPosition,
+                          int iAlpha,
+                          float flScaleW,
+                          float flScaleH);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
@@ -75,11 +98,11 @@ private:
     bool m_bBuilt = {};                         // +0x30: set once the sprites are built.
     // +0x31..+0x33 is alignment padding before the trailing state.
     // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
-    // +0x34..+0x47: further layer state (two ints, a byte flag, and one more int the constructor
-    // zero-clears) still being worked out, kept to preserve the 0x48-byte allocation size.
-    int m_nReserved34 = {}; // +0x34
-    int m_nReserved38 = {}; // +0x38
-    bool m_bReady = {};     // +0x3c: whether the number display is ready to show.
+    // +0x34/+0x38: the viewport size cached each frame by the process step, added into the marker
+    // positions.
+    float m_flViewportWidth = {};  // +0x34
+    float m_flViewportHeight = {}; // +0x38
+    bool m_bReady = {};            // +0x3c: whether the number display is ready to show.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
     int m_nFrameCounter = {};            // +0x40: the display frame counter, reset when made ready.
     unsigned char m_aReserved44[4] = {}; // +0x44
