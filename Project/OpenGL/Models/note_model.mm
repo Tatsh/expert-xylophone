@@ -16,11 +16,13 @@
 #include "Render/vectormath.h"
 #include "ScoreTracker.h"
 #include "bounds_effect_layer.h"
+#include "damage_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
 #include "explosion_effect_layer.h"
 #include "gamesystem.h"
 #include "note_effect_mgr.h"
+#include "note_glow_layer.h"
 #include "playtimer.h"
 #include "rbffnoterecord.h"
 #include "reflec_gauge_layer.h"
@@ -584,6 +586,212 @@ void NoteModel::UpdateStepApproach() {
         }
         point.flSlopeX = (point.flEndX - point.flStartX) / (point.flTime1 - point.flTime0);
         point.flSlopeY = (point.flEndY - point.flStartY) / (point.flTime2 - point.flTime1);
+    }
+}
+
+namespace {
+// The existing step's constants.
+// The grace a hold head is given past its release time before the note is finalised as a miss
+// (@ghidraAddress 0x308b64 = 153).
+constexpr float kHoldReleaseGrace = 153.0f;
+// The ghost (replay) miss penalty scale: (1 - longRate) * 3 (@ghidraAddress 0x40400000 = 3.0).
+constexpr float kGhostMissPenaltyScale = 3.0f;
+// The player/CPU fixed miss penalty delta.
+constexpr int kMissScoreDelta = -3;
+// The rival mode of a ghost (replay) note.
+constexpr int kRivalModeGhost = 2;
+// The maximum length of a missed hold note's render tail (@ghidraAddress 0x301f78 = 200).
+constexpr float kShotTailMaxLength = 200.0f;
+} // namespace
+
+/** @ghidraAddress 0x131e3c */
+void NoteModel::UpdateStepExisted() {
+    // The current play-field judge clock, read before the note advances.
+    const float flPlayTime = PlayTimer::shared()->GetPlayTime();
+
+    // Advance the note, resolve any pending shot, and reflect it off either play-field edge.
+    AdvancePosition();
+    CheckShot();
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    if (m_pos.x < -pGameSystem->GetSheetInsetHalfX()) {
+        HandleReflect(static_cast<int>(-GameSystem::GetGameSystem()->GetSheetInsetHalfX()));
+    }
+    if (GameSystem::GetGameSystem()->GetSheetInsetHalfX() < m_pos.x) {
+        HandleReflect(static_cast<int>(GameSystem::GetGameSystem()->GetSheetInsetHalfX()));
+    }
+
+    // While a hold head is still within its release grace (or the note is any non-hold note) and it
+    // has not yet crossed the target line, run the per-mode judge and stop; otherwise it has passed
+    // the field and is finalised below as a miss.
+    const float flJudgeTime = flPlayTime * kApproachTimeScale + kApproachTimeBias;
+    const bool bWithinRelease =
+        m_pRecord == nullptr || m_pRecord->GetHoldKind() != kHoldKindHead ||
+        flJudgeTime <=
+            static_cast<float>(m_pRecord->GetTimeB() + m_pRecord->GetTimeA()) + kHoldReleaseGrace;
+    if (bWithinRelease && m_pos.y < GameSystem::GetGameSystem()->GetSheetInsetHalfY()) {
+        switch (m_nRivalMode) {
+        case 0:
+            JudgeNoteTiming();
+            break;
+        case 1:
+            CheckNoteMiss();
+            break;
+        case kRivalModeGhost:
+            UpdateNoteAutoTap();
+            break;
+        case kRivalModeSpectate:
+            break;
+        default:
+            assert(0);
+        }
+    } else {
+        // The miss path: the note reached or passed its target line without a hit (or a hold head ran
+        // out its release grace). Link its path and resolve it as a miss.
+        UpdateNotePathLinks();
+
+        if (m_pRecord == nullptr) {
+            // A record-less note snaps to the near lane target and finishes.
+            const float flInsetHalfY = GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+            if (m_pos.y <= -flInsetHalfY) {
+                m_pos.y = -flInsetHalfY;
+            } else if (flInsetHalfY <= m_pos.y) {
+                m_pos.y = flInsetHalfY;
+            }
+            m_nState = kNoteStateFinished;
+            m_nSubState = 0;
+        } else if (m_pRecord->GetType() != kNoteTypeHold) {
+            if (m_pRecord->GetHoldKind() != kHoldKindHead) {
+                // A normal note snaps to the near lane target and finishes.
+                const float flInsetHalfY = GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+                if (m_pos.y <= -flInsetHalfY) {
+                    m_pos.y = -flInsetHalfY;
+                } else if (flInsetHalfY <= m_pos.y) {
+                    m_pos.y = flInsetHalfY;
+                }
+                m_nState = kNoteStateFinished;
+                m_nSubState = 0;
+            } else {
+                // A stray hold head fades out.
+                m_nState = kNoteStateFadeOut;
+                m_nSubState = 0;
+            }
+        } else {
+            // A missed hold note enters the shot state and takes its per-mode miss penalty.
+            m_nState = kNoteStateShot;
+            m_nSubState = 0;
+            if (m_nRivalMode != kRivalModeSpectate) {
+                ScoreTracker *pTracker = ScoreTracker::shared();
+                const int nSide = m_pRecord != nullptr ? m_pRecord->GetSide() :
+                                                         (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+                const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+                const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+                const int nDelta =
+                    m_nRivalMode == kRivalModeGhost ?
+                        static_cast<int>((1.0f - m_flLongRate) * kGhostMissPenaltyScale) :
+                        kMissScoreDelta;
+                pTracker->AddScoreDelta(nSide,
+                                        static_cast<int>(m_pos.x * flMirrorX),
+                                        static_cast<int>(m_pos.y * flMirrorY),
+                                        nDelta);
+            }
+        }
+
+        // The common miss score: grade 3 (miss), plus its gauge penalty, unless spectating.
+        if (m_nRivalMode != kRivalModeSpectate) {
+            ScoreTracker *pTracker = ScoreTracker::shared();
+            const int nSide = m_pRecord != nullptr ? m_pRecord->GetSide() :
+                                                     (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+            const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+            const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+            const int nBonus =
+                GameSystem::GetGameSystem()->GetFullJustReflec() ? 0 : (m_bShotResolved ? 1 : 0);
+            const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                         (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+            pTracker->AddScore(nSide,
+                               static_cast<int>(m_pos.x * flMirrorX),
+                               static_cast<int>(m_pos.y * flMirrorY),
+                               kGradeMiss,
+                               nBonus,
+                               nHoldKind == kScoreHoldKind);
+            m_nJudgeGrade = kGradeMiss;
+
+            static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+
+            ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+            const int nGaugeSide = m_pRecord != nullptr ? m_pRecord->GetSide() :
+                                                          (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+            const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+            ReflecGaugeLayer::AddReflecGaugeValue(
+                kGaugeGainByTier[nTier][kGradeMiss], pGauge, nGaugeSide);
+        }
+
+        // Spawn the miss glow, and a bounds-damage effect for every note but a hold.
+        NoteGlowLayer *pGlow = NoteGlowLayer::shared();
+        const int nGlowSide =
+            m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        pGlow->CreateEffect(static_cast<unsigned int>(nGlowSide));
+
+        if (m_pRecord == nullptr ||
+            (m_pRecord->GetType() != kNoteTypeHold && m_pRecord->GetHoldKind() != kHoldKindHead)) {
+            DamageEffectLayer *pDamage = DamageEffectLayer::shared();
+            const int nDamageSide = m_pRecord != nullptr ? m_pRecord->GetSide() :
+                                                           (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+            const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+            const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+            pDamage->CreateBoundsDamage(nDamageSide, m_pos.x * flMirrorX, m_pos.y * flMirrorY);
+        }
+    }
+
+    // A hold note (type 1) keeps its render endpoint tracking the held tail.
+    if (m_pRecord != nullptr && m_pRecord->GetType() == kNoteTypeHold) {
+        if (m_nWaypointIndex == m_nWaypointCount) {
+            // The tail direction is the velocity scaled by the note's target-copy magnitude.
+            S_VECTOR2 dirVec = m_velocity;
+            ScaleVector2(&dirVec, -static_cast<float>(m_pRecord->GetTargetCopy()));
+            const float flMaxLength = Vector2Length(&dirVec);
+            NormalizeVector2(&dirVec);
+
+            S_VECTOR2 deltaVec;
+            if (m_nWaypointCount == 0) {
+                // Straight to the spawn base.
+                deltaVec = m_basePos;
+                SubtractVector2(&deltaVec, &m_pos);
+            } else {
+                // To the reflect edge picked by the travel direction.
+                const float flInsetHalfX = GameSystem::GetGameSystem()->GetSheetInsetHalfX();
+                float flEdgeX;
+                float flDistX;
+                if (m_velocity.x <= 0.0f) {
+                    flDistX = flInsetHalfX - m_pos.x;
+                    flEdgeX = flInsetHalfX;
+                } else {
+                    flDistX = -flInsetHalfX - m_pos.x;
+                    flEdgeX = -flInsetHalfX;
+                }
+                deltaVec.y = (dirVec.y * flDistX) / dirVec.x;
+                deltaVec.x = flEdgeX - m_pos.x;
+            }
+
+            float flLength = Vector2Length(&deltaVec);
+            if (flMaxLength <= flLength) {
+                flLength = flMaxLength;
+            }
+            if (kShotTailMaxLength < flLength) {
+                flLength = kShotTailMaxLength;
+            }
+            m_flShotSpeed = flLength;
+
+            // The render endpoint is the tail direction scaled by the clamped length, from the note.
+            S_VECTOR2 endPoint = dirVec;
+            ScaleVector2(&endPoint, flLength);
+            AddVector2(&endPoint, &m_pos);
+            m_flRenderX = endPoint.x;
+            m_flRenderY = endPoint.y;
+        } else {
+            // Still travelling its waypoints: the render endpoint is the current position.
+            m_flRenderX = m_pos.x;
+            m_flRenderY = m_pos.y;
+        }
     }
 }
 

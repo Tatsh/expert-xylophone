@@ -264,7 +264,9 @@ public:
 
     /**
      * @brief The state-machine existing step (state 2): advances the note, reflects it off the play
-     * field, and judges its timing or miss. Reconstruction pending.
+     * field, and either judges its timing (per rival mode) or, once it has passed its target line
+     * without a hit, finalises it as a miss (scoring the miss, applying the gauge penalty, and spawning the
+     * miss glow and bounds-damage effects). A hold note keeps its render endpoint tracking the tail.
      * @ghidraAddress 0x131e3c
      */
     void UpdateStepExisted();

@@ -267,7 +267,9 @@ void ScoreTracker::AddScore(
 }
 
 /** @ghidraAddress 0x149610 */
-void ScoreTracker::AddScoreDelta(int nPlayer, int nDelta) {
+void ScoreTracker::AddScoreDelta(int nPlayer, int nPosX, int nPosY, int nDelta) {
+    (void)nPosX; // The hit-position arguments mirror AddScore but are unused here.
+    (void)nPosY;
     const unsigned int nSide = GameSystem::GetGameSystem()->GetPlayColor() == nPlayer ? 1 : 0;
     int nScore = m_aRecords[nSide].nCells[kCellScore] + nDelta;
     if (nScore < 0) {

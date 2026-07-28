@@ -153,12 +153,15 @@ public:
      * @brief Adjusts a player's running score by a signed delta and refreshes its field display.
      *
      * The delta is added to the side's score cell, clamped at zero; the player-field score digits
-     * are then retargeted to the new value with no animation.
+     * are then retargeted to the new value with no animation. The hit-position arguments mirror
+     * @c AddScore's signature but are unused by this path.
      * @param nPlayer The scoring note's player index.
+     * @param nPosX The hit's screen x (unused by this path).
+     * @param nPosY The hit's screen y (unused by this path).
      * @param nDelta The signed score delta.
      * @ghidraAddress 0x149610
      */
-    void AddScoreDelta(int nPlayer, int nDelta);
+    void AddScoreDelta(int nPlayer, int nPosX, int nPosY, int nDelta);
 
     /**
      * @brief Applies a shot-note judgement to a player's lane and fires its score/judge effects.
