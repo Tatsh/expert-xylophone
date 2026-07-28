@@ -16,9 +16,11 @@
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 #include "shotsoundmanager.h"
 #include "soundeffectmanager.h"
 #include "title_part_layout.h"
+#include "titlecolettescene.h"
 
 namespace {
 // The value the constructor seeds into the fade value (the fully-shown level).
@@ -53,6 +55,35 @@ constexpr float kTitleFadeDuration = 500.0f;
 
 // The themed voice bank the title screen loads.
 constexpr int kTitleVoiceId = 0;
+
+// The maximum value of an opaque colour channel, and the half factor for a size-to-anchor centre.
+constexpr unsigned int kColorMax = 255;
+constexpr float kHalf = 0.5f;
+
+// The part-layout anchor mode that draws from the per-device lettered/logo UV atlas; every other
+// mode draws from the shared default title-part atlas.
+constexpr int kPartAnchorModeAtlas = 1;
+
+// The screen-space transform the default-device parts apply: the X and Y offsets and the scale that
+// map a part's layout position into screen space (@ghidraAddress 0x2f8568 X offset, 0x301f94 Y
+// offset, 0x301108 scale), plus the layer's own half-anchor origins.
+constexpr float kPartScreenOffsetX = -384.0f;
+constexpr float kPartScreenOffsetY = -680.0f;
+constexpr float kPartScreenScale = 0.4f;
+
+// The interactive part kinds whose screen rectangles are recorded for the title touch tests.
+constexpr unsigned int kPartKindHit0 = 0x2b;
+constexpr unsigned int kPartKindHit1 = 0x32;
+constexpr unsigned int kPartKindHit2 = 0x34;
+constexpr unsigned int kPartKindHit3 = 0x3e;
+constexpr unsigned int kPartKindHit4 = 0x50;
+
+// The extra offsets the default-device hit-rect for kind 0x50 (the start prompt) is nudged by
+// (@ghidraAddress 0x2f855c width, 0x2f8574 X, 0x2f8578 height, plus an inline -30 Y).
+constexpr float kStartPromptWidthPad = 80.0f;
+constexpr float kStartPromptOffsetX = -40.0f;
+constexpr float kStartPromptHeightPad = 60.0f;
+constexpr float kStartPromptOffsetY = -30.0f;
 } // namespace
 
 namespace rb {
@@ -196,6 +227,125 @@ void TitleLimelightScene::AdvanceFadeValue(int nDeltaFrames) {
             (m_flFadeElapsed - m_flFadeStartDelay) / (m_flFadeDuration - m_flFadeStartDelay);
     }
     m_flFadeValue = m_flFadeStart + flProgress * (m_flFadeEnd - m_flFadeStart);
+}
+
+/** @ghidraAddress 0x1543fc */
+void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
+                                             unsigned int nColorAlpha,
+                                             float flTransformX,
+                                             float flTransformY,
+                                             float flSize,
+                                             float flRotation) {
+    if (nKind >= static_cast<unsigned int>(kSpriteSlotCount)) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nKind];
+    const int nSlot = pInstancer->GetSpriteCount();
+    if (nSlot >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    if (nKind == 0) {
+        // The background: a full-texture quad sized from the instancer's bound texture.
+        ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+        const float flScale = pTexture->GetScale();
+        const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / flScale;
+        const float flPointHeight = static_cast<float>(pTexture->GetImageHeight()) / flScale;
+
+        pInstancer->SetSpriteAnchor(nSlot, S_VECTOR2{flPointWidth * kHalf, flPointHeight * kHalf});
+        pInstancer->SetSpriteSize(nSlot, S_VECTOR2{flPointWidth, flPointHeight});
+        pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{0.0f, 0.0f});
+        pInstancer->SetSpriteUvSize(
+            nSlot,
+            S_VECTOR2{static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetAllocWidth(),
+                      static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetAllocHeight()});
+        pInstancer->SetSpritePosition(nSlot, S_VECTOR2{flTransformX, flTransformY});
+        // The background draws at the texture's retina scale, not the caller's scale.
+        pInstancer->SetSpriteScale(nSlot, flScale, flScale);
+    } else {
+        // A lettered or logo part: its anchor, size, and atlas frame come from the per-device layout
+        // record (the record's position/size fields serve as the sprite anchor and size here).
+        const bool bIsPad = IsPad();
+        const TitlePartLayoutRecord &layout =
+            bIsPad ? g_aTitle2PartLayoutAltFrame[nKind] : g_aTitle2PartLayoutDefault[nKind];
+        const float flAnchorX = layout.flPosX;
+        const float flAnchorY = layout.flPosY;
+        const float flSizeX = layout.flWidth;
+        const float flSizeY = layout.flHeight;
+
+        // The anchor mode selects the atlas: mode one draws from the per-device lettered/logo atlas,
+        // any other mode from the shared default title-part atlas.
+        const SpriteUvEntry *pUvTable;
+        if (layout.nTextureIndex != kPartAnchorModeAtlas) {
+            pUvTable = g_aTitlePartUvDefault;
+        } else if (bIsPad) {
+            pUvTable = g_aTitle2PartUvAlt;
+        } else {
+            pUvTable = g_aTitle2PartUvMain;
+        }
+        const SpriteUvEntry &uv = pUvTable[layout.nUvIndex];
+        pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+        pInstancer->SetSpriteUvSize(nSlot, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+
+        // Map the part's transform into screen space. The iPad layout is already in screen units
+        // barring the Y offset; the default device also scales about the screen offsets.
+        float flPosX;
+        float flPosY;
+        if (bIsPad) {
+            flPosX = flTransformX;
+            flPosY = (flTransformY + kPartScreenOffsetY) + m_flPartOriginY * kHalf;
+        } else {
+            flPosX =
+                (flTransformX + kPartScreenOffsetX) * kPartScreenScale + m_flPartOriginX * kHalf;
+            flPosY =
+                (flTransformY + kPartScreenOffsetY) * kPartScreenScale + m_flPartOriginY * kHalf;
+        }
+        pInstancer->SetSpritePosition(nSlot, S_VECTOR2{flPosX, flPosY});
+        pInstancer->SetSpriteAnchor(nSlot, S_VECTOR2{flAnchorX, flAnchorY});
+        pInstancer->SetSpriteSize(nSlot, S_VECTOR2{flSizeX, flSizeY});
+        pInstancer->SetSpriteScale(nSlot, flSize, flSize);
+
+        // Record the interactive parts' touch rectangles (top-left corner, then size) for the title
+        // touch tests. Kind 0x50 (the start prompt) is padded outwards on the default device.
+        const float flRectX = flPosX - flAnchorX;
+        const float flRectY = flPosY - flAnchorY;
+        switch (nKind) {
+        case kPartKindHit0:
+            m_aHitRects[1] = {flRectX, flRectY, flSizeX, flSizeY};
+            break;
+        case kPartKindHit1:
+            m_aHitRects[3] = {flRectX, flRectY, flSizeX, flSizeY};
+            break;
+        case kPartKindHit2:
+            m_aHitRects[2] = {flRectX, flRectY, flSizeX, flSizeY};
+            break;
+        case kPartKindHit3:
+            m_aHitRects[4] = {flRectX, flRectY, flSizeX, flSizeY};
+            break;
+        case kPartKindHit4:
+            if (bIsPad) {
+                m_aHitRects[0] = {flRectX, flRectY, flSizeX, flSizeY};
+            } else {
+                m_aHitRects[0] = {flRectX + kStartPromptOffsetX,
+                                  flRectY + kStartPromptOffsetY,
+                                  flSizeX + kStartPromptWidthPad,
+                                  flSizeY + kStartPromptHeightPad};
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    pInstancer->SetSpriteRotation(nSlot, flRotation);
+
+    // Tint by the intro-fade complement: a grey (1 - fade) with the caller's alpha scaled by it.
+    const float flIntensity = 1.0f - m_flFadeValue;
+    const auto nChannel = static_cast<unsigned int>(flIntensity * kColorMax);
+    const auto nAlpha = static_cast<unsigned int>(static_cast<float>(nColorAlpha) * flIntensity);
+    pInstancer->SetSpriteColor(nSlot, nChannel, nChannel, nChannel, nAlpha);
+
+    pInstancer->SetSpriteCount(nSlot + 1);
 }
 
 } // namespace rb

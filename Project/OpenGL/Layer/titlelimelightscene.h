@@ -7,6 +7,8 @@
 
 #include "basescene.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -32,6 +34,16 @@ public:
     // The number of cached title textures and the number of part sprite instancers the layer builds.
     static constexpr int kTextureCount = 3;
     static constexpr int kSpriteSlotCount = 0x53;
+    // The number of interactive-part touch hit-rectangles the part emitter records.
+    static constexpr int kHitRectCount = 5;
+
+    /** @brief One interactive part's touch hit-rectangle, in screen space. */
+    struct HitRect {
+        float x = {};      // +0x00: the rectangle's left edge.
+        float y = {};      // +0x04: the rectangle's top edge.
+        float width = {};  // +0x08: the rectangle's width.
+        float height = {}; // +0x0c: the rectangle's height.
+    };
 
     /**
      * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
@@ -61,6 +73,31 @@ public:
     void OnFrame(void *pFrameArg) override;
 
 private:
+    /**
+     * @brief Emits one title part sprite into its instancer slot, positioned and sized by kind.
+     *
+     * A no-op for an out-of-range kind or a full instancer. Kind 0 is the background: it binds the
+     * instancer's texture and fills a full-texture quad. Every other kind reads the per-kind part
+     * layout (the alt table when the alt flag at +0x49 is set, otherwise the main table) for its
+     * anchor mode, position, size, and atlas frame — the atlas frame indexing one of three UV tables
+     * by the layout's anchor mode. The interactive kinds (0x2b, 0x32, 0x34, 0x3e, 0x50) additionally
+     * record their screen rectangle into the layer's hit-rect fields for the touch tests. The sprite
+     * is tinted by the intro-fade complement (1 - the fade value) scaled by the caller's alpha.
+     * @param nKind The part kind, also the instancer index.
+     * @param nColorAlpha The caller's alpha.
+     * @param flTransformX The part's base transform X.
+     * @param flTransformY The part's base transform Y.
+     * @param flSize The part's uniform scale.
+     * @param flRotation The part's rotation, in radians.
+     * @ghidraAddress 0x1543fc
+     */
+    void RenderPartsElement(unsigned int nKind,
+                            unsigned int nColorAlpha,
+                            float flTransformX,
+                            float flTransformY,
+                            float flSize,
+                            float flRotation);
+
     /**
      * @brief Releases the cached textures and flags each owned part sprite instancer for the scene
      * walker to delete.
@@ -121,8 +158,13 @@ private:
     float m_flFadeStartDelay = {};            // +0x5b0: the delay before the fade curve begins.
     float m_flFadeValue = {};                 // +0x5b4: the current fade value (seeded to 1.0).
     unsigned char m_aReserved5b8[0xc] = {};   // +0x5b8: trailing presentation state.
-    int m_nTrailingIndex = {};               // +0x5c4: a per-slot index (-1 when none is selected).
-    unsigned char m_aReserved5c8[0x60] = {}; // +0x5c8: trailing presentation state.
+    int m_nTrailingIndex = {};            // +0x5c4: a per-slot index (-1 when none is selected).
+    unsigned char m_aReserved5c8[8] = {}; // +0x5c8: trailing presentation state.
+    float m_flPartOriginX = {}; // +0x5d0: the part layout's screen X origin (added to a part's X).
+    float m_flPartOriginY = {}; // +0x5d4: the part layout's screen Y origin (added to a part's Y).
+    // +0x5d8: the five touch hit-rectangles the part emitter records for the interactive parts, read
+    // by the title touch tests. Each is {x, y, width, height}.
+    HitRect m_aHitRects[kHitRectCount] = {}; // +0x5d8
 };
 
 } // namespace rb

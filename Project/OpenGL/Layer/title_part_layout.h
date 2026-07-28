@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "sprite_uv_table.h"
+
 /**
  * @brief One title-part layout record: the cached-texture index the part binds and its placement
  * rectangle. A 24-byte record; @c TitleLimelightScene::LoadResources reads the texture index to bind
@@ -32,6 +34,20 @@ extern const TitlePartLayoutRecord g_aTitle2PartLayoutDefault[];
  * @ghidraAddress 0x309580
  */
 extern const TitlePartLayoutRecord g_aTitle2PartLayoutAltFrame[];
+
+/**
+ * @brief The lettered/logo parts' UV atlas for the default device (45 records). A part indexes this
+ * (through its layout record's UV index) when its anchor mode is one and the alt flag is clear.
+ * @ghidraAddress 0x2f7638
+ */
+extern const SpriteUvEntry g_aTitle2PartUvMain[];
+
+/**
+ * @brief The lettered/logo parts' UV atlas for the alt-frame (iPad) device (45 records). A part
+ * indexes this when its anchor mode is one and the alt flag is set.
+ * @ghidraAddress 0x2f7368
+ */
+extern const SpriteUvEntry g_aTitle2PartUvAlt[];
 
 // code: language=C++
 // kate: hl C++;
