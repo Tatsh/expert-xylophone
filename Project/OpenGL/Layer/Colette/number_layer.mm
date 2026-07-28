@@ -1,6 +1,8 @@
 #include "number_layer.h"
 
 #include "../Share/bg_layer.h"
+#include "curve.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -69,6 +71,288 @@ constexpr bool kSlotAdditiveBlend[] = {false, false};
 // The additive blend-mode identifier the flagged slots use.
 constexpr int kAdditiveBlendMode = 1;
 
+// The number of digit markers the process step animates in its main run (markers 1 through 12); the
+// zeroth marker (the "+"/label) is handled separately.
+constexpr int kNumberMarkerRun = 12;
+
+// The per-digit alpha-envelope curve (4 {time, value} points per marker). @ghidraAddress 0x30d824
+constexpr float kNumberAlphaCurve[kNumberMarkerRun][8] = {
+    {400.0f, 0.0f, 650.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {366.66666f, 0.0f, 616.6667f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {333.33334f, 0.0f, 583.3333f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {300.0f, 0.0f, 550.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {266.66666f, 0.0f, 516.6667f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {233.33333f, 0.0f, 483.33334f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {233.33333f, 0.0f, 483.33334f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {266.66666f, 0.0f, 516.6667f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {300.0f, 0.0f, 550.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {333.33334f, 0.0f, 583.3333f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {366.66666f, 0.0f, 616.6667f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+    {400.0f, 0.0f, 650.0f, 1.0f, 1416.6666f, 1.0f, 1583.3334f, 0.00001f},
+};
+
+// The per-digit scale curve (9 {time, value} points per marker). @ghidraAddress 0x30d4c4
+constexpr float kNumberScaleCurve[kNumberMarkerRun][18] = {
+    {400.0f,
+     0.0f,
+     566.6667f,
+     1.1f,
+     650.0f,
+     1.0f,
+     733.3333f,
+     1.05f,
+     783.3333f,
+     1.0f,
+     833.3333f,
+     1.02f,
+     866.6667f,
+     1.0f,
+     900.0f,
+     1.02f,
+     933.3333f,
+     1.0f},
+    {366.66666f,
+     0.0f,
+     533.3333f,
+     1.1f,
+     616.6667f,
+     1.0f,
+     700.0f,
+     1.05f,
+     750.0f,
+     1.0f,
+     800.0f,
+     1.02f,
+     833.3333f,
+     1.0f,
+     866.6667f,
+     1.02f,
+     900.0f,
+     1.0f},
+    {333.33334f,
+     0.0f,
+     500.0f,
+     1.1f,
+     583.3333f,
+     1.0f,
+     666.6667f,
+     1.05f,
+     716.6667f,
+     1.0f,
+     766.6667f,
+     1.02f,
+     800.0f,
+     1.0f,
+     833.3333f,
+     1.02f,
+     866.6667f,
+     1.0f},
+    {300.0f,
+     0.0f,
+     466.66666f,
+     1.1f,
+     550.0f,
+     1.0f,
+     633.3333f,
+     1.05f,
+     683.3333f,
+     1.0f,
+     733.3333f,
+     1.02f,
+     766.6667f,
+     1.0f,
+     800.0f,
+     1.02f,
+     833.3333f,
+     1.0f},
+    {266.66666f,
+     0.0f,
+     433.33334f,
+     1.1f,
+     516.6667f,
+     1.0f,
+     600.0f,
+     1.05f,
+     650.0f,
+     1.0f,
+     700.0f,
+     1.02f,
+     733.3333f,
+     1.0f,
+     766.6667f,
+     1.02f,
+     800.0f,
+     1.0f},
+    {233.33333f,
+     0.0f,
+     400.0f,
+     1.1f,
+     483.33334f,
+     1.0f,
+     566.6667f,
+     1.05f,
+     616.6667f,
+     1.0f,
+     666.6667f,
+     1.02f,
+     700.0f,
+     1.0f,
+     733.3333f,
+     1.02f,
+     766.6667f,
+     1.0f},
+    {233.33333f,
+     0.0f,
+     400.0f,
+     1.1f,
+     483.33334f,
+     1.0f,
+     566.6667f,
+     1.05f,
+     616.6667f,
+     1.0f,
+     666.6667f,
+     1.02f,
+     700.0f,
+     1.0f,
+     733.3333f,
+     1.02f,
+     766.6667f,
+     1.0f},
+    {266.66666f,
+     0.0f,
+     433.33334f,
+     1.1f,
+     516.6667f,
+     1.0f,
+     600.0f,
+     1.05f,
+     650.0f,
+     1.0f,
+     700.0f,
+     1.02f,
+     733.3333f,
+     1.0f,
+     766.6667f,
+     1.02f,
+     800.0f,
+     1.0f},
+    {300.0f,
+     0.0f,
+     466.66666f,
+     1.1f,
+     550.0f,
+     1.0f,
+     633.3333f,
+     1.05f,
+     683.3333f,
+     1.0f,
+     733.3333f,
+     1.02f,
+     766.6667f,
+     1.0f,
+     800.0f,
+     1.02f,
+     833.3333f,
+     1.0f},
+    {333.33334f,
+     0.0f,
+     500.0f,
+     1.1f,
+     583.3333f,
+     1.0f,
+     666.6667f,
+     1.05f,
+     716.6667f,
+     1.0f,
+     766.6667f,
+     1.02f,
+     800.0f,
+     1.0f,
+     833.3333f,
+     1.02f,
+     866.6667f,
+     1.0f},
+    {366.66666f,
+     0.0f,
+     533.3333f,
+     1.1f,
+     616.6667f,
+     1.0f,
+     700.0f,
+     1.05f,
+     750.0f,
+     1.0f,
+     800.0f,
+     1.02f,
+     833.3333f,
+     1.0f,
+     866.6667f,
+     1.02f,
+     900.0f,
+     1.0f},
+    {400.0f,
+     0.0f,
+     566.6667f,
+     1.1f,
+     650.0f,
+     1.0f,
+     733.3333f,
+     1.05f,
+     783.3333f,
+     1.0f,
+     833.3333f,
+     1.02f,
+     866.6667f,
+     1.0f,
+     900.0f,
+     1.02f,
+     933.3333f,
+     1.0f},
+};
+
+// The per-digit base positions. @ghidraAddress 0x30d450
+constexpr S_VECTOR2 kNumberDigitBase[kNumberMarkerRun] = {
+    {135.0f, 663.0f},
+    {180.0f, 663.0f},
+    {222.0f, 663.0f},
+    {286.0f, 663.0f},
+    {325.0f, 663.0f},
+    {367.0f, 663.0f},
+    {432.0f, 663.0f},
+    {474.0f, 663.0f},
+    {518.0f, 663.0f},
+    {561.0f, 663.0f},
+    {600.0f, 663.0f},
+    {639.0f, 663.0f},
+};
+
+// The zeroth marker (the label) animates from three separate curves: its two scale axes and its
+// alpha. @ghidraAddress 0x30d9a4, 0x30d9c4, 0x30d9e4
+constexpr float kNumberLabelScaleXCurve[] = {
+    0.0f, 0.0f, 166.66667f, 1.5f, 250.0f, 1.0f, 500.0f, 5.0f};
+constexpr float kNumberLabelScaleYCurve[] = {
+    0.0f, 0.0f, 166.66667f, 1.5f, 250.0f, 1.0f, 500.0f, 1.5f};
+constexpr float kNumberLabelAlphaCurve[] = {250.0f, 1.0f, 500.0f, 0.0f};
+constexpr int kNumberLabelScalePoints = 4;
+constexpr int kNumberLabelAlphaPoints = 2;
+constexpr int kNumberCurvePoints = 4;
+constexpr int kNumberScalePoints = 9;
+
+// The zeroth marker's fixed base position.
+constexpr S_VECTOR2 kNumberLabelBase = {384.0f, 663.0f};
+
+// The animation runs over this many milliseconds, then the display turns off (@ghidraAddress
+// 0x2feff0), the phone layout halves the marker scale, and the label scale carries a 0.9 factor
+// (@ghidraAddress 0x2fede0).
+constexpr float kNumberAnimDuration = 2000.0f;
+constexpr float kNumberPhoneScale = 0.5f;
+constexpr float kNumberPadScale = 1.0f;
+constexpr float kNumberLabelScaleFactor = 0.9f;
+
+// The alpha curve's output is scaled to a 0..255 byte (@ghidraAddress 0x2eed00).
+constexpr float kNumberAlphaScale = 255.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x17dd98 */
@@ -126,6 +410,62 @@ void NumberLayer::SetReady() {
 /** @ghidraAddress 0x17df3c */
 void NumberLayer::ClearReady() {
     m_bReady = false;
+}
+
+/** @ghidraAddress 0x17df44 */
+void NumberLayer::Process(float flDelta) {
+    if (!m_bReady) {
+        return;
+    }
+
+    // Advance the intro timer; once it runs out the display turns itself off.
+    const float flTime = m_nFrameCounter + flDelta;
+    m_nFrameCounter = static_cast<int>(flTime);
+    if (flTime >= kNumberAnimDuration) {
+        m_bReady = false;
+        return;
+    }
+
+    // Cache the viewport size the marker emitter blends into its positions, and clear both batches.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flViewportWidth = pGameSystem->GetViewportWidth();
+    m_flViewportHeight = pGameSystem->GetViewportHeight();
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+
+    // The phone layout draws the markers at half scale.
+    const float flScale = IsPad() ? kNumberPadScale : kNumberPhoneScale;
+
+    // The twelve digit markers: each takes its base position, its alpha from the per-digit envelope
+    // curve, and a uniform scale from the per-digit scale curve.
+    for (int nDigit = 0; nDigit < kNumberMarkerRun; ++nDigit) {
+        S_VECTOR2 position = kNumberDigitBase[nDigit];
+        const float flAlpha = CalculateCurveInterpolation(
+            kNumberAlphaCurve[nDigit], kNumberCurvePoints, static_cast<float>(m_nFrameCounter));
+        const float flCurveScale = CalculateCurveInterpolation(
+            kNumberScaleCurve[nDigit], kNumberScalePoints, static_cast<float>(m_nFrameCounter));
+        EmitMarkerSprite(static_cast<unsigned int>(nDigit + 1),
+                         &position,
+                         static_cast<int>(flAlpha * kNumberAlphaScale),
+                         flScale * flCurveScale,
+                         flScale * flCurveScale);
+    }
+
+    // The leading label marker (index 0) animates from its own per-axis scale curves (carrying the
+    // 0.9 factor) and its own alpha curve.
+    S_VECTOR2 labelPos = kNumberLabelBase;
+    const float flLabelScaleX = CalculateCurveInterpolation(
+        kNumberLabelScaleXCurve, kNumberLabelScalePoints, static_cast<float>(m_nFrameCounter));
+    const float flLabelScaleY = CalculateCurveInterpolation(
+        kNumberLabelScaleYCurve, kNumberLabelScalePoints, static_cast<float>(m_nFrameCounter));
+    const float flLabelAlpha = CalculateCurveInterpolation(
+        kNumberLabelAlphaCurve, kNumberLabelAlphaPoints, static_cast<float>(m_nFrameCounter));
+    EmitMarkerSprite(0,
+                     &labelPos,
+                     static_cast<int>(flLabelAlpha * kNumberAlphaScale),
+                     static_cast<float>(flScale * flLabelScaleX * kNumberLabelScaleFactor),
+                     static_cast<float>(flScale * flLabelScaleY * kNumberLabelScaleFactor));
 }
 
 /** @ghidraAddress 0x17e1b4 */

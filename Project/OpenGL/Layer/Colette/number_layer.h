@@ -62,6 +62,19 @@ public:
     }
 
     /**
+     * @brief Advances the number display's intro animation one frame and re-emits its digit markers.
+     *
+     * A no-op until the display is made ready. It advances the animation timer and turns the display
+     * off once it runs out; otherwise it caches the viewport size, clears the sprite batches, and
+     * re-emits each of the twelve digit markers (its base position, its alpha from the per-digit
+     * envelope curve, and its scale from the per-digit scale curve) plus the leading label marker
+     * (driven by its own scale and alpha curves). The phone layout halves the marker scale.
+     * @param flDelta The frame delta.
+     * @ghidraAddress 0x17df44
+     */
+    void Process(float flDelta);
+
+    /**
      * @brief Appends one score-digit marker sprite to its batch at a world position, at the given
      * scale and alpha.
      *
