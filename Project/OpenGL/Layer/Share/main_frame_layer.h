@@ -137,7 +137,13 @@ private:
     void BuildSprites();
 
     /**
-     * @brief Re-lays-out the frame's marker/difficulty overlay sprites. Reconstruction pending.
+     * @brief Re-lays-out the frame's border mesh and its marker/difficulty overlay sprites.
+     *
+     * Positions the frame mesh's 24 vertices as two theme-independent horizontal bands (a short
+     * centre tab and the full-width bottom strip) sized to the current viewport width, clears both
+     * overlay instancers, then emits the two top labels, the marker label, the difficulty label, and
+     * the centred frame-mesh marker. The current player theme selects which label and marker sprites
+     * are emitted.
      * @ghidraAddress 0x17bd50
      */
     void SetOverlayLayout();

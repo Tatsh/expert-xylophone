@@ -1,5 +1,8 @@
 #include "main_frame_layer.h"
 
+#include "RBMacros.h"
+#include "RBUserSettingData.h"
+#include "gamesystem.h"
 #include "neDrawPolygon2D.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -81,6 +84,43 @@ const MainFrameOverlayLayout g_aMainFrameOverlayLayout[] = {
 
 // The sprite-kind bound the emitter rejects at or above (the overlay-layout table's element count).
 constexpr unsigned int kMainFrameSpriteKindBound = 0x49;
+
+// The overlay-layout geometry, all in points. The frame mesh is two horizontal bands: a short
+// centre tab (top edge at y=0) and the full-width bottom strip (top edge at y=7), both sharing the
+// bottom edge at y=21. Each band is a run of columns; consecutive vertex indices give a column its
+// top vertex then its bottom vertex. The two inner columns sit a fixed span either side of the
+// screen centre; the strip's outer columns sit fixed insets in from the screen edges.
+constexpr float kFrameInnerEdgeOffset = -123.5f; // @ghidraAddress 0x30ce1c: the left inner column's
+                                                 //   offset from the screen centre.
+constexpr float kFrameInnerEdgeSpan = 247.0f; // @ghidraAddress 0x30ce20: the span from the left to
+                                              //   the right inner column (twice the half-offset).
+constexpr float kFrameTabTopY = 0.0f;         // The centre tab's top edge.
+constexpr float kFrameStripTopY = 7.0f;       // The bottom strip's top edge.
+constexpr float kFrameBandBottomY = 21.0f;    // The shared bottom edge of both bands.
+constexpr float kFrameColumnInset = 11.0f; // A column's inset from an inner edge or a screen edge.
+constexpr float kFrameColumnMargin = 2.0f; // A column's small margin from an inner or screen edge.
+
+// The label and marker sprite Y positions, and the centring divisor for the label-panel X spans.
+constexpr float kFrameLabelTopY = 2.0f;    // The two top label sprites' Y.
+constexpr float kFrameLabelMidY = 14.0f;   // The marker and difficulty label sprites' Y.
+constexpr float kFrameMarkerY = 10.0f;     // The frame-mesh marker sprite's Y.
+constexpr float kFrameCentreFactor = 0.5f; // Halves a span to centre a label panel within it.
+
+// The overlay sprite kinds. The Colette theme (thema == 2) uses a distinct set of label and marker
+// sprites; every other theme uses the base set.
+constexpr unsigned int kFrameLabelSpriteLeft = 0;       // The left label, base themes.
+constexpr unsigned int kFrameLabelSpriteRight = 1;      // The right label, base themes.
+constexpr unsigned int kFrameMarkerSpriteOffset = 2;    // The marker sprite's base, base themes.
+constexpr unsigned int kColetteLabelSpriteLeft = 0x42;  // The left label, Colette theme.
+constexpr unsigned int kColetteLabelSpriteRight = 0x43; // The right label, Colette theme.
+constexpr unsigned int kColetteMarkerSpriteOffset =
+    0x44; // The marker sprite's base, Colette theme.
+constexpr unsigned int kFrameMeshMarkerSprite =
+    0x48; // The centred marker sprite on the frame mesh.
+
+// The per-marker base sprite kind the difficulty index is added to for the difficulty label.
+// @ghidraAddress 0x30ce88
+constexpr int kFrameDifficultyMarkerBase[] = {6, 21, 36, 51};
 
 } // namespace
 
@@ -217,6 +257,94 @@ void MainFrameLayer::EmitMainFrameSprite(unsigned int nInstancerIndex,
         kOverlayChannelMax,
         static_cast<unsigned int>(static_cast<int>(m_fadeChannel.GetCurrent())));
     pInstancer->SetSpriteCount(nSlot + 1);
+}
+
+/** @ghidraAddress 0x17bd50 */
+void MainFrameLayer::SetOverlayLayout() {
+    // The theme selects which label and marker sprites the overlay emits. The binary reads it first,
+    // inside an autorelease scope, before touching the geometry.
+    const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+
+    // The frame width in points, its centre, and the two inner columns a fixed span either side of
+    // that centre.
+    const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
+    const float flHalfWidth = flWidth * kFrameCentreFactor;
+    const float flLeftInner = flHalfWidth + kFrameInnerEdgeOffset;
+    const float flRightInner = flLeftInner + kFrameInnerEdgeSpan;
+
+    // The centre tab: four columns spanning the top edge (y=0) down to the shared band bottom.
+    const float aTabColumnsX[] = {
+        flLeftInner,
+        flLeftInner + kFrameColumnInset,
+        flRightInner - kFrameColumnInset,
+        flRightInner,
+    };
+    // The bottom strip: eight columns spanning its own top edge (y=7) down to the shared band
+    // bottom, symmetric about the centre (screen edges, then a step in, then either side of the two
+    // inner edges).
+    const float aStripColumnsX[] = {
+        kFrameColumnMargin,
+        kFrameColumnInset,
+        flLeftInner - kFrameColumnInset,
+        flLeftInner - kFrameColumnMargin,
+        flRightInner + kFrameColumnMargin,
+        flRightInner + kFrameColumnInset,
+        flWidth - kFrameColumnInset,
+        flWidth - kFrameColumnMargin,
+    };
+
+    // Each column contributes two consecutive mesh vertices: its top vertex then its bottom vertex.
+    int nVertex = 0;
+    for (const float flColumnX : aTabColumnsX) {
+        m_pFrameMesh2d->SetPos(nVertex++, S_VECTOR2{flColumnX, kFrameTabTopY});
+        m_pFrameMesh2d->SetPos(nVertex++, S_VECTOR2{flColumnX, kFrameBandBottomY});
+    }
+    for (const float flColumnX : aStripColumnsX) {
+        m_pFrameMesh2d->SetPos(nVertex++, S_VECTOR2{flColumnX, kFrameStripTopY});
+        m_pFrameMesh2d->SetPos(nVertex++, S_VECTOR2{flColumnX, kFrameBandBottomY});
+    }
+
+    // Clear both overlay instancers before re-emitting this frame's sprites into them.
+    for (ne::C_SPRITE_INSTANCING_2D *pInstancer : m_apInstancers) {
+        pInstancer->SetSpriteCount(0);
+    }
+
+    // The two label panels are centred within the strip's leftmost and rightmost inner spans.
+    const float flLeftLabelX =
+        kFrameColumnMargin +
+        ((flLeftInner - kFrameColumnMargin) - kFrameColumnMargin) * kFrameCentreFactor;
+    const float flRightLabelX =
+        (flRightInner + kFrameColumnMargin) +
+        ((flWidth - kFrameColumnMargin) - (flRightInner + kFrameColumnMargin)) * kFrameCentreFactor;
+
+    // The two top labels, then the marker sprite base, differ by theme.
+    unsigned int nMarkerSpriteKind;
+    if (theme == RBUserSettingDataThemeColette) {
+        EmitMainFrameSprite(
+            MainFrameInstancerOverlay, kColetteLabelSpriteLeft, flLeftLabelX, kFrameLabelTopY);
+        EmitMainFrameSprite(
+            MainFrameInstancerOverlay, kColetteLabelSpriteRight, flRightLabelX, kFrameLabelTopY);
+        nMarkerSpriteKind = m_nMarker + kColetteMarkerSpriteOffset;
+    } else {
+        EmitMainFrameSprite(
+            MainFrameInstancerOverlay, kFrameLabelSpriteLeft, flLeftLabelX, kFrameLabelTopY);
+        EmitMainFrameSprite(
+            MainFrameInstancerOverlay, kFrameLabelSpriteRight, flRightLabelX, kFrameLabelTopY);
+        nMarkerSpriteKind = m_nMarker + kFrameMarkerSpriteOffset;
+    }
+
+    // The marker label sits at the mid row on the right; the difficulty label mirrors it on the
+    // left, its sprite kind the difficulty index added to this marker's difficulty-sprite base.
+    EmitMainFrameSprite(
+        MainFrameInstancerOverlay, nMarkerSpriteKind, flRightLabelX, kFrameLabelMidY);
+    EmitMainFrameSprite(MainFrameInstancerOverlay,
+                        m_nDifficulty + kFrameDifficultyMarkerBase[m_nMarker],
+                        flLeftLabelX,
+                        kFrameLabelMidY);
+
+    // The centred marker sits on the frame-mesh instancer.
+    EmitMainFrameSprite(
+        MainFrameInstancerFrame, kFrameMeshMarkerSprite, flHalfWidth, kFrameMarkerY);
 }
 
 /** @ghidraAddress 0x17c4dc */
