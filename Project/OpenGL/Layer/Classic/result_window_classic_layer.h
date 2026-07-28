@@ -360,6 +360,19 @@ public:
     void ToggleCustomizeCharacterTexture(unsigned int nCharacterId);
 
     /**
+     * @brief Begins displaying the main customize sprite asset for the given asset id.
+     *
+     * Records the asset id and checks its availability by the player's level threshold. When
+     * unavailable the two active flags are cleared and nothing is shown. Otherwise it marks the asset
+     * active, resets its scale to one, resolves the asset's unlock entry (its category is the asset
+     * type, its item the variant), builds and loads the asset texture, and binds it into the main
+     * asset instancer slot (5).
+     * @param nAssetId The main customize asset id.
+     * @ghidraAddress 0x11c66c
+     */
+    void BeginCustomizeMainAsset(unsigned int nAssetId);
+
+    /**
      * @brief Emits one glyph sprite anchored by a separator record, at that record's scale.
      *
      * Fetches the separator record @p nSepIndex, which supplies the anchored base position (offset
@@ -591,11 +604,13 @@ private:
     float m_flGestureHoldTimer = {}; // +0x154: accumulates toward the gesture-hold release timeout.
     // +0x158..+0x15f: further layer state, still being worked out.
     unsigned char m_aReserved158[8] = {}; // +0x158
-    int m_nPlayerLevel = {};  // +0x160: the player's level, copied from the game system.
-    int m_nPlayerExp = {};    // +0x164: the player's experience, from the game system.
-    int m_nGainedExp = {};    // +0x168: the experience gained this play (when levelling).
-    int m_nExpThreshold = {}; // +0x16c: the level-up experience threshold.
-    bool m_bReachedCap = {};  // +0x170: set when the level cap is reached (no threshold).
+    int m_nPlayerLevel = {};      // +0x160: the player's level, copied from the game system.
+    int m_nPlayerExp = {};        // +0x164: the player's experience, from the game system.
+    int m_nGainedExp = {};        // +0x168: the experience gained this play (when levelling).
+    int m_nExpThreshold = {};     // +0x16c: the level-up experience threshold.
+    bool m_bMainAssetActive = {}; // +0x170: whether the main customize asset is loaded and shown
+                                  //         (cleared when the asset is unavailable or the level cap
+                                  //         has no threshold).
     // +0x171..+0x173 is alignment padding.
     unsigned char m_aPad171[3] = {}; // +0x171
     int m_nDisplayCounterA = {};     // +0x174: a per-round display counter, reset to zero.
@@ -609,10 +624,13 @@ private:
     // +0x189..+0x18b is alignment padding.
     unsigned char m_aPad189[3] = {}; // +0x189
     int m_nUnlockStep = {};          // +0x18c: the unlock-progression step.
-    int m_nTrackIndexB = {};         // +0x190: a second music-track index sentinel (-1).
+    int m_nMainAssetId = {};         // +0x190: the main customize asset id being shown.
     int m_nTrackIndexC = {};         // +0x194: the resolved music-track index (-1 when unset).
-    // +0x198..+0x19f: further progression state, still being worked out.
-    unsigned char m_aReserved198[8] = {}; // +0x198
+    // +0x198: a customize-asset sub-state byte cleared when the main asset loads.
+    bool m_bMainAssetSubState = {}; // +0x198
+    // +0x199..+0x19b is alignment padding.
+    unsigned char m_aPad199[3] = {};    // +0x199
+    float m_flMainAssetScale = {};      // +0x19c: the main customize asset scale, reset to 1.0.
     bool m_bCustomizePreviewShown = {}; // +0x1a0: whether the customize character preview is shown.
     // +0x1a1..+0x1a3 is alignment padding.
     unsigned char m_aPad1a1[3] = {};  // +0x1a1

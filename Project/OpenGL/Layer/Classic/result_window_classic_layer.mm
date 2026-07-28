@@ -653,6 +653,39 @@ void ResultWindowClassicLayer::ToggleCustomizeCharacterTexture(unsigned int nCha
     }
 }
 
+// The main customize asset draws into this sprite instancer slot.
+static constexpr unsigned int kMainAssetSlot = 5;
+
+/** @ghidraAddress 0x11c66c */
+void ResultWindowClassicLayer::BeginCustomizeMainAsset(unsigned int nAssetId) {
+    m_nMainAssetId = static_cast<int>(nAssetId);
+    LevelTables::GetInstance(); // The binary vends the singleton (lazy-init) before the lookups.
+
+    // The asset is available only when its level threshold is non-negative; otherwise clear the
+    // active flags and show nothing.
+    if (static_cast<int>(LevelTables::GetLevelExpThreshold(m_nMainAssetId)) < 0) {
+        m_bCustomizePending = false;
+        m_bMainAssetActive = false;
+        return;
+    }
+
+    m_bMainAssetActive = true;
+    m_bCustomizePending = true;
+    m_flMainAssetScale = 1.0f;
+
+    // Resolve the asset's unlock entry (its category is the asset type, its item the variant), build
+    // and load the asset texture, and bind it into the main asset slot. The binary discards this
+    // method's return value.
+    const LevelUnlockEntry *pEntry = LevelTables::GetLevelUnlockEntry(m_nMainAssetId);
+    m_bMainAssetSubState = false;
+    NSString *path = BuildCustomizeAssetPathString(pEntry->nCategory, pEntry->nItem);
+    ne::C_TEXTURE *pTexture = ne::C_TEXTURE::FindOrLoadCached([path UTF8String]);
+    // The binary binds and releases the texture unconditionally on the available path (no null check,
+    // unlike the toggle helper).
+    SetInstancerTextureAndRefreshSlots(kMainAssetSlot, pTexture);
+    pTexture->Release();
+}
+
 /** @ghidraAddress 0x115348 */
 void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
                                                                   ne::C_TEXTURE *pTexture) {
@@ -1270,7 +1303,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_bDisplayFlagC = false;
     m_bCustomizePending = false;
     m_nUnlockStep = 0;
-    m_nTrackIndexB = -1;
+    m_nMainAssetId = -1;
     m_nTrackIndexC = -1;
     m_bCustomizePreviewShown = false;
     m_nUnlockCounter = 0;
@@ -1286,8 +1319,9 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nExpThreshold = static_cast<int>(nThreshold);
     m_nLevelUpStep = 0;
     if (static_cast<int>(nThreshold) < 0) {
-        // The level cap has no threshold; no experience is gained toward the next level.
-        m_bReachedCap = false;
+        // The level cap has no threshold; no experience is gained toward the next level, and the
+        // main customize asset is not shown.
+        m_bMainAssetActive = false;
     } else {
         m_nGainedExp = pGameSystem->GetGainedExp();
     }
@@ -1295,7 +1329,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     // When no customize swap is pending, kick off the main-asset load; otherwise consume the pending
     // flag and seed the resolved track index from the player level.
     if (!m_bCustomizePending) {
-        BeginCustomizeMainAsset();
+        BeginCustomizeMainAsset(static_cast<unsigned int>(m_nPlayerLevel));
     } else {
         m_bCustomizePending = false;
         m_nTrackIndexC = m_nPlayerLevel;
