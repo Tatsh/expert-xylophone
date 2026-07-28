@@ -465,6 +465,119 @@ void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
 
 namespace {
 
+// The three element anchor ids ComputeElementBounds resolves: the centre panel, the score block,
+// and the music-info block.
+constexpr int kElementAnchorCentre = 1;
+constexpr int kElementAnchorScore = 5;
+constexpr int kElementAnchorMusicInfo = 0x46;
+
+// The phone-layout anchor-position record indices for each element's two corners.
+constexpr int kPhonePosCentre = 1;
+constexpr int kPhonePosScoreMin = 3;
+constexpr int kPhonePosScoreMax = 4;
+constexpr int kPhonePosMusicInfoMin = 0x43;
+constexpr int kPhonePosMusicInfoMax = 0x44;
+
+// The phone-layout parts record indices supplying each element's corner sizes. These are distinct
+// from the position indices above: the size record the binary inflates by is not the same index as
+// the position it inflates around.
+constexpr int kPhoneSizeCentre = 1;
+constexpr int kPhoneSizeScoreMin = 3;
+constexpr int kPhoneSizeScoreMax = 9;
+constexpr int kPhoneSizeMusicInfoMin = 79;
+constexpr int kPhoneSizeMusicInfoMax = 85;
+
+// The iPad-layout parts and position record indices for each element's two corners (the parts
+// record supplies the element size, the position record its placement; both share the index).
+constexpr int kPadRecScoreMin = 5;
+constexpr int kPadRecScoreMax = 8;
+constexpr int kPadRecMusicInfoMin = 70;
+constexpr int kPadRecMusicInfoMax = 73;
+
+} // namespace
+
+/** @ghidraAddress 0x7b09c */
+void ResultWindowColetteLayer::ComputeElementBounds(int nAnchorId,
+                                                    S_VECTOR2 *pMin,
+                                                    S_VECTOR2 *pMax) const {
+    if (IsPad()) {
+        // The iPad layout places the corners from the fixed result-layout table and takes the
+        // element size from the pad parts table.
+        switch (nAnchorId) {
+        case kElementAnchorCentre: {
+            // The centre panel resolves its anchor box but reports empty bounds.
+            PhoneLayoutRect box;
+            getPosition(0, &box);
+            *pMin = S_VECTOR2{0.0f, 0.0f};
+            *pMax = S_VECTOR2{0.0f, 0.0f};
+            break;
+        }
+        case kElementAnchorMusicInfo: {
+            const PartsDataRecord &recMin = g_aColettePartsPad[kPadRecMusicInfoMin];
+            const PartsDataRecord &recMax = g_aColettePartsPad[kPadRecMusicInfoMax];
+            pMin->x = g_aResultLayoutPosition[kPadRecMusicInfoMin].x - recMin.flWidth * 0.5f;
+            pMin->y = g_aResultLayoutPosition[kPadRecMusicInfoMin].y - recMin.flHeight * 0.5f;
+            pMax->x = g_aResultLayoutPosition[kPadRecMusicInfoMax].x + recMax.flWidth * 0.5f;
+            pMax->y = g_aResultLayoutPosition[kPadRecMusicInfoMax].y + recMax.flHeight * 0.5f;
+            break;
+        }
+        case kElementAnchorScore: {
+            const PartsDataRecord &recMin = g_aColettePartsPad[kPadRecScoreMin];
+            const PartsDataRecord &recMax = g_aColettePartsPad[kPadRecScoreMax];
+            pMin->x = g_aResultLayoutPosition[kPadRecScoreMin].x - recMin.flWidth * 0.5f;
+            pMin->y = g_aResultLayoutPosition[kPadRecScoreMin].y - recMin.flHeight * 0.5f;
+            pMax->x = g_aResultLayoutPosition[kPadRecScoreMax].x + recMax.flWidth * 0.5f;
+            pMax->y = g_aResultLayoutPosition[kPadRecScoreMax].y + recMax.flHeight * 0.5f;
+            break;
+        }
+        default:
+            break;
+        }
+        return;
+    }
+
+    // The phone layout resolves both corner positions through the phone anchor resolver and takes
+    // the element size from the phone parts table.
+    switch (nAnchorId) {
+    case kElementAnchorCentre: {
+        const PartsDataRecord &rec = g_aColettePartsPhone[kPhoneSizeCentre];
+        getPosition_Phone(kPhonePosCentre, pMin);
+        getPosition_Phone(kPhonePosCentre, pMax);
+        pMin->x -= rec.flWidth * 0.5f;
+        pMin->y -= rec.flHeight * 0.5f;
+        pMax->x += rec.flWidth * 0.5f;
+        pMax->y += rec.flHeight * 0.5f;
+        break;
+    }
+    case kElementAnchorMusicInfo: {
+        const PartsDataRecord &recMin = g_aColettePartsPhone[kPhoneSizeMusicInfoMin];
+        const PartsDataRecord &recMax = g_aColettePartsPhone[kPhoneSizeMusicInfoMax];
+        getPosition_Phone(kPhonePosMusicInfoMin, pMin);
+        getPosition_Phone(kPhonePosMusicInfoMax, pMax);
+        pMin->x -= recMin.flWidth * 0.5f;
+        pMin->y -= recMin.flHeight * 0.5f;
+        pMax->x += recMax.flWidth * 0.5f;
+        pMax->y += recMax.flHeight * 0.5f;
+        break;
+    }
+    case kElementAnchorScore: {
+        const PartsDataRecord &recMin = g_aColettePartsPhone[kPhoneSizeScoreMin];
+        const PartsDataRecord &recMax = g_aColettePartsPhone[kPhoneSizeScoreMax];
+        getPosition_Phone(kPhonePosScoreMin, pMin);
+        getPosition_Phone(kPhonePosScoreMax, pMax);
+        pMin->x -= recMin.flWidth * 0.5f;
+        pMin->y -= recMin.flHeight * 0.5f;
+        pMax->x += recMax.flWidth * 0.5f;
+        pMax->y += recMax.flHeight * 0.5f;
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+namespace {
+
 // The play-record cell ids the tweet reads per side.
 constexpr unsigned int kCellScore = 0;
 constexpr unsigned int kCellMaxCombo = 2;

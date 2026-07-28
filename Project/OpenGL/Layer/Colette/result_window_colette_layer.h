@@ -231,6 +231,22 @@ public:
     void getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const;
 
     /**
+     * @brief Computes an element's axis-aligned bounding box for the given anchor id.
+     *
+     * Resolves the two corner anchor positions for the anchor id (three ids are supported: the
+     * centre panel, the music-info block, and the score block) and inflates them by half the
+     * element's size, writing the top-left corner to @p pMin and the bottom-right to @p pMax. On an
+     * iPad the positions come from the fixed result-layout table and the sizes from the pad parts
+     * table; on a phone they come from the phone anchor resolver and the phone parts table. An
+     * unsupported anchor id leaves the outputs untouched.
+     * @param nAnchorId The element anchor id.
+     * @param pMin Receives the element's top-left corner.
+     * @param pMax Receives the element's bottom-right corner.
+     * @ghidraAddress 0x7b09c
+     */
+    void ComputeElementBounds(int nAnchorId, S_VECTOR2 *pMin, S_VECTOR2 *pMax) const;
+
+    /**
      * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
      *
      * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold the
