@@ -102,7 +102,12 @@ public:
 
     /**
      * @brief Updates the result screen's touch handling and posts the score to Twitter on the share
-     * gesture. Reconstruction pending.
+     * gesture.
+     *
+     * Enables the gesture regions once the panel is fully shown, runs the four hit-box regions, then
+     * tracks the centre side-slider: a horizontal drag past the threshold toggles the slider value
+     * (with a themed sound) in single-player, and the share region's tap edge posts the result to
+     * Twitter.
      * @ghidraAddress 0x1173d8
      */
     void UpdateTouchAndPostTwitterShare();
@@ -659,8 +664,8 @@ public:
     static constexpr int kScoreAnimCount = 5;
     // The number of phone-layout position records.
     static constexpr int kPositionRecordCount = 82;
-    // The number of gesture touch regions (four hit-box regions plus the drag slider region).
-    static constexpr int kGestureRegionCount = 5;
+    // The number of result-screen gesture hit-box regions (the side-slider drag region is separate).
+    static constexpr int kGestureRegionCount = 4;
 
 private:
     /**
@@ -703,10 +708,10 @@ private:
         {}; // +0x64: set for a networked/online play (game type not single-player).
     float m_flSlideTimer =
         {}; // +0x68: a signed slide/settle timer, advanced toward zero each frame.
-    // +0x6c..+0x93: the five gesture touch regions (four result-screen hit-box regions plus the
-    // in-game side-slider drag region). The customize-character reload flag reuses the first
-    // region's tap-edge byte (+0x71): the customize overlay and the result-screen gesture are never
-    // live at the same time, so the binary overlaps them in the same byte.
+    // +0x6c..+0x8b: the four result-screen gesture hit-box regions. The customize-character reload
+    // flag reuses the first region's tap-edge byte (+0x71): the customize overlay and the
+    // result-screen gesture are never live at the same time, so the binary overlaps them in the same
+    // byte.
     struct GestureTouchRegion {
         int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
         bool bDown = {};                // +0x04: whether a touch is currently inside the region.
@@ -715,6 +720,11 @@ private:
         unsigned char m_aPad07[1] = {}; // +0x07
     };
     GestureTouchRegion m_aGestureRegions[kGestureRegionCount] = {}; // +0x6c
+    // +0x8c..+0x93: the in-game side-slider drag region. It shares the region stride but carries a
+    // float swipe start-Y where a hit-box region carries its flag bytes, so it is modelled on its
+    // own rather than as a fifth GestureTouchRegion.
+    int m_nSliderTouchId = {};   // +0x8c: the slider's tracked touch id (-1 when none).
+    float m_flSliderStartX = {}; // +0x90: the slider touch's start X, for the drag threshold.
     int m_nRotationCounterA =
         {}; // +0x94: a decoration rotation counter, wrapping every 400 frames.
     int m_nRotationCounterB =

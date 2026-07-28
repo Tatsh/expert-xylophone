@@ -11,6 +11,7 @@
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
 #include "engineruntime.h"
+#include "fade_overlay_layer.h"
 #include "float_tween.h"
 #import "gamesystem.h"
 #include "leveltables.h"
@@ -522,6 +523,107 @@ void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
                 }
             }
         }
+    }
+}
+
+namespace {
+// The fully-opaque alpha level the panel-shown gate compares against.
+constexpr int kFullyOpaqueAlpha = 255;
+// The side-slider drag threshold, in pixels, past the touch's start X in either direction.
+constexpr float kSliderDragThreshold = 30.0f;
+// The slider's two settle-target directions.
+constexpr float kSliderDirectionRight = 1.0f;
+constexpr float kSliderDirectionLeft = -1.0f;
+// The themed sound effect the slider toggle fires.
+constexpr int kSliderToggleSoundEffect = 7;
+} // namespace
+
+/** @ghidraAddress 0x1173d8 */
+void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
+    // The result panel is interactive only once its reveal is complete and the screen fade is gone:
+    // the panel alpha channel must read fully opaque and the fade overlay must be fully clear.
+    const int nPanelAlpha =
+        static_cast<int>(m_aScoreAnimChannels[kScoreChannel].flCurrent * kFullyOpaqueAlpha);
+    const float flChannelC = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
+    const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
+
+    UpdateGestureTouchTracking();
+
+    m_aGestureRegions[0].bEnabled = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
+    if (flFadeAlpha != 0.0f ||
+        static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
+        // Not fully shown: disable the swipe regions, and the share region when Twitter is available.
+        m_aGestureRegions[1].bEnabled = false;
+        m_aGestureRegions[2].bEnabled = false;
+        if (m_bTwitterAvailable) {
+            m_aGestureRegions[3].bEnabled = false;
+        }
+        return;
+    }
+
+    // Fully shown: the swipe regions follow the device (their enable flag mirrors the is-pad flag),
+    // and the share region follows Twitter availability.
+    if (IsPad()) {
+        m_aGestureRegions[1].bEnabled = true;
+        m_aGestureRegions[2].bEnabled = true;
+    }
+    if (m_bTwitterAvailable) {
+        m_aGestureRegions[3].bEnabled = true;
+    }
+
+    // Track a horizontal swipe over the centre box: claim a fresh touch inside it, then release it
+    // as a left or right swipe once it moves past the drag threshold from its start X.
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    if (m_nSliderTouchId == -1) {
+        for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
+            TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
+            if (!pTouch->bIsNew) {
+                continue;
+            }
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            const float flY = static_cast<float>(pTouch->nCurrentY);
+            PhoneLayoutRect box{};
+            getCenterPosition_Phone(&box);
+            if (box.flX <= flX && flX <= box.flX + box.flWidth && box.flY <= flY &&
+                flY <= box.flY + box.flHeight) {
+                m_nSliderTouchId = pTouch->nId;
+                m_flSliderStartX = flX;
+                break;
+            }
+        }
+    } else {
+        TouchPoint *pTouch = pTouchManager->FindTouchById(m_nSliderTouchId);
+        if (pTouch == nullptr) {
+            // The touch is gone: stop tracking.
+            m_nSliderTouchId = -1;
+        } else {
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            if (flX < m_flSliderStartX - kSliderDragThreshold) {
+                m_aGestureRegions[2].bTapEdge = true; // A left swipe.
+                m_nSliderTouchId = -1;
+            } else if (flX > m_flSliderStartX + kSliderDragThreshold) {
+                m_aGestureRegions[1].bTapEdge = true; // A right swipe.
+                m_nSliderTouchId = -1;
+            }
+            // Within the drag deadzone the touch keeps tracking (its id is retained).
+        }
+    }
+
+    // On a swipe in single-player, toggle the slider value and fire the toggle sound.
+    if ((GameSystem::GetGameSystem()->GetGameType() | 2) == 2 &&
+        (m_aGestureRegions[1].bTapEdge || m_aGestureRegions[2].bTapEdge)) {
+        m_flSlideTimer =
+            m_aGestureRegions[1].bTapEdge ? kSliderDirectionRight : kSliderDirectionLeft;
+        m_aGestureRegions[1].bTapEdge = false;
+        m_aGestureRegions[2].bTapEdge = false;
+        m_nNetworkPlay = m_nNetworkPlay != 1; // The binary reuses this slot as the slider toggle.
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSliderToggleSoundEffect);
+    }
+
+    // On the share gesture, consume the edge and post the result to Twitter.
+    if (m_bTwitterAvailable && m_aGestureRegions[3].bTapEdge) {
+        m_aGestureRegions[3].bTapEdge = false;
+        PostResultToTwitter();
     }
 }
 
