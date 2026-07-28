@@ -8,6 +8,8 @@
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -57,6 +59,27 @@ public:
     void TriggerJudgeEffect(unsigned int nLane, unsigned int nScore, unsigned int nJudgeType);
 
     /**
+     * @brief Emits one judgement-glyph sprite (a label or score digit) into the batch's next slot.
+     *
+     * Looks up the glyph's anchor, pixel size, and shared-atlas frame from the platform's
+     * judgement-glyph table (the iPad set or the phone set, chosen by the hardware), positions the
+     * sprite there with the given rotation, and tints it by colour type: pink for the JUST / JUST
+     * REFLEC label, cyan for the second special type, and opaque white otherwise. Advances the live
+     * sprite count.
+     * @param nGlyphIndex The glyph's index into the judgement-glyph table.
+     * @param pPosition The glyph's screen position.
+     * @param nAlpha The glyph's alpha.
+     * @param nColorType The colour type: 1 pink, 2 cyan, otherwise white.
+     * @param flRotation The glyph's rotation, in radians.
+     * @ghidraAddress 0x185288
+     */
+    void EmitDigitSprite(unsigned int nGlyphIndex,
+                         const S_VECTOR2 *pPosition,
+                         unsigned int nAlpha,
+                         int nColorType,
+                         float flRotation);
+
+    /**
      * @brief Begins the fade-in animation, easing the layer to fully opaque over @p flDuration
      * (snapping to opaque immediately when the duration is non-positive).
      * @param flDuration The fade duration.
@@ -85,7 +108,7 @@ private:
         unsigned char m_aPad01[3] = {}; // +0x01
         unsigned int m_nScore = {};     // +0x04: the displayed score value.
         unsigned int m_nJudgeType = {}; // +0x08: the judgement kind.
-        int m_nTimer = {};              // +0x0c: the popup animation timer.
+        float m_flTimer = {};           // +0x0c: the popup animation timer, in frame-time.
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts2 atlas.
