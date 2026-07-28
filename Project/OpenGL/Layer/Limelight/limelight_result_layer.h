@@ -96,7 +96,11 @@ public:
 
     /**
      * @brief Updates the phone result screen's touch handling and Twitter-share button.
-     * Reconstruction pending.
+     *
+     * Enables the gesture buttons once the panel is fully shown, runs the four phone-part buttons,
+     * then tracks the centre side-slider: a horizontal drag past the threshold toggles the slider
+     * value (with a themed sound) in single-player, and the share button's tap edge posts the result
+     * to Twitter (dark-title variant).
      * @ghidraAddress 0x1240ec
      */
     void UpdatePhoneTouchAndShare();
@@ -655,8 +659,10 @@ private:
     // +0x08: the overall phone-part pressed state, published each frame: 1 while any touch is
     // active, 0x100 on the frame the last touch releases, else 0.
     unsigned short m_nPressedState = {}; // +0x08
-    // +0x0a..+0x0f: further descriptor state preceding the textures, still being worked out.
-    unsigned char m_aReserved0a[6] = {};      // +0x0a
+    // +0x0a: set on a frame the side-slider commits a left/right swipe, cleared otherwise.
+    bool m_bSliderSwiped = {}; // +0x0a
+    // +0x0b..+0x0f: further descriptor state preceding the textures, still being worked out.
+    unsigned char m_aReserved0b[5] = {};      // +0x0b
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
@@ -674,9 +680,10 @@ private:
     // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch id
     // reset to -1, a flags half-word, and an initialised byte).
     ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
-    // +0x9c: the current result step index, reset to -1 (the "none" sentinel).
-    int m_nCurrentStep = {}; // +0x9c
-    int m_nReservedA0 = {};  // +0xa0: presentation state, still being worked out.
+    // +0x9c: the current result step index, reset to -1 (the "none" sentinel). The phone touch/share
+    // handler reuses this slot as the side-slider's tracked touch id (also the "none" sentinel).
+    int m_nCurrentStep = {};     // +0x9c
+    float m_flSliderStartX = {}; // +0xa0: the side-slider touch's start X, for the drag threshold.
     int m_nRotationCounter =
         {};                    // +0xa4: the decoration rotation counter, wrapping each 192 frames.
     int m_nRotationFrame = {}; // +0xa8: the decoration animation frame index (0 through 3).

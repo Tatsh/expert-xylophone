@@ -10,6 +10,7 @@
 #include "ScoreTracker.h"
 #import "TwitterImageCreater.h"
 #include "deviceenvironment.h"
+#include "fade_overlay_layer.h"
 #include "float_tween.h"
 #import "gamesystem.h"
 #include "limelight_parts_data_table.h"
@@ -1710,5 +1711,118 @@ void LimelightResultLayer::UpdatePhonePartTouchStates() {
         m_nPressedState = kPressedReleased;
     } else {
         m_nPressedState = kPressedNone;
+    }
+}
+
+namespace {
+// The fully-opaque alpha level the panel-shown gate compares against.
+constexpr int kFullyOpaqueAlpha = 255;
+// The panel/effect alpha channels the interactivity gate reads.
+constexpr int kPanelAlphaChannel = 0;
+constexpr int kEffectAlphaChannel = 3;
+// The result-panel gesture button indices: the panel gate, the two swipe buttons, and the share
+// button.
+constexpr int kButtonPanel = 0;
+constexpr int kButtonSwipeRight = 1;
+constexpr int kButtonSwipeLeft = 2;
+constexpr int kButtonShare = 3;
+// The side-slider drag threshold, in pixels, past the touch's start X in either direction.
+constexpr float kSliderDragThreshold = 30.0f;
+// The slider's two settle-target directions.
+constexpr float kSliderDirectionRight = 1.0f;
+constexpr float kSliderDirectionLeft = -1.0f;
+// The themed sound effect the slider toggle fires.
+constexpr int kSliderToggleSoundEffect = 7;
+// The value the toggle target compares against.
+constexpr int kToggleOn = 1;
+} // namespace
+
+/** @ghidraAddress 0x1240ec */
+void LimelightResultLayer::UpdatePhoneTouchAndShare() {
+    // The result panel is interactive only once its reveal is complete and the screen fade is gone.
+    const int nPanelAlpha =
+        static_cast<int>(m_aBonusAnimChannels[kPanelAlphaChannel].flCurrent * kFullyOpaqueAlpha);
+    const float flChannelC = m_aBonusAnimChannels[kEffectAlphaChannel].flCurrent;
+    const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
+
+    UpdatePhonePartTouchStates();
+
+    m_aButtons[kButtonPanel].bInitialised = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
+    if (flFadeAlpha != 0.0f ||
+        static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
+        // Not fully shown: disable the swipe buttons, and the share button when Twitter is available.
+        m_aButtons[kButtonSwipeRight].bInitialised = false;
+        m_aButtons[kButtonSwipeLeft].bInitialised = false;
+        if (m_bTwitterAvailable) {
+            m_aButtons[kButtonShare].bInitialised = false;
+        }
+        return;
+    }
+
+    // Fully shown: enable the swipe buttons on an iPad and the share button when Twitter is available.
+    if (IsPad()) {
+        m_aButtons[kButtonSwipeRight].bInitialised = true;
+        m_aButtons[kButtonSwipeLeft].bInitialised = true;
+    }
+    if (m_bTwitterAvailable) {
+        m_aButtons[kButtonShare].bInitialised = true;
+    }
+
+    // Track a horizontal swipe over the centre box: claim a fresh touch inside it, then release it
+    // as a left or right swipe once it moves past the drag threshold from its start X. The slider's
+    // tracked touch id reuses the current-step slot.
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    if (m_nCurrentStep == kNoStep) {
+        for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
+            TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
+            if (!pTouch->bIsNew) {
+                continue;
+            }
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            const float flY = static_cast<float>(pTouch->nCurrentY);
+            PhoneLayoutRect box{};
+            getCenterPosition_Phone(&box);
+            if (IsTouchInsideRect(flX, flY, box)) {
+                m_nCurrentStep = pTouch->nId;
+                m_flSliderStartX = flX;
+                break;
+            }
+        }
+    } else {
+        TouchPoint *pTouch = pTouchManager->FindTouchById(m_nCurrentStep);
+        if (pTouch == nullptr) {
+            m_nCurrentStep = kNoStep;
+        } else {
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            if (flX < m_flSliderStartX - kSliderDragThreshold) {
+                m_aButtons[kButtonSwipeLeft].bTapEdge = true;
+                m_nCurrentStep = kNoStep;
+            } else if (flX > m_flSliderStartX + kSliderDragThreshold) {
+                m_aButtons[kButtonSwipeRight].bTapEdge = true;
+                m_nCurrentStep = kNoStep;
+            }
+            // Within the drag deadzone the touch keeps tracking (its id is retained).
+        }
+    }
+
+    // On a swipe in single-player, toggle the slider value and fire the toggle sound.
+    if ((GameSystem::GetGameSystem()->GetGameType() | 2) == 2) {
+        if (!m_aButtons[kButtonSwipeRight].bTapEdge && !m_aButtons[kButtonSwipeLeft].bTapEdge) {
+            m_bSliderSwiped = false;
+        } else {
+            m_flSlideTimer = m_aButtons[kButtonSwipeRight].bTapEdge ? kSliderDirectionRight :
+                                                                      kSliderDirectionLeft;
+            m_bSliderSwiped = true;
+            m_aButtons[kButtonSwipeRight].bTapEdge = false;
+            m_aButtons[kButtonSwipeLeft].bTapEdge = false;
+            m_nActive = m_nActive != kToggleOn; // The binary reuses this slot as the slider toggle.
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSliderToggleSoundEffect);
+        }
+    }
+
+    // On the share gesture, consume the edge and post the result to Twitter.
+    if (m_bTwitterAvailable && m_aButtons[kButtonShare].bTapEdge) {
+        m_aButtons[kButtonShare].bTapEdge = false;
+        PostResultToTwitterBlack();
     }
 }
