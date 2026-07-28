@@ -83,15 +83,15 @@ SlideNoteLayer::SlideNoteLayer() {
 void SlideNoteLayer::Create(int nColor,
                             unsigned char nFlagA,
                             int nKind,
-                            float flStartX,
-                            unsigned int nPacked10,
-                            float flStartY,
                             float flEndX,
+                            float flEndY,
+                            float flTargetX,
+                            float flTargetY,
+                            float flAlphaScale,
                             unsigned char nFlagB,
                             unsigned char nFlagC,
-                            unsigned char nFlagE,
-                            float flEndY,
-                            unsigned char nFlagD) {
+                            unsigned char nFlagD,
+                            unsigned char nFlagE) {
     assert(nColor >= 0 && nColor < kPlayerColorMax);
 
     // A trail whose note is on the opposite play side is drawn mirrored a half-turn.
@@ -107,13 +107,13 @@ void SlideNoteLayer::Create(int nColor,
             trail.nColor = nColor;
             trail.bActive = true;
             trail.nFlagA = nFlagA;
-            trail.flStartX = flStartX;
-            trail.nPacked10 = nPacked10;
-            trail.flStartY = flStartY;
             trail.flEndX = flEndX;
+            trail.flEndY = flEndY;
+            trail.flTargetX = flTargetX;
+            trail.flTargetY = flTargetY;
             trail.nFlagB = nFlagB;
             trail.nFlagC = nFlagC;
-            trail.flEndY = flEndY;
+            trail.flAlphaScale = flAlphaScale;
             trail.flRotation = flRotation;
             trail.nFlagD = nFlagD;
             trail.nFlagE = nFlagE;
