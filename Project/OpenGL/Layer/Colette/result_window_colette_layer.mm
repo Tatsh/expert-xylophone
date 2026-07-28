@@ -17,6 +17,7 @@
 #include "neTexture.h"
 #include "parts_data_table.h"
 #include "phone_anchor_table.h"
+#include "result_layout_position_table.h"
 #import "s_vector2.h"
 #include "soundeffectmanager.h"
 #include "touch_point.h"
@@ -35,6 +36,11 @@ PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghid
 AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount] = {};      // @ghidraAddress 0x3d6530
 AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount] = {}; // @ghidraAddress 0x3d6580
 AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount] = {};  // @ghidraAddress 0x3d65d0
+
+// The result-window layout position bank (declared in result_layout_position_table.h):
+// zero-initialised here to match the binary's __common segment, filled at runtime by the
+// result-layout-table initialisers.
+S_VECTOR2 g_aResultLayoutPosition[kResultLayoutPositionCount] = {}; // @ghidraAddress 0x3d4630
 
 // The Colette parts tables (declared in parts_data_table.h): zero-initialised here to match the
 // binary's __common segment, filled at runtime.
@@ -977,6 +983,240 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
                        S_VECTOR2{flScaleX, flScaleY},
                        nIntensity,
                        nAlpha);
+}
+
+namespace {
+
+// The parts slot the number digits draw into.
+constexpr int kNumberDigitSlot = 1;
+
+// The number base the digits are extracted in, and the largest digit-slot buffer the renderer uses.
+constexpr int kDecimalBase = 10;
+constexpr int kMaxDigitSlots = 6;
+
+// The digit part-family bases and, for each, the wider leading-digit variant, the standalone prefix
+// glyph (drawn before the whole number), and the under-digit prefix glyph (drawn beneath the leading
+// digit). A family whose base is not listed uses its own base unchanged for each.
+constexpr int kFamilyScoreBase = 0xca;
+constexpr int kFamilyScoreLeading = 0xd4;
+constexpr int kFamilyScoreStandalonePrefix = 0xdf;
+constexpr int kFamilyScoreUnderPrefix = 0xde;
+constexpr int kFamilyRankBase = 0xe0;
+constexpr int kFamilyRankLeading = 0xeb;
+constexpr int kFamilyRankStandalonePrefix = 0xf6;
+constexpr int kFamilyRankUnderPrefix = 0xf5;
+constexpr int kFamilyRateBase = 0x105;
+constexpr int kFamilyRateLeading = 0x112;
+constexpr int kFamilyRateStandalonePrefix = 0x11c;
+constexpr int kFamilyRateUnderPrefix = 0x10f;
+constexpr int kFamilyBigBase = 0x147;
+constexpr int kFamilyBigLeading = 0x151;
+constexpr int kFamilyBigUnderPrefix = 0x15b;
+constexpr int kFamilyExpBase = 0xf7;
+constexpr int kFamilyExpLeading = 0x112;
+constexpr int kFamilyExpUnderPrefix = 0x10f;
+
+// The dim factor applied to the left-padding glyphs' alpha (@ghidraAddress 0x2fd058 = 0.7).
+constexpr float kLeftPadDimFactor = 0.7f;
+
+// The base-position-index sentinel that draws a trailing separator glyph (the achievement-rate
+// display), and the two red-channel discriminator values that select the slash or dot separator
+// (@ghidraAddress 0x2fd024 = 180, 0x2fd030 = 252).
+constexpr int kSeparatorPositionSentinel = 0x9f;
+constexpr int kSeparatorSlash = 0x111;
+constexpr int kSeparatorDot = 0x110;
+constexpr float kSeparatorDiscriminatorSlash = 180.0f;
+constexpr float kSeparatorDiscriminatorDot = 252.0f;
+
+// The upright rotation and unit scale every digit glyph draws with.
+constexpr float kDigitRotation = 0.0f;
+constexpr float kDigitScale = 1.0f;
+
+// Resolves the wider leading-digit variant for a digit part-family base, or the base unchanged for
+// an unlisted family.
+int LeadingDigitBaseFor(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kFamilyScoreBase:
+        return kFamilyScoreLeading;
+    case kFamilyRankBase:
+        return kFamilyRankLeading;
+    case kFamilyRateBase:
+        return kFamilyRateLeading;
+    case kFamilyBigBase:
+        return kFamilyBigLeading;
+    case kFamilyExpBase:
+        return kFamilyExpLeading;
+    default:
+        return nDigitPartBase;
+    }
+}
+
+// Resolves the standalone prefix glyph (drawn before the whole number) for a digit part-family base.
+int StandalonePrefixFor(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kFamilyScoreBase:
+        return kFamilyScoreStandalonePrefix;
+    case kFamilyRankBase:
+        return kFamilyRankStandalonePrefix;
+    case kFamilyRateBase:
+        return kFamilyRateStandalonePrefix;
+    default:
+        return nDigitPartBase;
+    }
+}
+
+// Resolves the under-digit prefix glyph (drawn beneath the leading digit) for a digit part-family
+// base, or the base unchanged for an unlisted family.
+int UnderDigitPrefixFor(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kFamilyScoreBase:
+        return kFamilyScoreUnderPrefix;
+    case kFamilyRankBase:
+        return kFamilyRankUnderPrefix;
+    case kFamilyRateBase:
+        return kFamilyRateUnderPrefix;
+    case kFamilyBigBase:
+        return kFamilyBigUnderPrefix;
+    case kFamilyExpBase:
+        return kFamilyExpUnderPrefix;
+    default:
+        return nDigitPartBase;
+    }
+}
+
+} // namespace
+
+/** @ghidraAddress 0x76ce8 */
+void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
+                                                         int nDigitCount,
+                                                         int nBasePositionIndex,
+                                                         int nDigitPartBase,
+                                                         bool bWideLeading,
+                                                         bool bDrawPrefix,
+                                                         bool bLeftPad,
+                                                         unsigned int nAlpha,
+                                                         float flRotation,
+                                                         float flRed,
+                                                         float flGreen,
+                                                         float flBlue) {
+    (void)
+        flRotation; // The binary accepts a rotation slot (s0) but never reads it; digits are upright.
+
+    // Extract the base-ten digits, least significant first, tracking the most significant non-zero
+    // digit's slot (the highest slot actually drawn).
+    int aDigits[kMaxDigitSlots] = {};
+    int nTopDigit = 0;
+    for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
+        aDigits[nSlot] = nValue % kDecimalBase;
+        if (aDigits[nSlot] != 0) {
+            nTopDigit = nSlot;
+        }
+        nValue /= kDecimalBase;
+    }
+
+    // An all-zero value in wide-leading mode still draws its two least-significant slots.
+    if (nTopDigit == 0 && bWideLeading) {
+        aDigits[1] = 0;
+        nTopDigit = 1;
+    }
+
+    // The glyphs draw right to left, so the position index walks downward from the base. When both
+    // the wide-leading and prefix flags are set, the standalone prefix glyph is drawn first, at the
+    // base position, and the digits start one slot below.
+    int nPosIndex = nBasePositionIndex;
+    if (bWideLeading && bDrawPrefix) {
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                StandalonePrefixFor(nDigitPartBase),
+                                g_aResultLayoutPosition[nBasePositionIndex],
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                flRed,
+                                flGreen,
+                                flBlue);
+        nPosIndex = nBasePositionIndex - 1;
+    }
+
+    // Draw each significant digit, walking down the position bank. In wide-leading mode the leading
+    // digit takes the family's wider variant and also draws the under-digit prefix glyph one slot
+    // below, consuming two positions instead of one.
+    for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
+        const bool bLeadingSlot = nSlot == 0 && bWideLeading;
+        const int nBaseThisDigit =
+            bLeadingSlot ? LeadingDigitBaseFor(nDigitPartBase) : nDigitPartBase;
+        const int nPartId = aDigits[nSlot] + nBaseThisDigit;
+        (void)getPartsData(nPartId); // The binary looks the part metrics up before the draw call.
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                nPartId,
+                                g_aResultLayoutPosition[nPosIndex],
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                flRed,
+                                flGreen,
+                                flBlue);
+
+        if (bLeadingSlot) {
+            const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+            (void)getPartsData(nUnderPrefix);
+            RenderPartSpriteByIndex(kNumberDigitSlot,
+                                    nUnderPrefix,
+                                    g_aResultLayoutPosition[nPosIndex - 1],
+                                    nAlpha,
+                                    kDigitRotation,
+                                    kDigitScale,
+                                    kDigitScale,
+                                    flRed,
+                                    flGreen,
+                                    flBlue);
+            nPosIndex -= 2;
+        } else {
+            nPosIndex -= 1;
+        }
+    }
+
+    // Optional left padding fills the unused leading slots with the base '0' glyph at a dimmed alpha,
+    // continuing down the position bank.
+    int nSeparatorIndex = nPosIndex;
+    if (bLeftPad && nTopDigit + 1 < nDigitCount) {
+        const unsigned int nPadAlpha = static_cast<unsigned int>(
+            static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
+        // The separator index the rate display uses is derived from the pre-pad position.
+        nSeparatorIndex = (nTopDigit + nPosIndex + 1) - nDigitCount;
+        for (int nPad = (nDigitCount - 1) - nTopDigit; nPad != 0; --nPad) {
+            RenderPartSpriteByIndex(kNumberDigitSlot,
+                                    nDigitPartBase,
+                                    g_aResultLayoutPosition[nPosIndex],
+                                    nPadAlpha,
+                                    kDigitRotation,
+                                    kDigitScale,
+                                    kDigitScale,
+                                    flRed,
+                                    flGreen,
+                                    flBlue);
+            nPosIndex -= 1;
+        }
+    }
+
+    // The achievement-rate display (identified by its base position index) draws a trailing separator
+    // glyph, the slash or dot selected by the red channel discriminator.
+    if (nBasePositionIndex == kSeparatorPositionSentinel &&
+        (flRed == kSeparatorDiscriminatorSlash || flRed == kSeparatorDiscriminatorDot)) {
+        const int nSeparator =
+            flRed == kSeparatorDiscriminatorSlash ? kSeparatorSlash : kSeparatorDot;
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                nSeparator,
+                                g_aResultLayoutPosition[nSeparatorIndex],
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                flRed,
+                                flGreen,
+                                flBlue);
+    }
 }
 
 /** @ghidraAddress 0x769cc */

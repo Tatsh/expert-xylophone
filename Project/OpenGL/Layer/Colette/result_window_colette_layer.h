@@ -231,6 +231,46 @@ public:
 
 private:
     /**
+     * @brief Renders a non-negative integer as a row of parts-atlas digit sprites.
+     *
+     * Extracts @p nDigitCount base-ten digits of @p nValue (least significant first) into a local
+     * buffer, then draws the significant digits right to left, walking downward through the layout
+     * position bank from @p nBasePositionIndex, each glyph part id being @p nDigitPartBase plus the
+     * digit. In wide-leading mode an all-zero value still draws its two low slots, the leading digit
+     * takes the family's wider variant and also draws an under-digit prefix glyph beneath itself, and
+     * (when @p bDrawPrefix is also set) a standalone prefix glyph is drawn before the whole number.
+     * Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
+     * alpha. When the base position index is the achievement-rate sentinel, a trailing slash or dot
+     * separator is drawn, selected by @p flRed.
+     * @param nValue The non-negative integer to render.
+     * @param nDigitCount The number of digit slots.
+     * @param nBasePositionIndex The base layout position-bank index (the row is drawn downward).
+     * @param nDigitPartBase The base part id of the digit family (the digit is added to it).
+     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit prefix.
+     * @param bDrawPrefix Whether to draw the family's standalone prefix glyph before the number.
+     * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
+     * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRotation The sprite rotation slot (in the @c s0 register); accepted but unused, as the
+     * digits always draw upright.
+     * @param flRed The red colour channel, which also discriminates the rate separator glyph.
+     * @param flGreen The green colour channel.
+     * @param flBlue The blue colour channel.
+     * @ghidraAddress 0x76ce8
+     */
+    void RenderNumberDigitsAsParts(int nValue,
+                                   int nDigitCount,
+                                   int nBasePositionIndex,
+                                   int nDigitPartBase,
+                                   bool bWideLeading,
+                                   bool bDrawPrefix,
+                                   bool bLeftPad,
+                                   unsigned int nAlpha,
+                                   float flRotation,
+                                   float flRed,
+                                   float flGreen,
+                                   float flBlue);
+
+    /**
      * @brief Constructs the layer: chains the base-layer constructor and zero-clears its state,
      * seeding the swipe touch id and the four touch-region touch ids to the "none" sentinel (-1).
      * The binary inlines this into @c shared (0x73edc).
