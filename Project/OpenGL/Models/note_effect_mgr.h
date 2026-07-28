@@ -112,6 +112,19 @@ public:
     void SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet);
 
     /**
+     * @brief Evaluates the chart's scroll position at a target time by integrating the speed-change
+     *        path.
+     *
+     * Walks the bound chart's speed-change path nodes, accumulating each segment's speed times its
+     * duration (scaled to the per-millisecond scroll rate) up to @p nTargetTime, then adds the
+     * partial final segment. Returns zero when no chart is bound or it has no path nodes.
+     * @param nTargetTime The target time to evaluate the scroll position at.
+     * @return The integrated scroll position.
+     * @ghidraAddress 0x137664
+     */
+    float EvaluateNotePathAtTime(int nTargetTime) const;
+
+    /**
      * @brief Appends a newly-activated note to the active list and insertion-sorts it into hit-time
      *        order.
      * @param pNote The note to insert.

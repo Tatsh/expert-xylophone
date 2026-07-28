@@ -9,6 +9,7 @@
 #include "note_effect_mgr.h"
 
 #include <cstdlib>
+#include <cstring>
 
 #import "RBUserSettingData.h"
 #include "deviceenvironment.h"
@@ -323,6 +324,47 @@ void NoteEffectMgr::SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet) {
         m_nDensityTier = 2;
     }
     InitNoteObjects();
+}
+
+/** @ghidraAddress 0x137664 */
+float NoteEffectMgr::EvaluateNotePathAtTime(int nTargetTime) const {
+    // The per-millisecond scroll-rate scale (@ghidraAddress 0x308c48 = 1/60000).
+    constexpr float kScrollRatePerMs = 1.0f / 60000.0f;
+
+    if (m_pMusicSheet == nullptr) {
+        return 0.0f;
+    }
+    const int nCount = m_pMusicSheet->GetSheetPathNodeCount();
+    if (nCount == 0) {
+        return 0.0f;
+    }
+
+    // Each path node stores its speed as a float in the value slot (read raw, not converted) and its
+    // time in the following int slot.
+    const auto nodeSpeed = [this](int nIndex) {
+        float flSpeed;
+        const int nRaw = m_pMusicSheet->GetSheetPathNode(nIndex)->x;
+        std::memcpy(&flSpeed, &nRaw, sizeof(flSpeed));
+        return flSpeed;
+    };
+
+    float flSpeed = nodeSpeed(0);
+    float flPosition = 0.0f;
+    int nRemaining = nTargetTime;
+    for (int nIndex = 1; nIndex < nCount; ++nIndex) {
+        const int nNodeTime = m_pMusicSheet->GetSheetPathNode(nIndex)->y;
+        if (nNodeTime >= nTargetTime) {
+            break;
+        }
+        // Integrate the segment from the previous node to this one at the current speed.
+        const float flSegment =
+            static_cast<float>(nNodeTime - m_pMusicSheet->GetSheetPathNode(nIndex - 1)->y);
+        flPosition += flSpeed * flSegment * kScrollRatePerMs;
+        nRemaining = static_cast<int>(static_cast<float>(nRemaining) - flSegment);
+        flSpeed = nodeSpeed(nIndex);
+    }
+    // Add the partial final segment up to the target time.
+    return flPosition + static_cast<float>(nRemaining) * flSpeed * kScrollRatePerMs;
 }
 
 /** @ghidraAddress 0x1379cc */

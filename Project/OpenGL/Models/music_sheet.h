@@ -105,6 +105,11 @@ public:
      */
     SheetPathNode *GetSheetPathNode(int nIndex);
 
+    /** @brief The number of speed-change path nodes in the chart. */
+    int GetSheetPathNodeCount() const {
+        return m_pathNodes.GetCount();
+    }
+
     /**
      * @brief Returns the first path node's speed value, or a default when there are no path nodes.
      * @return The first node's speed as a float, or the default speed.
