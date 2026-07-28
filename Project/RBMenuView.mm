@@ -278,8 +278,6 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)layoutSearchBarActive:(BOOL)active;
 /** @brief Slide the menu buttons to reveal or hide the playlist-edit controls. */
 - (void)shiftMenuButtonsForPlaylistEditEntering:(BOOL)entering;
-/** @brief Hide or show the pastel search mascots for the push-notification transition. */
-- (void)setSearchMascotsHidden:(BOOL)hidden;
 
 @end
 
@@ -2478,8 +2476,9 @@ static BOOL g_bRandamIntSeeded = NO;
         __weak RBMenuView *weakSelf = self;
         [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
                          animations:^{
-                           /** @ghidraAddress 0xb4a3c */
-                           [weakSelf setSearchMascotsHidden:YES];
+                           /** @ghidraAddress 0xb49f4 */
+                           weakSelf.searchMascot.alpha = kAlphaHidden;
+                           weakSelf.mascot.alpha = kAlphaHidden;
                          }];
     }
 }
@@ -2513,14 +2512,16 @@ static BOOL g_bRandamIntSeeded = NO;
     if (self.searchBar.frame.origin.y >= 0.0) {
         [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
                          animations:^{
-                           /** @ghidraAddress 0xb505c */
-                           [weakSelf setSearchMascotsHidden:NO];
+                           /** @ghidraAddress 0xb50b8 */
+                           weakSelf.searchMascot.alpha = kAlphaOpaque;
+                           weakSelf.mascot.alpha = kAlphaOpaque;
                          }];
     } else {
         [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
                          animations:^{
                            /** @ghidraAddress 0xb51ac */
-                           [weakSelf setSearchMascotsHidden:YES];
+                           weakSelf.searchMascot.alpha = kAlphaHidden;
+                           weakSelf.mascot.alpha = kAlphaHidden;
                          }];
     }
 }
@@ -2929,12 +2930,6 @@ static BOOL g_bRandamIntSeeded = NO;
         UIView *view = shiftUp[i];
         view.frame = CGRectMake(view.x, view.y - down, view.width, view.height);
     }
-}
-
-- (void)setSearchMascotsHidden:(BOOL)hidden {
-    CGFloat alpha = hidden ? kAlphaHidden : kAlphaOpaque;
-    self.searchMascot.alpha = alpha;
-    self.mascot.alpha = alpha;
 }
 
 @end
