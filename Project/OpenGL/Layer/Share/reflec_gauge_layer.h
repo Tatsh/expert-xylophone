@@ -206,17 +206,40 @@ private:
     };
 
     /**
-     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position.
-     * @param descriptor The sprite anchor, size, and atlas frame.
+     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position, with an
+     * explicit texture rectangle.
+     *
+     * The caller resolves the quad's texture rectangle (the value renderer scales it to draw a
+     * partially-filled digit cell); this places the quad's anchor and size from the descriptor and
+     * its UV from @p uvOrigin and @p uvSize.
+     * @param descriptor The sprite anchor and size (its atlas-frame field is unused here).
      * @param nBatch The target sprite batch.
      * @param nSide The player side, selecting the position and rotation.
      * @param nAlpha The sprite tint alpha.
+     * @param uvOrigin The quad's UV origin.
+     * @param uvSize The quad's UV size.
      * @ghidraAddress 0x18b380
      */
     void EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
                          unsigned int nBatch,
                          unsigned int nSide,
-                         int nAlpha);
+                         int nAlpha,
+                         const S_VECTOR2 &uvOrigin,
+                         const S_VECTOR2 &uvSize);
+
+    /**
+     * @brief Emits one gauge value/digit quad, scaled to draw a partially-filled digit cell.
+     *
+     * Selects the digit descriptor by orientation, gauge mode, player side (inverted for the non-1P
+     * side), and digit index, scales the cell's width and its UV width by @p flScale, and emits it
+     * through @c EmitGaugeSprite into the value batch.
+     * @param flScale The horizontal fill fraction (scales the cell width and its UV width).
+     * @param nSide The player side.
+     * @param nDigit The digit/value cell index.
+     * @param nAlpha The sprite tint alpha.
+     * @ghidraAddress 0x18b174
+     */
+    void EmitGaugeValueSprite(float flScale, unsigned int nSide, int nDigit, int nAlpha);
 
     ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts2 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =

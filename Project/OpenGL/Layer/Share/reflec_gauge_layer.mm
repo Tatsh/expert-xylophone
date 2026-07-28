@@ -45,6 +45,9 @@ constexpr float kBrightnessBias = 0.3f;
 // The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
+// The batch the gauge value/digit sprites are emitted into.
+constexpr unsigned int kValueBatch = 1;
+
 // The batch the gauge label sprites are emitted into.
 constexpr unsigned int kLabelBatch = 2;
 
@@ -95,6 +98,42 @@ extern const ReflecGaugeLayer::GaugeSpriteDescriptor
     g_aGaugeIconLandscape[]; // @ghidraAddress 0x30fea4
 extern const ReflecGaugeLayer::GaugeSpriteDescriptor
     g_aGaugeIconPortrait[]; // @ghidraAddress 0x30fe2c
+
+namespace {
+
+// The gauge value/digit descriptor tables (20-byte GaugeSpriteDescriptor), read-only data embedded
+// in the binary. The landscape table is indexed by player side; the portrait mode-0 table by
+// (side * kPortraitValueRowStride + digit); the portrait alternate-mode table by side, with the
+// digit's anchor X taken from a separate per-digit table.
+constexpr int kPortraitValueRowStride = 5;
+
+const ReflecGaugeLayer::GaugeSpriteDescriptor g_aGaugeValueLandscape[] = {
+    {{50.0f, 10.0f}, {120.0f, 20.0f}, 0x114},
+    {{50.0f, 10.0f}, {120.0f, 20.0f}, 0x115},
+}; // @ghidraAddress 0x30fdc8
+
+const ReflecGaugeLayer::GaugeSpriteDescriptor g_aGaugeValuePortrait[] = {
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x8f},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x90},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x91},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x92},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x93},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x94},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x95},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x96},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x97},
+    {{39.0f, 5.0f}, {100.0f, 20.0f}, 0x98},
+}; // @ghidraAddress 0x30fcc4
+
+const ReflecGaugeLayer::GaugeSpriteDescriptor g_aGaugeValuePortraitAlt[] = {
+    {{0.0f, 9.0f}, {60.0f, 12.0f}, 0x84},
+    {{0.0f, 9.0f}, {60.0f, 12.0f}, 0x86},
+}; // @ghidraAddress 0x30fd8c
+
+// The alternate-mode digit anchor-X values, indexed by digit. @ghidraAddress 0x30fdb4
+constexpr float kGaugeValueDigitX[] = {164.0f, 97.0f, 30.0f, -37.0f, -104.0f};
+
+} // namespace
 
 /** @ghidraAddress 0x18a7d0 */
 ReflecGaugeLayer::ReflecGaugeLayer() {
@@ -260,7 +299,9 @@ void ReflecGaugeLayer::ResetSideGauges() {
 void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
                                        unsigned int nBatch,
                                        unsigned int nSide,
-                                       int nAlpha) {
+                                       int nAlpha,
+                                       const S_VECTOR2 &uvOrigin,
+                                       const S_VECTOR2 &uvSize) {
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
     const int nIndex = pBatch->GetSpriteCount();
     if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
@@ -304,12 +345,11 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
         }
     }
 
-    const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
     pBatch->SetSpritePosition(nIndex, position);
     pBatch->SetSpriteAnchor(nIndex, descriptor.anchor);
     pBatch->SetSpriteSize(nIndex, descriptor.size);
-    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
-    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteUvOrigin(nIndex, uvOrigin);
+    pBatch->SetSpriteUvSize(nIndex, uvSize);
     pBatch->SetSpriteRotation(nIndex, flRotation);
     pBatch->SetSpriteScale(nIndex, 1.0f, 1.0f);
     pBatch->SetSpriteColor(
@@ -328,7 +368,13 @@ void ReflecGaugeLayer::EmitBaseSprite(unsigned int nBatch, int nAlpha) {
     } else {
         descriptor = kBaseSpriteAlt;
     }
-    EmitGaugeSprite(descriptor, nBatch, 0, nAlpha);
+    const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
+    EmitGaugeSprite(descriptor,
+                    nBatch,
+                    0,
+                    nAlpha,
+                    S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                    S_VECTOR2{uv.flSizeU, uv.flSizeV});
 }
 
 /** @ghidraAddress 0x18b2cc */
@@ -346,7 +392,13 @@ void ReflecGaugeLayer::EmitLabelSprite(unsigned int nSide, int nLabelIndex, int 
     descriptor.anchor = S_VECTOR2{kLabelAnchorX[nLabelIndex], side.flAnchorY};
     descriptor.size = S_VECTOR2{side.flSizeX, side.flSizeY};
     descriptor.nAtlasFrame = side.nAtlasFrame;
-    EmitGaugeSprite(descriptor, kLabelBatch, nSide, nAlpha);
+    const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
+    EmitGaugeSprite(descriptor,
+                    kLabelBatch,
+                    nSide,
+                    nAlpha,
+                    S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                    S_VECTOR2{uv.flSizeU, uv.flSizeV});
 }
 
 /** @ghidraAddress 0x18b0dc */
@@ -354,5 +406,54 @@ void ReflecGaugeLayer::EmitIconSprite(unsigned int nSide, int nIconIndex, int nA
     // The phone (portrait) uses its own icon table; the landscape build uses the other.
     const GaugeSpriteDescriptor &descriptor =
         IsPad() ? g_aGaugeIconPortrait[nIconIndex] : g_aGaugeIconLandscape[nIconIndex];
-    EmitGaugeSprite(descriptor, kIconBatch, nSide, nAlpha);
+    const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
+    EmitGaugeSprite(descriptor,
+                    kIconBatch,
+                    nSide,
+                    nAlpha,
+                    S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                    S_VECTOR2{uv.flSizeU, uv.flSizeV});
+}
+
+/** @ghidraAddress 0x18b174 */
+void ReflecGaugeLayer::EmitGaugeValueSprite(float flScale,
+                                            unsigned int nSide,
+                                            int nDigit,
+                                            int nAlpha) {
+    // The colour side follows the active player, inverted for the non-1P side.
+    unsigned int nColorSide =
+        static_cast<unsigned int>(GameSystem::GetGameSystem()->GetPlayColor());
+    if (nSide != 1) {
+        nColorSide = (nColorSide == 0) ? 1 : 0;
+    }
+
+    // Select the cell descriptor and the anchor-X source: landscape and portrait mode 0 take both
+    // from one record; the portrait alternate mode takes the anchor X from the per-digit table and
+    // the rest from the per-side alternate record.
+    const GaugeSpriteDescriptor *pRecord = nullptr;
+    float flAnchorX = 0.0f;
+    if (!IsPad()) {
+        pRecord = &g_aGaugeValueLandscape[nColorSide];
+        flAnchorX = pRecord->anchor.x;
+    } else if (m_nGaugeStyle == 0) {
+        pRecord = &g_aGaugeValuePortrait[nColorSide * kPortraitValueRowStride + nDigit];
+        flAnchorX = pRecord->anchor.x;
+    } else {
+        pRecord = &g_aGaugeValuePortraitAlt[nColorSide];
+        flAnchorX = kGaugeValueDigitX[nDigit];
+    }
+
+    // The cell's width and its UV width scale with the fill fraction; the anchor Y, height, and UV
+    // origin/height are unscaled.
+    const SpriteUvEntry &uv = g_aSpriteUvTable[pRecord->nAtlasFrame];
+    GaugeSpriteDescriptor descriptor;
+    descriptor.anchor = S_VECTOR2{flAnchorX, pRecord->anchor.y};
+    descriptor.size = S_VECTOR2{pRecord->size.x * flScale, pRecord->size.y};
+    descriptor.nAtlasFrame = pRecord->nAtlasFrame;
+    EmitGaugeSprite(descriptor,
+                    kValueBatch,
+                    nSide,
+                    nAlpha,
+                    S_VECTOR2{uv.flOriginU, uv.flOriginV},
+                    S_VECTOR2{uv.flSizeU * flScale, uv.flSizeV});
 }
