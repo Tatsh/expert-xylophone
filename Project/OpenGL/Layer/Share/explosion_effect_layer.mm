@@ -14,6 +14,7 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 
 // The process-wide explosion effect layer, created lazily by shared().
 static ExplosionEffectLayer *g_pExplosionEffectLayer = nullptr; // @ghidraAddress 0x3deb50
@@ -22,6 +23,15 @@ namespace {
 
 // The scale converting a unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
 constexpr float kAlphaByteScale = 255.0f;
+
+// The fixed anchor and size, in points, every explosion sprite draws with (@ghidraAddress 0x30bf28
+// anchor, 0x30bf2c size).
+constexpr float kEffectAnchor = 84.0f;
+constexpr float kEffectSize = 168.0f;
+
+// The explosion atlas cell's UV size (@ghidraAddress 0x30bf30 U; the V is an inline constant).
+constexpr float kEffectUvSizeU = 0.08203125f;
+constexpr float kEffectUvSizeV = 0.1640625f;
 
 // The per-type burst texture names, interleaved red then blue, indexed by (colour + type * 2)
 // (@ghidraAddress 0x3ce608).
@@ -143,4 +153,28 @@ void ExplosionEffectLayer::SetPlayColorAlpha(float flAlpha, int nLane) {
     // Lane zero stores the first bank's alpha byte, any other lane the second.
     const int nBank = nLane != 0 ? 1 : 0;
     m_aPlayColorAlpha[nBank] = static_cast<unsigned char>(flAlpha * kAlphaByteScale);
+}
+
+/** @ghidraAddress 0x1776ac */
+void ExplosionEffectLayer::SetExplosionEffectSprite(unsigned int nLane,
+                                                    const S_VECTOR2 *pPosition,
+                                                    const S_VECTOR2 *pUvOrigin,
+                                                    int nAlpha,
+                                                    float flRotation) {
+    const int nIndex = m_aSpriteCount[nLane];
+    if (nIndex >= m_aSpriteCapacity[nLane]) {
+        return;
+    }
+
+    const float flScale = m_flEffectSize;
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nLane];
+    pBatch->SetSpritePosition(nIndex, *pPosition);
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{kEffectAnchor, kEffectAnchor});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{kEffectSize, kEffectSize});
+    pBatch->SetSpriteUvOrigin(nIndex, *pUvOrigin);
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{kEffectUvSizeU, kEffectUvSizeV});
+    pBatch->SetSpriteScale(nIndex, flScale, flScale);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(nAlpha));
+    ++m_aSpriteCount[nLane];
 }

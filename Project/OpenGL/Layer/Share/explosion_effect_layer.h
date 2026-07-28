@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
@@ -78,6 +80,26 @@ public:
     static constexpr int kEffectTypeCount = 19;
 
 private:
+    /**
+     * @brief Appends one explosion-effect sprite to a lane's instancer.
+     *
+     * Writes the next free slot of the lane's sprite batch with a fixed 84-point anchor and
+     * 168-point size, the caller's position and animation-frame UV origin, a fixed UV cell size, the
+     * layer's current burst scale on both axes, the caller's rotation, and opaque white modulated by
+     * @p nAlpha; then advances the lane's live sprite count. A no-op when the batch is full.
+     * @param nLane The lane (bank) to append to.
+     * @param pPosition The sprite's world position.
+     * @param pUvOrigin The animation-frame UV origin.
+     * @param nAlpha The sprite alpha.
+     * @param flRotation The sprite rotation, in radians.
+     * @ghidraAddress 0x1776ac
+     */
+    void SetExplosionEffectSprite(unsigned int nLane,
+                                  const S_VECTOR2 *pPosition,
+                                  const S_VECTOR2 *pUvOrigin,
+                                  int nAlpha,
+                                  float flRotation);
+
     // Constructs the layer: clears the sprite set and every effect slot.
     // @ghidraAddress 0x176e18
     ExplosionEffectLayer();
