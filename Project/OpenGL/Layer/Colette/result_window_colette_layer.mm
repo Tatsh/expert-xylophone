@@ -12,6 +12,7 @@
 #include "anchor_box_table.h"
 #import "deviceenvironment.h"
 #include "fade_overlay_layer.h"
+#include "float_tween.h"
 #import "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -735,6 +736,88 @@ void ResultWindowColetteLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
     if (m_flBonusCueTimer > kBonusCueThreshold) {
         m_bBonusCueArmed = false;
         SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kBonusCueVoiceId);
+    }
+}
+
+namespace {
+// The Update timers' constants.
+// The positive swipe-decay divisor (the impulse settles toward zero) (@ghidraAddress 0x2fd050 =
+// -300).
+constexpr float kSwipeDecayRateDown = -300.0f;
+// The negative swipe-decay divisor (@ghidraAddress 0x2eedcc = 300).
+constexpr float kSwipeDecayRateUp = 300.0f;
+// The decoration rotation counter's wrap period.
+constexpr int kRotationWrap = 0xc0;
+// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
+constexpr float kRotationFramesPerIndex = 48.0f;
+// The last decoration animation frame index.
+constexpr int kRotationFrameMax = 3;
+
+// The five tween channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+constexpr int kTweenAdvanceOrder[] = {0, 1, 3, 2, 4};
+} // namespace
+
+/** @ghidraAddress 0x7aef8 */
+void ResultWindowColetteLayer::Update(float flDeltaTime) {
+    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
+    if (!IsPad()) {
+        const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
+        const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
+        if (bPortrait != m_bPortrait) {
+            m_bPortrait = bPortrait;
+        }
+    }
+
+    // Advance the five open/close tween channels. Each shares FloatTween's six-float layout and the
+    // binary drives it through FloatTween::Advance, so advance each through that view.
+    for (int nChannel : kTweenAdvanceOrder) {
+        reinterpret_cast<FloatTween *>(&m_aTween[nChannel])->Advance(flDeltaTime);
+    }
+
+    // Decay the signed swipe impulse toward zero, at differing rates by sign, clamping on the zero
+    // crossing.
+    if (m_flSwipeDir > 0.0f) {
+        m_flSwipeDir += flDeltaTime / kSwipeDecayRateDown;
+        if (m_flSwipeDir < 0.0f) {
+            m_flSwipeDir = 0.0f;
+        }
+    } else if (m_flSwipeDir < 0.0f) {
+        m_flSwipeDir += flDeltaTime / kSwipeDecayRateUp;
+        if (m_flSwipeDir > 0.0f) {
+            m_flSwipeDir = 0.0f;
+        }
+    }
+
+    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame index.
+    int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
+    if (nCounter > kRotationWrap) {
+        nCounter %= kRotationWrap;
+    }
+    m_nRotationCounter = nCounter;
+    int nFrame = static_cast<int>(static_cast<float>(nCounter) / kRotationFramesPerIndex);
+    if (nFrame < 0) {
+        nFrame = 0;
+    }
+    if (nFrame > kRotationFrameMax) {
+        nFrame = kRotationFrameMax;
+    }
+    m_nRotationFrame = nFrame;
+
+    UpdateBonusSoundCueTimer(flDeltaTime);
+
+    // The input pass: the tutorial-gated touch pass while the menu tutorial is active, otherwise the
+    // standard swipe pass.
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+        UpdateResultTouchInput();
+    } else {
+        ProcessResultScreenInput();
+    }
+
+    // Dispatch to the iPad or phone render path.
+    if (IsPad()) {
+        RenderResultScoreBonusPanel();
+    } else {
+        RenderColetteResultPanel();
     }
 }
 

@@ -128,6 +128,34 @@ public:
     void UpdateTouchHitRegions();
 
     /**
+     * @brief The per-frame result-window update: advances the open/close tween channels and rotating
+     * decorations, updates the bonus voice cue and the appropriate input pass, then dispatches to the
+     * iPad or phone render path.
+     *
+     * Off an iPad it first recomputes the portrait-orientation flag from the game system's viewport.
+     * It advances the five tween channels (in the binary's swapped 0,1,3,2,4 order), the signed swipe
+     * decay timer (toward zero, at differing rates by sign), and the decoration rotation counter
+     * (wrapping every 192 frames, its frame index the counter over 48, clamped to 0 through 3). The
+     * input pass is the tutorial-gated touch pass while the menu tutorial is active, otherwise the
+     * standard swipe pass.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x7aef8
+     */
+    void Update(float flDeltaTime);
+
+    /**
+     * @brief Renders the result-score bonus panel (the iPad/landscape path). Reconstruction pending.
+     * @ghidraAddress 0x74f2c
+     */
+    void RenderResultScoreBonusPanel();
+
+    /**
+     * @brief Renders the Colette result panel (the phone/portrait path). Reconstruction pending.
+     * @ghidraAddress 0x7799c
+     */
+    void RenderColetteResultPanel();
+
+    /**
      * @brief The result screen's per-frame input pass: gates on the fade-in, tracks a vertical swipe
      * to toggle the result page and fire its sound, updates the touch hit-regions, and posts the
      * Twitter share when its region is tapped.
@@ -728,8 +756,10 @@ private:
     ResultTouchRegion m_aTouchRegion[kTouchRegionCount] = {}; // +0x84
     int m_nSwipeTouchId = {};   // +0xa4: the tracked swipe touch id (-1 when none).
     float m_flSwipeStartY = {}; // +0xa8: the swipe touch's start Y, for the up/down threshold test.
-    // +0xac..+0xcb: further per-frame presentation state, still being worked out.
-    unsigned char m_aReservedAc[0x20] = {}; // +0xac
+    int m_nRotationCounter = {}; // +0xac: a decoration rotation counter, wrapping every 192 frames.
+    int m_nRotationFrame = {};   // +0xb0: the decoration animation frame index (0 through 3).
+    // +0xb4..+0xcb: further per-frame presentation state, still being worked out.
+    unsigned char m_aReservedB4[0x18] = {}; // +0xb4
     // +0xcc: the five open/close display animation channels (an alpha fade plus four offset/scale
     // channels) the show and hide tweens keyframe.
     ResultTweenChannel m_aTween[kTweenChannelCount] = {}; // +0xcc
