@@ -1140,6 +1140,9 @@ EXCLUDED_ADDRS = {
     '0x16bc54', # ShowUnderageBlockedAlert — an Objective-C method IMP (method_t at 0x3a0960, type
                 # "v24@0:8@16") presenting the underage/age-restriction UIAlertController with a
                 # cancel-handler block; objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16be64', # DisplayCampaignTermsDialogFromCampaign — an Objective-C method IMP (method_t at
+                # 0x3a0978, type "v24@0:8@16") presenting a campaign's terms in a dismiss-only
+                # UIAlertController; objc_msgSend-dispatched, ObjC-side not C/C++.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
