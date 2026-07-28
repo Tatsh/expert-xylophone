@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -79,6 +81,21 @@ public:
 
 private:
     /**
+     * @brief Appends one bounds-effect sprite to the batch.
+     *
+     * Writes the next sprite slot with a fixed 84-point anchor and 168-point size, the caller's
+     * position and animation-frame UV origin, the fixed bounds cell UV size, the layer's current
+     * effect scale on both axes, and opaque white modulated by @p nAlpha. The sprite is flipped a
+     * half-turn when its x is negative (mirrored onto the left bound). Advances the sprite count; the
+     * caller guards against overflow.
+     * @param pPosition The sprite's screen position.
+     * @param pUvOrigin The animation-frame UV origin.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x1758f0
+     */
+    void SetBoundsEffectSprite(const S_VECTOR2 *pPosition, const S_VECTOR2 *pUvOrigin, int nAlpha);
+
+    /**
      * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state, and
      * seeds both lane-light flags on and the effect size to one.
      * @ghidraAddress 0x175210
@@ -96,7 +113,7 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the effect sprite instancer.
-    unsigned char m_aReserved18[4] = {};        // +0x18
+    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
     unsigned char m_aReserved21[3] = {};        // +0x21

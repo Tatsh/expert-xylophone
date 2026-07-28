@@ -15,10 +15,24 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 
 namespace {
 // The effect size the constructor seeds.
 constexpr float kInitialEffectSize = 1.0f;
+
+// The fixed anchor and size, in points, every bounds sprite draws with (@ghidraAddress 0x30bf28
+// anchor, 0x30bf2c size).
+constexpr float kEffectAnchor = 84.0f;
+constexpr float kEffectSize = 168.0f;
+
+// The bounds atlas cell's UV size (@ghidraAddress 0x30c0c0 U; the V is an inline constant).
+constexpr float kEffectUvSizeU = 0.041015625f;
+constexpr float kEffectUvSizeV = 0.1640625f;
+
+// The half-turn rotation applied to a sprite on the left bound (a negative x), in radians
+// (@ghidraAddress 0x2fe894).
+constexpr float kMirrorRotation = 3.1415927f;
 
 // The effect atlas for each bounds-effect style (default, limelight, colette).
 constexpr const char *kEffectTextureNames[] = {
@@ -115,4 +129,23 @@ void BoundsEffectLayer::SetLaneLightFlag(float flValue, int nLane) {
     } else {
         m_bLaneLight1 = bFlag;
     }
+}
+
+/** @ghidraAddress 0x1758f0 */
+void BoundsEffectLayer::SetBoundsEffectSprite(const S_VECTOR2 *pPosition,
+                                              const S_VECTOR2 *pUvOrigin,
+                                              int nAlpha) {
+    const float flScale = m_flEffectSize;
+    const int nIndex = m_nSpriteCount;
+
+    m_pSprite->SetSpritePosition(nIndex, *pPosition);
+    m_pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{kEffectAnchor, kEffectAnchor});
+    m_pSprite->SetSpriteSize(nIndex, S_VECTOR2{kEffectAnchor, kEffectSize});
+    m_pSprite->SetSpriteUvOrigin(nIndex, *pUvOrigin);
+    m_pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{kEffectUvSizeU, kEffectUvSizeV});
+    m_pSprite->SetSpriteScale(nIndex, flScale, flScale);
+    // A sprite on the left bound (a negative x) is mirrored with a half-turn.
+    m_pSprite->SetSpriteRotation(nIndex, pPosition->x < 0.0f ? kMirrorRotation : 0.0f);
+    m_pSprite->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(nAlpha));
+    ++m_nSpriteCount;
 }
