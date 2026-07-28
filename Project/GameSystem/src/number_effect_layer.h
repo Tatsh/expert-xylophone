@@ -114,6 +114,24 @@ private:
     void EmitNumberSprite(
         float flX, float flY, unsigned int nBatch, unsigned int nDescIndex, unsigned int nColour);
 
+    /**
+     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes the
+     * brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
+     *
+     * On the landscape layout it emits the track element (and its wide-variant extension), then the
+     * knob element (half alpha while held), and finally the brightness-fill element plus a second
+     * sprite offset along the track vector by the current brightness.
+     * @param flDeltaTime The frame's elapsed time.
+     * @ghidraAddress 0x18a4ac
+     */
+    void Update(float flDeltaTime);
+
+    /**
+     * @brief Handles the brightness-slider touch for the frame.
+     * @ghidraAddress 0x189f40
+     */
+    void ProcessBrightnessSliderTouch();
+
     // Constructs the layer through the base constructor; every field is zero-initialised. The binary
     // inlines this into the singleton getter rather than emitting a separate constructor.
     NumberEffectLayer() = default;
@@ -127,14 +145,18 @@ private:
     // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts2 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
-    LinearTween m_fadeChannel;              // +0x30 (five floats, ending at +0x44)
-    bool m_bFadeActive = {};                // +0x44 raised once the channel advances a frame
-    unsigned char m_aReserved45[0x0b] = {}; // +0x45
-    bool m_bWideScreen = {};                // +0x50: set when the viewport is wider than the split.
-    unsigned char m_aReserved54[0x0c] = {}; // +0x54
-    float m_flBrightness = {};              // +0x60: the layer brightness (0 to 1).
-    bool m_bBuilt = {};                     // +0x64: set once the instancers are built.
-    unsigned char m_aReserved65[3] = {};    // +0x65
+    LinearTween m_fadeChannel;           // +0x30 (five floats, ending at +0x44)
+    bool m_bFadeActive = {};             // +0x44 raised once the channel advances a frame
+    unsigned char m_aReserved45[3] = {}; // +0x45
+    float m_flCachedViewportWidth = {};  // +0x48: the last-seen viewport width (re-anchor trigger).
+    float m_flCachedViewportHeight = {}; // +0x4c: the last-seen viewport height.
+    bool m_bWideScreen = {};             // +0x50: set when the viewport is wider than the split.
+    unsigned char m_aReserved54[8] = {}; // +0x54
+    bool m_bSliderHeld = {};             // +0x5c: set while the brightness slider is being dragged.
+    unsigned char m_aReserved5d[3] = {}; // +0x5d
+    float m_flBrightness = {};           // +0x60: the layer brightness (0 to 1).
+    bool m_bBuilt = {};                  // +0x64: set once the instancers are built.
+    unsigned char m_aReserved65[3] = {}; // +0x65
     // +0x68: the side-dependent transform block seeded when the instancers are built.
     float m_aTransform[kTransformWordCount] = {};
 };

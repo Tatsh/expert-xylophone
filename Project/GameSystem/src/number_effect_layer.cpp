@@ -201,6 +201,66 @@ void NumberEffectLayer::EmitNumberSprite(
     pBatch->SetSpriteCount(nIndex + 1);
 }
 
+/** @ghidraAddress 0x18a4ac */
+void NumberEffectLayer::Update(float flDeltaTime) {
+    // The slider layout tracks the elements to specific batches and descriptors.
+    constexpr unsigned int kTrackBatch = 3;
+    constexpr unsigned int kKnobBatch = 2;
+    constexpr unsigned int kFillBatch = 0;
+    constexpr unsigned int kFillMarkerBatch = 1;
+    constexpr unsigned int kTrackElement = 2;
+    constexpr unsigned int kTrackWideElement = 3;
+    constexpr unsigned int kKnobElement = 1;
+    constexpr unsigned int kFillElement = 0;
+    constexpr unsigned int kOpaque = 0xff;
+    constexpr unsigned int kHeldAlpha = 0x80;
+    constexpr unsigned int kWhite = 0xff;
+
+    // Re-anchor and refresh the wide-screen flag when the viewport size changes.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flWidth = pGameSystem->GetViewportWidth();
+    const float flHeight = pGameSystem->GetViewportHeight();
+    if (m_flCachedViewportWidth != flWidth || m_flCachedViewportHeight != flHeight) {
+        m_flCachedViewportWidth = flWidth;
+        m_flCachedViewportHeight = flHeight;
+        m_bWideScreen = GameSystem::GetGameSystem()->GetViewportWidth() > kWideScreenSplit;
+    }
+
+    AdvanceFadeInterp(flDeltaTime);
+
+    // Reset every batch's live sprite count for the frame.
+    for (auto *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+
+    ProcessBrightnessSliderTouch();
+
+    S_VECTOR2 pos{};
+    // The landscape layout draws the slider track (element 2) plus its wide-variant extension.
+    if (!IsPad()) {
+        ComputeAnchorPos(kTrackElement, &pos);
+        EmitNumberSprite(pos.x, pos.y, kTrackBatch, kTrackWideElement, kWhite);
+        if (m_bWideScreen) {
+            ComputeAnchorPos(kTrackWideElement, &pos);
+            EmitNumberSprite(pos.x, pos.y, kTrackBatch, kTrackWideElement, kWhite);
+        }
+    }
+
+    // The knob (element 1) draws at half alpha while the slider is held.
+    ComputeAnchorPos(kKnobElement, &pos);
+    EmitNumberSprite(pos.x, pos.y, kKnobBatch, kKnobElement, m_bSliderHeld ? kHeldAlpha : kOpaque);
+
+    // The brightness fill (element 0) plus a marker sprite offset along the track vector by the
+    // current brightness.
+    ComputeAnchorPos(kFillElement, &pos);
+    EmitNumberSprite(pos.x, pos.y, kFillBatch, kFillElement, kWhite);
+    EmitNumberSprite(pos.x + m_aTransform[0] + m_flBrightness * m_aTransform[2],
+                     pos.y + m_aTransform[1],
+                     kFillMarkerBatch,
+                     kKnobElement,
+                     kWhite);
+}
+
 // The process-wide number-effect layer, created lazily by shared().
 static NumberEffectLayer *g_pNumberEffectLayer = nullptr; // @ghidraAddress 0x3df240
 
