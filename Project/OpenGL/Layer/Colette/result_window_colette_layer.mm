@@ -1243,6 +1243,17 @@ constexpr int kPhoneBigUnderPrefix = 0x18f;
 constexpr float kPhoneGlyphRotation = 0.0f;
 constexpr float kPhoneGlyphScale = 1.0f;
 
+// The half factor applied to a glyph's measured width when advancing the proportional phone cursor,
+// and the two kerning nudges it applies (@ghidraAddress 0x40000000 = 2, 0xc0800000 = -4).
+constexpr float kPhoneProportionalHalf = 0.5f;
+constexpr float kPhoneExpLeadingKern = 2.0f;
+constexpr float kPhoneExpUnderPrefixKern = -4.0f;
+
+// The exp-family leading-digit glyph range whose draw applies the +2 kerning nudge (part ids in
+// @c [0x11a, 0x123]), and the exp under-digit prefix glyph whose draw applies the -4 nudge.
+constexpr int kPhoneExpLeadingLow = 0x11a;
+constexpr int kPhoneExpLeadingSpan = 0xa;
+
 // Resolves the wider leading-digit glyph base for a phone digit-family base.
 int PhoneLeadingBaseFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
@@ -1298,6 +1309,118 @@ constexpr float kPairCentreHalf = 0.5f;
 constexpr float kPairSeparatorGap = 1.0f;
 
 } // namespace
+
+/** @ghidraAddress 0x7a318 */
+void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
+                                                             int nDigitCount,
+                                                             int nBasePositionIndex,
+                                                             int nDigitPartBase,
+                                                             bool bWideLeading,
+                                                             bool bLeftPad,
+                                                             unsigned int nAlpha,
+                                                             float flRed,
+                                                             float flGreen,
+                                                             float flBlue) {
+    // Draws one phone glyph at the cursor through the coloured glyph path, then reports its measured
+    // width so the caller can advance the cursor.
+    const auto drawGlyph =
+        [&](int nPartId, float flX, float flY, unsigned int nGlyphAlpha) -> float {
+        RenderGlyphPartFromTable(kPhoneNumberSlot,
+                                 nPartId,
+                                 S_VECTOR2{flX, flY},
+                                 nGlyphAlpha,
+                                 static_cast<unsigned int>(flRed),
+                                 static_cast<unsigned int>(flGreen),
+                                 static_cast<unsigned int>(flBlue),
+                                 kPhoneGlyphRotation,
+                                 kPhoneGlyphScale,
+                                 kPhoneGlyphScale);
+        return getPartsData_Phone(nPartId)->flWidth;
+    };
+
+    // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
+    int aDigits[6] = {};
+    int nTopDigit = 0;
+    for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
+        aDigits[nSlot] = nValue % 10;
+        if (aDigits[nSlot] != 0) {
+            nTopDigit = nSlot;
+        }
+        nValue /= 10;
+    }
+
+    // Seed the cursor from the anchored base position and centre it by half a digit width per drawn
+    // slot. The binary looks the base digit's metrics up before seeding.
+    S_VECTOR2 cursor{};
+    getPosition_Phone(nBasePositionIndex, &cursor);
+
+    // An all-zero value in wide-leading mode still draws its least-significant slot.
+    if (nTopDigit == 0 && bWideLeading) {
+        nTopDigit = 1;
+    }
+
+    const float flDigitWidth = getPartsData_Phone(nDigitPartBase)->flWidth;
+    cursor.x += static_cast<float>(nTopDigit) * kPhoneProportionalHalf * flDigitWidth;
+
+    // In wide-leading mode the rate and exp families pre-advance the cursor by half the standalone and
+    // under-digit prefix widths, then draw the standalone prefix glyph and step left by its width.
+    if (bWideLeading) {
+        const int nStandalonePrefix = PhoneStandalonePrefixFor(nDigitPartBase);
+        if (nDigitPartBase == kPhoneFamilyRateBase || nDigitPartBase == kPhoneFamilyExpBase) {
+            const int nUnderPrefix = nDigitPartBase == kPhoneFamilyRateBase ?
+                                         kPhoneRateUnderPrefix :
+                                         kPhoneExpUnderPrefix;
+            cursor.x += getPartsData_Phone(nStandalonePrefix)->flWidth * kPhoneProportionalHalf;
+            cursor.x += getPartsData_Phone(nUnderPrefix)->flWidth * kPhoneProportionalHalf;
+        }
+        cursor.x -= drawGlyph(nStandalonePrefix, cursor.x, cursor.y, nAlpha);
+    }
+
+    // Draw each significant digit right to left, advancing the cursor left by each glyph's width. In
+    // wide-leading mode the leading digit takes the family's wider variant (rate/exp only) and also
+    // draws the under-digit prefix glyph, with per-family kerning nudges.
+    for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
+        const bool bLeadingSlot = nSlot == 0 && bWideLeading;
+        int nBaseThisDigit = nDigitPartBase;
+        if (bLeadingSlot) {
+            if (nDigitPartBase == kPhoneFamilyRateBase) {
+                nBaseThisDigit = kPhoneRateLeading;
+            } else if (nDigitPartBase == kPhoneFamilyExpBase) {
+                nBaseThisDigit = kPhoneExpLeading;
+            }
+        }
+        const int nPartId = aDigits[nSlot] + nBaseThisDigit;
+        cursor.x -= drawGlyph(nPartId, cursor.x, cursor.y, nAlpha);
+        // An exp-family leading digit nudges the cursor right to tighten its spacing.
+        if (nSlot == 0 && static_cast<unsigned int>(nPartId - kPhoneExpLeadingLow) <
+                              static_cast<unsigned int>(kPhoneExpLeadingSpan)) {
+            cursor.x += kPhoneExpLeadingKern;
+        }
+
+        if (bLeadingSlot) {
+            int nUnderPrefix = nPartId;
+            if (nDigitPartBase == kPhoneFamilyRateBase) {
+                nUnderPrefix = kPhoneRateUnderPrefix;
+            } else if (nDigitPartBase == kPhoneFamilyExpBase) {
+                nUnderPrefix = kPhoneExpUnderPrefix;
+            }
+            cursor.x -= drawGlyph(nUnderPrefix, cursor.x, cursor.y, nAlpha);
+            if (nUnderPrefix == kPhoneExpUnderPrefix) {
+                cursor.x += kPhoneExpUnderPrefixKern;
+            }
+        }
+    }
+
+    // Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
+    // alpha, advancing the cursor left by each glyph's width.
+    if (bLeftPad && nTopDigit + 1 < nDigitCount) {
+        const unsigned int nPadAlpha = static_cast<unsigned int>(
+            static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
+        for (int nPad = (nDigitCount - 1) - nTopDigit; nPad != 0; --nPad) {
+            cursor.x -= drawGlyph(nDigitPartBase, cursor.x, cursor.y, nPadAlpha);
+        }
+    }
+}
 
 /** @ghidraAddress 0x79f48 */
 void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,

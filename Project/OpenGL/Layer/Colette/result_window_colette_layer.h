@@ -342,6 +342,41 @@ private:
                                  float flBlue);
 
     /**
+     * @brief Renders a non-negative integer as a row of proportionally-spaced phone-layout glyph
+     * sprites at an anchored position.
+     *
+     * The phone-layout twin of @c RenderNumberDigitsProportional: it decomposes @p nValue into
+     * base-ten digits, seeds a cursor from the anchored base position centred by half a digit width
+     * per drawn slot, then draws the significant digits right to left advancing the cursor by each
+     * glyph's measured width. In wide-leading mode the rate and exp families pre-advance the cursor by
+     * half the standalone and under-digit prefix widths, draw a standalone prefix glyph, and give the
+     * leading digit the family's wider variant with an under-digit prefix and small kerning nudges.
+     * Optional left padding fills the unused leading slots at a dimmed alpha. Every glyph draws
+     * through the coloured glyph path with the given red, green, and blue channels.
+     * @param nValue The non-negative integer to render.
+     * @param nDigitCount The number of digit slots.
+     * @param nBasePositionIndex The phone anchor-position index the cursor is seeded from.
+     * @param nDigitPartBase The base part id of the digit family (the digit is added to it).
+     * @param bWideLeading Whether to draw the wider leading-digit variant with its prefix glyphs.
+     * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
+     * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRed The red colour channel.
+     * @param flGreen The green colour channel.
+     * @param flBlue The blue colour channel.
+     * @ghidraAddress 0x7a318
+     */
+    void RenderPhoneNumberProportional(int nValue,
+                                       int nDigitCount,
+                                       int nBasePositionIndex,
+                                       int nDigitPartBase,
+                                       bool bWideLeading,
+                                       bool bLeftPad,
+                                       unsigned int nAlpha,
+                                       float flRed,
+                                       float flGreen,
+                                       float flBlue);
+
+    /**
      * @brief Renders two numbers separated by a slash as monospaced parts-atlas digit sprites.
      *
      * Draws @p nLeftValue and @p nRightValue (each up to four significant digits, rank-family digits)
