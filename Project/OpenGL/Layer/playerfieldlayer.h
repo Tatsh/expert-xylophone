@@ -28,6 +28,13 @@ struct ScoreDigitField {
     float flCurrent = {};  // +0x0c: the current animated value.
     float flElapsed = {};  // +0x10: the elapsed animation time.
     float flDuration = {}; // +0x14: the animation duration, in seconds.
+
+    /**
+     * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end value
+     * once the duration is reached.
+     * @ghidraAddress 0x18bd58
+     */
+    void Advance(float flDeltaTime);
 };
 
 /**
@@ -41,6 +48,21 @@ class PlayerFieldLayer : public PlayFieldLayerBase {
 public:
     // The number of player sides.
     static constexpr int kSideCount = 2;
+
+    /**
+     * @brief One score-digit glyph descriptor: its anchor, size, and UV-table index.
+     *
+     * The score-number layout tables are arrays of these, one entry per digit glyph; the update reads
+     * a glyph's width to lay out the digit string and @c EmitScoreDigitSprite reads its anchor and
+     * size and resolves its UV rectangle from the shared sprite-UV table.
+     */
+    struct ScoreDigitGlyph {
+        float flAnchorX = {}; // +0x00: the glyph anchor x.
+        float flAnchorY = {}; // +0x04: the glyph anchor y.
+        float flSizeW = {};   // +0x08: the glyph width.
+        float flSizeH = {};   // +0x0c: the glyph height.
+        int nUvIndex = {};    // +0x10: the index into the shared sprite-UV table.
+    };
 
     /**
      * @brief A player side's score-digit roll-up record.
@@ -102,21 +124,22 @@ public:
      */
     void SetScorePosition(float flValue, int nSide);
 
-private:
     /**
-     * @brief One score-digit glyph descriptor: its anchor, size, and UV-table index.
+     * @brief The per-frame score-display update: advances the fade and rolls each side's score-digit
+     * counter, then lays out and emits each side's digit string.
      *
-     * The caller builds one of these per digit; @c EmitScoreDigitSprite reads its anchor and size
-     * directly and resolves its UV rectangle from the shared sprite-UV table.
+     * Advances the layer's fade channel, then for each of the two player sides: rolls the side's
+     * animated score counter, decodes its current value into decimal digits, measures the string
+     * width from the orientation's glyph-advance table, resolves the side's base position (folding in
+     * a one-shot per-side offset), centres the string about the play field (mirroring the layout and
+     * applying a half-turn glyph rotation on the flagged side), and emits each digit right to left
+     * with the fade-scaled alpha. Finally it publishes the sprite count to the instancer.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x18b810
      */
-    struct ScoreDigitGlyph {
-        float flAnchorX = {}; // +0x00: the glyph anchor x.
-        float flAnchorY = {}; // +0x04: the glyph anchor y.
-        float flSizeW = {};   // +0x08: the glyph width.
-        float flSizeH = {};   // +0x0c: the glyph height.
-        int nUvIndex = {};    // +0x10: the index into the shared sprite-UV table.
-    };
+    void Update(float flDeltaTime);
 
+private:
     /**
      * @brief Emits one score-digit glyph quad into the score sprite batch.
      *
