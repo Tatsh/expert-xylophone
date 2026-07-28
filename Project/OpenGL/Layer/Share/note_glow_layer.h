@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -57,15 +59,46 @@ public:
      */
     void CreateEffect(unsigned int nColor);
 
+    /**
+     * @brief Advances and redraws each active per-colour glow for the frame.
+     *
+     * Resets the sprite count, then for each colour advances its animation timer; a glow past its
+     * lifetime is deactivated, otherwise its bar sprite is emitted centred on the play field, mirrored
+     * for the non-play colour, faded out by the timer, and scaled by the colour's scale. Finally
+     * commits the sprite count to the instancer.
+     * @param flDelta The frame's elapsed time, in frames.
+     * @ghidraAddress 0x176b64
+     */
+    void Process(float flDelta);
+
     // The number of player colours the glow tracks.
     static constexpr int kColorCount = 2;
 
 private:
+    /**
+     * @brief Emits one glow bar sprite for a colour into the batch.
+     *
+     * Resolves the colour's atlas UV, writes the next sprite with a fixed anchor and bar size, the
+     * caller's position, the given horizontal scale and rotation, and opaque white modulated by the
+     * alpha, then advances the sprite count.
+     * @param nColor The player colour (0 or 1), selecting the atlas UV row.
+     * @param pPosition The bar's centre position.
+     * @param nAlpha The bar's alpha.
+     * @param flScale The bar's horizontal scale.
+     * @param flRotation The bar's rotation, in radians.
+     * @ghidraAddress 0x176cb0
+     */
+    void EmitGlowSprite(unsigned int nColor,
+                        const S_VECTOR2 *pPosition,
+                        int nAlpha,
+                        float flScale,
+                        float flRotation);
+
     /** @brief One per-colour glow effect slot: its active flag and animation timer. */
     struct EffectSlot {
         bool bActive = {};                 // +0x00: whether the colour's glow is animating.
         unsigned char aReserved01[3] = {}; // +0x01
-        int nTimer = {};                   // +0x04: the glow's animation timer.
+        float flTimer = {};                // +0x04: the glow's animation timer, in frames.
     };
 
     /**
@@ -77,7 +110,7 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the effect atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the glow sprite instancer.
-    unsigned char m_aReserved18[4] = {};        // +0x18
+    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count this frame.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
     unsigned char m_aReserved21[3] = {};        // +0x21
