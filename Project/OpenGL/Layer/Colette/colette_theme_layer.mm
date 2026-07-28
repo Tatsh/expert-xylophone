@@ -1,9 +1,11 @@
 #include "colette_theme_layer.h"
 
 #include "../Share/bg_layer.h"
+#import "RBUserSettingData.h"
 #include "ScoreTracker.h"
 #include "curve.h"
 #include "engineglobals.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -83,6 +85,14 @@ constexpr unsigned int kFcBatchIndex[] = {1, 2, 3, 4, 0};
 
 // The sprite slot whose glyph draws black (the drop-shadow copy); every other slot draws white.
 constexpr unsigned int kFcShadowSlot = 0;
+
+// The per-frame update's base backdrop sprite: its slot, its fade curve (two {time, value} pairs
+// keyed on the reveal clock, @ghidraAddress 0x30e86c), and the highest play-record rank that still
+// counts as a clear (a rank above this shows the miss sprites instead of the result sprites).
+constexpr unsigned int kFcBaseSlot = 0;
+constexpr int kFcBaseCurvePairs = 2;
+constexpr float kFcBaseCurve[] = {-500.0f, 0.0f, -333.33334f, 0.75f};
+constexpr int kFcClearRankMax = 1;
 
 // The "miss"/lower-rank full-combo burst: the six animated sprites and the sizes of their curves,
 // the sprite-slot base they emit at, and the constants placing them.
@@ -599,6 +609,78 @@ void ColetteThemeLayer::StartFadeOut(float flDuration) {
 /** @ghidraAddress 0x18795c */
 void ColetteThemeLayer::AdvanceFadeInterp(float flDelta) {
     m_gradeChannel.Advance(flDelta);
+}
+
+/** @ghidraAddress 0x18776c */
+void ColetteThemeLayer::Update(float flDelta) {
+    // Cache the viewport size and clear the four sprite batches for this frame.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flViewportWidth = pGameSystem->GetViewportWidth();
+    m_flViewportHeight = pGameSystem->GetViewportHeight();
+    for (int &nCount : m_aSpriteCounts) {
+        nCount = 0;
+    }
+
+    AdvanceFadeInterp(flDelta);
+
+    // Nothing draws until the reveal is armed.
+    if (!m_bGradeClockActive) {
+        return;
+    }
+
+    // Advance the reveal clock while it is running, and stop it once it passes the threshold.
+    float flClock = m_flGradeRevealClock;
+    if (m_bGradeVisible) {
+        flClock += flDelta;
+        m_flGradeRevealClock = flClock;
+    }
+    if (flClock >= m_flGradeRevealDuration) {
+        m_bGradeVisible = false;
+    }
+
+    // The base backdrop sprite: its scale-Y and alpha both come from the base curve at the clock.
+    const float flBaseCurve = CalculateCurveInterpolation(kFcBaseCurve, kFcBaseCurvePairs, flClock);
+    const S_VECTOR2 origin{0.0f, 0.0f};
+    EmitFcSprite(1.0f,
+                 flBaseCurve,
+                 0.0f,
+                 kFcBaseSlot,
+                 &origin,
+                 static_cast<int>(flBaseCurve * m_gradeChannel.GetCurrent() * kFcAlphaByteScale));
+
+    // Each drawn side: the first side draws only when the two-side gauge is enabled.
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        if ((m_nSideCount | nSide) == 0) {
+            continue;
+        }
+
+        const int nBestRank = m_aGradeValues[nSide];
+        const bool bLowRank = ScoreTracker::shared()->GetPlayRecordRank(nSide) > kFcClearRankMax;
+        const bool bChallenge = GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0;
+
+        // A side without a recorded best rank shows its rank medals, at the player's colour.
+        if (nBestRank == 0) {
+            const int nColorVariant = [RBUserSettingData sharedInstance].playColor;
+            if (nSide != 0) {
+                EmitFcRankSprites(nSide, nColorVariant);
+            } else {
+                EmitFcRankSprites(0, nColorVariant == 0);
+            }
+        }
+
+        // A clear (a good rank on a non-challenge play) shows the result sprites; otherwise the miss
+        // sprites.
+        if (bLowRank || bChallenge) {
+            EmitFcMissSprites(nSide);
+        } else {
+            EmitFcResultSprites(nSide);
+        }
+    }
+
+    // Publish each batch's live sprite count into its instancer.
+    for (int nBatch = 0; nBatch < kSpriteSlotCount; ++nBatch) {
+        m_apSprites[nBatch]->SetSpriteCount(m_aSpriteCounts[nBatch]);
+    }
 }
 
 /** @ghidraAddress 0x1879a4 */

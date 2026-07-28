@@ -133,6 +133,28 @@ private:
     void EmitFcRankSprites(int nSide, int nColorVariant);
 
     /**
+     * @brief Emits the full-combo "result" (cleared-rank) sprite set for one player side.
+     * Reconstruction pending.
+     * @param nSide The player side (0 or 1).
+     * @ghidraAddress 0x188114
+     */
+    void EmitFcResultSprites(int nSide);
+
+    /**
+     * @brief Advances and re-emits the full-combo result-grade effect for the frame.
+     *
+     * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While the
+     * reveal is armed it advances the reveal clock (clearing the clock-active flag once it passes the
+     * threshold), emits the base backdrop sprite at an alpha eased from the reveal clock, and for each
+     * drawn player side (the first side only when the two-side gauge is on) emits the rank medals (for
+     * a fresh best rank, at the player's colour), then the cleared-rank result sprites (a clear that is
+     * not a challenge) or the miss sprites otherwise. Finally it publishes each batch's sprite count.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x18776c
+     */
+    void Update(float flDelta);
+
+    /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
      * @ghidraAddress 0x187484
      */
@@ -156,9 +178,9 @@ private:
     float m_flGradeRevealClock = {}; // +0x64: the reveal clock, counting up to the threshold.
     bool m_bGradeArmed = {};         // +0x68: raised once the grade display is initialised.
     // +0x69..+0x6b is alignment padding before the reveal channel.
-    LinearTween m_gradeChannel; // +0x6c: the result grade-gauge reveal channel.
-    // +0x80..+0x87: the cached viewport size, still being worked out.
-    unsigned char m_aReserved80[8] = {}; // +0x80
+    LinearTween m_gradeChannel;          // +0x6c: the result grade-gauge reveal channel.
+    float m_flViewportWidth = {};        // +0x80: the cached viewport width (refreshed each frame).
+    float m_flViewportHeight = {};       // +0x84: the cached viewport height.
     int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side best-rank flag from the play record.
     float m_flGradeRevealDuration = {};  // +0x90: the reveal clock's threshold (3000 or 5000).
     // +0x94..+0x97: the remaining layer state, still being worked out.
