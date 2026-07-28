@@ -9,6 +9,7 @@
 #include "judge_score_layer.h"
 
 #include "bg_layer.h"
+#include "curve.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -43,6 +44,19 @@ constexpr unsigned int kColorMax = 255;
 
 // The burst UV row for each effect index (@ghidraAddress 0x30e7b0).
 constexpr int kBurstUvRow[] = {0x49, 0x4a};
+
+// Scales a unit-interval curve value into an 8-bit alpha (@ghidraAddress 0x2eed00).
+constexpr float kAlphaByteScale = 255.0f;
+
+// The burst scale-over-time curve: {time, scale} pairs the animation timer samples (@ghidraAddress
+// 0x30e788).
+constexpr float kBurstScaleCurve[] = {0.0f, 1.0f, 666.66669f, 1.4f};
+constexpr int kBurstScaleCurvePairs = 2;
+
+// The burst alpha-over-time curve: {time, alpha} pairs; the burst deactivates when the alpha reaches
+// zero (@ghidraAddress 0x30e798).
+constexpr float kBurstAlphaCurve[] = {0.0f, 1.0f, 133.33333f, 1.0f, 666.66669f, 0.0f};
+constexpr int kBurstAlphaCurvePairs = 3;
 } // namespace
 
 // The process-wide judgement-score layer, created lazily by shared().
@@ -105,4 +119,28 @@ void JudgeScoreLayer::LoadSprites() {
     }
 
     m_bLoaded = true;
+}
+
+/** @ghidraAddress 0x185600 */
+void JudgeScoreLayer::RenderScoreGaugeEffects(float flDelta) {
+    m_nSlotCount = 0;
+    for (auto &record : m_aEffects) {
+        if (!record.bActive) {
+            continue;
+        }
+        record.flTimer += flDelta;
+        const float flScale =
+            CalculateCurveInterpolation(kBurstScaleCurve, kBurstScaleCurvePairs, record.flTimer);
+        const float flAlpha =
+            CalculateCurveInterpolation(kBurstAlphaCurve, kBurstAlphaCurvePairs, record.flTimer);
+        if (flAlpha <= 0.0f) {
+            record.bActive = false;
+            continue;
+        }
+        EmitBurstSprite(record.nEffectIndex,
+                        flScale,
+                        record.position,
+                        static_cast<int>(flAlpha * kAlphaByteScale));
+    }
+    m_pSprite->SetSpriteCount(m_nSlotCount);
 }

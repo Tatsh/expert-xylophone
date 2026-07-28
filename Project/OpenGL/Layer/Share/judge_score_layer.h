@@ -45,6 +45,18 @@ public:
      */
     void LoadSprites();
 
+    /**
+     * @brief Advances and redraws every live score-burst effect for the frame.
+     *
+     * Resets the live slot count, then for each pooled record: advances its animation timer, samples
+     * the scale and alpha animation curves, deactivates the record once its alpha reaches zero, and
+     * otherwise emits its burst sprite at the sampled scale and alpha. Finally publishes the slot
+     * count to the instancer.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x185600
+     */
+    void RenderScoreGaugeEffects(float flDelta);
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
@@ -72,7 +84,11 @@ private:
 
     // One pooled score-burst effect record (20 bytes): its animation state.
     struct EffectRecord {
-        unsigned char aReserved00[0x14] = {}; // +0x00: the burst's animation state.
+        bool bActive = {};                 // +0x00: whether the record holds a live burst.
+        unsigned char aReserved01[3] = {}; // +0x01
+        unsigned int nEffectIndex = {};    // +0x04: the burst's atlas UV row.
+        S_VECTOR2 position;                // +0x08: the burst's screen position.
+        float flTimer = {};                // +0x10: the burst's animation timer.
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
