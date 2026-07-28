@@ -1,6 +1,7 @@
 #include "limelight_effect_layer.h"
 
 #include "bg_layer.h"
+#include "curve.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -85,6 +86,150 @@ constexpr float kViewportHalfScale = 0.5f;
 // The opaque white channel value each effect glyph is tinted with.
 constexpr unsigned int kChannelWhite = 0xff;
 
+// The number of curve-animated effect glyphs, the first grade sprite kind they occupy (kinds
+// 12..39, the group-1 glyphs), and the curve knot counts.
+constexpr int kCurveGlyphCount = 28;
+constexpr int kCurveGlyphFirstKind = 12;
+constexpr int kCurveXKnots = 2;
+constexpr int kCurveYKnots = 2;
+constexpr int kCurveAlphaKnots = 3;
+constexpr int kCurveScaleKnots = 2;
+
+// The vertical offset added to each curve-animated glyph's sampled Y (@ghidraAddress 0x3041a8), and
+// the byte alpha scale (@ghidraAddress 0x2eed00).
+constexpr float kCurveGlyphOffsetY = 580.0f;
+constexpr float kAlphaByteScale = 255.0f;
+
+// Each curve-animated glyph's horizontal-position curve ({time, x} knots at @ghidraAddress
+// 0x304584): the glyph sweeps in from the right.
+constexpr float kCurveGlyphXCurve[kCurveGlyphCount][kCurveXKnots * 2] = {
+    {400.0f, 684.0f, 900.0f, 694.0f},
+    {400.0f, 684.0f, 900.0f, 694.0f},
+    {366.66666f, 668.0f, 866.66669f, 678.0f},
+    {366.66666f, 668.0f, 866.66669f, 678.0f},
+    {333.33334f, 604.0f, 833.33331f, 614.0f},
+    {333.33334f, 604.0f, 833.33331f, 614.0f},
+    {300.0f, 541.0f, 800.0f, 551.0f},
+    {300.0f, 541.0f, 800.0f, 551.0f},
+    {266.66666f, 498.0f, 766.66669f, 508.0f},
+    {266.66666f, 498.0f, 766.66669f, 508.0f},
+    {233.33333f, 481.0f, 733.33331f, 491.0f},
+    {233.33333f, 481.0f, 733.33331f, 491.0f},
+    {200.0f, 434.0f, 700.0f, 444.0f},
+    {200.0f, 434.0f, 700.0f, 444.0f},
+    {166.66667f, 382.0f, 666.66669f, 392.0f},
+    {166.66667f, 382.0f, 666.66669f, 392.0f},
+    {133.33333f, 339.0f, 633.33331f, 349.0f},
+    {133.33333f, 339.0f, 633.33331f, 349.0f},
+    {100.0f, 326.0f, 600.0f, 336.0f},
+    {100.0f, 326.0f, 600.0f, 336.0f},
+    {66.66666f, 279.0f, 566.66669f, 289.0f},
+    {66.66666f, 279.0f, 566.66669f, 289.0f},
+    {66.66666f, 179.0f, 566.66669f, 189.0f},
+    {66.66666f, 179.0f, 566.66669f, 189.0f},
+    {33.33333f, 242.0f, 533.33331f, 252.0f},
+    {33.33333f, 242.0f, 533.33331f, 252.0f},
+    {0.0f, 95.0f, 500.0f, 105.0f},
+    {0.0f, 95.0f, 500.0f, 105.0f},
+};
+
+// Each curve-animated glyph's vertical-position curve ({time, y} knots at @ghidraAddress 0x304744).
+constexpr float kCurveGlyphYCurve[kCurveGlyphCount][kCurveYKnots * 2] = {
+    {400.0f, 96.0f, 900.0f, 91.0f},
+    {400.0f, 96.0f, 900.0f, 91.0f},
+    {366.66666f, 90.0f, 866.66669f, 85.0f},
+    {366.66666f, 90.0f, 866.66669f, 85.0f},
+    {333.33334f, 106.0f, 833.33331f, 96.0f},
+    {333.33334f, 106.0f, 833.33331f, 101.0f},
+    {300.0f, 104.0f, 800.0f, 94.0f},
+    {300.0f, 104.0f, 800.0f, 99.0f},
+    {266.66666f, 102.0f, 766.66669f, 92.0f},
+    {266.66666f, 102.0f, 766.66669f, 97.0f},
+    {233.33333f, 93.0f, 733.33331f, 88.0f},
+    {233.33333f, 93.0f, 733.33331f, 88.0f},
+    {200.0f, 97.0f, 700.0f, 92.0f},
+    {200.0f, 97.0f, 700.0f, 92.0f},
+    {166.66667f, 115.0f, 666.66669f, 110.0f},
+    {166.66667f, 115.0f, 666.66669f, 110.0f},
+    {133.33333f, 98.0f, 633.33331f, 93.0f},
+    {133.33333f, 98.0f, 633.33331f, 93.0f},
+    {100.0f, 108.0f, 600.0f, 103.0f},
+    {100.0f, 108.0f, 600.0f, 108.0f},
+    {66.66666f, 93.0f, 566.66669f, 88.0f},
+    {66.66666f, 93.0f, 566.66669f, 88.0f},
+    {66.66666f, 98.0f, 566.66669f, 93.0f},
+    {66.66666f, 98.0f, 566.66669f, 93.0f},
+    {33.33333f, 96.0f, 533.33331f, 91.0f},
+    {33.33333f, 96.0f, 533.33331f, 91.0f},
+    {0.0f, 96.0f, 500.0f, 91.0f},
+    {0.0f, 96.0f, 500.0f, 91.0f},
+};
+
+// Each curve-animated glyph's alpha curve ({time, alpha} knots at @ghidraAddress 0x304904): a quick
+// fade in and a long fade out, staggered per glyph.
+constexpr float kCurveGlyphAlphaCurve[kCurveGlyphCount][kCurveAlphaKnots * 2] = {
+    {633.33331f, 0.0f, 650.0f, 1.0f, 900.0f, 0.0f},
+    {400.0f, 0.0f, 633.33331f, 1.0f, 650.0f, 0.0f},
+    {600.0f, 0.0f, 616.66669f, 1.0f, 866.66669f, 0.0f},
+    {366.66666f, 0.0f, 600.0f, 1.0f, 616.66669f, 0.0f},
+    {566.66669f, 0.0f, 583.33331f, 1.0f, 833.33331f, 0.0f},
+    {333.33334f, 0.0f, 566.66669f, 1.0f, 583.33331f, 0.0f},
+    {533.33331f, 0.0f, 550.0f, 1.0f, 800.0f, 0.0f},
+    {300.0f, 0.0f, 533.33331f, 1.0f, 550.0f, 0.0f},
+    {500.0f, 0.0f, 516.66669f, 1.0f, 766.66669f, 0.0f},
+    {266.66666f, 0.0f, 500.0f, 1.0f, 516.66669f, 0.0f},
+    {466.66666f, 0.0f, 483.33334f, 1.0f, 733.33331f, 0.0f},
+    {233.33333f, 0.0f, 466.66666f, 1.0f, 483.33334f, 0.0f},
+    {433.33334f, 0.0f, 450.0f, 1.0f, 700.0f, 0.0f},
+    {200.0f, 0.0f, 433.33334f, 1.0f, 450.0f, 0.0f},
+    {400.0f, 0.0f, 416.66666f, 1.0f, 666.66669f, 0.0f},
+    {166.66667f, 0.0f, 400.0f, 1.0f, 416.66666f, 0.0f},
+    {366.66666f, 0.0f, 383.33334f, 1.0f, 466.66666f, 0.0f},
+    {133.33333f, 0.0f, 366.66666f, 1.0f, 383.33334f, 0.0f},
+    {333.33334f, 0.0f, 350.0f, 1.0f, 433.33334f, 0.0f},
+    {100.0f, 0.0f, 333.33334f, 1.0f, 350.0f, 0.0f},
+    {300.0f, 0.0f, 316.66666f, 1.0f, 400.0f, 0.0f},
+    {66.66666f, 0.0f, 300.0f, 1.0f, 316.66666f, 0.0f},
+    {300.0f, 0.0f, 316.66666f, 1.0f, 566.66669f, 0.0f},
+    {66.66666f, 0.0f, 300.0f, 1.0f, 316.66666f, 0.0f},
+    {266.66666f, 0.0f, 283.33334f, 1.0f, 533.33331f, 0.0f},
+    {33.33333f, 0.0f, 266.66666f, 1.0f, 283.33334f, 0.0f},
+    {233.33333f, 0.0f, 250.0f, 1.0f, 500.0f, 0.0f},
+    {0.0f, 0.0f, 233.33333f, 1.0f, 250.0f, 0.0f},
+};
+
+// Each curve-animated glyph's scale curve ({time, scale} knots at @ghidraAddress 0x304ba4).
+constexpr float kCurveGlyphScaleCurve[kCurveGlyphCount][kCurveScaleKnots * 2] = {
+    {400.0f, 0.0f, 900.0f, 0.5f},
+    {400.0f, 0.0f, 900.0f, 0.5f},
+    {366.66666f, 0.0f, 866.66669f, 0.45f},
+    {366.66666f, 0.0f, 866.66669f, 0.45f},
+    {333.33334f, 0.0f, 833.33331f, 0.45f},
+    {333.33334f, 0.0f, 833.33331f, 0.45f},
+    {300.0f, 0.0f, 800.0f, 0.6f},
+    {300.0f, 0.0f, 800.0f, 0.6f},
+    {266.66666f, 0.0f, 766.66669f, 0.65f},
+    {266.66666f, 0.0f, 766.66669f, 0.65f},
+    {233.33333f, 0.0f, 733.33331f, 0.45f},
+    {233.33333f, 0.0f, 733.33331f, 0.45f},
+    {200.0f, 0.0f, 700.0f, 0.45f},
+    {200.0f, 0.0f, 700.0f, 0.45f},
+    {166.66667f, 0.0f, 666.66669f, 0.45f},
+    {166.66667f, 0.0f, 666.66669f, 0.45f},
+    {133.33333f, 0.0f, 633.33331f, 0.55f},
+    {133.33333f, 0.0f, 633.33331f, 0.55f},
+    {100.0f, 0.0f, 600.0f, 0.45f},
+    {100.0f, 0.0f, 600.0f, 0.45f},
+    {66.66666f, 0.0f, 566.66669f, 0.55f},
+    {66.66666f, 0.0f, 566.66669f, 0.55f},
+    {66.66666f, 0.0f, 566.66669f, 0.45f},
+    {66.66666f, 0.0f, 566.66669f, 0.45f},
+    {33.33333f, 0.0f, 533.33331f, 0.65f},
+    {33.33333f, 0.0f, 533.33331f, 0.65f},
+    {0.0f, 0.0f, 500.0f, 0.5f},
+    {0.0f, 0.0f, 500.0f, 0.5f},
+};
+
 } // namespace
 
 /** @ghidraAddress 0x11ff84 */
@@ -142,6 +287,31 @@ void LimelightEffectLayer::SetActiveAndResetCounter() {
 /** @ghidraAddress 0x120128 */
 void LimelightEffectLayer::SetInactive() {
     m_bActive = false;
+}
+
+/** @ghidraAddress 0x120328 */
+void LimelightEffectLayer::EmitCurveAnimatedSprites(float flClock) {
+    for (int nGlyph = 0; nGlyph < kCurveGlyphCount; ++nGlyph) {
+        // Each glyph samples four independent curves at the same clock: its horizontal and vertical
+        // positions, its alpha, and its scale.
+        const float flPosX =
+            CalculateCurveInterpolation(kCurveGlyphXCurve[nGlyph], kCurveXKnots, flClock);
+        const float flPosY =
+            CalculateCurveInterpolation(kCurveGlyphYCurve[nGlyph], kCurveYKnots, flClock);
+        const float flAlpha =
+            CalculateCurveInterpolation(kCurveGlyphAlphaCurve[nGlyph], kCurveAlphaKnots, flClock);
+        const float flScale =
+            CalculateCurveInterpolation(kCurveGlyphScaleCurve[nGlyph], kCurveScaleKnots, flClock);
+
+        S_VECTOR2 position{flPosX, flPosY + kCurveGlyphOffsetY};
+        const unsigned int nAlpha =
+            static_cast<unsigned int>(static_cast<int>(flAlpha * kAlphaByteScale));
+        EmitSpriteSlot(static_cast<unsigned int>(kCurveGlyphFirstKind + nGlyph),
+                       &position,
+                       nAlpha,
+                       flScale,
+                       flScale);
+    }
 }
 
 /** @ghidraAddress 0x120434 */
