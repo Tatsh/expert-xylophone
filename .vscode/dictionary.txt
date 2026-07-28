@@ -123,6 +123,7 @@ favorite
 fmla
 fmov
 fmul
+fori
 foxundermoon
 fram
 fullcombo

@@ -10,8 +10,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MusicData.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
+#include "neTexture.h"
+#include "neTextureForiOS.h"
 
 // The process-wide game-system singleton, created lazily by GetGameSystem().
 static GameSystem *g_pGameSystem = nullptr; // @ghidraAddress 0x3de010
@@ -77,6 +80,33 @@ GameSystem *GameSystem::GetGameSystem() {
         g_pGameSystem = new GameSystem();
     }
     return g_pGameSystem;
+}
+
+/** @ghidraAddress 0x12f054 */
+void GameSystem::LoadMusicNameTexture(MusicData *pMusicData) {
+    // Release any previously loaded music-name texture before loading the new one.
+    if (m_pMusicNameTexture != nullptr) {
+        m_pMusicNameTexture->Release();
+        m_pMusicNameTexture = nullptr;
+    }
+    if (pMusicData == nil) {
+        return;
+    }
+
+    // On a retina screen, prefer the 2x white-name image; fall back to the 1x image when there is no
+    // 2x data or the 2x load fails.
+    if (UIScreen.mainScreen.scale > 1.0) {
+        NSData *pData2x = [pMusicData musicNameImageWhite2xData];
+        if (pData2x != nil) {
+            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+        }
+    }
+    if (m_pMusicNameTexture == nullptr) {
+        NSData *pData = [pMusicData musicNameImageWhiteData];
+        if (pData != nil) {
+            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+        }
+    }
 }
 
 /** @ghidraAddress 0x12f33c */
