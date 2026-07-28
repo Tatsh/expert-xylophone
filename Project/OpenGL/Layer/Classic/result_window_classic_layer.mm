@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#import "AudioManager.h"
 #import "RBViewController.h"
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
@@ -62,6 +63,12 @@ PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x
 // The fixed landscape offset the customize phone-overlay adds to its base position (zero-initialised
 // in the binary's __common segment, filled at runtime).
 static S_VECTOR2 g_classicCustomizeOverlayLandscapeOffset = {}; // @ghidraAddress 0x3d8058
+
+// The fixed landscape offsets the customize nameplate-overlay adds to its base position for its name
+// glyph, level glyph, and backing group (zero-initialised in __common, filled at runtime).
+static S_VECTOR2 g_classicNameplateNameOffset = {};    // @ghidraAddress 0x3d8068
+static S_VECTOR2 g_classicNameplateLevelOffset = {};   // @ghidraAddress 0x3d8070
+static S_VECTOR2 g_classicNameplateBackingOffset = {}; // @ghidraAddress 0x3d8060
 
 // The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
 // per result-window part, giving each part's placement offset, size, and UV-palette index.
@@ -858,6 +865,118 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
     RenderSpriteInstancerSlotScaled(kMainAssetRenderSlot, renderPos, nRenderScale);
 }
 
+namespace {
+// The nameplate-overlay slide constants.
+// The nameplate slide duration (@ghidraAddress 0x2feff4 = 500).
+constexpr float kNameplateSlideDuration = 500.0f;
+// The upward Y travel applied to the nameplate as it slides in (@ghidraAddress 0xc1a00000 = -20).
+constexpr float kNameplateSlideOffsetY = -20.0f;
+// The nameplate reveal-complete sound-effect slot and themed voice.
+constexpr int kNameplateRevealSoundSlot = 9;
+constexpr int kNameplateRevealVoiceId = 0xe;
+// The customize asset texture instancer slot the nameplate swap targets.
+constexpr unsigned int kNameplateAssetSlot = 6;
+// The part-id and character-code bases the nameplate name/level glyphs draw from.
+constexpr unsigned int kNameplateNamePartBase = 0xdf; // iPad name part = subId + this.
+constexpr unsigned int kNameplateLevelPart = 0xe4;    // iPad level part.
+constexpr unsigned int kNameplateNameCharBase = 0x79; // phone name char = subId + this.
+constexpr int kNameplateNamePositionIndex = 0x3d;     // phone name anchor.
+constexpr unsigned int kNameplateLevelChar = 0x69;    // phone level char.
+constexpr int kNameplateLevelPositionIndex = 0x3e;    // phone level anchor.
+constexpr int kNameplateBackingPositionIndex = 0x3f;  // phone backing anchor.
+constexpr unsigned int kNameplateGlyphSlot = 1;       // the name/level glyph instancer slot.
+} // namespace
+
+/** @ghidraAddress 0x119db4 */
+void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
+                                                               const S_VECTOR2 *pBasePos,
+                                                               unsigned int nScale) {
+    if (!m_bCustomizePreviewShown) {
+        // Decay phase: run the timer down; on reaching zero, promote any queued asset id, swap the
+        // displayed customize-character texture, and re-enter the grow phase.
+        m_flNameplateTimer -= static_cast<float>(nDeltaFrames);
+        if (m_flNameplateTimer <= 0.0f) {
+            m_flNameplateTimer = 0.0f;
+            if (m_nCustomizePendingId != -1) {
+                m_nCustomizeCharacterId = m_nCustomizePendingId;
+                m_nCustomizePendingId = -1;
+                m_bCustomizePreviewShown = true;
+                LevelTables::GetInstance();
+                const LevelUnlockEntry *pEntry =
+                    LevelTables::GetLevelUnlockEntry(m_nCustomizeCharacterId);
+                m_nCustomizeSubId = pEntry->nCategory;
+                NSString *path = BuildCustomizeAssetPathString(pEntry->nCategory, pEntry->nItem);
+                ne::C_TEXTURE *pTexture = ne::C_TEXTURE::FindOrLoadCached([path UTF8String]);
+                SetInstancerTextureAndRefreshSlots(kNameplateAssetSlot, pTexture);
+                pTexture->Release();
+            }
+        }
+    } else if (m_flNameplateTimer < kNameplateSlideDuration) {
+        // Grow phase: run the timer up; on reaching the cap, fire the reveal jingle and voice.
+        m_flNameplateTimer += static_cast<float>(nDeltaFrames);
+        if (kNameplateSlideDuration <= m_flNameplateTimer) {
+            m_flNameplateTimer = kNameplateSlideDuration;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kNameplateRevealSoundSlot);
+            SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kNameplateRevealVoiceId);
+        }
+    } else if (m_bExpAnimSettled) {
+        // Fully grown: once the level-up voice finishes, fold the gained experience into the running
+        // total and re-read the next level's threshold.
+        if (![AudioManager.sharedManager isPlayingVoice]) {
+            m_bExpAnimSettled = false;
+            LevelTables::GetInstance();
+            m_nLevelUpStep += m_nGainedExp;
+            m_nGainedExp = static_cast<int>(LevelTables::GetLevelExpThreshold(m_nPlayerLevel));
+        }
+    }
+
+    // The eased slide progress, upward Y offset, and base position.
+    float flProgress = m_flNameplateTimer / kNameplateSlideDuration;
+    if (flProgress < 0.0f) {
+        flProgress = 0.0f;
+    } else if (flProgress > 1.0f) {
+        flProgress = 1.0f;
+    }
+    S_VECTOR2 renderPos{pBasePos->x, pBasePos->y + (1.0f - flProgress) * kNameplateSlideOffsetY};
+    const unsigned int nAlpha =
+        static_cast<unsigned int>(static_cast<int>(flProgress * static_cast<float>(nScale)));
+
+    if (IsPad()) {
+        // The iPad path draws the name and level glyphs at their landscape offsets.
+        const unsigned int nNamePart =
+            static_cast<unsigned int>(m_nCustomizeSubId) + kNameplateNamePartBase;
+        S_VECTOR2 namePos = renderPos;
+        AddVector2(&namePos, &g_classicNameplateNameOffset);
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kNameplateGlyphSlot, nNamePart, namePos, nAlpha, false);
+
+        S_VECTOR2 levelPos = renderPos;
+        AddVector2(&levelPos, &g_classicNameplateLevelOffset);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kNameplateGlyphSlot, kNameplateLevelPart, levelPos, nAlpha, false);
+
+        AddVector2(&renderPos, &g_classicNameplateBackingOffset);
+        // Yes, the binary passes the name part id (subId + 0xdf) as the scaled render's scale here.
+        RenderSpriteInstancerSlotScaled(kNameplateAssetSlot, renderPos, nNamePart);
+    } else {
+        // The phone path draws the name and level glyphs at their anchor positions plus the eased
+        // position, then the backing group at its anchor.
+        const unsigned int nNameChar =
+            static_cast<unsigned int>(m_nCustomizeSubId) + kNameplateNameCharBase;
+        RenderSpriteWithPositionOffset(
+            kNameplateGlyphSlot, nNameChar, kNameplateNamePositionIndex, renderPos, nAlpha, 1.0f);
+        RenderSpriteWithPositionOffset(kNameplateGlyphSlot,
+                                       kNameplateLevelChar,
+                                       kNameplateLevelPositionIndex,
+                                       renderPos,
+                                       nAlpha,
+                                       1.0f);
+        S_VECTOR2 anchorPos{};
+        getPosition_Phone(kNameplateBackingPositionIndex, &anchorPos);
+        AddVector2(&renderPos, &anchorPos);
+        RenderSpriteInstancerSlotScaled(kNameplateAssetSlot, renderPos, nAlpha);
+    }
+}
+
 /** @ghidraAddress 0x115348 */
 void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
                                                                   ne::C_TEXTURE *pTexture) {
@@ -1552,7 +1671,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nMainAssetId = -1;
     m_nTrackIndexC = -1;
     m_bCustomizePreviewShown = false;
-    m_nUnlockCounter = 0;
+    m_flNameplateTimer = 0.0f;
     m_nCustomizeCharacterId = -1;
     m_nCustomizePendingId = -1;
     m_nRevealSeHandle = -1;

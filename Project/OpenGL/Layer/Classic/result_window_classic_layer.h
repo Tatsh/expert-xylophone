@@ -141,6 +141,26 @@ public:
     RenderCustomizePhoneOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, unsigned int nScale);
 
     /**
+     * @brief Advances and renders the customize nameplate overlay for one frame, swapping the shown
+     * skin texture when its reveal completes.
+     *
+     * Runs the overlay's slide timer down (while the preview is hidden) or up (while shown), swapping
+     * the displayed customize-character texture and re-entering the grow phase once the decay reaches
+     * zero with a queued asset, and firing the reveal jingle and voice at the top of the grow phase.
+     * Once fully grown it waits for the level-up voice to finish, then folds the gained experience
+     * into the running total. It renders the name and level glyphs plus the backing group at an eased
+     * Y position and progress-scaled alpha, through the part-sprite helpers on an iPad or the
+     * position-offset glyph helpers on a phone.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @param pBasePos The overlay group's base screen position.
+     * @param nScale The base alpha/size scale.
+     * @ghidraAddress 0x119db4
+     */
+    void RenderCustomizeNameplateOverlay(int nDeltaFrames,
+                                         const S_VECTOR2 *pBasePos,
+                                         unsigned int nScale);
+
+    /**
      * @brief Resets the result-screen score/level display block to its per-round defaults.
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
@@ -726,8 +746,9 @@ private:
     float m_flMainAssetScale = {};      // +0x19c: the main customize asset scale, reset to 1.0.
     bool m_bCustomizePreviewShown = {}; // +0x1a0: whether the customize character preview is shown.
     // +0x1a1..+0x1a3 is alignment padding.
-    unsigned char m_aPad1a1[3] = {};  // +0x1a1
-    int m_nUnlockCounter = {};        // +0x1a4: an unlock counter, reset to zero.
+    unsigned char m_aPad1a1[3] = {}; // +0x1a1
+    float m_flNameplateTimer =
+        {}; // +0x1a4: the customize nameplate-overlay slide timer (0 to 500).
     int m_nCustomizeCharacterId = {}; // +0x1a8: the shown customize character/costume id (-1 none).
     int m_nCustomizeSubId = {};       // +0x1ac: the customize character's cached unlock sub-id.
     int m_nCustomizePendingId = {}; // +0x1b0: the customize character id pending on the next toggle
