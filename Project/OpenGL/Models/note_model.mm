@@ -682,28 +682,81 @@ void NoteModel::CheckShotCPU() {
         }
     }
 
-    // Once resolved, choose the bounce direction: a hold note follows its display lane, any other
-    // note flips a coin.
+    // Once resolved, choose the bounce direction.
     if (m_bShotResolved) {
-        int nDirection;
-        if (m_pRecord != nullptr && m_pRecord->GetHoldKind() == kHoldKindHead) {
-            const int nLane = m_pRecord->GetDisplayLane();
-            if (nLane == kDisplayLaneCentre) {
-                nDirection = -1;
-            } else if (nLane == kDisplayLaneLeft) {
-                nDirection =
-                    static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 1 : -1;
-            } else {
-                assert(nLane == kDisplayLaneRight);
-                nDirection = 1;
-            }
-        } else {
-            nDirection =
-                static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 2 : -2;
-        }
-        SetShotDirection(nDirection);
+        SetShotDirection(PickShotBounceDirection());
     }
     m_bShotActive = false;
+}
+
+/** @ghidraAddress 0x13663c */
+void NoteModel::CheckShotGhost() {
+    // Subtracts one from the opposing gauge, marks the shot resolved, and records the lane judge
+    // result — the score-and-record block the binary inlines at each ghost scoring site.
+    const auto scoreShot = [&](ReflecGaugeLayer *pGauge) {
+        const int nColor = m_pRecord != nullptr ?
+                               m_pRecord->GetSide() :
+                               (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
+        ReflecGaugeLayer::SubReflecGaugeValue(1.0f, pGauge, nColor);
+        m_bShotResolved = true;
+        ScoreTracker::shared()->AddLaneJudgeResult(
+            IsOnPlaySide(),
+            static_cast<unsigned int>(GameSystem::GetGameSystem()->GetFullJustReflec()));
+    };
+
+    if (m_bShotDecaying) {
+        ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+        const int nColor = m_pRecord != nullptr ?
+                               m_pRecord->GetSide() :
+                               (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
+        if (pGauge->GetAnotherValue(nColor) >= 1.0f) {
+            // A ghost/replay note scores directly; a non-ghost note scores by emphasis or its side's
+            // live full-combo run, and otherwise consumes a queued hit from the manager.
+            bool bScoreDirect = m_bEmphasisFallback;
+            if (!bScoreDirect) {
+                if (m_nAutoShotMode == kAutoShotModeUser &&
+                    GameSystem::GetGameSystem()->GetUserFullCombo()) {
+                    bScoreDirect = true;
+                } else {
+                    bScoreDirect = m_nAutoShotMode == kAutoShotModeCpu &&
+                                   GameSystem::GetGameSystem()->GetCpuFullCombo();
+                }
+            }
+            if (bScoreDirect) {
+                scoreShot(pGauge);
+            } else if (NoteEffectMgr::shared()->GetHitCount() > 0) {
+                scoreShot(pGauge);
+                NoteEffectMgr::shared()->DecrementHitCount();
+            }
+        }
+    }
+
+    // A ghost note that did not score feeds a hit back into the manager's queue.
+    if (m_bEmphasisFallback && !m_bShotResolved) {
+        NoteEffectMgr::shared()->IncrementHitCount();
+    }
+
+    if (m_bShotResolved) {
+        SetShotDirection(PickShotBounceDirection());
+    }
+    m_bShotActive = false;
+}
+
+int NoteModel::PickShotBounceDirection() const {
+    // A hold note follows its display lane; any other note flips a coin between the two outer
+    // directions.
+    if (m_pRecord != nullptr && m_pRecord->GetHoldKind() == kHoldKindHead) {
+        const int nLane = m_pRecord->GetDisplayLane();
+        if (nLane == kDisplayLaneCentre) {
+            return -1;
+        }
+        if (nLane == kDisplayLaneLeft) {
+            return static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 1 : -1;
+        }
+        assert(nLane == kDisplayLaneRight);
+        return 1;
+    }
+    return static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 2 : -2;
 }
 
 namespace {

@@ -339,10 +339,22 @@ public:
     void CheckShotCPU();
 
     /**
-     * @brief The ghost (replay) shot handler. Reconstruction pending.
+     * @brief The ghost (replay) shot handler.
+     *
+     * The replay counterpart of @c CheckShotCPU: it scores a filled-gauge note by emphasis or the
+     * side's full-combo run, but a non-ghost note that fails those tests instead consumes a queued
+     * hit from the note manager's hit count, and a resolved ghost note that scored none feeds the
+     * hit count back. It then picks the bounce direction and leaves the shot phase.
      * @ghidraAddress 0x13663c
      */
     void CheckShotGhost();
+
+    /**
+     * @brief Picks a resolved shot's bounce direction: a hold note follows its display lane, any
+     * other note flips a coin between the two outer directions.
+     * @return The bounce direction sign.
+     */
+    int PickShotBounceDirection() const;
 
     /**
      * @brief Tests whether a touch point hits this note, reporting the squared touch distance.
