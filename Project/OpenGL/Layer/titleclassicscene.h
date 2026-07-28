@@ -8,6 +8,8 @@
 #include "basescene.h"
 #include "linear_tween.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -94,6 +96,26 @@ private:
      * @ghidraAddress 0x152450
      */
     void FinishAndOpenList();
+
+    /**
+     * @brief Emits a full-texture quad (such as the background) into a title sprite instancer slot.
+     *
+     * Resolves the instancer for the sprite kind and, while it has room, derives the quad's anchor,
+     * size, and UV span from the bound texture's image size, allocated size, and retina scale, then
+     * writes the caller's position, size scale, rotation, and an opaque-white colour modulated by the
+     * alpha, and bumps the slot count.
+     * @param nSpriteKind The sprite kind (below 9), selecting the instancer.
+     * @param position The quad's screen position.
+     * @param flSize The uniform size scale.
+     * @param flRotation The quad's rotation, in radians.
+     * @param nColorAlpha The quad's alpha.
+     * @ghidraAddress 0x152a90
+     */
+    void RenderTitleBackgroundFullQuad(unsigned int nSpriteKind,
+                                       const S_VECTOR2 &position,
+                                       float flSize,
+                                       float flRotation,
+                                       unsigned int nColorAlpha);
 
     unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.

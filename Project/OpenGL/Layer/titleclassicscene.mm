@@ -16,6 +16,7 @@
 #include "gamesystem.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 #include "shotsoundmanager.h"
 #include "soundeffectmanager.h"
 
@@ -69,6 +70,19 @@ constexpr float kTitleFadeDuration = 1000.0f;
 
 // The themed voice bank and the sound-effect voice id the title screen loads.
 constexpr int kTitleVoiceId = 0;
+
+// The instancer slot each sprite kind draws through (@ghidraAddress 0x309360): the nine title sprite
+// kinds map onto the eight instancers (the last two kinds share the final slot).
+constexpr unsigned int kTitleSpriteKindSlot[] = {0, 4, 5, 6, 7, 1, 2, 3, 3};
+
+// The highest sprite kind the emitters accept (kinds below this are valid).
+constexpr unsigned int kTitleSpriteKindCount = 9;
+
+// The half factor used to centre the full-quad anchor.
+constexpr float kQuadHalf = 0.5f;
+
+// The opaque colour-channel value the full quad draws with.
+constexpr unsigned int kTitleOpaque = 0xff;
 } // namespace
 
 // The eight title-screen instancer capacities and texture indices live in the binary's read-only
@@ -197,6 +211,44 @@ void TitleClassicScene::FinishAndOpenList() {
     rb::GameScene::GetInstance(GameSystem::GetGameSystem()->GetCurrentSceneSlot());
     [AppDelegate.appDelegate.viewController showMusicListView];
     MarkDead();
+}
+
+/** @ghidraAddress 0x152a90 */
+void TitleClassicScene::RenderTitleBackgroundFullQuad(unsigned int nSpriteKind,
+                                                      const S_VECTOR2 &position,
+                                                      float flSize,
+                                                      float flRotation,
+                                                      unsigned int nColorAlpha) {
+    if (nSpriteKind >= kTitleSpriteKindCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[kTitleSpriteKindSlot[nSpriteKind]];
+    const int nIndex = pInstancer->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pInstancer->GetCapacity())) {
+        return;
+    }
+
+    // The quad fills the bound texture's image at its retina scale, centred on the position, with its
+    // UV span the image's fraction of the allocated (power-of-two) atlas.
+    ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
+    const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
+    const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
+    const float flAllocWidth = static_cast<float>(pTexture->GetAllocWidth());
+    const float flAllocHeight = static_cast<float>(pTexture->GetAllocHeight());
+    const float flScale = pTexture->GetScale();
+
+    pInstancer->SetSpritePosition(nIndex, position);
+    pInstancer->SetSpriteAnchor(
+        nIndex, S_VECTOR2{flImageWidth * kQuadHalf / flScale, flImageHeight * kQuadHalf / flScale});
+    pInstancer->SetSpriteSize(nIndex, S_VECTOR2{flImageWidth / flScale, flImageHeight / flScale});
+    pInstancer->SetSpriteScale(nIndex, flSize, flSize);
+    pInstancer->SetSpriteRotation(nIndex, flRotation);
+    pInstancer->SetSpriteUvOrigin(nIndex, S_VECTOR2{0.0f, 0.0f});
+    pInstancer->SetSpriteUvSize(
+        nIndex, S_VECTOR2{flImageWidth / flAllocWidth, flImageHeight / flAllocHeight});
+    pInstancer->SetSpriteColor(nIndex, kTitleOpaque, kTitleOpaque, kTitleOpaque, nColorAlpha);
+
+    pInstancer->SetSpriteCount(nIndex + 1);
 }
 
 } // namespace rb
