@@ -63,12 +63,17 @@
 #include "result_window_colette_layer.h"
 #include "soundeffectmanager.h"
 #include "thema_marker_layer.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 #include "tutorial_guide_layer.h"
 
 namespace {
 
 // The initial mode the constructor seeds; the state machine advances from here on the first frame.
 constexpr int kInitialMode = 2;
+
+// The alternate play mode, in which the auto-pause note-convergence heuristic is disabled.
+constexpr int kAlternatePlayMode = 1;
 
 // The scene states below kStateBound that ignore a pause request: each set bit is a state index
 // whose scene should not pause the play timer (menu, loading, and result states). State 0x11 (the
@@ -384,6 +389,65 @@ void GameScene::PausePlayTimerAndBgm() {
     PlayTimer::shared()->MarkPaused(CACurrentMediaTime());
     if (pGameSystem->GetBgmPlaying()) {
         [[RBBGMManager getInstance] PauseMusic:0.0f];
+    }
+}
+
+/** @ghidraAddress 0x14b5b8 */
+void GameScene::CheckAutoPauseByNotePosition() {
+    // The vertical hit-band the note must fall in (in the 1024x-scaled screen space), and the x
+    // convergence threshold (in the 768-wide note space; the field midpoint is 384).
+    constexpr int kScrollFixedShift = 10;     // The <<10 (1024x) scroll-space scale.
+    constexpr float kNoteFieldWidth = 768.0f; // @ghidraAddress 0x2fd04c
+    constexpr int kBandCurrentBase = 0x19c;
+    constexpr int kBandCurrentSpan = 0xc8;
+    constexpr int kBandBeginBase = 0x19d;
+    constexpr int kBandBeginSpan = 0xc7;
+    constexpr int kFieldMidpoint = 0x180;
+    constexpr int kConvergeThreshold = 100;
+
+    if (GameSystem::GetGameSystem()->GetPaused()) {
+        return;
+    }
+
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    const int nCount = pTouchManager->GetActiveTouchCount();
+    if (nCount < 1) {
+        return;
+    }
+
+    bool bLeftConverged = false;
+    bool bRightConverged = false;
+    for (int i = 0; i < nCount; ++i) {
+        const TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
+        // Normalise the touch's y by the owning view height into the 1024x scroll space.
+        const float flHeight = static_cast<float>(pTouch->nKey2);
+        const int nCurrentY = static_cast<int>((static_cast<float>(pTouch->nCurrentY) / flHeight) *
+                                               (1 << kScrollFixedShift));
+        if (static_cast<unsigned int>(nCurrentY - kBandCurrentBase) > kBandCurrentSpan) {
+            continue;
+        }
+        const int nBeginY = static_cast<int>((static_cast<float>(pTouch->nBeginY) / flHeight) *
+                                             (1 << kScrollFixedShift));
+        if (static_cast<unsigned int>(nBeginY - kBandBeginBase) > kBandBeginSpan) {
+            continue;
+        }
+
+        // Normalise the x positions by the owning view width into the note field's width.
+        const float flWidth = static_cast<float>(pTouch->nKey1);
+        const int nCurrentX =
+            static_cast<int>((static_cast<float>(pTouch->nCurrentX) / flWidth) * kNoteFieldWidth);
+        const int nBeginX =
+            static_cast<int>((static_cast<float>(pTouch->nBeginX) / flWidth) * kNoteFieldWidth);
+        if (nBeginX < kFieldMidpoint && nCurrentX - nBeginX > kConvergeThreshold) {
+            bLeftConverged = true;
+        }
+        if (nBeginX > kFieldMidpoint && nBeginX - nCurrentX > kConvergeThreshold) {
+            bRightConverged = true;
+        }
+    }
+
+    if (bLeftConverged && bRightConverged && m_nMode != kAlternatePlayMode) {
+        PausePlayTimerAndBgm();
     }
 }
 

@@ -88,6 +88,18 @@ public:
     void PausePlayTimerAndBgm();
 
     /**
+     * @brief Auto-pauses gameplay when notes converge on both incoming buttons (a tilt/obstruction
+     * heuristic).
+     *
+     * Skips when already paused. For each active touch, normalises its position by the owning view
+     * size and, when the touch is inside the hit band, records whether a note converges toward the
+     * left or the right button (an inward drift over a hundred units). If both sides converge and the
+     * scene is in play mode, it pauses the play timer and background music.
+     * @ghidraAddress 0x14b5b8
+     */
+    void CheckAutoPauseByNotePosition();
+
+    /**
      * @brief Scene-mode-enter callback: enters normal play mode and initialises the scene.
      *
      * Sets the mode to normal, runs @c Init, and advances to state 2.
