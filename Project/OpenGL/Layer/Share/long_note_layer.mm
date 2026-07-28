@@ -9,8 +9,10 @@
 #include "long_note_layer.h"
 
 #include <cassert>
+#include <cmath>
 
 #include "bg_layer.h"
+#include "gamesystem.h"
 #include "long_note_sprite_table.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -190,10 +192,81 @@ void LongNoteLayer::SpawnParticle(float flX, float flY, float flScaleX, float fl
             particle.bActive = true;
             particle.flX = flX;
             particle.flY = flY;
-            particle.flReserved10 = 0.0f;
+            particle.flRotation = 0.0f;
             particle.flScaleX = flScaleX;
             particle.flScaleY = flScaleY;
             ++g_nParticleActiveIndex;
+            return;
+        }
+    }
+}
+
+namespace {
+// The two note end types the spawner accepts.
+constexpr int kEndTypeHead = 0;
+constexpr int kEndTypeTail = 1;
+// The player-colour count.
+constexpr int kPlayerColorMax = 2;
+// The quarter-turn added to a tail particle's travel-direction angle (@ghidraAddress 0x2fedd8).
+constexpr double kTailAngleBias = 1.5707963267948966;
+// The half-turn a head particle is mirrored by when its colour differs from the play colour
+// (@ghidraAddress 0x2fe894).
+constexpr float kHeadMirrorRotation = 3.1415927f;
+// The tail particle sprite kinds, by colour.
+constexpr int kTailKindColor0 = 4;
+constexpr int kTailKindColor1 = 5;
+} // namespace
+
+/** @ghidraAddress 0x188a48 */
+void LongNoteLayer::Create(int nColor,
+                           int nEndType,
+                           int nShapeFlagA,
+                           int nShapeFlagB,
+                           int bSpawnTrail,
+                           float flX,
+                           float flY,
+                           float flDirX,
+                           float flDirY,
+                           float flScaleX,
+                           float flScaleY) {
+    assert(nColor >= 0 && nColor < kPlayerColorMax);
+    assert(nEndType >= 0 && nEndType < kPlayerColorMax);
+
+    int nKind;
+    float flRotation;
+    if (nEndType != kEndTypeHead) {
+        // A tail faces its travel direction, a quarter turn past the raw angle.
+        nKind = nColor == 1 ? kTailKindColor1 : kTailKindColor0;
+        flRotation = static_cast<float>(
+            std::atan2(static_cast<double>(-flDirY), static_cast<double>(flDirX)) + kTailAngleBias);
+    } else {
+        // A head selects one of four fixed kinds from the two shape flags, per colour.
+        if (nColor == 1) {
+            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
+        } else {
+            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 0xb : 0xa) : (nShapeFlagB != 0 ? 3 : 1);
+        }
+        // It is mirrored a half turn when its colour differs from the current play colour.
+        flRotation =
+            GameSystem::GetGameSystem()->GetPlayColor() == nColor ? 0.0f : kHeadMirrorRotation;
+    }
+
+    // Store the particle in the first free pool slot from the shared active index.
+    for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
+        Particle &particle = m_aParticles[nSlot];
+        if (!particle.bActive) {
+            particle.nKind = nKind;
+            particle.bActive = true;
+            particle.flX = flX;
+            particle.flY = flY;
+            particle.flRotation = flRotation;
+            particle.flScaleX = flScaleX;
+            particle.flScaleY = flScaleY;
+            ++g_nParticleActiveIndex;
+            // Optionally spawn a trailing particle at the same position and scale.
+            if (bSpawnTrail != 0) {
+                SpawnParticle(flX, flY, flScaleX, flScaleY, nColor);
+            }
             return;
         }
     }

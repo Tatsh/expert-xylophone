@@ -68,6 +68,41 @@ public:
     void SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType);
 
     /**
+     * @brief Spawns a long-note head/tail particle into the pool with a resolved sprite kind and
+     * rotation.
+     *
+     * Resolves the particle sprite kind from the note colour and end type (a head, @p nEndType 0,
+     * selects one of four fixed kinds from the two shape flags; a tail, end type 1, uses the colour's
+     * kind), and its rotation (a head is mirrored a half turn when its colour differs from the current
+     * play colour; a tail faces its travel direction from @c atan2 plus a quarter turn). It stores the
+     * particle in the first free pool slot from the shared active index, and — when @p bSpawnTrail is
+     * set — also spawns a trailing particle at the same position and scale.
+     * @param nColor The note's player colour (0 or 1).
+     * @param nEndType The note end type (0 head, 1 tail).
+     * @param nShapeFlagA The first head shape selector.
+     * @param nShapeFlagB The second head shape selector.
+     * @param bSpawnTrail Whether to also spawn a trailing particle.
+     * @param flX The spawn X.
+     * @param flY The spawn Y.
+     * @param flDirX The tail travel-direction X (for the tail rotation).
+     * @param flDirY The tail travel-direction Y (for the tail rotation).
+     * @param flScaleX The particle X scale.
+     * @param flScaleY The particle Y scale.
+     * @ghidraAddress 0x188a48
+     */
+    void Create(int nColor,
+                int nEndType,
+                int nShapeFlagA,
+                int nShapeFlagB,
+                int bSpawnTrail,
+                float flX,
+                float flY,
+                float flDirX,
+                float flDirY,
+                float flScaleX,
+                float flScaleY);
+
+    /**
      * @brief Emits one long-note sprite of the given type into its batch.
      *
      * Looks the type up in the descriptor table for its batch, anchor, size, and UV-table index, and
@@ -104,7 +139,7 @@ private:
         int nKind = {};                    // +0x04: the particle kind (6 or 7).
         float flX = {};                    // +0x08: the particle X.
         float flY = {};                    // +0x0c: the particle Y.
-        float flReserved10 = {};           // +0x10: a per-particle scratch value.
+        float flRotation = {};             // +0x10: the particle rotation, in radians.
         float flScaleX = {};               // +0x14: the particle X scale.
         float flScaleY = {};               // +0x18: the particle Y scale.
     };
