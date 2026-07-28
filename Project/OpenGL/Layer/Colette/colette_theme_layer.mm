@@ -2,6 +2,7 @@
 
 #include "../Share/bg_layer.h"
 #include "ScoreTracker.h"
+#include "curve.h"
 #include "engineglobals.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -83,6 +84,73 @@ constexpr unsigned int kFcBatchIndex[] = {1, 2, 3, 4, 0};
 // The sprite slot whose glyph draws black (the drop-shadow copy); every other slot draws white.
 constexpr unsigned int kFcShadowSlot = 0;
 
+// The "miss"/lower-rank full-combo burst: the six animated sprites and the sizes of their curves,
+// the sprite-slot base they emit at, and the constants placing them.
+constexpr int kMissSpriteCount = 6;
+constexpr int kMissScaleCurvePairs = 0xe;
+constexpr int kMissScaleCurveFloats = kMissScaleCurvePairs * 2;
+constexpr int kMissRotCurvePairs = 2;
+constexpr int kMissRotCurveFloats = kMissRotCurvePairs * 2;
+constexpr int kBannerCurvePairs4 = 4;
+constexpr int kBannerCurvePairs2 = 2;
+constexpr unsigned int kMissSpriteSlotBase = 8; // the six sprites emit at slots 8..13.
+constexpr unsigned int kMissBannerSlot = 1;     // the banner emits at slot 1.
+
+// The single-player layout constants: the reference line the base Y sits below (@ghidraAddress
+// 0x30e800), the second side's downward shift and the first side's Y reflection base (@ghidraAddress
+// 0x301f78, 0x3052c0), the half-turn rotation for the mirrored side (@ghidraAddress 0x2fe894), and
+// the unit-interval-to-alpha scale (@ghidraAddress 0x2eed00).
+constexpr float kMissReferenceY = 663.0f;
+constexpr float kMissSecondSideShiftY = 200.0f;
+constexpr float kMissFirstSideReflectY = -200.0f;
+constexpr float kMissMirrorRotation = 3.1415927f;
+constexpr float kFcAlphaByteScale = 255.0f;
+
+// The single-side display flag value (m_nSideCount == 1) that triggers the mirror/shift layout.
+constexpr int kSingleSide = 1;
+// The second player side, which shifts down rather than mirrors.
+constexpr int kSecondSide = 1;
+
+// The six sprites' fixed X columns (@ghidraAddress 0x3defa0, seeded once at first use). Their shared
+// Y is the reference line less the layout height.
+constexpr float kMissSpriteX[kMissSpriteCount] = {-177.0f, -106.0f, -38.0f, 40.0f, 118.0f, 185.0f};
+
+// The six per-sprite scale curves (14 {time, value} pairs each). @ghidraAddress 0x30ee2c
+constexpr float kMissScaleCurve[kMissSpriteCount][kMissScaleCurveFloats] = {
+    {350f,       0f,    516.6667f, 1.1f, 600f,       1f,    683.3333f,  1.05f, 733.3333f,  1f,
+     783.3333f,  1.02f, 816.6667f, 1f,   850f,       1.02f, 883.3333f,  1f,    1066.6666f, 1f,
+     1133.3334f, 1.02f, 1200f,     1f,   1266.6666f, 1.02f, 1316.6666f, 1f},
+    {300f,       0f,    466.66666f, 1.1f, 550f,       1f,    633.3333f,  1.05f, 683.3333f,  1f,
+     733.3333f,  1.02f, 766.6667f,  1f,   800f,       1.02f, 833.3333f,  1f,    1116.6666f, 1f,
+     1183.3334f, 1.02f, 1250f,      1f,   1316.6666f, 1.02f, 1366.6666f, 1f},
+    {250f,       0f,    416.66666f, 1.1f, 500f,       1f,    583.3333f,  1.05f, 633.3333f,  1f,
+     683.3333f,  1.02f, 716.6667f,  1f,   750f,       1.02f, 783.3333f,  1f,    1166.6666f, 1f,
+     1233.3334f, 1.02f, 1300f,      1f,   1366.6666f, 1.02f, 1416.6666f, 1f},
+    {250f,       0f,    416.66666f, 1.1f, 500f,       1f,    583.3333f,  1.05f, 633.3333f,  1f,
+     683.3333f,  1.02f, 716.6667f,  1f,   750f,       1.02f, 783.3333f,  1f,    1216.6666f, 1f,
+     1283.3334f, 1.02f, 1350f,      1f,   1416.6666f, 1.02f, 1466.6666f, 1f},
+    {300f,       0f,    466.66666f, 1.1f, 550f,       1f,    633.3333f,  1.05f, 683.3333f,  1f,
+     733.3333f,  1.02f, 766.6667f,  1f,   800f,       1.02f, 833.3333f,  1f,    1266.6666f, 1f,
+     1333.3334f, 1.02f, 1400f,      1f,   1466.6666f, 1.02f, 1516.6666f, 1f},
+    {350f,       0f,    516.6667f, 1.1f, 600f,       1f,    683.3333f,  1.05f, 733.3333f,  1f,
+     783.3333f,  1.02f, 816.6667f, 1f,   850f,       1.02f, 883.3333f,  1f,    1316.6666f, 1f,
+     1383.3334f, 1.02f, 1450f,     1f,   1516.6666f, 1.02f, 1566.6666f, 1f},
+};
+
+// The six per-sprite rotation curves (2 {time, value} pairs each). @ghidraAddress 0x30f0cc
+constexpr float kMissRotCurve[kMissSpriteCount][kMissRotCurveFloats] = {
+    {2000f, 1f, 2333.3333f, 0f},
+    {2000f, 1f, 2333.3333f, 0f},
+    {2000f, 1f, 2333.3333f, 0f},
+    {2000f, 1f, 2333.3333f, 0f},
+    {2000f, 1f, 2333.3333f, 0f},
+    {2000f, 1f, 2333.3333f, 0f},
+};
+
+// The banner sprite's scale-X, scale-Y, and alpha curves. @ghidraAddress 0x30f12c/0x30f14c/0x30f16c
+constexpr float kBannerScaleXCurve[] = {0f, 0f, 166.66667f, 1.5f, 250f, 1f, 500f, 5f};
+constexpr float kBannerScaleYCurve[] = {0f, 0f, 166.66667f, 1.5f, 250f, 1f, 500f, 1.5f};
+constexpr float kBannerAlphaCurve[] = {250f, 1f, 500f, 0f};
 } // namespace
 
 /** @ghidraAddress 0x187484 */
@@ -221,4 +289,63 @@ void ColetteThemeLayer::EmitFcSprite(float flScaleX,
     pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, static_cast<unsigned int>(nAlpha));
 
     m_aSpriteCounts[nBatch] = nIndex + 1;
+}
+
+/** @ghidraAddress 0x187ea4 */
+void ColetteThemeLayer::EmitFcMissSprites(int nSide) {
+    const float flCurveScale = m_gradeChannel.GetCurrent();
+    const float flBaseY = kMissReferenceY - m_flHeight;
+
+    // The six curve-animated sprites, laid out along the fixed X columns at the shared base Y.
+    for (int nSprite = 0; nSprite < kMissSpriteCount; ++nSprite) {
+        const float flScale = CalculateCurveInterpolation(
+            kMissScaleCurve[nSprite], kMissScaleCurvePairs, flCurveScale);
+        const float flAlphaCurve =
+            CalculateCurveInterpolation(kMissRotCurve[nSprite], kMissRotCurvePairs, flCurveScale);
+
+        S_VECTOR2 position{kMissSpriteX[nSprite], flBaseY};
+        float flRotation = 0.0f;
+        if (m_nSideCount == kSingleSide) {
+            if (nSide == kSecondSide) {
+                position.y = flBaseY + kMissSecondSideShiftY;
+            } else {
+                // The first side is mirrored: its X is negated, its Y reflected, and it is turned a
+                // half-turn.
+                position.x = -kMissSpriteX[nSprite];
+                position.y = kMissFirstSideReflectY - flBaseY;
+                flRotation = kMissMirrorRotation;
+            }
+        }
+
+        EmitFcSprite(flScale,
+                     flScale,
+                     flRotation,
+                     kMissSpriteSlotBase + nSprite,
+                     &position,
+                     static_cast<int>(flAlphaCurve * flCurveScale * kFcAlphaByteScale));
+    }
+
+    // The banner sprite: its own scale-X, scale-Y, and alpha curves at the same base Y.
+    const float flBannerScaleX =
+        CalculateCurveInterpolation(kBannerScaleXCurve, kBannerCurvePairs4, flCurveScale);
+    const float flBannerScaleY =
+        CalculateCurveInterpolation(kBannerScaleYCurve, kBannerCurvePairs4, flCurveScale);
+    const float flBannerAlpha =
+        CalculateCurveInterpolation(kBannerAlphaCurve, kBannerCurvePairs2, flCurveScale);
+
+    S_VECTOR2 bannerPos{0.0f, flBaseY};
+    if (m_nSideCount == kSingleSide) {
+        if (nSide == kSecondSide) {
+            bannerPos.y = flBaseY + kMissSecondSideShiftY;
+        } else {
+            bannerPos.x = -0.0f;
+            bannerPos.y = kMissFirstSideReflectY - flBaseY;
+        }
+    }
+    EmitFcSprite(flBannerScaleX,
+                 flBannerScaleY,
+                 0.0f,
+                 kMissBannerSlot,
+                 &bannerPos,
+                 static_cast<int>(flBannerAlpha * kFcAlphaByteScale));
 }

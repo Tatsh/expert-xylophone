@@ -97,6 +97,21 @@ private:
                       int nAlpha);
 
     /**
+     * @brief Emits the six curve-animated "miss"/lower-rank full-combo sprites plus their banner for
+     * one player side.
+     *
+     * Lays out the six sprites along a fixed row of X columns at a shared base Y (the layout height
+     * below the reference line), each sized and rotated by its own animation curve sampled at the
+     * grade-reveal clock, then emits a final banner sprite. On a single-player display the second
+     * side is shifted down and the first side is mirrored (its X negated, its Y reflected, and its
+     * sprites turned a half-turn). Each sprite's alpha is its rotation/alpha curve value scaled by
+     * the reveal channel and the opaque range.
+     * @param nSide The player side (0 or 1).
+     * @ghidraAddress 0x187ea4
+     */
+    void EmitFcMissSprites(int nSide);
+
+    /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
      * @ghidraAddress 0x187484
      */
