@@ -71,6 +71,13 @@ public:
      */
     void StartFadeOut(float flDuration);
 
+    /**
+     * @brief Advances the grade/full-combo reveal channel by @p flDelta.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x18795c
+     */
+    void AdvanceFadeInterp(float flDelta);
+
 private:
     /**
      * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.

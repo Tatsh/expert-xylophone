@@ -596,6 +596,11 @@ void ColetteThemeLayer::StartFadeOut(float flDuration) {
     }
 }
 
+/** @ghidraAddress 0x18795c */
+void ColetteThemeLayer::AdvanceFadeInterp(float flDelta) {
+    m_gradeChannel.Advance(flDelta);
+}
+
 /** @ghidraAddress 0x1879a4 */
 void ColetteThemeLayer::EmitFcSprite(float flScaleX,
                                      float flScaleY,
