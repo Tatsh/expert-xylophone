@@ -171,6 +171,38 @@ public:
     void RenderPhoneNumberDigitsRow(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Renders a multi-digit decimal number in the phone result layout, right to left from a
+     * position plus offset.
+     *
+     * Splits @p nValue into up to @p nMaxDigits digits, tracking the significant count; when the
+     * value is zero and @p nFlags bit 0 is set, one digit is still drawn. Starting from
+     * @p pPosition plus @p pOffset, each significant digit's glyph (@p nBasePartId plus the digit) is
+     * drawn and the cursor stepped left by that glyph's own width less @p flSpacing; when the paired
+     * flag is set, a second glyph ten ids above the base is drawn beside the ones digit. When
+     * @p bPadZeros is set, the remaining leading positions are filled with the base glyph in a dimmed
+     * pass.
+     * @param flSpacing The spacing subtracted from each glyph's width when advancing.
+     * @param nValue The value to render.
+     * @param nMaxDigits The maximum number of digits.
+     * @param pPosition The base position.
+     * @param pOffset The offset added to the base position.
+     * @param nBasePartId The glyph part id of the digit zero.
+     * @param nFlags Bit 0 forces a zero digit and enables the paired ones-place glyph.
+     * @param bPadZeros Whether to dim-pad the leading positions to @p nMaxDigits.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x129d04
+     */
+    void RenderPhoneNumber(float flSpacing,
+                           int nValue,
+                           int nMaxDigits,
+                           const S_VECTOR2 *pPosition,
+                           const S_VECTOR2 *pOffset,
+                           unsigned int nBasePartId,
+                           unsigned int nFlags,
+                           int bPadZeros,
+                           unsigned int nAlpha);
+
+    /**
      * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the phone
      * result layout.
      *

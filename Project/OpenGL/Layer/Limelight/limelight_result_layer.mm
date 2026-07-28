@@ -376,6 +376,70 @@ constexpr float kPhoneRowGlyphSpacing = 1.0f;
 
 } // namespace
 
+namespace {
+// The paired ones-place glyph sits ten part ids above the digit-zero base.
+constexpr unsigned int kPhonePairedGlyphOffset = 10;
+} // namespace
+
+/** @ghidraAddress 0x129d04 */
+void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
+                                             int nValue,
+                                             int nMaxDigits,
+                                             const S_VECTOR2 *pPosition,
+                                             const S_VECTOR2 *pOffset,
+                                             unsigned int nBasePartId,
+                                             unsigned int nFlags,
+                                             int bPadZeros,
+                                             unsigned int nAlpha) {
+    // Split the value into up to nMaxDigits digits (ones first), tracking the significant count.
+    int aDigits[3] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < nMaxDigits; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i;
+        }
+        nValue /= 10;
+    }
+    // When only the ones place is significant and the show-zero flag is set, draw a second (zero)
+    // digit as well. The digit slot is already zero from the split.
+    const bool bShowZero = (nFlags & 1) != 0;
+    if (nSignificant == 0 && bShowZero) {
+        nSignificant = 1;
+    }
+
+    // Start at the base position plus the offset.
+    S_VECTOR2 cursor = *pPosition;
+    S_VECTOR2 offset = *pOffset;
+    AddVector2(&cursor, &offset);
+
+    // Draw each significant digit right to left, stepping the cursor left by the glyph's own width
+    // less the spacing. When the paired flag is set, a second glyph ten ids up is drawn beside the
+    // ones digit.
+    const bool bPaired = (nFlags & 1) != 0;
+    for (int i = 0; i <= nSignificant; ++i) {
+        const unsigned int nGlyph = aDigits[i] + nBasePartId;
+        cursor.x -= getPartsData_Phone(static_cast<int>(nGlyph))->flWidth;
+        RenderPhoneResultSpriteById(1, nGlyph, cursor, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        cursor.x -= flSpacing;
+        if (i == 0 && bPaired) {
+            const unsigned int nPaired = nBasePartId + kPhonePairedGlyphOffset;
+            cursor.x -= getPartsData_Phone(static_cast<int>(nPaired))->flWidth;
+            RenderPhoneResultSpriteById(1, nPaired, cursor, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+            cursor.x -= flSpacing;
+        }
+    }
+
+    // Dim-pad the remaining leading positions with the base glyph.
+    if (bPadZeros && nSignificant + 1 < nMaxDigits) {
+        for (int nPad = (nMaxDigits - 1) - nSignificant; nPad != 0; --nPad) {
+            cursor.x -= getPartsData_Phone(static_cast<int>(nBasePartId))->flWidth;
+            RenderPhoneResultSpriteById(1, nBasePartId, cursor, nAlpha, 1, 0.0f, 1.0f, 1.0f);
+            cursor.x -= flSpacing;
+        }
+    }
+}
+
 /** @ghidraAddress 0x12a11c */
 void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
                                                       const S_VECTOR2 *pPosition,
