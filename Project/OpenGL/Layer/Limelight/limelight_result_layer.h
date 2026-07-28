@@ -203,6 +203,19 @@ public:
                            unsigned int nAlpha);
 
     /**
+     * @brief Renders the result screen's total-score digits in the phone result layout.
+     *
+     * Sums the five result-bonus values, scales the total to tenths, and renders up to seven digits
+     * right to left from @p pPosition: the ones place from one glyph bank and the higher places from
+     * another, with a marker glyph drawn below the ones digit. At least two digits are drawn; alpha
+     * is halved for the leading positions beyond the significant digits.
+     * @param pPosition The right edge of the digit run.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12a928
+     */
+    void RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPosition, unsigned int nAlpha);
+
+    /**
      * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the phone
      * result layout.
      *

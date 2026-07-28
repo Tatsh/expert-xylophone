@@ -377,6 +377,20 @@ constexpr float kPhoneRowGlyphSpacing = 1.0f;
 } // namespace
 
 namespace {
+// The total-score digit layout: the number of digit places, the minimum drawn, the ones-place and
+// higher-place glyph banks, the marker glyph drawn below the ones digit, the marker's x and y
+// offsets, the between-digit gap, the tenths scale, and the alpha-halving factor.
+constexpr int kTotalScoreDigits = 7;
+constexpr int kTotalScoreMinDigits = 2;
+constexpr unsigned int kTotalScoreOnesBank = 0x71;
+constexpr unsigned int kTotalScoreHighBank = 0x67;
+constexpr unsigned int kTotalScoreMarkerGlyph = 0x7b;
+constexpr float kTotalScoreMarkerOffsetX = -4.0f;
+constexpr float kTotalScoreMarkerOffsetY = -20.0f;
+constexpr float kTotalScoreDigitGap = -2.0f;
+constexpr float kTotalScoreTenthsScale = 10.0f;
+constexpr float kTotalScoreDimFactor = 0.5f;
+
 // The paired ones-place glyph sits ten part ids above the digit-zero base.
 constexpr unsigned int kPhonePairedGlyphOffset = 10;
 } // namespace
@@ -436,6 +450,67 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
             cursor.x -= getPartsData_Phone(static_cast<int>(nBasePartId))->flWidth;
             RenderPhoneResultSpriteById(1, nBasePartId, cursor, nAlpha, 1, 0.0f, 1.0f, 1.0f);
             cursor.x -= flSpacing;
+        }
+    }
+}
+
+/** @ghidraAddress 0x12a928 */
+void LimelightResultLayer::RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPosition,
+                                                       unsigned int nAlpha) {
+    // The total score is the sum of the five result-bonus values, scaled to tenths.
+    const int nTotal = static_cast<int>((m_flExperienceBonus + m_flClearBonus + m_flMissBonus +
+                                         m_flRankBonus + m_flFirstPlayBonus) *
+                                        kTotalScoreTenthsScale);
+
+    // Split into seven digits (ones first), tracking the significant count.
+    int aDigits[kTotalScoreDigits] = {};
+    int nSignificant = 0;
+    int nRemaining = nTotal;
+    for (int i = 0; i < kTotalScoreDigits; ++i) {
+        aDigits[i] = nRemaining % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nRemaining /= 10;
+    }
+    const int nDrawCount =
+        nSignificant < kTotalScoreMinDigits ? kTotalScoreMinDigits : nSignificant;
+
+    float flCursorX = pPosition->x;
+    const float flY = pPosition->y;
+    unsigned int nCurrentAlpha = nAlpha;
+    for (int i = 0; i < kTotalScoreDigits; ++i) {
+        // The between-digit gap precedes every place after the ones digit.
+        if (i != 0) {
+            flCursorX += kTotalScoreDigitGap;
+        }
+        // Leading positions beyond the significant digits draw at half alpha.
+        if (i == nDrawCount) {
+            nCurrentAlpha = static_cast<unsigned int>(static_cast<float>(nCurrentAlpha & 0xff) *
+                                                      kTotalScoreDimFactor);
+        }
+        const unsigned int nBank = i == 0 ? kTotalScoreOnesBank : kTotalScoreHighBank;
+        const PartsDataRecord *pGlyph = getPartsData_Phone(static_cast<int>(aDigits[i] + nBank));
+        flCursorX -= pGlyph->flWidth;
+        RenderPhoneResultSpriteById(1,
+                                    aDigits[i] + nBank,
+                                    S_VECTOR2{flCursorX, flY - pGlyph->flHeight},
+                                    nCurrentAlpha & 0xff,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+        // A marker glyph sits below and just left of the ones digit.
+        if (i == 0) {
+            RenderPhoneResultSpriteById(
+                1,
+                kTotalScoreMarkerGlyph,
+                S_VECTOR2{flCursorX + kTotalScoreMarkerOffsetX, flY + kTotalScoreMarkerOffsetY},
+                nCurrentAlpha & 0xff,
+                0,
+                0.0f,
+                1.0f,
+                1.0f);
         }
     }
 }
