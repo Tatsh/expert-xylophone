@@ -90,11 +90,26 @@ public:
 
 private:
     /**
-     * @brief Emits one grade-display sprite into a slot. Reconstruction pending.
+     * @brief Emits one grade-display sprite of kind @p nSpriteKind.
+     *
+     * Looks the kind up in the grade sprite-layout table (which supplies the target sprite group,
+     * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot
+     * and the atlas frame to a UV rectangle (from the shared atlas table for a glyph/part kind, or
+     * the title-part table otherwise), and appends the sprite into that slot's batch (dropping it
+     * when the batch is full). The sprite takes the caller's @p flScaleX, @p flScaleY, and
+     * @p flRotation, is positioned at @p pPosition offset down by half the full-height layout
+     * coordinate, and is tinted black for the backdrop kind or white for every glyph/part, both at
+     * the caller's @p nAlpha.
+     * @param flScaleX The sprite's horizontal scale.
+     * @param flScaleY The sprite's vertical scale.
+     * @param flRotation The sprite's rotation, in radians.
+     * @param nSpriteKind The grade sprite kind, indexing the layout table.
+     * @param pPosition The sprite's world position (before the vertical centre offset).
+     * @param nAlpha The sprite's alpha, in @c [0, 255].
      * @ghidraAddress 0x120abc
      */
-    void EmitGradeSpriteSlot(float flSizeX,
-                             float flSizeY,
+    void EmitGradeSpriteSlot(float flScaleX,
+                             float flScaleY,
                              float flRotation,
                              unsigned int nSpriteKind,
                              const S_VECTOR2 *pPosition,

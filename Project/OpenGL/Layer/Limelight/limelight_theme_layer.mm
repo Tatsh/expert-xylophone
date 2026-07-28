@@ -3,11 +3,17 @@
 #include "../Share/bg_layer.h"
 #include "ScoreTracker.h"
 #include "curve.h"
+#include "engineglobals.h"
 #include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
+#include "sprite_uv_table.h"
+
+// The title-part UV atlas (a distinct atlas from the shared sprite UV table); the grade backdrop and
+// the higher sprite kinds take their UV from it.
+extern const SpriteUvEntry g_aTitlePartUvDefault[]; // @ghidraAddress 0x2f7908
 
 // The process-wide Limelight-theme layer, created lazily by shared().
 static LimelightThemeLayer *g_pLimelightThemeLayer = nullptr; // @ghidraAddress 0x3dd380
@@ -59,6 +65,64 @@ constexpr float kAlphaByteScale = 255.0f;
 // The minimum rank (of the B/A/AA/AAA/AAAP ladder) that draws the rank glyphs rather than the
 // high-rank badge.
 constexpr int kMinRankGlyphs = 2;
+
+// One record of the grade sprite-layout table: the target sprite group, the fixed anchor and quad
+// size, and the atlas-frame index for a grade sprite kind.
+struct GradeSpriteLayout {
+    int nGroup = {};      // +0x00: the logical sprite group, remapped to an instancer slot.
+    float flAnchorX = {}; // +0x04: the anchor's X offset.
+    float flAnchorY = {}; // +0x08: the anchor's Y offset.
+    float flSizeX = {};   // +0x0c: the quad's width.
+    float flSizeY = {};   // +0x10: the quad's height.
+    int nAtlasFrame = {}; // +0x14: the atlas-frame index into the UV table.
+};
+
+// The per-kind grade sprite layout (@ghidraAddress 0x305d64): kind 0 is the full-screen backdrop,
+// kinds 1..14 the achievement-rate digits (group 0), and the rest the rank glyphs and badges
+// (group 1).
+constexpr GradeSpriteLayout kGradeSpriteLayout[] = {
+    {4, 384.0f, 512.0f, 768.0f, 1024.0f, 0}, {0, 52.0f, 53.0f, 104.0f, 106.0f, 37},
+    {0, 30.0f, 53.0f, 60.0f, 106.0f, 38},    {0, 31.0f, 53.0f, 62.0f, 106.0f, 39},
+    {0, 51.0f, 53.0f, 102.0f, 106.0f, 40},   {0, 37.0f, 53.0f, 74.0f, 106.0f, 41},
+    {0, 10.0f, 53.0f, 20.0f, 106.0f, 42},    {0, 10.0f, 53.0f, 20.0f, 106.0f, 43},
+    {0, 29.0f, 53.0f, 58.0f, 106.0f, 44},    {0, 51.0f, 53.0f, 102.0f, 106.0f, 45},
+    {0, 10.0f, 53.0f, 20.0f, 106.0f, 46},    {0, 30.0f, 53.0f, 60.0f, 106.0f, 47},
+    {0, 31.0f, 53.0f, 62.0f, 106.0f, 48},    {0, 45.0f, 53.0f, 90.0f, 106.0f, 49},
+    {0, 33.0f, 53.0f, 66.0f, 106.0f, 50},    {1, 27.0f, 27.0f, 54.0f, 54.0f, 10},
+    {1, 9.5f, 9.5f, 19.0f, 19.0f, 11},       {1, 27.0f, 27.0f, 54.0f, 54.0f, 8},
+    {1, 9.5f, 9.5f, 19.0f, 19.0f, 9},        {1, 27.0f, 27.0f, 54.0f, 54.0f, 10},
+    {1, 9.5f, 9.5f, 19.0f, 19.0f, 11},       {1, 27.0f, 27.0f, 54.0f, 54.0f, 8},
+    {1, 9.5f, 9.5f, 19.0f, 19.0f, 9},        {1, 27.0f, 27.0f, 54.0f, 54.0f, 8},
+    {1, 9.5f, 9.5f, 19.0f, 19.0f, 9},        {1, 27.0f, 27.0f, 54.0f, 54.0f, 24},
+    {1, 9.5f, 9.5f, 16.0f, 16.0f, 25},       {1, 69.0f, 69.0f, 138.0f, 138.0f, 22},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 23},   {1, 69.0f, 69.0f, 138.0f, 138.0f, 22},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 23},   {1, 69.0f, 69.0f, 138.0f, 138.0f, 18},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 19},   {1, 69.0f, 69.0f, 138.0f, 138.0f, 18},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 19},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 32},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 33},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 32},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 33},   {1, 69.0f, 69.0f, 138.0f, 138.0f, 20},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 21},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 32},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 21},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 32},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 21},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 30},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 23},   {1, 61.5f, 61.5f, 123.0f, 123.0f, 30},
+    {1, 55.5f, 55.5f, 110.0f, 110.0f, 23},   {1, 69.0f, 69.0f, 138.0f, 138.0f, 20},
+    {1, 85.0f, 75.0f, 170.0f, 150.0f, 20},
+};
+
+// The sprite group → instancer-slot remap (@ghidraAddress 0x30622c): group 0→slot 1, 1→2, 2→3,
+// 3→4, 4→0 (the backdrop group draws in the untextured base slot).
+constexpr int kGroupToSlot[] = {1, 2, 3, 4, 0};
+
+// The highest sprite kind whose UV comes from the shared atlas table rather than the title-part
+// table: kinds 1 through 14 are the achievement-rate digits.
+constexpr unsigned int kMaxSharedAtlasKind = 14;
+
+// The backdrop sprite kind, tinted black rather than white.
+constexpr unsigned int kBackdropSpriteKind = 0;
+
+// The opaque and transparent channel values a grade sprite is tinted with.
+constexpr unsigned int kChannelWhite = 0xff;
+constexpr unsigned int kChannelBlack = 0;
 
 } // namespace
 
@@ -197,6 +261,46 @@ void LimelightThemeLayer::UpdateGradeDisplay(float flDeltaTime) {
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         m_apSprites[nSlot]->SetSpriteCount(m_aSpriteCounts[nSlot]);
     }
+}
+
+/** @ghidraAddress 0x120abc */
+void LimelightThemeLayer::EmitGradeSpriteSlot(float flScaleX,
+                                              float flScaleY,
+                                              float flRotation,
+                                              unsigned int nSpriteKind,
+                                              const S_VECTOR2 *pPosition,
+                                              unsigned int nAlpha) {
+    const GradeSpriteLayout &layout = kGradeSpriteLayout[nSpriteKind];
+    // Kinds 1 through 14 (the achievement-rate digits) index the shared atlas; the backdrop and the
+    // higher kinds index the title-part atlas.
+    const SpriteUvEntry &uv = (nSpriteKind >= 1 && nSpriteKind <= kMaxSharedAtlasKind) ?
+                                  g_aSpriteUvTable[layout.nAtlasFrame] :
+                                  g_aTitlePartUvDefault[layout.nAtlasFrame];
+
+    const int nSlot = kGroupToSlot[layout.nGroup];
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nSlot];
+    const int nIndex = m_aSpriteCounts[nSlot];
+    // Drop the sprite when the target batch is full.
+    if (nIndex >= static_cast<int>(kSlotCapacities[nSlot])) {
+        return;
+    }
+
+    // Centre the sprite vertically on the play-field's full-height layout coordinate.
+    const float flCentreY = static_cast<float>(g_nPlayfieldFullHeightY / 2);
+    pBatch->SetSpritePositionXY(nIndex, pPosition->x, pPosition->y + flCentreY);
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{layout.flAnchorX, layout.flAnchorY});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{layout.flSizeX, layout.flSizeY});
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteScale(nIndex, flScaleX, flScaleY);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+
+    // The backdrop kind is tinted black; every glyph or part is tinted white. Both take the caller's
+    // alpha.
+    const unsigned int nChannel =
+        nSpriteKind == kBackdropSpriteKind ? kChannelBlack : kChannelWhite;
+    pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, nAlpha);
+    ++m_aSpriteCounts[nSlot];
 }
 
 /** @ghidraAddress 0x1208c4 */
