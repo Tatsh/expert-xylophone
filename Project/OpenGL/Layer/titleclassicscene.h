@@ -117,6 +117,28 @@ private:
                                        float flRotation,
                                        unsigned int nColorAlpha);
 
+    /**
+     * @brief Emits one title-screen sprite into its instancer slot.
+     *
+     * Sprite kind 0 draws a full-texture quad (as @c RenderTitleBackgroundFullQuad does). Kinds 1
+     * through 8 take their anchor, size, and UV rectangle from the per-kind title layout table for the
+     * current frame variant (the alt-frame table when the alt frame is active, otherwise the
+     * main-frame table). Either way the caller's position, uniform size scale, rotation, and an
+     * opaque-white colour modulated by the alpha are applied, and the slot count is bumped. A no-op
+     * for an out-of-range kind or a full instancer.
+     * @param nSpriteKind The sprite kind (0 through 8), selecting the instancer and layout.
+     * @param position The sprite's screen position.
+     * @param flSize The uniform size scale.
+     * @param flRotation The sprite's rotation, in radians.
+     * @param nColorAlpha The sprite's alpha.
+     * @ghidraAddress 0x15259c
+     */
+    void EmitTitleSprite(unsigned int nSpriteKind,
+                         const S_VECTOR2 &position,
+                         float flSize,
+                         float flRotation,
+                         unsigned int nColorAlpha);
+
     unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.
     int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
