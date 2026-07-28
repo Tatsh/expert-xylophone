@@ -17,6 +17,7 @@
 #include "neTexture.h"
 #include "parts_data_table.h"
 #include "phone_anchor_table.h"
+#include "result_bonus_color_table.h"
 #include "result_layout_position_table.h"
 #import "s_vector2.h"
 #include "soundeffectmanager.h"
@@ -1216,6 +1217,115 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
                                 flRed,
                                 flGreen,
                                 flBlue);
+    }
+}
+
+namespace {
+
+// The rank-family monospace digit base the number-pair renderer draws with, its slash separator
+// part id, and the number of digit slots each of the pair's numbers extracts.
+constexpr int kPairDigitBase = 0xe0;
+constexpr int kPairSeparatorPart = 0xea;
+constexpr int kPairDigitSlots = 4;
+
+// The centring constants the number-pair renderer applies to its cursor: a separator-width fudge and
+// the half factor (@ghidraAddress 0x40000000 = 2, 0x3f000000 = 0.5), plus the separator's own
+// one-pixel advances.
+constexpr float kPairCentreFudge = 2.0f;
+constexpr float kPairCentreHalf = 0.5f;
+constexpr float kPairSeparatorGap = 1.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x77654 */
+void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
+                                                             int nRightValue,
+                                                             const S_VECTOR2 *pBasePosition,
+                                                             unsigned int nAlpha,
+                                                             int nLeftColorIndex,
+                                                             int nRightColorIndex) {
+    // The monospace digit width is the rank '0' glyph's width from the device-selected parts table.
+    const float flDigitWidth = getPartsData(kPairDigitBase)->flWidth;
+
+    // Extract each number's four base-ten digits (least significant first) and its significant-digit
+    // count (at least one).
+    int aLeftDigits[kPairDigitSlots] = {};
+    int nLeftTop = 0;
+    for (int nSlot = 0; nSlot < kPairDigitSlots; ++nSlot) {
+        aLeftDigits[nSlot] = nLeftValue % kDecimalBase;
+        if (aLeftDigits[nSlot] != 0) {
+            nLeftTop = nSlot + 1;
+        }
+        nLeftValue /= kDecimalBase;
+    }
+    const int nLeftCount = nLeftTop != 0 ? nLeftTop : 1;
+
+    int aRightDigits[kPairDigitSlots] = {};
+    int nRightTop = 0;
+    for (int nSlot = 0; nSlot < kPairDigitSlots; ++nSlot) {
+        aRightDigits[nSlot] = nRightValue % kDecimalBase;
+        if (aRightDigits[nSlot] != 0) {
+            nRightTop = nSlot + 1;
+        }
+        nRightValue /= kDecimalBase;
+    }
+    const int nRightCount = nRightTop != 0 ? nRightTop : 1;
+
+    // Centre the cursor on the base position by half the pair's total glyph run.
+    const int nLeftRun = static_cast<int>(static_cast<float>(nLeftCount) * flDigitWidth);
+    const int nRightRun = static_cast<int>(static_cast<float>(nRightCount) * flDigitWidth);
+    const float flCentre =
+        (static_cast<float>(nLeftRun + nRightRun) + flDigitWidth + kPairCentreFudge) *
+        kPairCentreHalf;
+    S_VECTOR2 position{pBasePosition->x + flCentre, pBasePosition->y};
+
+    const ResultBonusColor &rightColor = g_aResultBonusColor[nRightColorIndex];
+    const ResultBonusColor &leftColor = g_aResultBonusColor[nLeftColorIndex];
+
+    // The right number draws first, stepping the cursor left by the monospace width per digit.
+    for (int nSlot = 0; nSlot < nRightCount; ++nSlot) {
+        const S_VECTOR2 digitPos{position.x - flDigitWidth, position.y};
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                aRightDigits[nSlot] + kPairDigitBase,
+                                digitPos,
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                rightColor.flRed,
+                                rightColor.flGreen,
+                                rightColor.flBlue);
+        position.x -= flDigitWidth;
+    }
+
+    // The slash separator draws next, in the right number's colour, then the cursor steps past it.
+    const S_VECTOR2 separatorPos{position.x - (flDigitWidth + kPairSeparatorGap), position.y};
+    RenderPartSpriteByIndex(kNumberDigitSlot,
+                            kPairSeparatorPart,
+                            separatorPos,
+                            nAlpha,
+                            kDigitRotation,
+                            kDigitScale,
+                            kDigitScale,
+                            rightColor.flRed,
+                            rightColor.flGreen,
+                            rightColor.flBlue);
+    position.x = separatorPos.x - kPairSeparatorGap;
+
+    // The left number draws last, continuing to step the cursor left per digit.
+    for (int nSlot = 0; nSlot < nLeftCount; ++nSlot) {
+        const S_VECTOR2 digitPos{position.x - flDigitWidth, position.y};
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                aLeftDigits[nSlot] + kPairDigitBase,
+                                digitPos,
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                leftColor.flRed,
+                                leftColor.flGreen,
+                                leftColor.flBlue);
+        position.x -= flDigitWidth;
     }
 }
 

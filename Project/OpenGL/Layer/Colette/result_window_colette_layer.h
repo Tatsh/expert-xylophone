@@ -305,6 +305,30 @@ private:
                                         float flBlue);
 
     /**
+     * @brief Renders two numbers separated by a slash as monospaced parts-atlas digit sprites.
+     *
+     * Draws @p nLeftValue and @p nRightValue (each up to four significant digits, rank-family digits)
+     * as a "left/right" pair centred on the base position, advancing a proportional cursor by the
+     * monospace '0'-glyph width. The right number is drawn first (rightmost), then the slash
+     * separator, then the left number, each stepping the cursor left by the digit width. The left and
+     * right numbers take their colours from the bonus palette by @p nLeftColorIndex and
+     * @p nRightColorIndex.
+     * @param nLeftValue The left number (drawn after the separator).
+     * @param nRightValue The right number (drawn first, rightmost).
+     * @param pBasePosition The pair's base position (the cursor is centred on it).
+     * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param nLeftColorIndex The bonus-palette colour index for the left number.
+     * @param nRightColorIndex The bonus-palette colour index for the right number and the separator.
+     * @ghidraAddress 0x77654
+     */
+    void RenderNumberPairWithSeparator(int nLeftValue,
+                                       int nRightValue,
+                                       const S_VECTOR2 *pBasePosition,
+                                       unsigned int nAlpha,
+                                       int nLeftColorIndex,
+                                       int nRightColorIndex);
+
+    /**
      * @brief Constructs the layer: chains the base-layer constructor and zero-clears its state,
      * seeding the swipe touch id and the four touch-region touch ids to the "none" sentinel (-1).
      * The binary inlines this into @c shared (0x73edc).
