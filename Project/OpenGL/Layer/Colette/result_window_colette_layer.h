@@ -231,6 +231,14 @@ public:
 
 private:
     /**
+     * @brief Constructs the layer: chains the base-layer constructor and zero-clears its state,
+     * seeding the swipe touch id and the four touch-region touch ids to the "none" sentinel (-1).
+     * The binary inlines this into @c shared (0x73edc).
+     * @ghidraAddress 0x7aba8
+     */
+    ResultWindowColetteLayer();
+
+    /**
      * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
      *
      * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the

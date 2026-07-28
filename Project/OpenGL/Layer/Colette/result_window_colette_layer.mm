@@ -127,7 +127,20 @@ enum ResultTweenChannelIndex {
     kTweenChannel4 = 4,
 };
 
+// The "none" sentinel for a tracked touch id.
+constexpr int kNoTouchId = -1;
+
 } // namespace
+
+/** @ghidraAddress 0x7aba8 */
+ResultWindowColetteLayer::ResultWindowColetteLayer() {
+    // The base constructor and the zero-initialised members clear the layer; the constructor then
+    // seeds the touch-id fields to the "none" sentinel.
+    m_nSwipeTouchId = kNoTouchId;
+    for (auto &region : m_aTouchRegion) {
+        region.nTouchId = kNoTouchId;
+    }
+}
 
 /** @ghidraAddress 0x73edc */
 ResultWindowColetteLayer *ResultWindowColetteLayer::shared() {
