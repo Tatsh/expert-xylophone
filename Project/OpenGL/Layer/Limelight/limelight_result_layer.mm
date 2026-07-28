@@ -40,6 +40,19 @@ PhoneLayoutRecord
 PhoneLayoutRecord
     g_aLimelightSeparatorPhonePortrait[kLimelightSeparatorRecordCount]; // @ghidraAddress 0x3db960
 
+// The number of records in each Limelight phone-layout by-state position table.
+constexpr int kLimelightPositionByStateRecordCount = 4;
+
+// The Limelight phone-layout by-state position tables (0x14-stride PhoneLayoutRecord): the state
+// table (used on the iPad), and the portrait and default tables (selected by the orientation flag on
+// the phone). Zero-initialised in the binary's __common segment and filled at runtime.
+PhoneLayoutRecord
+    g_aLimelightPositionPhoneState[kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbd70
+PhoneLayoutRecord g_aLimelightPositionPhoneStatePortrait
+    [kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbdc0
+PhoneLayoutRecord g_aLimelightPositionPhoneStateDefault
+    [kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbe10
+
 // The single Limelight phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
 // mode): the state record, and the portrait and default records (selected by the is-pad flag and
 // orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
@@ -252,6 +265,22 @@ void LimelightResultLayer::getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition
 
     // Offset the base coordinate by half or full viewport dimensions per the record's anchor mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutPosition->x, &pOutPosition->y);
+}
+
+/** @ghidraAddress 0x123b5c */
+void LimelightResultLayer::getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const {
+    // The iPad uses the state table; the phone uses its portrait or default table by orientation.
+    const PhoneLayoutRecord &record =
+        IsPad() ? g_aLimelightPositionPhoneState[nIndex] :
+                  (m_bPortrait ? g_aLimelightPositionPhoneStatePortrait[nIndex] :
+                                 g_aLimelightPositionPhoneStateDefault[nIndex]);
+    pOutRect->flX = record.flX;
+    pOutRect->flY = record.flY;
+    pOutRect->flWidth = record.flWidth;
+    pOutRect->flHeight = record.flHeight;
+
+    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor mode.
+    ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
 }
 
 /** @ghidraAddress 0x123ad8 */

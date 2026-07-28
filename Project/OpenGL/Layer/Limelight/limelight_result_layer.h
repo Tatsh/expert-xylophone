@@ -139,6 +139,18 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
+     * @brief Resolves a by-state phone-layout rectangle by index, offset relative to the play field.
+     *
+     * Selects the state table on the iPad, otherwise the portrait or default table by the
+     * orientation flag; copies the record's four floats to @p pOutRect, then shifts the leading
+     * coordinate by the viewport's half or full width and height per the record's anchor mode.
+     * @param nIndex The position-record index (0 through 3).
+     * @param pOutRect Receives the resolved rectangle.
+     * @ghidraAddress 0x123b5c
+     */
+    void getPositionByState_Phone(int nIndex, PhoneLayoutRect *pOutRect) const;
+
+    /**
      * @brief Returns a phone-layout glyph descriptor by index.
      *
      * Always reads the pad parts table (which doubles as the phone glyph-metrics table), regardless
