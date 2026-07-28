@@ -393,6 +393,16 @@ private:
  */
 void EnsureOrientationNotificationsEnabled(void);
 
+/**
+ * @brief Reports the player's total score to the Game Center leaderboard.
+ *
+ * A no-op when Game Center is disabled or the local player is not authenticated. Otherwise it builds
+ * a @c GKScore for the total-score leaderboard, sets it to the stored total score, and reports it
+ * (with a no-op completion block).
+ * @ghidraAddress 0x14ef34
+ */
+void ReportTotalScoreToGameCenter(void);
+
 } // namespace rb
 
 // code: language=C++

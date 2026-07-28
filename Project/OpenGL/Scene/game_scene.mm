@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <new>
 
+#import <GameKit/GameKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
@@ -25,6 +26,7 @@
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "ReplayData.h"
+#import "ScoreData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
 #include "background_sprite_manager.h"
@@ -1144,6 +1146,28 @@ void EnsureOrientationNotificationsEnabled(void) {
     while (!device.isGeneratingDeviceOrientationNotifications) {
         [device beginGeneratingDeviceOrientationNotifications];
     }
+}
+
+/** @ghidraAddress 0x14ef34 */
+void ReportTotalScoreToGameCenter(void) {
+    // Skip entirely when Game Center is disabled for this build/device.
+    if (!GetHasGameCenterFlag()) {
+        return;
+    }
+    // Report only when the local player is authenticated.
+    if (!GKLocalPlayer.localPlayer.isAuthenticated) {
+        return;
+    }
+
+    const long long nTotalScore = [ScoreData totalScore];
+    GKScore *score =
+        [[GKScore alloc] initWithLeaderboardIdentifier:[AppDelegate totalScoreLeaderboardCategory]];
+    score.value = nTotalScore;
+    [GKScore reportScores:@[ score ]
+        withCompletionHandler:^(NSError *_Nullable error){
+            /** @ghidraAddress 0x35da80 */
+            // A global no-op completion block; the report result is ignored.
+        }];
 }
 
 } // namespace rb
