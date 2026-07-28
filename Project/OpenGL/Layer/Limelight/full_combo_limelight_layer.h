@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -74,6 +76,30 @@ public:
     static constexpr int kColorCount = 2;
 
 private:
+    /**
+     * @brief Emits one full-combo quad of the given type into its sprite batch, if capacity remains.
+     *
+     * Looks up the type's descriptor (its batch selector, anchor, pixel size, and atlas frame). The
+     * selector both chooses one of the layer's three sprite batches and selects the atlas the quad's
+     * UV rectangle comes from: batch 0 draws from the Limelight title-part atlas, the others from the
+     * shared sprite atlas. While that batch is below its capacity, it writes the quad — the caller's
+     * position, the descriptor's anchor and size, the atlas UV rectangle, the caller's scale and
+     * rotation, and opaque white at the caller's alpha — then bumps that batch's slot count.
+     * @param nType The sprite type (0 through 0x49).
+     * @param pPosition The quad's screen position.
+     * @param nAlpha The quad's alpha.
+     * @param flScaleX The quad's X scale.
+     * @param flScaleY The quad's Y scale.
+     * @param flRotation The quad's rotation, in radians.
+     * @ghidraAddress 0x123658
+     */
+    void CreateSprite(int nType,
+                      const S_VECTOR2 *pPosition,
+                      int nAlpha,
+                      float flScaleX,
+                      float flScaleY,
+                      float flRotation);
+
     // A per-colour full-combo effect record.
     struct EffectRecord {
         bool m_bActive = {}; // +0x00: whether the effect is playing.

@@ -6,9 +6,15 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
+#include "sprite_uv_table.h"
 
 // The process-wide Limelight full-combo layer, created lazily by shared().
 static FullComboLimelightLayer *g_pFullComboLimelightLayer = nullptr; // @ghidraAddress 0x3ddc40
+
+// The Limelight full-combo title-part UV atlas, indexed by a batch-0 descriptor's atlas frame
+// (@ghidraAddress 0x2f7908, defined in titlecolettescene_data.mm).
+extern const SpriteUvEntry g_aTitlePartUvDefault[];
 
 namespace {
 
@@ -36,6 +42,69 @@ constexpr int kAdditiveBlendMode = 1;
 constexpr int kTexParamSlotHigh = 1;
 constexpr int kTexParamSlotLow = 0;
 constexpr int kTexParamEnabled = 1;
+
+// The maximum value of an opaque colour channel.
+constexpr unsigned int kColorMax = 255;
+
+// The sprite-type bound the emitter asserts on (SPRITE_TYPE_LIMELIGHT_MAX).
+constexpr int kSpriteTypeCount = 0x4a;
+
+// The batch selector whose descriptors draw from the Limelight title-part atlas; every other
+// selector draws from the shared sprite atlas.
+constexpr int kTitlePartBatch = 0;
+
+// One full-combo sprite-type descriptor: the batch selector (also the atlas selector), the sprite
+// anchor and pixel size, and the atlas frame. The 24-byte stride matches the binary.
+struct LimelightSpriteDescriptor {
+    int nBatch;        // +0x00: the sprite batch (and atlas) selector.
+    float flAnchorX;   // +0x04: the sprite's anchor X.
+    float flAnchorY;   // +0x08: the sprite's anchor Y.
+    float flSizeX;     // +0x0c: the sprite's pixel width.
+    float flSizeY;     // +0x10: the sprite's pixel height.
+    int nUvFrameIndex; // +0x14: the atlas frame index.
+};
+
+// The full-combo sprite-type descriptor table, indexed by the sprite type. Read-only ROM data
+// embedded in the binary. @ghidraAddress 0x307348
+constexpr LimelightSpriteDescriptor kLimelightSpriteDescriptors[] = {
+    {2, 19.0f, 32.0f, 38.0f, 64.0f, 0x33},   {2, 23.0f, 32.0f, 46.0f, 64.0f, 0x34},
+    {2, 19.0f, 32.0f, 38.0f, 64.0f, 0x35},   {2, 19.0f, 32.0f, 38.0f, 64.0f, 0x36},
+    {2, 31.0f, 32.0f, 62.0f, 64.0f, 0x37},   {2, 33.0f, 32.0f, 66.0f, 64.0f, 0x38},
+    {2, 32.0f, 32.0f, 64.0f, 64.0f, 0x39},   {2, 22.0f, 32.0f, 44.0f, 64.0f, 0x3a},
+    {2, 33.0f, 32.0f, 66.0f, 64.0f, 0x3b},   {2, 16.0f, 32.0f, 32.0f, 64.0f, 0x3c},
+    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x7},    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x6},
+    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x5},    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x4},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0xa},    {0, 9.5f, 9.5f, 19.0f, 19.0f, 0xb},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x18},   {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x19},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0xa},    {0, 9.5f, 9.5f, 19.0f, 19.0f, 0xb},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x18},   {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x19},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x18},   {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x19},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x16}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x16}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 61.5f, 61.5f, 123.0f, 123.0f, 0x20}, {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1d},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 61.5f, 61.5f, 123.0f, 123.0f, 0x1e}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x12}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {1, 32.0f, 106.0f, 64.0f, 106.0f, 0x3d}, {1, 32.0f, 106.0f, 64.0f, 106.0f, 0x3d},
+    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x3},    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x2},
+    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x1},    {0, 23.0f, 22.0f, 46.0f, 44.0f, 0x0},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0xa},    {0, 9.5f, 9.5f, 19.0f, 19.0f, 0xb},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x8},    {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x9},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0xa},    {0, 9.5f, 9.5f, 19.0f, 19.0f, 0xb},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x8},    {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x9},
+    {0, 27.0f, 27.0f, 54.0f, 54.0f, 0x8},    {0, 9.5f, 9.5f, 16.0f, 16.0f, 0x9},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x16}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x16}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 61.5f, 61.5f, 123.0f, 123.0f, 0x20}, {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1d},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x1c}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {0, 61.5f, 61.5f, 123.0f, 123.0f, 0x1e}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x17},
+    {0, 69.0f, 69.0f, 138.0f, 138.0f, 0x12}, {0, 55.5f, 55.5f, 110.0f, 110.0f, 0x13},
+    {1, 32.0f, 106.0f, 64.0f, 106.0f, 0x3e}, {1, 32.0f, 106.0f, 64.0f, 106.0f, 0x3e},
+}; // @ghidraAddress 0x307348
 
 } // namespace
 
@@ -118,4 +187,42 @@ bool FullComboLimelightLayer::IsAnyEffectActive() const {
         }
     }
     return false;
+}
+
+/** @ghidraAddress 0x123658 */
+void FullComboLimelightLayer::CreateSprite(int nType,
+                                           const S_VECTOR2 *pPosition,
+                                           int nAlpha,
+                                           float flScaleX,
+                                           float flScaleY,
+                                           float flRotation) {
+    assert(nType >= 0 && nType < kSpriteTypeCount);
+
+    const LimelightSpriteDescriptor &descriptor = kLimelightSpriteDescriptors[nType];
+    const int nBatch = descriptor.nBatch;
+
+    // The write cursor is the layer's own per-batch count, not the instancer's; a full batch drops
+    // the quad.
+    const int nIndex = m_aSpriteCounts[nBatch];
+    if (nIndex >= static_cast<int>(kSlotCapacities[nBatch])) {
+        return;
+    }
+
+    // Batch 0 draws from the Limelight title-part atlas; every other batch from the shared atlas.
+    const SpriteUvEntry &uv = nBatch == kTitlePartBatch ?
+                                  g_aTitlePartUvDefault[descriptor.nUvFrameIndex] :
+                                  g_aSpriteUvTable[descriptor.nUvFrameIndex];
+
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
+    pBatch->SetSpritePosition(nIndex, *pPosition);
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{descriptor.flAnchorX, descriptor.flAnchorY});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{descriptor.flSizeX, descriptor.flSizeY});
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteScale(nIndex, flScaleX, flScaleY);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteColor(
+        nIndex, kColorMax, kColorMax, kColorMax, static_cast<unsigned int>(nAlpha));
+
+    m_aSpriteCounts[nBatch] = nIndex + 1;
 }
