@@ -439,6 +439,138 @@ constexpr float kMeterPhoneOffsetY[kSideCount] = {-45.0f, 45.0f};
 constexpr float kMeterSingleSideOverrideX = 204.0f;
 constexpr float kMeterSingleSideRotation = 3.1415927f;
 
+// The number of glyphs in the achievement-rate percentage digit strip, the first grade sprite kind
+// its glyphs occupy (kinds 15..49 in the grade sprite-layout table), and its curve knot count.
+constexpr int kArDigitGlyphCount = 35;
+constexpr int kArDigitGlyphFirstKind = 15;
+constexpr int kArDigitKnots = 3;
+
+// Each AR-digit glyph's fixed horizontal position (@ghidraAddress 0x305330..): a constant base
+// subtracted from the layout origin.
+constexpr float kArDigitAbsoluteX[kArDigitGlyphCount] = {
+    74.0f,  74.0f,  194.0f, 194.0f, 454.0f, 454.0f, 229.0f, 229.0f, 545.0f, 545.0f, 725.0f, 725.0f,
+    564.0f, 564.0f, 234.0f, 234.0f, 657.0f, 657.0f, 464.0f, 464.0f, 593.0f, 593.0f, 593.0f, 593.0f,
+    334.0f, 334.0f, 134.0f, 134.0f, 644.0f, 644.0f, 71.0f,  71.0f,  424.0f, 424.0f, 192.0f};
+
+// Each AR-digit glyph's per-frame scale curve ({time, scale} knots at @ghidraAddress 0x305a1c).
+constexpr float kArDigitScaleCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {166.666672f, 0.0f, 833.333313f, 0.5f, 850.0f, 0.5f},
+    {166.666672f, 0.0f, 833.333313f, 0.5f, 850.0f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {333.333344f, 0.0f, 1000.0f, 0.5f, 1016.666687f, 0.5f},
+    {166.666672f, 0.0f, 333.333344f, 0.6f, 833.333313f, 0.8f},
+    {166.666672f, 0.0f, 333.333344f, 0.6f, 833.333313f, 0.8f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 0.7f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 0.7f},
+    {0.0f, 0.0f, 166.666672f, 0.5f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.5f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.8f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.8f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.4f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.8f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.8f, 666.666687f, 1.0f},
+    {333.333344f, 0.0f, 500.0f, 0.4f, 1000.0f, 0.5f},
+    {333.333344f, 0.0f, 500.0f, 0.4f, 1000.0f, 0.5f},
+    {250.0f, 0.0f, 416.666656f, 0.4f, 916.666687f, 0.5f},
+    {250.0f, 0.0f, 416.666656f, 0.4f, 916.666687f, 0.5f},
+    {0.0f, 0.0f, 166.666672f, 0.6f, 666.666687f, 1.0f},
+    {0.0f, 0.0f, 166.666672f, 0.6f, 666.666687f, 1.0f},
+    {83.333336f, 0.0f, 250.0f, 0.6f, 750.0f, 1.0f},
+    {83.333336f, 0.0f, 250.0f, 0.8f, 750.0f, 1.0f},
+    {166.666672f, 0.0f, 333.333344f, 0.6f, 833.333313f, 1.0f},
+};
+
+// Each AR-digit glyph's per-frame alpha curve ({time, alpha} knots at @ghidraAddress 0x3056d4).
+constexpr float kArDigitAlphaCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {316.666656f, 0.0f, 333.333344f, 1.0f, 833.333313f, 0.0f},
+    {300.0f, 0.0f, 316.666656f, 1.0f, 483.333344f, 0.0f},
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {316.666656f, 0.0f, 333.333344f, 1.0f, 833.333313f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 483.333344f, 0.0f},
+    {483.333344f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {400.0f, 0.0f, 583.333313f, 1.0f, 916.666687f, 0.0f},
+    {466.666656f, 0.0f, 483.333344f, 1.0f, 650.0f, 0.0f},
+    {150.0f, 0.0f, 166.666672f, 1.0f, 666.666687f, 0.0f},
+    {133.333328f, 0.0f, 150.0f, 1.0f, 316.666656f, 0.0f},
+    {233.333328f, 0.0f, 250.0f, 1.0f, 750.0f, 0.0f},
+    {216.666672f, 0.0f, 233.333328f, 1.0f, 400.0f, 0.0f},
+    {216.666672f, 0.0f, 233.333328f, 1.0f, 400.0f, 0.0f},
+};
+
+// Each AR-digit glyph's per-frame vertical-position curve ({time, absoluteY} knots, assembled inline
+// by the layout pass): the glyph rises into place. As with the other strips, the origin-relative
+// cache is equivalent to sampling the absolute Y and subtracting the constant layout origin.
+constexpr float kArDigitPositionCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
+    {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
+    {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
+    {333.33334f, 768.0f, 500.0f, 760.5f, 1000.0f, 746.5f},
+    {333.33334f, 768.0f, 500.0f, 760.5f, 1000.0f, 746.5f},
+    {166.66667f, 638.0f, 333.33334f, 630.5f, 833.33331f, 616.5f},
+    {166.66667f, 638.0f, 333.33334f, 630.5f, 833.33331f, 616.5f},
+    {316.66666f, 584.0f, 333.33334f, 584.0f, 1000.0f, 554.0f},
+    {316.66666f, 584.0f, 333.33334f, 584.0f, 1000.0f, 554.0f},
+    {316.66666f, 590.0f, 333.33334f, 590.0f, 1000.0f, 560.0f},
+    {316.66666f, 590.0f, 333.33334f, 590.0f, 1000.0f, 560.0f},
+    {316.66666f, 647.0f, 333.33334f, 647.0f, 1000.0f, 617.0f},
+    {316.66666f, 647.0f, 333.33334f, 647.0f, 1000.0f, 617.0f},
+    {166.66667f, 764.0f, 333.33334f, 739.0f, 833.33331f, 724.0f},
+    {166.66667f, 764.0f, 333.33334f, 739.0f, 833.33331f, 724.0f},
+    {0.0f, 794.0f, 166.66667f, 744.0f, 666.66669f, 724.0f},
+    {0.0f, 794.0f, 166.66667f, 744.0f, 666.66669f, 724.0f},
+    {0.0f, 609.0f, 166.66667f, 559.0f, 666.66669f, 539.0f},
+    {0.0f, 609.0f, 166.66667f, 559.0f, 666.66669f, 539.0f},
+    {0.0f, 815.0f, 166.66667f, 765.0f, 666.66669f, 745.0f},
+    {0.0f, 815.0f, 166.66667f, 765.0f, 666.66669f, 745.0f},
+    {0.0f, 802.0f, 166.66667f, 752.0f, 666.66669f, 732.0f},
+    {0.0f, 802.0f, 166.66667f, 752.0f, 666.66669f, 732.0f},
+    {0.0f, 802.0f, 166.66667f, 752.0f, 666.66669f, 732.0f},
+    {0.0f, 802.0f, 166.66667f, 752.0f, 666.66669f, 732.0f},
+    {0.0f, 704.0f, 166.66667f, 674.0f, 666.66669f, 654.0f},
+    {0.0f, 704.0f, 166.66667f, 674.0f, 666.66669f, 654.0f},
+    {333.33334f, 704.0f, 500.0f, 674.0f, 1000.0f, 644.0f},
+    {333.33334f, 704.0f, 500.0f, 674.0f, 1000.0f, 644.0f},
+    {333.33334f, 704.0f, 500.0f, 674.0f, 1000.0f, 644.0f},
+    {250.0f, 704.0f, 416.66666f, 674.0f, 916.66669f, 644.0f},
+    {0.0f, 709.0f, 166.66667f, 695.0f, 666.66669f, 659.0f},
+    {0.0f, 709.0f, 166.66667f, 695.0f, 666.66669f, 659.0f},
+    {83.33334f, 594.0f, 250.0f, 564.0f, 750.0f, 544.0f},
+    {83.33334f, 594.0f, 250.0f, 564.0f, 750.0f, 544.0f},
+    {166.66667f, 594.0f, 333.33334f, 594.0f, 833.33331f, 594.0f},
+};
+
 } // namespace
 
 /** @ghidraAddress 0x120630 */
@@ -771,6 +903,46 @@ void LimelightThemeLayer::RenderGradeHighRankBadge(int nSide) {
                             kBadgeGlyphScale,
                             flRotation,
                             static_cast<unsigned int>(kBadgeGlyphFirstKind + nGlyph),
+                            &position,
+                            nAlpha);
+    }
+}
+
+/** @ghidraAddress 0x121e14 */
+void LimelightThemeLayer::RenderGradeArDigits(float flClock, unsigned int nSide) {
+    const float flOriginX = m_flWidth;
+    const float flOriginY = m_flHeight;
+
+    for (int nGlyph = 0; nGlyph < kArDigitGlyphCount; ++nGlyph) {
+        // The scale and alpha curves are sampled at the digit clock; the vertical-position curve is
+        // sampled at the layer's reveal clock.
+        const float flScale =
+            CalculateCurveInterpolation(kArDigitScaleCurve[nGlyph], kArDigitKnots, flClock);
+        const float flAlpha =
+            CalculateCurveInterpolation(kArDigitAlphaCurve[nGlyph], kArDigitKnots, flClock);
+        const float flAbsoluteY = CalculateCurveInterpolation(
+            kArDigitPositionCurve[nGlyph], kArDigitKnots, m_flGradeRevealClock);
+
+        // The glyph's X is a fixed base; both coordinates are placed relative to the layout origin.
+        S_VECTOR2 position{kArDigitAbsoluteX[nGlyph] - flOriginX, flAbsoluteY - flOriginY};
+        float flRotation = 0.0f;
+        if (m_nSideCount == 1) {
+            if (nSide == static_cast<unsigned int>(kNearSide)) {
+                position.y += kSingleSideNearNudgeY;
+            } else {
+                position.x = -position.x;
+                position.y = kSingleSideFarOriginY - position.y;
+                flRotation = kSingleSideFarRotation;
+            }
+        }
+
+        // The digit strip fades by its own alpha curve; the grade reveal channel is not applied.
+        const unsigned int nAlpha =
+            static_cast<unsigned int>(static_cast<int>(flAlpha * kAlphaByteScale));
+        EmitGradeSpriteSlot(flScale,
+                            flScale,
+                            flRotation,
+                            static_cast<unsigned int>(kArDigitGlyphFirstKind + nGlyph),
                             &position,
                             nAlpha);
     }

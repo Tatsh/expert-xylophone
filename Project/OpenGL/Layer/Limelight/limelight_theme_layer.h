@@ -172,7 +172,13 @@ private:
     void EmitGradeMeterSlot(unsigned int nSide, const S_VECTOR2 *pUvOrigin, unsigned int nAlpha);
 
     /**
-     * @brief Draws one side's achievement-rate percentage digits. Reconstruction pending.
+     * @brief Draws one side's animated achievement-rate percentage digit strip.
+     *
+     * Animates each of the thirty-five digit-strip glyphs in with its own scale, alpha, and
+     * vertical-position curves sampled at the digit clock, placing each at a fixed horizontal base
+     * relative to the layout origin. As with the rank glyphs, single-side mode nudges the near side
+     * down and mirrors the far side a half-turn across the field. Each glyph is emitted at the
+     * sampled scale with the sampled alpha (the reveal channel is not applied here).
      * @param flClock The digit animation clock (the reveal clock shifted by the digit reveal
      * offset).
      * @param nSide The player side.
