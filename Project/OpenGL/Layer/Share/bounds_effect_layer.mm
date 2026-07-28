@@ -21,6 +21,9 @@ namespace {
 // The effect size the constructor seeds.
 constexpr float kInitialEffectSize = 1.0f;
 
+// The lane-light alpha the constructor seeds each lane to: fully lit.
+constexpr unsigned char kLaneLightOn = 0xff;
+
 // The fixed anchor and size, in points, every bounds sprite draws with (@ghidraAddress 0x30bf28
 // anchor, 0x30bf2c size).
 constexpr float kEffectAnchor = 84.0f;
@@ -42,6 +45,63 @@ constexpr int kEffectStyleCount = 3;
 // The sprite-batch capacity and its additive blend mode.
 constexpr int kSpriteCapacity = 0x5c;
 constexpr int kAdditiveBlendMode = 1;
+
+// The bounds-effect animation timing and frame table (@ghidraAddress 0x2feff4 lifetime, 0x30bf20
+// frame step). An effect lives kEffectLifetime frame-time units; its timer divided by
+// kEffectFrameStep gives its animation frame, clamped to the last frame.
+constexpr float kEffectLifetime = 500.0f;
+constexpr float kEffectFrameStep = 20.833334f;
+constexpr int kEffectFrameCount = 24;
+
+// The animation-frame count each bounds-effect style draws (an effect at or past its style's count
+// has faded out and is not emitted). The default style stops two frames early and the Colette style
+// one frame early, relative to the Limelight style's full run.
+constexpr int kEffectFrameCountByStyle[] = {0x14, 0x17, 0x16};
+
+// The per-bank UV-frame origin table the effect sprites draw from, one row of kEffectFrameCount
+// frames per colour bank, indexed flatly as nBank * kEffectFrameCount + nFrame. The binary keeps
+// this as a load-once function-local static copied from ROM (@ghidraAddress 0x30c0d0). The ROM block
+// holds only 46 entries (bank 1's last two frames are absent); the second bank's final two slots are
+// zero here to keep the flat index in range, matching the empty UV the binary would resolve for the
+// rare limelight effect that survives to its last frame.
+constexpr S_VECTOR2 kEffectUvOrigins[kBankCount][kEffectFrameCount] = {
+    {
+        {0.0f, 0.6640625f},        {0.041992188f, 0.6640625f}, {0.083984375f, 0.6640625f},
+        {0.12597656f, 0.6640625f}, {0.16796875f, 0.6640625f},  {0.20996094f, 0.6640625f},
+        {0.25195312f, 0.6640625f}, {0.2939453f, 0.6640625f},   {0.3359375f, 0.6640625f},
+        {0.3779297f, 0.6640625f},  {0.41992188f, 0.6640625f},  {0.46191406f, 0.6640625f},
+        {0.50390625f, 0.6640625f}, {0.54589844f, 0.6640625f},  {0.5878906f, 0.6640625f},
+        {0.6298828f, 0.6640625f},  {0.671875f, 0.6640625f},    {0.7138672f, 0.6640625f},
+        {0.7558594f, 0.6640625f},  {0.79785156f, 0.6640625f},  {0.83984375f, 0.6640625f},
+        {0.88183594f, 0.6640625f}, {0.9238281f, 0.6640625f},   {0.0f, 0.8300781f},
+    },
+    {
+        {0.041992188f, 0.8300781f},
+        {0.083984375f, 0.8300781f},
+        {0.12597656f, 0.8300781f},
+        {0.16796875f, 0.8300781f},
+        {0.20996094f, 0.8300781f},
+        {0.25195312f, 0.8300781f},
+        {0.2939453f, 0.8300781f},
+        {0.3359375f, 0.8300781f},
+        {0.3779297f, 0.8300781f},
+        {0.41992188f, 0.8300781f},
+        {0.46191406f, 0.8300781f},
+        {0.50390625f, 0.8300781f},
+        {0.54589844f, 0.8300781f},
+        {0.5878906f, 0.8300781f},
+        {0.6298828f, 0.8300781f},
+        {0.671875f, 0.8300781f},
+        {0.7138672f, 0.8300781f},
+        {0.7558594f, 0.8300781f},
+        {0.79785156f, 0.8300781f},
+        {0.83984375f, 0.8300781f},
+        {0.88183594f, 0.8300781f},
+        {0.9238281f, 0.8300781f},
+        {0.0f, 0.0f},
+        {0.0f, 0.0f},
+    },
+};
 } // namespace
 
 // The process-wide bounds-effect layer, created lazily by shared().
@@ -57,10 +117,10 @@ BoundsEffectLayer *BoundsEffectLayer::shared() {
 
 /** @ghidraAddress 0x175210 */
 BoundsEffectLayer::BoundsEffectLayer() {
-    // The base constructor and member initialisers clear the layer; both lane-light flags start on
-    // and the effect size seeds to one.
-    m_bLaneLight0 = true;
-    m_bLaneLight1 = true;
+    // The base constructor and member initialisers clear the layer; both lane-light alphas start
+    // fully on and the effect size seeds to one.
+    m_nLaneLightAlpha0 = kLaneLightOn;
+    m_nLaneLightAlpha1 = kLaneLightOn;
     m_flEffectSize = kInitialEffectSize;
 }
 
@@ -107,12 +167,56 @@ void BoundsEffectLayer::CreateBoundsEffect(unsigned int nColor, float flPosX, fl
     for (EffectRecord &effect : m_aEffects[nColor]) {
         if (!effect.bActive) {
             effect.bActive = true;
-            effect.nTimer = 0;
+            effect.flTimer = 0.0f;
             effect.flPosX = flPosX;
             effect.flPosY = flPosY;
             return;
         }
     }
+}
+
+/** @ghidraAddress 0x17559c */
+void BoundsEffectLayer::Process(float flDelta) {
+    m_nSpriteCount = 0;
+
+    for (int nBank = 0; nBank < kBankCount; ++nBank) {
+        // Bank 1 draws at the first lane's light alpha, bank 0 at the second lane's.
+        const unsigned char nLaneAlpha = nBank == 1 ? m_nLaneLightAlpha1 : m_nLaneLightAlpha0;
+        for (EffectRecord &effect : m_aEffects[nBank]) {
+            if (!effect.bActive) {
+                continue;
+            }
+            // Advance the effect; it dies once its timer passes the lifetime.
+            effect.flTimer += flDelta;
+            if (effect.flTimer > kEffectLifetime) {
+                effect.bActive = false;
+                continue;
+            }
+            // A dark lane draws none of its effects.
+            if (nLaneAlpha == 0) {
+                continue;
+            }
+
+            // Map the timer to an animation frame, clamped to the frame table's range.
+            int nFrame = static_cast<int>(effect.flTimer / kEffectFrameStep);
+            if (nFrame < 0) {
+                nFrame = 0;
+            } else if (nFrame >= kEffectFrameCount) {
+                nFrame = kEffectFrameCount - 1;
+            }
+
+            // Emit the sprite only while the frame is within this style's animation (an unknown
+            // style, which the sprite build never sets, draws nothing).
+            if (m_nStyle >= 0 && m_nStyle < kEffectStyleCount &&
+                nFrame < kEffectFrameCountByStyle[m_nStyle]) {
+                const S_VECTOR2 position{effect.flPosX, effect.flPosY};
+                SetBoundsEffectSprite(&position, &kEffectUvOrigins[nBank][nFrame], nLaneAlpha);
+            }
+        }
+    }
+
+    // Publish the emitted sprite count into the instancer's draw count.
+    m_pSprite->SetSpriteCount(m_nSpriteCount);
 }
 
 /** @ghidraAddress 0x1754c4 */
@@ -122,12 +226,12 @@ void BoundsEffectLayer::SetEffectSize(float flSize) {
 
 /** @ghidraAddress 0x1754a8 */
 void BoundsEffectLayer::SetLaneLightFlag(float flValue, int nLane) {
-    // The binary truncates the float to an integer byte; the callers only ever pass 0.0 or 1.0.
-    const bool bFlag = static_cast<int>(flValue) != 0;
+    // The binary truncates the float to the alpha byte the lane's effects draw at.
+    const auto nAlpha = static_cast<unsigned char>(static_cast<int>(flValue));
     if (nLane == 1) {
-        m_bLaneLight0 = bFlag;
+        m_nLaneLightAlpha0 = nAlpha;
     } else {
-        m_bLaneLight1 = bFlag;
+        m_nLaneLightAlpha1 = nAlpha;
     }
 }
 

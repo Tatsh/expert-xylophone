@@ -65,6 +65,20 @@ public:
     void CreateBoundsEffect(unsigned int nColor, float flPosX, float flPosY);
 
     /**
+     * @brief Advances every live bounds effect one frame and re-emits the batch's sprites.
+     *
+     * Clears the batch's sprite count, then for each colour bank walks its records: a live record
+     * advances its timer by @p flDelta and deactivates once the timer passes its lifetime; otherwise,
+     * when that bank's lane-light alpha is non-zero, it maps the timer to an animation frame and
+     * appends the effect sprite (from the bank's UV-frame row, drawn at the lane-light alpha) as long
+     * as the frame is within the style's frame count. Finally publishes the batch's sprite count into
+     * the instancer's order field.
+     * @param flDelta The frame delta, in frame-time.
+     * @ghidraAddress 0x17559c
+     */
+    void Process(float flDelta);
+
+    /**
      * @brief Sets the effect size from the user's bounds-effect-size setting.
      * @param flSize The effect size.
      * @ghidraAddress 0x1754c4
@@ -72,9 +86,9 @@ public:
     void SetEffectSize(float flSize);
 
     /**
-     * @brief Sets one lane's bounds-light flag byte (the flash-active flag for that lane's edge).
-     * @param flValue The flag value, truncated to a byte.
-     * @param nLane The lane: 1 selects the first lane's flag, anything else the second.
+     * @brief Sets one lane's bounds-light alpha byte (the flash intensity for that lane's edge).
+     * @param flValue The alpha value, truncated to a byte (callers pass the on/off endpoints).
+     * @param nLane The lane: 1 selects the first lane's alpha, anything else the second.
      * @ghidraAddress 0x1754a8
      */
     void SetLaneLightFlag(float flValue, int nLane);
@@ -97,7 +111,7 @@ private:
 
     /**
      * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state, and
-     * seeds both lane-light flags on and the effect size to one.
+     * seeds both lane-light alphas fully on (0xff) and the effect size to one.
      * @ghidraAddress 0x175210
      */
     BoundsEffectLayer();
@@ -106,7 +120,7 @@ private:
     struct EffectRecord {
         bool bActive = {};                 // +0x00: whether the record holds a live effect.
         unsigned char aReserved01[3] = {}; // +0x01
-        int nTimer = {};                   // +0x04: the effect's animation timer.
+        float flTimer = {};                // +0x04: the effect's animation timer, in frame-time.
         float flPosX = {};                 // +0x08: the effect's screen x.
         float flPosY = {};                 // +0x0c: the effect's screen y.
     };
@@ -119,11 +133,13 @@ private:
     unsigned char m_aReserved21[3] = {};        // +0x21
     // +0x24: the two per-colour effect banks (each kRecordsPerBank records, stride 0x170 per bank).
     EffectRecord m_aEffects[kBankCount][kRecordsPerBank] = {};
-    bool m_bLaneLight0 = {};              // +0x304: the first lane's bounds-light flag.
-    bool m_bLaneLight1 = {};              // +0x305: the second lane's bounds-light flag.
-    unsigned char m_aReserved306[2] = {}; // +0x306
-    float m_flEffectSize = {};            // +0x308: the user's effect size.
-    int m_nStyle = {};                    // +0x30c: the bounds-effect style (0/1/2).
+    unsigned char m_nLaneLightAlpha0 =
+        {}; // +0x304: the first lane's bounds-light alpha (0 hides the
+            //         lane's effects, 0xff shows them fully).
+    unsigned char m_nLaneLightAlpha1 = {}; // +0x305: the second lane's bounds-light alpha.
+    unsigned char m_aReserved306[2] = {};  // +0x306
+    float m_flEffectSize = {};             // +0x308: the user's effect size.
+    int m_nStyle = {};                     // +0x30c: the bounds-effect style (0/1/2).
 };
 
 // code: language=C++
