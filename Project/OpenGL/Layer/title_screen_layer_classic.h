@@ -44,6 +44,20 @@ public:
      */
     void AdvanceSwipeState(int iSwipeEvent);
     /**
+     * @brief Advances the title screen one frame: ticks the animation clock, handles touch-to-start
+     * and the auto-timeout, advances the fade, and re-emits the title sprites.
+     *
+     * Clears the five sprite instancers, then — until the start is triggered — begins the fade-out to
+     * play once the caution has been read and the player taps after the intro (or, failing a tap,
+     * once the auto-timeout elapses). When the fade completes it latches the play state. It then
+     * emits the white backdrop, the three cross-fading title logo layers (each alpha-driven by its
+     * own animation curve, all centred on the viewport), and the black fade-overlay whose alpha
+     * tracks the fade channel.
+     * @param nDeltaFrames The elapsed frames this tick.
+     * @ghidraAddress 0x149c5c
+     */
+    void ProcessTitleLayer(int nDeltaFrames);
+    /**
      * @brief Advances the title fade channel by @p nDeltaFrames.
      * @ghidraAddress 0x149ff4
      */
@@ -78,7 +92,9 @@ private:
     unsigned char m_aReserved54[0x1c] = {}; // +0x054
     ne::C_SPRITE_INSTANCING_2D *m_apInstancers[kInstancerCount] =
         {};                                   // +0x070 the five title sprite instancers
-    unsigned char m_aReserved98[0x2c] = {};   // +0x098
+    unsigned char m_aReserved98[0x28] = {};   // +0x098
+    bool m_bStartTriggered = {};              // +0x0c0 latched once the title starts fading to play
+    unsigned char m_aReservedC1[3] = {};      // +0x0c1
     LinearTween m_fadeChannel;                // +0x0c4 title fade tween
     unsigned char m_aReserved0d8[0x38] = {};  // +0x0d8
     LinearTween m_fadeValueChannel;           // +0x110 secondary title fade/tween
