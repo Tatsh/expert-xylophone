@@ -9,6 +9,7 @@
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
+#include "soundeffectmanager.h"
 #include "sprite_uv_table.h"
 
 // The title-part UV atlas (a distinct atlas from the shared sprite UV table); the grade backdrop and
@@ -123,6 +124,54 @@ constexpr unsigned int kBackdropSpriteKind = 0;
 // The opaque and transparent channel values a grade sprite is tinted with.
 constexpr unsigned int kChannelWhite = 0xff;
 constexpr unsigned int kChannelBlack = 0;
+
+// The achievement-rate meter animation, driven by the reveal clock (@ghidraAddress 0x305220 start
+// threshold, 0x305224 clock bias, 0x305228 clock divisor, 0x30522c fade threshold). The needle frame
+// is (clock + bias) / divisor scaled by the frame count, clamped to the last frame.
+constexpr float kMeterStartThreshold = 3166.6667f;
+constexpr float kMeterClockBias = -3166.6667f;
+constexpr float kMeterClockDivisor = 1666.6667f;
+constexpr float kMeterFadeThreshold = 4833.3335f;
+
+// The achievement-rate fanfare's themed sound-effect slot, played once as the meter starts.
+constexpr int kMeterFanfareSoundEffect = 10;
+
+// The animated meter needle's UV-origin frames (@ghidraAddress 0x305130): a 6-row by 5-column atlas
+// grid the reveal clock steps through.
+constexpr S_VECTOR2 kMeterNeedleUv[] = {
+    {0.0f, 0.0f},
+    {0.16796875f, 0.0f},
+    {0.3359375f, 0.0f},
+    {0.50390625f, 0.0f},
+    {0.671875f, 0.0f},
+    {0.0f, 0.1484375f},
+    {0.16796875f, 0.1484375f},
+    {0.3359375f, 0.1484375f},
+    {0.50390625f, 0.1484375f},
+    {0.671875f, 0.1484375f},
+    {0.0f, 0.296875f},
+    {0.16796875f, 0.296875f},
+    {0.3359375f, 0.296875f},
+    {0.50390625f, 0.296875f},
+    {0.671875f, 0.296875f},
+    {0.0f, 0.4453125f},
+    {0.16796875f, 0.4453125f},
+    {0.3359375f, 0.4453125f},
+    {0.50390625f, 0.4453125f},
+    {0.671875f, 0.4453125f},
+    {0.0f, 0.59375f},
+    {0.16796875f, 0.59375f},
+    {0.3359375f, 0.59375f},
+    {0.50390625f, 0.59375f},
+    {0.671875f, 0.59375f},
+    {0.0f, 0.7421875f},
+    {0.16796875f, 0.7421875f},
+    {0.3359375f, 0.7421875f},
+    {0.50390625f, 0.7421875f},
+    {0.671875f, 0.7421875f},
+};
+constexpr int kMeterNeedleFrameCount = 30;
+constexpr int kMeterNeedleLastFrame = kMeterNeedleFrameCount - 1;
 
 } // namespace
 
@@ -301,6 +350,34 @@ void LimelightThemeLayer::EmitGradeSpriteSlot(float flScaleX,
         nSpriteKind == kBackdropSpriteKind ? kChannelBlack : kChannelWhite;
     pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, nAlpha);
     ++m_aSpriteCounts[nSlot];
+}
+
+/** @ghidraAddress 0x120ca0 */
+void LimelightThemeLayer::RenderGradeMeterSprite(unsigned int nSide) {
+    // The meter animates only once the reveal clock passes its start threshold.
+    if (m_flGradeRevealClock <= kMeterStartThreshold) {
+        return;
+    }
+
+    // The first frame past the threshold triggers the achievement-rate fanfare once.
+    if (m_bGradeArmed) {
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kMeterFanfareSoundEffect);
+        m_bGradeArmed = false;
+    }
+
+    // Map the reveal clock to a needle frame, clamping the raw index below to zero and above to the
+    // last frame (the binary tests the raw index, before the zero clamp, against the frame count).
+    const int nRawFrame = static_cast<int>(
+        ((m_flGradeRevealClock + kMeterClockBias) / kMeterClockDivisor) * kMeterNeedleFrameCount);
+    int nFrame = nRawFrame < 0 ? 0 : nRawFrame;
+    if (nRawFrame >= kMeterNeedleFrameCount) {
+        nFrame = kMeterNeedleLastFrame;
+    }
+
+    // The needle stays opaque until the clock passes the fade threshold, then vanishes.
+    const unsigned int nAlpha = m_flGradeRevealClock > kMeterFadeThreshold ? kChannelBlack : 0xff;
+
+    EmitGradeMeterSlot(nSide, &kMeterNeedleUv[nFrame], nAlpha);
 }
 
 /** @ghidraAddress 0x1208c4 */

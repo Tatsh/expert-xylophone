@@ -116,7 +116,14 @@ private:
                              unsigned int nAlpha);
 
     /**
-     * @brief Draws a side's grade meter (for a zero grade). Reconstruction pending.
+     * @brief Draws one side's animated achievement-rate meter needle.
+     *
+     * Runs only once the reveal clock passes the meter's start threshold. The first frame past the
+     * threshold triggers the achievement-rate fanfare (playing themed sound effect 10 once). It
+     * lazily seeds the shared needle-frame UV table, maps the reveal clock to one of the thirty
+     * needle frames (clamped), and emits that frame's meter sprite for the side at full alpha,
+     * fading to transparent once the clock passes the meter's fade threshold.
+     * @param nSide The player side.
      * @ghidraAddress 0x120ca0
      */
     void RenderGradeMeterSprite(unsigned int nSide);
@@ -132,6 +139,16 @@ private:
      * @ghidraAddress 0x1214ec
      */
     void RenderGradeHighRankBadge(int nSide);
+
+    /**
+     * @brief Emits one side's achievement-rate meter sprite at the given needle-frame UV and alpha.
+     * Reconstruction pending.
+     * @param nSide The player side.
+     * @param pUvOrigin The needle frame's UV origin.
+     * @param nAlpha The sprite's alpha, in @c [0, 255].
+     * @ghidraAddress 0x121bb8
+     */
+    void EmitGradeMeterSlot(unsigned int nSide, const S_VECTOR2 *pUvOrigin, unsigned int nAlpha);
 
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
