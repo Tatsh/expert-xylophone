@@ -550,13 +550,15 @@ private:
     unsigned char m_aReserved5da = {}; // +0x5da
     bool m_bJustHit =
         {}; // +0x5db: the perfect-hit flag, cleared when the note's path links notify.
-    bool m_bShotDecaying = {};         // +0x5dc: whether the shot phase runs its decay timer.
-    unsigned char m_aReserved5dd = {}; // +0x5dd
+    bool m_bShotDecaying = {};  // +0x5dc: whether the shot phase runs its decay timer.
+    bool m_bShotResolved = {};  // +0x5dd: set once a CPU/ghost shot has been scored and its gauge
+                                //         penalty applied, gating the shot-direction pick.
     bool m_bMissProcessed = {}; // +0x5de: whether a passed/missed tap note was already handled.
     bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
-    unsigned char m_aReserved5e2[6] = {}; // +0x5e2
+    unsigned char m_aReserved5e2[2] = {}; // +0x5e2
+    int m_nAutoShotMode = {}; // +0x5e4: the shot's auto-play mode (0 user-driven, 1 CPU, else off).
     int m_nColorLockState =
         {}; // +0x5e8: the recorded/assigned note result: the replay ghost stores the recorded judge
     //         here, and the random colour pass leaves it open when it is above the threshold.

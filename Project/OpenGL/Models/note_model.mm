@@ -14,6 +14,7 @@
 #include "Render/neRenderer.h"
 #include "Render/s_vector3.h"
 #include "Render/vectormath.h"
+#include "ScoreTracker.h"
 #include "bounds_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
@@ -21,6 +22,7 @@
 #include "note_effect_mgr.h"
 #include "playtimer.h"
 #include "rbffnoterecord.h"
+#include "reflec_gauge_layer.h"
 
 // The near/far lane slopes, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and read
 // here and by the effect layers. Each is the ratio of a note row's offset to the field-centre row
@@ -629,6 +631,79 @@ void NoteModel::CheckShot() {
     default:
         assert(0);
     }
+}
+
+namespace {
+// The gauge/effect colour a record-less note reports: its own side when set, otherwise the
+// no-partner sentinel.
+constexpr int kShotColorOwnSide = 0;
+constexpr int kShotColorNoPartner = 3;
+// The CPU shot's per-note auto-play modes: user-driven full combo, CPU-driven full combo.
+constexpr int kAutoShotModeUser = 0;
+constexpr int kAutoShotModeCpu = 1;
+// The random threshold that splits a bounce into its two directions, and the display lanes.
+constexpr float kShotDirectionSplit = 0.5f;
+constexpr int kDisplayLaneCentre = 0;
+constexpr int kDisplayLaneLeft = 1;
+constexpr int kDisplayLaneRight = 2;
+} // namespace
+
+/** @ghidraAddress 0x136480 */
+void NoteModel::CheckShotCPU() {
+    if (m_bShotDecaying) {
+        ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+        const int nColor = m_pRecord != nullptr ?
+                               m_pRecord->GetSide() :
+                               (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
+        // Only a filled opposing gauge lets the CPU note score.
+        if (pGauge->GetAnotherValue(nColor) >= 1.0f) {
+            // Score the note when it is emphasised, or when its side's full-combo run is still live.
+            bool bScore = ShouldEmphasize();
+            if (!bScore) {
+                if (m_nAutoShotMode == kAutoShotModeUser &&
+                    GameSystem::GetGameSystem()->GetUserFullCombo()) {
+                    bScore = true;
+                } else {
+                    bScore = m_nAutoShotMode == kAutoShotModeCpu &&
+                             GameSystem::GetGameSystem()->GetCpuFullCombo();
+                }
+            }
+            if (bScore) {
+                const int nSubColor = m_pRecord != nullptr ?
+                                          m_pRecord->GetSide() :
+                                          (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
+                ReflecGaugeLayer::SubReflecGaugeValue(1.0f, pGauge, nSubColor);
+                m_bShotResolved = true;
+                ScoreTracker *pTracker = ScoreTracker::shared();
+                pTracker->AddLaneJudgeResult(
+                    IsOnPlaySide(),
+                    static_cast<unsigned int>(GameSystem::GetGameSystem()->GetFullJustReflec()));
+            }
+        }
+    }
+
+    // Once resolved, choose the bounce direction: a hold note follows its display lane, any other
+    // note flips a coin.
+    if (m_bShotResolved) {
+        int nDirection;
+        if (m_pRecord != nullptr && m_pRecord->GetHoldKind() == kHoldKindHead) {
+            const int nLane = m_pRecord->GetDisplayLane();
+            if (nLane == kDisplayLaneCentre) {
+                nDirection = -1;
+            } else if (nLane == kDisplayLaneLeft) {
+                nDirection =
+                    static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 1 : -1;
+            } else {
+                assert(nLane == kDisplayLaneRight);
+                nDirection = 1;
+            }
+        } else {
+            nDirection =
+                static_cast<float>(rand()) * kInverseRandMax >= kShotDirectionSplit ? 2 : -2;
+        }
+        SetShotDirection(nDirection);
+    }
+    m_bShotActive = false;
 }
 
 namespace {
