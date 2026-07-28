@@ -1055,3 +1055,35 @@ void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
                        nIntensity,
                        nAlpha);
 }
+
+/** @ghidraAddress 0x79d54 */
+void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
+                                                        int nPartId,
+                                                        const S_VECTOR2 &position,
+                                                        unsigned int nAlpha,
+                                                        unsigned int nRed,
+                                                        unsigned int nGreen,
+                                                        unsigned int nBlue,
+                                                        float flRotation,
+                                                        float flScaleX,
+                                                        float flScaleY) {
+    if (nPartId >= kColettePhonePartsRecordCount) {
+        return;
+    }
+    // The glyph metrics come from the phone parts table indexed by the part id; the texture
+    // rectangle from the Colette glyph UV palette.
+    const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
+    const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
+    appendSpriteToSlotRgba(nSlot,
+                           nRed,
+                           nGreen,
+                           nBlue,
+                           nAlpha,
+                           position,
+                           S_VECTOR2{pGlyph->flX, pGlyph->flY},
+                           S_VECTOR2{pGlyph->flWidth, pGlyph->flHeight},
+                           S_VECTOR2{palette.flU, palette.flV},
+                           S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
+                           flRotation,
+                           S_VECTOR2{flScaleX, flScaleY});
+}

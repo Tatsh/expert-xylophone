@@ -464,6 +464,38 @@ private:
                                       float flScaleX,
                                       float flScaleY);
 
+    /**
+     * @brief Emits one glyph sprite from the phone parts table by part id, with an explicit
+     * per-vertex colour.
+     *
+     * The non-dimmable colour twin of @c RenderDimmableGlyphFromTable: it looks up the glyph's
+     * placement rectangle from the phone parts table indexed by @p nPartId and its texture rectangle
+     * from the Colette glyph UV palette, then appends the quad to the slot at @p position with the
+     * given rotation, scale, and red, green, and blue channels. Part ids at or above the phone parts
+     * table count are ignored.
+     * @param nSlot The slot index (0 through 7).
+     * @param nPartId The glyph part id (below the phone parts table count).
+     * @param position The glyph's world position.
+     * @param nAlpha The glyph alpha.
+     * @param nRed The glyph's red channel.
+     * @param nGreen The glyph's green channel.
+     * @param nBlue The glyph's blue channel.
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScaleX The glyph X scale.
+     * @param flScaleY The glyph Y scale.
+     * @ghidraAddress 0x79d54
+     */
+    void RenderGlyphPartFromTable(int nSlot,
+                                  int nPartId,
+                                  const S_VECTOR2 &position,
+                                  unsigned int nAlpha,
+                                  unsigned int nRed,
+                                  unsigned int nGreen,
+                                  unsigned int nBlue,
+                                  float flRotation,
+                                  float flScaleX,
+                                  float flScaleY);
+
     // +0x08/+0x09: the tutorial touch-hint flags the touch pass drives from the live touch count
     // (whether a touch is present, and whether one was just released).
     bool m_bTutorialTouchPresent = {}; // +0x08
