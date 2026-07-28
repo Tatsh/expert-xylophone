@@ -413,6 +413,74 @@ void LimelightResultLayer::RenderPhoneNumberDigitsRow(int nValue,
     }
 }
 
+namespace {
+
+// The percent-value glyph banks and layout: the parts slot, the digit bank ('0'), the leading
+// percent marker glyph, the decimal-point glyph, the minimum digit count drawn, the fixed per-glyph
+// advance, the extra centring pad, and the point's own advance.
+constexpr unsigned int kPercentSlot = 1;
+constexpr unsigned int kPercentDigitBank = 0x39;
+constexpr unsigned int kPercentMarkerGlyph = 0x45;
+constexpr unsigned int kPercentPointGlyph = 0x43;
+constexpr int kPercentMinDigits = 2;
+constexpr float kPercentGlyphAdvance = 6.0f;
+constexpr float kPercentCentrePad = 2.0f;
+constexpr float kPercentPointAdvance = 2.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x12a50c */
+void LimelightResultLayer::RenderPhonePercentValue(int nValue,
+                                                   const S_VECTOR2 *pPosition,
+                                                   unsigned int nAlpha) {
+    // Split the value into up to four digits (ones first), tracking the significant-digit count.
+    int aDigits[4] = {};
+    int nSignificant = 0;
+    for (int i = 0; i < 4; ++i) {
+        aDigits[i] = nValue % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nValue /= 10;
+    }
+    const int nDrawCount = nSignificant < kPercentMinDigits ? kPercentMinDigits : nSignificant;
+
+    // Centre the run about the position: one advance per drawn digit plus the leading marker, rounded
+    // and halved, then step left by one advance before the marker.
+    const int nHalfWidth = static_cast<int>(
+        static_cast<float>(nDrawCount + 1) * kPercentGlyphAdvance + kPercentCentrePad);
+    float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f - kPercentGlyphAdvance;
+    const float flY = pPosition->y;
+
+    // The leading percent marker.
+    RenderPhoneResultSpriteById(
+        kPercentSlot, kPercentMarkerGlyph, S_VECTOR2{flCursorX, flY}, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+
+    for (int i = 0; i < nDrawCount; ++i) {
+        flCursorX -= kPercentGlyphAdvance;
+        RenderPhoneResultSpriteById(kPercentSlot,
+                                    aDigits[i] + kPercentDigitBank,
+                                    S_VECTOR2{flCursorX, flY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+        // The decimal point follows the ones digit.
+        if (i == 0) {
+            flCursorX -= kPercentPointAdvance;
+            RenderPhoneResultSpriteById(kPercentSlot,
+                                        kPercentPointGlyph,
+                                        S_VECTOR2{flCursorX, flY},
+                                        nAlpha,
+                                        0,
+                                        0.0f,
+                                        1.0f,
+                                        1.0f);
+        }
+    }
+}
+
 /** @ghidraAddress 0x12ac64 */
 void LimelightResultLayer::AppendSpriteToSlot(const S_VECTOR2 &position,
                                               const S_VECTOR2 &anchor,

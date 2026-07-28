@@ -171,6 +171,21 @@ public:
     void RenderPhoneNumberDigitsRow(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the phone
+     * result layout.
+     *
+     * Splits @p nValue into up to four decimal digits (drawing at least two), centres the run about
+     * @p pPosition using a fixed six-pixel glyph advance, draws the leading marker glyph, then each
+     * digit (bank base @c 0x39 plus the digit) right to left, inserting the decimal-point glyph after
+     * the ones digit.
+     * @param nValue The percentage value (as an integer of tenths of a percent).
+     * @param pPosition The centre position of the value.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12a50c
+     */
+    void RenderPhonePercentValue(int nValue, const S_VECTOR2 *pPosition, unsigned int nAlpha);
+
+    /**
      * @brief Emits one result-window part sprite by part id.
      *
      * Looks up the part's placement rectangle and UV-palette entry, then appends a quad to the
