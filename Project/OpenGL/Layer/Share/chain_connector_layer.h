@@ -83,6 +83,21 @@ public:
      */
     void Create(int nColor, float flStartX, float flStartY, float flEndX, float flEndY);
 
+    /**
+     * @brief Resolves this frame's queued connectors into sprites and clears the queue.
+     *
+     * Derives the frame's connector alpha from the play colour and the rival-alpha setting (the play
+     * side's connectors draw fully opaque, the rival side's at the scaled rival alpha), then walks
+     * the pooled records. For each active record it clears the slot and forms the endpoint delta; a
+     * connector at least one pixel long is oriented along the delta (its rotation from the delta's
+     * angle plus a quarter turn), while a shorter one keeps a zero rotation. Either way its length is
+     * scaled by one sixteenth into the sprite's y-scale, and a connector sprite of the record's
+     * colour is emitted at that alpha. Finally it commits the batch's sprite count and resets the
+     * shared draw count for the next frame.
+     * @ghidraAddress 0x1859fc
+     */
+    void Update();
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
