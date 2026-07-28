@@ -108,6 +108,22 @@ public:
     void UpdateTouchAndPostTwitterShare();
 
     /**
+     * @brief Advances the level-up experience-bar reveal animation and returns its inverse progress.
+     *
+     * While unsettled it accumulates the frame delta into the reveal timer, normalises it against the
+     * fixed reveal duration, clamps to the unit interval, and maps it through the gained-experience
+     * span (base experience plus progress times the gained amount, less the level-up step, over the
+     * threshold). On the way up it (re)acquires a looping reveal sound effect; once the mapped value
+     * reaches one it latches the settled flag, toggles the shown character texture, advances the
+     * asset index, and either records the pending track index or kicks off the main-asset load.
+     * The layer's main-asset scale field stores one minus the clamped progress.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @return The clamped reveal progress in the unit interval.
+     * @ghidraAddress 0x1199fc
+     */
+    float AdvanceCustomizeOverlayProgress(int nDeltaFrames);
+
+    /**
      * @brief Resets the result-screen score/level display block to its per-round defaults.
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
@@ -673,12 +689,13 @@ private:
     // +0x171..+0x173 is alignment padding.
     unsigned char m_aPad171[3] = {}; // +0x171
     int m_nDisplayCounterA = {};     // +0x174: a per-round display counter, reset to zero.
-    int m_nDisplayCounterB = {};     // +0x178: a second per-round display counter.
-    bool m_bDisplayFlagC = {};       // +0x17c: a per-round display flag, reset to zero.
+    float m_flExpAnimTimer = {}; // +0x178: the level-up experience-bar reveal timer (0 at reset).
+    bool m_bExpAnimSettled = {}; // +0x17c: set once the experience-bar reveal reaches its target.
     // +0x17d..+0x17f is alignment padding.
     unsigned char m_aPad17d[3] = {}; // +0x17d
     int m_nLevelUpStep = {};         // +0x180: the level-up animation step.
-    int m_nTrackIndexA = {};         // +0x184: a music-track index sentinel (-1 when unset).
+    int m_nRevealSeHandle = {};      // +0x184: the experience-bar reveal sound-effect play handle
+                                     //         (-1 when none is playing).
     bool m_bCustomizePending = {};   // +0x188: whether a customize asset swap is pending.
     // +0x189..+0x18b is alignment padding.
     unsigned char m_aPad189[3] = {}; // +0x189

@@ -687,6 +687,89 @@ void ResultWindowClassicLayer::BeginCustomizeMainAsset(unsigned int nAssetId) {
     pTexture->Release();
 }
 
+namespace {
+// The experience-bar reveal animation constants.
+// The reveal timer bias (@ghidraAddress 0x302d70 = -4200) and its normalising duration
+// (@ghidraAddress 0x2ec6b0 = 100).
+constexpr float kExpRevealTimerBias = -4200.0f;
+constexpr float kExpRevealDuration = 100.0f;
+// The looping reveal sound-effect slot.
+constexpr int kExpRevealSoundSlot = 6;
+// The "no sound-effect handle" sentinel.
+constexpr int kNoSeHandle = -1;
+
+// Clamps a value to the unit interval.
+float ClampUnit(float flValue) {
+    if (flValue < 0.0f) {
+        return 0.0f;
+    }
+    if (flValue > 1.0f) {
+        return 1.0f;
+    }
+    return flValue;
+}
+} // namespace
+
+/** @ghidraAddress 0x1199fc */
+float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames) {
+    // Maps the reveal progress through the gained-experience span into the settled experience ratio.
+    const auto mapExpRatio = [this](float flProgress) {
+        return (flProgress * static_cast<float>(m_nGainedExp) + static_cast<float>(m_nPlayerExp) -
+                static_cast<float>(m_nLevelUpStep)) /
+               static_cast<float>(m_nExpThreshold);
+    };
+
+    if (m_bExpAnimSettled) {
+        // Already settled: report the mapped ratio at the frozen timer, without advancing.
+        const float flProgress =
+            ClampUnit((m_flExpAnimTimer + kExpRevealTimerBias) / kExpRevealDuration);
+        return ClampUnit(mapExpRatio(flProgress));
+    }
+
+    // Accumulate the frame delta and normalise the reveal progress.
+    m_flExpAnimTimer += static_cast<float>(nDeltaFrames);
+    float flProgress = (m_flExpAnimTimer + kExpRevealTimerBias) / kExpRevealDuration;
+    if (flProgress < 0.0f) {
+        flProgress = 0.0f;
+    } else if (flProgress > 1.0f) {
+        flProgress = 1.0f;
+    }
+
+    float flResult;
+    const float flExpRatio = mapExpRatio(flProgress);
+    if (flExpRatio < 0.0f) {
+        flResult = 0.0f;
+    } else if (flExpRatio >= 1.0f) {
+        // The reveal reached its target: latch it, show the next character texture, advance the asset
+        // index, and either record the pending track index or begin the main-asset load.
+        m_bExpAnimSettled = true;
+        ToggleCustomizeCharacterTexture(static_cast<unsigned int>(m_nMainAssetId));
+        ++m_nMainAssetId;
+        if (m_bCustomizePending) {
+            m_bCustomizePending = false;
+            m_nTrackIndexC = m_nMainAssetId;
+        } else {
+            BeginCustomizeMainAsset(static_cast<unsigned int>(m_nMainAssetId));
+        }
+        flResult = 1.0f;
+    } else {
+        // Mid-reveal: while the timer is inside the ramp and there is experience to gain, keep a
+        // looping reveal sound effect playing (re-acquire it once the previous handle finishes).
+        if (flProgress > 0.0f && flProgress < 1.0f && m_nGainedExp != 0) {
+            SoundEffectManager *pManager = SoundEffectManager::GetInstance();
+            if (m_nRevealSeHandle == kNoSeHandle ||
+                !pManager->IsPlaying(static_cast<unsigned int>(m_nRevealSeHandle))) {
+                m_nRevealSeHandle =
+                    static_cast<int>(pManager->PlayThemedSoundEffect(kExpRevealSoundSlot));
+            }
+        }
+        flResult = flExpRatio;
+    }
+
+    m_flMainAssetScale = 1.0f - flResult;
+    return flResult;
+}
+
 /** @ghidraAddress 0x115348 */
 void ResultWindowClassicLayer::SetInstancerTextureAndRefreshSlots(unsigned int nSlot,
                                                                   ne::C_TEXTURE *pTexture) {
@@ -1361,8 +1444,8 @@ void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
     effectC.flElapsed = flStartTime + kEffectDelayD;
     effectC.flReserved = 0.0f;
 
-    // Reset the current-step sentinel to "none".
-    m_nTrackIndexA = -1;
+    // Reset the reveal sound-effect handle to "none".
+    m_nRevealSeHandle = -1;
 }
 
 /** @ghidraAddress 0x11541c */
@@ -1374,8 +1457,8 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
 
     // Clear the per-round display counters and reset every music-track index sentinel to -1.
     m_nDisplayCounterA = 0;
-    m_nDisplayCounterB = 0;
-    m_bDisplayFlagC = false;
+    m_flExpAnimTimer = 0.0f;
+    m_bExpAnimSettled = false;
     m_bCustomizePending = false;
     m_nUnlockStep = 0;
     m_nMainAssetId = -1;
@@ -1384,7 +1467,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nUnlockCounter = 0;
     m_nCustomizeCharacterId = -1;
     m_nCustomizePendingId = -1;
-    m_nTrackIndexA = -1;
+    m_nRevealSeHandle = -1;
 
     // Copy the player level and experience from the game system and resolve the level-up threshold.
     const int nLevel = pGameSystem->GetPlayerLevel();
