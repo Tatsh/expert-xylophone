@@ -6,6 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -66,6 +67,27 @@ public:
      * @ghidraAddress 0x1be9b4
      */
     void SetEventBackgroundQuad(int nAlpha);
+
+    /**
+     * @brief Appends one event sprite to the main instancer at a world position, at the given scale
+     * and alpha.
+     *
+     * A no-op when the main instancer is full. The sprite's anchor, size, and atlas frame come from
+     * the shared event-sprite descriptor table (indexed by @p uDescIdx); in portrait the anchor and
+     * size are halved. Its scale is taken directly from @p flScaleX and @p flScaleY, and it is drawn
+     * opaque white at @p iAlpha.
+     * @param uDescIdx The event-sprite descriptor index.
+     * @param pPosition The sprite's world position.
+     * @param iAlpha The sprite alpha (0 through 255).
+     * @param flScaleX The sprite's X scale.
+     * @param flScaleY The sprite's Y scale.
+     * @ghidraAddress 0x1bea48
+     */
+    void EmitEventSprite(unsigned int uDescIdx,
+                         const S_VECTOR2 &position,
+                         int iAlpha,
+                         float flScaleX,
+                         float flScaleY);
 
 private:
     ne::C_TEXTURE *m_pTexture = {};                 // +0x08: the gm_event atlas.
