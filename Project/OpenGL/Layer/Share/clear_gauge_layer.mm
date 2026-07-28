@@ -65,6 +65,37 @@ constexpr float kPadGaugeX = 200.0f;
 
 } // namespace
 
+namespace {
+// The two-band icon batch count the constructor's cascade converges each batch capacity to (each of
+// the eight batches holds one glyph per side).
+constexpr int kPerBatchCapacityStep = 2;
+// The eight-entry stride between the two windows the constructor's copy loop reads and writes.
+constexpr int kBatchStateWindow = 8;
+// The number of batch-state entries the constructor's copy loop advances (42 of the 50).
+constexpr int kBatchStateCopyCount = 42;
+// The gauge's initial gauge-style and two-side defaults, and its initial reveal-fade side scales.
+constexpr int kInitialGaugeStyle = 0;
+constexpr int kInitialTwoSideEnabled = 1;
+} // namespace
+
+/** @ghidraAddress 0x1759fc */
+ClearGaugeLayer::ClearGaugeLayer() {
+    // The base constructor caches the device flags and theme; the member initialisers zero every
+    // field, so only the non-zero seeds and the batch-state cascade need writing here.
+    m_aSideAlphaScale[0] = 1.0f;
+    m_aSideAlphaScale[1] = 1.0f;
+    m_nGaugeStyle = kInitialGaugeStyle;
+    m_nTwoSideEnabled = kInitialTwoSideEnabled;
+
+    // Seed the batch-state array: copy each entry forward by one eight-entry window and step the
+    // source up by two, which leaves the first eight entries (the per-batch sprite capacities read by
+    // CreateSprites) at two and the rest zero.
+    for (int i = 0; i < kBatchStateCopyCount; ++i) {
+        m_aBatchState[i + kBatchStateWindow] = m_aBatchState[i];
+        m_aBatchState[i] += kPerBatchCapacityStep;
+    }
+}
+
 /** @ghidraAddress 0x175c90 */
 void ClearGaugeLayer::SetValue(float flValue, unsigned int nSide) {
     assert(static_cast<int>(nSide) >= 0 && static_cast<int>(nSide) < kSideCount);
@@ -136,7 +167,7 @@ void ClearGaugeLayer::CreateSprites() {
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
     for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
         ne::C_SPRITE_INSTANCING_2D *pBatch =
-            ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_anBatchCapacity[nBatch]));
+            ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_aBatchState[nBatch]));
         m_apSprites[nBatch] = pBatch;
         BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject()->AttachChild(pBatch);
         pBatch->SetVisible(true);

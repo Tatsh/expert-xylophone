@@ -192,11 +192,12 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
-    int m_anBatchCapacity[kBatchCount] =
-        {}; // +0x50: each batch's sprite capacity (the build seed).
-    // +0x70..+0x117: the batches' per-slot count/sprite-index bookkeeping the factory seeds;
-    // individual fields are still being worked out.
-    unsigned char m_aLayerState70[0xa8] = {}; // +0x70
+    // +0x50..+0x117: the batch-state array. The constructor's cascade seeds it so the first
+    // kBatchCount entries (read by CreateSprites) become each batch's sprite capacity; the remainder
+    // is per-slot bookkeeping the same cascade zero-fills. It is one contiguous 50-int region because
+    // the constructor's copy loop reads and writes it through two windows eight entries apart.
+    static constexpr int kBatchStateCount = 50;
+    int m_aBatchState[kBatchStateCount] = {}; // +0x50
     bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.
     // +0x119..+0x11f is alignment padding before the fade-tween block.
     unsigned char m_aPad119[7] = {}; // +0x119
