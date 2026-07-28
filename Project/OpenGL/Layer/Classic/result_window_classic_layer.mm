@@ -2,8 +2,12 @@
 
 #include <cassert>
 
+#import "AppDelegate.h"
 #import "AudioManager.h"
+#import "MusicData.h"
 #import "RBViewController.h"
+#include "ScoreTracker.h"
+#import "TwitterImageCreater.h"
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
 #include "engineruntime.h"
@@ -190,6 +194,82 @@ constexpr float kDefaultScale = 1.0f;
 // kFirstUntexturedSlot + kUntexturedSlotSpan - 1 (that is, slots 2 through 6).
 constexpr int kFirstUntexturedSlot = 2;
 constexpr int kUntexturedSlotSpan = 5;
+
+} // namespace
+
+namespace {
+
+// The play-record cell ids the tweet reads per side.
+constexpr unsigned int kCellScore = 0;
+constexpr unsigned int kCellMaxCombo = 2;
+constexpr unsigned int kCellJust = 3;
+constexpr unsigned int kCellGreat = 4;
+constexpr unsigned int kCellGood = 5;
+constexpr unsigned int kCellMiss = 6;
+constexpr unsigned int kCellJustReflec = 7;
+
+// The two score columns (the local player and the rival) the share image draws.
+constexpr int kShareSideCount = 2;
+
+// The achievement rate is reported as a percentage: the stored rate times this scale.
+constexpr float kSharePercentScale = 100.0f; // 1000.0 * 0.1, as the binary computes it.
+
+// The themed sound effect fired when the share begins.
+constexpr int kSoundEffectShare = 5;
+
+// The default player name and the tweet body format (music name, side-one score and rate, and the
+// App Store link), reproduced verbatim from the binary.
+static NSString *const kSharePlayerName = @"なまえ";
+static NSString *const kShareTweetFormat = @"%@をプレー！ Score:%d AR:%0.1f #rb_plus %@";
+static NSString *const kShareStoreUrl =
+    @"http://itunes.apple.com/jp/app/reflec-beat-plus/id472140433";
+
+// Builds the classic result-screen Twitter share image from the current play result and posts it
+// through the view controller. This variant uses the light (white) title and artist images. A free
+// function that reads only the game-system, score-tracker, and app-delegate singletons.
+// @ghidraAddress 0x117628
+void PostResultToTwitter() {
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectShare);
+
+    RBViewController *pViewController = AppDelegate.appDelegate.viewController;
+    if (pViewController == nil) {
+        return;
+    }
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+
+    TwitterImageCreater *pCreater = [[TwitterImageCreater alloc] init];
+    MusicData *pMusic = AppDelegate.appDelegate.musicData;
+    pCreater.titleImage = pMusic.musicNameImageWhite;
+    pCreater.artistImage = pMusic.artistNameImageWhite;
+    pCreater.grade = pGameSystem->GetDifficulty();
+    pCreater.level = pGameSystem->GetDifficultyLevel();
+    pCreater.gameType = pGameSystem->GetGameType();
+    pCreater.noteNum = pTracker->GetTotalNotes();
+
+    for (int nSide = 0; nSide < kShareSideCount; ++nSide) {
+        const unsigned int nUside = static_cast<unsigned int>(nSide);
+        [pCreater setScore:pTracker->GetPlayRecordCell(nUside, kCellScore) Side:nSide];
+        [pCreater setAR:pTracker->GetPlayRecordRate(nUside) Side:nSide];
+        [pCreater setJustNum:pTracker->GetPlayRecordCell(nUside, kCellJust) Side:nSide];
+        [pCreater setGreatNum:pTracker->GetPlayRecordCell(nUside, kCellGreat) Side:nSide];
+        [pCreater setGoodNum:pTracker->GetPlayRecordCell(nUside, kCellGood) Side:nSide];
+        [pCreater setMissNum:pTracker->GetPlayRecordCell(nUside, kCellMiss) Side:nSide];
+        [pCreater setJustReflecNum:pTracker->GetPlayRecordCell(nUside, kCellJustReflec) Side:nSide];
+        [pCreater setMaxComboNum:pTracker->GetPlayRecordCell(nUside, kCellMaxCombo) Side:nSide];
+        [pCreater setName:kSharePlayerName Side:nSide];
+    }
+
+    // The tweet body reports the local player's (side one) score and percentage rate.
+    MusicData *pTweetMusic = AppDelegate.appDelegate.musicData;
+    NSString *musicName = pTweetMusic.musicName;
+    const int nScore = pTracker->GetPlayRecordCell(1, kCellScore);
+    const double flRate = static_cast<double>(pTracker->GetPlayRecordRate(1) * kSharePercentScale);
+    NSString *tweet =
+        [NSString stringWithFormat:kShareTweetFormat, musicName, nScore, flRate, kShareStoreUrl];
+    [pViewController PostTwitter:pCreater Text:tweet];
+}
 
 } // namespace
 
