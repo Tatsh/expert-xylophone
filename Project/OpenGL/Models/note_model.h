@@ -198,7 +198,7 @@ public:
     }
     /** @brief Sets slide sub-point @p nIndex's recorded replay judge (the +0x44 sub-entry slot). */
     void SetSlideReplayJudge(int nIndex, int nJudge) {
-        m_aSubEntries[nIndex].nSeedD = nJudge;
+        m_aSubEntries[nIndex].nIncomingGrade = nJudge;
     }
     /** @brief The note's recorded judge result (from a replay). */
     int GetRecordedJudge() const {
@@ -571,14 +571,18 @@ private:
         float flStartY = {}; // +0x18: the point's start Y.
         float flEndX = {};   // +0x1c: the point's end X.
         float flEndY = {};   // +0x20: the point's end Y.
-        unsigned char aReserved24[8] = {}; // +0x24
+        // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide step
+        // (UpdateStepSlideExisted) along the two axis slopes.
+        float flCurX = {};   // +0x24: the point's current interpolated X.
+        float flCurY = {};   // +0x28: the point's current interpolated Y.
         float flSlopeX = {}; // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
         float flSlopeY = {}; // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
         unsigned char aReserved34[4] = {}; // +0x34
-        int nSeedA = {};                   // +0x38: a seed value (constructed to 5).
-        int nSlidePointJudge = {}; // +0x3c: the slide point's judge result (0 until judged).
-        int nSeedC = {};           // +0x40: a seed value (constructed to 0).
-        int nSeedD = {};           // +0x44: a seed value (constructed to 5).
+        int nResolvedGrade =
+            {}; // +0x38: the slide point's resolved judge grade (constructed to 5).
+        int nSlidePointJudge = {}; // +0x3c: the slide point's judge result / per-point hit tally.
+        int nMissCount = {};       // +0x40: the point's miss/combo tally (constructed to 0).
+        int nIncomingGrade = {};   // +0x44: the incoming grade/kind, 5 while unresolved.
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74

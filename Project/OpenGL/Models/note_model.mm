@@ -200,8 +200,8 @@ NoteModel::NoteModel(void *pSheet) {
     for (SubEntry &entry : m_aSubEntries) {
         entry.nKind = kSubEntryKindNone;
         entry.nIndex = kSubEntryIndexNone;
-        entry.nSeedA = kSubEntrySeed;
-        entry.nSeedD = kSubEntrySeed;
+        entry.nResolvedGrade = kSubEntrySeed;
+        entry.nIncomingGrade = kSubEntrySeed;
     }
     m_bIsPad = IsPad();
 }
@@ -235,8 +235,8 @@ void NoteModel::ResetPlayState() {
         m_aSubEntries[i] = SubEntry{};
         m_aSubEntries[i].nKind = kSubEntryKindNone;
         m_aSubEntries[i].nIndex = kSubEntryIndexNone;
-        m_aSubEntries[i].nSeedA = kSubEntrySeed;
-        m_aSubEntries[i].nSeedD = kSubEntrySeed;
+        m_aSubEntries[i].nResolvedGrade = kSubEntrySeed;
+        m_aSubEntries[i].nIncomingGrade = kSubEntrySeed;
     }
 
     m_bPlayStateFlag510 = false;
@@ -601,8 +601,22 @@ constexpr float kMissPenaltyScale = 3.0f;
 constexpr int kMissScoreDelta = -3;
 // The rival mode of a ghost (replay) note.
 constexpr int kRivalModeGhost = 2;
+// The rival-play mode a scored note skips scoring for.
+constexpr int kRivalModeSpectate = 3;
+// The hold kind whose scored note counts as a hold-bonus hit in the score path.
+constexpr int kScoreHoldKind = 1;
+// The first non-scoring timing grade (a miss).
+constexpr int kGradeMiss = 3;
 // The maximum length of a missed hold note's render tail (@ghidraAddress 0x301f78 = 200).
 constexpr float kShotTailMaxLength = 200.0f;
+// The per-density-tier, per-grade reflec-gauge gain a scored note adds (@ghidraAddress 0x308b84).
+// The row is the chart's density tier (0, 1, or 2); the column is the timing grade (0 through 3).
+constexpr int kGaugeGainGradeCount = 4;
+constexpr float kGaugeGainByTier[][kGaugeGainGradeCount] = {
+    {0.05f, 0.03f, 0.01f, 0.05f},
+    {0.04f, 0.02f, 0.01f, 0.04f},
+    {0.03f, 0.02f, 0.01f, 0.03f},
+};
 } // namespace
 
 /** @ghidraAddress 0x131e3c */
@@ -943,6 +957,258 @@ void NoteModel::UpdateStepLongTouched() {
                            nHoldKind == kScoreHoldKind);
         m_nJudgeGrade = kGradeMiss;
         static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+    }
+}
+
+namespace {
+// The slide step's judge-timing windows around the point's release time: the note's hit time minus
+// the current judge clock gives the signed error, which is graded against nested magnitude bands
+// (just, near, far). The just-high bound reuses the narrow collection-start constant.
+constexpr float kSlideJustHigh = 34.0f;  // 0x2fd00c (shared with g_flCollectionStartYNarrow)
+constexpr float kSlideJustLow = -34.0f;  // 0x308b6c
+constexpr float kSlideNearHigh = 102.0f; // 0x308b70
+constexpr float kSlideNearLow = -102.0f; // 0x308b74
+constexpr float kSlideFarLow = -153.0f;  // 0x308b78
+constexpr float kSlideFarHigh = 153.0f;  // 0x308b64
+// The unresolved slide-point sentinel, the far/miss grade, and the combo cutoff above which an
+// unresolved point misses.
+constexpr int kSlidePointUnresolved = 5;
+constexpr int kSlideGradeMiss = 3;
+constexpr int kSlideComboCutoff = 8;
+} // namespace
+
+/** @ghidraAddress 0x132be0 */
+void NoteModel::UpdateStepSlideExisted() {
+    const float flNow = PlayTimer::shared()->GetPlayTime() * kApproachTimeScale + kApproachTimeBias;
+    const float flDelta = PlayTimer::shared()->GetFrameDelta();
+
+    // Advance each slide point that has not yet passed its end time: pick the active point (the first
+    // whose window contains the clock) and interpolate its live position along its X then Y span.
+    const int nPointCount = m_pRecord->GetSlidePointCount();
+    for (int nPoint = 0; nPoint < nPointCount; ++nPoint) {
+        SubEntry &point = m_aSubEntries[nPoint];
+        if (flNow > point.flTime2) {
+            continue;
+        }
+        if (m_nActiveIndex == -1 && point.flTime0 <= flNow && flNow < point.flTime2) {
+            m_nActiveIndex = nPoint;
+        }
+        if (point.flTime0 <= flNow && flNow < point.flTime1) {
+            // First span: slide the live X toward the end by the X slope; the Y is unchanged.
+            S_VECTOR2 step{point.flSlopeX, 0.0f};
+            ScaleVector2(&step, flDelta);
+            S_VECTOR2 cur{point.flCurX, point.flCurY};
+            AddVector2(&step, &cur);
+            point.flCurX = step.x;
+            point.flCurY = step.y;
+        } else if (flNow >= point.flTime1 && flNow < point.flTime2) {
+            // Second span: slide the live Y by the Y slope, clamped to the end Y, snapping X to end.
+            S_VECTOR2 step{0.0f, point.flSlopeY};
+            ScaleVector2(&step, flDelta);
+            S_VECTOR2 cur{point.flCurX, point.flCurY};
+            AddVector2(&step, &cur);
+            if (point.flEndY < point.flCurY) {
+                step.y = point.flEndY;
+            }
+            point.flCurX = point.flEndX;
+            point.flCurY = step.y;
+        }
+    }
+
+    // Move the note: before its hit time it just advances; otherwise it follows the active point's
+    // segment along X, its per-frame direction stored in the first sub-entry's kind slot.
+    const int nActive = m_nActiveIndex;
+    const float flHitTime = GetHitTime();
+    if (nActive == -1 || flNow <= flHitTime) {
+        AdvancePosition();
+    } else {
+        m_prevPos = m_pos;
+        // The segment's start time: the note's hit time for the first point, else the previous
+        // point's second time.
+        const float flSegStart = nActive == 0 ? flHitTime : m_aSubEntries[nActive - 1].flTime2;
+        SubEntry &active = m_aSubEntries[nActive];
+        // The segment's X velocity is its X span over its time span; the note tracks it toward the
+        // segment's end X, snapping the Y to the segment's end Y. Its per-frame travel direction
+        // (still, right, or left) is recorded in the second active-kind slot.
+        S_VECTOR2 move{(active.flEndX - active.flStartX) / (active.flTime2 - flSegStart), 0.0f};
+        m_velocity.x = move.x;
+        m_velocity.y = 0.0f;
+        if (move.x == 0.0f) {
+            m_nActiveKind2 = 0;
+            move.y = active.flEndY;
+            move.x = active.flEndX;
+        } else if (move.x >= 0.0f) {
+            m_nActiveKind2 = 1;
+            ScaleVector2(&move, flDelta);
+            AddVector2(&move, &m_pos);
+            if (active.flEndX < m_pos.x) {
+                move.x = active.flEndX;
+            }
+        } else {
+            m_nActiveKind2 = 2;
+            ScaleVector2(&move, flDelta);
+            AddVector2(&move, &m_pos);
+            if (m_pos.x < active.flEndX) {
+                move.x = active.flEndX;
+            }
+        }
+        m_pos.x = move.x;
+        m_pos.y = move.y;
+    }
+
+    // Once past the hit time, pin the note to its near-lane target line.
+    if (flHitTime < flNow) {
+        m_pos.y = g_flPlayfieldNearLaneSlopeNeg * GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+    }
+
+    // Decide whether the note is touched this frame (only once the clock is within the release slack
+    // of the hit time).
+    bool bTouched = false;
+    if (flNow > flHitTime + kReleaseWindowSlack) {
+        switch (m_nRivalMode) {
+        case 0:
+            // The auto-assist flag counts the slide as touched outright; otherwise the note is hit
+            // only when a live touch falls within twice the sheet radius of its mirrored position.
+            if (GameSystem::GetGameSystem()->GetPaused()) {
+                bTouched = true;
+            } else {
+                const float flRadius = GameSystem::GetGameSystem()->GetSheetRadius() * 2.0f;
+                const float flRadiusSq = flRadius * flRadius;
+                TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+                NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+                for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
+                    const S_VECTOR2 *pPoint =
+                        pManager->GetOrCacheNotePosition(pTouchManager->GetActiveTouch(i)->nId);
+                    if (pPoint == nullptr) {
+                        continue;
+                    }
+                    const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+                    const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+                    const float flDx = m_pos.x * flMirrorX - pPoint->x;
+                    const float flDy = m_pos.y * flMirrorY - pPoint->y;
+                    if (flDx * flDx + flDy * flDy < flRadiusSq) {
+                        bTouched = true;
+                        break;
+                    }
+                }
+            }
+            break;
+        case 1:
+        case kRivalModeGhost:
+            // A CPU or ghost note counts as touched once the clock reaches its hit time.
+            if (flNow > flHitTime) {
+                bTouched = true;
+                m_bTouched = true;
+            }
+            break;
+        case kRivalModeSpectate:
+            return;
+        default:
+            assert(0);
+        }
+    }
+    m_bPlayStateFlag510 = bTouched;
+
+    // Score the whole slide the first time it is registered as touched: grade the release timing
+    // against the nested just/near/far magnitude bands and resolve the note.
+    bool bScoredThisFrame = m_bScored;
+    if (!m_bScored && bTouched) {
+        if (!m_bTouched) {
+            bScoredThisFrame = false;
+        } else {
+            const float flError = GetHitTime() - GetCurrentJudgeTime();
+            unsigned int nGrade = 0;
+            if (flError >= kSlideJustHigh || flError <= kSlideJustLow) {
+                if (flError >= kSlideNearHigh || flError <= kSlideNearLow) {
+                    nGrade = (flError > kSlideFarLow && flError < kSlideFarHigh) ? 2 : 3;
+                } else {
+                    nGrade = 1;
+                }
+            }
+            // The first slide point's incoming grade gates whether the timing grade counts (a slide
+            // that never registered a point scores as a plain hit).
+            const unsigned int nResolveGrade = m_aSubEntries[0].nIncomingGrade != 0 ? nGrade : 0;
+            ResolveNoteHit(nResolveGrade);
+            bScoredThisFrame = true;
+            m_bScored = true;
+        }
+    }
+
+    // Tally the frame's outcome onto the active point once past the hit time: an unscored frame (or a
+    // scored frame that was not touched this frame) bumps the point's miss/combo tally, while a
+    // scored-and-touched frame bumps its hit tally (the resolve loop reads a zero hit tally as a miss).
+    if (GetHitTime() <= flNow) {
+        if (!bScoredThisFrame) {
+            if (m_nActiveIndex >= 0) {
+                ++m_aSubEntries[m_nActiveIndex].nMissCount;
+            }
+        } else {
+            if (!m_bPlayStateFlag510 && m_nActiveIndex >= 0) {
+                ++m_aSubEntries[m_nActiveIndex].nMissCount;
+            }
+            if (m_bPlayStateFlag510 && m_nActiveIndex >= 0) {
+                ++m_aSubEntries[m_nActiveIndex].nSlidePointJudge;
+            }
+        }
+    }
+
+    // Resolve each passed, still-unresolved slide point: pick its grade, fire its burst and tap
+    // sound (unless it grades far), and add its score and gauge gain.
+    for (int nPoint = 0; nPoint < m_pRecord->GetSlidePointCount(); ++nPoint) {
+        SubEntry &point = m_aSubEntries[nPoint];
+        if (!(point.flTime2 < flNow && point.nResolvedGrade == kSlidePointUnresolved)) {
+            continue;
+        }
+
+        if (point.nIncomingGrade == kSlidePointUnresolved) {
+            if (point.nSlidePointJudge == 0 || point.nMissCount > kSlideComboCutoff) {
+                point.nResolvedGrade = kSlideGradeMiss;
+            } else {
+                point.nResolvedGrade = 0;
+                ExplosionEffectLayer::shared()->CreateExplosionEffect(
+                    static_cast<unsigned int>(GetSide()),
+                    point.nResolvedGrade,
+                    m_pos.x * (IsSideFlipped() ? 1.0f : -1.0f),
+                    m_pos.y * (IsSideFlipped() ? -1.0f : 1.0f));
+                PlayNoteTapSound(0, true);
+            }
+        } else {
+            point.nResolvedGrade = point.nIncomingGrade;
+            if (point.nResolvedGrade != kSlideGradeMiss) {
+                ExplosionEffectLayer::shared()->CreateExplosionEffect(
+                    static_cast<unsigned int>(GetSide()),
+                    point.nResolvedGrade,
+                    m_pos.x * (IsSideFlipped() ? 1.0f : -1.0f),
+                    m_pos.y * (IsSideFlipped() ? -1.0f : 1.0f));
+                PlayNoteTapSound(0, true);
+            }
+        }
+
+        ScoreTracker *pTracker = ScoreTracker::shared();
+        const int nSide = GetSide();
+        const float flMirrorX = IsSideFlipped() ? 1.0f : -1.0f;
+        const float flMirrorY = IsSideFlipped() ? -1.0f : 1.0f;
+        const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                     (m_bOwnSide ? 0 : kBoundsColorOwnSide);
+        pTracker->AddScore(nSide,
+                           static_cast<int>(m_pos.x * flMirrorX),
+                           static_cast<int>(m_pos.y * flMirrorY),
+                           point.nResolvedGrade,
+                           0,
+                           nHoldKind == kScoreHoldKind);
+
+        ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+        const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+        ReflecGaugeLayer::AddReflecGaugeValue(
+            kGaugeGainByTier[nTier][point.nResolvedGrade], pGauge, nSide);
+    }
+
+    // Finish the note once the last slide point's second-time boundary has passed.
+    const int nLast = m_pRecord->GetSlidePointCount() - 1;
+    if (m_aSubEntries[nLast].flTime2 < flNow) {
+        m_nState = kNoteStateFinished;
+        m_nSubState = 0;
+        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, GetSide());
     }
 }
 
@@ -1499,27 +1765,9 @@ void NoteModel::UpdateNotePathLinks() {
 namespace {
 
 // The note-record types that take the held/slide resolution paths (every other type is a normal
-// tap note).
+// tap note). The rival-mode, hold-kind, grade, and gauge-gain constants shared with the step
+// handlers are defined earlier in this file.
 constexpr int kNoteTypeSlide = 3;
-
-// The rival-play mode a scored note skips scoring for.
-constexpr int kRivalModeSpectate = 3;
-
-// The hold kind whose scored note counts as a hold-bonus hit in the score path.
-constexpr int kScoreHoldKind = 1;
-
-// The first non-scoring timing grade: a slide note judged at or worse than this is dropped without
-// a tap sound.
-constexpr int kGradeMiss = 3;
-
-// The per-density-tier, per-grade reflec-gauge gain the scored note adds (@ghidraAddress 0x308b84).
-// The row is the chart's density tier (0, 1, or 2); the column is the timing grade (0 through 3).
-constexpr int kGaugeGainGradeCount = 4;
-constexpr float kGaugeGainByTier[][kGaugeGainGradeCount] = {
-    {0.05f, 0.03f, 0.01f, 0.05f},
-    {0.04f, 0.02f, 0.01f, 0.04f},
-    {0.03f, 0.02f, 0.01f, 0.03f},
-};
 
 } // namespace
 
