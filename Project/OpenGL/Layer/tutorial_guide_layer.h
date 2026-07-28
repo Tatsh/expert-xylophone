@@ -91,7 +91,40 @@ public:
      */
     void Release();
 
+    /**
+     * @brief The per-frame update dispatcher.
+     *
+     * On the phone (non-pad) it first refreshes the portrait flag from the game system's current
+     * viewport dimensions. It then branches on the fade state: an active state (low byte non-zero)
+     * animates the finger sprites; an idle state below the hidden threshold does nothing; and the
+     * hidden/fade-out state advances the tutorial state machine and renders the result overlay.
+     * @param flDeltaTime The frame's elapsed time, in seconds.
+     * @ghidraAddress 0x10b778
+     */
+    void Update(float flDeltaTime);
+
 private:
+    /**
+     * @brief Advances and draws the animated tutorial finger sprites for the frame.
+     * @param flDeltaTime The frame's elapsed time, in seconds.
+     * @ghidraAddress 0x10b828
+     */
+    void AnimateFingerSprites(float flDeltaTime);
+
+    /**
+     * @brief Advances the tutorial fade-out state machine.
+     * @param flDeltaTime The frame's elapsed time, in seconds.
+     * @ghidraAddress 0x10c430
+     */
+    void AdvanceStateMachine(float flDeltaTime);
+
+    /**
+     * @brief Renders the tutorial result overlay during the fade-out phase.
+     * @param flDeltaTime The frame's elapsed time, in seconds.
+     * @ghidraAddress 0x10c5f8
+     */
+    void RenderResultOverlay(float flDeltaTime);
+
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state
      * (the texture, sprite, counts, flags, animation clock, and coordinate table).

@@ -265,6 +265,26 @@ void TutorialGuideLayer::Release() {
     m_bBuilt = false;
 }
 
+/** @ghidraAddress 0x10b778 */
+void TutorialGuideLayer::Update(float flDeltaTime) {
+    if (!m_bIsPad) {
+        const bool bPortrait = GameSystem::GetGameSystem()->GetViewportWidth() <=
+                               GameSystem::GetGameSystem()->GetViewportHeight();
+        if (bPortrait != m_bPortrait) {
+            m_bPortrait = bPortrait;
+        }
+    }
+    if ((m_nFadeState & 0xff) != 0) {
+        AnimateFingerSprites(flDeltaTime);
+        return;
+    }
+    if (static_cast<unsigned short>(m_nFadeState) < kFadeStateHidden) {
+        return;
+    }
+    AdvanceStateMachine(flDeltaTime);
+    RenderResultOverlay(flDeltaTime);
+}
+
 /** @ghidraAddress 0x10b400 */
 void TutorialGuideLayer::destroyShared() {
     if (g_pTutorialGuideLayer != nullptr) {
