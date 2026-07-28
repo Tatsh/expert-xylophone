@@ -249,8 +249,15 @@ public:
     void UpdateStepShot();
 
     /**
-     * @brief The state-machine approach step (state 1): tracks the note's lead-in until its path
-     * head time is reached, then links its path and advances it. Reconstruction pending.
+     * @brief The state-machine approach step (state 1): eases the note in until it reaches the play
+     * field, then hands it to its existing/slide state.
+     *
+     * Once the play clock passes the note's hit time, links its path and finishes it (state 8).
+     * Otherwise it advances the appearance progress from the note's spawn epoch, scaled by the
+     * record's resolved scroll speed. Below full progress it stores the eased appearance scale and
+     * progress fraction; at full progress it snaps to full scale, clears the shot direction, and
+     * enters the existing state (state 2) or, for a slide note, the slide state (state 5) after
+     * computing each slide point's interpolation times and slopes.
      * @ghidraAddress 0x131bc0
      */
     void UpdateStepApproach();
@@ -537,10 +544,22 @@ private:
     // One per-note sub-entry (a hold/slide segment slot): its kind, source note index, and seeded
     // state, filled by the constructor. The 0x48-byte stride and field roles are from the ctor.
     struct SubEntry {
-        int nKind = {};                       // +0x00: the segment kind (5 = none).
-        int nIndex = {};                      // +0x04: the source note index (-1 = none).
-        unsigned char aReserved08[0x30] = {}; // +0x08: per-segment state, still being worked out.
-        int nSeedA = {};                      // +0x38: a seed value (constructed to 5).
+        int nKind = {};  // +0x00: the segment kind (5 = none).
+        int nIndex = {}; // +0x04: the source note index (-1 = none).
+        // +0x08..+0x20: this slide point's three interpolation times and its start/end control
+        // positions, set by the approach step's slide-path setup (UpdateStepApproach).
+        float flTime0 = {};  // +0x08: the point's first interpolation time.
+        float flTime1 = {};  // +0x0c: the point's second interpolation time.
+        float flTime2 = {};  // +0x10: the point's third interpolation time (the pre-seeded time).
+        float flStartX = {}; // +0x14: the point's start X.
+        float flStartY = {}; // +0x18: the point's start Y.
+        float flEndX = {};   // +0x1c: the point's end X.
+        float flEndY = {};   // +0x20: the point's end Y.
+        unsigned char aReserved24[8] = {}; // +0x24
+        float flSlopeX = {}; // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
+        float flSlopeY = {}; // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
+        unsigned char aReserved34[4] = {}; // +0x34
+        int nSeedA = {};                   // +0x38: a seed value (constructed to 5).
         int nSlidePointJudge = {}; // +0x3c: the slide point's judge result (0 until judged).
         int nSeedC = {};           // +0x40: a seed value (constructed to 0).
         int nSeedD = {};           // +0x44: a seed value (constructed to 5).
@@ -566,9 +585,12 @@ private:
     WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
     bool m_bLongNoteActive = {};          // +0x5c8: set while a long note is held, cleared when
                                           //         the note is hit and finalised.
-    unsigned char m_aReserved5c9[7] = {}; // +0x5c9
-    float m_flFadeTimer = {};             // +0x5d0: the fade-out step's decaying timer.
-    unsigned char m_aReserved5d4[4] = {}; // +0x5d4
+    unsigned char m_aReserved5c9[3] = {}; // +0x5c9
+    float m_flAppearScale = {};           // +0x5cc: the approach step's appearance scale, eased in.
+    float m_flFadeTimer =
+        {};                  // +0x5d0: the fade-out step's decaying timer, also the approach step's
+                             //         appearance progress fraction.
+    float m_flBornTime = {}; // +0x5d4: the note's spawn epoch, the approach progress's start time.
     // +0x5d8: the two render draw flags, packed as one 16-bit store {bDrawFlag0, bDrawFlag1}.
     unsigned short m_wDrawFlags = {};
     bool m_bScored = {}; // +0x5da: set once a normal (non-held) note has been scored and finalised.

@@ -509,6 +509,84 @@ void NoteModel::UpdateStepShot() {
     }
 }
 
+namespace {
+// The approach step's appearance-progress and slide-path constants.
+constexpr float kApproachTimeScale = 1000.0f;  // The play-clock to note-time scale (0x2f8540).
+constexpr float kApproachTimeBias = -1500.0f;  // The play-clock lead-in bias (0x308b60).
+constexpr float kApproachSpeedDivisor = 60.0f; // The scroll-speed-to-progress divisor (0x2f8578).
+constexpr int kNoteTypeSlideApproach = 3;      // The record type that takes the slide path.
+// The appearance-progress-to-scale easing (a double-precision ramp): scale = frac * 0.2 + 0.8
+// (@ghidraAddress 0x2eece8 slope, 0x2eea40 bias).
+constexpr double kAppearScaleSlope = 0.2;
+constexpr double kAppearScaleBias = 0.8;
+} // namespace
+
+/** @ghidraAddress 0x131bc0 */
+void NoteModel::UpdateStepApproach() {
+    const float flNow = PlayTimer::shared()->GetPlayTime() * kApproachTimeScale + kApproachTimeBias;
+    const float flHitTime = GetHitTime();
+    if (flHitTime <= flNow) {
+        // The note reached the field before appearing: link its path and finish it.
+        UpdateNotePathLinks();
+        m_nState = kNoteStateFinished;
+        m_nSubState = 0;
+        return;
+    }
+
+    // The appearance progress runs from the spawn epoch, scaled by the record's resolved scroll
+    // speed (the end speed when the note is on-screen, else the start speed).
+    const float flScrollSpeed = m_pRecord->IsScrollVisible() ? m_pRecord->GetScrollEndSpeed() :
+                                                               m_pRecord->GetScrollStartSpeed();
+    float flProgress =
+        (flNow - m_flBornTime) * ((flScrollSpeed / kApproachSpeedDivisor) / kApproachTimeScale);
+    if (flProgress < 0.0f) {
+        flProgress = 0.0f;
+    }
+
+    if (flProgress < 1.0f) {
+        // Still appearing: ease the scale from its fractional progress and store the raw fraction.
+        const float flFraction = flProgress - static_cast<float>(static_cast<int>(flProgress));
+        float flScale = static_cast<float>(static_cast<double>(flFraction) * kAppearScaleSlope +
+                                           kAppearScaleBias);
+        if (flScale < 0.0f || 1.0f < flScale) {
+            flScale = 0.0f;
+        }
+        m_flAppearScale = flScale;
+        m_flFadeTimer = (flFraction < 0.0f || 1.0f < flFraction) ? 0.0f : flFraction;
+        return;
+    }
+
+    // Fully appeared: snap to full scale, clear the shot direction, and enter the next state.
+    m_flAppearScale = 1.0f;
+    m_flFadeTimer = 1.0f;
+    SetShotDirection(0);
+    if (m_pRecord == nullptr || m_pRecord->GetType() != kNoteTypeSlideApproach) {
+        m_nState = kNoteStateExisting;
+        m_nSubState = 0;
+        return;
+    }
+
+    // A slide note enters the slide state and sets up each slide point's interpolation.
+    m_nState = kNoteStateSlideExisting;
+    m_nSubState = 0;
+    const float flInsetHalfY = GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+    // The time offset that aligns every slide point's clock to the note-field crossing.
+    const float flTimeOffset = (g_flPlayfieldNearLaneSlopeNeg * flInsetHalfY -
+                                g_flPlayfieldExtraLaneSlopeNeg * flInsetHalfY) /
+                               m_velocity.y;
+    for (int nPoint = 0; nPoint < m_pRecord->GetSlidePointCount(); ++nPoint) {
+        SubEntry &point = m_aSubEntries[nPoint];
+        point.flTime1 = point.flTime2 - flTimeOffset;
+        if (nPoint == 0) {
+            point.flTime0 = flHitTime - flTimeOffset;
+        } else {
+            point.flTime0 = m_aSubEntries[nPoint - 1].flTime2 - flTimeOffset;
+        }
+        point.flSlopeX = (point.flEndX - point.flStartX) / (point.flTime1 - point.flTime0);
+        point.flSlopeY = (point.flEndY - point.flStartY) / (point.flTime2 - point.flTime1);
+    }
+}
+
 /** @ghidraAddress 0x131b64 */
 void NoteModel::UpdateStep() {
     switch (m_nState) {
