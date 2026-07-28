@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -62,6 +64,29 @@ public:
     }
 
 private:
+    /**
+     * @brief Appends one zoom-effect sprite to one of the manager's instancers, if capacity remains.
+     *
+     * Looks up one of the manager's sprite instancers by @p nSlotIndex; if it still has a free slot,
+     * writes a full instance there — the caller's position, the anchor and pixel size from the
+     * zoom-effect layout table (indexed by @p nLayoutIndex), the UV rectangle from the shared sprite
+     * atlas (the layout record's atlas frame), the caller's scale, and opaque white at @p nAlpha —
+     * then bumps the instancer's slot count. A no-op when the instancer is already full.
+     * @param flScaleX The instance's X scale.
+     * @param flScaleY The instance's Y scale.
+     * @param nSlotIndex The manager's sprite-instancer index.
+     * @param nLayoutIndex The zoom-effect layout-table index (its anchor, size, and atlas frame).
+     * @param pPosition The instance's screen position.
+     * @param nAlpha The instance's alpha.
+     * @ghidraAddress 0x10b1e0
+     */
+    void PushSpriteInstanceSlot(float flScaleX,
+                                float flScaleY,
+                                unsigned int nSlotIndex,
+                                unsigned int nLayoutIndex,
+                                const S_VECTOR2 *pPosition,
+                                int nAlpha);
+
     /**
      * @brief Constructs the manager, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x10a7d8
