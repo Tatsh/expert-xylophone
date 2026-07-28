@@ -69,6 +69,18 @@ public:
     void SetEventBackgroundQuad(int nAlpha);
 
     /**
+     * @brief Advances the event effect one frame and re-emits its animated sprites.
+     *
+     * Caches the viewport, clears the main instancer, and — while active — advances the effect timer
+     * (deactivating and clearing the background once it runs out), plays the banner sound on the
+     * first live frame, then fades the background quad and emits the centred banner, the three
+     * curve-swept side icons, and a mode-dependent extra sprite, all driven by the timer curves.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x1be5dc
+     */
+    void Update(float flDeltaTime);
+
+    /**
      * @brief Appends one event sprite to the main instancer at a world position, at the given scale
      * and alpha.
      *
@@ -95,14 +107,16 @@ private:
     ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
     int m_nSpriteCount = {}; // +0x20: the main instancer's initial sprite count.
     bool m_bBuilt = {};      // +0x24: set once the sprites are built.
-    // +0x25..+0x2f is further layer state (still being worked out) preceding the active flag.
-    unsigned char m_aReserved25[0xb] = {}; // +0x25
-    bool m_bActive = {};                   // +0x30: whether the effect is currently playing.
-    unsigned char m_aReserved31[3] = {};   // +0x31
-    float m_flTimer = {};                  // +0x34: the effect animation timer, in frames.
-    int m_nMode = {};                      // +0x38: a mode field the getter zero-clears.
-    bool m_bSoundFlag = {};                // +0x3c: a sound flag the getter zero-clears.
-    unsigned char m_aReserved3d[3] = {};   // +0x3d: padding to the 0x40-byte allocation size.
+    unsigned char m_aReserved25[3] =
+        {};                        // +0x25: alignment padding before the cached viewport size.
+    float m_flViewportWidth = {};  // +0x28: the viewport width cached each frame.
+    float m_flViewportHeight = {}; // +0x2c: the viewport height cached each frame.
+    bool m_bActive = {};           // +0x30: whether the effect is currently playing.
+    unsigned char m_aReserved31[3] = {}; // +0x31
+    float m_flTimer = {};                // +0x34: the effect animation timer, in frames.
+    int m_nMode = {};                    // +0x38: a mode field the getter zero-clears.
+    bool m_bSoundFlag = {};              // +0x3c: a sound flag the getter zero-clears.
+    unsigned char m_aReserved3d[3] = {}; // +0x3d: padding to the 0x40-byte allocation size.
 };
 
 // code: language=C++
