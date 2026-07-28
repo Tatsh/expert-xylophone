@@ -1118,6 +1118,12 @@ EXCLUDED_ADDRS = {
                 # Objective-C method, tracked on the ObjC side, not the C/C++ checklist.
     '0x1c3ccc', # InitializeGregorianCalendar — a dispatch_once block inside SSZipArchive.m's
                 # -_dateWithMSDOSFormat: (bundled third-party 3rdparty/), not ours to reconstruct.
+    '0xad800',  # HandleShowNetworkErrorAlertNoDelegate — a compiler-emitted global (no-capture)
+                # block ([UIAlertView showNetworkErrorWithDelegate:nil]) in the RBMenuView
+                # store/terms translation unit whose literal (0x35c0e0) is loaded by no code
+                # anywhere in the program (verified: no page-address load of its literal, no stored
+                # pointer, only a link-edit rebase fixup); the shipped SelectStoreButton wires the
+                # delegate twin (0xad8bc). A dead emitted block body, nothing to reconstruct.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
