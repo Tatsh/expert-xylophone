@@ -53,6 +53,21 @@ public:
     void CreateExplosionEffect(unsigned int nColor, int nJudge, float flPosX, float flPosY);
 
     /**
+     * @brief Advances every live burst for one frame and re-emits its sprite.
+     *
+     * Clears both banks' live sprite counts, then for each colour bank whose effect type is enabled:
+     * picks the per-bank play-colour alpha and mirror rotation from whether the bank matches the
+     * game system's current play colour, and for each active slot advances its animation timer by the
+     * frame delta, deactivating it once past the burst lifetime, otherwise (while the bank's alpha is
+     * non-zero) emitting the slot's sprite at the animation frame's UV cell from the burst UV table
+     * (indexed by the slot's judgement and its clamped animation phase). Finally publishes each bank's
+     * live sprite count to its instancer.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x177260
+     */
+    void Process(float flDeltaTime);
+
+    /**
      * @brief Sets a colour bank's explosion texture type, rebinding its instancer texture and
      * clearing every effect slot when the type changes.
      * @param nColor The player-colour bank (0 or 1).
@@ -108,7 +123,7 @@ private:
     struct EffectEntry {
         bool bActive = {};              // +0x00: whether the slot holds a live burst.
         unsigned char m_aPad01[3] = {}; // +0x01
-        int nTimer = {};                // +0x04: the burst animation timer.
+        float flTimer = {};             // +0x04: the burst animation timer, advanced each frame.
         int nJudge = {};                // +0x08: the judgement type that spawned the burst.
         float flPosX = {};              // +0x0c: the burst X position.
         float flPosY = {};              // +0x10: the burst Y position.

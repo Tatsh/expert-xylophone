@@ -11,6 +11,7 @@
 #include <cassert>
 
 #include "bg_layer.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -110,13 +111,157 @@ void ExplosionEffectLayer::CreateExplosionEffect(unsigned int nColor,
     for (int nSlot = 0; nSlot < kSlotsPerBank; ++nSlot) {
         EffectEntry &entry = m_aBanks[nColor][nSlot];
         if (!entry.bActive) {
-            entry.nTimer = 0;
+            entry.flTimer = 0.0f;
             entry.nJudge = nJudge;
             entry.bActive = true;
             entry.flPosX = flPosX;
             entry.flPosY = flPosY;
             return;
         }
+    }
+}
+
+namespace {
+// The burst animation UV table (@ghidraAddress 0x3deb60, built once by a compile-generated one-shot
+// from scattered source constants): 72 atlas-cell UV origins, indexed by the burst's judgement type
+// times twenty-four plus its clamped animation phase. Each row of twelve shares a V; the U ramps
+// across the atlas in twelfths.
+constexpr S_VECTOR2 kBurstUvCells[] = {
+    {0.0f, 0.6640625f},
+    {0.08300781f, 0.6640625f},
+    {0.16601562f, 0.6640625f},
+    {0.24902344f, 0.6640625f},
+    {0.33203125f, 0.6640625f},
+    {0.41503906f, 0.6640625f},
+    {0.49804688f, 0.6640625f},
+    {0.5810547f, 0.6640625f},
+    {0.6640625f, 0.6640625f},
+    {0.7470703f, 0.6640625f},
+    {0.8300781f, 0.6640625f},
+    {0.91308594f, 0.6640625f},
+    {0.0f, 0.8300781f},
+    {0.08300781f, 0.8300781f},
+    {0.16601562f, 0.8300781f},
+    {0.24902344f, 0.8300781f},
+    {0.33203125f, 0.8300781f},
+    {0.41503906f, 0.8300781f},
+    {0.49804688f, 0.8300781f},
+    {0.5810547f, 0.8300781f},
+    {0.6640625f, 0.8300781f},
+    {0.7470703f, 0.8300781f},
+    {0.8300781f, 0.8300781f},
+    {0.91308594f, 0.8300781f},
+    {0.0f, 0.33203125f},
+    {0.08300781f, 0.33203125f},
+    {0.16601562f, 0.33203125f},
+    {0.24902344f, 0.33203125f},
+    {0.33203125f, 0.33203125f},
+    {0.41503906f, 0.33203125f},
+    {0.49804688f, 0.33203125f},
+    {0.5810547f, 0.33203125f},
+    {0.6640625f, 0.33203125f},
+    {0.7470703f, 0.33203125f},
+    {0.8300781f, 0.33203125f},
+    {0.91308594f, 0.33203125f},
+    {0.0f, 0.49804688f},
+    {0.08300781f, 0.49804688f},
+    {0.16601562f, 0.49804688f},
+    {0.24902344f, 0.49804688f},
+    {0.33203125f, 0.49804688f},
+    {0.41503906f, 0.49804688f},
+    {0.49804688f, 0.49804688f},
+    {0.5810547f, 0.49804688f},
+    {0.6640625f, 0.49804688f},
+    {0.7470703f, 0.49804688f},
+    {0.8300781f, 0.49804688f},
+    {0.91308594f, 0.49804688f},
+    {0.0f, 0.0f},
+    {0.08300781f, 0.0f},
+    {0.16601562f, 0.0f},
+    {0.24902344f, 0.0f},
+    {0.33203125f, 0.0f},
+    {0.41503906f, 0.0f},
+    {0.49804688f, 0.0f},
+    {0.5810547f, 0.0f},
+    {0.6640625f, 0.0f},
+    {0.7470703f, 0.0f},
+    {0.8300781f, 0.0f},
+    {0.91308594f, 0.0f},
+    {0.0f, 0.16601562f},
+    {0.08300781f, 0.16601562f},
+    {0.16601562f, 0.16601562f},
+    {0.24902344f, 0.16601562f},
+    {0.33203125f, 0.16601562f},
+    {0.41503906f, 0.16601562f},
+    {0.49804688f, 0.16601562f},
+    {0.5810547f, 0.16601562f},
+    {0.6640625f, 0.16601562f},
+    {0.7470703f, 0.16601562f},
+    {0.8300781f, 0.16601562f},
+    {0.91308594f, 0.16601562f},
+};
+// The animation phase count and the frame time per phase (@ghidraAddress 0x30c9b0 = 16.667).
+constexpr int kBurstPhaseCount = 24;
+constexpr float kBurstFrameTime = 16.66666603f;
+// The burst lifetime past which a slot is deactivated (@ghidraAddress 0x302d6c = 400).
+constexpr float kBurstLifetime = 400.0f;
+// The mirror rotation applied to a bank that does not match the current play colour (pi), and none
+// for the matching bank (@ghidraAddress 0x30ca90 = {pi, 0}).
+constexpr float kBurstMirrorRotation = 3.1415927f;
+// The effect type value that disables a bank.
+constexpr int kEffectTypeOff = 0x14;
+} // namespace
+
+/** @ghidraAddress 0x177260 */
+void ExplosionEffectLayer::Process(float flDeltaTime) {
+    m_aSpriteCount[0] = 0;
+    m_aSpriteCount[1] = 0;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    for (int nBank = 0; nBank < kBankCount; ++nBank) {
+        if (m_aEffectType[nBank] == kEffectTypeOff) {
+            continue;
+        }
+
+        // A bank matching the current play colour draws upright at its own alpha; the other bank is
+        // mirrored a half turn.
+        const bool bColorMatch = pGameSystem->GetPlayColor() == nBank;
+        const unsigned int nAlpha = m_aPlayColorAlpha[bColorMatch ? 1 : 0];
+        const float flRotation = bColorMatch ? 0.0f : kBurstMirrorRotation;
+
+        for (int nSlot = 0; nSlot < kSlotsPerBank; ++nSlot) {
+            EffectEntry &entry = m_aBanks[nBank][nSlot];
+            if (!entry.bActive) {
+                continue;
+            }
+            entry.flTimer += flDeltaTime;
+            if (entry.flTimer > kBurstLifetime) {
+                entry.bActive = false;
+                continue;
+            }
+            // The bank's alpha gates emission; a zeroed alpha skips the burst this frame.
+            if (nAlpha == 0) {
+                continue;
+            }
+
+            int nPhase = static_cast<int>(entry.flTimer / kBurstFrameTime);
+            if (nPhase < 0) {
+                nPhase = 0;
+            } else if (nPhase > kBurstPhaseCount - 1) {
+                nPhase = kBurstPhaseCount - 1;
+            }
+            const S_VECTOR2 &uvOrigin = kBurstUvCells[entry.nJudge * kBurstPhaseCount + nPhase];
+            SetExplosionEffectSprite(static_cast<unsigned int>(nBank),
+                                     &entry.flPosX,
+                                     &uvOrigin,
+                                     static_cast<int>(nAlpha),
+                                     flRotation);
+        }
+    }
+
+    // Publish each bank's live sprite count to its instancer.
+    for (int nBank = 0; nBank < kBankCount; ++nBank) {
+        m_apSprites[nBank]->SetSpriteCount(m_aSpriteCount[nBank]);
     }
 }
 
@@ -138,7 +283,7 @@ void ExplosionEffectLayer::SetEffectType(unsigned int nColor, int nType) {
     for (int nBank = 0; nBank < kBankCount; ++nBank) {
         for (int nSlot = 0; nSlot < kSlotsPerBank; ++nSlot) {
             m_aBanks[nBank][nSlot].bActive = false;
-            m_aBanks[nBank][nSlot].nTimer = 0;
+            m_aBanks[nBank][nSlot].flTimer = 0.0f;
         }
     }
 }
