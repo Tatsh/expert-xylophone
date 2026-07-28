@@ -6,6 +6,7 @@
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
 #include "engineruntime.h"
+#include "float_tween.h"
 #import "gamesystem.h"
 #include "leveltables.h"
 #include "neSpriteInstancing.h"
@@ -1425,5 +1426,95 @@ void ResultWindowClassicLayer::UpdateGestureHoldTimer(float flDeltaTime) {
     if (m_flGestureHoldTimer > kGestureHoldTimeout) {
         m_bScoreAnimActive = false;
         SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kGestureReleaseVoiceId);
+    }
+}
+
+namespace {
+// The Update timers' constants.
+// The positive slide-timer divisor (the timer counts toward zero) (@ghidraAddress 0x2fd050 = -300).
+constexpr float kSlideTimerRateDown = -300.0f;
+// The negative slide-timer divisor (@ghidraAddress 0x2eedcc = 300).
+constexpr float kSlideTimerRateUp = 300.0f;
+// The two decoration rotation counters' wrap periods.
+constexpr int kRotationWrapA = 400;
+constexpr int kRotationWrapB = 0xc0;
+// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
+constexpr float kRotationFramesPerIndex = 48.0f;
+// The last decoration animation frame index.
+constexpr int kRotationFrameMax = 3;
+
+// The five score channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+constexpr int kScoreAdvanceOrder[] = {0, 1, 3, 2, 4};
+} // namespace
+
+/** @ghidraAddress 0x11c1bc */
+void ResultWindowClassicLayer::Update(float flDeltaTime) {
+    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
+    if (!IsPad()) {
+        const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
+        const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
+        if (bPortrait != m_bPortrait) {
+            m_bPortrait = bPortrait;
+        }
+    }
+
+    // Advance the five score/effect channels. Each shares FloatTween's six-float layout and the
+    // binary drives it through FloatTween::Advance, so advance each through that view.
+    for (int nChannel : kScoreAdvanceOrder) {
+        reinterpret_cast<FloatTween *>(&m_aScoreAnimChannels[nChannel])->Advance(flDeltaTime);
+    }
+
+    // Advance the signed slide/settle timer toward zero, at differing rates by sign, clamping on the
+    // zero crossing.
+    if (m_flSlideTimer > 0.0f) {
+        m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
+        if (m_flSlideTimer < 0.0f) {
+            m_flSlideTimer = 0.0f;
+        }
+    } else if (m_flSlideTimer < 0.0f) {
+        m_flSlideTimer += flDeltaTime / kSlideTimerRateUp;
+        if (m_flSlideTimer > 0.0f) {
+            m_flSlideTimer = 0.0f;
+        }
+    }
+
+    // The four ribbon trails: advance them on an iPad, hide their meshes otherwise.
+    if (IsPad()) {
+        const int nDelta = static_cast<int>(flDeltaTime);
+        for (Polygon2dTrail *pTrail : m_apTrails) {
+            pTrail->Update(nDelta);
+        }
+    } else {
+        for (Polygon2dTrail *pTrail : m_apTrails) {
+            pTrail->HideMesh();
+        }
+    }
+
+    // Advance the two decoration rotation counters (the first wraps every 400 frames, the second
+    // every 192) and derive the second's animation frame index.
+    m_nRotationCounterA =
+        static_cast<int>(static_cast<float>(m_nRotationCounterA) + flDeltaTime) % kRotationWrapA;
+    int nCounterB = static_cast<int>(static_cast<float>(m_nRotationCounterB) + flDeltaTime);
+    if (nCounterB > kRotationWrapB) {
+        nCounterB %= kRotationWrapB;
+    }
+    m_nRotationCounterB = nCounterB;
+    int nFrame = static_cast<int>(static_cast<float>(nCounterB) / kRotationFramesPerIndex);
+    if (nFrame < 0) {
+        nFrame = 0;
+    }
+    if (nFrame > kRotationFrameMax) {
+        nFrame = kRotationFrameMax;
+    }
+    m_nRotationFrame = nFrame;
+
+    UpdateGestureHoldTimer(flDeltaTime);
+    UpdateTouchAndPostTwitterShare();
+
+    // Dispatch to the iPad or phone render path.
+    if (IsPad()) {
+        RenderResultScoreLayerActive(flDeltaTime);
+    } else {
+        RenderResultScoreLayerIdle(flDeltaTime);
     }
 }

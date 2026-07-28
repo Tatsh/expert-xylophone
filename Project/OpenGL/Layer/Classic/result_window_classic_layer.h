@@ -72,6 +72,42 @@ public:
     void UpdateGestureHoldTimer(float flDeltaTime);
 
     /**
+     * @brief The per-frame result-score-window update: advances the score/effect animation channels
+     * and rotating decorations, updates the gesture-hold timer and the touch/Twitter-share state,
+     * then dispatches to the iPad or phone render path.
+     *
+     * Off an iPad it first recomputes the portrait-orientation flag from the game system's viewport.
+     * It advances the five score channels, the signed slide/settle timer (toward zero, at differing
+     * rates by sign), the four ribbon trails (advancing them on an iPad, hiding their meshes
+     * otherwise), and two rotation counters (wrapping at 400 and 192 frames, the frame index the
+     * second counter over 48, clamped to 0 through 3).
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x11c1bc
+     */
+    void Update(float flDeltaTime);
+
+    /**
+     * @brief Renders the result-score window on the iPad (landscape) path. Reconstruction pending.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x117b84
+     */
+    void RenderResultScoreLayerActive(float flDeltaTime);
+
+    /**
+     * @brief Renders the result-score window on the phone (portrait) path. Reconstruction pending.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x11a10c
+     */
+    void RenderResultScoreLayerIdle(float flDeltaTime);
+
+    /**
+     * @brief Updates the result screen's touch handling and posts the score to Twitter on the share
+     * gesture. Reconstruction pending.
+     * @ghidraAddress 0x1173d8
+     */
+    void UpdateTouchAndPostTwitterShare();
+
+    /**
      * @brief Resets the result-screen score/level display block to its per-round defaults.
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
@@ -601,13 +637,22 @@ private:
     float m_flDefaultScale = {};       // +0x60: the default sprite scale (1.0).
     int m_nNetworkPlay =
         {}; // +0x64: set for a networked/online play (game type not single-player).
-    // +0x68..+0x70: further layer state (transform vectors and per-cell fields) still being worked
+    float m_flSlideTimer =
+        {}; // +0x68: a signed slide/settle timer, advanced toward zero each frame.
+    // +0x6c..+0x70: further layer state (transform vectors and per-cell fields) still being worked
     // out, kept as a reserved span to preserve the allocation size.
-    unsigned char m_aReserved68[9] = {}; // +0x68
+    unsigned char m_aReserved6c[5] = {}; // +0x6c
     bool m_bCustomizeReloadFlag =
         {}; // +0x71: set when a customize-character texture swap is pending.
-    // +0x72..+0xb7: further layer state, still being worked out.
-    unsigned char m_aReserved72[0x46] = {}; // +0x72
+    // +0x72..+0x93: further layer state, still being worked out.
+    unsigned char m_aReserved72[0x22] = {}; // +0x72
+    int m_nRotationCounterA =
+        {}; // +0x94: a decoration rotation counter, wrapping every 400 frames.
+    int m_nRotationCounterB =
+        {};                    // +0x98: a decoration rotation counter, wrapping every 192 frames.
+    int m_nRotationFrame = {}; // +0x9c: the decoration animation frame index (0 through 3).
+    // +0xa0..+0xb7: further layer state, still being worked out.
+    unsigned char m_aReservedA0[0x18] = {}; // +0xa0
     // +0xb8..+0x12f: the five result-score/effect display animation channels.
     ResultBonusAnimChannel m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
     Polygon2dTrail *m_apTrails[kTrailCount] = {};                      // +0x130: the ribbon trails.

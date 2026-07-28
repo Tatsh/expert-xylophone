@@ -72,6 +72,12 @@ public:
      */
     void Reset();
 
+    /**
+     * @brief Hides the trail's mesh node without disturbing its vertices (clears the mesh's visible
+     * flag). Used by the owner's idle per-frame path.
+     */
+    void HideMesh();
+
 private:
     // Clears every mesh vertex back to the strip's first point in transparent white (the shared
     // hidden state used by Start and Reset).

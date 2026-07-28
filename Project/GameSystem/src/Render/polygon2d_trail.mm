@@ -100,6 +100,10 @@ void Polygon2dTrail::Reset() {
     ClearMeshVertices();
 }
 
+void Polygon2dTrail::HideMesh() {
+    m_pMesh->SetVisible(false);
+}
+
 void Polygon2dTrail::ClearMeshVertices() {
     for (int nVertex = 0; nVertex < m_nVertexCount; ++nVertex) {
         m_pMesh->SetRGBA(nVertex, kFullChannel, kFullChannel, kFullChannel, 0);
