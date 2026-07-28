@@ -394,6 +394,53 @@ void NoteEffectMgr::CompactActiveNotes() {
     m_nActiveCount = nSurvivors;
 }
 
+/** @ghidraAddress 0x136ccc */
+void NoteEffectMgr::ProcessActiveNotes() {
+    // Touch-hit pass: skipped while input is locked (paused).
+    if (!GameSystem::GetGameSystem()->GetPaused()) {
+        const float flTouchRadiusSq = GameSystem::GetGameSystem()->GetSheetDiameterSq();
+        TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+        for (int nTouch = 0; nTouch < pTouchManager->GetActiveTouchCount(); ++nTouch) {
+            TouchPoint *pTouch = pTouchManager->GetActiveTouch(nTouch);
+            if (!pTouch->bIsNew) {
+                continue;
+            }
+            const S_VECTOR2 *pPoint = GetOrCacheNotePosition(pTouch->nId);
+            if (pPoint == nullptr || m_nActiveCount <= 0) {
+                continue;
+            }
+
+            // Find the nearest active note this touch hits, within the sheet's touch radius.
+            int nNearest = -1;
+            float flNearestDistSq = flTouchRadiusSq;
+            for (int i = 0; i < m_nActiveCount; ++i) {
+                float flDistSq = -1.0f;
+                if (m_ppActiveList[i]->CheckTouchHit(pPoint->x, pPoint->y, &flDistSq) &&
+                    flDistSq < flNearestDistSq) {
+                    nNearest = i;
+                    flNearestDistSq = flDistSq;
+                }
+            }
+            if (nNearest != -1) {
+                m_ppActiveList[nNearest]->MarkTouched();
+            }
+        }
+    }
+
+    // Advance every active note's state machine, then render them in reverse order.
+    if (m_nActiveCount > 0) {
+        for (int i = 0; i < m_nActiveCount; ++i) {
+            m_ppActiveList[i]->UpdateStep();
+        }
+        for (int i = m_nActiveCount - 1; i >= 0; --i) {
+            m_ppActiveList[i]->RenderNote();
+        }
+    }
+
+    CompactActiveNotes();
+    m_nFrameTouchScratch = 0;
+}
+
 /** @ghidraAddress 0x137080 */
 void NoteEffectMgr::InsertActiveNoteSorted(NoteModel *pNote) {
     // Append at the tail, then bubble it earlier while its hit time precedes its predecessor's.

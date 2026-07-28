@@ -199,6 +199,19 @@ public:
     void CompactActiveNotes();
 
     /**
+     * @brief Processes the active-note list for one frame: touch-hit testing, step update, render,
+     * and compaction.
+     *
+     * Unless input is locked, it resolves each live touch's play-field position and, for each touch,
+     * finds the nearest active note it hits (within the sheet's touch radius) and marks that note
+     * touched. It then advances every active note's state machine, renders the active notes in
+     * reverse order, compacts the finished notes out of the list, and clears the per-frame
+     * touch-scratch field.
+     * @ghidraAddress 0x136ccc
+     */
+    void ProcessActiveNotes();
+
+    /**
      * @brief Walks every note record of the attached chart (a bounds/validation pass).
      *
      * Fetches each record by index from the bound chart; the fetched pointers are not consumed (the
@@ -293,7 +306,8 @@ private:
     unsigned char m_aReserved24[4] = {};  // +0x24
     rb::CMusicSheet2 *m_pMusicSheet = {}; // +0x28: the bound active chart, or null.
     int m_nDensityTier = {};              // +0x30: the note-density tier (0, 1, or 2).
-    unsigned char m_aReserved34[4] = {};  // +0x34
+    int m_nFrameTouchScratch =
+        {}; // +0x34: per-frame touch-scratch, cleared at the end of a process pass.
     // +0x38..+0x60: the six active-slot note indices, seeded to the -1 empty marker.
     long m_aActiveSlot[6] = {}; // +0x38
 

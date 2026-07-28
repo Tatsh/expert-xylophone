@@ -299,6 +299,13 @@ public:
     void UpdateStep();
 
     /**
+     * @brief Renders the note's body, effects, and any trail for the current frame. Reconstruction
+     * pending.
+     * @ghidraAddress 0x135388
+     */
+    void RenderNote();
+
+    /**
      * @brief Initialises the note for activation: seeds its full play state from its chart record
      * before it enters the active list. Reconstruction pending.
      * @ghidraAddress 0x134128
