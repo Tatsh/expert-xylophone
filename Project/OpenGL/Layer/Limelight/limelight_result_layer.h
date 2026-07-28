@@ -66,6 +66,39 @@ public:
     void InitializePhoneResultLayer();
 
     /**
+     * @brief The per-frame result-window update: advances the bonus tweens and decoration timers,
+     * updates the bonus voice cue and the phone touch/share state, then dispatches to the Limelight
+     * (iPad) or phone (portrait) render path.
+     *
+     * When the layer is not on an iPad it first recomputes the portrait-orientation flag from the game
+     * system's viewport. It advances the five bonus channels, the signed slide/settle timer (toward
+     * zero, at differing rates by sign), and the decoration rotation counter (wrapping every 192
+     * frames, its frame index the counter over 48, clamped to 0 through 3).
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x12adac
+     */
+    void Update(float flDeltaTime);
+
+    /**
+     * @brief Renders the Limelight (iPad/landscape) result window. Reconstruction pending.
+     * @ghidraAddress 0x124acc
+     */
+    void RenderLimelightResultWindow();
+
+    /**
+     * @brief Renders the phone (portrait) result window. Reconstruction pending.
+     * @ghidraAddress 0x127b04
+     */
+    void RenderPhoneResultWindow();
+
+    /**
+     * @brief Updates the phone result screen's touch handling and Twitter-share button.
+     * Reconstruction pending.
+     * @ghidraAddress 0x1240ec
+     */
+    void UpdatePhoneTouchAndShare();
+
+    /**
      * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
      * easing from its current shown value to zero over @p flStartTime (snapping to zero immediately
      * when @p flStartTime is non-positive), and disarms the bonus voice cue.
@@ -618,15 +651,17 @@ private:
     int m_nDefaultAlpha = {}; // +0x6c: default alpha (255), cleared to 0 when the set is built.
     float m_flBaseScale = {}; // +0x70: a base scale the builder seeds (0.7).
     int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
-    unsigned char m_aReserved78[4] = {}; // +0x78: presentation state, still being worked out.
+    float m_flSlideTimer =
+        {}; // +0x78: a signed slide/settle timer, advanced toward zero each frame.
     // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch id
     // reset to -1, a flags half-word, and an initialised byte).
     ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
     // +0x9c: the current result step index, reset to -1 (the "none" sentinel).
-    int m_nCurrentStep = {};             // +0x9c
-    int m_nReservedA0 = {};              // +0xa0: presentation state, still being worked out.
-    int m_nReservedA4 = {};              // +0xa4: presentation state, still being worked out.
-    unsigned char m_aReservedA8[4] = {}; // +0xa8: presentation state, still being worked out.
+    int m_nCurrentStep = {}; // +0x9c
+    int m_nReservedA0 = {};  // +0xa0: presentation state, still being worked out.
+    int m_nRotationCounter =
+        {};                    // +0xa4: the decoration rotation counter, wrapping each 192 frames.
+    int m_nRotationFrame = {}; // +0xa8: the decoration animation frame index (0 through 3).
     // +0xac..+0xc3: the two result-step animation slots the constructor clears (three parallel int
     // fields per slot at +0xac, +0xb4, and +0xbc, stride 4).
     int m_aStepAnimA[kStepAnimSlotCount] = {};                         // +0xac

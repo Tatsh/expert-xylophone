@@ -6,6 +6,7 @@
 #include "../Colette/phone_anchor_table.h"
 #import "RBViewController.h"
 #include "deviceenvironment.h"
+#include "float_tween.h"
 #import "gamesystem.h"
 #include "limelight_parts_data_table.h"
 #include "neRender.h"
@@ -165,6 +166,80 @@ LimelightResultLayer *LimelightResultLayer::shared() {
         g_pLimelightResultLayer = new LimelightResultLayer();
     }
     return g_pLimelightResultLayer;
+}
+
+namespace {
+// The Update timers' constants.
+// The positive slide-timer divisor (the timer counts toward zero) (@ghidraAddress 0x2fd050 = -300).
+constexpr float kSlideTimerRateDown = -300.0f;
+// The negative slide-timer divisor (@ghidraAddress 0x2eedcc = 300).
+constexpr float kSlideTimerRateUp = 300.0f;
+// The decoration rotation counter wraps at this frame count (@ghidraAddress the 0xc0 modulus).
+constexpr int kRotationWrap = 0xc0;
+// The frames per decoration animation index (@ghidraAddress 0x2fcff8 = 48).
+constexpr float kRotationFramesPerIndex = 48.0f;
+// The last decoration animation frame index.
+constexpr int kRotationFrameMax = 3;
+
+// The five bonus channels' advance order the update uses (channels 2 and 3 are advanced swapped).
+constexpr int kBonusAdvanceOrder[] = {0, 1, 3, 2, 4};
+} // namespace
+
+/** @ghidraAddress 0x12adac */
+void LimelightResultLayer::Update(float flDeltaTime) {
+    // Off an iPad, keep the portrait-orientation flag in sync with the viewport aspect.
+    if (!IsPad()) {
+        const float flWidth = GameSystem::GetGameSystem()->GetViewportWidth();
+        const bool bPortrait = flWidth <= GameSystem::GetGameSystem()->GetViewportHeight();
+        if (bPortrait != m_bPortrait) {
+            m_bPortrait = bPortrait;
+        }
+    }
+
+    // Advance the five bonus channels. The channel shares FloatTween's six-float layout and the binary
+    // drives it through FloatTween::Advance, so advance each through that view.
+    for (int nChannel : kBonusAdvanceOrder) {
+        reinterpret_cast<FloatTween *>(&m_aBonusAnimChannels[nChannel])->Advance(flDeltaTime);
+    }
+
+    // Advance the signed slide/settle timer toward zero, at differing rates by sign, and clamp on the
+    // zero crossing.
+    if (m_flSlideTimer > 0.0f) {
+        m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
+        if (m_flSlideTimer < 0.0f) {
+            m_flSlideTimer = 0.0f;
+        }
+    } else if (m_flSlideTimer < 0.0f) {
+        m_flSlideTimer += flDeltaTime / kSlideTimerRateUp;
+        if (m_flSlideTimer > 0.0f) {
+            m_flSlideTimer = 0.0f;
+        }
+    }
+
+    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame index.
+    int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
+    if (nCounter > kRotationWrap) {
+        nCounter %= kRotationWrap;
+    }
+    m_nRotationCounter = nCounter;
+    int nFrame = static_cast<int>(static_cast<float>(nCounter) / kRotationFramesPerIndex);
+    if (nFrame < 0) {
+        nFrame = 0;
+    }
+    if (nFrame > kRotationFrameMax) {
+        nFrame = kRotationFrameMax;
+    }
+    m_nRotationFrame = nFrame;
+
+    UpdateBonusSoundCueTimer(flDeltaTime);
+    UpdatePhoneTouchAndShare();
+
+    // Dispatch to the Limelight (iPad) or phone (portrait) render path.
+    if (IsPad()) {
+        RenderLimelightResultWindow();
+    } else {
+        RenderPhoneResultWindow();
+    }
 }
 
 /** @ghidraAddress 0x12ab60 */
