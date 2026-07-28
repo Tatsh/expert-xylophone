@@ -257,6 +257,167 @@ constexpr float kRankPositionCurve[kRankGlyphCount][kRankPositionKnots * 2] = {
 // Each rank glyph's fixed vertical position (@ghidraAddress 0x30523c): all seven share one Y.
 constexpr float kRankGlyphAbsoluteY = 653.0f;
 
+// The number of glyphs in the high-rank badge strip, the first grade sprite kind its glyphs occupy
+// (kinds 8..14 in the grade sprite-layout table), and its curve knot counts.
+constexpr int kBadgeGlyphCount = 7;
+constexpr int kBadgeGlyphFirstKind = 8;
+constexpr int kBadgeAlphaKnots = 4;
+constexpr int kBadgePositionKnots = 9;
+
+// Each high-rank badge glyph's fixed horizontal position (@ghidraAddress 0x3052c4..): the glyph does
+// not slide, so its X is a constant base subtracted from the layout origin.
+constexpr float kBadgeGlyphAbsoluteX[kBadgeGlyphCount] = {
+    193.0f, 259.0f, 319.0f, 362.0f, 420.0f, 501.0f, 578.0f};
+
+// Each high-rank badge glyph's per-frame alpha curve ({time, alpha} knots at @ghidraAddress
+// 0x3055f4): a fade in, a long hold, and a fade out, staggered per glyph.
+constexpr float kBadgeAlphaCurve[kBadgeGlyphCount][kBadgeAlphaKnots * 2] = {
+    {50.0f, 0.0f, 233.33333f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {150.0f, 0.0f, 333.33334f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {0.0f, 0.0f, 183.33333f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {66.666664f, 0.0f, 250.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {166.66667f, 0.0f, 350.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {0.0f, 0.0f, 183.33333f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {116.66667f, 0.0f, 300.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
+};
+
+// Each high-rank badge glyph's per-frame vertical-position curve ({time, absoluteY} knots, assembled
+// inline by the layout pass): the glyph bounces down its column. The binary precomputes these Y
+// values minus the layout origin into a block static; sampling the absolute-Y curve and subtracting
+// the origin is equivalent because the origin is constant.
+constexpr float kBadgePositionCurve[kBadgeGlyphCount][kBadgePositionKnots * 2] = {
+    {16.66667f,
+     581.0f,
+     50.0f,
+     583.0f,
+     233.33333f,
+     653.0f,
+     400.0f,
+     623.0f,
+     533.33331f,
+     653.0f,
+     666.66669f,
+     639.0f,
+     783.33331f,
+     653.0f,
+     1133.33337f,
+     660.0f,
+     3100.0f,
+     703.0f},
+    {150.0f,
+     583.0f,
+     333.33334f,
+     653.0f,
+     500.0f,
+     623.0f,
+     633.33331f,
+     653.0f,
+     766.66669f,
+     639.0f,
+     883.33331f,
+     653.0f,
+     3100.0f,
+     733.0f,
+     3116.66675f,
+     733.0f,
+     3133.33325f,
+     733.0f},
+    {0.0f,
+     583.0f,
+     183.33333f,
+     653.0f,
+     350.0f,
+     623.0f,
+     483.33334f,
+     653.0f,
+     616.66669f,
+     639.0f,
+     733.33331f,
+     653.0f,
+     3100.0f,
+     723.0f,
+     3116.66675f,
+     723.0f,
+     3133.33325f,
+     723.0f},
+    {66.66666f,
+     583.0f,
+     250.0f,
+     653.0f,
+     416.66666f,
+     623.0f,
+     550.0f,
+     653.0f,
+     683.33331f,
+     639.0f,
+     800.0f,
+     653.0f,
+     3100.0f,
+     761.0f,
+     3116.66675f,
+     761.0f,
+     3133.33325f,
+     761.0f},
+    {166.66667f,
+     583.0f,
+     350.0f,
+     653.0f,
+     516.66669f,
+     623.0f,
+     650.0f,
+     653.0f,
+     783.33331f,
+     639.0f,
+     900.0f,
+     653.0f,
+     3100.0f,
+     743.0f,
+     3116.66675f,
+     743.0f,
+     3133.33325f,
+     743.0f},
+    {0.0f,
+     583.0f,
+     183.33333f,
+     653.0f,
+     350.0f,
+     623.0f,
+     483.33334f,
+     653.0f,
+     616.66669f,
+     639.0f,
+     733.33331f,
+     653.0f,
+     3100.0f,
+     723.0f,
+     3116.66675f,
+     723.0f,
+     3133.33325f,
+     723.0f},
+    {116.66666f,
+     621.0f,
+     300.0f,
+     691.0f,
+     466.66666f,
+     661.0f,
+     600.0f,
+     691.0f,
+     733.33331f,
+     677.0f,
+     850.0f,
+     691.0f,
+     3100.0f,
+     791.0f,
+     3116.66675f,
+     791.0f,
+     3133.33325f,
+     791.0f},
+};
+
+// The high-rank badge glyphs emit at unit scale (the reveal-driven scale of the rank glyphs is not
+// applied here).
+constexpr float kBadgeGlyphScale = 1.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x120630 */
@@ -508,6 +669,44 @@ void LimelightThemeLayer::RenderGradeRankGlyphs(int nSide) {
                             flScale,
                             flRotation,
                             static_cast<unsigned int>(kRankGlyphFirstKind + nGlyph),
+                            &position,
+                            nAlpha);
+    }
+}
+
+/** @ghidraAddress 0x1214ec */
+void LimelightThemeLayer::RenderGradeHighRankBadge(int nSide) {
+    const float flClock = m_flGradeRevealClock;
+    const float flOriginX = m_flWidth;
+    const float flOriginY = m_flHeight;
+
+    for (int nGlyph = 0; nGlyph < kBadgeGlyphCount; ++nGlyph) {
+        const float flAlpha =
+            CalculateCurveInterpolation(kBadgeAlphaCurve[nGlyph], kBadgeAlphaKnots, flClock);
+        // The badge glyph holds a fixed X and animates only its Y; both are placed relative to the
+        // layout origin (the binary precomputes the origin-relative values into a block static).
+        const float flAbsoluteY =
+            CalculateCurveInterpolation(kBadgePositionCurve[nGlyph], kBadgePositionKnots, flClock);
+
+        S_VECTOR2 position{kBadgeGlyphAbsoluteX[nGlyph] - flOriginX, flAbsoluteY - flOriginY};
+        float flRotation = 0.0f;
+        // Single-side mode nudges the near side down and mirrors the far side across the field.
+        if (m_nSideCount == 1) {
+            if (nSide == kNearSide) {
+                position.y += kSingleSideNearNudgeY;
+            } else {
+                position.x = -position.x;
+                position.y = kSingleSideFarOriginY - position.y;
+                flRotation = kSingleSideFarRotation;
+            }
+        }
+
+        const unsigned int nAlpha = static_cast<unsigned int>(
+            static_cast<int>(flAlpha * m_gradeChannel.GetCurrent() * kAlphaByteScale));
+        EmitGradeSpriteSlot(kBadgeGlyphScale,
+                            kBadgeGlyphScale,
+                            flRotation,
+                            static_cast<unsigned int>(kBadgeGlyphFirstKind + nGlyph),
                             &position,
                             nAlpha);
     }

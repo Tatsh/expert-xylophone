@@ -143,7 +143,14 @@ private:
     void RenderGradeRankGlyphs(int nSide);
 
     /**
-     * @brief Draws a side's high-rank badge (rank below AA). Reconstruction pending.
+     * @brief Draws one side's animated high-rank badge glyph strip (the rank-below-AA path).
+     *
+     * Animates each of the seven badge glyphs in with its own alpha and vertical-position curves
+     * sampled at the reveal clock, placing each at a fixed horizontal base relative to the layout
+     * origin. As with the rank glyphs, single-side mode nudges the near side down and mirrors the far
+     * side a half-turn across the field. Each glyph is emitted at unit scale with alpha faded by the
+     * reveal channel.
+     * @param nSide The player side.
      * @ghidraAddress 0x1214ec
      */
     void RenderGradeHighRankBadge(int nSide);
