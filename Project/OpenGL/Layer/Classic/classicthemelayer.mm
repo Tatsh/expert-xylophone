@@ -35,12 +35,12 @@ constexpr int kDefaultColor = 1;
 // The value the two score-value slots are seeded to by the constructor.
 constexpr int kScoreValueDefault = 4;
 
-// The score-gauge display block's initial state: an off-screen start Y and two unit scales
+// The animation clock's seeded start, well before zero so the intro plays from the beginning
 // (@ghidraAddress 0x3018b0).
-constexpr float kScoreGaugeInitial[] = {-500.0f, 1.0f, 1.0f, 0.0f};
+constexpr float kAnimClockStart = -500.0f;
 
-// The score gauge's full target value.
-constexpr float kScoreGaugeFullTarget = 1.0f;
+// The eased-progress channel's fully-shown value.
+constexpr float kEaseFullValue = 1.0f;
 
 // The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
@@ -139,13 +139,17 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
 
 /** @ghidraAddress 0x10a01c */
 void ClassicThemeLayer::InitializeScoreGaugeState() {
-    m_nScoreGaugeState = 0;
-    m_flScoreGaugeTarget = kScoreGaugeFullTarget;
-    for (int i = 0; i < kScoreGaugeBlockCount; ++i) {
-        m_aScoreGaugeBlock[i] = kScoreGaugeInitial[i];
-    }
-    m_bFlag3c = true;
-    m_bFlag3d = true;
+    // Seed the animation clock and the eased-progress channel: the clock starts well before zero, the
+    // channel starts and ends fully shown over a zero duration (so it reads as shown), and its current
+    // value is one. Both animation flags are raised.
+    m_flClock = kAnimClockStart;
+    m_easeChannel.SetStart(kEaseFullValue);
+    m_easeChannel.SetEnd(kEaseFullValue);
+    m_easeChannel.SetDuration(0.0f);
+    m_easeChannel.SetElapsed(0.0f);
+    m_easeChannel.SetCurrent(kEaseFullValue);
+    m_bAnimActive = true;
+    m_bAnimEnabled = true;
     InitializeScoreValuesFromTracker();
 }
 
@@ -159,14 +163,18 @@ void ClassicThemeLayer::InitializeScoreValuesFromTracker() {
 
 /** @ghidraAddress 0x10a080 */
 void ClassicThemeLayer::StartGaugeValueFade(float flDuration) {
-    // The score-gauge block doubles as a value tween: [1] is the ramp start, [2] the elapsed time,
-    // and [3] the duration, ramping towards m_flScoreGaugeTarget.
-    m_aScoreGaugeBlock[1] = m_flScoreGaugeTarget;
-    m_aScoreGaugeBlock[2] = 0.0f;
-    m_aScoreGaugeBlock[3] = flDuration;
-    m_nScoreGaugeState = 0;
-    // A non-positive duration takes effect immediately: snap the target to zero.
+    // Restart the eased-progress channel from its current value down to zero over the given duration.
+    m_easeChannel.SetStart(m_easeChannel.GetCurrent());
+    m_easeChannel.SetEnd(0.0f);
+    m_easeChannel.SetDuration(flDuration);
+    m_easeChannel.SetElapsed(0.0f);
+    // A non-positive duration takes effect immediately: snap the current value to zero.
     if (flDuration <= 0.0f) {
-        m_flScoreGaugeTarget = 0.0f;
+        m_easeChannel.SetCurrent(0.0f);
     }
+}
+
+/** @ghidraAddress 0x10a5fc */
+void ClassicThemeLayer::AdvanceEasedProgress(float flDelta) {
+    m_easeChannel.Advance(flDelta);
 }

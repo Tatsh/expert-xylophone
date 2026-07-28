@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "linear_tween.h"
 #include "playfieldlayerbase.h"
 #include "s_vector2.h"
 
@@ -94,8 +95,8 @@ public:
                              int nAlpha);
 
     /**
-     * @brief Initialises the result-screen score-gauge display block, then seeds its per-side score
-     * values from the score tracker.
+     * @brief Initialises the theme-animation state, then seeds its per-side score values from the
+     * score tracker.
      * @ghidraAddress 0x10a01c
      */
     void InitializeScoreGaugeState();
@@ -107,17 +108,23 @@ public:
     void InitializeScoreValuesFromTracker();
 
     /**
-     * @brief Starts the score-gauge value animation, ramping the gauge from its current target over
-     * the given duration; a non-positive duration snaps the target to zero.
+     * @brief Starts the theme fade-in animation, easing the display value from its start to its end
+     * over the given duration; a non-positive duration snaps it in immediately.
      * @param flDuration The animation duration.
      * @ghidraAddress 0x10a080
      */
     void StartGaugeValueFade(float flDuration);
 
+    /**
+     * @brief Advances the theme's eased-progress channel by @p flDelta.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x10a5fc
+     */
+    void AdvanceEasedProgress(float flDelta);
+
 private:
     static constexpr int kBackgroundBatchCount = 3;
     static constexpr int kScoreValueCount = 2;
-    static constexpr int kScoreGaugeBlockCount = 4;
 
     ne::C_TEXTURE *m_pTexture = {};                                          // +0x08
     ne::C_SPRITE_INSTANCING_2D *m_apSpriteBatch[kBackgroundBatchCount] = {}; // +0x10
@@ -126,15 +133,13 @@ private:
     // +0x35..+0x37 is alignment padding before the colour index.
     unsigned char m_aPad35[3] = {}; // +0x35
     int m_nColor = {};              // +0x38: the theme colour index (defaults to one).
-    bool m_bFlag3c = {};            // +0x3c: a flag the constructor clears.
-    bool m_bFlag3d = {};            // +0x3d: a flag the constructor clears.
-    // +0x3e..+0x3f is alignment padding before the score-gauge block.
+    bool m_bAnimActive = {};        // +0x3c: whether the reveal-progress timer is still advancing.
+    bool m_bAnimEnabled = {};       // +0x3d: whether the theme animation is running this frame.
+    // +0x3e..+0x3f is alignment padding before the animation clock.
     unsigned char m_aPad3e[2] = {}; // +0x3e
-    // +0x40..+0x4f: the score-gauge display block InitializeScoreGaugeState seeds (a start position
-    // and two scales), cleared by the constructor.
-    float m_aScoreGaugeBlock[kScoreGaugeBlockCount] = {}; // +0x40
-    int m_nScoreGaugeState = {};     // +0x50: a state field InitializeScoreGaugeState clears.
-    float m_flScoreGaugeTarget = {}; // +0x54: the gauge's full target (one).
+    float m_flClock = {};           // +0x40: the theme animation clock, advanced each frame.
+    // +0x44..+0x57: the eased reveal-progress channel; its current value scales the emitted sprites.
+    LinearTween m_easeChannel;                 // +0x44
     int m_aScoreValues[kScoreValueCount] = {}; // +0x58: the per-side score display values.
 };
 
