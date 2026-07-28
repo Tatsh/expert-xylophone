@@ -954,6 +954,62 @@ void LimelightResultLayer::ResetThemeSelectState() {
     RefreshThema();
 }
 
+/** @ghidraAddress 0x123f60 */
+void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
+    // Every channel eases from its current shown value up to one.
+    constexpr float kShown = 1.0f;
+    // The later channels' fixed durations and the elapsed-time stagger offsets that cascade them in
+    // (the stagger constants are at @ghidraAddress 0x2eedcc = 300 and 0x307a38 = 900).
+    constexpr float kDuration200 = 200.0f;
+    constexpr float kDuration300 = 300.0f;
+    constexpr float kStagger300 = 300.0f;
+    constexpr float kStagger900 = 900.0f;
+
+    // Channel 0: the base channel, its duration the caller's base time; snaps to shown when the base
+    // time is non-positive.
+    ResultBonusAnimChannel &ch0 = m_aBonusAnimChannels[0];
+    ch0.flStart = ch0.flCurrent;
+    ch0.flTarget = kShown;
+    ch0.flDuration = flBaseTime;
+    ch0.flElapsed = 0.0f;
+    ch0.flReserved = 0.0f;
+    if (flBaseTime <= 0.0f) {
+        ch0.flCurrent = kShown;
+    }
+
+    // Channel 2: a 200-unit fade whose elapsed time starts at the base time.
+    ResultBonusAnimChannel &ch2 = m_aBonusAnimChannels[2];
+    ch2.flStart = ch2.flCurrent;
+    ch2.flTarget = kShown;
+    ch2.flDuration = kDuration200;
+    ch2.flElapsed = flBaseTime;
+    ch2.flReserved = 0.0f;
+
+    // Channel 1: a 300-unit fade staggered 300 units after the base time.
+    ResultBonusAnimChannel &ch1 = m_aBonusAnimChannels[1];
+    ch1.flStart = ch1.flCurrent;
+    ch1.flTarget = kShown;
+    ch1.flDuration = kDuration300;
+    ch1.flElapsed = flBaseTime + kStagger300;
+    ch1.flReserved = 0.0f;
+
+    // Channel 4: a 200-unit fade staggered 900 units after the base time.
+    ResultBonusAnimChannel &ch4 = m_aBonusAnimChannels[4];
+    ch4.flStart = ch4.flCurrent;
+    ch4.flTarget = kShown;
+    ch4.flDuration = kDuration200;
+    ch4.flElapsed = flBaseTime + kStagger900;
+    ch4.flReserved = 0.0f;
+
+    // Channel 3: a 300-unit fade staggered 900 units after the base time.
+    ResultBonusAnimChannel &ch3 = m_aBonusAnimChannels[3];
+    ch3.flStart = ch3.flCurrent;
+    ch3.flTarget = kShown;
+    ch3.flDuration = kDuration300;
+    ch3.flElapsed = flBaseTime + kStagger900;
+    ch3.flReserved = 0.0f;
+}
+
 /** @ghidraAddress 0x124000 */
 void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
     // Each channel eases from its current shown value toward zero over the start time; a non-positive

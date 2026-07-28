@@ -60,6 +60,17 @@ public:
     void ResetResultBonusAnimations(float flStartTime);
 
     /**
+     * @brief Opens the five bonus/EX display channels for the phone result screen's appear animation.
+     *
+     * Each channel eases from its current shown value up to one; the first channel's duration is the
+     * caller's base time (and it snaps to fully shown when that is non-positive), while the later
+     * four use fixed durations and staggered elapsed seeds so they cascade in.
+     * @param flBaseTime The appear animation's base time.
+     * @ghidraAddress 0x123f60
+     */
+    void SetupOpenTweenPhone(float flBaseTime);
+
+    /**
      * @brief Clears the five result-bonus display values and refreshes the current theme.
      *
      * Zeroes the clear, miss, rank, first-play, and experience bonus fields, then re-reads the user's
