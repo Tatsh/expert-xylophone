@@ -12,7 +12,11 @@
 #include <cstring>
 
 #import "RBUserSettingData.h"
+#include "ScoreTracker.h"
 #include "deviceenvironment.h"
+#include "full_combo_classic_layer.h"
+#include "full_combo_colette_layer.h"
+#include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
 #include "music_sheet.h"
 #include "note_model.h"
@@ -22,6 +26,24 @@
 // The process-wide note manager, created lazily by shared().
 static NoteEffectMgr *g_pNoteEffectMgr = nullptr; // @ghidraAddress 0x3de050
 
+namespace {
+
+// The play-record grade cells summed to detect chart completion (the four judged grades), and the
+// theme identifiers selecting the full-combo layer.
+constexpr unsigned int kGradeMiss = 3;
+constexpr unsigned int kGradeGood = 4;
+constexpr unsigned int kGradeGreat = 5;
+constexpr unsigned int kGradeJust = 6;
+constexpr int kThemaClassic = 0;
+constexpr int kThemaLimelight = 1;
+
+// The final judged grade values (the last note's grade) selecting the completion handler.
+constexpr int kFinalGradeFullCombo = 0;
+constexpr int kFinalGradeClear = 1;
+constexpr int kFinalGradeMiss = 2;
+
+} // namespace
+
 /** @ghidraAddress 0x136bec */
 NoteEffectMgr::NoteEffectMgr() {
     // The header, combo, tier, and render sub-table are zeroed by the member initialisers; the
@@ -30,6 +52,44 @@ NoteEffectMgr::NoteEffectMgr() {
         nSlot = kActiveSlotNone;
     }
     m_bIsPad = IsPad();
+}
+
+/** @ghidraAddress 0x137790 */
+void NoteEffectMgr::HandleNoteScored(int nUnused, int nSide) {
+    (void)nUnused; // The caller passes a note index the binary does not read here.
+
+    // The score-record side is the tracker row for whether the scored side is the active play side.
+    const unsigned int nRecordSide = GameSystem::GetGameSystem()->GetPlayColor() == nSide ? 1 : 0;
+    ScoreTracker *pTracker = ScoreTracker::shared();
+
+    // Sum the four judged-grade tallies (grades 3 through 6); the chart is complete once they reach
+    // the total note count.
+    const int nJudged = pTracker->GetPlayRecordCell(nRecordSide, kGradeMiss) +
+                        pTracker->GetPlayRecordCell(nRecordSide, kGradeGood) +
+                        pTracker->GetPlayRecordCell(nRecordSide, kGradeGreat) +
+                        pTracker->GetPlayRecordCell(nRecordSide, kGradeJust);
+    if (pTracker->GetTotalNotes() != nJudged) {
+        return;
+    }
+
+    // Finalise by the final judged grade: grade 2 and grade 1 set their judge scores; grade 0 is a
+    // full combo, which triggers the current theme's full-combo layer before setting judge score 0.
+    const int nFinalGrade = pTracker->GetPlayRecordCell(nRecordSide, kGradeJust);
+    if (nFinalGrade == kFinalGradeMiss) {
+        pTracker->SetJudgeScore3(nRecordSide);
+    } else if (nFinalGrade == kFinalGradeClear) {
+        pTracker->SetJudgeScore2(nRecordSide);
+    } else if (nFinalGrade == kFinalGradeFullCombo) {
+        const auto nColor = static_cast<unsigned int>(nSide);
+        if (m_nThema == kThemaLimelight) {
+            FullComboLimelightLayer::shared()->CreateFullComboLimelight(nColor);
+        } else if (m_nThema == kThemaClassic) {
+            FullComboClassicLayer::shared()->CreateFullComboClassic(nColor);
+        } else {
+            FullComboColetteLayer::shared()->CreateFullComboColette(nColor);
+        }
+        pTracker->SetJudgeScore0(nRecordSide);
+    }
 }
 
 /** @ghidraAddress 0x1373a0 */

@@ -202,6 +202,25 @@ public:
         return m_nNoteCount;
     }
 
+    /** @brief The active player theme (0 classic, 1 limelight, otherwise colette). */
+    int GetThema() const {
+        return m_nThema;
+    }
+
+    /**
+     * @brief Records a scored note and, when every note of the side is judged, fires the chart's
+     * completion.
+     *
+     * Sums the side's per-grade tallies (grades 3 through 6) on the score tracker; when they reach
+     * the total note count, the chart is complete. It then finalises by the final grade: grade 2
+     * sets judge score 3, grade 1 sets judge score 2, and grade 0 (a full combo) triggers the
+     * theme-specific full-combo layer before setting judge score 0.
+     * @param nUnused An index carried by the caller but not used here.
+     * @param nSide The scored note's side.
+     * @ghidraAddress 0x137790
+     */
+    void HandleNoteScored(int nUnused, int nSide);
+
     /**
      * @brief The accumulated hit (judged-note) count.
      * @ghidraAddress 0x137ae4
