@@ -271,6 +271,40 @@ private:
                                    float flBlue);
 
     /**
+     * @brief Renders a non-negative integer as a row of proportionally-spaced digit sprites.
+     *
+     * The proportional-spacing twin of @c RenderNumberDigitsAsParts: rather than stepping through the
+     * layout position bank, it seeds an X cursor from the base position and advances it by each
+     * glyph's measured width (the device-selected parts record's width field). It draws the
+     * significant digits right to left from the seeded position, offsetting the cursor left by half
+     * the widened leading digit, the prefix glyphs, and each drawn digit; the leading digit takes the
+     * family's wider variant with an under-digit prefix, a standalone prefix glyph is drawn first when
+     * the prefix flag is set, and optional left padding fills the unused leading slots.
+     * @param nValue The non-negative integer to render.
+     * @param nDigitCount The number of digit slots.
+     * @param nBasePositionIndex The layout position-bank index seeding the X cursor.
+     * @param nDigitPartBase The base part id of the digit family (the digit is added to it).
+     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit and
+     * standalone prefix glyphs (a single flag gating the whole prefix path).
+     * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
+     * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRed The red colour channel.
+     * @param flGreen The green colour channel.
+     * @param flBlue The blue colour channel.
+     * @ghidraAddress 0x77118
+     */
+    void RenderNumberDigitsProportional(int nValue,
+                                        int nDigitCount,
+                                        int nBasePositionIndex,
+                                        int nDigitPartBase,
+                                        bool bWideLeading,
+                                        bool bLeftPad,
+                                        unsigned int nAlpha,
+                                        float flRed,
+                                        float flGreen,
+                                        float flBlue);
+
+    /**
      * @brief Constructs the layer: chains the base-layer constructor and zero-clears its state,
      * seeding the swipe touch id and the four touch-region touch ids to the "none" sentinel (-1).
      * The binary inlines this into @c shared (0x73edc).

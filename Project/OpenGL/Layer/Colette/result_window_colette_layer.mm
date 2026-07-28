@@ -1219,6 +1219,142 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
     }
 }
 
+namespace {
+
+// The half factor applied to a glyph's measured width when advancing the proportional cursor, and
+// the two kerning nudges the proportional renderer applies (@ghidraAddress 0x40a00000 = 5, and
+// 0xc0800000 = -4).
+constexpr float kProportionalHalf = 0.5f;
+constexpr float kWideRankKern = 5.0f;
+constexpr float kUnderPrefixKern = -4.0f;
+
+// The under-digit prefix glyph whose draw applies the -4 kerning nudge, and the wide rank
+// leading-digit range whose draw applies the +5 kerning nudge (part ids in @c [0xeb, 0xf4]).
+constexpr int kUnderPrefixKernPart = 0xf5;
+constexpr int kWideRankLeadingLow = 0xeb;
+constexpr int kWideRankLeadingSpan = 0xa;
+
+} // namespace
+
+/** @ghidraAddress 0x77118 */
+void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
+                                                              int nDigitCount,
+                                                              int nBasePositionIndex,
+                                                              int nDigitPartBase,
+                                                              bool bWideLeading,
+                                                              bool bLeftPad,
+                                                              unsigned int nAlpha,
+                                                              float flRed,
+                                                              float flGreen,
+                                                              float flBlue) {
+    // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
+    int aDigits[kMaxDigitSlots] = {};
+    int nTopDigit = 0;
+    for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
+        aDigits[nSlot] = nValue % kDecimalBase;
+        if (aDigits[nSlot] != 0) {
+            nTopDigit = nSlot;
+        }
+        nValue /= kDecimalBase;
+    }
+
+    // An all-zero value in wide-leading mode still draws its two low slots.
+    if (nTopDigit == 0 && bWideLeading) {
+        aDigits[1] = 0;
+        nTopDigit = 1;
+    }
+
+    // Seed the cursor from the base position and centre it by half a digit width per drawn slot.
+    S_VECTOR2 cursor = g_aResultLayoutPosition[nBasePositionIndex];
+    const float flDigitWidth = getPartsData(nDigitPartBase)->flWidth;
+    cursor.x += static_cast<float>(nTopDigit) * kProportionalHalf * flDigitWidth;
+
+    // In wide-leading mode, advance the cursor by half the standalone and under-digit prefix widths,
+    // draw the standalone prefix glyph, then step the cursor left by its full width.
+    if (bWideLeading) {
+        const int nStandalonePrefix = StandalonePrefixFor(nDigitPartBase);
+        const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+        if (nDigitPartBase == kFamilyScoreBase || nDigitPartBase == kFamilyRankBase ||
+            nDigitPartBase == kFamilyRateBase) {
+            cursor.x += getPartsData(nStandalonePrefix)->flWidth * kProportionalHalf;
+            cursor.x += getPartsData(nUnderPrefix)->flWidth * kProportionalHalf;
+        }
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                nStandalonePrefix,
+                                cursor,
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                flRed,
+                                flGreen,
+                                flBlue);
+        cursor.x -= getPartsData(nStandalonePrefix)->flWidth;
+    }
+
+    // Draw each significant digit right to left, advancing the cursor left by each glyph's width.
+    const int nLeadingBase = LeadingDigitBaseFor(nDigitPartBase);
+    for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
+        const bool bLeadingSlot = nSlot == 0 && bWideLeading;
+        const int nBaseThisDigit = bLeadingSlot ? nLeadingBase : nDigitPartBase;
+        const int nPartId = aDigits[nSlot] + nBaseThisDigit;
+        RenderPartSpriteByIndex(kNumberDigitSlot,
+                                nPartId,
+                                cursor,
+                                nAlpha,
+                                kDigitRotation,
+                                kDigitScale,
+                                kDigitScale,
+                                flRed,
+                                flGreen,
+                                flBlue);
+        cursor.x -= getPartsData(nPartId)->flWidth;
+        // A wide rank leading digit on the first slot nudges the cursor right to tighten its spacing.
+        if (nSlot == 0 && static_cast<unsigned int>(nPartId - kWideRankLeadingLow) <
+                              static_cast<unsigned int>(kWideRankLeadingSpan)) {
+            cursor.x += kWideRankKern;
+        }
+
+        if (bLeadingSlot) {
+            const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+            RenderPartSpriteByIndex(kNumberDigitSlot,
+                                    nUnderPrefix,
+                                    cursor,
+                                    nAlpha,
+                                    kDigitRotation,
+                                    kDigitScale,
+                                    kDigitScale,
+                                    flRed,
+                                    flGreen,
+                                    flBlue);
+            cursor.x -= getPartsData(nUnderPrefix)->flWidth;
+            if (nUnderPrefix == kUnderPrefixKernPart) {
+                cursor.x += kUnderPrefixKern;
+            }
+        }
+    }
+
+    // Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
+    // alpha, advancing the cursor left by each glyph's width.
+    if (bLeftPad && nTopDigit + 1 < nDigitCount) {
+        const unsigned int nPadAlpha = static_cast<unsigned int>(
+            static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
+        for (int nPad = (nDigitCount - 1) - nTopDigit; nPad != 0; --nPad) {
+            RenderPartSpriteByIndex(kNumberDigitSlot,
+                                    nDigitPartBase,
+                                    cursor,
+                                    nPadAlpha,
+                                    kDigitRotation,
+                                    kDigitScale,
+                                    kDigitScale,
+                                    flRed,
+                                    flGreen,
+                                    flBlue);
+            cursor.x -= getPartsData(nDigitPartBase)->flWidth;
+        }
+    }
+}
+
 /** @ghidraAddress 0x769cc */
 void ResultWindowColetteLayer::RenderPartSpriteByIndex(int nSlot,
                                                        int nPartId,
