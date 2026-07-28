@@ -1134,6 +1134,9 @@ EXCLUDED_ADDRS = {
     '0x16ac24', # a sibling store-unavailable notice dialog IMP (method_t at 0x3a08d0).
     '0x16ad74', # a sibling purchase-failed notice dialog IMP (method_t at 0x3a08e8).
     '0x16c2f0', # a sibling generic notice dialog IMP (method_t at 0x3a09a8).
+    '0x16d458', # SetAlertSubviewsExclusiveTouch — a UIAlertView category method IMP (method_t at
+                # 0x3a0a50, type "v24@0:8@16") that marks an alert's subviews exclusive-touch; pure
+                # objc_msgSend/fast-enumeration body dispatched via objc_msgSend, ObjC-side.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
