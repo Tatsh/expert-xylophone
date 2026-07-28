@@ -14,6 +14,7 @@
 #include "parts_data_table.h"
 #include "s_vector2.h"
 #include "soundeffectmanager.h"
+#include "vectormath.h"
 
 // The process-wide Limelight result-window layer, created lazily by shared().
 static LimelightResultLayer *g_pLimelightResultLayer = nullptr; // @ghidraAddress 0x3de008
@@ -473,6 +474,20 @@ void LimelightResultLayer::RenderPhoneResultSpriteById(unsigned int nSlot,
                        nSlot,
                        nIntensity,
                        nAlpha);
+}
+
+/** @ghidraAddress 0x12a6cc */
+void LimelightResultLayer::EmitPhonePartAtAnchor(unsigned int nSlot,
+                                                 unsigned int nPartId,
+                                                 unsigned int nAnchorIndex,
+                                                 const S_VECTOR2 *pOffset,
+                                                 unsigned int nAlpha,
+                                                 float flScaleX) {
+    S_VECTOR2 position{};
+    getPosition_Phone(static_cast<int>(nAnchorIndex), &position);
+    S_VECTOR2 offset = *pOffset;
+    AddVector2(&position, &offset);
+    RenderPhoneResultSpriteById(nSlot, nPartId, position, nAlpha, false, 0.0f, flScaleX, 1.0f);
 }
 
 /** @ghidraAddress 0x126ab4 */

@@ -278,6 +278,27 @@ public:
                                  float flScaleY);
 
     /**
+     * @brief Emits one result part at a phone layout anchor plus an offset (a convenience wrapper).
+     *
+     * Resolves the base position from the phone anchor table by @p nAnchorIndex, adds @p offset, and
+     * renders the part by id at that position with unit Y scale, no rotation, and the main (undimmed)
+     * pass.
+     * @param nSlot The instancer slot to append to.
+     * @param nPartId The result-part id.
+     * @param nAnchorIndex The phone anchor-position index.
+     * @param pOffset The offset added to the resolved position.
+     * @param nAlpha The part alpha.
+     * @param flScaleX The part X scale.
+     * @ghidraAddress 0x12a6cc
+     */
+    void EmitPhonePartAtAnchor(unsigned int nSlot,
+                               unsigned int nPartId,
+                               unsigned int nAnchorIndex,
+                               const S_VECTOR2 *pOffset,
+                               unsigned int nAlpha,
+                               float flScaleX);
+
+    /**
      * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size anchor).
      *
      * Sizes the quad by the texture's own scale factor, derives its UV rectangle from the used
