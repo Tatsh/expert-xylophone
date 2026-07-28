@@ -760,6 +760,87 @@ int NoteModel::PickShotBounceDirection() const {
 }
 
 namespace {
+// The minimum horizontal touch drag, in pixels, that a player flick must exceed to shoot a note.
+constexpr float kPlayerFlickThreshold = 20.0f;
+} // namespace
+
+/** @ghidraAddress 0x1361ec */
+void NoteModel::CheckShotPlayer() {
+    // The player cannot shoot while paused or once the shot lifetime has run out.
+    if (GameSystem::GetGameSystem()->GetPaused() || m_flShotDecayTimer <= 0.0f) {
+        return;
+    }
+
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    const float flDiameterSq = GameSystem::GetGameSystem()->GetSheetDiameterSq();
+    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    const int nActive = pTouchManager->GetActiveTouchCount();
+    for (int i = 0; i < nActive; ++i) {
+        TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
+        const S_VECTOR2 *pTouchPos = pManager->GetOrCacheNotePosition(pTouch->nId);
+        if (pTouchPos == nullptr) {
+            continue;
+        }
+
+        // The touch must fall within the note's catch radius (mirrored to the note's side).
+        const float flSideX = m_pos.x * (IsSideFlipped() ? 1.0f : -1.0f);
+        const float flDx = flSideX - pTouchPos->x;
+        const float flSideY = m_pos.y * (IsSideFlipped() ? -1.0f : 1.0f);
+        const float flDy = flSideY - pTouchPos->y;
+        if (flDx * flDx + flDy * flDy >= flDiameterSq) {
+            continue;
+        }
+
+        // The flick's horizontal drag (mirrored to the note's side) must exceed the threshold.
+        const float flDrag = static_cast<float>(pTouch->nCurrentX - pTouch->nBeginX);
+        const float flSideDrag = IsSideFlipped() ? flDrag : -flDrag;
+        if (flSideDrag <= kPlayerFlickThreshold && flSideDrag >= -kPlayerFlickThreshold) {
+            continue;
+        }
+
+        // Score the note when its opposing gauge is filled, then shoot it in the flick's direction.
+        if (m_bShotDecaying) {
+            ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
+            const int nColor = m_pRecord != nullptr ?
+                                   m_pRecord->GetSide() :
+                                   (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
+            if (pGauge->GetAnotherValue(nColor) >= 1.0f) {
+                ReflecGaugeLayer::SubReflecGaugeValue(1.0f, pGauge, nColor);
+                m_bShotResolved = true;
+                ScoreTracker::shared()->AddLaneJudgeResult(
+                    IsOnPlaySide(),
+                    static_cast<unsigned int>(GameSystem::GetGameSystem()->GetFullJustReflec()));
+            }
+        }
+
+        // Whether or not the note scored, this frame's shot check is done: leave the shot phase.
+        m_bShotActive = false;
+        if (!m_bShotResolved) {
+            return;
+        }
+
+        // A hold note follows its display lane (its ambiguous lane picking the flick side); any other
+        // note shoots in the flick's horizontal direction.
+        int nDirection;
+        if (m_pRecord != nullptr && m_pRecord->GetHoldKind() == kHoldKindHead) {
+            const int nLane = m_pRecord->GetDisplayLane();
+            if (nLane == kDisplayLaneCentre) {
+                nDirection = -1;
+            } else if (nLane == kDisplayLaneLeft) {
+                nDirection = flSideDrag >= 0.0f ? 1 : -1;
+            } else {
+                assert(nLane == kDisplayLaneRight);
+                nDirection = 1;
+            }
+        } else {
+            nDirection = flSideDrag >= 0.0f ? 2 : -2;
+        }
+        SetShotDirection(nDirection);
+        return;
+    }
+}
+
+namespace {
 // The timing-window thresholds the note judge compares the signed time error against
 // (@ghidraAddress 0x308b64..0x308b78). The just window is [b6c, b64_narrow); a hit inside the
 // tighter [b74, b70) band grades early/late, otherwise far.
