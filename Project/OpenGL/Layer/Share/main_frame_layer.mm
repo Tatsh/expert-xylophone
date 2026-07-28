@@ -1,5 +1,6 @@
 #include "main_frame_layer.h"
 
+#include "neDrawPolygon2D.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
@@ -128,8 +129,8 @@ void MainFrameLayer::StartFadeOut(float flDuration) {
 
 /** @ghidraAddress 0x17c9a8 */
 void MainFrameLayer::SetMainFrameEnabled(bool bEnabled) {
-    if (m_pMainSprite != nullptr) {
-        m_pMainSprite->SetVisible(bEnabled);
+    if (m_pFrameMesh2d != nullptr) {
+        m_pFrameMesh2d->SetVisible(bEnabled);
     }
 }
 

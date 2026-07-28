@@ -11,6 +11,7 @@
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
+class C_DRAW_POLYGON_2D;
 } // namespace ne
 
 /**
@@ -148,8 +149,10 @@ private:
     MainFrameLayer();
 
     // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
-    unsigned char m_aReserved08[0x20] = {};         // +0x08
-    ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
+    unsigned char m_aReserved08[0x20] = {}; // +0x08
+    // +0x28: the frame's 2D polygon mesh (a C_RENDER, so SetMainFrameEnabled toggles its visibility;
+    // SetMainFrameOverlayLayout fills its 24 vertices through C_DRAW_POLYGON_2D::SetPos).
+    ne::C_DRAW_POLYGON_2D *m_pFrameMesh2d = {};
     // +0x30..+0x37: further layout state, still being worked out.
     unsigned char m_aReserved30[8] = {}; // +0x30
     // +0x38, +0x40: the two instancers EmitMainFrameSprite fills, indexed by MainFrameInstancer.
