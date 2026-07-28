@@ -47,6 +47,20 @@ public:
     void ResetResultScoreAnimations(float flStartTime);
 
     /**
+     * @brief Kicks off the staggered result-screen score/effect show animations.
+     *
+     * Seeds the five display animation channels to ease each from its current shown value to one:
+     * the score channel over @p flStartTime, and the four effect channels over fixed 200/300-unit
+     * durations with staggered delays (150, 2600, and 2900 units past the base). Restarts the four
+     * ribbon trails over 500 units — the first pair at the base time and the second pair delayed by
+     * 2600 units — and resets the current-step sentinel. A non-positive @p flStartTime snaps the
+     * score channel to its final value immediately.
+     * @param flStartTime The animation base start time.
+     * @ghidraAddress 0x116f90
+     */
+    void StartResultScoreAnimations(float flStartTime);
+
+    /**
      * @brief Counts a gesture hold-timer down and fires the release cue when it expires.
      *
      * A no-op while the score/gesture-active flag is clear. Otherwise it accumulates the frame delta

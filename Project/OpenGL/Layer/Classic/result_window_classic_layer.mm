@@ -1290,6 +1290,80 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
     m_bScoreAnimActive = false;
 }
 
+// The score-animation channel indices, their fixed effect-channel durations, and the per-channel
+// stagger delays past the base start time.
+namespace {
+constexpr int kScoreChannel = 0;
+constexpr int kEffectChannelA = 1;
+constexpr int kEffectChannelB = 2;
+constexpr int kEffectChannelC = 3;
+constexpr int kEffectChannelD = 4;
+constexpr float kScoreAnimShownTarget = 1.0f;
+constexpr float kEffectDurationShort = 200.0f;
+constexpr float kEffectDurationLong = 300.0f;
+constexpr float kEffectDelayA = 150.0f;  // @ghidraAddress 0x2eedcc
+constexpr float kEffectDelayC = 2600.0f; // @ghidraAddress 0x302d54
+constexpr float kEffectDelayD = 2900.0f; // @ghidraAddress 0x302d58
+constexpr int kTrailDuration = 500;
+} // namespace
+
+/** @ghidraAddress 0x116f90 */
+void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
+    // The score channel eases from its current shown value to one over the base start time; a
+    // non-positive time snaps it to the final value immediately.
+    ResultBonusAnimChannel &scoreChannel = m_aScoreAnimChannels[kScoreChannel];
+    scoreChannel.flStart = scoreChannel.flCurrent;
+    scoreChannel.flTarget = kScoreAnimShownTarget;
+    scoreChannel.flDuration = flStartTime;
+    scoreChannel.flElapsed = 0.0f;
+    scoreChannel.flReserved = 0.0f;
+    if (flStartTime <= 0.0f) {
+        scoreChannel.flCurrent = kScoreAnimShownTarget;
+    }
+
+    // The first ribbon-trail pair starts at the base time.
+    m_apTrails[0]->Start(kTrailDuration, static_cast<int>(flStartTime));
+    m_apTrails[1]->Start(kTrailDuration, static_cast<int>(flStartTime));
+
+    // Each effect channel eases from its current value to one over a fixed duration, its start
+    // staggered past the base time by holding the delay in the elapsed slot.
+    ResultBonusAnimChannel &effectB = m_aScoreAnimChannels[kEffectChannelB];
+    effectB.flStart = effectB.flCurrent;
+    effectB.flTarget = kScoreAnimShownTarget;
+    effectB.flDuration = kEffectDurationShort;
+    effectB.flElapsed = flStartTime;
+    effectB.flReserved = 0.0f;
+
+    ResultBonusAnimChannel &effectA = m_aScoreAnimChannels[kEffectChannelA];
+    effectA.flStart = effectA.flCurrent;
+    effectA.flTarget = kScoreAnimShownTarget;
+    effectA.flDuration = kEffectDurationLong;
+    effectA.flElapsed = flStartTime + kEffectDelayA;
+    effectA.flReserved = 0.0f;
+
+    // The second ribbon-trail pair is delayed past the base time.
+    const int nDelayedTrailStart = static_cast<int>(flStartTime + kEffectDelayC);
+    m_apTrails[2]->Start(kTrailDuration, nDelayedTrailStart);
+    m_apTrails[3]->Start(kTrailDuration, nDelayedTrailStart);
+
+    ResultBonusAnimChannel &effectD = m_aScoreAnimChannels[kEffectChannelD];
+    effectD.flStart = effectD.flCurrent;
+    effectD.flTarget = kScoreAnimShownTarget;
+    effectD.flDuration = kEffectDurationShort;
+    effectD.flElapsed = flStartTime + kEffectDelayC;
+    effectD.flReserved = 0.0f;
+
+    ResultBonusAnimChannel &effectC = m_aScoreAnimChannels[kEffectChannelC];
+    effectC.flStart = effectC.flCurrent;
+    effectC.flTarget = kScoreAnimShownTarget;
+    effectC.flDuration = kEffectDurationLong;
+    effectC.flElapsed = flStartTime + kEffectDelayD;
+    effectC.flReserved = 0.0f;
+
+    // Reset the current-step sentinel to "none".
+    m_nTrackIndexA = -1;
+}
+
 /** @ghidraAddress 0x11541c */
 void ResultWindowClassicLayer::ResetScoreDisplayState() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
