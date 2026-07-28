@@ -35,6 +35,17 @@ public:
     ClearGaugeLayer();
 
     /**
+     * @brief Builds the gauge's eight sprite batches on first use.
+     *
+     * Loads the gm_parts2 atlas, creates each batch sized from the capacity table, attaches it under
+     * the background layer, makes it visible, binds the atlas, and clears its sprite count. The
+     * second batch additionally enables the two-side gauge. Finally seeds both bands' base icons.
+     * Guarded so it runs only once.
+     * @ghidraAddress 0x175afc
+     */
+    void CreateSprites();
+
+    /**
      * @brief Advances the reveal fade and rebuilds the gauge's sprite batches for the frame.
      *
      * Eases the reveal fade toward its target over its duration (marking the colour dirty), clears
@@ -181,9 +192,11 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
-    // +0x50..+0x11f: the batches' per-slot capacity/count table and the sprite-index bookkeeping the
-    // factory seeds; individual fields are still being worked out.
-    unsigned char m_aLayerState50[0xd0] = {}; // +0x50
+    int m_anBatchCapacity[kBatchCount] =
+        {}; // +0x50: each batch's sprite capacity (the build seed).
+    // +0x70..+0x117: the batches' per-slot count/sprite-index bookkeeping the factory seeds;
+    // individual fields are still being worked out.
+    unsigned char m_aLayerState70[0xa8] = {}; // +0x70
     bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.
     // +0x119..+0x11f is alignment padding before the fade-tween block.
     unsigned char m_aPad119[7] = {}; // +0x119

@@ -3,9 +3,12 @@
 #include <cassert>
 #include <cmath>
 
+#include "bg_layer.h"
 #include "clear_gauge_digit_table.h"
 #include "engineglobals.h"
+#include "neRender.h"
 #include "neSpriteInstancing.h"
+#include "neTexture.h"
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
@@ -16,6 +19,15 @@ namespace {
 
 // The fully opaque per-channel colour value the gauge always writes.
 constexpr unsigned int kColorMax = 255;
+
+// The gm_parts2 atlas the gauge sprites draw from.
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
+
+// The batch whose build additionally enables the two-side gauge.
+constexpr int kTwoSideEnableBatch = 1;
+
+// The number of gauge bands (upper and lower) seeded with a base icon.
+constexpr int kBandCount = 2;
 
 // The base gauge icon draws into the first sprite batch.
 constexpr unsigned int kIconBatch = 0;
@@ -113,6 +125,34 @@ void ClearGaugeLayer::StartFadeOut(float flDuration) {
         m_flFadeCurrent = 0.0f;
         m_bColorDirty = true;
     }
+}
+
+/** @ghidraAddress 0x175afc */
+void ClearGaugeLayer::CreateSprites() {
+    if (m_bBuilt) {
+        return;
+    }
+
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
+    for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
+        ne::C_SPRITE_INSTANCING_2D *pBatch =
+            ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_anBatchCapacity[nBatch]));
+        m_apSprites[nBatch] = pBatch;
+        BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject()->AttachChild(pBatch);
+        pBatch->SetVisible(true);
+        pBatch->SetRefCountedMember(m_pTexture);
+        pBatch->SetSpriteCount(0);
+        // Building the second batch also enables the two-side gauge.
+        if (nBatch == kTwoSideEnableBatch) {
+            m_nTwoSideEnabled = 1;
+        }
+    }
+
+    // Seed both bands' base icons.
+    for (int nBand = 0; nBand < kBandCount; ++nBand) {
+        SetClearGaugeIcon(nBand, 1);
+    }
+    m_bBuilt = true;
 }
 
 /** @ghidraAddress 0x175dd4 */
