@@ -542,6 +542,28 @@ private:
      */
     LimelightResultLayer();
 
+    /**
+     * @brief Emits one phone-layout part sprite positioned relative to a separator field, offset by
+     * a caller-supplied delta.
+     *
+     * A no-op when the part index or separator index is out of range. The part's anchor, size, and
+     * atlas frame come from the pad parts table (the frame indexing the glyph UV palette); the
+     * position is the separator record's base, viewport-anchored by its anchor mode, plus the offset
+     * delta. The separator record's carried width and height supply the sprite's X scale and
+     * rotation. The sprite draws opaque white at the given alpha.
+     * @param nSlot The target sprite slot.
+     * @param nSeparatorIndex The separator-record index (0 through 51).
+     * @param nPartIndex The part index (0 through 141) into the pad parts table.
+     * @param pOffset The position offset added to the separator base.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x129a64
+     */
+    void RenderPhoneSpriteFieldAligned(unsigned int nSlot,
+                                       unsigned int nSeparatorIndex,
+                                       unsigned int nPartIndex,
+                                       const S_VECTOR2 *pOffset,
+                                       unsigned int nAlpha);
+
     // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
     // full; the shared low-level emit behind all the part helpers.
     // @ghidraAddress 0x12ac64

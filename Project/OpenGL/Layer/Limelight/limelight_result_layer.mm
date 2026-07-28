@@ -292,6 +292,43 @@ const PhoneLayoutRecord *LimelightResultLayer::getSeparator_Phone(int nIndex) co
                          &g_aLimelightSeparatorPhoneDefault[nIndex];
 }
 
+/** @ghidraAddress 0x129a64 */
+void LimelightResultLayer::RenderPhoneSpriteFieldAligned(unsigned int nSlot,
+                                                         unsigned int nSeparatorIndex,
+                                                         unsigned int nPartIndex,
+                                                         const S_VECTOR2 *pOffset,
+                                                         unsigned int nAlpha) {
+    if (nPartIndex >= static_cast<unsigned int>(kLimelightPadGlyphRecordBound) ||
+        nSeparatorIndex >= static_cast<unsigned int>(kLimelightSeparatorRecordCount)) {
+        return;
+    }
+
+    // The part's texture rectangle comes from the glyph UV palette, indexed by the part's frame.
+    const PartsDataRecord &part = g_aLimelightPartsPad[nPartIndex];
+    const UvPaletteEntry &uv = g_aLimelightGlyphUvPalette[part.nUvPaletteIndex];
+
+    // The separator record supplies the base position, its viewport anchor mode, and (in its carried
+    // width and height) the sprite's X scale and rotation.
+    const PhoneLayoutRecord *pSeparator = getSeparator_Phone(static_cast<int>(nSeparatorIndex));
+
+    float flAnchorX = 0.0f;
+    float flAnchorY = 0.0f;
+    ApplyAnchorOffset(pSeparator->nAnchorMode, &flAnchorX, &flAnchorY);
+
+    const S_VECTOR2 position{flAnchorX + pSeparator->flX + pOffset->x,
+                             flAnchorY + pSeparator->flY + pOffset->y};
+    AppendSpriteToSlot(position,
+                       S_VECTOR2{part.flX, part.flY},
+                       S_VECTOR2{part.flWidth, part.flHeight},
+                       S_VECTOR2{uv.flU, uv.flV},
+                       S_VECTOR2{uv.flUvWidth, uv.flUvHeight},
+                       pSeparator->flHeight,
+                       S_VECTOR2{pSeparator->flWidth, 1.0f},
+                       nSlot,
+                       kDefaultPartAlpha,
+                       nAlpha);
+}
+
 /** @ghidraAddress 0x123cc8 */
 void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) const {
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
