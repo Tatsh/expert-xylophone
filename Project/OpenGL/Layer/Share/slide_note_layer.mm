@@ -11,6 +11,7 @@
 #include <cassert>
 
 #include "bg_layer.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -62,6 +63,10 @@ constexpr int kBlendModeAdditive = 1;
 constexpr int kTexParamWrapT = 1;
 constexpr int kTexParamWrapS = 0;
 constexpr int kTexWrapRepeat = 1;
+
+// The half-turn rotation a trail takes when its note is on the opposite play side, in radians
+// (@ghidraAddress 0x2fe894).
+constexpr float kMirrorRotation = 3.1415927f;
 } // namespace
 
 /** @ghidraAddress 0x95a18 */
@@ -72,6 +77,50 @@ SlideNoteLayer::SlideNoteLayer() {
     m_bBuilt = false;
     m_flLastClock = kInvalidClock;
     g_nActiveSlideTrailCount = 0;
+}
+
+/** @ghidraAddress 0x95bc0 */
+void SlideNoteLayer::Create(int nColor,
+                            unsigned char nFlagA,
+                            int nKind,
+                            float flStartX,
+                            unsigned int nPacked10,
+                            float flStartY,
+                            float flEndX,
+                            unsigned char nFlagB,
+                            unsigned char nFlagC,
+                            unsigned char nFlagE,
+                            float flEndY,
+                            unsigned char nFlagD) {
+    assert(nColor >= 0 && nColor < kPlayerColorMax);
+
+    // A trail whose note is on the opposite play side is drawn mirrored a half-turn.
+    const float flRotation =
+        GameSystem::GetGameSystem()->GetPlayColor() != nColor ? kMirrorRotation : 0.0f;
+
+    // Claim the first inactive pooled trail, scanning from the shared active-trail cursor; a full
+    // pool drops the trail.
+    for (int nSlot = g_nActiveSlideTrailCount; nSlot < kTrailCount; ++nSlot) {
+        SlideNoteTrail &trail = m_aTrails[nSlot];
+        if (!trail.bActive) {
+            trail.nKind = nKind;
+            trail.nColor = nColor;
+            trail.bActive = true;
+            trail.nFlagA = nFlagA;
+            trail.flStartX = flStartX;
+            trail.nPacked10 = nPacked10;
+            trail.flStartY = flStartY;
+            trail.flEndX = flEndX;
+            trail.nFlagB = nFlagB;
+            trail.nFlagC = nFlagC;
+            trail.flEndY = flEndY;
+            trail.flRotation = flRotation;
+            trail.nFlagD = nFlagD;
+            trail.nFlagE = nFlagE;
+            ++g_nActiveSlideTrailCount;
+            return;
+        }
+    }
 }
 
 /** @ghidraAddress 0x95ae0 */

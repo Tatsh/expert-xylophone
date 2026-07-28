@@ -17,15 +17,30 @@ class C_TEXTURE;
 /**
  * @brief One slide-note trail record: the per-note trail state the layer animates and draws.
  *
- * A 44-byte record; the constructor clears the active flag and the leading 16-byte block. The
- * remaining fields are the trail's animation state, still being worked out. The trailing
- * @c // +0xNN comments document the byte offsets within the record.
+ * A 44-byte record seeded by @c Create with the trail's colour, its two endpoints, and its
+ * per-endpoint flags. The trailing @c // +0xNN comments document the byte offsets within the record.
  */
 struct SlideNoteTrail {
-    bool bActive = {};                  // +0x00: whether the trail slot is in use.
-    unsigned char aReserved01[11] = {}; // +0x01: further trail state before the animated block.
-    unsigned char aAnimBlock[16] = {};  // +0x0c: the animated trail block cleared on construct.
-    unsigned char aReserved1c[16] = {}; // +0x1c: the remaining trail state.
+    bool bActive = {};         // +0x00: whether the trail slot is in use.
+    unsigned char nFlagA = {}; // +0x01: the first per-trail flag byte.
+    // +0x02..+0x03 is alignment padding.
+    unsigned char aPad02[2] = {}; // +0x02
+    int nKind = {};               // +0x04: the trail kind/type.
+    int nColor = {};              // +0x08: the note colour (0 or 1).
+    float flStartX = {};          // +0x0c: the trail's start X.
+    unsigned int nPacked10 = {};  // +0x10: a packed four-byte field (per-endpoint sub-flags).
+    float flStartY = {};          // +0x14: the trail's start Y.
+    float flEndX = {};            // +0x18: the trail's end X.
+    unsigned char nFlagB = {};    // +0x1c: the second per-trail flag byte.
+    unsigned char nFlagC = {};    // +0x1d: the third per-trail flag byte.
+    unsigned char nFlagD = {};    // +0x1e: the fourth per-trail flag byte.
+    // +0x1f is alignment padding.
+    unsigned char aPad1f[1] = {}; // +0x1f
+    float flEndY = {};            // +0x20: the trail's end Y.
+    float flRotation = {};     // +0x24: the trail rotation (pi when the note is on the far side).
+    unsigned char nFlagE = {}; // +0x28: the fifth per-trail flag byte.
+    // +0x29..+0x2b is alignment padding to the 44-byte stride.
+    unsigned char aPad29[3] = {}; // +0x29
 };
 
 /**
@@ -41,12 +56,48 @@ public:
     // The number of sprite batches the layer owns and the number of slide-trail records it pools.
     static constexpr int kBatchCount = 3;
     static constexpr int kTrailCount = 80;
+    // The number of player colours a trail may take (the valid colour range is [0, kPlayerColorMax)).
+    static constexpr int kPlayerColorMax = 2;
 
     /**
      * @brief Returns the slide-note layer singleton, constructing it on first use.
      * @ghidraAddress 0x95a90
      */
     static SlideNoteLayer *shared();
+
+    /**
+     * @brief Spawns a slide-note trail into the pool, seeding its colour, endpoints, and flags.
+     *
+     * Claims the first inactive pooled trail from the shared active-trail cursor and seeds it: the
+     * kind, colour, start and end positions, the per-trail flag bytes, a packed sub-flag word, and a
+     * rotation of a half-turn when the note is on the opposite play side (else none). A full pool
+     * drops the trail. Asserts the colour is in @c [0, kPlayerColorMax).
+     * @param nColor The note's player colour (0 or 1).
+     * @param nFlagA The first per-trail flag byte.
+     * @param nKind The trail kind/type.
+     * @param flStartX The trail's start X.
+     * @param nPacked10 The packed four-byte sub-flag field.
+     * @param flStartY The trail's start Y.
+     * @param flEndX The trail's end X.
+     * @param nFlagB The second per-trail flag byte.
+     * @param nFlagC The third per-trail flag byte.
+     * @param nFlagE The fifth per-trail flag byte.
+     * @param flEndY The trail's end Y.
+     * @param nFlagD The fourth per-trail flag byte.
+     * @ghidraAddress 0x95bc0
+     */
+    void Create(int nColor,
+                unsigned char nFlagA,
+                int nKind,
+                float flStartX,
+                unsigned int nPacked10,
+                float flStartY,
+                float flEndX,
+                unsigned char nFlagB,
+                unsigned char nFlagC,
+                unsigned char nFlagE,
+                float flEndY,
+                unsigned char nFlagD);
 
     /**
      * @brief Constructs (and resets) the layer: chains the base constructor, clears the built flag
