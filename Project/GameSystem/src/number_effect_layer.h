@@ -97,6 +97,23 @@ public:
     void ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const;
 
 private:
+    /**
+     * @brief Emits one number-glyph sprite into a batch.
+     *
+     * Selects the element descriptor from the portrait or landscape layout table by the inherited
+     * is-pad flag, looks up its atlas UV rectangle, and writes the next free slot of batch
+     * @p nBatch with the descriptor's anchor and size, the caller's position, that UV rectangle, and
+     * a solid @p nColour tint at the layer's current fade alpha. A no-op when the batch is full.
+     * @param flX The sprite's x position.
+     * @param flY The sprite's y position.
+     * @param nBatch The target sprite batch (0 through 3).
+     * @param nDescIndex The element descriptor index (0 through 3).
+     * @param nColour The sprite's red, green, and blue channel value.
+     * @ghidraAddress 0x18a674
+     */
+    void EmitNumberSprite(
+        float flX, float flY, unsigned int nBatch, unsigned int nDescIndex, unsigned int nColour);
+
     // Constructs the layer through the base constructor; every field is zero-initialised. The binary
     // inlines this into the singleton getter rather than emitting a separate constructor.
     NumberEffectLayer() = default;

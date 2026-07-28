@@ -12,6 +12,8 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
+#include "sprite_uv_table.h"
 
 namespace {
 // The gm_parts2 atlas the number glyphs draw from.
@@ -68,6 +70,30 @@ constexpr int kLandscapeGravity[kWideVariantCount][kAnchorElementCount] = {
 // The fully-opaque alpha the fade-in eases toward (a 0-to-255 alpha channel).
 namespace {
 constexpr float kOpaqueAlpha = 255.0f;
+
+// One number-glyph element descriptor: its anchor, size, and index into the shared sprite-UV table.
+struct NumberElementDescriptor {
+    float flAnchorX;
+    float flAnchorY;
+    float flSizeW;
+    float flSizeH;
+    int nUvIndex;
+};
+
+// The number-glyph element descriptors for the landscape and portrait layouts (@ghidraAddress
+// 0x30fbd0 landscape, 0x30fb80 portrait).
+constexpr NumberElementDescriptor kLandscapeElements[] = {
+    {124.0f, 10.0f, 248.0f, 20.0f, 0x175},
+    {2.0f, 6.0f, 4.0f, 12.0f, 0x176},
+    {25.0f, 10.0f, 50.0f, 20.0f, 0x177},
+    {70.0f, 9.0f, 140.0f, 18.0f, 0x178},
+};
+constexpr NumberElementDescriptor kPortraitElements[] = {
+    {178.0f, 25.0f, 356.0f, 50.0f, 0xf4},
+    {2.0f, 7.0f, 4.0f, 12.0f, 0xf5},
+    {50.0f, 16.0f, 100.0f, 32.0f, 0xf6},
+    {70.0f, 9.0f, 140.0f, 18.0f, 0xf7},
+};
 } // namespace
 
 /** @ghidraAddress 0x189ef0 */
@@ -149,6 +175,30 @@ void NumberEffectLayer::ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut)
     default:
         break;
     }
+}
+
+/** @ghidraAddress 0x18a674 */
+void NumberEffectLayer::EmitNumberSprite(
+    float flX, float flY, unsigned int nBatch, unsigned int nDescIndex, unsigned int nColour) {
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nBatch];
+    const int nIndex = pBatch->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pBatch->GetCapacity())) {
+        return;
+    }
+
+    // The portrait (pad) layout uses its own element table; the phone uses the landscape table.
+    const NumberElementDescriptor &element =
+        IsPad() ? kPortraitElements[nDescIndex] : kLandscapeElements[nDescIndex];
+    const SpriteUvEntry &uv = g_aSpriteUvTable[element.nUvIndex];
+    const auto nAlpha = static_cast<unsigned int>(static_cast<int>(m_fadeChannel.GetCurrent()));
+
+    pBatch->SetSpritePosition(nIndex, S_VECTOR2{flX, flY});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{element.flSizeW, element.flSizeH});
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{element.flAnchorX, element.flAnchorY});
+    pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    pBatch->SetSpriteColor(nIndex, nColour, nColour, nColour, nAlpha);
+    pBatch->SetSpriteCount(nIndex + 1);
 }
 
 // The process-wide number-effect layer, created lazily by shared().
