@@ -220,6 +220,20 @@ public:
     void AdvanceAlongWaypoint();
 
     /**
+     * @brief Reflects the note at a play-field edge, or advances it to its next path waypoint.
+     *
+     * Computes the edge bound from the note-field half-width, mirrored by the travel direction and
+     * the note's side flip. When the note still has waypoints left, it advances the waypoint index,
+     * points the current-waypoint pointer at the next node, follows it, and takes the node's velocity;
+     * otherwise (unless the record is a hold note) it bounces the note back by mirroring its X about
+     * the edge and negating its X velocity. Either way it spawns a bounds effect at the edge and
+     * clears the waypoint-active flag.
+     * @param nDirection The travel direction sign selecting which edge to reflect off.
+     * @ghidraAddress 0x133858
+     */
+    void HandleReflect(int nDirection);
+
+    /**
      * @brief The state-machine fade-out step: advances the note's position and decays its fade
      * timer, transitioning to the finished state once the timer reaches zero.
      * @ghidraAddress 0x1334dc
@@ -519,9 +533,11 @@ private:
     unsigned char m_aReserved511[3] = {};   // +0x511
     int m_nDirectionSign = {};              // +0x514: the shot direction, clamped to [-2, 2].
     int m_nWaypointCount = {};              // +0x518: the shot's waypoint count (abs of direction).
-    unsigned char m_aReserved51c[4] = {};   // +0x51c
-    // +0x520: the waypoint/path animation block, zeroed on construction. +0x594 holds the
-    // waypoint-active flag that switches AdvanceNotePosition onto the interpolated path.
+    int m_nWaypointIndex = {};              // +0x51c: the current waypoint's index into the block.
+    // +0x520: the waypoint/path animation block, zeroed on construction: an array of 40-byte path
+    // nodes (WaypointNode covers each node's leading 20 bytes) the reflect path steps through.
+    // +0x594 holds the waypoint-active flag that switches AdvanceNotePosition onto the interpolated
+    // path.
     unsigned char m_aWaypointBlock0[0x74] = {}; // +0x520
     bool m_bWaypointActive = {};                // +0x594
     unsigned char m_aWaypointBlock1[0x2b] = {}; // +0x595

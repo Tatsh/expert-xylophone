@@ -14,6 +14,7 @@
 #include "Render/neRenderer.h"
 #include "Render/s_vector3.h"
 #include "Render/vectormath.h"
+#include "bounds_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
 #include "gamesystem.h"
@@ -403,6 +404,71 @@ void NoteModel::AdvanceAlongWaypoint() {
     ScaleVector2(&delta, flFraction);
     AddVector2(&delta, &m_pCurrentWaypoint->startPos);
     m_pos = delta;
+}
+
+namespace {
+
+// The waypoint path block's per-node stride, in bytes (each node is a WaypointNode followed by
+// per-node state to the next node).
+constexpr int kWaypointNodeStride = 0x28;
+
+// The note-record hold kinds a reflect skips (a hold's head or tail does not bounce).
+constexpr int kHoldKindHead = 1;
+constexpr int kNoteTypeHold = 1;
+
+// The half-scale applied to the note-field width to get each edge extent.
+constexpr float kEdgeHalfScale = 0.5f;
+
+// The bounds-effect colours a record-less note uses: three when it is on its own side, zero when not.
+constexpr unsigned int kBoundsColorOwnSide = 3;
+constexpr unsigned int kBoundsColorOtherSide = 0;
+
+} // namespace
+
+/** @ghidraAddress 0x133858 */
+void NoteModel::HandleReflect(int nDirection) {
+    // The two field-edge extents are the note-field half-width, positive and negative.
+    const float flHalfWidth = GameSystem::GetGameSystem()->GetSheetPosX();
+    const int nEdgePos = static_cast<int>(flHalfWidth * kEdgeHalfScale);
+    const int nEdgeNeg = static_cast<int>(flHalfWidth * -kEdgeHalfScale);
+
+    // The reflect edge is picked by the travel direction, then swapped when the note is side-flipped.
+    const int nForwardEdge = nDirection < 0 ? nEdgePos : nEdgeNeg;
+    const int nFlippedEdge = nDirection < 0 ? nEdgeNeg : nEdgePos;
+    const int nEdge = IsSideFlipped() == 0 ? nForwardEdge : nFlippedEdge;
+
+    if (m_nWaypointCount != m_nWaypointIndex) {
+        // Advance to the next path waypoint and take its velocity.
+        ++m_nWaypointIndex;
+        // The waypoint block is an inline array of 40-byte nodes based at m_aWaypointBlock0.
+        m_pCurrentWaypoint = reinterpret_cast<WaypointNode *>(
+            m_aWaypointBlock0 + m_nWaypointIndex * kWaypointNodeStride);
+        AdvanceAlongWaypoint();
+        if (m_pCurrentWaypoint != nullptr) {
+            m_velocity.x = m_pCurrentWaypoint->endPos.x;
+            m_velocity.y = m_pCurrentWaypoint->endPos.y;
+        }
+    } else {
+        // No waypoints left: bounce off the edge unless the note is a hold's head or tail.
+        const bool bHold = m_pRecord != nullptr && (m_pRecord->GetHoldKind() == kHoldKindHead ||
+                                                    m_pRecord->GetType() == kNoteTypeHold);
+        if (bHold) {
+            m_bWaypointActive = false;
+            return;
+        }
+        // Mirror the note's X about the edge and reverse its X velocity.
+        m_pos.x = static_cast<float>(nDirection) + (static_cast<float>(nDirection) - m_pos.x);
+        m_velocity.x = -m_velocity.x;
+    }
+
+    // Spawn a bounds effect at the reflect edge, its Y taken from the note position mirrored by side.
+    const unsigned int nColor = m_pRecord != nullptr ?
+                                    static_cast<unsigned int>(m_pRecord->GetSide()) :
+                                    (m_bOwnSide ? kBoundsColorOwnSide : kBoundsColorOtherSide);
+    const float flSideSign = IsSideFlipped() == 0 ? 1.0f : -1.0f;
+    BoundsEffectLayer::shared()->CreateBoundsEffect(
+        nColor, static_cast<float>(nEdge), m_pos.y * flSideSign);
+    m_bWaypointActive = false;
 }
 
 /** @ghidraAddress 0x1334dc */
