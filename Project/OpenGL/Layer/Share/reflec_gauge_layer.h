@@ -85,6 +85,19 @@ public:
     void CreateGaugeSliderSprites();
 
     /**
+     * @brief Advances the gauge bar's fill tween and rebuilds its cell sprites for the frame.
+     *
+     * Eases the fill value toward its target by @p flDelta, deriving the bar's fill ratio between its
+     * two endpoints and marking it dirty. It then clears each batch's sprite count and, for each of
+     * the two gauge halves, advances that side's animated display value toward its gauge value at the
+     * per-half rate, clamps the cell count to @c [0, 5], and re-emits the base, icon, value, and (in
+     * the alternate mode) label cell sprites at the resulting fill.
+     * @param flDelta The per-frame time delta.
+     * @ghidraAddress 0x18ad94
+     */
+    void UpdateGaugeBar(float flDelta);
+
+    /**
      * @brief Returns the gauge value for the given player colour.
      *
      * Maps the colour to a side (matching the current play side) and reads that side's value.
@@ -199,10 +212,10 @@ private:
      */
     ReflecGaugeLayer();
 
-    /** @brief One player side's gauge state: its value plus a trailing per-side field. */
+    /** @brief One player side's gauge state: its target value and its animated display value. */
     struct SideGauge {
-        float flValue = {};  // +0x00: the side's gauge value.
-        int nReserved4 = {}; // +0x04: trailing per-side state.
+        float flValue = {};        // +0x00: the side's gauge value (the scoring target).
+        float flDisplayValue = {}; // +0x04: the per-frame animated cell-fill value chasing flValue.
     };
 
     /**

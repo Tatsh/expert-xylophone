@@ -1,5 +1,6 @@
 #include "reflec_gauge_layer.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 
@@ -456,4 +457,104 @@ void ReflecGaugeLayer::EmitGaugeValueSprite(float flScale,
                     nAlpha,
                     S_VECTOR2{uv.flOriginU, uv.flOriginV},
                     S_VECTOR2{uv.flSizeU * flScale, uv.flSizeV});
+}
+
+namespace {
+
+// The per-half rates at which the animated display value climbs toward and falls away from the gauge
+// value each frame (@ghidraAddress 0x30fc50 = 0.0012 rising, 0x30fc54 = 0.006 falling).
+constexpr float kDisplayRiseRate = 0.0012000000569969416f;
+constexpr float kDisplayFallRate = 0.0060000005178153515f;
+
+// The fractional-fill threshold above which a partially-filled cell counts as an extra whole cell
+// (@ghidraAddress 0x2ee878 = 0.001), the maximum whole-cell count, and the alternate gauge mode that
+// draws value labels.
+constexpr double kCellFillThreshold = 0.001;
+constexpr int kMaxCells = 5;
+constexpr int kLabelGaugeMode = 1;
+
+} // namespace
+
+/** @ghidraAddress 0x18ad94 */
+void ReflecGaugeLayer::UpdateGaugeBar(float flDelta) {
+    // Ease the fill toward its target, deriving the bar's 0..1 fill ratio between its two endpoints.
+    // The fade channel's five floats are repurposed as the fill tween: start/end are the endpoints,
+    // duration the target, elapsed the current fill, and current the resolved fill value.
+    const float flTarget = m_fadeChannel.GetDuration();
+    float flRatio;
+    if (flTarget > m_fadeChannel.GetElapsed()) {
+        float flCurrent = m_fadeChannel.GetElapsed() + flDelta;
+        if (flCurrent > flTarget) {
+            flCurrent = flTarget;
+        }
+        m_fadeChannel.SetElapsed(flCurrent);
+        const float flProgress = flTarget == 0.0f ? 1.0f : flCurrent / flTarget;
+        const float flFill = m_fadeChannel.GetStart() +
+                             flProgress * (m_fadeChannel.GetEnd() - m_fadeChannel.GetStart());
+        m_fadeChannel.SetCurrent(flFill);
+        m_bFadeDone = true;
+        flRatio = flFill;
+    } else {
+        flRatio = m_fadeChannel.GetCurrent();
+    }
+
+    // The label alpha tracks the fill scaled by the display brightness.
+    const float flLabelAlpha = flRatio * m_flDisplayBrightness * kColorMax;
+
+    // Clear every batch's sprite count before re-emitting this frame's cells.
+    for (int i = 0; i < kBatchCount; ++i) {
+        m_apSprites[i]->SetSpriteCount(0);
+    }
+
+    const float flRise = flDelta * kDisplayRiseRate;
+    const float flFall = flDelta * kDisplayFallRate;
+    for (unsigned int nHalf = 0; nHalf < kSideCount; ++nHalf) {
+        const int nColor = static_cast<int>(flRatio * kColorMax * m_aScales[nHalf]);
+        EmitBaseSprite(nHalf, nColor);
+
+        // Advance this half's animated display value toward its gauge value, clamping at the target.
+        SideGauge &side = m_aSides[nHalf];
+        if (side.flDisplayValue < side.flValue) {
+            side.flDisplayValue += flRise;
+            if (side.flDisplayValue > side.flValue) {
+                side.flDisplayValue = side.flValue;
+            }
+        } else {
+            side.flDisplayValue -= flFall;
+            if (side.flDisplayValue < side.flValue) {
+                side.flDisplayValue = side.flValue;
+            }
+        }
+        const int nWholeCells = static_cast<int>(side.flDisplayValue);
+
+        if (!IsPad()) {
+            // Landscape: one icon plus a single value cell showing the fractional fill.
+            const float flFrac = nWholeCells == kMaxCells ?
+                                     1.0f :
+                                     side.flDisplayValue - static_cast<float>(nWholeCells);
+            EmitIconSprite(nHalf, nWholeCells, nColor);
+            EmitGaugeValueSprite(flFrac, nHalf, nWholeCells, nColor);
+            continue;
+        }
+
+        // Portrait mode 0 draws the icon; the alternate mode draws one value cell per filled step.
+        if (m_nGaugeStyle == 0) {
+            EmitIconSprite(nHalf, nWholeCells, nColor);
+        }
+        const float flFrac = side.flDisplayValue - static_cast<float>(nWholeCells);
+        const int nExtra = static_cast<double>(flFrac) > kCellFillThreshold ? 1 : 0;
+        const int nCellCount = std::min(nWholeCells + nExtra, kMaxCells);
+        if (m_nGaugeStyle == 0) {
+            continue;
+        }
+        for (int nCell = 0; nCell < nCellCount; ++nCell) {
+            // The last cell shows the fractional fill; the rest are full.
+            const float flCellFill =
+                nCell >= nCellCount - 1 ? side.flDisplayValue - static_cast<float>(nCell) : 1.0f;
+            EmitGaugeValueSprite(flCellFill, nHalf, nCell, nColor);
+            if (flCellFill >= 1.0f && m_nGaugeStyle == kLabelGaugeMode) {
+                EmitLabelSprite(nHalf, nCell, static_cast<int>(flLabelAlpha));
+            }
+        }
+    }
 }
