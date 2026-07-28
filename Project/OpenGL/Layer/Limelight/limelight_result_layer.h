@@ -216,6 +216,22 @@ public:
     void RenderPhoneTotalScoreDigits(const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
+     * @brief Renders a multiplier value (in tenths) in the phone result layout.
+     *
+     * Scales @p flMultiplier to tenths, splits it into up to three digits, and draws them right to
+     * left from @p pPosition using the multiplier glyph bank, inserting a marker glyph beside the
+     * ones digit. At least two digits are drawn; alpha is halved for the leading positions beyond the
+     * significant digits.
+     * @param flMultiplier The multiplier value.
+     * @param pPosition The right edge of the digit run.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x12a760
+     */
+    void RenderPhoneMultiplierDigitSprites(float flMultiplier,
+                                           const S_VECTOR2 *pPosition,
+                                           unsigned int nAlpha);
+
+    /**
      * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the phone
      * result layout.
      *

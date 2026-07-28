@@ -393,6 +393,14 @@ constexpr float kTotalScoreDimFactor = 0.5f;
 
 // The paired ones-place glyph sits ten part ids above the digit-zero base.
 constexpr unsigned int kPhonePairedGlyphOffset = 10;
+
+// The multiplier digit layout: the digit count, the minimum drawn, the digit glyph bank, and the
+// marker glyph drawn beside the ones digit. It shares the total-score tenths scale, gap, and dim
+// factor.
+constexpr int kMultiplierDigits = 3;
+constexpr int kMultiplierMinDigits = 2;
+constexpr unsigned int kMultiplierDigitBank = 0x81;
+constexpr unsigned int kMultiplierMarkerGlyph = 0x8d;
 } // namespace
 
 /** @ghidraAddress 0x129d04 */
@@ -450,6 +458,61 @@ void LimelightResultLayer::RenderPhoneNumber(float flSpacing,
             cursor.x -= getPartsData_Phone(static_cast<int>(nBasePartId))->flWidth;
             RenderPhoneResultSpriteById(1, nBasePartId, cursor, nAlpha, 1, 0.0f, 1.0f, 1.0f);
             cursor.x -= flSpacing;
+        }
+    }
+}
+
+/** @ghidraAddress 0x12a760 */
+void LimelightResultLayer::RenderPhoneMultiplierDigitSprites(float flMultiplier,
+                                                             const S_VECTOR2 *pPosition,
+                                                             unsigned int nAlpha) {
+    // The multiplier is scaled to tenths and split into three digits (ones first).
+    const int nValue = static_cast<int>(flMultiplier * kTotalScoreTenthsScale);
+    int aDigits[kMultiplierDigits] = {};
+    int nSignificant = 0;
+    int nRemaining = nValue;
+    for (int i = 0; i < kMultiplierDigits; ++i) {
+        aDigits[i] = nRemaining % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nRemaining /= 10;
+    }
+    const int nDrawCount =
+        nSignificant < kMultiplierMinDigits ? kMultiplierMinDigits : nSignificant;
+
+    float flBaseline = pPosition->x;
+    const float flPosY = pPosition->y;
+    unsigned int nCurrentAlpha = nAlpha;
+    for (int i = 0; i < kMultiplierDigits; ++i) {
+        // Leading positions beyond the significant digits draw at half alpha.
+        if (i == nDrawCount) {
+            nCurrentAlpha = static_cast<unsigned int>(static_cast<float>(nCurrentAlpha & 0xff) *
+                                                      kTotalScoreDimFactor);
+        }
+        const PartsDataRecord *pGlyph =
+            getPartsData_Phone(static_cast<int>(aDigits[i] + kMultiplierDigitBank));
+        const float flDrawX = flBaseline - pGlyph->flWidth;
+        const float flDigitY = flPosY - pGlyph->flHeight;
+        RenderPhoneResultSpriteById(1,
+                                    aDigits[i] + kMultiplierDigitBank,
+                                    S_VECTOR2{flDrawX, flDigitY},
+                                    nCurrentAlpha & 0xff,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+        flBaseline = flDrawX + kTotalScoreDigitGap;
+        // The marker glyph is drawn at the post-advance baseline, beside the ones digit.
+        if (i == 0) {
+            RenderPhoneResultSpriteById(1,
+                                        kMultiplierMarkerGlyph,
+                                        S_VECTOR2{flBaseline, flDigitY},
+                                        nCurrentAlpha & 0xff,
+                                        0,
+                                        0.0f,
+                                        1.0f,
+                                        1.0f);
         }
     }
 }
