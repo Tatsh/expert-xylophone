@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -61,7 +63,53 @@ public:
         return m_bActive;
     }
 
+    /**
+     * @brief Advances and redraws the Limelight full-combo effect for the frame.
+     *
+     * Caches the viewport size, clears both slot counts, and, while the effect is active, advances
+     * its clock (deactivating past the end threshold), then emits the twelve base glyph sprites (each
+     * animated by a scale and a position curve) and, once the clock passes the curve-phase start,
+     * the curve-animated glyph sprites.
+     * @param flDeltaTime The frame's elapsed time.
+     * @ghidraAddress 0x120130
+     */
+    void UpdateEffect(float flDeltaTime);
+
 private:
+    /**
+     * @brief Emits the twenty-eight curve-animated glyph sprites for the frame.
+     *
+     * Each slot chains four curve lookups (the output of each threading into the next as the query
+     * value) to derive an animated position, then emits that glyph's sprite.
+     * @param flClock The animation clock fed into the first curve lookup.
+     * @ghidraAddress 0x120328
+     */
+    void EmitCurveAnimatedSprites(float flClock);
+
+    /**
+     * @brief Emits one Limelight effect glyph of kind @p nSpriteKind at @p pPosition.
+     *
+     * Looks the kind up in the effect sprite-layout table (which supplies the target sprite group,
+     * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot and
+     * the atlas frame to a UV rectangle (from the shared atlas table for the higher kinds, or the
+     * title-part table otherwise), and appends the sprite into that slot's batch (dropping it when
+     * the batch is full). The position is adjusted in place by the cached viewport size: laid out
+     * full-size and only shifted vertically on an iPad, or halved and re-centred on the phone. The
+     * sprite takes the caller's @p flScaleX and @p flScaleY, no rotation, and a white tint at
+     * @p nAlpha.
+     * @param nSpriteKind The effect glyph kind, indexing the layout table.
+     * @param pPosition The sprite's base position, adjusted in place by the viewport size.
+     * @param nAlpha The sprite's alpha, in @c [0, 255].
+     * @param flScaleX The sprite's horizontal scale.
+     * @param flScaleY The sprite's vertical scale.
+     * @ghidraAddress 0x120434
+     */
+    void EmitSpriteSlot(unsigned int nSpriteKind,
+                        S_VECTOR2 *pPosition,
+                        unsigned int nAlpha,
+                        float flScaleX,
+                        float flScaleY);
+
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x11ff84
@@ -76,13 +124,11 @@ private:
     bool m_bSpritesBuilt = {};                  // +0x30: set once the sprites are built.
     // +0x31..+0x33 is alignment padding before the trailing state.
     // unsigned char m_aPad31[3]; // +0x31 (alignment padding, compiler-inserted)
-    // +0x34..+0x47: further layer state (two ints, a byte flag, and one more int the constructor
-    // zero-clears) still being worked out, kept to preserve the 0x48-byte allocation size.
-    int m_nReserved34 = {}; // +0x34
-    int m_nReserved38 = {}; // +0x38
-    bool m_bActive = {};    // +0x3c: whether the effect is active.
+    float m_flCachedViewportWidth = {};  // +0x34: the last-seen viewport width.
+    float m_flCachedViewportHeight = {}; // +0x38: the last-seen viewport height.
+    bool m_bActive = {};                 // +0x3c: whether the effect is active.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    int m_nFrameCounter = {};            // +0x40: the effect frame counter, reset on activation.
+    float m_flClock = {};                // +0x40: the effect animation clock, reset on activation.
     unsigned char m_aReserved44[4] = {}; // +0x44
 };
 
