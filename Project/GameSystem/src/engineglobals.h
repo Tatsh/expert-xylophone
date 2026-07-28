@@ -556,6 +556,25 @@ extern UIColor *g_pPaletteSteelBlueColor3;  /*!< @ghidraAddress 0x3d0000 */
 /** @brief The 32-point shared layout metric. @ghidraAddress 0x2ee9b0 */
 extern const double g_dLayoutMetricThirtyTwo;
 
+/**
+ * @brief The tutorial-pastel message-bubble clip rectangles, indexed: 0 head, 1 body, 2 left tail,
+ * 3 right tail. The retina rectangles cut out of the message artwork atlas, read by the tutorial
+ * pastel classes' @c -getClipList:. Seeded once at startup by @c InitializeTutorialPastelLayoutTables.
+ * @ghidraAddress 0x3df3e0
+ */
+extern CGRect g_aTutorialPastelClipRects[4];
+/**
+ * @brief The tutorial-pastel child layout points, indexed: 0 head, 1 body, 2 left tail, 3 right
+ * tail. Seeded once at startup by @c InitializeTutorialPastelLayoutTables.
+ * @ghidraAddress 0x3df460
+ */
+extern CGPoint g_aTutorialPastelPositions[4];
+/**
+ * @brief Seeds @c g_aTutorialPastelClipRects and @c g_aTutorialPastelPositions. Run once at startup.
+ * @ghidraAddress 0x1b81d8
+ */
+void InitializeTutorialPastelLayoutTables(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -70,6 +70,11 @@ CGPoint g_extendNoteNumberOffsetPhone;
 // The Twitter share-image element draw positions, seeded by InitializeParticleOffsetTable.
 CGPoint g_aTwitterImageDrawPos[8];
 
+// The tutorial-pastel message-bubble clip rectangles and child positions, seeded by
+// InitializeTutorialPastelLayoutTables.
+CGRect g_aTutorialPastelClipRects[4];
+CGPoint g_aTutorialPastelPositions[4];
+
 // The setting-screen layout table, seeded by InitializeSettingLayoutGlobals.
 CGPoint g_aSettingLayout[26];
 
@@ -582,6 +587,23 @@ __attribute__((constructor)) void InitializeParticleOffsetTable(void) {
         g_aTwitterImageDrawPos[5] = CGPointMake(19.0, 57.0);   // level (Colette theme)
         g_aTwitterImageDrawPos[6] = CGPointMake(25.0, 115.0);  // just-reflec badge
         g_aTwitterImageDrawPos[7] = CGPointMake(25.0, 135.0);  // full-combo badge
+    }
+}
+
+/** @ghidraAddress 0x1b81d8 */
+__attribute__((constructor)) void InitializeTutorialPastelLayoutTables(void) {
+    @autoreleasepool {
+        // The message-bubble clip rectangles cut out of the artwork atlas, indexed head, body, left
+        // tail, and right tail.
+        g_aTutorialPastelClipRects[0] = CGRectMake(361.0, 274.0, 136.0, 96.0);
+        g_aTutorialPastelClipRects[1] = CGRectMake(499.0, 274.0, 48.0, 56.0);
+        g_aTutorialPastelClipRects[2] = CGRectMake(498.0, 332.0, 24.0, 22.0);
+        g_aTutorialPastelClipRects[3] = CGRectMake(525.0, 332.0, 24.0, 22.0);
+        // The child layout points, in the same head/body/left/right order.
+        g_aTutorialPastelPositions[0] = CGPointMake(101.0, 172.0);
+        g_aTutorialPastelPositions[1] = CGPointMake(100.0, 76.0);
+        g_aTutorialPastelPositions[2] = CGPointMake(107.0, 120.0);
+        g_aTutorialPastelPositions[3] = CGPointMake(95.0, 120.0);
     }
 }
 
