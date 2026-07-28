@@ -15,6 +15,12 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
+#include "sprite_uv_table.h"
+
+// The score-gauge burst atlas UV table (a distinct atlas from the shared sprite UV table); the
+// damage sprites take their UV size from it.
+extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
 // The effect atlas for each bounds-effect style (default, limelight, colette).
@@ -28,6 +34,28 @@ constexpr float kInitialEffectSize = 1.0f;
 
 // The additive blend mode the effect batch draws with.
 constexpr int kAdditiveBlendMode = 1;
+
+// The number of sprite colours/types a damage sprite may take.
+constexpr int kSpriteTypeMax = 2;
+
+// The fixed anchor and quad size, in points, every damage sprite draws with (@ghidraAddress
+// 0x30bf28 anchor, 0x30bf2c size), the atlas cell UV size (0x30bf30 U; V is an inline constant), and
+// the Colette-theme vertical nudge (0x307a3c above, 0x30bf24 below).
+constexpr float kSpriteAnchor = 84.0f;
+constexpr float kSpriteSize = 168.0f;
+constexpr float kSpriteUvSizeU = 0.08203125f;
+constexpr float kSpriteUvSizeV = 0.1640625f;
+constexpr float kColetteOffsetAbove = 42.0f;
+constexpr float kColetteOffsetBelow = -42.0f;
+
+// The half-turn rotation a mirrored (negative-y) sprite takes, in radians (@ghidraAddress 0x2fe894).
+constexpr float kMirrorRotation = 3.1415927f;
+
+// Scales a lane's unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
+constexpr float kAlphaByteScale = 255.0f;
+
+// The Colette theme id.
+constexpr int kThemaColette = 2;
 } // namespace
 
 // The process-wide damage-effect layer, created lazily by shared().
@@ -109,4 +137,41 @@ void DamageEffectLayer::SetLaneValue(int nLane, float flValue) {
 /** @ghidraAddress 0x174238 */
 void DamageEffectLayer::SetEffectSize(float flSize) {
     m_flEffectSize = flSize;
+}
+
+/** @ghidraAddress 0x174538 */
+void DamageEffectLayer::EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VECTOR2 *pPosition) {
+    assert(nColor >= 0 && nColor < kSpriteTypeMax);
+
+    const float flScale = m_flEffectSize;
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_pSprite;
+    const int nIndex = m_nSpriteCount;
+
+    // The Colette theme nudges the sprite vertically (down normally, up when already below); every
+    // other theme uses the plain position.
+    if ([RBUserSettingData sharedInstance].thema == kThemaColette) {
+        const float flOffsetY = pPosition->y < 0.0f ? kColetteOffsetBelow : kColetteOffsetAbove;
+        pBatch->SetSpritePositionXY(nIndex, pPosition->x, pPosition->y + flOffsetY);
+    } else {
+        pBatch->SetSpritePosition(nIndex, *pPosition);
+    }
+
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{kSpriteAnchor, kSpriteAnchor});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{kSpriteSize, kSpriteSize});
+    pBatch->SetSpriteUvOrigin(nIndex, *pUv);
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{kSpriteUvSizeU, kSpriteUvSizeV});
+    pBatch->SetSpriteScale(nIndex, flScale, flScale);
+
+    // A sprite below the field (negative y) is mirrored a half-turn and uses the second lane's alpha.
+    float flAlphaScale;
+    if (pPosition->y < 0.0f) {
+        pBatch->SetSpriteRotation(nIndex, kMirrorRotation);
+        flAlphaScale = m_aLaneValue[1];
+    } else {
+        pBatch->SetSpriteRotation(nIndex, 0.0f);
+        flAlphaScale = m_aLaneValue[0];
+    }
+    pBatch->SetSpriteColor(
+        nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(flAlphaScale * kAlphaByteScale));
+    ++m_nSpriteCount;
 }

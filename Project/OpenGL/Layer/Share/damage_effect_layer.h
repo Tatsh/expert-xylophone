@@ -7,6 +7,8 @@
 
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -80,6 +82,20 @@ public:
 
 private:
     /**
+     * @brief Emits one bounds-damage sprite instance into the batch.
+     *
+     * Writes the next sprite slot with a fixed anchor and quad size, the animation-frame UV, the
+     * layer's effect scale, and opaque white modulated by the lane's alpha. On the Colette theme the
+     * position is nudged vertically; a negative y mirrors the sprite a half-turn and uses the second
+     * lane's alpha. Advances the sprite count.
+     * @param nColor The player colour (0 or 1), also selecting the lane alpha.
+     * @param pUv The animation-frame UV origin.
+     * @param pPosition The instance position; a negative y mirrors the sprite.
+     * @ghidraAddress 0x174538
+     */
+    void EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VECTOR2 *pPosition);
+
+    /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite/texture header and
      * the pooled effect records, and seeds the two lane values and the effect size to one.
      * @ghidraAddress 0x173f10
@@ -98,7 +114,7 @@ private:
 
     ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the bound effect atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {};       // +0x10: the effect sprite instancer.
-    unsigned char m_aReserved18[4] = {};              // +0x18
+    int m_nSpriteCount = {};                          // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                             // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                              // +0x20: set once the sprite batch is built.
     unsigned char m_aReserved21[3] = {};              // +0x21
