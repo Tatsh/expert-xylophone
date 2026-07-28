@@ -418,6 +418,27 @@ constexpr float kBadgePositionCurve[kBadgeGlyphCount][kBadgePositionKnots * 2] =
 // applied here).
 constexpr float kBadgeGlyphScale = 1.0f;
 
+// The achievement-rate meter sprite's fixed geometry (@ghidraAddress 0x305318 absolute X, 0x2fd044
+// anchor X, 0x300fb0 anchor Y, 0x305324 size X, 0x2eedc8 size Y, 0x305328/0x30532c UV size).
+constexpr float kMeterAbsoluteX = 204.0f;
+constexpr float kMeterAnchorX = 85.0f;
+constexpr float kMeterAnchorY = 75.0f;
+constexpr float kMeterSizeX = 170.0f;
+constexpr float kMeterSizeY = 150.0f;
+constexpr float kMeterUvSizeU = 0.166015625f;
+constexpr float kMeterUvSizeV = 0.146484375f;
+constexpr float kMeterSpriteScale = 1.0f;
+
+// The meter needle's per-side vertical position: absolute Y on iPad (@ghidraAddress 0x30531c,
+// 0x305320), and a small relative offset on the phone.
+constexpr float kMeterPadAbsoluteY[kSideCount] = {640.0f, 740.0f};
+constexpr float kMeterPhoneOffsetY[kSideCount] = {-45.0f, 45.0f};
+
+// The iPad single-side override applied to the near side: a raw horizontal position (not made
+// relative to the layout origin) and a half-turn rotation (@ghidraAddress 0x2fe894 = pi).
+constexpr float kMeterSingleSideOverrideX = 204.0f;
+constexpr float kMeterSingleSideRotation = 3.1415927f;
+
 } // namespace
 
 /** @ghidraAddress 0x120630 */
@@ -623,6 +644,49 @@ void LimelightThemeLayer::RenderGradeMeterSprite(unsigned int nSide) {
     const unsigned int nAlpha = m_flGradeRevealClock > kMeterFadeThreshold ? kChannelBlack : 0xff;
 
     EmitGradeMeterSlot(nSide, &kMeterNeedleUv[nFrame], nAlpha);
+}
+
+/** @ghidraAddress 0x121bb8 */
+void LimelightThemeLayer::EmitGradeMeterSlot(unsigned int nSide,
+                                             const S_VECTOR2 *pUvOrigin,
+                                             unsigned int nAlpha) {
+    // The meter needle draws in the additive batch (slot 3); a full batch drops the sprite.
+    constexpr int nSlot = 3;
+    const int nIndex = m_aSpriteCounts[nSlot];
+    if (nIndex >= static_cast<int>(kSlotCapacities[nSlot])) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nSlot];
+
+    // The needle's horizontal position is fixed relative to the layout origin; its vertical position
+    // is an absolute coordinate on iPad and a small relative offset on the phone.
+    float flPosX = kMeterAbsoluteX - m_flWidth;
+    float flPosY;
+    float flRotation = 0.0f;
+    if (IsPad()) {
+        flPosY = kMeterPadAbsoluteY[nSide] - m_flHeight;
+        // In single-side mode the near side (side 0) takes a raw horizontal override (not made
+        // relative to the origin) and mirrors a half-turn.
+        if (m_nSideCount == 1 && nSide == 0) {
+            flPosX = kMeterSingleSideOverrideX;
+            flRotation = kMeterSingleSideRotation;
+        }
+    } else {
+        flPosY = kMeterPhoneOffsetY[nSide];
+    }
+
+    // Centre the sprite vertically on the play-field's full-height layout coordinate.
+    flPosY += static_cast<float>(g_nPlayfieldFullHeightY / 2);
+
+    pBatch->SetSpritePositionXY(nIndex, flPosX, flPosY);
+    pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{kMeterAnchorX, kMeterAnchorY});
+    pBatch->SetSpriteSize(nIndex, S_VECTOR2{kMeterSizeX, kMeterSizeY});
+    pBatch->SetSpriteUvOrigin(nIndex, *pUvOrigin);
+    pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{kMeterUvSizeU, kMeterUvSizeV});
+    pBatch->SetSpriteScale(nIndex, kMeterSpriteScale, kMeterSpriteScale);
+    pBatch->SetSpriteRotation(nIndex, flRotation);
+    pBatch->SetSpriteColor(nIndex, kChannelWhite, kChannelWhite, kChannelWhite, nAlpha);
+    ++m_aSpriteCounts[nSlot];
 }
 
 /** @ghidraAddress 0x120e50 */

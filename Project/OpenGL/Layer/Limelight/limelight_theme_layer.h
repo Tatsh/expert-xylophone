@@ -156,8 +156,14 @@ private:
     void RenderGradeHighRankBadge(int nSide);
 
     /**
-     * @brief Emits one side's achievement-rate meter sprite at the given needle-frame UV and alpha.
-     * Reconstruction pending.
+     * @brief Emits one side's achievement-rate meter needle sprite at the given frame UV and alpha.
+     *
+     * Appends into the additive meter batch (dropping the sprite when the batch is full). The needle
+     * is placed at a fixed horizontal position relative to the layout origin, at a per-side vertical
+     * position that differs between iPad and phone, offset down by half the full-height layout
+     * coordinate. On iPad in single-side mode the near side is repositioned and mirrored a half-turn.
+     * The sprite draws at the fixed meter anchor, size, and UV size, at unit scale, tinted white at
+     * the caller's alpha.
      * @param nSide The player side.
      * @param pUvOrigin The needle frame's UV origin.
      * @param nAlpha The sprite's alpha, in @c [0, 255].
