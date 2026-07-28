@@ -67,6 +67,22 @@ public:
                       float flRotation,
                       float flScaleY);
 
+    /**
+     * @brief Enqueues one chain connector between two note endpoints for this frame.
+     *
+     * Finds the first free pooled record and stores the connector's colour (0 or 1) and its two
+     * endpoints, then advances the shared draw count. Silently drops the connector when the pool is
+     * full. The colour selects the connector sprite type; @c Update later resolves each active
+     * record into a sprite.
+     * @param nColor The connector colour (0 or 1).
+     * @param flStartX The start endpoint's x (the sprite's position x).
+     * @param flStartY The start endpoint's y (the sprite's position y).
+     * @param flEndX The end endpoint's x.
+     * @param flEndY The end endpoint's y.
+     * @ghidraAddress 0x185944
+     */
+    void Create(int nColor, float flStartX, float flStartY, float flEndX, float flEndY);
+
 private:
     /**
      * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
@@ -75,9 +91,14 @@ private:
      */
     ChainConnectorLayer();
 
-    // One pooled chain-connector record (24 bytes): its per-connector animation state.
+    // One pooled chain-connector record (24 bytes): a colour and the two endpoints a connector spans.
     struct ChainRecord {
-        unsigned char aReserved00[0x18] = {}; // +0x00: the connector's animation state.
+        bool bActive = {};   // +0x00: set while the record holds a queued connector.
+        int nColor = {};     // +0x04: the connector colour (0 or 1), selecting the sprite type.
+        float flStartX = {}; // +0x08: the start endpoint x (the sprite position x).
+        float flStartY = {}; // +0x0c: the start endpoint y (the sprite position y).
+        float flEndX = {};   // +0x10: the end endpoint x.
+        float flEndY = {};   // +0x14: the end endpoint y.
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the connector atlas.
@@ -85,9 +106,9 @@ private:
     int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[7] = {};        // +0x21
+    unsigned char m_aReserved21[3] = {};        // +0x21
     ChainRecord m_aChains[kChainRecordCount] =
-        {}; // +0x28: the pooled connector records (to 0xc28).
+        {}; // +0x24: the pooled connector records (to 0xc24).
 };
 
 // code: language=C++

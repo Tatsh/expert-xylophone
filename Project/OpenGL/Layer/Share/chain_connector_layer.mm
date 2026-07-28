@@ -36,6 +36,9 @@ static ChainConnectorLayer *g_pChainConnectorLayer = nullptr; // @ghidraAddress 
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
 
 namespace {
+// The number of connector colours a queued connector may carry (0 up to, but not including, this).
+constexpr int kPlayerColorMax = 2;
+
 // The number of connector sprite types, and the UV-table entry each indexes (both draw the same
 // fixed quad; the type only selects the atlas frame).
 constexpr int kConnectorTypeCount = 2;
@@ -85,6 +88,33 @@ void ChainConnectorLayer::CreateSprites() {
 
     m_bLoaded = true;
     g_nChainConnectorDrawCount = 0;
+}
+
+/** @ghidraAddress 0x185944 */
+void ChainConnectorLayer::Create(
+    int nColor, float flStartX, float flStartY, float flEndX, float flEndY) {
+    assert(nColor >= 0);
+    assert(nColor < kPlayerColorMax);
+
+    if (g_nChainConnectorDrawCount >= kChainRecordCount) {
+        return;
+    }
+
+    // Scan from the draw count for the first free pooled record.
+    for (int nIndex = g_nChainConnectorDrawCount; nIndex < kChainRecordCount; ++nIndex) {
+        ChainRecord &record = m_aChains[nIndex];
+        if (record.bActive) {
+            continue;
+        }
+        record.nColor = nColor;
+        record.bActive = true;
+        record.flStartX = flStartX;
+        record.flStartY = flStartY;
+        record.flEndX = flEndX;
+        record.flEndY = flEndY;
+        ++g_nChainConnectorDrawCount;
+        return;
+    }
 }
 
 /** @ghidraAddress 0x185b94 */
