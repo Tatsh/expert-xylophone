@@ -174,6 +174,37 @@ void LimelightResultLayer::InitializePhoneSpriteInstancers() {
     m_bBuilt = true;
 }
 
+/** @ghidraAddress 0x123e8c */
+void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneIndex,
+                                                            ne::C_TEXTURE *pTexture) {
+    ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apSprites[nPhoneIndex];
+    if (pInstancer == nullptr) {
+        return;
+    }
+    const int nCount = static_cast<int>(pInstancer->GetCapacity());
+    pInstancer->SetRefCountedMember(pTexture);
+    if (pTexture == nullptr || nCount < 1) {
+        return;
+    }
+
+    // The image's point size (its pixels over the retina scale) and its fraction of the allocated
+    // power-of-two texture.
+    const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetScale();
+    const float flPointHeight =
+        static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetScale();
+    const S_VECTOR2 size{flPointWidth, flPointHeight};
+    const S_VECTOR2 uvSize{static_cast<float>(pTexture->GetImageWidth()) /
+                               static_cast<float>(pTexture->GetAllocWidth()),
+                           static_cast<float>(pTexture->GetImageHeight()) /
+                               static_cast<float>(pTexture->GetAllocHeight())};
+
+    for (int nSlot = 0; nSlot < nCount; ++nSlot) {
+        pInstancer->SetSpriteSize(nSlot, size);
+        pInstancer->SetSpriteUvOrigin(nSlot, S_VECTOR2{0.0f, 0.0f});
+        pInstancer->SetSpriteUvSize(nSlot, uvSize);
+    }
+}
+
 /** @ghidraAddress 0x123838 */
 PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) const {
     assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);
