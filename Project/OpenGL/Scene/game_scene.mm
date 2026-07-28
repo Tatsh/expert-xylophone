@@ -976,19 +976,20 @@ void GameScene::ReleaseResultTexturesAndFrames() {
                                                                                nullptr);
     }
 
-    // Release and null the three cached result-screen text textures on the game system.
+    // Release and null the three cached song textures on the game system (artwork, music name, and
+    // artist name).
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
-    if (pGameSystem->m_pResultTextTexture1 != nullptr) {
-        pGameSystem->m_pResultTextTexture1->Release();
-        pGameSystem->m_pResultTextTexture1 = nullptr;
+    if (pGameSystem->m_pArtworkTexture != nullptr) {
+        pGameSystem->m_pArtworkTexture->Release();
+        pGameSystem->m_pArtworkTexture = nullptr;
     }
     if (pGameSystem->m_pMusicNameTexture != nullptr) {
         pGameSystem->m_pMusicNameTexture->Release();
         pGameSystem->m_pMusicNameTexture = nullptr;
     }
-    if (pGameSystem->m_pResultTextTexture2 != nullptr) {
-        pGameSystem->m_pResultTextTexture2->Release();
-        pGameSystem->m_pResultTextTexture2 = nullptr;
+    if (pGameSystem->m_pArtistNameTexture != nullptr) {
+        pGameSystem->m_pArtistNameTexture->Release();
+        pGameSystem->m_pArtistNameTexture = nullptr;
     }
 }
 

@@ -82,6 +82,33 @@ GameSystem *GameSystem::GetGameSystem() {
     return g_pGameSystem;
 }
 
+/** @ghidraAddress 0x12eee0 */
+void GameSystem::LoadArtworkTexture(MusicData *pMusicData) {
+    // Release any previously loaded artwork before loading the new one.
+    if (m_pArtworkTexture != nullptr) {
+        m_pArtworkTexture->Release();
+        m_pArtworkTexture = nullptr;
+    }
+    if (pMusicData == nil) {
+        return;
+    }
+
+    // On a retina screen, prefer the 2x jacket image; fall back to the 1x image when there is no 2x
+    // data or the 2x load fails.
+    if (UIScreen.mainScreen.scale > 1.0) {
+        NSData *pData2x = [pMusicData artwork2xData];
+        if (pData2x != nil) {
+            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+        }
+    }
+    if (m_pArtworkTexture == nullptr) {
+        NSData *pData = [pMusicData artworkData];
+        if (pData != nil) {
+            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+        }
+    }
+}
+
 /** @ghidraAddress 0x12f054 */
 void GameSystem::LoadMusicNameTexture(MusicData *pMusicData) {
     // Release any previously loaded music-name texture before loading the new one.
@@ -105,6 +132,33 @@ void GameSystem::LoadMusicNameTexture(MusicData *pMusicData) {
         NSData *pData = [pMusicData musicNameImageWhiteData];
         if (pData != nil) {
             m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+        }
+    }
+}
+
+/** @ghidraAddress 0x12f1c8 */
+void GameSystem::LoadArtistNameTexture(MusicData *pMusicData) {
+    // Release any previously loaded artist-name texture before loading the new one.
+    if (m_pArtistNameTexture != nullptr) {
+        m_pArtistNameTexture->Release();
+        m_pArtistNameTexture = nullptr;
+    }
+    if (pMusicData == nil) {
+        return;
+    }
+
+    // On a retina screen, prefer the 2x artist-name image; fall back to the 1x image when there is no
+    // 2x data or the 2x load fails.
+    if (UIScreen.mainScreen.scale > 1.0) {
+        NSData *pData2x = [pMusicData artistNameImageWhite2xData];
+        if (pData2x != nil) {
+            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+        }
+    }
+    if (m_pArtistNameTexture == nullptr) {
+        NSData *pData = [pMusicData artistNameImageWhiteData];
+        if (pData != nil) {
+            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
         }
     }
 }

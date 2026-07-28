@@ -469,12 +469,28 @@ public:
     static GameSystem *GetGameSystem();
 
     /**
-     * @brief Renders the given song's music-name text into a texture and stores it in
-     * @c m_pMusicNameTexture. Reconstruction pending.
+     * @brief Loads the given song's jacket/artwork image into @c m_pArtworkTexture, at 2x on a retina
+     * screen (falling back to 1x). Releases any previously loaded artwork first.
+     * @param pMusicData The current song's music-data object.
+     * @ghidraAddress 0x12eee0
+     */
+    void LoadArtworkTexture(MusicData *pMusicData);
+
+    /**
+     * @brief Loads the given song's music-name (white) image into @c m_pMusicNameTexture, at 2x on a
+     * retina screen (falling back to 1x). Releases any previously loaded texture first.
      * @param pMusicData The current song's music-data object.
      * @ghidraAddress 0x12f054
      */
     void LoadMusicNameTexture(MusicData *pMusicData);
+
+    /**
+     * @brief Loads the given song's artist-name (white) image into @c m_pArtistNameTexture, at 2x on
+     * a retina screen (falling back to 1x). Releases any previously loaded texture first.
+     * @param pMusicData The current song's music-data object.
+     * @ghidraAddress 0x12f1c8
+     */
+    void LoadArtistNameTexture(MusicData *pMusicData);
 
     /** @brief The rendered music-name text texture, loaded by @c LoadMusicNameTexture. */
     ne::C_TEXTURE *GetMusicNameTexture() const {
@@ -488,45 +504,45 @@ private:
      */
     GameSystem();
 
-    rb::GameScene *m_pCurrentScene = {}; // +0x00: the active game scene, or null when none runs.
-    double m_dScreenX = {};              // +0x08
-    double m_dScreenY = {};              // +0x10
-    double m_dScreenWidth = {};          // +0x18
-    double m_dScreenHeight = {};         // +0x20
-    float m_flScreenScale = {};          // +0x28
-    float m_flViewportWidth = {};        // +0x2c
-    float m_flViewportHeight = {};       // +0x30
-    bool m_fBackgroundFadeComplete = {}; // +0x34
-    bool m_fUse3dTiltProjection = {};    // +0x35
-    ne::C_TEXTURE *m_pResultTextTexture1 = {}; // +0x40: a cached result-screen text texture, bound
-                                               //        to a result-window instancer slot and
-                                               //        released with its two siblings at teardown.
-    ne::C_TEXTURE *m_pMusicNameTexture = {};   // +0x48: the rendered music-name text texture.
-    ne::C_TEXTURE *m_pResultTextTexture2 = {}; // +0x50: a second cached result-screen text texture,
-                                               //        released with its siblings at teardown.
-    float m_flSheetPosX = {};                  // +0x58
-    float m_flSheetPosY = {};                  // +0x5c
-    float m_flSheetMarginLeft = {};            // +0x60
-    float m_flSheetMarginTop = {};             // +0x64
-    float m_flSheetMarginRight = {};           // +0x68
-    float m_flSheetMarginBottom = {};          // +0x6c
-    float m_flSheetRadius = {};                // +0x70
-    float m_flCameraTargetX = {};              // +0x74
-    float m_flCameraTargetY = {};              // +0x78
-    float m_flSheetFarX = {};                  // +0x7c
-    float m_flSheetFarY = {};                  // +0x80
-    float m_flSheetInsetX = {};                // +0x84
-    float m_flSheetInsetY = {};                // +0x88
-    float m_flSheetInsetHalfX = {};            // +0x8c
-    float m_flSheetInsetHalfY = {};            // +0x90
-    float m_flSheetRadiusHalf = {};            // +0x94
-    float m_flSheetDiameterSq = {};            // +0x98
-    float m_flSheetRadiusScaled = {};          // +0x9c
-    float m_flSheetWidth = {};                 // +0xa0
-    float m_flSheetHeight = {};                // +0xa4
-    float m_flCameraPitchHeight = {};          // +0xa8
-    bool m_fBgmPlaying = {};                   // +0xac
-    bool m_fPaused = {}; // +0xad: set while the game is paused or interrupted.
+    rb::GameScene *m_pCurrentScene = {};   // +0x00: the active game scene, or null when none runs.
+    double m_dScreenX = {};                // +0x08
+    double m_dScreenY = {};                // +0x10
+    double m_dScreenWidth = {};            // +0x18
+    double m_dScreenHeight = {};           // +0x20
+    float m_flScreenScale = {};            // +0x28
+    float m_flViewportWidth = {};          // +0x2c
+    float m_flViewportHeight = {};         // +0x30
+    bool m_fBackgroundFadeComplete = {};   // +0x34
+    bool m_fUse3dTiltProjection = {};      // +0x35
+    ne::C_TEXTURE *m_pArtworkTexture = {}; // +0x40: the song jacket/artwork texture, loaded by
+                                           //        LoadArtworkTexture and released at teardown.
+    ne::C_TEXTURE *m_pMusicNameTexture = {}; // +0x48: the rendered music-name text texture.
+    ne::C_TEXTURE *m_pArtistNameTexture =
+        {};                           // +0x50: the rendered artist-name text texture, loaded
+                                      //        by LoadArtistNameTexture.
+    float m_flSheetPosX = {};         // +0x58
+    float m_flSheetPosY = {};         // +0x5c
+    float m_flSheetMarginLeft = {};   // +0x60
+    float m_flSheetMarginTop = {};    // +0x64
+    float m_flSheetMarginRight = {};  // +0x68
+    float m_flSheetMarginBottom = {}; // +0x6c
+    float m_flSheetRadius = {};       // +0x70
+    float m_flCameraTargetX = {};     // +0x74
+    float m_flCameraTargetY = {};     // +0x78
+    float m_flSheetFarX = {};         // +0x7c
+    float m_flSheetFarY = {};         // +0x80
+    float m_flSheetInsetX = {};       // +0x84
+    float m_flSheetInsetY = {};       // +0x88
+    float m_flSheetInsetHalfX = {};   // +0x8c
+    float m_flSheetInsetHalfY = {};   // +0x90
+    float m_flSheetRadiusHalf = {};   // +0x94
+    float m_flSheetDiameterSq = {};   // +0x98
+    float m_flSheetRadiusScaled = {}; // +0x9c
+    float m_flSheetWidth = {};        // +0xa0
+    float m_flSheetHeight = {};       // +0xa4
+    float m_flCameraPitchHeight = {}; // +0xa8
+    bool m_fBgmPlaying = {};          // +0xac
+    bool m_fPaused = {};              // +0xad: set while the game is paused or interrupted.
     // +0xae..+0xaf is alignment padding before the game type.
     int m_nGameType = {};                // +0xb0
     int m_nPlayerColor = {};             // +0xb4
