@@ -1222,6 +1222,53 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
 
 namespace {
 
+// The phone glyph slot the phone-number renderer draws into.
+constexpr int kPhoneNumberSlot = 1;
+
+// The phone digit families whose leading digit, standalone prefix, and under-digit prefix take
+// special glyph ids, keyed by the family's base part id. A family not listed uses its base unchanged.
+constexpr int kPhoneFamilyRateBase = 0xf9;
+constexpr int kPhoneFamilyExpBase = 0x10f;
+constexpr int kPhoneFamilyBigBase = 0x17b;
+constexpr int kPhoneRateLeading = 0x103;
+constexpr int kPhoneExpLeading = 0x11a;
+constexpr int kPhoneBigLeading = 0x185;
+constexpr int kPhoneRateStandalonePrefix = 0x10e;
+constexpr int kPhoneExpStandalonePrefix = 0x125;
+constexpr int kPhoneRateUnderPrefix = 0x10d;
+constexpr int kPhoneExpUnderPrefix = 0x124;
+constexpr int kPhoneBigUnderPrefix = 0x18f;
+
+// The upright rotation and unit scale every phone glyph draws with.
+constexpr float kPhoneGlyphRotation = 0.0f;
+constexpr float kPhoneGlyphScale = 1.0f;
+
+// Resolves the wider leading-digit glyph base for a phone digit-family base.
+int PhoneLeadingBaseFor(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kPhoneFamilyRateBase:
+        return kPhoneRateLeading;
+    case kPhoneFamilyExpBase:
+        return kPhoneExpLeading;
+    case kPhoneFamilyBigBase:
+        return kPhoneBigLeading;
+    default:
+        return nDigitPartBase;
+    }
+}
+
+// Resolves the standalone prefix glyph (drawn before the whole number) for a phone digit-family base.
+int PhoneStandalonePrefixFor(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kPhoneFamilyRateBase:
+        return kPhoneRateStandalonePrefix;
+    case kPhoneFamilyExpBase:
+        return kPhoneExpStandalonePrefix;
+    default:
+        return nDigitPartBase;
+    }
+}
+
 // The rank-family monospace digit base the number-pair renderer draws with, its slash separator
 // part id, and the number of digit slots each of the pair's numbers extracts.
 constexpr int kPairDigitBase = 0xe0;
@@ -1236,6 +1283,118 @@ constexpr float kPairCentreHalf = 0.5f;
 constexpr float kPairSeparatorGap = 1.0f;
 
 } // namespace
+
+/** @ghidraAddress 0x79f48 */
+void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
+                                                       int nDigitCount,
+                                                       int nBasePositionIndex,
+                                                       int nDigitPartBase,
+                                                       bool bWideLeading,
+                                                       bool bDrawPrefix,
+                                                       bool bLeftPad,
+                                                       unsigned int nAlpha,
+                                                       float flRed,
+                                                       float flGreen,
+                                                       float flBlue) {
+    // Draws one phone glyph at a position-bank index. The 0x17b family draws through the dimmable
+    // glyph path (never dimmed here); every other family through the coloured path.
+    const auto drawGlyph = [&](int nPartId, int nPosIndex, unsigned int nGlyphAlpha) {
+        S_VECTOR2 position{};
+        getPosition_Phone(nPosIndex, &position);
+        if (nDigitPartBase == kPhoneFamilyBigBase) {
+            RenderDimmableGlyphFromTable(kPhoneNumberSlot,
+                                         nPartId,
+                                         position,
+                                         nGlyphAlpha,
+                                         false,
+                                         kPhoneGlyphRotation,
+                                         kPhoneGlyphScale,
+                                         kPhoneGlyphScale);
+        } else {
+            RenderGlyphPartFromTable(kPhoneNumberSlot,
+                                     nPartId,
+                                     position,
+                                     nGlyphAlpha,
+                                     static_cast<unsigned int>(flRed),
+                                     static_cast<unsigned int>(flGreen),
+                                     static_cast<unsigned int>(flBlue),
+                                     kPhoneGlyphRotation,
+                                     kPhoneGlyphScale,
+                                     kPhoneGlyphScale);
+        }
+    };
+
+    // Extract the base-ten digits, least significant first, tracking the most significant non-zero
+    // digit's slot (the highest slot actually drawn).
+    int aDigits[6] = {};
+    int nTopDigit = 0;
+    for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
+        aDigits[nSlot] = nValue % 10;
+        if (aDigits[nSlot] != 0) {
+            nTopDigit = nSlot;
+        }
+        nValue /= 10;
+    }
+
+    // An all-zero value in wide-leading mode still draws its least-significant slot.
+    if (nTopDigit == 0 && bWideLeading) {
+        nTopDigit = 1;
+    }
+
+    // The glyphs draw right to left down the position bank. When both the wide-leading and prefix
+    // flags are set, the standalone prefix glyph is drawn first at the base position, and the digits
+    // start one slot below.
+    int nPosIndex = nBasePositionIndex;
+    if (bWideLeading && bDrawPrefix) {
+        drawGlyph(PhoneStandalonePrefixFor(nDigitPartBase), nBasePositionIndex, nAlpha);
+        nPosIndex = nBasePositionIndex - 1;
+    }
+
+    // Draw each significant digit, walking down the position bank. In wide-leading mode the leading
+    // digit takes the family's wider variant and also draws the under-digit prefix glyph one slot
+    // below, consuming two positions instead of one.
+    for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
+        const bool bLeadingSlot = nSlot == 0 && bWideLeading;
+        const int nBaseThisDigit =
+            bLeadingSlot ? PhoneLeadingBaseFor(nDigitPartBase) : nDigitPartBase;
+        const int nPartId = aDigits[nSlot] + nBaseThisDigit;
+        (void)getPartsData_Phone(nPartId); // The binary looks the metrics up before the draw call.
+        drawGlyph(nPartId, nPosIndex, nAlpha);
+
+        if (bLeadingSlot) {
+            int nUnderPrefix = nPartId;
+            switch (nDigitPartBase) {
+            case kPhoneFamilyRateBase:
+                nUnderPrefix = kPhoneRateUnderPrefix;
+                break;
+            case kPhoneFamilyExpBase:
+                nUnderPrefix = kPhoneExpUnderPrefix;
+                break;
+            case kPhoneFamilyBigBase:
+                nUnderPrefix = kPhoneBigUnderPrefix;
+                break;
+            default:
+                break;
+            }
+            (void)getPartsData_Phone(nUnderPrefix);
+            drawGlyph(nUnderPrefix, nPosIndex - 1, nAlpha);
+            nPosIndex -= 2;
+        } else {
+            nPosIndex -= 1;
+        }
+    }
+
+    // Optional left padding fills the unused leading slots with the base glyph at a dimmed alpha,
+    // continuing down the position bank.
+    if (bLeftPad && nTopDigit + 1 < nDigitCount) {
+        const unsigned int nPadAlpha = static_cast<unsigned int>(
+            static_cast<int>(static_cast<float>(nAlpha) * kLeftPadDimFactor));
+        for (int nPad = (nDigitCount - 1) - nTopDigit; nPad != 0; --nPad) {
+            drawGlyph(nDigitPartBase, nPosIndex, nPadAlpha);
+            nPosIndex -= 1;
+        }
+    }
+}
 
 /** @ghidraAddress 0x77654 */
 void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
