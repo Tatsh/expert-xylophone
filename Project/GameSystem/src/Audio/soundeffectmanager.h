@@ -49,6 +49,14 @@ public:
      */
     unsigned int PlaySharedSoundEffect();
     /**
+     * @brief Plays the current theme's loaded voice for @p voiceID, when the requested state matches
+     *        (or is the always-play state).
+     * @param voiceID The themed voice identifier.
+     * @return @c true when a voice was played.
+     * @ghidraAddress 0x1cceac
+     */
+    bool PlayThemedVoice(int voiceID);
+    /**
      * @brief Loads the themed voice for the given identifier and immediately plays it.
      *
      * A thin wrapper that loads the voice data through @c LoadThemedVoiceData and then plays it
@@ -92,10 +100,6 @@ private:
     // Loads one themed sound effect from the bundle into a slot (unless already loaded).
     // @ghidraAddress 0x1cc548
     void LoadThemedSoundEffect(int theme, int slot);
-
-    // Plays the loaded theme voice when the requested state matches (or is the always-play state).
-    // @ghidraAddress 0x1cceac
-    bool PlayThemedVoice(int voiceID);
 
     long m_nCurrentVoiceState = {};                             // +0x00 last-requested voice state
     bool m_aThemeLoaded[kThemeCount][kThemedSlotCount] = {};    // +0x08 per-theme slot loaded flags

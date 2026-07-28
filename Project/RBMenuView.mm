@@ -1211,10 +1211,45 @@ static BOOL g_bRandamIntSeeded = NO;
     [self.coverView SetAlphaAnimationDuration:kCoverFadeDuration End:0];
     [self startBGEffect];
 
+    __weak RBMenuView *weakSelf = self;
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, kShowAnimationDelayNanos), dispatch_get_main_queue(), ^{
-          /** @ghidraAddress 0xaa4dc */
-          self.userInteractionEnabled = YES;
+          /** @ghidraAddress 0xaa4f8 */
+          // The opening cover animation is done: tear down the cover and route to the next screen.
+          [weakSelf.showAnimationTimer invalidate];
+          weakSelf.showAnimationTimer = nil;
+          [weakSelf.coverView RemoveAlphaAnimation];
+          weakSelf.coverView.hidden = YES;
+          weakSelf.userInteractionEnabled = YES;
+          [weakSelf startNews];
+
+          // Start the menu music, retrying shortly if it has not finished loading, then bring up the
+          // ambient voice and the news information banner.
+          if (![[RBBGMManager getInstance] PlayMusic:1.5]) {
+              [weakSelf performSelector:@selector(ReplayMusic)
+                             withObject:nil
+                             afterDelay:g_dMascotMoveAnimDuration];
+          }
+          SoundEffectManager::GetInstance()->PlayThemedVoice(1);
+          [weakSelf showInfomation];
+
+          // On the Colette theme with a pending walkthrough, start the tutorial; otherwise open the
+          // store for a pending pack, campaign, or extend-note id, or show the pending push
+          // notification or web-info page, else fall back to the store button.
+          if ([RBUserSettingData sharedInstance].thema == kThemaPastel &&
+              ([RBTutorialManager needStartTutorialMusicselect] ||
+               [RBTutorialManager needStartTutorialCustomize])) {
+              [weakSelf startTutorial];
+          } else if ([[AppDelegate appDelegate] getPackIDForOpenStore] != nil ||
+                     [[AppDelegate appDelegate] getCampaignIDForOpenStore] != nil ||
+                     [[AppDelegate appDelegate] getExtendNotePIDForOpenStore] != nil) {
+              [weakSelf SelectStoreButton];
+          } else if ([AppDelegate getPushNotificationData] != nil &&
+                     [AppDelegate getPushNotificationData].count != 0) {
+              [weakSelf showPushNotificationView];
+          } else if ([[AppDelegate appDelegate] getWebInfoURL] != nil) {
+              [weakSelf showNotificationPageView];
+          }
         });
 }
 
