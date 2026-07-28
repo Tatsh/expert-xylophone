@@ -2,6 +2,7 @@
 
 #include "bg_layer.h"
 #include "curve.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -230,6 +231,96 @@ constexpr float kCurveGlyphScaleCurve[kCurveGlyphCount][kCurveScaleKnots * 2] = 
     {0.0f, 0.0f, 500.0f, 0.5f},
 };
 
+// The number of base glyphs in the effect strip (grade sprite kinds 0..11) and their curve knot
+// counts.
+constexpr int kBaseGlyphCount = 12;
+constexpr int kBaseYKnots = 5;
+constexpr int kBaseAlphaKnots = 4;
+
+// The effect clock's end threshold, the curve-phase start threshold, and the offset added to the
+// clock for the curve-animated pass (@ghidraAddress 0x2feff0, 0x3041a0, 0x3041a4).
+constexpr float kEffectEndThreshold = 2000.0f;
+constexpr float kCurvePhaseStart = 116.66666f;
+constexpr float kCurvePhaseClockOffset = -116.66666f;
+
+// The base glyph's alpha on an iPad (full) and on the phone (half); the scale takes the same value.
+constexpr float kBaseGlyphPadAlpha = 1.0f;
+constexpr float kBaseGlyphPhoneAlpha = 0.5f;
+
+// Each base glyph's fixed horizontal position (@ghidraAddress 0x3041b0): a constant base subtracted
+// from the layout origin (all share one vertical position, 653).
+constexpr float kBaseGlyphAbsoluteX[kBaseGlyphCount] = {
+    123.0f, 172.0f, 211.0f, 269.0f, 320.0f, 373.0f, 437.0f, 476.0f, 521.0f, 574.0f, 616.0f, 660.0f};
+
+// Each base glyph's per-frame vertical-position curve ({time, y} knots at @ghidraAddress 0x3043a4).
+constexpr float kBaseGlyphYCurve[kBaseGlyphCount][kBaseYKnots * 2] = {
+    {0.0f, 593.0f, 183.33333f, 663.0f, 350.0f, 623.0f, 500.0f, 668.0f, 616.66669f, 653.0f},
+    {16.66667f, 593.0f, 200.0f, 663.0f, 383.33334f, 623.0f, 516.66669f, 668.0f, 633.33331f, 653.0f},
+    {33.33333f, 593.0f, 216.66667f, 663.0f, 383.33334f, 623.0f, 533.33331f, 668.0f, 650.0f, 653.0f},
+    {50.0f, 593.0f, 233.33333f, 663.0f, 400.0f, 623.0f, 550.0f, 668.0f, 666.66669f, 653.0f},
+    {66.66666f, 593.0f, 250.0f, 663.0f, 416.66666f, 623.0f, 566.66669f, 668.0f, 683.33331f, 653.0f},
+    {83.33334f, 593.0f, 266.66666f, 663.0f, 433.33334f, 623.0f, 583.33331f, 668.0f, 700.0f, 653.0f},
+    {100.0f, 593.0f, 283.33334f, 663.0f, 450.0f, 623.0f, 600.0f, 668.0f, 716.66669f, 653.0f},
+    {116.66666f,
+     593.0f,
+     300.0f,
+     663.0f,
+     466.66666f,
+     623.0f,
+     616.66669f,
+     668.0f,
+     733.33331f,
+     653.0f},
+    {133.33333f,
+     593.0f,
+     316.66666f,
+     663.0f,
+     483.33334f,
+     623.0f,
+     633.33331f,
+     668.0f,
+     750.0f,
+     653.0f},
+    {150.0f, 593.0f, 333.33334f, 663.0f, 500.0f, 623.0f, 650.0f, 668.0f, 766.66669f, 653.0f},
+    {166.66667f,
+     593.0f,
+     350.0f,
+     663.0f,
+     516.66669f,
+     623.0f,
+     666.66669f,
+     668.0f,
+     783.33331f,
+     653.0f},
+    {183.33333f,
+     593.0f,
+     366.66666f,
+     663.0f,
+     533.33331f,
+     623.0f,
+     683.33331f,
+     668.0f,
+     800.0f,
+     653.0f},
+};
+
+// Each base glyph's per-frame alpha curve ({time, alpha} knots at @ghidraAddress 0x304224): a fade
+// in, a long hold, and a fade out, staggered per glyph.
+constexpr float kBaseGlyphAlphaCurve[kBaseGlyphCount][kBaseAlphaKnots * 2] = {
+    {0.0f, 0.0f, 166.66667f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {16.66667f, 0.0f, 183.33333f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {33.33333f, 0.0f, 200.0f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {50.0f, 0.0f, 216.66667f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {66.66666f, 0.0f, 233.33333f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {83.33334f, 0.0f, 250.0f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {100.0f, 0.0f, 266.66666f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {116.66666f, 0.0f, 283.33334f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {133.33333f, 0.0f, 300.0f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {150.0f, 0.0f, 316.66666f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {166.66667f, 0.0f, 333.33334f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+    {183.33333f, 0.0f, 350.0f, 1.0f, 1416.66663f, 1.0f, 1583.33337f, 0.0f},
+};
+
 } // namespace
 
 /** @ghidraAddress 0x11ff84 */
@@ -287,6 +378,55 @@ void LimelightEffectLayer::SetActiveAndResetCounter() {
 /** @ghidraAddress 0x120128 */
 void LimelightEffectLayer::SetInactive() {
     m_bActive = false;
+}
+
+/** @ghidraAddress 0x120130 */
+void LimelightEffectLayer::UpdateEffect(float flDeltaTime) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flCachedViewportWidth = pGameSystem->GetViewportWidth();
+    m_flCachedViewportHeight = pGameSystem->GetViewportHeight();
+
+    // Clear both instancers' live counts for the frame.
+    for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
+        m_apSprites[nSlot]->SetSpriteCount(0);
+    }
+
+    if (!m_bActive) {
+        return;
+    }
+
+    // Advance the clock, deactivating once it passes the end threshold.
+    m_flClock += flDeltaTime;
+    if (m_flClock >= kEffectEndThreshold) {
+        m_bActive = false;
+        return;
+    }
+
+    // The base glyphs draw at full alpha and scale on an iPad, half on the phone.
+    const float flBaseAlphaScale = IsPad() ? kBaseGlyphPadAlpha : kBaseGlyphPhoneAlpha;
+
+    // Once the clock passes the curve-phase start, emit the curve-animated glyphs.
+    if (m_flClock >= kCurvePhaseStart) {
+        EmitCurveAnimatedSprites(m_flClock + kCurvePhaseClockOffset);
+    }
+
+    // Emit the twelve base glyphs: each takes a fixed horizontal base and a curve-animated vertical
+    // position, faded by its own alpha curve scaled by the device alpha.
+    for (int nGlyph = 0; nGlyph < kBaseGlyphCount; ++nGlyph) {
+        const float flPosY =
+            CalculateCurveInterpolation(kBaseGlyphYCurve[nGlyph], kBaseYKnots, m_flClock);
+        const float flAlpha =
+            CalculateCurveInterpolation(kBaseGlyphAlphaCurve[nGlyph], kBaseAlphaKnots, m_flClock);
+
+        S_VECTOR2 position{kBaseGlyphAbsoluteX[nGlyph], flPosY};
+        const unsigned int nAlpha =
+            static_cast<unsigned int>(static_cast<int>(flAlpha * kAlphaByteScale));
+        EmitSpriteSlot(static_cast<unsigned int>(nGlyph),
+                       &position,
+                       nAlpha,
+                       flBaseAlphaScale,
+                       flBaseAlphaScale);
+    }
 }
 
 /** @ghidraAddress 0x120328 */
