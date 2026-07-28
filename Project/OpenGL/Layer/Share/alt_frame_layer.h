@@ -110,7 +110,10 @@ private:
     unsigned char m_aReserved4d[3] = {};        // +0x4d
     LinearTween m_fadeChannel;                  // +0x50: the frame fade channel.
     bool m_bFadeDone = {};                      // +0x64: set when the fade snaps to its endpoint.
-    unsigned char m_aReserved65[0x1b] = {};     // +0x65: trailing state to the 0x80-byte size.
+    unsigned char m_aReserved65[3] = {};        // +0x65
+    int m_nActiveLane = {};                 // +0x68: the highlighted (active) lane marker index.
+    int m_nMarkerCount = {};                // +0x6c: the number of markers this frame draws.
+    unsigned char m_aReserved70[0x10] = {}; // +0x70: trailing state to the 0x80-byte size.
 };
 
 // code: language=C++

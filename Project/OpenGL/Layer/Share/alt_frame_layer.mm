@@ -8,6 +8,8 @@
 
 #include "alt_frame_layer.h"
 
+#include "alt_frame_marker_table.h"
+#include "engineglobals.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -153,4 +155,63 @@ void AltFrameLayer::Process(float flDelta) {
     // Keep the two overlay batches visible.
     m_apSprites[1]->SetVisible(true);
     m_apSprites[2]->SetVisible(true);
+}
+
+namespace {
+// The frame-type thresholds that select the low/mid/high lane-count marker set.
+constexpr int kFrameTypeMidThreshold = 7;
+constexpr int kFrameTypeHighThreshold = 0xd;
+// The highlight sprite-kind row the active-lane marker draws instead of its normal row, per set.
+constexpr int kActiveLaneKind4 = 4;
+constexpr int kActiveLaneKind6 = 6;
+constexpr int kActiveLaneKind9 = 9;
+} // namespace
+
+/** @ghidraAddress 0x17a9d8 */
+void AltFrameLayer::RenderMarkers() {
+    // The play-field half-height (rounded toward zero) offsets every marker's base Y each frame.
+    const int nHalfHeight =
+        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+
+    // Each batch's running slot index this frame.
+    int aSlotIndex[kSpriteSlotCount] = {};
+    for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
+        // Select the layout and descriptor tables and the active-lane highlight kind by frame type,
+        // bounding the marker index to the chosen set's record count.
+        const AltFrameMarkerLayout *pLayout = nullptr;
+        const AltFrameSpriteDescriptor *pDescriptors = nullptr;
+        int nActiveKind = 0;
+        if (m_nFrameType < kFrameTypeMidThreshold) {
+            if (nMarker >= kAltFrameMarkerCount4) {
+                break;
+            }
+            pLayout = &g_aAltFrameMarker4[nMarker];
+            pDescriptors = g_aAltFrameDescriptor4;
+            nActiveKind = kActiveLaneKind4;
+        } else if (m_nFrameType < kFrameTypeHighThreshold) {
+            if (nMarker >= kAltFrameMarkerCount6) {
+                break;
+            }
+            pLayout = &g_aAltFrameMarker6[nMarker];
+            pDescriptors = g_aAltFrameDescriptor6;
+            nActiveKind = kActiveLaneKind6;
+        } else {
+            if (nMarker >= kAltFrameMarkerCount9) {
+                break;
+            }
+            pLayout = &g_aAltFrameMarker9[nMarker];
+            pDescriptors = g_aAltFrameDescriptor9;
+            nActiveKind = kActiveLaneKind9;
+        }
+
+        // The active-lane marker draws its highlight row; every other marker its own layout row.
+        const int nKind = nMarker == m_nActiveLane ? nActiveKind : pLayout->nSpriteKind;
+        const AltFrameSpriteDescriptor &descriptor = pDescriptors[nKind];
+
+        ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[descriptor.nBatch];
+        const int nSlot = aSlotIndex[descriptor.nBatch];
+        pBatch->SetSpritePositionXY(
+            nSlot, pLayout->flX, pLayout->flY + static_cast<float>(nHalfHeight));
+        aSlotIndex[descriptor.nBatch] = nSlot + 1;
+    }
 }

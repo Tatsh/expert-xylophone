@@ -34,6 +34,37 @@ extern AltFrameMarkerLayout g_aAltFrameMarker4[kAltFrameMarkerCount4]; // @ghidr
 extern AltFrameMarkerLayout g_aAltFrameMarker6[kAltFrameMarkerCount6]; // @ghidraAddress 0x3dbfb8
 extern AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9]; // @ghidraAddress 0x3dc108
 
+/**
+ * @brief One alt-frame sprite descriptor: which sprite batch it belongs to, its anchor and pixel
+ * size, and the UV atlas frame it draws from.
+ *
+ * Static read-only data embedded in the binary. Each marker's sprite-kind row indexes one of the
+ * descriptor tables (paired with the layout tables above by difficulty tier). The 24-byte stride
+ * matches the binary's layout.
+ */
+struct AltFrameSpriteDescriptor {
+    int nBatch = {};        // +0x00: the sprite batch (instancer) index this descriptor draws into.
+    float flAnchorX = {};   // +0x04: the sprite anchor X.
+    float flAnchorY = {};   // +0x08: the sprite anchor Y.
+    float flSizeX = {};     // +0x0c: the sprite pixel width.
+    float flSizeY = {};     // +0x10: the sprite pixel height.
+    int nUvFrameIndex = {}; // +0x14: the UV atlas-frame index.
+};
+
+// The number of descriptor records in each difficulty's sprite-descriptor table.
+constexpr int kAltFrameDescriptorCount4 = 10;
+constexpr int kAltFrameDescriptorCount6 = 12;
+constexpr int kAltFrameDescriptorCount9 = 15;
+
+// The three alt-frame sprite-descriptor tables, selected by the frame's lane count. Read-only ROM
+// data in the binary.
+extern const AltFrameSpriteDescriptor
+    g_aAltFrameDescriptor4[kAltFrameDescriptorCount4]; // @ghidraAddress 0x30ca98
+extern const AltFrameSpriteDescriptor
+    g_aAltFrameDescriptor6[kAltFrameDescriptorCount6]; // @ghidraAddress 0x30cb88
+extern const AltFrameSpriteDescriptor
+    g_aAltFrameDescriptor9[kAltFrameDescriptorCount9]; // @ghidraAddress 0x30cca8
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

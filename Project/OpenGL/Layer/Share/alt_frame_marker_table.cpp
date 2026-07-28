@@ -11,6 +11,53 @@ AltFrameMarkerLayout g_aAltFrameMarker4[kAltFrameMarkerCount4] = {}; // @ghidraA
 AltFrameMarkerLayout g_aAltFrameMarker6[kAltFrameMarkerCount6] = {}; // @ghidraAddress 0x3dbfb8
 AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9] = {}; // @ghidraAddress 0x3dc108
 
+// The static sprite-descriptor tables (read-only ROM data), one per difficulty tier.
+const AltFrameSpriteDescriptor g_aAltFrameDescriptor4[kAltFrameDescriptorCount4] = {
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 0},
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 1},
+    {0, 0.0f, 0.0f, 622.0f, 22.0f, 4},
+    {2, 128.0f, 16.0f, 256.0f, 32.0f, 0x67},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf8},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf9},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfa},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfb},
+    {0, 0.0f, 0.0f, 11.0f, 240.0f, 2},
+    {0, 0.0f, 0.0f, 10.0f, 100.0f, 3},
+}; // @ghidraAddress 0x30ca98
+
+const AltFrameSpriteDescriptor g_aAltFrameDescriptor6[kAltFrameDescriptorCount6] = {
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 0},
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 1},
+    {0, 0.0f, 0.0f, 56.0f, 22.0f, 4},
+    {0, 0.0f, 0.0f, 74.0f, 22.0f, 5},
+    {0, 0.0f, 0.0f, 492.0f, 22.0f, 6},
+    {2, 128.0f, 16.0f, 256.0f, 32.0f, 0x67},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf8},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf9},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfa},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfb},
+    {0, 0.0f, 0.0f, 11.0f, 240.0f, 2},
+    {0, 0.0f, 0.0f, 10.0f, 100.0f, 3},
+}; // @ghidraAddress 0x30cb88
+
+const AltFrameSpriteDescriptor g_aAltFrameDescriptor9[kAltFrameDescriptorCount9] = {
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 0},
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 1},
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 2},
+    {0, 0.0f, 0.0f, 73.0f, 511.0f, 3},
+    {0, 0.0f, 0.0f, 22.0f, 311.0f, 6},
+    {0, 0.0f, 0.0f, 22.0f, 311.0f, 7},
+    {0, 0.0f, 0.0f, 22.0f, 311.0f, 8},
+    {0, 0.0f, 0.0f, 22.0f, 311.0f, 9},
+    {2, 128.0f, 16.0f, 256.0f, 32.0f, 0x67},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf8},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xf9},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfa},
+    {1, 9.0f, 46.0f, 18.0f, 92.0f, 0xfb},
+    {0, 0.0f, 0.0f, 11.0f, 240.0f, 4},
+    {0, 0.0f, 0.0f, 14.0f, 100.0f, 5},
+}; // @ghidraAddress 0x30cca8
+
 namespace {
 
 // The marker X columns and the rotation of a sideways marker (@ghidraAddress 0x3fc90fdb = PI/2).
