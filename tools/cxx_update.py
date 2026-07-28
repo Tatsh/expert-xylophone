@@ -1152,6 +1152,18 @@ EXCLUDED_ADDRS = {
     '0x16aa0c', # -showTakeoverMessage — an Objective-C method IMP (method_t at 0x3a08b8, type
                 # "v24@0:8@16") presenting the data-takeover notice UIAlertController; data-only
                 # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16b1e8', # -showWithErrorMessage:delegate: — an Objective-C method IMP (method_t at 0x3a0918)
+                # presenting a runtime-message UIAlertController with a delegate; data-only
+                # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16cf04', # -showColetteThemaUnlockMessage — an Objective-C method IMP (method_t at 0x3a0a20)
+                # presenting the Colette theme-unlock UIAlertController; data-only cross-references,
+                # objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16b414', # -showUnlockedMusicInfoWithDelegate:musicNo: — an Objective-C method IMP (method_t
+                # at 0x3a0930) presenting the unlocked-music-info UIAlertController; data-only
+                # cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
+    '0x16c964', # -showAddLimepointByApplilink:: — an Objective-C method IMP (method_t at 0x3a09f0,
+                # type "v28@0:8i16@20") presenting the Applilink limepoint-added UIAlertController;
+                # data-only cross-references, objc_msgSend-dispatched, ObjC-side not C/C++.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
