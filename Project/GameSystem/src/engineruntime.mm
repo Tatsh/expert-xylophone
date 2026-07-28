@@ -12,7 +12,7 @@
 namespace {
 
 // The media-timer scale: elapsed seconds are reported in milliseconds. @ghidraAddress 0x2eeea0
-constexpr double kMediaTimeMillisScale = 1000.0;
+constexpr double kMediaTimeMsScale = 1000.0;
 
 // The achievement-rate thresholds for each clear rank, highest first. A rate at or above a threshold
 // earns that rank; below the lowest earns rank zero.
@@ -125,8 +125,8 @@ void C_TIME::Start() {
 }
 
 /** @ghidraAddress 0x3671c */
-float C_TIME::GetElapsedMillis() const {
-    return static_cast<float>((CACurrentMediaTime() - m_flTime) * kMediaTimeMillisScale);
+float C_TIME::GetElapsedMilliseconds() const {
+    return static_cast<float>((CACurrentMediaTime() - m_flTime) * kMediaTimeMsScale);
 }
 
 /** @ghidraAddress 0x12e900 */

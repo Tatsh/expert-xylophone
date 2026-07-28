@@ -180,7 +180,7 @@ constexpr int kDefaultPlayColor = 0;
 
 @implementation RBViewController {
     // The task and render media timers, each a C_TIME stored inline in the instance and stamped and
-    // read through its Start and GetElapsedMillis members.
+    // read through its Start and GetElapsedMilliseconds members.
     float m_LoopTime;              // +0x08
     C_TIME m_TaskTime;             // +0x10
     C_TIME m_RenderTime;           // +0x18
@@ -261,7 +261,7 @@ constexpr int kDefaultPlayColor = 0;
 
 - (void)Task {
     /** @ghidraAddress 0x8af3c */
-    float elapsed = m_TaskTime.GetElapsedMillis();
+    float elapsed = m_TaskTime.GetElapsedMilliseconds();
     m_TaskTime.Start();
     // The per-frame listener callback (ne::C_TASK::OnFrame) takes its frame-delta count as the
     // opaque void* argument, so the elapsed whole-frame count is passed packed into the pointer.
@@ -273,7 +273,7 @@ constexpr int kDefaultPlayColor = 0;
 - (void)Draw {
     /** @ghidraAddress 0x8af88 */
     neGLESRenderer *renderer = neGLESRenderer::GetShared();
-    float elapsed = m_RenderTime.GetElapsedMillis();
+    float elapsed = m_RenderTime.GetElapsedMilliseconds();
     if (elapsed < kMaxRenderFrameElapsed) {
         [self.glView BeginRender];
         renderer->ClearBuffers(kClearColor);

@@ -24,7 +24,7 @@ public:
      * @return The elapsed time, in milliseconds.
      * @ghidraAddress 0x3671c
      */
-    float GetElapsedMillis() const;
+    float GetElapsedMilliseconds() const;
 
 private:
     double m_flTime = {}; // +0x0
