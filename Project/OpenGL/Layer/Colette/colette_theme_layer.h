@@ -8,6 +8,8 @@
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -70,6 +72,30 @@ public:
     void StartFadeOut(float flDuration);
 
 private:
+    /**
+     * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
+     *
+     * Resolves the sprite slot's descriptor (its batch kind, anchor, pixel size, and atlas frame),
+     * maps the batch kind to one of the layer's four instancers, and — while that instancer is below
+     * its capacity — writes the quad there: the caller's position offset down by half the play-field
+     * height, the descriptor's anchor and size, the shared atlas UV rectangle, the caller's scale and
+     * rotation, and a tint that is black for the drop-shadow slot and white otherwise, at the caller's
+     * alpha. Then it bumps that batch's slot count.
+     * @param flScaleX The quad's X scale.
+     * @param flScaleY The quad's Y scale.
+     * @param flRotation The quad's rotation, in radians.
+     * @param nSpriteSlot The sprite-slot descriptor index.
+     * @param pPosition The quad's base screen position (x, y).
+     * @param nAlpha The quad's alpha.
+     * @ghidraAddress 0x1879a4
+     */
+    void EmitFcSprite(float flScaleX,
+                      float flScaleY,
+                      float flRotation,
+                      unsigned int nSpriteSlot,
+                      const S_VECTOR2 *pPosition,
+                      int nAlpha);
+
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
      * @ghidraAddress 0x187484
