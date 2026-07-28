@@ -121,6 +121,14 @@ public:
     void ProcessResultScreenInput();
 
     /**
+     * @brief The phone-layout result input pass: like @c ProcessResultScreenInput but gates the
+     * interactive flags by the tutorial game phase and detects a horizontal flick (setting the page
+     * dirty flag) rather than a vertical swipe.
+     * @ghidraAddress 0x74c70
+     */
+    void UpdateResultTouchInput();
+
+    /**
      * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
      *
      * Looks up a @c PhoneAnchorRecord from one of two runtime-filled tables (selected by the
@@ -445,9 +453,10 @@ private:
     // (whether a touch is present, and whether one was just released).
     bool m_bTutorialTouchPresent = {}; // +0x08
     bool m_bTutorialTouchEnded = {};   // +0x09
-    // +0x0a..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
+    bool m_bPageDirty = {}; // +0x0a: set when a flick changes the result page this frame.
+    // +0x0b..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
     // are still being worked out.
-    unsigned char m_aReserved0a[6] = {};      // +0x0a
+    unsigned char m_aReserved0b[5] = {};      // +0x0b
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background texture.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas texture, bound to the
                                               //        parts slot.

@@ -606,6 +606,106 @@ applySwipe:
     }
 }
 
+/** @ghidraAddress 0x74c70 */
+void ResultWindowColetteLayer::UpdateResultTouchInput() {
+    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kFullColor;
+    const float flChannel3 = m_aTween[kTweenChannel3].flCurrent;
+    const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
+    UpdateTouchHitRegions();
+
+    // The panel is interactive only once fully shown and the screen fade has cleared.
+    m_aTouchRegion[3].bEnabled = false;
+    const bool bFadeClear = flFadeAlpha == 0.0f;
+    m_aTouchRegion[0].bEnabled = static_cast<int>(flPanelAlpha) == 0xff && bFadeClear;
+    const bool bShown =
+        bFadeClear && static_cast<int>(flChannel3 * static_cast<float>(static_cast<unsigned int>(
+                                                        static_cast<int>(flPanelAlpha)))) == 0xff;
+    m_aTouchRegion[1].bEnabled = bShown;
+    m_aTouchRegion[2].bEnabled = bShown;
+
+    // The tutorial game phase overrides the interactive flags: early phases lock all input, the
+    // active phase locks only the primary region, and the final phase forces the primary on.
+    switch (GameSystem::GetGameSystem()->GetTutorialPhase()) {
+    case 0:
+    case 1:
+    case 2:
+    case 4:
+        m_aTouchRegion[0].bEnabled = false;
+        m_aTouchRegion[1].bEnabled = false;
+        m_aTouchRegion[2].bEnabled = false;
+        break;
+    case 3:
+        m_aTouchRegion[0].bEnabled = false;
+        break;
+    case 5:
+        m_aTouchRegion[0].bEnabled = true;
+        break;
+    default:
+        break;
+    }
+
+    if (!bShown) {
+        return;
+    }
+
+    // Track a horizontal flick on the centre title box to switch result pages.
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    if (m_nSwipeTouchId == -1) {
+        for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
+            TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
+            if (!pTouch->bIsNew) {
+                continue;
+            }
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            const float flY = static_cast<float>(pTouch->nCurrentY);
+            PhoneLayoutRect box{};
+            getCenterPosition_Phone(&box);
+            if (box.flX <= flX && flX <= box.flX + box.flWidth && box.flY <= flY &&
+                flY <= box.flY + box.flHeight) {
+                m_nSwipeTouchId = pTouch->nId;
+                m_flSwipeStartY = flX;
+                break;
+            }
+        }
+    } else {
+        TouchPoint *pTouch = pTouchManager->FindTouchById(m_nSwipeTouchId);
+        if (pTouch != nullptr) {
+            const float flX = static_cast<float>(pTouch->nCurrentX);
+            // Only the swipe-enabled regions register a flick; otherwise the touch just tracks.
+            if (!(m_aTouchRegion[1].bEnabled && m_aTouchRegion[2].bEnabled)) {
+                if (m_flSwipeStartY - kSwipeThreshold <= flX &&
+                    flX <= m_flSwipeStartY + kSwipeThreshold) {
+                    goto applyFlick;
+                }
+            } else if (m_flSwipeStartY - kSwipeThreshold <= flX) {
+                if (flX <= m_flSwipeStartY + kSwipeThreshold) {
+                    goto applyFlick;
+                }
+                m_aTouchRegion[1].bTapEdge = true;
+            } else {
+                m_aTouchRegion[2].bTapEdge = true;
+            }
+        }
+        m_nSwipeTouchId = -1;
+    }
+
+applyFlick:
+    // On a completed flick (single-player game), set the page direction, mark the page dirty, toggle
+    // the page index, and play the toggle sound effect.
+    if ((GameSystem::GetGameSystem()->GetGameType() | 2U) == 2) {
+        if (m_aTouchRegion[1].bTapEdge || m_aTouchRegion[2].bTapEdge) {
+            m_flSwipeDir = m_aTouchRegion[1].bTapEdge ? 1.0f : -1.0f;
+            m_bPageDirty = true;
+            m_aTouchRegion[1].bTapEdge = false;
+            m_aTouchRegion[2].bTapEdge = false;
+            m_nActive = (m_nActive != 1) ? 1 : 0;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectSwipeToggle);
+            return;
+        }
+        m_bPageDirty = false;
+    }
+}
+
 /** @ghidraAddress 0x74238 */
 void ResultWindowColetteLayer::UpdateBonusSoundCueTimer(float flDeltaTime) {
     if (!m_bBonusCueArmed) {
