@@ -68,6 +68,21 @@ public:
      */
     static ResultWindowColetteLayer *shared();
 
+    /** @brief Whether a tutorial touch was just released this frame (the tutorial advance gate). */
+    bool IsTutorialTouchEnded() const {
+        return m_bTutorialTouchEnded;
+    }
+
+    /** @brief Whether a flick changed the result page this frame. */
+    bool IsPageDirty() const {
+        return m_bPageDirty;
+    }
+
+    /** @brief The current result page index (0 or 1), also the running/initialised marker. */
+    int GetActivePage() const {
+        return m_nActive;
+    }
+
     /**
      * @brief Builds the eight result-window sprite instancers on first use.
      *

@@ -1,10 +1,12 @@
 #include "tutorial_guide_layer.h"
 
+#import "RBTutorialManager.h"
 #include "deviceenvironment.h"
 #include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "result_window_colette_layer.h"
 #import "s_vector2.h"
 
 // The process-wide tutorial-guide layer, created lazily by shared().
@@ -24,6 +26,21 @@ constexpr short kFadeStateHidden = 0x100;
 
 // Sprite kinds above this index are the small tap glyphs, halved on the phone (non-pad).
 constexpr unsigned int kTapGlyphKindBound = 4;
+
+// The in-play tutorial walkthrough phases the state machine advances through (game-system field
+// +0x130). Each transition waits out a dwell time and, from the first hint on, a gating flag on the
+// Colette result layer.
+enum {
+    kTutorialPhaseIntro = 0,    // Waits out the intro dwell, then shows the first hint.
+    kTutorialPhaseHint1 = 1,    // First in-play hint; advances on a released tutorial touch.
+    kTutorialPhaseHint2 = 2,    // Second in-play hint; advances on a released tutorial touch.
+    kTutorialPhaseResult = 3,   // Waits for the result page to be flicked back to page zero.
+    kTutorialPhaseDone = 4,     // Final hint; advances on a released tutorial touch.
+    kTutorialPhaseComplete = 5, // The walkthrough is finished; the state machine idles.
+};
+
+// The dwell time each timed tutorial phase waits before it may advance (@ghidraAddress 0x2feff0).
+constexpr float kTutorialPhaseDwellMs = 2000.0f;
 
 // The gauge-anchored blend offsets (@ghidraAddress 0x2f8568 X, 0x301f94 Y): the sprite is recentred
 // between its position and the cached gauge coordinate.
@@ -283,6 +300,62 @@ void TutorialGuideLayer::Update(float flDeltaTime) {
     }
     AdvanceStateMachine(flDeltaTime);
     RenderResultOverlay(flDeltaTime);
+}
+
+/** @ghidraAddress 0x10c430 */
+void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
+    m_flStateTimer += flDeltaTime;
+
+    int nNextPhase;
+    switch (GameSystem::GetGameSystem()->GetTutorialPhase()) {
+    case kTutorialPhaseIntro:
+        if (m_flStateTimer < kTutorialPhaseDwellMs) {
+            return;
+        }
+        nNextPhase = kTutorialPhaseHint1;
+        break;
+    case kTutorialPhaseHint1:
+        if (m_flStateTimer < kTutorialPhaseDwellMs ||
+            !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
+            return;
+        }
+        [[RBTutorialManager getInstance]
+            updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
+        nNextPhase = kTutorialPhaseHint2;
+        break;
+    case kTutorialPhaseHint2:
+        if (m_flStateTimer < kTutorialPhaseDwellMs ||
+            !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
+            return;
+        }
+        [[RBTutorialManager getInstance]
+            updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
+        nNextPhase = kTutorialPhaseResult;
+        break;
+    case kTutorialPhaseResult: {
+        ResultWindowColetteLayer *pResult = ResultWindowColetteLayer::shared();
+        if (!pResult->IsPageDirty() || pResult->GetActivePage() != 0) {
+            return;
+        }
+        [[RBTutorialManager getInstance]
+            updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
+        nNextPhase = kTutorialPhaseDone;
+        break;
+    }
+    case kTutorialPhaseDone:
+        if (m_flStateTimer < kTutorialPhaseDwellMs ||
+            !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
+            return;
+        }
+        [[RBTutorialManager getInstance] updateStatus:RBTutorialStatusMusicSelectSeen];
+        nNextPhase = kTutorialPhaseComplete;
+        break;
+    default:
+        return;
+    }
+
+    GameSystem::GetGameSystem()->SetTutorialPhase(nNextPhase);
+    m_flStateTimer = 0.0f;
 }
 
 /** @ghidraAddress 0x10b400 */
