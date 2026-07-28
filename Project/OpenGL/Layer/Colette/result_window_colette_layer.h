@@ -17,6 +17,19 @@ class C_TEXTURE;
 } // namespace ne
 
 /**
+ * @brief One result-panel touch hit-region: the tracked touch id and its press, tap-edge, and
+ * enabled flags. The input pass claims a touch inside the region's anchor box and reports a press or
+ * a tap-edge (a press that ended inside).
+ */
+struct ResultTouchRegion {
+    int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
+    bool bDown = {};                // +0x04: whether a touch is currently inside the region.
+    bool bTapEdge = {};             // +0x05: latched when a press ends inside the region.
+    bool bEnabled = {};             // +0x06: whether the region accepts input this frame.
+    unsigned char m_aPad07[1] = {}; // +0x07
+};
+
+/**
  * @brief One result-panel display animation channel: a value easing from @c flFrom to @c flTo over
  * @c flDuration, with the interpolated result held in @c flCurrent.
  */
@@ -45,6 +58,8 @@ public:
     static constexpr int kSlotCount = 8;
     // The number of open/close display animation channels.
     static constexpr int kTweenChannelCount = 5;
+    // The number of touch hit-regions the input pass tracks.
+    static constexpr int kTouchRegionCount = 4;
 
     /**
      * @brief The process-wide Colette result-window layer, created on first use.
@@ -89,6 +104,21 @@ public:
      * @ghidraAddress 0x74190
      */
     void StartHideTween(float flDuration);
+
+    /**
+     * @brief Updates the four touch hit-regions: claims or tracks one touch per region against its
+     * anchor box, reporting a press (@c bDown) and latching a tap-edge when a press ends inside.
+     * @ghidraAddress 0x744cc
+     */
+    void UpdateTouchHitRegions();
+
+    /**
+     * @brief The result screen's per-frame input pass: gates on the fade-in, tracks a vertical swipe
+     * to toggle the result page and fire its sound, updates the touch hit-regions, and posts the
+     * Twitter share when its region is tapped.
+     * @ghidraAddress 0x7427c
+     */
+    void ProcessResultScreenInput();
 
     /**
      * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
@@ -411,9 +441,13 @@ private:
                                       float flScaleX,
                                       float flScaleY);
 
-    // +0x08..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
+    // +0x08/+0x09: the tutorial touch-hint flags the touch pass drives from the live touch count
+    // (whether a touch is present, and whether one was just released).
+    bool m_bTutorialTouchPresent = {}; // +0x08
+    bool m_bTutorialTouchEnded = {};   // +0x09
+    // +0x0a..+0x0f: presentation-transform state seeded by the constructor, whose individual fields
     // are still being worked out.
-    unsigned char m_aReserved08[0x08] = {};   // +0x08
+    unsigned char m_aReserved0a[6] = {};      // +0x0a
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background texture.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas texture, bound to the
                                               //        parts slot.
@@ -430,9 +464,13 @@ private:
     int m_nGlyphBaseC = {};         // +0x74: glyph-table base index C (0x3a).
     float m_flPartsScale = {};      // +0x78: the parts-sprite scale (1.0).
     int m_nActive = {};             // +0x7c: set once the result screen is initialised and running.
-    // +0x80..+0xcb: further per-frame presentation state (page index, flick blend, handle, per-side
-    // statistics) that the render pass reads; the individual fields are still being worked out.
-    unsigned char m_aReserved80[0x4c] = {}; // +0x80
+    float m_flSwipeDir = {};        // +0x80: the last vertical swipe direction (+1 up, -1 down).
+    // +0x84: the four touch hit-regions the input pass tracks.
+    ResultTouchRegion m_aTouchRegion[kTouchRegionCount] = {}; // +0x84
+    int m_nSwipeTouchId = {};   // +0xa4: the tracked swipe touch id (-1 when none).
+    float m_flSwipeStartY = {}; // +0xa8: the swipe touch's start Y, for the up/down threshold test.
+    // +0xac..+0xcb: further per-frame presentation state, still being worked out.
+    unsigned char m_aReservedAc[0x20] = {}; // +0xac
     // +0xcc: the five open/close display animation channels (an alpha fade plus four offset/scale
     // channels) the show and hide tweens keyframe.
     ResultTweenChannel m_aTween[kTweenChannelCount] = {}; // +0xcc

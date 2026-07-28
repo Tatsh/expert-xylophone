@@ -211,6 +211,14 @@ public:
     }
 
     /**
+     * @brief The chart's total note count (the clear-rate denominator).
+     * @return The total note count.
+     */
+    int GetTotalNotes() const {
+        return m_nTotalNotes;
+    }
+
+    /**
      * @brief The process-wide score tracker, created on first use.
      * @return The shared score tracker.
      * @ghidraAddress 0x1492cc
