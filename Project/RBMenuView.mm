@@ -338,8 +338,10 @@ static BOOL g_bRandamIntSeeded = NO;
 
     [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
                      animations:^{
-                       /** @ghidraAddress 0xa1980 */
+                       /** @ghidraAddress 0xa1cfc */
+                       [self debugAlphaLog];
                        self.collectionView.alpha = kAlphaOpaque;
+                       [self debugAlphaLog];
                        if (self.backgroundScrollView != nil) {
                            self.backgroundScrollView.alpha = kAlphaOpaque;
                        }
