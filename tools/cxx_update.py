@@ -1124,6 +1124,16 @@ EXCLUDED_ADDRS = {
                 # anywhere in the program (verified: no page-address load of its literal, no stored
                 # pointer, only a link-edit rebase fixup); the shipped SelectStoreButton wires the
                 # delegate twin (0xad8bc). A dead emitted block body, nothing to reconstruct.
+    # A cluster of storage/notice dialog Objective-C method IMPs the decompiler surfaced with C-style
+    # signatures (so the is_objc_method filter cannot catch them). Each is referenced only from an
+    # Objective-C method_t entry in the __objc_const method list at 0x3a08xx (a {name, types
+    # "v..@0:8..", imp} triple), never called as a C function — they are dispatched via objc_msgSend
+    # and belong on the Objective-C side, not the C/C++ checklist.
+    '0x169f2c', # -strageAlertView: (presents the free-space-low single-button UIAlertController).
+    '0x16a6a4', # a sibling dismiss-only notice dialog IMP (method_t at 0x3a0888).
+    '0x16ac24', # a sibling store-unavailable notice dialog IMP (method_t at 0x3a08d0).
+    '0x16ad74', # a sibling purchase-failed notice dialog IMP (method_t at 0x3a08e8).
+    '0x16c2f0', # a sibling generic notice dialog IMP (method_t at 0x3a09a8).
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
