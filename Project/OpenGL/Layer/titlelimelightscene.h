@@ -99,6 +99,18 @@ private:
                             float flRotation);
 
     /**
+     * @brief Emits the title screen's star-field particle burst for the given animation time.
+     *
+     * For each of the 35 burst particles it samples the particle's Y-position, alpha, and scale
+     * animation curves at @p flTime, doubles the scale while the hidden-code flag is set, and emits
+     * the particle (as part kind index + 5) at its fixed X column and sampled Y, scale, and alpha
+     * through @c RenderPartsElement.
+     * @param flTime The title animation time the curves are sampled at.
+     * @ghidraAddress 0x15484c
+     */
+    void RenderParticleBurst(float flTime);
+
+    /**
      * @brief Releases the cached textures and flags each owned part sprite instancer for the scene
      * walker to delete.
      * @ghidraAddress 0x152edc
@@ -159,7 +171,9 @@ private:
     float m_flFadeValue = {};                 // +0x5b4: the current fade value (seeded to 1.0).
     unsigned char m_aReserved5b8[0xc] = {};   // +0x5b8: trailing presentation state.
     int m_nTrailingIndex = {};            // +0x5c4: a per-slot index (-1 when none is selected).
-    unsigned char m_aReserved5c8[8] = {}; // +0x5c8: trailing presentation state.
+    unsigned char m_aReserved5c8[4] = {}; // +0x5c8: trailing presentation state.
+    bool m_bSecretActive = {};            // +0x5cc: the hidden-code flag; doubles the burst scale.
+    unsigned char m_aReserved5cd[3] = {}; // +0x5cd
     float m_flPartOriginX = {}; // +0x5d0: the part layout's screen X origin (added to a part's X).
     float m_flPartOriginY = {}; // +0x5d4: the part layout's screen Y origin (added to a part's Y).
     // +0x5d8: the five touch hit-rectangles the part emitter records for the interactive parts, read
