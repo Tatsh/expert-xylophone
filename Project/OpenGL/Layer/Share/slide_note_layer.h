@@ -102,6 +102,22 @@ public:
                 unsigned char nFlagE);
 
     /**
+     * @brief Advances and renders every active slide trail for one frame.
+     *
+     * Resets the batch counts, advances the shared pulse clock (wrapped to its period) and the
+     * 0-to-29 frame counter (from which it derives a triangular fade factor and a scale-pulse
+     * factor), and picks the two per-side alpha factors from the game system. For each active trail
+     * it computes the comet vector between the trail's two endpoints, its length, and (once long
+     * enough or flagged) its angle, then emits the trail's body, glow, and cap sprites — their sprite
+     * kinds selected from the trail's flag bytes, colour, and kind — adding an extra sparkle sprite
+     * during the early part of the pulse. Finally it publishes each batch's sprite count and clears
+     * the shared active-trail count.
+     * @param flDeltaTime The frame delta.
+     * @ghidraAddress 0x95d14
+     */
+    void Update(float flDeltaTime);
+
+    /**
      * @brief Constructs (and resets) the layer: chains the base constructor, clears the built flag
      * and the invalid-clock sentinel, zeroes every slide-trail record, clears the three sprite
      * batches and their counts, and resets the shared active-trail count.
@@ -149,8 +165,8 @@ private:
     int m_anBatchCount[kBatchCount] = {};                      // +0x28: each batch's sprite count.
     bool m_bBuilt = {};                         // +0x34: whether the sprites are built.
     unsigned char m_aReserved35[3] = {};        // +0x35
-    float m_flLastClock = {};                   // +0x38: the last sample clock (-1 when invalid).
-    unsigned char m_aReserved3c[4] = {};        // +0x3c
+    float m_flLastClock = {};                   // +0x38: the pulse clock, wrapped to its period.
+    int m_nFrameCounter = {};                   // +0x3c: the 0-to-29 per-frame animation counter.
     SlideNoteTrail m_aTrails[kTrailCount] = {}; // +0x40: the slide-trail record pool.
     unsigned char m_aReservedTail[8] = {};      // +0xe00: trailing layer state to the 0xe08 size.
 };
