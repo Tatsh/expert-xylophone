@@ -8,6 +8,8 @@
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -101,6 +103,39 @@ public:
     void SetScorePosition(float flValue, int nSide);
 
 private:
+    /**
+     * @brief One score-digit glyph descriptor: its anchor, size, and UV-table index.
+     *
+     * The caller builds one of these per digit; @c EmitScoreDigitSprite reads its anchor and size
+     * directly and resolves its UV rectangle from the shared sprite-UV table.
+     */
+    struct ScoreDigitGlyph {
+        float flAnchorX = {}; // +0x00: the glyph anchor x.
+        float flAnchorY = {}; // +0x04: the glyph anchor y.
+        float flSizeW = {};   // +0x08: the glyph width.
+        float flSizeH = {};   // +0x0c: the glyph height.
+        int nUvIndex = {};    // +0x10: the index into the shared sprite-UV table.
+    };
+
+    /**
+     * @brief Emits one score-digit glyph quad into the score sprite batch.
+     *
+     * Writes the next sprite slot with the caller's position, the glyph descriptor's anchor and
+     * size, the UV rectangle resolved from the descriptor's UV index, the caller's rotation and
+     * uniform scale, and opaque white modulated by @p nAlpha; then advances the sprite count.
+     * @param pPosition The glyph's screen position.
+     * @param nAlpha The glyph alpha.
+     * @param glyph The glyph descriptor (anchor, size, and UV index).
+     * @param flRotation The glyph rotation, in radians.
+     * @param flScale The glyph's uniform scale.
+     * @ghidraAddress 0x18bc4c
+     */
+    void EmitScoreDigitSprite(const S_VECTOR2 &position,
+                              int nAlpha,
+                              const ScoreDigitGlyph &glyph,
+                              float flRotation,
+                              float flScale);
+
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the score-number atlas (gm_parts2).
     ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the score-number sprite instancer.
     int m_nSpriteCount = {};                    // +0x18: the instancer's initial sprite count.

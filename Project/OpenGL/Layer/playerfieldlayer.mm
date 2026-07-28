@@ -4,6 +4,8 @@
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
+#include "sprite_uv_table.h"
 
 // The process-wide player-field layer, created lazily by shared().
 static PlayerFieldLayer *g_pPlayerFieldLayer = nullptr; // @ghidraAddress 0x3df2f0
@@ -78,4 +80,24 @@ void PlayerFieldLayer::SetScoreSideFlag(int nSide) {
 /** @ghidraAddress 0x18b7fc */
 void PlayerFieldLayer::SetScorePosition(float flValue, int nSide) {
     m_aScorePosition[nSide != 0 ? 1 : 0] = flValue;
+}
+
+/** @ghidraAddress 0x18bc4c */
+void PlayerFieldLayer::EmitScoreDigitSprite(const S_VECTOR2 &position,
+                                            int nAlpha,
+                                            const ScoreDigitGlyph &glyph,
+                                            float flRotation,
+                                            float flScale) {
+    const SpriteUvEntry &uv = g_aSpriteUvTable[glyph.nUvIndex];
+    const int nIndex = m_nSpriteCount;
+
+    m_pSprite->SetSpritePositionXY(nIndex, position.x, position.y);
+    m_pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{glyph.flAnchorX, glyph.flAnchorY});
+    m_pSprite->SetSpriteSize(nIndex, S_VECTOR2{glyph.flSizeW, glyph.flSizeH});
+    m_pSprite->SetSpriteUvOrigin(nIndex, S_VECTOR2{uv.flOriginU, uv.flOriginV});
+    m_pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{uv.flSizeU, uv.flSizeV});
+    m_pSprite->SetSpriteRotation(nIndex, flRotation);
+    m_pSprite->SetSpriteScale(nIndex, flScale, flScale);
+    m_pSprite->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, static_cast<unsigned int>(nAlpha));
+    ++m_nSpriteCount;
 }
