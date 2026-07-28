@@ -1,6 +1,8 @@
 #include "main_frame_layer.h"
 
 #include "neSpriteInstancing.h"
+#include "neTexture.h"
+#include "s_vector2.h"
 
 // The process-wide main-frame layer, created lazily by shared().
 static MainFrameLayer *g_pMainFrameLayer = nullptr; // @ghidraAddress 0x3dedb0
@@ -14,6 +16,12 @@ constexpr int kDefaultMarker = 5;
 // The frame's fully-opaque alpha endpoint (255).
 constexpr float kFrameAlphaOpaque = 255.0f;
 constexpr float kFrameAlphaTransparent = 0.0f;
+
+// The frame mesh's single textured slot.
+constexpr int kFrameMeshSlot = 0;
+
+// Halves a scaled dimension into a half-pixel UV offset.
+constexpr float kUvHalf = 0.5f;
 
 } // namespace
 
@@ -81,6 +89,36 @@ void MainFrameLayer::SetFrameType(int nType) {
 void MainFrameLayer::BuildGeometry() {
     SetOverlayLayout();
     Build3dVertices();
+}
+
+/** @ghidraAddress 0x17c55c */
+void MainFrameLayer::SetMainFrameTexture(ne::C_TEXTURE *pTexture) {
+    if (m_pFrameMesh == nullptr) {
+        return;
+    }
+    m_pFrameMesh->SetRefCountedMember(pTexture);
+    if (pTexture == nullptr) {
+        return;
+    }
+
+    // The frame texture's source dimensions in points (its image size divided by the retina scale).
+    const float flPointWidth = static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetScale();
+    const float flPointHeight =
+        static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetScale();
+
+    // The mesh's single slot draws the whole texture: its anchor is the half-point centre (rounded
+    // to whole pixels), its size the full point dimensions, its UV origin zero, and its UV size the
+    // source image fraction of the allocated (power-of-two) texture.
+    m_pFrameMesh->SetSpriteAnchor(
+        kFrameMeshSlot,
+        S_VECTOR2{static_cast<float>(static_cast<int>(flPointWidth * kUvHalf)),
+                  static_cast<float>(static_cast<int>(flPointHeight * kUvHalf))});
+    m_pFrameMesh->SetSpriteSize(kFrameMeshSlot, S_VECTOR2{flPointWidth, flPointHeight});
+    m_pFrameMesh->SetSpriteUvOrigin(kFrameMeshSlot, S_VECTOR2{0.0f, 0.0f});
+    m_pFrameMesh->SetSpriteUvSize(
+        kFrameMeshSlot,
+        S_VECTOR2{static_cast<float>(pTexture->GetImageWidth()) / pTexture->GetAllocWidth(),
+                  static_cast<float>(pTexture->GetImageHeight()) / pTexture->GetAllocHeight()});
 }
 
 /** @ghidraAddress 0x17c4dc */

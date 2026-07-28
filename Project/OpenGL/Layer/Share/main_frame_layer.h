@@ -123,13 +123,15 @@ private:
     // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
     unsigned char m_aReserved08[0x20] = {};         // +0x08
     ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x28: the main frame sprite instancer.
-    // +0x30..+0x47: further layout state, still being worked out.
-    unsigned char m_aReserved30[0x18] = {}; // +0x30
-    int m_nFrameType = {};                  // +0x48: the frame type, seeded to 0x20 and set by
-                                            //        SetMainFrameType (which rebuilds on change).
-    int m_nDifficulty = {};                 // +0x4c: the difficulty index shown on the frame.
-    int m_nMarker = {};                     // +0x50: the frame marker, seeded to 5.
-    bool m_bReady = {}; // +0x54: cleared when the frame type changes (rebuild flag).
+    // +0x30..+0x3f: further layout state, still being worked out.
+    unsigned char m_aReserved30[0x10] = {};        // +0x30
+    ne::C_SPRITE_INSTANCING_2D *m_pFrameMesh = {}; // +0x40: the frame mesh sprite instancer whose
+                                                   //        first slot carries the frame texture.
+    int m_nFrameType = {};  // +0x48: the frame type, seeded to 0x20 and set by
+                            //        SetMainFrameType (which rebuilds on change).
+    int m_nDifficulty = {}; // +0x4c: the difficulty index shown on the frame.
+    int m_nMarker = {};     // +0x50: the frame marker, seeded to 5.
+    bool m_bReady = {};     // +0x54: cleared when the frame type changes (rebuild flag).
     unsigned char m_aReserved55[3] = {}; // +0x55
     LinearTween m_fadeChannel;           // +0x58: the frame alpha fade channel.
     bool m_bFadeDone = {};               // +0x6c: set when the fade snaps to its endpoint.
