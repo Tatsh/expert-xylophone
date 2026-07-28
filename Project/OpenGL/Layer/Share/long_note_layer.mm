@@ -40,10 +40,6 @@ constexpr int kAdditiveBlendMode = 1;
 constexpr int kTexParamValue = 1;
 } // namespace
 
-// The shared particle active index, reset when the layer is constructed and advanced as particles
-// spawn.
-int g_nParticleActiveIndex = {}; // @ghidraAddress 0x3df228
-
 // The process-wide long-note particle layer, created lazily by shared().
 static LongNoteLayer *g_pLongNoteLayer = nullptr; // @ghidraAddress 0x3df230
 

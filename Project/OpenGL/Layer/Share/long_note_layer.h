@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "playfieldlayerbase.h"
+#include "note_layer.h"
 
 struct S_VECTOR2;
 
@@ -14,26 +14,20 @@ class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
-// The shared particle active index, reset when the layer is constructed and advanced as particles
-// spawn.
-extern int g_nParticleActiveIndex; // @ghidraAddress 0x3df228
-
 /**
  * @brief The long-note particle effect layer: a 256-slot particle pool drawn through three sprite
  * batches.
  *
- * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
- * carries no RTTI, so the name is inferred from its @c GetLongNoteLayer accessor. Only the fields the
- * reconstructed methods touch are modelled; the trailing @c // +0xNN comments document the original
- * offsets for reference only.
+ * A process-wide singleton, built on first access, deriving from the shared @c NoteLayer particle
+ * base (which owns the pool, batches, counts, capacities, and scroll phases, and provides the
+ * per-frame @c Update and low-level @c CreateSprite). This layer adds the long-note-specific batch
+ * build, particle spawn, and connector-sprite emission. The class carries no RTTI, so the name is
+ * inferred from its @c GetLongNoteLayer accessor. The trailing @c // +0xNN comments document the
+ * original offsets for reference only.
  * @ghidraAddress LongNoteLayer (engine effect layer, 0x1c50 bytes)
  */
-class LongNoteLayer : public PlayFieldLayerBase {
+class LongNoteLayer : public NoteLayer {
 public:
-    // The number of pooled particles and the number of sprite batches.
-    static constexpr int kParticleCount = 256;
-    static constexpr int kBatchCount = 3;
-
     /**
      * @brief The process-wide long-note particle layer, created on first use.
      * @return The shared layer.
@@ -132,25 +126,8 @@ private:
      */
     LongNoteLayer();
 
-    /** @brief One pooled particle (28 bytes): its active flag, kind, position, and scale. */
-    struct Particle {
-        bool bActive = {};                 // +0x00: whether the slot holds a live particle.
-        unsigned char aReserved01[3] = {}; // +0x01
-        int nKind = {};                    // +0x04: the particle kind (6 or 7).
-        float flX = {};                    // +0x08: the particle X.
-        float flY = {};                    // +0x0c: the particle Y.
-        float flRotation = {};             // +0x10: the particle rotation, in radians.
-        float flScaleX = {};               // +0x14: the particle X scale.
-        float flScaleY = {};               // +0x18: the particle Y scale.
-    };
-
-    ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the particle atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
-    int m_anBatchCount[kBatchCount] = {};       // +0x28: each batch's live sprite count.
-    int m_anBatchCapacity[kBatchCount] = {};    // +0x34: each batch's sprite capacity.
-    bool m_bBuilt = {};                         // +0x40: set once the batches are built.
-    unsigned char m_aReserved41[0xf] = {};      // +0x41
-    Particle m_aParticles[kParticleCount] = {}; // +0x50: the pooled particles (to 0x1c50).
+    // The pool, sprite batches, counts, capacities, built flag, and scroll phases are inherited from
+    // NoteLayer.
 };
 
 // code: language=C++
