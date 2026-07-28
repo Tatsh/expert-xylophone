@@ -80,6 +80,20 @@ public:
                          float flRotation);
 
     /**
+     * @brief Advances and draws both lanes' judgement score/combo popups for the frame.
+     *
+     * Advances the layer fade channel, then for each active lane advances its popup timer (clearing
+     * the lane once the timer passes its lifetime) and emits the judgement label, the fixed
+     * points/combo label, and the score digits. Each glyph is positioned from a per-orientation,
+     * per-game-type, per-lane base position eased outward by an animation curve, tinted by the lane's
+     * play colour, and faded by the layer fade times an alpha curve. Finally publishes the batch's
+     * live sprite count to the instancer.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x184d60
+     */
+    void RenderJudgeScoreEffect(float flDelta);
+
+    /**
      * @brief Begins the fade-in animation, easing the layer to fully opaque over @p flDuration
      * (snapping to opaque immediately when the duration is non-positive).
      * @param flDuration The fade duration.

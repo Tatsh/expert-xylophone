@@ -1,7 +1,10 @@
 #include "judge_effect_layer.h"
 
 #include "bg_layer.h"
+#include "curve.h"
 #include "deviceenvironment.h"
+#include "engineglobals.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -83,6 +86,51 @@ constexpr unsigned int kJudgePinkBlue = 0xf8;
 constexpr unsigned int kJudgeCyanRed = 0xa8;
 constexpr unsigned int kJudgeCyanGreen = 0xfc;
 constexpr unsigned int kJudgeCyanBlue = 0xff;
+
+// The number of lanes the popup draws, and the maximum score-digit count.
+constexpr int kLaneCount = 2;
+constexpr int kMaxScoreDigits = 6;
+
+// The popup's lifetime, in frame-time; once a lane's timer passes this the popup clears.
+constexpr float kPopupLifetime = 3600.0f;
+
+// The alpha the emitted glyphs scale by (the fade times the alpha curve times full opacity).
+constexpr float kAlphaScale = 255.0f;
+
+// The per-game-type, per-lane pop-out direction table (@ghidraAddress 0x30e338): a non-zero entry
+// flips the pop-out to the left (and rotates the label a half turn).
+constexpr unsigned char kPopDirectionFlip[] = {0, 0, 1, 0, 0, 0, 0, 0};
+
+// The label pop-out rotation: a half turn (pi) when the direction is flipped, else none.
+constexpr float kLabelRotationFlipped = 3.1415927f; // pi.
+
+// The two animation curves the popup eases through: the horizontal pop-out offset (two control
+// points) and the alpha envelope (four control points). @ghidraAddress 0x30e340 and 0x30e350.
+constexpr float kPopOffsetCurve[] = {0.0f, 100.0f};
+constexpr float kAlphaCurve[] = {0.0f, 0.0f, 300.0f, 1.0f};
+
+// The base-position layout constants (all in the shared atlas's pixel space). The iPad lane
+// positions are built per game type from these; the phone lanes use a fixed pair.
+constexpr float kLayoutInsetLeft = -384.0f;  // 0x2f8568
+constexpr float kLayoutSpanTop = 1024.0f;    // 0x309164
+constexpr float kLayoutRowOffset = 54.0f;    // 0x30e334
+constexpr float kLayoutInsetTop = -512.0f;   // 0x2f8570
+constexpr float kLayoutMirrorSpan = 768.0f;  // 0x2fd04c
+constexpr float kLayoutBaseX = 490.0f;       // 0x3def30 (lazily seeded)
+constexpr float kLayoutBaseY = 590.0f;       // 0x3def34 (lazily seeded)
+constexpr float kLayoutMirrorInset = 512.0f; // 0x3ce934 (as float)
+constexpr float kPhoneLaneX = 106.0f;        // 0x42d40000
+constexpr int kPhoneLaneHalfSpan = 71;       // 0x47
+
+// The glyph-index bases: the fixed points/combo label per colour, the score-digit base per colour.
+constexpr unsigned int kPointsLabelGlyphColorA = 0xe;  // colour 0.
+constexpr unsigned int kPointsLabelGlyphColorB = 0x19; // colour 1.
+constexpr unsigned int kDigitGlyphBaseColorA = 4;      // colour 0.
+constexpr unsigned int kDigitGlyphBaseColorB = 0xf;    // colour 1.
+
+// The label colour types by resolved lane colour: colour 1 draws cyan, colour 0 draws pink.
+constexpr int kLabelColorTypeColorA = kJudgeColorTypePink;
+constexpr int kLabelColorTypeColorB = kJudgeColorTypeCyan;
 
 } // namespace
 
@@ -171,6 +219,122 @@ void JudgeEffectLayer::EmitDigitSprite(unsigned int nGlyphIndex,
     m_pSprite->SetSpriteColor(m_nSpriteCount, nRed, nGreen, nBlue, nAlpha);
 
     ++m_nSpriteCount;
+}
+
+/** @ghidraAddress 0x184d60 */
+void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
+    m_nSpriteCount = 0;
+
+    // Advance the layer fade channel toward its target for the frame.
+    m_fadeChannel.Advance(flDelta);
+    const float flFade = m_fadeChannel.GetCurrent();
+
+    // The playfield centre Y, rounding the signed full height toward zero before halving.
+    const int nHalfHeight =
+        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+    const float flHalfHeight = static_cast<float>(nHalfHeight);
+
+    for (int nLane = 0; nLane < kLaneCount; ++nLane) {
+        // Each lane's popup scales by the fade times its own axis scale.
+        const float flLaneScale = nLane == 0 ? m_flScaleX : m_flScaleY;
+        const float flFadeScale = flFade * flLaneScale;
+
+        JudgeRecord &record = m_aJudgeRecords[nLane];
+        if (!record.m_bActive) {
+            continue;
+        }
+        record.m_flTimer += flDelta;
+        if (record.m_flTimer >= kPopupLifetime) {
+            record.m_bActive = false;
+            continue;
+        }
+
+        // The pop-out direction (and label half-turn) follow the game type and lane.
+        const int nGameType = GameSystem::GetGameSystem()->GetGameType();
+        const bool bFlip = kPopDirectionFlip[nLane + nGameType * kLaneCount] != 0;
+        const float flLabelRotation = bFlip ? kLabelRotationFlipped : 0.0f;
+        const float flDirection = bFlip ? -1.0f : 1.0f;
+
+        // Build both layouts' lane base positions. The iPad layout derives each game type's two lane
+        // positions from the shared layout constants and the playfield centre; the phone layout uses
+        // a fixed left column split above and below centre.
+        const S_VECTOR2 aiPadBase[] = {
+            // Game type 0.
+            {kLayoutBaseX + kLayoutInsetLeft,
+             (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},
+            {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY + kLayoutInsetTop) + flHalfHeight},
+            // Game type 1.
+            {(kLayoutMirrorSpan - kLayoutBaseX) + kLayoutInsetLeft,
+             ((kLayoutSpanTop - kLayoutBaseY) - kLayoutMirrorInset) + flHalfHeight},
+            {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY - kLayoutMirrorInset) + flHalfHeight},
+            // Game type 2.
+            {kLayoutBaseX + kLayoutInsetLeft,
+             (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},
+            {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY + kLayoutInsetTop) + flHalfHeight},
+        };
+        const S_VECTOR2 aPhoneBase[] = {
+            {kPhoneLaneX, static_cast<float>(nHalfHeight - kPhoneLaneHalfSpan)},
+            {kPhoneLaneX, static_cast<float>(nHalfHeight + kPhoneLaneHalfSpan)},
+        };
+        const S_VECTOR2 &base =
+            IsPad() ? aiPadBase[nGameType * kLaneCount + nLane] : aPhoneBase[nLane];
+
+        // Ease the label horizontally out of the base position and fade it by the alpha curve.
+        const float flPopOffset = CalculateCurveInterpolation(kPopOffsetCurve, 2, record.m_flTimer);
+        S_VECTOR2 pos{base.x + flDirection * flPopOffset, base.y};
+        const float flAlphaCurve = CalculateCurveInterpolation(kAlphaCurve, 4, record.m_flTimer);
+
+        // Resolve the lane colour: the local lane takes the play colour, the other lane its inverse.
+        const int nPlayColor = GameSystem::GetGameSystem()->GetPlayColor();
+        const int nLaneColor = nLane == 1 ? nPlayColor : (nPlayColor == 0);
+
+        const unsigned int nAlpha =
+            static_cast<unsigned int>(static_cast<int>(flFadeScale * flAlphaCurve * kAlphaScale));
+
+        // Emit the judgement label, tinted pink or cyan by the lane colour, at the eased position.
+        const int nLabelColorType = nLaneColor == 1 ? kLabelColorTypeColorB : kLabelColorTypeColorA;
+        EmitDigitSprite(record.m_nJudgeType, &pos, nAlpha, nLabelColorType, flLabelRotation);
+
+        // Advance the pen past the label and emit the fixed points/combo label in white.
+        const JudgeGlyphMetrics *pMetrics =
+            IsPad() ? kJudgeGlyphMetricsPad : kJudgeGlyphMetricsPhone;
+        pos.x += flDirection + flDirection + flDirection * pMetrics[record.m_nJudgeType].flSizeX;
+        const unsigned int nPointsLabel =
+            nLaneColor == 0 ? kPointsLabelGlyphColorA : kPointsLabelGlyphColorB;
+        EmitDigitSprite(nPointsLabel, &pos, nAlpha, 0, flLabelRotation);
+
+        // Advance past the points label and split the score into up to six decimal digits, tracking
+        // the most significant non-zero place.
+        pMetrics = IsPad() ? kJudgeGlyphMetricsPad : kJudgeGlyphMetricsPhone;
+        pos.x += flDirection + flDirection * pMetrics[nPointsLabel].flSizeX;
+
+        int aDigits[kMaxScoreDigits] = {};
+        int nRemaining = static_cast<int>(record.m_nScore);
+        int nHighestPlace = 0;
+        for (int nPlace = 0; nPlace < kMaxScoreDigits; ++nPlace) {
+            const int nDigit = nRemaining % 10;
+            aDigits[nPlace] = nDigit;
+            if (nDigit > 0) {
+                nHighestPlace = nPlace + 1;
+            }
+            nRemaining /= 10;
+        }
+
+        // Emit the digits from the most significant place down, advancing the pen by each glyph, so a
+        // zero score still shows a single zero digit.
+        const unsigned int nDigitBase =
+            nLaneColor == 1 ? kDigitGlyphBaseColorB : kDigitGlyphBaseColorA;
+        int nPlace = nHighestPlace < 1 ? 1 : nHighestPlace;
+        for (; nPlace >= 1; --nPlace) {
+            const unsigned int nGlyph = static_cast<unsigned int>(aDigits[nPlace - 1]) + nDigitBase;
+            EmitDigitSprite(nGlyph, &pos, nAlpha, 0, flLabelRotation);
+            pMetrics = IsPad() ? kJudgeGlyphMetricsPad : kJudgeGlyphMetricsPhone;
+            pos.x += flDirection + flDirection * pMetrics[nGlyph].flSizeX;
+        }
+    }
+
+    // Publish the frame's live sprite count to the instancer.
+    m_pSprite->SetSpriteCount(m_nSpriteCount);
 }
 
 /** @ghidraAddress 0x184d00 */
