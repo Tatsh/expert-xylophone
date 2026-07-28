@@ -453,6 +453,38 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
     pSprite->SetSpriteCount(nIndex + 1);
 }
 
+namespace {
+// The colour-quad kind-to-slot table (@ghidraAddress 0x309360): each kind selects a sprite slot.
+// The binary reads m_apSprites one element past this value (the array's first slot is reserved for
+// the background), so the effective slot is the table entry plus one.
+constexpr unsigned int kColorQuadSlot[] = {0, 4, 5, 6, 7, 1, 2, 3, 3};
+constexpr unsigned int kColorQuadSlotBias = 1;
+constexpr unsigned int kColorQuadKindCount = 9;
+} // namespace
+
+/** @ghidraAddress 0x152bfc */
+void TitleColetteScene::EmitTitleColorQuad(unsigned int nKind,
+                                           unsigned int nColorRgb,
+                                           unsigned int nAlpha,
+                                           const S_VECTOR2 &position,
+                                           const S_VECTOR2 &size,
+                                           const S_VECTOR2 &anchor) {
+    if (nKind >= kColorQuadKindCount) {
+        return;
+    }
+    ne::C_SPRITE_INSTANCING_2D *pSprite = m_apSprites[kColorQuadSlot[nKind] + kColorQuadSlotBias];
+    const int nIndex = pSprite->GetSpriteCount();
+    if (nIndex >= static_cast<int>(pSprite->GetCapacity())) {
+        return;
+    }
+
+    pSprite->SetSpritePosition(nIndex, position);
+    pSprite->SetSpriteAnchor(nIndex, anchor);
+    pSprite->SetSpriteSize(nIndex, size);
+    pSprite->SetSpriteColor(nIndex, nColorRgb, nColorRgb, nColorRgb, nAlpha);
+    pSprite->SetSpriteCount(nIndex + 1);
+}
+
 /** @ghidraAddress 0x597a8 */
 unsigned int TitleColetteScene::AdvanceGestureState(int nInputCode) {
     switch (nInputCode) {
