@@ -148,7 +148,7 @@ void DamageEffectLayer::CreateBoundsDamage(int nColor, float flPosX, float flPos
             effect.bActive = true;
             effect.flPosX = flPosX;
             effect.flPosY = flPosY;
-            effect.nTimer = 0;
+            effect.flTimer = 0.0f;
             return;
         }
     }

@@ -121,7 +121,7 @@ private:
         int nColor = {};                   // +0x04: the effect's player colour.
         float flPosX = {};                 // +0x08: the effect's screen x.
         float flPosY = {};                 // +0x0c: the effect's screen y.
-        int nTimer = {};                   // +0x10: the effect's animation timer.
+        float flTimer = {};                // +0x10: the effect's animation timer, in frames.
     };
 
     ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the bound effect atlas.
