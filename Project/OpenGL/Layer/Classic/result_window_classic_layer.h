@@ -347,6 +347,19 @@ public:
     void SetInstancerTextureAndRefreshSlots(unsigned int nSlot, ne::C_TEXTURE *pTexture);
 
     /**
+     * @brief Toggles the customize character preview, loading its texture into the preview slot.
+     *
+     * When the preview is hidden, records @p nCharacterId, marks it shown, resolves the character's
+     * unlock entry (its category becomes the cached sub-id and its item the asset variant), builds
+     * the customize asset path, loads that texture, and binds it into the preview instancer slot
+     * (slot 6). When the preview is already shown, marks it hidden and records @p nCharacterId as the
+     * pending id for the next toggle.
+     * @param nCharacterId The character/costume id to preview.
+     * @ghidraAddress 0x11c5a0
+     */
+    void ToggleCustomizeCharacterTexture(unsigned int nCharacterId);
+
+    /**
      * @brief Emits one glyph sprite anchored by a separator record, at that record's scale.
      *
      * Fetches the separator record @p nSepIndex, which supplies the anchored base position (offset
@@ -600,16 +613,16 @@ private:
     int m_nTrackIndexC = {};         // +0x194: the resolved music-track index (-1 when unset).
     // +0x198..+0x19f: further progression state, still being worked out.
     unsigned char m_aReserved198[8] = {}; // +0x198
-    bool m_bUnlockFlag = {};              // +0x1a0: an unlock-state flag, reset to zero.
+    bool m_bCustomizePreviewShown = {}; // +0x1a0: whether the customize character preview is shown.
     // +0x1a1..+0x1a3 is alignment padding.
-    unsigned char m_aPad1a1[3] = {}; // +0x1a1
-    int m_nUnlockCounter = {};       // +0x1a4: an unlock counter, reset to zero.
-    int m_nTrackIndexD = {};         // +0x1a8: a music-track index sentinel (-1).
-    // +0x1ac..+0x1af: further progression state, still being worked out.
-    unsigned char m_aReserved1ac[4] = {}; // +0x1ac
-    int m_nTrackIndexE = {};              // +0x1b0: a music-track index sentinel (-1).
-    bool m_bTwitterAvailable = {};        // +0x1b4: whether the Twitter share API is available.
-    bool m_bPortrait = {};                // +0x1b5: selects the portrait position/separator tables.
+    unsigned char m_aPad1a1[3] = {};  // +0x1a1
+    int m_nUnlockCounter = {};        // +0x1a4: an unlock counter, reset to zero.
+    int m_nCustomizeCharacterId = {}; // +0x1a8: the shown customize character/costume id (-1 none).
+    int m_nCustomizeSubId = {};       // +0x1ac: the customize character's cached unlock sub-id.
+    int m_nCustomizePendingId = {}; // +0x1b0: the customize character id pending on the next toggle
+                                    //         (-1 when none).
+    bool m_bTwitterAvailable = {};  // +0x1b4: whether the Twitter share API is available.
+    bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1bf: trailing layer state, still being worked out.
     unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
 };

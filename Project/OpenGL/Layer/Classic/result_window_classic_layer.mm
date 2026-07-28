@@ -5,6 +5,7 @@
 #import "RBViewController.h"
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
+#include "engineruntime.h"
 #import "gamesystem.h"
 #include "leveltables.h"
 #include "neSpriteInstancing.h"
@@ -621,6 +622,34 @@ void ResultWindowClassicLayer::RenderScoreDigitsWithDot(int nIntegerValue,
                        nAlpha,
                        0);
         flX -= flAdvance;
+    }
+}
+
+// The customize preview draws into this sprite instancer slot.
+static constexpr unsigned int kCustomizePreviewSlot = 6;
+
+/** @ghidraAddress 0x11c5a0 */
+void ResultWindowClassicLayer::ToggleCustomizeCharacterTexture(unsigned int nCharacterId) {
+    // Already shown: hide the preview and remember the id to re-show on the next toggle.
+    if (m_bCustomizePreviewShown) {
+        m_bCustomizePreviewShown = false;
+        m_nCustomizePendingId = static_cast<int>(nCharacterId);
+        return;
+    }
+
+    // Show the preview: resolve the character's unlock entry (its category is cached as the sub-id,
+    // its item is the asset variant), build and load the asset texture, and bind it into the preview
+    // slot. The binary discards this method's return value.
+    m_nCustomizeCharacterId = static_cast<int>(nCharacterId);
+    m_bCustomizePreviewShown = true;
+    LevelTables::GetInstance(); // The binary vends the singleton (lazy-init) before the lookup.
+    const LevelUnlockEntry *pEntry = LevelTables::GetLevelUnlockEntry(m_nCustomizeCharacterId);
+    m_nCustomizeSubId = pEntry->nCategory;
+    NSString *path = BuildCustomizeAssetPathString(pEntry->nCategory, pEntry->nItem);
+    ne::C_TEXTURE *pTexture = ne::C_TEXTURE::FindOrLoadCached([path UTF8String]);
+    if (pTexture != nullptr) {
+        SetInstancerTextureAndRefreshSlots(kCustomizePreviewSlot, pTexture);
+        pTexture->Release();
     }
 }
 
@@ -1243,10 +1272,10 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nUnlockStep = 0;
     m_nTrackIndexB = -1;
     m_nTrackIndexC = -1;
-    m_bUnlockFlag = false;
+    m_bCustomizePreviewShown = false;
     m_nUnlockCounter = 0;
-    m_nTrackIndexD = -1;
-    m_nTrackIndexE = -1;
+    m_nCustomizeCharacterId = -1;
+    m_nCustomizePendingId = -1;
     m_nTrackIndexA = -1;
 
     // Copy the player level and experience from the game system and resolve the level-up threshold.
