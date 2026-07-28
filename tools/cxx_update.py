@@ -1137,6 +1137,9 @@ EXCLUDED_ADDRS = {
     '0x16d458', # SetAlertSubviewsExclusiveTouch — a UIAlertView category method IMP (method_t at
                 # 0x3a0a50, type "v24@0:8@16") that marks an alert's subviews exclusive-touch; pure
                 # objc_msgSend/fast-enumeration body dispatched via objc_msgSend, ObjC-side.
+    '0x16bc54', # ShowUnderageBlockedAlert — an Objective-C method IMP (method_t at 0x3a0960, type
+                # "v24@0:8@16") presenting the underage/age-restriction UIAlertController with a
+                # cancel-handler block; objc_msgSend-dispatched, ObjC-side not C/C++.
 }
 # Compiler-emitted free-function no-op stubs. Every one is a single-`ret` (4-byte) body installed as
 # a default block-invoke or an empty callback-table slot and reached only through a data pointer;
