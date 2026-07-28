@@ -19,6 +19,8 @@
 #include "polygon2d_trail.h"
 #import "s_vector2.h"
 #include "soundeffectmanager.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 #include "vectormath.h"
 
 // The process-wide Classic result-window layer, created lazily by shared().
@@ -458,6 +460,69 @@ void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
         m_bPortrait ? g_ClassicCenterPositionPhonePortrait : g_ClassicCenterPositionPhoneLandscape;
     *pOutRect = record;
     ApplyAnchorOffset(kAnchorHalfWidthHalfHeight, &pOutRect->flX, &pOutRect->flY);
+}
+
+/** @ghidraAddress 0x1171a0 */
+void ResultWindowClassicLayer::UpdateGestureTouchTracking() {
+    // Only the first four regions are hit-box regions; the fifth is the drag slider handled
+    // elsewhere.
+    constexpr int kHitBoxRegionCount = 4;
+    for (int nRegion = 0; nRegion < kHitBoxRegionCount; ++nRegion) {
+        GestureTouchRegion &region = m_aGestureRegions[nRegion];
+
+        // A disabled region drops any tracked touch and clears its flags.
+        if (!region.bEnabled) {
+            region.nTouchId = -1;
+            region.bDown = false;
+            region.bTapEdge = false;
+            region.bEnabled = false;
+        }
+
+        TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+        if (region.nTouchId == -1) {
+            // Unclaimed: latch the first freshly-pressed touch that lands inside the region's box.
+            for (int nIndex = 0; nIndex < pTouchManager->GetActiveTouchCount(); ++nIndex) {
+                TouchPoint *pTouch = pTouchManager->GetActiveTouch(nIndex);
+                if (!pTouch->bIsNew) {
+                    continue;
+                }
+                const float flX = static_cast<float>(pTouch->nCurrentX);
+                const float flY = static_cast<float>(pTouch->nCurrentY);
+                PhoneLayoutRect box{};
+                getPositionByState_Phone(nRegion, &box);
+                if (box.flX <= flX && flX <= box.flX + box.flWidth && box.flY <= flY &&
+                    flY <= box.flY + box.flHeight) {
+                    region.nTouchId = pTouch->nId;
+                    region.bDown = true;
+                    break;
+                }
+            }
+        } else {
+            // Claimed: track the held touch. Releasing it clears the region, latching the tap edge
+            // when it lifted inside the box.
+            TouchPoint *pTouch = pTouchManager->FindTouchById(region.nTouchId);
+            if (pTouch == nullptr) {
+                region.nTouchId = -1;
+                region.bDown = false;
+            } else {
+                const float flX = static_cast<float>(pTouch->nCurrentX);
+                const float flY = static_cast<float>(pTouch->nCurrentY);
+                PhoneLayoutRect box{};
+                getPositionByState_Phone(nRegion, &box);
+                const bool bInside = box.flX <= flX && flX <= box.flX + box.flWidth &&
+                                     box.flY <= flY && flY <= box.flY + box.flHeight;
+                region.bDown = bInside;
+                if (pTouch->bEnded) {
+                    region.nTouchId = -1;
+                    if (bInside) {
+                        // The tap-edge latch also clears the down flag (a single halfword store).
+                        region.bDown = false;
+                        region.bTapEdge = true;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** @ghidraAddress 0x116808 */

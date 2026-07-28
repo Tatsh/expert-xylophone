@@ -174,11 +174,14 @@ public:
 
     /**
      * @brief Whether a customize-character texture swap is pending.
+     *
+     * The flag lives in the first gesture region's tap-edge byte (+0x71); the customize overlay and
+     * the result-screen gesture never run together, so the binary reuses the same byte.
      * @return The reload flag.
      * @ghidraAddress 0x11c590
      */
     bool GetCustomizeReloadFlag() const {
-        return m_bCustomizeReloadFlag;
+        return m_aGestureRegions[0].bTapEdge;
     }
 
     /**
@@ -186,7 +189,7 @@ public:
      * @ghidraAddress 0x11c598
      */
     void ClearCustomizeReloadFlag() {
-        m_bCustomizeReloadFlag = false;
+        m_aGestureRegions[0].bTapEdge = false;
     }
 
     /**
@@ -656,6 +659,8 @@ public:
     static constexpr int kScoreAnimCount = 5;
     // The number of phone-layout position records.
     static constexpr int kPositionRecordCount = 82;
+    // The number of gesture touch regions (four hit-box regions plus the drag slider region).
+    static constexpr int kGestureRegionCount = 5;
 
 private:
     /**
@@ -664,6 +669,12 @@ private:
      * @ghidraAddress 0x11c66c
      */
     void BeginCustomizeMainAsset();
+
+    // Updates the four result-screen gesture hit-box regions for the frame: for each region, resets
+    // a disabled region, then either claims a fresh touch that presses inside the region's layout box
+    // or tracks its held touch, latching a tap-edge when the held touch lifts inside the box.
+    // @ghidraAddress 0x1171a0
+    void UpdateGestureTouchTracking();
 
     // Appends one fully-specified quad to a slot's sprite instancer, if the slot exists and is not
     // full; the shared low-level emit behind the part helpers.
@@ -692,13 +703,18 @@ private:
         {}; // +0x64: set for a networked/online play (game type not single-player).
     float m_flSlideTimer =
         {}; // +0x68: a signed slide/settle timer, advanced toward zero each frame.
-    // +0x6c..+0x70: further layer state (transform vectors and per-cell fields) still being worked
-    // out, kept as a reserved span to preserve the allocation size.
-    unsigned char m_aReserved6c[5] = {}; // +0x6c
-    bool m_bCustomizeReloadFlag =
-        {}; // +0x71: set when a customize-character texture swap is pending.
-    // +0x72..+0x93: further layer state, still being worked out.
-    unsigned char m_aReserved72[0x22] = {}; // +0x72
+    // +0x6c..+0x93: the five gesture touch regions (four result-screen hit-box regions plus the
+    // in-game side-slider drag region). The customize-character reload flag reuses the first
+    // region's tap-edge byte (+0x71): the customize overlay and the result-screen gesture are never
+    // live at the same time, so the binary overlaps them in the same byte.
+    struct GestureTouchRegion {
+        int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
+        bool bDown = {};                // +0x04: whether a touch is currently inside the region.
+        bool bTapEdge = {};             // +0x05: latched when a press ends inside the region.
+        bool bEnabled = {};             // +0x06: whether the region accepts input this frame.
+        unsigned char m_aPad07[1] = {}; // +0x07
+    };
+    GestureTouchRegion m_aGestureRegions[kGestureRegionCount] = {}; // +0x6c
     int m_nRotationCounterA =
         {}; // +0x94: a decoration rotation counter, wrapping every 400 frames.
     int m_nRotationCounterB =
