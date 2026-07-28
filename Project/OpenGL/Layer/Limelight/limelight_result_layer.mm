@@ -15,6 +15,8 @@
 #include "parts_data_table.h"
 #include "s_vector2.h"
 #include "soundeffectmanager.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 #include "vectormath.h"
 
 // The process-wide Limelight result-window layer, created lazily by shared().
@@ -1552,4 +1554,85 @@ void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
         }
     }
     m_bBonusCueArmed = false;
+}
+
+namespace {
+// The overall pressed state published each frame while any touch is active, on release, or idle.
+constexpr unsigned short kPressedActive = 1;
+constexpr unsigned short kPressedReleased = 0x100;
+constexpr unsigned short kPressedNone = 0;
+
+// Whether a touch point lies inside a by-state anchor rectangle.
+bool IsTouchInsideRect(float flX, float flY, const PhoneLayoutRect &rect) {
+    return rect.flX <= flX && flX <= rect.flX + rect.flWidth && rect.flY <= flY &&
+           flY <= rect.flY + rect.flHeight;
+}
+} // namespace
+
+/** @ghidraAddress 0x12434c */
+void LimelightResultLayer::UpdatePhonePartTouchStates() {
+    for (int nButton = 0; nButton < kButtonCount; ++nButton) {
+        ResultButtonRecord &button = m_aButtons[nButton];
+
+        // First-use initialisation: mark the button unclaimed and clear its flags.
+        if (!button.bInitialised) {
+            button.nTouchId = kNoTouchId;
+            button.bDown = false;
+            button.bTapEdge = false;
+            button.bInitialised = false;
+        }
+
+        TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+        if (button.nTouchId == kNoTouchId) {
+            // Unclaimed: scan the active touches for one pressing inside the button's rectangle.
+            for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
+                TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
+                if (!pTouch->bIsNew) {
+                    continue;
+                }
+                PhoneLayoutRect rect{};
+                getPositionByState_Phone(nButton, &rect);
+                if (IsTouchInsideRect(static_cast<float>(pTouch->nCurrentX),
+                                      static_cast<float>(pTouch->nCurrentY),
+                                      rect)) {
+                    button.nTouchId = pTouch->nId;
+                    button.bDown = true;
+                    break;
+                }
+            }
+        } else {
+            // Claimed: track the touch until it is released, latching a tap-edge on release inside.
+            TouchPoint *pTouch = pTouchManager->FindTouchById(button.nTouchId);
+            if (pTouch == nullptr) {
+                button.nTouchId = kNoTouchId;
+                button.bDown = false;
+            } else {
+                PhoneLayoutRect rect{};
+                getPositionByState_Phone(nButton, &rect);
+                const bool bInside = IsTouchInsideRect(static_cast<float>(pTouch->nCurrentX),
+                                                       static_cast<float>(pTouch->nCurrentY),
+                                                       rect);
+                button.bDown = bInside;
+                if (pTouch->bEnded) {
+                    button.nTouchId = kNoTouchId;
+                    if (bInside) {
+                        // The click latch: pressed byte cleared, tap-edge byte set (flags = 0x100).
+                        button.bDown = false;
+                        button.bTapEdge = true;
+                    }
+                }
+            }
+        }
+    }
+
+    // Publish the overall pressed state: active while any touch exists, the just-released latch on
+    // the frame the last touch ends, otherwise none.
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    if (pTouchManager->GetActiveTouchCount() > 0) {
+        m_nPressedState = kPressedActive;
+    } else if (pTouchManager->GetActiveTouchCount() == 0 && m_nPressedState != 0) {
+        m_nPressedState = kPressedReleased;
+    } else {
+        m_nPressedState = kPressedNone;
+    }
 }

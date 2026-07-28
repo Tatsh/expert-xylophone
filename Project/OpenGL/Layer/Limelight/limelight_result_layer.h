@@ -19,13 +19,16 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief One phone result-panel touch/button record: the tracked touch id, a flags half-word, and an
- * initialised byte. The constructor resets the id to the "none" sentinel and clears the flags.
+ * @brief One phone result-panel touch/button record: the tracked touch id, a pressed flag, a
+ * tap-edge (just-released-inside) flag, and an initialised byte. The two flag bytes are together the
+ * flags half-word the click latch writes as 0x100. The constructor resets the id to the "none"
+ * sentinel and clears the flags.
  */
 struct ResultButtonRecord {
-    int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
-    unsigned short nFlags = {};     // +0x04: the button's flags half-word.
-    bool bInitialised = {};         // +0x06: whether the button has been initialised.
+    int nTouchId = {};      // +0x00: the tracked touch id (-1 when none).
+    bool bDown = {};        // +0x04: whether a tracked touch is currently pressing the button.
+    bool bTapEdge = {};     // +0x05: latched when a tracked touch is released inside the button.
+    bool bInitialised = {}; // +0x06: whether the button has been initialised.
     unsigned char m_aPad07[1] = {}; // +0x07: alignment padding to the 8-byte stride.
 };
 
@@ -97,6 +100,18 @@ public:
      * @ghidraAddress 0x1240ec
      */
     void UpdatePhoneTouchAndShare();
+
+    /**
+     * @brief Updates the four phone-part result buttons' touch state and publishes the overall
+     * pressed state.
+     *
+     * For each button it claims an active touch whose position falls inside the button's
+     * by-state anchor rectangle, tracks it while it presses, and latches a tap-edge when the touch
+     * is released inside. After the four buttons it publishes the overall pressed state: one while any
+     * touch is active, the just-released latch on the frame the last touch ends, otherwise zero.
+     * @ghidraAddress 0x12434c
+     */
+    void UpdatePhonePartTouchStates();
 
     /**
      * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
@@ -637,8 +652,11 @@ private:
                                      float flScaleX,
                                      float flScaleY);
 
-    // +0x08..+0x0f: descriptor state preceding the textures, still being worked out.
-    unsigned char m_aReserved08[8] = {};      // +0x08
+    // +0x08: the overall phone-part pressed state, published each frame: 1 while any touch is
+    // active, 0x100 on the frame the last touch releases, else 0.
+    unsigned short m_nPressedState = {}; // +0x08
+    // +0x0a..+0x0f: further descriptor state preceding the textures, still being worked out.
+    unsigned char m_aReserved0a[6] = {};      // +0x0a
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
