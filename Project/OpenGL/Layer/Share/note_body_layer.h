@@ -64,11 +64,67 @@ private:
     // +0x35..+0x37 is alignment padding before the base offset.
     // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
     float m_flBaseOffset = {}; // +0x38: a base offset the constructor seeds to -1.
-    // +0x3c..+0x43: further layer state, still being worked out, preceding the per-note records.
-    unsigned char m_aReserved3c[8] = {}; // +0x3c
-    // +0x44..+0x47f: the per-note animation records (each 0x24 bytes), still being worked out, kept
-    // as a reserved span to preserve the 0x480-byte allocation size.
-    unsigned char m_aNoteRecords[0x43c] = {}; // +0x44
+
+    /**
+     * @brief One pooled note-body draw record (36 bytes): its active flag, the two shape selectors,
+     * the note colour, two position/parameter vector pairs, three end flags, and two scale values.
+     */
+    struct NoteRecord {
+        bool bActive = {};              // +0x00: whether the slot holds a live note body.
+        unsigned char nFlagA = {};      // +0x01: the first shape selector.
+        unsigned char nFlagB = {};      // +0x02: the second shape selector.
+        unsigned char m_aPad03[1] = {}; // +0x03
+        int nColor = {};                // +0x04: the note colour.
+        float flX = {};                 // +0x08: the note X.
+        float flY = {};                 // +0x0c: the note Y.
+        float flParamX = {};            // +0x10: the note's second X parameter.
+        float flParamY = {};            // +0x14: the note's second Y parameter.
+        unsigned char nFlagC = {};      // +0x18: a third shape/end flag.
+        unsigned char nFlagD = {};      // +0x19: a fourth flag.
+        unsigned char nFlagE = {};      // +0x1a: a fifth flag.
+        unsigned char m_aPad1b[1] = {}; // +0x1b
+        float flScaleX = {};            // +0x1c: the note X scale.
+        float flScaleY = {};            // +0x20: the note Y scale.
+    };
+    // The number of pooled note-body draw records.
+    static constexpr int kNoteRecordCount = 30;
+    // +0x3c..+0x473: the pooled note-body draw records.
+    NoteRecord m_aNoteRecords[kNoteRecordCount] = {}; // +0x3c
+    unsigned char m_aReserved474[0xc] = {};           // +0x474: trailing state to the 0x480 size.
+
+public:
+    /**
+     * @brief Spawns a note body into the first free pool slot.
+     *
+     * Scans the pool from its head for a free slot and, on finding one, stores the note colour, the
+     * two shape selectors and three end flags, the position and parameter vectors, and the two scale
+     * values, then advances the shared draw count. A full pool drops the note.
+     * @param nColor The note colour (0 or 1).
+     * @param nFlagA The first shape selector.
+     * @param nFlagB The second shape selector.
+     * @param flX The note X.
+     * @param flY The note Y.
+     * @param flParamX The note's second X parameter.
+     * @param flParamY The note's second Y parameter.
+     * @param nFlagC A third shape/end flag.
+     * @param nFlagD A fourth flag.
+     * @param flScaleX The note X scale.
+     * @param nFlagE A fifth flag.
+     * @param flScaleY The note Y scale.
+     * @ghidraAddress 0x181440
+     */
+    void Create(int nColor,
+                unsigned char nFlagA,
+                unsigned char nFlagB,
+                float flX,
+                float flY,
+                float flParamX,
+                float flParamY,
+                unsigned char nFlagC,
+                unsigned char nFlagD,
+                float flScaleX,
+                unsigned char nFlagE,
+                float flScaleY);
 };
 
 // code: language=C++

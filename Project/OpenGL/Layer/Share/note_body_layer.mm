@@ -1,5 +1,7 @@
 #include "note_body_layer.h"
 
+#include <cassert>
+
 #include "bg_layer.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
@@ -74,4 +76,47 @@ void NoteBodyLayer::LoadNoteBodySprites() {
 
     m_bBuilt = true;
     g_nNoteBodyDrawCount = 0;
+}
+
+namespace {
+// The player-colour count the spawner asserts against.
+constexpr int kPlayerColorMax = 2;
+} // namespace
+
+/** @ghidraAddress 0x181440 */
+void NoteBodyLayer::Create(int nColor,
+                           unsigned char nFlagA,
+                           unsigned char nFlagB,
+                           float flX,
+                           float flY,
+                           float flParamX,
+                           float flParamY,
+                           unsigned char nFlagC,
+                           unsigned char nFlagD,
+                           float flScaleX,
+                           unsigned char nFlagE,
+                           float flScaleY) {
+    assert(nColor >= 0 && nColor < kPlayerColorMax);
+
+    // Scan the pool from its head for a free slot; a full pool drops the note.
+    for (int nSlot = g_nNoteBodyDrawCount; nSlot < kNoteRecordCount; ++nSlot) {
+        NoteRecord &record = m_aNoteRecords[nSlot];
+        if (!record.bActive) {
+            record.nColor = nColor;
+            record.bActive = true;
+            record.nFlagA = nFlagA;
+            record.nFlagB = nFlagB;
+            record.flX = flX;
+            record.flY = flY;
+            record.flParamX = flParamX;
+            record.flParamY = flParamY;
+            record.nFlagC = nFlagC;
+            record.nFlagD = nFlagD;
+            record.flScaleX = flScaleX;
+            record.nFlagE = nFlagE;
+            record.flScaleY = flScaleY;
+            ++g_nNoteBodyDrawCount;
+            return;
+        }
+    }
 }
