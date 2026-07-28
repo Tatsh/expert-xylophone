@@ -179,3 +179,21 @@ bool LevelTables::LoadPlayerLevelData(int *pOutLevelExp) {
     pOutLevelExp[0] = 0;
     return true;
 }
+
+/** @ghidraAddress 0x1cc1dc */
+bool LevelTables::SavePlayerLevelData(const int *pLevelExp) {
+    NSString *directory = GetApplicationSupportPath();
+    NSString *path = [directory stringByAppendingPathComponent:kLevelListFileName];
+
+    const int nLevel = pLevelExp[0];
+    const int nExp = pLevelExp[1];
+
+    // The record persists the level, the experience, and the validation hash covering both, so a
+    // later load can re-hash and reject a tampered file.
+    NSMutableDictionary *record = [NSMutableDictionary dictionaryWithCapacity:3];
+    record[kLevelKey] = @(nLevel);
+    record[kExpKey] = @(nExp);
+    record[kCustomizeKey] = MakeLevelCustomizeHash(nLevel, nExp);
+
+    return [record writeToFile:path atomically:YES];
+}
