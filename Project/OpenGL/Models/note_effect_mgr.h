@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "s_vector2.h"
+
 class NoteModel;
 class RbffNoteRecord;
 
@@ -38,6 +40,19 @@ public:
      * @ghidraAddress 0x1373a0
      */
     void ClearNotePositionCache();
+
+    /**
+     * @brief Returns a touch's projected note-field position, computing and caching it on first use
+     * this frame.
+     *
+     * Returns the cached position when the touch id is already cached; otherwise claims the first
+     * empty cache slot, finds the live touch, normalises its position by the view size it began in,
+     * projects it into note-field space, and caches it. Returns @c nullptr when the cache is full or
+     * no live touch matches.
+     * @param nTouchId The touch id to resolve.
+     * @ghidraAddress 0x136e38
+     */
+    const S_VECTOR2 *GetOrCacheNotePosition(int nTouchId);
 
     /**
      * @brief Returns the note object for a chart note index, or @c nullptr when none matches.
@@ -276,8 +291,8 @@ private:
 
     // One per-note render entry: the cached note position (-1 when empty) and its render state.
     struct RenderEntry {
-        int nCachedPosition = {};          // +0x00: the cached note position, or -1 when empty.
-        unsigned char aReserved04[8] = {}; // +0x04: per-note render state, still being worked out.
+        int nCachedKey = {};      // +0x00: the touch id this slot caches, or -1 when empty.
+        S_VECTOR2 cachedPosition; // +0x04: the touch's projected note-field position.
     };
     // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68

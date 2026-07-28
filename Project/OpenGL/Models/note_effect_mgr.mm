@@ -22,6 +22,8 @@
 #include "note_model.h"
 #include "rbffnoterecord.h"
 #include "shotsoundmanager.h"
+#include "touch_point.h"
+#include "touchmanager.h"
 
 // The process-wide note manager, created lazily by shared().
 static NoteEffectMgr *g_pNoteEffectMgr = nullptr; // @ghidraAddress 0x3de050
@@ -95,8 +97,49 @@ void NoteEffectMgr::HandleNoteScored(int nUnused, int nSide) {
 /** @ghidraAddress 0x1373a0 */
 void NoteEffectMgr::ClearNotePositionCache() {
     for (RenderEntry &entry : m_aRenderTable) {
-        entry.nCachedPosition = -1;
+        entry.nCachedKey = -1;
     }
+}
+
+/** @ghidraAddress 0x136e38 */
+const S_VECTOR2 *NoteEffectMgr::GetOrCacheNotePosition(int nTouchId) {
+    // Return the already-cached projected position for this touch id, if present.
+    for (RenderEntry &entry : m_aRenderTable) {
+        if (entry.nCachedKey == nTouchId) {
+            return &entry.cachedPosition;
+        }
+    }
+
+    // Otherwise claim the first empty slot; a full cache drops the request.
+    int nSlot = -1;
+    for (int i = 0; i < kRenderEntryCount; ++i) {
+        if (m_aRenderTable[i].nCachedKey == -1) {
+            nSlot = i;
+            break;
+        }
+    }
+    if (nSlot < 0 || nSlot >= kRenderEntryCount) {
+        return nullptr;
+    }
+
+    // Find the live touch with this id, normalise its position by the view size it began in, project
+    // it into note-field space, and cache it.
+    TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
+    const int nActive = pTouchManager->GetActiveTouchCount();
+    for (int i = 0; i < nActive; ++i) {
+        TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
+        if (pTouch->nId != nTouchId) {
+            continue;
+        }
+        RenderEntry &entry = m_aRenderTable[nSlot];
+        entry.nCachedKey = nTouchId;
+        entry.cachedPosition =
+            S_VECTOR2{static_cast<float>(pTouch->nCurrentX) / static_cast<float>(pTouch->nKey1),
+                      static_cast<float>(pTouch->nCurrentY) / static_cast<float>(pTouch->nKey2)};
+        ProjectNoteHitPoint(&entry.cachedPosition);
+        return &entry.cachedPosition;
+    }
+    return nullptr;
 }
 
 /** @ghidraAddress 0x137004 */
