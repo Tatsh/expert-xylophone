@@ -2,9 +2,12 @@
 
 #include "../Share/bg_layer.h"
 #include "ScoreTracker.h"
+#include "curve.h"
+#include "gamesystem.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
+#include "s_vector2.h"
 
 // The process-wide Limelight-theme layer, created lazily by shared().
 static LimelightThemeLayer *g_pLimelightThemeLayer = nullptr; // @ghidraAddress 0x3dd380
@@ -44,6 +47,18 @@ constexpr float kGradeClockStart = -500.0f;
 // The reveal-clock threshold: shorter for a two-side display, longer for single-side or one record.
 constexpr float kGradeRevealDurationDual = 3000.0f;
 constexpr float kGradeRevealDurationSingle = 5000.0f;
+
+// The base grade sprite's slot and kind, its reveal alpha-fade curve ({time, value} pairs at
+// @ghidraAddress 0x305424), and the byte alpha scale (@ghidraAddress 0x2eed00).
+constexpr unsigned int kGradeBaseSlot = 0;
+constexpr unsigned int kGradeBaseKind = 0;
+constexpr float kGradeRevealCurve[] = {-500.0f, 0.0f, -333.33334f, 0.75f};
+constexpr int kGradeRevealCurvePairs = 2;
+constexpr float kAlphaByteScale = 255.0f;
+
+// The minimum rank (of the B/A/AA/AAA/AAAP ladder) that draws the rank glyphs rather than the
+// high-rank badge.
+constexpr int kMinRankGlyphs = 2;
 
 } // namespace
 
@@ -122,6 +137,66 @@ void LimelightThemeLayer::StartGradeAnimation(float flDuration) {
 /** @ghidraAddress 0x120a74 */
 void LimelightThemeLayer::AdvanceGradeChannel(float flDeltaTime) {
     m_gradeChannel.Advance(flDeltaTime);
+}
+
+/** @ghidraAddress 0x120920 */
+void LimelightThemeLayer::UpdateGradeDisplay(float flDeltaTime) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flCachedViewportWidth = pGameSystem->GetViewportWidth();
+    m_flCachedViewportHeight = pGameSystem->GetViewportHeight();
+    m_aSpriteCounts[0] = 0;
+    m_aSpriteCounts[1] = 0;
+    m_aSpriteCounts[2] = 0;
+    m_aSpriteCounts[3] = 0;
+
+    AdvanceGradeChannel(flDeltaTime);
+
+    if (m_bGradeVisible) {
+        // Run the reveal clock while the display is showing, and stop it once it passes the reveal
+        // duration.
+        if (m_bGradeClockActive) {
+            m_flGradeRevealClock += flDeltaTime;
+        }
+        if (m_flGradeRevealClock >= m_flGradeRevealDuration) {
+            m_bGradeClockActive = false;
+        }
+        // The base grade sprite fades in over the reveal, scaled by the reveal channel's value.
+        const float flReveal = CalculateCurveInterpolation(
+            kGradeRevealCurve, kGradeRevealCurvePairs, m_flGradeRevealClock);
+        S_VECTOR2 basePos{0.0f, 0.0f};
+        EmitGradeSpriteSlot(
+            1.0f,
+            1.0f,
+            0.0f,
+            kGradeBaseKind,
+            &basePos,
+            static_cast<unsigned int>(flReveal * m_gradeChannel.GetCurrent() * kAlphaByteScale));
+
+        // Per side (the first only when single-side), draw the grade meter for a zero grade, then the
+        // high-rank badge for a rank below AA or the rank glyphs otherwise.
+        for (int nSide = 0; nSide < kSideCount; ++nSide) {
+            // Side 0 is skipped only when the side count is zero.
+            if (m_nSideCount == 0 && nSide == 0) {
+                continue;
+            }
+            const int nGrade = m_aGradeValues[nSide];
+            const int nRank =
+                ScoreTracker::shared()->GetPlayRecordRank(static_cast<unsigned int>(nSide));
+            if (nGrade == 0) {
+                RenderGradeMeterSprite(static_cast<unsigned int>(nSide));
+            }
+            if (nRank < kMinRankGlyphs) {
+                RenderGradeHighRankBadge(nSide);
+            } else {
+                RenderGradeRankGlyphs(nSide);
+            }
+        }
+    }
+
+    // Publish each slot's live count to its instancer.
+    for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
+        m_apSprites[nSlot]->SetSpriteCount(m_aSpriteCounts[nSlot]);
+    }
 }
 
 /** @ghidraAddress 0x1208c4 */

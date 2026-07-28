@@ -8,6 +8,8 @@
 #include "linear_tween.h"
 #include "playfieldlayerbase.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -74,7 +76,48 @@ public:
      */
     void InitializeGradeValuesFromTracker();
 
+    /**
+     * @brief Advances and redraws the result grade/achievement-rate display for the frame.
+     *
+     * Caches the viewport size, advances the reveal channel, and, when the display is enabled, runs
+     * the reveal clock and emits the base grade sprite faded in by the reveal, then per side (the
+     * first only when single-side) draws the grade meter for a zero grade and either the high-rank
+     * badge (rank below AA) or the rank glyphs. Finally publishes each slot's count to its instancer.
+     * @param flDeltaTime The frame's elapsed time.
+     * @ghidraAddress 0x120920
+     */
+    void UpdateGradeDisplay(float flDeltaTime);
+
 private:
+    /**
+     * @brief Emits one grade-display sprite into a slot. Reconstruction pending.
+     * @ghidraAddress 0x120abc
+     */
+    void EmitGradeSpriteSlot(float flSizeX,
+                             float flSizeY,
+                             float flRotation,
+                             unsigned int nSpriteKind,
+                             const S_VECTOR2 *pPosition,
+                             unsigned int nAlpha);
+
+    /**
+     * @brief Draws a side's grade meter (for a zero grade). Reconstruction pending.
+     * @ghidraAddress 0x120ca0
+     */
+    void RenderGradeMeterSprite(unsigned int nSide);
+
+    /**
+     * @brief Draws a side's rank glyphs (rank AA and above). Reconstruction pending.
+     * @ghidraAddress 0x120e50
+     */
+    void RenderGradeRankGlyphs(int nSide);
+
+    /**
+     * @brief Draws a side's high-rank badge (rank below AA). Reconstruction pending.
+     * @ghidraAddress 0x1214ec
+     */
+    void RenderGradeHighRankBadge(int nSide);
+
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
      * @ghidraAddress 0x120630
@@ -99,9 +142,9 @@ private:
     float m_flGradeRevealClock = {}; // +0x64: the reveal clock, counting up to the threshold.
     bool m_bGradeArmed = {};         // +0x68: raised once the grade display is initialised.
     // +0x69..+0x6b is alignment padding before the reveal channel.
-    LinearTween m_gradeChannel; // +0x6c: the result grade-gauge reveal channel.
-    // +0x80..+0x87: the cached viewport size, still being worked out.
-    unsigned char m_aReserved80[8] = {}; // +0x80
+    LinearTween m_gradeChannel;          // +0x6c: the result grade-gauge reveal channel.
+    float m_flCachedViewportWidth = {};  // +0x80: the last-seen viewport width.
+    float m_flCachedViewportHeight = {}; // +0x84: the last-seen viewport height.
     int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side grade value from the play record.
     float m_flGradeRevealDuration = {};  // +0x90: the reveal clock's threshold (3000 or 5000).
     // +0x94..+0x97: the remaining layer state, still being worked out.
