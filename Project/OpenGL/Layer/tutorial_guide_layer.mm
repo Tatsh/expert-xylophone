@@ -108,12 +108,9 @@ constexpr TutorialGuideLayer::Keyframe kKeyframes[] = {
     {106833.3359375f, 110000.0f, 8},
 };
 
-// The two trailing step indices stored after the keyframes.
-constexpr int kStepHi0 = 14;
-constexpr int kStepHi1 = 15;
-
-// The seven sprite frame indices (@ghidraAddress 0x301f00) and the three trailing frame counters.
-constexpr int kFrameIndices[] = {16, 17, 18, 19, 20, 21, 22};
+// The nine per-step glyph sprite kinds, indexed by the current keyframe step (@ghidraAddress
+// 0x301f00 onwards): the two intro steps then the seven swept-tap frames.
+constexpr int kStepGlyphKinds[] = {14, 15, 16, 17, 18, 19, 20, 21, 22};
 
 // The four screen-coordinate pairs seeded at +0xb4 (@ghidraAddress 0x301f00 floats onwards).
 constexpr float kCoords[] = {384.0f, 680.0f, 216.0f, 594.0f, 200.0f, 800.0f, 394.0f, 586.0f};
@@ -212,16 +209,12 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
     m_pSprite->SetSpriteCount(m_nSpriteCount);
     m_bBuilt = true;
 
-    // Seed the keyframe timings, the trailing step indices, the frame-index table, and the screen
-    // coordinates.
+    // Seed the keyframe timings, the per-step glyph kinds, and the screen coordinates.
     for (int nKeyframe = 0; nKeyframe < kKeyframeCount; ++nKeyframe) {
         m_aKeyframes[nKeyframe] = kKeyframes[nKeyframe];
     }
-    m_nStepHi0 = kStepHi0;
-    m_nStepHi1 = kStepHi1;
-    for (int nFrame = 0; nFrame < static_cast<int>(sizeof(kFrameIndices) / sizeof(*kFrameIndices));
-         ++nFrame) {
-        m_aFrameIndices[nFrame] = kFrameIndices[nFrame];
+    for (int nStep = 0; nStep < kKeyframeCount; ++nStep) {
+        m_aStepGlyphKinds[nStep] = kStepGlyphKinds[nStep];
     }
     for (int nCoord = 0; nCoord < static_cast<int>(sizeof(kCoords) / sizeof(*kCoords)); ++nCoord) {
         m_aCoords[nCoord] = kCoords[nCoord];
@@ -281,6 +274,254 @@ void TutorialGuideLayer::Release() {
         m_pSprite = nullptr;
     }
     m_bBuilt = false;
+}
+
+namespace {
+// The finger animator's shared curve control-point offsets, added to the guide's swept keyframe X
+// positions to build the per-frame animation curves. @ghidraAddress 0x301f70 onwards.
+constexpr float kSweepHalfSpan = 166.66667f;     // 0x301f70
+constexpr float kSweepHalfSpanNeg = -166.66667f; // 0x301f74
+constexpr float kPulseSpan1 = 200.0f;            // 0x301f78
+constexpr float kPulseSpan2 = 233.33333f;        // 0x301f7c
+constexpr float kPulseSpan3 = 266.66667f;        // 0x301f80
+constexpr float kTriRise = -150.0f;              // 0x301f84 (used with the ripple table)
+constexpr float kFullSpan = 250.0f;              // 0x301f88
+constexpr float kFullSpanNeg = -250.0f;          // 0x301f8c
+constexpr float kPulseSpan0 = 150.0f;            // 0x2eedc8
+
+// The pulse scale keyframes.
+constexpr float kScaleOne = 1.0f;
+constexpr float kScalePeak = 1.1f;    // 0x3f8ccccd
+constexpr float kScaleSettle = 1.05f; // 0x3f866666
+
+// The alpha scales the finger animator applies to its curve outputs.
+constexpr float kFingerAlphaScale = 128.0f;
+constexpr float kRingAlphaScale = 255.0f; // 0x2eed00
+
+// The number of swept keyframes and the finger-animator curve-table lengths.
+constexpr int kSweepKeyframeCount = 9;
+constexpr int kRampCurveLen = 0x10;
+constexpr int kPulseCurveLen = 0x35;
+constexpr int kTriCurveLen = 0x18;
+constexpr int kConnCurveLen = 0x24;
+
+// The per-step glyph "no step" sentinel returned by the keyframe-step lookup.
+constexpr int kStepNoGlyph = 10;
+
+// The finger animator's sprite kinds.
+constexpr unsigned int kFingerSpriteKind = 0;
+constexpr unsigned int kRingSpriteKind = 10;
+constexpr unsigned int kHighlightSpriteKind = 9;
+
+// A curve control point: a query X and its value.
+struct CurvePoint {
+    float flX;
+    float flValue;
+};
+
+// Appends a rising ramp for one keyframe span to the curve: two flat-zero points at the swept start
+// and end, bracketed by two unit points half a span in from each side. The finger and ring curves
+// are built from four such spans (the guide's four visible tap columns).
+inline int AppendRampSpan(CurvePoint *pCurve, int nAt, float flStartX, float flEndX) {
+    pCurve[nAt] = CurvePoint{flStartX, 0.0f};
+    pCurve[nAt + 1] = CurvePoint{flStartX + kSweepHalfSpan, kScaleOne};
+    pCurve[nAt + 2] = CurvePoint{flEndX + kSweepHalfSpanNeg, kScaleOne};
+    pCurve[nAt + 3] = CurvePoint{flEndX, 0.0f};
+    return nAt + 4;
+}
+
+// Appends a five-point scale pulse rising from unit to a peak and settling back, used by the
+// highlight curve at each swept tap.
+inline int AppendScalePulse(CurvePoint *pCurve, int nAt, float flBaseX) {
+    pCurve[nAt] = CurvePoint{flBaseX, kScaleOne};
+    pCurve[nAt + 1] = CurvePoint{flBaseX + kPulseSpan0, kScalePeak};
+    pCurve[nAt + 2] = CurvePoint{flBaseX + kPulseSpan1, kScaleOne};
+    pCurve[nAt + 3] = CurvePoint{flBaseX + kPulseSpan2, kScaleSettle};
+    pCurve[nAt + 4] = CurvePoint{flBaseX + kPulseSpan3, kScaleOne};
+    return nAt + 5;
+}
+
+// Appends a two-point connector holding unit scale across a keyframe's off span.
+inline int AppendConnector(CurvePoint *pCurve, int nAt, float flEndX) {
+    pCurve[nAt] = CurvePoint{flEndX + kSweepHalfSpanNeg, kScaleOne};
+    pCurve[nAt + 1] = CurvePoint{flEndX, kScaleOne};
+    return nAt + 2;
+}
+
+// Appends a three-point rising triangle (two zeros then a unit) used by the highlight-alpha curve.
+inline int AppendRiseTriple(CurvePoint *pCurve, int nAt, float flStartX) {
+    pCurve[nAt] = CurvePoint{flStartX, 0.0f};
+    pCurve[nAt + 1] = CurvePoint{flStartX + kSweepHalfSpan, 0.0f};
+    pCurve[nAt + 2] = CurvePoint{flStartX + kFullSpan, kScaleOne};
+    return nAt + 3;
+}
+
+// Appends a three-point falling triangle (a unit then two zeros) used by the highlight-alpha curve.
+inline int AppendFallTriple(CurvePoint *pCurve, int nAt, float flEndX) {
+    pCurve[nAt] = CurvePoint{flEndX + kFullSpanNeg, kScaleOne};
+    pCurve[nAt + 1] = CurvePoint{flEndX + kSweepHalfSpanNeg, 0.0f};
+    pCurve[nAt + 2] = CurvePoint{flEndX, 0.0f};
+    return nAt + 3;
+}
+} // namespace
+
+/** @ghidraAddress 0x10b828 */
+void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    m_flGaugeX = pGameSystem->GetViewportWidth();
+    m_flGaugeY = pGameSystem->GetViewportHeight();
+    m_pSprite->SetSpriteCount(0);
+
+    if ((m_nFadeState & 0xff) == 0) {
+        return;
+    }
+    m_flClock += flDeltaTime;
+
+    // The current swept step drives the per-step glyph at the end.
+    const int nStep = static_cast<int>(
+        KeyframeStepTableLookup(m_flClock, &m_aKeyframes[0].flStartX, kSweepKeyframeCount));
+
+    // The finger, ring, and ripple curves share the same four-span rising ramp built from the
+    // keyframes' first, third, sixth (with its own end), and eighth spans.
+    static bool bRampBuilt = false;
+    static CurvePoint aFingerCurve[kRampCurveLen];
+    if (!bRampBuilt) {
+        int n = 0;
+        n = AppendRampSpan(aFingerCurve, n, m_aKeyframes[0].flStartX, m_aKeyframes[2].flEndX);
+        n = AppendRampSpan(aFingerCurve, n, m_aKeyframes[3].flStartX, m_aKeyframes[5].flEndX);
+        n = AppendRampSpan(aFingerCurve, n, m_aKeyframes[6].flStartX, m_aKeyframes[6].flEndX);
+        AppendRampSpan(aFingerCurve, n, m_aKeyframes[7].flStartX, m_aKeyframes[8].flEndX);
+        bRampBuilt = true;
+    }
+
+    // The finger sprite sizes to the viewport per the device and orientation, and fades in through
+    // the ramp curve at 128-scaled alpha.
+    float flFingerSizeX;
+    float flFingerSizeY;
+    if (m_bIsPad) {
+        flFingerSizeX = pGameSystem->GetViewportWidth();
+        flFingerSizeY = pGameSystem->GetViewportHeight();
+    } else if (m_bPortrait) {
+        flFingerSizeX = pGameSystem->GetViewportHeight();
+        flFingerSizeY = pGameSystem->GetViewportHeight();
+    } else {
+        flFingerSizeX = pGameSystem->GetViewportWidth();
+        flFingerSizeY = pGameSystem->GetViewportWidth();
+    }
+    S_VECTOR2 fingerPos{m_aCoords[0], m_aCoords[1]};
+    const float flFingerAlpha =
+        CalculateCurveInterpolation(&aFingerCurve[0].flX, kRampCurveLen, m_flClock);
+    EmitTutorialSpriteSlot(flFingerSizeX,
+                           flFingerSizeY,
+                           kFingerSpriteKind,
+                           &fingerPos.x,
+                           static_cast<int>(flFingerAlpha * kFingerAlphaScale));
+
+    // The ring and ripple curves are the same ramp; they scale and fade the ring sprite.
+    static bool bRingBuilt = false;
+    static CurvePoint aRingCurve[kRampCurveLen];
+    static CurvePoint aRippleCurve[kRampCurveLen];
+    if (!bRingBuilt) {
+        int n = 0;
+        n = AppendRampSpan(aRingCurve, n, m_aKeyframes[0].flStartX, m_aKeyframes[2].flEndX);
+        n = AppendRampSpan(aRingCurve, n, m_aKeyframes[3].flStartX, m_aKeyframes[5].flEndX);
+        n = AppendRampSpan(aRingCurve, n, m_aKeyframes[6].flStartX, m_aKeyframes[6].flEndX);
+        AppendRampSpan(aRingCurve, n, m_aKeyframes[7].flStartX, m_aKeyframes[8].flEndX);
+        bRingBuilt = true;
+    }
+    static bool bRippleBuilt = false;
+    if (!bRippleBuilt) {
+        int n = 0;
+        n = AppendRampSpan(aRippleCurve, n, m_aKeyframes[0].flStartX, m_aKeyframes[2].flEndX);
+        n = AppendRampSpan(aRippleCurve, n, m_aKeyframes[3].flStartX, m_aKeyframes[5].flEndX);
+        n = AppendRampSpan(aRippleCurve, n, m_aKeyframes[6].flStartX, m_aKeyframes[6].flEndX);
+        AppendRampSpan(aRippleCurve, n, m_aKeyframes[7].flStartX, m_aKeyframes[8].flEndX);
+        bRippleBuilt = true;
+    }
+    S_VECTOR2 ringPos{m_aCoords[2], m_aCoords[3]};
+    const float flRingScaleX =
+        CalculateCurveInterpolation(&aRingCurve[0].flX, kRampCurveLen, m_flClock);
+    const float flRingScaleY =
+        CalculateCurveInterpolation(&aRingCurve[0].flX, kRampCurveLen, m_flClock);
+    const float flRingAlpha =
+        CalculateCurveInterpolation(&aRippleCurve[0].flX, kRampCurveLen, m_flClock);
+    EmitTutorialSpriteSlot(flRingScaleX,
+                           flRingScaleY,
+                           kRingSpriteKind,
+                           &ringPos.x,
+                           static_cast<int>(flRingAlpha * kRingAlphaScale));
+
+    // The highlight sprite's scale pulses at every swept tap (nine pulses joined by four connectors)
+    // and its alpha rises and falls in triangles at the outer taps.
+    static bool bPulseBuilt = false;
+    static CurvePoint aPulseCurve[kPulseCurveLen];
+    if (!bPulseBuilt) {
+        int n = 0;
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[0].flStartX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[1].flStartX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[2].flStartX);
+        n = AppendConnector(aPulseCurve, n, m_aKeyframes[2].flEndX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[3].flStartX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[4].flStartX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[5].flStartX);
+        n = AppendConnector(aPulseCurve, n, m_aKeyframes[5].flEndX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[6].flStartX);
+        n = AppendConnector(aPulseCurve, n, m_aKeyframes[6].flEndX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[7].flStartX);
+        n = AppendScalePulse(aPulseCurve, n, m_aKeyframes[8].flStartX);
+        AppendConnector(aPulseCurve, n, m_aKeyframes[8].flEndX);
+        bPulseBuilt = true;
+    }
+    static bool bTriBuilt = false;
+    static CurvePoint aTriCurve[kTriCurveLen];
+    if (!bTriBuilt) {
+        int n = 0;
+        n = AppendRiseTriple(aTriCurve, n, m_aKeyframes[0].flStartX);
+        n = AppendFallTriple(aTriCurve, n, m_aKeyframes[2].flEndX);
+        n = AppendRiseTriple(aTriCurve, n, m_aKeyframes[3].flStartX);
+        n = AppendFallTriple(aTriCurve, n, m_aKeyframes[5].flEndX);
+        n = AppendRiseTriple(aTriCurve, n, m_aKeyframes[6].flStartX);
+        n = AppendFallTriple(aTriCurve, n, m_aKeyframes[6].flEndX);
+        n = AppendRiseTriple(aTriCurve, n, m_aKeyframes[7].flStartX);
+        AppendFallTriple(aTriCurve, n, m_aKeyframes[8].flEndX);
+        bTriBuilt = true;
+    }
+    S_VECTOR2 highlightPos{m_aCoords[4], m_aCoords[5]};
+    const float flHighlightScaleX =
+        CalculateCurveInterpolation(&aPulseCurve[0].flX, kPulseCurveLen, m_flClock);
+    const float flHighlightScaleY =
+        CalculateCurveInterpolation(&aPulseCurve[0].flX, kPulseCurveLen, m_flClock);
+    const float flHighlightAlpha =
+        CalculateCurveInterpolation(&aTriCurve[0].flX, kTriCurveLen, m_flClock);
+    EmitTutorialSpriteSlot(flHighlightScaleX,
+                           flHighlightScaleY,
+                           kHighlightSpriteKind,
+                           &highlightPos.x,
+                           static_cast<int>(flHighlightAlpha * kRingAlphaScale));
+
+    // The per-step glyph fades in over its own connector curve (a rise-hold per keyframe), unless the
+    // step lookup reported no glyph.
+    static bool bConnBuilt = false;
+    static CurvePoint aConnCurve[kConnCurveLen];
+    if (!bConnBuilt) {
+        int n = 0;
+        for (int nKf = 0; nKf < kSweepKeyframeCount; ++nKf) {
+            aConnCurve[n] = CurvePoint{m_aKeyframes[nKf].flStartX, 0.0f};
+            aConnCurve[n + 1] = CurvePoint{m_aKeyframes[nKf].flStartX + kSweepHalfSpan, kScaleOne};
+            aConnCurve[n + 2] = CurvePoint{m_aKeyframes[nKf].flEndX + kSweepHalfSpanNeg, kScaleOne};
+            aConnCurve[n + 3] = CurvePoint{m_aKeyframes[nKf].flEndX, 0.0f};
+            n += 4;
+        }
+        bConnBuilt = true;
+    }
+    S_VECTOR2 glyphPos{m_aCoords[6], m_aCoords[7]};
+    if (nStep != kStepNoGlyph) {
+        const unsigned int nGlyphKind = static_cast<unsigned int>(m_aStepGlyphKinds[nStep]);
+        const float flGlyphAlpha =
+            CalculateCurveInterpolation(&aConnCurve[0].flX, kConnCurveLen, m_flClock);
+        EmitTutorialSpriteSlot(
+            1.0f, 1.0f, nGlyphKind, &glyphPos.x, static_cast<int>(flGlyphAlpha * kRingAlphaScale));
+    }
 }
 
 /** @ghidraAddress 0x10b778 */

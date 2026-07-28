@@ -198,9 +198,9 @@ private:
     short m_nFadeState = {};        // +0x3c: the fade state (1 = fading in).
     unsigned char m_aReserved3e[2] = {};        // +0x3e: alignment before the keyframe table.
     Keyframe m_aKeyframes[kKeyframeCount] = {}; // +0x40: the nine keyframe timings.
-    int m_nStepHi0 = {};                        // +0xac: a trailing step index (14).
-    int m_nStepHi1 = {};                        // +0xb0: a trailing step index (15).
-    int m_aFrameIndices[7] = {};                // +0xb4: sprite frame indices (16 through 22).
+    // +0xac: the per-step glyph sprite kinds, indexed by the current keyframe step (values 14
+    // through 22). The finger animator reads this as one flat nine-entry array.
+    int m_aStepGlyphKinds[kKeyframeCount] = {}; // +0xac
     float m_aCoords[8] = {};                    // +0xd0: four screen-coordinate pairs.
     // +0xf0: the two per-step coordinate grids, filled from the keyframes and the per-column offset
     // tables. The first drives one sprite set, the second (kGridBias entries later) the other.
