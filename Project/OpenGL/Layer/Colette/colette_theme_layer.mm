@@ -115,6 +115,349 @@ constexpr int kSecondSide = 1;
 // Y is the reference line less the layout height.
 constexpr float kMissSpriteX[kMissSpriteCount] = {-177.0f, -106.0f, -38.0f, 40.0f, 118.0f, 185.0f};
 
+// The rank-medal full-combo burst: the seven medal sprites, their curve sizes, the slot base they
+// emit at, and the reveal-timer window they play within.
+constexpr int kRankMedalCount = 7;
+constexpr int kRankScaleCurvePairs = 9;
+constexpr int kRankScaleCurveFloats = kRankScaleCurvePairs * 2;
+constexpr int kRankAlphaCurvePairs = 3;
+constexpr int kRankAlphaCurveFloats = kRankAlphaCurvePairs * 2;
+constexpr int kRankRotCurvePairs = 2;
+constexpr int kRankRotCurveFloats = kRankRotCurvePairs * 2;
+constexpr int kRankOffsetCurvePairs = 3;
+constexpr int kRankOffsetCurveFloats = kRankOffsetCurvePairs * 2;
+constexpr unsigned int kRankSpriteSlotBase = 0x11; // the medals emit at slots 0x11..0x17.
+
+// The reveal-timer window the rank medals animate within, and the offset applied to the timer
+// (@ghidraAddress 0x305220 start, 0x30522c end, 0x305224 offset).
+constexpr float kRankWindowStart = 3166.6667f;
+constexpr float kRankWindowEnd = 4833.3335f;
+constexpr float kRankTimerOffset = -3166.6667f;
+
+// The second side's downward Y shift and the first side's Y reflection base for the mirror layout
+// (@ghidraAddress 0x2ec6b0, 0x2fcfec), and the sound the medals play on first entry.
+constexpr float kRankSecondSideShiftY = 100.0f;
+constexpr float kRankFirstSideReflectY = -100.0f;
+constexpr int kRankSoundEffect = 10;
+
+// The half-turn the mirrored side adds to a medal's rotation, in double precision as the binary
+// computes it (@ghidraAddress 0x2f85a0).
+constexpr double kRankMirrorRotation = 3.141592653589793;
+
+// One rank medal's fixed placement: its X column and its base Y (before the layout height is
+// subtracted), from the load-once medal table (@ghidraAddress 0x3def60).
+struct RankMedalPlacement {
+    float flX;
+    float flBaseY;
+};
+constexpr RankMedalPlacement kRankMedalPlacement[kRankMedalCount] = {
+    {-177.0f, 653.0f},
+    {-184.0f, 654.0f},
+    {-184.0f, 654.0f},
+    {-177.0f, 653.0f},
+    {-142.0f, 660.0f},
+    {-151.0f, 747.0f},
+    {-210.0f, 662.0f},
+};
+
+// The two medal slots that draw only for one colour variant: slot 1 skips the base variant, slot 2
+// skips the non-base variant.
+constexpr int kRankMedalVariantSkip1 = 1;
+constexpr int kRankMedalVariantSkip2 = 2;
+
+// @ghidraAddress 0x30e924
+constexpr float kRankScaleXCurve[kRankMedalCount][kRankScaleCurveFloats] = {
+    {0f,
+     0f,
+     166.66667f,
+     1.5f,
+     250f,
+     1f,
+     500f,
+     5f,
+     500f,
+     5f,
+     500f,
+     5f,
+     500f,
+     5f,
+     500f,
+     5f,
+     500f,
+     5f},
+    {250f,
+     0f,
+     416.66666f,
+     -1.5f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f},
+    {250f,
+     0f,
+     416.66666f,
+     -1.5f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f,
+     1250f,
+     -2f},
+    {250f,
+     0f,
+     416.66666f,
+     1.1f,
+     500f,
+     1f,
+     583.3333f,
+     1.05f,
+     633.3333f,
+     1f,
+     683.3333f,
+     1.02f,
+     716.6667f,
+     1f,
+     750f,
+     1.02f,
+     783.3333f,
+     1f},
+    {250f,
+     0f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f},
+    {250f,
+     0f,
+     416.66666f,
+     0.4f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f},
+    {250f,
+     0f,
+     416.66666f,
+     0.8f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f},
+};
+
+// @ghidraAddress 0x30eb1c
+constexpr float kRankScaleYCurve[kRankMedalCount][kRankScaleCurveFloats] = {
+    {0f,
+     0f,
+     166.66667f,
+     1.5f,
+     250f,
+     1f,
+     500f,
+     1f,
+     500f,
+     1f,
+     500f,
+     1f,
+     500f,
+     1f,
+     500f,
+     1f,
+     500f,
+     1f},
+    {250f,
+     0f,
+     416.66666f,
+     -1.5f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f},
+    {250f,
+     0f,
+     416.66666f,
+     -1.5f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f,
+     1250f,
+     -1.33f},
+    {250f,
+     0f,
+     416.66666f,
+     1.1f,
+     500f,
+     1f,
+     583.3333f,
+     1.05f,
+     633.3333f,
+     1f,
+     683.3333f,
+     1.02f,
+     716.6667f,
+     1f,
+     750f,
+     1.02f,
+     783.3333f,
+     1f},
+    {250f,
+     0f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f,
+     916.6667f,
+     0.5f},
+    {250f,
+     0f,
+     416.66666f,
+     0.4f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f,
+     916.6667f,
+     0.7f},
+    {250f,
+     0f,
+     416.66666f,
+     0.8f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f,
+     916.6667f,
+     1f},
+};
+
+// @ghidraAddress 0x30ed14
+constexpr float kRankAlphaCurve[kRankMedalCount][kRankAlphaCurveFloats] = {
+    {250f, 1f, 500f, 0f, 500f, 0f},
+    {250f, 1f, 1250f, 0f, 1250f, 0f},
+    {250f, 1f, 1250f, 0f, 1250f, 0f},
+    {0f, 1f, 16.666666f, 1f, 16.666666f, 1f},
+    {400f, 0f, 416.66666f, 1f, 916.6667f, 0f},
+    {400f, 0f, 416.66666f, 1f, 916.6667f, 0f},
+    {400f, 0f, 416.66666f, 1f, 916.6667f, 0f},
+};
+
+// @ghidraAddress 0x30edbc
+constexpr float kRankRotCurve[kRankMedalCount][kRankRotCurveFloats] = {
+    {0f, 0f, 16.666666f, 0f},
+    {250f, 0f, 1250f, 0.7853982f},
+    {250f, 0f, 1250f, 0.7853982f},
+    {0f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f},
+};
+
+// @ghidraAddress 0x30e87c
+constexpr float kRankOffsetYCurve[kRankMedalCount][kRankOffsetCurveFloats] = {
+    {0f, 0f, 16.666666f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f, 16.666666f, 0f},
+    {0f, 0f, 16.666666f, 0f, 16.666666f, 0f},
+    {250f, 0f, 916.6667f, -30f, 916.6667f, -30f},
+    {250f, 0f, 416.66666f, -50f, 916.6667f, -70f},
+    {250f, 0f, 416.66666f, -30f, 916.6667f, -50f},
+};
+
 // The six per-sprite scale curves (14 {time, value} pairs each). @ghidraAddress 0x30ee2c
 constexpr float kMissScaleCurve[kMissSpriteCount][kMissScaleCurveFloats] = {
     {350f,       0f,    516.6667f, 1.1f, 600f,       1f,    683.3333f,  1.05f, 733.3333f,  1f,
@@ -348,4 +691,63 @@ void ColetteThemeLayer::EmitFcMissSprites(int nSide) {
                  kMissBannerSlot,
                  &bannerPos,
                  static_cast<int>(flBannerAlpha * kFcAlphaByteScale));
+}
+
+/** @ghidraAddress 0x187b44 */
+void ColetteThemeLayer::EmitFcRankSprites(int nSide, int nColorVariant) {
+    // The medals only animate while the reveal clock is inside their window.
+    const float flClock = m_flGradeRevealClock;
+    if (flClock <= kRankWindowStart || flClock >= kRankWindowEnd) {
+        return;
+    }
+
+    // On the first frame inside the window, play the medal reveal sound once.
+    if (m_bGradeArmed) {
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kRankSoundEffect);
+        m_bGradeArmed = false;
+    }
+
+    const float flCurveScale = m_gradeChannel.GetCurrent();
+    const float flQuery = flClock + kRankTimerOffset;
+
+    for (int nMedal = 0; nMedal < kRankMedalCount; ++nMedal) {
+        const float flScaleX =
+            CalculateCurveInterpolation(kRankScaleXCurve[nMedal], kRankScaleCurvePairs, flQuery);
+        const float flScaleY =
+            CalculateCurveInterpolation(kRankScaleYCurve[nMedal], kRankScaleCurvePairs, flQuery);
+        const float flAlpha =
+            CalculateCurveInterpolation(kRankAlphaCurve[nMedal], kRankAlphaCurvePairs, flQuery);
+        float flRotation =
+            CalculateCurveInterpolation(kRankRotCurve[nMedal], kRankRotCurvePairs, flQuery);
+        const float flOffsetY =
+            CalculateCurveInterpolation(kRankOffsetYCurve[nMedal], kRankOffsetCurvePairs, flQuery);
+
+        S_VECTOR2 position{kRankMedalPlacement[nMedal].flX,
+                           (kRankMedalPlacement[nMedal].flBaseY - m_flHeight) + flOffsetY};
+        if (nSide == kSecondSide) {
+            position.y += kRankSecondSideShiftY;
+        } else if (nSide == 0) {
+            // The first side is mirrored: its X is negated, it is turned a half-turn, and its Y is
+            // reflected.
+            position.x = -position.x;
+            flRotation = static_cast<float>(static_cast<double>(flRotation) + kRankMirrorRotation);
+            position.y = kRankFirstSideReflectY - position.y;
+        }
+
+        // Two of the seven medals draw only for one colour variant; the rest always draw.
+        bool bEmit = true;
+        if (nMedal == kRankMedalVariantSkip1) {
+            bEmit = nColorVariant != 0;
+        } else if (nMedal == kRankMedalVariantSkip2) {
+            bEmit = nColorVariant != 1;
+        }
+        if (bEmit) {
+            EmitFcSprite(flScaleX,
+                         flScaleY,
+                         flRotation,
+                         kRankSpriteSlotBase + nMedal,
+                         &position,
+                         static_cast<int>(flAlpha * flCurveScale * kFcAlphaByteScale));
+        }
+    }
 }

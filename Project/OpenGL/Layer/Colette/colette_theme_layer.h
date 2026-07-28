@@ -112,6 +112,20 @@ private:
     void EmitFcMissSprites(int nSide);
 
     /**
+     * @brief Emits the seven curve-animated rank-medal sprites for one player side.
+     *
+     * Only runs while the grade-reveal clock is inside the medals' window; on the first such frame it
+     * plays the reveal sound once. Each of the seven medals is placed at its fixed column and base Y
+     * (offset by its own curve), sized and rotated and faded by its animation curves sampled at the
+     * windowed clock, and emitted through EmitFcSprite. The single-player mirror/shift layout applies
+     * as in the miss burst. Two medals draw only for a matching colour variant; the rest always draw.
+     * @param nSide The player side (0 or 1).
+     * @param nColorVariant The colour variant selecting which of the two conditional medals draws.
+     * @ghidraAddress 0x187b44
+     */
+    void EmitFcRankSprites(int nSide, int nColorVariant);
+
+    /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
      * @ghidraAddress 0x187484
      */
