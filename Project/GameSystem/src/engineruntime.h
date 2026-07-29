@@ -6,7 +6,11 @@
 
 #pragma once
 
+#include <stddef.h>
+
+#ifdef __OBJC__
 #import <Foundation/Foundation.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +21,7 @@ extern "C" {
  * @ghidraAddress 0x14992c
  */
 int GetClearRank(float achievementRate);
+#ifdef __OBJC__
 /**
  * @brief Builds the bundle image path for a customize asset of the given category and variant.
  *
@@ -37,6 +42,7 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
  * @ghidraAddress 0x550dc
  */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind);
+#endif
 /**
  * @brief Reloads every cached texture from its stored image name after a context loss.
  * @ghidraAddress 0x33e5c

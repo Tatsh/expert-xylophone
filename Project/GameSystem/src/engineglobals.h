@@ -6,12 +6,17 @@
 
 #pragma once
 
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#else
+#include <CoreGraphics/CoreGraphics.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifdef __OBJC__
 /**
  * @brief The per-difficulty minimum valid edited score (basic, medium, hard), used by the score
  * validator. Seeded once at startup by @c BuildGaugeThresholdArrays.
@@ -23,11 +28,13 @@ extern NSArray *g_pScoreMinThresholds;
  * @ghidraAddress 0x3de4a8
  */
 extern NSArray *g_pScoreMaxThresholds;
+#endif
 /**
  * @brief Seeds @c g_pScoreMinThresholds and @c g_pScoreMaxThresholds. Run once at startup.
  * @ghidraAddress 0x148a70
  */
 void BuildGaugeThresholdArrays(void);
+#ifdef __OBJC__
 /**
  * @brief The network API request-descriptor table, keyed by endpoint name (startup,
  * v3_ssl_resource, v3_packlist); each value is @c {method: GET, param: [target]}. Seeded once at
@@ -35,11 +42,13 @@ void BuildGaugeThresholdArrays(void);
  * @ghidraAddress 0x3dc270
  */
 extern NSDictionary *g_pApiRequestTable;
+#endif
 /**
  * @brief Seeds @c g_pApiRequestTable. Run once at startup.
  * @ghidraAddress 0x3394c
  */
 void InitializeApiRequestTable(void);
+#ifdef __OBJC__
 /**
  * @brief The macron-to-vowel katakana lookup table (89 entries): each katakana maps to its vowel-row
  * representative (ア, イ, ウ, エ, オ, or ン for @c ン), used to resolve a prolonged-sound mark to the
@@ -61,6 +70,7 @@ extern NSDictionary *g_pLowerToUpperTable;
  * @ghidraAddress 0x3dc268
  */
 extern NSDictionary *g_pVoiceToVoicelessTable;
+#endif
 /**
  * @brief Seeds the three katakana normalisation lookup tables (@c g_pLowerToUpperTable,
  * @c g_pMacronToVowelTable, and @c g_pVoiceToVoicelessTable). Run once at startup.
@@ -211,6 +221,7 @@ extern const double g_dSliderRowHeightWide;
  * @ghidraAddress 0x3df4f8
  */
 extern double g_dSliderRowHeight;
+#ifdef __OBJC__
 /**
  * @brief The cached opaque-white UI colour, seeded once at startup by @c InitializeUiColorConstants.
  * @ghidraAddress 0x3df560
@@ -227,6 +238,7 @@ extern UIColor *g_pCachedOffWhiteColor;
  * @ghidraAddress 0x3df570
  */
 extern UIColor *g_pCachedBlueColor;
+#endif
 /**
  * @brief The mascot message-balloon maximum width on the pad layout.
  * @ghidraAddress 0x2ee930
@@ -252,6 +264,7 @@ extern const float g_flFlashMinOpacity;
  * @ghidraAddress 0x2ec718
  */
 extern const double g_dAudioManagerResumeFadeInTime;
+#ifdef __OBJC__
 /**
  * @brief The localised "Delete" action-button title (pad layout).
  * @ghidraAddress 0x3cfbb0
@@ -429,6 +442,7 @@ extern NSString *g_pLocalizedUpdateToUnlockSong;   /*!< @ghidraAddress 0x3cfdf8 
 extern NSString *g_pLocalizedAppInstalledReward;   /*!< @ghidraAddress 0x3cfe00 */
 extern NSString *g_pLocalizedLimePointAddedFormat; /*!< @ghidraAddress 0x3cfe08 */
 extern NSString *g_pLocalizedSearchMusic;          /*!< "Search music". @ghidraAddress 0x3cfe10 */
+#endif
 /**
  * @brief Seeds every localised UI string global above from the main bundle's localisation table.
  * Run once at startup as a module initialiser.
@@ -445,12 +459,14 @@ void InitializeSliderHeightConstant(void);
  * @ghidraAddress 0x1d52a0
  */
 void InitializeUiColorConstants(void);
+#ifdef __OBJC__
 /**
  * @brief The dimming-cover overlay colour (black at half alpha), seeded by
  * @c InitializeUIColorPalette.
  * @ghidraAddress 0x3cff88
  */
 extern UIColor *g_pPaletteDimmingCoverColor;
+#endif
 // The per-channel palette colour components (each n/255), read by InitializeUIColorPalette. Doubles.
 extern const double g_PaletteColorGreenGrassRed;   /*!< @ghidraAddress 0x2ef5e8 */
 extern const double g_PaletteColorGreenGrassGreen; /*!< @ghidraAddress 0x2ef5f0 */
@@ -534,6 +550,7 @@ extern CGPoint g_extendNoteNumberOffsetPhone; /*!< @ghidraAddress 0x3dc2b0 */
  * @ghidraAddress 0x3d04c
  */
 void InitializeIdentityTransformGlobals(void);
+#ifdef __OBJC__
 /**
  * @brief The shared UI palette colours, indexed by the customise/playlist theme code.
  * @ghidraAddress 0x3cff90
@@ -553,6 +570,7 @@ extern UIColor *g_pPaletteLeafGreenColor3;  /*!< @ghidraAddress 0x3cffe8 */
 extern UIColor *g_pPaletteSteelBlueColor2;  /*!< @ghidraAddress 0x3cfff0 */
 extern UIColor *g_pPaletteGoldColor;        /*!< @ghidraAddress 0x3cfff8 */
 extern UIColor *g_pPaletteSteelBlueColor3;  /*!< @ghidraAddress 0x3d0000 */
+#endif
 /** @brief The 32-point shared layout metric. @ghidraAddress 0x2ee9b0 */
 extern const double g_dLayoutMetricThirtyTwo;
 
