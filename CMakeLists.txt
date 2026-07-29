@@ -127,6 +127,9 @@ add_subdirectory(Project)
 # progress overlay the unlock view uses. Both are ARC.
 set(_zip "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/SSZipArchive")
 set(_dap "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/DAProgressOverlayView")
+# UnZipArchive is the older Google Code "ziparchive" class the chart loader messages by name; it
+# builds against SSZipArchive's bundled minizip, which still provides the legacy unz/zip API.
+set(_uza "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/ziparchive")
 set(_minizip_sources
     "${_zip}/minizip/mz_compat.c"
     "${_zip}/minizip/mz_crypt.c"
@@ -145,9 +148,10 @@ set(_minizip_sources
     "${_zip}/minizip/mz_zip_rw.c")
 target_sources(rbplus PRIVATE
     "${_dap}/DAProgressOverlayView.m"
+    "${_uza}/UnZipArchive.mm"
     "${_zip}/SSZipArchive.m"
     ${_minizip_sources})
-target_include_directories(rbplus PRIVATE "${_zip}" "${_dap}")
+target_include_directories(rbplus PRIVATE "${_zip}" "${_dap}" "${_uza}")
 # The defines are SSZipArchive's own podspec set. minizip is vendored upstream C
 # we do not patch: pin it to gnu17 (C23 rejects some of its old constructs; this
 # per-source -std lands after the target-wide one, so it wins) and silence its
@@ -157,6 +161,7 @@ set(_minizip_defines "HAVE_INTTYPES_H;HAVE_PKCRYPT;HAVE_STDINT_H;HAVE_WZAES;HAVE
 set_source_files_properties(${_minizip_sources}
     PROPERTIES COMPILE_OPTIONS "-std=gnu17;-w" COMPILE_DEFINITIONS "${_minizip_defines}")
 set_source_files_properties("${_zip}/SSZipArchive.m" "${_dap}/DAProgressOverlayView.m"
+    "${_uza}/UnZipArchive.mm"
     PROPERTIES COMPILE_OPTIONS "-w" COMPILE_DEFINITIONS "${_minizip_defines}")
 
 # Compiler options as real -flags (not XCODE_ATTRIBUTE build settings) so they

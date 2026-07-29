@@ -195,15 +195,27 @@ extern int g_nGaugeTopBaseY;
 /** @brief The default-mode bottom-band gauge Y base. @ghidraAddress 0x3ce9a8 */
 extern int g_nGaugeBottomBaseY;
 /**
- * @brief The per-decode-type Blowfish key table shared with the chart loader.
+ * @brief One chart-decode entry: an obfuscated Blowfish key and its length in bytes.
+ *
+ * The keys are not NUL-terminated, so the length is carried alongside rather than measured. The
+ * binary lays the entries out on a 0x10 stride, the natural size of this structure.
+ */
+typedef struct ChartDecodeKey {
+    const char *pKey; // +0x00
+    int nLength;      // +0x08
+} ChartDecodeKey;
+
+/**
+ * @brief The per-decode-type Blowfish key table shared with the chart loader, indexed by the decode
+ * type. Only decode types 0 and 1 exist; the chart loader rejects anything higher.
  * @ghidraAddress 0x35b7c8
  */
-extern const char *const kChartDecodeKeys[];
+extern const ChartDecodeKey kChartDecodeKeys[];
+
 /**
- * @brief The per-decode-type Blowfish key lengths that pair with @c kChartDecodeKeys.
- * @ghidraAddress 0x35b7d0
+ * @brief The number of decode types @c kChartDecodeKeys carries.
  */
-extern const int kChartDecodeKeyLengths[];
+enum { kChartDecodeKeyCount = 2 };
 
 /**
  * @brief A shared layout metric of 100 points used across the customize and store screens.
@@ -254,6 +266,22 @@ extern const double g_dMascotMessageMaxWidthPhone;
  * @ghidraAddress 0x2ec6a0
  */
 extern const double g_dTranslucentAlpha;
+/**
+ * @brief The mascot slide-in/out move animation duration, in seconds.
+ * @ghidraAddress 0x2ec6a8
+ */
+extern const double g_dMascotMoveAnimDuration;
+/**
+ * @brief The mascot message-balloon fade animation duration, in seconds, reused as the shared
+ * translucent-cover white value.
+ * @ghidraAddress 0x2eedc0
+ */
+extern const double g_dMascotMessageAnimDuration;
+/**
+ * @brief The default explosion customize-effect size scale.
+ * @ghidraAddress 0x2ef17c
+ */
+extern const float g_flDefaultExplosionEffectSize;
 /**
  * @brief The shared minimum flash opacity, reused as the store BGM push/pop fade duration.
  * @ghidraAddress 0x2ec6b4

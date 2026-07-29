@@ -30,8 +30,8 @@ extern const CGFloat g_dTranslucentAlpha;             // @ghidraAddress 0x2ec6a0
 extern const CGFloat g_dAudioManagerResumeFadeInTime; // @ghidraAddress 0x2ec718 (0.3)
 extern const float g_flFlashMinOpacity;               // @ghidraAddress 0x2ec6b4 (0.0)
 
-// The store loading-label text, defined in the store page module. @ghidraAddress 0x3cfca8
-extern NSString *const g_pStoreLoadingTitle;
+// The shared localised "Loading..." string seeded at startup. @ghidraAddress 0x3cfca8
+extern NSString *g_pLocalizedLoadingMixed;
 
 // The sample-download and playback state machine held in the (non-property) sampleStatus ivar.
 typedef enum {
@@ -213,11 +213,11 @@ static const CGFloat kFullAlpha = 1.0;
                                                              g_dPopupBaseOriginYWide)];
         self.artworkView = artwork;
         self.artworkView.layer.borderWidth = kArtworkBorderWidth;
-        self.artworkView.layer.borderColor = (__bridge id)UIColor.whiteColor.CGColor;
+        self.artworkView.layer.borderColor = UIColor.whiteColor.CGColor;
         self.artworkView.backgroundColor = UIColor.whiteColor;
         self.artworkView.layer.shadowOffset =
             CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
-        self.artworkView.layer.shadowColor = (__bridge id)UIColor.blackColor.CGColor;
+        self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
         self.artworkView.layer.shadowOpacity = g_dRBWebViewGrayViewWhite;
         self.artworkView.layer.shadowRadius = kArtworkShadowRadius;
         self.artworkView.layer.shouldRasterize = YES;
@@ -338,8 +338,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.detailView.decelerationRate = UIScrollViewDecelerationRateFast;
         self.detailView.bouncesZoom = NO;
         self.detailView.layer.borderColor =
-            (__bridge id)[UIColor colorWithWhite:g_dAudioManagerResumeFadeInTime alpha:kFullAlpha]
-                .CGColor;
+            [UIColor colorWithWhite:g_dAudioManagerResumeFadeInTime alpha:kFullAlpha].CGColor;
 
         StoreImageView *banner = [[StoreImageView alloc] initWithFrame:CGRectZero];
         self.bannerView = banner;
@@ -394,7 +393,7 @@ static const CGFloat kFullAlpha = 1.0;
                                                           alpha:g_dAudioManagerResumeFadeInTime];
         self.labelLoading.shadowOffset = CGSizeMake(0, -kInnerPanelShadowOffset);
         self.labelLoading.textAlignment = NSTextAlignmentCenter;
-        self.labelLoading.text = g_pStoreLoadingTitle;
+        self.labelLoading.text = g_pLocalizedLoadingMixed;
         self.labelLoading.center = CGPointMake(kDescriptionWidth * 0.5,
                                                g_dSliderRowHeightWide * 0.5 + kLoadingLabelOffsetY);
 

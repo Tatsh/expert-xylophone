@@ -296,8 +296,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
         return nil;
     }
     NSMutableData *decoded = [MusicData decodeBF:data
-                                             Key:kChartDecodeKeys[decodeType]
-                                       KeyLength:kChartDecodeKeyLengths[decodeType]];
+                                             Key:kChartDecodeKeys[decodeType].pKey
+                                       KeyLength:kChartDecodeKeys[decodeType].nLength];
     [archive closeFile];
     return decoded;
 }

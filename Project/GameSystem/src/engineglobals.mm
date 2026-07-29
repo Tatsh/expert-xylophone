@@ -55,6 +55,41 @@ const double g_PaletteColorGoldRed = 0.89803922176361084;
 const double g_PaletteColorGoldGreen = 0.71764707565307617;
 const double g_PaletteColorGoldBlue = 0.19215686619281769;
 
+// The shared layout metrics and timings the UI code reads. Each value is transcribed from the
+// binary's read-only data at the address in its comment.
+const double g_dTranslucentAlpha = 0.800000011920929;
+const double g_dMascotMoveAnimDuration = 0.10000000149011612;
+const double g_dMascotMessageAnimDuration = 0.20000000298023224;
+const float g_flFlashMinOpacity = 0.20000000298023224f;
+const double g_dCustomizeLayoutMetric100 = 100.0;
+const double g_dAudioManagerResumeFadeInTime = 0.30000001192092896;
+const double g_dMascotMessageMaxWidthPad = 300.0;
+const double g_dMascotMessageMaxWidthPhone = 200.0;
+const double g_dSliderRowHeightWide = 40.0;
+const double g_dLayoutMetricThirtyTwo = 32.0;
+const float g_flDefaultExplosionEffectSize = 0.8999999761581421f;
+
+// The device screen height in points, seeded by the play-field layout pass.
+int g_nVariantScreenHeight;
+
+// The two obfuscated Blowfish chart keys, transcribed verbatim from 0x2fcf50 and 0x2fcf6a. They are
+// stored back to back and are not NUL-terminated, so each carries its length in the table below.
+static const char kChartDecodeKeyType0[] = {
+    0x4b, 0x6e, 0x6c, 0x5e, 0x69, 0x64, 0x1a, 0x4b, 0x5d, 0x5d, 0x62, 0x5a, 0x57,
+    0x35, 0x57, 0x52, 0x64, 0x0f, 0x34, 0x5c, 0x5e, 0x0b, 0x53, 0x38, 0x3b, 0x15,
+};
+static const char kChartDecodeKeyType1[] = {
+    0x4b, 0x6e, 0x6c, 0x5e, 0x69, 0x64, 0x1a, 0x4b, 0x5d, 0x5d, 0x62,
+    0x5a, 0x57, 0x35, 0x57, 0x52, 0x64, 0x5f, 0x5a, 0x62, 0x5f, 0x19,
+};
+
+// The per-decode-type key table at 0x35b7c8: each entry pairs a key with its length, laid out on
+// the binary's 0x10 stride.
+const ChartDecodeKey kChartDecodeKeys[] = {
+    {kChartDecodeKeyType0, static_cast<int>(sizeof(kChartDecodeKeyType0))},
+    {kChartDecodeKeyType1, static_cast<int>(sizeof(kChartDecodeKeyType1))},
+};
+
 // The gauge-parts scale table, seeded by InitializeGaugeAngleTable.
 float g_aGaugePartsScale[3];
 

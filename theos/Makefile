@@ -14,6 +14,7 @@ ReflecBeatPlus_FILES = $(shell find $(PROJECT_ROOT)/Project \
                            \( -name '*.m' -o -name '*.mm' -o -name '*.c' -o -name '*.cpp' \)) \
                        $(PROJECT_ROOT)/3rdparty/DAProgressOverlayView/DAProgressOverlayView.m \
                        $(PROJECT_ROOT)/3rdparty/SSZipArchive/SSZipArchive.m \
+                       $(PROJECT_ROOT)/3rdparty/ziparchive/UnZipArchive.mm \
                        $(wildcard $(PROJECT_ROOT)/3rdparty/SSZipArchive/minizip/*.c)
 
 ReflecBeatPlus_WARNINGS = -Wall -Wextra -Wshadow -Wcomma -Wnewline-eof -Wpointer-arith \
@@ -28,7 +29,8 @@ ReflecBeatPlus_CFLAGS  = -std=gnu2x -ftrivial-auto-var-init=zero -fobjc-arc -fob
                          -I$(PROJECT_ROOT)/Project \
                          $(addprefix -I,$(shell find $(PROJECT_ROOT)/Project -type d)) \
                          -I$(PROJECT_ROOT)/3rdparty/DAProgressOverlayView \
-                         -I$(PROJECT_ROOT)/3rdparty/SSZipArchive
+                         -I$(PROJECT_ROOT)/3rdparty/SSZipArchive \
+                         -I$(PROJECT_ROOT)/3rdparty/ziparchive
 ReflecBeatPlus_CCFLAGS = -std=gnu++2b -stdlib=libc++ -fno-char8_t \
                          -D_LIBCPP_ENABLE_ASSERTIONS=1 \
                          -Woverloaded-virtual -Wnon-virtual-dtor \
@@ -40,6 +42,7 @@ $(PROJECT_ROOT)/3rdparty/SSZipArchive/SSZipArchive.m_CFLAGS = $(MINIZIP_DEFINES)
 $(foreach _mz,$(wildcard $(PROJECT_ROOT)/3rdparty/SSZipArchive/minizip/*.c),\
     $(eval $(_mz)_CFLAGS = -std=gnu17 $(MINIZIP_DEFINES) -w))
 $(PROJECT_ROOT)/3rdparty/DAProgressOverlayView/DAProgressOverlayView.m_CFLAGS = -w
+$(PROJECT_ROOT)/3rdparty/ziparchive/UnZipArchive.mm_CFLAGS = $(MINIZIP_DEFINES) -w
 
 ReflecBeatPlus_FRAMEWORKS = UIKit Foundation CoreFoundation CoreGraphics CoreImage QuartzCore \
                             OpenGLES AudioToolbox AVFoundation OpenAL CoreData StoreKit Social \

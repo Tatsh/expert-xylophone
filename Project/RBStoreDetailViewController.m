@@ -25,6 +25,8 @@
 // animation duration doubles as the loading label's text-white component.
 extern const double g_dMascotMessageMaxWidthPad;  // @ghidraAddress 0x2ee930 (300.0)
 extern const double g_dMascotMessageAnimDuration; // @ghidraAddress 0x2eedc0 (0.2)
+// The shared localised "Loading..." store title.
+extern NSString *g_pLocalizedLoadingMixed; // @ghidraAddress 0x3cfca8
 
 // The pack detail table cell reuse identifiers.
 static NSString *const kMusicCellID = @"StoreDetailTableMusicCell";
@@ -163,7 +165,7 @@ static const int kNoExtendNotePid = -1;
         bounds.size.width * kCenterScale,
         (CGFloat)((int)(bounds.size.height * kCenterScale) + (int)kLoadingLabelCenterDrop));
     loading.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    loading.text = g_pStoreLoadingTitle;
+    loading.text = g_pLocalizedLoadingMixed;
     loading.hidden = YES;
     [self.view addSubview:loading];
     self.accessingLabel = loading;
