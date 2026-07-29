@@ -1251,6 +1251,271 @@ enum ShotColor {
 };
 } // namespace
 
+namespace {
+
+// The bounce-band lookup tables. Each maps a bounce position in [0, 6] onto the play-field band its
+// bounce point takes; the reflect route's lane table is instead indexed by the record's display
+// lane. @ghidraAddress 0x308bb4, 0x308bd0, 0x308bec, 0x308c08
+constexpr int kSingleBounceBandMap[] = {-2, -2, -1, 0, 1, 2, 2};
+constexpr int kDoubleBounceBandMap[] = {0, 0, 1, 1, 1, 2, 2};
+constexpr int kReflectBounceBandMap[] = {-2, -1, -1, 0, 1, 1, 2};
+constexpr int kReflectLaneBandMap[] = {-2, 0, 2};
+
+// The band each route kind measures its bounce from, and the range it clamps the result into before
+// asking for that band's Y bound.
+constexpr int kSingleBounceBaseBand = 3;
+constexpr int kSingleBounceMinBand = 2;
+constexpr int kSingleBounceMaxBand = 5;
+constexpr int kReflectBounceBaseBand = 2;
+constexpr int kReflectBounceMinBand = 1;
+constexpr int kReflectBounceMaxBand = 4;
+constexpr int kDoubleBounceMinBand = 0;
+constexpr int kDoubleBounceMaxBand = 7;
+
+// The double bounce's second point sits a fixed step past the first, and a forward shot mirrors a
+// lane or band through the middle of the seven bounce positions.
+constexpr int kDoubleBounceSecondStep = 5;
+constexpr int kBounceMirrorSpan = 6;
+
+// The bounce band a note takes on its own play side, and on the other one.
+constexpr int kBounceBandPlaySide = 6;
+constexpr int kBounceBandOtherSide = 3;
+
+// The display lane a note with no chart record falls back to, and the marker the other side takes.
+constexpr int kRouteLaneOwnSide = 3;
+constexpr int kRouteLaneNone = -1;
+
+// The two route kinds SetRoute lays out. A synthetic note on the other play side has no route kind
+// and takes the third value, which the binary asserts on.
+constexpr int kRouteKindPlain = 0;
+constexpr int kRouteKindReflect = 1;
+constexpr int kRouteKindNone = 3;
+
+// A route with n bounces fills n + 2 nodes: the spawn point, one per bounce, and the target line.
+constexpr int kRouteEndpointCount = 2;
+
+// The route never builds a segment past the third node.
+constexpr int kRouteMaxSegmentCount = 3;
+
+// The size of the whole waypoint block, cleared in one span.
+constexpr int kWaypointBlockSize = kWaypointBlockNodeCount * static_cast<int>(sizeof(WaypointNode));
+
+int ClampBounceBand(int nBand, int nMin, int nMax) {
+    if (nBand > nMax) {
+        return nMax;
+    }
+    return nBand < nMin ? nMin : nBand;
+}
+
+// The route writes a node's start coordinate only when that node is within the live part of the
+// block. Every guarded write in the route passes takes this shape.
+void SetNodeStartX(WaypointNode *pBlock, int nIndex, int nLiveCount, float flX) {
+    if (nIndex < nLiveCount) {
+        pBlock[nIndex].startPos.x = flX;
+    }
+}
+
+void SetNodeStartY(WaypointNode *pBlock, int nIndex, int nLiveCount, float flY) {
+    if (nIndex < nLiveCount) {
+        pBlock[nIndex].startPos.y = flY;
+    }
+}
+
+} // namespace
+
+/** @ghidraAddress 0x13498c */
+void NoteModel::BuildRouteWaypoints(int nRouteKind) {
+    const int nLiveCount = m_nWaypointCount + kRouteEndpointCount;
+    // The bounce bands are keyed off the play side, and the lane off the chart record; a synthetic
+    // note falls back to its own-side lane. The binary re-derives both inline at every use.
+    const int nBand = IsOnPlaySide() != 0 ? kBounceBandPlaySide : kBounceBandOtherSide;
+    const int nLane = m_pRecord != nullptr ? m_pRecord->GetDisplayLane() :
+                                             (m_bOwnSide ? kRouteLaneOwnSide : kRouteLaneNone);
+    const GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const float flInsetHalfX = pGameSystem->GetSheetInsetHalfX();
+    const float flInsetHalfY = pGameSystem->GetSheetInsetHalfY();
+
+    // The Y pass. A reflect note bounces once off a band derived from its lane; a plain note
+    // bounces once or twice depending on the magnitude of its shot direction.
+    if (nRouteKind == kRouteKindReflect) {
+        assert(m_nDirectionSign >= -1 && m_nDirectionSign <= 1);
+        if (m_nDirectionSign != 0) {
+            const int nRawBand = m_nDirectionSign < 0 ?
+                                     (kReflectLaneBandMap[nLane] + kReflectBounceBaseBand) -
+                                         kReflectBounceBandMap[nBand] :
+                                     (kReflectBounceBaseBand - kReflectLaneBandMap[nLane]) +
+                                         kReflectBounceBandMap[nBand];
+            const int nBounceBand =
+                ClampBounceBand(nRawBand, kReflectBounceMinBand, kReflectBounceMaxBand);
+            SetNodeStartY(m_aWaypointBlock, 0, nLiveCount, m_basePos.y);
+            SetNodeStartY(
+                m_aWaypointBlock, 1, nLiveCount, GetVirtualBoundY(nBounceBand) * flInsetHalfY);
+            SetNodeStartY(m_aWaypointBlock, 2, nLiveCount, GetTargetLineY());
+        } else {
+            SetNodeStartY(m_aWaypointBlock, 0, nLiveCount, m_basePos.y);
+            SetNodeStartY(m_aWaypointBlock, 1, nLiveCount, GetTargetLineY());
+        }
+    } else {
+        assert(nRouteKind == kRouteKindPlain);
+        switch (m_nDirectionSign) {
+        case 0:
+            SetNodeStartY(m_aWaypointBlock, 0, nLiveCount, m_basePos.y);
+            SetNodeStartY(m_aWaypointBlock, 1, nLiveCount, GetTargetLineY());
+            break;
+        case -1:
+        case 1: {
+            const int nRawBand = m_nDirectionSign < 0 ?
+                                     (kSingleBounceBaseBand - kSingleBounceBandMap[nLane]) +
+                                         kSingleBounceBandMap[nBand] :
+                                     (kSingleBounceBandMap[nLane] + kSingleBounceBaseBand) -
+                                         kSingleBounceBandMap[nBand];
+            const int nBounceBand =
+                ClampBounceBand(nRawBand, kSingleBounceMinBand, kSingleBounceMaxBand);
+            // The binary seeds all three nodes with the base Y, writes node 0 a second time, then
+            // overwrites nodes 1 and 2. The repeat is kept for fidelity.
+            for (int i = 0; i < kRouteMaxSegmentCount; ++i) {
+                SetNodeStartY(m_aWaypointBlock, i, nLiveCount, m_basePos.y);
+            }
+            SetNodeStartY(m_aWaypointBlock, 0, nLiveCount, m_basePos.y);
+            SetNodeStartY(
+                m_aWaypointBlock, 1, nLiveCount, GetVirtualBoundY(nBounceBand) * flInsetHalfY);
+            SetNodeStartY(m_aWaypointBlock, 2, nLiveCount, GetTargetLineY());
+            break;
+        }
+        case -2:
+        case 2: {
+            // A double bounce takes one band from the play side and one from the lane; a forward
+            // shot mirrors both through the middle bounce position.
+            int anRawBands[2];
+            if (m_nDirectionSign < 0) {
+                anRawBands[0] = kDoubleBounceBandMap[nBand];
+                anRawBands[1] = kDoubleBounceBandMap[nLane] + kDoubleBounceSecondStep;
+            } else {
+                anRawBands[0] = kDoubleBounceBandMap[kBounceMirrorSpan - nBand];
+                anRawBands[1] =
+                    kDoubleBounceBandMap[kBounceMirrorSpan - nLane] + kDoubleBounceSecondStep;
+            }
+            for (int i = 0; i < 2; ++i) {
+                const int nBounceBand =
+                    ClampBounceBand(anRawBands[i], kDoubleBounceMinBand, kDoubleBounceMaxBand);
+                SetNodeStartY(m_aWaypointBlock,
+                              i + 1,
+                              nLiveCount,
+                              GetVirtualBoundY(nBounceBand) * flInsetHalfY);
+            }
+            SetNodeStartY(m_aWaypointBlock, 0, nLiveCount, m_basePos.y);
+            SetNodeStartY(m_aWaypointBlock, 3, nLiveCount, GetTargetLineY());
+            break;
+        }
+        default:
+            assert(false);
+            break;
+        }
+    }
+
+    // The X pass. Every route starts at the base position and ends on its lane; each bounce in
+    // between is thrown at an alternating field edge.
+    assert(nRouteKind != kRouteKindReflect || (m_nDirectionSign >= -1 && m_nDirectionSign <= 1));
+    SetNodeStartX(m_aWaypointBlock, 0, nLiveCount, m_basePos.x);
+    switch (m_nDirectionSign) {
+    case 0:
+        SetNodeStartX(m_aWaypointBlock, 1, nLiveCount, GetLaneX());
+        break;
+    case 1:
+        SetNodeStartX(m_aWaypointBlock, 1, nLiveCount, flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 2, nLiveCount, GetLaneX());
+        break;
+    case -1:
+        SetNodeStartX(m_aWaypointBlock, 1, nLiveCount, -flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 2, nLiveCount, GetLaneX());
+        break;
+    case 2:
+        SetNodeStartX(m_aWaypointBlock, 1, nLiveCount, flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 2, nLiveCount, -flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 3, nLiveCount, GetLaneX());
+        break;
+    case -2:
+        SetNodeStartX(m_aWaypointBlock, 1, nLiveCount, -flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 2, nLiveCount, flInsetHalfX);
+        SetNodeStartX(m_aWaypointBlock, 3, nLiveCount, GetLaneX());
+        break;
+    default:
+        assert(false);
+        break;
+    }
+}
+
+/** @ghidraAddress 0x13498c */
+void NoteModel::FinishRoute() {
+    // Each node's end position becomes the offset to the next node, and its length that offset's
+    // magnitude.
+    float flTotalLength = 0.0f;
+    for (int i = 0; i <= m_nWaypointCount && i < kRouteMaxSegmentCount; ++i) {
+        WaypointNode &node = m_aWaypointBlock[i];
+        node.endPos = m_aWaypointBlock[i + 1].startPos;
+        SubtractVector2(&node.endPos, &node.startPos);
+        node.flLength = Vector2Length(&node.endPos);
+        flTotalLength += node.flLength;
+    }
+
+    // The path is walked at one speed from the spawn time to the hit time, so each segment's share
+    // of the total length is its share of that span.
+    const float flHitTime = GetHitTime();
+    if (m_nWaypointCount + kRouteEndpointCount > 0) {
+        m_aWaypointBlock[0].flStartTime = m_flSpawnTime;
+    }
+    if (m_nWaypointCount >= 0) {
+        const float flSpeed = flTotalLength / (flHitTime - m_flSpawnTime);
+        for (int i = 0; i <= m_nWaypointCount && i < kRouteMaxSegmentCount; ++i) {
+            WaypointNode &node = m_aWaypointBlock[i];
+            // Scaling the segment delta by speed over length turns it into the segment's velocity.
+            ScaleVector2(&node.endPos, flSpeed / node.flLength);
+            m_aWaypointBlock[i + 1].flStartTime = node.flStartTime + node.flLength / flSpeed;
+        }
+    }
+
+    // The node past the last bounce starts at the hit time. The binary folds both bounds into one
+    // unsigned compare, and recomputes the hit time here rather than reusing the value above.
+    const int nFinalNode = m_nWaypointCount + 1;
+    if (nFinalNode >= 0 && nFinalNode < kWaypointBlockNodeCount) {
+        m_aWaypointBlock[nFinalNode].flStartTime = flHitTime;
+    }
+
+    if (m_pCurrentWaypoint != nullptr) {
+        m_velocity = m_pCurrentWaypoint->endPos;
+    }
+}
+
+/** @ghidraAddress 0x13498c */
+void NoteModel::SetRoute() {
+    memset(m_aWaypointBlock, 0, kWaypointBlockSize);
+
+    if (m_pRecord != nullptr && !m_pRecord->GetChainLink().IsHead()) {
+        // A note partway along a chain copies its head note's route outright rather than deriving
+        // its own; the chain-link block's chain id doubles as the head note's index.
+        NoteModel *const pHead = m_pSheet->FindNoteByIndex(m_pRecord->GetChainLink().GetChainId());
+        if (pHead != nullptr) {
+            m_nDirectionSign = pHead->m_nDirectionSign;
+            m_nWaypointCount = pHead->m_nWaypointCount;
+            const int nHeadLiveCount = pHead->m_nWaypointCount + kRouteEndpointCount;
+            for (int i = 0; i < m_nWaypointCount + kRouteEndpointCount; ++i) {
+                if (i < kWaypointBlockNodeCount && i < nHeadLiveCount) {
+                    m_aWaypointBlock[i].startPos = pHead->m_aWaypointBlock[i].startPos;
+                }
+            }
+        }
+    } else {
+        // A head note takes its record's hold kind; a synthetic note routes as a plain note on its
+        // own side, and has no route at all on the other one.
+        const int nRouteKind = m_pRecord != nullptr ?
+                                   m_pRecord->GetHoldKind() :
+                                   (m_bOwnSide ? kRouteKindPlain : kRouteKindNone);
+        BuildRouteWaypoints(nRouteKind);
+    }
+
+    FinishRoute();
+}
+
 /** @ghidraAddress 0x1335ec */
 void NoteModel::SetShotDirection(int nDirection) {
     const float flSpawnTime =
@@ -2005,9 +2270,6 @@ constexpr int kSlideKindTerminal = 3;
 
 // The active-segment index sentinel meaning "none".
 constexpr int kActiveIndexNone = -1;
-
-// The size of the whole waypoint block, cleared in one span.
-constexpr int kWaypointBlockSize = kWaypointBlockNodeCount * static_cast<int>(sizeof(WaypointNode));
 
 // The game types whose rival side is drawn: the versus type, and the replay type.
 constexpr int kGameTypeVersus = 1;

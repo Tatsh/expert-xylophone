@@ -353,8 +353,13 @@ public:
     void ResetPlayState();
 
     /**
-     * @brief Sets the note's spawn geometry and route for the coming play, then propagates the same
-     * position, spawn time, and route along the note's linked chain. Reconstruction pending.
+     * @brief Lays out the note's path through the waypoint block for the coming play.
+     *
+     * Clears the block, then fills the start position of each live node. A note partway along a
+     * chain copies its head note's route outright; any other note derives its own from its hold
+     * kind, shot direction, display lane, and play side: the spawn point, one bounce point per unit
+     * of shot direction, and the target line. The segment deltas, lengths, and node start times are
+     * then resolved so the whole path is traversed at one speed between the spawn and hit times.
      * @ghidraAddress 0x13498c
      */
     void SetRoute();
@@ -557,6 +562,29 @@ public:
     static constexpr int kColorLockThreshold = 3;
 
 private:
+    /**
+     * @brief Fills the live waypoint nodes' start positions for a note that derives its own route.
+     *
+     * The Y pass places the spawn point, the bounce points (whose play-field bands come from the
+     * note's display lane and play side) and the target line; the X pass then places the same nodes
+     * across the field, alternating field edges for each bounce. The binary inlines this into
+     * @c SetRoute; it is split out only to keep the two passes legible.
+     * @param nRouteKind The route kind: the plain note or the reflect note.
+     * @ghidraAddress 0x13498c
+     */
+    void BuildRouteWaypoints(int nRouteKind);
+
+    /**
+     * @brief Resolves the laid-out route into per-segment deltas, lengths, and node start times.
+     *
+     * Each node's end position becomes the offset to the next node and its length that offset's
+     * magnitude; the path is then traversed at one speed between the spawn and hit times, which
+     * turns each end position into a velocity and gives each node its start time. The binary inlines
+     * this into @c SetRoute.
+     * @ghidraAddress 0x13498c
+     */
+    void FinishRoute();
+
     /**
      * @brief Returns the current play-field judge clock: the play time scaled to the chart's
      * millisecond range and offset by the lead-in.
