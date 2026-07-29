@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class RBMusicView;
+@class RBMenuView;
 @class RBSettingMenuButton;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The music-select view that presents this overlay.
  */
-@property(weak, nonatomic, nullable) RBMusicView *parentView;
+@property(weak, nonatomic, nullable) RBMenuView *parentView;
 
 /**
  * @brief The themed panel that holds the menu buttons.

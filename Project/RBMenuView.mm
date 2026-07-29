@@ -1560,8 +1560,7 @@ static BOOL g_bRandamIntSeeded = NO;
         RBSettingView *view = [[RBSettingView alloc] initWithFrame:self.bounds
                                                        ButtonFrame:buttonFrame];
         self.settingView = view;
-        self.settingView.parentView =
-            reinterpret_cast<RBMusicView *>(self); // The binary treats self as RBMusicView here.
+        self.settingView.parentView = self;
         [self addSubview:self.settingView];
         [self addSubview:self.settingButton];
         [self addSubview:self.coverView];
