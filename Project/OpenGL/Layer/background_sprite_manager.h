@@ -65,7 +65,13 @@ public:
 
     /**
      * @brief Advances the play-field zoom animation by one frame and emits its background sprite
-     * instances. Reconstruction pending.
+     * instances.
+     *
+     * Clears the three instancers, then (while active) advances the effect clock, retiring the
+     * effect once it reaches its duration. Otherwise it lays the effect out around the viewport
+     * centre and emits three groups: two expanding bursts and a halo on the first instancer, a
+     * curve-driven row of eleven sprites on the second, and the same row again on the third as a
+     * static ghost sampled at time zero.
      * @param flDelta The elapsed frame count.
      * @ghidraAddress 0x10a950
      */
@@ -109,7 +115,8 @@ private:
     bool m_bActive = {};                        // +0x35: whether the manager's animation is active.
     // +0x36..+0x37 is alignment padding before the frame counter.
     // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
-    int m_nFrameCounter = {};            // +0x38: the animation frame counter, reset on activation.
+    float m_flTimer = {}; // +0x38: the zoom effect's accumulated time, reset on activation and
+    //        advanced by the frame delta until it reaches the effect duration.
     unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };
 
