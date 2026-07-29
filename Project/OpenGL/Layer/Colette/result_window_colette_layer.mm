@@ -1527,9 +1527,13 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
                                                              bool bWideLeading,
                                                              bool bLeftPad,
                                                              unsigned int nAlpha,
+                                                             float flRotation,
                                                              float flRed,
                                                              float flGreen,
                                                              float flBlue) {
+    // The rotation argument is accepted and never read: every glyph below emits upright.
+    (void)flRotation;
+
     // Draws one phone glyph at the cursor through the coloured glyph path, then reports its measured
     // width so the caller can advance the cursor.
     const auto drawGlyph =
@@ -1974,9 +1978,13 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                                               bool bWideLeading,
                                                               bool bLeftPad,
                                                               unsigned int nAlpha,
+                                                              float flRotation,
                                                               float flRed,
                                                               float flGreen,
                                                               float flBlue) {
+    // The rotation argument is accepted and never read: every digit below emits upright.
+    (void)flRotation;
+
     // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
     int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;

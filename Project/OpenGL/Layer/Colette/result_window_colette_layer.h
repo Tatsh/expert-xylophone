@@ -354,6 +354,8 @@ private:
      * standalone prefix glyphs (a single flag gating the whole prefix path).
      * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
      * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRotation The glyph rotation, in radians. Accepted but ignored: the proportional
+     * digits always emit upright, so every call site passes zero.
      * @param flRed The red colour channel.
      * @param flGreen The green colour channel.
      * @param flBlue The blue colour channel.
@@ -366,6 +368,7 @@ private:
                                         bool bWideLeading,
                                         bool bLeftPad,
                                         unsigned int nAlpha,
+                                        float flRotation,
                                         float flRed,
                                         float flGreen,
                                         float flBlue);
@@ -426,6 +429,8 @@ private:
      * @param bWideLeading Whether to draw the wider leading-digit variant with its prefix glyphs.
      * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
      * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRotation The glyph rotation, in radians. Accepted but ignored: the proportional
+     * phone glyphs always emit upright, so every call site passes zero.
      * @param flRed The red colour channel.
      * @param flGreen The green colour channel.
      * @param flBlue The blue colour channel.
@@ -438,6 +443,7 @@ private:
                                        bool bWideLeading,
                                        bool bLeftPad,
                                        unsigned int nAlpha,
+                                       float flRotation,
                                        float flRed,
                                        float flGreen,
                                        float flBlue);
