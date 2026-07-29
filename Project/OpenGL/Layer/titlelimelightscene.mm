@@ -506,3 +506,90 @@ void TitleLimelightScene::RenderParticleBurst(float flTime) {
 }
 
 } // namespace rb
+
+namespace {
+
+// The hidden-code sound effect, and the value the completed code rewinds the fade timer to.
+constexpr int kSoundEffectTitleSecret = 0xd;
+constexpr int kSecretReplayTimerValue = 0x24fa;
+
+// The inputs the hidden-code sequence accepts.
+enum TitleSwipeInput {
+    kTitleSwipeUp = 0,      // An upward flick.
+    kTitleSwipeDown = 1,    // A downward flick.
+    kTitleSwipeLeft = 2,    // A leftward flick.
+    kTitleSwipeRight = 3,   // A rightward flick.
+    kTitleSwipeButtonA = 4, // The "A" confirm input that completes the sequence.
+    kTitleSwipeButtonB = 5, // The "B" input, the penultimate step.
+};
+
+// How far through the sequence the player has got.
+enum TitleSwipeStep {
+    kSwipeStepNone = 0,      // No input entered yet.
+    kSwipeStepUp1 = 1,       // First up entered.
+    kSwipeStepUp2 = 2,       // Second up entered.
+    kSwipeStepDown1 = 3,     // First down entered.
+    kSwipeStepDown2 = 4,     // Second down entered.
+    kSwipeStepLeft1 = 5,     // First left entered.
+    kSwipeStepRight1 = 6,    // First right entered.
+    kSwipeStepLeft2 = 7,     // Second left entered.
+    kSwipeStepRight2 = 8,    // Second right entered.
+    kSwipeStepButtonB = 9,   // B entered; the next A completes the sequence.
+    kSwipeStepComplete = 10, // The sequence completed.
+};
+
+} // namespace
+
+/** @ghidraAddress 0x1549b8 */
+void TitleLimelightScene::AdvanceSwipeState(int nSwipeEvent) {
+    switch (nSwipeEvent) {
+    case kTitleSwipeUp:
+        if (m_nSwipeState != kSwipeStepUp1) {
+            if (m_nSwipeState != kSwipeStepNone) {
+                return;
+            }
+            m_nSwipeState = kSwipeStepUp1;
+        }
+        m_nSwipeState = kSwipeStepUp2;
+        return;
+    case kTitleSwipeDown:
+        if (m_nSwipeState != kSwipeStepDown1) {
+            if (m_nSwipeState != kSwipeStepUp2) {
+                return;
+            }
+            m_nSwipeState = kSwipeStepDown1;
+        }
+        m_nSwipeState = kSwipeStepDown2;
+        return;
+    case kTitleSwipeLeft:
+        if (m_nSwipeState == kSwipeStepRight1) {
+            m_nSwipeState = kSwipeStepLeft2;
+        } else if (m_nSwipeState == kSwipeStepDown2) {
+            m_nSwipeState = kSwipeStepLeft1;
+        }
+        return;
+    case kTitleSwipeRight:
+        if (m_nSwipeState == kSwipeStepLeft2) {
+            m_nSwipeState = kSwipeStepRight2;
+        } else if (m_nSwipeState == kSwipeStepLeft1) {
+            m_nSwipeState = kSwipeStepRight1;
+        }
+        return;
+    case kTitleSwipeButtonA:
+        // The final A completes the code: fire the secret effect, latch the flag, rewind the timer.
+        if (m_nSwipeState == kSwipeStepButtonB) {
+            m_nSwipeState = kSwipeStepComplete;
+            SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectTitleSecret);
+            m_bSecretActive = true;
+            m_nFadeTimer = kSecretReplayTimerValue;
+        }
+        return;
+    case kTitleSwipeButtonB:
+        if (m_nSwipeState == kSwipeStepRight2) {
+            m_nSwipeState = kSwipeStepButtonB;
+        }
+        return;
+    default:
+        return;
+    }
+}

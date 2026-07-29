@@ -153,6 +153,18 @@ private:
      */
     void AdvanceFadeValue(int nDeltaFrames);
 
+    /**
+     * @brief Advances the title screen's hidden-code input sequence by one flick or button.
+     *
+     * The sequence is the Konami code -- up, up, down, down, left, right, left, right, B, A -- and
+     * each input only advances the state when it is the one the sequence expects next; anything
+     * else either leaves the state alone or, for the two openers, restarts it. The final A fires the
+     * secret sound effect, latches the hidden-code flag, and rewinds the fade timer.
+     * @param nSwipeEvent The input: a flick direction, or one of the two buttons.
+     * @ghidraAddress 0x1549b8
+     */
+    void AdvanceSwipeState(int nSwipeEvent);
+
     unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.
     int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
@@ -170,9 +182,9 @@ private:
     float m_flFadeStartDelay = {};            // +0x5b0: the delay before the fade curve begins.
     float m_flFadeValue = {};                 // +0x5b4: the current fade value (seeded to 1.0).
     unsigned char m_aReserved5b8[0xc] = {};   // +0x5b8: trailing presentation state.
-    int m_nTrailingIndex = {};            // +0x5c4: a per-slot index (-1 when none is selected).
-    unsigned char m_aReserved5c8[4] = {}; // +0x5c8: trailing presentation state.
-    bool m_bSecretActive = {};            // +0x5cc: the hidden-code flag; doubles the burst scale.
+    int m_nTrailingIndex = {}; // +0x5c4: a per-slot index (-1 when none is selected).
+    int m_nSwipeState = {};    // +0x5c8: the hidden-code (Konami) input sequence's progress.
+    bool m_bSecretActive = {}; // +0x5cc: the hidden-code flag; doubles the burst scale.
     unsigned char m_aReserved5cd[3] = {}; // +0x5cd
     float m_flPartOriginX = {}; // +0x5d0: the part layout's screen X origin (added to a part's X).
     float m_flPartOriginY = {}; // +0x5d4: the part layout's screen Y origin (added to a part's Y).
