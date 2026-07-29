@@ -6,8 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
-
-struct S_VECTOR2;
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
