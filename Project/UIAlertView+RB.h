@@ -211,8 +211,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The shown alert.
  * @ghidraAddress 0xf150
  */
+// The binary's selector really is showAddLimepointByApplilink:: with an unnamed second piece.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-selector-name"
 + (UIAlertView *)showAddLimepointByApplilink:(int)
                                    limePoint:(nullable id<UIAlertViewDelegate>)delegate;
+#pragma clang diagnostic pop
 
 /**
  * @brief Show the "reordering needs a download" alert (NO/YES) built with a fixed message.

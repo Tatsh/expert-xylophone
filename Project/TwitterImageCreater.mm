@@ -138,9 +138,14 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
 
 @interface TwitterImageCreater ()
 
-// Allocates the off-screen RGBA bitmap context of the given pixel dimensions.
+// Allocates the off-screen RGBA bitmap context of the given pixel dimensions. The binary's selector
+// really is createContext:: with an unnamed second piece, so the spelling below is correct even
+// though it reads like the parameter name was meant to be part of it.
 // @ghidraAddress 0x87ae4
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-selector-name"
 - (void)createContext:(int)width:(int)height;
+#pragma clang diagnostic pop
 // Draws an image with the given scale, bottom-left anchored at (x, y) in flipped context space.
 // @ghidraAddress 0x87ba0
 - (void)drawImage:(nullable UIImage *)image X:(int)x Y:(int)y Scale:(float)scale;
@@ -277,7 +282,10 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
 
 #pragma mark - Context
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-selector-name"
 - (void)createContext:(int)width:(int)height {
+#pragma clang diagnostic pop
     /** @ghidraAddress 0x87ae4 */
     [self reset];
     m_Width = width;
