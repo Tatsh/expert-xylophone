@@ -811,6 +811,10 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
     }
 }
 
+// The runtime-filled phone parts table (zero storage in __common, seeded by
+// InitializePhoneResultLayoutTable). @ghidraAddress 0x3d9100
+PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {};
+
 /** @ghidraAddress 0x123838 */
 PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
     assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);

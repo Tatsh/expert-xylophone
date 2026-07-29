@@ -445,7 +445,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     if (!self.isShowedMap) {
-        LoadAllCachedTextures();
+        ne::C_TEXTURE::ReloadAll();
     }
     [ApplilinkNetwork resume];
 }
@@ -453,7 +453,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [RBUserSettingData.sharedInstance save];
     if (!self.isShowedMap) {
-        ReleaseAllCachedTextures();
+        ne::C_TEXTURE::ReleaseAllHandles();
     }
     if (self.viewController) {
         [self.viewController closeItunesWithURL];
@@ -786,10 +786,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
       AppDelegate *strongSelf = weakSelf;
       // Cycle the whole texture cache to reclaim GPU memory, then rebuild the title.
       [UIImage clearImageCache];
-      GetTextureCacheList();
-      ReleaseAllCachedTextures();
-      GetTextureCacheList();
-      LoadAllCachedTextures();
+      ne::C_TEXTURE::GetCacheList();
+      ne::C_TEXTURE::ReleaseAllHandles();
+      ne::C_TEXTURE::GetCacheList();
+      ne::C_TEXTURE::ReloadAll();
       [strongSelf.viewController removeView];
       RBCampaignData.sharedInstance.hinabitaMode = 0;
       [strongSelf showTitle];

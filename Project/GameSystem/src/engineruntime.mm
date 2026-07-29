@@ -4,10 +4,14 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#include "RBUserSettingData.h"
 #include "customize_variant_tables.h"
 #include "neTexture.h"
 #include "ne_c_time.h"
 #include "texture_cache_control.h"
+#include "titleclassicscene.h"
+#include "titlecolettescene.h"
+#include "titlelimelightscene.h"
 
 namespace {
 
@@ -34,6 +38,9 @@ enum {
     kCustomizeKindMusic = 7,
     kCustomizeKindThema = 10,
 };
+
+// The listener priority the theme's title scene is registered at.
+constexpr int kTitleSceneListenerPriority = 1;
 
 // The clear-rank values the thresholds map to.
 constexpr int kClearRank5 = 5;
@@ -127,6 +134,25 @@ void C_TIME::Start() {
 /** @ghidraAddress 0x3671c */
 float C_TIME::GetElapsedMilliseconds() const {
     return static_cast<float>((CACurrentMediaTime() - m_flTime) * kMediaTimeMsScale);
+}
+
+/** @ghidraAddress 0x4fa24 */
+void CreateTitleLayerForTheme(void) {
+    // The selected theme picks which title scene is constructed; the binary distinguishes the three
+    // by their allocation sizes (0x168 classic, 0x898 colette, 0x628 limelight).
+    rb::BaseScene *pScene = nullptr;
+    switch (RBUserSettingData.sharedInstance.thema) {
+    case RBUserSettingDataThemeClassic:
+        pScene = new rb::TitleClassicScene();
+        break;
+    case RBUserSettingDataThemeColette:
+        pScene = new rb::TitleColetteScene();
+        break;
+    default:
+        pScene = new rb::TitleLimelightScene();
+        break;
+    }
+    pScene->InsertSorted(kTitleSceneListenerPriority);
 }
 
 /** @ghidraAddress 0x12e900 */

@@ -103,21 +103,21 @@ void C_TASK::InsertSorted(int nPriority) {
     m_nPriority = nPriority;
 }
 
+} // namespace ne
+
 /** @ghidraAddress 0x36628 */
 void DispatchListenerList(void *pFrameArg) {
     // Walk the list from the head. A live node gets its per-frame callback and the walk advances to
     // its successor; a dead node is destroyed (its successor is captured first, since destruction
     // splices the node out of the list).
-    for (C_TASK *pNode = g_listenerListSentinel.GetNext(); pNode != &g_listenerListSentinel;) {
+    for (ne::C_TASK *pNode = g_listenerListSentinel.GetNext(); pNode != &g_listenerListSentinel;) {
         if (!pNode->IsDead()) {
             pNode->OnFrame(pFrameArg);
             pNode = pNode->GetNext();
         } else {
-            C_TASK *pNext = pNode->GetNext();
+            ne::C_TASK *pNext = pNode->GetNext();
             delete pNode;
             pNode = pNext;
         }
     }
 }
-
-} // namespace ne

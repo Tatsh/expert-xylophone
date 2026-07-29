@@ -552,7 +552,7 @@ constexpr int kDefaultPlayColor = 0;
     [self createView];
     [self.musicMenuView showAnimation];
     ne::C_TEXTURE::EnsureCacheList();
-    ReleaseAllCachedTextures();
+    ne::C_TEXTURE::ReleaseAllHandles();
     [self StopLoop];
     [[RBExperienceData sharedInstance] takeover];
     if (![[RBUserSettingData sharedInstance] takeoverPoint]) {

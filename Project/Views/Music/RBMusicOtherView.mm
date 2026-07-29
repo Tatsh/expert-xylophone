@@ -5,12 +5,10 @@
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 #import "soundeffectmanager.h"
 
 namespace {
-
-// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
-extern const double g_dMascotMessageAnimDuration;
 
 // The sentinel stored in m_PrevSound before any toggle sound has been played.
 constexpr unsigned int kSoundHandleNone = 0xffffffff;

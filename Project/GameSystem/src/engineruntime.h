@@ -43,24 +43,9 @@ NSString *_Nullable BuildCustomizeAssetPathString(int assetType, int variantInde
  */
 NSString *_Nullable GetCustomizeFrameImagePath(int kind);
 #endif
-/**
- * @brief Reloads every cached texture from its stored image name after a context loss.
- * @ghidraAddress 0x33e5c
- */
-void LoadAllCachedTextures(void);
-/**
- * @brief Releases every texture handle held in the global texture cache.
- * @ghidraAddress 0x33e1c
- */
-void ReleaseAllCachedTextures(void);
-/**
- * @brief The head of the global live-texture cache list.
- *
- * The release-and-reload helpers read the list head as a side effect before cycling the cache; the
- * returned value is otherwise unused at the call sites that pair it with them.
- * @ghidraAddress 0x33bf0
- */
-void *GetTextureCacheList(void);
+// The texture-cache sweeps at 0x33e5c, 0x33e1c, and 0x33bf0 are static members of ne::C_TEXTURE
+// (ReloadAll, ReleaseAllHandles, and GetCacheList in neTexture.h), not free functions; they are
+// declared there rather than duplicated here.
 /**
  * @brief Renders the whole global scene tree for the current frame.
  * @ghidraAddress 0x29d58
