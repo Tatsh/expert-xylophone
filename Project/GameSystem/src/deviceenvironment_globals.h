@@ -50,12 +50,16 @@ extern NSString *_Nullable g_pFormattedVersion;
 extern NSString *_Nullable g_pRegionCode;
 /** @brief The current locale's language code. @ghidraAddress 0x3df3a8 */
 extern NSString *_Nullable g_pLocaleLanguageCode;
-/** @brief The Application Support directory path. @ghidraAddress 0x3df3b0 */
-extern NSString *_Nullable g_pAppSupportPath;
+/**
+ * @brief The Documents directory path, which every persistence route writes to and
+ * @c +[NSFileManager freeFileSystemSize] measures.
+ * @ghidraAddress 0x3df3b0
+ */
+extern NSString *_Nullable g_pDocumentsDirectoryPath;
 /** @brief The Caches directory path. @ghidraAddress 0x3df3b8 */
 extern NSString *_Nullable g_pCachesDirectoryPath;
-/** @brief The Documents directory path. @ghidraAddress 0x3df3c0 */
-extern NSString *_Nullable g_pDocumentsDirectoryPath;
+/** @brief The Application Support directory path, cached but never read. @ghidraAddress 0x3df3c0 */
+extern NSString *_Nullable g_pAppSupportPath;
 /** @brief The PrivateDocuments directory path (Library/PrivateDocuments). @ghidraAddress 0x3df3c8
  */
 extern NSString *_Nullable g_pPrivateDocumentsPath;

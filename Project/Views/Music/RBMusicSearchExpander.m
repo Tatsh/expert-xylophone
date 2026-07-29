@@ -18,7 +18,7 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
         return;
     }
     NSString *destination =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
     NSError *error = nil;
     if ([fileManager fileExistsAtPath:destination]) {
         [fileManager removeItemAtPath:destination error:&error];
@@ -63,7 +63,7 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
     self.expandDict = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *path =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
     if ([fileManager fileExistsAtPath:path]) {
         NSData *data = [NSData dataWithContentsOfFile:path];
         NSDictionary *decoded =
@@ -83,7 +83,7 @@ static NSString *const kSearchExpandDictFileName = @"SearchExpandDict.txt";
                                                      error:&error];
     NSString *json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSString *path =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kSearchExpandDictFileName];
     [json writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
 }
 

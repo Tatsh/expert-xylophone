@@ -12,10 +12,13 @@ extern "C" {
 #endif
 
 /**
- * @brief Returns the cached Application Support directory path.
+ * @brief Returns the cached Documents directory path.
+ *
+ * This is the directory the game's persistence routes write to, and the one
+ * @c +[NSFileManager freeFileSystemSize] measures.
  * @ghidraAddress 0x1a1624
  */
-NSString *GetApplicationSupportPath(void);
+NSString *GetDocumentsDirectoryPath(void);
 /**
  * @brief Returns the cached PrivateDocuments directory path.
  * @ghidraAddress 0x1a1224

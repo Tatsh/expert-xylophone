@@ -182,7 +182,7 @@ NSData *LevelTables::MakeLevelCustomizeHash(int nLevel, int nExp) {
 
 /** @ghidraAddress 0x1cbf18 */
 bool LevelTables::LoadPlayerLevelData(int *pOutLevelExp) {
-    NSString *directory = GetApplicationSupportPath();
+    NSString *directory = GetDocumentsDirectoryPath();
     NSString *path = [directory stringByAppendingPathComponent:kLevelListFileName];
 
     if ([NSFileManager isFileExist:path]) {
@@ -205,7 +205,7 @@ bool LevelTables::LoadPlayerLevelData(int *pOutLevelExp) {
 
 /** @ghidraAddress 0x1cc1dc */
 bool LevelTables::SavePlayerLevelData(const int *pLevelExp) {
-    NSString *directory = GetApplicationSupportPath();
+    NSString *directory = GetDocumentsDirectoryPath();
     NSString *path = [directory stringByAppendingPathComponent:kLevelListFileName];
 
     const int nLevel = pLevelExp[0];

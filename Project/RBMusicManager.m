@@ -154,7 +154,7 @@ static const int kClientMusicEntriesPerPage = 20;
 - (void)loadPurchasedMusics {
     /** @ghidraAddress 0x6b020 */
     NSString *listPath =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kPurchasedMusicListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kPurchasedMusicListFilename];
     if ([NSFileManager isFileExist:listPath]) {
         NSString *key = [AppDelegate musicListKey];
         NSMutableData *data = [[NSMutableData alloc] initWithContentsOfFile:listPath];
@@ -181,7 +181,7 @@ static const int kClientMusicEntriesPerPage = 20;
         return;
     }
     NSString *listPath =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kPurchasedMusicListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kPurchasedMusicListFilename];
     NSString *key = [AppDelegate musicListKey];
     CFDataRef plistData = CFPropertyListCreateXMLData(
         kCFAllocatorDefault, (__bridge CFPropertyListRef)self.purchasedMusicDictionaries);

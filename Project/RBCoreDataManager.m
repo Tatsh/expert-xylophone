@@ -82,7 +82,7 @@ static NSString *const kManagedObjectModelType = @"mom";
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     /** @ghidraAddress 0x1cb4e8 */
     if (_persistentStoreCoordinator == nil) {
-        NSString *directory = GetApplicationSupportPath();
+        NSString *directory = GetDocumentsDirectoryPath();
         NSString *storePath = [directory stringByAppendingPathComponent:self.scoreDataFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{
@@ -129,7 +129,7 @@ static NSString *const kManagedObjectModelType = @"mom";
 - (NSPersistentStoreCoordinator *)historyCoordinator {
     /** @ghidraAddress 0x1cb98c */
     if (_historyCoordinator == nil) {
-        NSString *directory = GetApplicationSupportPath();
+        NSString *directory = GetDocumentsDirectoryPath();
         NSString *storePath = [directory stringByAppendingPathComponent:kHistoryStoreFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{

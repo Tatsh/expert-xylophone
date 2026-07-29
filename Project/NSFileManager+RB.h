@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (unsigned long long)freeFileSystemSize;
 
 /**
- * @brief The padding-file directory (@c padding under the application-support directory).
+ * @brief The padding-file directory (@c padding under the Documents directory).
  * @return The padding directory path.
  * @ghidraAddress 0x1ca0c8
  */

@@ -125,7 +125,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
     }
 
     NSString *path =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kProductListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kProductListFilename];
     NSString *key = [AppDelegate musicListKey];
 
     CFDataRef plist = CFPropertyListCreateXMLData(
@@ -146,7 +146,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 
 - (void)loadProductList {
     NSString *path =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kProductListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kProductListFilename];
     if ([NSFileManager isFileExist:path]) {
         NSString *key = [AppDelegate musicListKey];
         NSMutableData *data = [[NSMutableData alloc] initWithContentsOfFile:path];

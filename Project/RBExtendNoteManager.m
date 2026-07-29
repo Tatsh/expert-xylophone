@@ -132,7 +132,7 @@ static const int kClientNoteEntriesPerPage = 20;
 - (void)loadPurchasedNotes {
     /** @ghidraAddress 0x181fcc */
     NSString *listPath =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kPurchasedNoteListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kPurchasedNoteListFilename];
     if ([NSFileManager isFileExist:listPath]) {
         NSString *key = [AppDelegate musicListKey];
         NSMutableData *data = [[NSMutableData alloc] initWithContentsOfFile:listPath];
@@ -159,7 +159,7 @@ static const int kClientNoteEntriesPerPage = 20;
         return;
     }
     NSString *listPath =
-        [GetApplicationSupportPath() stringByAppendingPathComponent:kPurchasedNoteListFilename];
+        [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kPurchasedNoteListFilename];
     NSString *key = [AppDelegate musicListKey];
     CFDataRef plistData = CFPropertyListCreateXMLData(
         kCFAllocatorDefault, (__bridge CFPropertyListRef)self.purchasedExtendNoteDictionaries);

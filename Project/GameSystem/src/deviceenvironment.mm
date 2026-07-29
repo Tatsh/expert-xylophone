@@ -57,16 +57,16 @@ NSString *g_pBundleVersion = nil;
 NSString *g_pFormattedVersion = nil;
 NSString *g_pRegionCode = nil;
 NSString *g_pLocaleLanguageCode = nil;
-NSString *g_pAppSupportPath = nil;
-NSString *g_pCachesDirectoryPath = nil;
 NSString *g_pDocumentsDirectoryPath = nil;
+NSString *g_pCachesDirectoryPath = nil;
+NSString *g_pAppSupportPath = nil;
 NSString *g_pPrivateDocumentsPath = nil;
 
 #pragma mark - Cached-value accessors
 
 /** @ghidraAddress 0x1a1624 */
-NSString *GetApplicationSupportPath(void) {
-    return g_pAppSupportPath;
+NSString *GetDocumentsDirectoryPath(void) {
+    return g_pDocumentsDirectoryPath;
 }
 
 /** @ghidraAddress 0x1a1224 */
@@ -248,14 +248,16 @@ void InitializeDeviceEnvironment(void) {
         g_pDeviceAssetTag = g_isRetina ? kAssetTagIPhone2x : kAssetTagIPhone;
     }
 
-    // The cached filesystem paths.
+    // The cached filesystem paths. The Documents path is the one the accessor at 0x1a1624 vends and
+    // every persistence route reads; the application-support path is cached here and never read
+    // back.
+    g_pDocumentsDirectoryPath =
+        NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject;
+    g_pCachesDirectoryPath =
+        NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
     g_pAppSupportPath =
         NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)
             .lastObject;
-    g_pCachesDirectoryPath =
-        NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
-    g_pDocumentsDirectoryPath =
-        NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject;
     g_pDownloadDirectoryPath =
         [g_pCachesDirectoryPath stringByAppendingPathComponent:kDownloadFolderName];
 

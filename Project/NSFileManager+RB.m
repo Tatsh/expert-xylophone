@@ -10,10 +10,12 @@
 
 #import "NSFileManager+RB.h"
 
+#import "deviceenvironment.h"
+
 // The minimum free space, in bytes, that @c isFreeSystemSize requires (50 MiB).
 static const unsigned long long kMinimumFreeSystemSize = 50 * 1024 * 1024;
 
-// The sub-directory of the application-support directory that holds padding files.
+// The sub-directory of the Documents directory that holds padding files.
 static NSString *const kPaddingDirectoryName = @"padding";
 
 // The caches sub-directory used as the temporary directory when @c NSTemporaryDirectory is
@@ -106,7 +108,9 @@ static NSString *g_pResourcePathCache = nil;
 
 + (unsigned long long)freeFileSystemSize {
     /** @ghidraAddress 0x1c9ba0 */
-    NSString *path = [NSFileManager applicationSupportDirectoryPath];
+    // The binary measures the cached Documents path, which iOS always creates, not the
+    // application-support path this category can also vend, which it does not.
+    NSString *path = GetDocumentsDirectoryPath();
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:path
                                                                                        error:nil];
     return [[attributes valueForKey:NSFileSystemFreeSize] longLongValue];
@@ -116,8 +120,7 @@ static NSString *g_pResourcePathCache = nil;
 
 + (NSString *)paddingDirName {
     /** @ghidraAddress 0x1ca0c8 */
-    return [[NSFileManager applicationSupportDirectoryPath]
-        stringByAppendingPathComponent:kPaddingDirectoryName];
+    return [GetDocumentsDirectoryPath() stringByAppendingPathComponent:kPaddingDirectoryName];
 }
 
 + (NSString *)documentDirectoryPath {
