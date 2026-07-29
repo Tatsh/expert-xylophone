@@ -18,6 +18,7 @@
 #import "RBMenuView.h"
 #import "RBMusicCell.h"
 #import "RBMusicView.h"
+#import "RBSettingMenuButton.h"
 #import "RBSettingView.h"
 #import "RBTutorialManager.h"
 #import "RBTutorialPastelLayer.h"

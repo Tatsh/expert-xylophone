@@ -22,6 +22,7 @@
 #import "RBMusicCell.h"
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
+#import "RBMusicSearchExpander.h"
 #import "RBMusicView.h"
 #import "RBNavigationController.h"
 #import "RBNewsHUDView.h"
@@ -35,6 +36,7 @@
 #import "RBSettingView.h"
 #import "RBStoreTabController.h"
 #import "RBTermAgreeView.h"
+#import "RBTermPhoneViewController.h"
 #import "RBTermView.h"
 #import "RBThemaView.h"
 #import "RBTutorialManager.h"
@@ -62,7 +64,7 @@ enum {
     kPlaylistIDHotBonus = 1, // The hot-bonus playlist.
     kPlaylistIDLevel = 2,    // A difficulty-level playlist.
     kPlaylistIDCustom = 3,   // A named custom playlist.
-    kPlaylistIDFavorite = 4, // The favourites playlist.
+    kPlaylistIDSpecial = 4,  // The SPECIAL-chart playlist.
 };
 
 // Playlist editing modes stored in playListEditMode.
@@ -266,9 +268,10 @@ static BOOL g_bRandamIntSeeded = NO;
 
 // The not-yet-reconstructed collaborators this hub creates or messages. They are forward-declared
 // so the hub compiles ahead of their own reconstructions; each is a small overlay or controller.
-@class RBMusicSearchExpander;
 
-@interface RBMenuView ()
+// The alert and page-slider delegate roles are private: the binary passes self to both, but neither
+// protocol appears in the class's public conformance list.
+@interface RBMenuView () <UIAlertViewDelegate, RBMenuPageSliderDelegate>
 
 /** @brief Build the tall-layout header and the theme 0/1 footer. */
 - (void)buildHeaderAndFooter:(NSInteger)thema;
@@ -1484,20 +1487,19 @@ static BOOL g_bRandamIntSeeded = NO;
         return;
     }
 
-    if (playlistID == kPlaylistIDFavorite) {
-        // Favourites: keep musics flagged favourite.
+    if (playlistID == kPlaylistIDSpecial) {
+        // Special playlist: keep musics that carry SPECIAL chart data.
         NSMutableArray *filtered = [NSMutableArray array];
         for (MusicData *music in searchResult) {
-            if (music.favorite != nil) {
+            if (music.spData != nil) {
                 [filtered addObject:music];
             }
         }
         [filtered sortUsingSelector:sortSelector];
         self.musicList = filtered;
-        return;
     }
-
-    self.musicList = searchResult;
+    // A playlist id past the special list matches no branch, so the binary leaves the previous
+    // music list in place rather than falling back to the unfiltered search result.
 }
 
 #pragma mark - Store view controller
@@ -1961,7 +1963,7 @@ static BOOL g_bRandamIntSeeded = NO;
     if (self.newsDownloader != nil) {
         return;
     }
-    self.newsDownloader = [[Downloader alloc] initWithURL:[NetworkUtil lineMessageURL] save:NO];
+    self.newsDownloader = [[Downloader alloc] initWithURL:[NetworkUtil lineMessageURL] save:nil];
     [self.newsDownloader startDownloadingWithDelegate:self];
 }
 
