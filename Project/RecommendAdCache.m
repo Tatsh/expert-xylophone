@@ -394,9 +394,9 @@ static NSString *const kRecommendAdCacheUnknownAdTypeMessage =
     NSArray *bannerList;
     switch (adType) {
     case RecommendAdCacheAdTypeInterstitial: {
-        NSArray *lottery = [RecommendAdData lotteryInterstitialWithAdLocation:adLocation];
+        NSError *lottery = [RecommendAdData lotteryInterstitialWithAdLocation:adLocation];
         if (lottery != nil) {
-            return (NSError *)lottery; // Faithful: the lottery result short-circuits the return.
+            return lottery; // Faithful: the lottery result short-circuits the return.
         }
         bannerList = [RecommendAdData getAppInterstitialList];
         break;

@@ -35,7 +35,7 @@ public:
          * @return Always 1.
          * @ghidraAddress 0x4abcc
          */
-        int Initialize(id source, bool bLoop);
+        int Initialize(id sourceObject, bool bLoopValue);
         /**
          * @brief Clears the record, releasing its two object references.
          * @return Always 1.

@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised table, or @c nil.
  * @ghidraAddress 0xda63c
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame style:(UITableViewStyle)style;
+- (instancetype)initWithFrame:(CGRect)frame style:(UITableViewStyle)style;
 
 #pragma mark Loading
 

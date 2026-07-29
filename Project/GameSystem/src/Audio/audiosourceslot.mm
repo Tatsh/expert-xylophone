@@ -26,9 +26,9 @@ unsigned int DecodePlayHandle(unsigned int handle) {
 } // namespace
 
 /** @ghidraAddress 0x4abcc */
-int AudioSourceSlot::SourceRecord::Initialize(id source, bool bLoop) {
-    this->source = [source copy];
-    this->bLoop = bLoop;
+int AudioSourceSlot::SourceRecord::Initialize(id sourceObject, bool bLoopValue) {
+    source = [sourceObject copy];
+    bLoop = bLoopValue;
     return 1;
 }
 

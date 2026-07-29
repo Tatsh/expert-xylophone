@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised overlay, or @c nil.
  * @ghidraAddress 0x21ff40
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Show the overlay and start the spinner animating.

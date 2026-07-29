@@ -22,10 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The main window that hosts the game engine's render surface.
+ *
+ * The binary's ivar type encoding is @c \@"neWindow", so the concrete subclass is kept here; it is
+ * @c nullable to match the @c window property @c UIApplicationDelegate declares, and is genuinely
+ * nil until the launch handler creates it.
  * @ghidraAddress 0x54684 (getter)
  * @ghidraAddress 0x54694 (setter)
  */
-@property(nonatomic, strong) neWindow *window;
+@property(nonatomic, strong, nullable) neWindow *window;
 /**
  * @brief The root view controller driving the game's screens.
  * @ghidraAddress 0x546cc (getter)
@@ -154,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x54ab4 (getter)
  * @ghidraAddress 0x54ac4 (setter)
  */
-@property(nonatomic, strong) NSURL *urlWebInfo;
+@property(nonatomic, strong, nullable) NSURL *urlWebInfo;
 /**
  * @brief The pre-release news web-info endpoint URL.
  * @ghidraAddress 0x54ad0 (getter)
@@ -407,9 +411,10 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Persist the two-element server-data pair (user identity and password) to the Keychain.
  * @param p1 The server-issued user identity.
  * @param p2 The server-issued password.
+ * @return @c YES when the pair was stored, @c NO when an item already exists or the store failed.
  * @ghidraAddress 0x514c8
  */
-+ (void)setServerData:(nullable NSString *)p1 andB:(nullable NSString *)p2;
++ (BOOL)setServerData:(nullable NSString *)p1 andB:(nullable NSString *)p2;
 
 /**
  * @brief The device-unique key string used to encrypt the purchased-music list: a Keychain

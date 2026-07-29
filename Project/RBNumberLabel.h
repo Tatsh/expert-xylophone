@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, RBNumberLabelImageType) {
  * @return The initialised control, or @c nil.
  * @ghidraAddress 0x200778
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Draw the current number as image-based digit glyphs within @p rect.

@@ -338,7 +338,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
     return alert;
 }
 
-+ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint:(id<UIAlertViewDelegate>)delegate {
++ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint :(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf150 */
     NSString *message =
         [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeyHasBeenAddedFormat), limePoint];
@@ -422,7 +422,12 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (UIAlertView *)showColetteThemaUnlockMessage {
     /** @ghidraAddress 0xf3e4 */
+    // The binary passes the localised string as the format itself, with no arguments; reproduced
+    // verbatim, so the non-literal-format diagnostic is scoped off rather than the call rewritten.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-security"
     NSString *message = [NSString stringWithFormat:RBLocalizedUIString(kColetteWelcomeMessageKey)];
+#pragma clang diagnostic pop
     return [[UIAlertView alloc] initWithTitle:kColetteWelcomeTitle
                                       message:message
                                      delegate:nil

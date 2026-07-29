@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised cell, or @c nil.
  * @ghidraAddress 0x16e320
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief The button that shows the item image. User interaction is disabled; the enclosing

@@ -52,8 +52,8 @@ static NSString *const kDescriptionFormat = @"<%@: %p identity:%zd order:%zd tit
     return [NSString stringWithFormat:kDescriptionFormat,
                                       NSStringFromClass([self class]),
                                       self,
-                                      self.identity,
-                                      self.order,
+                                      (ssize_t)self.identity,
+                                      (ssize_t)self.order,
                                       self.title,
                                       self.data];
 }

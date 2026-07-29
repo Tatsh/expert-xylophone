@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised layer, or @c nil.
  * @ghidraAddress 0x1b35fc
  */
-- (nullable instancetype)init;
+- (instancetype)init;
 
 /**
  * @brief Build the pastel bubble's four child layers from the tutorial message artwork.

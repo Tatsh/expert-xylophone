@@ -160,11 +160,11 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     self.rivalAlpha = kDefaultRivalAlpha;
     self.backgroundBrighness = kDefaultBackgroundBrighness;
 
-    NSArray *classic =
+    NSMutableDictionary *classic =
         RBMakeCustomizeItem(kClassicBgmType, kClassicBgmType, kClassicBgmType, kClassicBgmType);
-    NSArray *limelight = RBMakeCustomizeItem(
+    NSMutableDictionary *limelight = RBMakeCustomizeItem(
         kLimelightBgmType, kLimelightExplosionType, kLimelightFrameType, kLimelightBackgroundType);
-    NSArray *colette = RBMakeCustomizeItem(
+    NSMutableDictionary *colette = RBMakeCustomizeItem(
         kColetteBgmType, kColetteExplosionType, kColetteFrameType, kColetteBackgroundType);
     self.customizeItems = [[NSMutableArray alloc] initWithArray:@[ classic, limelight, colette ]];
     self.tutorialStatuses = [[NSMutableDictionary alloc] init];

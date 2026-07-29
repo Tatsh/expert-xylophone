@@ -39,7 +39,7 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  * @ghidraAddress 0x738e8 (getter)
  * @ghidraAddress 0x738f8 (setter)
  */
-@property(nonatomic, strong) RBHttpUtil *conn;
+@property(nonatomic, strong, nullable) RBHttpUtil *conn;
 /**
  * @brief The delegate that receives lifecycle callbacks when no block is set.
  * @ghidraAddress 0x73930 (getter)

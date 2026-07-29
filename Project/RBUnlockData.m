@@ -16,14 +16,6 @@ static NSString *const kVersionDictionaryKey = @"Version";
 // The dictionary key under which the catalogue package array is supplied.
 static NSString *const kPackageDictionaryKey = @"Package";
 
-// The player theme identifiers returned by @c -[RBUserSettingData thema].
-typedef enum {
-    // The default theme.
-    RBUnlockDataThemeDefault = 1,
-    // The Colette theme.
-    RBUnlockDataThemeColette = 2,
-} RBUnlockDataTheme;
-
 /**
  * @brief Builds the ordered package list from a catalogue dictionary's @c Package array.
  *
@@ -78,11 +70,11 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 
 - (void)parseDictionary:(NSDictionary *)dictionary {
     /** @ghidraAddress 0x19abd8 */
-    RBUnlockDataTheme theme = [[RBUserSettingData sharedInstance] thema];
-    if (theme == RBUnlockDataThemeDefault) {
+    const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+    if (theme == RBUserSettingDataThemeLimelight) {
         self.version = dictionary[kVersionDictionaryKey];
         self.package = RBUnlockDataParsePackages(dictionary);
-    } else if (theme == RBUnlockDataThemeColette) {
+    } else if (theme == RBUserSettingDataThemeColette) {
         self.versionColette = dictionary[kVersionDictionaryKey];
         self.packageColette = RBUnlockDataParsePackages(dictionary);
     }
@@ -90,11 +82,11 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 
 - (NSArray *)getPackage {
     /** @ghidraAddress 0x19b28c */
-    RBUnlockDataTheme theme = [[RBUserSettingData sharedInstance] thema];
-    if (theme == RBUnlockDataThemeDefault) {
+    const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+    if (theme == RBUserSettingDataThemeLimelight) {
         return self.package;
     }
-    if (theme == RBUnlockDataThemeColette) {
+    if (theme == RBUserSettingDataThemeColette) {
         return self.packageColette;
     }
     return nil;
@@ -102,8 +94,8 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 
 - (void)setTutorialData {
     /** @ghidraAddress 0x19b348 */
-    RBUnlockDataTheme theme = [[RBUserSettingData sharedInstance] thema];
-    if (theme == RBUnlockDataThemeColette) {
+    const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+    if (theme == RBUserSettingDataThemeColette) {
         // The shipped tutorial path parses from a nil catalogue, so both the version string and the
         // package list resolve to empty. This is reproduced faithfully.
         NSDictionary *tutorialDictionary = nil;

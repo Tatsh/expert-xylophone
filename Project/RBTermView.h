@@ -138,11 +138,11 @@ NS_ASSUME_NONNULL_BEGIN
 /** @brief The popup title label. */
 @property(strong, nonatomic, nullable) UILabel *titleView;
 /** @brief The scroll view holding one button per term. */
-@property(assign, nonatomic, nullable) UIScrollView *termsListView;
+@property(weak, nonatomic, nullable) UIScrollView *termsListView;
 /** @brief The container view for a single term's body text. */
-@property(assign, nonatomic, nullable) UIView *termView;
+@property(weak, nonatomic, nullable) UIView *termView;
 /** @brief The text view rendering a single term's body. */
-@property(assign, nonatomic, nullable) UITextView *termTextView;
+@property(weak, nonatomic, nullable) UITextView *termTextView;
 /** @brief The parsed per-term body cache, keyed by the term id string. */
 @property(strong, nonatomic, nullable) NSMutableDictionary *terms;
 /** @brief The in-flight terms list or detail download. */
@@ -150,9 +150,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** @brief Whether the dimming overlay is shown while loading. */
 @property(assign, nonatomic) BOOL isUseGrayView;
 /** @brief The dimming overlay covering the content while loading. */
-@property(assign, nonatomic, nullable) UIView *grayView;
+@property(weak, nonatomic, nullable) UIView *grayView;
 /** @brief The loading spinner shown during network activity. */
-@property(assign, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
+@property(weak, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
 /** @brief The view type: the agreement overlay (0) or the store terms viewer (1). */
 @property(assign, nonatomic) int viewType;
 /** @brief The list of term descriptors downloaded from the server. */

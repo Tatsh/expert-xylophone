@@ -81,12 +81,6 @@ typedef enum {
     RBUnlockItemTypeThema = 10,
 } RBUnlockItemType;
 
-// The player theme identifiers returned by -[RBUserSettingData thema].
-typedef enum {
-    RBUnlockViewThemeLimelight = 1,
-    RBUnlockViewThemeColette = 2,
-} RBUnlockViewTheme;
-
 // The sound-effect slots played by the picker.
 constexpr int kSoundEffectPopupCancel = 4;
 constexpr int kSoundEffectUnlocked = 9;
@@ -221,14 +215,13 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                            kPointLabelNarrowHeight);
         scrollTopMargin = kScrollTopMarginNarrow;
     } else {
-        RBUnlockViewTheme theme =
-            static_cast<RBUnlockViewTheme>([RBUserSettingData sharedInstance].thema);
-        if (theme == RBUnlockViewThemeLimelight) {
+        const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+        if (theme == RBUserSettingDataThemeLimelight) {
             self.pointLabel.frame = CGRectMake(kPointLabelWideX,
                                                kPointLabelLimelightY,
                                                kPointLabelWideWidth,
                                                kPointLabelLimelightHeight);
-        } else if (theme == RBUnlockViewThemeColette) {
+        } else if (theme == RBUserSettingDataThemeColette) {
             self.pointLabel.frame = CGRectMake(kPointLabelWideX,
                                                kPointLabelColetteY,
                                                kPointLabelWideWidth,
@@ -347,7 +340,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 
           // On the Limelight theme, take the first reward banner and normalise its URL for the
           // current retina state before storing.
-          if ([RBUserSettingData sharedInstance].thema == RBUnlockViewThemeLimelight &&
+          if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeLimelight &&
               [json[kRewardBannerListKey] count]) {
               NSDictionary *banner = json[kRewardBannerListKey][0];
               weakSelf.rewardBannerUrl = banner[kRewardBannerURLKey];
@@ -536,7 +529,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.pointLabel.number = [[RBExperienceData sharedInstance] getPoint];
 
     // Record the unlock for the customise walkthrough when it is running on the Colette theme.
-    if ([RBUserSettingData sharedInstance].thema == RBUnlockViewThemeColette &&
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
         [RBTutorialManager isTutorialCustomize]) {
         [RBTutorialManager setUnlockedItemInfo:self.popupView.itemData.type
                                         itemId:self.popupView.itemData.identity];

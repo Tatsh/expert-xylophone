@@ -273,7 +273,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     ComputeMd5Digest(derived, (CC_LONG)keyLength, digest);
     free(derived);
     BFCodec *codec = [[BFCodec alloc] init];
-    [codec cipherInit:digest keyLength:kBlowfishKeyLength];
+    // The digest is raw key material; the schedule reads it back as unsigned bytes regardless.
+    [codec cipherInit:(const char *)digest keyLength:kBlowfishKeyLength];
     if (![codec decipher:data]) {
         return nil;
     }
@@ -291,7 +292,9 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     if (![archive openFile:zipPath]) {
         return nil;
     }
-    NSMutableData *data = [archive getData:entryName];
+    // getData: declares NSData * but always returns the NSMutableData it filled, and decodeBF:
+    // deciphers it in place.
+    NSMutableData *data = (NSMutableData *)[archive getData:entryName];
     if (data == nil) {
         [archive closeFile];
         return nil;

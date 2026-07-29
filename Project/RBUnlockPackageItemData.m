@@ -37,11 +37,11 @@ static NSString *const kDescriptionFormat =
     return [NSString stringWithFormat:kDescriptionFormat,
                                       NSStringFromClass([self class]),
                                       self,
-                                      self.type,
-                                      self.identity,
+                                      (ssize_t)self.type,
+                                      (ssize_t)self.identity,
                                       self.name,
                                       self.path,
-                                      self.point];
+                                      (ssize_t)self.point];
 }
 
 @end

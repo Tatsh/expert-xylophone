@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised cell, or @c nil.
  * @ghidraAddress 0xbaa1c
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Assemble the cell's subviews and layers: the frame-bonus background, the artwork view, the

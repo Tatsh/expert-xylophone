@@ -339,6 +339,9 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
         } else if ([component rangeOfString:(k = kRecommendAdAreaViewQueryAdLocation)].location !=
                    NSNotFound) {
             adLocation = [self decodedValueFrom:component afterPrefix:k];
+            // Yes, the binary parses the ad_location key and then reads the _adLocation ivar at
+            // both call sites below, so the decoded value is discarded.
+            (void)adLocation;
         } else if ([component rangeOfString:(k = kRecommendAdAreaViewQueryAdIdFrom)].location !=
                    NSNotFound) {
             adIdFrom = [self decodedValueFrom:component afterPrefix:k];

@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, RBMusicMenuPopupViewType) {
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0x19ebfc
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the popup chrome: the base panel, the background artwork for the selected popup

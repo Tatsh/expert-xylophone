@@ -61,8 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The configured genre cell.
  * @ghidraAddress 0x1cabe8
  */
-- (nullable UITableViewCell *)tableView:(nonnull UITableView *)tableView
-                  cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath;
+- (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView
+                 cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath;
 
 /**
  * @brief The number of sections in the genre table.

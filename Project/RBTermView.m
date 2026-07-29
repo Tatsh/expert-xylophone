@@ -240,36 +240,40 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
     self.contentView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel
                                                          alpha:kColorAlphaOpaque];
 
-    // The dimming overlay covers the content while loading; it starts hidden.
-    self.grayView = [[UIView alloc] initWithFrame:self.bounds];
-    self.grayView.backgroundColor = [UIColor colorWithWhite:kColorWhiteGray alpha:kColorAlphaHalf];
-    self.grayView.hidden = YES;
-    [self addSubview:self.grayView];
+    // The dimming overlay covers the content while loading; it starts hidden. The view is handed to
+    // the superview before the field is set, so the field never owns it.
+    UIView *grayView = [[UIView alloc] initWithFrame:self.bounds];
+    grayView.backgroundColor = [UIColor colorWithWhite:kColorWhiteGray alpha:kColorAlphaHalf];
+    grayView.hidden = YES;
+    [self addSubview:grayView];
+    self.grayView = grayView;
 
     // The loading spinner, scaled up and centred, hidden while stopped.
-    self.indicatorView = [[UIActivityIndicatorView alloc] init];
-    [self.indicatorView.layer setValue:@(kIndicatorTransformScale) forKeyPath:@"transform.scale"];
-    self.indicatorView.center = self.center;
-    self.indicatorView.autoresizingMask = kIndicatorAutoresizingMask;
-    self.indicatorView.hidesWhenStopped = YES;
-    [self addSubview:self.indicatorView];
+    UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] init];
+    [indicatorView.layer setValue:@(kIndicatorTransformScale) forKeyPath:@"transform.scale"];
+    indicatorView.center = self.center;
+    indicatorView.autoresizingMask = kIndicatorAutoresizingMask;
+    indicatorView.hidesWhenStopped = YES;
+    [self addSubview:indicatorView];
+    self.indicatorView = indicatorView;
 
     CGFloat contentWidth = self.contentView.frame.size.width;
     CGFloat contentHeight = self.contentView.frame.size.height;
 
     // The scrolling terms list fills the content below the inset; it starts fully transparent.
-    self.termsListView = [[UIScrollView alloc]
+    UIScrollView *termsListView = [[UIScrollView alloc]
         initWithFrame:CGRectMake(0.0, contentInset, contentWidth, contentHeight - contentInset)];
-    self.termsListView.alpha = 0.0;
-    [self.contentView addSubview:self.termsListView];
+    termsListView.alpha = 0.0;
+    [self.contentView addSubview:termsListView];
+    self.termsListView = termsListView;
 
     // The term-body container occupies the same region, starting transparent.
-    self.termView = [[UIView alloc]
+    UIView *termView = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, contentInset, contentWidth, contentHeight - contentInset)];
-    self.termView.alpha = 0.0;
-    self.termView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel
-                                                      alpha:kColorAlphaOpaque];
-    [self.contentView addSubview:self.termView];
+    termView.alpha = 0.0;
+    termView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel alpha:kColorAlphaOpaque];
+    [self.contentView addSubview:termView];
+    self.termView = termView;
 
     // The back button returns from a term body to the list; it starts hidden.
     self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -289,21 +293,21 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
 
     // The term-body text view fills the body container, non-selectable, and reads back the classic
     // top inset measured above.
-    self.termTextView =
+    UITextView *termTextView =
         [[UITextView alloc] initWithFrame:CGRectMake(0.0,
                                                      contentTopInset,
                                                      self.termView.frame.size.width,
                                                      self.termView.frame.size.height)];
-    self.termTextView.textContainerInset = UIEdgeInsetsMake(kTermTextInsetVertical,
-                                                            kTermTextInsetHorizontal,
-                                                            kTermTextInsetVertical,
-                                                            kTermTextInsetHorizontal);
-    self.termTextView.textColor = [UIColor colorWithWhite:kColorWhiteTermText
-                                                    alpha:kColorAlphaOpaque];
-    self.termTextView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel
-                                                          alpha:kColorAlphaOpaque];
-    self.termTextView.selectable = NO;
-    [self.termView addSubview:self.termTextView];
+    termTextView.textContainerInset = UIEdgeInsetsMake(kTermTextInsetVertical,
+                                                       kTermTextInsetHorizontal,
+                                                       kTermTextInsetVertical,
+                                                       kTermTextInsetHorizontal);
+    termTextView.textColor = [UIColor colorWithWhite:kColorWhiteTermText alpha:kColorAlphaOpaque];
+    termTextView.backgroundColor = [UIColor colorWithWhite:kColorWhitePanel
+                                                     alpha:kColorAlphaOpaque];
+    termTextView.selectable = NO;
+    [self.termView addSubview:termTextView];
+    self.termTextView = termTextView;
 
     [self loadList];
 }

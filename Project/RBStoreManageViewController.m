@@ -711,7 +711,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     [tasks addObject:tuneTask];
 
     // Queue a download task for every purchased extend note of this tune.
-    NSDictionary *extendNotes =
+    NSArray *extendNotes =
         [[RBExtendNoteManager getInstance] getPurchasedExtendNoteDictionaryWithMusicID:musicId];
     if (extendNotes.count != 0) {
         for (NSDictionary *note in extendNotes) {

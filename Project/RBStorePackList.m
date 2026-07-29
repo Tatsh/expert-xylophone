@@ -246,8 +246,12 @@ static NSString *_lastProductCountryCode = nil;
                               [appVersion compare:requiredVersion
                                           options:NSNumericSearch] == kVersionRequirementUnmet)) {
         // The binary formats the version-mismatch message without substituting its positional
-        // arguments.
+        // arguments. Reproduced verbatim, so the diagnostic that flags the non-literal format is
+        // scoped off rather than the call being rewritten.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-security"
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
+#pragma clang diagnostic pop
         [self.delegate packListDownloadError:self errorMessage:message];
     } else {
         NSArray *packList = json[kStoreJSONKeyPackList];

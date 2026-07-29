@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised overlay, or @c nil if the superclass initialiser failed.
  * @ghidraAddress 0xc9370
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Builds the overlay's subviews: a close button (positioned differently on iPad and iPhone),

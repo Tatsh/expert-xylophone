@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1be3c4 (getter)
  * @ghidraAddress 0x1be3d4 (setter)
  */
-@property(assign, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
+@property(strong, nonatomic, nullable) UIActivityIndicatorView *indicatorView;
 
 /**
  * @brief The settings view that owns and presents this popup, if any.

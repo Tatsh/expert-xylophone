@@ -340,6 +340,7 @@ snapcraft
 sota
 soundeffectmanager
 sourcei
+ssize
 statusline
 stdbool
 stdint
@@ -409,6 +410,7 @@ wdelete
 wduplicate
 werror
 wextra
+wformat
 wimplicit
 winfinite
 winget

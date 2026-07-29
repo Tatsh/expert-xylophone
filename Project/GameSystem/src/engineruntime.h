@@ -71,7 +71,7 @@ void DispatchListenerList(int nElapsedMs);
  * @param nSize The number of bytes to clear.
  * @ghidraAddress 0x12e900
  */
-void ZeroMemoryIfNonNull(void *pBuffer, size_t nSize);
+void ZeroMemoryIfNonNull(void *_Nullable pBuffer, size_t nSize);
 
 #ifdef __cplusplus
 }

@@ -196,7 +196,8 @@ static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
         return count;
     }
     // Reserve one extra row for the local player when their rank falls beyond the loaded page.
-    return count + (count < self.localPlayerScore.rank ? 1 : 0);
+    // GKScore's rank is a signed NSInteger, so compare in that domain rather than promoting it.
+    return count + ((NSInteger)count < self.localPlayerScore.rank ? 1 : 0);
 }
 
 - (void)loadRanking {
@@ -356,7 +357,7 @@ static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
 
     GKScore *score;
     NSString *name;
-    if (indexPath.row == self.arrayScore.count) {
+    if (indexPath.row == (NSInteger)self.arrayScore.count) {
         // The final synthetic row shows the local player's own out-of-page score.
         score = self.localPlayerScore;
         name = [GKLocalPlayer localPlayer].alias;

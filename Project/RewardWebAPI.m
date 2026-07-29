@@ -267,8 +267,10 @@ static BOOL RewardResponseIsSuccess(id response) {
             [ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorUdidSetupFailed]);
         return;
     }
+    // The merge helper declares NSDictionary * but always returns the NSMutableDictionary it
+    // built, and the signature and cfr entries are added to it below.
     NSMutableDictionary *signedParameters =
-        [ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
+        (NSMutableDictionary *)[ApplilinkUtilities userAgentParametersJoinDictionary:parameters];
     [parameters removeAllObjects];
     [RewardWebAPI setSignatureWithParameters:signedParameters];
     [signedParameters setValue:kParamCfrValue forKey:kParamCfr];

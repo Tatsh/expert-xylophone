@@ -784,7 +784,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         return;
     }
     switch (info.getButtonState) {
-    case 0: {
+    case StoreExtendNoteButtonStateMoreInfo: {
         // The pack must be selected before its individual notes can be bought.
         self.moveToPackID = info.packID;
         UIAlertView *alert = [UIAlertView showPurchasePack:info.packName delegate:self];
@@ -792,14 +792,19 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [alert show];
         break;
     }
-    case 1:
+    case StoreExtendNoteButtonStatePurchase:
         [self startPurchase:info];
         break;
-    case 2:
+    case StoreExtendNoteButtonStateDownloadBin:
         [self startDownloadExtendNote:info];
         break;
-    case 3:
+    case StoreExtendNoteButtonStateDownloadNote:
         [self startDownloadExtendNote:info];
+        break;
+    case StoreExtendNoteButtonStateError:
+    case StoreExtendNoteButtonStateInstalled:
+        // The binary's switch covers only states 0 through 3, so an inconsistent or fully
+        // installed item does nothing when its button is tapped.
         break;
     }
 }

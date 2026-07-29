@@ -80,31 +80,31 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x6646c (getter)
  * @ghidraAddress 0x6647c (setter)
  */
-@property(nonatomic, strong) NSString *musicNameHira;
+@property(nonatomic, strong, nullable) NSString *musicNameHira;
 /**
  * @brief The romanised title.
  * @ghidraAddress 0x664b4 (getter)
  * @ghidraAddress 0x664c4 (setter)
  */
-@property(nonatomic, strong) NSString *musicNameRoman;
+@property(nonatomic, strong, nullable) NSString *musicNameRoman;
 /**
  * @brief The artist name.
  * @ghidraAddress 0x664fc (getter)
  * @ghidraAddress 0x6650c (setter)
  */
-@property(nonatomic, strong) NSString *artistName;
+@property(nonatomic, strong, nullable) NSString *artistName;
 /**
  * @brief The hiragana reading of the artist name.
  * @ghidraAddress 0x66544 (getter)
  * @ghidraAddress 0x66554 (setter)
  */
-@property(nonatomic, strong) NSString *artistNameHira;
+@property(nonatomic, strong, nullable) NSString *artistNameHira;
 /**
  * @brief The romanised artist name.
  * @ghidraAddress 0x6658c (getter)
  * @ghidraAddress 0x6659c (setter)
  */
-@property(nonatomic, strong) NSString *artistNameRoman;
+@property(nonatomic, strong, nullable) NSString *artistNameRoman;
 /**
  * @brief The sort key derived from the title reading.
  * @ghidraAddress 0x665d4 (getter)

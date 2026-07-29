@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised overlay, or @c nil.
  * @ghidraAddress 0x137b0c
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the overlay content: the dimming base view and its eight grey spotlight layers, the

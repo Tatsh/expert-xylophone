@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised cell, or @c nil.
  * @ghidraAddress 0xd922c
  */
-- (nullable instancetype)initWithStyle:(UITableViewCellStyle)style
-                       reuseIdentifier:(nullable NSString *)reuseIdentifier;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(nullable NSString *)reuseIdentifier;
 
 #pragma mark Drawing
 

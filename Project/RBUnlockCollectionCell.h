@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised cell, or @c nil.
  * @ghidraAddress 0x18fa28
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Lay out the framed backdrop, artwork, dimming, point-label, unlock, and badge subviews

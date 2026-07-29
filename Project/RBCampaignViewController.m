@@ -671,7 +671,7 @@ static NSString *const kCampaignIdFormat = @"%d";
     }
     StoreCampaignItemInfo *item = self.downloadMusicList[row];
     if (item != nil && item.linkURL != nil) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:item.linkURL]];
+        [[UIApplication sharedApplication] openURL:item.linkURL];
     }
 }
 

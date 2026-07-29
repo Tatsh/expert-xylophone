@@ -162,7 +162,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
                 callback(analysisError);
             }
             sInitializingFlg = NO;
-            [[RecommendCore sharedInstance] getAllAdStatusWithCallback:^(NSError *_Nullable error) {
+            [[RecommendCore sharedInstance] getAllAdStatusWithCallback:^(NSError *_Nullable adStatusError) {
               /** @ghidraAddress 0x214a44 */
               // After the ad-status refresh, prefetch the installed-application list (its result is
               // discarded — a warm-up of the appli-list cache).

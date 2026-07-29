@@ -2157,21 +2157,6 @@ int PhoneStandalonePrefixFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the under-digit prefix glyph for a phone digit-family base, or a supplied fallback for an
-// unlisted family (the leading digit's own part id).
-int PhoneUnderPrefixFor(int nDigitPartBase, int nFallbackPartId) {
-    switch (nDigitPartBase) {
-    case kPhoneFamilyRateBase:
-        return kPhoneRateUnderPrefix;
-    case kPhoneFamilyExpBase:
-        return kPhoneExpUnderPrefix;
-    case kPhoneFamilyBigBase:
-        return kPhoneBigUnderPrefix;
-    default:
-        return nFallbackPartId;
-    }
-}
-
 // The rank-family monospace digit base the number-pair renderer draws with, its slash separator
 // part id, and the number of digit slots each of the pair's numbers extracts.
 constexpr int kPairDigitBase = 0xe0;

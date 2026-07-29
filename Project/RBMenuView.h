@@ -111,10 +111,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Fade the whole menu out, stopping the news and background effect, and run the closing
  * tutorial step if needed.
- * @param hideAnimation The completion object invoked once the fade finishes.
+ * @param hideAnimation The completion block invoked once the fade finishes.
  * @ghidraAddress 0xaaac8
  */
-- (void)hideAnimation:(nullable id)hideAnimation;
+- (void)hideAnimation:(nullable void (^)(void))hideAnimation;
 
 /**
  * @brief Whether the menu is currently shown.

@@ -28,7 +28,7 @@ constexpr int kNoteKindTap = 0;
 // the live note list: matching-side notes take the recorded judge, JR flag, long rate, and (for
 // slide notes) each sub-point judge; a skipped just-reflec entry back-fills an unmatched tap head as
 // a just-reflec miss.
-void ApplyReplayForSide(ReplayData *pReplay, unsigned int nGhostSide) {
+void ApplyReplayForSide(ReplayData *pReplay, int nGhostSide) {
     NoteEffectMgr *pMgr = NoteEffectMgr::shared();
     int nLiveIndex = 0;
     int nPendingJustReflec = 0;
@@ -111,7 +111,8 @@ void ApplyReplayGhostToNotes() {
     // opposite side.
     const int nPlayColor = pGameSystem->GetPlayColor();
     const int nFirstSide = NoteEffectMgr::shared()->FindNoteByIndex(0)->GetSide();
-    const unsigned int nGhostSide =
-        nFirstSide == nPlayColor ? nPlayColor : static_cast<unsigned int>(nPlayColor == 0 ? 1 : 0);
+    // Every side value in play (the play colour, a note's side, the no-side sentinel 3) is a
+    // non-negative int, so the ghost side is one too.
+    const int nGhostSide = nFirstSide == nPlayColor ? nPlayColor : (nPlayColor == 0 ? 1 : 0);
     ApplyReplayForSide(pReplay, nGhostSide);
 }
