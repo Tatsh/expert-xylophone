@@ -89,8 +89,13 @@ public:
 
     /**
      * @brief Advances every active full-combo effect by one frame and emits its sprites.
-     * Reconstruction pending.
-     * @param flDelta The elapsed frame count.
+     *
+     * Clears the three batch counts, derives each side's lane-row base from the near lane's slope,
+     * then for every active player colour advances the effect clock, fires the themed voice cue once
+     * past its threshold, emits the seven sprite groups (the lane beams, column flares, and orbiting
+     * sparks; then the centre banner, the @c FULLCOMBO! letters with their glow pass, and the
+     * trailing sparkle sweep), and finally publishes the batch counts.
+     * @param flDelta The elapsed frame time, in milliseconds.
      * @ghidraAddress 0x10f4b8
      */
     void Update(float flDelta);
@@ -111,8 +116,8 @@ private:
     struct EffectRecord {
         bool m_bActive = {}; // +0x00: whether the effect is playing.
         // unsigned char m_aPad1[3]; // +0x01 (alignment padding, compiler-inserted)
-        int m_nTimer = {};  // +0x04: the effect animation timer.
-        bool m_bFlag2 = {}; // +0x08: a secondary state flag, cleared on activation.
+        float m_flTimer = {};    // +0x04: the effect animation clock, in milliseconds.
+        bool m_bVoiceFired = {}; // +0x08: set once the effect has fired its themed voice cue.
         // unsigned char m_aPad9[3]; // +0x09 (alignment padding, compiler-inserted)
     };
 
