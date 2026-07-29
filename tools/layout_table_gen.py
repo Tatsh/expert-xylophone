@@ -89,6 +89,22 @@ TABLES = [
     (0x1003DBE80, "g_LimelightCenterPositionPhoneDefault", 0x10, 1, RECT),
     (0x1003DDD90, "g_aLimelightColorMarkerRects", 0x10, 39, RECT),
     (0x1003DE000, "g_LimelightColorMarkerOrigin", 0x08, 1, PAIR),
+    # Colette (0x7b3b4)
+    (0x1003D0010, "g_aColettePartsPad", 0x18, 348, PARTS),
+    (0x1003D20B0, "g_aColettePartsPhone", 0x18, 400, PARTS),
+    (0x1003D4630, "g_aResultLayoutPosition", 0x08, 228, PAIR),
+    (0x1003D4D50, "g_aPhoneAnchorPortrait", 0x0C, 168, ANCHOR),
+    (0x1003D5530, "g_aPhoneAnchorDefault", 0x0C, 168, ANCHOR),
+    (0x1003D5D10, "g_aColetteSeparatorPhoneDefault", 0x14, 52, LAYOUT),
+    (0x1003D6120, "g_aColetteSeparatorPhonePortrait", 0x14, 52, LAYOUT),
+    (0x1003D6530, "g_aAnchorBoxPad", 0x14, 4, LAYOUT),
+    (0x1003D6580, "g_aAnchorBoxPortrait", 0x14, 4, LAYOUT),
+    (0x1003D65D0, "g_aAnchorBoxDefault", 0x14, 4, LAYOUT),
+    (0x1003D6620, "g_ColetteCenterPositionPhoneState", 0x10, 1, RECT),
+    (0x1003D6630, "g_ColetteCenterPositionPhonePortrait", 0x10, 1, RECT),
+    (0x1003D6640, "g_ColetteCenterPositionPhoneDefault", 0x10, 1, RECT),
+    (0x1003DC320, "g_aColetteColorMarkerRects", 0x10, 39, RECT),
+    (0x1003DC590, "g_ColetteColorMarkerOrigin", 0x08, 1, PAIR),
 ]
 
 

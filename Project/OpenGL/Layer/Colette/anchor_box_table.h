@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include "../Classic/classic_parts_data_table.h"
+#include "s_vector2.h"
+
 /**
  * @brief One non-phone anchor-box record: a base rectangle and the anchor mode that offsets it
  * relative to the play-field viewport.
@@ -32,6 +35,27 @@ constexpr int kAnchorBoxRecordCount = 4;
 extern AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount];      // @ghidraAddress 0x3d6530
 extern AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount]; // @ghidraAddress 0x3d6580
 extern AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount];  // @ghidraAddress 0x3d65d0
+
+// The number of records in each Colette phone-layout separator table.
+constexpr int kColetteSeparatorRecordCount = 52;
+
+// The Colette phone-layout separator tables (0x14-stride PhoneLayoutRecord), zero-initialised in
+// the binary's @c __common segment and filled at runtime; the orientation flag selects between
+// them.
+// They fill the span between the phone anchor tables and the anchor boxes exactly.
+// @ghidraAddress 0x3d5d10
+extern PhoneLayoutRecord g_aColetteSeparatorPhoneDefault[kColetteSeparatorRecordCount];
+// @ghidraAddress 0x3d6120
+extern PhoneLayoutRecord g_aColetteSeparatorPhonePortrait[kColetteSeparatorRecordCount];
+
+// The Colette colour-marker rectangles and their origin, zero-initialised in the binary's
+// @c __common segment and filled at runtime. The same shape as the Classic and Limelight pairs; the
+// record count and four-float shape are proven by the initialiser's writes, but the individual
+// coordinates' roles are not yet recovered, so they carry the shared rectangle field names.
+constexpr int kColetteColorMarkerRectCount = 39;
+// @ghidraAddress 0x3dc320
+extern PhoneLayoutRect g_aColetteColorMarkerRects[kColetteColorMarkerRectCount];
+extern S_VECTOR2 g_ColetteColorMarkerOrigin; // @ghidraAddress 0x3dc590
 
 // code: language=C++
 // kate: hl C++;
