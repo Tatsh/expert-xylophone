@@ -30,51 +30,76 @@ typedef NS_ENUM(NSInteger, AVBusStatus) {
 
 /**
  * @brief Prepares the bound source for playback (loads and readies its buffer).
+ * @return @c YES when a bound, idle player was prepared.
+ * @ghidraAddress 0x41798
  */
-- (void)prepare;
+- (BOOL)prepare;
 /**
  * @brief Binds a sound source to this voice and returns the voice's new current id.
  * @param source The source identifier to bind.
  * @return The voice's current id, packed into the low half of a play handle by the mixer.
+ * @ghidraAddress 0x4169c
  */
 - (unsigned int)setSource:(unsigned int)source;
 /**
- * @brief Unbinds the voice's current source.
+ * @brief Unbinds the voice's current source and invalidates its outstanding play handles.
+ * @return @c YES when a player was released.
+ * @ghidraAddress 0x4171c
  */
-- (void)removeSource;
+- (BOOL)removeSource;
 /**
  * @brief Whether the voice is currently bound to @p source.
  * @param source The source identifier to test.
  * @return @c YES when the voice holds @p source.
+ * @ghidraAddress 0x41f20
  */
 - (BOOL)isSameSource:(unsigned int)source;
 /**
  * @brief Starts (or resumes) playback of the bound source.
+ * @return @c YES when the voice was in a playable (prepared or paused) state.
+ * @ghidraAddress 0x41898
  */
-- (void)play;
+- (BOOL)play;
 /**
  * @brief Stops playback and rewinds the voice.
+ * @return @c YES when the voice held a player.
+ * @ghidraAddress 0x41964
  */
-- (void)stop;
+- (BOOL)stop;
 /**
- * @brief Pauses playback, leaving the play position in place.
+ * @brief Pauses playback. The binary stops the underlying player rather than pausing it, so the
+ * play position is not retained.
+ * @return @c YES when the voice held a player.
+ * @ghidraAddress 0x41a08
  */
-- (void)pause;
+- (BOOL)pause;
 /**
  * @brief Resumes playback from a paused state.
+ * @return @c YES when the voice was paused and holds a player.
+ * @ghidraAddress 0x41afc
  */
-- (void)offPause;
+- (BOOL)offPause;
 /**
  * @brief Sets the voice's playback volume.
  * @param volume The gain in the range zero to one.
+ * @return @c YES when the voice held a player.
+ * @ghidraAddress 0x41bc0
  */
-- (void)setVolume:(float)volume;
+- (BOOL)setVolume:(float)volume;
+/**
+ * @brief The voice's playback volume.
+ * @return The player's gain, or one when no source is bound.
+ * @ghidraAddress 0x41c64
+ */
+- (float)volume;
 /**
  * @brief The voice's current id, matched against a play handle's low half to resolve the voice.
+ * @ghidraAddress 0x41f38
  */
 - (unsigned int)currentID;
 /**
  * @brief The voice's playback state.
+ * @ghidraAddress 0x41d04
  */
 - (AVBusStatus)status;
 
