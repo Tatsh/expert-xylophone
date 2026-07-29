@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  * In debug mode the list comes from @c RecommendDebug; otherwise it is unarchived from the
  * @c ApplilinkRecommend.allAdData blob under its @c banner_display_status_list key.
  * @return The banner-display-status records, or @c nil.
- * @ghidraAddress 0x126e90
+ * @ghidraAddress 0x226e90
  */
 + (nullable NSArray *)getBannerDisplayStatusList;
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
  * In debug mode the list comes from @c RecommendDebug; otherwise it is unarchived from the
  * @c ApplilinkRecommend.allAdData blob under its @c ad_model_setting_list key.
  * @return The advert-model setting records, or @c nil.
- * @ghidraAddress 0x126fbc
+ * @ghidraAddress 0x226fbc
  */
 + (nullable NSArray *)getAdModelSettingList;
 
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Unarchived from the @c ApplilinkRecommend.allAdData blob under its @c list key.
  * @return The advert records, or @c nil.
- * @ghidraAddress 0x1270e8
+ * @ghidraAddress 0x2270e8
  */
 + (nullable NSArray *)getAdList;
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Unarchived from the @c ApplilinkRecommend.allAdData blob under its @c interstitial_spec_list key.
  * @return The interstitial-specification dictionary, or @c nil.
- * @ghidraAddress 0x1271c4
+ * @ghidraAddress 0x2271c4
  */
 + (nullable NSDictionary *)getInterstitialSpecList;
 
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Looks the advert model up in the banner-display-status list and returns its @c status value.
  * @param adModel The advert-model identifier.
  * @return The advert @c status value, or zero when the model is absent or malformed.
- * @ghidraAddress 0x1272a0
+ * @ghidraAddress 0x2272a0
  */
 + (int)getAdStatusByAdModel:(int)adModel;
 
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Narrows the advert list to the records whose @c ad_id equals @p adId and returns the first match.
  * @param adId The advert identifier.
  * @return The advert-data record, or @c nil.
- * @ghidraAddress 0x127460
+ * @ghidraAddress 0x227460
  */
 + (nullable NSDictionary *)getAdDataByAdId:(int)adId;
 
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
  * whose @c primary_flg is set, and returns that record.
  * @param appliId The advert application identifier.
  * @return The advert-data record, or @c nil.
- * @ghidraAddress 0x127570
+ * @ghidraAddress 0x227570
  */
 + (nullable NSDictionary *)getAdDataWithAppliId:(nullable NSString *)appliId;
 
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The advert list narrowed to a single advert type.
  * @param adType The advert-type identifier.
  * @return The advert records whose @c ad_type equals @p adType.
- * @ghidraAddress 0x1277dc
+ * @ghidraAddress 0x2277dc
  */
 + (nullable NSArray *)getAdListByAdType:(int)adType;
 
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Draws a lottery banner, resolves its cached @c banner_url to the on-disk banner-cache path, and
  * records the creative identifier.
  * @return An array with the single resolved banner record, or @c nil.
- * @ghidraAddress 0x1278a0
+ * @ghidraAddress 0x2278a0
  */
 + (nullable NSArray *)getAppBannerList;
 
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Resolves each drawn lottery-icon @c banner_icon_url to its cached file name and records the
  * creative identifier.
  * @return The resolved icon records.
- * @ghidraAddress 0x127c50
+ * @ghidraAddress 0x227c50
  */
 + (nullable NSArray *)getAppIconList;
 
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Draws a lottery interstitial, resolves its cached @c interstitial_banner_url to the on-disk
  * banner-cache path, records the creative identifier, and attaches the install-flag string.
  * @return An array with the single resolved interstitial record, or @c nil.
- * @ghidraAddress 0x127fec
+ * @ghidraAddress 0x227fec
  */
 + (nullable NSArray *)getAppInterstitialList;
 
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Filters the banner-type adverts to the ones still within their display term, then picks one
  * uniformly at random.
  * @return The drawn banner record, or @c nil.
- * @ghidraAddress 0x1283c8
+ * @ghidraAddress 0x2283c8
  */
 + (nullable NSDictionary *)getLotteryBannerData;
 
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Filters the icon-type adverts to the ones still within their display term, shuffles them, and
  * returns the first four (or fewer).
  * @return The drawn icon records, or @c nil.
- * @ghidraAddress 0x1284c4
+ * @ghidraAddress 0x2284c4
  */
 + (nullable NSArray *)getLotteryIconData;
 
@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Reduces the interstitial display-specification list to the entries whose daily and total display
  * counts and install state still allow a display, then draws one weighted by priority.
  * @return The drawn interstitial record, or @c nil.
- * @ghidraAddress 0x128624
+ * @ghidraAddress 0x228624
  */
 + (nullable NSDictionary *)getLotteryInterstitialData;
 
@@ -164,14 +164,14 @@ NS_ASSUME_NONNULL_BEGIN
  * cumulative priority window contains the draw.
  * @param list The candidate records, each carrying a @c priority.
  * @return The drawn record, or @c nil.
- * @ghidraAddress 0x128770
+ * @ghidraAddress 0x228770
  */
 + (nullable NSDictionary *)getLotteryInterstitialDataWithList:(nullable NSArray *)list;
 
 /**
  * @brief The interstitial display-specification list sorted by descending priority.
  * @return The @c ad_display_spec entries sorted by @c priority.
- * @ghidraAddress 0x128a18
+ * @ghidraAddress 0x228a18
  */
 + (nullable NSArray *)getInterstitialSpecPriorityList;
 
@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @c max_display_count_daily and @c max_display_count_total limits.
  * @param list The @c ad_display_spec entries to filter.
  * @return The entries that may still be displayed.
- * @ghidraAddress 0x128b28
+ * @ghidraAddress 0x228b28
  */
 + (nullable NSArray *)getInterstitialSpecCountForAdDisplaySpecList:(nullable NSArray *)list;
 
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
  * term has not expired, carrying the @c priority through to each surviving record.
  * @param list The @c ad_display_spec entries to filter.
  * @return The entries that may still be displayed.
- * @ghidraAddress 0x129078
+ * @ghidraAddress 0x229078
  */
 + (nullable NSArray *)getInterstitialSpecInstallForAdDisplaySpecList:(nullable NSArray *)list;
 
@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @c interstitial_banner_url.
  * @param list The @c ad_display_spec entries.
  * @return The interstitial advert records.
- * @ghidraAddress 0x1297c4
+ * @ghidraAddress 0x2297c4
  */
 + (nullable NSArray *)getAdInterstitialUrlListTermForAdDisplaySpecList:(nullable NSArray *)list;
 
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The interstitial advert records of a list that carry a banner URL.
  * @param list The advert records to filter.
  * @return The records with a non-empty @c interstitial_banner_url.
- * @ghidraAddress 0x129ae8
+ * @ghidraAddress 0x229ae8
  */
 + (nullable NSArray *)getAdInterstitialUrlListTermForList:(nullable NSArray *)list;
 
@@ -222,14 +222,14 @@ NS_ASSUME_NONNULL_BEGIN
  * Unarchives the @c adDisplayCountDaily blob and returns it only when its recorded @c adDisplayDate
  * matches the current day; otherwise @c nil.
  * @return The daily display-count dictionary, or @c nil.
- * @ghidraAddress 0x129ce4
+ * @ghidraAddress 0x229ce4
  */
 + (nullable NSDictionary *)getAdDisplayCountDailyDictionary;
 
 /**
  * @brief The archived total advert-display-count dictionary.
  * @return The total display-count dictionary, or @c nil.
- * @ghidraAddress 0x129ee0
+ * @ghidraAddress 0x229ee0
  */
 + (nullable NSDictionary *)getAdDisplayCountTotalDictionary;
 
@@ -241,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param adModel The advert-model identifier.
  * @param adLocation The ad-location identifier.
  * @return The advert-type identifier.
- * @ghidraAddress 0x129f90
+ * @ghidraAddress 0x229f90
  */
 + (int)getAdTypeWithAdModel:(int)adModel adLocation:(nullable NSString *)adLocation;
 
@@ -251,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Keeps the records whose @c external_ad_disp_mng_end_date is at or after the current time.
  * @param list The advert records to filter.
  * @return The records still within their display term.
- * @ghidraAddress 0x12a288
+ * @ghidraAddress 0x22a288
  */
 + (nullable NSArray *)getAdListTermForList:(nullable NSArray *)list;
 
@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The banner advert records of a list that carry a banner URL.
  * @param list The advert records to filter.
  * @return The records with a non-empty @c banner_url.
- * @ghidraAddress 0x12a610
+ * @ghidraAddress 0x22a610
  */
 + (nullable NSArray *)getAdBannerListForList:(nullable NSArray *)list;
 
@@ -267,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief A randomly shuffled copy of a list.
  * @param list The list to shuffle.
  * @return A new array with the elements of @p list in random order.
- * @ghidraAddress 0x12a884
+ * @ghidraAddress 0x22a884
  */
 + (nullable NSArray *)shuffled:(nullable NSArray *)list;
 
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param adLocation The ad-location identifier.
  * @return @c nil when the interstitial should be shown, otherwise a localised @c NSError describing
  * why it was suppressed.
- * @ghidraAddress 0x12aa30
+ * @ghidraAddress 0x22aa30
  */
 + (nullable NSError *)lotteryInterstitialWithAdLocation:(nullable NSString *)adLocation;
 
@@ -290,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @c default_scheme URL can be opened by the device; otherwise @c "0".
  * @param adData The advert-data record.
  * @return @c "1" or @c "0".
- * @ghidraAddress 0x12b200
+ * @ghidraAddress 0x22b200
  */
 + (nullable NSString *)getInstallFlgWithAdData:(nullable NSDictionary *)adData;
 
