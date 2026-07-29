@@ -12,6 +12,7 @@ namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 class C_DRAW_POLYGON_2D;
+class C_DRAW_POLYGON_3D;
 } // namespace ne
 
 /**
@@ -130,7 +131,13 @@ public:
     void BuildSprites();
 
     /**
-     * @brief Advances the frame layer by one frame and emits its sprites. Reconstruction pending.
+     * @brief Advances the frame layer by one frame, refreshing its geometry and fade alpha.
+     *
+     * Re-lays-out the overlay and rebuilds the 3D border whenever the viewport has changed size,
+     * then advances the fade channel toward its end. On the frame the fade moves — or the frame a
+     * snapped fade latches — the fade alpha is pushed into the 3D border's vertices, the 2D overlay
+     * mesh's vertices, and every live sprite slot, and the marker mesh is hidden once the alpha has
+     * fallen to the invisibility epsilon.
      * @param flDelta The elapsed frame count.
      * @ghidraAddress 0x17c6c8
      */
@@ -161,8 +168,15 @@ private:
      */
     MainFrameLayer();
 
-    // +0x08..+0x27: the frame's other sprite instancers and layout state, still being worked out.
-    unsigned char m_aReserved08[0x20] = {}; // +0x08
+    // +0x08..+0x0f: further layer state, still being worked out.
+    unsigned char m_aReserved08[8] = {}; // +0x08
+    ne::C_TEXTURE *m_pFrameTexture = {}; // +0x10: the frame atlas, from the texture cache.
+    // +0x18: the frame border's 16-vertex 3D mesh, whose vertices Build3dVertices lays out and whose
+    // per-vertex alpha follows the fade channel.
+    ne::C_DRAW_POLYGON_3D *m_pFrameMesh3d = {};
+    // +0x20: the marker's 8-vertex 3D mesh. Its visibility follows the fade alpha: it is hidden once
+    // the alpha falls to the invisibility epsilon.
+    ne::C_DRAW_POLYGON_3D *m_pMarkerMesh3d = {};
     // +0x28: the frame's 2D polygon mesh (a C_RENDER, so SetMainFrameEnabled toggles its visibility;
     // SetMainFrameOverlayLayout fills its 24 vertices through C_DRAW_POLYGON_2D::SetPos).
     ne::C_DRAW_POLYGON_2D *m_pFrameMesh2d = {};
@@ -179,8 +193,11 @@ private:
     unsigned char m_aReserved55[3] = {}; // +0x55
     LinearTween m_fadeChannel;           // +0x58: the frame alpha fade channel.
     bool m_bFadeDone = {};               // +0x6c: set when the fade snaps to its endpoint.
-    // +0x6d..+0x77: the remaining layer state, still being worked out.
-    unsigned char m_aReserved6d[0xb] = {}; // +0x6d
+    unsigned char m_aReserved6d[3] = {}; // +0x6d
+    // +0x70, +0x74: the viewport size the current layout and 3D mesh were built for; the per-frame
+    // step rebuilds both when the viewport changes.
+    float m_flLayoutWidth = {};
+    float m_flLayoutHeight = {};
 };
 
 // code: language=Objective-C++

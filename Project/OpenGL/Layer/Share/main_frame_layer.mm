@@ -4,6 +4,7 @@
 #include "RBUserSettingData.h"
 #include "gamesystem.h"
 #include "neDrawPolygon2D.h"
+#include "neDrawPolygon3D.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
@@ -24,6 +25,14 @@ constexpr float kFrameAlphaTransparent = 0.0f;
 
 // The frame mesh's single textured slot.
 constexpr int kFrameMeshSlot = 0;
+
+// The vertex counts of the two meshes the per-frame step fades: the 3D frame border and the 2D
+// overlay mesh.
+constexpr int kFrameMesh3dVertexCount = 16;
+constexpr int kFrameMesh2dVertexCount = 24;
+
+// The alpha at or below which the marker mesh counts as invisible and is hidden outright.
+constexpr float kAlphaInvisibleEpsilon = 0.001f; // @ghidraAddress 0x30c244
 
 // Halves a scaled dimension into a half-pixel UV offset.
 constexpr float kUvHalf = 0.5f;
@@ -188,6 +197,56 @@ void MainFrameLayer::SetFrameType(int nType) {
 void MainFrameLayer::BuildGeometry() {
     SetOverlayLayout();
     Build3dVertices();
+}
+
+/** @ghidraAddress 0x17c6c8 */
+void MainFrameLayer::Process(float flDelta) {
+    // Re-lay-out the overlay and the 3D border whenever the viewport has changed size.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    if (m_flLayoutWidth != pGameSystem->GetViewportWidth() ||
+        m_flLayoutHeight != pGameSystem->GetViewportHeight()) {
+        m_flLayoutWidth = pGameSystem->GetViewportWidth();
+        m_flLayoutHeight = pGameSystem->GetViewportHeight();
+        SetOverlayLayout();
+        Build3dVertices();
+    }
+
+    const float flDuration = m_fadeChannel.GetDuration();
+    if (flDuration > m_fadeChannel.GetElapsed()) {
+        // Advance the fade toward its end, clamping the elapsed time to the duration.
+        float flElapsed = m_fadeChannel.GetElapsed() + flDelta;
+        if (flElapsed > flDuration) {
+            flElapsed = flDuration;
+        }
+        m_fadeChannel.SetElapsed(flElapsed);
+        const float flFraction = flDuration == 0.0f ? 1.0f : flElapsed / flDuration;
+        m_fadeChannel.SetCurrent(m_fadeChannel.GetStart() +
+                                 flFraction * (m_fadeChannel.GetEnd() - m_fadeChannel.GetStart()));
+        // Raised and then cleared again below; the apply path is shared with the snapped fade.
+        m_bFadeDone = true;
+    } else if (!m_bFadeDone) {
+        // The fade is complete and its final alpha has already been applied.
+        return;
+    }
+    m_bFadeDone = false;
+
+    // Push the fade alpha into both meshes and every live sprite slot.
+    const auto nAlpha = static_cast<unsigned char>(static_cast<int>(m_fadeChannel.GetCurrent()));
+    for (int nVertex = 0; nVertex < kFrameMesh3dVertexCount; ++nVertex) {
+        m_pFrameMesh3d->SetAlpha(nVertex, nAlpha);
+    }
+    for (int nVertex = 0; nVertex < kFrameMesh2dVertexCount; ++nVertex) {
+        m_pFrameMesh2d->SetVertexAlpha(nVertex, nAlpha);
+    }
+    for (size_t nInstancer = 0; nInstancer < ARRAY_SIZE(m_apInstancers); ++nInstancer) {
+        ne::C_SPRITE_INSTANCING_2D *pInstancer = m_apInstancers[nInstancer];
+        for (int nSlot = 0; nSlot < pInstancer->GetSpriteCount(); ++nSlot) {
+            pInstancer->SetColorAlpha(nSlot, nAlpha);
+        }
+    }
+
+    // The marker mesh is hidden outright once the fade has taken it to invisible.
+    m_pMarkerMesh3d->SetVisible(m_fadeChannel.GetCurrent() > kAlphaInvisibleEpsilon);
 }
 
 /** @ghidraAddress 0x17c55c */
