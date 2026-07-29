@@ -5,6 +5,7 @@
 
 target_sources(rbplus PRIVATE
     ctask.mm
+    customize_variant_tables.mm
     deviceenvironment.mm
     enginecrypto.mm
     engineglobals.mm
@@ -17,6 +18,7 @@ target_sources(rbplus PRIVATE
     number_effect_layer.mm
     pause_gauge_layer.mm
     playtimer.mm
+    sprite_uv_table.cpp
     touchmanager.cpp
     ctask.h
     customize_variant_tables.h

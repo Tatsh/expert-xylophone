@@ -114,6 +114,43 @@ PauseGaugeLayer::~PauseGaugeLayer() {
 PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
 PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
 
+// The default-device sprite layout table: slot 0 is unused, slots 1 through 3 are the three lane
+// bars, 4 through 9 the lane end caps and dividers, and 10 through 12 the wide lane frames.
+// @ghidraAddress 0x308fe0
+const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[PauseGaugeLayer::kLaneSlotCount] = {
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, -75.0f, 36.0f, 9.0f, 76.0f, 18.0f, 453},
+    {0.0f, 0.0f, 36.0f, 9.0f, 76.0f, 18.0f, 454},
+    {0.0f, 75.0f, 36.0f, 9.0f, 76.0f, 18.0f, 455},
+    {0.0f, 0.0f, 0.0f, 25.0f, 39.0f, 50.0f, 456},
+    {0.0f, 0.0f, 0.0f, 25.0f, 39.0f, 50.0f, 457},
+    {0.0f, 0.0f, 0.0f, 25.0f, 39.0f, 50.0f, 458},
+    {0.0f, 0.0f, 0.0f, 25.0f, 1.0f, 50.0f, 459},
+    {0.0f, 0.0f, 0.0f, 25.0f, 1.0f, 50.0f, 460},
+    {0.0f, 0.0f, 0.0f, 25.0f, 1.0f, 50.0f, 461},
+    {0.0f, -75.0f, 119.0f, 24.0f, 238.0f, 48.0f, 462},
+    {0.0f, 0.0f, 119.0f, 24.0f, 238.0f, 48.0f, 463},
+    {0.0f, 75.0f, 119.0f, 24.0f, 238.0f, 48.0f, 464},
+};
+
+// The alt-frame-device sprite layout table: only the three lane bars are drawn, so every other slot
+// is zeroed in the binary. @ghidraAddress 0x308e74
+const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[PauseGaugeLayer::kLaneSlotCount] = {
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, -88.0f, 168.0f, 33.0f, 336.0f, 66.0f, 252},
+    {0.0f, 0.0f, 168.0f, 33.0f, 336.0f, 66.0f, 253},
+    {0.0f, 88.0f, 168.0f, 33.0f, 336.0f, 66.0f, 254},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0},
+};
+
 namespace {
 // The gauge rectangle sizes each device layout uses for every lane: the iPad draws
 // a 336x66 rectangle, every other device a 220x50 one.

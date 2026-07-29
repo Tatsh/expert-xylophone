@@ -14,6 +14,10 @@ namespace ne {
 // The texture cache's circular-list head-holder, created lazily by EnsureCacheList.
 C_TEXTURE **g_ppTextureCacheHead = nullptr; // @ghidraAddress 0x3cff30
 
+// The running total of the bytes held by all live textures, accumulated as textures are uploaded
+// and released. @ghidraAddress 0x3cff28
+int g_dwTotalTextureMemory = 0;
+
 // Sampler-parameter indices and the default values a freshly created texture is given.
 enum {
     kTexParamMinFilter = 0,

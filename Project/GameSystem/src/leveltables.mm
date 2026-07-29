@@ -9,6 +9,7 @@
 
 #include "leveltables.h"
 
+#include <climits>
 #include <cstring>
 
 #import <Foundation/Foundation.h>
@@ -21,18 +22,40 @@
 static LevelTables *g_pLevelTables = nullptr; // @ghidraAddress 0x3df548
 
 // The packed {category, item} unlock table: the unlock level of each entry is its one-based position
-// in the table. Read-only ROM data in the binary.
+// in the table. The constructor consumes the first kUnlockCtorCount entries; the trailing entry is
+// the clamp target of GetLevelUnlockEntry and names no item.
+// @ghidraAddress 0x31066c
 constexpr int kUnlockCtorCount = 30;
 constexpr int kUnlockMaxIndex = 30;
-extern const LevelUnlockEntry g_aLevelUnlockTable[kUnlockMaxIndex + 1]; // @ghidraAddress 0x31066c
+const LevelUnlockEntry g_aLevelUnlockTable[kUnlockMaxIndex + 1] = {
+    {3, 1},  {1, 6}, {2, 2},  {0, 2}, {1, 11}, {4, 1}, {2, 9},  {3, 2},  {1, 17}, {2, 3}, {0, 3},
+    {1, 21}, {4, 2}, {0, 6},  {3, 3}, {1, 7},  {2, 4}, {0, 4},  {1, 12}, {4, 3},  {3, 4}, {1, 18},
+    {2, 5},  {0, 5}, {1, 22}, {4, 4}, {3, 5},  {4, 5}, {2, 10}, {3, 6},  {3, -1},
+};
 
-// The cumulative experience threshold for each level. Read-only ROM data in the binary.
+// The cumulative experience threshold for each level. The final entry is the unreachable sentinel
+// that caps the last level. @ghidraAddress 0x3cf7e8
 constexpr int kExpTableMaxLevel = 30;
-extern const unsigned int g_aLevelExpThreshold[kExpTableMaxLevel + 1]; // @ghidraAddress 0x3cf7e8
+const unsigned int g_aLevelExpThreshold[kExpTableMaxLevel + 1] = {
+    10u,    990u,   1100u,  1200u,  1300u,  1400u,  1500u,  2500u,  2700u,    2900u, 3100u,
+    3300u,  3500u,  3700u,  5200u,  5600u,  6000u,  6400u,  6800u,  7200u,    9200u, 9800u,
+    10400u, 11000u, 11600u, 12200u, 15200u, 18200u, 25500u, 35500u, UINT_MAX,
+};
 
-// The per-level experience-gain step table. Read-only ROM data in the binary.
+// The per-level experience-gain step table. @ghidraAddress 0x310764
 constexpr int kStepTableMaxLevel = 9;
-extern const int g_aLevelExpStep[kStepTableMaxLevel + 1]; // @ghidraAddress 0x310764
+const int g_aLevelExpStep[kStepTableMaxLevel + 1] = {
+    400,
+    420,
+    440,
+    465,
+    495,
+    530,
+    570,
+    610,
+    655,
+    700,
+};
 
 namespace {
 

@@ -7,6 +7,10 @@
 // The engine play-timing singleton, created on first use by PlayTimer::shared.
 PlayTimer *g_pPlayTimer = nullptr; // @ghidraAddress 0x3de020
 
+// The per-frame time step, one 60th of a second in milliseconds, that scales a delay-frame count
+// into the play-timing offset. @ghidraAddress 0x2ef178
+const float g_flDelayFrameToSeconds = 16.66659927368164f;
+
 namespace {
 
 // The seconds-to-milliseconds scale applied to the per-frame interval (@ghidraAddress 0x2eeea0) and

@@ -36,10 +36,30 @@ OSStatus RenderVoiceAudioCallback(void *pRefCon,
     return noErr;
 }
 
-// The mixer's decibel-gain lookup table, indexed by the engine volume level. Seeded in the engine
-// data segment.
+// The number of engine volume levels the gain table covers (a MIDI-style 0 through 127 range).
+constexpr int kVoiceGainLevelCount = 128;
+
+// The mixer's decibel-gain lookup table, indexed by the engine volume level (0 through 127). Entry
+// 0 is silence and entry 127 is unity gain; every other entry is 20*log10(index/127), rounded to
+// three decimals as stored in the binary.
 // @ghidraAddress 0x2eef58
-extern const float g_aVoiceGainTable[];
+const float g_aVoiceGainTable[kVoiceGainLevelCount] = {
+    -120.0f,  -42.076f, -36.055f, -32.534f, -30.035f, -28.097f, -26.513f, -25.174f, -24.014f,
+    -22.991f, -22.076f, -21.248f, -20.492f, -19.797f, -19.154f, -18.554f, -17.994f, -17.467f,
+    -16.971f, -16.501f, -16.055f, -15.632f, -15.228f, -14.842f, -14.472f, -14.117f, -13.777f,
+    -13.449f, -13.133f, -12.828f, -12.534f, -12.249f, -11.973f, -11.706f, -11.446f, -11.195f,
+    -10.95f,  -10.712f, -10.48f,  -10.255f, -10.035f, -9.82f,   -9.611f,  -9.407f,  -9.207f,
+    -9.012f,  -8.821f,  -8.634f,  -8.451f,  -8.272f,  -8.097f,  -7.925f,  -7.756f,  -7.591f,
+    -7.428f,  -7.269f,  -7.112f,  -6.959f,  -6.808f,  -6.659f,  -6.513f,  -6.369f,  -6.228f,
+    -6.089f,  -5.952f,  -5.818f,  -5.685f,  -5.555f,  -5.426f,  -5.299f,  -5.174f,  -5.051f,
+    -4.929f,  -4.81f,   -4.691f,  -4.575f,  -4.46f,   -4.346f,  -4.234f,  -4.124f,  -4.014f,
+    -3.906f,  -3.8f,    -3.695f,  -3.59f,   -3.488f,  -3.386f,  -3.286f,  -3.186f,  -3.088f,
+    -2.991f,  -2.895f,  -2.8f,    -2.706f,  -2.614f,  -2.522f,  -2.431f,  -2.341f,  -2.252f,
+    -2.163f,  -2.076f,  -1.99f,   -1.904f,  -1.819f,  -1.735f,  -1.652f,  -1.57f,   -1.488f,
+    -1.408f,  -1.328f,  -1.248f,  -1.17f,   -1.092f,  -1.015f,  -0.938f,  -0.862f,  -0.787f,
+    -0.712f,  -0.638f,  -0.565f,  -0.492f,  -0.42f,   -0.349f,  -0.278f,  -0.208f,  -0.138f,
+    -0.069f,  0.0f,
+};
 
 namespace {
 
