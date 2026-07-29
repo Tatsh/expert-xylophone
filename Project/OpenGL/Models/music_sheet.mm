@@ -168,11 +168,11 @@ constexpr int kNoteTypeHold = 1;
 // The tolerance, in ticks, within which a note counts as near a query time.
 constexpr int kNearTimeTolerance = 2;
 
-// The chart-note-count thresholds selecting a scroll-speed tier, and the per-tier scroll speeds
-// (@ghidraAddress 0x308af0).
+// The chart-note-count thresholds selecting a density tier, and the per-tier fraction of the notes
+// that becomes the chart's just-reflec quota (@ghidraAddress 0x308af0).
 constexpr int kSpeedTierMidThreshold = 200;
 constexpr int kSpeedTierHighThreshold = 400;
-constexpr float kScrollSpeeds[] = {0.05f, 0.04f, 0.03f};
+constexpr float kJustReflecRates[] = {0.05f, 0.04f, 0.03f};
 
 // The note flag bits the legacy parser derives.
 constexpr unsigned int kNoteFlagSameLane = 1; // Paired with another note at the same time and side.
@@ -226,15 +226,15 @@ void CMusicSheet2::InitPathNodeRegion() {
     m_nSlideRecordCount = 0;
     m_nChartEndTimeScaled = 0;
     m_nField3c = 0;
-    m_nChartNoteCount = 0;
-    m_nChartNoteCountSide1 = 0;
+    m_aChartNoteCounts[0] = 0;
+    m_aChartNoteCounts[1] = 0;
     for (int nSide = 0; nSide < kSideCount; ++nSide) {
         m_aSideObjectCounts[nSide] = 0;
         m_aPlayableCounts[nSide] = 0;
         m_aSideCount[nSide] = 0;
     }
-    m_nScrollTiming = 0;
-    m_nRemainTiming = 0;
+    m_nJustReflecQuota = 0;
+    m_nJustReflecQuotaRemain = 0;
 }
 
 /** @ghidraAddress 0x12f828 */
@@ -434,8 +434,8 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     }
 
     // Publish the per-side counts into the reader's count fields.
-    m_nChartNoteCount = perSideCounters[6];
-    m_nChartNoteCountSide1 = perSideCounters[7];
+    m_aChartNoteCounts[0] = perSideCounters[6];
+    m_aChartNoteCounts[1] = perSideCounters[7];
     m_aSideObjectCounts[0] = perSideCounters[4];
     m_aSideObjectCounts[1] = perSideCounters[5];
     m_aPlayableCounts[0] = perSideCounters[2];
@@ -445,7 +445,7 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     delete[] m_pSideIndexArray;
     m_pSideIndexArray = new int[m_nFreeNoteCount];
     const int nOwnSide = pGameSystem->GetPlayColor();
-    m_nFirstIndex = (nOwnSide == 0) ? m_nChartNoteCountSide1 : m_nChartNoteCount;
+    m_nFirstIndex = (nOwnSide == 0) ? m_aChartNoteCounts[1] : m_aChartNoteCounts[0];
     const int nOtherPlayable = (nOwnSide == 0) ? m_aPlayableCounts[1] : m_aPlayableCounts[0];
     m_nIndexCount = 0;
 
@@ -925,16 +925,16 @@ int CMusicSheet2::CalculateChartTiming() {
 
     // Select a scroll-speed tier from the chart note count and compute the timings.
     int nTier = 0;
-    if (m_nChartNoteCount > kSpeedTierHighThreshold) {
+    if (m_aChartNoteCounts[0] > kSpeedTierHighThreshold) {
         nTier = 2;
-    } else if (m_nChartNoteCount > kSpeedTierMidThreshold) {
+    } else if (m_aChartNoteCounts[0] > kSpeedTierMidThreshold) {
         nTier = 1;
     }
-    const float flSpeed = kScrollSpeeds[nTier];
-    m_nScrollTiming = static_cast<int>(static_cast<float>(m_nChartNoteCount) * flSpeed);
-    m_nRemainTiming =
-        static_cast<int>(flSpeed * static_cast<float>(m_nChartNoteCount - m_aSideCount[0]));
-    return m_nRemainTiming;
+    const float flSpeed = kJustReflecRates[nTier];
+    m_nJustReflecQuota = static_cast<int>(static_cast<float>(m_aChartNoteCounts[0]) * flSpeed);
+    m_nJustReflecQuotaRemain =
+        static_cast<int>(flSpeed * static_cast<float>(m_aChartNoteCounts[0] - m_aSideCount[0]));
+    return m_nJustReflecQuotaRemain;
 }
 
 /** @ghidraAddress 0x12f604 */

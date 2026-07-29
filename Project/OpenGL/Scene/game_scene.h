@@ -403,6 +403,23 @@ private:
      */
     void ResetNotePlaybackState(bool bApplyGhost);
 
+    /**
+     * @brief Persists the finished play's score to the Core Data record and writes its replay ghost.
+     *
+     * Fetches (or creates) the current song's @c ScoreData record, tallies the per-lane judgement
+     * counts (including each slide note's per-point results) and computes the base-score total, then
+     * — for the played difficulty's columns — stores the score, achievement rate, and rank when they
+     * beat the stored best (raising the new-record flag), and marks a full combo. When anything
+     * changed it recomputes the record's tamper hash; it always refreshes the last-play date and
+     * bumps the play counter, then saves the managed object context (skipping the tutorial-song
+     * sentinel). Finally, when no replay exists yet for this tune and difficulty or the score
+     * improved, it builds a @c ReplayData ghost (tune, difficulty, seed, note count, score, combo,
+     * judgement cells, rate, date, and user) with a @c ReplayNote per played note — nesting a
+     * sub-note per slide point — and saves it.
+     * @ghidraAddress 0x14d600
+     */
+    void PersistScoreAndSaveReplay();
+
     int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
                                          //        frame).
     int m_nPlayTime = {};                // +0x50: the accumulated play time.

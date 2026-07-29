@@ -204,6 +204,18 @@ public:
     int GetRecordedJudge() const {
         return m_nColorLockState;
     }
+    /** @brief The note's judgement grade (the per-note COOL/GREAT/GOOD/MISS index). */
+    int GetJudgeGrade() const {
+        return m_nJudgeGrade;
+    }
+    /** @brief The note's shot travel progress (recorded as the replay long-note rate). */
+    float GetShotProgress() const {
+        return m_flShotProgress;
+    }
+    /** @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag). */
+    bool IsShotResolved() const {
+        return m_bShotResolved;
+    }
 
     /**
      * @brief Advances the note's position by one frame: saves the previous position, then either

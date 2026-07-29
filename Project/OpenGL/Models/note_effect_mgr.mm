@@ -465,7 +465,7 @@ void NoteEffectMgr::SetActiveMusicSheet(rb::CMusicSheet2 *pMusicSheet) {
         return;
     }
     // Pick the density tier from the chart's note count.
-    const int nChartNotes = pMusicSheet->GetChartNoteCount();
+    const int nChartNotes = pMusicSheet->GetChartNoteCount(0);
     if (nChartNotes < kDensityTierThreshold1) {
         m_nDensityTier = 0;
     } else if (nChartNotes < kDensityTierThreshold2) {

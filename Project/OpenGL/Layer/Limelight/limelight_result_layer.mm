@@ -324,7 +324,7 @@ void LimelightResultLayer::Update(float flDeltaTime) {
 /** @ghidraAddress 0x12ab60 */
 void LimelightResultLayer::InitializePhoneResultLayer() {
     m_nActive = 1;
-    m_bBonusCueArmed = GameSystem::GetGameSystem()->GetResultBonusFeatureActive();
+    m_bBonusCueArmed = GameSystem::GetGameSystem()->IsNewRecord();
     m_flBonusCueTimer = 0.0f;
     m_bTwitterAvailable = [RBViewController hasTwitterAPI];
 }

@@ -1949,7 +1949,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
 
     // Arm the score/gesture-active flag from the result-bonus feature, reset the hold timer, and
     // record whether the Twitter share API is available.
-    m_bScoreAnimActive = pGameSystem->GetResultBonusFeatureActive();
+    m_bScoreAnimActive = pGameSystem->IsNewRecord();
     m_flGestureHoldTimer = 0.0f;
     m_bTwitterAvailable = [RBViewController hasTwitterAPI];
 }

@@ -400,9 +400,16 @@ public:
     int GetPastelBonusType() const {
         return m_nPastelBonusType;
     }
-    /** @brief Whether the result-screen bonus feature is active for the current play. */
-    bool GetResultBonusFeatureActive() const {
-        return m_nResultBonusFeature != 0;
+    /**
+     * @brief Whether the finished play set a new record, which arms the result screen's celebration
+     * cue.
+     */
+    bool IsNewRecord() const {
+        return m_nNewRecordFlag != 0;
+    }
+    /** @brief Records whether the finished play set a new record. */
+    void SetNewRecord(bool value) {
+        m_nNewRecordFlag = value ? 1 : 0;
     }
     /** @brief Stores the player's level, current experience, and experience gained this play. */
     void SetResultLevelExp(int nLevel, int nExp, int nGained) {
@@ -577,8 +584,9 @@ private:
     int m_nPlayerLevel = {};             // +0x108
     int m_nPlayerExp = {};               // +0x10c
     int m_nGainedExp = {};               // +0x110
-    int m_nResultBonusFeature = {};      // +0x114: gates the result-screen bonus feature (read at
-                                         //         result-screen init to arm the bonus cue).
+    int m_nNewRecordFlag = {};           // +0x114: set when the finished play beat the stored best
+                                         //         score or rate (read at result-screen init to arm
+                                         //         the celebration cue).
     int m_nMenuTutorialActive = {};      // +0x12c
     int m_nTutorialPhase = {};           // +0x130: the in-play tutorial-guide phase.
     float m_flPlayfieldScale = {};       // +0x134

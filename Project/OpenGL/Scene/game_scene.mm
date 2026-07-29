@@ -21,12 +21,14 @@
 #import "MusicData.h"
 #import "RBBGMManager.h"
 #import "RBBonusData.h"
+#import "RBCoreDataManager.h"
 #import "RBExperienceData.h"
 #import "RBServerAPIManager.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "ReplayData.h"
+#import "ReplayNote.h"
 #import "ScoreData.h"
 #include "ScoreTracker.h"
 #include "alt_frame_layer.h"
@@ -52,6 +54,7 @@
 #include "music_sheet.h"
 #include "neTexture.h"
 #include "note_effect_mgr.h"
+#include "note_model.h"
 #include "note_replay.h"
 #include "note_result_layer.h"
 #include "number_effect_layer.h"
@@ -1233,7 +1236,7 @@ void GameScene::BindMusicSheetToNoteMgr(CMusicSheet2 *pMusicSheet) {
     pMgr->SetActiveMusicSheet(m_pMusicSheet);
     pMgr->IterateNoteRecords();
     // Seed the score tracker's total-note count from the chart, then reset playback with the ghost.
-    ScoreTracker::shared()->SetTotalNotes(m_pMusicSheet->GetChartNoteCount());
+    ScoreTracker::shared()->SetTotalNotes(m_pMusicSheet->GetChartNoteCount(0));
     ResetNotePlaybackState(true);
 }
 
@@ -1358,6 +1361,296 @@ void EnsureOrientationNotificationsEnabled(void) {
     UIDevice *device = UIDevice.currentDevice;
     while (!device.isGeneratingDeviceOrientationNotifications) {
         [device beginGeneratingDeviceOrientationNotifications];
+    }
+}
+
+namespace {
+// The two player sides the judgement tally covers.
+constexpr int kPlayerSideCount = 2;
+
+// The judgement grades a note — or an individual slide point — resolves to.
+enum JudgeGrade {
+    kJudgeGradeJust = 0,
+    kJudgeGradeGreat = 1,
+    kJudgeGradeGood = 2,
+    kJudgeGradeMiss = 3,
+    kJudgeGradeCount = 4,
+};
+
+// The per-grade base-score weights, the just-reflec weight, and the low-miss bonuses that together
+// make up a side's final score.
+constexpr int kScoreJust = 3;
+constexpr int kScoreGreat = 2;
+constexpr int kScoreGood = 1;
+constexpr int kScoreJustReflec = 10;
+constexpr int kNoMissBonus = 50;
+constexpr int kOneMissBonus = 25;
+constexpr int kTwoMissBonus = 10;
+
+// The miss tallies the three low-miss bonuses key on.
+constexpr int kNoMisses = 0;
+constexpr int kOneMiss = 1;
+constexpr int kTwoMisses = 2;
+
+// The note type whose judgement lives on its slide points rather than on the note itself.
+constexpr int kSlideNoteType = 3;
+
+// The play-record cells the persisted score and the replay header read.
+constexpr unsigned int kRecordScoreCell = 0;
+constexpr unsigned int kRecordComboCell = 1;
+constexpr unsigned int kRecordJustCell = 3;
+constexpr unsigned int kRecordGreatCell = 4;
+constexpr unsigned int kRecordGoodCell = 5;
+constexpr unsigned int kRecordMissCell = 6;
+constexpr unsigned int kRecordJustReflecCell = 7;
+
+// The highest legitimate stored rate: a record above it is treated as tampered and overwritten.
+constexpr float kMaxStoredRate = 1.0f;
+
+// The tutorial song's sentinel identifier, whose play is never written back to the store.
+constexpr int kTutorialMusicId = 999999998;
+
+// The judgement a replay note carries for a note the opposing side's ghost shot resolved.
+constexpr int kGhostShotJudge = 5;
+} // namespace
+
+/** @ghidraAddress 0x14d600 */
+void GameScene::PersistScoreAndSaveReplay() {
+    NSManagedObjectContext *context = RBCoreDataManager.sharedInstance.managedObjectContext;
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    MusicData *pMusicData = AppDelegate.appDelegate.musicData;
+    const int nMusicId = pMusicData.MusicID;
+    ScoreData *record = [ScoreData getScoreData:static_cast<unsigned int>(nMusicId)
+                         inManagedObjectContext:context];
+    ScoreTracker *pTracker = ScoreTracker::shared();
+
+    const int nPlaySide = pGameSystem->GetPlayColor();
+    const int nNoteCount = m_pMusicSheet->GetNoteCount();
+    const int nSideNoteCount = m_pMusicSheet->GetChartNoteCount(nPlaySide);
+    // A perfect play scores three per note plus ten per just-reflec opportunity, over the no-miss
+    // bonus.
+    const int nMaxScore = m_pMusicSheet->GetJustReflecQuota() * kScoreJustReflec + kNoMissBonus +
+                          nSideNoteCount * kScoreJust;
+
+    // Tally both sides' judgements, counting a slide note's points individually.
+    int aJudgeCounts[kPlayerSideCount][kJudgeGradeCount] = {};
+    for (int nIndex = 0; nIndex < nNoteCount; ++nIndex) {
+        NoteModel *pNote = NoteEffectMgr::shared()->FindNoteByIndex(nIndex);
+        const int nSide = pNote->GetSide();
+        if (pNote->GetType() == kSlideNoteType) {
+            for (int nPoint = 0; nPoint < pNote->GetSlidePointCount(); ++nPoint) {
+                // The binary does not range-check a slide point's grade the way it does a note's.
+                ++aJudgeCounts[nSide][pNote->GetSlidePointJudge(nPoint)];
+            }
+        } else {
+            const int nGrade = pNote->GetJudgeGrade();
+            if (nGrade >= 0 && nGrade < kJudgeGradeCount) {
+                ++aJudgeCounts[nSide][nGrade];
+            }
+        }
+    }
+
+    // Each side's just-reflec count comes from the tracker, whose side index is "is this my side".
+    int aJustReflecCounts[kPlayerSideCount] = {};
+    for (int nSide = 0; nSide < kPlayerSideCount; ++nSide) {
+        aJustReflecCounts[nSide] = pTracker->GetPlayRecordCell(
+            static_cast<unsigned int>(nSide == nPlaySide), kRecordJustReflecCell);
+    }
+
+    // Fold each side's tallies into its base score.
+    int aBaseScores[kPlayerSideCount] = {};
+    for (int nSide = 0; nSide < kPlayerSideCount; ++nSide) {
+        int nMissBonus = 0;
+        switch (aJudgeCounts[nSide][kJudgeGradeMiss]) {
+        case kNoMisses:
+            nMissBonus = kNoMissBonus;
+            break;
+        case kOneMiss:
+            nMissBonus = kOneMissBonus;
+            break;
+        case kTwoMisses:
+            nMissBonus = kTwoMissBonus;
+            break;
+        default:
+            break;
+        }
+        aBaseScores[nSide] = nMissBonus + aJudgeCounts[nSide][kJudgeGradeJust] * kScoreJust +
+                             aJudgeCounts[nSide][kJudgeGradeGreat] * kScoreGreat +
+                             aJudgeCounts[nSide][kJudgeGradeGood] * kScoreGood +
+                             aJustReflecCounts[nSide] * kScoreJustReflec;
+    }
+
+    // Read the stored best for the played difficulty's columns.
+    NSNumber *storedScore = nil;
+    NSNumber *storedRate = nil;
+    switch (pGameSystem->GetDifficulty()) {
+    case kDifficultyMedium:
+        storedScore = record.scoMed;
+        storedRate = record.arMed;
+        break;
+    case kDifficultyHard:
+        storedScore = record.scoHar;
+        storedRate = record.arHar;
+        break;
+    default:
+        // Basic and Special share the basic columns.
+        storedScore = record.scoBas;
+        storedRate = record.arBas;
+        break;
+    }
+    const int nStoredScore = storedScore.intValue;
+    const float flStoredRate = storedRate.floatValue;
+
+    // The recorded score is the smallest of what the tracker banked, what the tally computes, and
+    // what the chart can award.
+    int nFinalScore = pTracker->GetPlayRecordCell(kResultSide, kRecordScoreCell);
+    if (nFinalScore > aBaseScores[nPlaySide]) {
+        nFinalScore = aBaseScores[nPlaySide];
+    }
+    if (nFinalScore > nMaxScore) {
+        nFinalScore = nMaxScore;
+    }
+
+    // Store it when the play beat the stored best, or when the stored best exceeds what the chart
+    // can award (a tampered record).
+    bool bDirty = false;
+    if (nStoredScore > nMaxScore || nFinalScore > nStoredScore) {
+        pGameSystem->SetNewRecord(true);
+        switch (pGameSystem->GetDifficulty()) {
+        case kDifficultyMedium:
+            record.scoMed = @(nFinalScore);
+            break;
+        case kDifficultyHard:
+            record.scoHar = @(nFinalScore);
+            break;
+        default:
+            record.scoBas = @(nFinalScore);
+            break;
+        }
+        bDirty = true;
+    } else {
+        pGameSystem->SetNewRecord(false);
+    }
+
+    // The rate and its rank follow the same rule against the stored rate.
+    const float flRate = pTracker->GetPlayRecordRate(kResultSide);
+    if (flStoredRate > kMaxStoredRate || flRate > flStoredRate) {
+        const int nRank = pTracker->GetPlayRecordRank(kResultSide);
+        switch (pGameSystem->GetDifficulty()) {
+        case kDifficultyMedium:
+            record.arMed = @(flRate);
+            record.raMed = @(nRank);
+            break;
+        case kDifficultyHard:
+            record.arHar = @(flRate);
+            record.raHar = @(nRank);
+            break;
+        default:
+            record.arBas = @(flRate);
+            record.raBas = @(nRank);
+            break;
+        }
+        bDirty = true;
+    }
+
+    // A side whose every note was judged is a full combo. This never dirties the record on its own.
+    if (pTracker->IsSideAllNotesJudged(kResultSide)) {
+        switch (pGameSystem->GetDifficulty()) {
+        case kDifficultyMedium:
+            record.fcMed = @YES;
+            break;
+        case kDifficultyHard:
+            record.fcHar = @YES;
+            break;
+        default:
+            record.fcBas = @YES;
+            break;
+        }
+    }
+
+    // Re-stamp the tamper hash only when a stored value actually changed.
+    if (bDirty) {
+        record.chksco = [ScoreData hashScore:record];
+    }
+    record.lastPlayDate = NSDate.date;
+    switch (pGameSystem->GetDifficulty()) {
+    case kDifficultyMedium:
+        record.pcMed = @(record.pcMed.longLongValue + 1);
+        break;
+    case kDifficultyHard:
+        record.pcHar = @(record.pcHar.longLongValue + 1);
+        break;
+    default:
+        record.pcBas = @(record.pcBas.longLongValue + 1);
+        break;
+    }
+
+    // The tutorial song's play is never written back to the store.
+    if (pMusicData.MusicID != kTutorialMusicId) {
+        NSError *error = nil;
+        if (![context save:&error]) {
+            NSArray *detailedErrors = error.userInfo[NSDetailedErrorsKey];
+            for (NSError *detail in detailedErrors) {
+                // The binary walks the detailed errors without acting on any of them.
+                (void)detail;
+            }
+        }
+    }
+
+    // Write a replay ghost when this tune and difficulty has none yet, or the play set a record.
+    if (![ReplayData isExistReplayData:nMusicId difficulty:pGameSystem->GetDifficulty()] ||
+        pGameSystem->IsNewRecord()) {
+        ReplayData *replay = [[ReplayData alloc] init];
+        replay.tuneID = @(static_cast<unsigned int>(nMusicId));
+        replay.diff = @(pGameSystem->GetDifficulty());
+        replay.seed = @(pGameSystem->GetRandSeed());
+        replay.cntNote = @(nSideNoteCount);
+        replay.score = @(pTracker->GetPlayRecordCell(kResultSide, kRecordScoreCell));
+        replay.cntCom = @(pTracker->GetPlayRecordCell(kResultSide, kRecordComboCell));
+        replay.cntJust = @(pTracker->GetPlayRecordCell(kResultSide, kRecordJustCell));
+        replay.cntGreat = @(pTracker->GetPlayRecordCell(kResultSide, kRecordGreatCell));
+        replay.cntGood = @(pTracker->GetPlayRecordCell(kResultSide, kRecordGoodCell));
+        replay.cntMiss = @(pTracker->GetPlayRecordCell(kResultSide, kRecordMissCell));
+        replay.cntJR = @(pTracker->GetPlayRecordCell(kResultSide, kRecordJustReflecCell));
+        // The replay header keeps the rate truncated to a whole number.
+        replay.ar = @(static_cast<int>(pTracker->GetPlayRecordRate(kResultSide)));
+        replay.playDate = NSDate.date;
+        replay.user = AppDelegate.getServerData[0];
+
+        NSMutableArray<ReplayNote *> *notes =
+            [[NSMutableArray alloc] initWithCapacity:nSideNoteCount];
+        for (int nIndex = 0; nIndex < nNoteCount; ++nIndex) {
+            NoteModel *pNote = NoteEffectMgr::shared()->FindNoteByIndex(nIndex);
+            if (pNote->GetSide() == nPlaySide) {
+                ReplayNote *note = [[ReplayNote alloc] init];
+                note.index = @(nIndex);
+                note.type = @(pNote->GetType());
+                note.judge = @(pNote->GetJudgeGrade());
+                note.jr = @NO;
+                note.longrate = @(pNote->GetShotProgress());
+                if (pNote->GetType() == kSlideNoteType) {
+                    NSMutableArray<ReplayNote *> *points =
+                        [[NSMutableArray alloc] initWithCapacity:pNote->GetSlidePointCount()];
+                    for (int nPoint = 0; nPoint < pNote->GetSlidePointCount(); ++nPoint) {
+                        ReplayNote *point = [[ReplayNote alloc] init];
+                        point.index = @(nPoint);
+                        point.judge = @(pNote->GetSlidePointJudge(nPoint));
+                        [points addObject:point];
+                    }
+                    note.slide = [points copy];
+                }
+                [notes addObject:note];
+            } else if (pNote->IsShotResolved()) {
+                // The opposing side contributes only the notes its ghost shot resolved.
+                ReplayNote *note = [[ReplayNote alloc] init];
+                note.index = @(nIndex);
+                note.judge = @(kGhostShotJudge);
+                note.jr = @(pNote->IsShotResolved());
+                [notes addObject:note];
+            }
+        }
+        replay.replay = [notes copy];
+        [ReplayData saveReplayData:replay];
     }
 }
 

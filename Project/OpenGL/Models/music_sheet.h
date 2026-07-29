@@ -90,9 +90,21 @@ public:
         return m_nNoteCount;
     }
 
-    /** @brief The note count used to select the scroll-speed / density tier. */
-    int GetChartNoteCount() const {
-        return m_nChartNoteCount;
+    /**
+     * @brief One side's playable-note count, which also selects the scroll-speed / density tier.
+     * @param nSide The player side.
+     * @return The side's playable-note count.
+     */
+    int GetChartNoteCount(int nSide) const {
+        return m_aChartNoteCounts[nSide];
+    }
+
+    /**
+     * @brief The chart's just-reflec quota: the number of just-reflec opportunities it grants, and
+     * the term the maximum achievable score weights by @c kScoreJustReflec.
+     */
+    int GetJustReflecQuota() const {
+        return m_nJustReflecQuota;
     }
 
     /**
@@ -273,14 +285,14 @@ private:
     int m_nSlideRecordCount = {};   // +0x34: the number of slide records.
     int m_nChartEndTimeScaled = {}; // +0x38: the chart end time in scaled units.
     int m_nField3c = {};            // +0x3c: chart-parse scratch, still being worked out.
-    // +0x40: side 0's playable-note count (drives the scroll-speed tier); +0x44 is side 1's.
-    int m_nChartNoteCount = {};
-    int m_nChartNoteCountSide1 = {};          // +0x44
+    // +0x40: the per-side playable-note counts; side 0's also drives the scroll-speed tier.
+    int m_aChartNoteCounts[kSideCount] = {};
     int m_aSideObjectCounts[kSideCount] = {}; // +0x48: the per-side side-object note counts.
     int m_aPlayableCounts[kSideCount] = {};   // +0x50: the per-side playable (slide-index) counts.
     int m_aSideCount[kSideCount] = {};        // +0x58: the per-side late-note counts.
-    int m_nScrollTiming = {};                 // +0x60: the computed scroll timing.
-    int m_nRemainTiming = {};                 // +0x64: the computed remaining timing.
+    int m_nJustReflecQuota = {};              // +0x60: the chart's just-reflec opportunity count.
+    // +0x64: the same quota over the note count less side 0's late notes.
+    int m_nJustReflecQuotaRemain = {};
     RbffNoteRecord *m_pRecords = {};       // +0x68: the note-record pool (kNoteRecordStride each).
     RbffSlideRecord *m_pSlideRecords = {}; // +0x70: the slide-record array.
     int *m_pSideIndexArray = {};           // +0x78: the per-side note-index array.

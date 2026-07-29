@@ -195,7 +195,7 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
 /** @ghidraAddress 0x7ab54 */
 void ResultWindowColetteLayer::InitializeResultScreenFlags() {
     m_nActive = 1;
-    m_bBonusCueArmed = GameSystem::GetGameSystem()->GetResultBonusFeatureActive();
+    m_bBonusCueArmed = GameSystem::GetGameSystem()->IsNewRecord();
     m_flBonusCueTimer = 0.0f;
     m_bTwitterAvailable = [RBViewController hasTwitterAPI];
 }
