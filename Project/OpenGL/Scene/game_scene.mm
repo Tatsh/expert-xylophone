@@ -131,9 +131,10 @@ constexpr float kPresentationFadeInDuration = 1000.0f; // @ghidraAddress 0x2f854
 // The note-play state BeginMusicPlaybackAndTimer advances to once the intro is done.
 constexpr int kStateNotePlay = 8;
 
-// The exit state ExitToMusicList advances to, and the play-time threshold (in play time) it waits
-// past before tearing down.
-constexpr int kStateExit = 1;
+// The state the exit transitions and the play-field entry step both advance to: its handler resets
+// note playback. Also the play-time threshold (in play time) ExitToMusicList waits past before
+// tearing down.
+constexpr int kStateResetPlayback = 1;
 constexpr int kExitDelay = 0x5dc;
 
 // The bind state ReloadMusicForRestart advances to, and the ghost style that seeds the RNG from a
@@ -1032,7 +1033,7 @@ void GameScene::ClosePreviewAndReturnToList() {
     (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
     ReleaseAllCachedTextures();
 
-    m_nState = kStateExit;
+    m_nState = kStateResetPlayback;
 }
 
 /** @ghidraAddress 0x14c5bc */
@@ -1051,7 +1052,7 @@ void GameScene::ExitToMusicList() {
     (void)ne::C_TEXTURE::GetCacheList(); // The binary discards this call's result.
     ReleaseAllCachedTextures();
 
-    m_nState = kStateExit;
+    m_nState = kStateResetPlayback;
 }
 
 /** @ghidraAddress 0x14c690 */
@@ -1380,6 +1381,40 @@ namespace {
 // The listener-list priority the pause-gauge layer is registered at.
 constexpr int kPauseGaugeListenerPriority = 2;
 
+// The play states the dispatcher handles that no other step names: the entry state that builds the
+// layers, the state a bound chart advances to, the state a finished play advances to, the state a
+// restart re-enters, the preview set-up and resume states, and the second preview-exit state.
+constexpr int kStateInit = 0;
+constexpr int kStateChartBound = 3;
+constexpr int kStatePlayFinished = 0xa;
+constexpr int kStateRestartPlayback = 0xf;
+constexpr int kStatePreviewSetup = 0x10;
+constexpr int kStatePreviewResume = 0x12;
+constexpr int kStatePreviewExit = 0x14;
+
+// The game type identifying a networked match, whose result is never scored or banked.
+constexpr int kGameTypeNetworkMatch = 1;
+
+// The play-record's match outcome (judgement cell index 10).
+constexpr int kMatchResultWin = 0;
+constexpr int kMatchResultLose = 1;
+constexpr int kMatchResultDraw = 2;
+
+// The play colour drawn in blue; the other side is red.
+constexpr int kPlayColorBlue = 1;
+
+// The themed voice cues the end of a play loads, indexing the voice-name table.
+constexpr int kVoiceCueTitle = 0;
+constexpr int kVoiceCueWin = 3;
+constexpr int kVoiceCueLose = 4;
+constexpr int kVoiceCueDraw = 5;
+constexpr int kVoiceCueBlueWin = 15;
+constexpr int kVoiceCueRedWin = 16;
+
+// The inclusive song-identifier window whose plays are scored, banked, and reported.
+constexpr int kFirstScoredMusicId = 100000001;
+constexpr int kLastScoredMusicId = 899999999;
+
 // The base the intro fade level counts down from while the note path is still negative. The binary
 // really does store negative zero here, so the level is the negated fractional part.
 constexpr float kFadeInBase = -0.0f; // @ghidraAddress 0x308ddc
@@ -1432,6 +1467,219 @@ constexpr int kTutorialMusicId = 999999998;
 // The judgement a replay note carries for a note the opposing side's ghost shot resolved.
 constexpr int kGhostShotJudge = 5;
 } // namespace
+
+/** @ghidraAddress 0x14b3e8 */
+void GameScene::RunPlayStateMachineDispatch(int nDeltaFrames) {
+    NoteEffectMgr::shared()->ClearNotePositionCache();
+    CheckAutoPauseByNotePosition();
+    // While the pause gauge holds the game paused the applied delta is zero, freezing the play.
+    const int nAppliedDelta = RefreshPauseGaugeAndGetActiveFlag() ? nDeltaFrames : 0;
+    m_nPlayTime += nAppliedDelta;
+
+    switch (m_nState) {
+    case kStateInit:
+        m_flFirstPathSpeed = 0.0f;
+        InitializePlayFieldLayersForTheme();
+        m_nState = kStateResetPlayback;
+        m_nPlayTime = 0;
+        break;
+    case kStateRestartPlayback:
+        m_nState = kStateResetPlayback;
+        m_nPlayTime = 0;
+        break;
+    case kStateResetPlayback:
+        // The state the exit transitions land on: it resets note playback without a ghost.
+        ResetNotePlaybackState(false);
+        break;
+    case kStateBindChart:
+        m_nState = kStateChartBound;
+        m_nPlayTime = 0;
+        break;
+    case kStateChartBound:
+        AdvanceToPlayReadyState();
+        break;
+    case kStatePlayReady:
+        WaitForIntroThenStartNotes();
+        break;
+    case kStateWaitNotes:
+        StartGameplayPresentation();
+        break;
+    case kStatePastEffect:
+        // The event effect holds the presentation back until it has finished animating.
+        if (!EventEffectLayer::shared()->IsEffectActive()) {
+            m_nState = kStateWaitNotes;
+            m_nPlayTime = 0;
+        }
+        break;
+    case kStatePresenting:
+        BeginMusicPlaybackAndTimer();
+        break;
+    case kStateNotePlay:
+        ExecMain();
+        break;
+    case kStatePlayFinished:
+        EnterResultThemeState();
+        break;
+    case kStateResultTheme:
+        LoadResultScreenAndMusic();
+        break;
+    case kStateResultSubmit:
+        FinalizeResultAndSubmitScore(nAppliedDelta);
+        break;
+    case kMusicReleaseState:
+        ExitToMusicList();
+        break;
+    case kPauseExitState:
+        ReloadMusicForRestart();
+        break;
+    case kStatePreviewSetup:
+        SetupPreviewPlayback();
+        break;
+    case kStatePlaying:
+        AdvancePreviewPlaybackFrame(nAppliedDelta);
+        break;
+    case kStatePreviewResume:
+        ResumePreviewPlayback();
+        break;
+    case kGameSceneState13:
+    case kStatePreviewExit:
+        ClosePreviewAndReturnToList();
+        break;
+    default:
+        // State 9 and anything above the last preview state have no handler.
+        break;
+    }
+
+    RenderAllPlayFieldLayers(nAppliedDelta);
+    // The retrigger timer takes the raw delta, not the pause-gated one.
+    ShotSoundManager::GetInstance()->UpdateRetriggerTimer(static_cast<float>(nDeltaFrames));
+}
+
+/** @ghidraAddress 0x14ba48 */
+void GameScene::ExecMain() {
+    PlayTimer::shared()->Update();
+    NoteEffectMgr::shared()->ProcessActiveNotes();
+    ActivateDueNotes();
+
+    // Hold the play open while the theme's full-combo effect is still animating.
+    switch (m_nThema) {
+    case kThemaColette:
+        if (FullComboColetteLayer::shared()->IsAnyEffectActive()) {
+            return;
+        }
+        break;
+    case kThemaLimelight:
+        if (FullComboLimelightLayer::shared()->IsAnyEffectActive()) {
+            return;
+        }
+        break;
+    case kThemaClassic:
+        if (FullComboClassicLayer::shared()->IsAnyEffectActive()) {
+            return;
+        }
+        break;
+    default:
+        break;
+    }
+
+    // Wait until the play clock's scroll line has run past the chart's end.
+    const int nChartEndTime = m_pMusicSheet->GetChartEndTime();
+    const float flScrollLine =
+        PlayTimer::shared()->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
+    if (flScrollLine <= static_cast<float>(nChartEndTime)) {
+        return;
+    }
+
+    StopBgmAndAllowRotation();
+    ReleaseBgmAndVoice();
+    ScoreTracker::shared()->ComputeLaneClearRateAndGrade();
+
+    // A network match never scores or banks a replay; it goes straight to the winner's voice cue.
+    if (GameSystem::GetGameSystem()->GetGameType() != kGameTypeNetworkMatch) {
+        // Pick the theme's win, lose, or draw voice cue.
+        int nVoiceCue = kVoiceCueTitle;
+        switch (m_nThema) {
+        case kThemaColette:
+            nVoiceCue = kVoiceCueWin;
+            if (ScoreTracker::shared()->GetPlayRecordRate(kResultSide) < kClearRateThreshold) {
+                // The tutorial always hears the clear cue, however it went.
+                nVoiceCue = [RBTutorialManager isTutorialPlay] ? kVoiceCueWin : kVoiceCueLose;
+            }
+            break;
+        case kThemaLimelight:
+            nVoiceCue =
+                (ScoreTracker::shared()->GetPlayRecordRate(kResultSide) < kClearRateThreshold) ?
+                    kVoiceCueLose :
+                    kVoiceCueWin;
+            break;
+        case kThemaClassic:
+            nVoiceCue = kVoiceCueWin;
+            if (ScoreTracker::shared()->GetPlayRecordField10(kResultSide) != kMatchResultWin) {
+                nVoiceCue = (ScoreTracker::shared()->GetPlayRecordField10(kResultSide) ==
+                             kMatchResultLose) ?
+                                kVoiceCueLose :
+                                kVoiceCueDraw;
+            }
+            break;
+        default:
+            break;
+        }
+        SoundEffectManager::GetInstance()->LoadThemedVoiceData(nVoiceCue);
+
+        GameSystem *pGameSystem = GameSystem::GetGameSystem();
+        if (pGameSystem->GetUserFullCombo() || pGameSystem->GetCpuFullCombo() ||
+            pGameSystem->GetFullJustReflec()) {
+            m_nState = kStatePlayFinished;
+            m_nPlayTime = 0;
+            return;
+        }
+
+        // Only a real (non-preview, non-tutorial) song's play is banked and reported.
+        bool bComputeBonuses = false;
+        const int nMusicId = AppDelegate.appDelegate.musicData.MusicID;
+        if (nMusicId >= kFirstScoredMusicId &&
+            AppDelegate.appDelegate.musicData.MusicID <= kLastScoredMusicId) {
+            PersistScoreAndSaveReplay();
+            (void)NSDate.date; // Yes, the binary discards this call's result.
+            ReportTotalScoreToGameCenter();
+            bComputeBonuses = true;
+        } else if (AppDelegate.appDelegate.musicData.MusicID == kTutorialMusicId) {
+            bComputeBonuses = true;
+        }
+        if (bComputeBonuses) {
+            ComputeResultBonusesAndExperience();
+            m_nState = kStatePlayFinished;
+            m_nPlayTime = 0;
+            return;
+        }
+        // A song outside both windows falls through to the network match's winner-cue path.
+    }
+
+    // Republish the stored level and experience with nothing gained, and clear the new-record flag.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    LevelTables *pTables = LevelTables::GetInstance();
+    pGameSystem->SetResultLevelExp(pTables->GetCurrentLevel(), pTables->GetCurrentExp(), 0);
+    pGameSystem->SetNewRecord(false);
+
+    // Cue the winning side's colour voice: the player's own colour when they won, the opponent's
+    // when they lost, and the draw cue otherwise.
+    const int nPlayColor = GameSystem::GetGameSystem()->GetPlayColor();
+    const int nResult = ScoreTracker::shared()->GetPlayRecordField10(kResultSide);
+    int nWinnerCue = kVoiceCueDraw;
+    if (nResult != kMatchResultDraw) {
+        if (nResult == kMatchResultLose) {
+            nWinnerCue = (nPlayColor == kPlayColorBlue) ? kVoiceCueRedWin : kVoiceCueBlueWin;
+        } else if (nResult == kMatchResultWin) {
+            nWinnerCue = (nPlayColor != kPlayColorBlue) ? kVoiceCueRedWin : kVoiceCueBlueWin;
+        } else {
+            assert(0);
+        }
+    }
+    SoundEffectManager::GetInstance()->LoadThemedVoiceData(nWinnerCue);
+
+    m_nState = kStatePlayFinished;
+    m_nPlayTime = 0;
+}
 
 /** @ghidraAddress 0x14cf5c */
 void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {

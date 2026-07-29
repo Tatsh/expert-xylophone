@@ -452,6 +452,35 @@ private:
      */
     void RenderAllPlayFieldLayers(int nDeltaFrames);
 
+    /**
+     * @brief Runs one frame of the note-play state, and finishes the play once the chart ends.
+     *
+     * Ticks the play timer, processes the active notes, and activates the notes now due. It returns
+     * early while the active theme's full-combo effect is still animating, and again until the play
+     * clock's scroll line passes the chart's end time. Past that it stops the music, releases the
+     * BGM and voice, and computes the per-lane clear rate and grade, then either (for the
+     * versus/CPU game type, an out-of-range song, or the tutorial sentinel) republishes the player's
+     * level and experience and loads a rank-keyed voice cue, or loads the theme's clear or failure
+     * voice cue and — unless a full-combo flag is already raised — persists the score, reports the
+     * total to Game Center, and computes the result bonuses. Either way it advances to the
+     * result-theme state.
+     * @ghidraAddress 0x14ba48
+     */
+    void ExecMain();
+
+    /**
+     * @brief Runs one tick of the play state machine.
+     *
+     * Clears the note position cache, checks whether a note has run far enough to auto-pause, and
+     * refreshes the pause gauge — while the gauge holds the game paused the applied frame delta is
+     * forced to zero, freezing the play clock. It then accumulates the applied delta into the play
+     * time and dispatches the current state's handler, and finally renders every play-field layer
+     * and advances the shot-sound retrigger timer.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @ghidraAddress 0x14b3e8
+     */
+    void RunPlayStateMachineDispatch(int nDeltaFrames);
+
     int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
                                          //        frame).
     int m_nPlayTime = {};                // +0x50: the accumulated play time.

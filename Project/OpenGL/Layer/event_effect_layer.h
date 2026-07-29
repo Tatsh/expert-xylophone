@@ -101,6 +101,11 @@ public:
                          float flScaleX,
                          float flScaleY);
 
+    /** @brief Whether the event effect is currently playing. */
+    bool IsEffectActive() const {
+        return m_bActive;
+    }
+
 private:
     ne::C_TEXTURE *m_pTexture = {};                 // +0x08: the gm_event atlas.
     ne::C_SPRITE_INSTANCING_2D *m_pMainSprite = {}; // +0x10: the six-sprite main instancer.
