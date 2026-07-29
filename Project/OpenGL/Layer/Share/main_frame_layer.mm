@@ -136,6 +136,19 @@ constexpr unsigned int kFrameMeshMarkerSprite =
 // @ghidraAddress 0x30ce88
 constexpr int kFrameDifficultyMarkerBase[] = {6, 21, 36, 51};
 
+// The 3D border's geometry, all in sheet units. The border is a picture frame of four quads: a
+// bottom band, a top band, and a left and right vertical strip spanning between them. The band
+// width is the hardcoded design width rather than the measured far width, so it only reaches the
+// right edge on a 640-unit-wide sheet.
+constexpr float kFrameBorderBandWidth = 640.0f; // @ghidraAddress 0x30531c
+constexpr float kFrameBorderBandHeight = 33.0f; // @ghidraAddress 0x302d50, negated at 0x30ce24.
+constexpr float kFrameBorderStripWidth = 24.0f; // The left and right strips' width.
+
+// The factor the marker ring's outer corners are pushed out by. At 1000x the ring's outer edge is
+// far off screen, so the ring covers everything outside the sheet rectangle. The binary reads this
+// from the pooled 1000.0 literal it shares with unrelated call sites.
+constexpr float kMarkerRingOuterScale = 1000.0f; // @ghidraAddress 0x2f8540
+
 } // namespace
 
 // The binary inlines this constructor into shared (0x17b5d4).
@@ -321,6 +334,86 @@ void MainFrameLayer::EmitMainFrameSprite(unsigned int nInstancerIndex,
         kOverlayChannelMax,
         static_cast<unsigned int>(static_cast<int>(m_fadeChannel.GetCurrent())));
     pInstancer->SetSpriteCount(nSlot + 1);
+}
+
+/** @ghidraAddress 0x17c16c */
+void MainFrameLayer::Build3dVertices() {
+    const GameSystem *pGameSystem = GameSystem::GetGameSystem();
+
+    // The outer rectangle is the sheet plus its margins; the inner one is the sheet itself. Both
+    // are centred on the origin, so the centre terms below always evaluate to zero. The binary
+    // computes them anyway and they are kept to show where the inner edges are measured from.
+    const float flFarX = pGameSystem->GetSheetFarX();
+    const float flFarY = pGameSystem->GetSheetFarY();
+    const float flOuterLeft = flFarX * -kFrameCentreFactor;
+    const float flOuterRight = flFarX + flOuterLeft;
+    const float flOuterBottom = flFarY * -kFrameCentreFactor;
+    const float flOuterTop = flFarY + flOuterBottom;
+    const float flCentreX = flOuterLeft + flFarX * kFrameCentreFactor;
+    const float flCentreY = flOuterBottom + flFarY * kFrameCentreFactor;
+
+    const float flSheetX = pGameSystem->GetSheetPosX();
+    const float flSheetY = pGameSystem->GetSheetPosY();
+    const float flInnerLeft = flCentreX - flSheetX * kFrameCentreFactor;
+    const float flInnerRight = flSheetX + flInnerLeft;
+    const float flInnerBottom = flCentreY - flSheetY * kFrameCentreFactor;
+    const float flInnerTop = flSheetY + flInnerBottom;
+
+    // The border's shared edges: the bands' right edge, the two bands' inner edges, and the inner
+    // edge of each vertical strip.
+    const float flBandRightX = flOuterLeft + kFrameBorderBandWidth;
+    const float flBottomBandTopY = flOuterBottom + kFrameBorderBandHeight;
+    const float flTopBandBottomY = flOuterTop - kFrameBorderBandHeight;
+    const float flLeftStripRightX = flOuterLeft + kFrameBorderStripWidth;
+    const float flRightStripLeftX = flOuterRight - kFrameBorderStripWidth;
+
+    // The four quads, in the order the 22-index triangle strip walks them. Every vertex sits on the
+    // z=0 plane.
+    const S_VECTOR3 aBorderVertices[] = {
+        // The bottom band.
+        {flOuterLeft, flOuterBottom, 0.0f},
+        {flBandRightX, flOuterBottom, 0.0f},
+        {flOuterLeft, flBottomBandTopY, 0.0f},
+        {flBandRightX, flBottomBandTopY, 0.0f},
+        // The top band.
+        {flOuterLeft, flTopBandBottomY, 0.0f},
+        {flBandRightX, flTopBandBottomY, 0.0f},
+        {flOuterLeft, flOuterTop, 0.0f},
+        {flBandRightX, flOuterTop, 0.0f},
+        // The left strip, spanning between the two bands.
+        {flOuterLeft, flBottomBandTopY, 0.0f},
+        {flLeftStripRightX, flBottomBandTopY, 0.0f},
+        {flOuterLeft, flTopBandBottomY, 0.0f},
+        {flLeftStripRightX, flTopBandBottomY, 0.0f},
+        // The right strip.
+        {flRightStripLeftX, flBottomBandTopY, 0.0f},
+        {flOuterRight, flBottomBandTopY, 0.0f},
+        {flRightStripLeftX, flTopBandBottomY, 0.0f},
+        {flOuterRight, flTopBandBottomY, 0.0f},
+    };
+    int nVertex = 0;
+    for (const S_VECTOR3 &vertex : aBorderVertices) {
+        m_pFrameMesh3d->SetPos(nVertex++, vertex);
+    }
+
+    // The marker ring: four corners, each an outer vertex followed by the sheet corner it pairs
+    // with, walked anticlockwise from the bottom left. The outer vertices take their X from the far
+    // rectangle but their Y from the sheet rectangle; the mismatch is the binary's, and at this
+    // scale it makes no visible difference.
+    const S_VECTOR3 aMarkerRingVertices[] = {
+        {flOuterLeft * kMarkerRingOuterScale, flInnerBottom * kMarkerRingOuterScale, 0.0f},
+        {flInnerLeft, flInnerBottom, 0.0f},
+        {flOuterLeft * kMarkerRingOuterScale, flInnerTop * kMarkerRingOuterScale, 0.0f},
+        {flInnerLeft, flInnerTop, 0.0f},
+        {flOuterRight * kMarkerRingOuterScale, flInnerTop * kMarkerRingOuterScale, 0.0f},
+        {flInnerRight, flInnerTop, 0.0f},
+        {flOuterRight * kMarkerRingOuterScale, flInnerBottom * kMarkerRingOuterScale, 0.0f},
+        {flInnerRight, flInnerBottom, 0.0f},
+    };
+    nVertex = 0;
+    for (const S_VECTOR3 &vertex : aMarkerRingVertices) {
+        m_pMarkerMesh3d->SetPos(nVertex++, vertex);
+    }
 }
 
 /** @ghidraAddress 0x17bd50 */

@@ -153,7 +153,12 @@ public:
 
 private:
     /**
-     * @brief Rebuilds the frame's 3D vertex mesh. Reconstruction pending.
+     * @brief Rebuilds the positions of both 3D meshes from the current sheet metrics.
+     *
+     * Lays the border mesh out as a picture frame of four quads — a bottom band, a top band, and a
+     * left and right strip spanning between them — around the sheet's outer rectangle, then lays
+     * the marker ring out as four corner pairs that each join a far-off outer vertex to the sheet
+     * corner beside it, so the ring covers everything outside the sheet.
      * @ghidraAddress 0x17c16c
      */
     void Build3dVertices();
