@@ -7,6 +7,7 @@
 
 #include "s_vector2.h"
 
+class NoteEffectMgr;
 class RbffNoteRecord;
 
 /**
@@ -23,10 +24,14 @@ struct WaypointNode {
     S_VECTOR2 startPos = {}; // +0x04: the interpolation start position.
     S_VECTOR2 endPos = {};   // +0x0c: the interpolation end position (the per-fraction delta).
     float flLength = {};     // +0x14: the segment's length, traded for its traversal time.
-    // +0x18..+0x27: further per-node path state, still being worked out; kept as a reserved span so
-    // the node keeps its 40-byte stride.
-    unsigned char aReserved18[0x10] = {}; // +0x18
+    // +0x18..+0x27: the node's trailing four words. No routine in the binary reads or writes them —
+    // the route pass's block-wide clear is their only writer — so they carry no recovered meaning
+    // and are named for their position rather than a guessed role.
+    float aflSpare18[4] = {}; // +0x18
 };
+
+/** @brief The number of path nodes a note's waypoint block holds. */
+constexpr int kWaypointBlockNodeCount = 4;
 
 /**
  * @brief One live note on the play field: its chart record, animation state, world position, and
@@ -46,7 +51,7 @@ public:
      * @param pSheet The owning note sheet.
      * @ghidraAddress 0x1319fc
      */
-    explicit NoteModel(void *pSheet);
+    explicit NoteModel(NoteEffectMgr *pSheet);
 
     /**
      * @brief Reports whether the note should be horizontally mirrored for the current play side.
@@ -558,7 +563,7 @@ private:
      */
     float GetCurrentJudgeTime() const;
 
-    void *m_pSheet = {};            // +0x00: the owning note manager (NoteEffectMgr).
+    NoteEffectMgr *m_pSheet = {};   // +0x00: the owning note manager.
     RbffNoteRecord *m_pRecord = {}; // +0x08: the parsed chart record, or null for a synthetic note.
     int m_nNoteIndex = {};          // +0x10: the note's index in its sheet.
     int m_nState = {};              // +0x14: the note-state-machine state.
@@ -624,18 +629,15 @@ private:
     int m_nDirectionSign = {};              // +0x514: the shot direction, clamped to [-2, 2].
     int m_nWaypointCount = {};              // +0x518: the shot's waypoint count (abs of direction).
     int m_nWaypointIndex = {};              // +0x51c: the current waypoint's index into the block.
-    // +0x520: the waypoint/path animation block, zeroed on construction: an array of 40-byte path
-    // nodes (WaypointNode covers each node's leading 20 bytes) the reflect path steps through.
-    // +0x594 holds the waypoint-active flag that switches AdvanceNotePosition onto the interpolated
-    // path.
-    unsigned char m_aWaypointBlock0[0x74] = {}; // +0x520
-    bool m_bWaypointActive = {};                // +0x594
-    unsigned char m_aWaypointBlock1[0x2b] = {}; // +0x595
-    WaypointNode *m_pCurrentWaypoint = {};      // +0x5c0: the current path waypoint node, or null.
-    bool m_bLongNoteActive = {};          // +0x5c8: set while a long note is held, cleared when
-                                          //         the note is hit and finalised.
-    unsigned char m_aReserved5c9[3] = {}; // +0x5c9
-    float m_flAppearScale = {};           // +0x5cc: the approach step's appearance scale, eased in.
+    // +0x520..+0x5bf: the waypoint/path block, zeroed on construction and re-laid-out by SetRoute.
+    // The route fills the first m_nWaypointCount + 2 nodes: the spawn point, one node per bounce,
+    // and the target line.
+    WaypointNode m_aWaypointBlock[kWaypointBlockNodeCount] = {}; // +0x520
+    WaypointNode *m_pCurrentWaypoint = {}; // +0x5c0: the current path waypoint node, or null.
+    bool m_bLongNoteActive = {};           // +0x5c8: set while a long note is held, cleared when
+                                           //         the note is hit and finalised.
+    unsigned char m_aReserved5c9[3] = {};  // +0x5c9
+    float m_flAppearScale = {}; // +0x5cc: the approach step's appearance scale, eased in.
     float m_flFadeTimer =
         {};                  // +0x5d0: the fade-out step's decaying timer, also the approach step's
                              //         appearance progress fraction.

@@ -195,7 +195,7 @@ void ComputePlayfieldLayoutY(float flScale) {
 }
 
 /** @ghidraAddress 0x1319fc */
-NoteModel::NoteModel(void *pSheet) {
+NoteModel::NoteModel(NoteEffectMgr *pSheet) {
     m_pSheet = pSheet;
     m_nNoteIndex = -1;
     // Seed every hold/slide segment slot to its empty state; the other fields stay zero-initialised.
@@ -213,7 +213,7 @@ void NoteModel::SetNoteIndex(int nIndex) {
     m_nNoteIndex = nIndex;
     // Refresh the record pointer from the owning manager's currently-bound chart.
     if (m_pSheet != nullptr) {
-        m_pRecord = static_cast<NoteEffectMgr *>(m_pSheet)->GetActiveNoteRecord(nIndex);
+        m_pRecord = m_pSheet->GetActiveNoteRecord(nIndex);
     }
 }
 
@@ -415,10 +415,6 @@ void NoteModel::AdvanceAlongWaypoint() {
 
 namespace {
 
-// The waypoint path block's per-node stride, in bytes. The block is an inline array of nodes, so the
-// stride is the node size; deriving it keeps the two from drifting apart.
-constexpr int kWaypointNodeStride = static_cast<int>(sizeof(WaypointNode));
-
 // The note-record hold kinds a reflect skips (a hold's head or tail does not bounce).
 constexpr int kHoldKindHead = 1;
 constexpr int kNoteTypeHold = 1;
@@ -447,9 +443,7 @@ void NoteModel::HandleReflect(int nDirection) {
     if (m_nWaypointCount != m_nWaypointIndex) {
         // Advance to the next path waypoint and take its velocity.
         ++m_nWaypointIndex;
-        // The waypoint block is an inline array of 40-byte nodes based at m_aWaypointBlock0.
-        m_pCurrentWaypoint = reinterpret_cast<WaypointNode *>(
-            m_aWaypointBlock0 + m_nWaypointIndex * kWaypointNodeStride);
+        m_pCurrentWaypoint = &m_aWaypointBlock[m_nWaypointIndex];
         AdvanceAlongWaypoint();
         if (m_pCurrentWaypoint != nullptr) {
             m_velocity.x = m_pCurrentWaypoint->endPos.x;
@@ -460,7 +454,7 @@ void NoteModel::HandleReflect(int nDirection) {
         const bool bHold = m_pRecord != nullptr && (m_pRecord->GetHoldKind() == kHoldKindHead ||
                                                     m_pRecord->GetType() == kNoteTypeHold);
         if (bHold) {
-            m_bWaypointActive = false;
+            m_bLongNoteActive = false;
             return;
         }
         // Mirror the note's X about the edge and reverse its X velocity.
@@ -475,7 +469,7 @@ void NoteModel::HandleReflect(int nDirection) {
     const float flSideSign = IsSideFlipped() == 0 ? 1.0f : -1.0f;
     BoundsEffectLayer::shared()->CreateBoundsEffect(
         nColor, static_cast<float>(nEdge), m_pos.y * flSideSign);
-    m_bWaypointActive = false;
+    m_bLongNoteActive = false;
 }
 
 /** @ghidraAddress 0x1334dc */
@@ -731,12 +725,12 @@ void NoteModel::UpdateStepExisted() {
                                nHoldKind == kScoreHoldKind);
             m_nJudgeGrade = kGradeMiss;
 
-            static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+            m_pSheet->HandleNoteScored(m_nNoteIndex, nSide);
 
             ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
             const int nGaugeSide = m_pRecord != nullptr ? m_pRecord->GetSide() :
                                                           (m_bOwnSide ? 0 : kBoundsColorOwnSide);
-            const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+            const int nTier = m_pSheet->GetDensityTier();
             ReflecGaugeLayer::AddReflecGaugeValue(
                 kGaugeGainByTier[nTier][kGradeMiss], pGauge, nGaugeSide);
         }
@@ -874,7 +868,7 @@ void NoteModel::UpdateStepLongTouched() {
             const float flRadiusSq = flRadius * flRadius;
             bTouched = false;
             TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
-            NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+            NoteEffectMgr *pManager = m_pSheet;
             for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
                 const S_VECTOR2 *pPoint =
                     pManager->GetOrCacheNotePosition(pTouchManager->GetActiveTouch(i)->nId);
@@ -923,11 +917,11 @@ void NoteModel::UpdateStepLongTouched() {
                                                                   m_pos.y * flMirrorY);
 
             ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
-            const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+            const int nTier = m_pSheet->GetDensityTier();
             ReflecGaugeLayer::AddReflecGaugeValue(
                 kGaugeGainByTier[nTier][m_nLongGrade], pGauge, nSide);
 
-            static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+            m_pSheet->HandleNoteScored(m_nNoteIndex, nSide);
             PlayNoteTapSound(m_nLongGrade, true);
         }
         // Otherwise the note is still within its release grace: hold it another frame.
@@ -958,7 +952,7 @@ void NoteModel::UpdateStepLongTouched() {
                            nBonus,
                            nHoldKind == kScoreHoldKind);
         m_nJudgeGrade = kGradeMiss;
-        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nSide);
+        m_pSheet->HandleNoteScored(m_nNoteIndex, nSide);
     }
 }
 
@@ -1077,7 +1071,7 @@ void NoteModel::UpdateStepSlideExisted() {
                 const float flRadius = GameSystem::GetGameSystem()->GetSheetRadius() * 2.0f;
                 const float flRadiusSq = flRadius * flRadius;
                 TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
-                NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+                NoteEffectMgr *pManager = m_pSheet;
                 for (int i = 0; i < pTouchManager->GetActiveTouchCount(); ++i) {
                     const S_VECTOR2 *pPoint =
                         pManager->GetOrCacheNotePosition(pTouchManager->GetActiveTouch(i)->nId);
@@ -1200,7 +1194,7 @@ void NoteModel::UpdateStepSlideExisted() {
                            nHoldKind == kScoreHoldKind);
 
         ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
-        const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+        const int nTier = m_pSheet->GetDensityTier();
         ReflecGaugeLayer::AddReflecGaugeValue(
             kGaugeGainByTier[nTier][point.nResolvedGrade], pGauge, nSide);
     }
@@ -1210,7 +1204,7 @@ void NoteModel::UpdateStepSlideExisted() {
     if (m_aSubEntries[nLast].flTime2 < flNow) {
         m_nState = kNoteStateFinished;
         m_nSubState = 0;
-        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, GetSide());
+        m_pSheet->HandleNoteScored(m_nNoteIndex, GetSide());
     }
 }
 
@@ -1279,7 +1273,7 @@ void NoteModel::SetShotDirection(int nDirection) {
     SetRoute();
 
     // Propagate the spawn position, spawn time, and route along the note's linked chain.
-    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    NoteEffectMgr *pManager = m_pSheet;
     RbffNoteRecord *pRecord = m_pRecord;
     while (pRecord != nullptr && pRecord->GetChainLink().GetNext() != -1) {
         NoteModel *pLinked = pManager->FindNoteByIndex(pRecord->GetChainLink().GetNext());
@@ -1298,8 +1292,7 @@ void NoteModel::SetShotDirection(int nDirection) {
 /** @ghidraAddress 0x1361b0 */
 int NoteModel::GetActiveNoteColor() const {
     if (m_pRecord != nullptr && m_pRecord->GetStartTime() != -1) {
-        NoteModel *pNote =
-            static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(m_pRecord->GetStartTime());
+        NoteModel *pNote = m_pSheet->FindNoteByIndex(m_pRecord->GetStartTime());
         if (pNote != nullptr) {
             return pNote->GetRivalMode();
         }
@@ -1479,7 +1472,7 @@ void NoteModel::CheckShotPlayer() {
 
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     const float flDiameterSq = GameSystem::GetGameSystem()->GetSheetDiameterSq();
-    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    NoteEffectMgr *pManager = m_pSheet;
     const int nActive = pTouchManager->GetActiveTouchCount();
     for (int i = 0; i < nActive; ++i) {
         TouchPoint *pTouch = pTouchManager->GetActiveTouch(i);
@@ -1572,7 +1565,7 @@ constexpr int kRivalTapSoundIndex = 3;
 
 /** @ghidraAddress 0x133dfc */
 void NoteModel::PlayNoteTapSound(int nSoundIndex, bool bUseAlt) {
-    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    NoteEffectMgr *pManager = m_pSheet;
     if (m_nRivalMode == 0) {
         assert(nSoundIndex <= kMaxDefaultSoundIndex);
     } else {
@@ -1751,7 +1744,7 @@ void NoteModel::UpdateNotePathLinks() {
     if (m_pRecord == nullptr) {
         return;
     }
-    NoteEffectMgr *pManager = static_cast<NoteEffectMgr *>(m_pSheet);
+    NoteEffectMgr *pManager = m_pSheet;
     const short *pPathPoints = m_pRecord->GetPathPoints();
     for (int nPoint = 0; nPoint < m_pRecord->GetPointCount(); ++nPoint) {
         if (pManager == nullptr) {
@@ -1841,7 +1834,7 @@ void NoteModel::ResolveNoteHit(unsigned int nGrade) {
         ReflecGaugeLayer *pGauge = ReflecGaugeLayer::shared();
         const int nGaugeSide =
             m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
-        const int nTier = static_cast<NoteEffectMgr *>(m_pSheet)->GetDensityTier();
+        const int nTier = m_pSheet->GetDensityTier();
         ReflecGaugeLayer::AddReflecGaugeValue(kGaugeGainByTier[nTier][nGrade], pGauge, nGaugeSide);
     }
 
@@ -1849,7 +1842,7 @@ void NoteModel::ResolveNoteHit(unsigned int nGrade) {
     if (m_pSheet != nullptr) {
         const int nScoredSide =
             m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kBoundsColorOwnSide);
-        static_cast<NoteEffectMgr *>(m_pSheet)->HandleNoteScored(m_nNoteIndex, nScoredSide);
+        m_pSheet->HandleNoteScored(m_nNoteIndex, nScoredSide);
     }
 
     PlayNoteTapSound(nTapGrade, false);
@@ -1859,7 +1852,7 @@ void NoteModel::ResolveNoteHit(unsigned int nGrade) {
 void NoteModel::AdvancePosition() {
     const float flDelta = PlayTimer::shared()->GetFrameDelta();
     m_prevPos = m_pos;
-    if (m_bWaypointActive) {
+    if (m_bLongNoteActive) {
         AdvanceAlongWaypoint();
         return;
     }
@@ -2013,9 +2006,7 @@ constexpr int kSlideKindTerminal = 3;
 // The active-segment index sentinel meaning "none".
 constexpr int kActiveIndexNone = -1;
 
-// The size of the waypoint block the activation pass clears in one span: the leading reserved run,
-// the active flag, and the trailing reserved run — four nodes' worth.
-constexpr int kWaypointBlockNodeCount = 4;
+// The size of the whole waypoint block, cleared in one span.
 constexpr int kWaypointBlockSize = kWaypointBlockNodeCount * static_cast<int>(sizeof(WaypointNode));
 
 // The game types whose rival side is drawn: the versus type, and the replay type.
@@ -2050,16 +2041,14 @@ void NoteModel::Init() {
     // mirrored partner's live position, or the note's own lane placement.
     if (pRecord != nullptr) {
         if (pRecord->GetStartTime() >= 0) {
-            pMirrorSource =
-                static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(pRecord->GetStartTime());
+            pMirrorSource = m_pSheet->FindNoteByIndex(pRecord->GetStartTime());
             pRecord = m_pRecord;
         }
         if (pRecord != nullptr) {
             // A note that is not its chain's head inherits the head's base position.
             const short nChainId = pRecord->GetChainLink().GetChainId();
             if (nChainId >= 0) {
-                NoteModel *pChainNote =
-                    static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(nChainId);
+                NoteModel *pChainNote = m_pSheet->FindNoteByIndex(nChainId);
                 if (pChainNote != nullptr) {
                     m_basePos = pChainNote->m_basePos;
                     bBasePosSet = true;
@@ -2203,7 +2192,7 @@ void NoteModel::Init() {
     m_nDirectionSign = nDirection;
     m_nWaypointCount = nDirection < 0 ? -nDirection : nDirection;
     m_nWaypointIndex = 0;
-    m_pCurrentWaypoint = reinterpret_cast<WaypointNode *>(m_aWaypointBlock0);
+    m_pCurrentWaypoint = &m_aWaypointBlock[0];
 
     // The rival mode records whether this note belongs to the other play side, and how the current
     // game type draws it.
@@ -2227,9 +2216,7 @@ void NoteModel::Init() {
     }
     m_nRivalMode = nRivalMode;
 
-    // The whole waypoint block is cleared as one span: the two reserved runs and the active flag
-    // between them.
-    memset(m_aWaypointBlock0, 0, kWaypointBlockSize);
+    memset(m_aWaypointBlock, 0, kWaypointBlockSize);
     m_flBornTime = 0.0f;
     m_flAppearScale = kInitialAppearScale;
     m_flFadeTimer = kInitialFadeTimer;
