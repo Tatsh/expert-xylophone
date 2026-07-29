@@ -1511,10 +1511,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         int leftPID = [productIDList[leftIndex] intValue];
         StoreExtendNoteInfo *leftInfo =
             [self.extendNoteListCtrl getExtendNoteInfoWithProductID:leftPID];
-        [cell.leftView loadExtendNoteInfo:leftInfo index:leftIndex];
+        auto *leftTile = static_cast<StoreExtendNoteCellView *>(cell.leftView);
+        [leftTile loadExtendNoteInfo:leftInfo index:leftIndex];
         NSIndexPath *leftPath = [NSIndexPath indexPathForRow:leftIndex inSection:indexPath.section];
         UIImage *leftArtwork = StoreExtendPageArtworkForPadInfo(self, leftInfo, leftPID, leftPath);
-        [cell.leftView setArtwork:leftArtwork];
+        [leftTile setArtwork:leftArtwork];
 
         // Right half: product at (row * 2 + 1), present only if it exists.
         NSInteger rightIndex = indexPath.row * kPadProductsPerRow + 1;
@@ -1523,12 +1524,13 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             int rightPID = [productIDList[rightIndex] intValue];
             StoreExtendNoteInfo *rightInfo =
                 [self.extendNoteListCtrl getExtendNoteInfoWithProductID:rightPID];
-            [cell.rightView loadExtendNoteInfo:rightInfo index:rightIndex];
+            auto *rightTile = static_cast<StoreExtendNoteCellView *>(cell.rightView);
+            [rightTile loadExtendNoteInfo:rightInfo index:rightIndex];
             NSIndexPath *rightPath = [NSIndexPath indexPathForRow:rightIndex
                                                         inSection:indexPath.section];
             UIImage *rightArtwork =
                 StoreExtendPageArtworkForPadInfo(self, rightInfo, rightPID, rightPath);
-            [cell.rightView setArtwork:rightArtwork];
+            [rightTile setArtwork:rightArtwork];
         } else {
             cell.rightView.hidden = YES;
         }
@@ -1558,15 +1560,18 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)tableView:(UITableView *)tableView
-      willDisplayCell:(StoreExtendNoteCell *)cell
+      willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
     BOOL isPackRow = indexPath.row < [self numPackRows];
 
     if (!m_IsPad) {
         if (isPackRow) {
+            // The phone layout's rows are StoreExtendNoteCellPhone, which is where the background
+            // setters live; the binary messages them dynamically off the untyped delegate argument.
+            auto *phoneCell = static_cast<StoreExtendNoteCellPhone *>(cell);
             // Alternate the pack background image and its tint per row parity.
             UIImage *bg = (indexPath.row & 1) ? self.packBgImage1 : self.packBgImage0;
-            [cell setBgImage:bg];
+            [phoneCell setBgImage:bg];
             UIColor *tint = (indexPath.row & 1) ? [UIColor colorWithRed:kPhoneOddRowWhite
                                                                   green:kPhoneOddRowWhite
                                                                    blue:kPhoneOddRowWhite
@@ -1575,7 +1580,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                                                   green:kPhoneEvenRowWhite
                                                                    blue:kPhoneEvenRowWhite
                                                                   alpha:1.0];
-            [cell setBgColor:tint];
+            [phoneCell setBgColor:tint];
         } else {
             [cell setBackgroundColor:[UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0]];
         }
@@ -1654,11 +1659,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             static_cast<StoreExtendNoteCell *>([listView cellForRowAtIndexPath:cellPath]);
         UIImage *image = downloader.getImage;
         if (cell != nil && image != nil) {
-            if ((indexPath.row & 1) == 0) {
-                [cell.leftView setArtwork:image];
-            } else {
-                [cell.rightView setArtwork:image];
-            }
+            StoreTableCellViewBase *tile =
+                ((indexPath.row & 1) == 0) ? cell.leftView : cell.rightView;
+            [static_cast<StoreExtendNoteCellView *>(tile) setArtwork:image];
         }
     }
 }

@@ -23,19 +23,4 @@ static const CGFloat kProductViewHeight = 140.0;
     return self;
 }
 
-#pragma mark - Background (flattened from StoreTableCellBase)
-
-- (void)setBgImage:(UIImage *)image {
-    // StoreTableCellBase's implementation, which this cell inherits in the binary, forwards to the
-    // base's background image view; StoreExtendNoteCellPhone (0x1c1fa0) does the same through its
-    // own. The base is not reconstructed, so the assignment is made against the flattened property.
-    self.backGroundImageView.image = image;
-}
-
-- (void)setBgColor:(UIColor *)color {
-    // The binary's body is empty, matching StoreExtendNoteCellPhone::setBgColor: (0x1c202c): the
-    // extend-note cells take no background tint.
-    (void)color;
-}
-
 @end
