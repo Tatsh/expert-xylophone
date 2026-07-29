@@ -5,40 +5,60 @@
 
 #pragma once
 
-/**
- * @brief One pooled note-spawn effect: a burst emitted at a note's spawn position, tinted by the
- * note's player colour.
- */
-struct NoteBornEffect {
-    bool bActive = {};  // +0x00: whether this pool slot holds a live effect.
-    int nColorOne = {}; // +0x04: non-zero when the note's colour is the second player colour (1).
-    float flX = {};     // +0x08: the effect's X position.
-    float flY = {};     // +0x0c: the effect's Y position.
-    float flTimer = {}; // +0x10: the effect's animation timer, reset to zero on spawn.
-};
+#include "playfieldlayerbase.h"
+#include "s_vector2.h"
+
+namespace ne {
+class C_TEXTURE;
+class C_SPRITE_INSTANCING_2D;
+} // namespace ne
 
 /**
- * @brief The note-spawn ("born") effect layer.
+ * @brief The note-spawn ("born") effect layer: the burst sprites shown as notes spawn.
  *
- * Holds a fixed pool of note-spawn burst effects, each created at a note's spawn position by
- * @c Create. The name is inferred from the class's embedded @c __FILE__ path
- * (@c OpenGL/Layer/Share/note_born_layer.mm) rather than confirmed from runtime metadata. The
- * trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
+ * additively-blended sprite instancer drawing from the @c gm_parts1 atlas and a pool of per-burst
+ * effect records, each claimed by @c Create at a note's spawn position and animated by
+ * @c RenderScoreGaugeEffects until its alpha reaches zero.
+ *
+ * The class carries no RTTI; the name comes from the @c __FILE__ path embedded in @c Create's
+ * assertions (@c OpenGL/Layer/Share/note_born_layer.mm), which is the naming authority. The trailing
+ * @c // +0xNN comments document the original offsets for reference only.
+ * @ghidraAddress NoteBornLayer (engine effect layer, 0xa30 bytes)
  */
-class NoteBornLayer {
+class NoteBornLayer : public PlayFieldLayerBase {
 public:
-    // The number of player colours a note-spawn effect may take (the valid colour range is
+    // The number of pooled spawn-burst effect records.
+    static constexpr int kEffectRecordCount = 128;
+
+    // The number of player colours a spawn effect may take (the valid colour range is
     // @c [0, kPlayerColorMax)).
     static constexpr int kPlayerColorMax = 2;
-    // The number of pooled note-spawn effects.
-    static constexpr int kEffectPoolSize = 128;
 
     /**
-     * @brief Spawns a note-spawn burst effect at @p flX, @p flY for a note of the given colour.
+     * @brief The process-wide note-spawn layer, created on first use.
+     * @return The shared layer.
+     * @ghidraAddress 0x18546c
+     */
+    static NoteBornLayer *shared();
+
+    /**
+     * @brief Builds the spawn-burst sprite batch and binds its atlas on first use.
+     *
+     * Loads the @c gm_parts1 atlas, creates the world sprite batch sized to the layer's capacity,
+     * attaches it under the background layer, makes it visible, and flags its 3D path; on a
+     * non-tutorial build it also seeds two texture parameters. Guarded so it runs only once.
+     * @ghidraAddress 0x1854bc
+     */
+    void LoadSprites();
+
+    /**
+     * @brief Spawns a burst effect at @p flX, @p flY for a note of the given colour.
      *
      * Claims the first inactive pool slot and seeds it: marks it active, records whether the colour
-     * is the second player colour, stores the position, and resets the animation timer. A full pool
-     * drops the effect. Asserts the colour is in @c [0, kPlayerColorMax).
+     * is the second player colour (which selects the burst's atlas row), stores the position, and
+     * resets the animation timer. A full pool drops the effect. Asserts the colour is in
+     * @c [0, kPlayerColorMax).
      * @param nColor The note's player colour (0 or 1).
      * @param flX The effect's X position.
      * @param flY The effect's Y position.
@@ -46,13 +66,63 @@ public:
      */
     void Create(int nColor, float flX, float flY);
 
+    /**
+     * @brief Advances and redraws every live spawn-burst effect for the frame.
+     *
+     * Resets the live slot count, then for each pooled record: advances its animation timer, samples
+     * the scale and alpha animation curves, deactivates the record once its alpha reaches zero, and
+     * otherwise emits its burst sprite at the sampled scale and alpha. Finally publishes the slot
+     * count to the instancer.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x185600
+     */
+    void RenderScoreGaugeEffects(float flDelta);
+
 private:
-    // +0x00..+0x23: the layer header preceding the effect pool, still being worked out; kept as a
-    // reserved span so the pool lands at its original offset.
-    unsigned char m_aReserved00[0x24] = {};          // +0x00
-    NoteBornEffect m_aEffects[kEffectPoolSize] = {}; // +0x24: the pooled note-spawn effects.
+    /**
+     * @brief Constructs the layer: chains the base constructor, clears the sprite header and the
+     * pooled effect records, and seeds the default scale pair to one.
+     * @ghidraAddress 0x185408
+     */
+    NoteBornLayer();
+
+    /**
+     * @brief Emits one spawn-burst sprite into the batch's next slot.
+     *
+     * Looks up the burst's atlas UV by its colour row, positions it with a fixed 31-pixel anchor and
+     * size, applies the given scale, tints it opaque white at @p nAlpha, and advances the live slot
+     * count.
+     * @param nColorRow The burst's colour row (selects the atlas UV row).
+     * @param flScale The uniform sprite scale.
+     * @param position The burst screen position.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x1856e0
+     */
+    void
+    EmitBurstSprite(unsigned int nColorRow, float flScale, const S_VECTOR2 &position, int nAlpha);
+
+    // One pooled spawn-burst effect record (20 bytes): its animation state.
+    struct EffectRecord {
+        bool bActive = {};                 // +0x00: whether the record holds a live burst.
+        unsigned char aReserved01[3] = {}; // +0x01
+        // +0x04: non-zero when the note's colour is the second player colour; it also selects the
+        // burst's atlas UV row.
+        unsigned int nColorRow = {};
+        S_VECTOR2 position; // +0x08: the burst's screen position.
+        float flTimer = {}; // +0x10: the burst's animation timer.
+    };
+
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the spawn-burst sprite instancer.
+    int m_nSlotCount = {};                      // +0x18: the live sprite-slot count this frame.
+    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    unsigned char m_aReserved21[3] = {};        // +0x21
+    EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled burst records.
+    float m_aScale[2] = {};                           // +0xa24: the default scale pair (one, one).
+    unsigned char m_aReservedA2c[4] = {}; // +0xa2c: trailing state to the 0xa30-byte size.
 };
 
-// code: language=C++
-// kate: hl C++;
-// vim: set ft=cpp :
+// code: language=Objective-C++
+// kate: hl Objective-C++;
+// vim: set ft=objcpp :

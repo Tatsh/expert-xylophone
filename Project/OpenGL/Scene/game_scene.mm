@@ -50,7 +50,6 @@
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
 #include "judge_effect_layer.h"
-#include "judge_score_layer.h"
 #include "leveltables.h"
 #include "limelight_effect_layer.h"
 #include "limelight_result_layer.h"
@@ -59,6 +58,7 @@
 #include "main_frame_layer.h"
 #include "music_sheet.h"
 #include "neTexture.h"
+#include "note_born_layer.h"
 #include "note_charge_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
@@ -408,7 +408,7 @@ void GameScene::Init() {
     PlayColorLayer::shared()->RefreshThema();
     ReflecGaugeLayer::shared()->RefreshThema();
     ClearGaugeLayer::shared()->RefreshThema();
-    JudgeScoreLayer::shared()->RefreshThema();
+    NoteBornLayer::shared()->RefreshThema();
     ChainConnectorLayer::shared()->RefreshThema();
     LongNoteLayer::shared()->RefreshThema();
     NoteLayer::shared()->RefreshThema();
@@ -1915,7 +1915,7 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
     PlayColorLayer::shared()->Update(flDelta);
     BoundsEffectLayer::shared()->Process(flDelta);
     ExplosionEffectLayer::shared()->Process(flDelta);
-    JudgeScoreLayer::shared()->RenderScoreGaugeEffects(flDelta);
+    NoteBornLayer::shared()->RenderScoreGaugeEffects(flDelta);
     NoteResultLayer::shared()->Update(flDelta);
     LongNoteLayer::shared()->BuildLongNoteConnectorSprites(flDelta);
     NoteTrailLayer::shared()->Update(flDelta);
@@ -1985,7 +1985,7 @@ void GameScene::InitializePlayFieldLayersForTheme() {
     PlayColorLayer::shared()->BuildGaugePartsSpriteBatches();
     ReflecGaugeLayer::shared()->CreateGaugeSliderSprites();
     ClearGaugeLayer::shared()->CreateSprites();
-    JudgeScoreLayer::shared()->LoadSprites();
+    NoteBornLayer::shared()->LoadSprites();
     ChainConnectorLayer::shared()->CreateSprites();
     LongNoteLayer::shared()->LoadSprites();
     NoteLayer::shared()->CreateSpriteBatches();
