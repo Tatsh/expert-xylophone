@@ -108,6 +108,22 @@ public:
     }
 
     /**
+     * @brief One side's side-object note count.
+     * @param nSide The player side.
+     * @return The side's side-object note count.
+     */
+    int GetSideObjectCount(int nSide) const {
+        return m_aSideObjectCounts[nSide];
+    }
+
+    /**
+     * @brief The just-reflec quota taken over the note count less side zero's late notes.
+     */
+    int GetJustReflecQuotaRemain() const {
+        return m_nJustReflecQuotaRemain;
+    }
+
+    /**
      * @brief Returns the speed-change path node at @p nIndex.
      *
      * Asserts the index is within the path-node count.

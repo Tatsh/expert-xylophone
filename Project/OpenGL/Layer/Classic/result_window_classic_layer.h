@@ -657,6 +657,12 @@ public:
                                         float flScaleX);
 
     // The number of sprite-instancer slots the layer builds.
+    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    void SetResultScores(int nScore, int nScoreHi) {
+        m_nResultScore = nScore;
+        m_nResultScoreHi = nScoreHi;
+    }
+
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
     static constexpr int kTrailCount = 4;
@@ -781,8 +787,10 @@ private:
                                     //         (-1 when none).
     bool m_bTwitterAvailable = {};  // +0x1b4: whether the Twitter share API is available.
     bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
-    // +0x1b6..+0x1bf: trailing layer state, still being worked out.
-    unsigned char m_aReserved1b6[0xa] = {}; // +0x1b6
+    // +0x1b6..+0x1b7 is alignment padding before the result scores.
+    unsigned char m_aPad1b6[2] = {}; // +0x1b6
+    int m_nResultScore = {};         // +0x1b8: the result score value seeded from the scene.
+    int m_nResultScoreHi = {};       // +0x1bc: the second result score value seeded from the scene.
 };
 
 // code: language=Objective-C++

@@ -289,6 +289,12 @@ public:
         m_flExperienceBonus = flExperience;
     }
 
+    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    void SetResultScores(int nScore, int nScoreHi) {
+        m_nResultScore = nScore;
+        m_nResultScoreHi = nScoreHi;
+    }
+
 private:
     /**
      * @brief Renders a non-negative integer as a row of parts-atlas digit sprites.
@@ -813,9 +819,11 @@ private:
     float m_flHotMusicBonus = {};  // +0x168: the hot-music bonus.
     float m_flEarlyPlayBonus = {}; // +0x16c: the early-play bonus.
     float m_flExperienceBonus =
-        {}; // +0x170: the experience-point total shown on the result screen.
-    // +0x174..+0x17f: trailing presentation state to the allocation size.
-    unsigned char m_aReserved174[0xc] = {}; // +0x174
+        {};                    // +0x170: the experience-point total shown on the result screen.
+    int m_nResultScore = {};   // +0x174: the result score value seeded from the scene.
+    int m_nResultScoreHi = {}; // +0x178: the second result score value seeded from the scene.
+    // +0x17c..+0x17f: trailing presentation state to the allocation size.
+    unsigned char m_aReserved17c[4] = {}; // +0x17c
 };
 
 // code: language=Objective-C++

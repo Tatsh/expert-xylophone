@@ -598,6 +598,12 @@ public:
         m_flExperienceBonus = flExperience;
     }
 
+    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    void SetResultScores(int nScore, int nScoreHi) {
+        m_nResultScore = nScore;
+        m_nResultScoreHi = nScoreHi;
+    }
+
     // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
 

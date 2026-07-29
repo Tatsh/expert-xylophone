@@ -96,6 +96,14 @@ public:
         return m_bGradeVisible;
     }
 
+    /**
+     * @brief Sets the side count the grade display runs with.
+     * @param nSideCount The side count (one runs the display single-side).
+     */
+    void SetSideCount(int nSideCount) {
+        m_nSideCount = nSideCount;
+    }
+
 private:
     /**
      * @brief Emits one grade-display sprite of kind @p nSpriteKind.

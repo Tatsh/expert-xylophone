@@ -346,6 +346,206 @@ void GameScene::ClearLayerStateField() {
     m_nPlayTime = 0;
 }
 
+namespace {
+
+// The score-readout position the Limelight and Colette themes push the player field to; the Classic
+// theme leaves it unscaled (@ghidraAddress 0x2fd008).
+constexpr float kThemedScorePosition = 0.70f;
+constexpr float kDefaultScorePosition = 1.0f;
+
+// The play sides the score readout, gauge mirror, and theme layers are configured for.
+constexpr int kSideLeft = 0;
+constexpr int kSideRight = 1;
+
+// The game types: the first and third configure the left side, the second the right. Any other value
+// is a programming error and trips the binary's assertion.
+constexpr int kGameTypeSingle = 0;
+constexpr int kGameTypeVersus = 1;
+constexpr int kGameTypeReplay = 2;
+
+// The themes, selecting which theme and result layer the scene seeds.
+constexpr int kThemaClassic = 0;
+constexpr int kThemaLimelight = 1;
+constexpr int kThemaColette = 2;
+
+// The play mode that owns the chart; the others enter with one already bound.
+constexpr int kModeNormal = 0;
+
+// The note-sheet touch radius by note type, on the phone and on the iPad
+// (@ghidraAddress 0x308de0 and 0x308dec).
+constexpr int kSheetRadiusPhone[] = {96, 80, 68};
+constexpr int kSheetRadiusPad[] = {72, 62, 52};
+
+// The play colour by difficulty (@ghidraAddress 0x308df8). The binary indexes this table rather than
+// passing the difficulty straight through, though every entry maps to itself.
+constexpr int kPlayColorByDifficulty[] = {0, 1, 2, 3};
+
+// The intro thresholds, in play time, the scene seeds for every mode.
+constexpr float kPresentationDelay = 500.0f;
+constexpr float kIntroSecondDelay = 700.0f;
+constexpr float kReadyDelay = 2500.0f;
+
+// The effect intensities the play-colour lane is driven at when the rival side is shown or hidden.
+constexpr float kEffectShown = 1.0f;
+constexpr float kEffectHidden = 0.0f;
+
+} // namespace
+
+/** @ghidraAddress 0x14a518 */
+void GameScene::Init() {
+    // Recover every cached texture first; the layers below bind them as they refresh.
+    (void)ne::C_TEXTURE::GetCacheList(); // Yes, the binary discards this call's result.
+    ne::C_TEXTURE::ReloadAll();
+
+    // Re-read the player's theme into every play-field layer. The Colette layers are absent from
+    // this sweep in the binary.
+    BgLayer::GetBackgroundLayer()->RefreshThema();
+    AltFrameLayer::shared()->RefreshThema();
+    MainFrameLayer::shared()->RefreshThema();
+    PlayerFieldLayer::shared()->RefreshThema();
+    JudgeEffectLayer::shared()->RefreshThema();
+    ThemaMarkerLayer::shared()->SetupMarkers();
+    PlayColorLayer::shared()->RefreshThema();
+    ReflecGaugeLayer::shared()->RefreshThema();
+    ClearGaugeLayer::shared()->RefreshThema();
+    JudgeScoreLayer::shared()->RefreshThema();
+    ChainConnectorLayer::shared()->RefreshThema();
+    LongNoteLayer::shared()->RefreshThema();
+    NoteLayer::shared()->RefreshThema();
+    NoteTrailLayer::shared()->RefreshThema();
+    SlideNoteLayer::shared()->RefreshThema();
+    SlideNoteResultLayer::shared()->RefreshThema();
+    NoteChargeLayer::shared()->RefreshThema();
+    DamageEffectLayer::shared()->SetBoundsDamageStyle();
+    BoundsEffectLayer::shared()->SetStyle();
+    NoteResultLayer::shared()->RefreshThema();
+    ExplosionEffectLayer::shared()->RefreshThema();
+    NoteGlowLayer::shared()->SetTexture();
+    FullComboClassicLayer::shared()->RefreshThema();
+    BackgroundSpriteManager::shared()->RefreshThema();
+    ClassicThemeLayer::shared()->RefreshThema();
+    ResultWindowClassicLayer::shared()->RefreshThema();
+    FullComboLimelightLayer::shared()->RefreshThema();
+    LimelightEffectLayer::shared()->RefreshThema();
+    LimelightThemeLayer::shared()->RefreshThema();
+    LimelightResultLayer::shared()->ResetThemeSelectState();
+    FadeOverlayLayer::shared()->RefreshThema();
+    // The background, frame, explosion, and bounds layers are refreshed a second time.
+    BgLayer::GetBackgroundLayer()->RefreshThema();
+    AltFrameLayer::shared()->RefreshThema();
+    MainFrameLayer::shared()->RefreshThema();
+    ExplosionEffectLayer::shared()->RefreshThema();
+    BoundsEffectLayer::shared()->SetStyle();
+    EventEffectLayer::shared()->RefreshThema();
+    TutorialGuideLayer::shared()->RefreshThema();
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const int nGameType = pGameSystem->GetGameType();
+
+    // The two themed skins pull the score readout in; the Classic theme leaves it where it is.
+    const float flScorePosition = (m_nThema == kThemaColette || m_nThema == kThemaLimelight) ?
+                                      kThemedScorePosition :
+                                      kDefaultScorePosition;
+    PlayerFieldLayer::shared()->SetScorePosition(flScorePosition, kSideLeft);
+    PlayerFieldLayer::shared()->SetScorePosition(flScorePosition, kSideRight);
+
+    // The player's three effect-size preferences.
+    const float flBoundsSize = RBUserSettingData.sharedInstance.boundsEffectSize;
+    const float flDamageSize = RBUserSettingData.sharedInstance.damageEffectSize;
+    const float flExplosionSize = RBUserSettingData.sharedInstance.explosionEffectSize;
+    BoundsEffectLayer::shared()->SetEffectSize(flBoundsSize);
+    DamageEffectLayer::shared()->SetEffectSize(flDamageSize);
+    ExplosionEffectLayer::shared()->SetEffectSize(flExplosionSize);
+
+    const int nExplosionType = pGameSystem->GetExplosionType();
+    ExplosionEffectLayer::shared()->SetEffectType(kSideLeft, nExplosionType);
+    ExplosionEffectLayer::shared()->SetEffectType(kSideRight, nExplosionType);
+
+    // The iPad draws the alternate frame, the phone the main frame.
+    if (IsPad()) {
+        AltFrameLayer::shared()->SetFrameType(pGameSystem->GetFrameType());
+        AltFrameLayer::shared()->SetFrameMode(pGameSystem->GetDifficulty());
+        AltFrameLayer::shared()->SetAltFrameTexture(pGameSystem->GetMusicNameTexture());
+    } else {
+        MainFrameLayer::shared()->SetFrameType(pGameSystem->GetFrameType());
+        MainFrameLayer::shared()->SetMarker(pGameSystem->GetDifficulty(),
+                                            pGameSystem->GetDifficultyLevel());
+        MainFrameLayer::shared()->SetMainFrameTexture(pGameSystem->GetMusicNameTexture());
+        MainFrameLayer::shared()->SetMainFrameEnabled(true);
+    }
+
+    BgLayer::GetBackgroundLayer()->SetBackgroundType(pGameSystem->GetBackgroundType());
+
+    // The touch radius is smaller on the iPad, whose play field is laid out larger.
+    const int *pSheetRadius = IsPad() ? kSheetRadiusPad : kSheetRadiusPhone;
+    pGameSystem->SetSheetRadius(static_cast<float>(pSheetRadius[pGameSystem->GetNoteType()]));
+
+    const int nGaugeStyle = RBUserSettingData.sharedInstance.gaugeStyle;
+    ReflecGaugeLayer::shared()->SetGaugeStyle(nGaugeStyle);
+    ClearGaugeLayer::shared()->SetGaugeStyle(nGaugeStyle);
+
+    // The versus game type plays the right side; the single and replay types the left. Any other
+    // value trips the binary's assertion.
+    if (nGameType != kGameTypeSingle && nGameType != kGameTypeVersus &&
+        nGameType != kGameTypeReplay) {
+        assert(0);
+    }
+    const int nSide = nGameType == kGameTypeVersus ? kSideRight : kSideLeft;
+    PlayerFieldLayer::shared()->SetScoreSideFlag(nSide);
+    ReflecGaugeLayer::shared()->SetMirrorSide(nSide);
+    ClearGaugeLayer::shared()->SetTwoSideEnabled(nSide != 0);
+    if (m_nThema == kThemaColette) {
+        ColetteThemeLayer::shared()->SetSideCount(nSide);
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightThemeLayer::shared()->SetSideCount(nSide);
+    } else if (m_nThema == kThemaClassic) {
+        ClassicThemeLayer::shared()->SetColor(nSide);
+    }
+
+    PlayColorLayer::shared()->SetPlayColorValue(
+        kPlayColorByDifficulty[pGameSystem->GetDifficulty()]);
+    ShutdownNoteEffectSystem();
+    NoteEffectMgr::shared()->ApplyTheme();
+
+    // Only the normal mode binds the chart here; the others enter with one already loaded.
+    if (m_nMode == kModeNormal) {
+        LoadMusicAndSheet();
+        if (pGameSystem->GetFullJustReflec()) {
+            m_nResultScore = m_pMusicSheet->GetSideObjectCount(kSideLeft);
+            m_nResultScoreHi = m_pMusicSheet->GetSideObjectCount(kSideRight);
+        } else {
+            // Both slots take the same field; the binary reads it twice rather than pairing it
+            // with a neighbour.
+            m_nResultScore = m_pMusicSheet->GetJustReflecQuotaRemain();
+            m_nResultScoreHi = m_pMusicSheet->GetJustReflecQuotaRemain();
+        }
+
+        if (m_nThema == kThemaColette) {
+            ResultWindowColetteLayer::shared()->SetResultScores(m_nResultScore, m_nResultScoreHi);
+        } else if (m_nThema == kThemaLimelight) {
+            LimelightResultLayer::shared()->SetResultScores(m_nResultScore, m_nResultScoreHi);
+        } else if (m_nThema == kThemaClassic) {
+            ResultWindowClassicLayer::shared()->SetResultScores(m_nResultScore, m_nResultScoreHi);
+        }
+
+        LoadMusicNameAndFrameTexture();
+    }
+
+    m_flPresentationDelay = kPresentationDelay;
+    m_flIntroSecondDelay = kIntroSecondDelay;
+    m_flReadyDelay = kReadyDelay;
+
+    // The rival side's effects are drawn at full strength in a versus play, or whenever the rival
+    // alpha has been set; otherwise they are suppressed.
+    const bool bRivalShown = nGameType == kGameTypeVersus || pGameSystem->GetRivalAlpha() != 0.0f;
+    const float flEffect = bRivalShown ? kEffectShown : kEffectHidden;
+    const int nLightLane = pGameSystem->GetPlayColor() == 0 ? 1 : 0;
+    ExplosionEffectLayer::shared()->SetPlayColorAlpha(flEffect, kSideLeft);
+    DamageEffectLayer::shared()->SetLaneValue(kSideLeft, flEffect);
+    BoundsEffectLayer::shared()->SetLaneLightFlag(flEffect, nLightLane);
+    NoteResultLayer::shared()->SetScale(flEffect, kSideLeft);
+}
+
 /** @ghidraAddress 0x14b228 */
 void GameScene::StopBgmAndAllowRotation() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();

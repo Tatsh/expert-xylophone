@@ -495,12 +495,16 @@ private:
     int m_nMode = {};                       // +0x70: the play mode (0 normal, 1 alternate; the
                                             //        constructor seeds 2).
     float m_flPresentationDelay = {};       // +0x74: the play-ready intro threshold, in play time.
-    unsigned char m_aReserved78[4] = {};    // +0x78
+    float m_flIntroSecondDelay = {};        // +0x78: the intro's second threshold, in play time,
+                                            //        seeded to 700 beside the other two; no
+                                            //        reconstructed reader yet.
     float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
-    unsigned char m_aReserved80[8] = {};    // +0x80
-    int m_nThema = {};                      // +0x88: the active theme (0 Classic, 1 Limelight, 2
-                                            //        Colette), selecting the full-combo layer.
-    unsigned char m_aReserved8c[4] = {};    // +0x8c: trailing play state to the 0x90-byte size.
+    int m_nResultScore = {};             // +0x80: the chart's result score, handed to the theme's
+                                         //        result layer at set-up.
+    int m_nResultScoreHi = {};           // +0x84: the second result score value, likewise.
+    int m_nThema = {};                   // +0x88: the active theme (0 Classic, 1 Limelight, 2
+                                         //        Colette), selecting the full-combo layer.
+    unsigned char m_aReserved8c[4] = {}; // +0x8c: trailing play state to the 0x90-byte size.
 };
 
 /**

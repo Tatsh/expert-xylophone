@@ -100,6 +100,14 @@ public:
      */
     void Update(float flDelta);
 
+    /**
+     * @brief Sets the side count the grade display runs with.
+     * @param nSideCount The side count (one runs the display single-side).
+     */
+    void SetSideCount(int nSideCount) {
+        m_nSideCount = nSideCount;
+    }
+
 private:
     /**
      * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
