@@ -10,15 +10,22 @@
 class RbffNoteRecord;
 
 /**
- * @brief One path waypoint node: a start time and the two endpoints a note interpolates between.
+ * @brief One path waypoint node: a start time, the two endpoints a note interpolates between, and
+ * the segment's length.
  *
- * A 20-byte record; @c AdvanceNoteAlongWaypoint interpolates the note position from @c startPos
- * towards @c endPos by the elapsed fraction since @c flStartTime.
+ * A 40-byte record. @c AdvanceAlongWaypoint interpolates the note position from @c startPos towards
+ * @c endPos by the elapsed fraction since @c flStartTime. The route pass fills @c flLength with the
+ * straight-line distance between the endpoints, then converts it into the segment's traversal time
+ * and rescales @c endPos into a per-unit-time velocity.
  */
 struct WaypointNode {
     float flStartTime = {};  // +0x00: the node's start time.
     S_VECTOR2 startPos = {}; // +0x04: the interpolation start position.
     S_VECTOR2 endPos = {};   // +0x0c: the interpolation end position (the per-fraction delta).
+    float flLength = {};     // +0x14: the segment's length, traded for its traversal time.
+    // +0x18..+0x27: further per-node path state, still being worked out; kept as a reserved span so
+    // the node keeps its 40-byte stride.
+    unsigned char aReserved18[0x10] = {}; // +0x18
 };
 
 /**

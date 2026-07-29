@@ -415,9 +415,9 @@ void NoteModel::AdvanceAlongWaypoint() {
 
 namespace {
 
-// The waypoint path block's per-node stride, in bytes (each node is a WaypointNode followed by
-// per-node state to the next node).
-constexpr int kWaypointNodeStride = 0x28;
+// The waypoint path block's per-node stride, in bytes. The block is an inline array of nodes, so the
+// stride is the node size; deriving it keeps the two from drifting apart.
+constexpr int kWaypointNodeStride = static_cast<int>(sizeof(WaypointNode));
 
 // The note-record hold kinds a reflect skips (a hold's head or tail does not bounce).
 constexpr int kHoldKindHead = 1;
@@ -2014,8 +2014,9 @@ constexpr int kSlideKindTerminal = 3;
 constexpr int kActiveIndexNone = -1;
 
 // The size of the waypoint block the activation pass clears in one span: the leading reserved run,
-// the active flag, and the trailing reserved run.
-constexpr int kWaypointBlockSize = 0xa0;
+// the active flag, and the trailing reserved run — four nodes' worth.
+constexpr int kWaypointBlockNodeCount = 4;
+constexpr int kWaypointBlockSize = kWaypointBlockNodeCount * static_cast<int>(sizeof(WaypointNode));
 
 // The game types whose rival side is drawn: the versus type, and the replay type.
 constexpr int kGameTypeVersus = 1;
