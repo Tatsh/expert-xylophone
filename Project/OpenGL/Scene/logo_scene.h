@@ -55,10 +55,10 @@ public:
     /**
      * @brief The per-frame dispatch (vtable slot 0): runs the handler for the current state (0
      * initialise, 1 present, 2 start), and does nothing for any other state.
-     * @param pFrameArg The opaque per-frame argument (the frame delta, in milliseconds).
+     * @param nElapsedMs The frame delta, in milliseconds.
      * @ghidraAddress 0x149b40
      */
-    void OnFrame(void *pFrameArg) override;
+    void OnFrame(int nElapsedMs) override;
 
 private:
     /**

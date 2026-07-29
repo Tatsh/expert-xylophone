@@ -22,7 +22,7 @@ namespace {
 // nothing. Seeded by InitializeGlobalContainer.
 class ListenerListSentinel : public ne::C_TASK {
 public:
-    void OnFrame(void *) override {
+    void OnFrame(int) override {
     }
 };
 
@@ -58,7 +58,7 @@ C_TASK::~C_TASK() {
     Unlink();
 }
 
-void C_TASK::OnFrame(void *) {
+void C_TASK::OnFrame(int) {
 }
 
 void C_TASK::Unlink() {
@@ -106,13 +106,13 @@ void C_TASK::InsertSorted(int nPriority) {
 } // namespace ne
 
 /** @ghidraAddress 0x36628 */
-void DispatchListenerList(void *pFrameArg) {
+void DispatchListenerList(int nElapsedMs) {
     // Walk the list from the head. A live node gets its per-frame callback and the walk advances to
     // its successor; a dead node is destroyed (its successor is captured first, since destruction
     // splices the node out of the list).
     for (ne::C_TASK *pNode = g_listenerListSentinel.GetNext(); pNode != &g_listenerListSentinel;) {
         if (!pNode->IsDead()) {
-            pNode->OnFrame(pFrameArg);
+            pNode->OnFrame(nElapsedMs);
             pNode = pNode->GetNext();
         } else {
             ne::C_TASK *pNext = pNode->GetNext();

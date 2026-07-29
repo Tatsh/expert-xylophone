@@ -88,7 +88,7 @@ public:
      * list.
      * @ghidraAddress 0x57514
      */
-    void OnFrame(void *pFrameArg) override;
+    void OnFrame(int nElapsedMs) override;
 
 private:
     /**
@@ -116,10 +116,10 @@ private:
 
     /**
      * @brief State 2: scrolls and animates the title parts, handles touch, and drives transitions.
-     * @param pFrameArg The per-frame argument forwarded from the task callback (a frame-delta count).
+     * @param nElapsedMs The frame delta, in milliseconds, forwarded from the task callback.
      * @ghidraAddress 0x57ad8
      */
-    void RunMainLoop(void *pFrameArg);
+    void RunMainLoop(int nElapsedMs);
 
     /**
      * @brief The main loop's touch pass: tracks one touch, hit-tests the menu boxes on a fresh touch,

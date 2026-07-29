@@ -596,8 +596,8 @@ bool TitleColetteScene::IsInsideHitBox(float flX, float flY, const TitleHitRect 
 }
 
 /** @ghidraAddress 0x57ad8 */
-void TitleColetteScene::RunMainLoop(void *pFrameArg) {
-    const int nDeltaMs = static_cast<int>(reinterpret_cast<long>(pFrameArg));
+void TitleColetteScene::RunMainLoop(int nElapsedMs) {
+    const int nDeltaMs = nElapsedMs;
 
     // Cache the viewport size and advance the idle timer, capping it and arming attract mode.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
@@ -1146,7 +1146,7 @@ TitleColetteScene::~TitleColetteScene() {
 }
 
 /** @ghidraAddress 0x57514 */
-void TitleColetteScene::OnFrame(void *pFrameArg) {
+void TitleColetteScene::OnFrame(int nElapsedMs) {
     switch (m_nState) {
     case kStateLoad:
         LoadResources();
@@ -1155,7 +1155,7 @@ void TitleColetteScene::OnFrame(void *pFrameArg) {
         StartMusic();
         return;
     case kStateMainLoop:
-        RunMainLoop(pFrameArg);
+        RunMainLoop(nElapsedMs);
         return;
     case kStateFinish:
         FinishAndOpenList();

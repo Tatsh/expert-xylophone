@@ -266,10 +266,9 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x8af3c */
     float elapsed = m_TaskTime.GetElapsedMilliseconds();
     m_TaskTime.Start();
-    // The per-frame listener callback (ne::C_TASK::OnFrame) takes its frame-delta count as the
-    // opaque void* argument, so the elapsed whole-frame count is passed packed into the pointer.
-    auto elapsedFrames = static_cast<uintptr_t>(static_cast<int>(elapsed));
-    DispatchListenerList(reinterpret_cast<void *>(elapsedFrames));
+    // The elapsed millisecond count is truncated toward zero and dispatched to every listener's
+    // per-frame callback (the binary's fcvtzs into w0).
+    DispatchListenerList(static_cast<int>(elapsed));
     TouchManager::FetchSharedSingleton()->CompactTouchList();
 }
 

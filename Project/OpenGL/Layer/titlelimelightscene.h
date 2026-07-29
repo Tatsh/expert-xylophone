@@ -70,7 +70,7 @@ public:
      * 2 renders and animates the title parts, and state 3 finishes and opens the music list.
      * @ghidraAddress 0x152f84
      */
-    void OnFrame(void *pFrameArg) override;
+    void OnFrame(int nElapsedMs) override;
 
 private:
     /**
@@ -140,10 +140,10 @@ private:
      * records -- start, shot-sound audition, the two hidden-code buttons, and the voice cue -- and
      * reads a tracked touch's net travel as a hidden-code flick. Taking the start prompt seeds the
      * leave fade; once that fade completes the layer advances to the finish state.
-     * @param pFrameArg The per-frame argument forwarded from the task callback (a frame-delta count).
+     * @param nElapsedMs The frame delta, in milliseconds, forwarded from the task callback.
      * @ghidraAddress 0x1531fc
      */
-    void RenderFrame(void *pFrameArg);
+    void RenderFrame(int nElapsedMs);
 
     /**
      * @brief State 3: finishes the title screen and opens the music list.

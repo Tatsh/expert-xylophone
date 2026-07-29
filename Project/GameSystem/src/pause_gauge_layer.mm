@@ -466,8 +466,9 @@ void PauseGaugeLayer::TaskExecute() {
 }
 
 /** @ghidraAddress 0x1508b0 */
-void PauseGaugeLayer::OnFrame(void *pFrameArg) {
-    (void)pFrameArg; // The pause gauge does no per-frame work; its sprites are rendered externally.
+void PauseGaugeLayer::OnFrame(int nElapsedMs) {
+    (void)
+        nElapsedMs; // The pause gauge does no per-frame work; its sprites are rendered externally.
 }
 
 /** @ghidraAddress 0x150e58 */

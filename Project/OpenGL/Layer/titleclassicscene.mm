@@ -340,7 +340,7 @@ void TitleClassicScene::ReleaseResources() {
 }
 
 /** @ghidraAddress 0x151678 */
-void TitleClassicScene::OnFrame(void *pFrameArg) {
+void TitleClassicScene::OnFrame(int nElapsedMs) {
     switch (m_nState) {
     case kStateLoad:
         LoadResources();
@@ -349,7 +349,7 @@ void TitleClassicScene::OnFrame(void *pFrameArg) {
         StartMusic();
         return;
     case kStateRender:
-        RenderFrame(pFrameArg);
+        RenderFrame(nElapsedMs);
         return;
     case kStateFinish:
         FinishAndOpenList();
@@ -411,8 +411,8 @@ void TitleClassicScene::StartMusic() {
 }
 
 /** @ghidraAddress 0x151934 */
-void TitleClassicScene::RenderFrame(void *pFrameArg) {
-    const int nDeltaFrames = static_cast<int>(reinterpret_cast<intptr_t>(pFrameArg));
+void TitleClassicScene::RenderFrame(int nElapsedMs) {
+    const int nDeltaFrames = nElapsedMs;
     const float flDelta = static_cast<float>(nDeltaFrames);
 
     const GameSystem *pGameSystem = GameSystem::GetGameSystem();

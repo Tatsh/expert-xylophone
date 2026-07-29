@@ -140,7 +140,7 @@ extraout
 fabsf
 falied
 fastcall
-favorite
+fcvtzs
 floatloopcounter
 fmla
 fmov

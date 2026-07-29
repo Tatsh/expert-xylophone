@@ -1039,7 +1039,7 @@ void TitleLimelightScene::ReleaseResources() {
 }
 
 /** @ghidraAddress 0x152f84 */
-void TitleLimelightScene::OnFrame(void *pFrameArg) {
+void TitleLimelightScene::OnFrame(int nElapsedMs) {
     switch (m_nState) {
     case kStateLoad:
         LoadResources();
@@ -1048,7 +1048,7 @@ void TitleLimelightScene::OnFrame(void *pFrameArg) {
         StartMusic();
         return;
     case kStateRender:
-        RenderFrame(pFrameArg);
+        RenderFrame(nElapsedMs);
         return;
     case kStateFinish:
         FinishAndOpenList();
@@ -1104,8 +1104,8 @@ void TitleLimelightScene::StartMusic() {
 }
 
 /** @ghidraAddress 0x1531fc */
-void TitleLimelightScene::RenderFrame(void *pFrameArg) {
-    const int nDeltaFrames = static_cast<int>(reinterpret_cast<intptr_t>(pFrameArg));
+void TitleLimelightScene::RenderFrame(int nElapsedMs) {
+    const int nDeltaFrames = nElapsedMs;
 
     // Cache the viewport size the part emitter halves into the part layout's screen origin.
     const GameSystem *pGameSystem = GameSystem::GetGameSystem();

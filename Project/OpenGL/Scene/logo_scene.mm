@@ -74,8 +74,8 @@ LogoScene::~LogoScene() {
 }
 
 /** @ghidraAddress 0x149b40 */
-void LogoScene::OnFrame(void *pFrameArg) {
-    const int nDeltaMs = static_cast<int>(reinterpret_cast<intptr_t>(pFrameArg));
+void LogoScene::OnFrame(int nElapsedMs) {
+    const int nDeltaMs = nElapsedMs;
     switch (m_nState) {
     case kStateInitialise:
         Initialise();

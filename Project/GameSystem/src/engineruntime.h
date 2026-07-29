@@ -64,7 +64,7 @@ void CreateTitleLayerForTheme(void);
  *        node in the engine listener list.
  * @ghidraAddress 0x36628
  */
-void DispatchListenerList(void *pFrameArg);
+void DispatchListenerList(int nElapsedMs);
 /**
  * @brief Zeroes @p nSize bytes of @p pBuffer, guarding against a null pointer.
  * @param pBuffer The buffer to clear, or @c nullptr to do nothing.

@@ -57,9 +57,9 @@ public:
     /**
      * @brief The node's per-frame callback (vtable slot 0). The base does nothing; concrete
      * listeners override it.
-     * @param pFrameArg The opaque per-frame argument passed by the dispatcher.
+     * @param nElapsedMs The frame delta, in milliseconds, passed by the dispatcher.
      */
-    virtual void OnFrame(void *pFrameArg);
+    virtual void OnFrame(int nElapsedMs);
 
     /** @brief The previous node in the list. */
     C_TASK *GetPrev() const {

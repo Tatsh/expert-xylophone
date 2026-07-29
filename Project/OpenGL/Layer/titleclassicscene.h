@@ -64,7 +64,7 @@ public:
      * 2 renders and animates the title, and state 3 finishes and opens the music list.
      * @ghidraAddress 0x151678
      */
-    void OnFrame(void *pFrameArg) override;
+    void OnFrame(int nElapsedMs) override;
 
 private:
     /**
@@ -95,10 +95,10 @@ private:
      * input pass: the start hit-box commits to the music list, the two secret hit-boxes and the
      * four-way swipe classifier drive the hidden sequence, and the remaining hit-box auditions the
      * shot sound.
-     * @param pFrameArg The per-frame argument forwarded from the task callback (a frame-delta count).
+     * @param nElapsedMs The frame delta, in milliseconds, forwarded from the task callback.
      * @ghidraAddress 0x151934
      */
-    void RenderFrame(void *pFrameArg);
+    void RenderFrame(int nElapsedMs);
 
     /**
      * @brief State 3: finishes the title screen and opens the music list.

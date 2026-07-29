@@ -105,7 +105,7 @@ public:
      * externally).
      * @ghidraAddress 0x1508b0
      */
-    void OnFrame(void *pFrameArg) override;
+    void OnFrame(int nElapsedMs) override;
 
     /**
      * @brief Hit-tests a point against a lane's pause-gauge rectangle.
