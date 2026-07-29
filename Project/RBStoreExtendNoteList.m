@@ -277,13 +277,18 @@ static NSString *g_pStoreCountry = nil;
     if (appVersion == nil || (requiredVersion != nil &&
                               [appVersion compare:requiredVersion
                                           options:kVersionCompareOptions] == NSOrderedAscending)) {
+#ifdef ENABLE_PATCHES
+        // Pass the catalogue string as an argument rather than as the format, so its unsubstituted
+        // %1$@/%2$@ placeholders cannot consume varargs that were never pushed.
+        NSString *message = [NSString stringWithFormat:@"%@", g_pLocalizedUpdateRequiredFormat];
+#else
         // The binary passes the format string as the only argument, leaving its positional
-        // %1$@/%2$@ placeholders unsubstituted. Reproduced verbatim, so the diagnostic that flags
-        // the non-literal format is scoped off rather than the call being rewritten.
+        // %1$@/%2$@ placeholders unsubstituted.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-security"
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
 #pragma clang diagnostic pop
+#endif
         [self.delegate extendNoteListDownloadError:self errorMessage:message];
         self.extendNotelistDownloader = nil;
         return;

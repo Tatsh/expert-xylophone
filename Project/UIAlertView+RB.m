@@ -425,12 +425,18 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (UIAlertView *)showColetteThemaUnlockMessage {
     /** @ghidraAddress 0xf3e4 */
-    // The binary passes the localised string as the format itself, with no arguments; reproduced
-    // verbatim, so the non-literal-format diagnostic is scoped off rather than the call rewritten.
+#ifdef ENABLE_PATCHES
+    // Pass the localised string as an argument rather than as the format, so any specifier it
+    // happens to contain cannot consume varargs that were never pushed.
+    NSString *message =
+        [NSString stringWithFormat:@"%@", RBLocalizedUIString(kColetteWelcomeMessageKey)];
+#else
+    // The binary passes the localised string as the format itself, with no arguments.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-security"
     NSString *message = [NSString stringWithFormat:RBLocalizedUIString(kColetteWelcomeMessageKey)];
 #pragma clang diagnostic pop
+#endif
     return [[UIAlertView alloc] initWithTitle:kColetteWelcomeTitle
                                       message:message
                                      delegate:nil

@@ -26,6 +26,9 @@ Expert xylophone.
 The C and C++ engine reconstruction is tracked in [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md), a
 per-function checklist of every routine's status and reconstructed signature.
 
+A build stays faithful to the shipped binary by default. The deliberate deviations are gated behind
+the `ENABLE_PATCHES` flag and documented in [PATCHES.md](PATCHES.md).
+
 ## Installation
 
 Not yet written.

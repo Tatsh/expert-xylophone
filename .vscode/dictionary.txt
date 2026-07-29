@@ -21,6 +21,7 @@ applist
 archs
 areyouready
 arith
+armv
 asbd
 assetcatalog
 atsync
@@ -395,6 +396,7 @@ unretained
 unscored
 untilted
 valf
+varargs
 vars
 vartical
 vectormath

@@ -6,6 +6,16 @@ PROJECT_ROOT       := $(patsubst %/,%,$(dir $(THEOS_MAKEFILE_DIR)))
 export ARCHS  = arm64 arm64e
 export TARGET = iphone:clang:latest:12.0
 
+# ENABLE_PATCHES mirrors the CMake option of the same name: it compiles in the preservation
+# patches guarded by #ifdef ENABLE_PATCHES. Off by default so a plain build matches the binary;
+# enable with `make -C theos ENABLE_PATCHES=1`.
+ENABLE_PATCHES ?= 0
+ifneq ($(ENABLE_PATCHES),0)
+PATCH_DEFINES := -DENABLE_PATCHES=1
+else
+PATCH_DEFINES :=
+endif
+
 include $(THEOS)/makefiles/common.mk
 
 APPLICATION_NAME = ReflecBeatPlus
@@ -25,6 +35,7 @@ ReflecBeatPlus_WARNINGS = -Wall -Wextra -Wshadow -Wcomma -Wnewline-eof -Wpointer
                           -Wimplicit-retain-self
 ReflecBeatPlus_CFLAGS  = -std=gnu2x -ftrivial-auto-var-init=zero -fobjc-arc -fobjc-exceptions \
                          -DGLES_SILENCE_DEPRECATION \
+                         $(PATCH_DEFINES) \
                          $(ReflecBeatPlus_WARNINGS) \
                          -I$(PROJECT_ROOT)/Project \
                          $(addprefix -I,$(shell find $(PROJECT_ROOT)/Project -type d)) \

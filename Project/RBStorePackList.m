@@ -245,13 +245,18 @@ static NSString *_lastProductCountryCode = nil;
     if (appVersion == nil || (requiredVersion != nil &&
                               [appVersion compare:requiredVersion
                                           options:NSNumericSearch] == kVersionRequirementUnmet)) {
+#ifdef ENABLE_PATCHES
+        // Pass the catalogue string as an argument rather than as the format, so its unsubstituted
+        // positional placeholders cannot consume varargs that were never pushed.
+        NSString *message = [NSString stringWithFormat:@"%@", g_pLocalizedUpdateRequiredFormat];
+#else
         // The binary formats the version-mismatch message without substituting its positional
-        // arguments. Reproduced verbatim, so the diagnostic that flags the non-literal format is
-        // scoped off rather than the call being rewritten.
+        // arguments.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-security"
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
 #pragma clang diagnostic pop
+#endif
         [self.delegate packListDownloadError:self errorMessage:message];
     } else {
         NSArray *packList = json[kStoreJSONKeyPackList];
