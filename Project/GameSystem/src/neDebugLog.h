@@ -29,12 +29,14 @@
 
 #if RBPDBG
 
-#include <cstdarg>
-#include <cstdio>
+// The C spellings, not <cstdarg>/<cstdio>: this header is included from pure Objective-C (.m)
+// translation units, where the C++ headers do not exist.
 #include <os/log.h>
+#include <stdarg.h>
+#include <stdio.h>
 
-// printf-style wrapper over os_log (works in both .cpp and .mm translation units; os_log lines are
-// what idevicesyslog captures).
+// printf-style wrapper over os_log (works in .c, .m, .cpp, and .mm translation units alike; os_log
+// lines are what idevicesyslog captures).
 static inline void neDebugLog(const char *fmt, ...) {
     char buf[512];
     va_list ap;
@@ -66,9 +68,13 @@ static inline void neDebugLog(const char *fmt, ...) {
 // No-op fallbacks: a bare, unguarded log call still compiles away to nothing, and
 // NE_DBG_FIRST(n) collapses an `if (...) { ... }` diagnostic block to dead code that the optimiser
 // drops.
-static inline void neDebugLog(const char *, ...) {
+static inline void neDebugLog(const char *fmt, ...) {
+    (void)fmt;
 }
-#define NE_DBG_FIRST(limit) (false)
+
+// A plain 0 rather than `false`, which is a keyword only in C++ and would need <stdbool.h> in the
+// pure Objective-C translation units.
+#define NE_DBG_FIRST(limit) (0)
 #define NE_DBG(...) ((void)0)
 
 #endif
