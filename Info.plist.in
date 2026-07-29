@@ -25,10 +25,12 @@
     <true />
     <key>MinimumOSVersion</key>
     <string>@IOS_DEPLOYMENT_TARGET@</string>
+    <!--
     <key>UIRequiredDeviceCapabilities</key>
     <array>
       <string>gamekit</string>
     </array>
+    -->
     <key>UIRequiresFullScreen</key>
     <true />
     <key>UIBackgroundModes</key>
