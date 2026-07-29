@@ -9,6 +9,7 @@
 #include "note_model.h"
 
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 
@@ -17,17 +18,24 @@
 #include "Render/vectormath.h"
 #include "ScoreTracker.h"
 #include "bounds_effect_layer.h"
+#include "chain_connector_layer.h"
 #include "damage_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
 #include "explosion_effect_layer.h"
 #include "gamesystem.h"
+#include "long_note_layer.h"
 #include "note_born_layer.h"
+#include "note_charge_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
+#include "note_layer.h"
+#include "note_trail_layer.h"
 #include "playtimer.h"
 #include "rbffnoterecord.h"
 #include "reflec_gauge_layer.h"
+#include "slide_note_layer.h"
+#include "slide_note_result_layer.h"
 #include "touch_point.h"
 #include "touchmanager.h"
 
@@ -1250,6 +1258,304 @@ enum ShotColor {
     kShotColorInert = 3,  // A note that takes no shot action.
 };
 } // namespace
+
+namespace {
+
+// The note states that draw: the render pass skips any state outside [1, 7].
+constexpr int kRenderStateFirst = 1;
+constexpr int kRenderStateCount = 7;
+
+// The note type the render pass gives its own body layer: the long note and the slide note. Every
+// other type, and a note with no chart record at all, takes the plain note body.
+constexpr int kRenderTypeLongNote = 1;
+constexpr int kRenderTypeSlideNote = 3;
+
+// The side a note with no chart record reports: its own side draws as colour 0, the other side
+// takes the no-side sentinel.
+constexpr int kRenderSideOwn = 0;
+constexpr int kRenderSideNone = 3;
+
+// The game type whose rival side is always drawn, and the rival modes that hide a slide segment on
+// the other play side.
+constexpr int kRenderGameTypeVersus = 1;
+constexpr int kRenderRivalModeHiddenFirst = 1;
+constexpr int kRenderRivalModeHiddenCount = 2;
+
+// The note's end-cap flag: the link's second bit must be clear and the timing selector under its
+// bound.
+constexpr int kRenderLinkEndCapMask = 2;
+constexpr int kRenderTimingSelBound = 10;
+
+// The long-note state that draws a trail, and the grade bound above which no trail is drawn.
+constexpr int kRenderLongTrailState = 3;
+constexpr int kRenderLongTrailGradeBound = 3;
+
+// The play clock the slide-point windows are tested against: the play time scaled into chart units,
+// then biased.
+constexpr float kRenderPlayClockScale = 1000.0f;   // @ghidraAddress 0x2f8540
+constexpr float kRenderPlayClockOffset = -1500.0f; // @ghidraAddress 0x308b60
+
+// The quarter turn the shot angle is rotated by before it reaches the charge layer.
+constexpr float kRenderChargeAngleOffset = 1.5707963267948966f; // @ghidraAddress 0x2fedd8 (pi/2)
+
+// The partner states that draw no chain connector: the unset state and the retired state. The
+// binary folds both into `(state | 8) != 8`.
+constexpr int kRenderChainSkipStateUnset = 0;
+constexpr int kRenderChainSkipStateRetired = 8;
+
+// The play side mirrors every position and direction the render pass emits.
+constexpr float kRenderMirrorPositive = 1.0f;
+constexpr float kRenderMirrorNegative = -1.0f;
+
+} // namespace
+
+// The side flip negates X on the near side and Y on the flipped one. The binary re-tests the flip
+// for every single coordinate it mirrors, so these stay per-coordinate calls.
+float NoteModel::MirrorRenderX(float flX) const {
+    return flX * (IsSideFlipped() != 0 ? kRenderMirrorPositive : kRenderMirrorNegative);
+}
+
+float NoteModel::MirrorRenderY(float flY) const {
+    return flY * (IsSideFlipped() != 0 ? kRenderMirrorNegative : kRenderMirrorPositive);
+}
+
+int NoteModel::GetRenderSide() const {
+    if (m_pRecord != nullptr) {
+        return m_pRecord->GetSide();
+    }
+    return m_bOwnSide ? kRenderSideOwn : kRenderSideNone;
+}
+
+bool NoteModel::HasRenderEndCap() const {
+    // The binary reads the link word without re-checking the record, so a note with no record
+    // dereferences null here. The null test is ours; the shipped code has none.
+    if (m_pRecord == nullptr) {
+        return false;
+    }
+    const unsigned int nTimingSel = static_cast<unsigned int>(m_pRecord->GetTimingSel());
+    return (m_pRecord->GetLinkA() & kRenderLinkEndCapMask) == 0 &&
+           nTimingSel < kRenderTimingSelBound;
+}
+
+/** @ghidraAddress 0x135388 */
+void NoteModel::RenderNote() {
+    // A note on the other play side is drawn only when the rival side is visible at all, or the
+    // game type always shows it.
+    if (GameSystem::GetGameSystem()->GetRivalAlpha() == 0.0f &&
+        GameSystem::GetGameSystem()->GetGameType() != kRenderGameTypeVersus &&
+        IsOnPlaySide() == 0) {
+        return;
+    }
+    if (static_cast<unsigned int>(m_nState - kRenderStateFirst) >= kRenderStateCount) {
+        return;
+    }
+
+    const int nType = m_pRecord != nullptr ? m_pRecord->GetType() : 0;
+    if (m_pRecord != nullptr && nType == kRenderTypeSlideNote) {
+        RenderSlideNote();
+    } else if (m_pRecord != nullptr && nType == kRenderTypeLongNote && m_pos.x == m_flRenderX &&
+               m_pos.y == m_flRenderY) {
+        RenderLongNote(true);
+    } else if (m_pRecord != nullptr && nType == kRenderTypeLongNote) {
+        RenderLongNote(false);
+    } else {
+        RenderPlainNote();
+    }
+
+    RenderChainConnector();
+
+    // A resolved shot leaves its charge on the field, angled along the note's travel direction.
+    if (m_bShotResolved) {
+        const float flAngle =
+            static_cast<float>(atan2(static_cast<double>(MirrorRenderY(m_velocity.y)),
+                                     static_cast<double>(-MirrorRenderX(m_velocity.x)))) +
+            kRenderChargeAngleOffset;
+        NoteChargeLayer::shared()->Create(GetRenderSide(),
+                                          MirrorRenderX(m_pos.x),
+                                          MirrorRenderY(m_pos.y),
+                                          flAngle,
+                                          m_flFadeTimer);
+    }
+}
+
+/** @ghidraAddress 0x135388 */
+void NoteModel::RenderPlainNote() {
+    NoteLayer *const pLayer = NoteLayer::shared();
+    const int nSide = GetRenderSide();
+    const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                 (m_bOwnSide ? kRenderSideOwn : kRenderSideNone);
+    const bool bEndCap = HasRenderEndCap();
+    const int nHasPoints = m_pRecord != nullptr && m_pRecord->GetPointCount() > 0 ? 1 : 0;
+    const int nSpawnTrail = m_pRecord != nullptr ? static_cast<int>(m_pRecord->GetFlags() & 1) : 0;
+
+    pLayer->Create(nSide,
+                   nHoldKind,
+                   bEndCap ? 1 : 0,
+                   nHasPoints,
+                   nSpawnTrail,
+                   MirrorRenderX(m_pos.x),
+                   MirrorRenderY(m_pos.y),
+                   MirrorRenderX(m_velocity.x),
+                   MirrorRenderY(m_velocity.y),
+                   m_flAppearScale,
+                   m_flFadeTimer);
+}
+
+/** @ghidraAddress 0x135388 */
+void NoteModel::RenderSlideNote() {
+    const bool bResultReady = m_bPlayStateFlag510 && m_bScored;
+
+    SlideNoteLayer::shared()->Create(GetRenderSide(),
+                                     m_bScored,
+                                     m_nActiveKind2,
+                                     MirrorRenderX(m_pos.x),
+                                     MirrorRenderY(m_pos.y),
+                                     MirrorRenderX(m_pos.x),
+                                     MirrorRenderY(m_pos.y),
+                                     m_flFadeTimer,
+                                     bResultReady,
+                                     m_bRenderShotTail,
+                                     0,
+                                     0);
+    if (bResultReady) {
+        SlideNoteResultLayer::shared()->Create(
+            0, S_VECTOR2{MirrorRenderX(m_pos.x), MirrorRenderY(m_pos.y)});
+    }
+
+    // Each slide point whose window contains the play clock draws a segment from the previous
+    // point's live position (or from the note itself, for the first and the active point) to its
+    // own.
+    const float flPlayClock =
+        PlayTimer::shared()->GetPlayTime() * kRenderPlayClockScale + kRenderPlayClockOffset;
+    for (int i = 0; i < m_pRecord->GetSlidePointCount(); ++i) {
+        const SubEntry &point = m_aSubEntries[i];
+        if (point.flTime0 > flPlayClock || flPlayClock > point.flTime2) {
+            continue;
+        }
+        if (static_cast<unsigned int>(m_nRivalMode - kRenderRivalModeHiddenFirst) <
+                kRenderRivalModeHiddenCount &&
+            IsOnPlaySide() == 0) {
+            continue;
+        }
+
+        float flStartX = 0.0f;
+        float flStartY = 0.0f;
+        int nKind = kRenderSideNone;
+        unsigned char nTailFlag = 0;
+        if (!point.bLastPoint) {
+            if (i == 0 || i == m_nActiveIndex) {
+                flStartX = m_pos.x;
+                flStartY = m_pos.y;
+            } else {
+                flStartX = m_aSubEntries[i - 1].flCurX;
+                flStartY = m_aSubEntries[i - 1].flCurY;
+            }
+            nKind = point.nKind;
+        } else {
+            // The final point starts at the preceding point until the path's own end time passes,
+            // and at the note itself after it. The binary indexes both the end time and the
+            // preceding point without a lower bound, so a one-point path reads off the front of the
+            // sub-entry table; the bounds tests are ours.
+            const int nPathEndIndex = m_pRecord->GetSlidePointCount() - 2;
+            const float flPathEndTime =
+                nPathEndIndex >= 0 ? m_aSubEntries[nPathEndIndex].flTime2 : flPlayClock;
+            if (flPlayClock <= flPathEndTime && i > 0) {
+                flStartX = m_aSubEntries[i - 1].flCurX;
+                flStartY = m_aSubEntries[i - 1].flCurY;
+            } else {
+                flStartX = m_pos.x;
+                flStartY = m_pos.y;
+            }
+            nTailFlag = 1;
+        }
+
+        SlideNoteLayer::shared()->Create(GetRenderSide(),
+                                         m_bScored ? 1 : 0,
+                                         nKind,
+                                         MirrorRenderX(flStartX),
+                                         MirrorRenderY(flStartY),
+                                         MirrorRenderX(point.flCurX),
+                                         MirrorRenderY(point.flCurY),
+                                         m_flFadeTimer,
+                                         m_bPlayStateFlag510 && m_bScored,
+                                         m_bRenderShotTail,
+                                         nTailFlag,
+                                         nTailFlag);
+    }
+}
+
+/** @ghidraAddress 0x135388 */
+void NoteModel::RenderLongNote(bool bAtRenderPoint) {
+    LongNoteLayer *const pLayer = LongNoteLayer::shared();
+    const int nSide = GetRenderSide();
+    const int nHoldKind = m_pRecord != nullptr ? m_pRecord->GetHoldKind() :
+                                                 (m_bOwnSide ? kRenderSideOwn : kRenderSideNone);
+    const bool bEndCap = HasRenderEndCap();
+
+    // The body runs from the note to its render endpoint. While the note still sits on that
+    // endpoint the segment is angled along the travel direction; once it has left, it is drawn
+    // flat.
+    float flRotation = 0.0f;
+    unsigned char nRotated = 0;
+    if (bAtRenderPoint) {
+        flRotation = static_cast<float>(atan2(static_cast<double>(-MirrorRenderY(m_velocity.y)),
+                                              static_cast<double>(MirrorRenderX(m_velocity.x)))) +
+                     kRenderChargeAngleOffset;
+        nRotated = 1;
+    }
+
+    pLayer->Create(nSide,
+                   nHoldKind == 1,
+                   bEndCap,
+                   MirrorRenderX(m_pos.x),
+                   MirrorRenderY(m_pos.y),
+                   MirrorRenderX(m_flRenderX),
+                   MirrorRenderY(m_flRenderY),
+                   m_bRenderReflectPath,
+                   m_bRenderShotTail,
+                   m_flFadeTimer,
+                   nRotated,
+                   flRotation);
+
+    // A held note that has been graded leaves its trail behind.
+    if (m_nState == kRenderLongTrailState &&
+        static_cast<unsigned int>(m_nLongGrade) < kRenderLongTrailGradeBound) {
+        NoteTrailLayer::shared()->Create(
+            m_nLongGrade, MirrorRenderX(m_pos.x), MirrorRenderY(m_pos.y));
+    }
+
+    // A long note whose record asks for one also spawns a head particle, until the shot tail takes
+    // over the note's rendering.
+    if (m_pRecord != nullptr && (m_pRecord->GetFlags() & 1) != 0 && !m_bRenderShotTail) {
+        NoteLayer::shared()->SpawnParticle(MirrorRenderX(m_pos.x),
+                                           MirrorRenderY(m_pos.y),
+                                           m_flAppearScale,
+                                           m_flFadeTimer,
+                                           GetRenderSide());
+    }
+}
+
+/** @ghidraAddress 0x135388 */
+void NoteModel::RenderChainConnector() {
+    if (m_pRecord == nullptr || m_pRecord->GetChainLink().IsHead()) {
+        return;
+    }
+    NoteModel *const pPartner = m_pSheet->FindNoteByIndex(m_pRecord->GetChainLink().GetChainId());
+    if (pPartner == nullptr) {
+        return;
+    }
+    // The connector is skipped while the partner is unset or already retired; the binary folds both
+    // states into a single `(state | 8) != 8` test.
+    if (pPartner->m_nState == kRenderChainSkipStateUnset ||
+        pPartner->m_nState == kRenderChainSkipStateRetired) {
+        return;
+    }
+    ChainConnectorLayer::shared()->Create(GetRenderSide(),
+                                          MirrorRenderX(m_pos.x),
+                                          MirrorRenderY(m_pos.y),
+                                          pPartner->MirrorRenderX(pPartner->m_pos.x),
+                                          pPartner->MirrorRenderY(pPartner->m_pos.y));
+}
 
 namespace {
 

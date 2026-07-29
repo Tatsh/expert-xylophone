@@ -323,8 +323,14 @@ public:
     void UpdateStep();
 
     /**
-     * @brief Renders the note's body, effects, and any trail for the current frame. Reconstruction
-     * pending.
+     * @brief Emits this frame's sprites for the note into the per-kind note layers.
+     *
+     * Drops the note outright when it belongs to a hidden rival side or is not in a drawable state.
+     * A slide note emits its body, its result burst once scored, and one segment per slide point
+     * whose window contains the play clock; a long note emits its body, its trail once held and
+     * graded, and a head particle; every other note emits a plain body. A chained note then draws
+     * the connector to its partner, and a note whose shot has been resolved emits its charge.
+     * Every position is mirrored for the play side.
      * @ghidraAddress 0x135388
      */
     void RenderNote();
@@ -562,6 +568,65 @@ public:
     static constexpr int kColorLockThreshold = 3;
 
 private:
+    /**
+     * @brief Mirrors a render X coordinate for the play side: negated unless the note is flipped.
+     * @param flX The X before mirroring.
+     * @return The mirrored X.
+     * @ghidraAddress 0x135388
+     */
+    float MirrorRenderX(float flX) const;
+
+    /**
+     * @brief Mirrors a render Y coordinate for the play side: negated when the note is flipped.
+     * @param flY The Y before mirroring.
+     * @return The mirrored Y.
+     * @ghidraAddress 0x135388
+     */
+    float MirrorRenderY(float flY) const;
+
+    /**
+     * @brief Returns the colour the render pass draws the note in: its record's side, or (for a
+     * note with no record) its own side, else the no-side sentinel.
+     * @return The render side.
+     * @ghidraAddress 0x135388
+     */
+    int GetRenderSide() const;
+
+    /**
+     * @brief Whether the note draws its end cap: its link's second bit is clear and its timing
+     * selector is under the bound.
+     * @return @c true when the end cap is drawn.
+     * @ghidraAddress 0x135388
+     */
+    bool HasRenderEndCap() const;
+
+    /**
+     * @brief Emits the plain note body. The binary inlines this into @c RenderNote.
+     * @ghidraAddress 0x135388
+     */
+    void RenderPlainNote();
+
+    /**
+     * @brief Emits a slide note's body, its result burst once scored, and one segment per live
+     * slide point. The binary inlines this into @c RenderNote.
+     * @ghidraAddress 0x135388
+     */
+    void RenderSlideNote();
+
+    /**
+     * @brief Emits a long note's body, its trail once held and graded, and its head particle.
+     * @param bAtRenderPoint Whether the note still sits on its render endpoint, which angles the
+     *                       body along the travel direction rather than drawing it flat.
+     * @ghidraAddress 0x135388
+     */
+    void RenderLongNote(bool bAtRenderPoint);
+
+    /**
+     * @brief Emits the connector from this note to its chain partner, when it has a live one.
+     * @ghidraAddress 0x135388
+     */
+    void RenderChainConnector();
+
     /**
      * @brief Fills the live waypoint nodes' start positions for a note that derives its own route.
      *
