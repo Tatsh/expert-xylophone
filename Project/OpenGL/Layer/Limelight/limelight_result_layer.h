@@ -118,6 +118,22 @@ public:
     void UpdatePhonePartTouchStates();
 
     /**
+     * @brief Whether the result screen's confirm button has been tapped this play.
+     *
+     * The confirm signal is the first phone-part button's tap-edge latch; the result-finalise state
+     * polls it to know the player has acknowledged the result.
+     * @return @c true once the confirm button's tap edge has latched.
+     */
+    bool IsResultConfirmed() const {
+        return m_aButtons[0].bTapEdge;
+    }
+
+    /** @brief Clears the result-confirm tap-edge latch. */
+    void ClearResultConfirmed() {
+        m_aButtons[0].bTapEdge = false;
+    }
+
+    /**
      * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
      * easing from its current shown value to zero over @p flStartTime (snapping to zero immediately
      * when @p flStartTime is non-positive), and disarms the bonus voice cue.

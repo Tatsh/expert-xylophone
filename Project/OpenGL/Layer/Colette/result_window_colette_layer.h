@@ -84,6 +84,22 @@ public:
     }
 
     /**
+     * @brief Whether the result screen's confirm region has been tapped this play.
+     *
+     * The confirm signal is the first touch region's tap-edge latch; the result-finalise state polls
+     * it to know the player has acknowledged the result.
+     * @return @c true once the confirm region's tap edge has latched.
+     */
+    bool IsResultConfirmed() const {
+        return m_aTouchRegion[0].bTapEdge;
+    }
+
+    /** @brief Clears the result-confirm tap-edge latch. */
+    void ClearResultConfirmed() {
+        m_aTouchRegion[0].bTapEdge = false;
+    }
+
+    /**
      * @brief Builds the eight result-window sprite instancers on first use.
      *
      * Loads the selection-background and result-parts textures, creates one sprite instancer per

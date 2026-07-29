@@ -199,6 +199,19 @@ public:
     void EnterResultThemeState();
 
     /**
+     * @brief Finalises the result screen and submits the score once the player confirms it.
+     *
+     * Fires the result voice cue near the one-second mark, then waits until the active theme's result
+     * window reports the confirm tap. On confirm (outside an early tutorial) it plays the confirm
+     * sound, stops the music, clears the theme's confirm latch, and — unless this was a full-combo or
+     * full-just-reflec play — submits the play to the server, marks the tutorial's result step done and
+     * tears down the tutorial guide, then starts the fade-in and advances to the exit-to-list state.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @ghidraAddress 0x14c27c
+     */
+    void FinalizeResultAndSubmitScore(int nDeltaFrames);
+
+    /**
      * @brief Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
      * runs the active theme's intro layer, and fades in the background, player-field score, and
      * judge-effect layers, then advances to the presenting state.

@@ -22,6 +22,7 @@
 #import "RBBGMManager.h"
 #import "RBBonusData.h"
 #import "RBExperienceData.h"
+#import "RBServerAPIManager.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
@@ -585,6 +586,98 @@ void GameScene::EnterResultThemeState() {
     }
 
     m_nState = kStateResultTheme;
+}
+
+namespace {
+// The themed voice cue fired as the result screen crosses the one-second mark, and the play-time
+// mark (in play-time units) it fires at.
+constexpr int kResultReadyVoiceCue = 6;
+constexpr int kResultVoiceMark = 1000;
+// The confirm sound played when the player acknowledges the result.
+constexpr int kResultConfirmSoundEffect = 1;
+// The fade-out time the result confirm stops the music over.
+constexpr float kResultStopMusicFade = 1.5f;
+// The tutorial status representing "music-select tutorial seen", set once the result is submitted,
+// and the highest tutorial status still inside the in-play walkthrough (the result submit waits for
+// the walkthrough to pass it).
+constexpr unsigned int kTutorialResultSeenStatus = RBTutorialStatusMusicSelectSeen;
+constexpr unsigned int kTutorialInPlayStatusMax = 0x16;
+// The play-record cells the submit reads: the side-one score and its just-reflec count.
+constexpr unsigned int kSubmitScoreCell = 0;
+constexpr unsigned int kSubmitJustReflecCell = 7;
+} // namespace
+
+/** @ghidraAddress 0x14c27c */
+void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
+    // Fire the result voice cue once, on the frame the play time crosses the one-second mark.
+    if (m_nPlayTime > kResultVoiceMark && m_nPlayTime - nDeltaFrames <= kResultVoiceMark) {
+        SoundEffectManager::GetInstance()->PlayThemedVoice(kResultReadyVoiceCue);
+    }
+
+    // Wait for the active theme's result window to report the confirm tap.
+    bool bConfirmed = false;
+    if (m_nThema == kThemaClassic) {
+        bConfirmed = ResultWindowClassicLayer::shared()->GetCustomizeReloadFlag();
+    } else if (m_nThema == kThemaLimelight) {
+        bConfirmed = LimelightResultLayer::shared()->IsResultConfirmed();
+    } else if (m_nThema == kThemaColette) {
+        bConfirmed = ResultWindowColetteLayer::shared()->IsResultConfirmed();
+    }
+    if (!bConfirmed) {
+        return;
+    }
+
+    // An early tutorial play holds the result screen open until the walkthrough passes its result
+    // step; nothing is submitted until then.
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0 &&
+        RBTutorialManager.getCurrentStatus <= kTutorialInPlayStatusMax) {
+        return;
+    }
+
+    // Acknowledge the confirm: play the sound, stop the music, and clear the theme's confirm latch.
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kResultConfirmSoundEffect);
+    [RBBGMManager.getInstance StopMusic:kResultStopMusicFade];
+    if (m_nThema == kThemaColette) {
+        ResultWindowColetteLayer::shared()->ClearResultConfirmed();
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightResultLayer::shared()->ClearResultConfirmed();
+    } else if (m_nThema == kThemaClassic) {
+        ResultWindowClassicLayer::shared()->ClearCustomizeReloadFlag();
+    }
+
+    // Submit the play to the server unless it was a full-combo or full-just-reflec run.
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const unsigned int nScore = pTracker->GetPlayRecordCell(kResultSide, kSubmitScoreCell);
+    const unsigned int nJustReflec =
+        pTracker->GetPlayRecordCell(kResultSide, kSubmitJustReflecCell);
+    const unsigned int nNotes = static_cast<unsigned int>(pTracker->GetTotalNotes());
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const unsigned int nDifficulty = static_cast<unsigned int>(pGameSystem->GetDifficulty());
+    const unsigned int nMusicId =
+        static_cast<unsigned int>(AppDelegate.appDelegate.musicData.MusicID);
+    if ((!pGameSystem->GetUserFullCombo() || !pGameSystem->GetCpuFullCombo()) &&
+        !pGameSystem->GetFullJustReflec()) {
+        [RBServerAPIManager playedV2APIWithMusicID:nMusicId
+                                               dif:nDifficulty
+                                              note:nNotes
+                                                jr:nJustReflec
+                                             score:nScore];
+
+        // Mark the music-select tutorial seen the first time, and tear down the tutorial guide.
+        if ([RBUserSettingData.sharedInstance getTutorialStatus:kTutorialResultSeenStatus] == 0) {
+            [RBUserSettingData.sharedInstance updateTutorialStatus:kTutorialResultSeenStatus
+                                                             value:1];
+        }
+        if (pGameSystem->GetMenuTutorialActive() != 0) {
+            [RBTutorialManager
+                updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
+            TutorialGuideLayer::destroyShared();
+            pGameSystem->SetMenuTutorialActive(0);
+        }
+    }
+
+    FadeOverlayLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
+    m_nState = kMusicReleaseState;
 }
 
 /** @ghidraAddress 0x14b86c */
