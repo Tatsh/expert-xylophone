@@ -88,6 +88,14 @@ public:
      */
     void UpdateGradeDisplay(float flDeltaTime);
 
+    /**
+     * @brief Whether the result grade display is drawing (the theme intro has finished animating).
+     * @return @c true once the grade display is visible.
+     */
+    bool IsGradeVisible() const {
+        return m_bGradeVisible;
+    }
+
 private:
     /**
      * @brief Emits one grade-display sprite of kind @p nSpriteKind.

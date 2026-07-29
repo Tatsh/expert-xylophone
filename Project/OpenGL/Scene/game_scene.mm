@@ -680,6 +680,89 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
     m_nState = kMusicReleaseState;
 }
 
+namespace {
+// The play-time (in play-time units) the result screen waits past before it builds itself.
+constexpr int kResultBuildDelay = 500;
+// The result-window sprite-instancer slots the three loaded textures bind to.
+constexpr unsigned int kResultInstancerArtwork = 2;
+constexpr unsigned int kResultInstancerMusicName = 3;
+constexpr unsigned int kResultInstancerArtistName = 4;
+// The result show/open tween duration.
+constexpr float kResultShowTweenDuration = 500.0f; // @ghidraAddress 0x2feff4
+// The result-screen state the build advances to, the themed voice bank it loads, and the tutorial
+// status it advances a tutorial play to.
+constexpr int kStateResultSubmit = 0xc;
+constexpr int kResultVoiceBank = 6;
+constexpr unsigned int kTutorialResultStartStatus = 0x13;
+} // namespace
+
+/** @ghidraAddress 0x14bf30 */
+void GameScene::LoadResultScreenAndMusic() {
+    if (m_nPlayTime <= kResultBuildDelay) {
+        return;
+    }
+
+    // Wait for the active theme's intro/reveal to finish before building the result window.
+    if (m_nThema == kThemaClassic && ClassicThemeLayer::shared()->IsAnimActive()) {
+        return;
+    }
+    if (m_nThema == kThemaLimelight && LimelightThemeLayer::shared()->IsGradeVisible()) {
+        return;
+    }
+    if (m_nThema == kThemaColette && ColetteThemeLayer::shared()->IsGradeVisible()) {
+        return;
+    }
+
+    // Load the song artwork and artist-name textures for the result window (the music-name texture
+    // was loaded during set-up).
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    pGameSystem->LoadArtworkTexture(AppDelegate.appDelegate.musicData);
+    pGameSystem->LoadArtistNameTexture(AppDelegate.appDelegate.musicData);
+
+    // Bind the three result-window instancer textures (artwork, music name, artist name), reset the
+    // result flags, start the show tween, and clear the confirm latch — per theme.
+    ne::C_TEXTURE *pArtwork = pGameSystem->GetArtworkTexture();
+    ne::C_TEXTURE *pMusicName = pGameSystem->GetMusicNameTexture();
+    ne::C_TEXTURE *pArtistName = pGameSystem->GetArtistNameTexture();
+    if (m_nThema == kThemaColette) {
+        ResultWindowColetteLayer *pResult = ResultWindowColetteLayer::shared();
+        pResult->applySpriteInstancerTexture(kResultInstancerArtwork, pArtwork);
+        pResult->applySpriteInstancerTexture(kResultInstancerMusicName, pMusicName);
+        pResult->applySpriteInstancerTexture(kResultInstancerArtistName, pArtistName);
+        pResult->InitializeResultScreenFlags();
+        pResult->StartShowTween(kResultShowTweenDuration);
+        pResult->ClearResultConfirmed();
+    } else if (m_nThema == kThemaLimelight) {
+        LimelightResultLayer *pResult = LimelightResultLayer::shared();
+        pResult->SetPhoneInstancerTextureAndScale(kResultInstancerArtwork, pArtwork);
+        pResult->SetPhoneInstancerTextureAndScale(kResultInstancerMusicName, pMusicName);
+        pResult->SetPhoneInstancerTextureAndScale(kResultInstancerArtistName, pArtistName);
+        pResult->InitializePhoneResultLayer();
+        pResult->SetupOpenTweenPhone(kResultShowTweenDuration);
+        pResult->ClearResultConfirmed();
+    } else if (m_nThema == kThemaClassic) {
+        ResultWindowClassicLayer *pResult = ResultWindowClassicLayer::shared();
+        pResult->SetInstancerTextureAndRefreshSlots(kResultInstancerArtwork, pArtwork);
+        pResult->SetInstancerTextureAndRefreshSlots(kResultInstancerMusicName, pMusicName);
+        pResult->SetInstancerTextureAndRefreshSlots(kResultInstancerArtistName, pArtistName);
+        pResult->ResetScoreDisplayState();
+        pResult->StartResultScoreAnimations(kResultShowTweenDuration);
+        pResult->ClearCustomizeReloadFlag();
+    }
+
+    // Load the result voice, start the looping result music, and advance to the submit state.
+    SoundEffectManager::GetInstance()->LoadThemedVoiceData(kResultVoiceBank);
+    [RBBGMManager.getInstance LoadMusicResultWithLoop:YES];
+    [RBBGMManager.getInstance PlayMusic:0.0f];
+    m_nState = kStateResultSubmit;
+
+    // A tutorial play advances the walkthrough to the result step and resets the guide.
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+        [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
+        TutorialGuideLayer::shared()->Reset();
+    }
+}
+
 /** @ghidraAddress 0x14b86c */
 void GameScene::StartGameplayPresentation() {
     // Wait until play time has begun advancing.

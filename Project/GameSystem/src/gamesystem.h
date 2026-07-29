@@ -497,6 +497,16 @@ public:
         return m_pMusicNameTexture;
     }
 
+    /** @brief The song jacket/artwork texture, loaded by @c LoadArtworkTexture. */
+    ne::C_TEXTURE *GetArtworkTexture() const {
+        return m_pArtworkTexture;
+    }
+
+    /** @brief The rendered artist-name text texture, loaded by @c LoadArtistNameTexture. */
+    ne::C_TEXTURE *GetArtistNameTexture() const {
+        return m_pArtistNameTexture;
+    }
+
 private:
     /**
      * @brief Constructs the singleton, seeding the non-default (non-zero) fields; every other field

@@ -78,6 +78,14 @@ public:
      */
     void AdvanceFadeInterp(float flDelta);
 
+    /**
+     * @brief Whether the result grade display is drawing (the theme intro has finished animating).
+     * @return @c true once the grade display is visible.
+     */
+    bool IsGradeVisible() const {
+        return m_bGradeVisible;
+    }
+
 private:
     /**
      * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.

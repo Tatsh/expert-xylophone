@@ -212,6 +212,19 @@ public:
     void FinalizeResultAndSubmitScore(int nDeltaFrames);
 
     /**
+     * @brief Builds the result screen and starts the result music, once the play has settled.
+     *
+     * After half a second of play time and once the active theme's intro layer has finished
+     * animating, it loads the song artwork and artist-name textures, pushes the played song into the
+     * result state, and — per theme — binds the three result-window sprite-instancer textures, resets
+     * the result flags, starts the show tween, and clears the confirm latch. It then loads the result
+     * voice, starts the looping result BGM, and advances to the result-submit state; in a tutorial
+     * play it also advances the tutorial and resets the guide.
+     * @ghidraAddress 0x14bf30
+     */
+    void LoadResultScreenAndMusic();
+
+    /**
      * @brief Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
      * runs the active theme's intro layer, and fades in the background, player-field score, and
      * judge-effect layers, then advances to the presenting state.

@@ -116,6 +116,15 @@ public:
     void StartGaugeValueFade(float flDuration);
 
     /**
+     * @brief Whether the theme reveal animation's progress timer is still advancing (the result
+     * screen waits for it to finish before building itself).
+     * @return @c true while the reveal is still animating.
+     */
+    bool IsAnimActive() const {
+        return m_bAnimActive;
+    }
+
+    /**
      * @brief Advances the theme's eased-progress channel by @p flDelta.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x10a5fc
