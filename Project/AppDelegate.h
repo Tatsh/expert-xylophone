@@ -236,10 +236,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The pack identifier a deep link ("open store") queued for the store to open, as a string.
- * @ghidraAddress 0x4efec (getter)
- * @ghidraAddress 0x4efb4 (setter)
+ * @return The queued pack identifier, or @c nil when none is queued.
+ * @ghidraAddress 0x4efec
  */
-@property(nonatomic, copy, nullable, getter=getPackIDForOpenStore) NSString *packIDForOpenStore;
+- (nullable NSString *)getPackIDForOpenStore;
+
+/**
+ * @brief Store the pack identifier to open on the next store-tab presentation.
+ * @param packIDForOpenStore The pack identifier, or @c nil to clear it.
+ * @ghidraAddress 0x4efb4
+ */
+- (void)setPackIDForOpenStore:(nullable NSString *)packIDForOpenStore;
 
 /**
  * @brief The one-time class initialiser; the binary leaves it empty.

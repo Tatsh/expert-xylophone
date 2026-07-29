@@ -1027,6 +1027,16 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 #pragma mark - Open-store campaign
 
+/** @ghidraAddress 0x4efec */
+- (NSString *)getPackIDForOpenStore {
+    return self->_packIDForOpenStore;
+}
+
+/** @ghidraAddress 0x4efb4 */
+- (void)setPackIDForOpenStore:(NSString *)packIDForOpenStore {
+    self->_packIDForOpenStore = packIDForOpenStore;
+}
+
 /** @ghidraAddress 0x4f034 */
 - (NSString *)getCampaignIDForOpenStore {
     return self->_campaignIDForOpenStore;

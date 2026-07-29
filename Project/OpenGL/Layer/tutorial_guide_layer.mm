@@ -398,7 +398,7 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
     // the ramp curve at 128-scaled alpha.
     float flFingerSizeX;
     float flFingerSizeY;
-    if (m_bIsPad) {
+    if (IsPad()) {
         flFingerSizeX = pGameSystem->GetViewportWidth();
         flFingerSizeY = pGameSystem->GetViewportHeight();
     } else if (m_bPortrait) {
@@ -526,7 +526,7 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
 
 /** @ghidraAddress 0x10b778 */
 void TutorialGuideLayer::Update(float flDeltaTime) {
-    if (!m_bIsPad) {
+    if (!IsPad()) {
         const bool bPortrait = GameSystem::GetGameSystem()->GetViewportWidth() <=
                                GameSystem::GetGameSystem()->GetViewportHeight();
         if (bPortrait != m_bPortrait) {

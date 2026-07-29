@@ -33,6 +33,19 @@ public:
     // The sprite-instancer capacity the guide builds.
     static constexpr unsigned int kSpriteCapacity = 0x14;
 
+    // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
+    struct Keyframe {
+        float flStartX = {}; // +0x00
+        float flEndX = {};   // +0x04
+        int nStep = {};      // +0x08
+    };
+
+    // One coordinate-grid entry: an X position and a tag (a sprite frame or enable flag).
+    struct CoordEntry {
+        float flX = {};         // +0x00
+        unsigned int nTag = {}; // +0x04
+    };
+
     /**
      * @brief The process-wide tutorial-guide layer, created on first use.
      * @return The shared layer.
@@ -165,19 +178,6 @@ private:
      */
     void EmitTutorialSpriteSlot(
         float flSizeX, float flSizeY, unsigned int nSpriteKind, float *pPosition, int nAlpha);
-
-    // A keyframe step: the guide sweeps its taps from a start X to an end X over one step.
-    struct Keyframe {
-        float flStartX = {}; // +0x00
-        float flEndX = {};   // +0x04
-        int nStep = {};      // +0x08
-    };
-
-    // One coordinate-grid entry: an X position and a tag (a sprite frame or enable flag).
-    struct CoordEntry {
-        float flX = {};         // +0x00
-        unsigned int nTag = {}; // +0x04
-    };
 
     unsigned char m_aReserved08[8] =
         {};                         // +0x08: transient state; the low byte is cleared each call.
