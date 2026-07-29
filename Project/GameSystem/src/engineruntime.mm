@@ -64,7 +64,7 @@ void ne::C_TEXTURE::EnsureCacheControl(unsigned char nTag) {
     g_pTextureCacheControl->nTag = nTag;
     g_pTextureCacheControl->pNext = nullptr;
     g_pTextureCacheControl->nValue = 0;
-    g_pTextureCacheControl->pSpare = nullptr;
+    // The binary also zeroes the eight bytes at +0x18; the value-initialised new above covers it.
 }
 
 /** @ghidraAddress 0x14992c */

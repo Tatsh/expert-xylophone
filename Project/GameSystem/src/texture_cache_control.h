@@ -19,7 +19,9 @@ struct TextureCacheControl {
     TextureCacheControl *pNext = {};   // +0x08: the next control node (null on construction).
     int nValue = {};                   // +0x10: an int slot (zero on construction).
     unsigned char aReserved14[4] = {}; // +0x14: padding before the spare slot.
-    void *pSpare = {};                 // +0x18: a spare slot (null on construction).
+    // +0x18: eight bytes the constructor zeroes and nothing else in the binary reads or writes.
+    // Their type is unknown, so they are modelled as raw storage rather than claimed as a pointer.
+    unsigned char aReserved18[8] = {};
 };
 
 /**

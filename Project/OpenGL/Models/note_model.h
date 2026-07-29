@@ -709,12 +709,14 @@ private:
     int m_nField4f4 = {};                   // +0x4f4: post-table state, still being worked out.
     int m_nField4f8 = {};                   // +0x4f8: post-table state, still being worked out.
     unsigned char m_aReserved4fc[0xc] = {}; // +0x4fc
-    void *m_pField508 = {};                 // +0x508: cleared on construction.
-    bool m_bPlayStateFlag510 = {};          // +0x510: a play-state flag cleared on a play reset.
-    unsigned char m_aReserved511[3] = {};   // +0x511
-    int m_nDirectionSign = {};              // +0x514: the shot direction, clamped to [-2, 2].
-    int m_nWaypointCount = {};              // +0x518: the shot's waypoint count (abs of direction).
-    int m_nWaypointIndex = {};              // +0x51c: the current waypoint's index into the block.
+    // +0x508: eight bytes zeroed at construction with no reader anywhere in the binary. Their type
+    // is unknown, so they are modelled as raw storage rather than claimed as a pointer.
+    unsigned char m_aReserved508[8] = {};
+    bool m_bPlayStateFlag510 = {};        // +0x510: a play-state flag cleared on a play reset.
+    unsigned char m_aReserved511[3] = {}; // +0x511
+    int m_nDirectionSign = {};            // +0x514: the shot direction, clamped to [-2, 2].
+    int m_nWaypointCount = {};            // +0x518: the shot's waypoint count (abs of direction).
+    int m_nWaypointIndex = {};            // +0x51c: the current waypoint's index into the block.
     // +0x520..+0x5bf: the waypoint/path block, zeroed on construction and re-laid-out by SetRoute.
     // The route fills the first m_nWaypointCount + 2 nodes: the spawn point, one node per bounce,
     // and the target line.
