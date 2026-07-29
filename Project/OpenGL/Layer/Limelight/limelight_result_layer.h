@@ -83,13 +83,31 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the Limelight (iPad/landscape) result window. Reconstruction pending.
+     * @brief Renders the Limelight (iPad/landscape) result window for the current frame.
+     *
+     * Clears the eight instancers, then draws (when the window fade is non-zero) the panel frame and
+     * furniture, the music jacket and character previews, the difficulty badge, the target score and
+     * the signed distance from it, both sides' score gauges, the clear or failed stamp, the grade
+     * badge, and the full-combo badge. It then cross-fades two sliding pages: the per-side statistics
+     * table with its judgement counts, proportion gauges, and achievement-rate comparison, and the
+     * bonus breakdown with its four rows and grand total. In the versus game types the two page
+     * markers draw again at each page's own alpha. Positions come from the load-time parts-anchor
+     * table.
      * @ghidraAddress 0x124acc
      */
     void RenderLimelightResultWindow();
 
     /**
-     * @brief Renders the phone (portrait) result window. Reconstruction pending.
+     * @brief Renders the phone (portrait) result window for the current frame.
+     *
+     * The phone-layout twin of @c RenderLimelightResultWindow: it clears the eight instancers, then
+     * draws the backdrop, side rail, header bar, and footer band, two nine-patch panel boxes and the
+     * panel rules, the jacket and character previews (from the captured image in portrait), the score
+     * fields, the grade and full-combo badges, and the clear, failed, or winner stamp. It then
+     * cross-fades the statistics page (a nine-patch box, the column headings, and one eight-column
+     * row per side) against the bonus breakdown page, and lights the page dot for the selected page.
+     * Positions are resolved through the phone anchor tables rather than read from the parts-anchor
+     * table.
      * @ghidraAddress 0x127b04
      */
     void RenderPhoneResultWindow();
@@ -187,12 +205,14 @@ public:
     /**
      * @brief Returns the result-window parts descriptor at @p nIndex.
      *
-     * Selects the pad or phone parts table by the current device kind.
+     * Selects the pad or phone parts table by the current device kind. The routine takes only the
+     * index (in @c x0) and never touches the layer, so it is a static member rather than an
+     * instance method.
      * @param nIndex The parts-record index (below @c 0xff).
      * @return The parts descriptor.
      * @ghidraAddress 0x123838
      */
-    PartsDataRecord *GetPartsData(unsigned int nIndex) const;
+    static PartsDataRecord *GetPartsData(unsigned int nIndex);
 
     /**
      * @brief Resolves a phone-layout anchor position by index, offset relative to the play field.
@@ -574,6 +594,20 @@ public:
                         int nDenominator,
                         const S_VECTOR2 &position,
                         unsigned int nAlpha);
+
+    /**
+     * @brief Renders the result screen's total-score digits in the Limelight (pad) layout.
+     *
+     * Sums the five result-bonus values, scales the total to tenths, and draws up to seven places
+     * right to left from @p pPosition: the ones place from one glyph bank and the higher places from
+     * another, with a separator glyph beside the ones digit. At least two places are drawn; the
+     * leading places beyond the significant digits draw at half alpha. The cursor steps left by each
+     * glyph's own width plus a fixed gap, but only by the gap across the separator.
+     * @param pPosition The right edge of the digit run.
+     * @param nAlpha The sprite alpha.
+     * @ghidraAddress 0x1278a0
+     */
+    void RenderLimelightTotalScore(const S_VECTOR2 *pPosition, unsigned int nAlpha);
 
     /**
      * @brief Renders a one-decimal rating value as small glyph sprites with a decimal point.

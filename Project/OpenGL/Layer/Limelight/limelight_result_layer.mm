@@ -1,6 +1,7 @@
 #include "limelight_result_layer.h"
 
 #include <cassert>
+#include <cmath>
 
 #include "../Classic/classic_parts_data_table.h"
 #include "../Colette/phone_anchor_table.h"
@@ -403,11 +404,15 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
 }
 
 /** @ghidraAddress 0x123838 */
-PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) const {
+PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
     assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);
 
-    // The pad build uses the pad table; the phone build uses the phone table.
-    return IsPad() ? &g_aLimelightPartsPad[nIndex] : &g_aLimelightPartsPhone[nIndex];
+    // The pad branch reads the runtime-filled table and the phone branch the baked-in one. The two
+    // globals' names read inverted against that: the table the pad branch selects is the one named
+    // "Phone" (0x3d9100, filled by InitializePhoneResultLayoutTable) and the table the phone branch
+    // selects is the one named "Pad" (0x307cf0, constant rodata). The selector below follows the
+    // binary's `csel x0,x9,x8,ne`; the naming is left as landed rather than renamed here.
+    return IsPad() ? &g_aLimelightPartsPhone[nIndex] : &g_aLimelightPartsPad[nIndex];
 }
 
 /** @ghidraAddress 0x1238d0 */
@@ -1336,10 +1341,10 @@ void LimelightResultLayer::RenderNumber(float flSpacing,
 
 namespace {
 
-// The part id of the decimal-point glyph inserted by RenderPercentValue.
+// The part id of the decimal-point glyph inserted by RenderPercentValue. The minimum drawn digit
+// count this function also needs is kPercentMinDigits, declared with the rest of the percent-value
+// layout constants above.
 constexpr unsigned int kPointPart = 0x73;
-// The minimum number of digits RenderPercentValue draws (the ones digit plus one more).
-constexpr int kPercentMinDigits = 2;
 
 } // namespace
 
@@ -1536,6 +1541,88 @@ void LimelightResultLayer::RenderRatingValue(float flValue,
             }
         }
         flX -= kRatingGlyphGap;
+    }
+}
+
+namespace {
+
+// The Limelight total-score digit layout: the ones-place and higher-place glyph banks, the
+// separator glyph drawn beside the ones digit, the number of digit places, the minimum drawn, and
+// the gap the cursor steps by between places.
+constexpr unsigned int kPadTotalScoreOnesBank = 0xe1;
+constexpr unsigned int kPadTotalScoreHighBank = 0xd7;
+constexpr unsigned int kPadTotalScoreSeparatorPart = 0xeb;
+constexpr int kPadTotalScoreDigits = 7;
+constexpr int kPadTotalScoreMinDigits = 2;
+constexpr float kPadTotalScoreDigitGap = 2.0f;
+constexpr float kPadTotalScoreDimFactor = 0.5f;
+
+} // namespace
+
+/** @ghidraAddress 0x1278a0 */
+void LimelightResultLayer::RenderLimelightTotalScore(const S_VECTOR2 *pPosition,
+                                                     unsigned int nAlpha) {
+    // The total is the sum of the five result-bonus values, scaled to tenths.
+    const int nTotal = static_cast<int>((m_flExperienceBonus + m_flClearBonus + m_flMissBonus +
+                                         m_flRankBonus + m_flFirstPlayBonus) *
+                                        kTotalScoreTenthsScale);
+
+    // Split into seven places (ones first), tracking the significant count.
+    int aDigits[kPadTotalScoreDigits] = {};
+    int nSignificant = 0;
+    int nRemaining = nTotal;
+    for (int i = 0; i < kPadTotalScoreDigits; ++i) {
+        aDigits[i] = nRemaining % 10;
+        if (aDigits[i] != 0) {
+            nSignificant = i + 1;
+        }
+        nRemaining /= 10;
+    }
+    const int nDrawn =
+        nSignificant < kPadTotalScoreMinDigits ? kPadTotalScoreMinDigits : nSignificant;
+
+    float flX = pPosition->x;
+    int nDigit = 0;
+    while (true) {
+        // Leading places beyond the significant digits draw at half alpha.
+        if (nDigit == nDrawn) {
+            nAlpha = static_cast<unsigned int>(static_cast<float>(nAlpha & 0xff) *
+                                               kPadTotalScoreDimFactor);
+        }
+        const unsigned int nBank = nDigit == 0 ? kPadTotalScoreOnesBank : kPadTotalScoreHighBank;
+        const unsigned int nPart = static_cast<unsigned int>(aDigits[nDigit]) + nBank;
+        const PartsDataRecord *pRecord = GetPartsData(nPart);
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       nPart,
+                       S_VECTOR2{flX - pRecord->flWidth, pPosition->y - pRecord->flHeight},
+                       nAlpha & 0xff,
+                       0);
+        flX -= pRecord->flWidth;
+        if (nDigit == 0) {
+            // The separator sits beside the ones digit; the cursor does not step by its width, only
+            // by the between-place gap.
+            const PartsDataRecord *pSeparator = GetPartsData(kPadTotalScoreSeparatorPart);
+            EmitPartSprite(
+                0.0f,
+                1.0f,
+                1.0f,
+                kPartsSlot,
+                kPadTotalScoreSeparatorPart,
+                S_VECTOR2{flX - pSeparator->flWidth, pPosition->y - pSeparator->flHeight},
+                nAlpha & 0xff,
+                0);
+            flX -= kPadTotalScoreDigitGap;
+            nDigit = 1;
+        } else {
+            ++nDigit;
+            if (nDigit == kPadTotalScoreDigits) {
+                return;
+            }
+        }
+        flX -= kPadTotalScoreDigitGap;
     }
 }
 
@@ -1836,6 +1923,1688 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
         m_aButtons[kButtonShare].bTapEdge = false;
         PostResultToTwitterBlack();
     }
+}
+
+namespace {
+
+// The unit-interval-to-byte alpha scale (@ghidraAddress 0x2eed00).
+constexpr float kAlphaScale = 255.0f;
+// The clear-rate threshold separating the cleared and failed stamps (@ghidraAddress 0x2fd008).
+constexpr float kClearRateThreshold = 0.7f;
+// The clear rate is shown as tenths of a percent (@ghidraAddress 0x2f8540).
+constexpr float kRateTenthsOfPercentScale = 1000.0f;
+// The pixel width a full score gauge bar scales to (@ghidraAddress 0x302d60), and the width a full
+// judgement-count bar scales to (@ghidraAddress 0x302d64).
+constexpr float kScoreGaugeFullWidth = 160.0f;
+constexpr float kJudgeGaugeFullWidth = 138.0f;
+// The horizontal travel, in pixels, the two result pages slide by as they cross-fade.
+constexpr float kPageSlideDistance = 20.0f;
+
+// The instancer slots the iPad path draws into: the full-screen background, the music jacket, and
+// the two character previews. Everything else goes to the shared parts slot.
+constexpr unsigned int kBackgroundSlot = 0;
+constexpr unsigned long kJacketSlot = 2;
+constexpr unsigned long kPreviewLeftSlot = 3;
+constexpr unsigned long kPreviewRightSlot = 4;
+// The music jacket draws as a square of this pixel size.
+constexpr float kJacketSize = 180.0f;
+
+// The alpha channels the Limelight result window reads: the overall window fade, the panel fade,
+// and the page fade the two sliding pages share.
+constexpr int kChannelWindowFade = 0;
+constexpr int kChannelPanelFade = 1;
+constexpr int kChannelPageFade = 3;
+
+// The result-window part ids drawn by the iPad path.
+constexpr unsigned int kPartBackground = 0x00;
+constexpr unsigned int kPartPanelBody = 0x01;
+constexpr unsigned int kPartShareButton = 0x02;
+constexpr unsigned int kPartPanelFrameFirst = 0x03; // 0x03 through 0x08: three mirrored pairs.
+constexpr unsigned int kPartStatsFrameFirst = 0x0c; // 0x0c through 0x11: three mirrored pairs.
+constexpr unsigned int kPartVersusMarker = 0x15;
+constexpr unsigned int kPartStatsHeaderFirst = 0x16; // 0x16 through 0x18.
+constexpr unsigned int kPartStatsFooterFirst = 0x19; // 0x19 through 0x1b.
+constexpr unsigned int kPartSideOneGaugeLabelBase = 0x1c;
+constexpr unsigned int kPartSideZeroGaugeLabelBase = 0x1e;
+constexpr unsigned int kPartJacketFrame = 0x20;
+constexpr unsigned int kPartDifficultyBadgeBase = 0x21;
+constexpr unsigned int kPartDifficultyLevelBank = 0x25;
+constexpr unsigned int kPartScoreBank = 0x35;
+constexpr unsigned int kPartScoreAboveTarget = 0x40;
+constexpr unsigned int kPartScoreBelowTarget = 0x41;
+constexpr unsigned int kPartGaugeBarBase = 0x42;
+constexpr unsigned int kPartSideScoreBankBase = 0x44;
+// The two sides' score banks sit ten part ids apart, one per play colour.
+constexpr unsigned int kPartSideScoreBankStride = 10;
+constexpr unsigned int kPartRankBadgeBase = 0x58;
+constexpr unsigned int kPartFullComboBadge = 0x5e;
+constexpr unsigned int kPartStatsTitle = 0x5f;
+constexpr unsigned int kPartStatsSideLabel = 0x60;
+constexpr unsigned int kPartStatsDecorABase = 0x61; // Plus the decoration rotation frame.
+constexpr unsigned int kPartStatsDecorBBase = 0x65; // Plus the decoration rotation frame.
+constexpr unsigned int kPartJustGaugeBase = 0x76;   // Plus the decoration rotation frame.
+constexpr unsigned int kPartGreatGauge = 0x76;
+constexpr unsigned int kPartGoodGauge = 0x77;
+constexpr unsigned int kPartMissGauge = 0x78;
+constexpr unsigned int kPartComboGauge = 0x79;
+constexpr unsigned int kPartRateGauge = 0x7a;
+constexpr unsigned int kPartArPanelMark = 0x7b;
+constexpr unsigned int kPartArSideBankBase = 0x7c;
+// The AR columns' number banks and marks are also a play-colour pair, 0x16 part ids apart.
+constexpr unsigned int kPartArSideBankStride = 0x16;
+constexpr unsigned int kPartArSideMarkBase = 0x91;
+constexpr unsigned int kPartArTargetBank = 0xa8;
+constexpr unsigned int kPartArGradeBadgeBase = 0xc0;
+constexpr unsigned int kPartArGradeBadgeMaxTier = 5;
+constexpr unsigned int kPartArAheadMark = 0xbd;
+constexpr unsigned int kPartArBehindMark = 0xbe;
+constexpr unsigned int kPartHeaderTrimA = 0xc6;
+constexpr unsigned int kPartHeaderTrimB = 0xc7;
+constexpr unsigned int kPartHeaderTrimC = 0xc8;
+constexpr unsigned int kPartStatsPageMark = 0xc9;
+constexpr unsigned int kPartClearStamp = 0xca;
+constexpr unsigned int kPartFailedStamp = 0xcb;
+constexpr unsigned int kPartWinnerStamp = 0xcc;
+constexpr unsigned int kPartBonusPageMark = 0xcd;
+constexpr unsigned int kPartBonusHeaderFirst = 0xce; // 0xce through 0xd0.
+constexpr unsigned int kPartBonusFooterFirst = 0xd1; // 0xd1 through 0xd3.
+constexpr unsigned int kPartBonusTotalFirst = 0xd4;  // 0xd4 through 0xd6.
+constexpr unsigned int kPartBonusRowFirst = 0xec;    // 0xec through 0xef, one per bonus row.
+constexpr unsigned int kPartBonusRowMark = 0xf0;
+constexpr unsigned int kPartBonusRowRule = 0xfc;
+constexpr unsigned int kPartBonusTotalRule = 0xfd;
+constexpr unsigned int kPartBonusRowValueMark = 0xfe;
+
+// The winner stamp is placed at a fixed x, one row below the clear/failed stamp.
+constexpr float kWinnerStampX = 524.0f;
+constexpr float kWinnerStampYOffset = 18.0f;
+// The AR number column is nudged left of its anchor.
+constexpr float kArNumberNudgeX = -2.0f;
+
+// The play record's trailing field holds the match outcome; this side won.
+constexpr int kMatchOutcomeWin = 0;
+
+// The parts-anchor slots the iPad result window positions its elements at. Each name is the sole
+// element drawn at that slot; the table itself is filled at load time by
+// InitializePhoneResultLayoutTable.
+constexpr int kAnchorBackground = 1;
+constexpr int kAnchorPanelBody = 2;
+constexpr int kAnchorShareButton = 3;
+constexpr int kAnchorPanelFrameFirst = 4;  // Six slots, one per panel frame part.
+constexpr int kAnchorStatsFrameFirst = 10; // Six slots, one per stats frame part.
+constexpr int kAnchorVersusMarkerFirst = 16;
+constexpr int kAnchorStatsHeaderFirst = 18; // Three slots.
+constexpr int kAnchorStatsFooterFirst = 21; // Three slots.
+constexpr int kAnchorJacketFrame = 24;
+constexpr int kAnchorJacket = 25;
+constexpr int kAnchorPreviewLeft = 26;
+constexpr int kAnchorPreviewRight = 27;
+constexpr int kAnchorDifficultyBadge = 28;
+constexpr int kAnchorDifficultyLevel = 29;
+constexpr int kAnchorTargetScore = 31;
+constexpr int kAnchorScoreCompareMark = 32;
+constexpr int kAnchorScoreDifference = 33;
+constexpr int kAnchorSideOneGaugeLabel = 34;
+constexpr int kAnchorSideOneGaugeBar = 35;
+constexpr int kAnchorSideOneScore = 36;
+constexpr int kAnchorSideZeroGaugeLabel = 37;
+constexpr int kAnchorSideZeroGaugeBar = 38;
+constexpr int kAnchorSideZeroScore = 39;
+constexpr int kAnchorClearStamp = 40;
+constexpr int kAnchorRankBadge = 41;
+constexpr int kAnchorFullComboBadge = 42;
+constexpr int kAnchorStatsTitle = 44;
+constexpr int kAnchorStatsDecorA = 45;
+constexpr int kAnchorStatsDecorB = 46;
+constexpr int kAnchorArPanelMarkOne = 81;
+constexpr int kAnchorArSideLabelOne = 82;
+constexpr int kAnchorHeaderTrimA = 97;
+constexpr int kAnchorHeaderTrimB = 98;
+constexpr int kAnchorHeaderTrimC = 99;
+constexpr int kAnchorPageMark = 100;
+constexpr int kAnchorBonusHeaderFirst = 101;   // Three slots.
+constexpr int kAnchorBonusFooterFirst = 104;   // Three slots.
+constexpr int kAnchorBonusRowFirst = 107;      // Four slots, one per bonus row.
+constexpr int kAnchorBonusRowMarkFirst = 111;  // Four slots.
+constexpr int kAnchorBonusRowRuleFirst = 115;  // Four slots.
+constexpr int kAnchorBonusRowValueFirst = 123; // Four slots, paired with the rows.
+constexpr int kAnchorBonusTotalFirst = 127;    // Three slots.
+constexpr int kAnchorBonusTotalRule = 130;
+constexpr int kAnchorBonusTotalValue = 131;
+constexpr int kAnchorBonusTotalScore = 132;
+
+// The four bonus rows draw their value from these anchors, in the binary's order: the clear, miss,
+// rank, and first-play bonuses (the rank and miss anchors are swapped relative to the row order).
+constexpr int kAnchorBonusValueClear = 119;
+constexpr int kAnchorBonusValueMiss = 121;
+constexpr int kAnchorBonusValueRank = 120;
+constexpr int kAnchorBonusValueFirstPlay = 122;
+
+// The number of frame parts in each mirrored frame run, and the number of bonus rows.
+constexpr int kFramePartCount = 6;
+constexpr int kBonusRowCount = 4;
+constexpr int kStatsHeaderPartCount = 3;
+
+// The per-side statistics rows: side 0's anchors sit this far above side 1's, and the row's columns
+// are these offsets from the side's base slot.
+constexpr int kStatsSideAnchorStride = 0x11;
+constexpr int kStatsAnchorBase = 1;
+constexpr int kStatsColumnSideLabel = 0x2e;
+constexpr int kStatsColumnSideMark = 0x2f;
+constexpr int kStatsColumnFirst = 0x30; // Then alternating value and gauge columns.
+
+// The AR comparison block's anchor slots for one side.
+struct ArComparisonAnchors {
+    int nSideNumber;
+    int nTargetNumber;
+    int nCompareMark;
+    int nDifference;
+    int nGradeBadge;
+};
+
+constexpr ArComparisonAnchors kArAnchorsSideOne{84, 85, 86, 87, 88};
+constexpr ArComparisonAnchors kArAnchorsSideZero{92, 93, 94, 95, 96};
+
+// The AR panel mark and side label slots for side zero.
+constexpr int kAnchorArPanelMarkZero = 89;
+constexpr int kAnchorArSideLabelZero = 90;
+
+// Clamps a rate to the unit interval the way the binary does: values above one saturate, and NaN or
+// negative values fall to zero.
+inline float ClampRateToUnit(float flRate) {
+    const float flCapped = flRate > 1.0f ? 1.0f : flRate;
+    return flRate >= 0.0f ? flCapped : 0.0f;
+}
+
+// The emit helpers below de-inline the shapes the binary repeats verbatim through the two sliding
+// pages; each one seeds a fresh position vector from the page offset and adds the element's anchor,
+// exactly as the binary's `stp` pair plus AddVector2 does.
+
+// Emits one part at an anchor shifted right by the statistics page's slide offset.
+inline void EmitOffsetPart(LimelightResultLayer *pLayer,
+                           unsigned int nPartId,
+                           int nAnchor,
+                           float flOffsetX,
+                           unsigned int nAlpha) {
+    S_VECTOR2 position{flOffsetX, 0.0f};
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[nAnchor]);
+    pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, position, nAlpha, 0);
+}
+
+// Emits a run of consecutive parts at consecutive anchors, all on the statistics page.
+inline void EmitOffsetPartRun(LimelightResultLayer *pLayer,
+                              unsigned int nFirstPart,
+                              int nFirstAnchor,
+                              int nCount,
+                              float flOffsetX,
+                              unsigned int nAlpha) {
+    for (int i = 0; i < nCount; ++i) {
+        EmitOffsetPart(
+            pLayer, nFirstPart + static_cast<unsigned int>(i), nFirstAnchor + i, flOffsetX, nAlpha);
+    }
+}
+
+// Emits one part at an anchor shifted by the bonus page's slide offset.
+inline void EmitBonusPart(LimelightResultLayer *pLayer,
+                          unsigned int nPartId,
+                          int nAnchor,
+                          const S_VECTOR2 &offset,
+                          unsigned int nAlpha) {
+    S_VECTOR2 position = offset;
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[nAnchor]);
+    pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nPartId, position, nAlpha, 0);
+}
+
+// Draws one bonus row's rating value at an anchor shifted by the bonus page's slide offset.
+inline void EmitBonusRatingValue(LimelightResultLayer *pLayer,
+                                 int nAnchor,
+                                 const S_VECTOR2 &offset,
+                                 float flValue,
+                                 unsigned int nAlpha) {
+    S_VECTOR2 position = offset;
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[nAnchor]);
+    pLayer->RenderRatingValue(flValue, position, nAlpha);
+}
+
+// Emits the frame both sliding pages share: three mirrored part pairs at fixed anchors, plus the
+// page's own marker. Neither is shifted by the page offset.
+inline void
+EmitPageFrame(LimelightResultLayer *pLayer, unsigned int nAlpha, unsigned int nPageMarkPart) {
+    for (int i = 0; i < kFramePartCount; ++i) {
+        pLayer->EmitPartSprite(0.0f,
+                               (i % 2) == 0 ? 1.0f : -1.0f,
+                               1.0f,
+                               kPartsSlot,
+                               kPartStatsFrameFirst + static_cast<unsigned int>(i),
+                               g_aLimelightPartsAnchorPhone[kAnchorStatsFrameFirst + i],
+                               nAlpha,
+                               0);
+    }
+    pLayer->EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPartsSlot,
+                           nPageMarkPart,
+                           g_aLimelightPartsAnchorPhone[kAnchorPageMark],
+                           nAlpha,
+                           0);
+}
+
+// Draws one side's achievement-rate comparison: the side's rate, the target rate, an ahead or
+// behind mark, the signed difference, and the grade badge. The binary emits this block twice, once
+// per side, with only the anchors and the play-colour-selected banks differing.
+inline void EmitArComparison(LimelightResultLayer *pLayer,
+                             const ArComparisonAnchors &anchors,
+                             unsigned int nSideNumberBank,
+                             unsigned int nSideMarkPart,
+                             float flSideRate,
+                             float flTargetRate,
+                             int nRank,
+                             float flOffsetX,
+                             unsigned int nAlpha) {
+    const int nGradeTier = nRank < static_cast<int>(kPartArGradeBadgeMaxTier) + 1 ?
+                               nRank :
+                               static_cast<int>(kPartArGradeBadgeMaxTier);
+    const int nSideTenths =
+        static_cast<int>(ClampRateToUnit(flSideRate) * kRateTenthsOfPercentScale);
+    const int nTargetTenths =
+        static_cast<int>(ClampRateToUnit(flTargetRate) * kRateTenthsOfPercentScale);
+
+    S_VECTOR2 cursor{flOffsetX, 0.0f};
+    AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[anchors.nSideNumber]);
+    S_VECTOR2 nudge{kArNumberNudgeX, 0.0f};
+    AddVector2(&cursor, &nudge);
+    pLayer->RenderNumber(2.0f, nSideTenths, 4, cursor, nSideNumberBank, true, false, nAlpha);
+
+    S_VECTOR2 position{flOffsetX, 0.0f};
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[anchors.nSideNumber]);
+    pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nSideMarkPart, position, nAlpha, 0);
+
+    cursor = S_VECTOR2{flOffsetX, 0.0f};
+    AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[anchors.nTargetNumber]);
+    pLayer->RenderNumber(1.0f, nTargetTenths, 4, cursor, kPartArTargetBank, true, false, nAlpha);
+
+    cursor = S_VECTOR2{flOffsetX, 0.0f};
+    AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[anchors.nDifference]);
+    position = S_VECTOR2{flOffsetX, 0.0f};
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[anchors.nCompareMark]);
+
+    // Behind the target draws the behind mark and the shortfall; at or above it draws the ahead
+    // mark and the surplus.
+    int nDifference = 0;
+    if (ClampRateToUnit(flSideRate) <= ClampRateToUnit(flTargetRate)) {
+        pLayer->EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPartsSlot, kPartArBehindMark, position, nAlpha, 0);
+        nDifference = nTargetTenths - nSideTenths;
+    } else {
+        pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, kPartArAheadMark, position, nAlpha, 0);
+        nDifference = nSideTenths - nTargetTenths;
+    }
+    pLayer->RenderNumber(1.0f, nDifference, 4, cursor, kPartArTargetBank, true, false, nAlpha);
+
+    const unsigned int nBadge = nRank < 0 ?
+                                    kPartArGradeBadgeBase :
+                                    static_cast<unsigned int>(nGradeTier) + kPartArGradeBadgeBase;
+    position = S_VECTOR2{flOffsetX, 0.0f};
+    AddVector2(&position, &g_aLimelightPartsAnchorPhone[anchors.nGradeBadge]);
+    pLayer->EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, nBadge, position, nAlpha, 0);
+}
+
+} // namespace
+
+/** @ghidraAddress 0x124acc */
+void LimelightResultLayer::RenderLimelightResultWindow() {
+    const unsigned int nWindowAlpha =
+        static_cast<unsigned int>(m_aBonusAnimChannels[kChannelWindowFade].flCurrent * kAlphaScale);
+    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].flCurrent;
+    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].flCurrent;
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
+
+    // Clear every instancer's sprite count before re-emitting this frame.
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+    if (nWindowAlpha == 0) {
+        return;
+    }
+
+    const unsigned int nPanelAlpha =
+        static_cast<unsigned int>(flPanelFade * static_cast<float>(nWindowAlpha));
+    const unsigned int nPageAlpha =
+        static_cast<unsigned int>(flPageFade * static_cast<float>(nWindowAlpha));
+
+    // The window frame and the fixed panel furniture.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kBackgroundSlot,
+                   kPartBackground,
+                   g_aLimelightPartsAnchorPhone[kAnchorBackground],
+                   nWindowAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartHeaderTrimA,
+                   g_aLimelightPartsAnchorPhone[kAnchorHeaderTrimA],
+                   nWindowAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartHeaderTrimB,
+                   g_aLimelightPartsAnchorPhone[kAnchorHeaderTrimB],
+                   nWindowAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartPanelBody,
+                   g_aLimelightPartsAnchorPhone[kAnchorPanelBody],
+                   nWindowAlpha,
+                   m_aButtons[kButtonPanel].bDown);
+    if (m_bTwitterAvailable) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       kPartShareButton,
+                       g_aLimelightPartsAnchorPhone[kAnchorShareButton],
+                       nPageAlpha,
+                       m_aButtons[kButtonShare].bDown);
+    }
+    // The panel frame is three mirrored pairs: the odd part of each pair draws flipped in x.
+    for (int i = 0; i < kFramePartCount; ++i) {
+        EmitPartSprite(0.0f,
+                       (i % 2) == 0 ? 1.0f : -1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       kPartPanelFrameFirst + static_cast<unsigned int>(i),
+                       g_aLimelightPartsAnchorPhone[kAnchorPanelFrameFirst + i],
+                       nPanelAlpha,
+                       0);
+    }
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartHeaderTrimC,
+                   g_aLimelightPartsAnchorPhone[kAnchorHeaderTrimC],
+                   nPanelAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartJacketFrame,
+                   g_aLimelightPartsAnchorPhone[kAnchorJacketFrame],
+                   nPanelAlpha,
+                   0);
+    EmitTexturedPart(kJacketSlot,
+                     g_aLimelightPartsAnchorPhone[kAnchorJacket],
+                     S_VECTOR2{kJacketSize, kJacketSize},
+                     nPanelAlpha);
+    EmitAutoUvPart(kPreviewLeftSlot, g_aLimelightPartsAnchorPhone[kAnchorPreviewLeft], nPanelAlpha);
+    EmitAutoUvPart(
+        kPreviewRightSlot, g_aLimelightPartsAnchorPhone[kAnchorPreviewRight], nPanelAlpha);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartDifficultyBadgeBase +
+                       static_cast<unsigned int>(pGameSystem->GetDifficulty()),
+                   g_aLimelightPartsAnchorPhone[kAnchorDifficultyBadge],
+                   nPanelAlpha,
+                   0);
+    RenderNumber(2.0f,
+                 pGameSystem->GetDifficultyLevel() + 1,
+                 2,
+                 g_aLimelightPartsAnchorPhone[kAnchorDifficultyLevel],
+                 kPartDifficultyLevelBank,
+                 false,
+                 false,
+                 nPanelAlpha);
+
+    // The target score, and the signed distance this play landed from it.
+    const int nTargetScore = pGameSystem->GetTargetScore() < 0 ? 0 : pGameSystem->GetTargetScore();
+    int nScoreGap = pTracker->GetPlayRecordCell(1, kCellScore) - nTargetScore;
+    RenderNumber(2.0f,
+                 nTargetScore,
+                 4,
+                 g_aLimelightPartsAnchorPhone[kAnchorTargetScore],
+                 kPartScoreBank,
+                 false,
+                 true,
+                 nPanelAlpha);
+    if (nScoreGap < 0) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       kPartScoreBelowTarget,
+                       g_aLimelightPartsAnchorPhone[kAnchorScoreCompareMark],
+                       nPanelAlpha,
+                       0);
+        nScoreGap = -nScoreGap;
+    } else {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       kPartScoreAboveTarget,
+                       g_aLimelightPartsAnchorPhone[kAnchorScoreCompareMark],
+                       nPanelAlpha,
+                       0);
+    }
+    RenderNumber(2.0f,
+                 nScoreGap,
+                 4,
+                 g_aLimelightPartsAnchorPhone[kAnchorScoreDifference],
+                 kPartScoreBank,
+                 false,
+                 true,
+                 nPanelAlpha);
+
+    // The two sides' score gauges, each scaled against the higher of the two scores.
+    const int nSideOneScore = pTracker->GetPlayRecordCell(1, kCellScore);
+    const int nSideZeroScore = pTracker->GetPlayRecordCell(0, kCellScore);
+    float flSideOneBar = (nSideZeroScore != 0 || nSideOneScore != 0) ? 1.0f : 0.0f;
+    float flSideZeroBar = flSideOneBar;
+    if (nSideZeroScore < nSideOneScore) {
+        flSideOneBar = 1.0f;
+        flSideZeroBar = static_cast<float>(nSideZeroScore) / static_cast<float>(nSideOneScore);
+    }
+    if (nSideOneScore < nSideZeroScore) {
+        flSideZeroBar = 1.0f;
+        flSideOneBar = static_cast<float>(nSideOneScore) / static_cast<float>(nSideZeroScore);
+    }
+
+    // Side one carries the current play colour; side zero carries the other.
+    const unsigned int nSideZeroColor = nPlayColor == 0 ? 1 : 0;
+    const unsigned int nSideOneLabel = kPartSideOneGaugeLabelBase + nPlayColor;
+    const unsigned int nSideZeroLabel = kPartSideZeroGaugeLabelBase + nSideZeroColor;
+    const unsigned int nSideOneBarPart = kPartGaugeBarBase + nPlayColor;
+    const unsigned int nSideZeroBarPart = kPartGaugeBarBase + nSideZeroColor;
+    const unsigned int nSideOneScoreBank =
+        kPartSideScoreBankBase + nPlayColor * kPartSideScoreBankStride;
+    const unsigned int nSideZeroScoreBank =
+        kPartSideScoreBankBase + nSideZeroColor * kPartSideScoreBankStride;
+
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   nSideOneLabel,
+                   g_aLimelightPartsAnchorPhone[kAnchorSideOneGaugeLabel],
+                   nPanelAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   flSideOneBar * kScoreGaugeFullWidth,
+                   1.0f,
+                   kPartsSlot,
+                   nSideOneBarPart,
+                   g_aLimelightPartsAnchorPhone[kAnchorSideOneGaugeBar],
+                   nPanelAlpha,
+                   0);
+    RenderNumber(0.0f,
+                 nSideOneScore,
+                 4,
+                 g_aLimelightPartsAnchorPhone[kAnchorSideOneScore],
+                 nSideOneScoreBank,
+                 false,
+                 true,
+                 nPanelAlpha);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   nSideZeroLabel,
+                   g_aLimelightPartsAnchorPhone[kAnchorSideZeroGaugeLabel],
+                   nPanelAlpha,
+                   0);
+    EmitPartSprite(0.0f,
+                   flSideZeroBar * kScoreGaugeFullWidth,
+                   1.0f,
+                   kPartsSlot,
+                   nSideZeroBarPart,
+                   g_aLimelightPartsAnchorPhone[kAnchorSideZeroGaugeBar],
+                   nPanelAlpha,
+                   0);
+    RenderNumber(0.0f,
+                 nSideZeroScore,
+                 4,
+                 g_aLimelightPartsAnchorPhone[kAnchorSideZeroScore],
+                 nSideZeroScoreBank,
+                 false,
+                 true,
+                 nPanelAlpha);
+
+    // The cleared or failed stamp, the winner stamp, the grade badge, and the full-combo badge.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   pTracker->GetPlayRecordRate(1) < kClearRateThreshold ? kPartFailedStamp :
+                                                                          kPartClearStamp,
+                   g_aLimelightPartsAnchorPhone[kAnchorClearStamp],
+                   nPanelAlpha,
+                   0);
+    if (pTracker->GetPlayRecordField10(1) == kMatchOutcomeWin) {
+        EmitPartSprite(
+            0.0f,
+            1.0f,
+            1.0f,
+            kPartsSlot,
+            kPartWinnerStamp,
+            S_VECTOR2{kWinnerStampX,
+                      g_aLimelightPartsAnchorPhone[kAnchorClearStamp].y + kWinnerStampYOffset},
+            nPanelAlpha,
+            0);
+    }
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPartsSlot,
+                   kPartRankBadgeBase + static_cast<unsigned int>(pTracker->GetPlayRecordRank(1)),
+                   g_aLimelightPartsAnchorPhone[kAnchorRankBadge],
+                   nPanelAlpha,
+                   0);
+    if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(1, kCellMaxCombo)) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPartsSlot,
+                       kPartFullComboBadge,
+                       g_aLimelightPartsAnchorPhone[kAnchorFullComboBadge],
+                       nPanelAlpha,
+                       0);
+    }
+
+    // The statistics and bonus pages cross-fade as the slide timer runs, each sliding in from its
+    // own side. Which page leads depends on the panel's active flag.
+    const float flSlide = m_flSlideTimer;
+    const float flTransition = std::fabs(flSlide);
+    const float flSlideSign = flSlide <= 0.0f ? -kPageSlideDistance : kPageSlideDistance;
+    float flStatsOffsetX = 0.0f;
+    S_VECTOR2 bonusOffset{0.0f, 0.0f};
+    unsigned int nStatsAlpha = 0;
+    unsigned int nBonusAlpha = 0;
+    if (m_nActive == kToggleOn) {
+        nBonusAlpha = static_cast<unsigned int>(static_cast<float>(nPageAlpha) * flTransition);
+        nStatsAlpha =
+            static_cast<unsigned int>(static_cast<float>(nPageAlpha) * (1.0f - flTransition));
+        flStatsOffsetX = flSlide * -kPageSlideDistance;
+        bonusOffset.x = (1.0f - flTransition) * flSlideSign;
+    } else {
+        nBonusAlpha =
+            static_cast<unsigned int>(static_cast<float>(nPageAlpha) * (1.0f - flTransition));
+        nStatsAlpha = static_cast<unsigned int>(static_cast<float>(nPageAlpha) * flTransition);
+        bonusOffset.x = flSlide * -kPageSlideDistance;
+        flStatsOffsetX =
+            (1.0f - flTransition) * (flSlide > 0.0f ? kPageSlideDistance : -kPageSlideDistance);
+    }
+
+    EmitPageFrame(this, nStatsAlpha, kPartStatsPageMark);
+    EmitOffsetPartRun(this,
+                      kPartStatsHeaderFirst,
+                      kAnchorStatsHeaderFirst,
+                      kStatsHeaderPartCount,
+                      flStatsOffsetX,
+                      nStatsAlpha);
+    EmitOffsetPart(this, kPartStatsTitle, kAnchorStatsTitle, flStatsOffsetX, nStatsAlpha);
+    EmitOffsetPart(this,
+                   kPartStatsDecorABase + static_cast<unsigned int>(m_nRotationFrame),
+                   kAnchorStatsDecorA,
+                   flStatsOffsetX,
+                   nStatsAlpha);
+    EmitOffsetPart(this,
+                   kPartStatsDecorBBase + static_cast<unsigned int>(m_nRotationFrame),
+                   kAnchorStatsDecorB,
+                   flStatsOffsetX,
+                   nStatsAlpha);
+
+    // One statistics row per side: the judgement counts with their proportion gauges, the combo and
+    // reflec fractions, the score, and the clear rate.
+    for (unsigned int nSide = 0; nSide < static_cast<unsigned int>(ScoreTracker::kSideCount);
+         ++nSide) {
+        const int nJust = pTracker->GetPlayRecordCell(nSide, kCellJust);
+        const int nGreat = pTracker->GetPlayRecordCell(nSide, kCellGreat);
+        const int nGood = pTracker->GetPlayRecordCell(nSide, kCellGood);
+        const int nMiss = pTracker->GetPlayRecordCell(nSide, kCellMiss);
+        const int nJustReflec = pTracker->GetPlayRecordCell(nSide, kCellJustReflec);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(nSide, kCellMaxCombo);
+        const int nScore = pTracker->GetPlayRecordCell(nSide, kCellScore);
+        const int nTotalNotes = pTracker->GetTotalNotes();
+        const float flRate = pTracker->GetPlayRecordRate(nSide);
+        const float flTotalNotes = static_cast<float>(nTotalNotes);
+
+        // The reflec quota is read from the score slot belonging to this row's play colour.
+        const unsigned int nQuotaColor = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1u : 0u);
+        const int nReflecQuota = nQuotaColor == 0 ? m_nResultScore : m_nResultScoreHi;
+        const int nRowBase = kStatsAnchorBase + (nSide == 0 ? kStatsSideAnchorStride : 0);
+
+        EmitOffsetPart(this,
+                       kPartStatsSideLabel,
+                       nRowBase + kStatsColumnSideLabel,
+                       flStatsOffsetX,
+                       nStatsAlpha);
+        EmitOffsetPart(this,
+                       nSide == 1 ? nSideOneLabel : nSideZeroLabel,
+                       nRowBase + kStatsColumnSideMark,
+                       flStatsOffsetX,
+                       nStatsAlpha);
+
+        int nColumn = kStatsColumnFirst;
+        const auto EmitValueAndGauge = [&](int nValue, unsigned int nGaugePart, float flFraction) {
+            S_VECTOR2 cursor{flStatsOffsetX, 0.0f};
+            AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+            RenderDigits(nValue, cursor, nStatsAlpha);
+            ++nColumn;
+            cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+            AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+            EmitPartSprite(0.0f,
+                           flFraction * kJudgeGaugeFullWidth,
+                           1.0f,
+                           kPartsSlot,
+                           nGaugePart,
+                           cursor,
+                           nStatsAlpha,
+                           0);
+            ++nColumn;
+        };
+
+        EmitValueAndGauge(nJust,
+                          kPartJustGaugeBase + static_cast<unsigned int>(m_nRotationFrame),
+                          static_cast<float>(nJust) / flTotalNotes);
+        EmitValueAndGauge(nGreat, kPartGreatGauge, static_cast<float>(nGreat) / flTotalNotes);
+        EmitValueAndGauge(nGood, kPartGoodGauge, static_cast<float>(nGood) / flTotalNotes);
+        EmitValueAndGauge(nMiss, kPartMissGauge, static_cast<float>(nMiss) / flTotalNotes);
+
+        S_VECTOR2 cursor{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        RenderFraction(nJustReflec, nReflecQuota, cursor, nStatsAlpha);
+        ++nColumn;
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nJustReflec) / static_cast<float>(nReflecQuota)) *
+                           kJudgeGaugeFullWidth,
+                       1.0f,
+                       kPartsSlot,
+                       kPartJustGaugeBase + static_cast<unsigned int>(m_nRotationFrame),
+                       cursor,
+                       nStatsAlpha,
+                       0);
+        ++nColumn;
+
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        RenderFraction(nMaxCombo, nTotalNotes, cursor, nStatsAlpha);
+        ++nColumn;
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nMaxCombo) / flTotalNotes) * kJudgeGaugeFullWidth,
+                       1.0f,
+                       kPartsSlot,
+                       kPartComboGauge,
+                       cursor,
+                       nStatsAlpha,
+                       0);
+        ++nColumn;
+
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        RenderDigits(nScore, cursor, nStatsAlpha);
+        ++nColumn;
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        RenderPercentValue(
+            static_cast<int>(flRate * kRateTenthsOfPercentScale), cursor, nStatsAlpha);
+        ++nColumn;
+        cursor = S_VECTOR2{flStatsOffsetX, 0.0f};
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[nRowBase + nColumn]);
+        EmitPartSprite(0.0f,
+                       flRate * kJudgeGaugeFullWidth,
+                       1.0f,
+                       kPartsSlot,
+                       kPartRateGauge,
+                       cursor,
+                       nStatsAlpha,
+                       0);
+    }
+
+    EmitOffsetPartRun(this,
+                      kPartStatsFooterFirst,
+                      kAnchorStatsFooterFirst,
+                      kStatsHeaderPartCount,
+                      flStatsOffsetX,
+                      nStatsAlpha);
+    EmitOffsetPart(this, kPartArPanelMark, kAnchorArPanelMarkOne, flStatsOffsetX, nStatsAlpha);
+    EmitOffsetPart(this, nSideOneLabel, kAnchorArSideLabelOne, flStatsOffsetX, nStatsAlpha);
+    EmitArComparison(this,
+                     kArAnchorsSideOne,
+                     kPartArSideBankBase + nPlayColor * kPartArSideBankStride,
+                     kPartArSideMarkBase + nPlayColor * kPartArSideBankStride,
+                     pTracker->GetPlayRecordRate(1),
+                     pGameSystem->GetTargetAR(),
+                     pTracker->GetPlayRecordRank(1),
+                     flStatsOffsetX,
+                     nStatsAlpha);
+    EmitOffsetPart(this, nSideZeroLabel, kAnchorArSideLabelZero, flStatsOffsetX, nStatsAlpha);
+    EmitOffsetPart(this, kPartArPanelMark, kAnchorArPanelMarkZero, flStatsOffsetX, nStatsAlpha);
+    EmitArComparison(this,
+                     kArAnchorsSideZero,
+                     kPartArSideBankBase + nSideZeroColor * kPartArSideBankStride,
+                     kPartArSideMarkBase + nSideZeroColor * kPartArSideBankStride,
+                     pTracker->GetPlayRecordRate(0),
+                     pGameSystem->GetTargetAR(),
+                     pTracker->GetPlayRecordRank(0),
+                     flStatsOffsetX,
+                     nStatsAlpha);
+
+    // The bonus breakdown page: the same frame, four bonus rows with their rating values, and the
+    // grand total.
+    EmitPageFrame(this, nBonusAlpha, kPartBonusPageMark);
+    for (int i = 0; i < kStatsHeaderPartCount; ++i) {
+        EmitBonusPart(this,
+                      kPartBonusHeaderFirst + static_cast<unsigned int>(i),
+                      kAnchorBonusHeaderFirst + i,
+                      bonusOffset,
+                      nBonusAlpha);
+    }
+    for (int i = 0; i < kBonusRowCount; ++i) {
+        EmitBonusPart(this,
+                      kPartBonusRowFirst + static_cast<unsigned int>(i),
+                      kAnchorBonusRowFirst + i,
+                      bonusOffset,
+                      nBonusAlpha);
+        EmitBonusPart(
+            this, kPartBonusRowValueMark, kAnchorBonusRowValueFirst + i, bonusOffset, nBonusAlpha);
+    }
+    for (int i = 0; i < kBonusRowCount; ++i) {
+        EmitBonusPart(
+            this, kPartBonusRowMark, kAnchorBonusRowMarkFirst + i, bonusOffset, nBonusAlpha);
+    }
+    for (int i = 0; i < kBonusRowCount; ++i) {
+        EmitBonusPart(
+            this, kPartBonusRowRule, kAnchorBonusRowRuleFirst + i, bonusOffset, nBonusAlpha);
+    }
+    EmitBonusRatingValue(this, kAnchorBonusValueClear, bonusOffset, m_flClearBonus, nBonusAlpha);
+    EmitBonusRatingValue(this, kAnchorBonusValueMiss, bonusOffset, m_flMissBonus, nBonusAlpha);
+    EmitBonusRatingValue(this, kAnchorBonusValueRank, bonusOffset, m_flRankBonus, nBonusAlpha);
+    EmitBonusRatingValue(
+        this, kAnchorBonusValueFirstPlay, bonusOffset, m_flFirstPlayBonus, nBonusAlpha);
+    for (int i = 0; i < kStatsHeaderPartCount; ++i) {
+        EmitBonusPart(this,
+                      kPartBonusFooterFirst + static_cast<unsigned int>(i),
+                      kAnchorBonusFooterFirst + i,
+                      bonusOffset,
+                      nBonusAlpha);
+    }
+    EmitBonusPart(this, kPartBonusTotalRule, kAnchorBonusTotalRule, bonusOffset, nBonusAlpha);
+    EmitBonusRatingValue(this,
+                         kAnchorBonusTotalValue,
+                         bonusOffset,
+                         m_flClearBonus + m_flMissBonus + m_flRankBonus + m_flFirstPlayBonus,
+                         nBonusAlpha);
+    for (int i = 0; i < kStatsHeaderPartCount; ++i) {
+        EmitBonusPart(this,
+                      kPartBonusTotalFirst + static_cast<unsigned int>(i),
+                      kAnchorBonusTotalFirst + i,
+                      bonusOffset,
+                      nBonusAlpha);
+    }
+    {
+        S_VECTOR2 cursor = bonusOffset;
+        AddVector2(&cursor, &g_aLimelightPartsAnchorPhone[kAnchorBonusTotalScore]);
+        RenderLimelightTotalScore(&cursor, nBonusAlpha);
+    }
+
+    // In the versus game types the two page markers draw twice: once opaque over the share fade and
+    // once at each page's own alpha.
+    if ((pGameSystem->GetGameType() | 2) == 2) {
+        for (int i = 0; i < 2; ++i) {
+            S_VECTOR2 position{};
+            AddVector2(&position, &g_aLimelightPartsAnchorPhone[kAnchorVersusMarkerFirst + i]);
+            EmitPartSprite(
+                0.0f, 1.0f, 1.0f, kPartsSlot, kPartVersusMarker, position, nPageAlpha, 1);
+        }
+        S_VECTOR2 position{};
+        AddVector2(&position, &g_aLimelightPartsAnchorPhone[kAnchorVersusMarkerFirst]);
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, kPartVersusMarker, position, nBonusAlpha, 0);
+        position = S_VECTOR2{};
+        AddVector2(&position, &g_aLimelightPartsAnchorPhone[kAnchorVersusMarkerFirst + 1]);
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPartsSlot, kPartVersusMarker, position, nStatsAlpha, 0);
+    }
+}
+
+namespace {
+
+// The phone result window's part ids.
+constexpr unsigned int kPhonePartBackground = 0x00;
+constexpr unsigned int kPhonePartShareButton = 0x01;
+constexpr unsigned int kPhonePartBoxCorner = 0x02;
+constexpr unsigned int kPhonePartBoxEdgeH = 0x03;
+constexpr unsigned int kPhonePartBoxEdgeV = 0x04;
+constexpr unsigned int kPhonePartBoxFill = 0x05;
+constexpr unsigned int kPhonePartInnerCorner = 0x06;
+constexpr unsigned int kPhonePartInnerEdgeH = 0x07;
+constexpr unsigned int kPhonePartInnerEdgeV = 0x08;
+constexpr unsigned int kPhonePartInnerFill = 0x09;
+constexpr unsigned int kPhonePartBarCap = 0x0a;
+constexpr unsigned int kPhonePartBarBody = 0x0b;
+constexpr unsigned int kPhonePartSeparatorRule = 0x0c;
+constexpr unsigned int kPhonePartSeparatorThick = 0x0d;
+constexpr unsigned int kPhonePartJacketFrame = 0x0e;
+constexpr unsigned int kPhonePartPreviewFrame = 0x10;
+constexpr unsigned int kPhonePartClearLabel = 0x11;
+constexpr unsigned int kPhonePartMusicLabel = 0x12;
+constexpr unsigned int kPhonePartDifficultyBadgeBase = 0x13;
+constexpr unsigned int kPhonePartTargetLabel = 0x0f;
+constexpr unsigned int kPhonePartScoreBank = 0x17;
+constexpr unsigned int kPhonePartScoreMark = 0x21;
+constexpr unsigned int kPhonePartScoreAboveTarget = 0x22;
+constexpr unsigned int kPhonePartScoreBelowTarget = 0x23;
+constexpr unsigned int kPhonePartResultScoreBank = 0x24;
+constexpr unsigned int kPhonePartRankBadgeBase = 0x2e;
+constexpr unsigned int kPhonePartFullComboBadge = 0x34;
+constexpr unsigned int kPhonePartSideOneLabelBase = 0x35;
+constexpr unsigned int kPhonePartSideZeroLabelBase = 0x37;
+constexpr unsigned int kPhonePartStatsDecorABase = 0x47; // Plus the decoration rotation frame.
+constexpr unsigned int kPhonePartStatsHeaderB = 0x4b;
+constexpr unsigned int kPhonePartStatsHeaderC = 0x4c;
+constexpr unsigned int kPhonePartStatsHeaderD = 0x4d;
+constexpr unsigned int kPhonePartStatsDecorBBase = 0x4e; // Plus the decoration rotation frame.
+constexpr unsigned int kPhonePartStatsHeaderE = 0x52;
+constexpr unsigned int kPhonePartStatsHeaderF = 0x53;
+constexpr unsigned int kPhonePartStatsHeaderG = 0x54;
+constexpr unsigned int kPhonePartSideRailTop = 0x55;
+constexpr unsigned int kPhonePartSideRailMark = 0x56;
+constexpr unsigned int kPhonePartHeaderBar = 0x57;
+constexpr unsigned int kPhonePartHeaderBarCap = 0x58;
+constexpr unsigned int kPhonePartFooterCap = 0x59;
+constexpr unsigned int kPhonePartFooterBody = 0x5a;
+constexpr unsigned int kPhonePartFooterMark = 0x5b;
+constexpr unsigned int kPhonePartClearStamp = 0x5c;
+constexpr unsigned int kPhonePartFailedStamp = 0x5d;
+constexpr unsigned int kPhonePartWinnerStamp = 0x5e;
+constexpr unsigned int kPhonePartStatsTitle = 0x5f;
+constexpr unsigned int kPhonePartPageDot = 0x60;
+constexpr unsigned int kPhonePartBonusTitle = 0x61;
+constexpr unsigned int kPhonePartBonusHeader = 0x62;
+constexpr unsigned int kPhonePartBonusTotalMark = 0x63;
+constexpr unsigned int kPhonePartBonusFooterA = 0x64;
+constexpr unsigned int kPhonePartBonusFooterB = 0x65;
+constexpr unsigned int kPhonePartBonusFooterC = 0x66;
+constexpr unsigned int kPhonePartBonusRowFirst = 0x7c; // 0x7c through 0x7f, one per bonus row.
+constexpr unsigned int kPhonePartBonusRowMark = 0x80;
+constexpr unsigned int kPhonePartBonusRowRule = 0x8b;
+constexpr unsigned int kPhonePartBonusTotalRule = 0x8c;
+
+// The phone anchor-position indices the window resolves through getPosition_Phone.
+constexpr int kPhoneAnchorBackground = 0;
+constexpr int kPhoneAnchorOuterBoxTopLeft = 1;
+constexpr int kPhoneAnchorOuterBoxBottomRight = 2;
+constexpr int kPhoneAnchorInnerBoxTopLeft = 3;
+constexpr int kPhoneAnchorInnerBoxBottomRight = 4;
+constexpr int kPhoneAnchorPreviewLeft = 5;
+constexpr int kPhoneAnchorPreviewRight = 6;
+constexpr int kPhoneAnchorJacket = 7;
+constexpr int kPhoneAnchorJacketFrame = 8;
+constexpr int kPhoneAnchorMusicLabel = 9;
+constexpr int kPhoneAnchorDifficultyBadge = 10;
+constexpr int kPhoneAnchorTargetLabel = 0x0b;
+constexpr int kPhoneAnchorTargetScore = 0x0c;
+constexpr int kPhoneAnchorScoreMarkLeft = 0x0d;
+constexpr int kPhoneAnchorScoreCompareMark = 0x0e;
+constexpr int kPhoneAnchorScoreDifference = 0x0f;
+constexpr int kPhoneAnchorScoreMarkRight = 0x10;
+constexpr int kPhoneAnchorResultScore = 0x11;
+constexpr int kPhoneAnchorPreviewFrame = 0x12;
+constexpr int kPhoneAnchorRankBadge = 0x13;
+constexpr int kPhoneAnchorFullComboBadge = 0x14;
+constexpr int kPhoneAnchorClearLabel = 0x15;
+constexpr int kPhoneAnchorClearStamp = 0x16;
+constexpr int kPhoneAnchorStatsDecorA = 0x17;
+constexpr int kPhoneAnchorStatsHeaderB = 0x18;
+constexpr int kPhoneAnchorStatsHeaderC = 0x19;
+constexpr int kPhoneAnchorStatsHeaderD = 0x1a;
+constexpr int kPhoneAnchorStatsDecorB = 0x1b;
+constexpr int kPhoneAnchorStatsHeaderE = 0x1c;
+constexpr int kPhoneAnchorStatsHeaderF = 0x1d;
+constexpr int kPhoneAnchorStatsHeaderG = 0x1e;
+constexpr int kPhoneAnchorSideOneLabel = 0x1f;
+constexpr int kPhoneAnchorSideZeroLabel = 0x28;
+constexpr int kPhoneAnchorShareButton = 0x31;
+constexpr int kPhoneAnchorSideRailTop = 0x32;
+constexpr int kPhoneAnchorSideRailMark = 0x33;
+constexpr int kPhoneAnchorHeaderBarLeft = 0x34;
+constexpr int kPhoneAnchorHeaderBarRight = 0x35;
+constexpr int kPhoneAnchorFooter = 0x36;
+constexpr int kPhoneAnchorFooterMark = 0x37;
+constexpr int kPhoneAnchorWinnerStamp = 0x38;
+constexpr int kPhoneAnchorStatsBoxTopLeft = 0x39;
+constexpr int kPhoneAnchorStatsBoxBottomRight = 0x3a;
+constexpr int kPhoneAnchorStatsBarLeft = 0x3b;
+constexpr int kPhoneAnchorStatsBarRight = 0x3c;
+constexpr int kPhoneAnchorStatsTitle = 0x3d;
+constexpr int kPhoneAnchorPageDotStats = 0x3e;
+constexpr int kPhoneAnchorPageDotBonus = 0x3f;
+constexpr int kPhoneAnchorBonusHeader = 0x40;
+constexpr int kPhoneAnchorBonusTotalMark = 0x41;
+constexpr int kPhoneAnchorBonusRowFirst = 0x42;     // Four slots, one per bonus row.
+constexpr int kPhoneAnchorBonusRowMarkFirst = 0x46; // Four slots.
+constexpr int kPhoneAnchorBonusRowRuleFirst = 0x4a; // Four slots.
+constexpr int kPhoneAnchorBonusValueClear = 0x4e;
+constexpr int kPhoneAnchorBonusValueRank = 0x4f;
+constexpr int kPhoneAnchorBonusValueMiss = 0x50;
+constexpr int kPhoneAnchorBonusValueFirstPlay = 0x51;
+constexpr int kPhoneAnchorBonusFooterA = 0x52;
+constexpr int kPhoneAnchorBonusFooterB = 0x53;
+constexpr int kPhoneAnchorBonusFooterC = 0x54;
+constexpr int kPhoneAnchorBonusTotalRule = 0x55;
+constexpr int kPhoneAnchorBonusTotalValue = 0x56;
+constexpr int kPhoneAnchorBonusTotalScore = 0x57;
+
+// The separator-record runs the window draws its rules from: the twelve panel rules, the
+// twenty-eight statistics-table rules, and the six bonus-table rules.
+constexpr unsigned int kPhoneSeparatorPanelFirst = 0;
+constexpr unsigned int kPhoneSeparatorPanelThickFirst = 2;
+constexpr unsigned int kPhoneSeparatorPanelThickCount = 4;
+constexpr unsigned int kPhoneSeparatorPanelCount = 12;
+constexpr unsigned int kPhoneSeparatorStatsFirst = 0x0c;
+constexpr unsigned int kPhoneSeparatorStatsCount = 28;
+constexpr unsigned int kPhoneSeparatorBonusFirst = 0x2e;
+constexpr unsigned int kPhoneSeparatorBonusCount = 6;
+
+// The statistics rows' anchor columns: side zero's row sits this far above side one's, and the
+// eight columns follow the row's base slot.
+constexpr int kPhoneStatsSideAnchorStride = 9;
+constexpr int kPhoneStatsColumnFirst = 0x20;
+
+// The nine-patch box inset: each corner occupies this many pixels, so the stretched edges span the
+// box less twice the inset.
+constexpr float kPhoneBoxInset = 9.0f;
+constexpr float kPhoneBoxInsetTwice = 18.0f;
+// The stats bar's end caps occupy this many pixels each.
+constexpr float kPhoneBarCapInset = 15.0f;
+constexpr float kPhoneBarCapInsetTwice = 30.0f;
+// The footer band starts this far in from the panel's left edge and is mirrored about the viewport.
+constexpr float kPhoneFooterInset = 42.0f;
+// The music jacket draws as a square of this pixel size.
+constexpr float kPhoneJacketSize = 82.0f;
+// The side rail is drawn at twice the viewport height so it always spans the screen.
+constexpr float kPhoneSideRailHeightScale = 2.0f;
+// The two side labels stand on end off an iPhone: the rows read bottom-up on one side and top-down
+// on the other (@ghidraAddress 0x302d74 and 0x302d78).
+constexpr float kPhoneSideLabelRotationZero = -1.5707964f;
+constexpr float kPhoneSideLabelRotationOne = 1.5707964f;
+
+// The number of bonus rows the phone breakdown lists.
+constexpr int kPhoneBonusRowCount = 4;
+
+} // namespace
+
+/** @ghidraAddress 0x127b04 */
+void LimelightResultLayer::RenderPhoneResultWindow() {
+    const unsigned int nWindowAlpha =
+        static_cast<unsigned int>(m_aBonusAnimChannels[kChannelWindowFade].flCurrent * kAlphaScale);
+    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].flCurrent;
+    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].flCurrent;
+    const float flTitleFade = m_aBonusAnimChannels[kBonusAnimCount - 1].flCurrent;
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
+    // The binary fetches the singleton a second time for the viewport reads.
+    GameSystem *pViewport = GameSystem::GetGameSystem();
+    S_VECTOR2 position{};
+
+    // Clear every instancer's sprite count before re-emitting this frame.
+    for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
+        pSprite->SetSpriteCount(0);
+    }
+    if (nWindowAlpha == 0) {
+        return;
+    }
+
+    const unsigned int nPanelAlpha =
+        static_cast<unsigned int>(flPanelFade * static_cast<float>(nWindowAlpha));
+
+    // Draws one nine-patch box: four mirrored corners, two stretched horizontal edges, two
+    // stretched vertical edges, and the stretched centre fill.
+    const auto EmitNinePatch = [&](const S_VECTOR2 &topLeft,
+                                   const S_VECTOR2 &bottomRight,
+                                   unsigned int nCornerPart,
+                                   unsigned int nEdgeHPart,
+                                   unsigned int nEdgeVPart,
+                                   unsigned int nFillPart,
+                                   unsigned int nAlpha) {
+        const float flInnerWidth = (bottomRight.x - topLeft.x) - kPhoneBoxInsetTwice;
+        const float flInnerHeight = (bottomRight.y - topLeft.y) - kPhoneBoxInsetTwice;
+        const float flInsetX = topLeft.x + kPhoneBoxInset;
+        const float flInsetY = topLeft.y + kPhoneBoxInset;
+        RenderPhoneResultSpriteById(kPartsSlot, nCornerPart, topLeft, nAlpha, 0, 0.0f, 1.0f, 1.0f);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nCornerPart,
+                                    S_VECTOR2{bottomRight.x, topLeft.y},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    -1.0f,
+                                    1.0f);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nCornerPart,
+                                    S_VECTOR2{topLeft.x, bottomRight.y},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    -1.0f);
+        RenderPhoneResultSpriteById(
+            kPartsSlot, nCornerPart, bottomRight, nAlpha, 0, 0.0f, -1.0f, -1.0f);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nEdgeHPart,
+                                    S_VECTOR2{flInsetX, topLeft.y},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    flInnerWidth,
+                                    1.0f);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nEdgeHPart,
+                                    S_VECTOR2{flInsetX, bottomRight.y},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    flInnerWidth,
+                                    -1.0f);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nEdgeVPart,
+                                    S_VECTOR2{topLeft.x, flInsetY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    1.0f,
+                                    flInnerHeight);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nEdgeVPart,
+                                    S_VECTOR2{bottomRight.x, flInsetY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    -1.0f,
+                                    flInnerHeight);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    nFillPart,
+                                    S_VECTOR2{flInsetX, flInsetY},
+                                    nAlpha,
+                                    0,
+                                    0.0f,
+                                    flInnerWidth,
+                                    flInnerHeight);
+    };
+
+    // Resolves an anchor, shifts it by a page offset, and returns the result.
+    const auto AnchorPlus = [&](int nAnchorIndex, const S_VECTOR2 &offset) {
+        S_VECTOR2 result{};
+        getPosition_Phone(nAnchorIndex, &result);
+        S_VECTOR2 shift = offset;
+        AddVector2(&result, &shift);
+        return result;
+    };
+
+    // The full-screen backdrop, the side rail, and the header bar.
+    getPosition_Phone(kPhoneAnchorBackground, &position);
+    RenderPhoneResultSpriteById(
+        kBackgroundSlot, kPhonePartBackground, position, nWindowAlpha, 0, 0.0f, 1.0f, 1.0f);
+    getPosition_Phone(kPhoneAnchorSideRailTop, &position);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartSideRailTop,
+                                position,
+                                nWindowAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                pViewport->GetViewportHeight() * kPhoneSideRailHeightScale);
+    getPosition_Phone(kPhoneAnchorSideRailMark, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartSideRailMark, position, nWindowAlpha, 0, 0.0f, 1.0f, 1.0f);
+
+    S_VECTOR2 headerLeft{};
+    S_VECTOR2 headerRight{};
+    getPosition_Phone(kPhoneAnchorHeaderBarLeft, &headerLeft);
+    getPosition_Phone(kPhoneAnchorHeaderBarRight, &headerRight);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartHeaderBar,
+                                headerLeft,
+                                nWindowAlpha,
+                                0,
+                                0.0f,
+                                headerRight.x - headerLeft.x,
+                                1.0f);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartHeaderBarCap, headerRight, nWindowAlpha, 0, 0.0f, 1.0f, 1.0f);
+
+    // The footer band: a cap at each end, mirrored about the viewport, with a stretched body
+    // between.
+    S_VECTOR2 footer{};
+    getPosition_Phone(kPhoneAnchorFooter, &footer);
+    const float flFooterBodyX = footer.x + kPhoneFooterInset;
+    const float flViewportWidth = pViewport->GetViewportWidth();
+    const bool bPanelDown = m_aButtons[kButtonPanel].bDown;
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartFooterCap, footer, nWindowAlpha, bPanelDown, 0.0f, 1.0f, 1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartFooterBody,
+                                S_VECTOR2{flFooterBodyX, footer.y},
+                                nWindowAlpha,
+                                bPanelDown,
+                                0.0f,
+                                flViewportWidth - (flFooterBodyX + flFooterBodyX),
+                                1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartFooterCap,
+                                S_VECTOR2{flViewportWidth - footer.x, footer.y},
+                                nWindowAlpha,
+                                bPanelDown,
+                                0.0f,
+                                -1.0f,
+                                1.0f);
+    getPosition_Phone(kPhoneAnchorFooterMark, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartFooterMark, position, nWindowAlpha, bPanelDown, 0.0f, 1.0f, 1.0f);
+    if (m_bTwitterAvailable) {
+        getPosition_Phone(kPhoneAnchorShareButton, &position);
+        RenderPhoneResultSpriteById(kPartsSlot,
+                                    kPhonePartShareButton,
+                                    position,
+                                    nWindowAlpha,
+                                    m_aButtons[kButtonShare].bDown,
+                                    0.0f,
+                                    1.0f,
+                                    1.0f);
+    }
+
+    // The outer panel box and the inner information box.
+    S_VECTOR2 outerTopLeft{};
+    S_VECTOR2 outerBottomRight{};
+    getPosition_Phone(kPhoneAnchorOuterBoxTopLeft, &outerTopLeft);
+    getPosition_Phone(kPhoneAnchorOuterBoxBottomRight, &outerBottomRight);
+    EmitNinePatch(outerTopLeft,
+                  outerBottomRight,
+                  kPhonePartBoxCorner,
+                  kPhonePartBoxEdgeH,
+                  kPhonePartBoxEdgeV,
+                  kPhonePartBoxFill,
+                  nWindowAlpha);
+    S_VECTOR2 innerTopLeft{};
+    S_VECTOR2 innerBottomRight{};
+    getPosition_Phone(kPhoneAnchorInnerBoxTopLeft, &innerTopLeft);
+    getPosition_Phone(kPhoneAnchorInnerBoxBottomRight, &innerBottomRight);
+    EmitNinePatch(innerTopLeft,
+                  innerBottomRight,
+                  kPhonePartInnerCorner,
+                  kPhonePartInnerEdgeH,
+                  kPhonePartInnerEdgeV,
+                  kPhonePartInnerFill,
+                  nPanelAlpha);
+
+    // The twelve panel rules: the middle four are the thick variant.
+    for (unsigned int i = 0; i < kPhoneSeparatorPanelCount; ++i) {
+        const unsigned int nSeparator = kPhoneSeparatorPanelFirst + i;
+        const bool bThick =
+            nSeparator >= kPhoneSeparatorPanelThickFirst &&
+            nSeparator < kPhoneSeparatorPanelThickFirst + kPhoneSeparatorPanelThickCount;
+        S_VECTOR2 offset{};
+        RenderPhoneSpriteFieldAligned(kPartsSlot,
+                                      nSeparator,
+                                      bThick ? kPhonePartSeparatorThick : kPhonePartSeparatorRule,
+                                      &offset,
+                                      nPanelAlpha);
+    }
+
+    // The music jacket and the two character previews. In portrait the previews come from the
+    // captured half-scale image; otherwise they draw straight from their instancers.
+    getPosition_Phone(kPhoneAnchorJacket, &position);
+    EmitTexturedPart(
+        kJacketSlot, position, S_VECTOR2{kPhoneJacketSize, kPhoneJacketSize}, nPanelAlpha);
+    const bool bPortrait = m_bPortrait;
+    getPosition_Phone(kPhoneAnchorPreviewLeft, &position);
+    if (!bPortrait) {
+        EmitAutoUvPart(kPreviewLeftSlot, position, nPanelAlpha);
+        getPosition_Phone(kPhoneAnchorPreviewRight, &position);
+        EmitAutoUvPart(kPreviewRightSlot, position, nPanelAlpha);
+    } else {
+        EmitPhoneHalfScaleTexturedPart(static_cast<unsigned int>(kPreviewLeftSlot),
+                                       position,
+                                       nPanelAlpha,
+                                       static_cast<unsigned int>(m_nDefaultAlpha));
+        getPosition_Phone(kPhoneAnchorPreviewRight, &position);
+        EmitPhoneHalfScaleTexturedPart(static_cast<unsigned int>(kPreviewRightSlot),
+                                       position,
+                                       nPanelAlpha,
+                                       static_cast<unsigned int>(m_nDefaultAlpha));
+    }
+
+    getPosition_Phone(kPhoneAnchorJacketFrame, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartJacketFrame, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    getPosition_Phone(kPhoneAnchorMusicLabel, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartMusicLabel, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    getPosition_Phone(kPhoneAnchorDifficultyBadge, &position);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartDifficultyBadgeBase +
+                                    static_cast<unsigned int>(pGameSystem->GetDifficulty()),
+                                position,
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                1.0f);
+
+    // The target score and the signed distance this play landed from it.
+    const int nSideOneScore = pTracker->GetPlayRecordCell(1, kCellScore);
+    getPosition_Phone(kPhoneAnchorTargetLabel, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartTargetLabel, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    const int nTargetScore = pGameSystem->GetTargetScore() < 0 ? 0 : pGameSystem->GetTargetScore();
+    getPosition_Phone(kPhoneAnchorTargetScore, &position);
+    S_VECTOR2 noOffset{};
+    RenderPhoneNumber(
+        1.0f, nTargetScore, 4, &position, &noOffset, kPhonePartScoreBank, 0, 1, nPanelAlpha);
+    getPosition_Phone(kPhoneAnchorScoreMarkLeft, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartScoreMark, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    int nScoreGap = nSideOneScore - nTargetScore;
+    getPosition_Phone(kPhoneAnchorScoreCompareMark, &position);
+    if (nScoreGap < 0) {
+        RenderPhoneResultSpriteById(
+            kPartsSlot, kPhonePartScoreBelowTarget, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+        nScoreGap = -nScoreGap;
+    } else {
+        RenderPhoneResultSpriteById(
+            kPartsSlot, kPhonePartScoreAboveTarget, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    }
+    getPosition_Phone(kPhoneAnchorScoreDifference, &position);
+    noOffset = S_VECTOR2{};
+    RenderPhoneNumber(
+        1.0f, nScoreGap, 4, &position, &noOffset, kPhonePartScoreBank, 0, 1, nPanelAlpha);
+    getPosition_Phone(kPhoneAnchorScoreMarkRight, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartScoreMark, position, nPanelAlpha, 0, 0.0f, -1.0f, 1.0f);
+    getPosition_Phone(kPhoneAnchorResultScore, &position);
+    noOffset = S_VECTOR2{};
+    RenderPhoneNumber(
+        1.0f, nSideOneScore, 4, &position, &noOffset, kPhonePartResultScoreBank, 0, 1, nPanelAlpha);
+
+    if (!m_bPortrait) {
+        getPosition_Phone(kPhoneAnchorPreviewFrame, &position);
+        RenderPhoneResultSpriteById(
+            kPartsSlot, kPhonePartPreviewFrame, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    }
+    getPosition_Phone(kPhoneAnchorRankBadge, &position);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartRankBadgeBase +
+                                    static_cast<unsigned int>(pTracker->GetPlayRecordRank(1)),
+                                position,
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                1.0f);
+    if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(1, kCellMaxCombo)) {
+        getPosition_Phone(kPhoneAnchorFullComboBadge, &position);
+        RenderPhoneResultSpriteById(
+            kPartsSlot, kPhonePartFullComboBadge, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    }
+
+    const unsigned int nPageAlpha =
+        static_cast<unsigned int>(flPageFade * static_cast<float>(nWindowAlpha));
+    getPosition_Phone(kPhoneAnchorClearLabel, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartClearLabel, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    getPosition_Phone(kPhoneAnchorClearStamp, &position);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                pTracker->GetPlayRecordRate(1) < kClearRateThreshold ?
+                                    kPhonePartFailedStamp :
+                                    kPhonePartClearStamp,
+                                position,
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                1.0f);
+    if (pTracker->GetPlayRecordField10(1) == kMatchOutcomeWin) {
+        getPosition_Phone(kPhoneAnchorWinnerStamp, &position);
+        RenderPhoneResultSpriteById(
+            kPartsSlot, kPhonePartWinnerStamp, position, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    }
+
+    // The statistics box and the bar beneath it.
+    S_VECTOR2 statsTopLeft{};
+    S_VECTOR2 statsBottomRight{};
+    S_VECTOR2 barLeft{};
+    S_VECTOR2 barRight{};
+    getPosition_Phone(kPhoneAnchorStatsBoxTopLeft, &statsTopLeft);
+    getPosition_Phone(kPhoneAnchorStatsBoxBottomRight, &statsBottomRight);
+    getPosition_Phone(kPhoneAnchorStatsBarLeft, &barLeft);
+    getPosition_Phone(kPhoneAnchorStatsBarRight, &barRight);
+    // The top edge is emitted before the corners here, unlike the two boxes above.
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerEdgeH,
+                                S_VECTOR2{statsTopLeft.x + kPhoneBoxInset, statsTopLeft.y},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                statsBottomRight.x - (statsTopLeft.x + kPhoneBoxInsetTwice),
+                                1.0f);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartInnerCorner, statsTopLeft, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerCorner,
+                                S_VECTOR2{statsBottomRight.x, statsTopLeft.y},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                -1.0f,
+                                1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerCorner,
+                                S_VECTOR2{statsTopLeft.x, statsBottomRight.y},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                -1.0f);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartInnerCorner, statsBottomRight, nPanelAlpha, 0, 0.0f, -1.0f, -1.0f);
+    const float flStatsInnerWidth = (statsBottomRight.x - statsTopLeft.x) - kPhoneBoxInsetTwice;
+    const float flStatsInnerHeight = (statsBottomRight.y - statsTopLeft.y) - kPhoneBoxInsetTwice;
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerEdgeH,
+                                S_VECTOR2{statsTopLeft.x + kPhoneBoxInset, statsBottomRight.y},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                flStatsInnerWidth,
+                                -1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerEdgeV,
+                                S_VECTOR2{statsTopLeft.x, statsTopLeft.y + kPhoneBoxInset},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                flStatsInnerHeight);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartInnerEdgeV,
+                                S_VECTOR2{statsBottomRight.x, statsTopLeft.y + kPhoneBoxInset},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                -1.0f,
+                                flStatsInnerHeight);
+    RenderPhoneResultSpriteById(
+        kPartsSlot,
+        kPhonePartInnerFill,
+        S_VECTOR2{statsTopLeft.x + kPhoneBoxInset, statsTopLeft.y + kPhoneBoxInset},
+        nPanelAlpha,
+        0,
+        0.0f,
+        flStatsInnerWidth,
+        flStatsInnerHeight);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartBarCap, barLeft, nPanelAlpha, 0, 0.0f, 1.0f, 1.0f);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartBarBody,
+                                S_VECTOR2{barLeft.x + kPhoneBarCapInset, barLeft.y},
+                                nPanelAlpha,
+                                0,
+                                0.0f,
+                                (barRight.x - barLeft.x) - kPhoneBarCapInsetTwice,
+                                1.0f);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartBarCap, barRight, nPanelAlpha, 0, 0.0f, -1.0f, 1.0f);
+
+    // The statistics and bonus pages cross-fade as the slide timer runs, each sliding in from its
+    // own side. Which page leads depends on the panel's active flag.
+    const float flSlide = m_flSlideTimer;
+    const float flTransition = std::fabs(flSlide);
+    const float flRemaining = 1.0f - flTransition;
+    const float flSlideSign = flSlide <= 0.0f ? -kPageSlideDistance : kPageSlideDistance;
+    const float flAlphaRemaining = static_cast<float>(nPageAlpha) * flRemaining;
+    const float flAlphaTransition = static_cast<float>(nPageAlpha) * flTransition;
+    S_VECTOR2 statsOffset{};
+    S_VECTOR2 bonusOffset{};
+    float flStatsFraction = flTransition;
+    float flStatsAlpha = flAlphaTransition;
+    float flBonusAlpha = flAlphaRemaining;
+    if (m_nActive == kToggleOn) {
+        flStatsFraction = flRemaining;
+        flStatsAlpha = flAlphaRemaining;
+        flBonusAlpha = flAlphaTransition;
+        statsOffset.x = flSlide * -kPageSlideDistance;
+        bonusOffset.x = flRemaining * flSlideSign;
+    } else {
+        statsOffset.x = flRemaining * flSlideSign;
+        bonusOffset.x = flSlide * -kPageSlideDistance;
+    }
+    const unsigned int nStatsAlpha = static_cast<unsigned int>(flStatsAlpha);
+    const unsigned int nBonusAlpha = static_cast<unsigned int>(flBonusAlpha);
+
+    // The statistics page: its title fades with the page's own share of the title channel.
+    getPosition_Phone(kPhoneAnchorStatsTitle, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot,
+        kPhonePartStatsTitle,
+        position,
+        static_cast<unsigned int>(static_cast<float>(nWindowAlpha) * flTitleFade * flStatsFraction),
+        0,
+        0.0f,
+        1.0f,
+        1.0f);
+    for (unsigned int i = 0; i < kPhoneSeparatorStatsCount; ++i) {
+        RenderPhoneSpriteFieldAligned(kPartsSlot,
+                                      kPhoneSeparatorStatsFirst + i,
+                                      kPhonePartSeparatorRule,
+                                      &statsOffset,
+                                      nStatsAlpha);
+    }
+
+    // The statistics table's column headings.
+    const int aStatsHeaderAnchors[] = {kPhoneAnchorStatsDecorA,
+                                       kPhoneAnchorStatsHeaderB,
+                                       kPhoneAnchorStatsHeaderC,
+                                       kPhoneAnchorStatsHeaderD,
+                                       kPhoneAnchorStatsDecorB,
+                                       kPhoneAnchorStatsHeaderE,
+                                       kPhoneAnchorStatsHeaderF,
+                                       kPhoneAnchorStatsHeaderG};
+    const unsigned int aStatsHeaderParts[] = {
+        kPhonePartStatsDecorABase + static_cast<unsigned int>(m_nRotationFrame),
+        kPhonePartStatsHeaderB,
+        kPhonePartStatsHeaderC,
+        kPhonePartStatsHeaderD,
+        kPhonePartStatsDecorBBase + static_cast<unsigned int>(m_nRotationFrame),
+        kPhonePartStatsHeaderE,
+        kPhonePartStatsHeaderF,
+        kPhonePartStatsHeaderG};
+    for (int i = 0; i < static_cast<int>(sizeof(aStatsHeaderAnchors) / sizeof(int)); ++i) {
+        getPosition_Phone(aStatsHeaderAnchors[i], &position);
+        EmitPhonePartWithOffset(kPartsSlot,
+                                aStatsHeaderParts[i],
+                                position,
+                                statsOffset,
+                                nStatsAlpha,
+                                0,
+                                0.0f,
+                                1.0f,
+                                1.0f);
+    }
+
+    // One statistics row per side, each a run of eight value columns.
+    const unsigned int nSideOneLabel = kPhonePartSideOneLabelBase + nPlayColor;
+    const unsigned int nSideZeroLabel = kPhonePartSideZeroLabelBase + (nPlayColor == 0 ? 1u : 0u);
+    for (unsigned int nSide = 0; nSide < static_cast<unsigned int>(ScoreTracker::kSideCount);
+         ++nSide) {
+        const int nJust = pTracker->GetPlayRecordCell(nSide, kCellJust);
+        const int nGreat = pTracker->GetPlayRecordCell(nSide, kCellGreat);
+        const int nGood = pTracker->GetPlayRecordCell(nSide, kCellGood);
+        const int nMiss = pTracker->GetPlayRecordCell(nSide, kCellMiss);
+        const int nJustReflec = pTracker->GetPlayRecordCell(nSide, kCellJustReflec);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(nSide, kCellMaxCombo);
+        const int nScore = pTracker->GetPlayRecordCell(nSide, kCellScore);
+        const int nTotalNotes = pTracker->GetTotalNotes();
+        const float flRate = pTracker->GetPlayRecordRate(nSide);
+
+        // The reflec quota is read from the score slot belonging to this row's play colour.
+        const unsigned int nQuotaColor = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1u : 0u);
+        const int nReflecQuota = nQuotaColor == 0 ? m_nResultScore : m_nResultScoreHi;
+        const int nRowBase = nSide == 0 ? kPhoneStatsSideAnchorStride : 0;
+
+        // Off an iPhone the side labels stand on end, mirrored between the two rows.
+        const float flLabelRotation =
+            m_bPortrait ? 0.0f :
+                          (nSide == 1 ? kPhoneSideLabelRotationOne : kPhoneSideLabelRotationZero);
+        RenderPhonePartWithOffset(kPartsSlot,
+                                  nSide == 1 ? nSideOneLabel : nSideZeroLabel,
+                                  nSide == 1 ? kPhoneAnchorSideOneLabel : kPhoneAnchorSideZeroLabel,
+                                  statsOffset,
+                                  nStatsAlpha,
+                                  0,
+                                  flLabelRotation,
+                                  1.0f,
+                                  1.0f);
+
+        int nColumn = kPhoneStatsColumnFirst;
+        S_VECTOR2 cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneNumberDigitsRow(nJust, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneNumberDigitsRow(nGreat, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneNumberDigitsRow(nGood, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneNumberDigitsRow(nMiss, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneFraction(nJustReflec, nReflecQuota, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneFraction(nMaxCombo, nTotalNotes, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhoneNumberDigitsRow(nScore, &cursor, nStatsAlpha);
+        cursor = AnchorPlus(nRowBase + nColumn++, statsOffset);
+        RenderPhonePercentValue(
+            static_cast<int>(flRate * kRateTenthsOfPercentScale), &cursor, nStatsAlpha);
+    }
+
+    // The bonus breakdown page.
+    getPosition_Phone(kPhoneAnchorStatsTitle, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartBonusTitle, position, nBonusAlpha, 0, 0.0f, 1.0f, 1.0f);
+    for (unsigned int i = 0; i < kPhoneSeparatorBonusCount; ++i) {
+        RenderPhoneSpriteFieldAligned(kPartsSlot,
+                                      kPhoneSeparatorBonusFirst + i,
+                                      kPhonePartSeparatorRule,
+                                      &bonusOffset,
+                                      nBonusAlpha);
+    }
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusHeader,
+                          kPhoneAnchorBonusHeader,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    for (int i = 0; i < kPhoneBonusRowCount; ++i) {
+        EmitPhonePartAtAnchor(kPartsSlot,
+                              kPhonePartBonusRowFirst + static_cast<unsigned int>(i),
+                              static_cast<unsigned int>(kPhoneAnchorBonusRowFirst + i),
+                              &bonusOffset,
+                              nBonusAlpha,
+                              1.0f);
+    }
+    for (int i = 0; i < kPhoneBonusRowCount; ++i) {
+        EmitPhonePartAtAnchor(kPartsSlot,
+                              kPhonePartBonusRowMark,
+                              static_cast<unsigned int>(kPhoneAnchorBonusRowMarkFirst + i),
+                              &bonusOffset,
+                              nBonusAlpha,
+                              1.0f);
+    }
+    for (int i = 0; i < kPhoneBonusRowCount; ++i) {
+        EmitPhonePartAtAnchor(kPartsSlot,
+                              kPhonePartBonusRowRule,
+                              static_cast<unsigned int>(kPhoneAnchorBonusRowRuleFirst + i),
+                              &bonusOffset,
+                              nBonusAlpha,
+                              1.0f);
+    }
+
+    S_VECTOR2 bonusCursor = AnchorPlus(kPhoneAnchorBonusValueClear, bonusOffset);
+    RenderPhoneMultiplierDigitSprites(m_flClearBonus, &bonusCursor, nBonusAlpha);
+    bonusCursor = AnchorPlus(kPhoneAnchorBonusValueMiss, bonusOffset);
+    RenderPhoneMultiplierDigitSprites(m_flMissBonus, &bonusCursor, nBonusAlpha);
+    bonusCursor = AnchorPlus(kPhoneAnchorBonusValueRank, bonusOffset);
+    RenderPhoneMultiplierDigitSprites(m_flRankBonus, &bonusCursor, nBonusAlpha);
+    bonusCursor = AnchorPlus(kPhoneAnchorBonusValueFirstPlay, bonusOffset);
+    RenderPhoneMultiplierDigitSprites(m_flFirstPlayBonus, &bonusCursor, nBonusAlpha);
+
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusTotalMark,
+                          kPhoneAnchorBonusTotalMark,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusTotalRule,
+                          kPhoneAnchorBonusTotalRule,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    bonusCursor = AnchorPlus(kPhoneAnchorBonusTotalValue, bonusOffset);
+    RenderPhoneMultiplierDigitSprites(m_flClearBonus + m_flMissBonus + m_flRankBonus +
+                                          m_flFirstPlayBonus,
+                                      &bonusCursor,
+                                      nBonusAlpha);
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusFooterA,
+                          kPhoneAnchorBonusFooterA,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusFooterB,
+                          kPhoneAnchorBonusFooterB,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    EmitPhonePartAtAnchor(kPartsSlot,
+                          kPhonePartBonusFooterC,
+                          kPhoneAnchorBonusFooterC,
+                          &bonusOffset,
+                          nBonusAlpha,
+                          1.0f);
+    bonusCursor = AnchorPlus(kPhoneAnchorBonusTotalScore, bonusOffset);
+    RenderPhoneTotalScoreDigits(&bonusCursor, nBonusAlpha);
+
+    // The two page dots: each lights (drawing through the dimmed pass) for the page it selects.
+    getPosition_Phone(kPhoneAnchorPageDotStats, &position);
+    RenderPhoneResultSpriteById(kPartsSlot,
+                                kPhonePartPageDot,
+                                position,
+                                nPageAlpha,
+                                m_nActive == kToggleOn,
+                                0.0f,
+                                1.0f,
+                                1.0f);
+    getPosition_Phone(kPhoneAnchorPageDotBonus, &position);
+    RenderPhoneResultSpriteById(
+        kPartsSlot, kPhonePartPageDot, position, nPageAlpha, m_nActive == 0, 0.0f, 1.0f, 1.0f);
 }
 
 // Seeds every Limelight phone result-screen layout table at load time, the twin of
