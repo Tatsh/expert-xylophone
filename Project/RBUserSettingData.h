@@ -17,7 +17,7 @@
 /**
  * @brief The player theme identifiers stored in @c thema.
  */
-typedef NS_ENUM(NSInteger, RBUserSettingDataTheme) {
+typedef NS_ENUM(int, RBUserSettingDataTheme) {
     RBUserSettingDataThemeClassic = 0,   /*!< The Classic theme. */
     RBUserSettingDataThemeLimelight = 1, /*!< The Limelight theme. */
     RBUserSettingDataThemeColette = 2,   /*!< The Colette theme. */

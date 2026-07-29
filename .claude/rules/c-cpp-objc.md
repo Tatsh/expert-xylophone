@@ -162,8 +162,9 @@
   `char`/`unsigned char` — never `NSInteger`/`NSUInteger` for these. A pointer-sized 64-bit integer
   (`q`/`Q`) uses the Cocoa typedef `NSInteger`/`NSUInteger`, not `long`/`unsigned long` or
   `long long`/`unsigned long long`. (Read the width from the `method_t` `types` string or the ivar/
-  property encoding: `q`/`Q` are 8-byte, `i`/`I` are 4-byte.) `NS_ENUM`/`NS_OPTIONS` backings keep
-  `NSInteger`/`NSUInteger` per the enumeration rules below. Apply this on any file you touch.
+  property encoding: `q`/`Q` are 8-byte, `i`/`I` are 4-byte.) This applies to an `NS_ENUM`/
+  `NS_OPTIONS` backing too: back it with `int`/`unsigned int` when the ivar it types encodes as
+  `i`/`I`, so the field keeps the binary's width. Apply this on any file you touch.
 - Use `#import` for all imports.
 - Use only Objective-C 2.0 constructs including properties, dot syntax, fast enumeration, blocks,
   and boxed literals.
@@ -196,9 +197,10 @@
   constant group defined in an implementation file (`.m`, `.mm`, `.cpp`, `.c`) does **not** use the
   `NS_*` macros — use a plain C/C++ `enum`, grouped `static NSString *const`, `static const`, or
   `static constexpr` there instead.
-  - `NS_ENUM` for a simple integer-backed enumeration. Back it with `NSInteger` when the underlying
-    value is signed or `NSUInteger` when it is unsigned (matching the binary field's signedness);
-    never back an `NS_ENUM`/`NS_OPTIONS` with a raw `int` or `unsigned int`.
+  - `NS_ENUM` for a simple integer-backed enumeration. Back it with the type matching the width and
+    signedness of the ivar it types: `NSInteger`/`NSUInteger` for an 8-byte (`q`/`Q`) field, and
+    `int`/`unsigned int` for a 4-byte (`i`/`I`) one. Do not pick a backing that widens the field
+    beyond what the binary stores.
   - `NS_CLOSED_ENUM` for a simple enumeration that can never gain new cases.
   - `NS_OPTIONS` for an enumeration whose cases are bit-flag sets combined with `|`.
   - `NS_TYPED_ENUM` for an enumeration whose raw value is a type you specify. The raw type is

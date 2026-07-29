@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @c RBCustomSelectView builds one grid per category; the timing category is number @c 8 because
  * number @c 7 is unused.
  */
-typedef NS_ENUM(NSInteger, RBCustomizeItemType) {
+typedef NS_ENUM(int, RBCustomizeItemType) {
     RBCustomizeItemTypeBgm = 0,       /*!< The theme background-music category. */
     RBCustomizeItemTypeShot = 1,      /*!< The tap shot-sound category. */
     RBCustomizeItemTypeExplosion = 2, /*!< The explosion-effect category. */

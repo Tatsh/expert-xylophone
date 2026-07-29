@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The playback state of an @c AVBus voice, returned by @c status.
  */
-typedef NS_ENUM(NSInteger, AVBusStatus) {
+typedef NS_ENUM(int, AVBusStatus) {
     AVBusStatusNone = -1,    /*!< No source is bound. */
     AVBusStatusPrepared = 1, /*!< A source is bound and prepared but not playing. */
     AVBusStatusPlaying = 2,  /*!< The voice is playing. */
