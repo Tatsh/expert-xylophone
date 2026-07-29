@@ -109,8 +109,7 @@ int AudioSourceSlot::RemoveSourceByIndex(int index) {
         return 0;
     }
     // Detach the record from any voice still playing it, then release its object references.
-    m_pMixer->RemoveSourceFromBuses(
-        static_cast<unsigned int>(reinterpret_cast<uintptr_t>(pRecord)));
+    m_pMixer->RemoveSourceFromBuses(pRecord);
     pRecord->Clear();
     return 1;
 }
@@ -129,10 +128,8 @@ unsigned int AudioSourceSlot::AcquireBusForSourceIndex(int index) {
     if (index >= m_nSourceCount || m_pSourceArray[index] == nullptr) {
         return 0xffffffff;
     }
-    // The mixer keys a voice by the low 32 bits of the record pointer; tag the returned handle valid.
-    const unsigned int dwSource =
-        static_cast<unsigned int>(reinterpret_cast<uintptr_t>(m_pSourceArray[index]));
-    return m_pMixer->AcquireBusForSource(dwSource, 0) | kPlayHandleValidBit;
+    // The mixer keys a voice by the record itself; tag the returned handle valid.
+    return m_pMixer->AcquireBusForSource(m_pSourceArray[index], 0) | kPlayHandleValidBit;
 }
 
 /** @ghidraAddress 0x4a990 */

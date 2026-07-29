@@ -5,6 +5,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "audiosourceslot.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -36,11 +38,14 @@ typedef NS_ENUM(NSInteger, AVBusStatus) {
 - (BOOL)prepare;
 /**
  * @brief Binds a sound source to this voice and returns the voice's new current id.
- * @param source The source identifier to bind.
+ *
+ * The record carries either a URL or a data buffer; whichever is set selects the player the voice
+ * is built from.
+ * @param source The source record to bind.
  * @return The voice's current id, packed into the low half of a play handle by the mixer.
  * @ghidraAddress 0x4169c
  */
-- (unsigned int)setSource:(unsigned int)source;
+- (unsigned int)setSource:(AudioSourceSlot::SourceRecord *)source;
 /**
  * @brief Unbinds the voice's current source and invalidates its outstanding play handles.
  * @return @c YES when a player was released.
@@ -49,11 +54,11 @@ typedef NS_ENUM(NSInteger, AVBusStatus) {
 - (BOOL)removeSource;
 /**
  * @brief Whether the voice is currently bound to @p source.
- * @param source The source identifier to test.
+ * @param source The source record to test.
  * @return @c YES when the voice holds @p source.
  * @ghidraAddress 0x41f20
  */
-- (BOOL)isSameSource:(unsigned int)source;
+- (BOOL)isSameSource:(AudioSourceSlot::SourceRecord *)source;
 /**
  * @brief Starts (or resumes) playback of the bound source.
  * @return @c YES when the voice was in a playable (prepared or paused) state.
@@ -107,6 +112,6 @@ typedef NS_ENUM(NSInteger, AVBusStatus) {
 
 NS_ASSUME_NONNULL_END
 
-// code: language=Objective-C
-// kate: hl Objective-C;
-// vim: set ft=objc :
+// code: language=Objective-C++
+// kate: hl Objective-C++;
+// vim: set ft=objcpp :

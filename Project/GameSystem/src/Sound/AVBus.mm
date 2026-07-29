@@ -18,9 +18,9 @@ static const NSInteger kLoopOnce = 0;
 static const float kUnboundVoiceVolume = 1.0f;
 
 @interface AVBus () <AVAudioPlayerDelegate> {
-    // The bound source. The binary compares it by identity in isSameSource: and clears it on
-    // unbind.
-    unsigned int mSource;
+    // The bound source record. The binary compares it by identity in isSameSource: and clears it
+    // on unbind.
+    AudioSourceSlot::SourceRecord *mSource;
     // Bumped on every unbind, so a play handle minted against an older binding stops resolving to
     // this voice.
     unsigned short mCurrentID;
@@ -33,7 +33,7 @@ static const float kUnboundVoiceVolume = 1.0f;
  * @ghidraAddress 0x41f48 (getter)
  * @ghidraAddress 0x41f58 (setter)
  */
-@property (nonatomic, strong) AVAudioPlayer *player;
+@property(nonatomic, strong) AVAudioPlayer *player;
 
 // The two source-binding constructors setSource: dispatches between. They are spelled "init..." in
 // the binary but return a success flag rather than an object, so they are held out of the init
@@ -100,19 +100,21 @@ static const float kUnboundVoiceVolume = 1.0f;
 }
 
 /** @ghidraAddress 0x4169c */
-- (unsigned int)setSource:(unsigned int)source {
+- (unsigned int)setSource:(AudioSourceSlot::SourceRecord *)source {
     mSource = source;
-    // The binary's argument is a pointer to a source record holding a URL, a data buffer, and a
-    // loop flag, and it builds the player here through initWithContentsOfURL:isLoop: or
-    // initWithContentsOfData:isLoop: depending on which of the two is set. That record type is not
-    // modelled in this tree yet — the mixer passes the source as a plain id — so the binding is
-    // recorded without constructing the player.
+    // A record carries the sound either as a URL or as a data buffer; the URL wins when both are
+    // set, matching the binary's null test on the first field.
+    if (source->source != nil) {
+        [self initWithContentsOfURL:source->source isLoop:source->bLoop];
+    } else {
+        [self initWithContentsOfData:source->companion isLoop:source->bLoop];
+    }
     return mCurrentID;
 }
 
 /** @ghidraAddress 0x4171c */
 - (BOOL)removeSource {
-    mSource = 0;
+    mSource = nullptr;
     ++mCurrentID;
     if (self.player == nil) {
         return NO;
@@ -122,7 +124,7 @@ static const float kUnboundVoiceVolume = 1.0f;
 }
 
 /** @ghidraAddress 0x41f20 */
-- (BOOL)isSameSource:(unsigned int)source {
+- (BOOL)isSameSource:(AudioSourceSlot::SourceRecord *)source {
     return mSource == source;
 }
 

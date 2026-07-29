@@ -59,14 +59,15 @@ AVBus *AVSeMixer::BusForHandle(unsigned int dwHandle) {
 }
 
 /** @ghidraAddress 0x47eb4 */
-unsigned int AVSeMixer::AcquireBusForSource(unsigned int dwSource, unsigned int nVolume) {
+unsigned int AVSeMixer::AcquireBusForSource(AudioSourceSlot::SourceRecord *pSource,
+                                            unsigned int nVolume) {
     const int nIndex = FindFreeBusIndex();
     if (nIndex == -1) {
         return 0xffffffff;
     }
     AVBus *pBus = m_pBuses[nIndex];
     [pBus removeSource];
-    const unsigned int dwCurrentId = [pBus setSource:dwSource];
+    const unsigned int dwCurrentId = [pBus setSource:pSource];
     [pBus prepare];
     const unsigned int dwHandle =
         (dwCurrentId & kBusHandleIdMask) | (nIndex << kBusHandleIndexShift);
@@ -75,10 +76,10 @@ unsigned int AVSeMixer::AcquireBusForSource(unsigned int dwSource, unsigned int 
 }
 
 /** @ghidraAddress 0x483d8 */
-void AVSeMixer::RemoveSourceFromBuses(unsigned int source) {
+void AVSeMixer::RemoveSourceFromBuses(AudioSourceSlot::SourceRecord *pSource) {
     for (int nIndex = 0; nIndex < m_nVoiceCount; ++nIndex) {
         AVBus *pBus = m_pBuses[nIndex];
-        if ([pBus isSameSource:source]) {
+        if ([pBus isSameSource:pSource]) {
             [pBus removeSource];
         }
     }

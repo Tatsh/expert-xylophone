@@ -4,7 +4,7 @@
 # defined in the root CMakeLists, and puts the directory on the include path. Bare filenames.
 
 target_sources(rbplus PRIVATE
-    AVBus.m
+    AVBus.mm
     audioformat.c
     avsemixer.mm
     cacamixer.mm

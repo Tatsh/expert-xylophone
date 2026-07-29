@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "audiosourceslot.h"
+
 @class AVBus;
 
 /**
@@ -39,12 +41,12 @@ public:
      *
      * Packs the chosen voice index into bits 16 and up and the voice's current id into the low half,
      * then applies the initial volume through the handle.
-     * @param dwSource The source id to bind.
+     * @param pSource The source record to bind.
      * @param nVolume The initial volume on a 0..127 scale.
      * @return The play handle, or @c 0xffffffff when no voice is free.
      * @ghidraAddress 0x47eb4
      */
-    unsigned int AcquireBusForSource(unsigned int dwSource, unsigned int nVolume);
+    unsigned int AcquireBusForSource(AudioSourceSlot::SourceRecord *pSource, unsigned int nVolume);
 
     /**
      * @brief Resolves a play handle back to its voice, validating the packed id.
@@ -64,10 +66,10 @@ public:
 
     /**
      * @brief Detaches @p source from every voice currently bound to it.
-     * @param source The source id to remove.
+     * @param pSource The source record to remove.
      * @ghidraAddress 0x483d8
      */
-    void RemoveSourceFromBuses(unsigned int source);
+    void RemoveSourceFromBuses(AudioSourceSlot::SourceRecord *pSource);
 
     /**
      * @brief Starts playback on the voice resolved from @p dwHandle.
