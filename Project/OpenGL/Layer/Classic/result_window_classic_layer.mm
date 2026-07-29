@@ -1,6 +1,7 @@
 #include "result_window_classic_layer.h"
 
 #include <cassert>
+#include <cmath>
 
 #import "AppDelegate.h"
 #import "AudioManager.h"
@@ -77,15 +78,15 @@ PhoneLayoutRect g_ClassicCenterPositionPhoneState = {};     // @ghidraAddress 0x
 PhoneLayoutRect g_ClassicCenterPositionPhonePortrait = {};  // @ghidraAddress 0x3d90e0
 PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape = {}; // @ghidraAddress 0x3d90f0
 
-// The fixed landscape offset the customize phone-overlay adds to its base position (zero-initialised
-// in the binary's __common segment, filled at runtime).
-static S_VECTOR2 g_classicCustomizeOverlayLandscapeOffset = {}; // @ghidraAddress 0x3d8058
-
-// The fixed landscape offsets the customize nameplate-overlay adds to its base position for its name
-// glyph, level glyph, and backing group (zero-initialised in __common, filled at runtime).
-static S_VECTOR2 g_classicNameplateNameOffset = {};    // @ghidraAddress 0x3d8068
-static S_VECTOR2 g_classicNameplateLevelOffset = {};   // @ghidraAddress 0x3d8070
-static S_VECTOR2 g_classicNameplateBackingOffset = {}; // @ghidraAddress 0x3d8060
+// The fixed landscape offsets the customize overlays add to their base positions. These are not
+// standalone globals: 0x3d8058 through 0x3d8070 fall inside the anchor table based at 0x3d7cd0
+// (indices 113 through 116), and the load-time initialiser is what fills them. They were previously
+// modelled as four separate statics, which gave them their own zeroed storage and made both
+// overlays add a null offset.
+constexpr int kCustomizeOverlayLandscapeAnchor = 113; // 0x3d8058
+constexpr int kNameplateBackingAnchor = 114;          // 0x3d8060
+constexpr int kNameplateNameAnchor = 115;             // 0x3d8068
+constexpr int kNameplateLevelAnchor = 116;            // 0x3d8070
 
 // The Classic phone parts table (@ghidraAddress 0x303580): static read-only sprite descriptors, one
 // per result-window part, giving each part's placement offset, size, and UV-palette index.
@@ -1057,7 +1058,7 @@ constexpr unsigned int kMainAssetRenderSlot = 5;
 /** @ghidraAddress 0x119be8 */
 void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
                                                            const S_VECTOR2 *pBasePos,
-                                                           unsigned int nScale) {
+                                                           float flScale) {
     // Advance the slide timer: forward (clamped to the duration) while the direction flag is set,
     // backward (clamped to zero) while it is clear. On reaching zero, kick off any queued main-asset
     // load and clear the queue sentinel.
@@ -1091,14 +1092,14 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
 
     // The overlay eases upward as it appears; its base alpha scales with the progress.
     S_VECTOR2 renderPos{pBasePos->x, pBasePos->y + (1.0f - flProgress) * kPhoneOverlaySlideOffsetY};
-    const float flAlphaBase = flProgress * static_cast<float>(nScale);
+    const float flAlphaBase = flProgress * flScale;
     const unsigned int nGroupAlpha =
         static_cast<unsigned int>(static_cast<int>(flAlphaBase * m_flMainAssetScale));
 
     if (IsPad()) {
         // The iPad overlay part draws at the base position shifted by the fixed landscape offset;
         // the same shifted position feeds the final scaled render.
-        AddVector2(&renderPos, &g_classicCustomizeOverlayLandscapeOffset);
+        AddVector2(&renderPos, &g_aClassicPartsAnchorPad[kCustomizeOverlayLandscapeAnchor]);
         EmitPartSprite(
             0.0f, 1.0f, 1.0f, kPhoneOverlaySlot, kPadOverlayPartId, renderPos, nGroupAlpha, false);
     } else {
@@ -1147,7 +1148,7 @@ constexpr unsigned int kNameplateGlyphSlot = 1;       // the name/level glyph in
 /** @ghidraAddress 0x119db4 */
 void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
                                                                const S_VECTOR2 *pBasePos,
-                                                               unsigned int nScale) {
+                                                               float flScale) {
     if (!m_bCustomizePreviewShown) {
         // Decay phase: run the timer down; on reaching zero, promote any queued asset id, swap the
         // displayed customize-character texture, and re-enter the grow phase.
@@ -1195,23 +1196,22 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
         flProgress = 1.0f;
     }
     S_VECTOR2 renderPos{pBasePos->x, pBasePos->y + (1.0f - flProgress) * kNameplateSlideOffsetY};
-    const unsigned int nAlpha =
-        static_cast<unsigned int>(static_cast<int>(flProgress * static_cast<float>(nScale)));
+    const unsigned int nAlpha = static_cast<unsigned int>(static_cast<int>(flProgress * flScale));
 
     if (IsPad()) {
         // The iPad path draws the name and level glyphs at their landscape offsets.
         const unsigned int nNamePart =
             static_cast<unsigned int>(m_nCustomizeSubId) + kNameplateNamePartBase;
         S_VECTOR2 namePos = renderPos;
-        AddVector2(&namePos, &g_classicNameplateNameOffset);
+        AddVector2(&namePos, &g_aClassicPartsAnchorPad[kNameplateNameAnchor]);
         EmitPartSprite(0.0f, 1.0f, 1.0f, kNameplateGlyphSlot, nNamePart, namePos, nAlpha, false);
 
         S_VECTOR2 levelPos = renderPos;
-        AddVector2(&levelPos, &g_classicNameplateLevelOffset);
+        AddVector2(&levelPos, &g_aClassicPartsAnchorPad[kNameplateLevelAnchor]);
         EmitPartSprite(
             0.0f, 1.0f, 1.0f, kNameplateGlyphSlot, kNameplateLevelPart, levelPos, nAlpha, false);
 
-        AddVector2(&renderPos, &g_classicNameplateBackingOffset);
+        AddVector2(&renderPos, &g_aClassicPartsAnchorPad[kNameplateBackingAnchor]);
         // Yes, the binary passes the name part id (subId + 0xdf) as the scaled render's scale here.
         RenderSpriteInstancerSlotScaled(kNameplateAssetSlot, renderPos, nNamePart);
     } else {
@@ -1920,7 +1920,7 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
     m_nNetworkPlay = (pGameSystem->GetGameType() | 2) == 2 ? 0 : 1;
 
     // Clear the per-round display counters and reset every music-track index sentinel to -1.
-    m_nDisplayCounterA = 0;
+    m_flResultElapsed = 0.0f;
     m_flExpAnimTimer = 0.0f;
     m_bExpAnimSettled = false;
     m_bCustomizePending = false;
@@ -2063,6 +2063,1807 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
         RenderResultScoreLayerActive(flDeltaTime);
     } else {
         RenderResultScoreLayerIdle(flDeltaTime);
+    }
+}
+
+namespace {
+// The instancer slots the pad render path draws into. Slot 1 carries every part sprite; the rest
+// carry a single quad each.
+constexpr unsigned int kPadBackdropSlot = 0;
+constexpr unsigned int kPadPartsSlot = 1;
+constexpr unsigned int kPadJacketSlot = 2;
+constexpr unsigned int kPadBannerSlotA = 3;
+constexpr unsigned int kPadBannerSlotB = 4;
+
+// The music-jacket quad's pixel size.
+constexpr float kPadJacketSize = 180.0f;
+
+// The three proportional-bar reference widths: the two sides' score-comparison bars
+// (@ghidraAddress 0x302d60), the per-judgement rows (0x302d64), and the experience bar (0x302d68).
+constexpr float kScoreCompareBarWidth = 160.0f;
+constexpr float kJudgementBarWidth = 138.0f;
+constexpr float kExperienceBarWidth = 210.0f;
+
+// The two stat pages slide this far horizontally as they trade places.
+constexpr float kPageSlideTravel = 20.0f;
+
+// The level-up sparkle chase: the rotation counter's period (@ghidraAddress 0x302d6c), the phase
+// step between consecutive sparkles (0x3010a0, held as a double in the binary), and their X travel.
+constexpr float kSparkleCounterPeriod = 400.0f;
+constexpr double kSparklePhaseStep = 0.3;
+constexpr float kSparkleTravelX = 5.0f;
+
+// The achievement-rate digits sit two pixels left of their anchor.
+constexpr float kRateDigitNudgeX = -2.0f;
+
+// A single-digit difficulty level shifts its digits left to stay centred.
+constexpr float kLevelDigitNarrowShiftX = -6.0f;
+constexpr int kLevelDigitWideThreshold = 9;
+
+// The inter-glyph gaps the pad path's digit runs use.
+constexpr float kDigitGapWide = 2.0f;
+constexpr float kDigitGapNarrow = 1.0f;
+constexpr float kDigitGapNone = 0.0f;
+
+// The pad panel's part ids.
+constexpr unsigned int kPartBackdrop = 0;
+constexpr unsigned int kPartConfirmButton = 1;
+constexpr unsigned int kPartShareButton = 2;
+constexpr unsigned int kPartLaneMarker = 0x15;
+constexpr unsigned int kPartJacketFrame = 0x29;
+constexpr unsigned int kPartDifficultyBadgeBase = 0x2a;
+constexpr unsigned int kPartScoreDeltaUp = 0x49;
+constexpr unsigned int kPartScoreDeltaDown = 0x4a;
+constexpr unsigned int kPartRankBadgeBase = 0x61;
+constexpr unsigned int kPartFullComboBadge = 0x67;
+constexpr unsigned int kPartRowIcon = 0x69;
+// The judgement-bar family: the great, good, miss, maximum-combo, and rate bars are consecutive
+// members, and the two animated rows index the family by the decoration frame instead.
+constexpr unsigned int kPartBarFamilyBase = 0x7f;
+constexpr unsigned int kPartBarGreat = kPartBarFamilyBase;
+constexpr unsigned int kPartBarGood = kPartBarFamilyBase + 1;
+constexpr unsigned int kPartBarMiss = kPartBarFamilyBase + 2;
+constexpr unsigned int kPartBarMaxCombo = kPartBarFamilyBase + 3;
+constexpr unsigned int kPartBarRate = kPartBarFamilyBase + 4;
+constexpr unsigned int kPartRateMarker = 0x84;
+constexpr unsigned int kPartRateBelowTarget = 0xc6;
+constexpr unsigned int kPartRateAboveTarget = 0xc7;
+constexpr unsigned int kPartClearRankBase = 0xc9;
+constexpr unsigned int kPartExpSeparator = 0xc8;
+constexpr unsigned int kPartExpLabel = 0xcf;
+constexpr unsigned int kPartExpGainedLabel = 0xda;
+constexpr unsigned int kPartExpBarBacking = 0xdb;
+constexpr unsigned int kPartExpBar = 0xdc;
+constexpr unsigned int kPartExpSparkle = 0xdd;
+constexpr unsigned int kPartMatchOutcomeBase = 0xed;
+
+// The glyph-bank bases the pad path's digit runs draw from.
+constexpr unsigned int kGlyphLevelBase = 0x2e;
+constexpr unsigned int kGlyphScoreBase = 0x3e;
+constexpr unsigned int kGlyphRateTargetBase = 0xb1;
+constexpr unsigned int kGlyphExpGainedBase = 0xd0;
+constexpr unsigned int kGlyphExpThresholdBase = 0x72;
+
+// The digit counts each run draws.
+constexpr int kLevelDigitCount = 2;
+constexpr int kScoreDigitCount = 4;
+constexpr int kRateDigitCount = 4;
+constexpr int kExpGainedDigitCount = 4;
+constexpr int kExpThresholdDigitCount = 5;
+
+// The multiplier that turns a unit-interval achievement rate into its displayed permille value
+// (@ghidraAddress 0x2f8540).
+constexpr float kAchievementRateScale = 1000.0f;
+
+// The clear-rank badge family tops out at six tiers.
+constexpr int kClearRankTierMax = 5;
+
+// One frame-furniture emit: a part id, its anchor-bank slot, and its X scale (the mirrored halves
+// of the frame draw at -1).
+struct PadFramePart {
+    unsigned int nPartId;
+    int nAnchor;
+    float flScaleX;
+};
+
+// The panel furniture that always draws at the body alpha, in the binary's emit order.
+constexpr PadFramePart kPadFrameParts[] = {
+    {3, 3, 1.0f},
+    {4, 4, -1.0f},
+    {5, 5, 1.0f},
+    {6, 6, -1.0f},
+    {7, 7, 1.0f},
+    {8, 8, -1.0f},
+    {9, 122, 1.0f},
+    {10, 123, 1.0f},
+    {11, 124, -1.0f},
+    {0xea, 125, 1.0f},
+};
+
+// The panel furniture that draws at the panel alpha, above the backdrop.
+constexpr PadFramePart kPadHeaderParts[] = {
+    {0xe5, 117, 1.0f},
+    {0xe6, 118, 1.0f},
+    {0xe7, 119, -1.0f},
+    {0xe8, 120, 1.0f},
+    {0xe9, 121, -1.0f},
+};
+
+// The front stat page's frame, drawn straight from the anchor bank at the front-page alpha.
+constexpr PadFramePart kFrontPageFrameParts[] = {
+    {0x0c, 9, 1.0f},
+    {0x0d, 10, -1.0f},
+    {0x0e, 11, 1.0f},
+    {0x0f, 12, -1.0f},
+    {0x10, 13, 1.0f},
+    {0x11, 14, -1.0f},
+    {0x12, 126, 1.0f},
+    {0x13, 127, 1.0f},
+    {0x14, 128, -1.0f},
+    {0xeb, 129, 1.0f},
+    {0xea, 48, 1.0f},
+};
+
+// The back stat page's frame, drawn straight from the anchor bank at the back-page alpha.
+constexpr PadFramePart kBackPageFrameParts[] = {
+    {0x0c, 9, 1.0f},
+    {0x0d, 10, -1.0f},
+    {0x0e, 11, 1.0f},
+    {0x0f, 12, -1.0f},
+    {0x10, 13, 1.0f},
+    {0x11, 14, -1.0f},
+    {0x16, 126, 1.0f},
+    {0x17, 127, 1.0f},
+    {0x18, 128, -1.0f},
+    {0xec, 130, 1.0f},
+};
+
+// The front page's slide-relative headings, and the back page's.
+constexpr PadFramePart kFrontPageHeadings[] = {
+    {0x19, 17, 1.0f}, {0x1a, 18, 1.0f}, {0x1b, 19, 1.0f}};
+constexpr PadFramePart kFrontPageFooters[] = {{0x1c, 20, 1.0f}, {0x1d, 21, 1.0f}, {0x1e, 22, 1.0f}};
+constexpr PadFramePart kBackPageHeadings[] = {{0x1f, 23, 1.0f}, {0x20, 24, 1.0f}, {0x21, 25, 1.0f}};
+constexpr PadFramePart kBackPageFooters[] = {{0x22, 26, 1.0f}, {0x23, 27, 1.0f}, {0x24, 28, 1.0f}};
+
+// The front page's decoration group: a static badge and the two frame-animated rosettes.
+constexpr int kFrontPageBadgeAnchor = 49;
+constexpr unsigned int kPartFrontPageBadge = 0x68;
+constexpr int kFrontPageRosetteAnchorA = 50;
+constexpr int kFrontPageRosetteAnchorB = 51;
+constexpr unsigned int kPartRosetteBaseA = 0x6a;
+constexpr unsigned int kPartRosetteBaseB = 0x6e;
+
+// The two lane markers the single-player pass draws, each as a shadow and then a main pass.
+constexpr int kLaneMarkerAnchors[] = {15, 16};
+constexpr int kLaneMarkerCount = 2;
+
+// The panel's fixed anchor-bank slots.
+constexpr int kBackdropAnchor = 0;
+constexpr int kConfirmButtonAnchor = 1;
+constexpr int kShareButtonAnchor = 2;
+constexpr int kJacketFrameAnchor = 29;
+constexpr int kJacketAnchor = 30;
+constexpr int kBannerAnchorA = 31;
+constexpr int kBannerAnchorB = 32;
+constexpr int kDifficultyBadgeAnchor = 33;
+constexpr int kDifficultyLevelAnchor = 34;
+constexpr int kTargetScoreAnchor = 36;
+constexpr int kScoreDeltaSignAnchor = 37;
+constexpr int kScoreDeltaAnchor = 38;
+constexpr int kSide1LabelAnchor = 39;
+constexpr int kSide1BarAnchor = 40;
+constexpr int kSide1ScoreAnchor = 41;
+constexpr int kSide0LabelAnchor = 42;
+constexpr int kSide0BarAnchor = 43;
+constexpr int kSide0ScoreAnchor = 44;
+constexpr int kMatchOutcomeAnchor = 45;
+constexpr int kRankBadgeAnchor = 46;
+constexpr int kFullComboAnchor = 47;
+
+// The rank/rate comparison group each side draws on the front page.
+constexpr int kSide1RateMarkerAnchor = 86;
+constexpr int kSide1RateLabelAnchor = 87;
+constexpr int kSide0RateMarkerAnchor = 94;
+constexpr int kSide0RateLabelAnchor = 95;
+
+// The experience/level-up group on the back page.
+constexpr int kExpLabelAnchor = 102;
+constexpr int kExpGainedLabelAnchor = 103;
+constexpr int kExpGainedAnchor = 104;
+constexpr int kExpProgressAnchor = 105;
+constexpr int kExpSeparatorAnchor = 106;
+constexpr int kExpThresholdAnchor = 107;
+constexpr int kExpBarBackingAnchor = 108;
+constexpr int kExpBarAnchor = 109;
+constexpr int kExpSparkleAnchors[] = {110, 111, 112};
+constexpr int kExpSparkleCount = 3;
+
+// The per-side judgement-row anchor bases: side 0's row starts at 0x45, side 1's at 0x34. Each row
+// lays out seventeen consecutive slots from its base.
+constexpr int kJudgementRowBase[ResultWindowClassicLayer::kSideCount] = {0x45, 0x34};
+
+// The offsets of each field within a judgement row, from that row's base anchor.
+enum JudgementRowSlot {
+    kRowGroupIcon = 0x00,
+    kRowSideLabel = 0x01,
+    kRowJustDigits = 0x02,
+    kRowJustBar = 0x03,
+    kRowGreatDigits = 0x04,
+    kRowGreatBar = 0x05,
+    kRowGoodDigits = 0x06,
+    kRowGoodBar = 0x07,
+    kRowMissDigits = 0x08,
+    kRowMissBar = 0x09,
+    kRowJustReflecDigits = 0x0a,
+    kRowJustReflecBar = 0x0b,
+    kRowMaxComboDigits = 0x0c,
+    kRowMaxComboBar = 0x0d,
+    kRowScoreDigits = 0x0e,
+    kRowRateDigits = 0x0f,
+    kRowRateBar = 0x10,
+};
+
+// The anchor-bank slots one side's rank/achievement-rate comparison block draws into.
+struct RankBlockAnchors {
+    int nRateDigits;   // the side's achievement-rate digits, and its own rate-bank badge.
+    int nTargetDigits; // the target rate's digits.
+    int nCompareGlyph; // the above-or-below comparison glyph.
+    int nDeltaDigits;  // the signed difference between the two.
+    int nRankBadge;    // the clear-rank badge.
+};
+constexpr RankBlockAnchors kRankBlockAnchors[ResultWindowClassicLayer::kSideCount] = {
+    {97, 98, 99, 100, 101},
+    {89, 90, 91, 92, 93},
+};
+
+// Clamps a rate into the unit interval. The comparison order is the binary's, so a NaN rate falls
+// through both tests and lands at zero.
+inline float ClampRate(float flRate) {
+    const float flCapped = (flRate > 1.0f) ? 1.0f : flRate;
+    return (flRate >= 0.0f) ? flCapped : 0.0f;
+}
+
+// Offsets a copy of an anchor-bank entry by a page's horizontal slide.
+inline S_VECTOR2 AnchorWithSlide(float flSlideX, int nAnchor) {
+    S_VECTOR2 position{flSlideX, 0.0f};
+    AddVector2(&position, &g_aClassicPartsAnchorPad[nAnchor]);
+    return position;
+}
+} // namespace
+
+/** @ghidraAddress 0x117b84 */
+void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
+    const unsigned int nPanelAlpha = static_cast<unsigned int>(
+        m_aScoreAnimChannels[kScoreChannel].flCurrent * static_cast<float>(kFullyOpaqueAlpha));
+    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].flCurrent;
+    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
+
+    // Every slot restarts empty each frame, whether or not the panel draws.
+    for (ne::C_SPRITE_INSTANCING_2D *pSlot : m_apSprites) {
+        pSlot->SetSpriteCount(0);
+    }
+
+    if (nPanelAlpha == 0) {
+        return;
+    }
+
+    const unsigned int nBodyAlpha =
+        static_cast<unsigned int>(flBodyScale * static_cast<float>(nPanelAlpha));
+    const unsigned int nShareAlpha =
+        static_cast<unsigned int>(flShareScale * static_cast<float>(nPanelAlpha));
+
+    // The backdrop and the header furniture draw at the panel alpha.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadBackdropSlot,
+                   kPartBackdrop,
+                   g_aClassicPartsAnchorPad[kBackdropAnchor],
+                   nPanelAlpha,
+                   false);
+    for (const PadFramePart &part : kPadHeaderParts) {
+        EmitPartSprite(0.0f,
+                       part.flScaleX,
+                       1.0f,
+                       kPadPartsSlot,
+                       part.nPartId,
+                       g_aClassicPartsAnchorPad[part.nAnchor],
+                       nPanelAlpha,
+                       false);
+    }
+
+    // The confirm and share buttons dim while their own gesture region is held; the share button
+    // only exists when the Twitter API is available.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartConfirmButton,
+                   g_aClassicPartsAnchorPad[kConfirmButtonAnchor],
+                   nPanelAlpha,
+                   m_aGestureRegions[0].bDown);
+    if (m_bTwitterAvailable) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartShareButton,
+                       g_aClassicPartsAnchorPad[kShareButtonAnchor],
+                       nShareAlpha,
+                       m_aGestureRegions[3].bDown);
+    }
+
+    for (const PadFramePart &part : kPadFrameParts) {
+        EmitPartSprite(0.0f,
+                       part.flScaleX,
+                       1.0f,
+                       kPadPartsSlot,
+                       part.nPartId,
+                       g_aClassicPartsAnchorPad[part.nAnchor],
+                       nBodyAlpha,
+                       false);
+    }
+
+    // The music jacket and the two banner slots.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartJacketFrame,
+                   g_aClassicPartsAnchorPad[kJacketFrameAnchor],
+                   nBodyAlpha,
+                   false);
+    const S_VECTOR2 jacketSize{kPadJacketSize, kPadJacketSize};
+    BlitInstancerTextureSlot(
+        kPadJacketSlot, g_aClassicPartsAnchorPad[kJacketAnchor], jacketSize, nBodyAlpha);
+    RenderSpriteInstancerSlotScaled(
+        kPadBannerSlotA, g_aClassicPartsAnchorPad[kBannerAnchorA], nBodyAlpha);
+    RenderSpriteInstancerSlotScaled(
+        kPadBannerSlotB, g_aClassicPartsAnchorPad[kBannerAnchorB], nBodyAlpha);
+
+    // The difficulty badge and its level digits; a single-digit level shifts left to stay centred.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartDifficultyBadgeBase +
+                       static_cast<unsigned int>(pGameSystem->GetDifficulty()),
+                   g_aClassicPartsAnchorPad[kDifficultyBadgeAnchor],
+                   nBodyAlpha,
+                   false);
+    const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
+    S_VECTOR2 levelPos = g_aClassicPartsAnchorPad[kDifficultyLevelAnchor];
+    if (nDifficultyLevel < kLevelDigitWideThreshold) {
+        levelPos.x += kLevelDigitNarrowShiftX;
+    }
+    RenderDigitSequence(nDifficultyLevel + 1,
+                        kLevelDigitCount,
+                        &levelPos,
+                        kGlyphLevelBase,
+                        false,
+                        false,
+                        nBodyAlpha,
+                        kDigitGapWide);
+
+    // The target score and the signed distance from it.
+    int nTargetScore = pGameSystem->GetTargetScore();
+    if (nTargetScore < 0) {
+        nTargetScore = 0;
+    }
+    int nScoreDelta = pTracker->GetPlayRecordCell(1, 0) - nTargetScore;
+    RenderDigitSequence(nTargetScore,
+                        kScoreDigitCount,
+                        &g_aClassicPartsAnchorPad[kTargetScoreAnchor],
+                        kGlyphScoreBase,
+                        false,
+                        true,
+                        nBodyAlpha,
+                        kDigitGapWide);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   nScoreDelta < 0 ? kPartScoreDeltaDown : kPartScoreDeltaUp,
+                   g_aClassicPartsAnchorPad[kScoreDeltaSignAnchor],
+                   nBodyAlpha,
+                   false);
+    if (nScoreDelta < 0) {
+        nScoreDelta = -nScoreDelta;
+    }
+    RenderDigitSequence(nScoreDelta,
+                        kScoreDigitCount,
+                        &g_aClassicPartsAnchorPad[kScoreDeltaAnchor],
+                        kGlyphScoreBase,
+                        false,
+                        true,
+                        nBodyAlpha,
+                        kDigitGapWide);
+
+    // The two sides' score-comparison bars: the leading side's bar runs full width and the trailing
+    // side's is scaled by their ratio; both are zero only when neither side scored.
+    const int nSide1Score = pTracker->GetPlayRecordCell(1, 0);
+    const int nSide0Score = pTracker->GetPlayRecordCell(0, 0);
+    float flSide1Ratio = (nSide0Score != 0 || nSide1Score != 0) ? 1.0f : 0.0f;
+    float flSide0Ratio = flSide1Ratio;
+    if (nSide0Score < nSide1Score) {
+        flSide1Ratio = 1.0f;
+        flSide0Ratio = static_cast<float>(nSide0Score) / static_cast<float>(nSide1Score);
+    }
+    if (nSide1Score < nSide0Score) {
+        flSide0Ratio = 1.0f;
+        flSide1Ratio = static_cast<float>(nSide1Score) / static_cast<float>(nSide0Score);
+    }
+
+    // The play colour swaps which side owns which label, bar, and digit bank.
+    const bool bColorSwapped = nPlayColor != 0;
+    const unsigned int nSide1LabelPart = bColorSwapped ? 0x26 : 0x25;
+    const unsigned int nSide0LabelPart = bColorSwapped ? 0x27 : 0x28;
+    const unsigned int nSide1BarPart = bColorSwapped ? 0x4c : 0x4b;
+    const unsigned int nSide0BarPart = bColorSwapped ? 0x4b : 0x4c;
+    const unsigned int nSide1GlyphBase = bColorSwapped ? 0x57 : 0x4d;
+    const unsigned int nSide0GlyphBase = bColorSwapped ? 0x4d : 0x57;
+
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   nSide1LabelPart,
+                   g_aClassicPartsAnchorPad[kSide1LabelAnchor],
+                   nBodyAlpha,
+                   false);
+    EmitPartSprite(0.0f,
+                   flSide1Ratio * kScoreCompareBarWidth,
+                   1.0f,
+                   kPadPartsSlot,
+                   nSide1BarPart,
+                   g_aClassicPartsAnchorPad[kSide1BarAnchor],
+                   nBodyAlpha,
+                   false);
+    RenderDigitSequence(nSide1Score,
+                        kScoreDigitCount,
+                        &g_aClassicPartsAnchorPad[kSide1ScoreAnchor],
+                        nSide1GlyphBase,
+                        false,
+                        true,
+                        nBodyAlpha,
+                        kDigitGapNone);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   nSide0LabelPart,
+                   g_aClassicPartsAnchorPad[kSide0LabelAnchor],
+                   nBodyAlpha,
+                   false);
+    EmitPartSprite(0.0f,
+                   flSide0Ratio * kScoreCompareBarWidth,
+                   1.0f,
+                   kPadPartsSlot,
+                   nSide0BarPart,
+                   g_aClassicPartsAnchorPad[kSide0BarAnchor],
+                   nBodyAlpha,
+                   false);
+    RenderDigitSequence(nSide0Score,
+                        kScoreDigitCount,
+                        &g_aClassicPartsAnchorPad[kSide0ScoreAnchor],
+                        nSide0GlyphBase,
+                        false,
+                        true,
+                        nBodyAlpha,
+                        kDigitGapNone);
+
+    // The match-outcome and clear-rank badges, and the full-combo badge when the maximum combo
+    // covers every note in the chart.
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartMatchOutcomeBase +
+                       static_cast<unsigned int>(pTracker->GetPlayRecordField10(1)),
+                   g_aClassicPartsAnchorPad[kMatchOutcomeAnchor],
+                   nBodyAlpha,
+                   false);
+    EmitPartSprite(0.0f,
+                   1.0f,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartRankBadgeBase + static_cast<unsigned int>(pTracker->GetPlayRecordRank(1)),
+                   g_aClassicPartsAnchorPad[kRankBadgeAnchor],
+                   nBodyAlpha,
+                   false);
+    const int nTotalNotes = pTracker->GetTotalNotes();
+    if (nTotalNotes == pTracker->GetPlayRecordCell(1, 2)) {
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartFullComboBadge,
+                       g_aClassicPartsAnchorPad[kFullComboAnchor],
+                       nBodyAlpha,
+                       false);
+    }
+
+    // The stat area cross-fades between two horizontally sliding pages. The signed slide timer
+    // drives both the alphas and the travel; a networked play leads with the opposite page, so the
+    // two assignments are mirrored.
+    const float flSlide = m_flSlideTimer;
+    const float flSlideMagnitude = std::fabs(flSlide);
+    float flFrontAlpha = 0.0f;
+    float flBackAlpha = 0.0f;
+    float flFrontSlideX = 0.0f;
+    float flBackSlideX = 0.0f;
+    if (m_nNetworkPlay == 1) {
+        flBackAlpha = static_cast<float>(nShareAlpha) * flSlideMagnitude;
+        flFrontAlpha = static_cast<float>(nShareAlpha) * (1.0f - flSlideMagnitude);
+        flFrontSlideX = flSlide * -kPageSlideTravel;
+        flBackSlideX =
+            (1.0f - flSlideMagnitude) * (flSlide <= 0.0f ? -kPageSlideTravel : kPageSlideTravel);
+    } else {
+        flBackAlpha = static_cast<float>(nShareAlpha) * (1.0f - flSlideMagnitude);
+        flFrontAlpha = static_cast<float>(nShareAlpha) * flSlideMagnitude;
+        flBackSlideX = flSlide * -kPageSlideTravel;
+        flFrontSlideX =
+            (1.0f - flSlideMagnitude) * (flSlide > 0.0f ? kPageSlideTravel : -kPageSlideTravel);
+    }
+    const S_VECTOR2 backPageOrigin{flBackSlideX, 0.0f};
+    const unsigned int nFrontAlpha = static_cast<unsigned int>(flFrontAlpha);
+
+    // The front page's frame draws straight from the anchor bank; only its content slides.
+    for (const PadFramePart &part : kFrontPageFrameParts) {
+        EmitPartSprite(0.0f,
+                       part.flScaleX,
+                       1.0f,
+                       kPadPartsSlot,
+                       part.nPartId,
+                       g_aClassicPartsAnchorPad[part.nAnchor],
+                       nFrontAlpha,
+                       false);
+    }
+    for (const PadFramePart &part : kFrontPageHeadings) {
+        const S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, part.nAnchor);
+        EmitPartSprite(
+            0.0f, part.flScaleX, 1.0f, kPadPartsSlot, part.nPartId, position, nFrontAlpha, false);
+    }
+    {
+        const S_VECTOR2 badgePos = AnchorWithSlide(flFrontSlideX, kFrontPageBadgeAnchor);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartFrontPageBadge, badgePos, nFrontAlpha, false);
+        const S_VECTOR2 rosetteA = AnchorWithSlide(flFrontSlideX, kFrontPageRosetteAnchorA);
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartRosetteBaseA + static_cast<unsigned int>(m_nRotationFrame),
+                       rosetteA,
+                       nFrontAlpha,
+                       false);
+        const S_VECTOR2 rosetteB = AnchorWithSlide(flFrontSlideX, kFrontPageRosetteAnchorB);
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartRosetteBaseB + static_cast<unsigned int>(m_nRotationFrame),
+                       rosetteB,
+                       nFrontAlpha,
+                       false);
+    }
+
+    // One judgement row per side: a digit column and a proportional bar for each counter. The just
+    // and just-reflec bars index the bar family by the decoration frame, so they animate.
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        const unsigned int uSide = static_cast<unsigned int>(nSide);
+        const int nJust = pTracker->GetPlayRecordCell(uSide, 3);
+        const int nGreat = pTracker->GetPlayRecordCell(uSide, 4);
+        const int nGood = pTracker->GetPlayRecordCell(uSide, 5);
+        const int nMiss = pTracker->GetPlayRecordCell(uSide, 6);
+        const int nJustReflec = pTracker->GetPlayRecordCell(uSide, 7);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(uSide, 2);
+        const int nScore = pTracker->GetPlayRecordCell(uSide, 0);
+        const int nRowTotalNotes = pTracker->GetTotalNotes();
+        const float flRate = pTracker->GetPlayRecordRate(uSide);
+
+        // Side 0 reads the play colour's score slot; side 1 reads the other one.
+        const int nScoreSlot =
+            (nSide == 0) ? static_cast<int>(nPlayColor) : ((nPlayColor == 0) ? 1 : 0);
+        const int nSideResultScore = m_aResultScores[nScoreSlot];
+
+        const int nRowBase = kJudgementRowBase[nSide];
+        const float flTotal = static_cast<float>(nRowTotalNotes);
+        const unsigned int nAnimatedBar =
+            kPartBarFamilyBase + static_cast<unsigned int>(m_nRotationFrame);
+
+        S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowGroupIcon);
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartRowIcon, position, nFrontAlpha, false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowSideLabel);
+        EmitPartSprite(0.0f,
+                       1.0f,
+                       1.0f,
+                       kPadPartsSlot,
+                       (nSide == 1) ? nSide1LabelPart : nSide0LabelPart,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowJustDigits);
+        RenderScoreDigitsCompact(nJust, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowJustBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nJust) / flTotal) * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       nAnimatedBar,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowGreatDigits);
+        RenderScoreDigitsCompact(nGreat, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowGreatBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nGreat) / flTotal) * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartBarGreat,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowGoodDigits);
+        RenderScoreDigitsCompact(nGood, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowGoodBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nGood) / flTotal) * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartBarGood,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowMissDigits);
+        RenderScoreDigitsCompact(nMiss, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowMissBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nMiss) / flTotal) * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartBarMiss,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        // The just-reflec row measures against the side's seeded result score, not the note total.
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowJustReflecDigits);
+        RenderScoreDigitsWithDot(nJustReflec, nSideResultScore, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowJustReflecBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nJustReflec) / static_cast<float>(nSideResultScore)) *
+                           kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       nAnimatedBar,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowMaxComboDigits);
+        RenderScoreDigitsWithDot(nMaxCombo, nRowTotalNotes, position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowMaxComboBar);
+        EmitPartSprite(0.0f,
+                       (static_cast<float>(nMaxCombo) / flTotal) * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartBarMaxCombo,
+                       position,
+                       nFrontAlpha,
+                       false);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowScoreDigits);
+        RenderScoreDigitsCompact(nScore, position, nFrontAlpha);
+
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowRateDigits);
+        RenderScorePaddedWithDot(
+            static_cast<int>(flRate * kAchievementRateScale), position, nFrontAlpha);
+        position = AnchorWithSlide(flFrontSlideX, nRowBase + kRowRateBar);
+        EmitPartSprite(0.0f,
+                       flRate * kJudgementBarWidth,
+                       1.0f,
+                       kPadPartsSlot,
+                       kPartBarRate,
+                       position,
+                       nFrontAlpha,
+                       false);
+    }
+
+    for (const PadFramePart &part : kFrontPageFooters) {
+        const S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, part.nAnchor);
+        EmitPartSprite(
+            0.0f, part.flScaleX, 1.0f, kPadPartsSlot, part.nPartId, position, nFrontAlpha, false);
+    }
+
+    const unsigned int nBackAlpha = static_cast<unsigned int>(flBackAlpha);
+
+    // Each side's achievement rate against the target rate: its own digits, the target's digits, an
+    // above-or-below glyph, the signed difference, and the clear-rank badge.
+    const auto RenderRankBlock = [&](int nSide) {
+        S_VECTOR2 position;
+        const unsigned int uSide = static_cast<unsigned int>(nSide);
+        const float flRate = ClampRate(pTracker->GetPlayRecordRate(uSide));
+        const float flTargetRate = ClampRate(pGameSystem->GetTargetAR());
+        const int nRank = pTracker->GetPlayRecordRank(uSide);
+        const int nRankTier = (nRank < kClearRankTierMax + 1) ? nRank : kClearRankTierMax;
+        const RankBlockAnchors &anchors = kRankBlockAnchors[nSide];
+
+        // A swapped play colour trades the two sides' rate banks and badges.
+        const bool bSideOne = nSide == 1;
+        const unsigned int nRateGlyphBase = (bSideOne == (nPlayColor != 0)) ? 0x9b : 0x85;
+        const unsigned int nRateBadgePart = (bSideOne == (nPlayColor != 0)) ? 0xb0 : 0x9a;
+
+        S_VECTOR2 rateDigitPos = AnchorWithSlide(flFrontSlideX, anchors.nRateDigits);
+        S_VECTOR2 nudge{kRateDigitNudgeX, 0.0f};
+        AddVector2(&rateDigitPos, &nudge);
+        int nRateValue = static_cast<int>(flRate * kAchievementRateScale);
+        RenderDigitSequence(nRateValue,
+                            kRateDigitCount,
+                            &rateDigitPos,
+                            nRateGlyphBase,
+                            true,
+                            false,
+                            nFrontAlpha,
+                            kDigitGapWide);
+
+        position = AnchorWithSlide(flFrontSlideX, anchors.nRateDigits);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, nRateBadgePart, position, nFrontAlpha, false);
+
+        S_VECTOR2 targetPos = AnchorWithSlide(flFrontSlideX, anchors.nTargetDigits);
+        const int nTargetValue = static_cast<int>(flTargetRate * kAchievementRateScale);
+        RenderDigitSequence(nTargetValue,
+                            kRateDigitCount,
+                            &targetPos,
+                            kGlyphRateTargetBase,
+                            true,
+                            false,
+                            nFrontAlpha,
+                            kDigitGapNarrow);
+
+        // The delta position is resolved before the branch, as the binary does.
+        S_VECTOR2 deltaPos = AnchorWithSlide(flFrontSlideX, anchors.nDeltaDigits);
+        position = AnchorWithSlide(flFrontSlideX, anchors.nCompareGlyph);
+        int nDelta = 0;
+        if (flRate <= flTargetRate) {
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPadPartsSlot,
+                           kPartRateAboveTarget,
+                           position,
+                           nFrontAlpha,
+                           false);
+            nDelta = nTargetValue - nRateValue;
+        } else {
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPadPartsSlot,
+                           kPartRateBelowTarget,
+                           position,
+                           nFrontAlpha,
+                           false);
+            nDelta = nRateValue - nTargetValue;
+        }
+        RenderDigitSequence(nDelta,
+                            kRateDigitCount,
+                            &deltaPos,
+                            kGlyphRateTargetBase,
+                            true,
+                            false,
+                            nFrontAlpha,
+                            kDigitGapNarrow);
+
+        const unsigned int nRankPart =
+            (nRank < 0) ? kPartClearRankBase :
+                          (kPartClearRankBase + static_cast<unsigned int>(nRankTier));
+        position = AnchorWithSlide(flFrontSlideX, anchors.nRankBadge);
+        EmitPartSprite(0.0f, 1.0f, 1.0f, kPadPartsSlot, nRankPart, position, nFrontAlpha, false);
+    };
+
+    // Side one leads with the rate marker, side zero with its label: the binary emits the pair in
+    // the opposite order for each side.
+    {
+        S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, kSide1RateMarkerAnchor);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartRateMarker, position, nFrontAlpha, false);
+        position = AnchorWithSlide(flFrontSlideX, kSide1RateLabelAnchor);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, nSide1LabelPart, position, nFrontAlpha, false);
+    }
+    RenderRankBlock(1);
+    {
+        S_VECTOR2 position = AnchorWithSlide(flFrontSlideX, kSide0RateLabelAnchor);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, nSide0LabelPart, position, nFrontAlpha, false);
+        position = AnchorWithSlide(flFrontSlideX, kSide0RateMarkerAnchor);
+        EmitPartSprite(
+            0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartRateMarker, position, nFrontAlpha, false);
+    }
+    RenderRankBlock(0);
+
+    // The back page: its frame draws straight from the anchor bank, its content from the page
+    // origin.
+    for (const PadFramePart &part : kBackPageFrameParts) {
+        EmitPartSprite(0.0f,
+                       part.flScaleX,
+                       1.0f,
+                       kPadPartsSlot,
+                       part.nPartId,
+                       g_aClassicPartsAnchorPad[part.nAnchor],
+                       nBackAlpha,
+                       false);
+    }
+    for (const PadFramePart &part : kBackPageHeadings) {
+        S_VECTOR2 position = backPageOrigin;
+        AddVector2(&position, &g_aClassicPartsAnchorPad[part.nAnchor]);
+        EmitPartSprite(
+            0.0f, part.flScaleX, 1.0f, kPadPartsSlot, part.nPartId, position, nBackAlpha, false);
+    }
+
+    // The experience/level-up group.
+    const int nDeltaFrames = static_cast<int>(flDeltaTime);
+    const float flExpProgress = AdvanceCustomizeOverlayProgress(nDeltaFrames);
+    int nExpThreshold = m_nExpThreshold;
+    if (nExpThreshold < 0) {
+        nExpThreshold = 0;
+    }
+
+    S_VECTOR2 position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpLabelAnchor]);
+    EmitPartSprite(0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartExpLabel, position, nBackAlpha, false);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpGainedLabelAnchor]);
+    EmitPartSprite(
+        0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartExpGainedLabel, position, nBackAlpha, false);
+
+    // The gained-experience digits round-trip the field through a float, as the binary does.
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpGainedAnchor]);
+    RenderDigitSequence(static_cast<int>(static_cast<float>(m_nGainedExp)),
+                        kExpGainedDigitCount,
+                        &position,
+                        kGlyphExpGainedBase,
+                        false,
+                        true,
+                        nBackAlpha,
+                        kDigitGapWide);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpProgressAnchor]);
+    RenderDigitSequence(static_cast<int>(flExpProgress * static_cast<float>(nExpThreshold)),
+                        kExpThresholdDigitCount,
+                        &position,
+                        kGlyphExpGainedBase,
+                        false,
+                        true,
+                        nBackAlpha,
+                        kDigitGapWide);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpSeparatorAnchor]);
+    EmitPartSprite(0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartExpSeparator, position, nBackAlpha, false);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpThresholdAnchor]);
+    RenderDigitSequence(nExpThreshold,
+                        kExpThresholdDigitCount,
+                        &position,
+                        kGlyphExpThresholdBase,
+                        false,
+                        true,
+                        nBackAlpha,
+                        kDigitGapNarrow);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpBarBackingAnchor]);
+    EmitPartSprite(
+        0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartExpBarBacking, position, nBackAlpha, false);
+    position = backPageOrigin;
+    AddVector2(&position, &g_aClassicPartsAnchorPad[kExpBarAnchor]);
+    EmitPartSprite(0.0f,
+                   flExpProgress * kExperienceBarWidth,
+                   1.0f,
+                   kPadPartsSlot,
+                   kPartExpBar,
+                   position,
+                   nBackAlpha,
+                   false);
+
+    m_flResultElapsed += flDeltaTime;
+
+    // Three sparkles chase along the experience bar while the main customize asset is shown. Each
+    // trails the previous one by a fixed phase, wrapping back through zero, and the whole group
+    // drifts right as the rotation counter runs.
+    if (m_bMainAssetActive) {
+        const float flPhase = static_cast<float>(m_nRotationCounterA) / kSparkleCounterPeriod;
+        float flLevel = 1.0f - flPhase;
+        const float flSparkleX = backPageOrigin.x + flPhase * kSparkleTravelX;
+        for (int nSparkle = 0; nSparkle < kExpSparkleCount; ++nSparkle) {
+            if (nSparkle != 0) {
+                const float flStepped =
+                    static_cast<float>(static_cast<double>(flLevel) + kSparklePhaseStep);
+                flLevel = (flStepped > 1.0f) ? (flStepped - 1.0f) : flStepped;
+            }
+            S_VECTOR2 sparklePos{flSparkleX, backPageOrigin.y};
+            AddVector2(&sparklePos, &g_aClassicPartsAnchorPad[kExpSparkleAnchors[nSparkle]]);
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPadPartsSlot,
+                           kPartExpSparkle,
+                           sparklePos,
+                           static_cast<unsigned int>(
+                               static_cast<int>(static_cast<float>(nBackAlpha) * flLevel)),
+                           false);
+        }
+    }
+
+    RenderCustomizePhoneOverlay(nDeltaFrames, &backPageOrigin, static_cast<float>(nBackAlpha));
+
+    for (const PadFramePart &part : kBackPageFooters) {
+        S_VECTOR2 footerPos = backPageOrigin;
+        AddVector2(&footerPos, &g_aClassicPartsAnchorPad[part.nAnchor]);
+        EmitPartSprite(
+            0.0f, part.flScaleX, 1.0f, kPadPartsSlot, part.nPartId, footerPos, nBackAlpha, false);
+    }
+
+    RenderCustomizeNameplateOverlay(nDeltaFrames, &backPageOrigin, static_cast<float>(nBackAlpha));
+
+    // A single-player game draws the two lane markers twice: a half-intensity shadow pass at the
+    // share alpha, then the main pass, whose two markers take the back and front page alphas.
+    if ((pGameSystem->GetGameType() | 2) == 2) {
+        for (int nMarker : kLaneMarkerAnchors) {
+            S_VECTOR2 markerPos{};
+            AddVector2(&markerPos, &g_aClassicPartsAnchorPad[nMarker]);
+            EmitPartSprite(
+                0.0f, 1.0f, 1.0f, kPadPartsSlot, kPartLaneMarker, markerPos, nShareAlpha, true);
+        }
+        const unsigned int aMarkerAlpha[] = {nBackAlpha, nFrontAlpha};
+        for (int nMarker = 0; nMarker < kLaneMarkerCount; ++nMarker) {
+            S_VECTOR2 markerPos{};
+            AddVector2(&markerPos, &g_aClassicPartsAnchorPad[kLaneMarkerAnchors[nMarker]]);
+            EmitPartSprite(0.0f,
+                           1.0f,
+                           1.0f,
+                           kPadPartsSlot,
+                           kPartLaneMarker,
+                           markerPos,
+                           aMarkerAlpha[nMarker],
+                           false);
+        }
+    }
+}
+
+namespace {
+// The instancer slots the phone render path draws into.
+constexpr unsigned int kPhoneBackdropSlot = 0;
+constexpr unsigned int kPhoneGlyphSlot = 1;
+constexpr unsigned int kPhoneJacketSlot = 2;
+constexpr unsigned int kPhoneBannerSlotA = 3;
+constexpr unsigned int kPhoneBannerSlotB = 4;
+
+// The music-jacket quad's pixel size on the phone layout.
+constexpr float kPhoneJacketSize = 82.0f;
+// The banner slots draw at full intensity when the layer is in its landscape orientation.
+constexpr unsigned int kBannerFullIntensity = 255;
+
+// A nine-slice box insets its corner glyphs by this much, so each stretched edge loses twice it.
+constexpr float kNineSliceCornerInset = 9.0f;
+constexpr float kNineSliceEdgeTrim = kNineSliceCornerInset * 2.0f;
+
+// The outer frame's stretch insets: the rail that spans the viewport, the header bar, and the caps
+// at each end of the notch in the stats box's top edge.
+constexpr float kFrameRailInset = 22.0f;
+constexpr float kHeaderBarInset = 24.0f;
+constexpr float kNotchCapInset = 15.0f;
+constexpr float kNotchCapTrim = kNotchCapInset * 2.0f;
+
+// The per-side stat header rotates a quarter turn in landscape and sits upright in portrait
+// (@ghidraAddress 0x302d74 and 0x302d78).
+constexpr float kSideHeaderRotationSide0 = -1.5707964f;
+constexpr float kSideHeaderRotationSide1 = 1.5707964f;
+
+// The phone experience bar's full width (@ghidraAddress 0x302d7c).
+constexpr float kPhoneExperienceBarWidth = 112.0f;
+
+// The phone panel's glyph codes.
+constexpr unsigned int kPhoneGlyphBackdrop = 0;
+constexpr unsigned int kPhoneGlyphShareButton = 1;
+constexpr unsigned int kPhoneGlyphFrameCornerTop = 0x6a;
+constexpr unsigned int kPhoneGlyphFrameEdgeA = 0x6b;
+constexpr unsigned int kPhoneGlyphFrameEdgeB = 0x6c;
+constexpr unsigned int kPhoneGlyphFrameEdgeC = 0x6d;
+constexpr unsigned int kPhoneGlyphRailCap = 0x6e;
+constexpr unsigned int kPhoneGlyphRailJoint = 0x6f;
+constexpr unsigned int kPhoneGlyphRailSpan = 0x70;
+constexpr unsigned int kPhoneGlyphHeaderCap = 0x71;
+constexpr unsigned int kPhoneGlyphHeaderSpan = 0x72;
+constexpr unsigned int kPhoneGlyphHeaderBadge = 0x73;
+constexpr unsigned int kPhoneGlyphMusicTitle = 0xe;
+constexpr unsigned int kPhoneGlyphScoreLabel = 0x12;
+constexpr unsigned int kPhoneGlyphDifficultyBase = 0x13;
+constexpr unsigned int kPhoneGlyphTargetLabel = 0xf;
+constexpr unsigned int kPhoneGlyphScoreSeparator = 0x21;
+constexpr unsigned int kPhoneGlyphDeltaUp = 0x22;
+constexpr unsigned int kPhoneGlyphDeltaDown = 0x23;
+constexpr unsigned int kPhoneGlyphJacketBadge = 0x10;
+constexpr unsigned int kPhoneGlyphRankBase = 0x2e;
+constexpr unsigned int kPhoneGlyphFullCombo = 0x34;
+constexpr unsigned int kPhoneGlyphRankLabel = 0x11;
+constexpr unsigned int kPhoneGlyphMatchOutcomeBase = 0x74;
+constexpr unsigned int kPhoneGlyphStatsTab = 0x78;
+constexpr unsigned int kPhoneGlyphExpTab = 0x77;
+constexpr unsigned int kPhoneGlyphLaneMarker = 0x65;
+constexpr unsigned int kPhoneGlyphExpSparkle = 0x63;
+constexpr unsigned int kPhoneGlyphExpBar = 0x62;
+
+// The glyph banks the phone path's number fields draw from.
+constexpr unsigned int kPhoneGlyphBankTarget = 0x17;
+constexpr unsigned int kPhoneGlyphBankScore = 0x24;
+constexpr unsigned int kPhoneGlyphBankExpGained = 0x55;
+constexpr unsigned int kPhoneGlyphBankExpThreshold = 0x39;
+
+// The two nine-slice boxes the panel draws, each from a pair of phone position records. The glyph
+// family runs corner, horizontal edge, vertical edge, centre from its base code.
+constexpr unsigned int kNineSliceOuterBase = 2;
+constexpr unsigned int kNineSliceInnerBase = 6;
+constexpr int kOuterBoxPositionA = 1;
+constexpr int kOuterBoxPositionB = 2;
+constexpr int kInnerBoxPositionA = 3;
+constexpr int kInnerBoxPositionB = 4;
+
+// The notched stats box: its two corners plus the two ends of the notch in its top edge.
+constexpr int kStatsBoxCornerA = 0x4d;
+constexpr int kStatsBoxCornerB = 0x4e;
+constexpr int kStatsBoxNotchStart = 0x4f;
+constexpr int kStatsBoxNotchEnd = 0x50;
+constexpr unsigned int kNotchCapGlyph = 10;
+constexpr unsigned int kNotchSpanGlyph = 0xb;
+
+// The phone position records the fixed panel furniture resolves from.
+constexpr int kPhonePosBackdrop = 0;
+constexpr int kPhonePosShareButton = 0x42;
+constexpr int kPhonePosFrameCornerTop = 0x43;
+constexpr int kPhonePosFrameEdgeA = 0x44;
+constexpr int kPhonePosFrameEdgeB = 0x45;
+constexpr int kPhonePosFrameEdgeC = 0x46;
+constexpr int kPhonePosFrameEdgeBMirror = 0x47;
+constexpr int kPhonePosFrameEdgeAMirror = 0x48;
+constexpr int kPhonePosRailCap = 0x49;
+constexpr int kPhonePosRailJoint = 0x4a;
+constexpr int kPhonePosHeaderCap = 0x4b;
+constexpr int kPhonePosHeaderBadge = 0x4c;
+constexpr int kPhonePosJacket = 7;
+constexpr int kPhonePosBannerA = 5;
+constexpr int kPhonePosBannerB = 6;
+constexpr int kPhonePosMusicTitle = 8;
+constexpr int kPhonePosScoreLabel = 9;
+constexpr int kPhonePosDifficulty = 10;
+constexpr int kPhonePosTargetLabel = 0xb;
+constexpr int kPhonePosTargetDigits = 0xc;
+constexpr int kPhonePosScoreSeparator = 0xd;
+constexpr int kPhonePosDeltaGlyph = 0xe;
+constexpr int kPhonePosDeltaDigits = 0xf;
+constexpr int kPhonePosScoreSeparatorMirror = 0x10;
+constexpr int kPhonePosScoreDigits = 0x11;
+constexpr int kPhonePosJacketBadge = 0x12;
+constexpr int kPhonePosRankBadge = 0x13;
+constexpr int kPhonePosFullCombo = 0x14;
+constexpr int kPhonePosRankLabel = 0x15;
+constexpr int kPhonePosMatchOutcome = 0x16;
+constexpr int kPhonePosPageTabs = 0x51;
+constexpr int kPhonePosLaneMarkerA = 0x40;
+constexpr int kPhonePosLaneMarkerB = 0x41;
+
+// The rotating decoration row above the stats: five frame-animated or fixed glyphs and their
+// position records.
+struct PhoneDecoration {
+    unsigned int nCharCode; // the glyph code, or the animation base when bAnimated is set.
+    int nPositionIndex;
+    bool bAnimated; // whether the decoration frame index is added to the glyph code.
+};
+constexpr PhoneDecoration kPhoneDecorations[] = {
+    {0x47, 0x17, true},
+    {0x4b, 0x18, false},
+    {0x4c, 0x19, false},
+    {0x4d, 0x1a, false},
+    {0x4e, 0x1b, true},
+    {0x52, 0x1c, false},
+    {0x53, 0x1d, false},
+    {0x54, 0x1e, false},
+};
+
+// The exp page's fixed glyph row.
+struct PhoneExpPart {
+    unsigned int nCharCode;
+    int nPositionIndex;
+};
+constexpr PhoneExpPart kPhoneExpParts[] = {
+    {0x66, 0x31},
+    {0x67, 0x32},
+    {0x68, 0x33},
+    {0x5f, 0x34},
+    {0x60, 0x38},
+    {0x61, 0x39},
+};
+
+// The separator glyphs drawn straight from the separator table, before the pages split. The two
+// glyph codes are the thin and thick rules.
+constexpr unsigned int kSeparatorRuleThin = 0xc;
+constexpr unsigned int kSeparatorRuleThick = 0xd;
+struct PhoneSeparator {
+    int nIndex;
+    unsigned int nCharCode;
+};
+constexpr PhoneSeparator kPanelSeparators[] = {
+    {0, kSeparatorRuleThin},
+    {1, kSeparatorRuleThin},
+    {2, kSeparatorRuleThick},
+    {3, kSeparatorRuleThick},
+    {4, kSeparatorRuleThick},
+    {5, kSeparatorRuleThick},
+    {6, kSeparatorRuleThin},
+    {7, kSeparatorRuleThin},
+    {8, kSeparatorRuleThin},
+    {9, kSeparatorRuleThin},
+    {10, kSeparatorRuleThin},
+    {11, kSeparatorRuleThin},
+};
+
+// The separator ranges the two pages carry, each drawn at its own page offset and alpha.
+constexpr int kStatsSeparatorFirst = 0x0c;
+constexpr int kStatsSeparatorLast = 0x27;
+constexpr int kExpSeparatorFirst = 0x28;
+constexpr int kExpSeparatorLast = 0x2d;
+
+// Each side's stat row: a header glyph at its own position record, then eight value fields laid out
+// from the row's base position record.
+constexpr int kStatRowBase[ResultWindowClassicLayer::kSideCount] = {0x29, 0x20};
+constexpr int kStatRowHeaderPosition[ResultWindowClassicLayer::kSideCount] = {0x28, 0x1f};
+enum PhoneStatRowSlot {
+    kPhoneRowJust = 0,
+    kPhoneRowGreat = 1,
+    kPhoneRowGood = 2,
+    kPhoneRowMiss = 3,
+    kPhoneRowJustReflec = 4,
+    kPhoneRowMaxCombo = 5,
+    kPhoneRowScore = 6,
+    kPhoneRowRate = 7,
+};
+
+// The exp page's number fields and their position records.
+constexpr int kPhonePosExpGained = 0x35;
+constexpr int kPhonePosExpProgress = 0x36;
+constexpr int kPhonePosExpThreshold = 0x37;
+constexpr int kPhonePosExpBar = 0x3a;
+constexpr int kPhonePosExpSparkle = 0x3b;
+
+constexpr int kPhoneExpGainedDigitCount = 4;
+constexpr int kPhoneExpThresholdDigitCount = 5;
+constexpr int kPhoneScoreDigitCount = 4;
+} // namespace
+
+/** @ghidraAddress 0x11a10c */
+void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
+    const unsigned int nPanelAlpha = static_cast<unsigned int>(
+        m_aScoreAnimChannels[kScoreChannel].flCurrent * static_cast<float>(kFullyOpaqueAlpha));
+    const float flPanelAlpha = static_cast<float>(nPanelAlpha);
+    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].flCurrent;
+    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
+    const float flTabScale = m_aScoreAnimChannels[kEffectChannelD].flCurrent;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
+    // The binary re-reads the game system for the viewport width the frame rails span.
+    GameSystem *pViewportSystem = GameSystem::GetGameSystem();
+
+    for (ne::C_SPRITE_INSTANCING_2D *pSlot : m_apSprites) {
+        pSlot->SetSpriteCount(0);
+    }
+
+    if (nPanelAlpha == 0) {
+        return;
+    }
+
+    const unsigned int nBodyAlpha = static_cast<unsigned int>(flBodyScale * flPanelAlpha);
+
+    // Resolves a phone-layout position record.
+    const auto PositionAt = [&](int nIndex) {
+        S_VECTOR2 position{};
+        getPosition_Phone(nIndex, &position);
+        return position;
+    };
+    // Emits one glyph into the panel's glyph slot.
+    const auto EmitGlyph = [&](unsigned int nCharCode,
+                               const S_VECTOR2 &position,
+                               unsigned int nAlpha,
+                               bool bDimmed,
+                               float flScaleX,
+                               float flScaleY) {
+        DispatchGlyphSpriteFromTable(
+            kPhoneGlyphSlot, nCharCode, &position, nAlpha, bDimmed, 0.0f, flScaleX, flScaleY);
+    };
+
+    // The backdrop and the outer frame furniture.
+    {
+        const S_VECTOR2 backdrop = PositionAt(kPhonePosBackdrop);
+        DispatchGlyphSpriteFromTable(kPhoneBackdropSlot,
+                                     kPhoneGlyphBackdrop,
+                                     &backdrop,
+                                     nPanelAlpha,
+                                     false,
+                                     0.0f,
+                                     1.0f,
+                                     1.0f);
+    }
+    EmitGlyph(
+        kPhoneGlyphFrameEdgeA, PositionAt(kPhonePosFrameEdgeA), nPanelAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(
+        kPhoneGlyphFrameEdgeB, PositionAt(kPhonePosFrameEdgeB), nPanelAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(
+        kPhoneGlyphFrameEdgeC, PositionAt(kPhonePosFrameEdgeC), nPanelAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(kPhoneGlyphFrameEdgeB,
+              PositionAt(kPhonePosFrameEdgeBMirror),
+              nPanelAlpha,
+              false,
+              -1.0f,
+              1.0f);
+    EmitGlyph(kPhoneGlyphFrameEdgeA,
+              PositionAt(kPhonePosFrameEdgeAMirror),
+              nPanelAlpha,
+              false,
+              1.0f,
+              1.0f);
+    EmitGlyph(kPhoneGlyphFrameCornerTop,
+              PositionAt(kPhonePosFrameCornerTop),
+              nPanelAlpha,
+              false,
+              1.0f,
+              1.0f);
+
+    // The rail across the panel: a cap and joint at each end, and a span stretched to the viewport.
+    {
+        const S_VECTOR2 railCap = PositionAt(kPhonePosRailCap);
+        const S_VECTOR2 railJoint = PositionAt(kPhonePosRailJoint);
+        const float flCapWidth = railJoint.x - railCap.x;
+        const float flSpanStart = railJoint.x + kFrameRailInset;
+        const float flViewportWidth = pViewportSystem->GetViewportWidth();
+        EmitGlyph(kPhoneGlyphRailCap, railCap, nPanelAlpha, false, flCapWidth, 1.0f);
+        EmitGlyph(kPhoneGlyphRailJoint, railJoint, nPanelAlpha, false, 1.0f, 1.0f);
+        const S_VECTOR2 spanPos{flSpanStart, railJoint.y};
+        EmitGlyph(kPhoneGlyphRailSpan,
+                  spanPos,
+                  nPanelAlpha,
+                  false,
+                  flViewportWidth + flSpanStart * -2.0f,
+                  1.0f);
+        const S_VECTOR2 mirrorPos{flViewportWidth - railJoint.x, railJoint.y};
+        EmitGlyph(kPhoneGlyphRailJoint, mirrorPos, nPanelAlpha, false, -1.0f, 1.0f);
+        EmitGlyph(kPhoneGlyphRailCap, mirrorPos, nPanelAlpha, false, flCapWidth, 1.0f);
+    }
+
+    // The header bar, dimmed while the confirm region is held.
+    {
+        const bool bConfirmDown = m_aGestureRegions[0].bDown;
+        const S_VECTOR2 headerCap = PositionAt(kPhonePosHeaderCap);
+        const float flBarStart = headerCap.x + kHeaderBarInset;
+        const float flViewportWidth = pViewportSystem->GetViewportWidth();
+        EmitGlyph(kPhoneGlyphHeaderCap, headerCap, nPanelAlpha, bConfirmDown, 1.0f, 1.0f);
+        const S_VECTOR2 barPos{flBarStart, headerCap.y};
+        EmitGlyph(kPhoneGlyphHeaderSpan,
+                  barPos,
+                  nPanelAlpha,
+                  bConfirmDown,
+                  flViewportWidth - (flBarStart + flBarStart),
+                  1.0f);
+        const S_VECTOR2 capMirror{flViewportWidth - headerCap.x, headerCap.y};
+        EmitGlyph(kPhoneGlyphHeaderCap, capMirror, nPanelAlpha, bConfirmDown, -1.0f, 1.0f);
+        EmitGlyph(kPhoneGlyphHeaderBadge,
+                  PositionAt(kPhonePosHeaderBadge),
+                  nPanelAlpha,
+                  bConfirmDown,
+                  1.0f,
+                  1.0f);
+    }
+    if (m_bTwitterAvailable) {
+        EmitGlyph(kPhoneGlyphShareButton,
+                  PositionAt(kPhonePosShareButton),
+                  nPanelAlpha,
+                  m_aGestureRegions[3].bDown,
+                  1.0f,
+                  1.0f);
+    }
+
+    // A nine-slice box spanning two corner positions: four corners drawn by mirroring one glyph,
+    // two stretched horizontal edges, two stretched vertical edges, and a stretched centre.
+    const auto RenderNineSlice = [&](unsigned int nBaseCharCode,
+                                     const S_VECTOR2 &cornerA,
+                                     const S_VECTOR2 &cornerB,
+                                     unsigned int nAlpha) {
+        const unsigned int nCorner = nBaseCharCode;
+        const unsigned int nEdgeH = nBaseCharCode + 1;
+        const unsigned int nEdgeV = nBaseCharCode + 2;
+        const unsigned int nCentre = nBaseCharCode + 3;
+
+        EmitGlyph(nCorner, cornerA, nAlpha, false, 1.0f, 1.0f);
+        const S_VECTOR2 topRight{cornerB.x, cornerA.y};
+        EmitGlyph(nCorner, topRight, nAlpha, false, -1.0f, 1.0f);
+        const S_VECTOR2 bottomLeft{cornerA.x, cornerB.y};
+        EmitGlyph(nCorner, bottomLeft, nAlpha, false, 1.0f, -1.0f);
+        EmitGlyph(nCorner, cornerB, nAlpha, false, -1.0f, -1.0f);
+
+        const float flSpanX = (cornerB.x - cornerA.x) - kNineSliceEdgeTrim;
+        const float flSpanY = (cornerB.y - cornerA.y) - kNineSliceEdgeTrim;
+        const float flInsetX = cornerA.x + kNineSliceCornerInset;
+        const S_VECTOR2 edgeTop{flInsetX, cornerA.y};
+        EmitGlyph(nEdgeH, edgeTop, nAlpha, false, flSpanX, 1.0f);
+        const S_VECTOR2 edgeBottom{flInsetX, cornerB.y};
+        EmitGlyph(nEdgeH, edgeBottom, nAlpha, false, flSpanX, -1.0f);
+        const float flInsetY = cornerA.y + kNineSliceCornerInset;
+        const S_VECTOR2 edgeLeft{cornerA.x, flInsetY};
+        EmitGlyph(nEdgeV, edgeLeft, nAlpha, false, 1.0f, flSpanY);
+        const S_VECTOR2 edgeRight{cornerB.x, flInsetY};
+        EmitGlyph(nEdgeV, edgeRight, nAlpha, false, -1.0f, flSpanY);
+        const S_VECTOR2 centre{flInsetX, flInsetY};
+        EmitGlyph(nCentre, centre, nAlpha, false, flSpanX, flSpanY);
+    };
+
+    RenderNineSlice(kNineSliceOuterBase,
+                    PositionAt(kOuterBoxPositionA),
+                    PositionAt(kOuterBoxPositionB),
+                    nPanelAlpha);
+    RenderNineSlice(kNineSliceInnerBase,
+                    PositionAt(kInnerBoxPositionA),
+                    PositionAt(kInnerBoxPositionB),
+                    nBodyAlpha);
+
+    for (const PhoneSeparator &separator : kPanelSeparators) {
+        const S_VECTOR2 noOffset{};
+        RenderGlyphAtSeparator(
+            kPhoneGlyphSlot, separator.nIndex, separator.nCharCode, noOffset, nBodyAlpha);
+    }
+
+    // The music jacket and the two banner slots; the landscape orientation draws the banners centred
+    // at full intensity instead of scaled.
+    {
+        const S_VECTOR2 jacketPos = PositionAt(kPhonePosJacket);
+        const S_VECTOR2 jacketSize{kPhoneJacketSize, kPhoneJacketSize};
+        BlitInstancerTextureSlot(kPhoneJacketSlot, jacketPos, jacketSize, nBodyAlpha);
+
+        S_VECTOR2 bannerPos = PositionAt(kPhonePosBannerA);
+        if (!m_bPortrait) {
+            RenderSpriteInstancerSlotScaled(kPhoneBannerSlotA, bannerPos, nBodyAlpha);
+            bannerPos = PositionAt(kPhonePosBannerB);
+            RenderSpriteInstancerSlotScaled(kPhoneBannerSlotB, bannerPos, nBodyAlpha);
+        } else {
+            RenderSpriteInstancerSlotHalfScale(
+                kPhoneBannerSlotA, bannerPos, nBodyAlpha, kBannerFullIntensity);
+            bannerPos = PositionAt(kPhonePosBannerB);
+            RenderSpriteInstancerSlotHalfScale(
+                kPhoneBannerSlotB, bannerPos, nBodyAlpha, kBannerFullIntensity);
+        }
+    }
+
+    // The music heading, difficulty badge, and the target/score comparison.
+    EmitGlyph(
+        kPhoneGlyphMusicTitle, PositionAt(kPhonePosMusicTitle), nBodyAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(
+        kPhoneGlyphScoreLabel, PositionAt(kPhonePosScoreLabel), nBodyAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(kPhoneGlyphDifficultyBase + static_cast<unsigned int>(pGameSystem->GetDifficulty()),
+              PositionAt(kPhonePosDifficulty),
+              nBodyAlpha,
+              false,
+              1.0f,
+              1.0f);
+
+    const int nSideOneScore = pTracker->GetPlayRecordCell(1, 0);
+    EmitGlyph(
+        kPhoneGlyphTargetLabel, PositionAt(kPhonePosTargetLabel), nBodyAlpha, false, 1.0f, 1.0f);
+    int nTargetScore = pGameSystem->GetTargetScore();
+    if (nTargetScore < 0) {
+        nTargetScore = 0;
+    }
+    {
+        const S_VECTOR2 targetPos = PositionAt(kPhonePosTargetDigits);
+        const S_VECTOR2 noOffset{};
+        RenderNumberFieldWithPad(nTargetScore,
+                                 kPhoneScoreDigitCount,
+                                 targetPos,
+                                 noOffset,
+                                 kPhoneGlyphBankTarget,
+                                 false,
+                                 true,
+                                 nBodyAlpha,
+                                 1.0f);
+    }
+    EmitGlyph(kPhoneGlyphScoreSeparator,
+              PositionAt(kPhonePosScoreSeparator),
+              nBodyAlpha,
+              false,
+              1.0f,
+              1.0f);
+
+    int nScoreDelta = nSideOneScore - nTargetScore;
+    {
+        const S_VECTOR2 glyphPos = PositionAt(kPhonePosDeltaGlyph);
+        EmitGlyph(nScoreDelta < 0 ? kPhoneGlyphDeltaDown : kPhoneGlyphDeltaUp,
+                  glyphPos,
+                  nBodyAlpha,
+                  false,
+                  1.0f,
+                  1.0f);
+        const S_VECTOR2 deltaPos = PositionAt(kPhonePosDeltaDigits);
+        if (nScoreDelta < 0) {
+            nScoreDelta = -nScoreDelta;
+        }
+        const S_VECTOR2 noOffset{};
+        RenderNumberFieldWithPad(nScoreDelta,
+                                 kPhoneScoreDigitCount,
+                                 deltaPos,
+                                 noOffset,
+                                 kPhoneGlyphBankTarget,
+                                 false,
+                                 true,
+                                 nBodyAlpha,
+                                 1.0f);
+    }
+    EmitGlyph(kPhoneGlyphScoreSeparator,
+              PositionAt(kPhonePosScoreSeparatorMirror),
+              nBodyAlpha,
+              false,
+              -1.0f,
+              1.0f);
+    {
+        const S_VECTOR2 scorePos = PositionAt(kPhonePosScoreDigits);
+        const S_VECTOR2 noOffset{};
+        RenderNumberFieldWithPad(nSideOneScore,
+                                 kPhoneScoreDigitCount,
+                                 scorePos,
+                                 noOffset,
+                                 kPhoneGlyphBankScore,
+                                 false,
+                                 true,
+                                 nBodyAlpha,
+                                 1.0f);
+    }
+    if (!m_bPortrait) {
+        EmitGlyph(kPhoneGlyphJacketBadge,
+                  PositionAt(kPhonePosJacketBadge),
+                  nBodyAlpha,
+                  false,
+                  1.0f,
+                  1.0f);
+    }
+
+    const unsigned int nShareAlpha = static_cast<unsigned int>(flShareScale * flPanelAlpha);
+
+    // The clear-rank badge, the full-combo badge, and the match outcome.
+    EmitGlyph(kPhoneGlyphRankBase + static_cast<unsigned int>(pTracker->GetPlayRecordRank(1)),
+              PositionAt(kPhonePosRankBadge),
+              nBodyAlpha,
+              false,
+              1.0f,
+              1.0f);
+    if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(1, 2)) {
+        EmitGlyph(
+            kPhoneGlyphFullCombo, PositionAt(kPhonePosFullCombo), nBodyAlpha, false, 1.0f, 1.0f);
+    }
+    EmitGlyph(kPhoneGlyphRankLabel, PositionAt(kPhonePosRankLabel), nBodyAlpha, false, 1.0f, 1.0f);
+    EmitGlyph(kPhoneGlyphMatchOutcomeBase +
+                  static_cast<unsigned int>(pTracker->GetPlayRecordField10(1)),
+              PositionAt(kPhonePosMatchOutcome),
+              nBodyAlpha,
+              false,
+              1.0f,
+              1.0f);
+
+    // The stats box: a nine-slice whose top edge is notched to make room for the page tabs, so its
+    // top rail is drawn as two spans either side of the notch, with a capped bar bridging them.
+    {
+        const S_VECTOR2 cornerA = PositionAt(kStatsBoxCornerA);
+        const S_VECTOR2 cornerB = PositionAt(kStatsBoxCornerB);
+        const S_VECTOR2 notchStart = PositionAt(kStatsBoxNotchStart);
+        const S_VECTOR2 notchEnd = PositionAt(kStatsBoxNotchEnd);
+
+        const unsigned int nCorner = kNineSliceInnerBase;
+        const unsigned int nEdgeH = kNineSliceInnerBase + 1;
+        const unsigned int nEdgeV = kNineSliceInnerBase + 2;
+        const unsigned int nCentre = kNineSliceInnerBase + 3;
+        const float flInsetX = cornerA.x + kNineSliceCornerInset;
+
+        const S_VECTOR2 topLeftSpan{flInsetX, cornerA.y};
+        EmitGlyph(nEdgeH, topLeftSpan, nBodyAlpha, false, notchStart.x - flInsetX, 1.0f);
+        const S_VECTOR2 topRightSpan{notchEnd.x, cornerA.y};
+        EmitGlyph(nEdgeH,
+                  topRightSpan,
+                  nBodyAlpha,
+                  false,
+                  (cornerB.x - notchEnd.x) - kNineSliceCornerInset,
+                  1.0f);
+
+        EmitGlyph(nCorner, cornerA, nBodyAlpha, false, 1.0f, 1.0f);
+        const S_VECTOR2 topRight{cornerB.x, cornerA.y};
+        EmitGlyph(nCorner, topRight, nBodyAlpha, false, -1.0f, 1.0f);
+        const S_VECTOR2 bottomLeft{cornerA.x, cornerB.y};
+        EmitGlyph(nCorner, bottomLeft, nBodyAlpha, false, 1.0f, -1.0f);
+        EmitGlyph(nCorner, cornerB, nBodyAlpha, false, -1.0f, -1.0f);
+
+        const float flSpanX = (cornerB.x - cornerA.x) - kNineSliceEdgeTrim;
+        const float flSpanY = (cornerB.y - cornerA.y) - kNineSliceEdgeTrim;
+        const S_VECTOR2 edgeBottom{flInsetX, cornerB.y};
+        EmitGlyph(nEdgeH, edgeBottom, nBodyAlpha, false, flSpanX, -1.0f);
+        const float flInsetY = cornerA.y + kNineSliceCornerInset;
+        const S_VECTOR2 edgeLeft{cornerA.x, flInsetY};
+        EmitGlyph(nEdgeV, edgeLeft, nBodyAlpha, false, 1.0f, flSpanY);
+        const S_VECTOR2 edgeRight{cornerB.x, flInsetY};
+        EmitGlyph(nEdgeV, edgeRight, nBodyAlpha, false, -1.0f, flSpanY);
+        const S_VECTOR2 centre{flInsetX, flInsetY};
+        EmitGlyph(nCentre, centre, nBodyAlpha, false, flSpanX, flSpanY);
+
+        // The bar bridging the notch, capped at each end.
+        EmitGlyph(kNotchCapGlyph, notchStart, nBodyAlpha, false, 1.0f, 1.0f);
+        const S_VECTOR2 notchSpan{notchStart.x + kNotchCapInset, notchStart.y};
+        EmitGlyph(kNotchSpanGlyph,
+                  notchSpan,
+                  nBodyAlpha,
+                  false,
+                  (notchEnd.x - notchStart.x) - kNotchCapTrim,
+                  1.0f);
+        EmitGlyph(kNotchCapGlyph, notchEnd, nBodyAlpha, false, -1.0f, 1.0f);
+    }
+
+    // The stats and experience pages cross-fade as the signed slide timer runs, sliding
+    // horizontally in opposite directions. A networked play leads with the opposite page, so the
+    // assignments are mirrored. Each page also drives its own tab glyph, whose alpha comes from the
+    // fifth channel rather than the body channel.
+    const float flSlide = m_flSlideTimer;
+    const float flSlideMagnitude = std::fabs(flSlide);
+    const float flRemaining = 1.0f - flSlideMagnitude;
+    const float flTabAlphaBase = flPanelAlpha * flTabScale;
+    const float flSlideEdge = (flSlide <= 0.0f) ? -kPageSlideTravel : kPageSlideTravel;
+
+    float flStatsAlpha = 0.0f;
+    float flExpAlpha = 0.0f;
+    float flStatsTabAlpha = 0.0f;
+    float flExpTabAlpha = 0.0f;
+    float flStatsSlideX = 0.0f;
+    float flExpSlideX = 0.0f;
+    if (m_nNetworkPlay == 1) {
+        flStatsAlpha = static_cast<float>(nShareAlpha) * flRemaining;
+        flExpAlpha = static_cast<float>(nShareAlpha) * flSlideMagnitude;
+        flStatsTabAlpha = flTabAlphaBase * flRemaining;
+        flExpTabAlpha = flTabAlphaBase * flSlideMagnitude;
+        flStatsSlideX = flSlide * -kPageSlideTravel;
+        flExpSlideX = flRemaining * flSlideEdge;
+    } else {
+        flStatsAlpha = static_cast<float>(nShareAlpha) * flSlideMagnitude;
+        flExpAlpha = static_cast<float>(nShareAlpha) * flRemaining;
+        flStatsTabAlpha = flTabAlphaBase * flSlideMagnitude;
+        flExpTabAlpha = flTabAlphaBase * flRemaining;
+        flStatsSlideX = flRemaining * flSlideEdge;
+        flExpSlideX = flSlide * -kPageSlideTravel;
+    }
+    const S_VECTOR2 statsOffset{flStatsSlideX, 0.0f};
+    const S_VECTOR2 expOffset{flExpSlideX, 0.0f};
+    const unsigned int nStatsAlpha = static_cast<unsigned int>(flStatsAlpha);
+    const unsigned int nExpAlpha = static_cast<unsigned int>(flExpAlpha);
+
+    EmitGlyph(kPhoneGlyphStatsTab,
+              PositionAt(kPhonePosPageTabs),
+              static_cast<unsigned int>(static_cast<int>(flStatsTabAlpha)),
+              false,
+              1.0f,
+              1.0f);
+
+    for (int nSeparator = kStatsSeparatorFirst; nSeparator <= kStatsSeparatorLast; ++nSeparator) {
+        RenderGlyphAtSeparator(
+            kPhoneGlyphSlot, nSeparator, kSeparatorRuleThin, statsOffset, nStatsAlpha);
+    }
+
+    for (const PhoneDecoration &decoration : kPhoneDecorations) {
+        const unsigned int nCharCode =
+            decoration.bAnimated ?
+                (decoration.nCharCode + static_cast<unsigned int>(m_nRotationFrame)) :
+                decoration.nCharCode;
+        const S_VECTOR2 position = PositionAt(decoration.nPositionIndex);
+        RenderTableSpriteAtIndex(kPhoneGlyphSlot,
+                                 nCharCode,
+                                 position,
+                                 statsOffset,
+                                 nStatsAlpha,
+                                 false,
+                                 0.0f,
+                                 1.0f,
+                                 1.0f);
+    }
+
+    // One stat row per side: a rotated header glyph, then the judgement counts, the two ratios, the
+    // score, and the achievement rate.
+    const unsigned int nSide1HeaderGlyph = (nPlayColor != 0) ? 0x36 : 0x35;
+    const unsigned int nSide0HeaderGlyph = (nPlayColor == 0) ? 0x38 : 0x37;
+    for (int nSide = 0; nSide < kSideCount; ++nSide) {
+        const unsigned int uSide = static_cast<unsigned int>(nSide);
+        const int nJust = pTracker->GetPlayRecordCell(uSide, 3);
+        const int nGreat = pTracker->GetPlayRecordCell(uSide, 4);
+        const int nGood = pTracker->GetPlayRecordCell(uSide, 5);
+        const int nMiss = pTracker->GetPlayRecordCell(uSide, 6);
+        const int nJustReflec = pTracker->GetPlayRecordCell(uSide, 7);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(uSide, 2);
+        const int nScore = pTracker->GetPlayRecordCell(uSide, 0);
+        const int nRowTotalNotes = pTracker->GetTotalNotes();
+        const float flRate = pTracker->GetPlayRecordRate(uSide);
+
+        const int nScoreSlot =
+            (nSide == 0) ? static_cast<int>(nPlayColor) : ((nPlayColor == 0) ? 1 : 0);
+        const int nSideResultScore = m_aResultScores[nScoreSlot];
+
+        // The header sits upright in portrait and turns a quarter turn in landscape.
+        const float flHeaderRotation =
+            m_bPortrait ? 0.0f :
+                          ((nSide == 1) ? kSideHeaderRotationSide1 : kSideHeaderRotationSide0);
+        RenderTableSpriteWithOffset(kPhoneGlyphSlot,
+                                    (nSide == 1) ? nSide1HeaderGlyph : nSide0HeaderGlyph,
+                                    kStatRowHeaderPosition[nSide],
+                                    statsOffset,
+                                    nStatsAlpha,
+                                    false,
+                                    flHeaderRotation,
+                                    1.0f,
+                                    1.0f);
+
+        const int nRowBase = kStatRowBase[nSide];
+        // Each field's position is resolved from its record, then shifted by the page's slide.
+        const auto RowPosition = [&](int nSlot) {
+            S_VECTOR2 position = PositionAt(nRowBase + nSlot);
+            S_VECTOR2 offset = statsOffset;
+            AddVector2(&position, &offset);
+            return position;
+        };
+
+        S_VECTOR2 position = RowPosition(kPhoneRowJust);
+        RenderDigitRowSpacedByWidth(nJust, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowGreat);
+        RenderDigitRowSpacedByWidth(nGreat, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowGood);
+        RenderDigitRowSpacedByWidth(nGood, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowMiss);
+        RenderDigitRowSpacedByWidth(nMiss, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowJustReflec);
+        RenderRatioDigits(nJustReflec, nSideResultScore, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowMaxCombo);
+        RenderRatioDigits(nMaxCombo, nRowTotalNotes, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowScore);
+        RenderDigitRowSpacedByWidth(nScore, &position, nStatsAlpha);
+        position = RowPosition(kPhoneRowRate);
+        RenderDecimalWithDotGlyph(
+            static_cast<int>(flRate * kAchievementRateScale), &position, nStatsAlpha);
+    }
+
+    EmitGlyph(kPhoneGlyphExpTab,
+              PositionAt(kPhonePosPageTabs),
+              static_cast<unsigned int>(static_cast<int>(flExpTabAlpha)),
+              false,
+              1.0f,
+              1.0f);
+
+    for (int nSeparator = kExpSeparatorFirst; nSeparator <= kExpSeparatorLast; ++nSeparator) {
+        RenderGlyphAtSeparator(
+            kPhoneGlyphSlot, nSeparator, kSeparatorRuleThin, expOffset, nExpAlpha);
+    }
+    for (const PhoneExpPart &part : kPhoneExpParts) {
+        const S_VECTOR2 position = PositionAt(part.nPositionIndex);
+        RenderTableSpriteAtIndex(kPhoneGlyphSlot,
+                                 part.nCharCode,
+                                 position,
+                                 expOffset,
+                                 nExpAlpha,
+                                 false,
+                                 0.0f,
+                                 1.0f,
+                                 1.0f);
+    }
+
+    m_flResultElapsed += flDeltaTime;
+
+    // The gained-experience digits round-trip the field through a float, as the binary does.
+    {
+        const S_VECTOR2 gainedPos = PositionAt(kPhonePosExpGained);
+        RenderNumberFieldWithPad(static_cast<int>(static_cast<float>(m_nGainedExp)),
+                                 kPhoneExpGainedDigitCount,
+                                 gainedPos,
+                                 expOffset,
+                                 kPhoneGlyphBankExpGained,
+                                 false,
+                                 true,
+                                 nExpAlpha,
+                                 1.0f);
+    }
+
+    const int nDeltaFrames = static_cast<int>(flDeltaTime);
+    const float flExpProgress = AdvanceCustomizeOverlayProgress(nDeltaFrames);
+    int nExpThreshold = m_nExpThreshold;
+    if (nExpThreshold < 0) {
+        nExpThreshold = 0;
+    }
+    {
+        const S_VECTOR2 thresholdPos = PositionAt(kPhonePosExpThreshold);
+        RenderNumberFieldWithPad(nExpThreshold,
+                                 kPhoneExpThresholdDigitCount,
+                                 thresholdPos,
+                                 expOffset,
+                                 kPhoneGlyphBankExpThreshold,
+                                 false,
+                                 true,
+                                 nExpAlpha,
+                                 0.0f);
+        const S_VECTOR2 progressPos = PositionAt(kPhonePosExpProgress);
+        RenderNumberFieldWithPad(
+            static_cast<int>(flExpProgress * static_cast<float>(nExpThreshold)),
+            kPhoneExpThresholdDigitCount,
+            progressPos,
+            expOffset,
+            kPhoneGlyphBankExpGained,
+            false,
+            true,
+            nExpAlpha,
+            1.0f);
+        const S_VECTOR2 barPos = PositionAt(kPhonePosExpBar);
+        RenderTableSpriteAtIndex(kPhoneGlyphSlot,
+                                 kPhoneGlyphExpBar,
+                                 barPos,
+                                 expOffset,
+                                 nExpAlpha,
+                                 false,
+                                 0.0f,
+                                 flExpProgress * kPhoneExperienceBarWidth,
+                                 1.0f);
+    }
+
+    // A single sparkle chases along the experience bar while the main customize asset is shown.
+    if (m_bMainAssetActive) {
+        const float flPhase = static_cast<float>(m_nRotationCounterA) / kSparkleCounterPeriod;
+        const S_VECTOR2 sparkleOffset{expOffset.x + flPhase * kSparkleTravelX, expOffset.y};
+        const S_VECTOR2 sparklePos = PositionAt(kPhonePosExpSparkle);
+        RenderTableSpriteAtIndex(
+            kPhoneGlyphSlot,
+            kPhoneGlyphExpSparkle,
+            sparklePos,
+            sparkleOffset,
+            static_cast<unsigned int>(static_cast<int>(flExpAlpha * (1.0f - flPhase))),
+            false,
+            0.0f,
+            1.0f,
+            1.0f);
+    }
+
+    RenderCustomizePhoneOverlay(nDeltaFrames, &expOffset, flExpAlpha);
+    RenderCustomizeNameplateOverlay(nDeltaFrames, &expOffset, flExpAlpha);
+
+    // A single-player game draws the two lane markers twice: a half-intensity shadow pass at the
+    // share alpha, then the main pass, whose two markers take the exp and stats page alphas.
+    if ((pGameSystem->GetGameType() | 2) == 2) {
+        EmitGlyph(
+            kPhoneGlyphLaneMarker, PositionAt(kPhonePosLaneMarkerA), nShareAlpha, true, 1.0f, 1.0f);
+        EmitGlyph(
+            kPhoneGlyphLaneMarker, PositionAt(kPhonePosLaneMarkerB), nShareAlpha, true, 1.0f, 1.0f);
+        EmitGlyph(
+            kPhoneGlyphLaneMarker, PositionAt(kPhonePosLaneMarkerA), nExpAlpha, false, 1.0f, 1.0f);
+        EmitGlyph(kPhoneGlyphLaneMarker,
+                  PositionAt(kPhonePosLaneMarkerB),
+                  nStatsAlpha,
+                  false,
+                  1.0f,
+                  1.0f);
     }
 }
 

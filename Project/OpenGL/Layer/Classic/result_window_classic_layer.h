@@ -87,14 +87,42 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the result-score window on the iPad (landscape) path. Reconstruction pending.
+     * @brief Renders the result-score window on the iPad (landscape) path.
+     *
+     * Clears the eight instancer slots, then — once the panel alpha channel is non-zero — draws the
+     * whole pad panel: the backdrop and frame furniture, the confirm and share buttons (each dimmed
+     * while its gesture region is pressed), the music jacket and banner slots, the difficulty badge
+     * and level digits, the target score and its signed delta, the two sides' score-comparison bars,
+     * and the match-outcome, rank, and full-combo badges.
+     *
+     * The stats then cross-fade between two horizontally sliding pages driven by the signed slide
+     * timer: the front page carries the per-side judgement rows (a digit column and a proportional
+     * bar for each of just, great, good, miss, just-reflec, maximum combo, score, and rate) plus each
+     * side's rank and achievement-rate comparison against the target; the back page carries the
+     * experience/level-up group, its three chasing sparkles, and the two customize overlays. In
+     * single-player it finishes with the paired shadow-and-main pass over the two lane markers.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x117b84
      */
     void RenderResultScoreLayerActive(float flDeltaTime);
 
     /**
-     * @brief Renders the result-score window on the phone (portrait) path. Reconstruction pending.
+     * @brief Renders the result-score window on the phone (portrait) path.
+     *
+     * The phone twin of @c RenderResultScoreLayerActive, built from the phone position bank rather
+     * than the pad anchor bank. It clears the eight instancer slots, then — once the panel alpha
+     * channel is non-zero — draws the outer frame (its rails and header bar stretched to the
+     * viewport width, the header dimmed while the confirm region is held), two nine-slice boxes, the
+     * fixed separator rules, the music jacket and banner slots, the heading row, the target/score
+     * comparison, and the rank, full-combo, and match-outcome badges. The stats box is a third
+     * nine-slice whose top edge is notched for the page tabs.
+     *
+     * The stats and experience pages then cross-fade and slide horizontally against the signed slide
+     * timer, each with its own tab glyph alpha taken from the fifth animation channel: the stats page
+     * carries the decoration row and the two per-side stat rows (judgement counts, the two ratios,
+     * the score, and the achievement rate), the experience page the level-up group, its chasing
+     * sparkle, and the two customize overlays. In single-player it finishes with the paired
+     * shadow-and-main pass over the two lane markers.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x11a10c
      */
@@ -139,11 +167,11 @@ public:
      * a fixed landscape offset, and both finish with the scaled main-asset slot render.
      * @param nDeltaFrames The elapsed frame count this tick.
      * @param pBasePos The overlay group's base screen position.
-     * @param nScale The base alpha/size scale.
+     * @param flScale The base alpha/size scale. It arrives in @c v0 as a float, not in an integer
+     * register.
      * @ghidraAddress 0x119be8
      */
-    void
-    RenderCustomizePhoneOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, unsigned int nScale);
+    void RenderCustomizePhoneOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, float flScale);
 
     /**
      * @brief Advances and renders the customize nameplate overlay for one frame, swapping the shown
@@ -158,12 +186,12 @@ public:
      * position-offset glyph helpers on a phone.
      * @param nDeltaFrames The elapsed frame count this tick.
      * @param pBasePos The overlay group's base screen position.
-     * @param nScale The base alpha/size scale.
+     * @param flScale The base alpha/size scale. It arrives in @c v0 as a float, not in an integer
+     * register.
      * @ghidraAddress 0x119db4
      */
-    void RenderCustomizeNameplateOverlay(int nDeltaFrames,
-                                         const S_VECTOR2 *pBasePos,
-                                         unsigned int nScale);
+    void
+    RenderCustomizeNameplateOverlay(int nDeltaFrames, const S_VECTOR2 *pBasePos, float flScale);
 
     /**
      * @brief Resets the result-screen score/level display block to its per-round defaults.
@@ -656,13 +684,22 @@ public:
                                         unsigned int nAlpha,
                                         float flScaleX);
 
-    // The number of sprite-instancer slots the layer builds.
-    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    // The number of player sides the result panel reports.
+    static constexpr int kSideCount = 2;
+
+    /** @brief The play colour a seeded result score belongs to. */
+    enum ResultScoreColor {
+        kResultScoreRed = 0,  /*!< The red side's score. */
+        kResultScoreBlue = 1, /*!< The blue side's score. */
+    };
+
+    /** @brief Stores the pair of per-colour result score values the scene seeds at set-up. */
     void SetResultScores(int nScore, int nScoreHi) {
-        m_nResultScore = nScore;
-        m_nResultScoreHi = nScoreHi;
+        m_aResultScores[kResultScoreRed] = nScore;
+        m_aResultScores[kResultScoreBlue] = nScoreHi;
     }
 
+    // The number of sprite-instancer slots the layer builds.
     static constexpr int kSpriteSlotCount = 8;
     // The number of ribbon trails the layer builds (during the first slot's setup).
     static constexpr int kTrailCount = 4;
@@ -757,9 +794,12 @@ private:
                                   //         has no threshold).
     // +0x171..+0x173 is alignment padding.
     unsigned char m_aPad171[3] = {}; // +0x171
-    int m_nDisplayCounterA = {};     // +0x174: a per-round display counter, reset to zero.
-    float m_flExpAnimTimer = {}; // +0x178: the level-up experience-bar reveal timer (0 at reset).
-    bool m_bExpAnimSettled = {}; // +0x17c: set once the experience-bar reveal reaches its target.
+    // +0x174: the result screen's own elapsed-time accumulator, advanced by the frame delta on the
+    // pad render path and reset to zero each round. Read and written with float instructions
+    // (`ldr s0` / `fadd` / `str s0`), so it is a float despite being reset from an integer zero.
+    float m_flResultElapsed = {}; // +0x174
+    float m_flExpAnimTimer = {};  // +0x178: the level-up experience-bar reveal timer (0 at reset).
+    bool m_bExpAnimSettled = {};  // +0x17c: set once the experience-bar reveal reaches its target.
     // +0x17d..+0x17f is alignment padding.
     unsigned char m_aPad17d[3] = {}; // +0x17d
     int m_nLevelUpStep = {};         // +0x180: the level-up animation step.
@@ -789,8 +829,9 @@ private:
     bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1b7 is alignment padding before the result scores.
     unsigned char m_aPad1b6[2] = {}; // +0x1b6
-    int m_nResultScore = {};         // +0x1b8: the result score value seeded from the scene.
-    int m_nResultScoreHi = {};       // +0x1bc: the second result score value seeded from the scene.
+    // +0x1b8: the two result score values seeded from the scene. The pad render path indexes them by
+    // a computed side/colour index, so they are one array rather than two scalars.
+    int m_aResultScores[kSideCount] = {};
 };
 
 // code: language=Objective-C++
