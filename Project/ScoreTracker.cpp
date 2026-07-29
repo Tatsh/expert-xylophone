@@ -103,8 +103,8 @@ constexpr int kBandModeOffset = 3;
 
 /** @ghidraAddress 0x14983c */
 void ScoreTracker::ComputeLaneClearRateAndGrade() {
-    // Pick the leading side from the two sides' first counters, recording it in each side's trailing
-    // field.
+    // Pick the leading side from the two sides' first counters, recording it in each side's
+    // trailing field.
     const int nFirstSideLead = m_aRecords[0].nCells[kCellScore];
     const int nSecondSideLead = m_aRecords[1].nCells[kCellScore];
     if (nSecondSideLead < nFirstSideLead) {
@@ -150,7 +150,8 @@ void ScoreTracker::ResetLaneGaugeState() {
     // now-zeroed value.
     for (unsigned int nSide = 0; nSide < kSideCount; ++nSide) {
         PlayRecord &record = m_aRecords[nSide];
-        // The binary clears only the judgement counters, leaving the rate, rank, and trailing field.
+        // The binary clears only the judgement counters, leaving the rate, rank, and trailing
+        // field.
         for (int &nCell : record.nCells) {
             nCell = 0;
         }
@@ -187,8 +188,8 @@ void ScoreTracker::AddScore(
     (void)nPosY; // The screen y is passed through but unused by the score path.
     const bool bSideMatch = GameSystem::GetGameSystem()->GetPlayColor() == nPlayer;
 
-    // Choose the result-quad band from the hit's screen x against the sheet's quarter-width, shifted
-    // by the play mode and whether the note is on the current play side.
+    // Choose the result-quad band from the hit's screen x against the sheet's quarter-width,
+    // shifted by the play mode and whether the note is on the current play side.
     const float flPosX = static_cast<float>(nPosX);
     const float flSheetPosX = GameSystem::GetGameSystem()->GetSheetPosX();
     const int nGroup = (bSideMatch ? kBandSideMatchOffset : 0) + (nMode != 0 ? kBandModeOffset : 0);
@@ -268,8 +269,9 @@ void ScoreTracker::AddScoreDelta(int nPlayer, int nPosX, int nPosY, int nDelta) 
 
 /** @ghidraAddress 0x149678 */
 void ScoreTracker::AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags) {
-    // Map the player side to a lane slot: side 0 -> 1, side 1 -> 0, anything else -> the 3 (no-side)
-    // slot. The no-side slot reads one record past the two named sides, reproduced faithfully.
+    // Map the player side to a lane slot: side 0 -> 1, side 1 -> 0, anything else -> the 3
+    // (no-side) slot. The no-side slot reads one record past the two named sides, reproduced
+    // faithfully.
     unsigned int nSlot;
     if (nPlayerSide == 0) {
         nSlot = 1;

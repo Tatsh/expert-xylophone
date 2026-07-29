@@ -93,8 +93,8 @@ constexpr float kLabelAnchorX[] = {173.0f, 106.0f, 39.0f, -28.0f, -95.0f, 54.0f,
 
 } // namespace
 
-// The gauge icon descriptor tables, indexed by icon index (landscape and portrait variants). Each is
-// a 20-byte GaugeSpriteDescriptor. Read-only data embedded in the binary.
+// The gauge icon descriptor tables, indexed by icon index (landscape and portrait variants). Each
+// is a 20-byte GaugeSpriteDescriptor. Read-only data embedded in the binary.
 extern const ReflecGaugeLayer::GaugeSpriteDescriptor
     g_aGaugeIconLandscape[]; // @ghidraAddress 0x30fea4
 extern const ReflecGaugeLayer::GaugeSpriteDescriptor
@@ -312,7 +312,8 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
     // Pick the quad's screen position and rotation by orientation and gauge mode.
     S_VECTOR2 position{};
     float flRotation = 0.0f;
-    // The play-field half-height, rounding toward zero, is the vertical span each band is offset by.
+    // The play-field half-height, rounding toward zero, is the vertical span each band is offset
+    // by.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
     if (IsPad()) {
@@ -461,14 +462,14 @@ void ReflecGaugeLayer::EmitGaugeValueSprite(float flScale,
 
 namespace {
 
-// The per-half rates at which the animated display value climbs toward and falls away from the gauge
-// value each frame (@ghidraAddress 0x30fc50 = 0.0012 rising, 0x30fc54 = 0.006 falling).
+// The per-half rates at which the animated display value climbs toward and falls away from the
+// gauge value each frame (@ghidraAddress 0x30fc50 = 0.0012 rising, 0x30fc54 = 0.006 falling).
 constexpr float kDisplayRiseRate = 0.0012000000569969416f;
 constexpr float kDisplayFallRate = 0.0060000005178153515f;
 
 // The fractional-fill threshold above which a partially-filled cell counts as an extra whole cell
-// (@ghidraAddress 0x2ee878 = 0.001), the maximum whole-cell count, and the alternate gauge mode that
-// draws value labels.
+// (@ghidraAddress 0x2ee878 = 0.001), the maximum whole-cell count, and the alternate gauge mode
+// that draws value labels.
 constexpr double kCellFillThreshold = 0.001;
 constexpr int kMaxCells = 5;
 constexpr int kLabelGaugeMode = 1;
@@ -477,9 +478,10 @@ constexpr int kLabelGaugeMode = 1;
 
 /** @ghidraAddress 0x18ad94 */
 void ReflecGaugeLayer::UpdateGaugeBar(float flDelta) {
-    // Ease the fill toward its target, deriving the bar's 0..1 fill ratio between its two endpoints.
-    // The fade channel's five floats are repurposed as the fill tween: start/end are the endpoints,
-    // duration the target, elapsed the current fill, and current the resolved fill value.
+    // Ease the fill toward its target, deriving the bar's 0..1 fill ratio between its two
+    // endpoints. The fade channel's five floats are repurposed as the fill tween: start/end are the
+    // endpoints, duration the target, elapsed the current fill, and current the resolved fill
+    // value.
     const float flTarget = m_fadeChannel.GetDuration();
     float flRatio;
     if (flTarget > m_fadeChannel.GetElapsed()) {
@@ -512,7 +514,8 @@ void ReflecGaugeLayer::UpdateGaugeBar(float flDelta) {
         const int nColor = static_cast<int>(flRatio * kColorMax * m_aScales[nHalf]);
         EmitBaseSprite(nHalf, nColor);
 
-        // Advance this half's animated display value toward its gauge value, clamping at the target.
+        // Advance this half's animated display value toward its gauge value, clamping at the
+        // target.
         SideGauge &side = m_aSides[nHalf];
         if (side.flDisplayValue < side.flValue) {
             side.flDisplayValue += flRise;

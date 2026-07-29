@@ -17,8 +17,8 @@
 #include "neTexture.h"
 #include "sprite_uv_table.h"
 
-// The spawn-burst atlas UV table, indexed by the burst UV row. Read-only data embedded in the binary
-// (a distinct atlas from the shared sprite UV table).
+// The spawn-burst atlas UV table, indexed by the burst UV row. Read-only data embedded in the
+// binary (a distinct atlas from the shared sprite UV table).
 extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
@@ -58,8 +58,8 @@ constexpr float kAlphaByteScale = 255.0f;
 constexpr float kBurstScaleCurve[] = {0.0f, 1.0f, 666.66669f, 1.4f};
 constexpr int kBurstScaleCurvePairs = 2;
 
-// The burst alpha-over-time curve: {time, alpha} pairs; the burst deactivates when the alpha reaches
-// zero (@ghidraAddress 0x30e798).
+// The burst alpha-over-time curve: {time, alpha} pairs; the burst deactivates when the alpha
+// reaches zero (@ghidraAddress 0x30e798).
 constexpr float kBurstAlphaCurve[] = {0.0f, 1.0f, 133.33333f, 1.0f, 666.66669f, 0.0f};
 constexpr int kBurstAlphaCurvePairs = 3;
 } // namespace

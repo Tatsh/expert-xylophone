@@ -12,8 +12,8 @@ namespace ne {
  *
  * Every drawable in the engine is a @c C_RENDER: nodes form a parent/child/sibling tree that is
  * walked to compose local and world transforms and to emit draw calls. Concrete leaves such as
- * @c C_SPRITE_INSTANCING_2D derive from it. The class is polymorphic (it carries a vtable), so it is
- * modelled with a virtual destructor.
+ * @c C_SPRITE_INSTANCING_2D derive from it. The class is polymorphic (it carries a vtable), so it
+ * is modelled with a virtual destructor.
  *
  * The trailing @c // +0xNN comments document the original 32-bit member offsets for reference only;
  * never read or write the object through those offsets. Members whose meaning has not yet been

@@ -120,8 +120,8 @@ void GameSystem::LoadMusicNameTexture(MusicData *pMusicData) {
         return;
     }
 
-    // On a retina screen, prefer the 2x white-name image; fall back to the 1x image when there is no
-    // 2x data or the 2x load fails.
+    // On a retina screen, prefer the 2x white-name image; fall back to the 1x image when there is
+    // no 2x data or the 2x load fails.
     if (UIScreen.mainScreen.scale > 1.0) {
         NSData *pData2x = [pMusicData musicNameImageWhite2xData];
         if (pData2x != nil) {
@@ -147,8 +147,8 @@ void GameSystem::LoadArtistNameTexture(MusicData *pMusicData) {
         return;
     }
 
-    // On a retina screen, prefer the 2x artist-name image; fall back to the 1x image when there is no
-    // 2x data or the 2x load fails.
+    // On a retina screen, prefer the 2x artist-name image; fall back to the 1x image when there is
+    // no 2x data or the 2x load fails.
     if (UIScreen.mainScreen.scale > 1.0) {
         NSData *pData2x = [pMusicData artistNameImageWhite2xData];
         if (pData2x != nil) {
@@ -219,8 +219,9 @@ void GameSystem::ConfigureSheetLayerForScreen(int nScaleStep) {
     ComputePlayfieldLayoutY(1.0f);
 
     // Clamp the screen bounds into the supported point buckets. The width axis and the height axis
-    // are each clamped to the tall bucket independently; the landscape/portrait comparison then picks
-    // which clamped pair to use, so a portrait screen reads its long side as the "long" dimension.
+    // are each clamped to the tall bucket independently; the landscape/portrait comparison then
+    // picks which clamped pair to use, so a portrait screen reads its long side as the "long"
+    // dimension.
     const CGRect bounds = UIScreen.mainScreen.bounds;
     const int nWidth = static_cast<int>(bounds.size.width);
     const int nHeight = static_cast<int>(bounds.size.height);

@@ -115,8 +115,8 @@ void Polygon2dTrail::ClearMeshVertices() {
 void Polygon2dTrail::Init() {
     const int nVertexCount = m_nVertexCount;
 
-    // Build the strip's mesh: one position-and-colour vertex per strip point, an owned vertex buffer,
-    // and an index per vertex; register it in the global scene tree and make it visible.
+    // Build the strip's mesh: one position-and-colour vertex per strip point, an owned vertex
+    // buffer, and an index per vertex; register it in the global scene tree and make it visible.
     m_pMesh = ne::CreatePolygon2dMesh(kTrailDrawMode,
                                       static_cast<unsigned int>(nVertexCount),
                                       kTrailVertexFormat,

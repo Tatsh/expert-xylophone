@@ -12,8 +12,8 @@
 #import <CoreFoundation/CoreFoundation.h>
 
 // Collaborator classes reached from these methods. Their headers are not all reconstructed in this
-// tree yet (the same speculative-import style AppDelegate.mm and RBMusicManager.m already use); they
-// resolve once those classes land. Downloader, StoreUtil, and BFCodec are committed;
+// tree yet (the same speculative-import style AppDelegate.mm and RBMusicManager.m already use);
+// they resolve once those classes land. Downloader, StoreUtil, and BFCodec are committed;
 // PurchaseTransactionCache is not.
 #import "AppDelegate.h"
 #import "BFCodec.h"

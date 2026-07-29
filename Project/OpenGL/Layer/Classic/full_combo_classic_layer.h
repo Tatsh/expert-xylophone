@@ -55,8 +55,8 @@ public:
      *
      * The object type selects the target sprite batch (and its slot counter); the geometry type
      * indexes the descriptor table for the anchor, size, and UV-table index. While the batch has
-     * free capacity, appends a sprite at @p pPosition with the given scale, rotation, and alpha. The
-     * colour is always opaque white modulated by @p nAlpha. A no-op when the batch is full.
+     * free capacity, appends a sprite at @p pPosition with the given scale, rotation, and alpha.
+     * The colour is always opaque white modulated by @p nAlpha. A no-op when the batch is full.
      * @param nObjType The sprite object type (0 through 2), selecting the batch.
      * @param nType The sprite geometry type (0 through 15).
      * @param pPosition The sprite position.
@@ -91,10 +91,10 @@ public:
      * @brief Advances every active full-combo effect by one frame and emits its sprites.
      *
      * Clears the three batch counts, derives each side's lane-row base from the near lane's slope,
-     * then for every active player colour advances the effect clock, fires the themed voice cue once
-     * past its threshold, emits the seven sprite groups (the lane beams, column flares, and orbiting
-     * sparks; then the centre banner, the @c FULLCOMBO! letters with their glow pass, and the
-     * trailing sparkle sweep), and finally publishes the batch counts.
+     * then for every active player colour advances the effect clock, fires the themed voice cue
+     * once past its threshold, emits the seven sprite groups (the lane beams, column flares, and
+     * orbiting sparks; then the centre banner, the @c FULLCOMBO! letters with their glow pass, and
+     * the trailing sparkle sweep), and finally publishes the batch counts.
      * @param flDelta The elapsed frame time, in milliseconds.
      * @ghidraAddress 0x10f4b8
      */

@@ -21,8 +21,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * three full-combo atlases and four sprite instancers, drawn beneath the shared background layer,
  * that present the Colette full-combo effect. The class carries no RTTI (it is non-polymorphic), so
- * the name is inferred from its singleton getter rather than confirmed from the runtime metadata. It
- * shares its layout with @c LimelightThemeLayer. The trailing @c // +0xNN comments document the
+ * the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
+ * It shares its layout with @c LimelightThemeLayer. The trailing @c // +0xNN comments document the
  * original 32-bit offsets for reference only.
  */
 class ColetteThemeLayer : public PlayFieldLayerBase {
@@ -89,12 +89,13 @@ public:
     /**
      * @brief Advances and re-emits the full-combo result-grade effect for the frame.
      *
-     * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While the
-     * reveal is armed it advances the reveal clock (clearing the clock-active flag once it passes the
-     * threshold), emits the base backdrop sprite at an alpha eased from the reveal clock, and for each
-     * drawn player side (the first side only when the two-side gauge is on) emits the rank medals (for
-     * a fresh best rank, at the player's colour), then the cleared-rank result sprites (a clear that is
-     * not a challenge) or the miss sprites otherwise. Finally it publishes each batch's sprite count.
+     * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While
+     * the reveal is armed it advances the reveal clock (clearing the clock-active flag once it
+     * passes the threshold), emits the base backdrop sprite at an alpha eased from the reveal
+     * clock, and for each drawn player side (the first side only when the two-side gauge is on)
+     * emits the rank medals (for a fresh best rank, at the player's colour), then the cleared-rank
+     * result sprites (a clear that is not a challenge) or the miss sprites otherwise. Finally it
+     * publishes each batch's sprite count.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x18776c
      */
@@ -113,11 +114,11 @@ private:
      * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
      *
      * Resolves the sprite slot's descriptor (its batch kind, anchor, pixel size, and atlas frame),
-     * maps the batch kind to one of the layer's four instancers, and — while that instancer is below
-     * its capacity — writes the quad there: the caller's position offset down by half the play-field
-     * height, the descriptor's anchor and size, the shared atlas UV rectangle, the caller's scale and
-     * rotation, and a tint that is black for the drop-shadow slot and white otherwise, at the caller's
-     * alpha. Then it bumps that batch's slot count.
+     * maps the batch kind to one of the layer's four instancers, and — while that instancer is
+     * below its capacity — writes the quad there: the caller's position offset down by half the
+     * play-field height, the descriptor's anchor and size, the shared atlas UV rectangle, the
+     * caller's scale and rotation, and a tint that is black for the drop-shadow slot and white
+     * otherwise, at the caller's alpha. Then it bumps that batch's slot count.
      * @param flScaleX The quad's X scale.
      * @param flScaleY The quad's Y scale.
      * @param flRotation The quad's rotation, in radians.
@@ -134,8 +135,8 @@ private:
                       int nAlpha);
 
     /**
-     * @brief Emits the six curve-animated "miss"/lower-rank full-combo sprites plus their banner for
-     * one player side.
+     * @brief Emits the six curve-animated "miss"/lower-rank full-combo sprites plus their banner
+     * for one player side.
      *
      * Lays out the six sprites along a fixed row of X columns at a shared base Y (the layout height
      * below the reference line), each sized and rotated by its own animation curve sampled at the
@@ -151,11 +152,12 @@ private:
     /**
      * @brief Emits the seven curve-animated rank-medal sprites for one player side.
      *
-     * Only runs while the grade-reveal clock is inside the medals' window; on the first such frame it
-     * plays the reveal sound once. Each of the seven medals is placed at its fixed column and base Y
-     * (offset by its own curve), sized and rotated and faded by its animation curves sampled at the
-     * windowed clock, and emitted through EmitFcSprite. The single-player mirror/shift layout applies
-     * as in the miss burst. Two medals draw only for a matching colour variant; the rest always draw.
+     * Only runs while the grade-reveal clock is inside the medals' window; on the first such frame
+     * it plays the reveal sound once. Each of the seven medals is placed at its fixed column and
+     * base Y (offset by its own curve), sized and rotated and faded by its animation curves sampled
+     * at the windowed clock, and emitted through EmitFcSprite. The single-player mirror/shift
+     * layout applies as in the miss burst. Two medals draw only for a matching colour variant; the
+     * rest always draw.
      * @param nSide The player side (0 or 1).
      * @param nColorVariant The colour variant selecting which of the two conditional medals draws.
      * @ghidraAddress 0x187b44
@@ -167,8 +169,9 @@ private:
      *
      * Each of the nine sprites is placed at its fixed X column with its Y driven by a per-sprite
      * position curve (built once with the layout height folded in), and sized and faded by its own
-     * scale and alpha curves sampled at the grade-reveal clock. The single-player mirror/shift layout
-     * matches the miss and rank bursts; in multiplayer the position curve drives the Y directly.
+     * scale and alpha curves sampled at the grade-reveal clock. The single-player mirror/shift
+     * layout matches the miss and rank bursts; in multiplayer the position curve drives the Y
+     * directly.
      * @param nSide The player side (0 or 1).
      * @ghidraAddress 0x188114
      */

@@ -9,7 +9,8 @@
 #import "engineglobals.h"
 
 // Local declarations for the two sibling classes reconstructed separately. These members belong in
-// the siblings' own headers (RBErosionMarkUpdaterAlertController and RBErosionMarkUpdaterScoreView).
+// the siblings' own headers (RBErosionMarkUpdaterAlertController and
+// RBErosionMarkUpdaterScoreView).
 @interface RBErosionMarkUpdaterAlertController : UIAlertController
 @end
 

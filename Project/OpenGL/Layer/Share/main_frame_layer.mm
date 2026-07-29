@@ -418,8 +418,8 @@ void MainFrameLayer::Build3dVertices() {
 
 /** @ghidraAddress 0x17bd50 */
 void MainFrameLayer::SetOverlayLayout() {
-    // The theme selects which label and marker sprites the overlay emits. The binary reads it first,
-    // inside an autorelease scope, before touching the geometry.
+    // The theme selects which label and marker sprites the overlay emits. The binary reads it
+    // first, inside an autorelease scope, before touching the geometry.
     const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
 
     // The frame width in points, its centre, and the two inner columns a fixed span either side of
@@ -532,8 +532,8 @@ constexpr unsigned int kMarkerMesh3dIndexCount = 10;
 constexpr int kFrameMesh3dIndexCount = 22;
 constexpr int kFrameMesh2dIndexCount = 28;
 
-// The mesh factory's draw mode, its two vertex formats (the untextured marker and the textured frame
-// meshes), and its buffer-ownership flags.
+// The mesh factory's draw mode, its two vertex formats (the untextured marker and the textured
+// frame meshes), and its buffer-ownership flags.
 constexpr unsigned int kMeshDrawMode = 4;
 constexpr unsigned int kMarkerVertexFormat = 5;
 constexpr unsigned int kTexturedVertexFormat = 7;
@@ -545,8 +545,8 @@ constexpr int kTexEnvParamSlotA = 1;
 constexpr int kTexEnvParamSlotB = 0;
 constexpr int kTexEnvParamValue = 1;
 
-// The 3D border is four quads of four vertices; the last two walk their atlas corners in a different
-// order from the first two.
+// The 3D border is four quads of four vertices; the last two walk their atlas corners in a
+// different order from the first two.
 constexpr int kFrameQuadCount = 4;
 constexpr int kQuadVertexCount = 4;
 constexpr int kBorderFlippedQuadStart = 2;
@@ -563,8 +563,8 @@ constexpr unsigned int kFrameInstancerCapacity = 1;
 // The sprite count each instancer is rebuilt empty at.
 constexpr int kInstancerEmptyCount = 0;
 
-// The colours freshly built vertices take: the marker's opaque black, and the frame meshes' white at
-// zero alpha (the fade pass in Process supplies the real alpha).
+// The colours freshly built vertices take: the marker's opaque black, and the frame meshes' white
+// at zero alpha (the fade pass in Process supplies the real alpha).
 constexpr unsigned char kVertexChannelMin = 0;
 constexpr unsigned char kVertexChannelMax = 255;
 constexpr unsigned char kVertexAlphaClear = 0;
@@ -587,16 +587,16 @@ constexpr SpriteUvEntry kFrameBorderUv[kFrameQuadCount] = {
     {0.765625f, 0.0009765625f, 0.1875f, 0.8183594f},
 };
 
-// The shared-atlas rows the overlay's centre tab and bottom strip draw from. The Colette theme takes
-// a different pair.
+// The shared-atlas rows the overlay's centre tab and bottom strip draw from. The Colette theme
+// takes a different pair.
 constexpr int kOverlayTabUvIndexDefault = 443;
 constexpr int kOverlayStripUvIndexDefault = 444;
 constexpr int kOverlayTabUvIndexColette = 451;
 constexpr int kOverlayStripUvIndexColette = 452;
 
-// Whether each corner takes the rectangle's far U and far V edge rather than its origin. The border's
-// first two quads walk their corners in one order and its last two in another; every overlay band
-// uses the third order.
+// Whether each corner takes the rectangle's far U and far V edge rather than its origin. The
+// border's first two quads walk their corners in one order and its last two in another; every
+// overlay band uses the third order.
 constexpr bool kBorderCornerOrderA[kQuadVertexCount][2] = {
     {false, true}, {false, false}, {true, true}, {true, false}};
 constexpr bool kBorderCornerOrderB[kQuadVertexCount][2] = {
@@ -639,8 +639,8 @@ FrameBorderUvTable BuildFrameBorderUvTable() {
 
 /** @ghidraAddress 0x17b654 */
 void MainFrameLayer::BuildSprites() {
-    // The default frame type is a sentinel meaning "whatever frame the player has equipped"; resolve
-    // it once and keep the resolved type.
+    // The default frame type is a sentinel meaning "whatever frame the player has equipped";
+    // resolve it once and keep the resolved type.
     if (m_nFrameType == kDefaultFrameType) {
         m_nFrameType = GameSystem::GetGameSystem()->GetFrameType();
     }
@@ -654,15 +654,15 @@ void MainFrameLayer::BuildSprites() {
         m_pOverlayTexture->Release();
         m_pOverlayTexture = nullptr;
     }
-    // The sentinel survives only when the game system is itself unset, in which case the layer builds
-    // its meshes untextured.
+    // The sentinel survives only when the game system is itself unset, in which case the layer
+    // builds its meshes untextured.
     if (m_nFrameType != kDefaultFrameType) {
         m_pFrameTexture = ne::C_TEXTURE::FindOrLoadCached(g_aFrameTextureNames[m_nFrameType]);
         m_pOverlayTexture = ne::C_TEXTURE::FindOrLoadCached(g_szGmParts2TextureKey);
     }
 
-    // The marker's ring, built once. Its vertices stay at the origin until Build3dVertices lays them
-    // out, and it starts hidden.
+    // The marker's ring, built once. Its vertices stay at the origin until Build3dVertices lays
+    // them out, and it starts hidden.
     if (m_pMarkerMesh3d == nullptr) {
         m_pMarkerMesh3d = ne::CreatePolygon3dMesh(kMeshDrawMode,
                                                   kMarkerMesh3dVertexCount,

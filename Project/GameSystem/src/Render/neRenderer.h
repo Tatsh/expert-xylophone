@@ -84,8 +84,9 @@ public:
     /**
      * @brief Projects a world-space homogeneous point to screen (pixel) coordinates.
      *
-     * Applies the projection matrix, performs the perspective divide, and maps the clip-space result
-     * into the pixel rectangle (with the Y axis flipped to a top-left origin). The point's @c x and
+     * Applies the projection matrix, performs the perspective divide, and maps the clip-space
+     * result into the pixel rectangle (with the Y axis flipped to a top-left origin). The point's
+     * @c x and
      * @c y are overwritten with the screen coordinates; @c z and @c w are left as the projection
      * multiply produced them.
      * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
@@ -321,7 +322,8 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
  * @brief Projects a world-space point to screen coordinates through the current camera globals.
  *
  * A convenience wrapper: transforms @p pVec4 by the current model node's view matrix
- * (@c g_pCurrentModelNode), then projects it through the active view camera (@c g_pActiveViewCamera).
+ * (@c g_pCurrentModelNode), then projects it through the active view camera (@c
+ * g_pActiveViewCamera).
  * @param pVec4 The world-space homogeneous point, overwritten with the screen coordinates.
  * @ghidraAddress 0x2a158
  */

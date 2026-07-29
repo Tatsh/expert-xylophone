@@ -126,7 +126,8 @@ void SlideNoteLayer::Create(int nColor,
 }
 
 namespace {
-// The pulse clock's period and its negative (subtracted to wrap) (@ghidraAddress 0x2fee08/0x2fee0c).
+// The pulse clock's period and its negative (subtracted to wrap) (@ghidraAddress
+// 0x2fee08/0x2fee0c).
 constexpr float kPulsePeriod = 66.66666412f;
 constexpr float kPulseWrap = -66.66666412f;
 // The pulse phase below which the early sparkle sprite is drawn (@ghidraAddress 0x2fee10 = 33.333).
@@ -202,8 +203,8 @@ void SlideNoteLayer::Update(float flDeltaTime) {
             static_cast<float>((nFrame - (kScaleGrowBound + 1)) * kScaleDecaySlope + kFadeBias1);
     }
 
-    // The two per-side alpha factors: the note's own side keeps full intensity, the far side dims to
-    // the game system's cross-side alpha (chosen by which side is the current play colour).
+    // The two per-side alpha factors: the note's own side keeps full intensity, the far side dims
+    // to the game system's cross-side alpha (chosen by which side is the current play colour).
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const bool bColorIsOne = pGameSystem->GetPlayColor() == 1;
     const float flCrossAlpha = pGameSystem->GetRivalAlpha();
@@ -377,8 +378,8 @@ void SlideNoteLayer::CreateSprite(int nType,
     pBatch->SetSpriteRotation(nIndex, flRotation);
     pBatch->SetSpriteColor(nIndex, 0xff, 0xff, 0xff, nAlpha);
 
-    // The head/tail types size to the layout height and scale both axes; the glow types (0xf and up)
-    // take their height from the length argument and draw at unit y-scale.
+    // The head/tail types size to the layout height and scale both axes; the glow types (0xf and
+    // up) take their height from the length argument and draw at unit y-scale.
     float flScaleY;
     if (nType < kSlideNoteGlowTypeBase) {
         pBatch->SetSpriteSize(nIndex, S_VECTOR2{spriteType.flSizeW, spriteType.flSizeH});

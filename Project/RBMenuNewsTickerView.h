@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (float)setText:(nullable NSString *)text LINK:(nullable NSURL *)LINK;
 
 /**
- * @brief The scroll animation's base duration in seconds, added to the length-dependent scroll time.
+ * @brief The scroll animation's base duration in seconds, added to the length-dependent scroll
+ * time.
  * @param duration The base duration in seconds.
  * @ghidraAddress 0x9f150
  */

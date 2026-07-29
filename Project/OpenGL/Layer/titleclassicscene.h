@@ -15,17 +15,17 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown before
- * the music list.
+ * @brief The theme-0 (Classic) title-screen scene layer: the animated title/logo screen shown
+ * before the music list.
  *
  * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme for theme 0. Its
- * per-frame callback is a small state machine (@c DispatchTitleScreenState): load the title textures
- * and sprites and start the BGM, wait for the start music, render and animate the title, then finish
- * and open the music list. The Ghidra name @c ScoreGaugeLayer for its constructor is a misnomer; the
- * vtable's methods are all title-screen routines. This is a distinct, smaller (0x168-byte) class from
- * the interactive @c TitleScreenLayerClassic gesture layer. The trailing @c // +0xNN comments
- * document the original member offsets for reference only; the spans whose roles are still being
- * worked out are reserved to preserve the object layout.
+ * per-frame callback is a small state machine (@c DispatchTitleScreenState): load the title
+ * textures and sprites and start the BGM, wait for the start music, render and animate the title,
+ * then finish and open the music list. The Ghidra name @c ScoreGaugeLayer for its constructor is a
+ * misnomer; the vtable's methods are all title-screen routines. This is a distinct, smaller
+ * (0x168-byte) class from the interactive @c TitleScreenLayerClassic gesture layer. The trailing @c
+ * // +0xNN comments document the original member offsets for reference only; the spans whose roles
+ * are still being worked out are reserved to preserve the object layout.
  * @ghidraAddress TitleClassicScene (engine layer, 0x168 bytes)
  */
 namespace rb {
@@ -41,7 +41,8 @@ public:
 
     /**
      * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
-     * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to -1).
+     * zero-clears the presentation state (seeding the fade base to 1.0 and the trailing index to
+     * -1).
      * @ghidraAddress 0x1514b4
      */
     TitleClassicScene();
@@ -60,16 +61,16 @@ public:
     /**
      * @brief The per-frame task callback: dispatches on the layer state.
      *
-     * State 0 loads the title resources and starts the BGM, state 1 waits for the start music, state
-     * 2 renders and animates the title, and state 3 finishes and opens the music list.
+     * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
+     * state 2 renders and animates the title, and state 3 finishes and opens the music list.
      * @ghidraAddress 0x151678
      */
     void OnFrame(int nElapsedMs) override;
 
 private:
     /**
-     * @brief Releases the cached textures and flags each owned sprite instancer for the scene walker
-     * to delete.
+     * @brief Releases the cached textures and flags each owned sprite instancer for the scene
+     * walker to delete.
      * @ghidraAddress 0x1515cc
      */
     void ReleaseResources();
@@ -90,11 +91,11 @@ private:
      * @brief State 2: renders and animates the title screen for the frame.
      *
      * Clears the eight instancers, ticks the start-prompt, star, and ring clocks, emits the whole
-     * title screen (background, start prompt, two scrolling star layers, two counter-rotating rings,
-     * the logo, and the black fade overlay), then — once the start delay has elapsed — runs the touch
-     * input pass: the start hit-box commits to the music list, the two secret hit-boxes and the
-     * four-way swipe classifier drive the hidden sequence, and the remaining hit-box auditions the
-     * shot sound.
+     * title screen (background, start prompt, two scrolling star layers, two counter-rotating
+     * rings, the logo, and the black fade overlay), then — once the start delay has elapsed — runs
+     * the touch input pass: the start hit-box commits to the music list, the two secret hit-boxes
+     * and the four-way swipe classifier drive the hidden sequence, and the remaining hit-box
+     * auditions the shot sound.
      * @param nElapsedMs The frame delta, in milliseconds, forwarded from the task callback.
      * @ghidraAddress 0x151934
      */
@@ -126,8 +127,8 @@ private:
      *
      * Resolves the instancer for the sprite kind and, while it has room, derives the quad's anchor,
      * size, and UV span from the bound texture's image size, allocated size, and retina scale, then
-     * writes the caller's position, size scale, rotation, and an opaque-white colour modulated by the
-     * alpha, and bumps the slot count.
+     * writes the caller's position, size scale, rotation, and an opaque-white colour modulated by
+     * the alpha, and bumps the slot count.
      * @param nSpriteKind The sprite kind (below 9), selecting the instancer.
      * @param nColorAlpha The quad's alpha.
      * @param position The quad's screen position.
@@ -145,8 +146,8 @@ private:
      * @brief Emits one title-screen sprite into its instancer slot.
      *
      * Sprite kind 0 draws a full-texture quad (as @c RenderTitleBackgroundFullQuad does). Kinds 1
-     * through 8 take their anchor, size, and UV rectangle from the per-kind title layout table for the
-     * current frame variant (the alt-frame table when the alt frame is active, otherwise the
+     * through 8 take their anchor, size, and UV rectangle from the per-kind title layout table for
+     * the current frame variant (the alt-frame table when the alt frame is active, otherwise the
      * main-frame table). Either way the caller's position, uniform size scale, rotation, and an
      * opaque-white colour modulated by the alpha are applied, and the slot count is bumped. A no-op
      * for an out-of-range kind or a full instancer.
@@ -166,10 +167,10 @@ private:
     /**
      * @brief Emits a plain coloured quad (no atlas lookup) into a title sprite instancer slot.
      *
-     * Resolves the instancer for the quad kind and, while it has room, writes the caller's position,
-     * size, and anchor with a solid grey-scale tint modulated by the alpha, then bumps the slot
-     * count. A no-op for an out-of-range kind or a full instancer. The title screen uses it for the
-     * untextured black overlay that fades the screen out.
+     * Resolves the instancer for the quad kind and, while it has room, writes the caller's
+     * position, size, and anchor with a solid grey-scale tint modulated by the alpha, then bumps
+     * the slot count. A no-op for an out-of-range kind or a full instancer. The title screen uses
+     * it for the untextured black overlay that fades the screen out.
      * @param nKind The colour-quad kind (0 through 8), selecting the instancer.
      * @param nColorRgb The quad's red, green, and blue channel value.
      * @param nAlpha The quad's alpha.
@@ -221,7 +222,8 @@ private:
 extern const unsigned int g_aTitleSpriteCapacity[rb::TitleClassicScene::kSpriteSlotCount];
 
 /**
- * @brief The cached-texture index each of the eight title-screen instancers binds (slot 7 binds none).
+ * @brief The cached-texture index each of the eight title-screen instancers binds (slot 7 binds
+ * none).
  * @ghidraAddress 0x309384
  */
 extern const unsigned int g_aTitleSpriteTextureIndex[rb::TitleClassicScene::kSpriteSlotCount];

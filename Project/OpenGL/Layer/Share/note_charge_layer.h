@@ -20,9 +20,9 @@ class C_SPRITE_INSTANCING_2D;
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the
  * charge-note graphics, plus a large table of per-charge records. Its instancer capacity is the sum
  * of a per-group capacity table computed by the constructor. The class carries no RTTI (it is
- * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from the
- * runtime metadata. Only the sprite-batch fields are modelled so far; the record table is kept as a
- * reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from
+ * the runtime metadata. Only the sprite-batch fields are modelled so far; the record table is kept
+ * as a reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
  * reference only.
  */
 class NoteChargeLayer : public PlayFieldLayerBase {
@@ -45,9 +45,9 @@ public:
      */
     void LoadNoteChargeSprites();
 
-    // The player colours a charge/particle may carry (asserted by Create/CreateParticle), the number
-    // of pooled charge records and burst particles, and the number of sprite graphics CreateSprite
-    // can emit.
+    // The player colours a charge/particle may carry (asserted by Create/CreateParticle), the
+    // number of pooled charge records and burst particles, and the number of sprite graphics
+    // CreateSprite can emit.
     static constexpr int kPlayerColorMax = 2;
     static constexpr int kChargeCount = 0x20;
     static constexpr int kParticleCount = 0x100;
@@ -80,9 +80,9 @@ public:
     void CreateParticle(int nColor, const S_VECTOR2 *pPosition);
 
     /**
-     * @brief Advances the layer one frame: steps the two spin phases, emits each active charge (plus
-     * a phase-driven number of burst particles), then ages and emits each active particle, clearing
-     * both pools' spent entries.
+     * @brief Advances the layer one frame: steps the two spin phases, emits each active charge
+     * (plus a phase-driven number of burst particles), then ages and emits each active particle,
+     * clearing both pools' spent entries.
      * @param flDeltaSeconds The frame delta in seconds.
      * @ghidraAddress 0x180ed4
      */
@@ -120,7 +120,8 @@ private:
         float flB = {};          // +0x14: the alpha-weight geometry parameter.
     };
 
-    // One pooled burst particle (24 bytes): its colour, lifetime-slot sprite type, position, and age.
+    // One pooled burst particle (24 bytes): its colour, lifetime-slot sprite type, position, and
+    // age.
     struct BurstParticle {
         bool bActive = {};       // +0x00: whether the slot holds a live particle.
         int nColor = {};         // +0x04: the player colour.

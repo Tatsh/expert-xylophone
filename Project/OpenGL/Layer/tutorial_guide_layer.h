@@ -65,8 +65,8 @@ public:
      * Loads the tutorial atlas, creates the 20-sprite instancer (registered in the global scene
      * tree, made visible, and bound to the atlas), then seeds the nine keyframe timings and the
      * frame-index and coordinate tables and fills the two per-step coordinate grids by adding each
-     * keyframe's base X to the shared per-column offset tables. Guarded so the tables are built only
-     * once (but the transient visibility byte is always cleared first).
+     * keyframe's base X to the shared per-column offset tables. Guarded so the tables are built
+     * only once (but the transient visibility byte is always cleared first).
      * @ghidraAddress 0x10b44c
      */
     void BuildTutorialGuideSpriteTable();
@@ -165,10 +165,11 @@ private:
      * @brief Emits one guide sprite of a given kind into the instancer, if its pool is not full.
      *
      * Looks up the sprite kind's descriptor (target anchor, size, and UV-table index) and its UV
-     * rectangle, optionally re-derives the Y position from the gauge coordinate when the guide is in
-     * its gauge-anchored mode, then writes the sprite's position, anchor, size, UV rectangle, scale,
-     * and colour and advances the instancer's sprite count. On the phone (non-pad), sprite kinds
-     * above the tap-glyph range draw at half size. Silently drops the sprite when the pool is full.
+     * rectangle, optionally re-derives the Y position from the gauge coordinate when the guide is
+     * in its gauge-anchored mode, then writes the sprite's position, anchor, size, UV rectangle,
+     * scale, and colour and advances the instancer's sprite count. On the phone (non-pad), sprite
+     * kinds above the tap-glyph range draw at half size. Silently drops the sprite when the pool is
+     * full.
      * @param flSizeX The sprite's X scale.
      * @param flSizeY The sprite's Y scale.
      * @param nSpriteKind The sprite-kind descriptor index.

@@ -13,10 +13,10 @@
 
 /**
  * The AVFoundation sound-effect voice mixer: a fixed pool of @c AVBus voices held in an
- * @c NSMutableArray. Play handles pack a voice index in bits 16 and up and the voice's current id in
- * the low 16 bits, so a handle resolves back to a voice by bounds-checking the index and matching
- * the id. The former free engine functions that took the mixer as their first argument are its
- * instance methods. Only the members those methods touch are modelled; the trailing @c // +0xNN
+ * @c NSMutableArray. Play handles pack a voice index in bits 16 and up and the voice's current id
+ * in the low 16 bits, so a handle resolves back to a voice by bounds-checking the index and
+ * matching the id. The former free engine functions that took the mixer as their first argument are
+ * its instance methods. Only the members those methods touch are modelled; the trailing @c // +0xNN
  * offset comments are documentation only.
  * @ghidraAddress AVSeMixer (engine sound mixer)
  */
@@ -37,10 +37,11 @@ public:
     int FindFreeBusIndex();
 
     /**
-     * @brief Acquires a free voice, binds @p dwSource to it, prepares it, and returns a play handle.
+     * @brief Acquires a free voice, binds @p dwSource to it, prepares it, and returns a play
+     * handle.
      *
-     * Packs the chosen voice index into bits 16 and up and the voice's current id into the low half,
-     * then applies the initial volume through the handle.
+     * Packs the chosen voice index into bits 16 and up and the voice's current id into the low
+     * half, then applies the initial volume through the handle.
      * @param pSource The source record to bind.
      * @param nVolume The initial volume on a 0..127 scale.
      * @return The play handle, or @c 0xffffffff when no voice is free.
@@ -51,7 +52,8 @@ public:
     /**
      * @brief Resolves a play handle back to its voice, validating the packed id.
      * @param dwHandle The play handle (voice index in bits 16 and up, current id in the low half).
-     * @return The matching voice, or @c nil when the index is out of range or the id does not match.
+     * @return The matching voice, or @c nil when the index is out of range or the id does not
+     * match.
      * @ghidraAddress 0x480c0
      */
     AVBus *BusForHandle(unsigned int dwHandle);

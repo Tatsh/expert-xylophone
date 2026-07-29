@@ -3,8 +3,8 @@
 //  REFLEC BEAT plus
 //
 //  The level-threshold tables manager (LevelTables) and the player-level table helpers.
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to the
-//  program image base.
+//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  the program image base.
 //
 
 #include "leveltables.h"
@@ -21,9 +21,9 @@
 // The level-tables manager singleton.
 static LevelTables *g_pLevelTables = nullptr; // @ghidraAddress 0x3df548
 
-// The packed {category, item} unlock table: the unlock level of each entry is its one-based position
-// in the table. The constructor consumes the first kUnlockCtorCount entries; the trailing entry is
-// the clamp target of GetLevelUnlockEntry and names no item.
+// The packed {category, item} unlock table: the unlock level of each entry is its one-based
+// position in the table. The constructor consumes the first kUnlockCtorCount entries; the trailing
+// entry is the clamp target of GetLevelUnlockEntry and names no item.
 // @ghidraAddress 0x31066c
 constexpr int kUnlockCtorCount = 30;
 constexpr int kUnlockMaxIndex = 30;

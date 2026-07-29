@@ -306,8 +306,8 @@ void caCAMixer::Terminate() {
     if (m_pVoiceArray == nullptr) {
         return;
     }
-    // Delete each voice slot (clearing its bound source first), re-reading the count and array after
-    // each delete to stay safe against re-entrant teardown, then free the array itself.
+    // Delete each voice slot (clearing its bound source first), re-reading the count and array
+    // after each delete to stay safe against re-entrant teardown, then free the array itself.
     for (int nBus = 0; nBus < m_nVoiceCount; ++nBus) {
         caVoice *pVoice = m_pVoiceArray[nBus];
         pVoice->SetSource(nullptr);

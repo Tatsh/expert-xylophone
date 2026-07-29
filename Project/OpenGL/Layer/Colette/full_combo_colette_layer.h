@@ -17,11 +17,12 @@ class C_SPRITE_INSTANCING_2D;
 /**
  * @brief The Colette-theme full-combo layer.
  *
- * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns three
- * sprite instancers, drawn beneath the shared background layer, that present the Colette full-combo
- * effect (all three sharing the gm_parts2 atlas). The class carries no RTTI (it is non-polymorphic),
- * so the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
- * The trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns
+ * three sprite instancers, drawn beneath the shared background layer, that present the Colette
+ * full-combo effect (all three sharing the gm_parts2 atlas). The class carries no RTTI (it is
+ * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from
+ * the runtime metadata. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * reference only.
  */
 class FullComboColetteLayer : public PlayFieldLayerBase {
 public:
@@ -83,8 +84,8 @@ public:
     /**
      * @brief Clears every player colour's full-combo effect active flag.
      *
-     * The binary reuses this on the Classic and Limelight full-combo layers too, whose effect-record
-     * arrays share this layout.
+     * The binary reuses this on the Classic and Limelight full-combo layers too, whose
+     * effect-record arrays share this layout.
      * @ghidraAddress 0x9b35c
      */
     void ClearEffectFlags();

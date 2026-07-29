@@ -18,8 +18,8 @@ namespace {
 // The media-timer scale: elapsed seconds are reported in milliseconds. @ghidraAddress 0x2eeea0
 constexpr double kMediaTimeMsScale = 1000.0;
 
-// The achievement-rate thresholds for each clear rank, highest first. A rate at or above a threshold
-// earns that rank; below the lowest earns rank zero.
+// The achievement-rate thresholds for each clear rank, highest first. A rate at or above a
+// threshold earns that rank; below the lowest earns rank zero.
 constexpr float kClearRankThreshold5 = 0.95f; // @ghidraAddress 0x308d3c
 constexpr float kClearRankThreshold4 = 0.90f; // @ghidraAddress 0x2ef17c
 constexpr float kClearRankThreshold3 = 0.80f; // @ghidraAddress 0x2f856c

@@ -84,8 +84,8 @@ public:
     /**
      * @brief Lazily constructs the global GL render-state singleton and probes GL capabilities.
      *
-     * On first call it allocates the render state, runs its constructor, stores it in the global, and
-     * probes the GL capabilities; subsequent calls are a no-op.
+     * On first call it allocates the render state, runs its constructor, stores it in the global,
+     * and probes the GL capabilities; subsequent calls are a no-op.
      * @ghidraAddress 0x20f5c
      */
     static void EnsureShared();
@@ -234,8 +234,8 @@ public:
      * @brief The maximum number of palette matrices a single instanced draw call may use.
      *
      * Read from the renderer's capability block (the GL_OES_matrix_palette limit). The sprite batch
-     * flushes a draw once this many per-instance matrices have been queued, and a skinned mesh loads
-     * this many bone matrices.
+     * flushes a draw once this many per-instance matrices have been queued, and a skinned mesh
+     * loads this many bone matrices.
      */
     int GetMaxPaletteMatrices() const {
         return m_nMaxPaletteMatrices;
@@ -244,7 +244,8 @@ public:
     /**
      * @brief Probes the live GL ES context for its capabilities and sets the initial GL state.
      *
-     * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present, the
+     * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present,
+     * the
      * @c GL_MAX_VERTEX_UNITS_OES limit), reads @c GL_MAX_TEXTURE_SIZE, loads a default projection
      * matrix through matrix mode 2, and sets the line width to one. Run once by
      * @c EnsureShared after the render state is constructed.
@@ -340,14 +341,14 @@ public:
      */
     void ClearColorPointer(int nStride, int nColorOffset, int nBinding);
     /**
-     * @brief Re-issue the active unit's texcoord array against the bound array buffer, resetting the
-     *        cached per-unit pointer state when the bound buffer changed.
+     * @brief Re-issue the active unit's texcoord array against the bound array buffer, resetting
+     * the cached per-unit pointer state when the bound buffer changed.
      * @ghidraAddress 0x217e4
      */
     void ClearTexCoordPointer(int nStride, int nTexCoordOffset);
     /**
-     * @brief Re-issue the skinning weight array against the bound array buffer, resetting its cached
-     *        pointer state when the bound buffer changed.
+     * @brief Re-issue the skinning weight array against the bound array buffer, resetting its
+     * cached pointer state when the bound buffer changed.
      * @ghidraAddress 0x218ec
      */
     void ClearWeightPointer(int nStride, int nSize);

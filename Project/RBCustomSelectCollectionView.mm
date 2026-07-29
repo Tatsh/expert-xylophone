@@ -95,8 +95,9 @@ static NSString *const kGaugeStyleOverlayImageName = @"04_customize/cus_gs_bt_ef
 // The note-item button image name format (the item id fills the placeholder).
 static NSString *const kNoteItemImageNameFormat = @"04_customize/cus_iobj_%@";
 
-// The framed background image resizes with a symmetric vertical cap inset: the top and bottom insets
-// leave a fixed centre stretch region. The wide-font layout uses a larger inset than the narrow one.
+// The framed background image resizes with a symmetric vertical cap inset: the top and bottom
+// insets leave a fixed centre stretch region. The wide-font layout uses a larger inset than the
+// narrow one.
 constexpr CGFloat kBackgroundCapInsetWide = 36.0;
 constexpr CGFloat kBackgroundCapInsetNarrow = 25.0;
 // The background image height passed to the cap-inset call.
@@ -705,8 +706,8 @@ constexpr long kPageControlMinPageCount = 2;
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
 }
 
-// Shows the highlight overlay on the sibling button whose tag matches the tapped selection and hides
-// it on the rest.
+// Shows the highlight overlay on the sibling button whose tag matches the tapped selection and
+// hides it on the rest.
 - (void)refreshButtonHighlightsForTappedTag:(NSInteger)tappedTag inSuperviewOf:(UIView *)button {
     for (UIView *sibling in button.superview.subviews) {
         UIView *overlay = [sibling viewWithTag:kHighlightOverlayTag];

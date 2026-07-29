@@ -2,12 +2,12 @@
 //  RBRewardListView.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBRewardListView). Verified against
-//  the arm64 disassembly: -setupView's soft-float frame and corner-radius operands, the activity
-//  indicator's transform.scale key-value coding, and the fade durations were recovered from the
-//  register moves the decompiler folds into pseudo-variables. This is a plain Objective-C file
-//  because the class reaches the RewardNetwork advert facade through ordinary class-method message
-//  sends, with no C++.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBRewardListView). Verified
+//  against the arm64 disassembly: -setupView's soft-float frame and corner-radius operands, the
+//  activity indicator's transform.scale key-value coding, and the fade durations were recovered
+//  from the register moves the decompiler folds into pseudo-variables. This is a plain Objective-C
+//  file because the class reaches the RewardNetwork advert facade through ordinary class-method
+//  message sends, with no C++.
 //
 
 #import "RBRewardListView.h"

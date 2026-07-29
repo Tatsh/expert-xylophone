@@ -148,8 +148,8 @@ constexpr int kGhostStyleReplay = 1;
 constexpr int kStatePlayReady = 4;
 constexpr float kGaugeGrowFromValue = 450.0f; // @ghidraAddress 0x308dd8
 
-// The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or above
-// which the clear cue plays.
+// The result-voice cue and the clear-cue sound-effect slots, and the clear-rate threshold at or
+// above which the clear cue plays.
 constexpr int kResultVoiceCue = 0x13;
 constexpr int kClearCueSoundEffect = 8;
 constexpr float kClearRateThreshold = 0.7f; // @ghidraAddress 0x2fd008
@@ -177,8 +177,8 @@ constexpr int kDifficultyMedium = 1;
 constexpr int kDifficultyHard = 2;
 constexpr int kDifficultySpecial = 3;
 
-// The score-record cell holding the miss count, and its values: full-combo (0), one miss (1), two or
-// more misses (2).
+// The score-record cell holding the miss count, and its values: full-combo (0), one miss (1), two
+// or more misses (2).
 constexpr unsigned int kMissCell = 6;
 constexpr int kMissFullCombo = 0;
 constexpr int kMissOne = 1;
@@ -286,7 +286,8 @@ bool UsesFullDetailSheet(GameSystem *pGameSystem) {
     return IsPad() && (pGameSystem->GetGameType() | 2) == 2;
 }
 
-// Reports whether the active theme's intro animation is still playing, so gameplay must keep waiting.
+// Reports whether the active theme's intro animation is still playing, so gameplay must keep
+// waiting.
 bool IsThemeIntroStillAnimating(int nThema) {
     if (nThema == kThemaClassic) {
         return BackgroundSpriteManager::shared()->IsActive();
@@ -306,8 +307,9 @@ namespace rb {
 
 /** @ghidraAddress 0x14a21c */
 GameScene::GameScene() {
-    // The scene-base constructor ran first and the compiler installed the play dispatch vtable; seed
-    // the play state (the base fields and the reserved sub-state are already zero-initialised).
+    // The scene-base constructor ran first and the compiler installed the play dispatch vtable;
+    // seed the play state (the base fields and the reserved sub-state are already
+    // zero-initialised).
     m_nState = 0;
     m_nPlayTime = 0;
     m_nMode = kInitialMode;
@@ -358,8 +360,8 @@ constexpr float kDefaultScorePosition = 1.0f;
 constexpr int kSideLeft = 0;
 constexpr int kSideRight = 1;
 
-// The game types: the first and third configure the left side, the second the right. Any other value
-// is a programming error and trips the binary's assertion.
+// The game types: the first and third configure the left side, the second the right. Any other
+// value is a programming error and trips the binary's assertion.
 constexpr int kGameTypeSingle = 0;
 constexpr int kGameTypeVersus = 1;
 constexpr int kGameTypeReplay = 2;
@@ -377,8 +379,8 @@ constexpr int kModeNormal = 0;
 constexpr int kSheetRadiusPhone[] = {96, 80, 68};
 constexpr int kSheetRadiusPad[] = {72, 62, 52};
 
-// The play colour by difficulty (@ghidraAddress 0x308df8). The binary indexes this table rather than
-// passing the difficulty straight through, though every entry maps to itself.
+// The play colour by difficulty (@ghidraAddress 0x308df8). The binary indexes this table rather
+// than passing the difficulty straight through, though every entry maps to itself.
 constexpr int kPlayColorByDifficulty[] = {0, 1, 2, 3};
 
 // The intro thresholds, in play time, the scene seeds for every mode.
@@ -795,8 +797,8 @@ void GameScene::EnterResultThemeState() {
     // Start the result-voice cue.
     SoundEffectManager::GetInstance()->PlayThemedVoice(kResultVoiceCue);
 
-    // Play the clear cue when the play cleared: the achievement rate reached the clear threshold, or
-    // this is a tutorial play.
+    // Play the clear cue when the play cleared: the achievement rate reached the clear threshold,
+    // or this is a tutorial play.
     if (ScoreTracker::shared()->GetPlayRecordRate(kResultSide) >= kClearRateThreshold ||
         [RBTutorialManager isTutorialPlay]) {
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kClearCueSoundEffect);
@@ -1020,7 +1022,8 @@ void GameScene::AdvanceToPlayReadyState() {
     // Build the note-result layout for the current chart.
     NoteResultLayer::shared()->BuildQuadPositions();
 
-    // Build and fade in the on-screen frame (the alternate frame on iPad, the main frame elsewhere).
+    // Build and fade in the on-screen frame (the alternate frame on iPad, the main frame
+    // elsewhere).
     if (m_bIsPad) {
         AltFrameLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
     } else {
@@ -1100,8 +1103,8 @@ void GameScene::ActivateDueNotes() {
             continue;
         }
 
-        // Only head notes spawn here. A head paired with a tail (flag bit set and a chain-link timing
-        // selector) waits until its tail is also due.
+        // Only head notes spawn here. A head paired with a tail (flag bit set and a chain-link
+        // timing selector) waits until its tail is also due.
         if (pRecord->GetStartTime() != kHeadNoteStartTime) {
             continue;
         }
@@ -1200,8 +1203,8 @@ void GameScene::SetupPreviewPlayback() {
     }
     m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
 
-    // Start the play timer, beginning the background music when there is a chart and it is not already
-    // playing.
+    // Start the play timer, beginning the background music when there is a chart and it is not
+    // already playing.
     PlayTimer *pTimer = PlayTimer::shared();
     bool bRunning = false;
     if (bHasMusic && !pGameSystem->GetBgmPlaying()) {
@@ -1364,7 +1367,8 @@ void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
         PlayTimer *pTimer = PlayTimer::shared();
         MusicData *pMusicData = AppDelegate.appDelegate.musicData;
         if (pMusicData.MusicID == kPreviewMusicID) {
-            // The no-song demo loops its background music from the top and runs a music-driven timer.
+            // The no-song demo loops its background music from the top and runs a music-driven
+            // timer.
             [RBBGMManager.getInstance StopMusic:0.0f];
             [RBBGMManager.getInstance SeekToTop];
             [RBBGMManager.getInstance PlayMusic:0.0f];
@@ -1509,7 +1513,8 @@ void GameScene::LoadMusicNameAndFrameTexture() {
     MusicData *musicData = [AppDelegate appDelegate].musicData;
     pGameSystem->LoadMusicNameTexture(musicData);
 
-    // The iPad build uses the wide alternate-frame layer; the phone build uses the main-frame layer.
+    // The iPad build uses the wide alternate-frame layer; the phone build uses the main-frame
+    // layer.
     if (IsPad()) {
         AltFrameLayer::shared()->SetAltFrameTexture(pGameSystem->GetMusicNameTexture());
     } else {

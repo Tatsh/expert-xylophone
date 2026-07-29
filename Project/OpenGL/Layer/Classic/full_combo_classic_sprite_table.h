@@ -26,7 +26,8 @@ struct ClassicFullComboSpriteType {
 constexpr int kClassicFullComboSpriteTypeCount = 16;
 constexpr int kClassicFullComboObjectTypeCount = 3;
 
-// The Classic full-combo sprite-type descriptor table (@ghidraAddress 0x302bf8): read-only ROM data.
+// The Classic full-combo sprite-type descriptor table (@ghidraAddress 0x302bf8): read-only ROM
+// data.
 extern const ClassicFullComboSpriteType
     g_aClassicFullComboSpriteTypes[kClassicFullComboSpriteTypeCount];
 

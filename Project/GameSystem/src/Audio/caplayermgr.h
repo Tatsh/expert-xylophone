@@ -63,7 +63,8 @@ public:
     /**
      * @brief Frees the PCM data of the sound at @p index, detaching it from any active voice first.
      * @param index The registered sound id.
-     * @return @c 1 when a sound was freed, @c 0 when the index is out of range or the slot is empty.
+     * @return @c 1 when a sound was freed, @c 0 when the index is out of range or the slot is
+     * empty.
      * @ghidraAddress 0x4b870
      */
     int FreeSoundDataByIndex(int index);

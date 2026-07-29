@@ -141,9 +141,9 @@ void ClassicThemeLayer::ConfigureSpriteSlot(int nBatch,
 
 /** @ghidraAddress 0x10a01c */
 void ClassicThemeLayer::InitializeScoreGaugeState() {
-    // Seed the animation clock and the eased-progress channel: the clock starts well before zero, the
-    // channel starts and ends fully shown over a zero duration (so it reads as shown), and its current
-    // value is one. Both animation flags are raised.
+    // Seed the animation clock and the eased-progress channel: the clock starts well before zero,
+    // the channel starts and ends fully shown over a zero duration (so it reads as shown), and its
+    // current value is one. Both animation flags are raised.
     m_flClock = kAnimClockStart;
     m_easeChannel.SetStart(kEaseFullValue);
     m_easeChannel.SetEnd(kEaseFullValue);
@@ -165,7 +165,8 @@ void ClassicThemeLayer::InitializeScoreValuesFromTracker() {
 
 /** @ghidraAddress 0x10a080 */
 void ClassicThemeLayer::StartGaugeValueFade(float flDuration) {
-    // Restart the eased-progress channel from its current value down to zero over the given duration.
+    // Restart the eased-progress channel from its current value down to zero over the given
+    // duration.
     m_easeChannel.SetStart(m_easeChannel.GetCurrent());
     m_easeChannel.SetEnd(0.0f);
     m_easeChannel.SetDuration(flDuration);
@@ -215,8 +216,8 @@ constexpr int kEffectBatch = 2;
 constexpr int kScrimSpriteKind = 0;
 constexpr int kParticleSpriteKind = 4;
 
-// The play-record outcomes that gate the reveal: the winning side plays the two particle bursts, and
-// the losing side draws nothing past its banner.
+// The play-record outcomes that gate the reveal: the winning side plays the two particle bursts,
+// and the losing side draws nothing past its banner.
 constexpr int kOutcomeWin = 0;
 constexpr int kOutcomeLose = 1;
 
@@ -297,8 +298,8 @@ constexpr float kBurstBSpinPairs[][kBurstBSpinPairCount * 2] = {
     {1500.0f, 0.0f, 2000.0f, 1.5707964f},
 };
 
-// The four curve arrays the bursts sample, each pairing a keyframe count with one of the pair blocks
-// above. @ghidraAddress 0x35cb80, 0x35cc20, 0x35ccc0, and 0x35cd20.
+// The four curve arrays the bursts sample, each pairing a keyframe count with one of the pair
+// blocks above. @ghidraAddress 0x35cb80, 0x35cc20, 0x35ccc0, and 0x35cd20.
 const FloatCurve g_aBurstAScaleCurves[kBurstAParticleCount] = {
     {kBurstAScalePairCount, kBurstAScalePairs[0]},
     {kBurstAScalePairCount, kBurstAScalePairs[1]},
@@ -357,7 +358,8 @@ void ClassicThemeLayer::Update(float flDelta) {
             m_bAnimActive = false;
         }
 
-        // The eased progress fades the whole reveal in and out; every sprite's alpha is scaled by it.
+        // The eased progress fades the whole reveal in and out; every sprite's alpha is scaled by
+        // it.
         const float flProgress = m_easeChannel.GetCurrent();
 
         // The full-screen scrim darkens the play field behind the reveal.

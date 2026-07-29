@@ -19,9 +19,9 @@ class C_TEXTURE;
  *
  * A single node draws up to @c m_dwCapacity sprites of one texture in one instanced draw call; the
  * per-sprite position, size, anchor, UV-origin, UV-size, rotation, scale, and colour arrays are
- * uploaded together. It is a @c C_RENDER, so it lives in the scene graph and inherits visibility and
- * transform. The trailing @c // +0xNN comments document the original 32-bit offsets for reference
- * only; state is reached through the accessors, never through those offsets.
+ * uploaded together. It is a @c C_RENDER, so it lives in the scene graph and inherits visibility
+ * and transform. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * reference only; state is reached through the accessors, never through those offsets.
  */
 class C_SPRITE_INSTANCING_2D : public C_RENDER {
 public:
@@ -30,11 +30,11 @@ public:
      *
      * Allocates the per-sprite attribute arrays and the per-frame vertex scratch, then builds and
      * uploads the static quad vertex and index buffers (four vertices and six indices per sprite).
-     * The binary emits two near-identical constructors that differ only by draw mode: the screen-space
-     * batch (@c InitSpriteInstancer) installs the axis-aligned render path and nearest-filter texture
-     * parameters, while the world-space batch (@c InitWorldSpriteBatch) installs the camera-composed
-     * render path, sets the batch flag, and uses linear-filter parameters. They are unified here with
-     * the @p bWorldSpace selector.
+     * The binary emits two near-identical constructors that differ only by draw mode: the
+     * screen-space batch (@c InitSpriteInstancer) installs the axis-aligned render path and
+     * nearest-filter texture parameters, while the world-space batch (@c InitWorldSpriteBatch)
+     * installs the camera-composed render path, sets the batch flag, and uses linear-filter
+     * parameters. They are unified here with the @p bWorldSpace selector.
      * @param nCapacity The maximum number of sprites the batch can draw.
      * @param bWorldSpace Whether to build the world-space (camera-composed) batch rather than the
      *        screen-space one.
@@ -303,11 +303,12 @@ private:
     int m_nBlendMode = {};                  // +0x150
     bool m_bBatchFlag = {};                 // +0x154
     // +0x158: an 8-byte member present in the binary's 0x160-byte object but read or written by no
-    // C_SPRITE_INSTANCING_2D method (verified by an exhaustive whole-binary cross-reference of +0x158
-    // accesses). The sibling render-node subclasses (RenderPolygon2dMesh / RenderPolygon3dMesh) keep
-    // a live mesh-texture member here; this batch node holds its texture at m_pTexture (+0x138)
-    // instead, leaving this slot of the shared node layout unused. It is kept so the object matches
-    // the binary's allocation size. (+0x155..+0x157 is alignment padding.)
+    // C_SPRITE_INSTANCING_2D method (verified by an exhaustive whole-binary cross-reference of
+    // +0x158 accesses). The sibling render-node subclasses (RenderPolygon2dMesh /
+    // RenderPolygon3dMesh) keep a live mesh-texture member here; this batch node holds its texture
+    // at m_pTexture (+0x138) instead, leaving this slot of the shared node layout unused. It is
+    // kept so the object matches the binary's allocation size. (+0x155..+0x157 is alignment
+    // padding.)
     long long m_unused158 = {}; // +0x158
 };
 

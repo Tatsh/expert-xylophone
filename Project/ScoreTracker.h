@@ -25,9 +25,9 @@ struct PlayRecord {
 /**
  * @brief The process-wide per-play score and judgement tracker.
  *
- * Holds one @c PlayRecord for each of the two player sides, behind a leading state field. Created on
- * first use by @c GetScoreTracker. The trailing @c // +0xNN comments document the original 32-bit
- * member offsets for reference only.
+ * Holds one @c PlayRecord for each of the two player sides, behind a leading state field. Created
+ * on first use by @c GetScoreTracker. The trailing @c // +0xNN comments document the original
+ * 32-bit member offsets for reference only.
  */
 class ScoreTracker {
 public:
@@ -83,8 +83,8 @@ public:
      * @brief Recomputes each side's clear rate and grade tier from its judgement counts and records
      * which side leads.
      *
-     * Compares the two sides' first counter to pick the leading side (0, 1, or 2 for a tie), storing
-     * it in each record's trailing field. For each side the clear rate is
+     * Compares the two sides' first counter to pick the leading side (0, 1, or 2 for a tie),
+     * storing it in each record's trailing field. For each side the clear rate is
      * @c (cool*3 + great*2 + good) / (totalNotes*3), stored in the rate slot, and mapped to a grade
      * tier 0 through 5 by the same thresholds as @c GetClearRank, stored in the rank slot.
      * @ghidraAddress 0x14983c
@@ -118,12 +118,12 @@ public:
     /**
      * @brief Applies one note's judgement to a player's record and fires the score effects.
      *
-     * The binary qualifies this @c ScoreManager::AddScore (in @c score_manager.mm), but it takes the
-     * tracker as its object, so it is modelled as a tracker method. It adds the per-grade delta to
-     * the side's running score (clamped at zero), bumps the matching judgement counter, advances the
-     * combo and maximum combo (resetting the combo on a miss), recomputes the clear rate, and fires
-     * the lane-gauge, note-result, and score-digit effects. The result quad's position band is
-     * chosen from the hit's screen x against the note sheet's quarter-width, the play mode, and
+     * The binary qualifies this @c ScoreManager::AddScore (in @c score_manager.mm), but it takes
+     * the tracker as its object, so it is modelled as a tracker method. It adds the per-grade delta
+     * to the side's running score (clamped at zero), bumps the matching judgement counter, advances
+     * the combo and maximum combo (resetting the combo on a miss), recomputes the clear rate, and
+     * fires the lane-gauge, note-result, and score-digit effects. The result quad's position band
+     * is chosen from the hit's screen x against the note sheet's quarter-width, the play mode, and
      * whether the note's player matches the current play side.
      * @param nPlayer The scoring note's player index.
      * @param nPosX The hit's screen x, selecting the result-quad band.
@@ -153,8 +153,8 @@ public:
      * @brief Applies a shot-note judgement to a player's lane and fires its score/judge effects.
      *
      * Maps the player side to a lane slot, then: on the no-score path (judge flag bit 0) only bumps
-     * the lane's hit counter; otherwise adds ten to the lane's score, bumps the hit counter, retargets
-     * the player-field score digits, and fires a judge effect.
+     * the lane's hit counter; otherwise adds ten to the lane's score, bumps the hit counter,
+     * retargets the player-field score digits, and fires a judge effect.
      * @param nPlayerSide The player side selector.
      * @param nJudgeFlags The judgement flags (bit 0 marks the no-score path).
      * @ghidraAddress 0x149678

@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * The advert screen reports back through an informal delegate: the delegate implements
  * @c appListDidAppear, @c appListDidDisappear, and @c appListFailLoadWithError: as it needs them.
- * Every method forwards to @c [RewardCore sharedInstance] once @c ApplilinkConsts reports the SDK is
- * usable on this device.
+ * Every method forwards to @c [RewardCore sharedInstance] once @c ApplilinkConsts reports the SDK
+ * is usable on this device.
  */
 @interface RewardNetwork : NSObject
 

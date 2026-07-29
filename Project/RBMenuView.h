@@ -51,9 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 // The adopted protocols are transcribed from the binary's class_ro_t baseProtocols list, in order:
 // UICollectionViewDelegate, UICollectionViewDataSource, RBCollectionViewDelegate,
-// UIGestureRecognizerDelegate, RBTermAgreeViewDelegate, DownloaderDelegate, and UISearchBarDelegate.
-// (UIScrollViewDelegate is reached through UICollectionViewDelegate, and RBMenuPageSliderDelegate is
-// only conformed to informally, so neither appears in the binary's list.)
+// UIGestureRecognizerDelegate, RBTermAgreeViewDelegate, DownloaderDelegate, and
+// UISearchBarDelegate. (UIScrollViewDelegate is reached through UICollectionViewDelegate, and
+// RBMenuPageSliderDelegate is only conformed to informally, so neither appears in the binary's
+// list.)
 @interface RBMenuView : UIView <UICollectionViewDelegate,
                                 UICollectionViewDataSource,
                                 RBCollectionViewDelegate,

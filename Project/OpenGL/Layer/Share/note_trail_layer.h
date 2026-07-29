@@ -20,8 +20,9 @@ class C_SPRITE_INSTANCING_2D;
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the note
  * trails, plus a table of per-trail records. The class carries no RTTI (it is non-polymorphic), so
  * the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
- * Only the sprite-batch fields are modelled so far; the per-trail record table is kept as a reserved
- * span. The trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * Only the sprite-batch fields are modelled so far; the per-trail record table is kept as a
+ * reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * reference only.
  */
 class NoteTrailLayer : public PlayFieldLayerBase {
 public:
@@ -37,17 +38,17 @@ public:
 
     /**
      * @brief Lazily builds the note-trail sprite: loads the gm_parts1 atlas and creates the sprite
-     * instancer (attaching it under the background layer's render object, making it visible, binding
-     * the atlas, flagging additive blend, and, except on the tutorial hardware, enabling its two
-     * texture-environment parameters).
+     * instancer (attaching it under the background layer's render object, making it visible,
+     * binding the atlas, flagging additive blend, and, except on the tutorial hardware, enabling
+     * its two texture-environment parameters).
      *
      * Guarded so the sprite is built only once.
      * @ghidraAddress 0x184758
      */
     void LoadNoteTrailSprites();
 
-    // The judge grades a queued result mark may carry (asserted by Create); the most marks the queue
-    // holds in one frame; and the number of result sprite graphics CreateSprite can emit.
+    // The judge grades a queued result mark may carry (asserted by Create); the most marks the
+    // queue holds in one frame; and the number of result sprite graphics CreateSprite can emit.
     static constexpr int kJudgeMax = 4;
     static constexpr int kMaxResults = 40;
     static constexpr int kResultSpriteTypeCount = 6;
@@ -81,8 +82,8 @@ public:
      * @brief Emits one result sprite into the batch at the running write index.
      *
      * Both graphics draw a fixed 58-anchored, 116-square quad; the type only selects the UV rect.
-     * Writes the sprite's position, anchor, size, UV rect, rotation, scale, and colour (opaque white
-     * modulated by @p nAlpha), then advances the write index.
+     * Writes the sprite's position, anchor, size, UV rect, rotation, scale, and colour (opaque
+     * white modulated by @p nAlpha), then advances the write index.
      * @param nSpriteType The sprite graphic to emit (0 through @c kResultSpriteTypeCount - 1).
      * @param pPosition The sprite position.
      * @param nAlpha The sprite alpha.

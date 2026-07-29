@@ -111,7 +111,8 @@ bool GetHasGameCenterFlag(void);
 /**
  * @brief Reports whether the device uses the iPad interface idiom.
  *
- * Reads the cached idiom flag (@c UIDevice.userInterfaceIdiom @c == @c UIUserInterfaceIdiomPad) that
+ * Reads the cached idiom flag (@c UIDevice.userInterfaceIdiom @c == @c UIUserInterfaceIdiomPad)
+ * that
  * @c InitializeDeviceEnvironment sets once at startup. It selects the wide (pad) versus narrow
  * (phone) layout branch throughout the UI, and the score-digit glyph-spacing table.
  * @return @c true on an iPad-idiom device, @c false otherwise.

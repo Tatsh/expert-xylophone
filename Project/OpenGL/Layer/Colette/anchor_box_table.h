@@ -30,8 +30,8 @@ struct AnchorBoxRecord {
 constexpr int kAnchorBoxRecordCount = 4;
 
 // The three non-phone anchor-box tables, zero-initialised in the binary's @c __common segment and
-// filled at runtime by @c InitializeResultLayoutTables. The pad flag selects the pad table; otherwise
-// the orientation flag selects the portrait or default table.
+// filled at runtime by @c InitializeResultLayoutTables. The pad flag selects the pad table;
+// otherwise the orientation flag selects the portrait or default table.
 extern AnchorBoxRecord g_aAnchorBoxPad[kAnchorBoxRecordCount];      // @ghidraAddress 0x3d6530
 extern AnchorBoxRecord g_aAnchorBoxPortrait[kAnchorBoxRecordCount]; // @ghidraAddress 0x3d6580
 extern AnchorBoxRecord g_aAnchorBoxDefault[kAnchorBoxRecordCount];  // @ghidraAddress 0x3d65d0

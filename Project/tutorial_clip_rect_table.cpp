@@ -3,8 +3,8 @@
 //  REFLEC BEAT plus
 //
 //  The tutorial artwork atlas clip-rectangle table (g_pTutorialClipRect), seeded at load time.
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to the
-//  program image base.
+//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  the program image base.
 //
 
 #include <CoreGraphics/CoreGraphics.h>

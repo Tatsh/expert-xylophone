@@ -12,8 +12,8 @@
  *
  * The two components carry three interchangeable name pairs that overlay the same storage, so a
  * value reads naturally in whatever role it is playing: @c x / @c y for a position or offset,
- * @c width / @c height for a size, and @c u / @c v for a texture coordinate. All three name the same
- * two floats; the layout is unchanged.
+ * @c width / @c height for a size, and @c u / @c v for a texture coordinate. All three name the
+ * same two floats; the layout is unchanged.
  * @ghidraAddress S_VECTOR2 (engine struct type)
  */
 struct S_VECTOR2 {

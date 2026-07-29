@@ -13,8 +13,8 @@
  *
  * The flash overlay is managed by two @b class methods dispatched to the @c UIView class object
  * (@c setFlashEffectView:Duration:Start:End:Rotate: and @c removeFlashEffectView:); every other
- * method is recorded in the binary's instance-method list and dispatches to a @c UIView instance, so
- * those are reconstructed as instance methods. All selector spellings (including the mixed-case
+ * method is recorded in the binary's instance-method list and dispatches to a @c UIView instance,
+ * so those are reconstructed as instance methods. All selector spellings (including the mixed-case
  * @c SetFlashEffect… and @c SetJumpEffect… names) are preserved verbatim from the binary.
  */
 
@@ -79,7 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Start the default flash pulse on the receiver.
  *
- * Convenience for @c SetFlashEffectDuration:Start:End: with the default duration, a start opacity of
+ * Convenience for @c SetFlashEffectDuration:Start:End: with the default duration, a start opacity
+ * of
  * @c 1.0, and the dimmed end opacity.
  * @ghidraAddress 0x1a3710
  */

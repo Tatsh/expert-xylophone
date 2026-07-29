@@ -24,7 +24,8 @@ struct PauseGaugeRectSize {
 /**
  * @brief One pause-gauge sprite layout record: the sprite's anchor, size, and UV-table index.
  *
- * A 28-byte read-only record; the emitter reads the anchor, size, and UV index from it. The trailing
+ * A 28-byte read-only record; the emitter reads the anchor, size, and UV index from it. The
+ * trailing
  * @c // +0xNN comments document the byte offsets.
  */
 struct PauseGaugeSpriteLayout {
@@ -69,8 +70,8 @@ public:
 
     /**
      * @brief Constructs the pause-gauge layer: chains the UI-layer base, installs the task dispatch
-     * table, clears the state and charging flag, seeds the active-lane mask, distributes the per-lane
-     * sprite-slot ids from the lane-group table, and loads the sprites.
+     * table, clears the state and charging flag, seeds the active-lane mask, distributes the
+     * per-lane sprite-slot ids from the lane-group table, and loads the sprites.
      * @ghidraAddress 0x1508b4
      */
     PauseGaugeLayer();
@@ -151,15 +152,15 @@ public:
     void HandleExit();
 
     /**
-     * @brief The pause-menu Resume action: resumes play when a scene is active and plays the confirm
-     *        sound effect.
+     * @brief The pause-menu Resume action: resumes play when a scene is active and plays the
+     * confirm sound effect.
      * @ghidraAddress 0x15139c
      */
     static void HandleResume();
 
     /**
-     * @brief The pause-menu Retry/Release action: transitions the active scene into its music-release
-     *        state and plays the confirm sound effect.
+     * @brief The pause-menu Retry/Release action: transitions the active scene into its
+     * music-release state and plays the confirm sound effect.
      * @ghidraAddress 0x151434
      */
     static void HandleMusicRelease();
@@ -177,8 +178,8 @@ public:
     /**
      * @brief The pause-scene state-machine step: dispatches on the layer state.
      *
-     * State 0 loads the sprites, state 1 opens the pause menu, state 2 runs the per-frame show step,
-     * and state 3 flags the layer dead so the next dispatch destroys it.
+     * State 0 loads the sprites, state 1 opens the pause menu, state 2 runs the per-frame show
+     * step, and state 3 flags the layer dead so the next dispatch destroys it.
      * @ghidraAddress 0x150b38
      */
     void TaskExecute();

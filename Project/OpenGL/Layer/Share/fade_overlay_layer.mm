@@ -24,7 +24,8 @@ constexpr unsigned int kBlackChannel = 0;
 FadeOverlayLayer *FadeOverlayLayer::shared() {
     if (g_pFadeOverlayLayer == nullptr) {
         // The binary allocates the raw 0x30-byte object and runs the base constructor, then zeroes
-        // the instancer, slot, tween, and alpha fields; the zero-initialising members reproduce that.
+        // the instancer, slot, tween, and alpha fields; the zero-initialising members reproduce
+        // that.
         g_pFadeOverlayLayer = new FadeOverlayLayer();
     }
     return g_pFadeOverlayLayer;

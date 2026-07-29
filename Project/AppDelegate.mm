@@ -419,7 +419,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         [self.strageAlertView show];
     }
 
-    // If a store deep-link was queued and the music-select menu is active, jump to the store button.
+    // If a store deep-link was queued and the music-select menu is active, jump to the store
+    // button.
     if (scene && scene->GetState() == kGameSceneStateMusicSelect &&
         (self.packIDForOpenStore || self.campaignIDForOpenStore ||
          self.extendNotePIDForOpenStore)) {
@@ -550,7 +551,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                   withString:@""] stringByReplacingOccurrencesOfString:@" "
                                                                             withString:@""];
 
-    // Upload the token with the region, bundle version, and the two server-data values as a JSON POST.
+    // Upload the token with the region, bundle version, and the two server-data values as a JSON
+    // POST.
     NSArray *serverData = [AppDelegate getServerData];
     NSDictionary *payload = @{
         @"target" : GetRegionCode(),
@@ -593,7 +595,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         @"url" : userInfo[@"url"],
     }];
 
-    // While the app is active on the music-select (or earlier) screen, surface the queued push view.
+    // While the app is active on the music-select (or earlier) screen, surface the queued push
+    // view.
     GameSystem *gameSystem = GameSystem::GetGameSystem();
     rb::GameScene *scene = gameSystem->GetCurrentScene();
     if (scene && application.applicationState == UIApplicationStateActive &&
@@ -732,7 +735,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x50698 */
 + (void)ApplilinkInitialize {
-    // Only initialise when server data (a KONAMI ID login) is present; otherwise mark uninitialised.
+    // Only initialise when server data (a KONAMI ID login) is present; otherwise mark
+    // uninitialised.
     NSArray *serverData = [AppDelegate getServerData];
     if (serverData != nil && serverData[kServerDataUserIdIndex] != nil) {
         [ApplilinkNetwork

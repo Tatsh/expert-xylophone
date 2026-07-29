@@ -4,13 +4,14 @@
  * plays cached one-shot sound effects and short voices) and an @c AudioSourceSlot bus manager (the
  * @c seAVPlayer subsystem, which streams grouped sources through mixer buses). On top of those it
  * layers ObjC @c AVAudioPlayer instances for the looping background music and the currently playing
- * voice line, together with fade-in and fade-out timing, an interruption and suspend or resume state
- * machine, and a background-music stack used to overlay one tune on top of another.
+ * voice line, together with fade-in and fade-out timing, an interruption and suspend or resume
+ * state machine, and a background-music stack used to overlay one tune on top of another.
  *
  * Sound effects are addressed by an opaque handle whose top nibble tags which subsystem owns it and
  * whether it was registered by index or by call name; the low 28 bits are the raw engine index. The
  * manager keeps parallel look-up tables (@c seNameList, @c seRidList, and the @c seType dictionary)
- * so a caller may release or re-address a source by either its call name or its resource identifier.
+ * so a caller may release or re-address a source by either its call name or its resource
+ * identifier.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class AudioManager, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.
@@ -49,7 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)systemTerminate;
 /**
- * @brief Stop the engine audio graph, pause every bus, and suspend both the music and voice players.
+ * @brief Stop the engine audio graph, pause every bus, and suspend both the music and voice
+ * players.
  * @ghidraAddress 0x40d6c
  */
 - (void)systemSuspend;
@@ -334,7 +336,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Set the playback volume for a mixer group.
  * @ghidraAddress 0x3f624
  * @param seVolume The volume, ignored when it is @c 128 or greater.
- * @param groupId The mixer group: @c 0 selects the cached voice subsystem, non-zero the bus manager.
+ * @param groupId The mixer group: @c 0 selects the cached voice subsystem, non-zero the bus
+ * manager.
  */
 - (void)setSeVolume:(int)seVolume groupId:(int)groupId;
 

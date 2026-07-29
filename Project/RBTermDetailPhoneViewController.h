@@ -2,8 +2,8 @@
  * The phone-layout terms-of-use detail view controller. It is an @c RBBaseViewController subclass
  * pushed onto the navigation stack by @c RBTermPhoneViewController when a term with a body (rather
  * than an external link) is selected. It builds a navigation-bar title label and a custom "back"
- * left bar-button item, downloads the selected term's body for the current region, and shows it in a
- * non-selectable text view. A loading spinner and an optional dimming overlay cover the content
+ * left bar-button item, downloads the selected term's body for the current region, and shows it in
+ * a non-selectable text view. A loading spinner and an optional dimming overlay cover the content
  * during network activity.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBTermDetailPhoneViewController,

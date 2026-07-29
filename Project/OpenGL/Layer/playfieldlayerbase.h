@@ -10,8 +10,8 @@
  *
  * Holds the presentation context common to every theme layer: the is-pad flag, whether the device
  * is the older hardware type, and the selected theme. Concrete play-field layers (the clear gauge,
- * the player-field score layer, the effect layers) derive from it. The trailing @c // +0xNN comments
- * document the original 32-bit offsets for reference only.
+ * the player-field score layer, the effect layers) derive from it. The trailing @c // +0xNN
+ * comments document the original 32-bit offsets for reference only.
  */
 class PlayFieldLayerBase {
 public:
@@ -48,8 +48,8 @@ public:
     /**
      * @brief The base layer-release hook: releases nothing.
      *
-     * A concrete layer's destructor releases its own resources and then chains this empty base hook.
-     * The base holds only value fields, so it has nothing to release.
+     * A concrete layer's destructor releases its own resources and then chains this empty base
+     * hook. The base holds only value fields, so it has nothing to release.
      * @ghidraAddress 0x109e00
      */
     void ReleaseResources() {

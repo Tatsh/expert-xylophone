@@ -72,8 +72,9 @@ constexpr int kClearEffectInset = 0;
 constexpr int kThemeClearEffectA = 1;
 constexpr int kThemeClearEffectB = 2;
 
-// Packed sprite colours (byte order red, green, blue, alpha): the root container's opaque black, and
-// the white the background batches start at with zero alpha, which the fade fills in each frame.
+// Packed sprite colours (byte order red, green, blue, alpha): the root container's opaque black,
+// and the white the background batches start at with zero alpha, which the fade fills in each
+// frame.
 constexpr unsigned int kOpaqueBlack = 0xff000000;
 constexpr unsigned int kWhiteRgb = 0x00ffffff;
 
@@ -199,7 +200,8 @@ void BgLayer::InitializeBackgroundLayer() {
     }
 
     // Build the background-image batch as a child of the root, then size its sprite from the bound
-    // texture. SetRefCountedMember runs every time, so a deselected background releases its texture.
+    // texture. SetRefCountedMember runs every time, so a deselected background releases its
+    // texture.
     if (m_pBackgroundBatch == nullptr) {
         m_pBackgroundBatch = ne::CreateWorldSpriteBatch(m_nSpriteCapacity);
         m_pRootSprite->AttachChild(m_pBackgroundBatch);

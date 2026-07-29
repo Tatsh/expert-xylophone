@@ -19,8 +19,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and two sprite instancers, drawn beneath the shared background layer, that present the
  * gauge-part graphics. The class carries no RTTI (it is non-polymorphic), so the name is inferred
- * from its singleton getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN
- * comments document the original 32-bit offsets for reference only.
+ * from its singleton getter rather than confirmed from the runtime metadata. The trailing @c //
+ * +0xNN comments document the original 32-bit offsets for reference only.
  */
 class PlayColorLayer : public PlayFieldLayerBase {
 public:
@@ -119,8 +119,8 @@ public:
     /**
      * @brief Advances the gauge animation and emits every gauge-part sprite for the frame.
      *
-     * Advances the fill tween and the glow-pulse clock, resets both batches' sprite counts, then for
-     * each play side emits the layered base-fill, highlight, and glow part sprites at each lane
+     * Advances the fill tween and the glow-pulse clock, resets both batches' sprite counts, then
+     * for each play side emits the layered base-fill, highlight, and glow part sprites at each lane
      * position, with alpha driven by the fill level and brightness.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x839b8
@@ -144,7 +144,8 @@ private:
     // +0x58..+0x63: the three across-field gauge X positions, re-synced from the game system's
     // sheet-inset half-width each set-up.
     float m_aGaugePosX[kGaugeLaneXCount] = {}; // +0x58
-    // +0x64..+0x6b: the two toward-edge gauge Y positions, re-synced from the sheet-inset half-height.
+    // +0x64..+0x6b: the two toward-edge gauge Y positions, re-synced from the sheet-inset
+    // half-height.
     float m_aGaugePosY[kGaugeLaneYCount] = {}; // +0x64
     float m_flGlowPhase = {};                  // +0x6c: the pulsing glow rotation phase.
     bool m_bBuilt = {};                        // +0x70: set once the batches are built.

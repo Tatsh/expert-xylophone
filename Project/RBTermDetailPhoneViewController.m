@@ -3,11 +3,11 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBTermDetailPhoneViewController).
-//  This is the per-term detail controller pushed by RBTermPhoneViewController's -selectTerm:. Unlike
-//  its sibling, its -pushBarBtnBack: never plays a themed sound effect and never reaches the C++
-//  engine, so it is a plain Objective-C (.m) file. The -viewDidLoad content maths and the term-body
-//  text-view metrics were read from the arm64 disassembly, where the decompiler folds the soft-float
-//  register moves into pseudo doubles.
+//  This is the per-term detail controller pushed by RBTermPhoneViewController's -selectTerm:.
+//  Unlike its sibling, its -pushBarBtnBack: never plays a themed sound effect and never reaches the
+//  C++ engine, so it is a plain Objective-C (.m) file. The -viewDidLoad content maths and the
+//  term-body text-view metrics were read from the arm64 disassembly, where the decompiler folds the
+//  soft-float register moves into pseudo doubles.
 //
 
 #import "RBTermDetailPhoneViewController.h"
@@ -146,8 +146,8 @@ static const UIViewAutoresizing kTermTextAutoresizingMask = (UIViewAutoresizing)
     [self.view addSubview:termView];
     self.termView = termView;
 
-    // The term-body text view fills the body container, non-selectable by default, with a light body
-    // colour on a dark panel.
+    // The term-body text view fills the body container, non-selectable by default, with a light
+    // body colour on a dark panel.
     UITextView *termTextView =
         [[UITextView alloc] initWithFrame:CGRectMake(0.0,
                                                      0.0,

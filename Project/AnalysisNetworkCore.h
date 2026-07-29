@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Whether daily-active-user measurement has already been sent today.
- * @return @c YES when the persisted @c ApplilinkAnalysis.dauMeasurementDate is the same calendar day
- * as now.
+ * @return @c YES when the persisted @c ApplilinkAnalysis.dauMeasurementDate is the same calendar
+ * day as now.
  * @ghidraAddress 0x20f640
  */
 + (BOOL)getSendDauFlg;

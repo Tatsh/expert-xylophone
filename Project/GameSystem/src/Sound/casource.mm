@@ -127,8 +127,8 @@ int caSource::ReadAudioPcmData(ExtAudioFileRef hAudioFile, AudioStreamBasicDescr
         return 0;
     }
 
-    // Read frames into the buffer until it is full: each pass points a one-buffer AudioBufferList at
-    // the next unfilled span and reads as many frames as remain.
+    // Read frames into the buffer until it is full: each pass points a one-buffer AudioBufferList
+    // at the next unfilled span and reads as many frames as remain.
     int nRemaining = static_cast<int>(m_dwBufferSize);
     if (nRemaining < 1) {
         return 1;

@@ -206,8 +206,8 @@ constexpr double kSparkleSweep = -1.5707963267948966;
 constexpr float kFrameRate = 60.0f;
 constexpr float kMillisecondsPerSecond = 1000.0f;
 
-// The unit-interval-to-byte alpha scale (@ghidraAddress 0x2eed00), the scale the untimed groups draw
-// at, and the fully opaque alpha the sparkles take while they are in range.
+// The unit-interval-to-byte alpha scale (@ghidraAddress 0x2eed00), the scale the untimed groups
+// draw at, and the fully opaque alpha the sparkles take while they are in range.
 constexpr float kAlphaScale = 255.0f;
 constexpr float kUnitScale = 1.0f;
 constexpr unsigned int kOpaqueAlpha = 255;
@@ -556,8 +556,8 @@ inline float RampAndClamp(float flFrames, float flMidpoint, float flFallSpan) {
     return 0.0f;
 }
 
-// Combines a group's offset into its base position, mirroring it through the anchor when the side is
-// drawn flipped.
+// Combines a group's offset into its base position, mirroring it through the anchor when the side
+// is drawn flipped.
 inline S_VECTOR2 CombineOffset(const S_VECTOR2 &base, const S_VECTOR2 &offset, bool bMirrored) {
     S_VECTOR2 position = base;
     S_VECTOR2 delta = offset;

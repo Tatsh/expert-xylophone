@@ -91,7 +91,8 @@ constexpr GLenum kClientStateToGlArray[] = {
     GL_WEIGHT_ARRAY_OES,       // 6
 };
 
-// Maps an engine matrix-mode index (1..3) to its GL matrix mode; any other index selects model-view.
+// Maps an engine matrix-mode index (1..3) to its GL matrix mode; any other index selects
+// model-view.
 constexpr GLenum kMatrixModeToGl[] = {GL_PROJECTION, GL_TEXTURE, GL_MATRIX_PALETTE_OES};
 
 // Maps engine blend factor indices to their GL blend enums. The first two entries (GL_ZERO, GL_ONE)
@@ -247,7 +248,8 @@ bool neGLESRenderer::IsFramebufferComplete() {
 int neGLESRenderer::RenderKindToGl(RenderKind nKind) {
     assert(nKind >= 0 && nKind < RENDER_KIND_MAX);
     // The colour, depth, and stencil attachment enums are consecutive; the binary computes them
-    // inline as GL_COLOR_ATTACHMENT0_OES + kind * (GL_DEPTH_ATTACHMENT_OES - GL_COLOR_ATTACHMENT0_OES).
+    // inline as GL_COLOR_ATTACHMENT0_OES + kind * (GL_DEPTH_ATTACHMENT_OES -
+    // GL_COLOR_ATTACHMENT0_OES).
     constexpr int kAttachments[] = {
         GL_COLOR_ATTACHMENT0_OES, GL_DEPTH_ATTACHMENT_OES, GL_STENCIL_ATTACHMENT_OES};
     return kAttachments[nKind];
@@ -479,7 +481,8 @@ void neGLESRenderer::ClearColorPointer(int nStride, int nColorOffset, int nBindi
         m_nColorBufferBinding = m_nArrayBufferBound;
         m_nColorStride = kResetStrideSentinel;
         m_pColorPointer = nullptr;
-        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a pointer.
+        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a
+        // pointer.
         glColorPointer(kColorComponentCount,
                        GL_UNSIGNED_BYTE,
                        nStride,
@@ -494,7 +497,8 @@ void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
         m_anTexCoordBufferBinding[nUnit] = m_nArrayBufferBound;
         m_apTexCoordPointer[nUnit] = nullptr;
         m_anTexCoordStride[nUnit] = kResetStrideSentinel;
-        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a pointer.
+        // With a buffer bound, the GL pointer argument is a byte offset into the VBO, not a
+        // pointer.
         glTexCoordPointer(2,
                           GL_SHORT,
                           nStride,
@@ -554,9 +558,9 @@ void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
 
 /** @ghidraAddress 0x21ae8 */
 void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
-    // Translate the engine parameter type and value enums to GL and apply them to the bound texture.
-    // The binary's embedded __func__ is TexParamValueFuncToGLValue: the type and value mappers are
-    // inlined into this setter, each asserting its argument is in range.
+    // Translate the engine parameter type and value enums to GL and apply them to the bound
+    // texture. The binary's embedded __func__ is TexParamValueFuncToGLValue: the type and value
+    // mappers are inlined into this setter, each asserting its argument is in range.
     assert(nParameter >= 0 && nParameter < kTexParamTypeMax);
     assert(nValue >= 0 && nValue < kTexParamValueMax);
     glTexParameteri(GL_TEXTURE_2D,
@@ -566,8 +570,8 @@ void neGLESRenderer::SetTextureParameter(int nParameter, int nValue) {
 
 /** @ghidraAddress 0x21484 */
 void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
-    // Clear the buffer from every cached binding slot so no stale binding references the freed name,
-    // then delete it.
+    // Clear the buffer from every cached binding slot so no stale binding references the freed
+    // name, then delete it.
     const int nBuffer = static_cast<int>(dwBuffer);
     if (m_nArrayBufferBound == nBuffer) {
         m_nArrayBufferBound = 0;

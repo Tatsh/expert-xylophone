@@ -139,8 +139,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Build a five-keyframe bounce on the selected scale axes.
  *
  * The value keyframes overshoot above and dip below unit scale before settling, giving a springy
- * "bound" effect. The axis selection matches @c createScaleAnimWithFromValue:toValue:X:Y:delay:duration:
- * and returns @c nil when neither axis is selected.
+ * "bound" effect. The axis selection matches @c
+ * createScaleAnimWithFromValue:toValue:X:Y:delay:duration: and returns @c nil when neither axis is
+ * selected.
  * @param X Whether to bounce along the horizontal axis.
  * @param Y Whether to bounce along the vertical axis.
  * @param delay The animation's begin time, in seconds.

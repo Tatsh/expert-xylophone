@@ -3,8 +3,9 @@
  * product tiles (a left and a right slot) and, on construction, gives itself the store list's dark
  * neutral-grey background on both the cell and its content view and suppresses the selection
  * highlight. It does not build the tiles itself; the concrete subclasses do that. @c dealloc clears
- * each tile's delegate and @c prepareForReuse resets each tile. Its subclasses are @c StoreTableCell
- * (the pad two-up pack cell) and @c StorePackCell (the phone single-pack cell); a sibling base view,
+ * each tile's delegate and @c prepareForReuse resets each tile. Its subclasses are @c
+ * StoreTableCell (the pad two-up pack cell) and @c StorePackCell (the phone single-pack cell); a
+ * sibling base view,
  * @c StoreTableCellViewBase, is the tile type this cell hosts.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreTableCellBase, image base

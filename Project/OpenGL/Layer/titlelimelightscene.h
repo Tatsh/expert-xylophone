@@ -23,15 +23,16 @@ class C_SPRITE_INSTANCING_2D;
  * title resources and start the BGM, wait for the start music, render and animate the parts, then
  * finish and open the music list. It is a larger (0x628-byte) layer than @c rb::TitleClassicScene,
  * drawing the title from many part sprites. The trailing @c // +0xNN comments document the original
- * member offsets for reference only; the spans whose roles are still being worked out are reserved to
- * preserve the object layout.
+ * member offsets for reference only; the spans whose roles are still being worked out are reserved
+ * to preserve the object layout.
  * @ghidraAddress TitleLimelightScene (engine layer, 0x628 bytes)
  */
 namespace rb {
 
 class TitleLimelightScene : public BaseScene {
 public:
-    // The number of cached title textures and the number of part sprite instancers the layer builds.
+    // The number of cached title textures and the number of part sprite instancers the layer
+    // builds.
     static constexpr int kTextureCount = 3;
     static constexpr int kSpriteSlotCount = 0x53;
     // The number of interactive-part touch hit-rectangles the part emitter records.
@@ -47,7 +48,8 @@ public:
 
     /**
      * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
-     * zero-clears the presentation state (seeding the fade value to 1.0 and the trailing index to -1).
+     * zero-clears the presentation state (seeding the fade value to 1.0 and the trailing index to
+     * -1).
      * @ghidraAddress 0x152de8
      */
     TitleLimelightScene();
@@ -66,8 +68,8 @@ public:
     /**
      * @brief The per-frame task callback: dispatches on the layer state.
      *
-     * State 0 loads the title resources and starts the BGM, state 1 waits for the start music, state
-     * 2 renders and animates the title parts, and state 3 finishes and opens the music list.
+     * State 0 loads the title resources and starts the BGM, state 1 waits for the start music,
+     * state 2 renders and animates the title parts, and state 3 finishes and opens the music list.
      * @ghidraAddress 0x152f84
      */
     void OnFrame(int nElapsedMs) override;
@@ -79,10 +81,11 @@ private:
      * A no-op for an out-of-range kind or a full instancer. Kind 0 is the background: it binds the
      * instancer's texture and fills a full-texture quad. Every other kind reads the per-kind part
      * layout (the alt table when the alt flag at +0x49 is set, otherwise the main table) for its
-     * anchor mode, position, size, and atlas frame — the atlas frame indexing one of three UV tables
-     * by the layout's anchor mode. The interactive kinds (0x2b, 0x32, 0x34, 0x3e, 0x50) additionally
-     * record their screen rectangle into the layer's hit-rect fields for the touch tests. The sprite
-     * is tinted by the intro-fade complement (1 - the fade value) scaled by the caller's alpha.
+     * anchor mode, position, size, and atlas frame — the atlas frame indexing one of three UV
+     * tables by the layout's anchor mode. The interactive kinds (0x2b, 0x32, 0x34, 0x3e, 0x50)
+     * additionally record their screen rectangle into the layer's hit-rect fields for the touch
+     * tests. The sprite is tinted by the intro-fade complement (1 - the fade value) scaled by the
+     * caller's alpha.
      * @param nKind The part kind, also the instancer index.
      * @param nColorAlpha The caller's alpha.
      * @param flTransformX The part's base transform X.
@@ -136,10 +139,10 @@ private:
      * instancer, and emits the whole title in program order: the backdrop, the rotated lead part,
      * the row of ten, the two groups of four, the singles, the ring of fifteen, the stacked trio,
      * the four sweeping parts, the three particle-burst windows, and the corner button with its own
-     * one-second pulse. It then hit-tests a fresh touch against the five rectangles the part emitter
-     * records -- start, shot-sound audition, the two hidden-code buttons, and the voice cue -- and
-     * reads a tracked touch's net travel as a hidden-code flick. Taking the start prompt seeds the
-     * leave fade; once that fade completes the layer advances to the finish state.
+     * one-second pulse. It then hit-tests a fresh touch against the five rectangles the part
+     * emitter records -- start, shot-sound audition, the two hidden-code buttons, and the voice cue
+     * -- and reads a tracked touch's net travel as a hidden-code flick. Taking the start prompt
+     * seeds the leave fade; once that fade completes the layer advances to the finish state.
      * @param nElapsedMs The frame delta, in milliseconds, forwarded from the task callback.
      * @ghidraAddress 0x1531fc
      */
@@ -155,8 +158,8 @@ private:
      * @brief Advances the fade curve one frame toward its target value.
      *
      * While the elapsed time is below the duration, accumulates the frame delta and, once past the
-     * start delay, sets the fade value by linearly interpolating from the start to the end value over
-     * the remaining span. Past the duration, snaps the fade value to the end.
+     * start delay, sets the fade value by linearly interpolating from the start to the end value
+     * over the remaining span. Past the duration, snaps the fade value to the end.
      * @param nDeltaFrames The elapsed frame count.
      * @ghidraAddress 0x154380
      */
@@ -167,8 +170,8 @@ private:
      *
      * The sequence is the Konami code -- up, up, down, down, left, right, left, right, B, A -- and
      * each input only advances the state when it is the one the sequence expects next; anything
-     * else either leaves the state alone or, for the two openers, restarts it. The final A fires the
-     * secret sound effect, latches the hidden-code flag, and rewinds the animation clock.
+     * else either leaves the state alone or, for the two openers, restarts it. The final A fires
+     * the secret sound effect, latches the hidden-code flag, and rewinds the animation clock.
      * @param nSwipeEvent The input: a flick direction, or one of the two buttons.
      * @ghidraAddress 0x1549b8
      */
@@ -210,8 +213,8 @@ private:
     float m_flViewportWidth = {};  // +0x5d0: the viewport width cached each frame; the part emitter
                                    // halves it into the part layout's screen X origin.
     float m_flViewportHeight = {}; // +0x5d4: the viewport height, used the same way.
-    // +0x5d8: the five touch hit-rectangles the part emitter records for the interactive parts, read
-    // by the title touch tests. Each is {x, y, width, height}.
+    // +0x5d8: the five touch hit-rectangles the part emitter records for the interactive parts,
+    // read by the title touch tests. Each is {x, y, width, height}.
     HitRect m_aHitRects[kHitRectCount] = {}; // +0x5d8
 };
 

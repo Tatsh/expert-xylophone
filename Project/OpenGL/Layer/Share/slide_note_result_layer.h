@@ -18,8 +18,9 @@ class C_SPRITE_INSTANCING_2D;
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and a single sprite batch drawn beneath the shared background layer. Each frame the layer
- * advances two independent spin phases and, for every result mark queued that frame, emits a spinning
- * sprite whose graphic is chosen from the mark's judge. The class name comes from its embedded
+ * advances two independent spin phases and, for every result mark queued that frame, emits a
+ * spinning sprite whose graphic is chosen from the mark's judge. The class name comes from its
+ * embedded
  * @c slide_note_result_layer.mm path; it carries no RTTI (it is non-polymorphic). The trailing
  * @c // +0xNN comments document the original 32-bit offsets for reference only.
  */
@@ -56,9 +57,9 @@ public:
 
     /**
      * @brief Lazily builds the result sprite batch: loads the gm_parts1 atlas, creates the batch
-     * (attaching it under the background layer's render object, making it visible, binding the atlas,
-     * and flagging additive blend), and, on the newer hardware, sets its two texture-environment
-     * parameters. Guarded so the batch is built only once.
+     * (attaching it under the background layer's render object, making it visible, binding the
+     * atlas, and flagging additive blend), and, on the newer hardware, sets its two
+     * texture-environment parameters. Guarded so the batch is built only once.
      * @ghidraAddress 0x66b08
      */
     void BuildSpriteBatch();

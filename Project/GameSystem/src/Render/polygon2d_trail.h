@@ -43,9 +43,10 @@ public:
      * @brief Advances the trail's visible head along the strip by one frame's worth of travel.
      *
      * Adds @p flDeltaTime to the reveal progress (finishing and deactivating once it passes the
-     * reveal length, or waiting while it is still negative), then walks the strip's segments from the
-     * head by the per-frame step, snapping crossed vertices onto their path points and interpolating
-     * the partially-reached vertex, writing each moved vertex to the mesh in opaque white.
+     * reveal length, or waiting while it is still negative), then walks the strip's segments from
+     * the head by the per-frame step, snapping crossed vertices onto their path points and
+     * interpolating the partially-reached vertex, writing each moved vertex to the mesh in opaque
+     * white.
      * @param nDeltaTime The elapsed frame time.
      * @ghidraAddress 0x11c3e0
      */

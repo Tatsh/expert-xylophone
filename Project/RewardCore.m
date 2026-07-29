@@ -205,7 +205,7 @@ static dispatch_queue_t gRewardCoreQueue;
               postApplicationInstallWithPriority:kRewardInstallPriorityNormal
                                         callback:^(NSError *error) {
                                           /** @ghidraAddress 0x207f7c
-                                                     * (HandleInstallPostCompletionBlockInvoke) */
+                                           * (HandleInstallPostCompletionBlockInvoke) */
                                           if (error) {
                                               [RewardCore sharedInstance].initializeFlg = 0;
                                               callback(error);
@@ -401,7 +401,7 @@ static dispatch_queue_t gRewardCoreQueue;
         appliIdListWithType:kRewardListTypeInstalledPost
                    callback:^(NSDictionary *result, NSError *error) {
                      /** @ghidraAddress 0x2092e0
-                                * (HandleInstalledAppReportBlockInvoke) */
+                      * (HandleInstalledAppReportBlockInvoke) */
                      if (error) {
                          callback(error);
                          return;

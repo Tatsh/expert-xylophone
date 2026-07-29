@@ -107,8 +107,8 @@ static neGLView *g_pGLView = nil;
                            fromDrawable:static_cast<CAEAGLLayer *>(self.layer)];
     m_GLInterface->GetRenderbufferWidth(&m_FrontBufferWidth);
     m_GLInterface->GetRenderbufferHeight(&m_FrontBufferHeight);
-    neGLESRenderer::
-        IsFramebufferComplete(); // The completeness check is issued for its GL side effect only.
+    neGLESRenderer::IsFramebufferComplete(); // The completeness check is issued for its GL side
+                                             // effect only.
 
     if ([self.delegate respondsToSelector:@selector(LayoutedGLView:)]) {
         [self.delegate LayoutedGLView:self];

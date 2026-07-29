@@ -47,8 +47,8 @@ const EventSpriteDescriptor g_aEventSpriteDescriptor[] = {
     {{356.0f, 56.0f}, {712.0f, 112.0f}, 0},
 };
 
-// The event-sprite UV atlas the descriptors index by frame number. Static read-only data embedded in
-// the binary; the reconstruction carries only the entries the descriptor table references.
+// The event-sprite UV atlas the descriptors index by frame number. Static read-only data embedded
+// in the binary; the reconstruction carries only the entries the descriptor table references.
 // @ghidraAddress 0x2f7b28
 const SpriteUvEntry g_aEventSpriteUvTable[] = {
     {0.0f, 0.0f, 0.6953125f, 0.21875f},
@@ -170,7 +170,8 @@ void EventEffectLayer::Update(float flDeltaTime) {
         return;
     }
 
-    // Advance the timer; a wrap below zero or past the duration ends the effect and clears the quad.
+    // Advance the timer; a wrap below zero or past the duration ends the effect and clears the
+    // quad.
     m_flTimer += flDeltaTime;
     if (m_flTimer < 0.0f || m_flTimer > kEventDuration) {
         m_bActive = false;
@@ -199,8 +200,8 @@ void EventEffectLayer::Update(float flDeltaTime) {
     EmitEventSprite(0, bannerPos, static_cast<int>(flBannerAlpha * kAlphaScale) & 0xff, 1.0f, 1.0f);
 
     // The three side icons sweep in on their X-position curves. The binary lazily builds each curve
-    // once (a guarded one-shot), seeding its two X values from the first frame's viewport width; the
-    // function-local statics reproduce that one-time initialisation.
+    // once (a guarded one-shot), seeding its two X values from the first frame's viewport width;
+    // the function-local statics reproduce that one-time initialisation.
     const float flIconEnterX = flViewportWidth * (IsPad() ? kIconScalePad : kIconScalePhone);
     const float flIconExitX =
         IsPad() ? flViewportWidth * kIconOffsetPad : flViewportWidth * kIconOffsetPhone;

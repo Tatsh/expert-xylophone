@@ -63,9 +63,9 @@ public:
     /**
      * @brief Counts a gesture hold-timer down and fires the release cue when it expires.
      *
-     * A no-op while the score/gesture-active flag is clear. Otherwise it accumulates the frame delta
-     * into the hold timer and, once the timer passes the hold timeout, clears the active flag and
-     * plays the themed release voice.
+     * A no-op while the score/gesture-active flag is clear. Otherwise it accumulates the frame
+     * delta into the hold timer and, once the timer passes the hold timeout, clears the active flag
+     * and plays the themed release voice.
      * @param flDeltaTime The elapsed time since the last frame, in milliseconds.
      * @ghidraAddress 0x11738c
      */
@@ -76,11 +76,11 @@ public:
      * and rotating decorations, updates the gesture-hold timer and the touch/Twitter-share state,
      * then dispatches to the iPad or phone render path.
      *
-     * Off an iPad it first recomputes the portrait-orientation flag from the game system's viewport.
-     * It advances the five score channels, the signed slide/settle timer (toward zero, at differing
-     * rates by sign), the four ribbon trails (advancing them on an iPad, hiding their meshes
-     * otherwise), and two rotation counters (wrapping at 400 and 192 frames, the frame index the
-     * second counter over 48, clamped to 0 through 3).
+     * Off an iPad it first recomputes the portrait-orientation flag from the game system's
+     * viewport. It advances the five score channels, the signed slide/settle timer (toward zero, at
+     * differing rates by sign), the four ribbon trails (advancing them on an iPad, hiding their
+     * meshes otherwise), and two rotation counters (wrapping at 400 and 192 frames, the frame index
+     * the second counter over 48, clamped to 0 through 3).
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x11c1bc
      */
@@ -92,14 +92,14 @@ public:
      * Clears the eight instancer slots, then — once the panel alpha channel is non-zero — draws the
      * whole pad panel: the backdrop and frame furniture, the confirm and share buttons (each dimmed
      * while its gesture region is pressed), the music jacket and banner slots, the difficulty badge
-     * and level digits, the target score and its signed delta, the two sides' score-comparison bars,
-     * and the match-outcome, rank, and full-combo badges.
+     * and level digits, the target score and its signed delta, the two sides' score-comparison
+     * bars, and the match-outcome, rank, and full-combo badges.
      *
      * The stats then cross-fade between two horizontally sliding pages driven by the signed slide
      * timer: the front page carries the per-side judgement rows (a digit column and a proportional
-     * bar for each of just, great, good, miss, just-reflec, maximum combo, score, and rate) plus each
-     * side's rank and achievement-rate comparison against the target; the back page carries the
-     * experience/level-up group, its three chasing sparkles, and the two customize overlays. In
+     * bar for each of just, great, good, miss, just-reflec, maximum combo, score, and rate) plus
+     * each side's rank and achievement-rate comparison against the target; the back page carries
+     * the experience/level-up group, its three chasing sparkles, and the two customize overlays. In
      * single-player it finishes with the paired shadow-and-main pass over the two lane markers.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x117b84
@@ -112,16 +112,16 @@ public:
      * The phone twin of @c RenderResultScoreLayerActive, built from the phone position bank rather
      * than the pad anchor bank. It clears the eight instancer slots, then — once the panel alpha
      * channel is non-zero — draws the outer frame (its rails and header bar stretched to the
-     * viewport width, the header dimmed while the confirm region is held), two nine-slice boxes, the
-     * fixed separator rules, the music jacket and banner slots, the heading row, the target/score
-     * comparison, and the rank, full-combo, and match-outcome badges. The stats box is a third
-     * nine-slice whose top edge is notched for the page tabs.
+     * viewport width, the header dimmed while the confirm region is held), two nine-slice boxes,
+     * the fixed separator rules, the music jacket and banner slots, the heading row, the
+     * target/score comparison, and the rank, full-combo, and match-outcome badges. The stats box is
+     * a third nine-slice whose top edge is notched for the page tabs.
      *
-     * The stats and experience pages then cross-fade and slide horizontally against the signed slide
-     * timer, each with its own tab glyph alpha taken from the fifth animation channel: the stats page
-     * carries the decoration row and the two per-side stat rows (judgement counts, the two ratios,
-     * the score, and the achievement rate), the experience page the level-up group, its chasing
-     * sparkle, and the two customize overlays. In single-player it finishes with the paired
+     * The stats and experience pages then cross-fade and slide horizontally against the signed
+     * slide timer, each with its own tab glyph alpha taken from the fifth animation channel: the
+     * stats page carries the decoration row and the two per-side stat rows (judgement counts, the
+     * two ratios, the score, and the achievement rate), the experience page the level-up group, its
+     * chasing sparkle, and the two customize overlays. In single-player it finishes with the paired
      * shadow-and-main pass over the two lane markers.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x11a10c
@@ -132,24 +132,26 @@ public:
      * @brief Updates the result screen's touch handling and posts the score to Twitter on the share
      * gesture.
      *
-     * Enables the gesture regions once the panel is fully shown, runs the four hit-box regions, then
-     * tracks the centre side-slider: a horizontal drag past the threshold toggles the slider value
-     * (with a themed sound) in single-player, and the share region's tap edge posts the result to
-     * Twitter.
+     * Enables the gesture regions once the panel is fully shown, runs the four hit-box regions,
+     * then tracks the centre side-slider: a horizontal drag past the threshold toggles the slider
+     * value (with a themed sound) in single-player, and the share region's tap edge posts the
+     * result to Twitter.
      * @ghidraAddress 0x1173d8
      */
     void UpdateTouchAndPostTwitterShare();
 
     /**
-     * @brief Advances the level-up experience-bar reveal animation and returns its inverse progress.
+     * @brief Advances the level-up experience-bar reveal animation and returns its inverse
+     * progress.
      *
-     * While unsettled it accumulates the frame delta into the reveal timer, normalises it against the
-     * fixed reveal duration, clamps to the unit interval, and maps it through the gained-experience
-     * span (base experience plus progress times the gained amount, less the level-up step, over the
-     * threshold). On the way up it (re)acquires a looping reveal sound effect; once the mapped value
-     * reaches one it latches the settled flag, toggles the shown character texture, advances the
-     * asset index, and either records the pending track index or kicks off the main-asset load.
-     * The layer's main-asset scale field stores one minus the clamped progress.
+     * While unsettled it accumulates the frame delta into the reveal timer, normalises it against
+     * the fixed reveal duration, clamps to the unit interval, and maps it through the
+     * gained-experience span (base experience plus progress times the gained amount, less the
+     * level-up step, over the threshold). On the way up it (re)acquires a looping reveal sound
+     * effect; once the mapped value reaches one it latches the settled flag, toggles the shown
+     * character texture, advances the asset index, and either records the pending track index or
+     * kicks off the main-asset load. The layer's main-asset scale field stores one minus the
+     * clamped progress.
      * @param nDeltaFrames The elapsed frame count this tick.
      * @return The clamped reveal progress in the unit interval.
      * @ghidraAddress 0x1199fc
@@ -161,10 +163,11 @@ public:
      *
      * Runs the overlay's slide timer forward while the direction flag is set (clamped to the reveal
      * duration) or backward while it is clear (clamped to zero, kicking off the queued main-asset
-     * load once it settles). It then renders the overlay group at an eased Y position (offset upward
-     * by the inverse progress) and an alpha scaled by the progress: the phone path draws through the
-     * position-offset glyph helper at a fixed anchor, the iPad path through the part-sprite helper at
-     * a fixed landscape offset, and both finish with the scaled main-asset slot render.
+     * load once it settles). It then renders the overlay group at an eased Y position (offset
+     * upward by the inverse progress) and an alpha scaled by the progress: the phone path draws
+     * through the position-offset glyph helper at a fixed anchor, the iPad path through the
+     * part-sprite helper at a fixed landscape offset, and both finish with the scaled main-asset
+     * slot render.
      * @param nDeltaFrames The elapsed frame count this tick.
      * @param pBasePos The overlay group's base screen position.
      * @param flScale The base alpha/size scale. It arrives in @c v0 as a float, not in an integer
@@ -177,13 +180,13 @@ public:
      * @brief Advances and renders the customize nameplate overlay for one frame, swapping the shown
      * skin texture when its reveal completes.
      *
-     * Runs the overlay's slide timer down (while the preview is hidden) or up (while shown), swapping
-     * the displayed customize-character texture and re-entering the grow phase once the decay reaches
-     * zero with a queued asset, and firing the reveal jingle and voice at the top of the grow phase.
-     * Once fully grown it waits for the level-up voice to finish, then folds the gained experience
-     * into the running total. It renders the name and level glyphs plus the backing group at an eased
-     * Y position and progress-scaled alpha, through the part-sprite helpers on an iPad or the
-     * position-offset glyph helpers on a phone.
+     * Runs the overlay's slide timer down (while the preview is hidden) or up (while shown),
+     * swapping the displayed customize-character texture and re-entering the grow phase once the
+     * decay reaches zero with a queued asset, and firing the reveal jingle and voice at the top of
+     * the grow phase. Once fully grown it waits for the level-up voice to finish, then folds the
+     * gained experience into the running total. It renders the name and level glyphs plus the
+     * backing group at an eased Y position and progress-scaled alpha, through the part-sprite
+     * helpers on an iPad or the position-offset glyph helpers on a phone.
      * @param nDeltaFrames The elapsed frame count this tick.
      * @param pBasePos The overlay group's base screen position.
      * @param flScale The base alpha/size scale. It arrives in @c v0 as a float, not in an integer
@@ -198,9 +201,9 @@ public:
      *
      * Sets the networked-play flag from the game type, clears the display counters and sentinels
      * (the music-track indices to -1), copies the player level and experience from the game system,
-     * resolves the level-up threshold and gained experience, kicks off the customize asset load when
-     * none is pending, arms the score/gesture-active flag from the result-bonus feature, and records
-     * whether the Twitter share API is available.
+     * resolves the level-up threshold and gained experience, kicks off the customize asset load
+     * when none is pending, arms the score/gesture-active flag from the result-bonus feature, and
+     * records whether the Twitter share API is available.
      * @ghidraAddress 0x11541c
      */
     void ResetScoreDisplayState();
@@ -283,8 +286,8 @@ public:
      *
      * Selects the state table on the iPad, otherwise the portrait or
      * landscape table by the orientation flag, copies the record's four floats to @p pOutRect, then
-     * shifts the leading coordinate by the viewport's half or full width and height per the record's
-     * anchor mode.
+     * shifts the leading coordinate by the viewport's half or full width and height per the
+     * record's anchor mode.
      * @param nIndex The position-record index.
      * @param pOutRect Receives the resolved rectangle.
      * @ghidraAddress 0x114e9c
@@ -306,8 +309,8 @@ public:
      * @brief Emits one result-window part sprite by part id into an instancer slot.
      *
      * Looks up the part's placement rectangle and UV-palette rectangle and appends a quad to the
-     * slot; part ids at or above the table bound are ignored. The main pass draws at full alpha, the
-     * shadow pass at half intensity.
+     * slot; part ids at or above the table bound are ignored. The main pass draws at full alpha,
+     * the shadow pass at half intensity.
      * @param flRotation The sprite rotation, in radians.
      * @param flScaleX The sprite X scale.
      * @param flScaleY The sprite Y scale.
@@ -385,7 +388,8 @@ public:
     /**
      * @brief Renders a value padded to at least two digits with a dot glyph after the ones digit.
      *
-     * Splits @p nValue into up to four digits (at least two) and emits each digit right to left from
+     * Splits @p nValue into up to four digits (at least two) and emits each digit right to left
+     * from
      * @p position stepping by its own width, inserting the dot glyph after the ones digit.
      * @param nValue The value to render.
      * @param position The right-hand start position.
@@ -398,11 +402,11 @@ public:
      * @brief Renders a number field of glyphs at an offset position, with an optional paired glyph
      *        and dimmed leading-zero padding.
      *
-     * Splits @p nValue into up to @p nDigitCount digits, offsets @p position by @p offset, and emits
-     * each glyph (character code @p nGlyphBase plus the digit) right to left through the glyph
-     * dispatcher, advancing by each glyph's width less @p flSpacing. When the leading-zero flag is
-     * set the first digit also draws a paired glyph ten codes up, and when @p bPadRight is set the
-     * remaining positions are drawn as dimmed glyphs.
+     * Splits @p nValue into up to @p nDigitCount digits, offsets @p position by @p offset, and
+     * emits each glyph (character code @p nGlyphBase plus the digit) right to left through the
+     * glyph dispatcher, advancing by each glyph's width less @p flSpacing. When the leading-zero
+     * flag is set the first digit also draws a paired glyph ten codes up, and when @p bPadRight is
+     * set the remaining positions are drawn as dimmed glyphs.
      * @param nValue The value to render.
      * @param nDigitCount The maximum number of digits.
      * @param position The base position.
@@ -475,10 +479,10 @@ public:
     /**
      * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
      *
-     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
-     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
-     * sets its UV size to the used region (image size over allocated power-of-two size). Does nothing
-     * if the slot is empty or @p pTexture is null.
+     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in
+     * the slot, resizes it to the texture image size over its scale factor, zeroes its UV origin,
+     * and sets its UV size to the used region (image size over allocated power-of-two size). Does
+     * nothing if the slot is empty or @p pTexture is null.
      * @param nSlot The instancer slot.
      * @param pTexture The texture to bind.
      * @ghidraAddress 0x115348
@@ -491,8 +495,8 @@ public:
      * When the preview is hidden, records @p nCharacterId, marks it shown, resolves the character's
      * unlock entry (its category becomes the cached sub-id and its item the asset variant), builds
      * the customize asset path, loads that texture, and binds it into the preview instancer slot
-     * (slot 6). When the preview is already shown, marks it hidden and records @p nCharacterId as the
-     * pending id for the next toggle.
+     * (slot 6). When the preview is already shown, marks it hidden and records @p nCharacterId as
+     * the pending id for the next toggle.
      * @param nCharacterId The character/costume id to preview.
      * @ghidraAddress 0x11c5a0
      */
@@ -502,10 +506,10 @@ public:
      * @brief Begins displaying the main customize sprite asset for the given asset id.
      *
      * Records the asset id and checks its availability by the player's level threshold. When
-     * unavailable the two active flags are cleared and nothing is shown. Otherwise it marks the asset
-     * active, resets its scale to one, resolves the asset's unlock entry (its category is the asset
-     * type, its item the variant), builds and loads the asset texture, and binds it into the main
-     * asset instancer slot (5).
+     * unavailable the two active flags are cleared and nothing is shown. Otherwise it marks the
+     * asset active, resets its scale to one, resolves the asset's unlock entry (its category is the
+     * asset type, its item the variant), builds and loads the asset texture, and binds it into the
+     * main asset instancer slot (5).
      * @param nAssetId The main customize asset id.
      * @ghidraAddress 0x11c66c
      */
@@ -537,8 +541,8 @@ public:
      * @brief Draws a slot's whole bound texture image as one quad at a position and size.
      *
      * Reads the slot's bound texture, computes the used UV region (image size over allocated
-     * power-of-two size), and appends a full-intensity quad of the given size at the given position.
-     * Does nothing if the slot is empty or has no bound texture.
+     * power-of-two size), and appends a full-intensity quad of the given size at the given
+     * position. Does nothing if the slot is empty or has no bound texture.
      * @param nSlot The instancer slot.
      * @param position The quad's world position.
      * @param size The quad's size, in pixels.
@@ -612,9 +616,9 @@ public:
      *        scale.
      *
      * Looks up the glyph's placement rectangle from the phone parts table and its glyph UV-palette
-     * rectangle, adds @p offset to @p position, and appends the quad to the slot. Character codes at
-     * or above the glyph-table bound are ignored. The main pass draws at full intensity, the shadow
-     * pass at half.
+     * rectangle, adds @p offset to @p position, and appends the quad to the slot. Character codes
+     * at or above the glyph-table bound are ignored. The main pass draws at full intensity, the
+     * shadow pass at half.
      * @param nSlot The instancer slot to append to.
      * @param nCharCode The glyph character code (below the glyph-table bound).
      * @param position The glyph's base position.
@@ -639,9 +643,9 @@ public:
     /**
      * @brief Emits one phone-table glyph sprite at a resolved position index plus an offset.
      *
-     * Resolves the base position from the phone position table by @p nPositionIndex, then behaves as
-     * RenderTableSpriteAtIndex: looks up the glyph rectangle and UV rectangle, adds @p offset, and
-     * appends the quad with the given rotation and scale (half intensity on the shadow pass).
+     * Resolves the base position from the phone position table by @p nPositionIndex, then behaves
+     * as RenderTableSpriteAtIndex: looks up the glyph rectangle and UV rectangle, adds @p offset,
+     * and appends the quad with the given rotation and scale (half intensity on the shadow pass).
      * @param nSlot The instancer slot to append to.
      * @param nCharCode The glyph character code (below the glyph-table bound).
      * @param nPositionIndex The phone position-record index.
@@ -666,9 +670,9 @@ public:
     /**
      * @brief Emits one glyph sprite at a resolved position index plus an offset, X-scaled only.
      *
-     * Resolves the base position from the phone position table by @p nPositionIndex, adds @p offset,
-     * then dispatches the glyph through the glyph dispatcher with the given X scale (unit Y scale, no
-     * rotation, full intensity).
+     * Resolves the base position from the phone position table by @p nPositionIndex, adds @p
+     * offset, then dispatches the glyph through the glyph dispatcher with the given X scale (unit Y
+     * scale, no rotation, full intensity).
      * @param nSlot The instancer slot to append to.
      * @param nCharCode The glyph character code (below the glyph-table bound).
      * @param nPositionIndex The phone position-record index.
@@ -707,7 +711,8 @@ public:
     static constexpr int kScoreAnimCount = 5;
     // The number of phone-layout position records.
     static constexpr int kPositionRecordCount = 82;
-    // The number of result-screen gesture hit-box regions (the side-slider drag region is separate).
+    // The number of result-screen gesture hit-box regions (the side-slider drag region is
+    // separate).
     static constexpr int kGestureRegionCount = 4;
 
 private:
@@ -724,15 +729,15 @@ private:
     ResultWindowClassicLayer();
 
     /**
-     * @brief Begins loading the customize-character main asset for the result screen. Reconstruction
-     * pending.
+     * @brief Begins loading the customize-character main asset for the result screen.
+     * Reconstruction pending.
      * @ghidraAddress 0x11c66c
      */
     void BeginCustomizeMainAsset();
 
     // Updates the four result-screen gesture hit-box regions for the frame: for each region, resets
-    // a disabled region, then either claims a fresh touch that presses inside the region's layout box
-    // or tracks its held touch, latching a tap-edge when the held touch lifts inside the box.
+    // a disabled region, then either claims a fresh touch that presses inside the region's layout
+    // box or tracks its held touch, latching a tap-edge when the held touch lifts inside the box.
     // @ghidraAddress 0x1171a0
     void UpdateGestureTouchTracking();
 
@@ -765,8 +770,8 @@ private:
         {}; // +0x68: a signed slide/settle timer, advanced toward zero each frame.
     // +0x6c..+0x8b: the four result-screen gesture hit-box regions. The customize-character reload
     // flag reuses the first region's tap-edge byte (+0x71): the customize overlay and the
-    // result-screen gesture are never live at the same time, so the binary overlaps them in the same
-    // byte.
+    // result-screen gesture are never live at the same time, so the binary overlaps them in the
+    // same byte.
     struct GestureTouchRegion {
         int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
         bool bDown = {};                // +0x04: whether a touch is currently inside the region.
@@ -841,8 +846,8 @@ private:
     bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1b7 is alignment padding before the result scores.
     unsigned char m_aPad1b6[2] = {}; // +0x1b6
-    // +0x1b8: the two result score values seeded from the scene. The pad render path indexes them by
-    // a computed side/colour index, so they are one array rather than two scalars.
+    // +0x1b8: the two result score values seeded from the scene. The pad render path indexes them
+    // by a computed side/colour index, so they are one array rather than two scalars.
     int m_aResultScores[kSideCount] = {};
 };
 

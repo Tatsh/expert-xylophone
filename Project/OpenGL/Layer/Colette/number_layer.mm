@@ -473,7 +473,8 @@ void NumberLayer::EmitMarkerSprite(
     unsigned int uMarkerIndex, S_VECTOR2 *pPosition, int iAlpha, float flScaleW, float flScaleH) {
     const NumberMarkerLayout &layout = kNumberMarkerLayout[uMarkerIndex];
     // The shared parts atlas covers the exercised marker range; the binary's high-index branch
-    // (uMarkerIndex > 12) instead reads the layer's effect atlas, which the shipped caller never hits.
+    // (uMarkerIndex > 12) instead reads the layer's effect atlas, which the shipped caller never
+    // hits.
     (void)kEffectAtlasMarkerThreshold;
     const SpriteUvEntry &uv = g_aSpriteUvTable[layout.nUvFrameIndex];
 

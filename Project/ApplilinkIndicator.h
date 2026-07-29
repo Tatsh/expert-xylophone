@@ -1,10 +1,10 @@
 /** @file
  * Reconstructed interface for the Applilink SDK's @c ApplilinkIndicator.
  *
- * @c ApplilinkIndicator is the Applilink advert SDK's loading indicator: a dimming @c UIView overlay
- * that hosts a large white @c UIActivityIndicatorView and is shown while an advert screen loads. It
- * keeps the spinner centred on layout, exposes @c -show and @c -close to start and stop the
- * animation, and @c -touchEventActived to turn the overlay transparent and non-interactive.
+ * @c ApplilinkIndicator is the Applilink advert SDK's loading indicator: a dimming @c UIView
+ * overlay that hosts a large white @c UIActivityIndicatorView and is shown while an advert screen
+ * loads. It keeps the spinner centred on layout, exposes @c -show and @c -close to start and stop
+ * the animation, and @c -touchEventActived to turn the overlay transparent and non-interactive.
  * Reconstructed from Ghidra project rb458, program rb458.
  */
 

@@ -134,9 +134,7 @@ static const int kRecommendVerticalAlignDefault = 0;
 #pragma mark Application list
 
 + (void)openAppListWithAdLocation:(NSString *)adLocation delegate:(id)delegate {
-    [self openAppListWithAdLocation:adLocation
-                        requestCode:nil
-                           delegate:delegate];
+    [self openAppListWithAdLocation:adLocation requestCode:nil delegate:delegate];
 }
 
 + (void)openAppListWithAdLocation:(NSString *)adLocation
@@ -173,10 +171,7 @@ static const int kRecommendVerticalAlignDefault = 0;
 + (void)openAdScreenWithAdModel:(RecommendAdModel)adModel
                      adLocation:(NSString *)adLocation
                        delegate:(id)delegate {
-    [self openAdScreenWithAdModel:adModel
-                       adLocation:adLocation
-                      requestCode:nil
-                         delegate:delegate];
+    [self openAdScreenWithAdModel:adModel adLocation:adLocation requestCode:nil delegate:delegate];
 }
 
 + (void)openAdScreenWithAdModel:(RecommendAdModel)adModel
@@ -259,9 +254,7 @@ static const int kRecommendVerticalAlignDefault = 0;
 #pragma mark Interstitial
 
 + (void)openInterstitialWithAdLocation:(NSString *)adLocation delegate:(id)delegate {
-    [self openInterstitialWithAdLocation:adLocation
-                             requestCode:nil
-                                delegate:delegate];
+    [self openInterstitialWithAdLocation:adLocation requestCode:nil delegate:delegate];
 }
 
 + (void)openInterstitialWithAdLocation:(NSString *)adLocation

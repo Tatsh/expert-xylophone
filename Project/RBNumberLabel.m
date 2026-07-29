@@ -2,11 +2,11 @@
 //  RBNumberLabel.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBNumberLabel). Verified against the
-//  arm64 disassembly: the glyph tables and their asset names, the number-by-ten scaling for the
-//  decimal style, the ten-digit split, the two-pass layout that measures the run before centring the
-//  lime style, the bottom-aligned right-to-left glyph placement, and the small decimal-point marker
-//  drawn after the fractional digit.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBNumberLabel). Verified against
+//  the arm64 disassembly: the glyph tables and their asset names, the number-by-ten scaling for the
+//  decimal style, the ten-digit split, the two-pass layout that measures the run before centring
+//  the lime style, the bottom-aligned right-to-left glyph placement, and the small decimal-point
+//  marker drawn after the fractional digit.
 //
 
 #import "RBNumberLabel.h"

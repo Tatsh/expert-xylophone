@@ -205,8 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Presentation
 
 /**
- * @brief Animate the detail panel in (or, when @p showAnimation is @c NO, snap it in without a fade)
- * and start the select BGM.
+ * @brief Animate the detail panel in (or, when @p showAnimation is @c NO, snap it in without a
+ * fade) and start the select BGM.
  * @param showAnimation Whether to run the fade-in animation.
  * @ghidraAddress 0xd50a0
  */

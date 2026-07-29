@@ -195,8 +195,8 @@ void FullComboColetteLayer::InitializeBackgroundSpriteLayers() {
     ne::C_TEXTURE *const apTextureFields[] = {m_pTexture0, m_pTexture1, m_pTexture2};
 
     // Build one sprite instancer per slot, attach it under the background render object, make it
-    // visible, bind its mapped atlas, clear its sprite count, put the middle slot in additive blend,
-    // and enable each slot's two texture-environment parameters.
+    // visible, bind its mapped atlas, clear its sprite count, put the middle slot in additive
+    // blend, and enable each slot's two texture-environment parameters.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         m_apSprites[nSlot] = pSprite;

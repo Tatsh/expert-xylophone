@@ -2,10 +2,10 @@
 //  SoundPlayer.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class SoundPlayer). This is the per-voice
-//  player the SoundManager mixer graph drives: it holds a SoundData asset and a play cursor and
-//  fills the render callback's buffer list on demand. The whole class is plain Objective-C messaging
-//  over the SoundData asset, so it lives in a .m file.
+//  Reconstructed from Ghidra project rb458, program rb458 (class SoundPlayer). This is the
+//  per-voice player the SoundManager mixer graph drives: it holds a SoundData asset and a play
+//  cursor and fills the render callback's buffer list on demand. The whole class is plain
+//  Objective-C messaging over the SoundData asset, so it lives in a .m file.
 //
 
 #import "SoundPlayer.h"

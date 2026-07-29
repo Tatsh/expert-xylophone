@@ -2,8 +2,8 @@
 //  RBUnlockView.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockView). Verified against the
-//  arm64 disassembly: -setupView's idiom- and theme-dependent soft-float geometry and
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBUnlockView). Verified against
+//  the arm64 disassembly: -setupView's idiom- and theme-dependent soft-float geometry and
 //  -reloadData's scroll-content layout were recovered from the register moves the decompiler folds
 //  into pseudo-variables. This is an Objective-C++ file because it preloads the C++ shot-sound and
 //  themed sound-effect engine singletons.
@@ -613,8 +613,8 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
 #pragma mark Music download
 
 - (void)getMusicInfoWithMusicID:(unsigned int)musicID {
-    // Overlay the tapped cell's frame artwork, or its plain artwork when the frame is hidden, with a
-    // progress spinner inset from the artwork bounds.
+    // Overlay the tapped cell's frame artwork, or its plain artwork when the frame is hidden, with
+    // a progress spinner inset from the artwork bounds.
     if (!self.selectedCell.frameImageView.isHidden) {
         self.progressOverlayView = [[DAProgressOverlayView alloc]
             initWithFrame:CGRectInset(self.selectedCell.frameImageView.bounds,

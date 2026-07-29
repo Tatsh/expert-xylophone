@@ -19,8 +19,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It presents
  * the event-notification effect through a small root sprite instancer and a main instancer nested
  * beneath it. The class carries no RTTI (it is non-polymorphic), so the name is inferred from its
- * singleton getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN comments
- * document the original 32-bit offsets for reference only.
+ * singleton getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN
+ * comments document the original 32-bit offsets for reference only.
  */
 class EventEffectLayer : public PlayFieldLayerBase {
 public:
@@ -61,8 +61,8 @@ public:
     /**
      * @brief Sets the full-screen background quad's colour and size in the root instancer.
      *
-     * Sizes the single background sprite to the current viewport and sets its colour to opaque black
-     * scaled by @p nAlpha (packed into the colour's high byte).
+     * Sizes the single background sprite to the current viewport and sets its colour to opaque
+     * black scaled by @p nAlpha (packed into the colour's high byte).
      * @param nAlpha The background alpha (0 through 255).
      * @ghidraAddress 0x1be9b4
      */
@@ -71,9 +71,9 @@ public:
     /**
      * @brief Advances the event effect one frame and re-emits its animated sprites.
      *
-     * Caches the viewport, clears the main instancer, and — while active — advances the effect timer
-     * (deactivating and clearing the background once it runs out), plays the banner sound on the
-     * first live frame, then fades the background quad and emits the centred banner, the three
+     * Caches the viewport, clears the main instancer, and — while active — advances the effect
+     * timer (deactivating and clearing the background once it runs out), plays the banner sound on
+     * the first live frame, then fades the background quad and emits the centred banner, the three
      * curve-swept side icons, and a mode-dependent extra sprite, all driven by the timer curves.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x1be5dc
@@ -86,8 +86,8 @@ public:
      *
      * A no-op when the main instancer is full. The sprite's anchor, size, and atlas frame come from
      * the shared event-sprite descriptor table (indexed by @p uDescIdx); in portrait the anchor and
-     * size are halved. Its scale is taken directly from @p flScaleX and @p flScaleY, and it is drawn
-     * opaque white at @p iAlpha.
+     * size are halved. Its scale is taken directly from @p flScaleX and @p flScaleY, and it is
+     * drawn opaque white at @p iAlpha.
      * @param uDescIdx The event-sprite descriptor index.
      * @param pPosition The sprite's world position.
      * @param iAlpha The sprite alpha (0 through 255).

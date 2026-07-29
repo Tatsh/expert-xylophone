@@ -39,8 +39,8 @@ constexpr int kAdditiveBlendMode = 1;
 constexpr int kSpriteTypeMax = 2;
 
 // The fixed anchor and quad size, in points, every damage sprite draws with (@ghidraAddress
-// 0x30bf28 anchor, 0x30bf2c size), the atlas cell UV size (0x30bf30 U; V is an inline constant), and
-// the Colette-theme vertical nudge (0x307a3c above, 0x30bf24 below).
+// 0x30bf28 anchor, 0x30bf2c size), the atlas cell UV size (0x30bf30 U; V is an inline constant),
+// and the Colette-theme vertical nudge (0x307a3c above, 0x30bf24 below).
 constexpr float kSpriteAnchor = 84.0f;
 constexpr float kSpriteSize = 168.0f;
 constexpr float kSpriteUvSizeU = 0.08203125f;
@@ -48,7 +48,8 @@ constexpr float kSpriteUvSizeV = 0.1640625f;
 constexpr float kColetteOffsetAbove = 42.0f;
 constexpr float kColetteOffsetBelow = -42.0f;
 
-// The half-turn rotation a mirrored (negative-y) sprite takes, in radians (@ghidraAddress 0x2fe894).
+// The half-turn rotation a mirrored (negative-y) sprite takes, in radians (@ghidraAddress
+// 0x2fe894).
 constexpr float kMirrorRotation = 3.1415927f;
 
 // Scales a lane's unit-interval alpha to the byte range (@ghidraAddress 0x2eed00).
@@ -65,8 +66,8 @@ constexpr float kFrameDivisor = 20.8333f;
 constexpr int kAnimFrameCount = 24;
 constexpr int kLastAnimFrame = kAnimFrameCount - 1;
 
-// The damage animation UV table (@ghidraAddress 0x30bf40): kSpriteTypeMax colours of kAnimFrameCount
-// frame UV origins, indexed nColor * kAnimFrameCount + frame.
+// The damage animation UV table (@ghidraAddress 0x30bf40): kSpriteTypeMax colours of
+// kAnimFrameCount frame UV origins, indexed nColor * kAnimFrameCount + frame.
 constexpr S_VECTOR2 kBoundsDamageUv[] = {
     {0.0f, 0.0f},           {0.0830078f, 0.0f},      {0.166016f, 0.0f},      {0.249023f, 0.0f},
     {0.332031f, 0.0f},      {0.415039f, 0.0f},       {0.498047f, 0.0f},      {0.581055f, 0.0f},
@@ -187,7 +188,8 @@ void DamageEffectLayer::EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VEC
     pBatch->SetSpriteUvSize(nIndex, S_VECTOR2{kSpriteUvSizeU, kSpriteUvSizeV});
     pBatch->SetSpriteScale(nIndex, flScale, flScale);
 
-    // A sprite below the field (negative y) is mirrored a half-turn and uses the second lane's alpha.
+    // A sprite below the field (negative y) is mirrored a half-turn and uses the second lane's
+    // alpha.
     float flAlphaScale;
     if (pPosition->y < 0.0f) {
         pBatch->SetSpriteRotation(nIndex, kMirrorRotation);

@@ -49,8 +49,8 @@ namespace rb {
 
 /** @ghidraAddress 0x149a04 */
 LogoScene::LogoScene() {
-    // The base constructor installs the task node; the member initialisers zero-clear the animation,
-    // fade, and sprite state. The fade's current value is seeded to one.
+    // The base constructor installs the task node; the member initialisers zero-clear the
+    // animation, fade, and sprite state. The fade's current value is seeded to one.
     m_fade.SetCurrent(1.0f);
 }
 

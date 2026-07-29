@@ -68,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showAnimation;
 
 /**
- * @brief Animate the panel closed: disable the buttons and shrink the panel back up to the top edge.
+ * @brief Animate the panel closed: disable the buttons and shrink the panel back up to the top
+ * edge.
  * @ghidraAddress 0xeb674
  */
 - (void)hideAnimation;

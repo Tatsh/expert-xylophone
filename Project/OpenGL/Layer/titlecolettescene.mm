@@ -41,7 +41,8 @@ constexpr int kStateFinish = 3;
 constexpr float kInitialFadeValue = 1.0f;
 constexpr int kNoTouchId = -1;
 
-// The three shared title texture base names; the fourth cached texture is the campaign-specific one.
+// The three shared title texture base names; the fourth cached texture is the campaign-specific
+// one.
 constexpr const char *kTitleTextureNames[] = {
     "00_texture/ti_bg",
     "00_texture/ti_parts",
@@ -66,7 +67,8 @@ static NSString *const kTitleSeType = @"m4a";
 // The part name spliced into the theme sound-effect path (@ghidraAddress 0x35dca8).
 static NSString *const kTitleSePartName = @"JUMP";
 
-// The background part fills the screen from its texture; the logo parts carry a distinct render type.
+// The background part fills the screen from its texture; the logo parts carry a distinct render
+// type.
 constexpr unsigned int kBackgroundPartId = 0;
 constexpr int kPartTypeLogo = 3;
 
@@ -284,8 +286,9 @@ void TitleColetteScene::LoadResources() {
     m_apTextures[2] = ne::C_TEXTURE::FindOrLoadCached(kTitleTextureNames[2]);
     m_apTextures[3] = ne::C_TEXTURE::FindOrLoadCached(campaignTexture.UTF8String);
 
-    // Build the 104 part sprite instancers: register each in the global scene tree, make it visible,
-    // bind its texture from the layout table (unless the part binds none), and seed its sprite count.
+    // Build the 104 part sprite instancers: register each in the global scene tree, make it
+    // visible, bind its texture from the layout table (unless the part binds none), and seed its
+    // sprite count.
     const TitlePartLayoutRecord *pLayout =
         IsPad() ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault;
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
@@ -352,8 +355,8 @@ void TitleColetteScene::RecordPartHitBox(unsigned int nPartId,
         nSlot = kHitBoxSoundEffect;
         break;
     case kPartCorporateLogo:
-        // The corporate-logo part in the landscape layout uses a nudged, grown hit-box; the portrait
-        // layout uses the plain rectangle.
+        // The corporate-logo part in the landscape layout uses a nudged, grown hit-box; the
+        // portrait layout uses the plain rectangle.
         if (!IsPad()) {
             m_aHitBox[kHitBoxCorporateLogo] = TitleHitRect{flLeft + kCorporateHitOffsetX,
                                                            flTop + kCorporateHitOffsetY,
@@ -404,8 +407,8 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         pSprite->SetSpritePosition(nIndex, position);
         pSprite->SetSpriteScale(nIndex, flScale, flScale);
     } else {
-        // The other parts take their placement from the platform layout table and their UV rectangle
-        // from the type-specific atlas table.
+        // The other parts take their placement from the platform layout table and their UV
+        // rectangle from the type-specific atlas table.
         const bool bIsPad = IsPad();
         const TitlePartLayoutRecord &layout =
             (bIsPad ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault)[nPartId];
@@ -442,8 +445,8 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
     }
 
     pSprite->SetSpriteRotation(nIndex, flRotation);
-    // The tint is scaled by the reveal (one minus the fade value): as the fade eases toward zero the
-    // parts brighten in and the alpha rises.
+    // The tint is scaled by the reveal (one minus the fade value): as the fade eases toward zero
+    // the parts brighten in and the alpha rises.
     const float flReveal = 1.0f - m_flFadeValue;
     pSprite->SetSpriteColor(nIndex,
                             static_cast<unsigned int>(flReveal * color.r),
@@ -609,8 +612,8 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         m_bAttractMode = true;
     }
 
-    // In the Hinabita campaign, advance the sound-effect timer (arming the ready flag), and once the
-    // sound effect has fired, accumulate the elapsed time since.
+    // In the Hinabita campaign, advance the sound-effect timer (arming the ready flag), and once
+    // the sound effect has fired, accumulate the elapsed time since.
     if (m_bHinabitaMode) {
         m_nSeTimer += nDeltaMs;
         if (m_nSeTimer > kSeReadyThreshold) {
@@ -623,8 +626,8 @@ void TitleColetteScene::RunMainLoop(int nElapsedMs) {
         }
     }
 
-    // Drive the logo swing: while held (m_bSwingToggle) the phase steps by the velocity and rewinds a
-    // full turn past the squared limit; when released it idles back toward zero. A non-zero phase
+    // Drive the logo swing: while held (m_bSwingToggle) the phase steps by the velocity and rewinds
+    // a full turn past the squared limit; when released it idles back toward zero. A non-zero phase
     // rotates each of the twelve swing particles into its animated position.
     if (m_bSwingToggle) {
         m_nSwingPhase += m_nSwingDelta;
@@ -930,8 +933,8 @@ void TitleColetteScene::RenderCampaignPortrait() {
                        0.0f,
                        S_VECTOR3{kFullColor, kFullColor, kFullColor});
     } else {
-        // Shown and reacting to a sound-effect hit: the main portrait plays the reaction squash over
-        // the reaction timer; when it finishes the reaction flag and timer reset.
+        // Shown and reacting to a sound-effect hit: the main portrait plays the reaction squash
+        // over the reaction timer; when it finishes the reaction flag and timer reset.
         const float flTime = static_cast<float>(m_nSeAccumulator);
         const float flScale = CalculateCurveInterpolation(g_aCampaignPortraitReaction, 6, flTime);
         EmitPartSprite(kPartCampaignMain,

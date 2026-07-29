@@ -2,12 +2,12 @@
 //  RBSettingView.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBSettingView). Verified against the
-//  arm64 disassembly: -setupView:'s per-theme panel styling and the vertical button-stack maths were
-//  recovered from the soft-float register moves that the decompiler folds into pseudo-variables, and
-//  the open/close frame animations were confirmed against the block literals the decompiler emits.
-//  This is an Objective-C++ file because several handlers reach the C++ SoundEffectManager engine
-//  singleton.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBSettingView). Verified against
+//  the arm64 disassembly: -setupView:'s per-theme panel styling and the vertical button-stack maths
+//  were recovered from the soft-float register moves that the decompiler folds into
+//  pseudo-variables, and the open/close frame animations were confirmed against the block literals
+//  the decompiler emits. This is an Objective-C++ file because several handlers reach the C++
+//  SoundEffectManager engine singleton.
 //
 
 #import "RBSettingView.h"
@@ -30,9 +30,9 @@ constexpr int kSoundEffectCancel = 4;
 constexpr int kSoundEffectSettingOpenClassic = 3;
 constexpr int kSoundEffectSettingOpen = 12;
 
-// Autoresizing masks. The overlay itself stays pinned to the whole screen; the panel keeps its width
-// and stays anchored to the top; each button keeps its width and stays anchored to the bottom of the
-// panel so the column grows downward.
+// Autoresizing masks. The overlay itself stays pinned to the whole screen; the panel keeps its
+// width and stays anchored to the top; each button keeps its width and stays anchored to the bottom
+// of the panel so the column grows downward.
 constexpr UIViewAutoresizing kAutoresizingFull =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
@@ -46,9 +46,9 @@ constexpr UIViewAutoresizing kAutoresizingButton =
 // The panel fades and slides over a quarter second.
 constexpr NSTimeInterval kSettingAnimationDuration = 0.25;
 
-// Colette-theme (thema == 2) panel background and border colours, and the shared border width used by
-// the Classic and Colette themes. Read from the binary's constant pool at 0x1003016a0 (background
-// RGB), 0x1003016c0 (border RGB), and 0x1003016b8 (border width).
+// Colette-theme (thema == 2) panel background and border colours, and the shared border width used
+// by the Classic and Colette themes. Read from the binary's constant pool at 0x1003016a0
+// (background RGB), 0x1003016c0 (border RGB), and 0x1003016b8 (border width).
 constexpr CGFloat kColetteBackgroundRed = 0.945;
 constexpr CGFloat kColetteBackgroundGreen = 0.9420;
 constexpr CGFloat kColetteBackgroundBlue = 0.7647;
@@ -60,9 +60,9 @@ constexpr CGFloat kThemedBorderWidth = 1.3;
 // The Limelight theme (thema == 1) uses a plain white panel with a fixed corner radius.
 constexpr CGFloat kLimelightCornerRadius = 10.0;
 
-// Per-theme panel corner radii, indexed by RBUserSettingData.thema. The default table is used for the
-// iPad (wide) layout; the region table (IsPad() == 0) is used otherwise. Values read from
-// the binary's constant pool at 0x1003017d0 and 0x1003017dc.
+// Per-theme panel corner radii, indexed by RBUserSettingData.thema. The default table is used for
+// the iPad (wide) layout; the region table (IsPad() == 0) is used otherwise. Values read from the
+// binary's constant pool at 0x1003017d0 and 0x1003017dc.
 constexpr CGFloat kSettingCornerRadiusDefault[] = {22.0, 22.0, 33.0};
 constexpr CGFloat kSettingCornerRadiusRegion[] = {14.0, 14.0, 14.0};
 

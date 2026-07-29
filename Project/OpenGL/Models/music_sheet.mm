@@ -270,8 +270,8 @@ int CMusicSheet2::ParseNoteChartFile(const void *pBytes, GameSystem *pGameSystem
     m_nVersion = static_cast<int>(pWords[1]);
     const auto *pStream = static_cast<const unsigned char *>(pBytes) + 16;
 
-    // The parsers read the post-header byte stream as arrays of words; the cast reinterprets the raw
-    // chart bytes as the word type each format parser consumes.
+    // The parsers read the post-header byte stream as arrays of words; the cast reinterprets the
+    // raw chart bytes as the word type each format parser consumes.
     bool bParsed;
     if (static_cast<unsigned int>(m_nVersion - kMinModernVersion) < kModernVersionSpan) {
         bParsed = ParseNotesV10(reinterpret_cast<const unsigned long *>(pStream)) != 0;
@@ -365,8 +365,8 @@ constexpr int kIndexArraySentinel = 0x7fffffff;
 
 /** @ghidraAddress 0x13029c */
 unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
-    // perSideCounters[side]: note index; [side+2]: playable+slide index count; [side+4]: side-object
-    // count; [side+6]: non-slide-tail (playable) count.
+    // perSideCounters[side]: note index; [side+2]: playable+slide index count; [side+4]:
+    // side-object count; [side+6]: non-slide-tail (playable) count.
     int perSideCounters[8] = {};
     const int nPlayColor = pGameSystem->GetPlayColor();
     const int nVersion = m_nVersion;
@@ -1024,8 +1024,8 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
         } else {
             bool bSpread = false;
             if ((record.GetFlags() & kNoteFlagSideObject) != 0) {
-                // A side note first marks the colour-tone slots of overlapping same-lane hold notes,
-                // then spreads onto them.
+                // A side note first marks the colour-tone slots of overlapping same-lane hold
+                // notes, then spreads onto them.
                 unsigned char aScanFlags[kSideScanSlotCount] = {};
                 int nMarked = -1;
                 for (int j = i; j < m_nNoteCount; ++j) {
@@ -1112,7 +1112,8 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
 
 /** @ghidraAddress 0x131450 */
 void CMusicSheet2::AssignGreenTargets() {
-    // First pass: record each hold note's or colour-resolved note's chosen target and mark its slot.
+    // First pass: record each hold note's or colour-resolved note's chosen target and mark its
+    // slot.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         int nTarget = -1;
@@ -1129,8 +1130,8 @@ void CMusicSheet2::AssignGreenTargets() {
         }
     }
 
-    // Second pass: for eligible green notes, initialise the availability bitmap then clear the slots
-    // blocked by overlapping and chained notes.
+    // Second pass: for eligible green notes, initialise the availability bitmap then clear the
+    // slots blocked by overlapping and chained notes.
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
         const bool bEligible =
@@ -1167,8 +1168,8 @@ void CMusicSheet2::AssignGreenTargets() {
             }
         }
 
-        // Walk the chain forward (field -3) and backward (field -4); each step re-derives the search
-        // from the note just found, and each side trims the bitmap from one end.
+        // Walk the chain forward (field -3) and backward (field -4); each step re-derives the
+        // search from the note just found, and each side trims the bitmap from one end.
         int nForward = 0;
         for (RbffNoteRecord *pChain = &record;
              (pChain = FindChainNote(pChain->GetLane(),

@@ -18,8 +18,8 @@ public:
     /**
      * @brief Advances the tween by @p flDeltaTime and returns its current value.
      *
-     * Before the delay elapses the cached value is returned unchanged; afterwards the accumulator is
-     * advanced (clamped not to overshoot), the normalised ramp position is computed, and the
+     * Before the delay elapses the cached value is returned unchanged; afterwards the accumulator
+     * is advanced (clamped not to overshoot), the normalised ramp position is computed, and the
      * interpolated value is cached and returned.
      * @param flDeltaTime The elapsed frame time.
      * @return The updated current value.

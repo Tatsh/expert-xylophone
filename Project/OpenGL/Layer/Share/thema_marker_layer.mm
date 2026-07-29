@@ -255,8 +255,8 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const int nPlaySide = pGameSystem->GetPlayColor();
 
-    // The two mirrored Y positions: the near-lane slope (and its negative) scaled by the sheet-inset
-    // half-height.
+    // The two mirrored Y positions: the near-lane slope (and its negative) scaled by the
+    // sheet-inset half-height.
     const float flInsetHalfY = pGameSystem->GetSheetInsetHalfY();
     const float aMirroredY[kMirrorSlotCount] = {g_flPlayfieldNearLaneSlope * flInsetHalfY,
                                                 g_flPlayfieldNearLaneSlopeNeg * flInsetHalfY};
@@ -279,9 +279,9 @@ void ThemaMarkerLayer::RenderThemaMarkerFrame() {
         for (int nSprite = 0; nSprite < kMarkerSpriteCount[nGroup]; ++nSprite) {
             const int nIndex = nBaseIndex + nSprite;
             pBatch->SetSpritePositionY(nIndex, flY);
-            // The tall band (groups 4, 5) is double-height with a bottom-centred anchor; the mid band
-            // (groups 2, 3) is single-height with a centred anchor; the top band (groups 0, 1) keeps
-            // its built size.
+            // The tall band (groups 4, 5) is double-height with a bottom-centred anchor; the mid
+            // band (groups 2, 3) is single-height with a centred anchor; the top band (groups 0, 1)
+            // keeps its built size.
             if (nGroup - kTallBandFirstGroup < kBandGroupSpan &&
                 nGroup - kTallBandFirstGroup >= 0) {
                 pBatch->SetSpriteSize(nIndex, S_VECTOR2{flWidth, flRadius + flRadius});
@@ -470,7 +470,8 @@ void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
                 flAlpha = flBase * m_flDangerBrightness * m_flScaleY * kBandDimFactor;
                 break;
             default:
-                // Groups 4 and 5 use the fade value times the X scale, ignoring the per-group scale.
+                // Groups 4 and 5 use the fade value times the X scale, ignoring the per-group
+                // scale.
                 flAlpha = m_fadeChannel.GetCurrent() * kMarkerAlphaScale * m_flScaleX;
                 break;
             }

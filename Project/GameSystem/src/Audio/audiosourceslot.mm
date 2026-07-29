@@ -2,8 +2,8 @@
 //  audiosourceslot.mm
 //  REFLEC BEAT plus
 //
-//  The AVFoundation sound-effect source manager (AudioSourceSlot). Reconstructed from Ghidra project
-//  rb458, program rb458. @ghidraAddress values are relative to the program image base.
+//  The AVFoundation sound-effect source manager (AudioSourceSlot). Reconstructed from Ghidra
+//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
 #include "audiosourceslot.h"

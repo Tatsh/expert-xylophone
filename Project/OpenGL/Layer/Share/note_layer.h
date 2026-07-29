@@ -31,7 +31,8 @@ extern int g_nParticleActiveIndex; // @ghidraAddress 0x3df228
  */
 class NoteLayer : public PlayFieldLayerBase {
 public:
-    // The number of pooled particles, the number of sprite batches, and the number of scroll phases.
+    // The number of pooled particles, the number of sprite batches, and the number of scroll
+    // phases.
     static constexpr int kParticleCount = 256;
     static constexpr int kBatchCount = 3;
     static constexpr int kScrollPhaseCount = 3;
@@ -39,12 +40,12 @@ public:
     /**
      * @brief Advances the scroll phases and emits every live particle's sprites for the frame.
      *
-     * Advances the three scrolling animation phases (each wrapped into its range), derives the frame's
-     * rotation and a triangle-wave global fade, and reads the play colour to pick the two per-lane
-     * colour multipliers. It then walks the particle pool up to the shared active index: each live slot
-     * is consumed (its active flag cleared) and, by its kind, emits the sprite quad(s) that make it up
-     * through @c CreateSprite. Finally it publishes each batch's slot count to its instancer and resets
-     * the shared active index.
+     * Advances the three scrolling animation phases (each wrapped into its range), derives the
+     * frame's rotation and a triangle-wave global fade, and reads the play colour to pick the two
+     * per-lane colour multipliers. It then walks the particle pool up to the shared active index:
+     * each live slot is consumed (its active flag cleared) and, by its kind, emits the sprite
+     * quad(s) that make it up through @c CreateSprite. Finally it publishes each batch's slot count
+     * to its instancer and resets the shared active index.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x188cc0
      */
@@ -78,9 +79,9 @@ public:
      * @brief Builds the three gm_parts1 particle sprite batches on first use.
      *
      * Loads the atlas, creates each batch sized to its seeded capacity, attaches them under the
-     * background layer, makes them visible, flags additive blend on the outer two, seeds two texture
-     * parameters on the middle batch (non-tutorial build), and resets the shared particle active
-     * index. Guarded so it runs only once.
+     * background layer, makes them visible, flags additive blend on the outer two, seeds two
+     * texture parameters on the middle batch (non-tutorial build), and resets the shared particle
+     * active index. Guarded so it runs only once.
      * @ghidraAddress 0x188954
      */
     void CreateSpriteBatches();
@@ -105,11 +106,11 @@ public:
      * rotation.
      *
      * Resolves the particle sprite kind from the note colour and end type (a head, @p nEndType 0,
-     * selects one of four fixed kinds from the two shape flags; a tail, end type 1, uses the colour's
-     * kind), and its rotation (a head is mirrored a half turn when its colour differs from the current
-     * play colour; a tail faces its travel direction from @c atan2 plus a quarter turn). It stores the
-     * particle in the first free pool slot from the shared active index, and — when @p bSpawnTrail is
-     * set — also spawns a trailing particle at the same position and scale.
+     * selects one of four fixed kinds from the two shape flags; a tail, end type 1, uses the
+     * colour's kind), and its rotation (a head is mirrored a half turn when its colour differs from
+     * the current play colour; a tail faces its travel direction from @c atan2 plus a quarter
+     * turn). It stores the particle in the first free pool slot from the shared active index, and —
+     * when @p bSpawnTrail is set — also spawns a trailing particle at the same position and scale.
      * @param nColor The note's player colour (0 or 1).
      * @param nEndType The note end type (0 head, 1 tail).
      * @param nShapeFlagA The first head shape selector.
@@ -137,13 +138,15 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the header and particle pool,
-     * resets the shared active index, and seeds each sprite batch's capacity from the seed tables.
+     * @brief Constructs the layer: chains the base constructor, clears the header and particle
+     * pool, resets the shared active index, and seeds each sprite batch's capacity from the seed
+     * tables.
      * @ghidraAddress 0x188850
      */
     NoteLayer();
 
-    /** @brief One pooled particle (28 bytes): its active flag, kind, position, rotation, and scale. */
+    /** @brief One pooled particle (28 bytes): its active flag, kind, position, rotation, and scale.
+     */
     struct Particle {
         bool bActive = {};                 // +0x00: whether the slot holds a live particle.
         unsigned char aReserved01[3] = {}; // +0x01

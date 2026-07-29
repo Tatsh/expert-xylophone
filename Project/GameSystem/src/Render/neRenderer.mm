@@ -19,8 +19,8 @@ ne::CameraNode *g_pCurrentModelNode = nullptr;   // @ghidraAddress 0x3cff18
 /** @ghidraAddress 0x2991c */
 ne::Viewport::Viewport(
     float flWidth, float flHeight, int nViewX, int nViewY, int nViewW, int nViewH) {
-    // The binary redundantly sets the projection matrix to identity first; MakeOrthoMatrix overwrites
-    // it entirely. The field of view and aspect stay zero for an ortho viewport.
+    // The binary redundantly sets the projection matrix to identity first; MakeOrthoMatrix
+    // overwrites it entirely. The field of view and aspect stay zero for an ortho viewport.
     m_nRefCount = 1;
     m_nViewX = nViewX;
     m_nViewY = nViewY;
@@ -78,7 +78,8 @@ void ne::Viewport::Release() {
 
 /** @ghidraAddress 0x29a80 */
 void ne::Viewport::ApplyToRenderer(neGLESRenderer *pRenderer) {
-    // The engine matrix-mode index for the projection matrix (SetMatrixMode maps 1 to GL_PROJECTION).
+    // The engine matrix-mode index for the projection matrix (SetMatrixMode maps 1 to
+    // GL_PROJECTION).
     constexpr int kMatrixModeProjection = 1;
     pRenderer->SetViewport(GetViewX(), GetViewY(), GetViewWidth(), GetViewHeight());
     pRenderer->SetMatrixMode(kMatrixModeProjection, GetProjectionMatrix());
@@ -191,8 +192,8 @@ void ComputeScreenPickRay(const S_VECTOR2 *pScreen, S_VECTOR3 *pRayOrigin, S_VEC
     nearPoint.y = (pScreen->y - 0.5f) * -2.0f * flTanHalfFov;
     nearPoint.z = -1.0f;
 
-    // Transform the ray origin (the camera position) and the near point into world space through the
-    // current model node's inverse-view (camera-to-world) matrix.
+    // Transform the ray origin (the camera position) and the near point into world space through
+    // the current model node's inverse-view (camera-to-world) matrix.
     float invViewMatrix[16];
     std::memcpy(invViewMatrix, g_pCurrentModelNode->GetInverseViewMatrix(), sizeof(invViewMatrix));
     pRayOrigin->x = 0.0f;
@@ -212,8 +213,8 @@ void ne::Viewport::ProjectWorldToScreen(float *pVec4) {
     // The matrix helper only reads its matrix argument, so casting away the accessor's constness is
     // safe here.
     MultiplyVector4ByMatrixInPlace(pVec4, const_cast<float *>(GetProjectionMatrix()));
-    // Perspective divide, then map clip space into the pixel rectangle; the Y axis is negated so the
-    // origin is top-left.
+    // Perspective divide, then map clip space into the pixel rectangle; the Y axis is negated so
+    // the origin is top-left.
     const float x = pVec4[0];
     const float y = pVec4[1];
     const float w = pVec4[3];

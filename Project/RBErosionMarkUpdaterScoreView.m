@@ -19,7 +19,8 @@ static const CGFloat kTitleBarHeightMetric = 44.0;
 /// @ghidraAddress 0x301000 (its negation seeds the buttons' vertical offset).
 static const CGFloat kMessageRowHeightMetric = 40.0;
 
-/// The dialog corner radius, the layer shadow radius and offset height, and the button border width.
+/// The dialog corner radius, the layer shadow radius and offset height, and the button border
+/// width.
 static const CGFloat kDialogCornerRadius = 5.0;
 
 /// The panel drop-shadow opacity.

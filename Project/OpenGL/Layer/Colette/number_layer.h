@@ -19,8 +19,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns two
  * atlases and two sprite instancers, drawn beneath the shared background layer, that present the
  * score digits. The class carries no RTTI (it is non-polymorphic), so the name is inferred from its
- * singleton getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN comments
- * document the original 32-bit offsets for reference only.
+ * singleton getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN
+ * comments document the original 32-bit offsets for reference only.
  */
 class NumberLayer : public PlayFieldLayerBase {
 public:
@@ -62,13 +62,15 @@ public:
     }
 
     /**
-     * @brief Advances the number display's intro animation one frame and re-emits its digit markers.
+     * @brief Advances the number display's intro animation one frame and re-emits its digit
+     * markers.
      *
-     * A no-op until the display is made ready. It advances the animation timer and turns the display
-     * off once it runs out; otherwise it caches the viewport size, clears the sprite batches, and
-     * re-emits each of the twelve digit markers (its base position, its alpha from the per-digit
-     * envelope curve, and its scale from the per-digit scale curve) plus the leading label marker
-     * (driven by its own scale and alpha curves). The phone layout halves the marker scale.
+     * A no-op until the display is made ready. It advances the animation timer and turns the
+     * display off once it runs out; otherwise it caches the viewport size, clears the sprite
+     * batches, and re-emits each of the twelve digit markers (its base position, its alpha from the
+     * per-digit envelope curve, and its scale from the per-digit scale curve) plus the leading
+     * label marker (driven by its own scale and alpha curves). The phone layout halves the marker
+     * scale.
      * @param flDelta The frame delta.
      * @ghidraAddress 0x17df44
      */
@@ -80,9 +82,9 @@ public:
      *
      * A no-op when the target batch is full. The anchor, size, and atlas frame come from the shared
      * number-marker layout table (indexed by @p uMarkerIndex). The position is blended toward the
-     * screen centre from @p pPosition: the phone (non-iPad) layout averages the point with the field
-     * edge and adds half the cached viewport size on both axes; the iPad layout offsets only the Y.
-     * The sprite is drawn opaque white at @p iAlpha.
+     * screen centre from @p pPosition: the phone (non-iPad) layout averages the point with the
+     * field edge and adds half the cached viewport size on both axes; the iPad layout offsets only
+     * the Y. The sprite is drawn opaque white at @p iAlpha.
      * @param uMarkerIndex The marker layout index (also the atlas-frame source).
      * @param pPosition The sprite's world position (adjusted in place).
      * @param iAlpha The sprite alpha (0 through 255).

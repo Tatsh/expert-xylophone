@@ -15,8 +15,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A per-tune sort record carrying the collation readings and source data for a single tune on
- * the store manage screens.
+ * @brief A per-tune sort record carrying the collation readings and source data for a single tune
+ * on the store manage screens.
  */
 @interface RBManageSortData : NSObject
 

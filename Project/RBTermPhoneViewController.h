@@ -4,8 +4,8 @@
  * terms row on the phone build, where the pad build overlays @c RBTermView instead). It builds a
  * navigation-bar title label and a custom "back" left bar-button item, downloads the terms list for
  * the current region, lays one button per term into a scrolling list, and — when a term is tapped —
- * either opens its external URL or pushes an @c RBTermDetailPhoneViewController for the term body. A
- * loading spinner and an optional dimming overlay cover the content during network activity.
+ * either opens its external URL or pushes an @c RBTermDetailPhoneViewController for the term body.
+ * A loading spinner and an optional dimming overlay cover the content during network activity.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBTermPhoneViewController, image
  * base 0x100000000). @ghidraAddress values are offsets relative to the image base. The class adopts

@@ -69,8 +69,8 @@ int NoteLaneTracker::AssignNoteLane(
         pSlots[nLane].ExpireBefore(nTimeStart);
     }
 
-    // Bucket the lanes by the highest assignment pair (1 or 2) that overlaps the note's span; a lane
-    // that overlaps neither goes in bucket 0.
+    // Bucket the lanes by the highest assignment pair (1 or 2) that overlaps the note's span; a
+    // lane that overlaps neither goes in bucket 0.
     int aBucketCount[NoteLaneSlot::kSpanPairCount] = {};
     int aBucketLanes[NoteLaneSlot::kSpanPairCount][kLaneCount] = {};
     for (int nLane = 0; nLane < kLaneCount; ++nLane) {
@@ -112,8 +112,8 @@ int NoteLaneTracker::AssignNoteLane(
         }
         delete[] pOrder;
 
-        // Reserve the chosen lane on pair 2, its neighbours on pair 1, then extend the chosen lane's
-        // pair-1 span by the tail.
+        // Reserve the chosen lane on pair 2, its neighbours on pair 1, then extend the chosen
+        // lane's pair-1 span by the tail.
         pSlots[nLane].ExtendSpanPair(kChosenSpanPair, nTimeStart, nTimeEnd);
         if (nLane >= 1) {
             pSlots[nLane - 1].ExtendSpanPair(kNeighbourSpanPair, nTimeStart, nTimeEnd);

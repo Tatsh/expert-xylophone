@@ -54,14 +54,16 @@ PhoneLayoutRecord
 constexpr int kLimelightPositionByStateRecordCount = 4;
 
 // The Limelight phone-layout by-state position tables (0x14-stride PhoneLayoutRecord): the state
-// table (used on the iPad), and the portrait and default tables (selected by the orientation flag on
-// the phone). Zero-initialised in the binary's __common segment and filled at runtime.
+// table (used on the iPad), and the portrait and default tables (selected by the orientation flag
+// on the phone). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRecord
     g_aLimelightPositionPhoneState[kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbd70
-PhoneLayoutRecord g_aLimelightPositionPhoneStatePortrait
-    [kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbdc0
-PhoneLayoutRecord g_aLimelightPositionPhoneStateDefault
-    [kLimelightPositionByStateRecordCount]; // @ghidraAddress 0x3dbe10
+PhoneLayoutRecord
+    g_aLimelightPositionPhoneStatePortrait[kLimelightPositionByStateRecordCount]; // @ghidraAddress
+                                                                                  // 0x3dbdc0
+PhoneLayoutRecord
+    g_aLimelightPositionPhoneStateDefault[kLimelightPositionByStateRecordCount]; // @ghidraAddress
+                                                                                 // 0x3dbe10
 
 // The single Limelight phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
 // mode): the state record, and the portrait and default records (selected by the is-pad flag and
@@ -494,8 +496,8 @@ namespace {
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x308a60). Slot 1 (the parts atlas) holds
-// the most sprites; the rest are small fixed banks.
+// The per-slot sprite-instancer capacities (@ghidraAddress 0x308a60). Slot 1 (the parts atlas)
+// holds the most sprites; the rest are small fixed banks.
 constexpr unsigned int kSlotCapacities[] = {1, 400, 1, 1, 1, 2, 2, 1};
 
 // The per-slot texture-field selector (@ghidraAddress 0x308a40): the field index (0 = background,
@@ -648,8 +650,8 @@ inline void ApplyAnchorOffset(int nAnchorMode, float *pX, float *pY) {
 /** @ghidraAddress 0x12abb4 */
 LimelightResultLayer::LimelightResultLayer() {
     // The base constructor and the zero-initialised members clear the layer; the constructor then
-    // seeds the non-zero defaults: the default part alpha, the current-step "none" sentinel, and each
-    // button's "none" touch id.
+    // seeds the non-zero defaults: the default part alpha, the current-step "none" sentinel, and
+    // each button's "none" touch id.
     m_nDefaultAlpha = kDefaultPartAlpha;
     m_nCurrentStep = kNoStep;
     for (ResultButtonRecord &button : m_aButtons) {
@@ -695,14 +697,14 @@ void LimelightResultLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the five bonus channels. The channel shares FloatTween's six-float layout and the binary
-    // drives it through FloatTween::Advance, so advance each through that view.
+    // Advance the five bonus channels. The channel shares FloatTween's six-float layout and the
+    // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kBonusAdvanceOrder) {
         m_aBonusAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
-    // Advance the signed slide/settle timer toward zero, at differing rates by sign, and clamp on the
-    // zero crossing.
+    // Advance the signed slide/settle timer toward zero, at differing rates by sign, and clamp on
+    // the zero crossing.
     if (m_flSlideTimer > 0.0f) {
         m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
         if (m_flSlideTimer < 0.0f) {
@@ -715,7 +717,8 @@ void LimelightResultLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame index.
+    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame
+    // index.
     int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
     if (nCounter > kRotationWrap) {
         nCounter %= kRotationWrap;
@@ -861,7 +864,8 @@ void LimelightResultLayer::getPositionByState_Phone(int nIndex, PhoneLayoutRect 
     pOutRect->flWidth = record.flWidth;
     pOutRect->flHeight = record.flHeight;
 
-    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor mode.
+    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor
+    // mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
 }
 
@@ -889,8 +893,8 @@ void LimelightResultLayer::RenderPhoneSpriteFieldAligned(unsigned int nSlot,
     const PartsDataRecord &part = g_aLimelightPartsPad[nPartIndex];
     const UvPaletteEntry &uv = g_aLimelightGlyphUvPalette[part.nUvPaletteIndex];
 
-    // The separator record supplies the base position, its viewport anchor mode, and (in its carried
-    // width and height) the sprite's X scale and rotation.
+    // The separator record supplies the base position, its viewport anchor mode, and (in its
+    // carried width and height) the sprite's X scale and rotation.
     const PhoneLayoutRecord *pSeparator = getSeparator_Phone(static_cast<int>(nSeparatorIndex));
 
     float flAnchorX = 0.0f;
@@ -916,8 +920,8 @@ void LimelightResultLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect) co
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_LimelightCenterPositionPhoneState;
-        (void)GameSystem::
-            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
+                                           // discards it.
         return;
     }
 
@@ -1031,9 +1035,9 @@ void LimelightResultLayer::EmitPhoneHalfScaleTexturedPart(unsigned int nSlot,
 
 namespace {
 
-// The digit glyph bank RenderPhoneNumberDigitsRow draws from (its '0'), its maximum digit count, the
-// nominal glyph width used to centre the run, and the extra pixel added to each glyph's own width
-// when advancing. The glyphs draw into the parts slot.
+// The digit glyph bank RenderPhoneNumberDigitsRow draws from (its '0'), its maximum digit count,
+// the nominal glyph width used to centre the run, and the extra pixel added to each glyph's own
+// width when advancing. The glyphs draw into the parts slot.
 constexpr unsigned int kPhoneRowGlyphSlot = 1;
 constexpr unsigned int kPhoneRowDigitBank = 0x39;
 constexpr int kPhoneRowMaxDigits = 4;
@@ -1313,8 +1317,8 @@ void LimelightResultLayer::RenderPhonePercentValue(int nValue,
     }
     const int nDrawCount = nSignificant < kPercentMinDigits ? kPercentMinDigits : nSignificant;
 
-    // Centre the run about the position: one advance per drawn digit plus the leading marker, rounded
-    // and halved, then step left by one advance before the marker.
+    // Centre the run about the position: one advance per drawn digit plus the leading marker,
+    // rounded and halved, then step left by one advance before the marker.
     const int nHalfWidth = static_cast<int>(
         static_cast<float>(nDrawCount + 1) * kPercentGlyphAdvance + kPercentCentrePad);
     float flCursorX = pPosition->x + static_cast<float>(nHalfWidth) * 0.5f - kPercentGlyphAdvance;
@@ -2081,8 +2085,8 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
     constexpr float kStagger300 = 300.0f;
     constexpr float kStagger900 = 900.0f;
 
-    // Channel 0: the base channel, its duration the caller's base time; snaps to shown when the base
-    // time is non-positive.
+    // Channel 0: the base channel, its duration the caller's base time; snaps to shown when the
+    // base time is non-positive.
     FloatTween &ch0 = m_aBonusAnimChannels[0];
     ch0.SetFrom(ch0.GetCurrent());
     ch0.SetTo(kShown);
@@ -2128,8 +2132,8 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
 
 /** @ghidraAddress 0x124000 */
 void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
-    // Each channel eases from its current shown value toward zero over the start time; a non-positive
-    // start time snaps the target to zero immediately.
+    // Each channel eases from its current shown value toward zero over the start time; a
+    // non-positive start time snaps the target to zero immediately.
     for (FloatTween &channel : m_aBonusAnimChannels) {
         channel.SetFrom(channel.GetCurrent());
         channel.SetTo(0.0f);
@@ -2260,7 +2264,8 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
     m_aButtons[kButtonPanel].bInitialised = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
     if (flFadeAlpha != 0.0f ||
         static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
-        // Not fully shown: disable the swipe buttons, and the share button when Twitter is available.
+        // Not fully shown: disable the swipe buttons, and the share button when Twitter is
+        // available.
         m_aButtons[kButtonSwipeRight].bInitialised = false;
         m_aButtons[kButtonSwipeLeft].bInitialised = false;
         if (m_bTwitterAvailable) {
@@ -2269,7 +2274,8 @@ void LimelightResultLayer::UpdatePhoneTouchAndShare() {
         return;
     }
 
-    // Fully shown: enable the swipe buttons on an iPad and the share button when Twitter is available.
+    // Fully shown: enable the swipe buttons on an iPad and the share button when Twitter is
+    // available.
     if (IsPad()) {
         m_aButtons[kButtonSwipeRight].bInitialised = true;
         m_aButtons[kButtonSwipeLeft].bInitialised = true;

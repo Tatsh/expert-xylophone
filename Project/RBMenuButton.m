@@ -2,10 +2,10 @@
 //  RBMenuButton.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton). Verified against the
-//  arm64 disassembly: -setupView:'s bounds sizing, the resizable-image cap insets, and the per-type
-//  image-name table were recovered from the soft-float register moves and the [type * 5] table index
-//  that the decompiler folds into pseudo-variables.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton). Verified against
+//  the arm64 disassembly: -setupView:'s bounds sizing, the resizable-image cap insets, and the
+//  per-type image-name table were recovered from the soft-float register moves and the [type * 5]
+//  table index that the decompiler folds into pseudo-variables.
 //
 
 #import "RBMenuButton.h"

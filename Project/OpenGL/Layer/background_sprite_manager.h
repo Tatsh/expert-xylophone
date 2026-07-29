@@ -21,8 +21,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns a
  * single atlas and three sprite instancers that hang beneath the background layer's render object.
  * The class carries no RTTI (it is non-polymorphic), so the name is inferred from its singleton
- * getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN comments document
- * the original 32-bit offsets for reference only.
+ * getter rather than confirmed from the runtime metadata. The trailing @c // +0xNN comments
+ * document the original 32-bit offsets for reference only.
  */
 class BackgroundSpriteManager : public PlayFieldLayerBase {
 public:
@@ -35,8 +35,9 @@ public:
 
     /**
      * @brief Lazily builds the three background sprite instancers: loads the atlas and creates each
-     * instancer (attaching it under the background layer's render object, making it visible, binding
-     * the atlas, seeding its sprite count, and flagging additive blend on the outer two slots).
+     * instancer (attaching it under the background layer's render object, making it visible,
+     * binding the atlas, seeding its sprite count, and flagging additive blend on the outer two
+     * slots).
      *
      * Guarded so the nodes are built only once.
      * @ghidraAddress 0x10a86c
@@ -79,13 +80,14 @@ public:
 
 private:
     /**
-     * @brief Appends one zoom-effect sprite to one of the manager's instancers, if capacity remains.
+     * @brief Appends one zoom-effect sprite to one of the manager's instancers, if capacity
+     * remains.
      *
-     * Looks up one of the manager's sprite instancers by @p nSlotIndex; if it still has a free slot,
-     * writes a full instance there — the caller's position, the anchor and pixel size from the
-     * zoom-effect layout table (indexed by @p nLayoutIndex), the UV rectangle from the shared sprite
-     * atlas (the layout record's atlas frame), the caller's scale, and opaque white at @p nAlpha —
-     * then bumps the instancer's slot count. A no-op when the instancer is already full.
+     * Looks up one of the manager's sprite instancers by @p nSlotIndex; if it still has a free
+     * slot, writes a full instance there — the caller's position, the anchor and pixel size from
+     * the zoom-effect layout table (indexed by @p nLayoutIndex), the UV rectangle from the shared
+     * sprite atlas (the layout record's atlas frame), the caller's scale, and opaque white at @p
+     * nAlpha — then bumps the instancer's slot count. A no-op when the instancer is already full.
      * @param flScaleX The instance's X scale.
      * @param flScaleY The instance's Y scale.
      * @param nSlotIndex The manager's sprite-instancer index.

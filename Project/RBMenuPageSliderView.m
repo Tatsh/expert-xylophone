@@ -3,8 +3,9 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuPageSliderView). The popup
-//  wrapper that embeds an RBMenuPageSlider; the show and reposition soft-float geometry was recovered
-//  from the arm64 disassembly (the decompiler folds the CGRect components into pseudo-variables).
+//  wrapper that embeds an RBMenuPageSlider; the show and reposition soft-float geometry was
+//  recovered from the arm64 disassembly (the decompiler folds the CGRect components into
+//  pseudo-variables).
 //
 
 #import "RBMenuPageSliderView.h"
@@ -12,8 +13,8 @@
 #import "RBMenuPageSlider.h"
 #import "RBPopupView.h"
 
-// The base, content, and wrapper views resize with a flexible width and a flexible top margin so the
-// slider stays pinned to the bottom edge as the layout changes (the binary's 0x12 mask).
+// The base, content, and wrapper views resize with a flexible width and a flexible top margin so
+// the slider stays pinned to the bottom edge as the layout changes (the binary's 0x12 mask).
 static const UIViewAutoresizing kSliderAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 

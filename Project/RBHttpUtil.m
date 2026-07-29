@@ -398,8 +398,8 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
         self.proceedBlock(self);
     } else if (self.delegate) {
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloadProceed:)
-                                        withObject:self
-                                     waitUntilDone:NO];
+                                                    withObject:self
+                                                 waitUntilDone:NO];
     }
 }
 
@@ -412,13 +412,13 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     [fileManager moveItemAtURL:location toURL:destination error:&error];
     if (error == nil) {
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderFinished:)
-                                        withObject:self
-                                     waitUntilDone:NO];
+                                                    withObject:self
+                                                 waitUntilDone:NO];
     } else {
         self.systemErrorMessage = error.userInfo.description;
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderError:)
-                                        withObject:self
-                                     waitUntilDone:NO];
+                                                    withObject:self
+                                                 waitUntilDone:NO];
     }
 }
 

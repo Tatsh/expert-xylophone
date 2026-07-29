@@ -48,16 +48,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Interaction
 
 /**
- * @brief Tap handler: map the tap's location along the bar to a LEVEL (zero through nine) and select
- * it.
+ * @brief Tap handler: map the tap's location along the bar to a LEVEL (zero through nine) and
+ * select it.
  * @param tap The tap gesture recogniser.
  * @ghidraAddress 0xc7410
  */
 - (void)tap:(nullable UITapGestureRecognizer *)tap;
 
 /**
- * @brief Select the given LEVEL: clamp it to the range zero through nine, store it, glide the marker
- * to its slot, and play the level-change sound effect (unless it is already playing).
+ * @brief Select the given LEVEL: clamp it to the range zero through nine, store it, glide the
+ * marker to its slot, and play the level-change sound effect (unless it is already playing).
  * @param SelectLevel The requested LEVEL.
  * @ghidraAddress 0xc7604
  */

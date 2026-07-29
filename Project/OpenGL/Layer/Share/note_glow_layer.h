@@ -18,9 +18,9 @@ class C_SPRITE_INSTANCING_2D;
  * @brief The small note-glow effect layer (the combo/aura glow shown at note-render time).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
- * carries no RTTI, so the name is inferred from its @c GetNoteGlowLayer accessor and render-time use.
- * Only the fields the reconstructed methods touch are modelled; the trailing @c // +0xNN comments
- * document the original offsets for reference only.
+ * carries no RTTI, so the name is inferred from its @c GetNoteGlowLayer accessor and render-time
+ * use. Only the fields the reconstructed methods touch are modelled; the trailing @c // +0xNN
+ * comments document the original offsets for reference only.
  * @ghidraAddress NoteGlowLayer (engine effect layer, 0x40 bytes)
  */
 class NoteGlowLayer : public PlayFieldLayerBase {
@@ -63,9 +63,9 @@ public:
      * @brief Advances and redraws each active per-colour glow for the frame.
      *
      * Resets the sprite count, then for each colour advances its animation timer; a glow past its
-     * lifetime is deactivated, otherwise its bar sprite is emitted centred on the play field, mirrored
-     * for the non-play colour, faded out by the timer, and scaled by the colour's scale. Finally
-     * commits the sprite count to the instancer.
+     * lifetime is deactivated, otherwise its bar sprite is emitted centred on the play field,
+     * mirrored for the non-play colour, faded out by the timer, and scaled by the colour's scale.
+     * Finally commits the sprite count to the instancer.
      * @param flDelta The frame's elapsed time, in frames.
      * @ghidraAddress 0x176b64
      */

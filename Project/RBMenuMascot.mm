@@ -2,10 +2,10 @@
 //  RBMenuMascot.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuMascot). Verified against the
-//  arm64 disassembly: the wander physics and the message-bubble layout use soft-float register moves
-//  that the decompiler folds into pseudo-variables, so the CGRect/CGSize maths were recovered from
-//  the disassembly. This is an Objective-C++ file because -startAnimation:, -getMovePoint, and
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuMascot). Verified against
+//  the arm64 disassembly: the wander physics and the message-bubble layout use soft-float register
+//  moves that the decompiler folds into pseudo-variables, so the CGRect/CGSize maths were recovered
+//  from the disassembly. This is an Objective-C++ file because -startAnimation:, -getMovePoint, and
 //  -update reach the C++ GameSystem engine singleton and the S_VECTOR2 engine vector type.
 //
 
@@ -488,7 +488,8 @@ static NSString *const kMessageTextKey = @"text";
                 weakSelf.messageView.alpha = 1.0;
               }
               completion:^(BOOL innerFinished) {
-                // Fades the message view out after a hold, then clears the label and idles the ticker.
+                // Fades the message view out after a hold, then clears the label and idles the
+                // ticker.
                 /** @ghidraAddress 0x2e348 */
                 [UIView animateWithDuration:kMessageAnimDuration
                     delay:kMessageFadeOutDelay

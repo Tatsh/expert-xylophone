@@ -14,8 +14,8 @@ namespace ne {
 
 namespace {
 
-// The scale mapping a normalised [0, 1] UV coordinate to the signed 16-bit fixed-point stored in the
-// vertex buffer (@ghidraAddress 0x2eed04 for U, 0x2eed08 for V).
+// The scale mapping a normalised [0, 1] UV coordinate to the signed 16-bit fixed-point stored in
+// the vertex buffer (@ghidraAddress 0x2eed04 for U, 0x2eed08 for V).
 constexpr float kUvFixedPointScale = 32767.0f;
 
 // The sentinel stored in an unset per-vertex attribute offset.
@@ -193,7 +193,8 @@ void C_DRAW_POLYGON_3D::AllocateBuffers() {
         m_pBoneScale = new float[nMaxUnits];
     }
 
-    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless caller-owned.
+    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless
+    // caller-owned.
     m_pVertexArray = new unsigned char[static_cast<unsigned int>(m_nVertexCount) * nStride];
     if (!m_bVertexBufferExternal) {
         pRenderer->GenBuffer(&m_dwVertexVbo);

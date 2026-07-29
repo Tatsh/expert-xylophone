@@ -2,10 +2,10 @@
 //  RBCorporateViewController.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBCorporateViewController). This is
-//  a plain Objective-C (.m) file: it presents Konami's corporate web page in an RBWebView and never
-//  reaches the C++ engine. The -viewDidLoad spinner centring was read from the arm64 disassembly,
-//  where the decompiler folds the soft-float register moves into pseudo doubles.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBCorporateViewController). This
+//  is a plain Objective-C (.m) file: it presents Konami's corporate web page in an RBWebView and
+//  never reaches the C++ engine. The -viewDidLoad spinner centring was read from the arm64
+//  disassembly, where the decompiler folds the soft-float register moves into pseudo doubles.
 //
 
 #import "RBCorporateViewController.h"

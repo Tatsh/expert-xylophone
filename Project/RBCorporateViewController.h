@@ -1,10 +1,11 @@
 /** @file
  * The corporate/legal information view controller. It is an @c RBBaseViewController subclass pushed
- * onto the navigation stack that presents Konami's corporate web page (@c https://www.konami.com/ja/)
- * inside an @c RBWebView. It builds a custom "back" left bar-button item, shows a centred activity
- * indicator while the page loads, and acts as the web view's delegate: it starts the spinner on each
- * navigation, clears the URL cache when a load starts, suppresses the iOS touch callout and stops the
- * spinner when a load finishes, and presents the shared network-error alert on failure.
+ * onto the navigation stack that presents Konami's corporate web page (@c
+ * https://www.konami.com/ja/) inside an @c RBWebView. It builds a custom "back" left bar-button
+ * item, shows a centred activity indicator while the page loads, and acts as the web view's
+ * delegate: it starts the spinner on each navigation, clears the URL cache when a load starts,
+ * suppresses the iOS touch callout and stops the spinner when a load finishes, and presents the
+ * shared network-error alert on failure.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBCorporateViewController, image
  * base 0x100000000). @ghidraAddress values are offsets relative to the image base. The class adopts
@@ -66,8 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Navigation
 
 /**
- * @brief Handle the custom "back" bar-button tap: stop the loading spinner, hide the navigation bar,
- * and pop the controller (all animated).
+ * @brief Handle the custom "back" bar-button tap: stop the loading spinner, hide the navigation
+ * bar, and pop the controller (all animated).
  * @param sender The tapped bar-button item.
  * @ghidraAddress 0xf0b84
  */
@@ -121,7 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Alert view delegate
 
 /**
- * @brief Handle the network-error alert dismissal: pop the controller when this is the first request.
+ * @brief Handle the network-error alert dismissal: pop the controller when this is the first
+ * request.
  * @param alertView The alert view that was dismissed.
  * @param buttonIndex The index of the button that was tapped.
  * @ghidraAddress 0xf0ff0

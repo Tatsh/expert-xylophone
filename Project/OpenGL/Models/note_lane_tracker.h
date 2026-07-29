@@ -35,9 +35,9 @@ public:
      * The class is polymorphic (the compiler emits its vtable at offset 0), so the destructor is
      * virtual. The vtable holds the two Itanium destructor thunks — the complete-object variant
      * (@c 0x148c70, an empty body) and the deleting variant (@c 0x148c74, which tail-calls
-     * @c operator @c delete) — plus the out-of-line deleting destructor (@c 0x148d20, which installs
-     * the vtable, destroys the attached generator sub-object, and frees the tracker); all fold into
-     * this one destructor.
+     * @c operator @c delete) — plus the out-of-line deleting destructor (@c 0x148d20, which
+     * installs the vtable, destroys the attached generator sub-object, and frees the tracker); all
+     * fold into this one destructor.
      * @ghidraAddress 0x148cd8
      * @ghidraAddress 0x148c70
      * @ghidraAddress 0x148c74
@@ -93,8 +93,8 @@ private:
     /**
      * @brief Fisher-Yates shuffle of an int array, used to break lane-assignment ties randomly.
      *
-     * Ties are broken with the C library @c rand rather than the engine generator. (The binary takes
-     * an ignored leading register argument, dropped here.)
+     * Ties are broken with the C library @c rand rather than the engine generator. (The binary
+     * takes an ignored leading register argument, dropped here.)
      * @param pArray The int array to shuffle in place.
      * @param nCount The element count.
      * @ghidraAddress 0x14911c

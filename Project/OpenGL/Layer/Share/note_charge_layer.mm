@@ -186,8 +186,8 @@ void NoteChargeLayer::Update(float flDeltaSeconds) {
         m_flSpinPhaseA += kSpinPhaseAStep;
     }
 
-    // Advance the second spin phase, counting how many times it overflowed this frame; each overflow
-    // spawns one burst particle per active charge.
+    // Advance the second spin phase, counting how many times it overflowed this frame; each
+    // overflow spawns one burst particle per active charge.
     int nParticleBursts = 0;
     m_flSpinPhaseB += flDeltaSeconds;
     while (m_flSpinPhaseB > kSpinPhaseBWrap) {

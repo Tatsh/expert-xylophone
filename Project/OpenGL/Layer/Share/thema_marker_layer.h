@@ -38,8 +38,8 @@ public:
     static ThemaMarkerLayer *shared();
 
     /**
-     * @brief Lazily builds the theme-marker sprites: picks the marker count from the theme, loads the
-     * gm_parts1 atlas, creates the two sprite instancers (attaching each under the background
+     * @brief Lazily builds the theme-marker sprites: picks the marker count from the theme, loads
+     * the gm_parts1 atlas, creates the two sprite instancers (attaching each under the background
      * layer's render object, making it visible, and binding the atlas), and emits each marker
      * group's sprites from the shared layout and UV tables.
      *
@@ -49,9 +49,9 @@ public:
     void LoadThemaMarkerSprites();
 
     /**
-     * @brief Re-applies the current theme to the already-built markers: refreshes the theme, reselects
-     * the marker count, reloads and re-binds the atlas to both batches, and re-emits every marker
-     * group's geometry.
+     * @brief Re-applies the current theme to the already-built markers: refreshes the theme,
+     * reselects the marker count, reloads and re-binds the atlas to both batches, and re-emits
+     * every marker group's geometry.
      *
      * Unlike @c LoadThemaMarkerSprites this does not create the batches; it refreshes an existing
      * layer after a theme change.
@@ -70,8 +70,8 @@ public:
 
     /**
      * @brief Begins the marker fade-in, selecting the active marker value: eases the markers to
-     * opaque over @p flDuration (snapping to opaque and marking the colour dirty when the duration is
-     * non-positive) and resets the effect timer.
+     * opaque over @p flDuration (snapping to opaque and marking the colour dirty when the duration
+     * is non-positive) and resets the effect timer.
      * @param flDuration The fade duration.
      * @param flMarker The active marker value to store.
      * @ghidraAddress 0x180400

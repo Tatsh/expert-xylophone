@@ -16,10 +16,10 @@ class C_TEXTURE;
 /**
  * @brief One sprite descriptor in a star-glyph layout table (a 20-byte record).
  *
- * Describes one drawable sprite (a star animation frame or a single digit glyph): its anchor offset,
- * its pixel size, and the atlas-frame number that indexes the shared sprite UV table. The layout
- * table is selected by device (pad or phone) and indexed by frame kind (records 0 through 6) or digit
- * value plus seven (records 7 through 16).
+ * Describes one drawable sprite (a star animation frame or a single digit glyph): its anchor
+ * offset, its pixel size, and the atlas-frame number that indexes the shared sprite UV table. The
+ * layout table is selected by device (pad or phone) and indexed by frame kind (records 0 through 6)
+ * or digit value plus seven (records 7 through 16).
  */
 struct StarSpriteDescriptor {
     S_VECTOR2 anchor = {}; /*!< The sprite anchor offset. +0x00 */
@@ -36,8 +36,8 @@ extern const StarSpriteDescriptor g_aStarGlyphTablePhone[]; // @ghidraAddress 0x
  * @brief The note-result effect layer.
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It animates
- * up to twelve result "star" quads, each with a numeric label, through one sprite instancer, spawned
- * as notes are judged. The class name and source path are taken from the binary's embedded
+ * up to twelve result "star" quads, each with a numeric label, through one sprite instancer,
+ * spawned as notes are judged. The class name and source path are taken from the binary's embedded
  * @c note_result_layer.mm assert. The trailing @c // +0xNN comments document the original 32-bit
  * offsets for reference only.
  */
@@ -85,8 +85,8 @@ public:
      * @brief Lazily builds the layer's sprite instancer.
      *
      * Seeds the base sprite size (halved on the phone), rebuilds the quad positions, loads the
-     * @c gm_parts2 atlas, and creates and attaches the instancer under the background layer. Guarded
-     * so it runs only once.
+     * @c gm_parts2 atlas, and creates and attaches the instancer under the background layer.
+     * Guarded so it runs only once.
      * @ghidraAddress 0x18934c
      */
     void CreateSpriteInstancer();
@@ -94,11 +94,11 @@ public:
     /**
      * @brief Advances every active result quad by one frame and emits its star and digit sprites.
      *
-     * Each of the twelve quads advances its timer, deactivates once past its lifetime, and otherwise
-     * projects its world position to the screen, picks its star animation frame from its kind and
-     * timer, and emits the star sprite plus one sprite per digit of its numeric label (laid out
-     * centred, and mirrored on the single-player left side). The live sprite count is then published
-     * to the instancer.
+     * Each of the twelve quads advances its timer, deactivates once past its lifetime, and
+     * otherwise projects its world position to the screen, picks its star animation frame from its
+     * kind and timer, and emits the star sprite plus one sprite per digit of its numeric label
+     * (laid out centred, and mirrored on the single-player left side). The live sprite count is
+     * then published to the instancer.
      * @param flDeltaTime The frame delta, in seconds.
      * @ghidraAddress 0x1896a4
      */
@@ -113,8 +113,8 @@ private:
      * @brief Emits one sprite slot (a star frame or a digit glyph) into the instancer.
      *
      * Writes the vertex position, copies the descriptor's anchor and size, looks up the atlas UV by
-     * the descriptor's frame number, applies the flip rotation, sets the uniform scale to @p flSize,
-     * and writes an opaque-white colour at @p nAlpha, then advances the live slot counter.
+     * the descriptor's frame number, applies the flip rotation, sets the uniform scale to @p
+     * flSize, and writes an opaque-white colour at @p nAlpha, then advances the live slot counter.
      * @param flSize The uniform sprite scale.
      * @param position The vertex screen position.
      * @param bFlip Whether to flip the sprite horizontally (a half-turn rotation).

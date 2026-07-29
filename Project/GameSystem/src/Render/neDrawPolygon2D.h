@@ -41,7 +41,8 @@ public:
      * index counts, ownership flags, and draw colour.
      *
      * Records the configuration and initialises the per-vertex attribute offsets to their unset
-     * sentinels; @c AllocatePolygon2dMeshBuffers derives the real offsets and allocates the buffers.
+     * sentinels; @c AllocatePolygon2dMeshBuffers derives the real offsets and allocates the
+     * buffers.
      * @param nDrawMode The primitive draw mode.
      * @param nVertexCount The number of vertices.
      * @param nVertexFormat The vertex-format attribute bit-set.
@@ -152,11 +153,11 @@ public:
     };
 
     /**
-     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh) the
-     * per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
+     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
+     * the per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
      *
-     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking the
-     * mesh's vertex and index data dirty so the first draw uploads them.
+     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking
+     * the mesh's vertex and index data dirty so the first draw uploads them.
      * @ghidraAddress 0x27568
      */
     void AllocateBuffers();

@@ -2,8 +2,8 @@
 //  RBTermPhoneViewController.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBTermPhoneViewController). This is
-//  an Objective-C++ file because -pushBarBtnBack: reaches the C++ SoundEffectManager engine
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBTermPhoneViewController). This
+//  is an Objective-C++ file because -pushBarBtnBack: reaches the C++ SoundEffectManager engine
 //  singleton. The -showTermsList button-row geometry was recovered from the arm64 soft-float
 //  register moves that the decompiler folds into pseudo doubles; the theme and iPad idiom branches
 //  were read from the disassembly.

@@ -108,9 +108,9 @@ constexpr unsigned int kMissSpriteSlotBase = 8; // the six sprites emit at slots
 constexpr unsigned int kMissBannerSlot = 1;     // the banner emits at slot 1.
 
 // The single-player layout constants: the reference line the base Y sits below (@ghidraAddress
-// 0x30e800), the second side's downward shift and the first side's Y reflection base (@ghidraAddress
-// 0x301f78, 0x3052c0), the half-turn rotation for the mirrored side (@ghidraAddress 0x2fe894), and
-// the unit-interval-to-alpha scale (@ghidraAddress 0x2eed00).
+// 0x30e800), the second side's downward shift and the first side's Y reflection base
+// (@ghidraAddress 0x301f78, 0x3052c0), the half-turn rotation for the mirrored side (@ghidraAddress
+// 0x2fe894), and the unit-interval-to-alpha scale (@ghidraAddress 0x2eed00).
 constexpr float kMissReferenceY = 663.0f;
 constexpr float kMissSecondSideShiftY = 200.0f;
 constexpr float kMissFirstSideReflectY = -200.0f;
@@ -122,8 +122,8 @@ constexpr int kSingleSide = 1;
 // The second player side, which shifts down rather than mirrors.
 constexpr int kSecondSide = 1;
 
-// The six sprites' fixed X columns (@ghidraAddress 0x3defa0, seeded once at first use). Their shared
-// Y is the reference line less the layout height.
+// The six sprites' fixed X columns (@ghidraAddress 0x3defa0, seeded once at first use). Their
+// shared Y is the reference line less the layout height.
 constexpr float kMissSpriteX[kMissSpriteCount] = {-177.0f, -106.0f, -38.0f, 40.0f, 118.0f, 185.0f};
 
 // The rank-medal full-combo burst: the seven medal sprites, their curve sizes, the slot base they
@@ -873,9 +873,9 @@ void ColetteThemeLayer::CreateFcEffectSprites() {
 
     ne::C_TEXTURE *const apTextureFields[] = {m_pPartsTexture, m_pEffectTexture, m_pPartsTexture2};
 
-    // Build one sprite instancer per slot, attach it under the background render object, and make it
-    // visible. The first slot binds no texture; the rest bind their mapped atlas. Seed each slot's
-    // sprite count and flag additive blend on the last slot.
+    // Build one sprite instancer per slot, attach it under the background render object, and make
+    // it visible. The first slot binds no texture; the rest bind their mapped atlas. Seed each
+    // slot's sprite count and flag additive blend on the last slot.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
@@ -996,8 +996,8 @@ void ColetteThemeLayer::Update(float flDelta) {
             }
         }
 
-        // A clear (a good rank on a non-challenge play) shows the result sprites; otherwise the miss
-        // sprites.
+        // A clear (a good rank on a non-challenge play) shows the result sprites; otherwise the
+        // miss sprites.
         if (bLowRank || bChallenge) {
             EmitFcMissSprites(nSide);
         } else {
@@ -1169,8 +1169,8 @@ void ColetteThemeLayer::EmitFcRankSprites(int nSide, int nColorVariant) {
 
 /** @ghidraAddress 0x188114 */
 void ColetteThemeLayer::EmitFcResultSprites(int nSide) {
-    // The position curves' Y values are the base Ys less the layout height, filled once. The table is
-    // [sprite][pair]{time, y}; only the odd (value) slots are height-adjusted.
+    // The position curves' Y values are the base Ys less the layout height, filled once. The table
+    // is [sprite][pair]{time, y}; only the odd (value) slots are height-adjusted.
     static float aPosCurve[kResultSpriteCount][kResultPosCurveFloats];
     static bool bPosCurveBuilt = false;
     if (!bPosCurveBuilt) {

@@ -49,8 +49,8 @@ public:
     /**
      * @brief Spawns a bounds-damage effect for a player colour at a screen position.
      *
-     * Claims the first inactive pooled record and fills its colour, position, and reset timer. A full
-     * pool drops the effect.
+     * Claims the first inactive pooled record and fills its colour, position, and reset timer. A
+     * full pool drops the effect.
      * @param nColor The player colour (0 or 1).
      * @param flPosX The effect's screen x.
      * @param flPosY The effect's screen y.
@@ -97,9 +97,9 @@ private:
      * @brief Emits one bounds-damage sprite instance into the batch.
      *
      * Writes the next sprite slot with a fixed anchor and quad size, the animation-frame UV, the
-     * layer's effect scale, and opaque white modulated by the lane's alpha. On the Colette theme the
-     * position is nudged vertically; a negative y mirrors the sprite a half-turn and uses the second
-     * lane's alpha. Advances the sprite count.
+     * layer's effect scale, and opaque white modulated by the lane's alpha. On the Colette theme
+     * the position is nudged vertically; a negative y mirrors the sprite a half-turn and uses the
+     * second lane's alpha. Advances the sprite count.
      * @param nColor The player colour (0 or 1), also selecting the lane alpha.
      * @param pUv The animation-frame UV origin.
      * @param pPosition The instance position; a negative y mirrors the sprite.
@@ -108,8 +108,8 @@ private:
     void EmitSprite(int nColor, const S_VECTOR2 *pUv, const S_VECTOR2 *pPosition);
 
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the sprite/texture header and
-     * the pooled effect records, and seeds the two lane values and the effect size to one.
+     * @brief Constructs the layer: chains the base constructor, clears the sprite/texture header
+     * and the pooled effect records, and seeds the two lane values and the effect size to one.
      * @ghidraAddress 0x173f10
      */
     DamageEffectLayer();

@@ -480,8 +480,8 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     // bare view with no shared protocol, so they are dispatched dynamically here too.
     id clipRoot = self.clipRootView;
 
-    // touchAnim shows the pulsing touch marker; cursorAnim shows the bouncing cursor; stay keeps the
-    // content view where it is rather than nudging it clear of the spotlight.
+    // touchAnim shows the pulsing touch marker; cursorAnim shows the bouncing cursor; stay keeps
+    // the content view where it is rather than nudging it clear of the spotlight.
     BOOL touchAnim = NO;
     BOOL cursorAnim = NO;
     BOOL stay = NO;

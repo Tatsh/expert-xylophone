@@ -30,8 +30,8 @@ struct ScoreDigitField {
     float flDuration = {}; /*!< The animation duration, in seconds. +0x14 */
 
     /**
-     * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end value
-     * once the duration is reached.
+     * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end
+     * value once the duration is reached.
      * @ghidraAddress 0x18bd58
      */
     void Advance(float flDeltaTime);
@@ -52,9 +52,9 @@ public:
     /**
      * @brief One score-digit glyph descriptor: its anchor, size, and UV-table index.
      *
-     * The score-number layout tables are arrays of these, one entry per digit glyph; the update reads
-     * a glyph's width to lay out the digit string and @c EmitScoreDigitSprite reads its anchor and
-     * size and resolves its UV rectangle from the shared sprite-UV table.
+     * The score-number layout tables are arrays of these, one entry per digit glyph; the update
+     * reads a glyph's width to lay out the digit string and @c EmitScoreDigitSprite reads its
+     * anchor and size and resolves its UV rectangle from the shared sprite-UV table.
      */
     struct ScoreDigitGlyph {
         float flAnchorX = {}; // +0x00: the glyph anchor x.
@@ -96,9 +96,9 @@ public:
     static PlayerFieldLayer *shared();
 
     /**
-     * @brief Lazily builds the score-number sprite: loads the gm_parts2 atlas and creates the sprite
-     * instancer (attaching it under the background layer's render object, making it visible, binding
-     * the atlas, and seeding its sprite count).
+     * @brief Lazily builds the score-number sprite: loads the gm_parts2 atlas and creates the
+     * sprite instancer (attaching it under the background layer's render object, making it visible,
+     * binding the atlas, and seeding its sprite count).
      *
      * Guarded so the sprite is built only once.
      * @ghidraAddress 0x18b6fc
@@ -137,15 +137,15 @@ public:
     void SetScorePosition(float flValue, int nSide);
 
     /**
-     * @brief The per-frame score-display update: advances the fade and rolls each side's score-digit
-     * counter, then lays out and emits each side's digit string.
+     * @brief The per-frame score-display update: advances the fade and rolls each side's
+     * score-digit counter, then lays out and emits each side's digit string.
      *
      * Advances the layer's fade channel, then for each of the two player sides: rolls the side's
      * animated score counter, decodes its current value into decimal digits, measures the string
-     * width from the orientation's glyph-advance table, resolves the side's base position (folding in
-     * a one-shot per-side offset), centres the string about the play field (mirroring the layout and
-     * applying a half-turn glyph rotation on the flagged side), and emits each digit right to left
-     * with the fade-scaled alpha. Finally it publishes the sprite count to the instancer.
+     * width from the orientation's glyph-advance table, resolves the side's base position (folding
+     * in a one-shot per-side offset), centres the string about the play field (mirroring the layout
+     * and applying a half-turn glyph rotation on the flagged side), and emits each digit right to
+     * left with the fade-scaled alpha. Finally it publishes the sprite count to the instancer.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x18b810
      */

@@ -61,8 +61,8 @@ public:
     /**
      * @brief Decodes the whole source file into the PCM data block sized by @c ReadAudioFormat.
      *
-     * Allocates and zeroes the PCM buffer, sets the client data format on the file, and reads frames
-     * in a loop until the buffer is full.
+     * Allocates and zeroes the PCM buffer, sets the client data format on the file, and reads
+     * frames in a loop until the buffer is full.
      * @param hAudioFile The opened source file.
      * @param pAsbd The client stream description set by @c ReadAudioFormat.
      * @return @c 1 on success, @c 0 on an empty size or read error.
@@ -90,8 +90,8 @@ public:
      * @brief Frees the decoded PCM data block and clears the buffer pointer and size, leaving the
      *        object reusable.
      *
-     * Distinct from the destructor: the destructor only releases the block, whereas this also zeroes
-     * the pointer and size so the source can be reloaded.
+     * Distinct from the destructor: the destructor only releases the block, whereas this also
+     * zeroes the pointer and size so the source can be reloaded.
      * @return Always @c 1.
      * @ghidraAddress 0x4d368
      */

@@ -60,10 +60,10 @@ constexpr int kEffectFrameCountByStyle[] = {0x14, 0x17, 0x16};
 
 // The per-bank UV-frame origin table the effect sprites draw from, one row of kEffectFrameCount
 // frames per colour bank, indexed flatly as nBank * kEffectFrameCount + nFrame. The binary keeps
-// this as a load-once function-local static copied from ROM (@ghidraAddress 0x30c0d0). The ROM block
-// holds only 46 entries (bank 1's last two frames are absent); the second bank's final two slots are
-// zero here to keep the flat index in range, matching the empty UV the binary would resolve for the
-// rare limelight effect that survives to its last frame.
+// this as a load-once function-local static copied from ROM (@ghidraAddress 0x30c0d0). The ROM
+// block holds only 46 entries (bank 1's last two frames are absent); the second bank's final two
+// slots are zero here to keep the flat index in range, matching the empty UV the binary would
+// resolve for the rare limelight effect that survives to its last frame.
 constexpr S_VECTOR2 kEffectUvOrigins[BoundsEffectLayer::kBankCount][kEffectFrameCount] = {
     {
         {0.0f, 0.6640625f},        {0.041992188f, 0.6640625f}, {0.083984375f, 0.6640625f},

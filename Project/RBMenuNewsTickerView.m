@@ -2,9 +2,10 @@
 //  RBMenuNewsTickerView.m
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuNewsTickerView). The soft-float
-//  CGRect layout, the marquee keyframe timing, and the rbplus:// link routing were recovered from the
-//  arm64 disassembly, whose register/stack float moves the decompiler folds into pseudo-variables.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuNewsTickerView). The
+//  soft-float CGRect layout, the marquee keyframe timing, and the rbplus:// link routing were
+//  recovered from the arm64 disassembly, whose register/stack float moves the decompiler folds into
+//  pseudo-variables.
 //
 
 #import "RBMenuNewsTickerView.h"
@@ -44,15 +45,15 @@ static const CGFloat kNewsTickerDarkThemeBackgroundAlpha = 1.0;
 // points into extra scroll seconds.
 static const CGFloat kNewsTickerScrollPointsPerSecond = 75.0;
 
-// The fixed number of seconds added to every overflowing marquee scroll on top of the overflow-width
-// term and the base duration.
+// The fixed number of seconds added to every overflowing marquee scroll on top of the
+// overflow-width term and the base duration.
 static const CGFloat kNewsTickerScrollConstantSeconds = 3.0;
 
 // The fixed y-coordinate of the scrolling text layer's position within the base view.
 static const CGFloat kNewsTickerTextLayerPositionY = 40.0;
 
-// The anchor-point x-coordinate the text layer animates to at startup, sliding the layer's origin to
-// its horizontal centre so the text scrolls symmetrically.
+// The anchor-point x-coordinate the text layer animates to at startup, sliding the layer's origin
+// to its horizontal centre so the text scrolls symmetrically.
 static const CGFloat kNewsTickerTextAnchorCenterX = 0.5;
 
 // The relative time, within a scroll cycle, at which the text sits fully centred.
@@ -63,7 +64,8 @@ static NSString *const kNewsTickerAnchorAnimationKey = @"NEWS_INFO_SET_ANCHOR";
 static NSString *const kNewsTickerPositionAnimationKey = @"NEWS_INFO_SET_POSITION";
 static NSString *const kNewsTickerPositionEndAnimationKey = @"NEWS_INFO_SET_POSITION_END";
 
-// The rbplus:// link scheme and the host, path, and query tokens that select each in-app destination.
+// The rbplus:// link scheme and the host, path, and query tokens that select each in-app
+// destination.
 static NSString *const kNewsTickerLinkScheme = @"rbplus";
 static NSString *const kNewsTickerLinkHostStore = @"store";
 static NSString *const kNewsTickerLinkHostInfo = @"info";

@@ -16,8 +16,8 @@ namespace ne {
  * shared by reference count: holders retain with @c AddRef and release through @c Release, which
  * destroys the texture when the last reference goes away. The
  * class is polymorphic, so it is modelled with a virtual destructor (the vtable at offset 0 is what
- * the release helper dispatches through). Trailing @c // +0xNN comments document the original 32-bit
- * offsets for reference only.
+ * the release helper dispatches through). Trailing @c // +0xNN comments document the original
+ * 32-bit offsets for reference only.
  */
 class C_TEXTURE {
 public:
@@ -48,8 +48,8 @@ public:
     /**
      * @brief Release one reference and destroy the texture once the count reaches zero.
      *
-     * The binary dereferences the object before its now-redundant null check, so this must be called
-     * on a live texture; destruction runs through the virtual destructor.
+     * The binary dereferences the object before its now-redundant null check, so this must be
+     * called on a live texture; destruction runs through the virtual destructor.
      * @ghidraAddress 0x31af4
      */
     void Release();
@@ -139,8 +139,8 @@ public:
      * @brief Record the texture's logical size and scale, track its GPU byte footprint, and upload.
      *
      * Stores the source image's logical dimensions and content scale, computes the byte size from
-     * the pixel format (RGB is 3 bytes per texel, alpha or luminance is 1, RGBA is 4), adds it to the
-     * global texture-memory total, then uploads the pixels through @c InitializeTexture2d.
+     * the pixel format (RGB is 3 bytes per texel, alpha or luminance is 1, RGBA is 4), adds it to
+     * the global texture-memory total, then uploads the pixels through @c InitializeTexture2d.
      * @param nWidth The power-of-two texture width.
      * @param nHeight The power-of-two texture height.
      * @param nFormat The pixel format (2 for RGB, 3 for alpha or luminance, otherwise RGBA).
@@ -162,8 +162,8 @@ public:
     /**
      * @brief Store one sampler parameter, skipping the GL call when the cached value is unchanged.
      *
-     * The texture keeps a shadow of its four current sampler-parameter values; a set only reaches GL
-     * when the requested value differs from the shadow, after which the shadow is updated.
+     * The texture keeps a shadow of its four current sampler-parameter values; a set only reaches
+     * GL when the requested value differs from the shadow, after which the shadow is updated.
      * @param pRenderer The GL renderer to issue the parameter change through.
      * @param nIndex The sampler-parameter slot (0 through 3).
      * @param nValue The parameter value.
@@ -186,8 +186,8 @@ public:
      * Decodes the named image, rounds to a power-of-two RGBA (or tight RGB) buffer, and re-uploads
      * it; used to recover a texture whose GL handle was dropped on a context loss. A no-op when the
      * entry has no source path.
-     * @return Non-zero on success (including the no-source-path no-op), zero when the image could not
-     *         be loaded.
+     * @return Non-zero on success (including the no-source-path no-op), zero when the image could
+     * not be loaded.
      * @ghidraAddress 0x3205c
      */
     int ReloadFromSourceName();
@@ -208,9 +208,9 @@ public:
      * @brief Build a cached texture directly from decoded pixel data (rather than an image asset).
      *
      * Allocates a texture, uploads the given pixels while tracking their GPU footprint, and, on
-     * success, reference-counts the texture and splices it into the head of the live cache list. Used
-     * by the @c NSData image decoder path, which decodes to a power-of-two RGBA (or tight RGB) buffer
-     * itself.
+     * success, reference-counts the texture and splices it into the head of the live cache list.
+     * Used by the @c NSData image decoder path, which decodes to a power-of-two RGBA (or tight RGB)
+     * buffer itself.
      * @param nWidth The power-of-two texture width.
      * @param nHeight The power-of-two texture height.
      * @param nFormat The pixel format (2 for RGB, 3 for alpha or luminance, otherwise RGBA).
@@ -232,10 +232,10 @@ public:
     /**
      * @brief Find a cached texture by key, loading and caching it on a miss.
      *
-     * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's reference
-     * count is incremented and it is returned. On a miss a new entry is allocated, initialised, and
-     * loaded from the named image; on success it is reference-counted, spliced into the list, and
-     * returned, otherwise @c nullptr.
+     * Walks the cache list for an entry whose key matches @p pszName; on a hit the entry's
+     * reference count is incremented and it is returned. On a miss a new entry is allocated,
+     * initialised, and loaded from the named image; on success it is reference-counted, spliced
+     * into the list, and returned, otherwise @c nullptr.
      * @param pszName The texture key (an image asset path).
      * @return The cached or newly loaded texture, or @c nullptr when the image could not be loaded.
      * @ghidraAddress 0x33c78

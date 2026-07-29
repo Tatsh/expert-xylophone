@@ -25,7 +25,8 @@ extern bool g_bHasGameCenter;
 /** @brief The device asset-suffix tag (@c iPhone, @c iPhone@2x, @c iPad, or @c iPad2x).
  * @ghidraAddress 0x3df350 */
 extern NSString *_Nullable g_pDeviceAssetTag;
-/** @brief The image-asset directory (PrivateDocuments/Images/<assetTag>). @ghidraAddress 0x3df358 */
+/** @brief The image-asset directory (PrivateDocuments/Images/<assetTag>). @ghidraAddress 0x3df358
+ */
 extern NSString *_Nullable g_pImageAssetDirectoryPath;
 /** @brief The download directory (Caches/Download). @ghidraAddress 0x3df360 */
 extern NSString *_Nullable g_pDownloadDirectoryPath;
@@ -55,7 +56,8 @@ extern NSString *_Nullable g_pAppSupportPath;
 extern NSString *_Nullable g_pCachesDirectoryPath;
 /** @brief The Documents directory path. @ghidraAddress 0x3df3c0 */
 extern NSString *_Nullable g_pDocumentsDirectoryPath;
-/** @brief The PrivateDocuments directory path (Library/PrivateDocuments). @ghidraAddress 0x3df3c8 */
+/** @brief The PrivateDocuments directory path (Library/PrivateDocuments). @ghidraAddress 0x3df3c8
+ */
 extern NSString *_Nullable g_pPrivateDocumentsPath;
 
 NS_ASSUME_NONNULL_END

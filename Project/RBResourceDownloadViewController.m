@@ -654,8 +654,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     [self.view addSubview:self.helpView];
     [self.view addSubview:self.pastelView];
 
-    // The progress meter is assembled from crops of the single "dl_info" atlas: the pastel base, the
-    // pop artwork, the track, and the clipped fill. Each cropped sprite is drawn at half size.
+    // The progress meter is assembled from crops of the single "dl_info" atlas: the pastel base,
+    // the pop artwork, the track, and the clipped fill. Each cropped sprite is drawn at half size.
     UIImage *info = [UIImage imageWithName:kInfoImageName useCache:NO];
 
     UIImage *pastel = [info clipImageWithRect:kPastelClipRect];
@@ -696,8 +696,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
         [self.view addSubview:self.pastelView];
     }
 
-    // The help carousel: a resizable background, a paged scroll view, a gradient header carrying the
-    // "how_bar" caption, a page control, and one "how_N" page per help page.
+    // The help carousel: a resizable background, a paged scroll view, a gradient header carrying
+    // the "how_bar" caption, a page control, and one "how_N" page per help page.
     UIImage *helpBackground = [[UIImage imageWithName:kHelpBackgroundImageName useCache:NO]
         resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset,
                                                      kHelpBackgroundCapInset,
@@ -775,8 +775,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // Re-centre the help container and the pastel progress container within the current bounds. The
     // wide variant always uses the side-by-side (landscape) rule; the standard variant stacks the
     // containers in portrait and places them side by side in landscape. The recovered arithmetic is
-    // soft-float mangled, so the reconstruction centres both containers from their fixed sizes and a
-    // 20-point gutter.
+    // soft-float mangled, so the reconstruction centres both containers from their fixed sizes and
+    // a 20-point gutter.
     CGRect bounds = self.view.bounds;
     BOOL sideBySide = IsPad() || bounds.size.height <= bounds.size.width;
 

@@ -132,8 +132,9 @@ static const CGFloat kButtonTitleShadowAlpha = 0.6000000238418579;
 static const CGFloat kCenterScale = 0.5;
 
 @implementation StorePackDetailViewPad {
-    // The index of the tune whose sample is currently playing, or @c kNoSamplePlaying (-1) when none
-    // is. This ivar has no property and keeps the binary's literal name (no leading underscore).
+    // The index of the tune whose sample is currently playing, or @c kNoSamplePlaying (-1) when
+    // none is. This ivar has no property and keeps the binary's literal name (no leading
+    // underscore).
     int samplePlaying;
     // Whether @c showPackInfo has already populated the subviews. This ivar has no property and
     // keeps the binary's literal name (no leading underscore).

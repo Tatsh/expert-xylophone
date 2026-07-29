@@ -3,10 +3,10 @@
  * quadrant layers plus four grey centre layers that together punch a rectangular "spotlight" hole
  * around the control the current tutorial step points at, draws the tutorial message artwork and a
  * pastel speech bubble beside the hole, and animates a bouncing cursor or a pulsing touch marker on
- * top of the highlighted control. Each tap advances the step: @c hitTest:withEvent: swallows touches
- * outside the spotlight, drives the step cursor forward, and re-lays-out the overlay for the next
- * step. The step sequence is owned by @c RBTutorialManager; this view mirrors the live step into its
- * own @c tutorialStatus and reports completion back through the manager.
+ * top of the highlighted control. Each tap advances the step: @c hitTest:withEvent: swallows
+ * touches outside the spotlight, drives the step cursor forward, and re-lays-out the overlay for
+ * the next step. The step sequence is owned by @c RBTutorialManager; this view mirrors the live
+ * step into its own @c tutorialStatus and reports completion back through the manager.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuTutorialView, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.

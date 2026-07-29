@@ -294,9 +294,9 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
         }
 
         if (nTarget == kSliderTargetKnob) {
-            // The knob stays held while the touch presses inside it. A touch that leaves the knob is
-            // simply not held; a touch released inside the knob cancels the adjustment, plays the
-            // cancel sound, clears the knob, and returns the play scene to its state.
+            // The knob stays held while the touch presses inside it. A touch that leaves the knob
+            // is simply not held; a touch released inside the knob cancels the adjustment, plays
+            // the cancel sound, clears the knob, and returns the play scene to its state.
             const bool bInside = IsInsideSliderRect(static_cast<float>(pTouch->nCurrentX),
                                                     static_cast<float>(pTouch->nCurrentY),
                                                     flLeft,
@@ -316,8 +316,9 @@ void NumberEffectLayer::ProcessBrightnessSliderTouch() {
             }
             m_bSliderHeld = bHeld;
         } else {
-            // The track maps the touch's X to a normalised brightness (clamped to the unit interval),
-            // stores it, pushes it into the user settings and background layer, and saves.
+            // The track maps the touch's X to a normalised brightness (clamped to the unit
+            // interval), stores it, pushes it into the user settings and background layer, and
+            // saves.
             S_VECTOR2 trackAnchor{0.0f, 0.0f};
             ComputeAnchorPos(kSliderTargetTrack, &trackAnchor);
             float flBrightness =

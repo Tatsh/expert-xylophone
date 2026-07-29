@@ -47,8 +47,8 @@ constexpr NoteSpriteDescriptor kNoteSpriteDescriptors[] = {
     {31.0f, 31.0f, 62.0f, 62.0f, 22},
 };
 
-// The batch each sprite type is drawn through (@ghidraAddress 0x30f6f4): the background type uses the
-// first batch, the shot type the third, everything else the second.
+// The batch each sprite type is drawn through (@ghidraAddress 0x30f6f4): the background type uses
+// the first batch, the shot type the third, everything else the second.
 constexpr int kNoteSpriteBatch[] = {0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1};
 
 // The UV rectangles the descriptors index (@ghidraAddress 0x2ef668, stride 0x10): UV origin and UV
@@ -85,8 +85,8 @@ constexpr NoteUvRect kNoteUvRects[] = {
     {0.5546875f, 0.41015625f, 0.09375f, 0.09375f},
 };
 
-// The scroll-phase wrap limits and per-frame steps. Phases A and B share the wide wrap; phase C uses
-// the narrow one. @ghidraAddress 0x2f8540/0x2f8544 and 0x2fcf88/0x2fcf8c.
+// The scroll-phase wrap limits and per-frame steps. Phases A and B share the wide wrap; phase C
+// uses the narrow one. @ghidraAddress 0x2f8540/0x2f8544 and 0x2fcf88/0x2fcf8c.
 constexpr float kScrollWrapWide = 1000.0f;
 constexpr float kScrollStepWide = -1000.0f;
 constexpr float kScrollWrapNarrow = 133.33333f;
@@ -95,8 +95,8 @@ constexpr float kScrollStepNarrow = -133.33333f;
 // The rotation is phase A converted to radians (2*pi / 1000). @ghidraAddress 0x30f6e8.
 constexpr double kPhaseToRadians = 0.006283185307179587;
 
-// The triangle-wave global fade constants (@ghidraAddress 0x2feff4 midpoint, 0x2fee0c rising divisor,
-// 0x30f6f0 falling offset, 0x2ee910 falling divisor).
+// The triangle-wave global fade constants (@ghidraAddress 0x2feff4 midpoint, 0x2fee0c rising
+// divisor, 0x30f6f0 falling offset, 0x2ee910 falling divisor).
 constexpr float kFadeMidpoint = 500.0f;
 constexpr float kFadeRiseDivisor = -66.66667f;
 constexpr float kFadeFallOffset = -0.3f;
@@ -113,8 +113,8 @@ constexpr int kPhaseB = 1;
 constexpr int kPhaseC = 2;
 constexpr int kPlayColorPrimary = 1;
 
-// The particle kinds and the sprite type / colour multiplier each emits. The first (background) kind
-// and kinds six and seven use the global fade; the others split between the two lane-colour
+// The particle kinds and the sprite type / colour multiplier each emits. The first (background)
+// kind and kinds six and seven use the global fade; the others split between the two lane-colour
 // multipliers. Kinds four and five emit a second trail sprite.
 constexpr unsigned int kOpaque = 0xff;
 
@@ -168,8 +168,8 @@ void NoteLayer::Update(float flDelta) {
     const float flRotation =
         static_cast<float>(static_cast<double>(m_aScrollPhase[kPhaseA]) * kPhaseToRadians);
 
-    // The global fade is a triangle wave over phase C: it rises to one before the midpoint and falls
-    // back after it, clamped to the unit interval, then scaled to an alpha.
+    // The global fade is a triangle wave over phase C: it rises to one before the midpoint and
+    // falls back after it, clamped to the unit interval, then scaled to an alpha.
     float flFade;
     if (m_aScrollPhase[kPhaseC] < kFadeMidpoint) {
         flFade = m_aScrollPhase[kPhaseC] / kFadeRiseDivisor * kFadeHalf + kFadeOne;
@@ -194,7 +194,8 @@ void NoteLayer::Update(float flDelta) {
     const float flColorB = bPrimary ? kFadeOne : flRivalAlpha;
     const float flColorScale = pGameSystem->GetSheetRadiusScaled();
 
-    // Walk the live particles up to the shared active index; each is consumed and emits its sprites.
+    // Walk the live particles up to the shared active index; each is consumed and emits its
+    // sprites.
     for (int nSlot = 0; nSlot < kParticleCount; ++nSlot) {
         if (nSlot >= g_nParticleActiveIndex) {
             break;
@@ -208,8 +209,8 @@ void NoteLayer::Update(float flDelta) {
         const S_VECTOR2 pos{particle.flX, particle.flY};
         const float flScale = particle.flScaleX * flColorScale;
 
-        // Each kind maps to a sprite type and one of the colour multipliers; kinds four and five emit
-        // an extra trail sprite, and kinds six and seven use the global fade.
+        // Each kind maps to a sprite type and one of the colour multipliers; kinds four and five
+        // emit an extra trail sprite, and kinds six and seven use the global fade.
         switch (particle.nKind) {
         case 0:
             CreateSprite(1,
@@ -245,8 +246,8 @@ void NoteLayer::Update(float flDelta) {
                          static_cast<int>(particle.flScaleY * flColorA * kAlphaScale),
                          flScale,
                          particle.flRotation);
-            // The trail sprite scales by the particle's own X scale times the colour scale and takes
-            // the frame's rotation.
+            // The trail sprite scales by the particle's own X scale times the colour scale and
+            // takes the frame's rotation.
             CreateSprite(7,
                          &pos,
                          static_cast<int>(particle.flScaleY * flColorA * kAlphaScale),

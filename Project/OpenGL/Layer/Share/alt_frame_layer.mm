@@ -41,7 +41,8 @@ constexpr float kFrameAlphaOpaque = 255.0f;
 AltFrameLayer::AltFrameLayer() {
     m_nFrameType = kDefaultFrameType;
     m_nFrameMode = kDefaultFrameMode;
-    // The sprite batches, counts, ready flag, and fade channel are zeroed by the member initialisers.
+    // The sprite batches, counts, ready flag, and fade channel are zeroed by the member
+    // initialisers.
 }
 
 /** @ghidraAddress 0x17a4f8 */
@@ -258,8 +259,9 @@ void AltFrameLayer::SetFrameMode(int nMode) {
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
 
     // The mesh sprite (batch zero) draws from the frame type's alt-frame mesh UV atlas (the
-    // mid-lane-count set up to frame type twelve, the high-lane-count set above); the overlay batches
-    // draw from the shared atlas. The descriptor's UV-frame index selects the record either way.
+    // mid-lane-count set up to frame type twelve, the high-lane-count set above); the overlay
+    // batches draw from the shared atlas. The descriptor's UV-frame index selects the record either
+    // way.
     const SpriteUvEntry *pUvTable;
     if (pDescriptor->nBatch != kMeshBatch) {
         pUvTable = g_aSpriteUvTable;
@@ -336,8 +338,8 @@ void AltFrameLayer::BuildSprites() {
 
     m_nMarkerCount = kAltFrameMarkerCount;
 
-    // The default frame type is a sentinel meaning "whatever frame the player has equipped"; resolve
-    // it once and keep the resolved type.
+    // The default frame type is a sentinel meaning "whatever frame the player has equipped";
+    // resolve it once and keep the resolved type.
     if (m_nFrameType == kDefaultFrameType) {
         m_nFrameType = GameSystem::GetGameSystem()->GetFrameType();
     }
@@ -356,8 +358,8 @@ void AltFrameLayer::BuildSprites() {
         m_anBatchCapacity[nBatch] = kOverlayBatchCapacity;
     }
 
-    // The sentinel survives only when the game system is itself unset, in which case the layer keeps
-    // whatever textures it already holds.
+    // The sentinel survives only when the game system is itself unset, in which case the layer
+    // keeps whatever textures it already holds.
     if (m_nFrameType != kDefaultFrameType) {
         m_apTextures[kFrameAtlasSlot] =
             ne::C_TEXTURE::FindOrLoadCached(g_aFrameTextureNames[m_nFrameType]);
@@ -393,7 +395,8 @@ void AltFrameLayer::BuildSprites() {
 
     for (int nMarker = 0; nMarker < m_nMarkerCount; ++nMarker) {
         // Select the layout and descriptor tables and the active-lane highlight kind by frame type,
-        // bounding the marker index to the chosen set's record count, exactly as RenderMarkers does.
+        // bounding the marker index to the chosen set's record count, exactly as RenderMarkers
+        // does.
         const AltFrameMarkerLayout *pLayout = nullptr;
         const AltFrameSpriteDescriptor *pDescriptors = nullptr;
         int nActiveKind = 0;
@@ -424,8 +427,8 @@ void AltFrameLayer::BuildSprites() {
         const AltFrameSpriteDescriptor &descriptor = pDescriptors[nKind];
 
         // The mesh sprite draws from the frame type's alt-frame mesh UV atlas (the mid-lane-count
-        // set up to frame type twelve, the high-lane-count set above); the overlay sprites draw from
-        // the shared atlas.
+        // set up to frame type twelve, the high-lane-count set above); the overlay sprites draw
+        // from the shared atlas.
         const SpriteUvEntry *pUvTable;
         if (descriptor.nBatch != kMeshBatch) {
             pUvTable = g_aSpriteUvTable;

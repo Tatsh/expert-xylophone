@@ -4,8 +4,8 @@
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class
 //  RBResourceDownloadBGEffectPartView). Verified against the arm64 disassembly: -init chains to the
-//  superclass through objc_msgSendSuper2, and every -setImage*Path: is likewise a super-send, so the
-//  three artwork paths are seeded on the base class implementation.
+//  superclass through objc_msgSendSuper2, and every -setImage*Path: is likewise a super-send, so
+//  the three artwork paths are seeded on the base class implementation.
 //
 
 #import "RBResourceDownloadBGEffectPartView.h"

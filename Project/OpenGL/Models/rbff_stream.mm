@@ -2,8 +2,8 @@
 //  rbff_stream.mm
 //  REFLEC BEAT plus
 //
-//  The RBFF chart-stream cursor and header helpers. Reconstructed from Ghidra project rb458, program
-//  rb458. @ghidraAddress values are relative to the program image base.
+//  The RBFF chart-stream cursor and header helpers. Reconstructed from Ghidra project rb458,
+//  program rb458. @ghidraAddress values are relative to the program image base.
 //
 
 #include "rbff_stream.h"

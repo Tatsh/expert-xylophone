@@ -9,10 +9,10 @@
 #import "engineglobals.h"
 
 // Shared engine layout metrics and cached localised strings, referenced by their Ghidra names.
-extern const double g_dLayoutMetricThirtyTwo;                     // @ghidraAddress 0x2ee9b0 (32.0)
-extern const double g_dSliderRowHeightWide;                       // @ghidraAddress 0x2ee950
-extern const double g_dAudioManagerResumeFadeInTime;              // @ghidraAddress 0x2ec718 (0.3)
-extern const double g_dMascotMessageMaxWidthPad;                  // @ghidraAddress 0x2ee930 (300.0)
+extern const double g_dLayoutMetricThirtyTwo;        // @ghidraAddress 0x2ee9b0 (32.0)
+extern const double g_dSliderRowHeightWide;          // @ghidraAddress 0x2ee950
+extern const double g_dAudioManagerResumeFadeInTime; // @ghidraAddress 0x2ec718 (0.3)
+extern const double g_dMascotMessageMaxWidthPad;     // @ghidraAddress 0x2ee930 (300.0)
 
 // Asset names in the search image directory.
 static NSString *const kSearchCancelImageName = @"06_search/sear_cancel";

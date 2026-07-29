@@ -80,8 +80,8 @@ void BackgroundSpriteManager::BuildBackgroundSpriteNodes() {
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
 
     // Build one sprite instancer per slot, attach it under the background render object, make it
-    // visible, bind the atlas, seed its sprite count, and flag additive blend on the outer two slots
-    // (every slot but the middle one).
+    // visible, bind the atlas, seed its sprite count, and flag additive blend on the outer two
+    // slots (every slot but the middle one).
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
@@ -239,8 +239,8 @@ void BackgroundSpriteManager::Update(float flDelta) {
         return;
     }
 
-    // The effect is laid out around the viewport centre. An iPad draws it full size; the phone draws
-    // it at the same half scale that halves the viewport.
+    // The effect is laid out around the viewport centre. An iPad draws it full size; the phone
+    // draws it at the same half scale that halves the viewport.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     S_VECTOR2 center{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()};
     ScaleVector2(&center, kHalfScale);
@@ -286,8 +286,8 @@ void BackgroundSpriteManager::Update(float flDelta) {
                            &haloPosition,
                            static_cast<int>(flHaloAlpha * kAlphaByteScale));
 
-    // The animated row: eleven sprites spread along the centre line, each on its own X-offset curve,
-    // sharing one alpha and one vertical-scale curve.
+    // The animated row: eleven sprites spread along the centre line, each on its own X-offset
+    // curve, sharing one alpha and one vertical-scale curve.
     const float flRowAlpha = CalculateCurveInterpolation(kRowAlphaCurve, kTwoPointCurve, m_flTimer);
     const float flRowScaleY =
         flScale * CalculateCurveInterpolation(kRowScaleYCurve, kTwoPointCurve, m_flTimer);

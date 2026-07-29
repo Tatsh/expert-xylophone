@@ -30,8 +30,8 @@ static const UIViewAutoresizing kCenteredImageAutoresizingMask =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// The autoresizing mask applied to the info_1 sub-image on the iPhone layout: flexible right and top
-// margins (0xc), pinning it to the bottom-left.
+// The autoresizing mask applied to the info_1 sub-image on the iPhone layout: flexible right and
+// top margins (0xc), pinning it to the bottom-left.
 static const UIViewAutoresizing kInfo1AutoresizingMask =
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
 
@@ -62,7 +62,8 @@ static const CGFloat kMusicImagePadY = 90.0; // @0x2ee9a0
 static const CGFloat kInfo2CenterX = 30.0;
 static const CGFloat kInfo2CenterY = 204.0; // @0x301218
 
-// The iPhone-layout info_1 image centre: a fixed x with a y measured up from the bottom of the view.
+// The iPhone-layout info_1 image centre: a fixed x with a y measured up from the bottom of the
+// view.
 static const CGFloat kInfo1CenterX = 90.0;        // @0x2ee9a0
 static const CGFloat kInfo1CenterYOffset = -44.0; // @0x301220, added to the view height
 

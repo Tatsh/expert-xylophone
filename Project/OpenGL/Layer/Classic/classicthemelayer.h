@@ -46,8 +46,9 @@ public:
     static ClassicThemeLayer *shared();
 
     /**
-     * @brief Constructs the layer: chains the base constructor and clears the batch, count, texture,
-     * and colour state, defaulting the colour index to one and the two trailing slots to four.
+     * @brief Constructs the layer: chains the base constructor and clears the batch, count,
+     * texture, and colour state, defaulting the colour index to one and the two trailing slots to
+     * four.
      * @ghidraAddress 0x109e68
      */
     ClassicThemeLayer();
@@ -56,9 +57,9 @@ public:
      * @brief Build the Classic-theme background sprite batches into the scene graph.
      *
      * On the first call it loads the shared background texture, creates the three world sprite
-     * batches, attaches them under the background layer's root, seeds each batch's sprite count from
-     * the layer, and makes them visible; the third batch is additively blended. Subsequent calls do
-     * nothing.
+     * batches, attaches them under the background layer's root, seeds each batch's sprite count
+     * from the layer, and makes them visible; the third batch is additively blended. Subsequent
+     * calls do nothing.
      * @ghidraAddress 0x109f30
      */
     void InitializeBackgroundSceneNodes();
@@ -134,11 +135,11 @@ public:
     /**
      * @brief Advances the theme's reveal animation by one frame and emits its sprites.
      *
-     * Clears the batch slot counts, advances the eased-progress channel, and — while the animation is
-     * enabled — advances the reveal clock (retiring it at its end) and emits the full-screen scrim,
-     * then for each play side its outcome banner, the additive glow behind it, and, for the winning
-     * side, two curve-driven particle bursts. Every slot count is published to its render node
-     * afterwards, whether or not the reveal ran.
+     * Clears the batch slot counts, advances the eased-progress channel, and — while the animation
+     * is enabled — advances the reveal clock (retiring it at its end) and emits the full-screen
+     * scrim, then for each play side its outcome banner, the additive glow behind it, and, for the
+     * winning side, two curve-driven particle bursts. Every slot count is published to its render
+     * node afterwards, whether or not the reveal ran.
      * @param flDelta The elapsed frame count.
      * @ghidraAddress 0x10a0a8
      */
@@ -160,7 +161,8 @@ private:
     // +0x3e..+0x3f is alignment padding before the animation clock.
     unsigned char m_aPad3e[2] = {}; // +0x3e
     float m_flClock = {};           // +0x40: the theme animation clock, advanced each frame.
-    // +0x44..+0x57: the eased reveal-progress channel; its current value scales the emitted sprites.
+    // +0x44..+0x57: the eased reveal-progress channel; its current value scales the emitted
+    // sprites.
     LinearTween m_easeChannel;                 // +0x44
     int m_aScoreValues[kScoreValueCount] = {}; // +0x58: the per-side score display values.
 };

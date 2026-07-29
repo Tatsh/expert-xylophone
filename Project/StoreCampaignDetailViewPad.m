@@ -142,7 +142,8 @@ static const CGFloat kFullAlpha = 1.0;
     // The audio-sample state machine; this ivar has no property and keeps its literal, non-prefixed
     // binary name.
     int sampleStatus;
-    // Whether a sample download is currently in flight; keeps its literal, non-prefixed binary name.
+    // Whether a sample download is currently in flight; keeps its literal, non-prefixed binary
+    // name.
     BOOL isDownloadingSample;
     // Whether the bound item reports itself as unlocked; keeps its literal binary name.
     BOOL bUnlock;

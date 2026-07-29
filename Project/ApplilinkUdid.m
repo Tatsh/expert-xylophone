@@ -8,8 +8,9 @@
 //  digest through CommonCrypto, so there is no C++.
 //
 //  ApplilinkUdid is the Applilink reward-network SDK's device-identifier manager. It is a lazily
-//  created singleton whose +sharedInstance owns a serial dispatch queue and one ApplilinkPasteBoard;
-//  every operation is a class method that routes through that shared pasteboard and the keychain.
+//  created singleton whose +sharedInstance owns a serial dispatch queue and one
+//  ApplilinkPasteBoard; every operation is a class method that routes through that shared
+//  pasteboard and the keychain.
 //
 //  In the KONAMI PopnRhythmin build this class is RewardNetworkUdid; rb458 renamed it to
 //  ApplilinkUdid and added a few nil guards, but the algorithms match.

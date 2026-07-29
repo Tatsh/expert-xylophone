@@ -81,11 +81,11 @@ public:
      *
      * Stores @p nMode, then writes the first slot of the highlight's sprite batch: it takes the
      * position, rotation, and scale from the active lane's marker layout (the base Y offset by the
-     * play-field half-height), and the anchor, pixel size, and atlas rectangle from the mode-selected
-     * highlight descriptor. The lane-count tier (chosen by the frame type) selects the marker and
-     * descriptor tables; the descriptor's batch selects the sprite instancer, and the mesh batch
-     * draws from the frame type's alt-frame mesh UV atlas while the overlay batches draw from the
-     * shared atlas. The highlight is always drawn opaque white.
+     * play-field half-height), and the anchor, pixel size, and atlas rectangle from the
+     * mode-selected highlight descriptor. The lane-count tier (chosen by the frame type) selects
+     * the marker and descriptor tables; the descriptor's batch selects the sprite instancer, and
+     * the mesh batch draws from the frame type's alt-frame mesh UV atlas while the overlay batches
+     * draw from the shared atlas. The highlight is always drawn opaque white.
      * @param nMode The frame mode (the active lane's highlight selector).
      * @ghidraAddress 0x17abc4
      */

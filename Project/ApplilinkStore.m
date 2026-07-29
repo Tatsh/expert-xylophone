@@ -8,10 +8,10 @@
 //  is no C++.
 //
 //  ApplilinkStore is the SDK's App Store product-page facade singleton. It is created once,
-//  presents the store through an ApplilinkViewController (which owns the SKStoreProductViewController),
-//  and is itself the SdkViewDelegate of that view controller. When the view controller reports the
-//  open, close, closed, or load-failure notices, the store forwards them to the caller's own
-//  sdkDelegate.
+//  presents the store through an ApplilinkViewController (which owns the
+//  SKStoreProductViewController), and is itself the SdkViewDelegate of that view controller. When
+//  the view controller reports the open, close, closed, or load-failure notices, the store forwards
+//  them to the caller's own sdkDelegate.
 //
 
 #import "ApplilinkStore.h"
@@ -71,7 +71,8 @@ static const float kMinimumStoreSystemVersion = 6.0f;
     }
     if (sViewController == nil) {
         // The binary stores both values straight into the backing ivars here; in particular the
-        // parameters bypass the copy setter, so this keeps the caller's instance rather than a copy.
+        // parameters bypass the copy setter, so this keeps the caller's instance rather than a
+        // copy.
         _sdkDelegate = delegate;
         _applilinkParams = appParam;
         sViewController = [[ApplilinkViewController alloc] init];

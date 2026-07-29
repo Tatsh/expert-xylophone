@@ -77,8 +77,8 @@ constexpr float kTitleFadeDuration = 1000.0f;
 // The themed voice bank and the sound-effect voice id the title screen loads.
 constexpr int kTitleVoiceId = 0;
 
-// The instancer slot each sprite kind draws through (@ghidraAddress 0x309360): the nine title sprite
-// kinds map onto the eight instancers (the last two kinds share the final slot).
+// The instancer slot each sprite kind draws through (@ghidraAddress 0x309360): the nine title
+// sprite kinds map onto the eight instancers (the last two kinds share the final slot).
 constexpr unsigned int kTitleSpriteKindSlot[] = {0, 4, 5, 6, 7, 1, 2, 3, 3};
 
 // The highest sprite kind the emitters accept (kinds below this are valid).
@@ -91,10 +91,10 @@ constexpr float kQuadHalf = 0.5f;
 constexpr unsigned int kTitleOpaque = 0xff;
 
 // One per-kind title sprite layout: the sprite anchor, its pixel size, and its UV rectangle. The
-// binary lazily builds these under a guard from read-only constants and the play-field centre split;
-// the resolved records (indices 1 through 8; index 0 is unused since kind 0 draws a full quad) are
-// reproduced here. The main-frame and alt-frame tables differ only in the last two records (the
-// frame-specific logo).
+// binary lazily builds these under a guard from read-only constants and the play-field centre
+// split; the resolved records (indices 1 through 8; index 0 is unused since kind 0 draws a full
+// quad) are reproduced here. The main-frame and alt-frame tables differ only in the last two
+// records (the frame-specific logo).
 struct TitleSpriteLayout {
     float flAnchorX;
     float flAnchorY;
@@ -149,8 +149,8 @@ constexpr float kNoRotation = 0.0f;
 // (@ghidraAddress 0x2eed00).
 constexpr float kAlphaScale = 255.0f;
 
-// The start prompt's vertical offset below the viewport centre (@ghidraAddress 0x2fd024). The prompt
-// then sits halfway again between that line and the bottom edge.
+// The start prompt's vertical offset below the viewport centre (@ghidraAddress 0x2fd024). The
+// prompt then sits halfway again between that line and the bottom edge.
 constexpr float kPromptOffsetY = 180.0f;
 
 // The start prompt's one-shot fade-in: its clock is capped at the curve's last keyframe
@@ -159,22 +159,23 @@ constexpr float kPromptFadeLimit = 1500.0f;
 constexpr int kPromptFadePairCount = 2;
 constexpr float kPromptFadeCurve[] = {500.0f, 0.0f, 1500.0f, 1.0f};
 
-// The start prompt's repeating pulse: its clock wraps at 1000 ms (@ghidraAddress 0x2f8540, wrapped by
-// adding 0x2f8544) and its keyframe pairs live at 0x3093b4.
+// The start prompt's repeating pulse: its clock wraps at 1000 ms (@ghidraAddress 0x2f8540, wrapped
+// by adding 0x2f8544) and its keyframe pairs live at 0x3093b4.
 constexpr float kPromptPulsePeriod = 1000.0f;
 constexpr int kPromptPulsePairCount = 3;
 constexpr float kPromptPulseCurve[] = {0.0f, 0.0f, 500.0f, 1.0f, 1000.0f, 0.0f};
 
-// Once the hidden sequence completes every animation clock runs five times faster; the leaving layer
-// separately drives the prompt pulse at the same multiple.
+// Once the hidden sequence completes every animation clock runs five times faster; the leaving
+// layer separately drives the prompt pulse at the same multiple.
 constexpr int kNormalSpeed = 1;
 constexpr int kSecretSpeedUp = 5;
 constexpr int kLeavingPulseSpeedUp = 5;
 
-// Each star layer's scroll period (@ghidraAddress 0x3093dc), the distance it travels over one period
-// (0x3093e4), the gap between a layer's two copies so the field wraps seamlessly (0x309164), the two
-// alpha bounds the twinkle sweeps between (0x3093cc and 0x3093d4), the twinkle period (0x2feff4), and
-// each layer's size scale (0x3093f4 — the second layer's negative scale mirrors it).
+// Each star layer's scroll period (@ghidraAddress 0x3093dc), the distance it travels over one
+// period (0x3093e4), the gap between a layer's two copies so the field wraps seamlessly (0x309164),
+// the two alpha bounds the twinkle sweeps between (0x3093cc and 0x3093d4), the twinkle period
+// (0x2feff4), and each layer's size scale (0x3093f4 — the second layer's negative scale mirrors
+// it).
 constexpr float kStarScrollPeriod[] = {153600.0f, 614400.0f};
 constexpr float kStarScrollDistance[] = {-1024.0f, -1024.0f};
 constexpr float kStarWrapDistance = 1024.0f;
@@ -184,11 +185,11 @@ constexpr float kStarTwinklePeriod = 500.0f;
 constexpr int kStarTwinklePeriodMs = 500;
 constexpr float kStarLayerScale[] = {1.0f, -1.0f};
 
-// Each ring sweeps its size from a start (@ghidraAddress 0x3093f4, the same pair as the star scales)
-// to an end (0x3093ec) over the scale period (0x309168, whose integer form 30000 is also the clock's
-// wrap), turns one full revolution per spin period (0x309170, a pair of doubles, over 0x3093fc), and
-// takes its alpha from a five-keyframe curve (0x309404, stride 0x28) whose last keyframe time doubles
-// as the alpha clock's wrap.
+// Each ring sweeps its size from a start (@ghidraAddress 0x3093f4, the same pair as the star
+// scales) to an end (0x3093ec) over the scale period (0x309168, whose integer form 30000 is also
+// the clock's wrap), turns one full revolution per spin period (0x309170, a pair of doubles, over
+// 0x3093fc), and takes its alpha from a five-keyframe curve (0x309404, stride 0x28) whose last
+// keyframe time doubles as the alpha clock's wrap.
 constexpr float kRingScaleStart[] = {1.0f, -1.0f};
 constexpr float kRingScaleEnd[] = {2.0f, -2.5f};
 constexpr float kRingScalePeriod = 30000.0f;
@@ -330,7 +331,8 @@ void TitleClassicScene::ReleaseResources() {
             pTexture = nullptr;
         }
     }
-    // The sprite instancers are owned by the scene graph; flag each for the scene walker and null it.
+    // The sprite instancers are owned by the scene graph; flag each for the scene walker and null
+    // it.
     for (ne::C_SPRITE_INSTANCING_2D *&pSprite : m_apSprites) {
         if (pSprite != nullptr) {
             pSprite->RequestDelete();
@@ -369,7 +371,8 @@ void TitleClassicScene::LoadResources() {
     }
 
     // Build the eight sprite instancers: register each in the global scene tree, make it visible,
-    // bind its texture (except the last slot), seed its sprite count, and set its blend/texture modes.
+    // bind its texture (except the last slot), seed its sprite count, and set its blend/texture
+    // modes.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite =
             ne::CreateSpriteInstancer(g_aTitleSpriteCapacity[nSlot]);
@@ -420,8 +423,8 @@ void TitleClassicScene::RenderFrame(int nElapsedMs) {
     const float flViewportHeight = pGameSystem->GetViewportHeight();
     const float flLayoutScale = IsPad() ? kUnitScale : kPhoneLayoutScale;
 
-    // The hit-box pass anchors on this scaled copy rather than on the centre computed below; the two
-    // are numerically identical, and the binary keeps both.
+    // The hit-box pass anchors on this scaled copy rather than on the centre computed below; the
+    // two are numerically identical, and the binary keeps both.
     S_VECTOR2 halfViewport{flViewportWidth, flViewportHeight};
     ScaleVector2(&halfViewport, kQuadHalf);
 
@@ -490,7 +493,8 @@ void TitleClassicScene::RenderFrame(int nElapsedMs) {
         kUnitScale,
         kNoRotation);
 
-    // Two star layers scroll upwards, each drawn twice a wrap apart so the field never shows a seam.
+    // Two star layers scroll upwards, each drawn twice a wrap apart so the field never shows a
+    // seam.
     for (int nLayer = 0; nLayer < kStarLayerCount; ++nLayer) {
         const int nSpeed = m_bSwipeTriggered ? kSecretSpeedUp : kNormalSpeed;
 
@@ -624,7 +628,8 @@ void TitleClassicScene::RenderFrame(int nElapsedMs) {
                 const TitleHitBoxLayout &layout = kTitleHitBoxLayout[nBox];
                 const float flWidth = flLayoutScale * layout.flWidth;
                 const float flHeight = flLayoutScale * layout.flHeight;
-                // Only the start box hangs off the prompt line; the rest sit on the viewport centre.
+                // Only the start box hangs off the prompt line; the rest sit on the viewport
+                // centre.
                 const float flAnchorX = (nBox == kHitBoxStart) ? flCentreX : halfViewport.x;
                 const float flAnchorY = (nBox == kHitBoxStart) ? flPromptY : halfViewport.y;
                 aHitBoxes[nBox].flX = static_cast<float>(
@@ -762,8 +767,8 @@ void TitleClassicScene::RenderTitleBackgroundFullQuad(unsigned int nSpriteKind,
         return;
     }
 
-    // The quad fills the bound texture's image at its retina scale, centred on the position, with its
-    // UV span the image's fraction of the allocated (power-of-two) atlas.
+    // The quad fills the bound texture's image at its retina scale, centred on the position, with
+    // its UV span the image's fraction of the allocated (power-of-two) atlas.
     ne::C_TEXTURE *pTexture = pInstancer->GetBoundTexture();
     const float flImageWidth = static_cast<float>(pTexture->GetImageWidth());
     const float flImageHeight = static_cast<float>(pTexture->GetImageHeight());
@@ -817,8 +822,8 @@ void TitleClassicScene::EmitTitleSprite(unsigned int nSpriteKind,
         pInstancer->SetSpriteUvSize(
             nIndex, S_VECTOR2{flImageWidth / flAllocWidth, flImageHeight / flAllocHeight});
     } else {
-        // Kinds 1 through 8 take a fixed layout from the frame-variant table (iPad uses the alt-frame
-        // table, the phone the main-frame table).
+        // Kinds 1 through 8 take a fixed layout from the frame-variant table (iPad uses the
+        // alt-frame table, the phone the main-frame table).
         const TitleSpriteLayout &layout =
             IsPad() ? kTitleLayoutAlt[nSpriteKind] : kTitleLayoutMain[nSpriteKind];
         pInstancer->SetSpriteAnchor(nIndex, S_VECTOR2{layout.flAnchorX, layout.flAnchorY});

@@ -22,8 +22,8 @@ class C_TEXTURE;
  * Draws an indexed 3D triangle mesh: per-vertex position, colour, and UV arrays plus a 16-bit index
  * buffer. It is a @c C_RENDER, so it lives in the scene graph. The trailing @c // +0xNN comments
  * document the original offsets for reference only; state is reached through the accessors, never
- * through those offsets. Only the members touched by the reconstructed methods are named so far; the
- * rest of the 0x17c-byte object is a reserved span preserving the binary's allocation size.
+ * through those offsets. Only the members touched by the reconstructed methods are named so far;
+ * the rest of the 0x17c-byte object is a reserved span preserving the binary's allocation size.
  */
 class C_DRAW_POLYGON_3D : public C_RENDER {
 public:
@@ -144,11 +144,11 @@ public:
     };
 
     /**
-     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh) the
-     * per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
+     * @brief Allocates the interleaved vertex buffer, the index buffer, and (for a skinned mesh)
+     * the per-bone arrays, deriving the per-attribute offsets and stride from the vertex format.
      *
-     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking the
-     * mesh's vertex and index data dirty so the first draw uploads them.
+     * Also generates the GL vertex and index buffer objects unless the caller owns them, marking
+     * the mesh's vertex and index data dirty so the first draw uploads them.
      * @ghidraAddress 0x287e8
      */
     void AllocateBuffers();

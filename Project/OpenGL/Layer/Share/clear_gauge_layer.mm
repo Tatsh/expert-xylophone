@@ -88,8 +88,8 @@ ClearGaugeLayer::ClearGaugeLayer() {
     m_nTwoSideEnabled = kInitialTwoSideEnabled;
 
     // Seed the batch-state array: copy each entry forward by one eight-entry window and step the
-    // source up by two, which leaves the first eight entries (the per-batch sprite capacities read by
-    // CreateSprites) at two and the rest zero.
+    // source up by two, which leaves the first eight entries (the per-batch sprite capacities read
+    // by CreateSprites) at two and the rest zero.
     for (int i = 0; i < kBatchStateCopyCount; ++i) {
         m_aBatchState[i + kBatchStateWindow] = m_aBatchState[i];
         m_aBatchState[i] += kPerBatchCapacityStep;
@@ -252,7 +252,8 @@ void ClearGaugeLayer::SetClearGaugeIcon(int nBottomBand, int nAlpha) {
 
 /** @ghidraAddress 0x175eec */
 void ClearGaugeLayer::SetClearGaugeMarker(unsigned int nSide, int nAlpha) {
-    // The marker's anchor, height, unfilled width, and atlas frame, chosen by orientation and style.
+    // The marker's anchor, height, unfilled width, and atlas frame, chosen by orientation and
+    // style.
     S_VECTOR2 anchor;
     float flHeight;
     float flWidthBase;
@@ -432,8 +433,8 @@ void ClearGaugeLayer::SetClearGaugeSprite(unsigned int nBatch,
 ClearGaugeLayer *ClearGaugeLayer::shared() {
     if (g_pClearGaugeLayer == nullptr) {
         // The binary allocates the raw object and runs the clear-gauge constructor
-        // (InitClearGaugeLayer, 0x1759fc), which chains to the play-field base initialiser and seeds
-        // the sprite-slot bookkeeping.
+        // (InitClearGaugeLayer, 0x1759fc), which chains to the play-field base initialiser and
+        // seeds the sprite-slot bookkeeping.
         g_pClearGaugeLayer = new ClearGaugeLayer();
     }
     return g_pClearGaugeLayer;

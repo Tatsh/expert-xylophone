@@ -242,7 +242,8 @@ NSString *g_pLocalizedSearchMusic;
 
 namespace {
 // Looks a key up in the main bundle's localisation table, defaulting to an empty string. The bundle
-// is resolved once by the caller and shared across every lookup (the binary re-fetched it per call).
+// is resolved once by the caller and shared across every lookup (the binary re-fetched it per
+// call).
 NSString *Localize(NSBundle *bundle, NSString *key) {
     return [bundle localizedStringForKey:key value:@"" table:nil];
 }
@@ -425,7 +426,8 @@ __attribute__((constructor)) void InitializeApiRequestTable(void) {
 /** @ghidraAddress 0x2ac00 */
 __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
     @autoreleasepool {
-        // Small katakana fold to their full-size form (used to normalise a reading before matching).
+        // Small katakana fold to their full-size form (used to normalise a reading before
+        // matching).
         g_pLowerToUpperTable = @{
             @"ァ" : @"ア",
             @"ィ" : @"イ",
@@ -535,7 +537,8 @@ __attribute__((constructor)) void InitializeGlobalLookupTables(void) {
             @"ン" : @"ン",
         };
 
-        // Voiced and semi-voiced katakana fold to their base kana (dropping the dakuten/handakuten).
+        // Voiced and semi-voiced katakana fold to their base kana (dropping the
+        // dakuten/handakuten).
         g_pVoiceToVoicelessTable = @{
             @"ガ" : @"カ",
             @"ギ" : @"キ",

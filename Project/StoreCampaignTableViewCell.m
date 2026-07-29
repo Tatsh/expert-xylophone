@@ -21,8 +21,8 @@ static const CGFloat kItemWidthPhone = 320.0;
 static const CGFloat kItemHeightPad = 160.0;
 static const CGFloat kItemHeightPhone = 80.0;
 
-// The rounded jacket placeholder is a square (110 points on pad, 64 on phone) that is inset from the
-// artwork origin, nudged up 2 points on phone to line up with the shadow.
+// The rounded jacket placeholder is a square (110 points on pad, 64 on phone) that is inset from
+// the artwork origin, nudged up 2 points on phone to line up with the shadow.
 static const CGFloat kJacketSizePad = 110.0;
 static const CGFloat kJacketSizePhone = 64.0;
 static const int kJacketPhoneVerticalNudge = 2;
@@ -40,7 +40,8 @@ static const NSTimeInterval kArtworkFadeDuration = 0.2;
 static const CGFloat kOpaqueAlpha = 1.0;
 static const CGFloat kTransparentAlpha = 0.0;
 
-// A campaign item is a tune when its type is zero; only a tune is checked against the local library.
+// A campaign item is a tune when its type is zero; only a tune is checked against the local
+// library.
 static const int kCampaignItemTypeTune = 0;
 
 // The two alternating pack-background images (selected by row parity) and the jacket placeholder.

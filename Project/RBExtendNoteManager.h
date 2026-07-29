@@ -3,10 +3,10 @@
  * charts that augment an existing tune: each is delivered as its own packaged archive and described
  * by a purchased-extend-note dictionary. This manager owns the array of those dictionaries decoded
  * from the persisted @c nolist file, lazily builds and caches an array of @c MusicDataExtend
- * catalogue entries from them, and vends those entries by their own extend identifier or by the base
- * tune identifier they augment. It records and persists purchases, deletes a purchased extend note's
- * files, and holds the paged "client" (server-supplied) extend-note list used when comparing the
- * local catalogue against a remote one.
+ * catalogue entries from them, and vends those entries by their own extend identifier or by the
+ * base tune identifier they augment. It records and persists purchases, deletes a purchased extend
+ * note's files, and holds the paged "client" (server-supplied) extend-note list used when comparing
+ * the local catalogue against a remote one.
  *
  * The purchased-extend-note list is stored enciphered with the same per-device Blowfish key as the
  * purchased-music list: the key string is the device-unique value vended by

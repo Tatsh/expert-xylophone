@@ -123,8 +123,8 @@
         self.proceedBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderProceed:)]) {
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderProceed:)
-                                        withObject:self
-                                     waitUntilDone:YES];
+                                                    withObject:self
+                                                 waitUntilDone:YES];
     }
 }
 
@@ -133,8 +133,8 @@
         self.successBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderFinished:)]) {
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderFinished:)
-                                        withObject:self
-                                     waitUntilDone:YES];
+                                                    withObject:self
+                                                 waitUntilDone:YES];
     }
 }
 
@@ -143,8 +143,8 @@
         self.failureBlock(self);
     } else if ([self.delegate respondsToSelector:@selector(downloaderError:)]) {
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderError:)
-                                        withObject:self
-                                     waitUntilDone:YES];
+                                                    withObject:self
+                                                 waitUntilDone:YES];
     }
 }
 

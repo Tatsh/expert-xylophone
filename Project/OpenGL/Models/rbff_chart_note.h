@@ -9,8 +9,8 @@
  * @brief One note as it is stored in the RBFF chart stream: a 40-byte little-endian record the
  * parser deserialises into the richer in-memory @c RbffNoteRecord.
  *
- * The fields are read in stream order by @c DeserializeNoteRecord. The trailing @c // +0xNN comments
- * document the on-disk byte offsets.
+ * The fields are read in stream order by @c DeserializeNoteRecord. The trailing @c // +0xNN
+ * comments document the on-disk byte offsets.
  */
 struct RbffChartNote {
     int nTimeA = {};              /*!< The note's primary time. +0x00 */
@@ -80,8 +80,8 @@ struct RbffTempoEvent {
 };
 
 /**
- * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts and two
- * ints, with four trailing reserved bytes.
+ * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts and
+ * two ints, with four trailing reserved bytes.
  */
 struct RbffChartHeaderRecord {
     unsigned short nField0 = {}; /*!< The first of the record's three leading shorts. +0x00 */
@@ -125,7 +125,8 @@ void InitNoteChainData(RbffNoteReadRecord *pRecord);
 RbffNoteReadRecord *FreeNotePathArray(RbffNoteReadRecord *pRecord);
 
 /**
- * @brief Reads one note record from an RBFF stream into a staging record, allocating its path array.
+ * @brief Reads one note record from an RBFF stream into a staging record, allocating its path
+ * array.
  * @param pOut The destination staging record.
  * @param ppCursor The stream cursor, advanced past the record on return.
  * @return Always 1.

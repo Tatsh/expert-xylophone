@@ -134,8 +134,8 @@ public:
     bool GraphSetup(int nVoiceCount);
 
     /**
-     * @brief Tears the mixer down: stops and disposes the AUGraph, then deletes every voice slot and
-     *        the voice array.
+     * @brief Tears the mixer down: stops and disposes the AUGraph, then deletes every voice slot
+     * and the voice array.
      * @ghidraAddress 0x4affc
      */
     void Terminate();

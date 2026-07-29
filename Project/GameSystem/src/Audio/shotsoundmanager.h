@@ -34,8 +34,8 @@ public:
      */
     void LoadAll();
     /**
-     * @brief Stores the shot sound group volume (clamped to the unit interval) and applies it to the
-     *        audio manager's shot bus.
+     * @brief Stores the shot sound group volume (clamped to the unit interval) and applies it to
+     * the audio manager's shot bus.
      * @param flVolume The requested volume, clamped to the range zero to one.
      * @ghidraAddress 0x1cd4a4
      */

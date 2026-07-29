@@ -18,8 +18,8 @@ class C_TEXTURE;
 /**
  * @brief The play-field clear-gauge layer.
  *
- * Draws each player side's clear gauge as a set of sprite batches over the background scene node. It
- * derives from @c PlayFieldLayerBase and is a process-wide singleton built on first access. The
+ * Draws each player side's clear gauge as a set of sprite batches over the background scene node.
+ * It derives from @c PlayFieldLayerBase and is a process-wide singleton built on first access. The
  * trailing @c // +0xNN comments document the original 32-bit member offsets for reference only; the
  * object is always reached through named fields. Some of the layer's sprite-slot state between the
  * base fields and the recovered members below is still being worked out.
@@ -37,10 +37,10 @@ public:
     /**
      * @brief Builds the gauge's eight sprite batches on first use.
      *
-     * Loads the gm_parts2 atlas, creates each batch sized from the capacity table, attaches it under
-     * the background layer, makes it visible, binds the atlas, and clears its sprite count. The
-     * second batch additionally enables the two-side gauge. Finally seeds both bands' base icons.
-     * Guarded so it runs only once.
+     * Loads the gm_parts2 atlas, creates each batch sized from the capacity table, attaches it
+     * under the background layer, makes it visible, binds the atlas, and clears its sprite count.
+     * The second batch additionally enables the two-side gauge. Finally seeds both bands' base
+     * icons. Guarded so it runs only once.
      * @ghidraAddress 0x175afc
      */
     void CreateSprites();
@@ -50,8 +50,8 @@ public:
      *
      * Eases the reveal fade toward its target over its duration (marking the colour dirty), clears
      * every batch's sprite count, and then for each drawn side (the first side only when the
-     * two-side gauge is enabled) appends its icon, fill marker, and digits at an alpha taken from the
-     * current fade value scaled by the side's alpha multiplier.
+     * two-side gauge is enabled) appends its icon, fill marker, and digits at an alpha taken from
+     * the current fade value scaled by the side's alpha multiplier.
      * @param flDelta The frame's elapsed time, in frames.
      * @ghidraAddress 0x175dd4
      */
@@ -61,9 +61,11 @@ public:
      * @brief Appends the gauge's base icon quad, choosing its size and atlas frame by layout.
      *
      * Selects a quad size and atlas frame from the current orientation and gauge style (three
-     * variants: phone, iPad default, and iPad alternate), then appends it to the first batch through
+     * variants: phone, iPad default, and iPad alternate), then appends it to the first batch
+     * through
      * @c SetClearGaugeSprite on the given band.
-     * @param nBottomBand Non-zero to place the icon on the lower gauge band, zero for the upper band.
+     * @param nBottomBand Non-zero to place the icon on the lower gauge band, zero for the upper
+     * band.
      * @param nAlpha The icon's alpha.
      * @ghidraAddress 0x175bc8
      */
@@ -86,10 +88,10 @@ public:
      *
      * Reads the side's gauge value, scales it into a per-mille percentage (so a full gauge reads as
      * @c 100.0), and appends the two fixed labels (a separator and the percent sign) plus the
-     * thousands, hundreds, tens, and ones digits, suppressing leading zeros above the tens place. The
-     * glyphs come from the platform's label and digit tables, switching to a high-value variant at or
-     * above seventy percent, with each digit positioned by its place and the iPad default style
-     * recentred horizontally.
+     * thousands, hundreds, tens, and ones digits, suppressing leading zeros above the tens place.
+     * The glyphs come from the platform's label and digit tables, switching to a high-value variant
+     * at or above seventy percent, with each digit positioned by its place and the iPad default
+     * style recentred horizontally.
      * @param nSide The player side, also selecting the gauge band.
      * @param nAlpha The readout's alpha.
      * @ghidraAddress 0x176000
@@ -100,11 +102,13 @@ public:
      * @brief Appends one gauge quad to a batch, positioned by orientation, band, and gauge style.
      *
      * The shared low-level writer behind @c SetClearGaugeIcon, @c SetClearGaugeMarker, and
-     * @c SetClearGaugeDigits. It places the quad using the play-field gauge base rows (mirroring the
-     * X and half-turning the quad on the two-side layout), writes the caller's anchor, size, and
-     * atlas rectangle, and appends it to batch @p nBatch. Nothing is written once the batch is full.
+     * @c SetClearGaugeDigits. It places the quad using the play-field gauge base rows (mirroring
+     * the X and half-turning the quad on the two-side layout), writes the caller's anchor, size,
+     * and atlas rectangle, and appends it to batch @p nBatch. Nothing is written once the batch is
+     * full.
      * @param nBatch The sprite batch to append to.
-     * @param nBottomBand Non-zero to place the quad on the lower gauge band, zero for the upper band.
+     * @param nBottomBand Non-zero to place the quad on the lower gauge band, zero for the upper
+     * band.
      * @param pQuad The quad's anchor (@c pQuad[0]) and size (@c pQuad[1]), in that order.
      * @param nAlpha The quad's alpha.
      * @param uvOrigin The atlas rectangle origin.
@@ -181,9 +185,9 @@ public:
     static ClearGaugeLayer *shared();
 
 private:
-    // Appends one label or digit glyph: builds the quad from the descriptor (overriding its anchor X
-    // when @p pAnchorX is given and recentring the iPad default style), resolves the atlas frame, and
-    // emits it into @p nBatch on @p nSide's band.
+    // Appends one label or digit glyph: builds the quad from the descriptor (overriding its anchor
+    // X when @p pAnchorX is given and recentring the iPad default style), resolves the atlas frame,
+    // and emits it into @p nBatch on @p nSide's band.
     void EmitGlyph(const GaugeGlyphDesc &glyph,
                    unsigned int nBatch,
                    unsigned int nSide,
@@ -193,9 +197,10 @@ private:
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gauge atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the eight sprite batches.
     // +0x50..+0x117: the batch-state array. The constructor's cascade seeds it so the first
-    // kBatchCount entries (read by CreateSprites) become each batch's sprite capacity; the remainder
-    // is per-slot bookkeeping the same cascade zero-fills. It is one contiguous 50-int region because
-    // the constructor's copy loop reads and writes it through two windows eight entries apart.
+    // kBatchCount entries (read by CreateSprites) become each batch's sprite capacity; the
+    // remainder is per-slot bookkeeping the same cascade zero-fills. It is one contiguous 50-int
+    // region because the constructor's copy loop reads and writes it through two windows eight
+    // entries apart.
     static constexpr int kBatchStateCount = 50;
     int m_aBatchState[kBatchStateCount] = {}; // +0x50
     bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.

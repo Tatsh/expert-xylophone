@@ -213,10 +213,12 @@ void LongNoteLayer::CreateSprite(int nType,
 }
 
 namespace {
-// The pulse clock's period and its negative (subtracted to wrap) (@ghidraAddress 0x2fee08/0x2fee0c).
+// The pulse clock's period and its negative (subtracted to wrap) (@ghidraAddress
+// 0x2fee08/0x2fee0c).
 constexpr float kPulsePeriod = 66.66666412f;
 constexpr float kPulseWrap = -66.66666412f;
-// The pulse phase below which the flagged extra connector sprite is drawn (@ghidraAddress 0x2fee10).
+// The pulse phase below which the flagged extra connector sprite is drawn (@ghidraAddress
+// 0x2fee10).
 constexpr float kPulseSpritePhase = 33.33333206f;
 // The frame-alpha table (@ghidraAddress 0x2fee30), indexed by the record's fourth flag byte.
 constexpr float kFrameAlphaTable[] = {255.0f, 128.0f};
@@ -227,8 +229,8 @@ constexpr float kMinConnectorLength = 1.0f;
 // The player colour whose own side keeps full intensity.
 constexpr int kPlayColorSecond = 1;
 // The sprite-type offsets each connector emits, relative to the record's base type. The four body
-// segments always draw; the pulse segment draws only while the record is flagged and the pulse clock
-// is in its first half, and the tail only once the connector is long enough.
+// segments always draw; the pulse segment draws only while the record is flagged and the pulse
+// clock is in its first half, and the tail only once the connector is long enough.
 constexpr int kOffsetBody0 = 0;
 constexpr int kOffsetBody1 = 4;
 constexpr int kOffsetBody2 = 8;
@@ -257,8 +259,8 @@ void LongNoteLayer::BuildLongNoteConnectorSprites(float flDelta) {
         m_flPulseClock += kPulseWrap;
     }
 
-    // The two per-side alpha factors: the note's own side keeps full intensity, the far side dims to
-    // the game system's cross-side alpha (chosen by which side is the current play colour).
+    // The two per-side alpha factors: the note's own side keeps full intensity, the far side dims
+    // to the game system's cross-side alpha (chosen by which side is the current play colour).
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const bool bColorIsOne = pGameSystem->GetPlayColor() == kPlayColorSecond;
     const float flCrossAlpha = pGameSystem->GetRivalAlpha();

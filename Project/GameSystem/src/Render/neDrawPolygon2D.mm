@@ -189,7 +189,8 @@ void C_DRAW_POLYGON_2D::AllocateBuffers() {
         m_pBoneScale = new float[nMaxUnits];
     }
 
-    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless caller-owned.
+    // Allocate the interleaved vertex buffer; gen a GL vertex VBO and mark dirty unless
+    // caller-owned.
     m_pVertexArray = new unsigned char[static_cast<unsigned int>(m_nVertexCount) * nStride];
     if (!m_bVertexBufferExternal) {
         pRenderer->GenBuffer(&m_dwVertexVbo);
@@ -280,7 +281,8 @@ void C_DRAW_POLYGON_2D::SetUV(int nIndex, float flU, float flV) {
         static_cast<unsigned char *>(m_pVertexArray) + nIndex * m_nVertexStride + m_nTexcoordOffset;
     // The UV field lives at a byte offset in the interleaved buffer; view it as shorts.
     short *pTexcoord = reinterpret_cast<short *>(pVertex);
-    // The vertical coordinate is stored flipped; both channels are scaled to the signed 16-bit range.
+    // The vertical coordinate is stored flipped; both channels are scaled to the signed 16-bit
+    // range.
     pTexcoord[0] = static_cast<short>(flU * kTexcoordScaleU);
     pTexcoord[1] = static_cast<short>((1.0 - static_cast<double>(flV)) * kTexcoordScaleV);
     m_bVertexDirty = true;

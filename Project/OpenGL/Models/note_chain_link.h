@@ -50,7 +50,8 @@ public:
         return m_nPrev;
     }
 
-    /** @brief Marks this note a long-note head bound to @p nPartner, with both end markers unset. */
+    /** @brief Marks this note a long-note head bound to @p nPartner, with both end markers unset.
+     */
     void SetLongNoteHead(short nChainId, short nPartner) {
         m_nPrev = nChainId;
         m_nNext = kNone;

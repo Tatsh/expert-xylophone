@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
 
 /**
- * @brief Delegate callbacks delivered on the main queue when the matching completion block is unset.
+ * @brief Delegate callbacks delivered on the main queue when the matching completion block is
+ * unset.
  *
  * Both callbacks are sent with the downloader and its @c indexPathInTableView.
  */

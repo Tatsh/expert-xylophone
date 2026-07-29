@@ -96,8 +96,8 @@ unsigned int caPlayerMgr::FindOrGrowFreeSlot() {
             return static_cast<unsigned int>(nSlot);
         }
     }
-    // Otherwise grow the array by a fixed step, copying the existing slots and zeroing the new ones,
-    // and return the first new index.
+    // Otherwise grow the array by a fixed step, copying the existing slots and zeroing the new
+    // ones, and return the first new index.
     const int nOldCount = m_nSourceCount;
     const int nNewCount = nOldCount + kSlotGrowStep;
     m_nSourceCount = nNewCount;

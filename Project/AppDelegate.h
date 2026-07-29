@@ -365,7 +365,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addPushNotificationData:(nullable NSDictionary *)data;
 
 /**
- * @brief Whether the accepted terms version is older than the latest available, requiring re-accept.
+ * @brief Whether the accepted terms version is older than the latest available, requiring
+ * re-accept.
  * @ghidraAddress 0x4ee50
  */
 - (BOOL)needUpdateTerms;

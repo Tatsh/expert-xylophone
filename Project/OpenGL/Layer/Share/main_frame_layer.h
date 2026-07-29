@@ -19,12 +19,12 @@ class C_DRAW_POLYGON_3D;
  * @brief The play-field main-frame layer (the frame graphics around the note field).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
- * frame's sprite instancers and a fade channel that animates the frame's alpha in and out. The class
- * carries no RTTI (it is non-polymorphic), so the name is inferred from its singleton getter rather
- * than confirmed from the runtime metadata. Only the fields the reconstructed methods touch are
- * modelled; the trailing @c // +0xNN comments document the original 32-bit offsets for reference
- * only. The remaining layer state (the sprite instancers, layout tables, and 3D vertices the build
- * and render paths use) is still being worked out and kept as reserved storage.
+ * frame's sprite instancers and a fade channel that animates the frame's alpha in and out. The
+ * class carries no RTTI (it is non-polymorphic), so the name is inferred from its singleton getter
+ * rather than confirmed from the runtime metadata. Only the fields the reconstructed methods touch
+ * are modelled; the trailing @c // +0xNN comments document the original 32-bit offsets for
+ * reference only. The remaining layer state (the sprite instancers, layout tables, and 3D vertices
+ * the build and render paths use) is still being worked out and kept as reserved storage.
  */
 class MainFrameLayer : public PlayFieldLayerBase {
 public:
@@ -37,7 +37,8 @@ public:
 
     /**
      * @brief Begins the frame fade-in, easing the frame alpha to fully opaque (255) over
-     * @p flDuration (snapping to opaque and marking the fade done when the duration is non-positive).
+     * @p flDuration (snapping to opaque and marking the fade done when the duration is
+     * non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x17c670
      */
@@ -72,8 +73,8 @@ public:
      * @brief Sets the frame marker and difficulty, refreshing the overlay layout when either
      * changes.
      *
-     * Builds the sprites first if they are not yet built, records the new marker and difficulty, and
-     * re-lays-out the overlay only when one of them actually changed.
+     * Builds the sprites first if they are not yet built, records the new marker and difficulty,
+     * and re-lays-out the overlay only when one of them actually changed.
      * @param nMarker The frame marker.
      * @param nDifficulty The difficulty index shown on the frame.
      * @ghidraAddress 0x17c4dc
@@ -81,15 +82,15 @@ public:
     void SetMarker(int nMarker, int nDifficulty);
 
     /**
-     * @brief Rebuilds the full frame geometry: the marker/difficulty overlay layout and the 3D frame
-     * vertices.
+     * @brief Rebuilds the full frame geometry: the marker/difficulty overlay layout and the 3D
+     * frame vertices.
      * @ghidraAddress 0x17c864
      */
     void BuildGeometry();
 
     /**
-     * @brief Binds a texture to the frame mesh's sprite instancer and recomputes the mesh UV offsets
-     * and scale from the texture's dimensions.
+     * @brief Binds a texture to the frame mesh's sprite instancer and recomputes the mesh UV
+     * offsets and scale from the texture's dimensions.
      *
      * With a null texture the mesh is left unchanged (only the instancer's texture is cleared).
      * @param pTexture The frame texture, or null to clear it.
@@ -127,13 +128,13 @@ public:
     /**
      * @brief (Re)builds the frame's meshes and sprite instancers for the current frame type.
      *
-     * Resolves the frame type (substituting the game system's when the layer still holds the default
-     * sentinel), releases and reloads the frame and overlay atlases, then creates any of the three
-     * meshes and two instancers that do not exist yet: the marker's eight-vertex ring, the border's
-     * sixteen-vertex textured strip, and the overlay's twenty-four-vertex strip parented to the
-     * border. Every vertex is seeded at the origin with its atlas UV and a cleared alpha, and both
-     * instancers are left empty. Finally it lays the overlay out, rebuilds the 3D vertices, and marks
-     * the layer ready.
+     * Resolves the frame type (substituting the game system's when the layer still holds the
+     * default sentinel), releases and reloads the frame and overlay atlases, then creates any of
+     * the three meshes and two instancers that do not exist yet: the marker's eight-vertex ring,
+     * the border's sixteen-vertex textured strip, and the overlay's twenty-four-vertex strip
+     * parented to the border. Every vertex is seeded at the origin with its atlas UV and a cleared
+     * alpha, and both instancers are left empty. Finally it lays the overlay out, rebuilds the 3D
+     * vertices, and marks the layer ready.
      * @ghidraAddress 0x17b654
      */
     void BuildSprites();
@@ -168,9 +169,9 @@ private:
      *
      * Positions the frame mesh's 24 vertices as two theme-independent horizontal bands (a short
      * centre tab and the full-width bottom strip) sized to the current viewport width, clears both
-     * overlay instancers, then emits the two top labels, the marker label, the difficulty label, and
-     * the centred frame-mesh marker. The current player theme selects which label and marker sprites
-     * are emitted.
+     * overlay instancers, then emits the two top labels, the marker label, the difficulty label,
+     * and the centred frame-mesh marker. The current player theme selects which label and marker
+     * sprites are emitted.
      * @ghidraAddress 0x17bd50
      */
     void SetOverlayLayout();
@@ -185,14 +186,15 @@ private:
     // BuildSprites releases and reloads both.
     ne::C_TEXTURE *m_pFrameTexture = {};
     ne::C_TEXTURE *m_pOverlayTexture = {};
-    // +0x18: the frame border's 16-vertex 3D mesh, whose vertices Build3dVertices lays out and whose
-    // per-vertex alpha follows the fade channel.
+    // +0x18: the frame border's 16-vertex 3D mesh, whose vertices Build3dVertices lays out and
+    // whose per-vertex alpha follows the fade channel.
     ne::C_DRAW_POLYGON_3D *m_pFrameMesh3d = {};
-    // +0x20: the marker's 8-vertex 3D mesh. Its visibility follows the fade alpha: it is hidden once
-    // the alpha falls to the invisibility epsilon.
+    // +0x20: the marker's 8-vertex 3D mesh. Its visibility follows the fade alpha: it is hidden
+    // once the alpha falls to the invisibility epsilon.
     ne::C_DRAW_POLYGON_3D *m_pMarkerMesh3d = {};
-    // +0x28: the frame's 2D polygon mesh (a C_RENDER, so SetMainFrameEnabled toggles its visibility;
-    // SetMainFrameOverlayLayout fills its 24 vertices through C_DRAW_POLYGON_2D::SetPos).
+    // +0x28: the frame's 2D polygon mesh (a C_RENDER, so SetMainFrameEnabled toggles its
+    // visibility; SetMainFrameOverlayLayout fills its 24 vertices through
+    // C_DRAW_POLYGON_2D::SetPos).
     ne::C_DRAW_POLYGON_2D *m_pFrameMesh2d = {};
     // +0x30..+0x37: further layout state, still being worked out.
     unsigned char m_aReserved30[8] = {}; // +0x30

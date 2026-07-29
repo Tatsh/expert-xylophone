@@ -57,7 +57,8 @@ enum {
 };
 
 // The app version compares as equal or newer only when the shop-master version does not order after
-// it. -compare:options: returns this when the info-dictionary version is older than the requirement.
+// it. -compare:options: returns this when the info-dictionary version is older than the
+// requirement.
 static const NSComparisonResult kVersionRequirementUnmet = NSOrderedAscending;
 
 // The country code most recently seen on a StoreKit product's price locale, retained across product

@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief A themed settings-menu button hosting an inner @c UIButton and a flashing new-content
  * effect overlay.
  *
- * The owning @c RBSettingView creates one instance per menu entry with @c initWithFilename:, wires a
- * target/action onto its @c button, and calls @c setFlashEffect / @c removeFlashEffect to show or
+ * The owning @c RBSettingView creates one instance per menu entry with @c initWithFilename:, wires
+ * a target/action onto its @c button, and calls @c setFlashEffect / @c removeFlashEffect to show or
  * hide the new-content flash.
  */
 @interface RBSettingMenuButton : UIControl

@@ -29,19 +29,19 @@ NS_ASSUME_NONNULL_BEGIN
  */
 typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
     RBTutorialStatusMusicSelectStart = 0, /*!< First music-select walkthrough step; also the value
-                                            *   below which @c +isTutorialMusicselect is true. */
+                                           *   below which @c +isTutorialMusicselect is true. */
     RBTutorialStatusPlayStart = 9,        /*!< The step at which the in-play walkthrough should
-                                            *   begin (the top of the music-select range). */
+                                           *   begin (the top of the music-select range). */
     RBTutorialStatusPlayRangeStart = 10,  /*!< First in-play walkthrough step. */
     RBTutorialStatusMusicSelectSeen = 23, /*!< Persisted "music-select tutorial seen" flag. */
     RBTutorialStatusCustomizeStart = 24,  /*!< First customise walkthrough step. */
     RBTutorialStatusCustomizeSeen = 33,   /*!< Persisted "customise tutorial seen" flag. */
     RBTutorialStatusCustomizeEnd = 34,    /*!< Last customise walkthrough step; advances the cursor
-                                            *   to @c RBTutorialStatusDone. */
+                                           *   to @c RBTutorialStatusDone. */
     RBTutorialStatusStoreStart = 35,      /*!< First store walkthrough step. */
     RBTutorialStatusStoreSeen = 37,       /*!< Persisted "store tutorial seen" flag. */
     RBTutorialStatusDone = 40,            /*!< Terminal sentinel reached after the customise
-                                            *   walkthrough finishes. */
+                                           *   walkthrough finishes. */
     RBTutorialStatusNone = 0xffffffff,    /*!< No tutorial active; the initial singleton value. */
 };
 

@@ -39,8 +39,8 @@ enum {
     kApplilinkUdidCipherDecrypt = 1,
 };
 
-// Localised error codes raised through ApplilinkNetworkError. These mirror the file-private codes in
-// ApplilinkNetworkError.m; only the codes this class raises are named here.
+// Localised error codes raised through ApplilinkNetworkError. These mirror the file-private codes
+// in ApplilinkNetworkError.m; only the codes this class raises are named here.
 enum {
     kApplilinkPasteBoardErrorInvalidField = 1013,      // A pasteboard slot could not be opened.
     kApplilinkPasteBoardErrorWriteFailed = 1015,       // Every slot write failed.

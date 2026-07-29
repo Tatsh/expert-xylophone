@@ -5,8 +5,8 @@
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBMusicCPUView). Verified against
 //  the arm64 disassembly: -SetupView's per-theme, per-idiom slider and container geometry was
 //  recovered from the soft-float register moves and constant-pool loads that the decompiler folds
-//  into pseudo-variables, and the marker-glide animation was confirmed against the block literal the
-//  decompiler emits. This is an Objective-C++ file because -SelectLevel: reaches the C++
+//  into pseudo-variables, and the marker-glide animation was confirmed against the block literal
+//  the decompiler emits. This is an Objective-C++ file because -SelectLevel: reaches the C++
 //  SoundEffectManager engine singleton.
 //
 
@@ -52,7 +52,8 @@ static NSString *const kLevelMarkerImageName = @"02_music_detail/det_lev_sel";
 // The slider bar frame per (theme, idiom). The Colette theme's wide bar spans the whole view
 // width with x zero and a themed top inset; every other combination uses a fixed constant-pool
 // rectangle. Decoded from the constant pool at 0x1002fcfd8 (280), 0x100301158 (36), 0x1002ec6e0
-// (50), 0x100301198 (274), 0x1002ec6c8 (80), and 0x1002eecd8 (64), plus the inline immediate values.
+// (50), 0x100301198 (274), 0x1002ec6c8 (80), and 0x1002eecd8 (64), plus the inline immediate
+// values.
 constexpr CGFloat kSliderBarColetteTopInset = 80.0;
 constexpr CGFloat kSliderBarWideTopInset = 64.0;
 constexpr CGFloat kSliderBarColetteDefaultX = 10.0;
@@ -100,8 +101,8 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
 constexpr CGFloat kInteriorStepDivisor = 8.0;
 
 @interface RBMusicCPUView () {
-    // Named exactly as in the binary's ivar list. The previous level-change sound-effect play handle,
-    // or kNoSoundHandle when none has played.
+    // Named exactly as in the binary's ivar list. The previous level-change sound-effect play
+    // handle, or kNoSoundHandle when none has played.
     unsigned int m_PrevSound; // +0x8
 }
 @end

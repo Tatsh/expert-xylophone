@@ -32,8 +32,8 @@ typedef enum {
     RecommendCoreErrorCodeNoAppliId = 1029,          // 0x405
 } RecommendCoreErrorCode;
 
-// Advert-model identifiers whose banner opens the advert area directly (100, 101) or the interstitial
-// (5) rather than gating on the installed-application list.
+// Advert-model identifiers whose banner opens the advert area directly (100, 101) or the
+// interstitial (5) rather than gating on the installed-application list.
 typedef enum {
     RecommendCoreAdModelInterstitial = 5,
     RecommendCoreAdModelOwnAdBase = 100,

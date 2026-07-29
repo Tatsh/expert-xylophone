@@ -16,8 +16,8 @@ class C_SPRITE_INSTANCING_2D;
 namespace rb {
 
 /**
- * @brief The boot logo scene: the opening screen that shows the corporate and rating logos and waits
- * for a touch to start the application.
+ * @brief The boot logo scene: the opening screen that shows the corporate and rating logos and
+ * waits for a touch to start the application.
  *
  * The first scene registered after launch. It loads the konami, bemani, and rating (nonage) logo
  * textures, sweeps them on with a set of animation curves, and, once the caution notice has been
@@ -34,9 +34,9 @@ public:
     static constexpr int kTextureCount = 3;
 
     /**
-     * @brief Constructs the logo scene: chains the scene-base constructor, installs the logo dispatch
-     * table, and zero-clears its animation, fade, and sprite state (seeding the fade progress to
-     * one).
+     * @brief Constructs the logo scene: chains the scene-base constructor, installs the logo
+     * dispatch table, and zero-clears its animation, fade, and sprite state (seeding the fade
+     * progress to one).
      * @ghidraAddress 0x149a04
      */
     LogoScene();
@@ -62,9 +62,9 @@ public:
 
 private:
     /**
-     * @brief State 0: loads the three logo textures, builds the five logo sprite instancers and binds
-     * their sources, loads the sound effects, seeds the fade tween, and advances to the present
-     * state.
+     * @brief State 0: loads the three logo textures, builds the five logo sprite instancers and
+     * binds their sources, loads the sound effects, seeds the fade tween, and advances to the
+     * present state.
      * @ghidraAddress 0x149b68
      */
     void Initialise();

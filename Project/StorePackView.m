@@ -10,7 +10,7 @@
 // by their Ghidra addresses, matching how the other reconstructed views (for example
 // RBSearchMapView) pull them in. The 100.0-point and 0.3-second metrics come from the bridge
 // header instead.
-extern const double g_dLayoutMetricThirtyTwo;   // @ghidraAddress 0x2ee9b0 (32.0)
+extern const double g_dLayoutMetricThirtyTwo; // @ghidraAddress 0x2ee9b0 (32.0)
 
 // Store asset names used by the tile.
 static NSString *const kStoreJacketPlaceholderImageName = @"09_store/store_jacket_64";

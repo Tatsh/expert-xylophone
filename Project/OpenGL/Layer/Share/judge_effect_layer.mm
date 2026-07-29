@@ -43,8 +43,8 @@ struct JudgeGlyphMetrics {
 // The number of glyph records in each platform's judgement-glyph table.
 constexpr int kJudgeGlyphCount = 26;
 
-// The judgement-glyph metrics tables, one per platform (the iPad set and the phone set), selected at
-// emit time by the hardware check. Read-only ROM data embedded in the binary.
+// The judgement-glyph metrics tables, one per platform (the iPad set and the phone set), selected
+// at emit time by the hardware check. Read-only ROM data embedded in the binary.
 constexpr JudgeGlyphMetrics kJudgeGlyphMetricsPad[kJudgeGlyphCount] = {
     {0.0f, 0.0f, 102.0f, 8.0f, 0xda}, {0.0f, 0.0f, 102.0f, 8.0f, 0xdb},
     {0.0f, 0.0f, 75.0f, 8.0f, 0xdc},  {0.0f, 0.0f, 75.0f, 8.0f, 0xdd},
@@ -136,8 +136,8 @@ constexpr int kLabelColorTypeColorB = kJudgeColorTypeCyan;
 
 /** @ghidraAddress 0x184bb0 */
 JudgeEffectLayer::JudgeEffectLayer() {
-    // The base constructor and the zero-initialised members clear the texture, sprite, fade channel,
-    // and per-lane records; the constructor then seeds the scale pair to one.
+    // The base constructor and the zero-initialised members clear the texture, sprite, fade
+    // channel, and per-lane records; the constructor then seeds the scale pair to one.
     m_flScaleX = kInitialScale;
     m_flScaleY = kInitialScale;
 }
@@ -255,9 +255,9 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
         const float flLabelRotation = bFlip ? kLabelRotationFlipped : 0.0f;
         const float flDirection = bFlip ? -1.0f : 1.0f;
 
-        // Build both layouts' lane base positions. The iPad layout derives each game type's two lane
-        // positions from the shared layout constants and the playfield centre; the phone layout uses
-        // a fixed left column split above and below centre.
+        // Build both layouts' lane base positions. The iPad layout derives each game type's two
+        // lane positions from the shared layout constants and the playfield centre; the phone
+        // layout uses a fixed left column split above and below centre.
         const S_VECTOR2 aiPadBase[] = {
             // Game type 0.
             {kLayoutBaseX + kLayoutInsetLeft,
@@ -284,7 +284,8 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
         S_VECTOR2 pos{base.x + flDirection * flPopOffset, base.y};
         const float flAlphaCurve = CalculateCurveInterpolation(kAlphaCurve, 4, record.m_flTimer);
 
-        // Resolve the lane colour: the local lane takes the play colour, the other lane its inverse.
+        // Resolve the lane colour: the local lane takes the play colour, the other lane its
+        // inverse.
         const int nPlayColor = GameSystem::GetGameSystem()->GetPlayColor();
         const int nLaneColor = nLane == 1 ? nPlayColor : (nPlayColor == 0);
 
@@ -320,8 +321,8 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
             nRemaining /= 10;
         }
 
-        // Emit the digits from the most significant place down, advancing the pen by each glyph, so a
-        // zero score still shows a single zero digit.
+        // Emit the digits from the most significant place down, advancing the pen by each glyph, so
+        // a zero score still shows a single zero digit.
         const unsigned int nDigitBase =
             nLaneColor == 1 ? kDigitGlyphBaseColorB : kDigitGlyphBaseColorA;
         int nPlace = nHighestPlace < 1 ? 1 : nHighestPlace;

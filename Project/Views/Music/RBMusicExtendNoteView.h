@@ -1,13 +1,13 @@
 /** @file
  * The extend-note (追加ノート) badge shown for a tune in the music-select screen. When a tune has a
- * purchased extend (special) note pack, @c RBMusicView builds one of these to advertise it: a tappable
- * difficulty button carrying the special-chart frame and its level-number glyph, plus a translucent
- * caption panel showing the pack's comment. The view looks its pack up through
+ * purchased extend (special) note pack, @c RBMusicView builds one of these to advertise it: a
+ * tappable difficulty button carrying the special-chart frame and its level-number glyph, plus a
+ * translucent caption panel showing the pack's comment. The view looks its pack up through
  * @c RBExtendNoteManager by the extend-note identifier it is initialised with and reads the pack's
  * difficulty and comment from the resulting @c MusicDataExtend catalogue entry.
  *
- * Reconstructed from Ghidra project rb458, program rb458 (class @c RBMusicExtendNoteView, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * Reconstructed from Ghidra project rb458, program rb458 (class @c RBMusicExtendNoteView, image
+ * base 0x100000000). @ghidraAddress values are offsets relative to the image base.
  */
 
 #import <UIKit/UIKit.h>
@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Build the difficulty button and the translucent comment caption panel.
  *
- * Looks the pack up through @c RBExtendNoteManager by @c extendNoteID, chooses the themed difficulty
- * frame and its selected overlay, stacks the level-number glyph on the button, positions everything
- * from the theme- and idiom-dependent layout metrics, and lays the pack's comment into a truncating
- * label inside a half-opacity grey panel beside the button.
+ * Looks the pack up through @c RBExtendNoteManager by @c extendNoteID, chooses the themed
+ * difficulty frame and its selected overlay, stacks the level-number glyph on the button, positions
+ * everything from the theme- and idiom-dependent layout metrics, and lays the pack's comment into a
+ * truncating label inside a half-opacity grey panel beside the button.
  * @ghidraAddress 0x3c4c8
  */
 - (void)SetupView;

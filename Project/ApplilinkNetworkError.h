@@ -40,8 +40,8 @@ extern NSErrorDomain const ApplilinkErrorDomain;
  * user-info entries.
  *
  * The returned error's @c userInfo is @c userInfo with the localised description for @c code added
- * under @c NSLocalizedDescriptionKey. Unknown codes fall back to the message for the unexpected-error
- * code.
+ * under @c NSLocalizedDescriptionKey. Unknown codes fall back to the message for the
+ * unexpected-error code.
  *
  * @param code The Applilink error code.
  * @param userInfo Additional user-info entries to merge, or @c nil.

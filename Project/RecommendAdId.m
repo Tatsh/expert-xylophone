@@ -84,7 +84,8 @@ enum {
 }
 
 /**
- * @brief Rebuild a caller-facing record dictionary by locally decrypting a stored pasteboard record.
+ * @brief Rebuild a caller-facing record dictionary by locally decrypting a stored pasteboard
+ * record.
  * @param data The archived record read from the local device pasteboard.
  * @return The decrypted record dictionary.
  * @ghidraAddress 0x203f88
@@ -300,7 +301,8 @@ enum {
     pasteboard.persistent = YES;
     NSData *archived = [NSKeyedArchiver archivedDataWithRootObject:record];
     [pasteboard setData:archived forPasteboardType:kRecommendAdIdPasteboardType];
-    // Yes, the binary discards this decrypted round-trip; it is evaluated only for its side effects.
+    // Yes, the binary discards this decrypted round-trip; it is evaluated only for its side
+    // effects.
     [self convertToData:record];
 }
 

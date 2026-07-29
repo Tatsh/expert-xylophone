@@ -89,8 +89,8 @@ public:
     /**
      * @brief Returns the packed unlock entry for a level.
      *
-     * Clamps @p nLevel to the unlock table's bounds. The entry's {category, item} names what unlocks
-     * at that level.
+     * Clamps @p nLevel to the unlock table's bounds. The entry's {category, item} names what
+     * unlocks at that level.
      * @param nLevel The level (0 through 30).
      * @return A pointer to the level's unlock entry.
      * @ghidraAddress 0x1cc438
@@ -125,8 +125,8 @@ public:
      * @brief Loads and validates the player's level and experience from the persisted plist.
      *
      * Reads the @c lelist plist from the application-support directory, re-hashes its level and
-     * experience, and accepts them into @p pOutLevelExp only when the stored hash matches; otherwise
-     * the output level is cleared.
+     * experience, and accepts them into @p pOutLevelExp only when the stored hash matches;
+     * otherwise the output level is cleared.
      * @param pOutLevelExp Receives the {level, experience} pair.
      * @return Always @c true.
      * @ghidraAddress 0x1cbf18
@@ -134,7 +134,8 @@ public:
     static bool LoadPlayerLevelData(int *pOutLevelExp);
 
     /**
-     * @brief Saves the player's level and experience to the @c lelist plist with an anti-tamper hash.
+     * @brief Saves the player's level and experience to the @c lelist plist with an anti-tamper
+     * hash.
      *
      * Writes the @c lelist plist in the application-support directory holding the level, the
      * experience, and the validation hash from @c MakeLevelCustomizeHash, so @c LoadPlayerLevelData

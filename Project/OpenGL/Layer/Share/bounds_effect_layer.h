@@ -19,8 +19,9 @@ class C_SPRITE_INSTANCING_2D;
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetBoundsEffectLayer / @c SetBoundsEffect*
- * accessors. Only the fields the reconstructed methods touch are modelled; the rest of the 0x310-byte
- * object is reserved. The trailing @c // +0xNN comments document the original offsets for reference.
+ * accessors. Only the fields the reconstructed methods touch are modelled; the rest of the
+ * 0x310-byte object is reserved. The trailing @c // +0xNN comments document the original offsets
+ * for reference.
  * @ghidraAddress BoundsEffectLayer (engine effect layer, 0x310 bytes)
  */
 class BoundsEffectLayer : public PlayFieldLayerBase {
@@ -39,9 +40,9 @@ public:
     /**
      * @brief Builds the effect sprite batch and binds the style's atlas on first use.
      *
-     * Reads the user's bounds-effect style, loads the matching atlas, creates the 0x5c-capacity world
-     * sprite batch, attaches it under the background layer, makes it visible, and flags additive
-     * blend. Guarded so it runs only once.
+     * Reads the user's bounds-effect style, loads the matching atlas, creates the 0x5c-capacity
+     * world sprite batch, attaches it under the background layer, makes it visible, and flags
+     * additive blend. Guarded so it runs only once.
      * @ghidraAddress 0x1752dc
      */
     void InitializeSprites();
@@ -68,11 +69,11 @@ public:
      * @brief Advances every live bounds effect one frame and re-emits the batch's sprites.
      *
      * Clears the batch's sprite count, then for each colour bank walks its records: a live record
-     * advances its timer by @p flDelta and deactivates once the timer passes its lifetime; otherwise,
-     * when that bank's lane-light alpha is non-zero, it maps the timer to an animation frame and
-     * appends the effect sprite (from the bank's UV-frame row, drawn at the lane-light alpha) as long
-     * as the frame is within the style's frame count. Finally publishes the batch's sprite count into
-     * the instancer's order field.
+     * advances its timer by @p flDelta and deactivates once the timer passes its lifetime;
+     * otherwise, when that bank's lane-light alpha is non-zero, it maps the timer to an animation
+     * frame and appends the effect sprite (from the bank's UV-frame row, drawn at the lane-light
+     * alpha) as long as the frame is within the style's frame count. Finally publishes the batch's
+     * sprite count into the instancer's order field.
      * @param flDelta The frame delta, in frame-time.
      * @ghidraAddress 0x17559c
      */
@@ -100,8 +101,8 @@ private:
      * Writes the next sprite slot with a fixed 84-point anchor and 168-point size, the caller's
      * position and animation-frame UV origin, the fixed bounds cell UV size, the layer's current
      * effect scale on both axes, and opaque white modulated by @p nAlpha. The sprite is flipped a
-     * half-turn when its x is negative (mirrored onto the left bound). Advances the sprite count; the
-     * caller guards against overflow.
+     * half-turn when its x is negative (mirrored onto the left bound). Advances the sprite count;
+     * the caller guards against overflow.
      * @param pPosition The sprite's screen position.
      * @param pUvOrigin The animation-frame UV origin.
      * @param nAlpha The sprite alpha.
@@ -110,8 +111,8 @@ private:
     void SetBoundsEffectSprite(const S_VECTOR2 *pPosition, const S_VECTOR2 *pUvOrigin, int nAlpha);
 
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state, and
-     * seeds both lane-light alphas fully on (0xff) and the effect size to one.
+     * @brief Constructs the layer: chains the base constructor, clears the per-lane effect state,
+     * and seeds both lane-light alphas fully on (0xff) and the effect size to one.
      * @ghidraAddress 0x175210
      */
     BoundsEffectLayer();

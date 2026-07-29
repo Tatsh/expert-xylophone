@@ -49,8 +49,8 @@ public:
      */
     unsigned int PlaySharedSoundEffect();
     /**
-     * @brief Plays the current theme's loaded voice for @p voiceID, when the requested state matches
-     *        (or is the always-play state).
+     * @brief Plays the current theme's loaded voice for @p voiceID, when the requested state
+     * matches (or is the always-play state).
      * @param voiceID The themed voice identifier.
      * @return @c true when a voice was played.
      * @ghidraAddress 0x1cceac

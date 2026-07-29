@@ -380,7 +380,8 @@ static BOOL g_bRandamIntSeeded = NO;
     CGSize bounds = self.bounds.size;
 
     // The per-theme layout metrics. Each branch fills the same set of column and row coordinates,
-    // transcribed from the decompiled soft-float computation, and drives the shared placement below.
+    // transcribed from the decompiled soft-float computation, and drives the shared placement
+    // below.
     int footerY = 0;
     int menuButtonWidth = 0; // A one-third column stride for the setting/rank/store row.
     int settingRowY = 0;     // The setting/rank/store row Y.
@@ -486,7 +487,8 @@ static BOOL g_bRandamIntSeeded = NO;
         }
     } else {
         // Computed (base/3) layouts (the binary's "tall" arithmetic). The classic and pastel themes
-        // share the same column tail; the white theme uses wider insets and its own settingButton X.
+        // share the same column tail; the white theme uses wider insets and its own settingButton
+        // X.
         if (thema == kThemaClassic || thema == kThemaPastel) {
             int base;
             int rowBase;
@@ -1232,8 +1234,8 @@ static BOOL g_bRandamIntSeeded = NO;
           weakSelf.userInteractionEnabled = YES;
           [weakSelf startNews];
 
-          // Start the menu music, retrying shortly if it has not finished loading, then bring up the
-          // ambient voice and the news information banner.
+          // Start the menu music, retrying shortly if it has not finished loading, then bring up
+          // the ambient voice and the news information banner.
           if (![[RBBGMManager getInstance] PlayMusic:1.5]) {
               [weakSelf performSelector:@selector(ReplayMusic)
                              withObject:nil
@@ -1292,7 +1294,8 @@ static BOOL g_bRandamIntSeeded = NO;
           /** @ghidraAddress 0xaae24 */
           // Run the caller's completion block, then tear the menu down: stop and clear the
           // show-animation timer, hide the menu and its cover, and drop the selected-music view.
-          hideAnimation(); // The binary invokes the captured block unconditionally, with no nil guard.
+          hideAnimation(); // The binary invokes the captured block unconditionally, with no nil
+                           // guard.
           [weakSelf.showAnimationTimer invalidate];
           weakSelf.showAnimationTimer = nil;
           weakSelf.hidden = YES;
@@ -1761,7 +1764,8 @@ static BOOL g_bRandamIntSeeded = NO;
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0xad2c0 */
           // Walk the terms list; for the current terms record (type 1) compare the accepted version
-          // against the server's, and either prompt to re-accept the updated terms or open the store.
+          // against the server's, and either prompt to re-accept the updated terms or open the
+          // store.
           for (NSDictionary *entry in [downloader getDataInJSON][kTermsKeyList]) {
               if ([entry[kTermsKeyType] integerValue] != 1) {
                   continue;

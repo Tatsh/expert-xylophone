@@ -15,9 +15,9 @@ class C_SPRITE_INSTANCING_2D;
 /**
  * @brief The note-burst explosion effect layer.
  *
- * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It keeps two
- * per-player-colour banks of nineteen effect slots, each drawn through one of two world-space sprite
- * instancers, and spawns a burst in the first free slot when a note is scored. The trailing
+ * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It keeps
+ * two per-player-colour banks of nineteen effect slots, each drawn through one of two world-space
+ * sprite instancers, and spawns a burst in the first free slot when a note is scored. The trailing
  * @c // +0xNN comments document the original 32-bit offsets for reference only.
  */
 class ExplosionEffectLayer : public PlayFieldLayerBase {
@@ -54,13 +54,13 @@ public:
     /**
      * @brief Advances every live burst for one frame and re-emits its sprite.
      *
-     * Clears both banks' live sprite counts, then for each colour bank whose effect type is enabled:
-     * picks the per-bank play-colour alpha and mirror rotation from whether the bank matches the
-     * game system's current play colour, and for each active slot advances its animation timer by the
-     * frame delta, deactivating it once past the burst lifetime, otherwise (while the bank's alpha is
-     * non-zero) emitting the slot's sprite at the animation frame's UV cell from the burst UV table
-     * (indexed by the slot's judgement and its clamped animation phase). Finally publishes each bank's
-     * live sprite count to its instancer.
+     * Clears both banks' live sprite counts, then for each colour bank whose effect type is
+     * enabled: picks the per-bank play-colour alpha and mirror rotation from whether the bank
+     * matches the game system's current play colour, and for each active slot advances its
+     * animation timer by the frame delta, deactivating it once past the burst lifetime, otherwise
+     * (while the bank's alpha is non-zero) emitting the slot's sprite at the animation frame's UV
+     * cell from the burst UV table (indexed by the slot's judgement and its clamped animation
+     * phase). Finally publishes each bank's live sprite count to its instancer.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x177260
      */
@@ -98,8 +98,9 @@ private:
      * @brief Appends one explosion-effect sprite to a lane's instancer.
      *
      * Writes the next free slot of the lane's sprite batch with a fixed 84-point anchor and
-     * 168-point size, the caller's position and animation-frame UV origin, a fixed UV cell size, the
-     * layer's current burst scale on both axes, the caller's rotation, and opaque white modulated by
+     * 168-point size, the caller's position and animation-frame UV origin, a fixed UV cell size,
+     * the layer's current burst scale on both axes, the caller's rotation, and opaque white
+     * modulated by
      * @p nAlpha; then advances the lane's live sprite count. A no-op when the batch is full.
      * @param nLane The lane (bank) to append to.
      * @param pPosition The sprite's world position.

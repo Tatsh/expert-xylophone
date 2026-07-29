@@ -340,7 +340,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-selector-name"
-+ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint :(id<UIAlertViewDelegate>)delegate {
++ (UIAlertView *)showAddLimepointByApplilink:(int)limePoint:(id<UIAlertViewDelegate>)delegate {
 #pragma clang diagnostic pop
     /** @ghidraAddress 0xf150 */
     NSString *message =

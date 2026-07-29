@@ -13,8 +13,8 @@
 // index is below this bound).
 constexpr int kLimelightPartsRecordBound = 255;
 
-// The Limelight result-window parts tables, zero-initialised in the binary's @c __common segment and
-// filled at runtime; the pad-versus-phone device kind selects between them.
+// The Limelight result-window parts tables, zero-initialised in the binary's @c __common segment
+// and filled at runtime; the pad-versus-phone device kind selects between them.
 extern PartsDataRecord
     g_aLimelightPartsPhone[kLimelightPartsRecordBound];                  // @ghidraAddress 0x3d9100
 extern PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound]; // @ghidraAddress 0x307cf0

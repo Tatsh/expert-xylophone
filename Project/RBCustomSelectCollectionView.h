@@ -2,8 +2,8 @@
  * A single customize category's item grid, hosted by @c RBCustomSelectView. Each instance shows one
  * customization category (theme background music, tap shot, explosion, frame, background, note,
  * gauge, or timing) inside a framed background. Most categories present a paged
- * @c RBCollectionView of @c RBCustomSelectCollectionCell items with a @c UIPageControl; the note and
- * gauge categories instead lay out fixed image buttons, and the shot, explosion, and timing
+ * @c RBCollectionView of @c RBCustomSelectCollectionCell items with a @c UIPageControl; the note
+ * and gauge categories instead lay out fixed image buttons, and the shot, explosion, and timing
  * categories add a slider control.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBCustomSelectCollectionView,
@@ -19,8 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The customization category a @c RBCustomSelectCollectionView presents.
  *
- * The value is passed to @c -initWithFrame:customizeType: and stored in the backing @c customizeType
- * ivar. It drives which catalogue of items the grid loads and which control layout it builds.
+ * The value is passed to @c -initWithFrame:customizeType: and stored in the backing @c
+ * customizeType ivar. It drives which catalogue of items the grid loads and which control layout it
+ * builds.
  * @c RBCustomSelectView builds one grid per category; the timing category is number @c 8 because
  * number @c 7 is unused.
  */

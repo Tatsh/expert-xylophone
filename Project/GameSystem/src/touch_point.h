@@ -6,10 +6,10 @@
 #pragma once
 
 /**
- * One tracked touch inside the @c TouchManager slot array. It is a plain data record: @c TouchManager
- * fills it in and callers that resolve a slot (through @c TouchManager::FindTouchById) read its
- * position and phase fields directly. The 32-bit offset comments are documentation only; the 64-bit
- * build goes through the named fields.
+ * One tracked touch inside the @c TouchManager slot array. It is a plain data record: @c
+ * TouchManager fills it in and callers that resolve a slot (through @c TouchManager::FindTouchById)
+ * read its position and phase fields directly. The 32-bit offset comments are documentation only;
+ * the 64-bit build goes through the named fields.
  * @ghidraAddress TouchPoint (engine touch-slot struct)
  */
 struct TouchPoint {

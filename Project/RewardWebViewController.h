@@ -6,8 +6,9 @@
  * with a close button, and an @c ApplilinkIndicator loading overlay. It loads the reward advert
  * page, tracks the load through the @c UIWebViewDelegate callbacks, detects the advert's close
  * request (either a @c "close" navigation or a @c "command=close" query), rotates its content to
- * follow the status-bar orientation, and reports the advert lifecycle back to its @c SdkViewDelegate.
- * It is created and driven by @c RewardCore. Reconstructed from Ghidra project rb458, program rb458.
+ * follow the status-bar orientation, and reports the advert lifecycle back to its @c
+ * SdkViewDelegate. It is created and driven by @c RewardCore. Reconstructed from Ghidra project
+ * rb458, program rb458.
  */
 
 #import <UIKit/UIKit.h>

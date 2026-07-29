@@ -1,8 +1,8 @@
 /** @file
  * The unlock-confirmation popup presented over the customize screen when the player taps a locked
- * item in the unlock picker. It dims the whole screen and floats a rounded, framed panel showing the
- * item's artwork, its lime-point cost, and yes/no buttons that confirm or cancel the unlock. Music
- * items additionally download and overlay a themed frame image around the artwork.
+ * item in the unlock picker. It dims the whole screen and floats a rounded, framed panel showing
+ * the item's artwork, its lime-point cost, and yes/no buttons that confirm or cancel the unlock.
+ * Music items additionally download and overlay a themed frame image around the artwork.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBCustomInfoPopupView, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.
@@ -19,10 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The unlock-confirmation popup shown over the customize screen.
  *
- * A @c UIControl whose whole-screen frame dims the customize screen behind a centred, rounded panel.
- * The owning @c RBUnlockView wires the yes/no button actions, sets @c itemData (which lays out the
- * artwork and cost), sets @c pointLabel to the player's current balance, and drives @c showAnimation
- * and @c hideAnimation.
+ * A @c UIControl whose whole-screen frame dims the customize screen behind a centred, rounded
+ * panel. The owning @c RBUnlockView wires the yes/no button actions, sets @c itemData (which lays
+ * out the artwork and cost), sets @c pointLabel to the player's current balance, and drives @c
+ * showAnimation and @c hideAnimation.
  */
 @interface RBCustomInfoPopupView : UIControl
 

@@ -50,16 +50,17 @@ extern NSDictionary *g_pApiRequestTable;
 void InitializeApiRequestTable(void);
 #ifdef __OBJC__
 /**
- * @brief The macron-to-vowel katakana lookup table (89 entries): each katakana maps to its vowel-row
- * representative (ア, イ, ウ, エ, オ, or ン for @c ン), used to resolve a prolonged-sound mark to the
- * preceding character's vowel when building a reading key. Seeded once at startup by
+ * @brief The macron-to-vowel katakana lookup table (89 entries): each katakana maps to its
+ * vowel-row representative (ア, イ, ウ, エ, オ, or ン for @c ン), used to resolve a prolonged-sound
+ * mark to the preceding character's vowel when building a reading key. Seeded once at startup by
  * @c InitializeGlobalLookupTables.
  * @ghidraAddress 0x3dc258
  */
 extern NSDictionary *g_pMacronToVowelTable;
 /**
- * @brief The small-kana-to-large-kana lookup table (11 entries): ァィゥェォ→アイウエオ, ャュョ→ヤユヨ,
- * ヮ→ワ, ッ→ツ, and ヶ→ケ. Seeded once at startup by @c InitializeGlobalLookupTables.
+ * @brief The small-kana-to-large-kana lookup table (11 entries): ァィゥェォ→アイウエオ,
+ * ャュョ→ヤユヨ, ヮ→ワ, ッ→ツ, and ヶ→ケ. Seeded once at startup by @c
+ * InitializeGlobalLookupTables.
  * @ghidraAddress 0x3dc260
  */
 extern NSDictionary *g_pLowerToUpperTable;
@@ -90,8 +91,9 @@ extern int g_nVariantScreenHeight;
  */
 extern int g_nPlayfieldFullHeightY;
 /**
- * @brief The play-field near-lane slope: the ratio of the near note row's offset to the field-centre
- * row scale. Seeded by the play-field layout pass and read by the note and full-combo effect layers.
+ * @brief The play-field near-lane slope: the ratio of the near note row's offset to the
+ * field-centre row scale. Seeded by the play-field layout pass and read by the note and full-combo
+ * effect layers.
  * @ghidraAddress 0x3ce95c
  */
 extern float g_flPlayfieldNearLaneSlope;
@@ -108,14 +110,14 @@ extern float g_flPlayfieldNearLaneSlopeNeg;
  */
 extern float g_flPlayfieldFarLaneSlope;
 /**
- * @brief The negative far-lane slope: the ratio of the far note row's offset to the field-centre row
- * scale, negated. Seeded by the play-field layout pass and used as a note's target travel line.
+ * @brief The negative far-lane slope: the ratio of the far note row's offset to the field-centre
+ * row scale, negated. Seeded by the play-field layout pass and used as a note's target travel line.
  * @ghidraAddress 0x3ce970
  */
 extern float g_flPlayfieldFarLaneSlopeNeg;
 /**
- * @brief The play-field field height, in 1024-scaled layout units (the base scale times 1024). Every
- * other layout coordinate is derived from it. Seeded by the play-field layout pass.
+ * @brief The play-field field height, in 1024-scaled layout units (the base scale times 1024).
+ * Every other layout coordinate is derived from it. Seeded by the play-field layout pass.
  * @ghidraAddress 0x3ce930
  */
 extern int g_nPlayfieldFieldHeight;
@@ -171,8 +173,8 @@ extern int g_nPlayfieldRow192;
 /**
  * @brief Recomputes the whole play-field vertical layout table from a base scale factor.
  *
- * Scales the input by 1024 into the field height, then derives the field centre, every fixed note and
- * HUD row, the near, far, mid, and extra lane slopes, and the two gauge base bands from it. Run
+ * Scales the input by 1024 into the field height, then derives the field centre, every fixed note
+ * and HUD row, the near, far, mid, and extra lane slopes, and the two gauge base bands from it. Run
  * whenever the play-field height changes.
  * @param flScale The base field-height scale factor.
  * @ghidraAddress 0x55488
@@ -187,8 +189,8 @@ extern int g_nGaugeAltTopBaseY;
 /** @brief The alternate-mode bottom-band gauge Y base. @ghidraAddress 0x3ce9a0 */
 extern int g_nGaugeAltBottomBaseY;
 /**
- * @brief The two gauge Y base positions used in the default (mode-zero) gauge layout: the top band's
- * base and the bottom band's base. Seeded by the play-field layout pass.
+ * @brief The two gauge Y base positions used in the default (mode-zero) gauge layout: the top
+ * band's base and the bottom band's base. Seeded by the play-field layout pass.
  * @ghidraAddress 0x3ce9a4
  */
 extern int g_nGaugeTopBaseY;
@@ -235,7 +237,8 @@ extern const double g_dSliderRowHeightWide;
 extern double g_dSliderRowHeight;
 #ifdef __OBJC__
 /**
- * @brief The cached opaque-white UI colour, seeded once at startup by @c InitializeUiColorConstants.
+ * @brief The cached opaque-white UI colour, seeded once at startup by @c
+ * InitializeUiColorConstants.
  * @ghidraAddress 0x3df560
  */
 extern UIColor *g_pCachedWhiteColor;
@@ -495,7 +498,8 @@ void InitializeUiColorConstants(void);
  */
 extern UIColor *g_pPaletteDimmingCoverColor;
 #endif
-// The per-channel palette colour components (each n/255), read by InitializeUIColorPalette. Doubles.
+// The per-channel palette colour components (each n/255), read by InitializeUIColorPalette.
+// Doubles.
 extern const double g_PaletteColorGreenGrassRed;   /*!< @ghidraAddress 0x2ef5e8 */
 extern const double g_PaletteColorGreenGrassGreen; /*!< @ghidraAddress 0x2ef5f0 */
 extern const double g_PaletteColorMagentaRed;      /*!< @ghidraAddress 0x2ef5f8 */
@@ -542,7 +546,8 @@ extern CGPoint g_difficultyNumberOffsetPhone; /*!< @ghidraAddress 0x3dc6f0 */
 void InitializeCGAffineTransformGlobals(void);
 /**
  * @brief The Twitter share-image element draw positions, indexed: 0 title, 1 artist, 2 difficulty,
- * 3 level (non-Colette), 4 line, 5 level (Colette), 6 just-reflec badge, 7 full-combo badge. Read by
+ * 3 level (non-Colette), 4 line, 5 level (Colette), 6 just-reflec badge, 7 full-combo badge. Read
+ * by
  * @c -[TwitterImageCreater createImage]. Seeded once by @c InitializeParticleOffsetTable.
  * @ghidraAddress 0x3dc5d0
  */
@@ -555,8 +560,8 @@ void InitializeParticleOffsetTable(void);
 /**
  * @brief The setting-screen layout table: a cache of the panel and per-theme button-column geometry
  * points, most derived by offsetting a template point by the base panel origin/size. The button-
- * column origins live at @c [8]/@c [10] and the step gaps at @c [14]/@c [17] (read by @c RBSettingView).
- * Seeded once at startup by @c InitializeSettingLayoutGlobals.
+ * column origins live at @c [8]/@c [10] and the step gaps at @c [14]/@c [17] (read by @c
+ * RBSettingView). Seeded once at startup by @c InitializeSettingLayoutGlobals.
  * @ghidraAddress 0x3dc850
  */
 extern CGPoint g_aSettingLayout[26];
@@ -663,7 +668,8 @@ extern const float g_afLimelightPackageTitleColorTable[];
 /**
  * @brief The tutorial-pastel message-bubble clip rectangles, indexed: 0 head, 1 body, 2 left tail,
  * 3 right tail. The retina rectangles cut out of the message artwork atlas, read by the tutorial
- * pastel classes' @c -getClipList:. Seeded once at startup by @c InitializeTutorialPastelLayoutTables.
+ * pastel classes' @c -getClipList:. Seeded once at startup by @c
+ * InitializeTutorialPastelLayoutTables.
  * @ghidraAddress 0x3df3e0
  */
 extern CGRect g_aTutorialPastelClipRects[4];
@@ -674,7 +680,8 @@ extern CGRect g_aTutorialPastelClipRects[4];
  */
 extern CGPoint g_aTutorialPastelPositions[4];
 /**
- * @brief Seeds @c g_aTutorialPastelClipRects and @c g_aTutorialPastelPositions. Run once at startup.
+ * @brief Seeds @c g_aTutorialPastelClipRects and @c g_aTutorialPastelPositions. Run once at
+ * startup.
  * @ghidraAddress 0x1b81d8
  */
 void InitializeTutorialPastelLayoutTables(void);

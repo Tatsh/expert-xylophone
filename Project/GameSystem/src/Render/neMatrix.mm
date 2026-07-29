@@ -271,7 +271,8 @@ void MultiplyMatrixInPlace(float *pMatrix, float *pRight) {
 
 /** @ghidraAddress 0x19660 */
 void SetMatrixTranslation(float *pMatrix, float x, float y, float z) {
-    // Overwrite only the translation column, leaving the rotation/scale block and bottom row intact.
+    // Overwrite only the translation column, leaving the rotation/scale block and bottom row
+    // intact.
     pMatrix[kMatrixTranslateX] = x;
     pMatrix[kMatrixTranslateY] = y;
     pMatrix[kMatrixTranslateZ] = z;
@@ -291,8 +292,9 @@ void MakeScaleMatrix(float *pOutMatrix, float flScaleX, float flScaleY, float fl
 
 /** @ghidraAddress 0x19798 */
 float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle) {
-    // Z rotation in the upper-left 3x3 (column-major), leaving the translation column and bottom row
-    // intact. The binary computes the sine and cosine together with the combined sincos routine.
+    // Z rotation in the upper-left 3x3 (column-major), leaving the translation column and bottom
+    // row intact. The binary computes the sine and cosine together with the combined sincos
+    // routine.
     //   [ cos  -sin   0 ]
     //   [ sin   cos   0 ]
     //   [  0     0    1 ]

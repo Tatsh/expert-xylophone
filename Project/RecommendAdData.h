@@ -3,12 +3,13 @@
  *
  * @c RecommendAdData is the recommend network's advert-data model store. It is a stateless utility
  * class: every member is a class method and the class holds no instance state. The store reads the
- * archived advert payload that the SDK caches in @c NSUserDefaults (the @c ApplilinkRecommend.allAdData
- * blob and its sub-lists), narrows and filters those records by advert identifier, advert model,
- * advert type, and application identifier, resolves the on-disk banner and interstitial cache paths,
- * runs the weighted interstitial lottery, and derives the install-flag string for a record. The
- * Applilink SDK ships as a closed third-party library; the full class surface is recovered here from
- * the Objective-C metadata. Reconstructed from Ghidra project rb458, program rb458.
+ * archived advert payload that the SDK caches in @c NSUserDefaults (the @c
+ * ApplilinkRecommend.allAdData blob and its sub-lists), narrows and filters those records by advert
+ * identifier, advert model, advert type, and application identifier, resolves the on-disk banner
+ * and interstitial cache paths, runs the weighted interstitial lottery, and derives the
+ * install-flag string for a record. The Applilink SDK ships as a closed third-party library; the
+ * full class surface is recovered here from the Objective-C metadata. Reconstructed from Ghidra
+ * project rb458, program rb458.
  */
 
 #import <Foundation/Foundation.h>

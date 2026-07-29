@@ -26,8 +26,8 @@ constexpr int kNoteKindTap = 0;
 
 // Applies the replay to the live notes for one ghost side. Walks the replay array in lockstep with
 // the live note list: matching-side notes take the recorded judge, JR flag, long rate, and (for
-// slide notes) each sub-point judge; a skipped just-reflec entry back-fills an unmatched tap head as
-// a just-reflec miss.
+// slide notes) each sub-point judge; a skipped just-reflec entry back-fills an unmatched tap head
+// as a just-reflec miss.
 void ApplyReplayForSide(ReplayData *pReplay, int nGhostSide) {
     NoteEffectMgr *pMgr = NoteEffectMgr::shared();
     int nLiveIndex = 0;
@@ -37,8 +37,8 @@ void ApplyReplayForSide(ReplayData *pReplay, int nGhostSide) {
     for (NSUInteger nReplayIndex = 0; nReplayIndex < nReplayCount; ++nReplayIndex) {
         ReplayNote *pEvent = pReplay.replay[nReplayIndex];
 
-        // A skipped just-reflec entry (non-slide, judge 5 with the JR flag) is deferred to back-fill
-        // a later unmatched tap head.
+        // A skipped just-reflec entry (non-slide, judge 5 with the JR flag) is deferred to
+        // back-fill a later unmatched tap head.
         if (pEvent.type.intValue != kReplayTypeSlide && pEvent.judge.intValue == kReplayJudgeSkip &&
             pEvent.jr.boolValue) {
             ++nPendingJustReflec;

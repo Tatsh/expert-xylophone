@@ -23,8 +23,8 @@
 // The maximum value of an opaque colour channel.
 static constexpr unsigned int kColorMax = 255;
 
-// The textured title sprite kinds (1..3 inclusive) bind and size from their instancer's texture; the
-// two backdrop kinds (0 and 4) draw a full-viewport quad from the game system instead.
+// The textured title sprite kinds (1..3 inclusive) bind and size from their instancer's texture;
+// the two backdrop kinds (0 and 4) draw a full-viewport quad from the game system instead.
 static constexpr unsigned int kTitleKindTexturedFirst = 1;
 static constexpr unsigned int kTitleKindTexturedLast = 3;
 static constexpr unsigned int kTitleKindBackdropWhite = 0;
@@ -72,8 +72,8 @@ void TitleScreenLayerClassic::ProcessTitleLayer(int nDeltaFrames) {
         pInstancer->SetSpriteCount(0);
     }
 
-    // Begin the fade-out to play on the first qualifying tap: the caution must have been read and the
-    // tap must land after the intro window.
+    // Begin the fade-out to play on the first qualifying tap: the caution must have been read and
+    // the tap must land after the intro window.
     if (!m_bStartTriggered) {
         if ([RBUserSettingData sharedInstance].alreadyReadTitleCaution &&
             m_nElapsed > kTitleTapEarliest &&
@@ -102,7 +102,8 @@ void TitleScreenLayerClassic::ProcessTitleLayer(int nDeltaFrames) {
         m_fadeChannel.SetElapsed(0.0f);
     }
 
-    // The three logo layers all centre on the viewport; their alpha comes from their own fade curve.
+    // The three logo layers all centre on the viewport; their alpha comes from their own fade
+    // curve.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const S_VECTOR2 origin{0.0f, 0.0f};
     const S_VECTOR2 centre{pGameSystem->GetViewportWidth() * kTitleCentreFactor,

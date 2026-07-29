@@ -21,8 +21,8 @@ class CMusicSheet2;
  * A lazily-created singleton (see @c shared). Only the fields the reconstructed methods touch are
  * modelled; the spans between them are the note-object pools and per-note render state, reserved to
  * preserve the 360-byte layout. The trailing @c // +0xNN comments document the original offsets for
- * reference only. The class is non-polymorphic, so the name is inferred from its methods rather than
- * confirmed from RTTI.
+ * reference only. The class is non-polymorphic, so the name is inferred from its methods rather
+ * than confirmed from RTTI.
  * @ghidraAddress NoteEffectMgr (engine note manager, 360 bytes)
  */
 class NoteEffectMgr {
@@ -35,7 +35,8 @@ public:
     static NoteEffectMgr *shared();
 
     /**
-     * @brief The chart's note-density tier (0, 1, or 2), which selects the per-grade gauge-gain row.
+     * @brief The chart's note-density tier (0, 1, or 2), which selects the per-grade gauge-gain
+     * row.
      * @return The density tier.
      */
     int GetDensityTier() const {
@@ -55,8 +56,8 @@ public:
      *
      * Returns the cached position when the touch id is already cached; otherwise claims the first
      * empty cache slot, finds the live touch, normalises its position by the view size it began in,
-     * projects it into note-field space, and caches it. Returns @c nullptr when the cache is full or
-     * no live touch matches.
+     * projects it into note-field space, and caches it. Returns @c nullptr when the cache is full
+     * or no live touch matches.
      * @param nTouchId The touch id to resolve.
      * @ghidraAddress 0x136e38
      */
@@ -65,8 +66,8 @@ public:
     /**
      * @brief Returns the note object for a chart note index, or @c nullptr when none matches.
      *
-     * A valid in-range index returns the pooled object directly; otherwise (or for a negative index)
-     * the pool is scanned for an object whose note index matches.
+     * A valid in-range index returns the pooled object directly; otherwise (or for a negative
+     * index) the pool is scanned for an object whose note index matches.
      * @param nIndex The chart note index.
      * @return The matching note object, or @c nullptr.
      * @ghidraAddress 0x137018
@@ -120,8 +121,8 @@ public:
     void InitNoteObjects();
 
     /**
-     * @brief Detaches every pooled note from its chart binding and clears the active list (a lighter
-     *        reset than a full re-init).
+     * @brief Detaches every pooled note from its chart binding and clears the active list (a
+     * lighter reset than a full re-init).
      * @ghidraAddress 0x1379cc
      */
     void ResetAllNoteSubEntries();
@@ -159,8 +160,8 @@ public:
      * @brief Activates the chart note at @p nChartIndex: spawns its @c NoteModel and sorts it into
      * the active list, unless it has no record or is already active.
      *
-     * A no-op without a bound chart, when the index has no record, when no pooled object matches, or
-     * when the note is already active (its state is non-zero).
+     * A no-op without a bound chart, when the index has no record, when no pooled object matches,
+     * or when the note is already active (its state is non-zero).
      * @param nChartIndex The chart note index.
      * @ghidraAddress 0x136f98
      */
@@ -202,9 +203,9 @@ public:
      * @brief Processes the active-note list for one frame: touch-hit testing, step update, render,
      * and compaction.
      *
-     * Unless input is locked, it resolves each live touch's play-field position and, for each touch,
-     * finds the nearest active note it hits (within the sheet's touch radius) and marks that note
-     * touched. It then advances every active note's state machine, renders the active notes in
+     * Unless input is locked, it resolves each live touch's play-field position and, for each
+     * touch, finds the nearest active note it hits (within the sheet's touch radius) and marks that
+     * note touched. It then advances every active note's state machine, renders the active notes in
      * reverse order, compacts the finished notes out of the list, and clears the per-frame
      * touch-scratch field.
      * @ghidraAddress 0x136ccc
@@ -223,9 +224,9 @@ public:
     /**
      * @brief Assigns each active note a randomised colour, then locks the full-combo colours.
      *
-     * A per-combo probability picks the proportion of the four colours; each unlocked note draws its
-     * colour from that distribution. When the user or CPU achieved a full combo, every note on the
-     * matching side is then forced to colour zero.
+     * A per-combo probability picks the proportion of the four colours; each unlocked note draws
+     * its colour from that distribution. When the user or CPU achieved a full combo, every note on
+     * the matching side is then forced to colour zero.
      * @ghidraAddress 0x1373c0
      */
     void AssignNoteColors();

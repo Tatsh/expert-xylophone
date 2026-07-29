@@ -22,7 +22,8 @@ class C_SPRITE_INSTANCING_2D;
  * @c RenderScoreGaugeEffects until its alpha reaches zero.
  *
  * The class carries no RTTI; the name comes from the @c __FILE__ path embedded in @c Create's
- * assertions (@c OpenGL/Layer/Share/note_born_layer.mm), which is the naming authority. The trailing
+ * assertions (@c OpenGL/Layer/Share/note_born_layer.mm), which is the naming authority. The
+ * trailing
  * @c // +0xNN comments document the original offsets for reference only.
  * @ghidraAddress NoteBornLayer (engine effect layer, 0xa30 bytes)
  */
@@ -69,10 +70,10 @@ public:
     /**
      * @brief Advances and redraws every live spawn-burst effect for the frame.
      *
-     * Resets the live slot count, then for each pooled record: advances its animation timer, samples
-     * the scale and alpha animation curves, deactivates the record once its alpha reaches zero, and
-     * otherwise emits its burst sprite at the sampled scale and alpha. Finally publishes the slot
-     * count to the instancer.
+     * Resets the live slot count, then for each pooled record: advances its animation timer,
+     * samples the scale and alpha animation curves, deactivates the record once its alpha reaches
+     * zero, and otherwise emits its burst sprite at the sampled scale and alpha. Finally publishes
+     * the slot count to the instancer.
      * @param flDelta The frame's elapsed time.
      * @ghidraAddress 0x185600
      */
@@ -89,9 +90,9 @@ private:
     /**
      * @brief Emits one spawn-burst sprite into the batch's next slot.
      *
-     * Looks up the burst's atlas UV by its colour row, positions it with a fixed 31-pixel anchor and
-     * size, applies the given scale, tints it opaque white at @p nAlpha, and advances the live slot
-     * count.
+     * Looks up the burst's atlas UV by its colour row, positions it with a fixed 31-pixel anchor
+     * and size, applies the given scale, tints it opaque white at @p nAlpha, and advances the live
+     * slot count.
      * @param nColorRow The burst's colour row (selects the atlas UV row).
      * @param flScale The uniform sprite scale.
      * @param position The burst screen position.

@@ -48,9 +48,9 @@ extern const UvPaletteEntry g_aClassicGlyphUvPalette[]; // @ghidraAddress 0x2f4d
  *
  * Used by the separator, position-by-state, and centre-position accessors. Only the leading
  * coordinate is viewport-anchored; the secondary coordinate (@c flWidth / @c flHeight, names
- * inferred from the separator-bar usage) is copied through verbatim. The tables are zero-initialised
- * in the binary's @c __common segment and filled at runtime. The trailing @c // +0xNN comments
- * document the original member offsets for reference only.
+ * inferred from the separator-bar usage) is copied through verbatim. The tables are
+ * zero-initialised in the binary's @c __common segment and filled at runtime. The trailing @c //
+ * +0xNN comments document the original member offsets for reference only.
  */
 struct PhoneLayoutRecord {
     float flX = {};       /*!< The base X coordinate (viewport-anchored). +0x00 */
@@ -60,8 +60,8 @@ struct PhoneLayoutRecord {
     int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x10 */
 };
 
-// One anchored phone-layout rectangle, as returned by the position and centre accessors: the leading
-// coordinate after viewport anchoring, plus the record's carried secondary coordinate.
+// One anchored phone-layout rectangle, as returned by the position and centre accessors: the
+// leading coordinate after viewport anchoring, plus the record's carried secondary coordinate.
 struct PhoneLayoutRect {
     float flX = {};      /*!< The anchored X coordinate. +0x00 */
     float flY = {};      /*!< The anchored Y coordinate. +0x04 */

@@ -20,9 +20,9 @@ constexpr double kMediaTimeMsScale = 1000.0;
 constexpr float kLatencyOffsetScale = 1000.0f;
 constexpr double kDriftCorrectionFactor = 0.1;
 
-// The BGM-latency offset, in the offset's own units, added for each OS-version tier before the drift
-// correction. The iOS-8.0-to-8.1 tier adds nothing; iOS 8.1 or later adds the larger offset; a pre-
-// 8.0 device adds the smaller one (@ghidraAddress 0x308b44 = 49.9998, 0x308b48 = 33.3332).
+// The BGM-latency offset, in the offset's own units, added for each OS-version tier before the
+// drift correction. The iOS-8.0-to-8.1 tier adds nothing; iOS 8.1 or later adds the larger offset;
+// a pre- 8.0 device adds the smaller one (@ghidraAddress 0x308b44 = 49.9998, 0x308b48 = 33.3332).
 constexpr float kLatencyOffset80To81 = 0.0f;
 constexpr float kLatencyOffset81OrLater = 49.99980163574219f;
 constexpr float kLatencyOffsetPre80 = 33.33319854736328f;
@@ -50,8 +50,9 @@ PlayTimer *PlayTimer::Update() {
     m_dLastTime = dNow;
     double dInterval = dNow - m_dBaseTime;
 
-    // While the music is driving playback, correct the timing origin for drift between the wall clock
-    // and the BGM's reported position, once the BGM has advanced past the last sampled position.
+    // While the music is driving playback, correct the timing origin for drift between the wall
+    // clock and the BGM's reported position, once the BGM has advanced past the last sampled
+    // position.
     if (m_bRunning) {
         const double dBgmTime = [AudioManager.sharedManager bgmCurrentTime];
         if (dBgmTime <= m_dAccumulated) {
@@ -79,8 +80,8 @@ PlayTimer *PlayTimer::Update() {
         dInterval += dDrift;
     }
 
-    // The per-frame step is the drift-corrected interval since the last recorded play time, scaled to
-    // milliseconds and clamped to non-negative.
+    // The per-frame step is the drift-corrected interval since the last recorded play time, scaled
+    // to milliseconds and clamped to non-negative.
     float flStep =
         static_cast<float>((dInterval - static_cast<double>(m_flPlayTime)) * kMediaTimeMsScale);
     if (flStep <= 0.0f) {

@@ -9,8 +9,8 @@
  * @brief One record of the shared sprite UV atlas: a quad's UV origin and UV size.
  *
  * The engine's sprite layers index this table by an atlas-frame number to obtain the texture
- * coordinates of a glyph or part within the shared @c gm_parts atlas. The 16-byte stride matches the
- * binary's layout. This is read-only data embedded in the binary.
+ * coordinates of a glyph or part within the shared @c gm_parts atlas. The 16-byte stride matches
+ * the binary's layout. This is read-only data embedded in the binary.
  */
 struct SpriteUvEntry {
     float flOriginU = {}; /*!< The U coordinate of the quad's top-left corner. +0x00 */

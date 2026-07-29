@@ -14,8 +14,8 @@
 //  node's callback and destroying the ones flagged dead. Scene layers register themselves onto the
 //  list at a priority; the list is walked in ascending priority order.
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to the
-//  program image base.
+//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  the program image base.
 //
 
 /**
@@ -102,7 +102,8 @@ protected:
     // Unlinks the node from its circular list (shared by the destructor and re-insertion).
     void Unlink();
 
-    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual methods).
+    // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual
+    // methods).
     C_TASK *m_pPrev = {};                   // +0x08: the previous node.
     C_TASK *m_pNext = {};                   // +0x10: the next node.
     int m_nPriority = {};                   // +0x18: the sort key (the task state field).

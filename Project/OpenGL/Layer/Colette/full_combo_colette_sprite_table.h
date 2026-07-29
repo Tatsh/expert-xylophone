@@ -24,7 +24,8 @@ struct ColetteFullComboSpriteType {
 // The number of Colette full-combo sprite types.
 constexpr int kColetteFullComboSpriteTypeCount = 103;
 
-// The Colette full-combo sprite-type descriptor table (@ghidraAddress 0x3005f0): read-only ROM data.
+// The Colette full-combo sprite-type descriptor table (@ghidraAddress 0x3005f0): read-only ROM
+// data.
 extern const ColetteFullComboSpriteType
     g_aColetteFullComboSpriteTypes[kColetteFullComboSpriteTypeCount];
 

@@ -49,8 +49,8 @@ constexpr float kGaugeBlendOffsetX = -384.0f;
 constexpr float kGaugeBlendOffsetY = -680.0f;
 constexpr float kGaugeBlendHalf = 0.5f;
 
-// One guide sprite-kind descriptor (@ghidraAddress 0x3021e0, stride 0x18): the target instancer, the
-// anchor and size, and the index into the UV table below.
+// One guide sprite-kind descriptor (@ghidraAddress 0x3021e0, stride 0x18): the target instancer,
+// the anchor and size, and the index into the UV table below.
 struct SpriteKindDescriptor {
     int nInstancer;
     float flAnchorX;
@@ -121,7 +121,8 @@ constexpr float kCoords[] = {384.0f, 680.0f, 216.0f, 594.0f, 200.0f, 800.0f, 394
 constexpr TutorialGuideLayer::CoordEntry kOffsetsA[TutorialGuideLayer::kGridColumns] = {
     {0.0f, 0}, {233.333f, 1}, {250.0f, 1}, {-250.0f, 1}, {-233.333f, 1}, {0.0f, 0}};
 
-// The per-column offset table for grid B; its last row narrows the inner taps and clears their tags.
+// The per-column offset table for grid B; its last row narrows the inner taps and clears their
+// tags.
 constexpr TutorialGuideLayer::CoordEntry
     kOffsetsB[TutorialGuideLayer::kGridRows][TutorialGuideLayer::kGridColumns] = {
         {{0.0f, 0}, {166.667f, 1}, {250.0f, 1}, {-250.0f, 1}, {-166.667f, 1}, {0.0f, 0}},
@@ -129,16 +130,17 @@ constexpr TutorialGuideLayer::CoordEntry
         {{0.0f, 0}, {166.667f, 1}, {250.0f, 1}, {-250.0f, 1}, {-166.667f, 1}, {0.0f, 0}},
         {{0.0f, 0}, {83.333f, 0}, {250.0f, 1}, {-250.0f, 1}, {-83.333f, 0}, {0.0f, 0}}};
 
-// The column index at and beyond which a grid row switches from the keyframe's start X to its end X.
+// The column index at and beyond which a grid row switches from the keyframe's start X to its end
+// X.
 constexpr int kEndColumnThreshold = 3;
 
 } // namespace
 
 /** @ghidraAddress 0x10b308 */
 TutorialGuideLayer::TutorialGuideLayer() {
-    // The base constructor runs first; every member is zero-initialised by its in-class initialiser,
-    // matching the binary's explicit zero-clear of the texture, sprite, counts, flags, clock, and
-    // coordinate table.
+    // The base constructor runs first; every member is zero-initialised by its in-class
+    // initialiser, matching the binary's explicit zero-clear of the texture, sprite, counts, flags,
+    // clock, and coordinate table.
 }
 
 /** @ghidraAddress 0x10cda4 */
@@ -154,8 +156,8 @@ void TutorialGuideLayer::EmitTutorialSpriteSlot(
     const UvRect &uv = kUvRects[kind.nUvIndex];
 
     // In the gauge-anchored mode (any non-zero fade state low byte) the sprite is recentred between
-    // its own position and the cached gauge coordinate; the portrait variant additionally halves the
-    // X blend.
+    // its own position and the cached gauge coordinate; the portrait variant additionally halves
+    // the X blend.
     if ((m_nFadeState & 0xff) != 0) {
         float flY;
         if (!IsPad()) {
@@ -451,8 +453,8 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
                            &ringPos.x,
                            static_cast<int>(flRingAlpha * kRingAlphaScale));
 
-    // The highlight sprite's scale pulses at every swept tap (nine pulses joined by four connectors)
-    // and its alpha rises and falls in triangles at the outer taps.
+    // The highlight sprite's scale pulses at every swept tap (nine pulses joined by four
+    // connectors) and its alpha rises and falls in triangles at the outer taps.
     static bool bPulseBuilt = false;
     static CurvePoint aPulseCurve[kPulseCurveLen];
     if (!bPulseBuilt) {
@@ -499,8 +501,8 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
                            &highlightPos.x,
                            static_cast<int>(flHighlightAlpha * kRingAlphaScale));
 
-    // The per-step glyph fades in over its own connector curve (a rise-hold per keyframe), unless the
-    // step lookup reported no glyph.
+    // The per-step glyph fades in over its own connector curve (a rise-hold per keyframe), unless
+    // the step lookup reported no glyph.
     static bool bConnBuilt = false;
     static CurvePoint aConnCurve[kConnCurveLen];
     if (!bConnBuilt) {
@@ -643,7 +645,8 @@ constexpr HandGlyphOffset kHandOffsetsPhone[] = {
 constexpr HandGlyphOffset kHandOffsetsPad[] = {
     {0.0f, 0.0f}, {-180.0f, 40.0f}, {-180.0f, 240.0f}, {0.0f, 32.0f}}; // 0x301f50
 
-// The phrase-glyph offset-table entries: the pointer hand, the primary phrase, and the finish phrase.
+// The phrase-glyph offset-table entries: the pointer hand, the primary phrase, and the finish
+// phrase.
 constexpr int kOffsetHand = 1;
 constexpr int kOffsetPrimary = 2;
 constexpr int kOffsetFinish = 3;

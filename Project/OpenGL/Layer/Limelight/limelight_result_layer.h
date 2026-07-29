@@ -20,8 +20,8 @@ class C_SPRITE_INSTANCING_2D;
 
 /**
  * @brief One phone result-panel touch/button record: the tracked touch id, a pressed flag, a
- * tap-edge (just-released-inside) flag, and an initialised byte. The two flag bytes are together the
- * flags half-word the click latch writes as 0x100. The constructor resets the id to the "none"
+ * tap-edge (just-released-inside) flag, and an initialised byte. The two flag bytes are together
+ * the flags half-word the click latch writes as 0x100. The constructor resets the id to the "none"
  * sentinel and clears the flags.
  */
 struct ResultButtonRecord {
@@ -35,12 +35,12 @@ struct ResultButtonRecord {
 /**
  * @brief The Limelight-theme result-window layer.
  *
- * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It draws the
- * Limelight result panel through eight sprite instancers. The class carries no RTTI (it is
- * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from the
- * runtime metadata. Only the sprite-set fields used by @c InitializePhoneSpriteInstancers are modelled
- * so far; the remainder of the @c 0x170-byte layout is kept as a reserved span to preserve the
- * allocation size. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It draws
+ * the Limelight result panel through eight sprite instancers. The class carries no RTTI (it is
+ * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from
+ * the runtime metadata. Only the sprite-set fields used by @c InitializePhoneSpriteInstancers are
+ * modelled so far; the remainder of the @c 0x170-byte layout is kept as a reserved span to preserve
+ * the allocation size. The trailing @c // +0xNN comments document the original 32-bit offsets for
  * reference only.
  */
 class LimelightResultLayer : public PlayFieldLayerBase {
@@ -60,10 +60,11 @@ public:
     static LimelightResultLayer *shared();
 
     /**
-     * @brief Initialises the phone (portrait) result-window state at the start of the result screen.
+     * @brief Initialises the phone (portrait) result-window state at the start of the result
+     * screen.
      *
-     * Marks the layer active, arms the bonus voice cue when the game system's result-bonus feature is
-     * set, resets the bonus-cue timer, and records whether the Twitter share API is available.
+     * Marks the layer active, arms the bonus voice cue when the game system's result-bonus feature
+     * is set, resets the bonus-cue timer, and records whether the Twitter share API is available.
      * @ghidraAddress 0x12ab60
      */
     void InitializePhoneResultLayer();
@@ -73,10 +74,10 @@ public:
      * updates the bonus voice cue and the phone touch/share state, then dispatches to the Limelight
      * (iPad) or phone (portrait) render path.
      *
-     * When the layer is not on an iPad it first recomputes the portrait-orientation flag from the game
-     * system's viewport. It advances the five bonus channels, the signed slide/settle timer (toward
-     * zero, at differing rates by sign), and the decoration rotation counter (wrapping every 192
-     * frames, its frame index the counter over 48, clamped to 0 through 3).
+     * When the layer is not on an iPad it first recomputes the portrait-orientation flag from the
+     * game system's viewport. It advances the five bonus channels, the signed slide/settle timer
+     * (toward zero, at differing rates by sign), and the decoration rotation counter (wrapping
+     * every 192 frames, its frame index the counter over 48, clamped to 0 through 3).
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x12adac
      */
@@ -85,14 +86,14 @@ public:
     /**
      * @brief Renders the Limelight (iPad/landscape) result window for the current frame.
      *
-     * Clears the eight instancers, then draws (when the window fade is non-zero) the panel frame and
-     * furniture, the music jacket and character previews, the difficulty badge, the target score and
-     * the signed distance from it, both sides' score gauges, the clear or failed stamp, the grade
-     * badge, and the full-combo badge. It then cross-fades two sliding pages: the per-side statistics
-     * table with its judgement counts, proportion gauges, and achievement-rate comparison, and the
-     * bonus breakdown with its four rows and grand total. In the versus game types the two page
-     * markers draw again at each page's own alpha. Positions come from the load-time parts-anchor
-     * table.
+     * Clears the eight instancers, then draws (when the window fade is non-zero) the panel frame
+     * and furniture, the music jacket and character previews, the difficulty badge, the target
+     * score and the signed distance from it, both sides' score gauges, the clear or failed stamp,
+     * the grade badge, and the full-combo badge. It then cross-fades two sliding pages: the
+     * per-side statistics table with its judgement counts, proportion gauges, and achievement-rate
+     * comparison, and the bonus breakdown with its four rows and grand total. In the versus game
+     * types the two page markers draw again at each page's own alpha. Positions come from the
+     * load-time parts-anchor table.
      * @ghidraAddress 0x124acc
      */
     void RenderLimelightResultWindow();
@@ -101,13 +102,13 @@ public:
      * @brief Renders the phone (portrait) result window for the current frame.
      *
      * The phone-layout twin of @c RenderLimelightResultWindow: it clears the eight instancers, then
-     * draws the backdrop, side rail, header bar, and footer band, two nine-patch panel boxes and the
-     * panel rules, the jacket and character previews (from the captured image in portrait), the score
-     * fields, the grade and full-combo badges, and the clear, failed, or winner stamp. It then
-     * cross-fades the statistics page (a nine-patch box, the column headings, and one eight-column
-     * row per side) against the bonus breakdown page, and lights the page dot for the selected page.
-     * Positions are resolved through the phone anchor tables rather than read from the parts-anchor
-     * table.
+     * draws the backdrop, side rail, header bar, and footer band, two nine-patch panel boxes and
+     * the panel rules, the jacket and character previews (from the captured image in portrait), the
+     * score fields, the grade and full-combo badges, and the clear, failed, or winner stamp. It
+     * then cross-fades the statistics page (a nine-patch box, the column headings, and one
+     * eight-column row per side) against the bonus breakdown page, and lights the page dot for the
+     * selected page. Positions are resolved through the phone anchor tables rather than read from
+     * the parts-anchor table.
      * @ghidraAddress 0x127b04
      */
     void RenderPhoneResultWindow();
@@ -117,8 +118,8 @@ public:
      *
      * Enables the gesture buttons once the panel is fully shown, runs the four phone-part buttons,
      * then tracks the centre side-slider: a horizontal drag past the threshold toggles the slider
-     * value (with a themed sound) in single-player, and the share button's tap edge posts the result
-     * to Twitter (dark-title variant).
+     * value (with a themed sound) in single-player, and the share button's tap edge posts the
+     * result to Twitter (dark-title variant).
      * @ghidraAddress 0x1240ec
      */
     void UpdatePhoneTouchAndShare();
@@ -129,8 +130,9 @@ public:
      *
      * For each button it claims an active touch whose position falls inside the button's
      * by-state anchor rectangle, tracks it while it presses, and latches a tap-edge when the touch
-     * is released inside. After the four buttons it publishes the overall pressed state: one while any
-     * touch is active, the just-released latch on the frame the last touch ends, otherwise zero.
+     * is released inside. After the four buttons it publishes the overall pressed state: one while
+     * any touch is active, the just-released latch on the frame the last touch ends, otherwise
+     * zero.
      * @ghidraAddress 0x12434c
      */
     void UpdatePhonePartTouchStates();
@@ -152,20 +154,21 @@ public:
     }
 
     /**
-     * @brief Resets the five bonus/EX display animation channels to their zeroed initial state, each
-     * easing from its current shown value to zero over @p flStartTime (snapping to zero immediately
-     * when @p flStartTime is non-positive), and disarms the bonus voice cue.
+     * @brief Resets the five bonus/EX display animation channels to their zeroed initial state,
+     * each easing from its current shown value to zero over @p flStartTime (snapping to zero
+     * immediately when @p flStartTime is non-positive), and disarms the bonus voice cue.
      * @param flStartTime The animation base start time.
      * @ghidraAddress 0x124000
      */
     void ResetResultBonusAnimations(float flStartTime);
 
     /**
-     * @brief Opens the five bonus/EX display channels for the phone result screen's appear animation.
+     * @brief Opens the five bonus/EX display channels for the phone result screen's appear
+     * animation.
      *
-     * Each channel eases from its current shown value up to one; the first channel's duration is the
-     * caller's base time (and it snaps to fully shown when that is non-positive), while the later
-     * four use fixed durations and staggered elapsed seeds so they cascade in.
+     * Each channel eases from its current shown value up to one; the first channel's duration is
+     * the caller's base time (and it snaps to fully shown when that is non-positive), while the
+     * later four use fixed durations and staggered elapsed seeds so they cascade in.
      * @param flBaseTime The appear animation's base time.
      * @ghidraAddress 0x123f60
      */
@@ -174,8 +177,8 @@ public:
     /**
      * @brief Clears the five result-bonus display values and refreshes the current theme.
      *
-     * Zeroes the clear, miss, rank, first-play, and experience bonus fields, then re-reads the user's
-     * current theme (through the base layer's theme refresh).
+     * Zeroes the clear, miss, rank, first-play, and experience bonus fields, then re-reads the
+     * user's current theme (through the base layer's theme refresh).
      * @ghidraAddress 0x123da4
      */
     void ResetThemeSelectState();
@@ -194,8 +197,8 @@ public:
      * @brief Binds a texture to one phone sprite instancer and rescales all its slots to the
      * texture's dimensions.
      *
-     * With a null texture, or a zero-capacity instancer, only the instancer's texture is set (no slot
-     * rescale).
+     * With a null texture, or a zero-capacity instancer, only the instancer's texture is set (no
+     * slot rescale).
      * @param nPhoneIndex The phone-instancer index.
      * @param pTexture The texture to bind, or null to clear it.
      * @ghidraAddress 0x123e8c
@@ -227,7 +230,8 @@ public:
     void getPosition_Phone(int nIndex, S_VECTOR2 *pOutPosition) const;
 
     /**
-     * @brief Resolves a by-state phone-layout rectangle by index, offset relative to the play field.
+     * @brief Resolves a by-state phone-layout rectangle by index, offset relative to the play
+     * field.
      *
      * Selects the state table on the iPad, otherwise the portrait or default table by the
      * orientation flag; copies the record's four floats to @p pOutRect, then shifts the leading
@@ -274,10 +278,11 @@ public:
     /**
      * @brief Renders a small unsigned integer as centred phone digit-glyph sprites.
      *
-     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run about
+     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run
+     * about
      * @p position using a nominal seven-pixel glyph width, and emits each digit's glyph (bank base
-     * @c 0x39 plus the digit) right to left through @c RenderPhoneResultSpriteById, stepping left by
-     * each glyph's own width plus one pixel.
+     * @c 0x39 plus the digit) right to left through @c RenderPhoneResultSpriteById, stepping left
+     * by each glyph's own width plus one pixel.
      * @param nValue The value to render (up to four digits).
      * @param pPosition The centre position of the digit run.
      * @param nAlpha The sprite alpha.
@@ -291,11 +296,12 @@ public:
      *
      * Splits @p nValue into up to @p nMaxDigits digits, tracking the significant count; when the
      * value is zero and @p nFlags bit 0 is set, one digit is still drawn. Starting from
-     * @p pPosition plus @p pOffset, each significant digit's glyph (@p nBasePartId plus the digit) is
-     * drawn and the cursor stepped left by that glyph's own width less @p flSpacing; when the paired
-     * flag is set, a second glyph ten ids above the base is drawn beside the ones digit. When
-     * @p bPadZeros is set, the remaining leading positions are filled with the base glyph in a dimmed
-     * pass.
+     * @p pPosition plus @p pOffset, each significant digit's glyph (@p nBasePartId plus the digit)
+     * is drawn and the cursor stepped left by that glyph's own width less @p flSpacing; when the
+     * paired flag is set, a second glyph ten ids above the base is drawn beside the ones digit.
+     * When
+     * @p bPadZeros is set, the remaining leading positions are filled with the base glyph in a
+     * dimmed pass.
      * @param flSpacing The spacing subtracted from each glyph's width when advancing.
      * @param nValue The value to render.
      * @param nMaxDigits The maximum number of digits.
@@ -321,9 +327,9 @@ public:
      * @brief Renders the result screen's total-score digits in the phone result layout.
      *
      * Sums the five result-bonus values, scales the total to tenths, and renders up to seven digits
-     * right to left from @p pPosition: the ones place from one glyph bank and the higher places from
-     * another, with a marker glyph drawn below the ones digit. At least two digits are drawn; alpha
-     * is halved for the leading positions beyond the significant digits.
+     * right to left from @p pPosition: the ones place from one glyph bank and the higher places
+     * from another, with a marker glyph drawn below the ones digit. At least two digits are drawn;
+     * alpha is halved for the leading positions beyond the significant digits.
      * @param pPosition The right edge of the digit run.
      * @param nAlpha The sprite alpha.
      * @ghidraAddress 0x12a928
@@ -335,8 +341,8 @@ public:
      *
      * Scales @p flMultiplier to tenths, splits it into up to three digits, and draws them right to
      * left from @p pPosition using the multiplier glyph bank, inserting a marker glyph beside the
-     * ones digit. At least two digits are drawn; alpha is halved for the leading positions beyond the
-     * significant digits.
+     * ones digit. At least two digits are drawn; alpha is halved for the leading positions beyond
+     * the significant digits.
      * @param flMultiplier The multiplier value.
      * @param pPosition The right edge of the digit run.
      * @param nAlpha The sprite alpha.
@@ -347,13 +353,13 @@ public:
                                            unsigned int nAlpha);
 
     /**
-     * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the phone
-     * result layout.
+     * @brief Renders a percentage value (a leading marker, digits, and a decimal point) in the
+     * phone result layout.
      *
      * Splits @p nValue into up to four decimal digits (drawing at least two), centres the run about
      * @p pPosition using a fixed six-pixel glyph advance, draws the leading marker glyph, then each
-     * digit (bank base @c 0x39 plus the digit) right to left, inserting the decimal-point glyph after
-     * the ones digit.
+     * digit (bank base @c 0x39 plus the digit) right to left, inserting the decimal-point glyph
+     * after the ones digit.
      * @param nValue The percentage value (as an integer of tenths of a percent).
      * @param pPosition The centre position of the value.
      * @param nAlpha The sprite alpha.
@@ -365,9 +371,9 @@ public:
      * @brief Renders a fraction (@p nNumerator over @p nDenominator) in the phone result layout.
      *
      * Centres the whole run about @p pPosition using a nominal seven-pixel per-digit width, then
-     * draws the denominator digits right to left, a separating slash glyph, and the numerator digits,
-     * so the fraction reads numerator-slash-denominator left to right. Each digit steps the cursor
-     * left by seven pixels (drawn at a six-pixel inset); the slash steps by one (drawn at a
+     * draws the denominator digits right to left, a separating slash glyph, and the numerator
+     * digits, so the fraction reads numerator-slash-denominator left to right. Each digit steps the
+     * cursor left by seven pixels (drawn at a six-pixel inset); the slash steps by one (drawn at a
      * seven-pixel inset).
      * @param nNumerator The fraction's numerator (up to four digits).
      * @param nDenominator The fraction's denominator (up to four digits).
@@ -436,8 +442,8 @@ public:
      * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
      * looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
      * texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot with
-     * the given rotation and scale. Character codes at or above the pad glyph bound are ignored. The
-     * main pass draws at full intensity, the shadow pass at half.
+     * the given rotation and scale. Character codes at or above the pad glyph bound are ignored.
+     * The main pass draws at full intensity, the shadow pass at half.
      * @param nSlot The instancer slot to append to.
      * @param nCharCode The glyph character code (below the pad glyph bound).
      * @param nPositionIndex The phone anchor-position index.
@@ -464,8 +470,9 @@ public:
      *
      * Looks up the glyph placement rectangle from the pad parts table by @p nCharCode and its
      * texture rectangle from the Limelight glyph UV palette, adds @p offset to @p position, and
-     * appends the quad to the slot with the given rotation and scale. Character codes at or above the
-     * pad glyph bound are ignored. The main pass draws at full intensity, the shadow pass at half.
+     * appends the quad to the slot with the given rotation and scale. Character codes at or above
+     * the pad glyph bound are ignored. The main pass draws at full intensity, the shadow pass at
+     * half.
      * @param nSlot The instancer slot to append to.
      * @param nCharCode The glyph character code (below the pad glyph bound).
      * @param position The glyph's base position.
@@ -490,9 +497,9 @@ public:
     /**
      * @brief Emits one result part at a phone layout anchor plus an offset (a convenience wrapper).
      *
-     * Resolves the base position from the phone anchor table by @p nAnchorIndex, adds @p offset, and
-     * renders the part by id at that position with unit Y scale, no rotation, and the main (undimmed)
-     * pass.
+     * Resolves the base position from the phone anchor table by @p nAnchorIndex, adds @p offset,
+     * and renders the part by id at that position with unit Y scale, no rotation, and the main
+     * (undimmed) pass.
      * @param nSlot The instancer slot to append to.
      * @param nPartId The result-part id.
      * @param nAnchorIndex The phone anchor-position index.
@@ -509,12 +516,13 @@ public:
                                float flScaleX);
 
     /**
-     * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size anchor).
+     * @brief Emits one part sprite drawing a slot's whole bound texture, centred (half-size
+     * anchor).
      *
      * Sizes the quad by the texture's own scale factor, derives its UV rectangle from the used
-     * image over its allocation, and centres it via a half-size anchor. The alpha is @p nScale times
-     * the layer base scale; the colour intensity is taken from @p nIntensity. A no-op when the slot
-     * is out of range or empty (the binary does not null-check the bound texture).
+     * image over its allocation, and centres it via a half-size anchor. The alpha is @p nScale
+     * times the layer base scale; the colour intensity is taken from @p nIntensity. A no-op when
+     * the slot is out of range or empty (the binary does not null-check the bound texture).
      * @param nSlot The instancer slot (0 through 7).
      * @param position The sprite's centre position.
      * @param nScale The scale units multiplied into the alpha.
@@ -529,7 +537,8 @@ public:
     /**
      * @brief Renders a small unsigned integer as centred Limelight digit-glyph sprites.
      *
-     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run about
+     * Splits @p nValue into up to four decimal digits (at least one is drawn), centres the run
+     * about
      * @p position using the zero-glyph advance, and emits each digit's glyph part right to left,
      * stepping left by each glyph's own width.
      * @param nValue The value to render (up to four digits).
@@ -540,10 +549,11 @@ public:
     void RenderDigits(int nValue, const S_VECTOR2 &position, unsigned int nAlpha);
 
     /**
-     * @brief Renders a multi-digit decimal number as right-aligned glyph sprites from a chosen glyph
-     *        bank, with optional leading-zero padding and per-column layout tweaks.
+     * @brief Renders a multi-digit decimal number as right-aligned glyph sprites from a chosen
+     * glyph bank, with optional leading-zero padding and per-column layout tweaks.
      *
-     * Splits @p nValue into up to @p nMaxDigits decimal digits and emits each digit's glyph (part id
+     * Splits @p nValue into up to @p nMaxDigits decimal digits and emits each digit's glyph (part
+     * id
      * @p nBasePartId plus the digit) right to left, advancing by each glyph's width less
      * @p flSpacing. The score and rating columns carry paired glyphs and small vertical or
      * horizontal alignment nudges; when @p bPadZeros is set, the remaining leading positions are
@@ -599,10 +609,10 @@ public:
      * @brief Renders the result screen's total-score digits in the Limelight (pad) layout.
      *
      * Sums the five result-bonus values, scales the total to tenths, and draws up to seven places
-     * right to left from @p pPosition: the ones place from one glyph bank and the higher places from
-     * another, with a separator glyph beside the ones digit. At least two places are drawn; the
-     * leading places beyond the significant digits draw at half alpha. The cursor steps left by each
-     * glyph's own width plus a fixed gap, but only by the gap across the separator.
+     * right to left from @p pPosition: the ones place from one glyph bank and the higher places
+     * from another, with a separator glyph beside the ones digit. At least two places are drawn;
+     * the leading places beyond the significant digits draw at half alpha. The cursor steps left by
+     * each glyph's own width plus a fixed gap, but only by the gap across the separator.
      * @param pPosition The right edge of the digit run.
      * @param nAlpha The sprite alpha.
      * @ghidraAddress 0x1278a0
@@ -643,9 +653,10 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: chains the base-layer constructor, then zero-clears its state and
-     * seeds the non-zero defaults — the default part alpha (255), the current-step and per-button
-     * touch-id "none" sentinels (-1), and the cleared flags. The binary inlines this into @c shared.
+     * @brief Constructs the layer: chains the base-layer constructor, then zero-clears its state
+     * and seeds the non-zero defaults — the default part alpha (255), the current-step and
+     * per-button touch-id "none" sentinels (-1), and the cleared flags. The binary inlines this
+     * into @c shared.
      * @ghidraAddress 0x12abb4
      */
     LimelightResultLayer();
@@ -656,8 +667,8 @@ private:
      *
      * A no-op when the part index or separator index is out of range. The part's anchor, size, and
      * atlas frame come from the pad parts table (the frame indexing the glyph UV palette); the
-     * position is the separator record's base, viewport-anchored by its anchor mode, plus the offset
-     * delta. The separator record's carried width and height supply the sprite's X scale and
+     * position is the separator record's base, viewport-anchored by its anchor mode, plus the
+     * offset delta. The separator record's carried width and height supply the sprite's X scale and
      * rotation. The sprite draws opaque white at the given alpha.
      * @param nSlot The target sprite slot.
      * @param nSeparatorIndex The separator-record index (0 through 51).
@@ -689,8 +700,9 @@ private:
     /**
      * @brief Emits one glyph sprite from the pad parts table by part id, dimmable.
      *
-     * Looks up the glyph's placement rectangle from the pad parts table indexed by @p nPartId and its
-     * texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot at
+     * Looks up the glyph's placement rectangle from the pad parts table indexed by @p nPartId and
+     * its texture rectangle from the Limelight glyph UV palette, then appends the quad to the slot
+     * at
      * @p position with the given rotation and scale. Part ids at or above the pad glyph table count
      * are ignored. The main pass draws at full intensity, the dimmed pass at half.
      * @param nSlot The instancer slot to append to.
@@ -733,11 +745,12 @@ private:
     int m_nActive = {};       // +0x74: set once the phone result screen is initialised and running.
     float m_flSlideTimer =
         {}; // +0x78: a signed slide/settle timer, advanced toward zero each frame.
-    // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch id
-    // reset to -1, a flags half-word, and an initialised byte).
+    // +0x7c: the four phone result-panel touch/button records the constructor seeds (each a touch
+    // id reset to -1, a flags half-word, and an initialised byte).
     ResultButtonRecord m_aButtons[kButtonCount] = {}; // +0x7c
-    // +0x9c: the current result step index, reset to -1 (the "none" sentinel). The phone touch/share
-    // handler reuses this slot as the side-slider's tracked touch id (also the "none" sentinel).
+    // +0x9c: the current result step index, reset to -1 (the "none" sentinel). The phone
+    // touch/share handler reuses this slot as the side-slider's tracked touch id (also the "none"
+    // sentinel).
     int m_nCurrentStep = {};     // +0x9c
     float m_flSliderStartX = {}; // +0xa0: the side-slider touch's start X, for the drag threshold.
     int m_nRotationCounter =
@@ -760,7 +773,8 @@ private:
     // +0x14d..+0x14f is alignment padding before the bonus values.
     unsigned char m_aPad14d[3] = {}; // +0x14d
     // +0x150..+0x163: the five result-bonus display values, computed by
-    // rb::GameScene::ComputeResultBonusesAndExperience and cleared together by ResetThemeSelectState.
+    // rb::GameScene::ComputeResultBonusesAndExperience and cleared together by
+    // ResetThemeSelectState.
     float m_flClearBonus = {};     // +0x150: the clear bonus.
     float m_flMissBonus = {};      // +0x154: the miss (full-combo/miss1/miss2) bonus.
     float m_flRankBonus = {};      // +0x158: the rank (B/A/AA/AAA/AAAP) bonus.
@@ -774,8 +788,8 @@ private:
     /**
      * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
      *
-     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold the
-     * cue is disarmed and themed voice 7 is loaded and played.
+     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold
+     * the cue is disarmed and themed voice 7 is loaded and played.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x1240a8
      */

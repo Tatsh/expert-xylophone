@@ -2,12 +2,12 @@
 //  RBMenuBGEffectPartView.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuBGEffectPartView). This is an
-//  Objective-C++ file because -startAnimation reaches the C++ GameSystem engine singleton and the
-//  S_VECTOR2 engine vector type. Verified against the arm64 disassembly: the spawn maths (integer
-//  modulo of the viewport extent, the alpha and size table lookups, and the random cycle delay) use
-//  soft-float register moves that the decompiler folds into pseudo-variables, so they were recovered
-//  from the disassembly at 0x10000d2a8.
+//  Reconstructed from Ghidra project rb458, program rb458 (class RBMenuBGEffectPartView). This is
+//  an Objective-C++ file because -startAnimation reaches the C++ GameSystem engine singleton and
+//  the S_VECTOR2 engine vector type. Verified against the arm64 disassembly: the spawn maths
+//  (integer modulo of the viewport extent, the alpha and size table lookups, and the random cycle
+//  delay) use soft-float register moves that the decompiler folds into pseudo-variables, so they
+//  were recovered from the disassembly at 0x10000d2a8.
 //
 
 #import "RBMenuBGEffectPartView.h"

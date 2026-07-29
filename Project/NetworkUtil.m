@@ -172,8 +172,8 @@ static NSString *const kNonceCharFormat = @"%c";
 }
 
 /**
- * The reward-check endpoint. The binary references this selector but ships no implementation for it,
- * so it resolves to @c nil at runtime; kept to match the declared interface.
+ * The reward-check endpoint. The binary references this selector but ships no implementation for
+ * it, so it resolves to @c nil at runtime; kept to match the declared interface.
  */
 + (NSURL *)rewardCheckURL {
     return nil;

@@ -597,14 +597,14 @@ namespace {
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x304170). Slot 1 (the parts atlas) holds
-// the most sprites; the rest are small fixed banks.
+// The per-slot sprite-instancer capacities (@ghidraAddress 0x304170). Slot 1 (the parts atlas)
+// holds the most sprites; the rest are small fixed banks.
 constexpr unsigned int kSlotCapacities[] = {1, 400, 1, 1, 1, 2, 2, 0};
 
 // The per-slot texture-field selector (@ghidraAddress 0x304150): the index (0 = background, 1 =
 // parts) into the layer's two texture fields for each slot that binds a texture. A slot binds a
-// texture only when it is one of the first two or the last (the middle slots share the atlas already
-// bound by the batch they mirror).
+// texture only when it is one of the first two or the last (the middle slots share the atlas
+// already bound by the batch they mirror).
 constexpr int kSlotTextureField[] = {0, 1, 3, 3, 3, 3, 3, 0};
 
 // The default sprite alpha and scale the builder seeds before creating the batches.
@@ -751,8 +751,8 @@ constexpr unsigned int kDecimalDigitBank = 0x39;
 constexpr unsigned int kDecimalDotGlyph = 0x43;
 constexpr int kDecimalMinDigits = 2;
 constexpr int kDecimalMaxDigits = 4;
-// The fixed per-glyph advance and the centring bias RenderDecimalWithDotGlyph uses (the dot glyph is
-// tucked two pixels tighter than a full advance).
+// The fixed per-glyph advance and the centring bias RenderDecimalWithDotGlyph uses (the dot glyph
+// is tucked two pixels tighter than a full advance).
 constexpr float kDecimalGlyphAdvance = 6.0f;
 constexpr float kDecimalCenterBias = 2.0f;
 constexpr float kDecimalDotAdvance = 2.0f;
@@ -859,7 +859,8 @@ void ResultWindowClassicLayer::getPositionByState_Phone(int nIndex,
     pOutRect->flWidth = record.flWidth;
     pOutRect->flHeight = record.flHeight;
 
-    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor mode.
+    // Offset the leading coordinate by half or full viewport dimensions per the record's anchor
+    // mode.
     ApplyAnchorOffset(record.nAnchorMode, &pOutRect->flX, &pOutRect->flY);
 }
 
@@ -868,8 +869,8 @@ void ResultWindowClassicLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_ClassicCenterPositionPhoneState;
-        (void)GameSystem::
-            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
+                                           // discards it.
         return;
     }
 
@@ -987,7 +988,8 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
     m_aGestureRegions[0].bEnabled = nPanelAlpha == kFullyOpaqueAlpha && flFadeAlpha == 0.0f;
     if (flFadeAlpha != 0.0f ||
         static_cast<int>(flChannelC * static_cast<float>(nPanelAlpha)) != kFullyOpaqueAlpha) {
-        // Not fully shown: disable the swipe regions, and the share region when Twitter is available.
+        // Not fully shown: disable the swipe regions, and the share region when Twitter is
+        // available.
         m_aGestureRegions[1].bEnabled = false;
         m_aGestureRegions[2].bEnabled = false;
         if (m_bTwitterAvailable) {
@@ -1332,8 +1334,8 @@ void ResultWindowClassicLayer::ToggleCustomizeCharacterTexture(unsigned int nCha
     }
 
     // Show the preview: resolve the character's unlock entry (its category is cached as the sub-id,
-    // its item is the asset variant), build and load the asset texture, and bind it into the preview
-    // slot. The binary discards this method's return value.
+    // its item is the asset variant), build and load the asset texture, and bind it into the
+    // preview slot. The binary discards this method's return value.
     m_nCustomizeCharacterId = static_cast<int>(nCharacterId);
     m_bCustomizePreviewShown = true;
     LevelTables::GetInstance(); // The binary vends the singleton (lazy-init) before the lookup.
@@ -1367,15 +1369,15 @@ void ResultWindowClassicLayer::BeginCustomizeMainAsset(unsigned int nAssetId) {
     m_bCustomizePending = true;
     m_flMainAssetScale = 1.0f;
 
-    // Resolve the asset's unlock entry (its category is the asset type, its item the variant), build
-    // and load the asset texture, and bind it into the main asset slot. The binary discards this
-    // method's return value.
+    // Resolve the asset's unlock entry (its category is the asset type, its item the variant),
+    // build and load the asset texture, and bind it into the main asset slot. The binary discards
+    // this method's return value.
     const LevelUnlockEntry *pEntry = LevelTables::GetLevelUnlockEntry(m_nMainAssetId);
     m_bMainAssetSubState = false;
     NSString *path = BuildCustomizeAssetPathString(pEntry->nCategory, pEntry->nItem);
     ne::C_TEXTURE *pTexture = ne::C_TEXTURE::FindOrLoadCached([path UTF8String]);
-    // The binary binds and releases the texture unconditionally on the available path (no null check,
-    // unlike the toggle helper).
+    // The binary binds and releases the texture unconditionally on the available path (no null
+    // check, unlike the toggle helper).
     SetInstancerTextureAndRefreshSlots(kMainAssetSlot, pTexture);
     pTexture->Release();
 }
@@ -1405,7 +1407,8 @@ float ClampUnit(float flValue) {
 
 /** @ghidraAddress 0x1199fc */
 float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames) {
-    // Maps the reveal progress through the gained-experience span into the settled experience ratio.
+    // Maps the reveal progress through the gained-experience span into the settled experience
+    // ratio.
     const auto mapExpRatio = [this](float flProgress) {
         return (flProgress * static_cast<float>(m_nGainedExp) + static_cast<float>(m_nPlayerExp) -
                 static_cast<float>(m_nLevelUpStep)) /
@@ -1433,8 +1436,8 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
     if (flExpRatio < 0.0f) {
         flResult = 0.0f;
     } else if (flExpRatio >= 1.0f) {
-        // The reveal reached its target: latch it, show the next character texture, advance the asset
-        // index, and either record the pending track index or begin the main-asset load.
+        // The reveal reached its target: latch it, show the next character texture, advance the
+        // asset index, and either record the pending track index or begin the main-asset load.
         m_bExpAnimSettled = true;
         ToggleCustomizeCharacterTexture(static_cast<unsigned int>(m_nMainAssetId));
         ++m_nMainAssetId;
@@ -1484,8 +1487,8 @@ void ResultWindowClassicLayer::RenderCustomizePhoneOverlay(int nDeltaFrames,
                                                            const S_VECTOR2 *pBasePos,
                                                            float flScale) {
     // Advance the slide timer: forward (clamped to the duration) while the direction flag is set,
-    // backward (clamped to zero) while it is clear. On reaching zero, kick off any queued main-asset
-    // load and clear the queue sentinel.
+    // backward (clamped to zero) while it is clear. On reaching zero, kick off any queued
+    // main-asset load and clear the queue sentinel.
     float flTimer;
     if (m_bCustomizePending) {
         flTimer = m_flPhoneOverlayTimer + static_cast<float>(nDeltaFrames);
@@ -1602,8 +1605,8 @@ void ResultWindowClassicLayer::RenderCustomizeNameplateOverlay(int nDeltaFrames,
             SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kNameplateRevealVoiceId);
         }
     } else if (m_bExpAnimSettled) {
-        // Fully grown: once the level-up voice finishes, fold the gained experience into the running
-        // total and re-read the next level's threshold.
+        // Fully grown: once the level-up voice finishes, fold the gained experience into the
+        // running total and re-read the next level's threshold.
         if (![AudioManager.sharedManager isPlayingVoice]) {
             m_bExpAnimSettled = false;
             LevelTables::GetInstance();
@@ -1703,8 +1706,8 @@ void ResultWindowClassicLayer::RenderGlyphAtSeparator(unsigned int nSlot,
     const PartsDataRecord *pGlyph = &g_aClassicPartsPhone[nCharCode];
     const UvPaletteEntry &palette = g_aClassicGlyphUvPalette[pGlyph->nUvPaletteIndex];
 
-    // The separator record supplies the anchored base position and this sprite's scale and rotation:
-    // its width field is the X scale, its height field is the rotation.
+    // The separator record supplies the anchored base position and this sprite's scale and
+    // rotation: its width field is the X scale, its height field is the rotation.
     const PhoneLayoutRecord *pSeparator = getSeparator_Phone(nSepIndex);
     float flAnchoredX = pSeparator->flX;
     float flAnchoredY = pSeparator->flY;
@@ -1777,8 +1780,8 @@ void ResultWindowClassicLayer::RenderSpriteInstancerSlotScaled(unsigned int nSlo
     const S_VECTOR2 spriteSize{flImageWidth / flTextureScale, flImageHeight / flTextureScale};
     const S_VECTOR2 uvSize{flImageWidth / static_cast<float>(pTexture->GetAllocWidth()),
                            flImageHeight / static_cast<float>(pTexture->GetAllocHeight())};
-    // The alpha channel is the requested scale times the layer's default scale; the intensity is the
-    // texture's scale factor truncated to a byte.
+    // The alpha channel is the requested scale times the layer's default scale; the intensity is
+    // the texture's scale factor truncated to a byte.
     const unsigned int nAlpha =
         static_cast<unsigned int>(static_cast<float>(nScale) * m_flDefaultScale);
     const unsigned int nIntensity = static_cast<unsigned int>(flTextureScale) & 0xff;
@@ -2242,8 +2245,8 @@ void ResultWindowClassicLayer::InitSpriteSetsLazy() {
 
 /** @ghidraAddress 0x1170c0 */
 void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
-    // Each channel eases from its current shown value toward zero over the start time; a non-positive
-    // start time snaps the target to zero immediately.
+    // Each channel eases from its current shown value toward zero over the start time; a
+    // non-positive start time snaps the target to zero immediately.
     for (FloatTween &channel : m_aScoreAnimChannels) {
         channel.SetFrom(channel.GetCurrent());
         channel.SetTo(0.0f);
@@ -2355,8 +2358,8 @@ void ResultWindowClassicLayer::ResetScoreDisplayState() {
         m_nGainedExp = pGameSystem->GetGainedExp();
     }
 
-    // When no customize swap is pending, kick off the main-asset load; otherwise consume the pending
-    // flag and seed the resolved track index from the player level.
+    // When no customize swap is pending, kick off the main-asset load; otherwise consume the
+    // pending flag and seed the resolved track index from the player level.
     if (!m_bCustomizePending) {
         BeginCustomizeMainAsset(static_cast<unsigned int>(m_nPlayerLevel));
     } else {
@@ -2418,8 +2421,8 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
         m_aScoreAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
-    // Advance the signed slide/settle timer toward zero, at differing rates by sign, clamping on the
-    // zero crossing.
+    // Advance the signed slide/settle timer toward zero, at differing rates by sign, clamping on
+    // the zero crossing.
     if (m_flSlideTimer > 0.0f) {
         m_flSlideTimer += flDeltaTime / kSlideTimerRateDown;
         if (m_flSlideTimer < 0.0f) {
@@ -3840,8 +3843,8 @@ void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
             kPhoneGlyphSlot, separator.nIndex, separator.nCharCode, noOffset, nBodyAlpha);
     }
 
-    // The music jacket and the two banner slots; the landscape orientation draws the banners centred
-    // at full intensity instead of scaled.
+    // The music jacket and the two banner slots; the landscape orientation draws the banners
+    // centred at full intensity instead of scaled.
     {
         const S_VECTOR2 jacketPos = PositionAt(kPhonePosJacket);
         const S_VECTOR2 jacketSize{kPhoneJacketSize, kPhoneJacketSize};

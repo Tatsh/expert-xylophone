@@ -62,9 +62,10 @@ public:
      * @brief Reports whether the note should be horizontally mirrored for the current play side.
      *
      * With no chart record, or a record whose side is out of range, the note's own side flag
-     * decides (returning the no-partner sentinel when unset). Otherwise the note is flipped when its
-     * side differs from the game system's current play side.
-     * @return @c 1 when the note's X should be flipped, @c 0 when not, @c 3 as the no-side sentinel.
+     * decides (returning the no-partner sentinel when unset). Otherwise the note is flipped when
+     * its side differs from the game system's current play side.
+     * @return @c 1 when the note's X should be flipped, @c 0 when not, @c 3 as the no-side
+     * sentinel.
      * @ghidraAddress 0x135e84
      */
     int IsSideFlipped() const;
@@ -72,9 +73,9 @@ public:
     /**
      * @brief Reports whether the note is on the current play side.
      *
-     * With no chart record, or a record whose side is out of range, the note's own-side flag decides
-     * (returning the no-side sentinel when unset). Otherwise the note is on the play side when its
-     * side matches the game system's current play side.
+     * With no chart record, or a record whose side is out of range, the note's own-side flag
+     * decides (returning the no-side sentinel when unset). Otherwise the note is on the play side
+     * when its side matches the game system's current play side.
      * @return @c 1 when the note is on the play side, @c 0 when not, @c 3 as the no-side sentinel.
      * @ghidraAddress 0x134924
      */
@@ -168,9 +169,10 @@ public:
     /**
      * @brief Returns the note's target Y line: the screen edge the note travels toward.
      *
-     * The travel-line fraction is chosen by the note's hold kind (the record's hold kind, or the own-
-     * side flag for a synthetic note): kind 0 uses the near-lane slope, kind 1 uses the far-lane
-     * slope, any other kind yields zero. The fraction is scaled by the game system's sheet inset.
+     * The travel-line fraction is chosen by the note's hold kind (the record's hold kind, or the
+     * own- side flag for a synthetic note): kind 0 uses the near-lane slope, kind 1 uses the
+     * far-lane slope, any other kind yields zero. The fraction is scaled by the game system's sheet
+     * inset.
      * @return The target Y coordinate.
      * @ghidraAddress 0x135310
      */
@@ -229,7 +231,8 @@ public:
     float GetShotProgress() const {
         return m_flShotProgress;
     }
-    /** @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag). */
+    /** @brief Whether a CPU/ghost shot has been scored on this note (the replay just-reflec flag).
+     */
     bool IsShotResolved() const {
         return m_bShotResolved;
     }
@@ -253,10 +256,10 @@ public:
      *
      * Computes the edge bound from the note-field half-width, mirrored by the travel direction and
      * the note's side flip. When the note still has waypoints left, it advances the waypoint index,
-     * points the current-waypoint pointer at the next node, follows it, and takes the node's velocity;
-     * otherwise (unless the record is a hold note) it bounces the note back by mirroring its X about
-     * the edge and negating its X velocity. Either way it spawns a bounds effect at the edge and
-     * clears the waypoint-active flag.
+     * points the current-waypoint pointer at the next node, follows it, and takes the node's
+     * velocity; otherwise (unless the record is a hold note) it bounces the note back by mirroring
+     * its X about the edge and negating its X velocity. Either way it spawns a bounds effect at the
+     * edge and clears the waypoint-active flag.
      * @param nDirection The travel direction sign selecting which edge to reflect off.
      * @ghidraAddress 0x133858
      */
@@ -270,9 +273,9 @@ public:
     void UpdateStepFadeOut();
 
     /**
-     * @brief The state-machine shot step: advances the reflected note along its reversed velocity by
-     * its speed and progress, stores the render position and draw flags, and finishes the note once
-     * it flies below the play field.
+     * @brief The state-machine shot step: advances the reflected note along its reversed velocity
+     * by its speed and progress, stores the render position and draw flags, and finishes the note
+     * once it flies below the play field.
      * @ghidraAddress 0x132b20
      */
     void UpdateStepShot();
@@ -294,8 +297,9 @@ public:
     /**
      * @brief The state-machine existing step (state 2): advances the note, reflects it off the play
      * field, and either judges its timing (per rival mode) or, once it has passed its target line
-     * without a hit, finalises it as a miss (scoring the miss, applying the gauge penalty, and spawning the
-     * miss glow and bounds-damage effects). A hold note keeps its render endpoint tracking the tail.
+     * without a hit, finalises it as a miss (scoring the miss, applying the gauge penalty, and
+     * spawning the miss glow and bounds-damage effects). A hold note keeps its render endpoint
+     * tracking the tail.
      * @ghidraAddress 0x131e3c
      */
     void UpdateStepExisted();
@@ -306,10 +310,10 @@ public:
      * While the hold runs it moves the note's render endpoint along the reversed velocity by the
      * remaining fraction of the hold. It then decides whether the note is still touched (a CPU or
      * ghost note always is; a player note holds while an active touch stays within the sheet's
-     * release radius, or unconditionally while paused). Once the note is released or its release time
-     * passes, it either finishes as a hit at its stored grade (scoring the hit, spawning the burst,
-     * adding the gauge gain, and playing the tap sound) or, on an early release, enters the shot state
-     * and scores a miss with the hold-shortfall penalty.
+     * release radius, or unconditionally while paused). Once the note is released or its release
+     * time passes, it either finishes as a hit at its stored grade (scoring the hit, spawning the
+     * burst, adding the gauge gain, and playing the tap sound) or, on an early release, enters the
+     * shot state and scores a miss with the hold-shortfall penalty.
      * @ghidraAddress 0x1324c4
      */
     void UpdateStepLongTouched();
@@ -346,12 +350,12 @@ public:
      *
      * Resolves the base position from the first of three sources that applies — a chain-mate's base
      * position, a mirrored partner's live position negated through the field centre, or the note's
-     * own lane at the mid-lane row — and lays out the slide path's sub-entries when the record names
-     * a chosen target. It then seeds the position, shot, render, and spawn-time state, derives the
-     * shot direction and rival mode, clears the waypoint block and the per-play flags, and (for a
-     * note with no mirrored partner) enters the pre-spawn state and emits its spawn burst. Finally
-     * it routes the note and, when its hit time has already passed, snaps it onto the target line in
-     * the passed state.
+     * own lane at the mid-lane row — and lays out the slide path's sub-entries when the record
+     * names a chosen target. It then seeds the position, shot, render, and spawn-time state,
+     * derives the shot direction and rival mode, clears the waypoint block and the per-play flags,
+     * and (for a note with no mirrored partner) enters the pre-spawn state and emits its spawn
+     * burst. Finally it routes the note and, when its hit time has already passed, snaps it onto
+     * the target line in the passed state.
      * @ghidraAddress 0x134128
      */
     void Init();
@@ -424,8 +428,8 @@ public:
     /**
      * @brief Tests whether a touch point hits this note, reporting the squared touch distance.
      *
-     * Only a player note in its existing or slide-existing state can be hit, and only once the judge
-     * clock is inside its hit window or it is close enough below its target line. The note's
+     * Only a player note in its existing or slide-existing state can be hit, and only once the
+     * judge clock is inside its hit window or it is close enough below its target line. The note's
      * side-mirrored screen position is compared against the touch point, and a hit requires the
      * squared distance to fall within the sheet's touch radius.
      * @param flX The touch X.
@@ -439,9 +443,10 @@ public:
     /**
      * @brief Decides whether this note should be emphasised (highlighted).
      *
-     * A per-combo random chance emphasises the note outright; otherwise, in versus mode, the note is
-     * emphasised when its side matches the local side and that side achieved a full combo (falling
-     * back to the per-note flag), and in non-versus mode when the user achieved a full combo.
+     * A per-combo random chance emphasises the note outright; otherwise, in versus mode, the note
+     * is emphasised when its side matches the local side and that side achieved a full combo
+     * (falling back to the per-note flag), and in non-versus mode when the user achieved a full
+     * combo.
      * @return @c true when the note should be emphasised.
      * @ghidraAddress 0x136884
      */
@@ -451,7 +456,8 @@ public:
      * @brief Judges a touched note's timing accuracy and reports the resulting grade.
      *
      * Does nothing when the note is not the frame's touched note. Otherwise it grades the signed
-     * time error against the timing windows (0 = just, 1 = early/late, 2 = far) and resolves the hit.
+     * time error against the timing windows (0 = just, 1 = early/late, 2 = far) and resolves the
+     * hit.
      * @ghidraAddress 0x133a48
      */
     void JudgeNoteTiming();
@@ -496,8 +502,8 @@ public:
      * (normal) note is marked scored and finished, spawns the hit burst, and — unless it is a rival
      * note — adds its score, records the judged grade, and adds the per-grade gauge gain (from the
      * chart's density-tier row), then notifies its chain-path links and the scoring subsystem. All
-     * paths finish by playing the note's tap sound. Screen positions are mirrored for a side-flipped
-     * note.
+     * paths finish by playing the note's tap sound. Screen positions are mirrored for a
+     * side-flipped note.
      * @param nGrade The judged grade (0 = best/just).
      * @ghidraAddress 0x133ec0
      */
@@ -553,16 +559,19 @@ public:
      */
     void ResetPlayState();
 
-    /** @brief The no-side sentinel returned when the note has neither a record side nor own side. */
+    /** @brief The no-side sentinel returned when the note has neither a record side nor own side.
+     */
     static constexpr int kNoSideSentinel = 3;
 
-    /** @brief The idle-type sentinel a synthetic note reports for its type when it has no own side. */
+    /** @brief The idle-type sentinel a synthetic note reports for its type when it has no own side.
+     */
     static constexpr int kIdleTypeSentinel = 5;
 
     /** @brief The number of per-note sub-entry (hold/slide segment) slots. */
     static constexpr int kSubEntryCount = 16;
 
-    /** @brief A colour-lock state at or below this leaves the note open to random colour assignment. */
+    /** @brief A colour-lock state at or below this leaves the note open to random colour
+     * assignment. */
     static constexpr int kColorLockThreshold = 3;
 
 private:
@@ -642,8 +651,8 @@ private:
      *
      * Each node's end position becomes the offset to the next node and its length that offset's
      * magnitude; the path is then traversed at one speed between the spawn and hit times, which
-     * turns each end position into a velocity and gives each node its start time. The binary inlines
-     * this into @c SetRoute.
+     * turns each end position into a velocity and gives each node its start time. The binary
+     * inlines this into @c SetRoute.
      * @ghidraAddress 0x13498c
      */
     void FinishRoute();
@@ -695,8 +704,8 @@ private:
         float flStartY = {}; // +0x18: the point's start Y.
         float flEndX = {};   // +0x1c: the point's end X.
         float flEndY = {};   // +0x20: the point's end Y.
-        // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide step
-        // (UpdateStepSlideExisted) along the two axis slopes.
+        // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide
+        // step (UpdateStepSlideExisted) along the two axis slopes.
         float flCurX = {};    // +0x24: the point's current interpolated X.
         float flCurY = {};    // +0x28: the point's current interpolated Y.
         float flSlopeX = {};  // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
@@ -790,9 +799,9 @@ void InitNoteLaneTable();
 /**
  * @brief Returns a note lane's across-field position fraction.
  *
- * For the ordinary lane kind, returns the lane's fraction (the centre lane is zero, and out-of-range
- * lanes are zero). For the alternate wide-lane kind, the two wide lanes use the wide-lane fractions
- * and every other lane is zero.
+ * For the ordinary lane kind, returns the lane's fraction (the centre lane is zero, and
+ * out-of-range lanes are zero). For the alternate wide-lane kind, the two wide lanes use the
+ * wide-lane fractions and every other lane is zero.
  * @param nKind The lane kind.
  * @param nLane The lane index.
  * @return The lane's position fraction.

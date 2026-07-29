@@ -160,8 +160,9 @@ struct InitialSpriteVertex {
  */
 C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWorldSpace) {
     // The base C_RENDER constructor and the derived vtable are installed by the compiler; the nine
-    // attribute-array pointers and the remaining scalars are zero from their member initialisers. The
-    // world-space batch additionally clears the batch flag (the screen-space one leaves it default).
+    // attribute-array pointers and the remaining scalars are zero from their member initialisers.
+    // The world-space batch additionally clears the batch flag (the screen-space one leaves it
+    // default).
     m_dwCapacity = nCapacity;
     if (bWorldSpace) {
         m_bBatchFlag = false;
@@ -232,8 +233,8 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWor
 }
 
 // The deleting-destructor variant at 0x2fa70 (the D0 vtable thunk the compiler emits for
-// `delete pBatch`: it runs this destructor, then frees the object) shares this reconstruction; it is
-// a compiler artifact with no distinct source function.
+// `delete pBatch`: it runs this destructor, then frees the object) shares this reconstruction; it
+// is a compiler artifact with no distinct source function.
 /**
  * @ghidraAddress 0x30c80
  * @ghidraAddress 0x2f968
@@ -480,7 +481,8 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as bytes.
+    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as
+    // bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);
@@ -584,7 +586,8 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     const bool bUnitScale = flScaleX == 1.0f && flScaleY == 1.0f;
 
     if (bNoRotation && bUnitScale) {
-        // No rotation or scale: the quad only needs to be translated so its anchor sits at position.
+        // No rotation or scale: the quad only needs to be translated so its anchor sits at
+        // position.
         MakeTranslationMatrix(pOutMatrix, position.x - anchor.x, position.y - anchor.y, 0.0f);
         return;
     }
@@ -659,7 +662,8 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
     pRenderer->SetGlClientState(kClientColor, 1);
-    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as bytes.
+    // The colour bytes sit at a byte offset within each interleaved vertex; view the buffer as
+    // bytes.
     pRenderer->SetColorPointer(reinterpret_cast<unsigned char *>(pScratch) + kVertexColorOffset,
                                kVertexStride);
     BindPassTexture(pRenderer);

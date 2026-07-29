@@ -122,8 +122,8 @@ const S_VECTOR2 *NoteEffectMgr::GetOrCacheNotePosition(int nTouchId) {
         return nullptr;
     }
 
-    // Find the live touch with this id, normalise its position by the view size it began in, project
-    // it into note-field space, and cache it.
+    // Find the live touch with this id, normalise its position by the view size it began in,
+    // project it into note-field space, and cache it.
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
     const int nActive = pTouchManager->GetActiveTouchCount();
     for (int i = 0; i < nActive; ++i) {
@@ -489,8 +489,8 @@ float NoteEffectMgr::EvaluateNotePathAtTime(int nTargetTime) const {
         return 0.0f;
     }
 
-    // Each path node stores its speed as a float in the value slot (read raw, not converted) and its
-    // time in the following int slot.
+    // Each path node stores its speed as a float in the value slot (read raw, not converted) and
+    // its time in the following int slot.
     const auto nodeSpeed = [this](int nIndex) {
         float flSpeed;
         const int nRaw = m_pMusicSheet->GetSheetPathNode(nIndex)->x;

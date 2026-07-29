@@ -5,8 +5,9 @@
  * allows every orientation, while the wide (iPad) layout is constrained to the portrait
  * orientations.
  *
- * Reconstructed from Ghidra project rb458, program rb458 (class RBErosionMarkUpdaterAlertController,
- * image base 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * Reconstructed from Ghidra project rb458, program rb458 (class
+ * RBErosionMarkUpdaterAlertController, image base 0x100000000). @ghidraAddress values are offsets
+ * relative to the image base.
  */
 
 #import <UIKit/UIKit.h>

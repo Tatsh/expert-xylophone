@@ -87,11 +87,12 @@ public:
     }
 
     /**
-     * @brief Starts (or restarts) playback timing from the given media time: seeds the timing origin
-     * and last-update time, zeroes the play time, frame delta, and accumulated time, sets the running
-     * flag, and clears the paused flag.
+     * @brief Starts (or restarts) playback timing from the given media time: seeds the timing
+     * origin and last-update time, zeroes the play time, frame delta, and accumulated time, sets
+     * the running flag, and clears the paused flag.
      * @param dMediaTime The current media time to time from.
-     * @param bRunning Whether playback is actually running (a preview with no music leaves it clear).
+     * @param bRunning Whether playback is actually running (a preview with no music leaves it
+     * clear).
      */
     void StartPlayback(double dMediaTime, bool bRunning) {
         m_bRunning = bRunning;
@@ -114,11 +115,11 @@ public:
     /**
      * @brief Advances the play clock for this frame, syncing to the BGM playback time.
      *
-     * A no-op that zeroes the frame delta while paused. Otherwise it measures the wall-clock interval
-     * since the last update, and — when the timer is running (music-driven) — corrects the timing
-     * origin for any drift between the wall clock and the BGM's reported position, biased by an
-     * OS-version-tier latency offset. The per-frame step is the drift-corrected interval scaled to
-     * milliseconds, clamped to non-negative.
+     * A no-op that zeroes the frame delta while paused. Otherwise it measures the wall-clock
+     * interval since the last update, and — when the timer is running (music-driven) — corrects the
+     * timing origin for any drift between the wall clock and the BGM's reported position, biased by
+     * an OS-version-tier latency offset. The per-frame step is the drift-corrected interval scaled
+     * to milliseconds, clamped to non-negative.
      * @return This timer, or null when the timer is running but the BGM has not yet advanced.
      * @ghidraAddress 0x1318a4
      */

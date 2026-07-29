@@ -118,7 +118,8 @@ float *SetMatrixRotationZ3x3(float *pMatrix, float flAngle);
  */
 void SetMatrixScale3x3(float *pMatrix, float flScaleX, float flScaleY, float flScaleZ);
 /**
- * @brief Multiplies a 4-component row vector by a 4x4 column-major matrix: @c pOut @c = @c pVec4 @c *
+ * @brief Multiplies a 4-component row vector by a 4x4 column-major matrix: @c pOut @c = @c pVec4 @c
+ * *
  *        @c pMatrix.
  *
  * All four input components are read before any output is written, so @p pOut may alias @p pVec4.

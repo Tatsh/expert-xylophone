@@ -480,24 +480,24 @@ public:
     static GameSystem *GetGameSystem();
 
     /**
-     * @brief Loads the given song's jacket/artwork image into @c m_pArtworkTexture, at 2x on a retina
-     * screen (falling back to 1x). Releases any previously loaded artwork first.
+     * @brief Loads the given song's jacket/artwork image into @c m_pArtworkTexture, at 2x on a
+     * retina screen (falling back to 1x). Releases any previously loaded artwork first.
      * @param pMusicData The current song's music-data object.
      * @ghidraAddress 0x12eee0
      */
     void LoadArtworkTexture(MusicData *pMusicData);
 
     /**
-     * @brief Loads the given song's music-name (white) image into @c m_pMusicNameTexture, at 2x on a
-     * retina screen (falling back to 1x). Releases any previously loaded texture first.
+     * @brief Loads the given song's music-name (white) image into @c m_pMusicNameTexture, at 2x on
+     * a retina screen (falling back to 1x). Releases any previously loaded texture first.
      * @param pMusicData The current song's music-data object.
      * @ghidraAddress 0x12f054
      */
     void LoadMusicNameTexture(MusicData *pMusicData);
 
     /**
-     * @brief Loads the given song's artist-name (white) image into @c m_pArtistNameTexture, at 2x on
-     * a retina screen (falling back to 1x). Releases any previously loaded texture first.
+     * @brief Loads the given song's artist-name (white) image into @c m_pArtistNameTexture, at 2x
+     * on a retina screen (falling back to 1x). Releases any previously loaded texture first.
      * @param pMusicData The current song's music-data object.
      * @ghidraAddress 0x12f1c8
      */

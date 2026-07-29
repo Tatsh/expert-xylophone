@@ -43,9 +43,9 @@ struct TitleHitRect {
  *
  * A @c rb::BaseScene-derived per-frame task created by @c CreateTitleLayerForTheme for theme 2. Its
  * per-frame callback is a small state machine (@c OnFrame): load the campaign textures, part
- * sprites, title BGM, and theme sound-effect player; start the BGM; scroll and animate the parts and
- * handle input; then finish and open the music list. It is the largest title scene (0x898 bytes),
- * drawing the title from 104 part sprites plus a campaign-portrait layer. The Ghidra name
+ * sprites, title BGM, and theme sound-effect player; start the BGM; scroll and animate the parts
+ * and handle input; then finish and open the music list. It is the largest title scene (0x898
+ * bytes), drawing the title from 104 part sprites plus a campaign-portrait layer. The Ghidra name
  * @c TitleScreenLayer for this class is a misnomer; its RTTI type_info is @c rb::TitleColetteScene.
  * The trailing @c // +0xNN comments document the original member offsets for reference only; the
  * spans whose roles are still being worked out are reserved to preserve the object layout.
@@ -53,7 +53,8 @@ struct TitleHitRect {
  */
 class TitleColetteScene : public BaseScene {
 public:
-    // The number of cached title textures and the number of part sprite instancers the scene builds.
+    // The number of cached title textures and the number of part sprite instancers the scene
+    // builds.
     static constexpr int kTextureCount = 4;
     static constexpr int kSpriteSlotCount = 0x68;
     // The number of part anchor positions in the ring the title arranges its parts around.
@@ -70,8 +71,8 @@ public:
     TitleColetteScene();
 
     /**
-     * @brief Destroys the scene: releases its cached textures, part sprites, and sound-effect player,
-     * then runs the task-node base destructor.
+     * @brief Destroys the scene: releases its cached textures, part sprites, and sound-effect
+     * player, then runs the task-node base destructor.
      *
      * The binary emits a non-deleting destructor body (@c 0x574d8) and a deleting variant
      * (@c 0x574dc) that runs it then frees the object; both are this destructor.
@@ -122,14 +123,14 @@ private:
     void RunMainLoop(int nElapsedMs);
 
     /**
-     * @brief The main loop's touch pass: tracks one touch, hit-tests the menu boxes on a fresh touch,
-     * and classifies a flick into the hidden-gesture state machine on release.
+     * @brief The main loop's touch pass: tracks one touch, hit-tests the menu boxes on a fresh
+     * touch, and classifies a flick into the hidden-gesture state machine on release.
      */
     void ProcessTitleTouch();
 
     /**
-     * @brief Begins the corporate-logo exit: seeds the exit cross-fade, stops the BGM, plays the exit
-     * sound, marks the scene exiting, and fades the corporate button in.
+     * @brief Begins the corporate-logo exit: seeds the exit cross-fade, stops the BGM, plays the
+     * exit sound, marks the scene exiting, and fades the corporate button in.
      */
     void BeginExit();
 
@@ -185,11 +186,11 @@ private:
      * @brief Emits one title part's sprite into its instancer slot and records its hit-box rect.
      *
      * Appends one quad to part @p nPartId's sprite instancer (doing nothing once the instancer is
-     * full). The background part (id 0) fills the screen from its texture; the other parts take their
-     * placement from the platform layout table and their UV rectangle from the type-specific atlas
-     * table, recentring the landscape layout around the viewport. The colour is the passed tint faded
-     * out by the scene's fade level, and the lettered/logo parts whose ids gate a touch also store
-     * their anchor rectangle into the layer's hit-box table.
+     * full). The background part (id 0) fills the screen from its texture; the other parts take
+     * their placement from the platform layout table and their UV rectangle from the type-specific
+     * atlas table, recentring the landscape layout around the viewport. The colour is the passed
+     * tint faded out by the scene's fade level, and the lettered/logo parts whose ids gate a touch
+     * also store their anchor rectangle into the layer's hit-box table.
      * @param nPartId The part index (0 background; the lettered and logo part ids otherwise).
      * @param nAlpha The base alpha, scaled by the fade.
      * @param position The part centre position.
@@ -205,9 +206,9 @@ private:
                         float flRotation,
                         const S_VECTOR3 &color);
 
-    // Records a touchable part's hit-box (its draw position offset by the layout anchor, sized by the
-    // layout extent) into the layer's hit-box table. The sound-effect part in the landscape layout
-    // uses a nudged and grown rectangle. Parts without a hit-box are ignored.
+    // Records a touchable part's hit-box (its draw position offset by the layout anchor, sized by
+    // the layout extent) into the layer's hit-box table. The sound-effect part in the landscape
+    // layout uses a nudged and grown rectangle. Parts without a hit-box are ignored.
     void RecordPartHitBox(unsigned int nPartId,
                           const S_VECTOR2 &drawPosition,
                           const TitlePartLayoutRecord &layout);
@@ -224,8 +225,8 @@ private:
     unsigned int AdvanceGestureState(int nInputCode);
 
     /**
-     * @brief Rotates a swing-particle rest position around the logo pivot by the current swing phase
-     * and returns its screen X coordinate.
+     * @brief Rotates a swing-particle rest position around the logo pivot by the current swing
+     * phase and returns its screen X coordinate.
      * @param flBaseX The particle's rest X.
      * @param flBaseY The particle's rest Y.
      * @return The rotated screen X coordinate.
@@ -246,8 +247,8 @@ private:
      * @brief Advances the title cross-fade timer and updates the interpolated fade value.
      *
      * Accumulates the frame delta into the elapsed time; once it passes the start delay, the fade
-     * value eases from its start to its end across the remaining duration (snapping to the end value
-     * when the duration is zero or the timer has already completed).
+     * value eases from its start to its end across the remaining duration (snapping to the end
+     * value when the duration is zero or the timer has already completed).
      * @param nDeltaMs The elapsed time this frame, in milliseconds.
      * @ghidraAddress 0x586b0
      */
@@ -293,8 +294,8 @@ private:
     unsigned char m_aReserved742[2] = {}; // +0x742
     float m_flViewportWidth = {};  // +0x744: the viewport width, cached from the game system.
     float m_flViewportHeight = {}; // +0x748: the viewport height.
-    // +0x74c: the eight part hit-box rectangles the emitter records for touch testing (the corporate
-    // logo, the lettered parts, and the sound-effect part).
+    // +0x74c: the eight part hit-box rectangles the emitter records for touch testing (the
+    // corporate logo, the lettered parts, and the sound-effect part).
     TitleHitRect m_aHitBox[kHitBoxCount] = {};      // +0x74c
     S_VECTOR2 m_aPartAnchor[kPartAnchorCount] = {}; // +0x7cc: the ring of part anchor positions,
     // copied from the campaign anchor table at set-up.

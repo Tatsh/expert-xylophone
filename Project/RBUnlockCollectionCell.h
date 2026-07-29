@@ -45,8 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)layoutSubviews;
 
 /**
- * @brief Reset the cell for reuse: re-enable it, reveal the point label, clear the artwork, and hide
- * the unlock overlay.
+ * @brief Reset the cell for reuse: re-enable it, reveal the point label, clear the artwork, and
+ * hide the unlock overlay.
  * @ghidraAddress 0x1917fc
  */
 - (void)prepareForReuse;

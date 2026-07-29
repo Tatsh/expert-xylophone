@@ -4,8 +4,8 @@
  *
  * The view is a @c UIImageView subclass that hosts two child image views: a @c backgroundView that
  * shows a placeholder jacket, and a foreground @c imageView that starts fully transparent and is
- * faded in when the remote artwork arrives. Downloading is delegated to an @c ImageDownloader, whose
- * completion callbacks arrive through the adopted @c ImageDownloaderDelegate protocol.
+ * faded in when the remote artwork arrives. Downloading is delegated to an @c ImageDownloader,
+ * whose completion callbacks arrive through the adopted @c ImageDownloaderDelegate protocol.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreImageView, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.

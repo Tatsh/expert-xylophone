@@ -77,8 +77,8 @@ enum {
 enum {
     kAlertButtonCancel = 0,
     kAlertButtonConfirm = 1,
-    // The purchase-limit sheet lists three age tiers at button indices one through three; index four
-    // and above opens the help page.
+    // The purchase-limit sheet lists three age tiers at button indices one through three; index
+    // four and above opens the help page.
     kPurchaseLimitFirstHelpIndex = 4,
 };
 
@@ -118,8 +118,9 @@ static NSString *const kStoreTopKey = @"TOP ";
 
 // The empty store-tab title and the pad pack-table title are one-off literals. The remaining
 // display strings are the shared store-layer NSString globals declared in
-// RBStoreExtendPageViewController.h (g_pLocalizedShowMore @0x3cfd70, g_pLocalizedLoadingMixed @0x3cfca8,
-// g_pLocalizedPushUpToShowMore @0x3cfd18, and the modal-dialog messages), reused here rather than redeclared.
+// RBStoreExtendPageViewController.h (g_pLocalizedShowMore @0x3cfd70, g_pLocalizedLoadingMixed
+// @0x3cfca8, g_pLocalizedPushUpToShowMore @0x3cfd18, and the modal-dialog messages), reused here
+// rather than redeclared.
 static NSString *const kStoreEmptyTitle = @"";         // @ghidraAddress 0x3cfd90
 static NSString *const kStorePackTableTitle = @"PACK"; // @ghidraAddress 0x3cfce8
 
@@ -231,17 +232,18 @@ static NSString *const kCurrencyCodeJPY = @"JPY";
 // The KONAMI mobile help page opened from the purchase-limit sheet.
 static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 
-// The store's error-message format and the download-progress message format. The purchase-unavailable
-// message reuses the shared purchase-failed global.
+// The store's error-message format and the download-progress message format. The
+// purchase-unavailable message reuses the shared purchase-failed global.
 static NSString *const kStoreDownloadingFormat = @"%@"; // @ghidraAddress 0x3cfbd8
 static NSString *const kStoreErrorFormat = @"%@";       // @ghidraAddress 0x3cfd08
 
-// The modal-dialog message shown while a pack's tunes download. The binary uses a short local literal
-// here rather than one of the shared store-message globals.
+// The modal-dialog message shown while a pack's tunes download. The binary uses a short local
+// literal here rather than one of the shared store-message globals.
 static NSString *const kStoreDownloadDialogMessage = @"";
 
 // The cover-tap dismissal fade, shared with the audio-manager resume fade (a distinct 0.3 s global
-// from the open/close animation duration). @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
+// from the open/close animation duration). @ghidraAddress 0x2ec718
+// (g_dAudioManagerResumeFadeInTime)
 static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 @interface RBStorePageViewController () {
@@ -253,7 +255,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 // Build the phone-layout promotion, sample controls, and pack table.
 - (void)buildPhoneLayout:(CGRect)bounds;
-// Build the pad-layout title, promotion banner, sample controls, pack table, cover, and detail view.
+// Build the pad-layout title, promotion banner, sample controls, pack table, cover, and detail
+// view.
 - (void)buildPadLayout:(CGRect)bounds;
 // Build the pack-table auxiliary views (info label, banners, loading and fetching labels, pack-cell
 // background images) shared by both layouts.
@@ -1926,8 +1929,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 /** @ghidraAddress 0x1e6860 */
 - (BOOL)nextRestorePackInfo {
     // A snapshot of restoreProductID is iterated because the add… helpers below mutate the live
-    // array. YES is returned the moment an async detail download is started (or one entry is handled)
-    // so the caller stops and waits for the downloader callback.
+    // array. YES is returned the moment an async detail download is started (or one entry is
+    // handled) so the caller stops and waits for the downloader callback.
     NSArray<NSString *> *productIDs = [NSArray arrayWithArray:self.restoreProductID];
     if (productIDs.count == 0) {
         return NO;

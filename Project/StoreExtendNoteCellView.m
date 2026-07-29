@@ -183,7 +183,8 @@ static const NSInteger kCommentLabelLineCount = 3;
     } else if (state == StoreExtendNoteButtonStateMoreInfo ||
                state == StoreExtendNoteButtonStatePurchase) {
         // The not-yet-installed states show the formatted product price. The error state (-1) is
-        // excluded: the binary tests the state as unsigned, so a negative value fails both branches.
+        // excluded: the binary tests the state as unsigned, so a negative value fails both
+        // branches.
         self.purchasedLabel.text = [StoreUtil priceString:info.product];
     }
 

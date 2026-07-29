@@ -12,8 +12,8 @@
 #include "soundeffectmanager.h"
 #include "sprite_uv_table.h"
 
-// The title-part UV atlas (a distinct atlas from the shared sprite UV table); the grade backdrop and
-// the higher sprite kinds take their UV from it.
+// The title-part UV atlas (a distinct atlas from the shared sprite UV table); the grade backdrop
+// and the higher sprite kinds take their UV from it.
 extern const SpriteUvEntry g_aTitlePartUvDefault[]; // @ghidraAddress 0x2f7908
 
 // The process-wide Limelight-theme layer, created lazily by shared().
@@ -126,8 +126,8 @@ constexpr unsigned int kChannelWhite = 0xff;
 constexpr unsigned int kChannelBlack = 0;
 
 // The achievement-rate meter animation, driven by the reveal clock (@ghidraAddress 0x305220 start
-// threshold, 0x305224 clock bias, 0x305228 clock divisor, 0x30522c fade threshold). The needle frame
-// is (clock + bias) / divisor scaled by the frame count, clamped to the last frame.
+// threshold, 0x305224 clock bias, 0x305228 clock divisor, 0x30522c fade threshold). The needle
+// frame is (clock + bias) / divisor scaled by the frame count, clamped to the last frame.
 constexpr float kMeterStartThreshold = 3166.6667f;
 constexpr float kMeterClockBias = -3166.6667f;
 constexpr float kMeterClockDivisor = 1666.6667f;
@@ -264,8 +264,8 @@ constexpr int kBadgeGlyphFirstKind = 8;
 constexpr int kBadgeAlphaKnots = 4;
 constexpr int kBadgePositionKnots = 9;
 
-// Each high-rank badge glyph's fixed horizontal position (@ghidraAddress 0x3052c4..): the glyph does
-// not slide, so its X is a constant base subtracted from the layout origin.
+// Each high-rank badge glyph's fixed horizontal position (@ghidraAddress 0x3052c4..): the glyph
+// does not slide, so its X is a constant base subtracted from the layout origin.
 constexpr float kBadgeGlyphAbsoluteX[kBadgeGlyphCount] = {
     193.0f, 259.0f, 319.0f, 362.0f, 420.0f, 501.0f, 578.0f};
 
@@ -281,10 +281,10 @@ constexpr float kBadgeAlphaCurve[kBadgeGlyphCount][kBadgeAlphaKnots * 2] = {
     {116.66667f, 0.0f, 300.0f, 1.0f, 2000.0f, 1.0f, 2333.3333f, 0.0f},
 };
 
-// Each high-rank badge glyph's per-frame vertical-position curve ({time, absoluteY} knots, assembled
-// inline by the layout pass): the glyph bounces down its column. The binary precomputes these Y
-// values minus the layout origin into a block static; sampling the absolute-Y curve and subtracting
-// the origin is equivalent because the origin is constant.
+// Each high-rank badge glyph's per-frame vertical-position curve ({time, absoluteY} knots,
+// assembled inline by the layout pass): the glyph bounces down its column. The binary precomputes
+// these Y values minus the layout origin into a block static; sampling the absolute-Y curve and
+// subtracting the origin is equivalent because the origin is constant.
 constexpr float kBadgePositionCurve[kBadgeGlyphCount][kBadgePositionKnots * 2] = {
     {16.66667f,
      581.0f,
@@ -533,9 +533,10 @@ constexpr float kArDigitAlphaCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
     {216.666672f, 0.0f, 233.333328f, 1.0f, 400.0f, 0.0f},
 };
 
-// Each AR-digit glyph's per-frame vertical-position curve ({time, absoluteY} knots, assembled inline
-// by the layout pass): the glyph rises into place. As with the other strips, the origin-relative
-// cache is equivalent to sampling the absolute Y and subtracting the constant layout origin.
+// Each AR-digit glyph's per-frame vertical-position curve ({time, absoluteY} knots, assembled
+// inline by the layout pass): the glyph rises into place. As with the other strips, the
+// origin-relative cache is equivalent to sampling the absolute Y and subtracting the constant
+// layout origin.
 constexpr float kArDigitPositionCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
     {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
     {333.33334f, 738.0f, 500.0f, 730.5f, 1000.0f, 716.5f},
@@ -578,8 +579,9 @@ constexpr float kArDigitPositionCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
 
 /** @ghidraAddress 0x120630 */
 LimelightThemeLayer::LimelightThemeLayer() {
-    // The base constructor and the zero-initialised members clear the textures, sprites, counts, and
-    // flags; the constructor then applies the layout size and the non-zero grade-display defaults.
+    // The base constructor and the zero-initialised members clear the textures, sprites, counts,
+    // and flags; the constructor then applies the layout size and the non-zero grade-display
+    // defaults.
     m_flWidth = kLayoutWidth;
     m_flHeight = kLayoutHeight;
     m_nSideCount = kDefaultSideCount;
@@ -615,9 +617,9 @@ void LimelightThemeLayer::InitFullComboLayerTextures() {
 
     ne::C_TEXTURE *const apTextureFields[] = {m_pPartsTexture, m_pEffectTexture, m_pWinTexture};
 
-    // Build one sprite instancer per slot, attach it under the background render object, and make it
-    // visible. The first slot binds no texture; the rest bind their mapped atlas. Seed each slot's
-    // sprite count and flag additive blend on the last slot.
+    // Build one sprite instancer per slot, attach it under the background render object, and make
+    // it visible. The first slot binds no texture; the rest bind their mapped atlas. Seed each
+    // slot's sprite count and flag additive blend on the last slot.
     for (int nSlot = 0; nSlot < kSpriteSlotCount; ++nSlot) {
         ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
         pParent->AttachChild(pSprite);
@@ -686,8 +688,8 @@ void LimelightThemeLayer::UpdateGradeDisplay(float flDeltaTime) {
             &basePos,
             static_cast<unsigned int>(flReveal * m_gradeChannel.GetCurrent() * kAlphaByteScale));
 
-        // Per side (the first only when single-side), draw the grade meter for a zero grade, then the
-        // high-rank badge for a rank below AA or the rank glyphs otherwise.
+        // Per side (the first only when single-side), draw the grade meter for a zero grade, then
+        // the high-rank badge for a rank below AA or the rank glyphs otherwise.
         for (int nSide = 0; nSide < kSideCount; ++nSide) {
             // Side 0 is skipped only when the side count is zero.
             if (m_nSideCount == 0 && nSide == 0) {
@@ -745,8 +747,8 @@ void LimelightThemeLayer::EmitGradeSpriteSlot(float flScaleX,
     pBatch->SetSpriteScale(nIndex, flScaleX, flScaleY);
     pBatch->SetSpriteRotation(nIndex, flRotation);
 
-    // The backdrop kind is tinted black; every glyph or part is tinted white. Both take the caller's
-    // alpha.
+    // The backdrop kind is tinted black; every glyph or part is tinted white. Both take the
+    // caller's alpha.
     const unsigned int nChannel =
         nSpriteKind == kBackdropSpriteKind ? kChannelBlack : kChannelWhite;
     pBatch->SetSpriteColor(nIndex, nChannel, nChannel, nChannel, nAlpha);
@@ -793,8 +795,8 @@ void LimelightThemeLayer::EmitGradeMeterSlot(unsigned int nSide,
     }
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[nSlot];
 
-    // The needle's horizontal position is fixed relative to the layout origin; its vertical position
-    // is an absolute coordinate on iPad and a small relative offset on the phone.
+    // The needle's horizontal position is fixed relative to the layout origin; its vertical
+    // position is an absolute coordinate on iPad and a small relative offset on the phone.
     float flPosX = kMeterAbsoluteX - m_flWidth;
     float flPosY;
     float flRotation = 0.0f;

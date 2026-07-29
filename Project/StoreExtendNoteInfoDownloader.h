@@ -99,8 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Begin the detail download.
- * @param userOpen Whether the request is on behalf of a user-initiated open, threaded through to the
- * extend-note-info URL builder.
+ * @param userOpen Whether the request is on behalf of a user-initiated open, threaded through to
+ * the extend-note-info URL builder.
  * @ghidraAddress 0x179d10
  */
 - (void)downloadDetail:(BOOL)userOpen;

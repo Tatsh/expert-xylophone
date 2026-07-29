@@ -67,9 +67,9 @@ public:
      * @brief Advances and redraws the Limelight full-combo effect for the frame.
      *
      * Caches the viewport size, clears both slot counts, and, while the effect is active, advances
-     * its clock (deactivating past the end threshold), then emits the twelve base glyph sprites (each
-     * animated by a scale and a position curve) and, once the clock passes the curve-phase start,
-     * the curve-animated glyph sprites.
+     * its clock (deactivating past the end threshold), then emits the twelve base glyph sprites
+     * (each animated by a scale and a position curve) and, once the clock passes the curve-phase
+     * start, the curve-animated glyph sprites.
      * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x120130
      */
@@ -90,12 +90,12 @@ private:
      * @brief Emits one Limelight effect glyph of kind @p nSpriteKind at @p pPosition.
      *
      * Looks the kind up in the effect sprite-layout table (which supplies the target sprite group,
-     * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot and
-     * the atlas frame to a UV rectangle (from the shared atlas table for the higher kinds, or the
-     * title-part table otherwise), and appends the sprite into that slot's batch (dropping it when
-     * the batch is full). The position is adjusted in place by the cached viewport size: laid out
-     * full-size and only shifted vertically on an iPad, or halved and re-centred on the phone. The
-     * sprite takes the caller's @p flScaleX and @p flScaleY, no rotation, and a white tint at
+     * fixed anchor and quad size, and atlas-frame index), resolves the group to an instancer slot
+     * and the atlas frame to a UV rectangle (from the shared atlas table for the higher kinds, or
+     * the title-part table otherwise), and appends the sprite into that slot's batch (dropping it
+     * when the batch is full). The position is adjusted in place by the cached viewport size: laid
+     * out full-size and only shifted vertically on an iPad, or halved and re-centred on the phone.
+     * The sprite takes the caller's @p flScaleX and @p flScaleY, no rotation, and a white tint at
      * @p nAlpha.
      * @param nSpriteKind The effect glyph kind, indexing the layout table.
      * @param pPosition The sprite's base position, adjusted in place by the viewport size.

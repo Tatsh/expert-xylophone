@@ -23,8 +23,8 @@ using SheetPathNode = NotePathPoint;
  * @brief The note-chart reader: parses an RBFF chart blob into a pool of note records and holds the
  * per-chart timing, lane, and free-note state the play field reads.
  *
- * A polymorphic engine object of 152 bytes. The field layout is taken from the Ghidra data type; the
- * trailing @c // +0xNN comments document the original offsets for reference only, and access is
+ * A polymorphic engine object of 152 bytes. The field layout is taken from the Ghidra data type;
+ * the trailing @c // +0xNN comments document the original offsets for reference only, and access is
  * always through the named members.
  */
 namespace rb {
@@ -76,8 +76,8 @@ public:
      *
      * Bails if a chart is already loaded, checks the @c 'RBFF' magic, reads the format version
      * (rejecting versions above 13), dispatches to the version-appropriate parser (versions 10 to
-     * 14 or the legacy 6 and 7 path), then installs the parsed notes and resolves each note's scroll
-     * speeds. A failure at any step still resolves scroll speeds before returning zero.
+     * 14 or the legacy 6 and 7 path), then installs the parsed notes and resolves each note's
+     * scroll speeds. A failure at any step still resolves scroll speeds before returning zero.
      * @param pBytes The raw chart bytes.
      * @param pGameSystem The game-system singleton the install path reads.
      * @return @c 1 on success, @c 0 on a bad magic, unsupported version, or parse failure.
@@ -154,8 +154,8 @@ public:
      * @brief Counts the chart's late notes per side and computes its scroll timing.
      *
      * Walks the note records to find each side's side-object end time, counts the notes (and slide
-     * records) whose end time is past it into the per-side counters, then selects a scroll-speed tier
-     * from the chart note count and stores the scroll and remaining timings.
+     * records) whose end time is past it into the per-side counters, then selects a scroll-speed
+     * tier from the chart note count and stores the scroll and remaining timings.
      * @return The computed remaining timing.
      * @ghidraAddress 0x131294
      */
@@ -186,7 +186,8 @@ public:
     bool CheckNoteNearTime(int nTime, int nTarget);
 
     /**
-     * @brief Finds a note on @p nLane whose active span overlaps the time range, from @p nStartIndex.
+     * @brief Finds a note on @p nLane whose active span overlaps the time range, from @p
+     * nStartIndex.
      * @return The first matching note record, or @c nullptr.
      * @ghidraAddress 0x131704
      */
@@ -245,8 +246,8 @@ private:
     void InitPathNodeRegion();
 
     /**
-     * @brief Parses a legacy (version 6 and 7) note-chart word stream into the record pool and links
-     * long notes.
+     * @brief Parses a legacy (version 6 and 7) note-chart word stream into the record pool and
+     * links long notes.
      *
      * Reads the note count and chart end time from the header, allocates and default-constructs the
      * record pool, deserialises each note (allocating its path-point sub-array), derives its flag
@@ -290,8 +291,8 @@ private:
 
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual dtor).
     int m_nVersion = {}; // +0x08: the parsed chart format version.
-    // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10, the
-    // live count at +0x18, and the capacity at +0x1c).
+    // +0x10: the speed-change path nodes in the reader's growable array (entry pointer at +0x10,
+    // the live count at +0x18, and the capacity at +0x1c).
     NotePathPointArray m_pathNodes = {};
     int m_nChartEndTime = {};       // +0x20: the chart's end time.
     int m_nSeedA = {};              // +0x24: a parse seed/scratch value.

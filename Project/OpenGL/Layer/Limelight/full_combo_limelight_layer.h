@@ -20,8 +20,9 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * three full-combo atlases and three sprite instancers, drawn beneath the shared background layer,
  * that present the Limelight full-combo effect. The class carries no RTTI (it is non-polymorphic),
- * so the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
- * The trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * so the name is inferred from its singleton getter rather than confirmed from the runtime
+ * metadata. The trailing @c // +0xNN comments document the original 32-bit offsets for reference
+ * only.
  */
 class FullComboLimelightLayer : public PlayFieldLayerBase {
 public:
@@ -40,10 +41,10 @@ public:
     FullComboLimelightLayer();
 
     /**
-     * @brief Lazily builds the layer's textures and sprites: loads the three atlases and creates the
-     * three sprite instancers (attaching each under the background layer's render object, making it
-     * visible, binding its mapped atlas, clearing its sprite count, flagging additive blend on the
-     * middle slot, and enabling its two texture-environment parameters).
+     * @brief Lazily builds the layer's textures and sprites: loads the three atlases and creates
+     * the three sprite instancers (attaching each under the background layer's render object,
+     * making it visible, binding its mapped atlas, clearing its sprite count, flagging additive
+     * blend on the middle slot, and enabling its two texture-environment parameters).
      *
      * Guarded so the sprites are built only once.
      * @ghidraAddress 0x122934
@@ -90,14 +91,16 @@ public:
 
 private:
     /**
-     * @brief Emits one full-combo quad of the given type into its sprite batch, if capacity remains.
+     * @brief Emits one full-combo quad of the given type into its sprite batch, if capacity
+     * remains.
      *
      * Looks up the type's descriptor (its batch selector, anchor, pixel size, and atlas frame). The
-     * selector both chooses one of the layer's three sprite batches and selects the atlas the quad's
-     * UV rectangle comes from: batch 0 draws from the Limelight title-part atlas, the others from the
-     * shared sprite atlas. While that batch is below its capacity, it writes the quad — the caller's
-     * position, the descriptor's anchor and size, the atlas UV rectangle, the caller's scale and
-     * rotation, and opaque white at the caller's alpha — then bumps that batch's slot count.
+     * selector both chooses one of the layer's three sprite batches and selects the atlas the
+     * quad's UV rectangle comes from: batch 0 draws from the Limelight title-part atlas, the others
+     * from the shared sprite atlas. While that batch is below its capacity, it writes the quad —
+     * the caller's position, the descriptor's anchor and size, the atlas UV rectangle, the caller's
+     * scale and rotation, and opaque white at the caller's alpha — then bumps that batch's slot
+     * count.
      * @param nType The sprite type (0 through 0x49).
      * @param pPosition The quad's screen position.
      * @param nAlpha The quad's alpha.

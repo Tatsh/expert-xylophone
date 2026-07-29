@@ -12,9 +12,9 @@
 
 #import "RecommendCore.h"
 
-// The redirect outcome returned by -[RecommendCore redirectViewContollerWithRequest:] that means the
-// request's URL was rewritten in place (a "change destination" link), so the advert web view must be
-// reloaded with the rewritten request.
+// The redirect outcome returned by -[RecommendCore redirectViewContollerWithRequest:] that means
+// the request's URL was rewritten in place (a "change destination" link), so the advert web view
+// must be reloaded with the rewritten request.
 static const int kRecommendRedirectReloadRequest = 2;
 
 @interface RecommendWebViewController ()
@@ -24,7 +24,8 @@ static const int kRecommendRedirectReloadRequest = 2;
 - (int)redirectWithRequest:(NSURLRequest *)request;
 
 // An empty override the binary defines to suppress the superview-detach behaviour on this
-// controller. It shadows the inherited -[UIResponder] chain rather than -[UIView removeFromSuperview].
+// controller. It shadows the inherited -[UIResponder] chain rather than -[UIView
+// removeFromSuperview].
 - (void)removeFromSuperview;
 
 @end
@@ -56,8 +57,8 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 #pragma mark - Redirect handling
 
-// Routes the advert redirect through RecommendCore. When the core rewrites the request in place, the
-// web view is reloaded with the rewritten request.
+// Routes the advert redirect through RecommendCore. When the core rewrites the request in place,
+// the web view is reloaded with the rewritten request.
 // @ 0x100203048
 - (int)redirectWithRequest:(NSURLRequest *)request {
     int outcome = [[RecommendCore sharedInstance] redirectViewContollerWithRequest:request];

@@ -119,8 +119,8 @@ static const NSUInteger kDownloaderCapacity = 32;
     if (self.promotionDataArray != nil) {
         return;
     }
-    // The binary keeps this second nil-check even though the early return above makes it dead; it is
-    // reproduced faithfully.
+    // The binary keeps this second nil-check even though the early return above makes it dead; it
+    // is reproduced faithfully.
     if (self.promotionDataArray != nil) {
         self.promotionDataArray = nil;
     }

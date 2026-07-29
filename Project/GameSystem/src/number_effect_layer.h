@@ -46,9 +46,9 @@ public:
     /**
      * @brief Lazily builds the four gm_parts2 sprite instancers.
      *
-     * Seeds the side-dependent transform block (mirrored on the left side), loads the atlas, creates
-     * and registers each instancer under the background layer, and sets the wide-screen flag from
-     * the viewport width. Guarded so it runs only once.
+     * Seeds the side-dependent transform block (mirrored on the left side), loads the atlas,
+     * creates and registers each instancer under the background layer, and sets the wide-screen
+     * flag from the viewport width. Guarded so it runs only once.
      * @ghidraAddress 0x189d9c
      */
     void CreateSpriteInstancers();
@@ -99,8 +99,8 @@ public:
     void ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const;
 
     /**
-     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes the
-     * brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
+     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes
+     * the brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
      *
      * On the landscape layout it emits the track element (and its wide-variant extension), then the
      * knob element (half alpha while held), and finally the brightness-fill element plus a second
@@ -116,8 +116,9 @@ private:
      *
      * Selects the element descriptor from the portrait or landscape layout table by the inherited
      * is-pad flag, looks up its atlas UV rectangle, and writes the next free slot of batch
-     * @p nBatch with the descriptor's anchor and size, the caller's position, that UV rectangle, and
-     * a solid @p nColour tint at the layer's current fade alpha. A no-op when the batch is full.
+     * @p nBatch with the descriptor's anchor and size, the caller's position, that UV rectangle,
+     * and a solid @p nColour tint at the layer's current fade alpha. A no-op when the batch is
+     * full.
      * @param flX The sprite's x position.
      * @param flY The sprite's y position.
      * @param nBatch The target sprite batch (0 through 3).
@@ -134,8 +135,8 @@ private:
      */
     void ProcessBrightnessSliderTouch();
 
-    // Constructs the layer through the base constructor; every field is zero-initialised. The binary
-    // inlines this into the singleton getter rather than emitting a separate constructor.
+    // Constructs the layer through the base constructor; every field is zero-initialised. The
+    // binary inlines this into the singleton getter rather than emitting a separate constructor.
     NumberEffectLayer() = default;
 
     /**

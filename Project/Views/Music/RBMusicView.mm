@@ -35,8 +35,8 @@
 // @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
 extern const double g_dMascotMessageAnimDuration;
 
-// The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed by
-// difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).
+// The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed
+// by difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).
 enum { kDifficultyCount = 4 };
 
 // The three setting pages hosted by the paged setting scroll.
@@ -143,8 +143,8 @@ static const NSTimeInterval kFirstInfoScrollRetryDelay = 0.5;
 // The full rival alpha seeded for the tutorial game.
 static const float kTutorialRivalAlpha = 1.0f;
 
-// The play-colour coin-flip threshold: when both colours are allowed, a unit-interval random draw at
-// or above this value selects colour 1, otherwise colour 0.
+// The play-colour coin-flip threshold: when both colours are allowed, a unit-interval random draw
+// at or above this value selects colour 1, otherwise colour 0.
 static const float kPlayColorRandomThreshold = 0.5f;
 
 // The black-pastel combo roll: a random draw modulo kPastelBlackComboRollModulo above
@@ -241,7 +241,8 @@ static NSString *const kSelLineImageNames[] = {
 };
 
 // The wide-popup base frame the line overlay container uses, decoded from g_dPopupBaseOriginXWide
-// (112.0), DAT_1003013f0 (161.0), g_dPopupBaseWidthWide (546.0), and g_dPopupBaseHeightWide (680.0).
+// (112.0), DAT_1003013f0 (161.0), g_dPopupBaseWidthWide (546.0), and g_dPopupBaseHeightWide
+// (680.0).
 static const CGFloat kPopupBaseOriginXWide = 112.0;
 static const CGFloat kPopupBaseOriginYWide = 161.0;
 static const CGFloat kPopupBaseWidthWide = 546.0;
@@ -286,8 +287,8 @@ static const CGFloat kPageTintWhiteCurrent = 0.5;
 static const CGFloat kNameAlphaDim = 0.699999988;
 static const CGFloat kNameAlphaFull = 1.0;
 
-// The setting sub-view page indices (page X = index * scroll width). The CPU and other sub-views sit
-// at pages 3 and 4 in the arena game type and both at page 3 otherwise.
+// The setting sub-view page indices (page X = index * scroll width). The CPU and other sub-views
+// sit at pages 3 and 4 in the arena game type and both at page 3 otherwise.
 static const CGFloat kColorPage = 0.0;
 static const CGFloat kDifficultyPage = 1.0;
 static const CGFloat kSpeedPage = 2.0;
@@ -426,12 +427,38 @@ static const DetailGeometry kGeometryDefaultArena = {
 // The default non-arena leg (@0xcce50). jacketSize is theme-picked (non-white then white); the
 // scroll and page slots partly fall through to the CGPointZero global (both lanes 0.0).
 static const DetailGeometry kGeometryDefaultNormal = {
-    20.0,  56.0,  147.0,                    // jacket (white size; non-white: 150)
-    0.0,   0.0,   0.0,   0.0,  24.0,  45.0, // name-centre (nameCenterX is the 0.0 CGPointZero lane)
-    111.0, 102.0, 74.0,  28.0, 252.0, 101.0, 244.0, 97.0, 244.0,
-    89.0,  143.0, 55.0,  10.0, 0.0,   0.0,   0.0, // scrollX 10; scrollY/W/H fall through to 0.0 (CGPointZero)
-    246.0, 0.0,   0.0,   0.0,                     // pageX 246; pageY/W/H fall through to 0.0
-    214.0, 104.0,
+    20.0,
+    56.0,
+    147.0, // jacket (white size; non-white: 150)
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    24.0,
+    45.0, // name-centre (nameCenterX is the 0.0 CGPointZero lane)
+    111.0,
+    102.0,
+    74.0,
+    28.0,
+    252.0,
+    101.0,
+    244.0,
+    97.0,
+    244.0,
+    89.0,
+    143.0,
+    55.0,
+    10.0,
+    0.0,
+    0.0,
+    0.0, // scrollX 10; scrollY/W/H fall through to 0.0
+         // (CGPointZero)
+    246.0,
+    0.0,
+    0.0,
+    0.0, // pageX 246; pageY/W/H fall through to 0.0
+    214.0,
+    104.0,
 };
 static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 
@@ -453,8 +480,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 // The themed music-name image accessor factored out of the switchWithDifficulty: dispatch (the
 // binary inlines the twelve theme-by-difficulty accessor calls).
 - (nullable UIImage *)musicNameImageOfMusic:(MusicData *)music forDifficulty:(int)difficulty;
-// De-inlined SetupView helper (the binary draws the BPM strip inline via UIGraphics); not a distinct
-// selector in the binary.
+// De-inlined SetupView helper (the binary draws the BPM strip inline via UIGraphics); not a
+// distinct selector in the binary.
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax;
 @end
 
@@ -489,8 +516,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 
 - (void)SetupView {
     // Builds the whole detail panel. Worked from raw arm64 (the decompiler crashes on this method
-    // with the known RBCoreDataManager broken-struct error); every geometry constant was decoded from
-    // the .const pools. @ghidraAddress 0xcc078
+    // with the known RBCoreDataManager broken-struct error); every geometry constant was decoded
+    // from the .const pools. @ghidraAddress 0xcc078
     NSManagedObjectContext *moc = [RBCoreDataManager sharedInstance].managedObjectContext;
     ScoreData *score = [ScoreData getScoreData:self.musicData.MusicID inManagedObjectContext:moc];
 
@@ -911,8 +938,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [self updateDecideButton];
 }
 
-// Builds the BPM strip image by drawing the digit images (and a range separator when the minimum and
-// maximum BPM differ) side by side into a single image. @ghidraAddress 0xcd744
+// Builds the BPM strip image by drawing the digit images (and a range separator when the minimum
+// and maximum BPM differ) side by side into a single image. @ghidraAddress 0xcd744
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax {
     NSMutableArray<UIImage *> *digitImages = [NSMutableArray array];
     CGFloat totalWidth = 0.0;
@@ -973,9 +1000,9 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 
 - (void)SetUpLineView {
     // Builds the animated select-line overlay: a container inserted below baseView, plus ten
-    // select-line images, each wrapped in a UIImageView whose layer anchor point, position, opacity,
-    // and contents scale are set inside a zero-duration transaction. On the compact layout every
-    // frame and position is halved. @ghidraAddress 0xd2764
+    // select-line images, each wrapped in a UIImageView whose layer anchor point, position,
+    // opacity, and contents scale are set inside a zero-duration transaction. On the compact layout
+    // every frame and position is halved. @ghidraAddress 0xd2764
     CGRect selfBounds = self.bounds;
     BOOL isPad = IsPad();
 

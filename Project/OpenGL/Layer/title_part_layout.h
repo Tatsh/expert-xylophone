@@ -9,8 +9,8 @@
 
 /**
  * @brief One title-part layout record: the cached-texture index the part binds and its placement
- * rectangle. A 24-byte record; @c TitleLimelightScene::LoadResources reads the texture index to bind
- * each part instancer's texture.
+ * rectangle. A 24-byte record; @c TitleLimelightScene::LoadResources reads the texture index to
+ * bind each part instancer's texture.
  */
 struct TitlePartLayoutRecord {
     /**

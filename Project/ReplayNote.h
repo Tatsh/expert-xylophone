@@ -46,8 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, nullable) NSNumber *longrate;
 /**
- * @brief The slide note's per-point sub-results, one nested @c ReplayNote per slide point (optional;
- * omitted from the archive when nil).
+ * @brief The slide note's per-point sub-results, one nested @c ReplayNote per slide point
+ * (optional; omitted from the archive when nil).
  * @ghidraAddress 0x106fb4 (getter)
  * @ghidraAddress 0x106fc4 (setter)
  */

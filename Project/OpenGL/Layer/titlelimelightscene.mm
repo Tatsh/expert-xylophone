@@ -2,8 +2,8 @@
 //  title_screen_layer2.mm
 //  REFLEC BEAT plus
 //
-//  The parts-based title-screen scene layer (TitleLimelightScene). Reconstructed from Ghidra project
-//  rb458, program rb458. @ghidraAddress values are relative to the program image base.
+//  The parts-based title-screen scene layer (TitleLimelightScene). Reconstructed from Ghidra
+//  project rb458, program rb458. @ghidraAddress values are relative to the program image base.
 //
 
 #include "titlelimelightscene.h"
@@ -1487,8 +1487,9 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         // The background draws at the texture's retina scale, not the caller's scale.
         pInstancer->SetSpriteScale(nSlot, flScale, flScale);
     } else {
-        // A lettered or logo part: its anchor, size, and atlas frame come from the per-device layout
-        // record (the record's position/size fields serve as the sprite anchor and size here).
+        // A lettered or logo part: its anchor, size, and atlas frame come from the per-device
+        // layout record (the record's position/size fields serve as the sprite anchor and size
+        // here).
         const bool bIsPad = IsPad();
         const TitlePartLayoutRecord &layout =
             bIsPad ? g_aTitle2PartLayoutAltFrame[nKind] : g_aTitle2PartLayoutDefault[nKind];
@@ -1497,8 +1498,8 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         const float flSizeX = layout.flWidth;
         const float flSizeY = layout.flHeight;
 
-        // The anchor mode selects the atlas: mode one draws from the per-device lettered/logo atlas,
-        // any other mode from the shared default title-part atlas.
+        // The anchor mode selects the atlas: mode one draws from the per-device lettered/logo
+        // atlas, any other mode from the shared default title-part atlas.
         const SpriteUvEntry *pUvTable;
         if (layout.nTextureIndex != kPartAnchorModeAtlas) {
             pUvTable = g_aTitlePartUvDefault;

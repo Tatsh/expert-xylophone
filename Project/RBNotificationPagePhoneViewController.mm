@@ -3,13 +3,13 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class
-//  RBNotificationPagePhoneViewController). This is the phone-side news / information page controller,
-//  the counterpart of the RBNotificationPageView popup used on the pad build. Its -pushBarBtnBack:
-//  plays a themed sound effect through the C++ SoundEffectManager engine singleton, so this is an
-//  Objective-C++ (.mm) file. Verified against the arm64 disassembly: -viewDidLoad's spinner centre
-//  is the view-bounds midpoint (the decompiler folds the soft-float register moves into pseudo
-//  doubles), and -webView:shouldStartLoadWithRequest:navigationType:'s deep-link routing was read
-//  from the raw branch structure.
+//  RBNotificationPagePhoneViewController). This is the phone-side news / information page
+//  controller, the counterpart of the RBNotificationPageView popup used on the pad build. Its
+//  -pushBarBtnBack: plays a themed sound effect through the C++ SoundEffectManager engine
+//  singleton, so this is an Objective-C++ (.mm) file. Verified against the arm64 disassembly:
+//  -viewDidLoad's spinner centre is the view-bounds midpoint (the decompiler folds the soft-float
+//  register moves into pseudo doubles), and -webView:shouldStartLoadWithRequest:navigationType:'s
+//  deep-link routing was read from the raw branch structure.
 //
 
 #import "RBNotificationPagePhoneViewController.h"

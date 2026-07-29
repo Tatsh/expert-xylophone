@@ -18,8 +18,9 @@ namespace {
 constexpr const char *kTextureName = "00_texture/gm_parts2";
 
 // The two score-digit glyph layout tables, selected by the layer's is-pad flag. Each holds twenty
-// entries: ten digits for the low side, then ten for the high side (the +10 font offset). The is-pad
-// build uses the first table (@ghidraAddress 0x30ff40), the phone build the second (0x3100d0).
+// entries: ten digits for the low side, then ten for the high side (the +10 font offset). The
+// is-pad build uses the first table (@ghidraAddress 0x30ff40), the phone build the second
+// (0x3100d0).
 constexpr PlayerFieldLayer::ScoreDigitGlyph kScoreGlyphsPad[] = {
     {0.0f, 37.0f, 46.0f, 74.0f, 111}, {0.0f, 37.0f, 46.0f, 74.0f, 112},
     {0.0f, 37.0f, 46.0f, 74.0f, 113}, {0.0f, 37.0f, 46.0f, 74.0f, 114},
@@ -49,8 +50,8 @@ constexpr PlayerFieldLayer::ScoreDigitGlyph kScoreGlyphsPhone[] = {
 constexpr S_VECTOR2 kScoreBasePad[] = {{0.0f, -51.0f}, {0.0f, 51.0f}};
 constexpr S_VECTOR2 kScoreBasePhone[] = {{0.0f, -45.0f}, {0.0f, 45.0f}};
 
-// The per-(side, side-flag) mirror table: a non-zero byte draws the string right-aligned and rotates
-// each glyph a half-turn (@ghidraAddress 0x310260).
+// The per-(side, side-flag) mirror table: a non-zero byte draws the string right-aligned and
+// rotates each glyph a half-turn (@ghidraAddress 0x310260).
 constexpr unsigned char kScoreMirrorTable[] = {0, 0, 1, 0, 78, 50, 114, 98};
 
 // The maximum decimal digits a score string renders.

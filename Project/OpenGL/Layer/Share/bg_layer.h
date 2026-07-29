@@ -110,8 +110,8 @@ public:
     }
 
 private:
-    // The "no background selected" sentinel the factory stamps into m_nBackgroundId; while it is set,
-    // no background texture is loaded.
+    // The "no background selected" sentinel the factory stamps into m_nBackgroundId; while it is
+    // set, no background texture is loaded.
     static constexpr int kNoBackground = 0x1d;
 
     // The clear-effect fade duration used when the clear-effect overlay is toggled.

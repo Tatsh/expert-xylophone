@@ -22,8 +22,8 @@ extern int g_nChainConnectorDrawCount; // @ghidraAddress 0x3def48
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetChainConnectorLayer accessor. Only the
- * fields the reconstructed methods touch are modelled; the trailing @c // +0xNN comments document the
- * original offsets for reference only.
+ * fields the reconstructed methods touch are modelled; the trailing @c // +0xNN comments document
+ * the original offsets for reference only.
  * @ghidraAddress ChainConnectorLayer (engine effect layer, 0xc28 bytes)
  */
 class ChainConnectorLayer : public PlayFieldLayerBase {
@@ -41,9 +41,9 @@ public:
     /**
      * @brief Builds the gm_parts1 connector sprite batch and binds its atlas on first use.
      *
-     * Creates the world sprite batch sized to the layer's capacity, attaches it under the background
-     * layer, makes it visible, flags additive blend, (on a non-tutorial build) seeds two texture
-     * parameters, and resets the shared connector draw count. Guarded so it runs only once.
+     * Creates the world sprite batch sized to the layer's capacity, attaches it under the
+     * background layer, makes it visible, flags additive blend, (on a non-tutorial build) seeds two
+     * texture parameters, and resets the shared connector draw count. Guarded so it runs only once.
      * @ghidraAddress 0x185894
      */
     void CreateSprites();
@@ -52,8 +52,8 @@ public:
      * @brief Emits one connector sprite of the given type into the batch.
      *
      * Both types draw a fixed 14x16 quad anchored at (7, 0); the type only selects the UV-table
-     * entry. Appends a sprite at @p pPosition with the given rotation and y-scale (x-scale is unit),
-     * in opaque white modulated by @p nAlpha.
+     * entry. Appends a sprite at @p pPosition with the given rotation and y-scale (x-scale is
+     * unit), in opaque white modulated by @p nAlpha.
      * @param nType The connector sprite type (0 or 1).
      * @param pPosition The sprite position.
      * @param nAlpha The sprite alpha.
@@ -86,14 +86,14 @@ public:
     /**
      * @brief Resolves this frame's queued connectors into sprites and clears the queue.
      *
-     * Derives the frame's connector alpha from the play colour and the rival-alpha setting (the play
-     * side's connectors draw fully opaque, the rival side's at the scaled rival alpha), then walks
-     * the pooled records. For each active record it clears the slot and forms the endpoint delta; a
-     * connector at least one pixel long is oriented along the delta (its rotation from the delta's
-     * angle plus a quarter turn), while a shorter one keeps a zero rotation. Either way its length is
-     * scaled by one sixteenth into the sprite's y-scale, and a connector sprite of the record's
-     * colour is emitted at that alpha. Finally it commits the batch's sprite count and resets the
-     * shared draw count for the next frame.
+     * Derives the frame's connector alpha from the play colour and the rival-alpha setting (the
+     * play side's connectors draw fully opaque, the rival side's at the scaled rival alpha), then
+     * walks the pooled records. For each active record it clears the slot and forms the endpoint
+     * delta; a connector at least one pixel long is oriented along the delta (its rotation from the
+     * delta's angle plus a quarter turn), while a shorter one keeps a zero rotation. Either way its
+     * length is scaled by one sixteenth into the sprite's y-scale, and a connector sprite of the
+     * record's colour is emitted at that alpha. Finally it commits the batch's sprite count and
+     * resets the shared draw count for the next frame.
      * @ghidraAddress 0x1859fc
      */
     void Update();
@@ -106,7 +106,8 @@ private:
      */
     ChainConnectorLayer();
 
-    // One pooled chain-connector record (24 bytes): a colour and the two endpoints a connector spans.
+    // One pooled chain-connector record (24 bytes): a colour and the two endpoints a connector
+    // spans.
     struct ChainRecord {
         bool bActive = {};   // +0x00: set while the record holds a queued connector.
         int nColor = {};     // +0x04: the connector colour (0 or 1), selecting the sprite type.

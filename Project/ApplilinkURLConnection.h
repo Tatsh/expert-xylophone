@@ -5,9 +5,10 @@
  * @c ApplilinkURLConnection is a thin asynchronous @c NSURLConnection wrapper used throughout the
  * Applilink reward-network SDK (for example by @c ApplilinkWebAPI, @c ApplilinkNetwork, and
  * @c DestinationCore) to run a single @c NSURLRequest and forward the outcome to an
- * @c ApplilinkURLConnectionDelegate. It accumulates the response body in an @c NSMutableData, decodes
- * it as a UTF-8 string on completion, and dispatches success, failure, and redirect notifications to
- * its (weakly-held) delegate. Reconstructed from Ghidra project rb458, program rb458.
+ * @c ApplilinkURLConnectionDelegate. It accumulates the response body in an @c NSMutableData,
+ * decodes it as a UTF-8 string on completion, and dispatches success, failure, and redirect
+ * notifications to its (weakly-held) delegate. Reconstructed from Ghidra project rb458, program
+ * rb458.
  */
 
 #import <Foundation/Foundation.h>
@@ -39,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Sent when the connection is about to follow a redirect.
  * @param request The redirect request the connection is about to send.
- * @return @c YES to intercept the redirect and finish the load without following it, @c NO to let the
- * redirect proceed.
+ * @return @c YES to intercept the redirect and finish the load without following it, @c NO to let
+ * the redirect proceed.
  */
 - (BOOL)redirectStartLoad:(nullable NSURLRequest *)request;
 

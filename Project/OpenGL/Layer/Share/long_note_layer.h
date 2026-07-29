@@ -54,10 +54,11 @@ public:
      * Restarts the batch counts and advances the shared pulse clock, wrapping it into its period,
      * then walks the record pool up to the shared draw count. Each live record is consumed and
      * emits four body segments — plus a pulse segment while it is flagged and the clock is in its
-     * first half, and a tail once the connector is long enough — at the alpha its frame-table entry,
-     * side factor, and own alpha scale give it, rotated to the connector's direction (or to the
-     * record's own rotation when it carries one). The second shape selector chooses the alternate
-     * sprite set. Finally each batch's emitted count is published and the shared pool is released.
+     * first half, and a tail once the connector is long enough — at the alpha its frame-table
+     * entry, side factor, and own alpha scale give it, rotated to the connector's direction (or to
+     * the record's own rotation when it carries one). The second shape selector chooses the
+     * alternate sprite set. Finally each batch's emitted count is published and the shared pool is
+     * released.
      * @param flDelta The elapsed frame count.
      * @ghidraAddress 0x181510
      */
@@ -66,10 +67,10 @@ public:
     /**
      * @brief Emits one long-note sprite of the given type into its batch.
      *
-     * Looks the type up in the descriptor table for its batch, anchor, size, and UV-table index, and
-     * appends a sprite at @p pPosition. The stretchable body types size to the layout height and
-     * scale both axes by @p flScale; the fixed-length types take their height from @p flLength and
-     * draw at unit y-scale. The colour is always opaque white modulated by @p nAlpha.
+     * Looks the type up in the descriptor table for its batch, anchor, size, and UV-table index,
+     * and appends a sprite at @p pPosition. The stretchable body types size to the layout height
+     * and scale both axes by @p flScale; the fixed-length types take their height from @p flLength
+     * and draw at unit y-scale. The colour is always opaque white modulated by @p nAlpha.
      * @param nType The sprite type (0 through 35).
      * @param pPosition The sprite position.
      * @param nAlpha The sprite alpha.

@@ -11,9 +11,9 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-// Collaborator classes reached from the class-level helpers. Their headers are not yet reconstructed
-// in this tree (the same speculative imports AppDelegate.mm already uses); they resolve once those
-// classes land.
+// Collaborator classes reached from the class-level helpers. Their headers are not yet
+// reconstructed in this tree (the same speculative imports AppDelegate.mm already uses); they
+// resolve once those classes land.
 #import "RBCoreDataManager.h"
 #import "RBMusicManager.h"
 #import "RBScoreHash.h"
@@ -44,7 +44,8 @@ static const int kScoreMaximum = 9999;
 // inclusive 1...9999 range.
 static const int kScoreScoringMinimum = 1;
 
-// The lowest tune identifier @c totalScore treats as a real chart; identifiers below it are skipped.
+// The lowest tune identifier @c totalScore treats as a real chart; identifiers below it are
+// skipped.
 static const int kMinimumValidTuneID = 1;
 
 // Achievement-rate bounds enforced by @c checkOverScore.

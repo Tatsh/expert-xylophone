@@ -56,9 +56,9 @@ int g_nGaugeAltBottomBaseY = {};  // @ghidraAddress 0x3ce9a0
 int g_nGaugeTopBaseY = {};        // @ghidraAddress 0x3ce9a4
 int g_nGaugeBottomBaseY = {};     // @ghidraAddress 0x3ce9a8
 
-// The rest of the play-field vertical layout table (@ghidraAddress 0x3ce930..0x3ce998 and 0x3d0008),
-// all derived from the field height by the play-field layout pass and read by the note, gauge, and
-// background layers.
+// The rest of the play-field vertical layout table (@ghidraAddress 0x3ce930..0x3ce998 and
+// 0x3d0008), all derived from the field height by the play-field layout pass and read by the note,
+// gauge, and background layers.
 int g_nPlayfieldFieldHeight = {};          // @ghidraAddress 0x3ce930
 int g_nPlayfieldHalfHeightY = {};          // @ghidraAddress 0x3ce938
 int g_nPlayfieldFullHeightY = {};          // @ghidraAddress 0x3d0008
@@ -84,9 +84,9 @@ int g_nPlayfieldRowE4 = {};                // @ghidraAddress 0x3ce994
 int g_nPlayfieldRow192 = {};               // @ghidraAddress 0x3ce998
 
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
-// by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the centre),
-// a lane spread span, and the two wide-lane fractions for the alternate lane kind. The leading span
-// is unused padding preceding the seeded fields.
+// by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the
+// centre), a lane spread span, and the two wide-lane fractions for the alternate lane kind. The
+// leading span is unused padding preceding the seeded fields.
 NoteLaneTable g_noteLaneTable = {}; // @ghidraAddress 0x3de000
 
 namespace {
@@ -99,7 +99,8 @@ constexpr float kBandFractions[] = {0.38f, 0.30f, 0.0f, 0.10f, 0.0f, 0.10f, 0.0f
 constexpr int kBandCount = 9;
 constexpr int kCenterBand = 4;
 
-// The alternate lane kind whose two wide lanes use the wide-lane fractions, and its two lane indices.
+// The alternate lane kind whose two wide lanes use the wide-lane fractions, and its two lane
+// indices.
 constexpr int kWideLaneKind = 1;
 constexpr int kWideLaneLeft = 1;
 constexpr int kWideLaneRight = 2;
@@ -142,8 +143,8 @@ constexpr float kPlayfieldExtraLaneOffset = -62.0f;
 
 /** @ghidraAddress 0x55488 */
 void ComputePlayfieldLayoutY(float flScale) {
-    // The field height is the base scale in 1024-unit scroll space; its half (rounded toward zero) is
-    // the field centre.
+    // The field height is the base scale in 1024-unit scroll space; its half (rounded toward zero)
+    // is the field centre.
     const int nHeight = static_cast<int>(flScale * kPlayfieldHeightScale);
     g_nPlayfieldFieldHeight = nHeight;
     const int nRounded = nHeight < 0 ? nHeight + 1 : nHeight;
@@ -206,7 +207,8 @@ void ComputePlayfieldLayoutY(float flScale) {
 NoteModel::NoteModel(NoteEffectMgr *pSheet) {
     m_pSheet = pSheet;
     m_nNoteIndex = -1;
-    // Seed every hold/slide segment slot to its empty state; the other fields stay zero-initialised.
+    // Seed every hold/slide segment slot to its empty state; the other fields stay
+    // zero-initialised.
     for (SubEntry &entry : m_aSubEntries) {
         entry.nKind = kSubEntryKindNone;
         entry.nIndex = kSubEntryIndexNone;
@@ -430,7 +432,8 @@ constexpr int kNoteTypeHold = 1;
 // The half-scale applied to the note-field width to get each edge extent.
 constexpr float kEdgeHalfScale = 0.5f;
 
-// The bounds-effect colours a record-less note uses: three when it is on its own side, zero when not.
+// The bounds-effect colours a record-less note uses: three when it is on its own side, zero when
+// not.
 constexpr unsigned int kBoundsColorOwnSide = 3;
 constexpr unsigned int kBoundsColorOtherSide = 0;
 
@@ -443,7 +446,8 @@ void NoteModel::HandleReflect(int nDirection) {
     const int nEdgePos = static_cast<int>(flHalfWidth * kEdgeHalfScale);
     const int nEdgeNeg = static_cast<int>(flHalfWidth * -kEdgeHalfScale);
 
-    // The reflect edge is picked by the travel direction, then swapped when the note is side-flipped.
+    // The reflect edge is picked by the travel direction, then swapped when the note is
+    // side-flipped.
     const int nForwardEdge = nDirection < 0 ? nEdgePos : nEdgeNeg;
     const int nFlippedEdge = nDirection < 0 ? nEdgeNeg : nEdgePos;
     const int nEdge = IsSideFlipped() == 0 ? nForwardEdge : nFlippedEdge;
@@ -470,7 +474,8 @@ void NoteModel::HandleReflect(int nDirection) {
         m_velocity.x = -m_velocity.x;
     }
 
-    // Spawn a bounds effect at the reflect edge, its Y taken from the note position mirrored by side.
+    // Spawn a bounds effect at the reflect edge, its Y taken from the note position mirrored by
+    // side.
     const unsigned int nColor = m_pRecord != nullptr ?
                                     static_cast<unsigned int>(m_pRecord->GetSide()) :
                                     (m_bOwnSide ? kBoundsColorOwnSide : kBoundsColorOtherSide);
@@ -664,8 +669,8 @@ void NoteModel::UpdateStepExisted() {
             assert(0);
         }
     } else {
-        // The miss path: the note reached or passed its target line without a hit (or a hold head ran
-        // out its release grace). Link its path and resolve it as a miss.
+        // The miss path: the note reached or passed its target line without a hit (or a hold head
+        // ran out its release grace). Link its path and resolve it as a miss.
         UpdateNotePathLinks();
 
         if (m_pRecord == nullptr) {
@@ -799,7 +804,8 @@ void NoteModel::UpdateStepExisted() {
             }
             m_flShotSpeed = flLength;
 
-            // The render endpoint is the tail direction scaled by the clamped length, from the note.
+            // The render endpoint is the tail direction scaled by the clamped length, from the
+            // note.
             S_VECTOR2 endPoint = dirVec;
             ScaleVector2(&endPoint, flLength);
             AddVector2(&endPoint, &m_pos);
@@ -814,11 +820,11 @@ void NoteModel::UpdateStepExisted() {
 }
 
 namespace {
-// The synthetic-note hold length when it has no chart record (the achievement-rate hash scale, reused
-// as a nominal hold duration) (@ghidraAddress 0x2f8540 = 1000).
+// The synthetic-note hold length when it has no chart record (the achievement-rate hash scale,
+// reused as a nominal hold duration) (@ghidraAddress 0x2f8540 = 1000).
 constexpr float kSyntheticHoldLength = 1000.0f;
-// The release-window slack: a held note is released once the judge clock is within this of the note's
-// scheduled release (@ghidraAddress 0x308b68 = -83.333).
+// The release-window slack: a held note is released once the judge clock is within this of the
+// note's scheduled release (@ghidraAddress 0x308b68 = -83.333).
 constexpr float kReleaseWindowSlack = -83.333336f;
 } // namespace
 
@@ -827,7 +833,8 @@ void NoteModel::UpdateStepLongTouched() {
     const float flJudgeTime =
         PlayTimer::shared()->GetPlayTime() * kApproachTimeScale + kApproachTimeBias;
 
-    // The note's scheduled release time and hold length (from the record, or the synthetic fallback).
+    // The note's scheduled release time and hold length (from the record, or the synthetic
+    // fallback).
     const float flReleaseTime =
         m_pRecord != nullptr ? static_cast<float>(m_pRecord->GetTimeB() + m_pRecord->GetTimeA()) :
                                (m_bOwnSide ? m_flSpawnTime + kSyntheticHitLead : 0.0f);
@@ -934,8 +941,8 @@ void NoteModel::UpdateStepLongTouched() {
         }
         // Otherwise the note is still within its release grace: hold it another frame.
     } else {
-        // The note was released early: enter the shot state, take the shortfall penalty, and score it
-        // as a miss.
+        // The note was released early: enter the shot state, take the shortfall penalty, and score
+        // it as a miss.
         m_nState = kNoteStateShot;
         m_nSubState = 0;
         UpdateNotePathLinks();
@@ -986,8 +993,9 @@ void NoteModel::UpdateStepSlideExisted() {
     const float flNow = PlayTimer::shared()->GetPlayTime() * kApproachTimeScale + kApproachTimeBias;
     const float flDelta = PlayTimer::shared()->GetFrameDelta();
 
-    // Advance each slide point that has not yet passed its end time: pick the active point (the first
-    // whose window contains the clock) and interpolate its live position along its X then Y span.
+    // Advance each slide point that has not yet passed its end time: pick the active point (the
+    // first whose window contains the clock) and interpolate its live position along its X then Y
+    // span.
     const int nPointCount = m_pRecord->GetSlidePointCount();
     for (int nPoint = 0; nPoint < nPointCount; ++nPoint) {
         SubEntry &point = m_aSubEntries[nPoint];
@@ -1006,7 +1014,8 @@ void NoteModel::UpdateStepSlideExisted() {
             point.flCurX = step.x;
             point.flCurY = step.y;
         } else if (flNow >= point.flTime1 && flNow < point.flTime2) {
-            // Second span: slide the live Y by the Y slope, clamped to the end Y, snapping X to end.
+            // Second span: slide the live Y by the Y slope, clamped to the end Y, snapping X to
+            // end.
             S_VECTOR2 step{0.0f, point.flSlopeY};
             ScaleVector2(&step, flDelta);
             S_VECTOR2 cur{point.flCurX, point.flCurY};
@@ -1065,8 +1074,8 @@ void NoteModel::UpdateStepSlideExisted() {
         m_pos.y = g_flPlayfieldNearLaneSlopeNeg * GameSystem::GetGameSystem()->GetSheetInsetHalfY();
     }
 
-    // Decide whether the note is touched this frame (only once the clock is within the release slack
-    // of the hit time).
+    // Decide whether the note is touched this frame (only once the clock is within the release
+    // slack of the hit time).
     bool bTouched = false;
     if (flNow > flHitTime + kReleaseWindowSlack) {
         switch (m_nRivalMode) {
@@ -1138,9 +1147,10 @@ void NoteModel::UpdateStepSlideExisted() {
         }
     }
 
-    // Tally the frame's outcome onto the active point once past the hit time: an unscored frame (or a
-    // scored frame that was not touched this frame) bumps the point's miss/combo tally, while a
-    // scored-and-touched frame bumps its hit tally (the resolve loop reads a zero hit tally as a miss).
+    // Tally the frame's outcome onto the active point once past the hit time: an unscored frame (or
+    // a scored frame that was not touched this frame) bumps the point's miss/combo tally, while a
+    // scored-and-touched frame bumps its hit tally (the resolve loop reads a zero hit tally as a
+    // miss).
     if (GetHitTime() <= flNow) {
         if (!bScoredThisFrame) {
             if (m_nActiveIndex >= 0) {
@@ -1929,7 +1939,8 @@ void NoteModel::CheckShotCPU() {
                                (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
         // Only a filled opposing gauge lets the CPU note score.
         if (pGauge->GetAnotherValue(nColor) >= 1.0f) {
-            // Score the note when it is emphasised, or when its side's full-combo run is still live.
+            // Score the note when it is emphasised, or when its side's full-combo run is still
+            // live.
             bool bScore = ShouldEmphasize();
             if (!bScore) {
                 if (m_nAutoShotMode == kAutoShotModeUser &&
@@ -1982,8 +1993,8 @@ void NoteModel::CheckShotGhost() {
                                m_pRecord->GetSide() :
                                (m_bOwnSide ? kShotColorOwnSide : kShotColorNoPartner);
         if (pGauge->GetAnotherValue(nColor) >= 1.0f) {
-            // A ghost/replay note scores directly; a non-ghost note scores by emphasis or its side's
-            // live full-combo run, and otherwise consumes a queued hit from the manager.
+            // A ghost/replay note scores directly; a non-ghost note scores by emphasis or its
+            // side's live full-combo run, and otherwise consumes a queued hit from the manager.
             bool bScoreDirect = m_bEmphasisFallback;
             if (!bScoreDirect) {
                 if (m_nAutoShotMode == kAutoShotModeUser &&
@@ -2091,8 +2102,8 @@ void NoteModel::CheckShotPlayer() {
             return;
         }
 
-        // A hold note follows its display lane (its ambiguous lane picking the flick side); any other
-        // note shoots in the flick's horizontal direction.
+        // A hold note follows its display lane (its ambiguous lane picking the flick side); any
+        // other note shoots in the flick's horizontal direction.
         int nDirection;
         if (m_pRecord != nullptr && m_pRecord->GetHoldKind() == kHoldKindHead) {
             const int nLane = m_pRecord->GetDisplayLane();
@@ -2343,7 +2354,8 @@ void NoteModel::ResolveNoteHit(unsigned int nGrade) {
         m_bJustHit = true;
     }
 
-    // The tap sound's grade: a slide note plays it as grade 0, every other path uses the real grade.
+    // The tap sound's grade: a slide note plays it as grade 0, every other path uses the real
+    // grade.
     int nTapGrade = static_cast<int>(nGrade);
 
     // The slide and long-note types take their own resolution paths.
@@ -2476,8 +2488,8 @@ float GetNoteLaneFraction(int nKind, int nLane) {
         return 0.0f;
     }
 
-    // The ordinary kind maps each lane to its across-field fraction; the centre and any out-of-range
-    // lane are zero.
+    // The ordinary kind maps each lane to its across-field fraction; the centre and any
+    // out-of-range lane are zero.
     switch (nLane) {
     case 0:
         return g_noteLaneTable.flLaneFrac0;
@@ -2635,9 +2647,9 @@ void NoteModel::Init() {
 
     if (!bBasePosSet) {
         pRecord = m_pRecord;
-        // The binary reads the chosen target through the record without a null check, so a note with
-        // no record faults here; activation only ever runs for recorded notes, so it does not fire
-        // in practice.
+        // The binary reads the chosen target through the record without a null check, so a note
+        // with no record faults here; activation only ever runs for recorded notes, so it does not
+        // fire in practice.
         const bool bSlidePath = pRecord->GetChosenTarget() != kNoChosenTarget;
 
         float aLaneFractions[kActivationLaneCount];
@@ -2700,8 +2712,8 @@ void NoteModel::Init() {
                                    GameSystem::GetGameSystem()->GetSheetInsetHalfY();
 
                     // The live position starts at the segment's start. Both slopes divide by a zero
-                    // time span here (the three times are still equal); the approach step recomputes
-                    // them once it has spread the times.
+                    // time span here (the three times are still equal); the approach step
+                    // recomputes them once it has spread the times.
                     entry.flCurX = entry.flStartX;
                     entry.flCurY = entry.flStartY;
                     entry.flSlopeX =
@@ -2743,7 +2755,8 @@ void NoteModel::Init() {
     int nDirection = 0;
     if (pMirrorSource != nullptr && pMirrorSource->m_bScored) {
         // A held note keeps the undirected default; every other note maps its colour index to a
-        // direction, and a note with no record takes the zero index (and so the leftward direction).
+        // direction, and a note with no record takes the zero index (and so the leftward
+        // direction).
         bool bDirected = true;
         int nColorIndex = 0;
         if (m_pRecord != nullptr) {

@@ -19,8 +19,8 @@ class C_TEXTURE;
 
 /**
  * @brief One result-panel touch hit-region: the tracked touch id and its press, tap-edge, and
- * enabled flags. The input pass claims a touch inside the region's anchor box and reports a press or
- * a tap-edge (a press that ended inside).
+ * enabled flags. The input pass claims a touch inside the region's anchor box and reports a press
+ * or a tap-edge (a press that ended inside).
  */
 struct ResultTouchRegion {
     int nTouchId = {};              /*!< The tracked touch id (-1 when none). +0x00 */
@@ -34,9 +34,9 @@ struct ResultTouchRegion {
  * @brief The Colette-theme result-window layer.
  *
  * Draws the phone-layout result panel (score, rank, rate, per-side stats, and bonus rows) as a bank
- * of eight sprite-instancer nodes over the play field. It is a process-wide singleton built on first
- * access and derives from @c PlayFieldLayerBase. The trailing @c // +0xNN comments document the
- * original 32-bit member offsets for reference only; state is reached through named fields. The
+ * of eight sprite-instancer nodes over the play field. It is a process-wide singleton built on
+ * first access and derives from @c PlayFieldLayerBase. The trailing @c // +0xNN comments document
+ * the original 32-bit member offsets for reference only; state is reached through named fields. The
  * fields between the recovered members whose roles are still being worked out are grouped into
  * reserved spans sized to preserve the binary's object layout.
  */
@@ -82,8 +82,8 @@ public:
     /**
      * @brief Whether the result screen's confirm region has been tapped this play.
      *
-     * The confirm signal is the first touch region's tap-edge latch; the result-finalise state polls
-     * it to know the player has acknowledged the result.
+     * The confirm signal is the first touch region's tap-edge latch; the result-finalise state
+     * polls it to know the player has acknowledged the result.
      * @return @c true once the confirm region's tap edge has latched.
      */
     bool IsResultConfirmed() const {
@@ -108,8 +108,8 @@ public:
     /**
      * @brief Initialises the result-screen state flags at the start of the result screen.
      *
-     * Marks the panel active, arms the bonus voice cue when the game system's result-bonus feature is
-     * set, resets the bonus-cue timer, and records whether the Twitter share API is available.
+     * Marks the panel active, arms the bonus voice cue when the game system's result-bonus feature
+     * is set, resets the bonus-cue timer, and records whether the Twitter share API is available.
      * @ghidraAddress 0x7ab54
      */
     void InitializeResultScreenFlags();
@@ -124,8 +124,8 @@ public:
     void StartShowTween(float flDuration);
 
     /**
-     * @brief Starts the result panel's hide animation: keyframes each display animation channel from
-     * its current shown value toward zero over @p flDuration (snapping immediately when
+     * @brief Starts the result panel's hide animation: keyframes each display animation channel
+     * from its current shown value toward zero over @p flDuration (snapping immediately when
      * non-positive) and clears the panel-active flag.
      * @param flDuration The animation duration.
      * @ghidraAddress 0x74190
@@ -140,16 +140,16 @@ public:
     void UpdateTouchHitRegions();
 
     /**
-     * @brief The per-frame result-window update: advances the open/close tween channels and rotating
-     * decorations, updates the bonus voice cue and the appropriate input pass, then dispatches to the
-     * iPad or phone render path.
+     * @brief The per-frame result-window update: advances the open/close tween channels and
+     * rotating decorations, updates the bonus voice cue and the appropriate input pass, then
+     * dispatches to the iPad or phone render path.
      *
-     * Off an iPad it first recomputes the portrait-orientation flag from the game system's viewport.
-     * It advances the five tween channels (in the binary's swapped 0,1,3,2,4 order), the signed swipe
-     * decay timer (toward zero, at differing rates by sign), and the decoration rotation counter
-     * (wrapping every 192 frames, its frame index the counter over 48, clamped to 0 through 3). The
-     * input pass is the tutorial-gated touch pass while the menu tutorial is active, otherwise the
-     * standard swipe pass.
+     * Off an iPad it first recomputes the portrait-orientation flag from the game system's
+     * viewport. It advances the five tween channels (in the binary's swapped 0,1,3,2,4 order), the
+     * signed swipe decay timer (toward zero, at differing rates by sign), and the decoration
+     * rotation counter (wrapping every 192 frames, its frame index the counter over 48, clamped to
+     * 0 through 3). The input pass is the tutorial-gated touch pass while the menu tutorial is
+     * active, otherwise the standard swipe pass.
      * @param flDeltaTime The frame delta.
      * @ghidraAddress 0x7aef8
      */
@@ -159,21 +159,21 @@ public:
      * @brief Renders the whole result-score and bonus panel: the pad-layout result screen.
      *
      * Derives the frame's alpha from the alpha tween channel scaled by 255 and returns immediately
-     * when that is zero, so a fully faded panel costs nothing. The four remaining tween channels give
-     * four further sub-alphas, and the swipe direction cross-fades the two result pages: the page
-     * alphas are the third and fourth sub-alphas split between @c |swipeDirection| and its
-     * complement, swapped according to the active page. Every slot's sprite count is reset first, so
-     * the pass rebuilds the panel from scratch each frame.
+     * when that is zero, so a fully faded panel costs nothing. The four remaining tween channels
+     * give four further sub-alphas, and the swipe direction cross-fades the two result pages: the
+     * page alphas are the third and fourth sub-alphas split between @c |swipeDirection| and its
+     * complement, swapped according to the active page. Every slot's sprite count is reset first,
+     * so the pass rebuilds the panel from scratch each frame.
      *
-     * The body then emits, in order: the backdrop; the music-info block and its difficulty and level
-     * glyphs; the clear or failed caption (the cleared caption when the rate reaches 70% or the menu
-     * tutorial is suppressing input, otherwise the longer failed caption); the score and achievement
-     * rate with their new-record, full-combo, and new-rate badges; the nineteen-part stat frame; the
-     * per-side judgement columns with their just, great, good, and miss counts, the just-reflec and
-     * max-combo pairs, and the per-side score and rate; the score and rate deltas against the target,
-     * each with its sign glyph and a colour chosen by the sign; the earned and target rank glyphs;
-     * and the six bonus rows with their stretched leader rules, values, and grand total. Off a
-     * two-player game type the trailing pair of side colour markers is skipped.
+     * The body then emits, in order: the backdrop; the music-info block and its difficulty and
+     * level glyphs; the clear or failed caption (the cleared caption when the rate reaches 70% or
+     * the menu tutorial is suppressing input, otherwise the longer failed caption); the score and
+     * achievement rate with their new-record, full-combo, and new-rate badges; the nineteen-part
+     * stat frame; the per-side judgement columns with their just, great, good, and miss counts, the
+     * just-reflec and max-combo pairs, and the per-side score and rate; the score and rate deltas
+     * against the target, each with its sign glyph and a colour chosen by the sign; the earned and
+     * target rank glyphs; and the six bonus rows with their stretched leader rules, values, and
+     * grand total. Off a two-player game type the trailing pair of side colour markers is skipped.
      * @ghidraAddress 0x74f2c
      */
     void RenderResultScoreBonusPanel();
@@ -184,8 +184,8 @@ public:
      * The phone twin of @c RenderResultScoreBonusPanel, sharing its alpha model exactly: the frame
      * alpha is the alpha tween channel scaled by 255 and a zero value returns immediately, the four
      * remaining channels give the artwork, music-info, stat, and bonus sub-alphas, and the stat and
-     * bonus channels cross-fade the two result pages between @c |swipeDirection| and its complement,
-     * swapped by the active page. Every slot's sprite count is reset first.
+     * bonus channels cross-fade the two result pages between @c |swipeDirection| and its
+     * complement, swapped by the active page. Every slot's sprite count is reset first.
      *
      * Where the pad path positions each element from the flat layout bank, this path resolves every
      * position through @c getPosition_Phone and builds its panels from nine-part stretched frames:
@@ -194,18 +194,18 @@ public:
      * block, and the bonus block.
      *
      * It then emits the music-info block with its artwork and name images, the clear or failed
-     * caption, the score and rate with their sign glyphs and personal-best badges, an eight-row stat
-     * grid stepped by a fractional row height, the per-side judgement columns, a two-column bonus
-     * grid, the bonus values and totals, the panel frame and share button, and the pair of per-side
-     * colour markers. Several part ids and offsets are selected by the portrait flag.
+     * caption, the score and rate with their sign glyphs and personal-best badges, an eight-row
+     * stat grid stepped by a fractional row height, the per-side judgement columns, a two-column
+     * bonus grid, the bonus values and totals, the panel frame and share button, and the pair of
+     * per-side colour markers. Several part ids and offsets are selected by the portrait flag.
      * @ghidraAddress 0x7799c
      */
     void RenderColetteResultPanel();
 
     /**
-     * @brief The result screen's per-frame input pass: gates on the fade-in, tracks a vertical swipe
-     * to toggle the result page and fire its sound, updates the touch hit-regions, and posts the
-     * Twitter share when its region is tapped.
+     * @brief The result screen's per-frame input pass: gates on the fade-in, tracks a vertical
+     * swipe to toggle the result page and fire its sound, updates the touch hit-regions, and posts
+     * the Twitter share when its region is tapped.
      * @ghidraAddress 0x7427c
      */
     void ProcessResultScreenInput();
@@ -296,8 +296,8 @@ public:
     /**
      * @brief Advances the bonus voice-cue timer and fires the cue once past its threshold.
      *
-     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold the
-     * cue is disarmed and the themed bonus voice is loaded and played.
+     * When the cue is armed, the timer accumulates the frame delta; once it passes the threshold
+     * the cue is disarmed and the themed bonus voice is loaded and played.
      * @param flDeltaTime The elapsed time since the last frame, in milliseconds.
      * @ghidraAddress 0x74238
      */
@@ -329,9 +329,10 @@ public:
     /**
      * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
      *
-     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
-     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
-     * sets its UV size to the used region. Does nothing if the slot is empty or @p pTexture is null.
+     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in
+     * the slot, resizes it to the texture image size over its scale factor, zeroes its UV origin,
+     * and sets its UV size to the used region. Does nothing if the slot is empty or @p pTexture is
+     * null.
      * @param nSlot The slot index (0 through 7).
      * @param pTexture The texture to bind.
      * @ghidraAddress 0x74018
@@ -345,22 +346,23 @@ private:
      * Extracts @p nDigitCount base-ten digits of @p nValue (least significant first) into a local
      * buffer, then draws the significant digits right to left, walking downward through the layout
      * position bank from @p nBasePositionIndex, each glyph part id being @p nDigitPartBase plus the
-     * digit. In wide-leading mode an all-zero value still draws its two low slots, the leading digit
-     * takes the family's wider variant and also draws an under-digit prefix glyph beneath itself, and
-     * (when @p bDrawPrefix is also set) a standalone prefix glyph is drawn before the whole number.
-     * Optional left padding fills the unused leading slots with the family's '0' glyph at a dimmed
-     * alpha. When the base position index is the achievement-rate sentinel, a trailing slash or dot
-     * separator is drawn, selected by @p flRed.
+     * digit. In wide-leading mode an all-zero value still draws its two low slots, the leading
+     * digit takes the family's wider variant and also draws an under-digit prefix glyph beneath
+     * itself, and (when @p bDrawPrefix is also set) a standalone prefix glyph is drawn before the
+     * whole number. Optional left padding fills the unused leading slots with the family's '0'
+     * glyph at a dimmed alpha. When the base position index is the achievement-rate sentinel, a
+     * trailing slash or dot separator is drawn, selected by @p flRed.
      * @param nValue The non-negative integer to render.
      * @param nDigitCount The number of digit slots.
      * @param nBasePositionIndex The base layout position-bank index (the row is drawn downward).
      * @param nDigitPartBase The base part id of the digit family (the digit is added to it).
-     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit prefix.
+     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit
+     * prefix.
      * @param bDrawPrefix Whether to draw the family's standalone prefix glyph before the number.
      * @param bLeftPad Whether to fill the unused leading slots with a dimmed padding glyph.
      * @param nAlpha The glyph alpha, in @c [0, 255].
-     * @param flRotation The sprite rotation slot (in the @c s0 register); accepted but unused, as the
-     * digits always draw upright.
+     * @param flRotation The sprite rotation slot (in the @c s0 register); accepted but unused, as
+     * the digits always draw upright.
      * @param flRed The red colour channel, which also discriminates the rate separator glyph.
      * @param flGreen The green colour channel.
      * @param flBlue The blue colour channel.
@@ -382,13 +384,13 @@ private:
     /**
      * @brief Renders a non-negative integer as a row of proportionally-spaced digit sprites.
      *
-     * The proportional-spacing twin of @c RenderNumberDigitsAsParts: rather than stepping through the
-     * layout position bank, it seeds an X cursor from the base position and advances it by each
+     * The proportional-spacing twin of @c RenderNumberDigitsAsParts: rather than stepping through
+     * the layout position bank, it seeds an X cursor from the base position and advances it by each
      * glyph's measured width (the device-selected parts record's width field). It draws the
      * significant digits right to left from the seeded position, offsetting the cursor left by half
-     * the widened leading digit, the prefix glyphs, and each drawn digit; the leading digit takes the
-     * family's wider variant with an under-digit prefix, a standalone prefix glyph is drawn first when
-     * the prefix flag is set, and optional left padding fills the unused leading slots.
+     * the widened leading digit, the prefix glyphs, and each drawn digit; the leading digit takes
+     * the family's wider variant with an under-digit prefix, a standalone prefix glyph is drawn
+     * first when the prefix flag is set, and optional left padding fills the unused leading slots.
      * @param nValue The non-negative integer to render.
      * @param nDigitCount The number of digit slots.
      * @param nBasePositionIndex The layout position-bank index seeding the X cursor.
@@ -421,18 +423,21 @@ private:
      * position.
      *
      * The phone-layout twin of @c RenderNumberDigitsAsParts: it decomposes @p nValue into base-ten
-     * digits (least significant first, tracking the top non-zero slot), then walks the phone position
-     * bank downward from @p nBasePositionIndex drawing each digit's glyph. When @p bWideLeading and
-     * @p bDrawPrefix are both set, a standalone prefix glyph is drawn first at the base position and
-     * the digits start one slot below; in wide-leading mode the leading digit takes the family's
-     * wider variant and also draws an under-digit prefix glyph one slot below. Optional left padding
-     * fills the unused leading slots. The @c 0x17b family draws through the dimmable glyph path; every
-     * other family draws through the coloured glyph path with the given red, green, and blue channels.
+     * digits (least significant first, tracking the top non-zero slot), then walks the phone
+     * position bank downward from @p nBasePositionIndex drawing each digit's glyph. When @p
+     * bWideLeading and
+     * @p bDrawPrefix are both set, a standalone prefix glyph is drawn first at the base position
+     * and the digits start one slot below; in wide-leading mode the leading digit takes the
+     * family's wider variant and also draws an under-digit prefix glyph one slot below. Optional
+     * left padding fills the unused leading slots. The @c 0x17b family draws through the dimmable
+     * glyph path; every other family draws through the coloured glyph path with the given red,
+     * green, and blue channels.
      * @param nValue The non-negative integer to render.
      * @param nDigitCount The number of digit slots.
      * @param nBasePositionIndex The phone position-bank index the glyphs walk down from.
      * @param nDigitPartBase The base part id of the digit family (the digit is added to it).
-     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit glyph.
+     * @param bWideLeading Whether to draw the wider leading-digit variant with its under-digit
+     * glyph.
      * @param bDrawPrefix Whether, in wide-leading mode, to draw the standalone prefix glyph first.
      * @param bLeftPad Whether to fill the unused leading slots with a padding glyph.
      * @param nAlpha The glyph alpha, in @c [0, 255].
@@ -463,11 +468,11 @@ private:
      * The phone-layout twin of @c RenderNumberDigitsProportional: it decomposes @p nValue into
      * base-ten digits, seeds a cursor from the anchored base position centred by half a digit width
      * per drawn slot, then draws the significant digits right to left advancing the cursor by each
-     * glyph's measured width. In wide-leading mode the rate and exp families pre-advance the cursor by
-     * half the standalone and under-digit prefix widths, draw a standalone prefix glyph, and give the
-     * leading digit the family's wider variant with an under-digit prefix and small kerning nudges.
-     * Optional left padding fills the unused leading slots at a dimmed alpha. Every glyph draws
-     * through the coloured glyph path with the given red, green, and blue channels.
+     * glyph's measured width. In wide-leading mode the rate and exp families pre-advance the cursor
+     * by half the standalone and under-digit prefix widths, draw a standalone prefix glyph, and
+     * give the leading digit the family's wider variant with an under-digit prefix and small
+     * kerning nudges. Optional left padding fills the unused leading slots at a dimmed alpha. Every
+     * glyph draws through the coloured glyph path with the given red, green, and blue channels.
      * @param nValue The non-negative integer to render.
      * @param nDigitCount The number of digit slots.
      * @param nBasePositionIndex The phone anchor-position index the cursor is seeded from.
@@ -497,18 +502,19 @@ private:
     /**
      * @brief Renders two numbers separated by a slash as monospaced parts-atlas digit sprites.
      *
-     * Draws @p nLeftValue and @p nRightValue (each up to four significant digits, rank-family digits)
-     * as a "left/right" pair centred on the base position, advancing a proportional cursor by the
-     * monospace '0'-glyph width. The right number is drawn first (rightmost), then the slash
-     * separator, then the left number, each stepping the cursor left by the digit width. The left and
-     * right numbers take their colours from the bonus palette by @p nLeftColorIndex and
+     * Draws @p nLeftValue and @p nRightValue (each up to four significant digits, rank-family
+     * digits) as a "left/right" pair centred on the base position, advancing a proportional cursor
+     * by the monospace '0'-glyph width. The right number is drawn first (rightmost), then the slash
+     * separator, then the left number, each stepping the cursor left by the digit width. The left
+     * and right numbers take their colours from the bonus palette by @p nLeftColorIndex and
      * @p nRightColorIndex.
      * @param nLeftValue The left number (drawn after the separator).
      * @param nRightValue The right number (drawn first, rightmost).
      * @param pBasePosition The pair's base position (the cursor is centred on it).
      * @param nAlpha The glyph alpha, in @c [0, 255].
      * @param nLeftColorIndex The bonus-palette colour index for the left number.
-     * @param nRightColorIndex The bonus-palette colour index for the right number and the separator.
+     * @param nRightColorIndex The bonus-palette colour index for the right number and the
+     * separator.
      * @ghidraAddress 0x77654
      */
     void RenderNumberPairWithSeparator(int nLeftValue,
@@ -523,17 +529,19 @@ private:
      *
      * The phone-layout twin of @c RenderNumberPairWithSeparator: it draws @p nLeftValue and
      * @p nRightValue (each up to four significant digits, from the phone digit family based at
-     * @c 0x10f) as a "right/left" pair centred on the base position, advancing a proportional cursor
-     * by the monospace phone '0'-glyph width. The right number is drawn first (rightmost), then the
-     * slash separator, then the left number, each stepping the cursor left by the digit width. The
-     * left and right numbers take their colours from the bonus palette by @p nLeftColorIndex and
+     * @c 0x10f) as a "right/left" pair centred on the base position, advancing a proportional
+     * cursor by the monospace phone '0'-glyph width. The right number is drawn first (rightmost),
+     * then the slash separator, then the left number, each stepping the cursor left by the digit
+     * width. The left and right numbers take their colours from the bonus palette by @p
+     * nLeftColorIndex and
      * @p nRightColorIndex.
      * @param nLeftValue The left number (drawn after the separator).
      * @param nRightValue The right number (drawn first, rightmost).
      * @param pBasePosition The pair's base position (the cursor is centred on it).
      * @param nAlpha The glyph alpha, in @c [0, 255].
      * @param nLeftColorIndex The bonus-palette colour index for the left number.
-     * @param nRightColorIndex The bonus-palette colour index for the right number and the separator.
+     * @param nRightColorIndex The bonus-palette colour index for the right number and the
+     * separator.
      * @ghidraAddress 0x7a740
      */
     void RenderPhoneNumberPairSeparated(int nLeftValue,
@@ -632,8 +640,8 @@ private:
      *
      * Identical to @c appendSpriteToSlot but takes independent red, green, and blue channels rather
      * than a single intensity. When the slot is in range, its instancer exists, and it is not full,
-     * writes the quad's position, anchor, size, UV origin, UV size, rotation, and scale into the next
-     * free sprite, sets its colour from the four channels, and advances the sprite count.
+     * writes the quad's position, anchor, size, UV origin, UV size, rotation, and scale into the
+     * next free sprite, sets its colour from the four channels, and advances the sprite count.
      * @param nSlot The slot index (0 through 7).
      * @param nRed The red channel.
      * @param nGreen The green channel.
@@ -666,9 +674,9 @@ private:
      *
      * Resolves the base position from the phone anchor table by @p nPositionIndex, adds @p offset,
      * looks up the glyph placement rectangle from the phone parts table by @p nCharCode and its
-     * texture rectangle from the Colette glyph UV palette, then appends the quad to the slot with the
-     * given rotation and scale. Character codes at or above the phone parts table count are ignored.
-     * The main pass draws at full intensity, the shadow pass at half.
+     * texture rectangle from the Colette glyph UV palette, then appends the quad to the slot with
+     * the given rotation and scale. Character codes at or above the phone parts table count are
+     * ignored. The main pass draws at full intensity, the shadow pass at half.
      * @param nSlot The slot index (0 through 7).
      * @param nCharCode The glyph character code (below the phone parts table count).
      * @param nPositionIndex The phone anchor-position index.
@@ -752,8 +760,8 @@ private:
      *
      * Looks up the glyph's placement rectangle from the phone parts table indexed by @p nPartId and
      * its texture rectangle from the Colette glyph UV palette, then appends the quad to the slot at
-     * @p position with the given rotation and scale. Part ids at or above the phone parts table count
-     * are ignored. The main pass draws at full intensity, the dimmed pass at half.
+     * @p position with the given rotation and scale. Part ids at or above the phone parts table
+     * count are ignored. The main pass draws at full intensity, the dimmed pass at half.
      * @param nSlot The slot index (0 through 7).
      * @param nPartId The glyph part id (below the phone parts table count).
      * @param position The glyph's world position.
@@ -778,11 +786,12 @@ private:
      * per-vertex colour.
      *
      * The non-dimmable colour twin of @c RenderDimmableGlyphFromTable: it looks up the glyph's
-     * placement rectangle from the phone parts table indexed by @p nPartId and its texture rectangle
-     * from the Colette glyph UV palette, then appends the quad to the slot at @p position with the
-     * given rotation, scale, and red, green, and blue channels. Part ids at or above the phone parts
-     * table count are ignored. The three colour channels arrive as floats and are truncated to byte
-     * channels, exactly as in @c RenderPartSpriteByIndex, whose argument order this shares.
+     * placement rectangle from the phone parts table indexed by @p nPartId and its texture
+     * rectangle from the Colette glyph UV palette, then appends the quad to the slot at @p position
+     * with the given rotation, scale, and red, green, and blue channels. Part ids at or above the
+     * phone parts table count are ignored. The three colour channels arrive as floats and are
+     * truncated to byte channels, exactly as in @c RenderPartSpriteByIndex, whose argument order
+     * this shares.
      * @param nSlot The slot index (0 through 7).
      * @param nPartId The glyph part id (below the phone parts table count).
      * @param position The glyph's world position.

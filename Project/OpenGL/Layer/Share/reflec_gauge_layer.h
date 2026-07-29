@@ -58,7 +58,8 @@ public:
     // The number of player sides the gauge tracks.
     static constexpr int kSideCount = 2;
 
-    /** @brief A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame. */
+    /** @brief A gauge sprite descriptor (a 20-byte record): its anchor, its size, and atlas frame.
+     */
     struct GaugeSpriteDescriptor {
         S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
         S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
@@ -86,11 +87,11 @@ public:
     /**
      * @brief Advances the gauge bar's fill tween and rebuilds its cell sprites for the frame.
      *
-     * Eases the fill value toward its target by @p flDelta, deriving the bar's fill ratio between its
-     * two endpoints and marking it dirty. It then clears each batch's sprite count and, for each of
-     * the two gauge halves, advances that side's animated display value toward its gauge value at the
-     * per-half rate, clamps the cell count to @c [0, 5], and re-emits the base, icon, value, and (in
-     * the alternate mode) label cell sprites at the resulting fill.
+     * Eases the fill value toward its target by @p flDelta, deriving the bar's fill ratio between
+     * its two endpoints and marking it dirty. It then clears each batch's sprite count and, for
+     * each of the two gauge halves, advances that side's animated display value toward its gauge
+     * value at the per-half rate, clamps the cell count to @c [0, 5], and re-emits the base, icon,
+     * value, and (in the alternate mode) label cell sprites at the resulting fill.
      * @param flDelta The per-frame time delta.
      * @ghidraAddress 0x18ad94
      */
@@ -130,8 +131,8 @@ public:
      */
     float GetValueBySide(unsigned int nSide) const;
     /**
-     * @brief Stores a side's gauge value, quantised to the gauge step and clamped to the gauge range
-     * (capping at the maximum unless the full-just-reflec flag is set).
+     * @brief Stores a side's gauge value, quantised to the gauge step and clamped to the gauge
+     * range (capping at the maximum unless the full-just-reflec flag is set).
      * @param flValue The requested value.
      * @param nSide The player side (0 or 1).
      * @ghidraAddress 0x18aa68
@@ -153,16 +154,16 @@ public:
     void SetMirrorSide(int nSide);
 
     /**
-     * @brief Begins the gauge fade-in, easing the gauge to fully opaque over @p flDuration (snapping
-     * to opaque and marking the fade done when the duration is non-positive).
+     * @brief Begins the gauge fade-in, easing the gauge to fully opaque over @p flDuration
+     * (snapping to opaque and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18ad3c
      */
     void StartFadeIn(float flDuration);
 
     /**
-     * @brief Begins the gauge fade-out, easing the gauge to transparent over @p flDuration (snapping
-     * to transparent and marking the fade done when the duration is non-positive).
+     * @brief Begins the gauge fade-out, easing the gauge to transparent over @p flDuration
+     * (snapping to transparent and marking the fade done when the duration is non-positive).
      * @param flDuration The fade duration.
      * @ghidraAddress 0x18ad6c
      */
@@ -218,8 +219,8 @@ private:
     };
 
     /**
-     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position, with an
-     * explicit texture rectangle.
+     * @brief Emits one gauge quad into a batch at a side- and mode-selected screen position, with
+     * an explicit texture rectangle.
      *
      * The caller resolves the quad's texture rectangle (the value renderer scales it to draw a
      * partially-filled digit cell); this places the quad's anchor and size from the descriptor and

@@ -21,8 +21,9 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns the
  * three full-combo atlases and four sprite instancers, drawn beneath the shared background layer,
  * that present the Limelight full-combo effect. The class carries no RTTI (it is non-polymorphic),
- * so the name is inferred from its singleton getter rather than confirmed from the runtime metadata.
- * The trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
+ * so the name is inferred from its singleton getter rather than confirmed from the runtime
+ * metadata. The trailing @c // +0xNN comments document the original 32-bit offsets for reference
+ * only.
  */
 class LimelightThemeLayer : public PlayFieldLayerBase {
 public:
@@ -35,9 +36,9 @@ public:
 
     /**
      * @brief Lazily builds the full-combo layer's textures and sprites: loads the three atlases and
-     * creates the four sprite instancers (attaching each under the background layer's render object,
-     * making it visible, binding its atlas for the textured slots, seeding its sprite count, and
-     * flagging additive blend on the last slot).
+     * creates the four sprite instancers (attaching each under the background layer's render
+     * object, making it visible, binding its atlas for the textured slots, seeding its sprite
+     * count, and flagging additive blend on the last slot).
      *
      * Guarded so the sprites are built only once.
      * @ghidraAddress 0x120718
@@ -50,8 +51,8 @@ public:
     static constexpr int kSideCount = 2;
 
     /**
-     * @brief Initialises the result grade display: seeds the reveal channel, parks the reveal clock,
-     * arms the display, fills the per-side grade values, and picks the reveal duration.
+     * @brief Initialises the result grade display: seeds the reveal channel, parks the reveal
+     * clock, arms the display, fills the per-side grade values, and picks the reveal duration.
      * @ghidraAddress 0x120844
      */
     void InitializeGradeDisplayState();
@@ -82,7 +83,8 @@ public:
      * Caches the viewport size, advances the reveal channel, and, when the display is enabled, runs
      * the reveal clock and emits the base grade sprite faded in by the reveal, then per side (the
      * first only when single-side) draws the grade meter for a zero grade and either the high-rank
-     * badge (rank below AA) or the rank glyphs. Finally publishes each slot's count to its instancer.
+     * badge (rank below AA) or the rank glyphs. Finally publishes each slot's count to its
+     * instancer.
      * @param flDeltaTime The frame's elapsed time.
      * @ghidraAddress 0x120920
      */
@@ -150,9 +152,9 @@ private:
      * Once the reveal clock passes the digit reveal threshold it first draws the achievement-rate
      * percentage digits. It then animates each of the seven strip glyphs in with its own scale,
      * alpha, and horizontal-position curves, sampled at the reveal clock, positioning each glyph
-     * relative to the layer's layout origin. In single-side mode the far side is mirrored a half-turn
-     * across the field and the near side is nudged down; each glyph is emitted at the sampled scale,
-     * with alpha faded by the reveal channel.
+     * relative to the layer's layout origin. In single-side mode the far side is mirrored a
+     * half-turn across the field and the near side is nudged down; each glyph is emitted at the
+     * sampled scale, with alpha faded by the reveal channel.
      * @param nSide The player side.
      * @ghidraAddress 0x120e50
      */
@@ -163,9 +165,9 @@ private:
      *
      * Animates each of the seven badge glyphs in with its own alpha and vertical-position curves
      * sampled at the reveal clock, placing each at a fixed horizontal base relative to the layout
-     * origin. As with the rank glyphs, single-side mode nudges the near side down and mirrors the far
-     * side a half-turn across the field. Each glyph is emitted at unit scale with alpha faded by the
-     * reveal channel.
+     * origin. As with the rank glyphs, single-side mode nudges the near side down and mirrors the
+     * far side a half-turn across the field. Each glyph is emitted at unit scale with alpha faded
+     * by the reveal channel.
      * @param nSide The player side.
      * @ghidraAddress 0x1214ec
      */
@@ -174,12 +176,12 @@ private:
     /**
      * @brief Emits one side's achievement-rate meter needle sprite at the given frame UV and alpha.
      *
-     * Appends into the additive meter batch (dropping the sprite when the batch is full). The needle
-     * is placed at a fixed horizontal position relative to the layout origin, at a per-side vertical
-     * position that differs between iPad and phone, offset down by half the full-height layout
-     * coordinate. On iPad in single-side mode the near side is repositioned and mirrored a half-turn.
-     * The sprite draws at the fixed meter anchor, size, and UV size, at unit scale, tinted white at
-     * the caller's alpha.
+     * Appends into the additive meter batch (dropping the sprite when the batch is full). The
+     * needle is placed at a fixed horizontal position relative to the layout origin, at a per-side
+     * vertical position that differs between iPad and phone, offset down by half the full-height
+     * layout coordinate. On iPad in single-side mode the near side is repositioned and mirrored a
+     * half-turn. The sprite draws at the fixed meter anchor, size, and UV size, at unit scale,
+     * tinted white at the caller's alpha.
      * @param nSide The player side.
      * @param pUvOrigin The needle frame's UV origin.
      * @param nAlpha The sprite's alpha, in @c [0, 255].

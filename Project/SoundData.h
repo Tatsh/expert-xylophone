@@ -1,8 +1,8 @@
 /** @file
  * A decoded audio asset used by the game's sound engine. On construction the object resolves a
- * sound file (from the application's document directory or main bundle, trying the @c .mp3, @c .wav,
- * and @c .m4a extensions in turn), opens it with @c ExtAudioFile, and configures a signed 16-bit
- * interleaved PCM client format. In buffered mode the whole file is decoded up front into a
+ * sound file (from the application's document directory or main bundle, trying the @c .mp3, @c
+ * .wav, and @c .m4a extensions in turn), opens it with @c ExtAudioFile, and configures a signed
+ * 16-bit interleaved PCM client format. In buffered mode the whole file is decoded up front into a
  * per-channel play buffer; in streaming mode the file stays open and frames are read on demand.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class SoundData, image base

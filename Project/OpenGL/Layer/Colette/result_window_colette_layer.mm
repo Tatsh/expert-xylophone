@@ -32,7 +32,8 @@
 static ResultWindowColetteLayer *g_pColetteResultLayer = nullptr; // @ghidraAddress 0x3dc598
 
 // The phone-layout anchor-position tables (declared in phone_anchor_table.h): zero-initialised here
-// to match the binary's __common segment, filled at runtime by the result-layout-table initialisers.
+// to match the binary's __common segment, filled at runtime by the result-layout-table
+// initialisers.
 PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount] = {}; // @ghidraAddress 0x3d4d50
 PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount] = {};  // @ghidraAddress 0x3d5530
 
@@ -391,17 +392,17 @@ const UvPaletteEntry g_aColettePartUvPalette[] = {
     {0.8730469f, 0.9609375f, 0.01171875f, 0.0390625f},
 };
 
-// The single Colette phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor mode):
-// the state record, and the portrait and default records (selected by the is-pad flag and
+// The single Colette phone-layout centre-position records (16-byte PhoneLayoutRect, no anchor
+// mode): the state record, and the portrait and default records (selected by the is-pad flag and
 // orientation flags). Zero-initialised in the binary's __common segment and filled at runtime.
 PhoneLayoutRect g_ColetteCenterPositionPhoneState = {};    // @ghidraAddress 0x3d6620
 PhoneLayoutRect g_ColetteCenterPositionPhonePortrait = {}; // @ghidraAddress 0x3d6630
 PhoneLayoutRect g_ColetteCenterPositionPhoneDefault = {};  // @ghidraAddress 0x3d6640
 
 // The Colette glyph UV-palette table the dimmable-glyph emitter indexes by a parts record's
-// UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM data
-// transcribed from the binary; the entry count is set by the span up to the next table rather than
-// by any bound in the code.
+// UV-palette index; distinct from the shared Limelight palette (@c g_aUvPalette). Read-only ROM
+// data transcribed from the binary; the entry count is set by the span up to the next table rather
+// than by any bound in the code.
 // @ghidraAddress 0x2f5e88
 const UvPaletteEntry g_aColetteGlyphUvPalette[] = {
     {0.107421875f, 0.28027344f, 0.0009765625f, 0.0009765625f},
@@ -749,8 +750,8 @@ namespace {
 constexpr const char *kBackgroundTextureName = "00_texture/sel_bg";
 constexpr const char *kPartsTextureName = "00_texture/result_parts";
 
-// The per-slot sprite-instancer capacities (@ghidraAddress 0x2fe874). Slot 1 (the parts atlas) holds
-// the most sprites; the rest are small fixed banks.
+// The per-slot sprite-instancer capacities (@ghidraAddress 0x2fe874). Slot 1 (the parts atlas)
+// holds the most sprites; the rest are small fixed banks.
 constexpr unsigned int kSlotCapacities[] = {1, 500, 1, 1, 1, 2, 2, 1};
 
 // The slot that draws the result-parts atlas, and the slot that draws the overlay texture. The
@@ -789,9 +790,9 @@ enum AnchorMode {
 };
 
 // The show tween's channels: an alpha fade-in plus four offset/scale channels. The offset/scale
-// channels ease from their current value toward one, holding the fixed start-scale in their duration
-// slot and the real per-channel duration (the base duration plus a stagger) in the elapsed slot,
-// which cascades the four channels in.
+// channels ease from their current value toward one, holding the fixed start-scale in their
+// duration slot and the real per-channel duration (the base duration plus a stagger) in the elapsed
+// slot, which cascades the four channels in.
 constexpr float kShowTweenTarget = 1.0f;
 // The offset/scale channels' ramp duration, in milliseconds; the paired 1.0 target is the low
 // word of the same 64-bit store. @ghidraAddress 0x439600003f800000 (high word)
@@ -1126,8 +1127,8 @@ void ResultWindowColetteLayer::getCenterPosition_Phone(PhoneLayoutRect *pOutRect
     // When the state flag is set the state record is copied verbatim, with no viewport anchoring.
     if (IsPad()) {
         *pOutRect = g_ColetteCenterPositionPhoneState;
-        (void)GameSystem::
-            GetGameSystem(); // The binary tail-calls the singleton getter and discards it.
+        (void)GameSystem::GetGameSystem(); // The binary tail-calls the singleton getter and
+                                           // discards it.
         return;
     }
 
@@ -1338,8 +1339,8 @@ constexpr float kAlphaScale = 255.0f;
 
 /** @ghidraAddress 0x7427c */
 void ResultWindowColetteLayer::ProcessResultScreenInput() {
-    // The panel is interactive only once its reveal is complete and the screen fade has cleared: the
-    // alpha channel must read fully opaque and the fade overlay must be gone.
+    // The panel is interactive only once its reveal is complete and the screen fade has cleared:
+    // the alpha channel must read fully opaque and the fade overlay must be gone.
     const float flPanelAlpha = m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale;
     const float flChannel3 = m_aTween[kTweenChannel3].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
@@ -1507,8 +1508,8 @@ void ResultWindowColetteLayer::UpdateResultTouchInput() {
     }
 
 applyFlick:
-    // On a completed flick (single-player game), set the page direction, mark the page dirty, toggle
-    // the page index, and play the toggle sound effect.
+    // On a completed flick (single-player game), set the page direction, mark the page dirty,
+    // toggle the page index, and play the toggle sound effect.
     if ((GameSystem::GetGameSystem()->GetGameType() | 2U) == 2) {
         if (m_aTouchRegion[1].bTapEdge || m_aTouchRegion[2].bTapEdge) {
             m_flSwipeDir = m_aTouchRegion[1].bTapEdge ? 1.0f : -1.0f;
@@ -1584,7 +1585,8 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
         }
     }
 
-    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame index.
+    // Advance the decoration rotation counter (wrapping every 192 frames) and derive its frame
+    // index.
     int nCounter = static_cast<int>(static_cast<float>(m_nRotationCounter) + flDeltaTime);
     if (nCounter > kRotationWrap) {
         nCounter %= kRotationWrap;
@@ -1601,8 +1603,8 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
 
     UpdateBonusSoundCueTimer(flDeltaTime);
 
-    // The input pass: the tutorial-gated touch pass while the menu tutorial is active, otherwise the
-    // standard swipe pass.
+    // The input pass: the tutorial-gated touch pass while the menu tutorial is active, otherwise
+    // the standard swipe pass.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
         UpdateResultTouchInput();
     } else {
@@ -1875,8 +1877,8 @@ constexpr int kDecimalBase = 10;
 constexpr int kMaxDigitSlots = 6;
 
 // The digit part-family bases and, for each, the wider leading-digit variant, the standalone prefix
-// glyph (drawn before the whole number), and the under-digit prefix glyph (drawn beneath the leading
-// digit). A family whose base is not listed uses its own base unchanged for each.
+// glyph (drawn before the whole number), and the under-digit prefix glyph (drawn beneath the
+// leading digit). A family whose base is not listed uses its own base unchanged for each.
 constexpr int kFamilyScoreBase = 0xca;
 constexpr int kFamilyScoreLeading = 0xd4;
 constexpr int kFamilyScoreStandalonePrefix = 0xdf;
@@ -1931,7 +1933,8 @@ int LeadingDigitBaseFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the standalone prefix glyph (drawn before the whole number) for a digit part-family base.
+// Resolves the standalone prefix glyph (drawn before the whole number) for a digit part-family
+// base.
 int StandalonePrefixFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
@@ -1979,8 +1982,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
                                                          float flRed,
                                                          float flGreen,
                                                          float flBlue) {
-    (void)
-        flRotation; // The binary accepts a rotation slot (s0) but never reads it; digits are upright.
+    (void)flRotation; // The binary accepts a rotation slot (s0) but never reads it; digits are
+                      // upright.
 
     // Extract the base-ten digits, least significant first, tracking the most significant non-zero
     // digit's slot (the highest slot actually drawn).
@@ -2057,8 +2060,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         }
     }
 
-    // Optional left padding fills the unused leading slots with the base '0' glyph at a dimmed alpha,
-    // continuing down the position bank.
+    // Optional left padding fills the unused leading slots with the base '0' glyph at a dimmed
+    // alpha, continuing down the position bank.
     int nSeparatorIndex = nPosIndex;
     if (bLeftPad && nTopDigit + 1 < nDigitCount) {
         const unsigned int nPadAlpha = static_cast<unsigned int>(
@@ -2080,8 +2083,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
         }
     }
 
-    // The achievement-rate display (identified by its base position index) draws a trailing separator
-    // glyph, the slash or dot selected by the red channel discriminator.
+    // The achievement-rate display (identified by its base position index) draws a trailing
+    // separator glyph, the slash or dot selected by the red channel discriminator.
     if (nBasePositionIndex == kSeparatorPositionSentinel &&
         (flRed == kSeparatorDiscriminatorSlash || flRed == kSeparatorDiscriminatorDot)) {
         const int nSeparator =
@@ -2105,7 +2108,8 @@ namespace {
 constexpr int kPhoneNumberSlot = 1;
 
 // The phone digit families whose leading digit, standalone prefix, and under-digit prefix take
-// special glyph ids, keyed by the family's base part id. A family not listed uses its base unchanged.
+// special glyph ids, keyed by the family's base part id. A family not listed uses its base
+// unchanged.
 constexpr int kPhoneFamilyRateBase = 0xf9;
 constexpr int kPhoneFamilyExpBase = 0x10f;
 constexpr int kPhoneFamilyBigBase = 0x17b;
@@ -2147,7 +2151,8 @@ int PhoneLeadingBaseFor(int nDigitPartBase) {
     }
 }
 
-// Resolves the standalone prefix glyph (drawn before the whole number) for a phone digit-family base.
+// Resolves the standalone prefix glyph (drawn before the whole number) for a phone digit-family
+// base.
 int PhoneStandalonePrefixFor(int nDigitPartBase) {
     switch (nDigitPartBase) {
     case kPhoneFamilyRateBase:
@@ -2165,8 +2170,8 @@ constexpr int kPairDigitBase = 0xe0;
 constexpr int kPairSeparatorPart = 0xea;
 constexpr int kPairDigitSlots = 4;
 
-// The centring constants the number-pair renderer applies to its cursor: a separator-width fudge and
-// the half factor (@ghidraAddress 0x40000000 = 2, 0x3f000000 = 0.5), plus the separator's own
+// The centring constants the number-pair renderer applies to its cursor: a separator-width fudge
+// and the half factor (@ghidraAddress 0x40000000 = 2, 0x3f000000 = 0.5), plus the separator's own
 // one-pixel advances.
 constexpr float kPairCentreFudge = 2.0f;
 constexpr float kPairCentreHalf = 0.5f;
@@ -2189,8 +2194,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
     // The rotation argument is accepted and never read: every glyph below emits upright.
     (void)flRotation;
 
-    // Draws one phone glyph at the cursor through the coloured glyph path, then reports its measured
-    // width so the caller can advance the cursor.
+    // Draws one phone glyph at the cursor through the coloured glyph path, then reports its
+    // measured width so the caller can advance the cursor.
     const auto drawGlyph =
         [&](int nPartId, float flX, float flY, unsigned int nGlyphAlpha) -> float {
         RenderGlyphPartFromTable(kPhoneNumberSlot,
@@ -2230,8 +2235,9 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
     const float flDigitWidth = getPartsData_Phone(nDigitPartBase)->flWidth;
     cursor.x += static_cast<float>(nTopDigit) * kPhoneProportionalHalf * flDigitWidth;
 
-    // In wide-leading mode the rate and exp families pre-advance the cursor by half the standalone and
-    // under-digit prefix widths, then draw the standalone prefix glyph and step left by its width.
+    // In wide-leading mode the rate and exp families pre-advance the cursor by half the standalone
+    // and under-digit prefix widths, then draw the standalone prefix glyph and step left by its
+    // width.
     if (bWideLeading) {
         const int nStandalonePrefix = PhoneStandalonePrefixFor(nDigitPartBase);
         if (nDigitPartBase == kPhoneFamilyRateBase || nDigitPartBase == kPhoneFamilyExpBase) {
@@ -2244,9 +2250,9 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
         cursor.x -= drawGlyph(nStandalonePrefix, cursor.x, cursor.y, nAlpha);
     }
 
-    // Draw each significant digit right to left, advancing the cursor left by each glyph's width. In
-    // wide-leading mode the leading digit takes the family's wider variant (rate/exp only) and also
-    // draws the under-digit prefix glyph, with per-family kerning nudges.
+    // Draw each significant digit right to left, advancing the cursor left by each glyph's width.
+    // In wide-leading mode the leading digit takes the family's wider variant (rate/exp only) and
+    // also draws the under-digit prefix glyph, with per-family kerning nudges.
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
         int nBaseThisDigit = nDigitPartBase;
@@ -2352,8 +2358,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
     }
 
     // The glyphs draw right to left down the position bank. When both the wide-leading and prefix
-    // flags are set, the standalone prefix glyph is drawn first at the base position, and the digits
-    // start one slot below.
+    // flags are set, the standalone prefix glyph is drawn first at the base position, and the
+    // digits start one slot below.
     int nPosIndex = nBasePositionIndex;
     if (bWideLeading && bDrawPrefix) {
         drawGlyph(PhoneStandalonePrefixFor(nDigitPartBase), nBasePositionIndex, nAlpha);
@@ -2416,8 +2422,8 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
     // The monospace digit width is the rank '0' glyph's width from the device-selected parts table.
     const float flDigitWidth = getPartsData(kPairDigitBase)->flWidth;
 
-    // Extract each number's four base-ten digits (least significant first) and its significant-digit
-    // count (at least one).
+    // Extract each number's four base-ten digits (least significant first) and its
+    // significant-digit count (at least one).
     int aLeftDigits[kPairDigitSlots] = {};
     int nLeftTop = 0;
     for (int nSlot = 0; nSlot < kPairDigitSlots; ++nSlot) {
@@ -2500,8 +2506,8 @@ void ResultWindowColetteLayer::RenderNumberPairWithSeparator(int nLeftValue,
 
 namespace {
 
-// The phone number-pair renderer's digit family base, its slash separator glyph, the number of digit
-// slots each number extracts, and the phone glyph slot they draw into.
+// The phone number-pair renderer's digit family base, its slash separator glyph, the number of
+// digit slots each number extracts, and the phone glyph slot they draw into.
 constexpr int kPhonePairDigitBase = 0x10f;
 constexpr int kPhonePairSeparatorPart = 0x119;
 constexpr int kPhonePairDigitSlots = 4;
@@ -2529,8 +2535,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
     // table.
     const float flDigitWidth = g_aColettePartsPhone[kPhonePairDigitBase].flWidth;
 
-    // Extract each number's four base-ten digits (least significant first) and its significant-digit
-    // count (at least one).
+    // Extract each number's four base-ten digits (least significant first) and its
+    // significant-digit count (at least one).
     int aLeftDigits[kPhonePairDigitSlots] = {};
     int nLeftTop = 0;
     for (int nSlot = 0; nSlot < kPhonePairDigitSlots; ++nSlot) {
@@ -2557,8 +2563,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
     const ResultBonusColor &rightColor = g_aResultBonusColor[nRightColorIndex];
 
     // Seed the cursor centred on the base position: each number's pixel width (truncated to a whole
-    // pixel separately, as the binary does), plus one digit width and a separator-width fudge, halved.
-    // The y-coordinate is carried through from the base position.
+    // pixel separately, as the binary does), plus one digit width and a separator-width fudge,
+    // halved. The y-coordinate is carried through from the base position.
     const float flBaseY = pBasePosition->y;
     const int nLeftWidth = static_cast<int>(static_cast<float>(nLeftCount) * flDigitWidth);
     const int nRightWidth = static_cast<int>(static_cast<float>(nRightCount) * flDigitWidth);
@@ -2582,7 +2588,8 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                  rightColor.flBlue);
     }
 
-    // The slash separator draws next, in the right colour, then the cursor steps past it by one pixel.
+    // The slash separator draws next, in the right colour, then the cursor steps past it by one
+    // pixel.
     flCursorX -= flDigitWidth;
     RenderGlyphPartFromTable(kPhonePairSlot,
                              kPhonePairSeparatorPart,
@@ -2666,8 +2673,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
     const float flDigitWidth = getPartsData(nDigitPartBase)->flWidth;
     cursor.x += static_cast<float>(nTopDigit) * kProportionalHalf * flDigitWidth;
 
-    // In wide-leading mode, advance the cursor by half the standalone and under-digit prefix widths,
-    // draw the standalone prefix glyph, then step the cursor left by its full width.
+    // In wide-leading mode, advance the cursor by half the standalone and under-digit prefix
+    // widths, draw the standalone prefix glyph, then step the cursor left by its full width.
     if (bWideLeading) {
         const int nStandalonePrefix = StandalonePrefixFor(nDigitPartBase);
         const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
@@ -2706,7 +2713,8 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                 flGreen,
                                 flBlue);
         cursor.x -= getPartsData(nPartId)->flWidth;
-        // A wide rank leading digit on the first slot nudges the cursor right to tighten its spacing.
+        // A wide rank leading digit on the first slot nudges the cursor right to tighten its
+        // spacing.
         if (nSlot == 0 && static_cast<unsigned int>(nPartId - kWideRankLeadingLow) <
                               static_cast<unsigned int>(kWideRankLeadingSpan)) {
             cursor.x += kWideRankKern;
@@ -2904,8 +2912,8 @@ constexpr float kScaleNormal = 1.0f;
 constexpr float kScaleMirrored = -1.0f;
 
 // The panel's fixed text colours, each channel in [0, 255]. The binary materialises them from its
-// own literal pool (@ghidraAddress 0x2fd00c through 0x2fd044) rather than reading the bonus palette,
-// even though the first six repeat palette entries; they reuse the palette record's plain
+// own literal pool (@ghidraAddress 0x2fd00c through 0x2fd044) rather than reading the bonus
+// palette, even though the first six repeat palette entries; they reuse the palette record's plain
 // red/green/blue triple as their type.
 constexpr ResultBonusColor kColorRate{34.0f, 149.0f, 238.0f};
 constexpr ResultBonusColor kColorJudgeCount{231.0f, 174.0f, 0.0f};
@@ -2947,9 +2955,9 @@ constexpr int kDigitsScore = 4;
 constexpr int kDigitsBonus = 3;
 constexpr int kDigitsGrandTotal = 6;
 
-// The parts-atlas ids the panel emits. Runs that a loop walks are given their base id; the rest name
-// the element they draw. The individual artwork each id selects is not recovered beyond its role
-// here.
+// The parts-atlas ids the panel emits. Runs that a loop walks are given their base id; the rest
+// name the element they draw. The individual artwork each id selects is not recovered beyond its
+// role here.
 enum ResultPanelPart {
     kPartBackdrop = 0x00,
     kPartPanelFrame = 0x01,
@@ -3016,8 +3024,9 @@ enum ResultPanelPart {
     kPartBonusTotalUnit = 0x146,
 };
 
-// The layout-bank slots the panel positions its fixed elements at. Runs a loop walks are given their
-// first slot. The digit rows pass their slot to a number renderer, which walks the bank itself.
+// The layout-bank slots the panel positions its fixed elements at. Runs a loop walks are given
+// their first slot. The digit rows pass their slot to a number renderer, which walks the bank
+// itself.
 enum ResultPanelPosition {
     kPosBackdrop = 0,
     kPosPanelFrame = 1,
@@ -3136,8 +3145,8 @@ constexpr unsigned int kStatFramePageAlphaMask = 0x1c0;
 // Only the first nine pieces are tested against those masks; the rest always draw plain.
 constexpr int kStatFrameMaskedPieceCount = 9;
 
-// Within the eight-part stat row, these two parts get a second, colour-tinted pass. The binary tests
-// them by clearing bit two and comparing against zero.
+// Within the eight-part stat row, these two parts get a second, colour-tinted pass. The binary
+// tests them by clearing bit two and comparing against zero.
 constexpr unsigned int kStatRowTintedIndexMask = ~4u;
 
 // The bonus rows the two feature toggles gate: the early-play row and the hot-music row.
@@ -3178,8 +3187,8 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     const int nRivalScore = pTracker->GetPlayRecordCell(kSideRival, kCellScore);
     const int nLocalRank = pTracker->GetPlayRecordRank(kSideLocal);
 
-    // Every slot's sprite list is rebuilt from scratch each frame. The binary does not null-check the
-    // instancers here, because the builder has already created all eight.
+    // Every slot's sprite list is rebuilt from scratch each frame. The binary does not null-check
+    // the instancers here, because the builder has already created all eight.
     for (auto *pSlot : m_apSlots) {
         pSlot->SetSpriteCount(0);
     }
@@ -3519,8 +3528,8 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal);
 
     // A vertical flick cross-fades the two result pages: the stats and bonus channels each split
-    // between the swipe progress and its complement, and which half belongs to which page swaps with
-    // the active page.
+    // between the swipe progress and its complement, and which half belongs to which page swaps
+    // with the active page.
     const float flSwipe = std::fabs(m_flSwipeDir);
     const bool bSecondPageActive = m_nActive != 1;
     const float flStatsSweep = static_cast<float>(nAlphaStats);
@@ -3983,9 +3992,9 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     }
 
     // The bonus rows. Each row draws its label, a leader rule stretched across the gap to the value
-    // column, the value's unit glyph, a second leader, and the row's suffix and trailing glyphs. The
-    // two leader rules are stretched by the column gap less the half widths of the glyphs flanking
-    // them; the binary hoists row zero's label width and reuses it for every row.
+    // column, the value's unit glyph, a second leader, and the row's suffix and trailing glyphs.
+    // The two leader rules are stretched by the column gap less the half widths of the glyphs
+    // flanking them; the binary hoists row zero's label width and reuses it for every row.
     const S_VECTOR2 &bonusOrigin = g_aResultLayoutPosition[kPosBonusRowOrigin];
     const float flBonusValueX = g_aResultLayoutPosition[kPosBonusValueColumn].x;
     const float flBonusUnitX = g_aResultLayoutPosition[kPosBonusUnitColumn].x;
@@ -4525,9 +4534,9 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
             kPartsSlot, nPartId, position, nAlpha, false, kNoRotation, kScaleNormal, kScaleNormal);
     };
 
-    // The nine-part stretched frame: four corners, the four edges scaled to span the gap between the
-    // two resolved anchors, and a centre fill. Five frames on this panel share the shape, so it is
-    // de-inlined here. The vertical span subtracts half the base part's height and half a second
+    // The nine-part stretched frame: four corners, the four edges scaled to span the gap between
+    // the two resolved anchors, and a centre fill. Five frames on this panel share the shape, so it
+    // is de-inlined here. The vertical span subtracts half the base part's height and half a second
     // part's height; that second part is a bottom corner, but which one differs per frame, so it is
     // a parameter rather than something derived from the base.
     const auto emitStretchedFrame = [&](int nBasePart,
@@ -4603,8 +4612,8 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                        kPhonePosMusicInfoFrameFar,
                        nFrameAlpha);
 
-    // The music-info block, its artwork, and the two name images the scene rendered into slots three
-    // and four.
+    // The music-info block, its artwork, and the two name images the scene rendered into slots
+    // three and four.
     const int nDifficulty = pGameSystem->GetDifficulty();
     const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
     emitAt(kPhonePartMusicInfoUpper, kPhonePosMusicInfoUpper, nAlphaMusicInfo);
@@ -4985,8 +4994,8 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     const float flBonusSubtotal = m_flClearBonus + m_flMissBonus + m_flRankBonus +
                                   m_flFirstPlayBonus + m_flEarlyPlayBonus + m_flHotMusicBonus;
     emitBonusValue(flBonusSubtotal, kPhonePosBonusSubtotalDigits);
-    // The grand total draws from the family that goes through the dimmable glyph path, which ignores
-    // the colour channels the call still passes as zero.
+    // The grand total draws from the family that goes through the dimmable glyph path, which
+    // ignores the colour channels the call still passes as zero.
     RenderPhoneNumberGlyphs(
         static_cast<int>((flBonusSubtotal + m_flExperienceBonus) * kBonusDisplayScale),
         kDigitsGrandTotal,

@@ -175,7 +175,8 @@ const StarSpriteDescriptor g_aStarGlyphTablePhone[] = {
 /** @ghidraAddress 0x1893f0 */
 void NoteResultLayer::BuildQuadPositions() {
     // One row's layout: the three normalised x columns, the runtime lane slope its y is scaled by,
-    // and the fixed y base it is offset by. The lane slopes are seeded by the play-field layout pass.
+    // and the fixed y base it is offset by. The lane slopes are seeded by the play-field layout
+    // pass.
     struct RowLayout {
         const float *pColumns;
         float flSlope;

@@ -3,8 +3,8 @@
  *
  * @c Crypto encrypts and decrypts the SDK's persisted payloads with AES-128 in ECB mode and PKCS#7
  * padding, using CommonCrypto, and derives the SHA-1 and SHA-256 hashes the SDK keys those payloads
- * and signs its requests by. The class is stateless: it has no instance state and exposes only class
- * methods. Reconstructed from Ghidra program rb458.
+ * and signs its requests by. The class is stateless: it has no instance state and exposes only
+ * class methods. Reconstructed from Ghidra program rb458.
  */
 
 #import <Foundation/Foundation.h>

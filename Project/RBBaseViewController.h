@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Report the interface orientations this view controller supports.
- * @return @c UIInterfaceOrientationMaskAll when the phone (standard) layout is active; otherwise the
- * orientation is constrained to portrait or landscape-left depending on the current orientation
+ * @return @c UIInterfaceOrientationMaskAll when the phone (standard) layout is active; otherwise
+ * the orientation is constrained to portrait or landscape-left depending on the current orientation
  * while music is playing.
  * @ghidraAddress 0x202778
  */
@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Legacy (pre-iOS 6) autorotation predicate for a specific interface orientation.
  * @param interfaceOrientation The candidate interface orientation.
- * @return @c YES for the phone (standard) layout; for the wide variant, @c YES only for the portrait
- * orientations while no music is playing.
+ * @return @c YES for the phone (standard) layout; for the wide variant, @c YES only for the
+ * portrait orientations while no music is playing.
  * @ghidraAddress 0x2027dc
  */
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;

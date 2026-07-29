@@ -56,8 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The legacy play-log endpoint. Referenced by
- * @c +[RBServerAPIManager playedAPIWithMusicID:dif:]; the binary ships no implementation for it (the
- * version 2 endpoint superseded it).
+ * @c +[RBServerAPIManager playedAPIWithMusicID:dif:]; the binary ships no implementation for it
+ * (the version 2 endpoint superseded it).
  */
 + (nullable NSURL *)playedURL;
 
@@ -190,8 +190,8 @@ NS_ASSUME_NONNULL_BEGIN
                           genre:(unsigned int)genre;
 
 /**
- * @brief Build the store pack-info endpoint URL for a pack, carrying the device user-info only for a
- * user-initiated open.
+ * @brief Build the store pack-info endpoint URL for a pack, carrying the device user-info only for
+ * a user-initiated open.
  * @param packID The pack identifier.
  * @param userOpen Whether the request is on behalf of a user-initiated open.
  * @return The store pack-info endpoint URL.

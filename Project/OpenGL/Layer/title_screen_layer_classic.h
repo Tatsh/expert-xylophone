@@ -4,14 +4,15 @@
 //  title_screen_layer_classic.h
 //  REFLEC BEAT plus
 //
-//  The interactive title screen layer, as far as its per-frame animation and fade channel observe it.
-//  This is the 0x898-byte gesture layer driven by ProcessTitleLayer (the 0x149xxx cluster), distinct
-//  from both the 0x168 rb::TitleClassicScene and the 0x898 rb::TitleColetteScene. Two families were
-//  previously misattributed here and now live on their real owners: the swing/gesture/fade helpers on
-//  TitleColetteScene, and the hidden Konami-code swipe machine (0x152cc8) plus the fade-value tween
-//  (0x152548) on rb::TitleClassicScene, whose +0x110/+0x160/+0x164 fields they write. The class is
-//  not fully modelled yet: only the fields the reconstructed routines touch are named, with the
-//  surrounding object modelled as reserved spans so the named fields land at their real offsets.
+//  The interactive title screen layer, as far as its per-frame animation and fade channel observe
+//  it. This is the 0x898-byte gesture layer driven by ProcessTitleLayer (the 0x149xxx cluster),
+//  distinct from both the 0x168 rb::TitleClassicScene and the 0x898 rb::TitleColetteScene. Two
+//  families were previously misattributed here and now live on their real owners: the
+//  swing/gesture/fade helpers on TitleColetteScene, and the hidden Konami-code swipe machine
+//  (0x152cc8) plus the fade-value tween (0x152548) on rb::TitleClassicScene, whose
+//  +0x110/+0x160/+0x164 fields they write. The class is not fully modelled yet: only the fields the
+//  reconstructed routines touch are named, with the surrounding object modelled as reserved spans
+//  so the named fields land at their real offsets.
 //
 //  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
 //  the program image base.
@@ -41,11 +42,11 @@ public:
      * @brief Advances the title screen one frame: ticks the animation clock, handles touch-to-start
      * and the auto-timeout, advances the fade, and re-emits the title sprites.
      *
-     * Clears the five sprite instancers, then — until the start is triggered — begins the fade-out to
-     * play once the caution has been read and the player taps after the intro (or, failing a tap,
-     * once the auto-timeout elapses). When the fade completes it latches the play state. It then
-     * emits the white backdrop, the three cross-fading title logo layers (each alpha-driven by its
-     * own animation curve, all centred on the viewport), and the black fade-overlay whose alpha
+     * Clears the five sprite instancers, then — until the start is triggered — begins the fade-out
+     * to play once the caution has been read and the player taps after the intro (or, failing a
+     * tap, once the auto-timeout elapses). When the fade completes it latches the play state. It
+     * then emits the white backdrop, the three cross-fading title logo layers (each alpha-driven by
+     * its own animation curve, all centred on the viewport), and the black fade-overlay whose alpha
      * tracks the fade channel.
      * @param nDeltaFrames The elapsed frames this tick.
      * @ghidraAddress 0x149c5c
@@ -62,11 +63,11 @@ private:
      * @brief Positions and fills one title-screen sprite instancer slot, if it has a free slot.
      *
      * A no-op for an out-of-range sprite kind or a full instancer. The three textured kinds (1..3)
-     * bind their instancer's texture and derive the sprite's anchor (half the point size), size, and
-     * UV span from the texture's pixel size, allocated size, and retina scale, drawing opaque white.
-     * The two backdrop kinds (0 and 4) draw a full-viewport quad sized from the game system, coloured
-     * white for kind 0 and black for kind 4. Either way the caller's position and scale are applied
-     * and the instancer's slot count is bumped.
+     * bind their instancer's texture and derive the sprite's anchor (half the point size), size,
+     * and UV span from the texture's pixel size, allocated size, and retina scale, drawing opaque
+     * white. The two backdrop kinds (0 and 4) draw a full-viewport quad sized from the game system,
+     * coloured white for kind 0 and black for kind 4. Either way the caller's position and scale
+     * are applied and the instancer's slot count is bumped.
      * @param nKind The sprite kind, also the instancer index (0..4).
      * @param pPosition The sprite's screen position.
      * @param flScale The sprite's uniform scale.
