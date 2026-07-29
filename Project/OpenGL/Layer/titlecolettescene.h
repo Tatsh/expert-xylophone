@@ -205,27 +205,6 @@ private:
                         float flRotation,
                         const S_VECTOR3 &color);
 
-    /**
-     * @brief Emits a plain coloured quad (no atlas lookup) into a title sprite slot.
-     *
-     * Maps the quad kind to a sprite slot through the kind-to-slot table, then, when that slot is not
-     * full, writes the next sprite with the given position, anchor, and size, a solid colour tint,
-     * and advances the slot count. Kinds at or above the table size are ignored.
-     * @param nKind The colour-quad kind (0 through 8).
-     * @param nColorRgb The quad's red, green, and blue channel value.
-     * @param nAlpha The quad's alpha.
-     * @param position The quad's position.
-     * @param size The quad's size.
-     * @param anchor The quad's anchor.
-     * @ghidraAddress 0x152bfc
-     */
-    void EmitTitleColorQuad(unsigned int nKind,
-                            unsigned int nColorRgb,
-                            unsigned int nAlpha,
-                            const S_VECTOR2 &position,
-                            const S_VECTOR2 &size,
-                            const S_VECTOR2 &anchor);
-
     // Records a touchable part's hit-box (its draw position offset by the layout anchor, sized by the
     // layout extent) into the layer's hit-box table. The sound-effect part in the landscape layout
     // uses a nudged and grown rectangle. Parts without a hit-box are ignored.

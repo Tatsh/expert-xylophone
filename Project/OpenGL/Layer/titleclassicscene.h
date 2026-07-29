@@ -7,8 +7,7 @@
 
 #include "basescene.h"
 #include "linear_tween.h"
-
-struct S_VECTOR2;
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -36,6 +35,9 @@ public:
     // The number of cached title textures and the number of sprite instancers the layer builds.
     static constexpr int kTextureCount = 7;
     static constexpr int kSpriteSlotCount = 8;
+    // The number of scrolling star layers and counter-rotating rings the title animates.
+    static constexpr int kStarLayerCount = 2;
+    static constexpr int kRingCount = 2;
 
     /**
      * @brief Constructs the layer: chains the UI-layer base, installs the title dispatch table, and
@@ -86,6 +88,13 @@ private:
 
     /**
      * @brief State 2: renders and animates the title screen for the frame.
+     *
+     * Clears the eight instancers, ticks the start-prompt, star, and ring clocks, emits the whole
+     * title screen (background, start prompt, two scrolling star layers, two counter-rotating rings,
+     * the logo, and the black fade overlay), then — once the start delay has elapsed — runs the touch
+     * input pass: the start hit-box commits to the music list, the two secret hit-boxes and the
+     * four-way swipe classifier drive the hidden sequence, and the remaining hit-box auditions the
+     * shot sound.
      * @param pFrameArg The per-frame argument forwarded from the task callback (a frame-delta count).
      * @ghidraAddress 0x151934
      */
@@ -98,6 +107,21 @@ private:
     void FinishAndOpenList();
 
     /**
+     * @brief Advances the title fade tween by @p nDeltaFrames.
+     * @param nDeltaFrames The elapsed frames this tick.
+     * @ghidraAddress 0x152548
+     */
+    void AdvanceFadeValue(int nDeltaFrames);
+
+    /**
+     * @brief Advances the hidden-swipe sequence on a directional swipe or secret-button tap, firing
+     * the secret sound effect and latching the completion flag when the sequence completes.
+     * @param iSwipeEvent The swipe or button event id.
+     * @ghidraAddress 0x152cc8
+     */
+    void AdvanceSwipeState(int iSwipeEvent);
+
+    /**
      * @brief Emits a full-texture quad (such as the background) into a title sprite instancer slot.
      *
      * Resolves the instancer for the sprite kind and, while it has room, derives the quad's anchor,
@@ -105,17 +129,17 @@ private:
      * writes the caller's position, size scale, rotation, and an opaque-white colour modulated by the
      * alpha, and bumps the slot count.
      * @param nSpriteKind The sprite kind (below 9), selecting the instancer.
+     * @param nColorAlpha The quad's alpha.
      * @param position The quad's screen position.
      * @param flSize The uniform size scale.
      * @param flRotation The quad's rotation, in radians.
-     * @param nColorAlpha The quad's alpha.
      * @ghidraAddress 0x152a90
      */
     void RenderTitleBackgroundFullQuad(unsigned int nSpriteKind,
-                                       const S_VECTOR2 &position,
+                                       unsigned int nColorAlpha,
+                                       S_VECTOR2 position,
                                        float flSize,
-                                       float flRotation,
-                                       unsigned int nColorAlpha);
+                                       float flRotation);
 
     /**
      * @brief Emits one title-screen sprite into its instancer slot.
@@ -127,17 +151,39 @@ private:
      * opaque-white colour modulated by the alpha are applied, and the slot count is bumped. A no-op
      * for an out-of-range kind or a full instancer.
      * @param nSpriteKind The sprite kind (0 through 8), selecting the instancer and layout.
+     * @param nColorAlpha The sprite's alpha.
      * @param position The sprite's screen position.
      * @param flSize The uniform size scale.
      * @param flRotation The sprite's rotation, in radians.
-     * @param nColorAlpha The sprite's alpha.
      * @ghidraAddress 0x15259c
      */
     void EmitTitleSprite(unsigned int nSpriteKind,
-                         const S_VECTOR2 &position,
+                         unsigned int nColorAlpha,
+                         S_VECTOR2 position,
                          float flSize,
-                         float flRotation,
-                         unsigned int nColorAlpha);
+                         float flRotation);
+
+    /**
+     * @brief Emits a plain coloured quad (no atlas lookup) into a title sprite instancer slot.
+     *
+     * Resolves the instancer for the quad kind and, while it has room, writes the caller's position,
+     * size, and anchor with a solid grey-scale tint modulated by the alpha, then bumps the slot
+     * count. A no-op for an out-of-range kind or a full instancer. The title screen uses it for the
+     * untextured black overlay that fades the screen out.
+     * @param nKind The colour-quad kind (0 through 8), selecting the instancer.
+     * @param nColorRgb The quad's red, green, and blue channel value.
+     * @param nAlpha The quad's alpha.
+     * @param position The quad's screen position.
+     * @param size The quad's size.
+     * @param anchor The quad's anchor.
+     * @ghidraAddress 0x152bfc
+     */
+    void EmitTitleColorQuad(unsigned int nKind,
+                            unsigned int nColorRgb,
+                            unsigned int nAlpha,
+                            S_VECTOR2 position,
+                            S_VECTOR2 size,
+                            S_VECTOR2 anchor);
 
     unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.
@@ -149,10 +195,21 @@ private:
     // +0xf0..+0x10f: further per-slot presentation state, still being worked out.
     unsigned char m_aReserved0f0[0x20] = {}; // +0xf0
     LinearTween m_fadeChannel;               // +0x110: the title fade tween.
-    unsigned char m_aReserved124[0x38] = {}; // +0x124: trailing state.
-    int m_nTrailingIndex = {};               // +0x15c: a per-slot index (-1 when
-                                             //         none is selected).
-    unsigned char m_aReserved160[0x08] = {}; // +0x160: trailing state.
+    float m_flStartDelayClock = {};          // +0x124: counts up until input is accepted.
+    bool m_bLeaving = {};                    // +0x128: latched once the player commits to starting.
+    unsigned char m_aReserved129[3] = {};    // +0x129
+    float m_flPromptFadeClock = {};          // +0x12c: the start prompt's one-shot fade-in clock.
+    float m_flPromptPulseClock = {};         // +0x130: the start prompt's repeating pulse clock.
+    int m_anStarScrollClock[kStarLayerCount] = {};  // +0x134: each star layer's scroll clock.
+    int m_anStarTwinkleClock[kStarLayerCount] = {}; // +0x13c: each star layer's twinkle clock.
+    int m_anRingScaleClock[kRingCount] = {};        // +0x144: each ring's scale-sweep clock.
+    int m_anRingSpinClock[kRingCount] = {};         // +0x14c: each ring's rotation clock.
+    int m_anRingAlphaClock[kRingCount] = {};        // +0x154: each ring's alpha-curve clock.
+    int m_nTrackedTouchId = {};  // +0x15c: the touch being followed for a swipe (-1 when none).
+    int m_nSwipeState = {};      // +0x160: the hidden-swipe sequence step.
+    bool m_bSwipeTriggered = {}; // +0x164: latched once the hidden sequence completes; also drives
+                                 //         the five-times animation speed-up.
+    unsigned char m_aReserved165[3] = {}; // +0x165
 };
 
 } // namespace rb
