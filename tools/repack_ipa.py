@@ -4,9 +4,12 @@ Repack the CI-built REFLEC BEAT plus .ipa with the game assets.
 
 Fetches the latest CI-built .ipa (a freshly-built binary with none of the game assets, which are not
 in the repo) through the GitHub REST API, overlays it onto a bundle directory that carries the
-bundle-native files the build lacks, copies the game's downloaded data into the app's ``assets/``
-folder, repacks the result into a new .ipa, signs it with an Apple ID via ``plumesign`` (the only
-external process used), and optionally installs it to the device.
+bundle-native files the build lacks, optionally copies the game's downloaded data into the app's
+``assets/`` folder, repacks the result into a new .ipa, signs it with an Apple ID via ``plumesign``
+(the only external process used), and optionally installs it to the device.
+
+The asset directory is optional. Omitting it repacks whatever ``assets/`` the merge directory
+already carries, which is what you want when only the binary changed.
 """
 from __future__ import annotations
 
@@ -312,14 +315,18 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
                         help='bundle directory laid out as an IPA root (contains Payload/<App>.app) '
                         'with the bundle-native files the build lacks; MODIFIED in place')
     parser.add_argument('asset_dir',
+                        nargs='?',
                         type=Path,
+                        default=None,
                         help="the game's downloaded data directory (music packs, sequences, "
-                        'artwork, and lists); copied into <App>.app/assets/')
+                        'artwork, and lists); copied into <App>.app/assets/. Optional: omit it to '
+                        "keep the merge directory's own assets/")
     parser.add_argument('output_ipa',
                         nargs='?',
                         type=Path,
                         default=Path.cwd() / 'Rbplus-signed.ipa',
-                        help='output path for the final .ipa (default: ./Rbplus-signed.ipa)')
+                        help='output path for the final .ipa (default: ./Rbplus-signed.ipa). Give '
+                        'the asset directory first to name this positionally')
     parser.add_argument('--token',
                         default=None,
                         help='GitHub token that can read the artifacts (default: the gh CLI token '
@@ -359,14 +366,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if not args.merge_dir.is_dir():
         _die(f'The merge directory does not exist: {args.merge_dir}')
-    if not args.asset_dir.is_dir():
-        _die(f'The asset directory does not exist: {args.asset_dir}')
+    # Both positionals are optional, so a stray second argument is far more likely to be an output
+    # path given without an asset directory than a mistyped asset directory.
+    if args.asset_dir is not None and not args.asset_dir.is_dir():
+        _die(f'The asset directory does not exist: {args.asset_dir}. The output .ipa is the third '
+             'positional, so name the asset directory before it.')
 
     # Resolve the signer up front so we fail fast before downloading anything.
     plumesign = '' if args.skip_sign else _resolve_plumesign(args.plumesign)
 
     merge_dir = args.merge_dir.resolve()
-    asset_dir = args.asset_dir.resolve()
+    asset_dir = args.asset_dir.resolve() if args.asset_dir is not None else None
     output_ipa = args.output_ipa.resolve()
 
     session = _session(args.token or _gh_token())
@@ -392,10 +402,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         shutil.copytree(extract, merge_dir, dirs_exist_ok=True)
 
         # A preservation build loads its downloaded packs, sequences, and art from
-        # <App>.app/assets/, so staging the asset dir there is required.
+        # <App>.app/assets/. Without an asset directory the merge directory has to supply that
+        # folder itself, so warn rather than fail when neither does.
         app = _find_app(merge_dir / 'Payload')
-        print(f'Populating the assets/ folder in {app.name}.')
-        shutil.copytree(asset_dir, app / 'assets', dirs_exist_ok=True)
+        if asset_dir is not None:
+            print(f'Populating the assets/ folder in {app.name}.')
+            shutil.copytree(asset_dir, app / 'assets', dirs_exist_ok=True)
+        elif (app / 'assets').is_dir():
+            print(f'No asset directory was given; keeping the assets/ folder in {app.name}.')
+        else:
+            print(f'warning: no asset directory was given and {app.name} has no assets/ folder; '
+                  'the game will have no music packs, sequences, or artwork.',
+                  file=sys.stderr)
 
         unsigned = work / 'unsigned.ipa'
         _make_ipa(merge_dir, unsigned)
