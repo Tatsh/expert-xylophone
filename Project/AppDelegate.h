@@ -29,7 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x54684 (getter)
  * @ghidraAddress 0x54694 (setter)
  */
+// UIApplicationDelegate declares this property as UIWindow *, and Objective-C requires a
+// redeclaration to match that type exactly rather than narrowing it. The binary's delegate really
+// owns the neWindow subclass, so the subclass type is kept and the exact-match rule is waived here.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-property-type"
 @property(nonatomic, strong, nullable) neWindow *window;
+#pragma clang diagnostic pop
 /**
  * @brief The root view controller driving the game's screens.
  * @ghidraAddress 0x546cc (getter)

@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0x107104
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the theme popup content: the paging scroll view, one full-page artwork per unlocked

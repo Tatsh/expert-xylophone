@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0xdda2c
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the ranking content: the friend and total ranking table views, and the friend and

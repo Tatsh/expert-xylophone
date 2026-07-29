@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0x96328
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the credits content: lay the credits-text image out in the popup content view.

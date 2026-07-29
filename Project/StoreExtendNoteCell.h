@@ -43,6 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) StoreExtendNoteCellView *rightView;
 
 /**
+ * @brief The cell's background image view.
+ *
+ * Inherited from @c StoreTableCellBase in the binary; declared here while that base is
+ * not yet reconstructed.
+ */
+@property(nonatomic, strong, nullable) UIImageView *backGroundImageView;
+
+/**
  * @brief Sets the cell's shared background image.
  *
  * Inherited from @c StoreTableCellBase in the binary; declared here while that base is

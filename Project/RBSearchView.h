@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0xe650c
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the search content: the current-position button and the embedded map view laid out

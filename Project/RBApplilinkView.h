@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The initialised view, or @c nil.
  * @ghidraAddress 0x1bd624
  */
-- (nullable instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 /**
  * @brief Build the Applilink content: hide the base gradation and title, then add the rounded web
