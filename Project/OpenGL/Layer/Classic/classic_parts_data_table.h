@@ -75,17 +75,19 @@ constexpr int kClassicPartsAnchorRecordCount = 131;
 // @ghidraAddress 0x3d7cd0
 extern S_VECTOR2 g_aClassicPartsAnchorPad[kClassicPartsAnchorRecordCount];
 
-// The Classic colour-marker rectangles, zero-initialised in the binary's @c __common segment and
-// filled at runtime. @c InitColorMarkerLayer reaches them through the pointer table at 0x3cf458.
-// The record count and the four-float shape are proven by the initialiser's writes; the individual
-// coordinates' roles are not yet recovered, so they carry the shared rectangle field names.
-constexpr int kClassicColorMarkerRectCount = 39;
+// The Classic ribbon-trail vertex storage, zero-initialised in the binary's @c __common segment and
+// filled at runtime by the layout initialiser. The layer constructor hands each trail one of the
+// four starts listed in the pointer table at 0x3cf458; those starts are 0xa0 apart, so each trail
+// owns 20 slots and uses the leading @c kTrailVertexCount of them. The flat extent runs to
+// 0x3dd2f8, where the layer singleton pointer begins.
+constexpr int kTrailVertexStride = 20;
+constexpr int kTrailVertexTotal = 79;
 // @ghidraAddress 0x3dd080
-extern PhoneLayoutRect g_aClassicColorMarkerRects[kClassicColorMarkerRectCount];
+extern S_VECTOR2 g_aClassicTrailVertices[kTrailVertexTotal];
 
-// The single colour-marker origin the initialiser writes just past the rectangle table, immediately
-// before the layer singleton pointer at 0x3dd2f8.
-extern S_VECTOR2 g_ClassicColorMarkerOrigin; // @ghidraAddress 0x3dd2f0
+// The per-trail vertex counts the constructor reads alongside those starts; every entry is 19.
+// @ghidraAddress 0x304190
+extern const int g_aClassicTrailVertexCounts[];
 
 // The Classic phone-layout separator tables, zero-initialised in the binary's @c __common segment
 // and filled at runtime; the portrait flag selects between them.

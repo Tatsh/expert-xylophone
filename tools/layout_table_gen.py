@@ -72,8 +72,10 @@ TABLES = [
     (0x1003D90D0, "g_ClassicCenterPositionPhoneState", 0x10, 1, RECT),
     (0x1003D90E0, "g_ClassicCenterPositionPhonePortrait", 0x10, 1, RECT),
     (0x1003D90F0, "g_ClassicCenterPositionPhoneLandscape", 0x10, 1, RECT),
-    (0x1003DD080, "g_aClassicColorMarkerRects", 0x10, 39, RECT),
-    (0x1003DD2F0, "g_ClassicColorMarkerOrigin", 0x08, 1, PAIR),
+    # 0x3dd080 is the Classic ribbon-trail vertex storage, NOT a rectangle table: the pointer
+    # table at 0x3cf458 hands its four 0xa0-strided starts to the layer constructor (0x115094),
+    # which uses 19 vertices from each. 79 entries runs to 0x3dd2f8, the singleton pointer.
+    (0x1003DD080, "g_aClassicTrailVertices", 0x08, 79, PAIR),
     # Limelight (0x12af9c)
     (0x1003D9100, "g_aLimelightPartsPhone", 0x18, 255, PARTS),
     (0x1003DA8E8, "g_aLimelightPartsAnchorPhone", 0x08, 133, PAIR),

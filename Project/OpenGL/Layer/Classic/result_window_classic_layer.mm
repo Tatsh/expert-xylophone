@@ -34,6 +34,12 @@ static ResultWindowClassicLayer *g_pClassicResultLayer = nullptr; // @ghidraAddr
 static constexpr float kGestureHoldTimeout = 3300.0f;
 static constexpr int kGestureReleaseVoiceId = 7;
 
+// The constructor's non-zero seeds: the fully-opaque sprite alpha, the touch id a region carries
+// while nothing is tracking it, and the sound-effect handle meaning nothing is playing.
+static constexpr unsigned int kFullAlpha = 255;
+static constexpr int kNoTouchId = -1;
+static constexpr int kNoSePlayHandle = -1;
+
 // The Classic pad parts table (declared in classic_parts_data_table.h): zero-initialised here to
 // match the binary's __common segment, filled at runtime.
 PartsDataRecord g_aClassicPartsPad[kClassicPartsRecordBound] = {}; // @ghidraAddress 0x3d6650
@@ -42,11 +48,12 @@ PartsDataRecord g_aClassicPartsPad[kClassicPartsRecordBound] = {}; // @ghidraAdd
 // here to match the binary's __common segment, filled at runtime.
 S_VECTOR2 g_aClassicPartsAnchorPad[kClassicPartsAnchorRecordCount] = {}; // @ghidraAddress 0x3d7cd0
 
-// The Classic colour-marker rectangles and their origin (declared in classic_parts_data_table.h):
+// The Classic ribbon-trail vertex storage (declared in classic_parts_data_table.h):
 // zero-initialised here to match the binary's __common segment, filled at runtime.
-PhoneLayoutRect g_aClassicColorMarkerRects[kClassicColorMarkerRectCount] =
-    {};                                    // @ghidraAddress 0x3dd080
-S_VECTOR2 g_ClassicColorMarkerOrigin = {}; // @ghidraAddress 0x3dd2f0
+S_VECTOR2 g_aClassicTrailVertices[kTrailVertexTotal] = {}; // @ghidraAddress 0x3dd080
+
+// The per-trail vertex counts, read-only data in the binary.
+const int g_aClassicTrailVertexCounts[] = {19, 19, 19, 19}; // @ghidraAddress 0x304190
 
 // The Classic phone-layout position tables (declared in classic_parts_data_table.h):
 // zero-initialised here to match the binary's __common segment, filled at runtime.
@@ -157,13 +164,32 @@ const PartsDataRecord g_aClassicPartsPhone[kClassicPhonePartsRecordCount] = {
     {1, 22.0f, 5.0f, 44.0f, 10.0f, 124},  {1, 51.0f, 5.0f, 102.0f, 10.0f, 125},
 };
 
+/** @ghidraAddress 0x115094 */
+ResultWindowClassicLayer::ResultWindowClassicLayer() {
+    // The base constructor and the zero-initialised members clear the layer; the binary writes
+    // those zeroes out explicitly, so only the non-zero defaults remain here.
+    m_nDefaultAlpha = kFullAlpha;
+    for (GestureTouchRegion &region : m_aGestureRegions) {
+        region.nTouchId = kNoTouchId;
+    }
+    m_nSliderTouchId = kNoTouchId;
+    m_nRevealSeHandle = kNoSePlayHandle;
+    m_bMainAssetSubState = true;
+
+    // Each trail draws a fixed-length strip out of the shared vertex storage: the pointer table
+    // at 0x3cf458 gives the four starts, one stride apart, and the count table gives each one's
+    // length.
+    for (int nTrail = 0; nTrail < kTrailCount; ++nTrail) {
+        m_apTrails[nTrail] =
+            new Polygon2dTrail(g_aClassicTrailVertexCounts[nTrail],
+                               &g_aClassicTrailVertices[nTrail * kTrailVertexStride]);
+    }
+}
+
 /** @ghidraAddress 0x1151fc */
 ResultWindowClassicLayer *ResultWindowClassicLayer::shared() {
     if (g_pClassicResultLayer == nullptr) {
-        // The binary allocates the raw 0x1c0-byte object and runs the colour-marker constructor
-        // (0x115094), which seeds the transform vectors and four colour sub-objects; that
-        // constructor's field initialisation is not yet reconstructed, so only the base is set up
-        // here.
+        // The binary allocates the raw 0x1c0-byte object and runs the constructor at 0x115094.
         g_pClassicResultLayer = new ResultWindowClassicLayer();
     }
     return g_pClassicResultLayer;
@@ -5991,86 +6017,86 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPositionPhoneStateLandscape[2].nAnchorMode = 0;
         g_aClassicPositionPhoneStateLandscape[3].flHeight = 44.0f;
         g_aClassicPositionPhoneStateLandscape[3].nAnchorMode = 4;
-        g_aClassicColorMarkerRects[0].flX = 179.0f;
-        g_aClassicColorMarkerRects[0].flY = 117.0f;
-        g_aClassicColorMarkerRects[1].flX = 123.0f;
-        g_aClassicColorMarkerRects[1].flY = 117.0f;
-        g_aClassicColorMarkerRects[2].flX = 121.0f;
-        g_aClassicColorMarkerRects[2].flY = 118.0f;
-        g_aClassicColorMarkerRects[3].flX = 119.0f;
-        g_aClassicColorMarkerRects[3].flY = 1.2e+02f;
-        g_aClassicColorMarkerRects[4].flX = 118.0f;
-        g_aClassicColorMarkerRects[4].flY = 122.0f;
-        g_aClassicColorMarkerRects[5].flX = 117.0f;
-        g_aClassicColorMarkerRects[5].flY = 347.0f;
-        g_aClassicColorMarkerRects[6].flX = 118.0f;
-        g_aClassicColorMarkerRects[6].flY = 349.0f;
-        g_aClassicColorMarkerRects[7].flX = 1.2e+02f;
-        g_aClassicColorMarkerRects[7].flY = 351.0f;
-        g_aClassicColorMarkerRects[8].flX = 122.0f;
-        g_aClassicColorMarkerRects[8].flY = 352.0f;
-        g_aClassicColorMarkerRects[9].flX = 384.0f;
-        g_aClassicColorMarkerRects[9].flY = 353.0f;
-        g_aClassicColorMarkerRects[10].flX = 589.0f;
-        g_aClassicColorMarkerRects[10].flY = 117.0f;
-        g_aClassicColorMarkerRects[11].flX = 646.0f;
-        g_aClassicColorMarkerRects[11].flY = 117.0f;
-        g_aClassicColorMarkerRects[12].flX = 648.0f;
-        g_aClassicColorMarkerRects[12].flY = 118.0f;
-        g_aClassicColorMarkerRects[13].flX = 6.5e+02f;
-        g_aClassicColorMarkerRects[13].flY = 1.2e+02f;
-        g_aClassicColorMarkerRects[14].flX = 651.0f;
-        g_aClassicColorMarkerRects[14].flY = 122.0f;
-        g_aClassicColorMarkerRects[15].flX = 652.0f;
-        g_aClassicColorMarkerRects[15].flY = 347.0f;
-        g_aClassicColorMarkerRects[16].flX = 651.0f;
-        g_aClassicColorMarkerRects[16].flY = 349.0f;
-        g_aClassicColorMarkerRects[17].flX = 649.0f;
-        g_aClassicColorMarkerRects[17].flY = 351.0f;
-        g_aClassicColorMarkerRects[18].flX = 647.0f;
-        g_aClassicColorMarkerRects[18].flY = 352.0f;
-        g_aClassicColorMarkerRects[19].flX = 384.0f;
-        g_aClassicColorMarkerRects[19].flY = 353.0f;
-        g_aClassicColorMarkerRects[20].flX = 179.0f;
-        g_aClassicColorMarkerRects[20].flY = 409.0f;
-        g_aClassicColorMarkerRects[21].flX = 123.0f;
-        g_aClassicColorMarkerRects[21].flY = 409.0f;
-        g_aClassicColorMarkerRects[22].flX = 121.0f;
-        g_aClassicColorMarkerRects[22].flY = 4.1e+02f;
-        g_aClassicColorMarkerRects[23].flX = 119.0f;
-        g_aClassicColorMarkerRects[23].flY = 412.0f;
-        g_aClassicColorMarkerRects[24].flX = 118.0f;
-        g_aClassicColorMarkerRects[24].flY = 414.0f;
-        g_aClassicColorMarkerRects[25].flX = 117.0f;
-        g_aClassicColorMarkerRects[25].flY = 904.0f;
-        g_aClassicColorMarkerRects[26].flX = 118.0f;
-        g_aClassicColorMarkerRects[26].flY = 906.0f;
-        g_aClassicColorMarkerRects[27].flX = 1.2e+02f;
-        g_aClassicColorMarkerRects[27].flY = 908.0f;
-        g_aClassicColorMarkerRects[28].flX = 122.0f;
-        g_aClassicColorMarkerRects[28].flY = 909.0f;
-        g_aClassicColorMarkerRects[29].flX = 384.0f;
-        g_aClassicColorMarkerRects[29].flY = 9.1e+02f;
-        g_ClassicColorMarkerOrigin.x = 384.0f;
-        g_ClassicColorMarkerOrigin.y = 9.1e+02f;
-        g_aClassicColorMarkerRects[30].flX = 589.0f;
-        g_aClassicColorMarkerRects[30].flY = 409.0f;
-        g_aClassicColorMarkerRects[31].flX = 646.0f;
-        g_aClassicColorMarkerRects[31].flY = 409.0f;
-        g_aClassicColorMarkerRects[32].flX = 648.0f;
-        g_aClassicColorMarkerRects[32].flY = 4.1e+02f;
-        g_aClassicColorMarkerRects[33].flX = 6.5e+02f;
-        g_aClassicColorMarkerRects[33].flY = 412.0f;
-        g_aClassicColorMarkerRects[34].flX = 651.0f;
-        g_aClassicColorMarkerRects[34].flY = 414.0f;
-        g_aClassicColorMarkerRects[35].flX = 652.0f;
-        g_aClassicColorMarkerRects[35].flY = 904.0f;
-        g_aClassicColorMarkerRects[36].flX = 651.0f;
-        g_aClassicColorMarkerRects[36].flY = 906.0f;
-        g_aClassicColorMarkerRects[37].flX = 649.0f;
-        g_aClassicColorMarkerRects[37].flY = 908.0f;
-        g_aClassicColorMarkerRects[38].flX = 647.0f;
-        g_aClassicColorMarkerRects[38].flY = 909.0f;
+        g_aClassicTrailVertices[0].x = 179.0f;
+        g_aClassicTrailVertices[0].y = 117.0f;
+        g_aClassicTrailVertices[2].x = 123.0f;
+        g_aClassicTrailVertices[2].y = 117.0f;
+        g_aClassicTrailVertices[4].x = 121.0f;
+        g_aClassicTrailVertices[4].y = 118.0f;
+        g_aClassicTrailVertices[6].x = 119.0f;
+        g_aClassicTrailVertices[6].y = 1.2e+02f;
+        g_aClassicTrailVertices[8].x = 118.0f;
+        g_aClassicTrailVertices[8].y = 122.0f;
+        g_aClassicTrailVertices[10].x = 117.0f;
+        g_aClassicTrailVertices[10].y = 347.0f;
+        g_aClassicTrailVertices[12].x = 118.0f;
+        g_aClassicTrailVertices[12].y = 349.0f;
+        g_aClassicTrailVertices[14].x = 1.2e+02f;
+        g_aClassicTrailVertices[14].y = 351.0f;
+        g_aClassicTrailVertices[16].x = 122.0f;
+        g_aClassicTrailVertices[16].y = 352.0f;
+        g_aClassicTrailVertices[18].x = 384.0f;
+        g_aClassicTrailVertices[18].y = 353.0f;
+        g_aClassicTrailVertices[20].x = 589.0f;
+        g_aClassicTrailVertices[20].y = 117.0f;
+        g_aClassicTrailVertices[22].x = 646.0f;
+        g_aClassicTrailVertices[22].y = 117.0f;
+        g_aClassicTrailVertices[24].x = 648.0f;
+        g_aClassicTrailVertices[24].y = 118.0f;
+        g_aClassicTrailVertices[26].x = 6.5e+02f;
+        g_aClassicTrailVertices[26].y = 1.2e+02f;
+        g_aClassicTrailVertices[28].x = 651.0f;
+        g_aClassicTrailVertices[28].y = 122.0f;
+        g_aClassicTrailVertices[30].x = 652.0f;
+        g_aClassicTrailVertices[30].y = 347.0f;
+        g_aClassicTrailVertices[32].x = 651.0f;
+        g_aClassicTrailVertices[32].y = 349.0f;
+        g_aClassicTrailVertices[34].x = 649.0f;
+        g_aClassicTrailVertices[34].y = 351.0f;
+        g_aClassicTrailVertices[36].x = 647.0f;
+        g_aClassicTrailVertices[36].y = 352.0f;
+        g_aClassicTrailVertices[38].x = 384.0f;
+        g_aClassicTrailVertices[38].y = 353.0f;
+        g_aClassicTrailVertices[40].x = 179.0f;
+        g_aClassicTrailVertices[40].y = 409.0f;
+        g_aClassicTrailVertices[42].x = 123.0f;
+        g_aClassicTrailVertices[42].y = 409.0f;
+        g_aClassicTrailVertices[44].x = 121.0f;
+        g_aClassicTrailVertices[44].y = 4.1e+02f;
+        g_aClassicTrailVertices[46].x = 119.0f;
+        g_aClassicTrailVertices[46].y = 412.0f;
+        g_aClassicTrailVertices[48].x = 118.0f;
+        g_aClassicTrailVertices[48].y = 414.0f;
+        g_aClassicTrailVertices[50].x = 117.0f;
+        g_aClassicTrailVertices[50].y = 904.0f;
+        g_aClassicTrailVertices[52].x = 118.0f;
+        g_aClassicTrailVertices[52].y = 906.0f;
+        g_aClassicTrailVertices[54].x = 1.2e+02f;
+        g_aClassicTrailVertices[54].y = 908.0f;
+        g_aClassicTrailVertices[56].x = 122.0f;
+        g_aClassicTrailVertices[56].y = 909.0f;
+        g_aClassicTrailVertices[58].x = 384.0f;
+        g_aClassicTrailVertices[58].y = 9.1e+02f;
+        g_aClassicTrailVertices[78].x = 384.0f;
+        g_aClassicTrailVertices[78].y = 9.1e+02f;
+        g_aClassicTrailVertices[60].x = 589.0f;
+        g_aClassicTrailVertices[60].y = 409.0f;
+        g_aClassicTrailVertices[62].x = 646.0f;
+        g_aClassicTrailVertices[62].y = 409.0f;
+        g_aClassicTrailVertices[64].x = 648.0f;
+        g_aClassicTrailVertices[64].y = 4.1e+02f;
+        g_aClassicTrailVertices[66].x = 6.5e+02f;
+        g_aClassicTrailVertices[66].y = 412.0f;
+        g_aClassicTrailVertices[68].x = 651.0f;
+        g_aClassicTrailVertices[68].y = 414.0f;
+        g_aClassicTrailVertices[70].x = 652.0f;
+        g_aClassicTrailVertices[70].y = 904.0f;
+        g_aClassicTrailVertices[72].x = 651.0f;
+        g_aClassicTrailVertices[72].y = 906.0f;
+        g_aClassicTrailVertices[74].x = 649.0f;
+        g_aClassicTrailVertices[74].y = 908.0f;
+        g_aClassicTrailVertices[76].x = 647.0f;
+        g_aClassicTrailVertices[76].y = 909.0f;
         g_ClassicCenterPositionPhoneState.flX = 119.0f;
         g_ClassicCenterPositionPhoneState.flY = 439.0f;
         g_ClassicCenterPositionPhonePortrait.flX = -141.0f;

@@ -712,6 +712,18 @@ public:
 
 private:
     /**
+     * @brief Constructs the layer: chains the base constructor, seeds the fields whose defaults are
+     * not zero, and builds the four ribbon trails.
+     *
+     * The gesture regions and the slider start with no tracked touch, the reveal sound-effect
+     * handle with no play in flight, and each trail is handed one of the four vertex-buffer starts
+     * listed in the pointer table at 0x3cf458 together with its vertex count. Every other field is
+     * left at the zero the binary writes explicitly.
+     * @ghidraAddress 0x115094
+     */
+    ResultWindowClassicLayer();
+
+    /**
      * @brief Begins loading the customize-character main asset for the result screen. Reconstruction
      * pending.
      * @ghidraAddress 0x11c66c
