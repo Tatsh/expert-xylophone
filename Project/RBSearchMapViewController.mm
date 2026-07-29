@@ -15,10 +15,10 @@
 #import "UIImage+RB.h"
 
 // SoundEffectManager::GetInstance()->PlayThemedSoundEffect(slot).
+#import "engineglobals.h"
 #import "soundeffectmanager.h"
 
 // The shared web-view indicator autoresizing mask.
-extern const unsigned int g_dwRBWebViewIndicatorAutoresizingMask; // @ghidraAddress 0x310460
 
 namespace {
 // The back button plays the shared "cancel" sound-effect slot.

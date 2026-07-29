@@ -15,7 +15,6 @@
 #import "engineglobals.h"
 
 // The localised store-loading title, reused from the store page. @ghidraAddress 0x3cfca8.
-extern NSString *const g_pStoreLoadingTitle;
 
 // The number of tune rows the panel always lays out, matching the pack tune-slot count.
 static const NSInteger kMusicRowCount = 4;
@@ -277,7 +276,7 @@ static const CGFloat kCenterScale = 0.5;
     self.labelLoading.shadowColor = [UIColor colorWithWhite:0.0 alpha:kLoadingShadowAlpha];
     self.labelLoading.shadowOffset = CGSizeMake(0.0, kTitleShadowOffsetY);
     self.labelLoading.textAlignment = NSTextAlignmentCenter;
-    self.labelLoading.text = g_pStoreLoadingTitle;
+    self.labelLoading.text = g_pLocalizedLoadingMixed;
     self.labelLoading.center = CGPointMake(
         kMusicRowStepX * kCenterScale, kMusicRowStepY * kCenterScale + kLoadingLabelCenterYOffset);
     isInfoLoaded = NO;

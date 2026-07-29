@@ -9,7 +9,6 @@
 // A shared layout metric of 60 points, reached by its Ghidra address as the other reconstructed
 // views (for example RBSearchMapView) do. The 100-point metric and the 0.3-second short fade come
 // from the engine bridge header instead.
-extern const double g_dLayoutMetricSixty; // @ghidraAddress 0x2ee948 (60.0)
 
 // Store badge asset names used by the cell.
 static NSString *const kStoreNewBadgeImageName = @"09_store/store_new";

@@ -11,9 +11,9 @@
 //
 
 #import "ApplilinkIndicator.h"
+#import "engineglobals.h"
 
 // The activity indicator is an 80x80 square, sharing the shared eighty-point layout metric.
-extern const double g_dLayoutMetricEighty; // @ghidraAddress 0x2ec6c8 (80.0)
 
 // The overlay dims its black background to half opacity, and each bounds axis is halved to centre
 // the spinner.

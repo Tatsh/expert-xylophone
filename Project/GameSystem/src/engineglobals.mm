@@ -67,7 +67,31 @@ const double g_dMascotMessageMaxWidthPad = 300.0;
 const double g_dMascotMessageMaxWidthPhone = 200.0;
 const double g_dSliderRowHeightWide = 40.0;
 const double g_dLayoutMetricThirtyTwo = 32.0;
+const double g_dLayoutMetricSixty = 60.0;
+const double g_dLayoutMetricEighty = 80.0;
+const double g_dCustomizeLayoutMetric82 = 82.0;
+const double g_dStoreDetailCopyrightLabelWidth = 310.0;
+const double g_dPopupBaseOriginYWide = 160.0;
+const double g_dTermButtonRowHeight = 50.0;
+const double g_dNameImageMaxWidth = 280.0;
+const double g_dRBWebViewGrayViewWhite = 0.6000000238418579;
+const double g_dRBNavBarTintWhite = 0.054901960784313725;
 const float g_flDefaultExplosionEffectSize = 0.8999999761581421f;
+
+// The two shared autoresizing masks: every margin and dimension flexible, and the indicator mask
+// that flexes only the four margins.
+const unsigned int g_dwAutoresizingMaskFlexibleAll = 0x3f;
+const unsigned int g_dwRBWebViewIndicatorAutoresizingMask = 0x2d;
+
+// The Limelight experience-package title colours at 0x310274: twenty-four RGB triples that cycle
+// through the same six colours (blue, green, red, cyan, magenta, cyan) four times.
+const float g_afLimelightPackageTitleColorTable[] = {
+    0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+};
 
 // The device screen height in points, seeded by the play-field layout pass.
 int g_nVariantScreenHeight;

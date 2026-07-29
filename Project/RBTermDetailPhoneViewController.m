@@ -56,16 +56,12 @@ static const CGFloat kColorAlphaOpaque = 1.0;
 extern const double g_dMascotMessageAnimDuration;
 
 // The dimming-overlay white component (0.6).
-// @ghidraAddress 0x2ec708 (g_dRBWebViewGrayViewWhite)
-extern const double g_dRBWebViewGrayViewWhite;
 
 // The term-body text white component (0.8), reused as a shared translucent value across the tree.
 // @ghidraAddress 0x2ec6a0 (g_dTranslucentAlpha)
 extern const double g_dTranslucentAlpha;
 
 // The dark navigation-bar tint white component (14/255).
-// @ghidraAddress 0x2eef50 (g_dRBNavBarTintWhite)
-extern const double g_dRBNavBarTintWhite;
 
 // The autoresizing masks applied to the overlay, spinner, term container, and text view,
 // transcribed verbatim from the binary's raw flag values.

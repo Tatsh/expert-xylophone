@@ -4,13 +4,11 @@
 #import "RBViewController.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
+#import "engineglobals.h"
 
 // Shared layout metrics reached by their Ghidra address as the other reconstructed store cells do;
 // they are not yet in the engine bridge header. Eighty is the tune-row height and the label column
 // left edge, sixty is the levels-label top, and eighty-two is the levels-label left edge.
-extern const double g_dLayoutMetricEighty;      // @ghidraAddress 0x2ec6c8 (80.0)
-extern const double g_dLayoutMetricSixty;       // @ghidraAddress 0x2ee948 (60.0)
-extern const double g_dCustomizeLayoutMetric82; // @ghidraAddress 0x3011c8 (82.0)
 
 // Store asset names used by the cell.
 static NSString *const kStoreDefaultJacketImageName = @"09_store/store_jacket_64";

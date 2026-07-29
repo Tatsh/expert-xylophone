@@ -26,16 +26,11 @@
 
 // The shared translucent-panel white value defined in another store screen; declared here rather
 // than redefined, matching how the store page controller reaches it.
-extern const CGFloat g_dRBWebViewGrayViewWhite; // @ghidraAddress 0x2ec708
 
 // Runtime-populated localised NSString globals held in the application's __DATA segment
 // (zero-initialised at link time and assigned during startup). They are declared here so the
 // implementation can reference them by name; they are never defined in the reconstructed source.
-extern NSString *const g_pStorePriceButtonFormat;    // @ghidraAddress 0x3cfb78 buy-price title.
-extern NSString *const g_pStoreInstallButtonTitle;   // @ghidraAddress 0x3cfc00 "install" title.
-extern NSString *const g_pStoreInstalledButtonTitle; // @ghidraAddress 0x3cfc08 "installed" title.
 // @ghidraAddress 0x3cfc10 "installing" title.
-extern NSString *const g_pStoreInstallingButtonTitle;
 
 // The navigation-item title of the detail screen.
 static NSString *const kDetailNavigationTitle = @"info";
@@ -522,23 +517,23 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 #pragma mark - Action button
 
 - (void)setButtonTextBuy {
-    NSString *buyTitle = [NSString stringWithFormat:g_pStorePriceButtonFormat, @(self.info.price)];
+    NSString *buyTitle = [NSString stringWithFormat:g_pLocalizedBuyFormat, @(self.info.price)];
     [self.downloadBtn setTitle:buyTitle forState:kControlStateNormal];
     [self.downloadBtn setEnabled:YES];
 }
 
 - (void)setButtonTextInstall {
-    [self.downloadBtn setTitle:g_pStoreInstallButtonTitle forState:kControlStateNormal];
+    [self.downloadBtn setTitle:g_pLocalizedInstall forState:kControlStateNormal];
     [self.downloadBtn setEnabled:YES];
 }
 
 - (void)setButtonTextInstalling {
-    [self.downloadBtn setTitle:g_pStoreInstallingButtonTitle forState:kControlStateDisabled];
+    [self.downloadBtn setTitle:g_pLocalizedInstalling forState:kControlStateDisabled];
     [self.downloadBtn setEnabled:NO];
 }
 
 - (void)setButtonTextInstalled {
-    [self.downloadBtn setTitle:g_pStoreInstalledButtonTitle forState:kControlStateDisabled];
+    [self.downloadBtn setTitle:g_pLocalizedInstalled forState:kControlStateDisabled];
     [self.downloadBtn setEnabled:NO];
 }
 

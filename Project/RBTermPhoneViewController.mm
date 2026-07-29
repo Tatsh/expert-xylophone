@@ -57,8 +57,6 @@ static NSString *const kTermButtonImageName = @"23_terms/tos_btn";
 extern const double g_dMascotMessageAnimDuration;
 
 // The dimming-overlay white component (0.6).
-// @ghidraAddress 0x2ec708 (g_dRBWebViewGrayViewWhite)
-extern const double g_dRBWebViewGrayViewWhite;
 
 // The wide (iPad) fixed term-button width (300.0).
 // @ghidraAddress 0x2ee930 (g_dMascotMessageMaxWidthPad)
@@ -69,12 +67,8 @@ extern const double g_dMascotMessageMaxWidthPad;
 extern const double g_dLayoutMetricThirtyTwo;
 
 // The dark navigation-bar tint white component (14/255).
-// @ghidraAddress 0x2eef50 (g_dRBNavBarTintWhite)
-extern const double g_dRBNavBarTintWhite;
 
 // The term-button row height (50.0).
-// @ghidraAddress 0x2ec6e0 (g_dTermButtonRowHeight)
-extern const double g_dTermButtonRowHeight;
 
 // The pad list start-Y table indexed by (thema == classic): the themed themes start at 64.0, the
 // classic theme at 32.0.

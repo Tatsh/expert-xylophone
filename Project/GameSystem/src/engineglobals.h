@@ -601,6 +601,64 @@ extern UIColor *g_pPaletteSteelBlueColor3;  /*!< @ghidraAddress 0x3d0000 */
 #endif
 /** @brief The 32-point shared layout metric. @ghidraAddress 0x2ee9b0 */
 extern const double g_dLayoutMetricThirtyTwo;
+/** @brief The 60-point shared layout metric. @ghidraAddress 0x2ee948 */
+extern const double g_dLayoutMetricSixty;
+/** @brief The 80-point shared layout metric. @ghidraAddress 0x2ec6c8 */
+extern const double g_dLayoutMetricEighty;
+/** @brief The 82-point customize-row layout metric. @ghidraAddress 0x3011c8 */
+extern const double g_dCustomizeLayoutMetric82;
+/** @brief The store detail copyright label width. @ghidraAddress 0x2eea30 */
+extern const double g_dStoreDetailCopyrightLabelWidth;
+/** @brief The wide-layout popup base Y origin. @ghidraAddress 0x2eea38 */
+extern const double g_dPopupBaseOriginYWide;
+/** @brief The terms screen's button row height. @ghidraAddress 0x2ec6e0 */
+extern const double g_dTermButtonRowHeight;
+/** @brief The searchable-spot name image maximum width. @ghidraAddress 0x2fcfd8 */
+extern const double g_dNameImageMaxWidth;
+/** @brief The web-view loading cover's grey white value. @ghidraAddress 0x2ec708 */
+extern const double g_dRBWebViewGrayViewWhite;
+/** @brief The navigation bar tint white value. @ghidraAddress 0x2eef50 */
+extern const double g_dRBNavBarTintWhite;
+/**
+ * @brief The autoresizing mask that flexes every margin and both dimensions (0x3f).
+ * @ghidraAddress 0x310450
+ */
+extern const unsigned int g_dwAutoresizingMaskFlexibleAll;
+/**
+ * @brief The autoresizing mask the web-view and map activity indicators use, flexing only the four
+ * margins (0x2d).
+ * @ghidraAddress 0x310460
+ */
+extern const unsigned int g_dwRBWebViewIndicatorAutoresizingMask;
+/**
+ * @brief The Limelight experience-package title colours, as RGB triples indexed by the package
+ * order. Twenty-four packages cycle through the same six colours.
+ * @ghidraAddress 0x310274
+ */
+extern const float g_afLimelightPackageTitleColorTable[];
+/** @brief The 60-point shared layout metric. @ghidraAddress 0x2ee948 */
+/** @brief The 80-point shared layout metric. @ghidraAddress 0x2ec6c8 */
+/** @brief The 82-point customize-row layout metric. @ghidraAddress 0x3011c8 */
+/** @brief The store detail copyright label width. @ghidraAddress 0x2eea30 */
+/** @brief The wide-layout popup base Y origin. @ghidraAddress 0x2eea38 */
+/** @brief The terms screen's button row height. @ghidraAddress 0x2ec6e0 */
+/** @brief The searchable-spot name image maximum width. @ghidraAddress 0x2fcfd8 */
+/** @brief The web-view loading cover's grey white value. @ghidraAddress 0x2ec708 */
+/** @brief The navigation bar tint white value. @ghidraAddress 0x2eef50 */
+/**
+ * @brief The autoresizing mask that flexes every margin and both dimensions (0x3f).
+ * @ghidraAddress 0x310450
+ */
+/**
+ * @brief The autoresizing mask the web-view and map activity indicators use, flexing only the four
+ * margins (0x2d).
+ * @ghidraAddress 0x310460
+ */
+/**
+ * @brief The Limelight experience-package title colours, as RGB triples indexed by the package
+ * order. Twenty-four packages cycle through the same six colours.
+ * @ghidraAddress 0x310274
+ */
 
 /**
  * @brief The tutorial-pastel message-bubble clip rectangles, indexed: 0 head, 1 body, 2 left tail,

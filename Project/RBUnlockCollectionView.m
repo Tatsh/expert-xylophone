@@ -21,6 +21,7 @@
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 
 // The stretchable frame image drawn behind the package title and items.
 static NSString *const kUnlockFrameImageName = @"04_customize/cus_fram_unlock";
@@ -105,8 +106,6 @@ static const CGFloat kColetteTitleBlue = 58.0 / 255.0;
 
 // The Limelight per-package title-colour palette: interleaved red, green, and blue float triples
 // indexed by the package's display order.
-// @ghidraAddress 0x310274 (g_afLimelightPackageTitleColorTable)
-extern const float g_afLimelightPackageTitleColorTable[];
 static const int kPackageColorStride = 3;
 
 enum {

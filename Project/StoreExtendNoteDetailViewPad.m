@@ -14,13 +14,11 @@
 #import "engineglobals.h"
 
 // The localised "Loading..." title, reused from the store page. @ghidraAddress 0x3cfca8.
-extern NSString *const g_pStoreLoadingTitle;
 
 // Shared engine layout constants. @ghidraAddress values are image-base offsets.
 extern const double g_dMascotMessageMaxWidthPad;   // @ghidraAddress 0x2ee930 (300.0)
 extern const double g_dMascotMessageMaxWidthPhone; // @ghidraAddress 0x2ee938 (200.0)
 extern const double g_dLayoutMetricThirtyTwo;      // @ghidraAddress 0x2ee9b0 (32.0)
-extern const double g_dRBWebViewGrayViewWhite;     // @ghidraAddress 0x2ec708
 
 // Image asset names.
 static NSString *const kStorePackBgImageName = @"09_store/store_pack_bg_2";
@@ -259,7 +257,7 @@ typedef enum {
     [self.labelLoading setShadowColor:[UIColor colorWithWhite:0.0 alpha:kLoadingShadowAlpha]];
     [self.labelLoading setShadowOffset:CGSizeMake(0.0, -1.0)];
     [self.labelLoading setTextAlignment:NSTextAlignmentCenter];
-    [self.labelLoading setText:g_pStoreLoadingTitle];
+    [self.labelLoading setText:g_pLocalizedLoadingMixed];
     [self.labelLoading setCenter:CGPointMake(CGRectGetWidth(self.frame) * 0.5,
                                              CGRectGetHeight(self.frame) * 0.5 + 15.0)];
     sampleStatus = StoreSampleStatusStopped;

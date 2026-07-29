@@ -44,7 +44,6 @@
 
 // The shared translucent-panel white value used by the store manage and web screens. It is a
 // file-scope global defined in another store screen, so it is declared here rather than redefined.
-extern CGFloat g_dRBWebViewGrayViewWhite;
 
 // View tags looked up with -[UIView viewWithTag:] against the page view or the pack table. The
 // pack table and its banner overlays keep the tags the binary assigns in loadView.
@@ -255,8 +254,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self = [super init];
     if (self != nil) {
         self.parent = parent;
-        [self.navigationItem setTitle:g_pStoreExtendTitle];
-        [self.tabBarItem setTitle:g_pStoreExtendTitle];
+        [self.navigationItem setTitle:g_pLocalizedSequences];
+        [self.tabBarItem setTitle:g_pLocalizedSequences];
         [self.tabBarItem setImage:[UIImage imageWithName:@"09_store/icon_append"]];
         self.extendNoteListCtrl = [[RBStoreExtendNoteList alloc] init];
         [self.extendNoteListCtrl setDelegate:self];
@@ -312,7 +311,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.packTableLabel setShadowColor:UIColor.lightGrayColor];
         [self.packTableLabel setShadowOffset:CGSizeMake(1.0, 1.0)];
         [self.packTableLabel setFont:[UIFont systemFontOfSize:kPackLabelFontSize]];
-        [self.packTableLabel setText:g_pStoreExtendTitle];
+        [self.packTableLabel setText:g_pLocalizedSequences];
         [self.packTableLabel sizeToFit];
         // Widen the label's bounds to the fixed pack-table width, keeping its fitted height.
         [self.packTableLabel setBounds:CGRectMake(0.0,
@@ -326,7 +325,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [self.view addSubview:self.packTableLabel];
 
         UIButton *showMore = [UIButton buttonWithType:UIButtonTypeCustom];
-        [showMore setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+        [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
         [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
         [showMore sizeToFit];
         // Anchor the button just above the view's bottom edge.
@@ -422,7 +421,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                 initWithFrame:CGRectMake(0.0, 0.0, viewBounds.size.width, kBannerLabelHeight)];
             [bannerLabel setTag:kBannerLabelTag];
             [bannerLabel setBackgroundColor:UIColor.clearColor];
-            [bannerLabel setText:g_pStoreBannerTitle];
+            [bannerLabel setText:g_pLocalizedPushUpToShowMore];
             [bannerLabel setFont:[UIFont systemFontOfSize:kBannerLabelFontSize]];
             [bannerLabel setTextColor:UIColor.whiteColor];
             [bannerLabel setTextAlignment:NSTextAlignmentCenter];
@@ -473,7 +472,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                           static_cast<CGFloat>(
                                               static_cast<int>(viewBounds.size.height * 0.5)))];
         [errorTitle setAutoresizingMask:kMaskFlexibleWidthHeight];
-        [errorTitle setText:g_pStoreLoadingTitle];
+        [errorTitle setText:g_pLocalizedLoadingMixed];
         [errorTitle setHidden:NO];
         [self.view addSubview:errorTitle];
     }
@@ -704,7 +703,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         // first backing view.
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
-            [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+            [self.showMoreButton setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
             CGPoint buttonCenter = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
             [self.showMoreButton setCenter:buttonCenter];
@@ -728,7 +727,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)extendNoteListDownloadError:(id)downloader errorMessage:(NSString *)errorMessage {
     if (errorMessage == nil) {
-        errorMessage = g_pStoreServerConnectFailed;
+        errorMessage = g_pLocalizedServerConnectFailed;
     }
     UITableView *packTable = static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
     if (![packTable isHidden]) {
@@ -737,7 +736,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [UIAlertView showWithErrorMessage:errorMessage delegate:nil];
         if (self.showMoreButton != nil) {
             [self.showMoreButton setHidden:NO];
-            [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+            [self.showMoreButton setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
             CGPoint buttonCenter = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
             [self.showMoreButton setCenter:buttonCenter];
@@ -761,7 +760,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         [packTable setAllowsSelection:YES];
         [packTable reloadData];
     } else {
-        [self showError:g_pStoreNoExtendNotes];
+        [self showError:g_pLocalizedServerNoData];
     }
     [[AppDelegate appDelegate] setExtendNotePIDForOpenStore:0];
 }
@@ -848,7 +847,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         // Suppress sample BGM, show the "stop" glyph, and blank the sample-music label.
         [[RBUserSettingData sharedInstance] setRefuseStoreSampleBGM:YES];
         [self.samplePlayButton setImage:self.stopImage forState:UIControlStateNormal];
-        [self.sampleMusicLabel setText:g_pStoreSampleStoppedMessage];
+        [self.sampleMusicLabel setText:@""];
     }
 }
 
@@ -942,7 +941,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.downloadManager = manager;
         StoreDialogView *dialog = self.parent.modalDialog;
         [dialog layout:kModalDialogLayoutMessage];
-        [dialog.labelMessage setText:g_pStoreInstallingMessage];
+        [dialog.labelMessage setText:@""];
         [self.downloadManager start];
     }
 }
@@ -976,7 +975,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)startPurchase:(StoreExtendNoteInfo *)info {
     if (![RBPurchaseManager isPurchasable] || info.product == nil) {
-        [UIAlertView showWithErrorMessage:g_pStorePurchaseFailedMessage delegate:nil];
+        [UIAlertView showWithErrorMessage:g_pLocalizedInAppPurchasesDisabled delegate:nil];
         return;
     }
 
@@ -988,7 +987,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     StoreDialogView *dialog = self.parent.modalDialog;
     [dialog layout:kModalDialogLayoutProgress];
-    [dialog.labelMessage setText:g_pStorePurchasingMessage];
+    [dialog.labelMessage setText:g_pLocalizedProcessing];
     [self.parent showModalDialog:self];
     [[RBPurchaseManager sharedManager] setDelegate:self];
     [[RBPurchaseManager sharedManager] beginPurchase:info.product];
@@ -1252,7 +1251,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
         StoreDialogView *dialog = self.parent.modalDialog;
         [dialog layout:kModalDialogLayoutMessage];
-        [dialog.labelMessage setText:g_pStoreDownloadInProgressMessage];
+        [dialog.labelMessage setText:@""];
 
         [self.downloadManager start];
     }
@@ -1276,7 +1275,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         if (buttonIndex == kAlertButtonConfirm) {
             StoreDialogView *dialog = self.parent.modalDialog;
             [dialog layout:kModalDialogLayoutProgress];
-            [dialog.labelMessage setText:g_pStoreRestoreInProgressMessage];
+            [dialog.labelMessage setText:g_pLocalizedProcessing];
             [self.parent showModalDialog:self];
 
             [[RBPurchaseManager sharedManager] setDelegate:self];
@@ -1425,7 +1424,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self.downloadManager = nil;
     [self.parent hideModalDialog];
 
-    NSString *failed = [[NSString alloc] initWithString:g_pStoreDownloadFailedMessage];
+    NSString *failed = [[NSString alloc] initWithString:g_pLocalizedDownloadFailed];
     [UIAlertView showWithErrorMessage:failed delegate:nil];
 
     if (!m_IsPad) {
@@ -1615,7 +1614,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     m_IsLoadingMoreList = YES;
     // Blank the button title, recentre it after a sizeToFit, reveal the spinner, hide the footer
     // spinner view, then fetch the next page.
-    [self.showMoreButton setTitle:g_pStoreLoadingTitle forState:UIControlStateNormal];
+    [self.showMoreButton setTitle:g_pLocalizedLoadingMixed forState:UIControlStateNormal];
     CGPoint center = self.showMoreButton.center;
     [self.showMoreButton sizeToFit];
     [self.showMoreButton setCenter:center];
@@ -1990,7 +1989,7 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
         cell.accessoryView = nil;
         cell.textLabel.textColor = [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0];
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellTextWhite alpha:1.0];
-        cell.textLabel.text = g_pStoreShowMoreTitle;
+        cell.textLabel.text = g_pLocalizedShowMore;
     } else {
         UIActivityIndicatorView *spinner =
             [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
@@ -2000,7 +1999,7 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
         [spinner startAnimating];
         cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhite alpha:1.0];
         cell.textLabel.shadowColor = nil;
-        cell.textLabel.text = g_pStoreLoadingTitle;
+        cell.textLabel.text = g_pLocalizedLoadingMixed;
     }
     return cell;
 }

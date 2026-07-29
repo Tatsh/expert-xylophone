@@ -118,8 +118,8 @@ static NSString *const kStoreTopKey = @"TOP ";
 
 // The empty store-tab title and the pad pack-table title are one-off literals. The remaining
 // display strings are the shared store-layer NSString globals declared in
-// RBStoreExtendPageViewController.h (g_pStoreShowMoreTitle @0x3cfd70, g_pStoreLoadingTitle @0x3cfca8,
-// g_pStoreBannerTitle @0x3cfd18, and the modal-dialog messages), reused here rather than redeclared.
+// RBStoreExtendPageViewController.h (g_pLocalizedShowMore @0x3cfd70, g_pLocalizedLoadingMixed @0x3cfca8,
+// g_pLocalizedPushUpToShowMore @0x3cfd18, and the modal-dialog messages), reused here rather than redeclared.
 static NSString *const kStoreEmptyTitle = @"";         // @ghidraAddress 0x3cfd90
 static NSString *const kStorePackTableTitle = @"PACK"; // @ghidraAddress 0x3cfce8
 
@@ -457,7 +457,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     [self.view addSubview:self.promotionView];
 
     UIButton *showMore = [UIButton buttonWithType:UIButtonTypeCustom];
-    [showMore setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+    [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
     [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     [showMore sizeToFit];
     showMore.center =
@@ -551,7 +551,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                 [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, bounds.size.width, 25.0)];
             info.tag = kTagInfoLabel;
             info.backgroundColor = UIColor.clearColor;
-            info.text = g_pStoreBannerTitle;
+            info.text = g_pLocalizedPushUpToShowMore;
             info.font = [UIFont systemFontOfSize:kInfoLabelFontSize];
             info.textColor = UIColor.whiteColor;
             info.textAlignment = NSTextAlignmentCenter;
@@ -594,7 +594,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                                      (CGFloat)(int)(bounds.size.height * kCenterScale));
         loading.autoresizingMask =
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        loading.text = g_pStoreLoadingTitle;
+        loading.text = g_pLocalizedLoadingMixed;
         loading.hidden = NO;
         [self.view addSubview:loading];
 
@@ -858,7 +858,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (self.packListCtrl.packlistContinued) {
         if (self.showMoreButton != nil) {
             self.showMoreButton.hidden = NO;
-            [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+            [self.showMoreButton setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
             CGPoint center = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
             self.showMoreButton.center = center;
@@ -898,14 +898,14 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 /** @ghidraAddress 0x1e2a6c */
 - (void)packListDownloadError:(RBStorePackList *)packList errorMessage:(NSString *)errorMessage {
     if (errorMessage == nil) {
-        errorMessage = g_pStoreServerConnectFailed;
+        errorMessage = g_pLocalizedServerConnectFailed;
     }
     UITableView *table = (UITableView *)[self.view viewWithTag:kTagPackTable];
     if (!table.isHidden) {
         [UIAlertView showWithErrorMessage:errorMessage delegate:nil];
         if (self.showMoreButton != nil) {
             self.showMoreButton.hidden = NO;
-            [self.showMoreButton setTitle:g_pStoreShowMoreTitle forState:UIControlStateNormal];
+            [self.showMoreButton setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
             CGPoint center = self.showMoreButton.center;
             [self.showMoreButton sizeToFit];
             self.showMoreButton.center = center;
@@ -941,7 +941,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         table.allowsSelection = YES;
         [table reloadData];
     } else {
-        [self showError:g_pStoreBannerTitle];
+        [self showError:g_pLocalizedPushUpToShowMore];
     }
 }
 
@@ -1116,7 +1116,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         cell.accessoryView = nil;
         cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhiteIdle alpha:1.0];
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellShadowWhite alpha:1.0];
-        cell.textLabel.text = g_pStoreShowMoreTitle;
+        cell.textLabel.text = g_pLocalizedShowMore;
     } else {
         UIActivityIndicatorView *indicator =
             [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
@@ -1125,7 +1125,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         [indicator startAnimating];
         cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhiteLoading alpha:1.0];
         cell.textLabel.shadowColor = nil;
-        cell.textLabel.text = g_pStoreLoadingTitle;
+        cell.textLabel.text = g_pLocalizedLoadingMixed;
     }
 }
 
@@ -1219,7 +1219,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
     m_IsLoadingMoreList = YES;
 
-    [self.showMoreButton setTitle:g_pStoreLoadingTitle forState:UIControlStateNormal];
+    [self.showMoreButton setTitle:g_pLocalizedLoadingMixed forState:UIControlStateNormal];
     CGPoint center = self.showMoreButton.center;
     [self.showMoreButton sizeToFit];
     self.showMoreButton.center = center;
@@ -1678,14 +1678,14 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 /** @ghidraAddress 0x1e52f8 */
 - (void)detailViewStartPurchase:(StorePackInfo *)packInfo {
     if (![RBPurchaseManager isPurchasable] || packInfo.product == nil) {
-        [UIAlertView showWithErrorMessage:g_pStorePurchaseFailedMessage delegate:nil];
+        [UIAlertView showWithErrorMessage:g_pLocalizedInAppPurchasesDisabled delegate:nil];
         return;
     }
     self.purchasingPackInfo = packInfo;
     if (![self checkAttainLimitPurchase:packInfo.product]) {
         StoreDialogView *dialog = self.parent.modalDialog;
         [dialog layout:YES];
-        dialog.labelMessage.text = g_pStorePurchasingMessage;
+        dialog.labelMessage.text = g_pLocalizedProcessing;
         [self.parent showModalDialog:self];
         [RBPurchaseManager sharedManager].delegate = self;
         [[RBPurchaseManager sharedManager] beginPurchase:packInfo.product];
@@ -2203,7 +2203,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1e925c */
 - (void)downloadManagerFailed:(StoreDownloadManager *)manager {
-    NSString *message = [[NSString alloc] initWithString:g_pStoreDownloadFailedMessage];
+    NSString *message = [[NSString alloc] initWithString:g_pLocalizedDownloadFailed];
     UIAlertView *alert = [UIAlertView showConnectRetryWithErrorMessage:message delegate:self];
     alert.tag = kAlertTagDownloadRetry;
 }
@@ -2277,7 +2277,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         if (buttonIndex == kAlertButtonConfirm) {
             StoreDialogView *dialog = self.parent.modalDialog;
             [dialog layout:YES];
-            dialog.labelMessage.text = g_pStoreRestoreInProgressMessage;
+            dialog.labelMessage.text = g_pLocalizedProcessing;
             [self.parent showModalDialog:self];
             [RBPurchaseManager sharedManager].delegate = self;
             [[RBPurchaseManager sharedManager] beginRestore];

@@ -18,6 +18,7 @@
 #import "RBRankingTableCell.h"
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
+#import "engineglobals.h"
 
 // The reuse identifier shared by every ranking row cell.
 static NSString *const kRankingCellIdentifier = @"RANKING_TABLE";
@@ -78,20 +79,6 @@ static const CGFloat kClassicHighlightRed = 75.0 / kColorScale;
 static const CGFloat kClassicHighlightGreen = 13.0 / kColorScale;
 static const CGFloat kClassicHighlightBlue = 79.0 / kColorScale;
 
-// The following localized-string globals are cached at startup by the shared localization loader
-// and defined in that translation unit; they are read here by address.
-
-// 0x3cfbe8, localization key "Failed to connect GameCenter."
-extern NSString *g_localizedGameCenterConnectFailed;
-// 0x3cfbf0, localization key "No Leaderboard data".
-extern NSString *g_localizedNoLeaderboardData;
-// 0x3cfca8, localization key "Loading...".
-extern NSString *g_localizedLoading;
-// 0x3cfcb0, localization key "LOADING...".
-extern NSString *g_localizedLoadingUpper;
-// 0x3cfd78, localization key "_", the "show more" arrow glyph.
-extern NSString *g_localizedShowMoreArrow;
-
 @implementation RBRankingTableView {
     // Non-property backing ivars.
     // Whether the board is being shown on an iPad, selecting the wider row height.
@@ -151,8 +138,8 @@ extern NSString *g_localizedShowMoreArrow;
                                         forState:UIControlStateNormal];
         [self.buttonLoadNext setTitleColor:self.strokeColor forState:UIControlStateHighlighted];
         [self.buttonLoadNext setTitleColor:self.strokeColor forState:UIControlStateSelected];
-        [self.buttonLoadNext setTitle:g_localizedShowMoreArrow forState:UIControlStateNormal];
-        [self.buttonLoadNext setTitle:g_localizedLoadingUpper forState:UIControlStateSelected];
+        [self.buttonLoadNext setTitle:g_pLocalizedSlash forState:UIControlStateNormal];
+        [self.buttonLoadNext setTitle:g_pLocalizedLoadingUpper forState:UIControlStateSelected];
         self.buttonLoadNext.titleLabel.font = [UIFont boldSystemFontOfSize:kLoadNextTitleFontSize];
         [self.buttonLoadNext addTarget:self
                                 action:@selector(pushLoadNext:)
@@ -217,7 +204,7 @@ extern NSString *g_localizedShowMoreArrow;
         return;
     }
     self.msgLabel.hidden = NO;
-    self.msgLabel.text = g_localizedLoading;
+    self.msgLabel.text = g_pLocalizedLoadingMixed;
     self.buttonLoadNext.hidden = YES;
     if (self.playerScope == GKLeaderboardPlayerScopeFriendsOnly) {
         RBRankingTableView *scoreView = self;
@@ -240,7 +227,7 @@ extern NSString *g_localizedShowMoreArrow;
         self.arrayScore = [[NSMutableArray alloc] init];
         [self load:friendIDs.count + 1];
     } else {
-        self.msgLabel.text = g_localizedGameCenterConnectFailed;
+        self.msgLabel.text = g_pLocalizedGameCenterConnectFailed;
     }
 }
 
@@ -317,7 +304,7 @@ extern NSString *g_localizedShowMoreArrow;
         [self reloadData];
         if (self.arrayScore.count == 0) {
             self.msgLabel.hidden = NO;
-            self.msgLabel.text = g_localizedNoLeaderboardData;
+            self.msgLabel.text = g_pLocalizedNoLeaderboardData;
         } else {
             self.msgLabel.hidden = YES;
         }
@@ -335,7 +322,7 @@ extern NSString *g_localizedShowMoreArrow;
 
 - (void)errorMsg {
     if (!self.msgLabel.isHidden) {
-        self.msgLabel.text = g_localizedGameCenterConnectFailed;
+        self.msgLabel.text = g_pLocalizedGameCenterConnectFailed;
     } else {
         [UIAlertView showGameCenterError];
     }

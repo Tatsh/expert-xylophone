@@ -283,7 +283,7 @@ static NSString *const kCampaignIdFormat = @"%d";
         self.loadingLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
                                                self.view.bounds.size.height * kCenterScale);
         self.loadingLabel.autoresizingMask = kAutoresizingMaskFlexibleSize;
-        self.loadingLabel.text = g_pStoreLoadingTitle;
+        self.loadingLabel.text = g_pLocalizedLoadingMixed;
         self.loadingLabel.hidden = NO;
         [self.view addSubview:self.loadingLabel];
 

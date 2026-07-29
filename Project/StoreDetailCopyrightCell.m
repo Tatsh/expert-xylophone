@@ -5,7 +5,6 @@
 // The wrap width of the copyright and terms label, shared with the store extend-note cell. Reached
 // by its Ghidra address as the other reconstructed store views do; it is not yet in the engine
 // bridge header.
-extern const double g_dStoreDetailCopyrightLabelWidth; // @ghidraAddress 0x2eea30 (310.0)
 
 // The label is inset a uniform 5 points from the cell's top-left; its width is fixed and its height
 // is grown by the table's row-height measurement, so it starts flat.

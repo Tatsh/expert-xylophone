@@ -11,7 +11,6 @@
 // RBSearchMapView) pull them in. The 100.0-point and 0.3-second metrics come from the bridge
 // header instead.
 extern const double g_dLayoutMetricThirtyTwo;   // @ghidraAddress 0x2ee9b0 (32.0)
-extern const CGFloat g_dRBWebViewGrayViewWhite; // @ghidraAddress 0x2ec708 (0.6)
 
 // Store asset names used by the tile.
 static NSString *const kStoreJacketPlaceholderImageName = @"09_store/store_jacket_64";
