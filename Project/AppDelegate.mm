@@ -34,7 +34,6 @@
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "clear_gauge_layer.h"
 #import "ctask.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
@@ -42,6 +41,7 @@
 #import "game_scene.h"
 #import "gamesystem.h"
 #import "leveltables.h"
+#import "logo_scene.h"
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
@@ -348,14 +348,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     TouchManager::EnsureSingleton();
     ne::C_TEXTURE::EnsureCacheList();
     ne::C_TEXTURE::EnsureCacheControl(0);
-    // The binary builds an rb::LogoScene here and inserts it at priority 1: 0x52458 allocates 0xd8
-    // bytes and calls its constructor at 0x149a68, where ClearGaugeLayer is 0x158 bytes and is
-    // built only by its own singleton getter. Constructing LogoScene needs its Present state
-    // (0x149c5c) reconstructed first, which is a NEON routine and its own unit of work, so the
-    // gauge layer is built here meanwhile. The cast follows from that stand-in, not from the
-    // binary.
-    ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
-    reinterpret_cast<ne::C_TASK *>(clearGauge)->InsertSorted(kLogoSceneListenerPriority);
+    // The launch handler builds the logo scene and registers it in the sorted listener list; it is
+    // a BaseScene, so the listener node is a real base and InsertSorted is inherited.
+    (new rb::LogoScene())->InsertSorted(kLogoSceneListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
 

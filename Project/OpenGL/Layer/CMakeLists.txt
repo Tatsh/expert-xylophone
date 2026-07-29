@@ -10,7 +10,6 @@ target_sources(rbplus PRIVATE
     playerfieldlayer.mm
     playfieldlayerbase.mm
     title_part_layout_data.mm
-    title_screen_layer_classic.mm
     titleclassicscene.mm
     titlecolettescene.mm
     titlecolettescene_data.mm
@@ -24,7 +23,6 @@ target_sources(rbplus PRIVATE
     playfieldlayerbase.h
     title_anim_table.h
     title_part_layout.h
-    title_screen_layer_classic.h
     titleclassicscene.h
     titlecolettescene.h
     titlelimelightscene.h

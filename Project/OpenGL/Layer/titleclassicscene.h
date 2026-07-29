@@ -23,7 +23,7 @@ class C_SPRITE_INSTANCING_2D;
  * textures and sprites and start the BGM, wait for the start music, render and animate the title,
  * then finish and open the music list. The Ghidra name @c ScoreGaugeLayer for its constructor is a
  * misnomer; the vtable's methods are all title-screen routines. This is a distinct, smaller
- * (0x168-byte) class from the interactive @c TitleScreenLayerClassic gesture layer. The trailing @c
+ * (0x168-byte) class from the boot logo scene @c rb::LogoScene. The trailing @c
  * // +0xNN comments document the original member offsets for reference only; the spans whose roles
  * are still being worked out are reserved to preserve the object layout.
  * @ghidraAddress TitleClassicScene (engine layer, 0x168 bytes)

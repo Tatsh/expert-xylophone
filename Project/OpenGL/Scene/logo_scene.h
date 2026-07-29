@@ -8,6 +8,8 @@
 #include "basescene.h"
 #include "linear_tween.h"
 
+struct S_VECTOR2;
+
 namespace ne {
 class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
@@ -84,6 +86,27 @@ private:
      * @ghidraAddress 0x149ec8
      */
     void Start();
+
+    /**
+     * @brief Advances the fade channel by @p nDeltaMs.
+     * @ghidraAddress 0x149ff4
+     */
+    void CalculateFade(int nDeltaMs);
+
+    /**
+     * @brief Positions and fills one logo sprite layer's instancer slot, if it has a free slot.
+     *
+     * A no-op for an out-of-range kind or a full instancer. The three textured kinds (1..3) bind
+     * their instancer's texture and derive the anchor, size, and UV span from its pixel size,
+     * allocated size, and retina scale. The two backdrop kinds (0 and 4) draw a full-viewport quad
+     * sized from the game system, white for kind 0 and black for kind 4.
+     * @param nKind The sprite kind, also the layer index (0..4).
+     * @param pPosition The sprite's screen position.
+     * @param flScale The sprite's uniform scale.
+     * @param nAlpha The sprite's alpha.
+     * @ghidraAddress 0x14a040
+     */
+    void SetTitleSprite(unsigned int nKind, const S_VECTOR2 *pPosition, float flScale, int nAlpha);
 
     int m_nState = {};     // +0x4c: the scene state (0, 1, or 2).
     int m_nElapsedMs = {}; // +0x50: the present animation clock, in ms.
