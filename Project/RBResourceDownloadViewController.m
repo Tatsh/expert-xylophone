@@ -387,8 +387,10 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                                             error:nil
                                          delegate:self];
     if (!unzipped) {
-        self.popImageView.hidden = NO;
+        // This runs on the detached unzip thread, so the view update joins the alert on the main
+        // thread rather than being set here as the binary does.
         dispatch_async(dispatch_get_main_queue(), ^{
+          self.popImageView.hidden = NO;
           /** @ghidraAddress 0x1c094 */
           [UIAlertView showDownloadErrorWithDelegate:self];
         });
@@ -514,7 +516,13 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 - (void)zipArchiveDidUnzipArchiveAtPath:(NSString *)path
                                 zipInfo:(unz_global_info)zipInfo
                            unzippedPath:(NSString *)unzippedPath {
-    [self success];
+    // SSZipArchive calls this back on the detached thread that runs -unzip:, and -success dismisses
+    // this controller. The binary calls -success straight through from here; current iOS traps that
+    // with an EXC_BREAKPOINT out of FBSMainRunLoopSerialQueue, so the call is marshalled to the
+    // main thread.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self success];
+    });
 }
 
 - (void)zipArchiveWillUnzipFileAtIndex:(NSInteger)fileIndex
