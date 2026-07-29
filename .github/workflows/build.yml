@@ -1,0 +1,78 @@
+concurrency:
+  cancel-in-progress: true
+  group: build-${{ github.ref }}
+env:
+  BUILD_CONFIG: 'Release'
+  IOS_CMAKE_REF: '21598aa550701d20654c032328f7e8710a14099b'
+jobs:
+  xcode:
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+    runs-on: macos-14
+    env:
+      IOS_ARCHS: 'arm64'
+      DEPLOYMENT_TARGET: '12.0'
+      # RESOURCES_DIR: ${{ vars.RESOURCES_DIR }}
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 'Toolchain versions'
+        run: |
+          xcodebuild -version
+          sw_vers
+      - name: 'Fetch ios-cmake toolchain'
+        run: |
+          git clone --revision="$IOS_CMAKE_REF" https://github.com/leetal/ios-cmake.git .ios-cmake
+      - name: 'Configure'
+        run: |
+          CMAKE_ARGS=(
+            -B build
+            -G Xcode
+            -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/.ios-cmake/ios.toolchain.cmake"
+            -DDEPLOYMENT_TARGET="$DEPLOYMENT_TARGET"
+            -DENABLE_BITCODE=NO
+            -DIOS_ARCHS="$IOS_ARCHS"
+            -DPLATFORM=OS64
+            -DENABLE_PATCHES=ON
+          )
+          [ -n "$RESOURCES_DIR" ] && CMAKE_ARGS+=( -DRESOURCES_DIR="$RESOURCES_DIR" )
+          cmake "${CMAKE_ARGS[@]}"
+      - name: 'Build'
+        run: |
+          cmake --build build --config "$BUILD_CONFIG" -- \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
+      - name: 'Ad-hoc sign + package .ipa'
+        run: |
+          APP="$(find build -type d -name 'REFLEC BEAT plus.app' -print -quit)"
+          test -n "$APP" || { echo "REFLEC BEAT plus.app not found under build/"; exit 1; }
+          echo "Built app: $APP"
+          codesign --force --sign - --timestamp=none "$APP"
+          codesign --verify --verbose=2 "$APP"
+          rm -rf Payload Rbplus-adhoc.ipa
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          /usr/bin/zip -qry Rbplus-adhoc.ipa Payload
+          echo "Packaged: Rbplus-adhoc.ipa"
+      - name: 'Upload .ipa'
+        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
+        with:
+          name: 'Rbplus-adhoc-ipa'
+          path: 'Rbplus-adhoc.ipa'
+          if-no-files-found: 'error'
+name: 'build'
+'on':
+  push:
+    branches: ['master']
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: ['master']

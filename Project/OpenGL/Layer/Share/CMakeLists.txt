@@ -1,0 +1,63 @@
+# CMakeLists.txt — Project/OpenGL/Layer/Share
+#
+# Adds this directory's translation units (and headers, for Xcode) to the single app target
+# defined in the root CMakeLists, and puts the directory on the include path. Bare filenames.
+
+target_sources(rbplus PRIVATE
+    alt_frame_layer.mm
+    alt_frame_marker_table.cpp
+    bg_layer.mm
+    bounds_effect_layer.mm
+    chain_connector_layer.mm
+    clear_gauge_layer.mm
+    damage_effect_layer.mm
+    explosion_effect_layer.mm
+    fade_overlay_layer.mm
+    float_tween.mm
+    frame_texture_table.cpp
+    judge_effect_layer.mm
+    long_note_layer.mm
+    main_frame_layer.mm
+    note_born_layer.mm
+    note_charge_layer.mm
+    note_glow_layer.mm
+    note_layer.mm
+    note_result_layer.mm
+    note_trail_layer.mm
+    play_color_layer.mm
+    reflec_gauge_layer.mm
+    slide_note_layer.mm
+    slide_note_result_layer.mm
+    thema_marker_layer.mm
+    alt_frame_layer.h
+    alt_frame_marker_table.h
+    bg_layer.h
+    bounds_effect_layer.h
+    chain_connector_layer.h
+    clear_gauge_digit_table.h
+    clear_gauge_layer.h
+    damage_effect_layer.h
+    explosion_effect_layer.h
+    fade_overlay_layer.h
+    float_tween.h
+    frame_texture_table.h
+    judge_effect_layer.h
+    long_note_layer.h
+    long_note_sprite_table.h
+    main_frame_layer.h
+    note_born_layer.h
+    note_charge_layer.h
+    note_glow_layer.h
+    note_layer.h
+    note_result_layer.h
+    note_trail_layer.h
+    play_color_layer.h
+    reflec_gauge_layer.h
+    result_bonus_anim_channel.h
+    slide_note_layer.h
+    slide_note_result_layer.h
+    slide_note_sprite_table.h
+    thema_marker_layer.h
+)
+
+target_include_directories(rbplus PRIVATE .)

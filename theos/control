@@ -1,0 +1,10 @@
+Package: jp.konami.rbplus
+Name: REFLEC BEAT plus
+Version: 4.5.8
+Architecture: iphoneos-arm
+Description: Reconstructed REFLEC BEAT plus (rb458) — a source-level rebuild of the
+ retired rhythm game so it can keep running on modern iOS.
+Maintainer: REFLEC BEAT plus reconstruction
+Author: Konami / Tatsh
+Section: Games
+Depends: firmware (>= 12.0)
