@@ -694,6 +694,10 @@ constexpr float kResultShowTweenDuration = 500.0f; // @ghidraAddress 0x2feff4
 constexpr int kStateResultSubmit = 0xc;
 constexpr int kResultVoiceBank = 6;
 constexpr unsigned int kTutorialResultStartStatus = 0x13;
+
+// The sentinel music id of the no-song auto-play demo, which loops its background music rather than
+// leaving it stopped.
+constexpr int kPreviewMusicID = 999999999;
 } // namespace
 
 /** @ghidraAddress 0x14bf30 */
@@ -1124,6 +1128,39 @@ void GameScene::ResumePreviewPlayback() {
     if (pTimer->IsPaused()) {
         pTimer->Resume(CACurrentMediaTime());
     }
+}
+
+/** @ghidraAddress 0x14cb4c */
+void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
+    // Loop the preview once its clock has run past the chart: only while the Limelight full-combo
+    // effect is not blocking, and the chart end time has fallen behind the play clock's scaled
+    // position (offset by the spawn look-ahead).
+    const float flChartEnd = static_cast<float>(m_pMusicSheet->GetChartEndTime());
+    const float flClockPos =
+        PlayTimer::shared()->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
+    if (!FullComboLimelightLayer::shared()->IsAnyEffectActive() && flChartEnd < flClockPos) {
+        GameSystem::GetGameSystem()->SetRandSeed(static_cast<unsigned int>(rand()));
+        ResetNotePlaybackState(false);
+
+        PlayTimer *pTimer = PlayTimer::shared();
+        if (AppDelegate.appDelegate.musicData.MusicID == kPreviewMusicID) {
+            // The no-song demo loops its background music from the top and runs a music-driven timer.
+            [RBBGMManager.getInstance StopMusic:0.0f];
+            [RBBGMManager.getInstance SeekToTop];
+            [RBBGMManager.getInstance PlayMusic:0.0f];
+            GameSystem::GetGameSystem()->SetBgmPlaying(true);
+            pTimer->StartPlayback(CACurrentMediaTime(), true);
+        } else {
+            pTimer->StartPlayback(CACurrentMediaTime(), false);
+        }
+        return;
+    }
+
+    // Otherwise advance one frame of the preview.
+    NumberEffectLayer::shared()->Update(static_cast<float>(nDeltaFrames));
+    PlayTimer::shared()->Update();
+    NoteEffectMgr::shared()->ProcessActiveNotes();
+    ActivateDueNotes();
 }
 
 /** @ghidraAddress 0x14f9a4 */

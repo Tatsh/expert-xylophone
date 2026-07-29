@@ -110,6 +110,11 @@ public:
         return m_pathNodes.GetCount();
     }
 
+    /** @brief The chart's end time, in unscaled chart units. */
+    int GetChartEndTime() const {
+        return m_nChartEndTime;
+    }
+
     /**
      * @brief Returns the first path node's speed value, or a default when there are no path nodes.
      * @return The first node's speed as a float, or the default speed.

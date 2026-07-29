@@ -225,6 +225,21 @@ public:
     void LoadResultScreenAndMusic();
 
     /**
+     * @brief Advances the note-chart preview a frame, looping it when the clock runs past the chart.
+     *
+     * The preview-playing state handler. While the Limelight full-combo effect is not blocking and
+     * the play clock has run past the chart's end (its scaled position past the chart end time, less
+     * the spawn look-ahead), it loops the preview: reseeds the RNG, resets note playback, and
+     * restarts the play timer — for the no-song demo (the sentinel music id) it also restarts the
+     * looping demo BGM and drives the timer from the music, otherwise it starts a free-running timer.
+     * Otherwise it advances one frame: ticks the number-effect layer, the play timer, and the
+     * note-effect processing, then activates the notes now due.
+     * @param nDeltaFrames The elapsed frame count this tick.
+     * @ghidraAddress 0x14cb4c
+     */
+    void AdvancePreviewPlaybackFrame(int nDeltaFrames);
+
+    /**
      * @brief Starts the gameplay presentation once play time has begun: plays the intro-voice cue,
      * runs the active theme's intro layer, and fades in the background, player-field score, and
      * judge-effect layers, then advances to the presenting state.
