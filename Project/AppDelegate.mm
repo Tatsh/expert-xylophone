@@ -34,7 +34,6 @@
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
-#import "clear_gauge_layer.h"
 #import "ctask.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
@@ -42,6 +41,7 @@
 #import "game_scene.h"
 #import "gamesystem.h"
 #import "leveltables.h"
+#import "logo_scene.h"
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
@@ -79,10 +79,10 @@ static constexpr int kRetinaScale = 2;
 static constexpr int kSheetSizeInsetX = 48;
 static constexpr int kSheetSizeInsetY = 98;
 
-// Launch miscellany: the render-loop period, the clear-gauge listener priority, and the initial
+// Launch miscellany: the render-loop period, the logo-scene listener priority, and the initial
 // capacity of the pending-push-notification list.
 static constexpr float kGameLoopTimeMs = 1.0f;
-static constexpr int kClearGaugeListenerPriority = 1;
+static constexpr int kLogoSceneListenerPriority = 1;
 static constexpr NSUInteger kPushListInitialCapacity = 3;
 
 // The App Store product page for REFLEC BEAT plus, opened by @c -launchAppStore.
@@ -343,16 +343,14 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
 
-    // Bring up the touch manager, texture caches, and the persistent clear-gauge render layer, then
-    // start the view controller's 60 fps game loop.
+    // Bring up the touch manager, texture caches, and the logo scene, then start the view
+    // controller's 60 fps game loop.
     TouchManager::EnsureSingleton();
     ne::C_TEXTURE::EnsureCacheList();
     ne::C_TEXTURE::EnsureCacheControl(0);
-    ClearGaugeLayer *clearGauge = new ClearGaugeLayer();
-    // The layer's listener-node sub-object overlays the start of the object (its vtable and list
-    // links); treat it as its C_TASK base to insert it into the sorted listener list. The cast goes
-    // away once the play-field layers are formally reparented onto the listener-node base.
-    reinterpret_cast<ne::C_TASK *>(clearGauge)->InsertSorted(kClearGaugeListenerPriority);
+    // The launch handler builds the logo scene and registers it in the sorted listener list; it is
+    // a BaseScene, so the listener node is a real base and InsertSorted is inherited.
+    (new rb::LogoScene())->InsertSorted(kLogoSceneListenerPriority);
     [self.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
     [self.viewController StartLoop];
 
