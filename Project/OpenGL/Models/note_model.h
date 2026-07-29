@@ -720,11 +720,15 @@ private:
     };
     // +0x74..+0x4f3: the 16 per-note sub-entry slots.
     SubEntry m_aSubEntries[kSubEntryCount] = {}; // +0x74
-    int m_nField4f4 = {};                   // +0x4f4: post-table state, still being worked out.
-    int m_nField4f8 = {};                   // +0x4f8: post-table state, still being worked out.
-    unsigned char m_aReserved4fc[0xc] = {}; // +0x4fc
-    // +0x508: eight bytes zeroed at construction with no reader anywhere in the binary. Their type
-    // is unknown, so they are modelled as raw storage rather than claimed as a pointer.
+    // +0x4f4 and +0x4f8: two words the constructor zeroes (str wzr at 0x131a70 and 0x131a74) and
+    // that no other method of the class reads or writes, so their role is not recovered.
+    int m_nField4f4 = {};
+    int m_nField4f8 = {};
+    // +0x4fc..+0x507: twelve bytes no method of the class touches at all, not even to clear them.
+    unsigned char m_aReserved4fc[0xc] = {};
+    // +0x508: eight bytes the constructor zeroes in one store (str xzr at 0x131a7c) and that
+    // nothing reads. Their type is unknown, so they are modelled as raw storage rather than a
+    // pointer.
     unsigned char m_aReserved508[8] = {};
     bool m_bPlayStateFlag510 = {};        // +0x510: a play-state flag cleared on a play reset.
     unsigned char m_aReserved511[3] = {}; // +0x511
