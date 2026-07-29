@@ -70,6 +70,14 @@ public:
      */
     bool IsAnyEffectActive() const;
 
+    /**
+     * @brief Advances every active full-combo effect by one frame and emits its sprites.
+     * Reconstruction pending.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x122b08
+     */
+    void Update(float flDelta);
+
     // The number of full-combo sprite instancers the layer builds.
     static constexpr int kSpriteSlotCount = 3;
     // The number of player colours with a full-combo effect record.

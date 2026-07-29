@@ -123,18 +123,25 @@ public:
                              float flX,
                              float flY);
 
+    /**
+     * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
+     * @ghidraAddress 0x17b654
+     */
+    void BuildSprites();
+
+    /**
+     * @brief Advances the frame layer by one frame and emits its sprites. Reconstruction pending.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x17c6c8
+     */
+    void Process(float flDelta);
+
 private:
     /**
      * @brief Rebuilds the frame's 3D vertex mesh. Reconstruction pending.
      * @ghidraAddress 0x17c16c
      */
     void Build3dVertices();
-
-    /**
-     * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
-     * @ghidraAddress 0x17b654
-     */
-    void BuildSprites();
 
     /**
      * @brief Re-lays-out the frame's border mesh and its marker/difficulty overlay sprites.

@@ -245,8 +245,8 @@ void ReflecGaugeLayer::SubReflecGaugeValue(float flDelta, ReflecGaugeLayer *pGau
 }
 
 /** @ghidraAddress 0x18ad0c */
-void ReflecGaugeLayer::SetGaugeDisplayBrightness(float flValue, ReflecGaugeLayer *pGauge) {
-    pGauge->m_flDisplayBrightness = flValue * kBrightnessScale + kBrightnessBias;
+void ReflecGaugeLayer::SetGaugeDisplayBrightness(float flValue) {
+    m_flDisplayBrightness = flValue * kBrightnessScale + kBrightnessBias;
 }
 
 /** @ghidraAddress 0x18ad2c */

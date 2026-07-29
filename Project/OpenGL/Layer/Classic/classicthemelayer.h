@@ -131,6 +131,14 @@ public:
      */
     void AdvanceEasedProgress(float flDelta);
 
+    /**
+     * @brief Advances the theme's reveal animation by one frame and emits its background and score
+     * sprites. Reconstruction pending.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x10a0a8
+     */
+    void Update(float flDelta);
+
 private:
     static constexpr int kBackgroundBatchCount = 3;
     static constexpr int kScoreValueCount = 2;

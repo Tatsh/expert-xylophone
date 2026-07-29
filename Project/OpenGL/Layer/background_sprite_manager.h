@@ -63,6 +63,14 @@ public:
         return m_bActive;
     }
 
+    /**
+     * @brief Advances the play-field zoom animation by one frame and emits its background sprite
+     * instances. Reconstruction pending.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x10a950
+     */
+    void Update(float flDelta);
+
 private:
     /**
      * @brief Appends one zoom-effect sprite to one of the manager's instancers, if capacity remains.

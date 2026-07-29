@@ -87,6 +87,18 @@ public:
     void SetDangerLevel(float flLevel);
 
     /**
+     * @brief Advances the marker fade by one frame and, when the fade colour has changed,
+     * recomputes every marker slot's alpha.
+     *
+     * Eases the fade tween from its start to its end over its duration — offsetting the elapsed
+     * baseline by the active-marker value — then animates the effects and, if the fade colour is
+     * dirty, refreshes each slot's alpha from the fade value and its per-group scale.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x1804a4
+     */
+    void RefreshMarkerAlpha(float flDelta);
+
+    /**
      * @brief Rebuilds and emits the marker frame's sprites for the current active marker.
      * @ghidraAddress 0x1801d4
      */

@@ -435,6 +435,23 @@ private:
      */
     void InitializePlayFieldLayersForTheme();
 
+    /**
+     * @brief Advances and renders every play-field layer for one frame.
+     *
+     * Computes the intro fade level first: fully lit until the chart's first path speed is set,
+     * after which it is the fractional part of the note path evaluated at the current scroll line,
+     * clamped to zero through one. That level drives the reflec gauge's brightness, the thema
+     * marker's danger level, and the play-colour gauge fill. It then ticks the score tracker and
+     * advances each shared layer — player field, judge effect, background, gauges, thema marker,
+     * play colour, the bounds, explosion, damage, and glow effects, the judge score, note result,
+     * note body, trail, slide, slide-result, charge, long-note, and chain layers, and the iPad alt
+     * frame or the phone main frame — by @p nDeltaFrames. Finally it runs the active theme's own
+     * layer set (with the tutorial guide while the menu tutorial is active) and the fade overlay.
+     * @param nDeltaFrames The elapsed frame count, zero while the game is paused.
+     * @ghidraAddress 0x14cf5c
+     */
+    void RenderAllPlayFieldLayers(int nDeltaFrames);
+
     int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
                                          //        frame).
     int m_nPlayTime = {};                // +0x50: the accumulated play time.

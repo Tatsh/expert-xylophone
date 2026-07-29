@@ -1380,6 +1380,10 @@ namespace {
 // The listener-list priority the pause-gauge layer is registered at.
 constexpr int kPauseGaugeListenerPriority = 2;
 
+// The base the intro fade level counts down from while the note path is still negative. The binary
+// really does store negative zero here, so the level is the negated fractional part.
+constexpr float kFadeInBase = -0.0f; // @ghidraAddress 0x308ddc
+
 // The two player sides the judgement tally covers.
 constexpr int kPlayerSideCount = 2;
 
@@ -1428,6 +1432,90 @@ constexpr int kTutorialMusicId = 999999998;
 // The judgement a replay note carries for a note the opposing side's ghost shot resolved.
 constexpr int kGhostShotJudge = 5;
 } // namespace
+
+/** @ghidraAddress 0x14cf5c */
+void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
+    // Until the chart's first path speed is known the play field is fully lit; after that the fade
+    // level tracks the fractional part of the note path at the current scroll line.
+    float flFadeLevel = 1.0f;
+    if (m_flFirstPathSpeed > 0.0f) {
+        const float flScrollLine =
+            PlayTimer::shared()->GetPlayTime() * kNoteLineScale + kNoteSpawnLookahead;
+        const float flPathValue =
+            NoteEffectMgr::shared()->EvaluateNotePathAtTime(static_cast<int>(flScrollLine));
+        // A negative path value fades in from the negative-zero base instead of down from one.
+        const float flBase = (flPathValue < 0.0f) ? kFadeInBase : 1.0f;
+        flFadeLevel = flBase - (flPathValue - static_cast<float>(static_cast<int>(flPathValue)));
+        if (flFadeLevel < 0.0f) {
+            flFadeLevel = 0.0f;
+        } else if (flFadeLevel > 1.0f) {
+            flFadeLevel = 1.0f;
+        }
+    }
+    ReflecGaugeLayer::shared()->SetGaugeDisplayBrightness(flFadeLevel);
+    ThemaMarkerLayer::shared()->SetDangerLevel(flFadeLevel);
+    PlayColorLayer::shared()->SetGaugeFillLevel(flFadeLevel);
+    ScoreTracker::shared()->TickGaugeState();
+
+    const float flDelta = static_cast<float>(nDeltaFrames);
+    PlayerFieldLayer::shared()->Update(flDelta);
+    JudgeEffectLayer::shared()->RenderJudgeScoreEffect(flDelta);
+    BgLayer::GetBackgroundLayer()->ProcessBackgroundLayer(flDelta);
+    ReflecGaugeLayer::shared()->UpdateGaugeBar(flDelta);
+    ClearGaugeLayer::shared()->Process(flDelta);
+    ThemaMarkerLayer::shared()->RefreshMarkerAlpha(flDelta);
+    PlayColorLayer::shared()->Update(flDelta);
+    BoundsEffectLayer::shared()->Process(flDelta);
+    ExplosionEffectLayer::shared()->Process(flDelta);
+    JudgeScoreLayer::shared()->RenderScoreGaugeEffects(flDelta);
+    NoteResultLayer::shared()->Update(flDelta);
+    NoteBodyLayer::shared()->BuildLongNoteConnectorSprites(flDelta);
+    NoteTrailLayer::shared()->Update(flDelta);
+    SlideNoteLayer::shared()->Update(flDelta);
+    SlideNoteResultLayer::shared()->Update(flDelta);
+    NoteChargeLayer::shared()->Update(flDelta);
+    LongNoteLayer::shared()->Update(flDelta);
+    // The frame delta is set up for this call too, but the chain layer takes no argument: it
+    // overwrites the register from the game system before ever reading it.
+    ChainConnectorLayer::shared()->Update();
+    DamageEffectLayer::shared()->Process(flDelta);
+    NoteGlowLayer::shared()->Process(flDelta);
+    if (IsPad()) {
+        AltFrameLayer::shared()->Process(flDelta);
+    } else {
+        MainFrameLayer::shared()->Process(flDelta);
+    }
+
+    switch (m_nThema) {
+    case kThemaColette:
+        FullComboColetteLayer::shared()->Update(flDelta);
+        NumberLayer::shared()->Process(flDelta);
+        ColetteThemeLayer::shared()->Update(flDelta);
+        ResultWindowColetteLayer::shared()->Update(flDelta);
+        EventEffectLayer::shared()->Update(flDelta);
+        if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+            TutorialGuideLayer::shared()->Update(flDelta);
+        }
+        break;
+    case kThemaLimelight:
+        FullComboLimelightLayer::shared()->Update(flDelta);
+        LimelightEffectLayer::shared()->UpdateEffect(flDelta);
+        LimelightThemeLayer::shared()->UpdateGradeDisplay(flDelta);
+        LimelightResultLayer::shared()->Update(flDelta);
+        EventEffectLayer::shared()->Update(flDelta);
+        break;
+    case kThemaClassic:
+        FullComboClassicLayer::shared()->Update(flDelta);
+        BackgroundSpriteManager::shared()->Update(flDelta);
+        ClassicThemeLayer::shared()->Update(flDelta);
+        ResultWindowClassicLayer::shared()->Update(flDelta);
+        break;
+    default:
+        break;
+    }
+
+    FadeOverlayLayer::shared()->Render(flDelta);
+}
 
 /** @ghidraAddress 0x14a298 */
 void GameScene::InitializePlayFieldLayersForTheme() {

@@ -91,16 +91,16 @@ public:
      */
     void SetFrameMode(int nMode);
 
-    // The number of frame sprite batches the layer builds.
-    static constexpr int kSpriteSlotCount = 3;
-
-private:
     /**
      * @brief (Re)builds the frame sprite batches for the current frame type. Reconstruction pending.
      * @ghidraAddress 0x17a548
      */
     void BuildSprites();
 
+    // The number of frame sprite batches the layer builds.
+    static constexpr int kSpriteSlotCount = 3;
+
+private:
     /**
      * @brief Rebuilds the frame's marker overlay sprites. Reconstruction pending.
      * @ghidraAddress 0x17a9d8

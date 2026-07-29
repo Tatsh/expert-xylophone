@@ -49,6 +49,14 @@ public:
      */
     void LoadNoteBodySprites();
 
+    /**
+     * @brief Advances the queued note records by one frame and emits the long-note connector
+     * sprites they describe. Reconstruction pending.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x181510
+     */
+    void BuildLongNoteConnectorSprites(float flDelta);
+
 private:
     /**
      * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.

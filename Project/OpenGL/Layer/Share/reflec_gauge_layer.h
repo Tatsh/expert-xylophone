@@ -26,13 +26,12 @@ class C_SPRITE_INSTANCING_2D;
 class ReflecGaugeLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief Sets a gauge layer's display brightness from a unit-interval value, mapped by an affine
+     * @brief Sets the gauge's display brightness from a unit-interval value, mapped by an affine
      * transform to @c [0.3, 1.0].
      * @param flValue The brightness input, in the range zero to one.
-     * @param pGauge The gauge layer.
      * @ghidraAddress 0x18ad0c
      */
-    static void SetGaugeDisplayBrightness(float flValue, ReflecGaugeLayer *pGauge);
+    void SetGaugeDisplayBrightness(float flValue);
 
     /**
      * @brief Adds a delta to a player colour's Reflec gauge value.

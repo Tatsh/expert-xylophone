@@ -86,6 +86,20 @@ public:
         return m_bGradeVisible;
     }
 
+    /**
+     * @brief Advances and re-emits the full-combo result-grade effect for the frame.
+     *
+     * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While the
+     * reveal is armed it advances the reveal clock (clearing the clock-active flag once it passes the
+     * threshold), emits the base backdrop sprite at an alpha eased from the reveal clock, and for each
+     * drawn player side (the first side only when the two-side gauge is on) emits the rank medals (for
+     * a fresh best rank, at the player's colour), then the cleared-rank result sprites (a clear that is
+     * not a challenge) or the miss sprites otherwise. Finally it publishes each batch's sprite count.
+     * @param flDelta The frame's elapsed time.
+     * @ghidraAddress 0x18776c
+     */
+    void Update(float flDelta);
+
 private:
     /**
      * @brief Emits one full-combo quad into its sprite batch, if that batch still has a free slot.
@@ -151,20 +165,6 @@ private:
      * @ghidraAddress 0x188114
      */
     void EmitFcResultSprites(int nSide);
-
-    /**
-     * @brief Advances and re-emits the full-combo result-grade effect for the frame.
-     *
-     * Caches the viewport size, clears the sprite batches, and advances the reveal channel. While the
-     * reveal is armed it advances the reveal clock (clearing the clock-active flag once it passes the
-     * threshold), emits the base backdrop sprite at an alpha eased from the reveal clock, and for each
-     * drawn player side (the first side only when the two-side gauge is on) emits the rank medals (for
-     * a fresh best rank, at the player's colour), then the cleared-rank result sprites (a clear that is
-     * not a challenge) or the miss sprites otherwise. Finally it publishes each batch's sprite count.
-     * @param flDelta The frame's elapsed time.
-     * @ghidraAddress 0x18776c
-     */
-    void Update(float flDelta);
 
     /**
      * @brief Constructs the layer, chaining the base constructor and seeding its own state.
