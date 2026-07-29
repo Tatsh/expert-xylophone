@@ -92,7 +92,13 @@ public:
     void SetFrameMode(int nMode);
 
     /**
-     * @brief (Re)builds the frame sprite batches for the current frame type. Reconstruction pending.
+     * @brief (Re)builds the frame sprite batches for the current frame type.
+     *
+     * A no-op once the layer is ready. Otherwise it resolves the frame type (substituting the game
+     * system's when the layer still holds the default sentinel), picks the active lane and each
+     * batch's capacity from the lane-count tier, loads the frame and shared parts atlases, creates
+     * and registers any batch that does not exist yet, then emits every marker's sprite: position,
+     * anchor, size, atlas rectangle, rotation, scale, and tint. Finally it marks the layer ready.
      * @ghidraAddress 0x17a548
      */
     void BuildSprites();
@@ -102,7 +108,11 @@ public:
 
 private:
     /**
-     * @brief Rebuilds the frame's marker overlay sprites. Reconstruction pending.
+     * @brief Re-places every marker sprite for the current frame type.
+     *
+     * Walks the lane-count tier's marker layout table and rewrites each sprite's position (the base
+     * Y offset by the play-field half-height), leaving the anchor, size, atlas rectangle, and tint
+     * that @c BuildSprites established.
      * @ghidraAddress 0x17a9d8
      */
     void RenderMarkers();
@@ -114,8 +124,13 @@ private:
      */
     AltFrameLayer();
 
-    ne::C_TEXTURE *m_pTexture = {};         // +0x08: the frame atlas.
-    unsigned char m_aReserved10[0x10] = {}; // +0x10: further texture/handle state.
+    // The number of textures the layer binds across its batches: the frame atlas and the shared
+    // parts atlas.
+    static constexpr int kTextureSlotCount = 2;
+
+    unsigned char m_aReserved08[8] = {}; // +0x08: untouched by the constructor and never read.
+    ne::C_TEXTURE *m_apTextures[kTextureSlotCount] =
+        {}; // +0x10: the frame atlas and the shared parts atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] =
         {};                                     // +0x20: the frame sprite batches.
     int m_aSpriteCounts[kSpriteSlotCount] = {}; // +0x38: each batch's initial sprite count.
@@ -126,9 +141,11 @@ private:
     LinearTween m_fadeChannel;                  // +0x50: the frame fade channel.
     bool m_bFadeDone = {};                      // +0x64: set when the fade snaps to its endpoint.
     unsigned char m_aReserved65[3] = {};        // +0x65
-    int m_nActiveLane = {};                 // +0x68: the highlighted (active) lane marker index.
-    int m_nMarkerCount = {};                // +0x6c: the number of markers this frame draws.
-    unsigned char m_aReserved70[0x10] = {}; // +0x70: trailing state to the 0x80-byte size.
+    int m_nActiveLane = {};  // +0x68: the highlighted (active) lane marker index.
+    int m_nMarkerCount = {}; // +0x6c: the number of markers this frame draws.
+    int m_anBatchCapacity[kSpriteSlotCount] =
+        {};                              // +0x70: each batch's sprite capacity and draw count.
+    unsigned char m_aReserved7c[4] = {}; // +0x7c: trailing state to the 0x80-byte size.
 };
 
 // code: language=C++
