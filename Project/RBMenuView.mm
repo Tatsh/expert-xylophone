@@ -3,6 +3,7 @@
 #import "AppDelegate.h"
 #import "AudioManager.h"
 #import "Downloader.h"
+#import "MusicData.h"
 #import "NetworkUtil.h"
 #import "RBApplilinkView.h"
 #import "RBBGMManager.h"
@@ -22,11 +23,14 @@
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
 #import "RBMusicView.h"
+#import "RBNavigationController.h"
 #import "RBNewsHUDView.h"
+#import "RBNotificationPagePhoneViewController.h"
 #import "RBNotificationPageView.h"
 #import "RBPlaylistManager.h"
 #import "RBPushNotificationView.h"
 #import "RBRankingView.h"
+#import "RBSearchMapViewController.h"
 #import "RBSearchView.h"
 #import "RBSettingView.h"
 #import "RBStoreTabController.h"
@@ -1300,7 +1304,7 @@ static BOOL g_bRandamIntSeeded = NO;
 
 #pragma mark - Music selection
 
-- (void)selectMusic:(RBMusicData *)selectMusic animated:(BOOL)animated {
+- (void)selectMusic:(MusicData *)selectMusic animated:(BOOL)animated {
     [self setSearchBarNonActive];
     [self hideSettingView];
     if (self.selectedView != nil) {
@@ -1344,7 +1348,7 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     int index = [self getRandamInt:0 max:static_cast<int>(self.musicList.count) - 1];
-    RBMusicData *music = self.musicList[index];
+    MusicData *music = self.musicList[index];
     self.selectedView.isRandom = YES;
     // A tag of 1 (from the random button) means animate the selection.
     [self selectMusic:music animated:([selectRandom tag] == 1)];
@@ -1396,7 +1400,7 @@ static BOOL g_bRandamIntSeeded = NO;
     NSMutableArray *searchResult;
     if (self.searchBar != nil && self.searchArray.count != 0) {
         searchResult = [[NSMutableArray alloc] init];
-        for (RBMusicData *music in musics) {
+        for (MusicData *music in musics) {
             if ([self matchTitle:music]) {
                 [searchResult addObject:music];
             }
@@ -1417,28 +1421,26 @@ static BOOL g_bRandamIntSeeded = NO;
     }
 
     if (playlistID == kPlaylistIDHotBonus) {
-        // Hot-bonus: keep only musics whose score record is flagged as hot-bonus.
+        // Keep only the tunes that have never been played: a music is dropped as soon as its score
+        // record shows a non-zero play count on any of the three difficulties.
         NSMutableArray *filtered = [NSMutableArray arrayWithArray:searchResult];
         NSMutableArray *ids = [NSMutableArray array];
-        for (RBMusicData *music in searchResult) {
+        for (MusicData *music in searchResult) {
             [ids addObject:@(music.MusicID)];
         }
         if (ids.count != 0) {
             NSManagedObjectContext *context =
                 [RBCoreDataManager sharedInstance].managedObjectContext;
             NSArray *scores = [ScoreData getScoreDatas:ids inManagedObjectContext:context];
-            for (RBMusicData *music in searchResult) {
-                BOOL keep = NO;
+            for (MusicData *music in searchResult) {
                 for (ScoreData *score in scores) {
-                    if (music.MusicID == score.MusicID.intValue) {
-                        if (score.hotBonusList || score.getGameType == score.getOption) {
-                            keep = YES;
+                    if (music.MusicID == score.tuneID.intValue) {
+                        if (score.pcBas.intValue != 0 || score.pcMed.intValue != 0 ||
+                            score.pcHar.intValue != 0) {
+                            [filtered removeObject:music];
                         }
                         break;
                     }
-                }
-                if (!keep) {
-                    [filtered removeObject:music];
                 }
             }
         }
@@ -1451,7 +1453,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // Difficulty-level playlist: keep musics that have any chart at the selected level.
         NSMutableArray *filtered = [NSMutableArray array];
         NSInteger level = [RBUserSettingData sharedInstance].playlistLevel;
-        for (RBMusicData *music in searchResult) {
+        for (MusicData *music in searchResult) {
             if (music.difficultyBasic == level || music.difficultyMedium == level ||
                 music.difficultyHard == level ||
                 (music.spData != nil && music.difficultySpecial == level)) {
@@ -1469,7 +1471,7 @@ static BOOL g_bRandamIntSeeded = NO;
         NSDictionary *playlist = [[RBPlaylistManager sharedInstance] playlistAtIndex:level];
         NSArray *listIDs = playlist[@"LIST"];
         NSMutableArray *filtered = [NSMutableArray array];
-        for (RBMusicData *music in searchResult) {
+        for (MusicData *music in searchResult) {
             for (NSNumber *entry in listIDs) {
                 if (entry.intValue == music.MusicID) {
                     [filtered addObject:music];
@@ -1485,7 +1487,7 @@ static BOOL g_bRandamIntSeeded = NO;
     if (playlistID == kPlaylistIDFavorite) {
         // Favourites: keep musics flagged favourite.
         NSMutableArray *filtered = [NSMutableArray array];
-        for (RBMusicData *music in searchResult) {
+        for (MusicData *music in searchResult) {
             if (music.favorite != nil) {
                 [filtered addObject:music];
             }
@@ -2036,7 +2038,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)createSearchDictionary {
     NSArray *musicDataArray = [[RBMusicManager getInstance] getMusicDataArray];
     self.searchDictionary = [[NSMutableDictionary alloc] init];
-    for (RBMusicData *musicData in musicDataArray) {
+    for (MusicData *musicData in musicDataArray) {
         // Normalise the name and artist: strip spaces, then fold kana and width so that
         // hiragana/katakana and full/half-width variants all match.
         NSMutableString *nameKey =
@@ -2217,7 +2219,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self reloadMusicData];
 }
 
-- (BOOL)matchTitle:(RBMusicData *)matchTitle {
+- (BOOL)matchTitle:(MusicData *)matchTitle {
     NSArray *terms = self.searchDictionary[@(matchTitle.MusicID)];
     // Every search token must be found somewhere in this title's term list.
     for (NSString *token in self.searchArray) {
@@ -2425,7 +2427,7 @@ static BOOL g_bRandamIntSeeded = NO;
         }
         [self playlistAddDelButtonUpdate];
     } else if (editMode == kMenuModePlaylistFinished) {
-        RBMusicData *musicData = self.musicList[indexPath.row];
+        MusicData *musicData = self.musicList[indexPath.row];
         self.selectedView.isRandom = NO;
         [self selectMusic:musicData animated:YES];
     }
@@ -2844,7 +2846,7 @@ static BOOL g_bRandamIntSeeded = NO;
 
     if (self.musicList != nil && self.musicList.count != 0) {
         NSInteger itemIndex = self.layout.colCount * self.layout.rowCount * self.currentPageIndex;
-        RBMusicData *music = self.musicList[itemIndex];
+        MusicData *music = self.musicList[itemIndex];
         if ([RBUserSettingData sharedInstance].menuItemSort == kMenuItemSortArtist) {
             self.pageSlider.indexLabel = music.artistNameHira;
         } else {

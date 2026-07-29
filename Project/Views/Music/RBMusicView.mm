@@ -1404,9 +1404,9 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [RBUserSettingData sharedInstance].playColor = playColor;
 
     [RBUserSettingData sharedInstance].cpuLevel = [self.cpuView level];
-    GetGameSystem()->SetComboCount([self.cpuView level]);
+    GameSystem::GetGameSystem()->SetComboCount([self.cpuView level]);
 
-    GameSystem *gameSystem = GetGameSystem();
+    GameSystem *gameSystem = GameSystem::GetGameSystem();
     if (self->m_GameType == kGameTypeDouble) {
         gameSystem->ConfigureSheetLayerForScreen(0);
     } else if (IsPad()) {
@@ -1416,23 +1416,24 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     }
 
     if (self->_thema < kThemeBlack || self->m_GameType != kGameTypeSingle) {
-        GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
+        GameSystem::GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
     } else {
         srand(static_cast<unsigned int>(time(nullptr)));
         (void)rand(); // The binary discards this first draw.
         if ([self m_IsWhitePastelMode]) {
-            GetGameSystem()->SetComboCount(kPastelWhiteCombo);
-            GetGameSystem()->SetPastelBonusType(kPastelBonusWhite);
+            GameSystem::GetGameSystem()->SetComboCount(kPastelWhiteCombo);
+            GameSystem::GetGameSystem()->SetPastelBonusType(kPastelBonusWhite);
         } else {
             BOOL isBlack = [self m_IsBlackPastelMode];
-            GetGameSystem()->SetPastelBonusType(isBlack ? kPastelBonusBlack : kPastelBonusNone);
+            GameSystem::GetGameSystem()->SetPastelBonusType(isBlack ? kPastelBonusBlack :
+                                                                      kPastelBonusNone);
             if (isBlack) {
                 srand(static_cast<unsigned int>(time(nullptr)));
                 int roll = rand();
-                GetGameSystem()->SetComboCount(roll % kPastelBlackComboRollModulo >
-                                                       kPastelBlackComboRollThreshold ?
-                                                   kPastelBlackComboHigh :
-                                                   kPastelBlackComboLow);
+                GameSystem::GetGameSystem()->SetComboCount(roll % kPastelBlackComboRollModulo >
+                                                                   kPastelBlackComboRollThreshold ?
+                                                               kPastelBlackComboHigh :
+                                                               kPastelBlackComboLow);
             }
         }
     }
@@ -1449,8 +1450,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [RBUserSettingData sharedInstance].playerColor = 0;
     [RBUserSettingData sharedInstance].difficulty = 0;
     [RBUserSettingData sharedInstance].rivalAlpha = kTutorialRivalAlpha;
-    GetGameSystem()->SetComboCount(kTutorialComboCount);
-    GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
+    GameSystem::GetGameSystem()->SetComboCount(kTutorialComboCount);
+    GameSystem::GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
 
     NSString *path = [RBMusicManager getPathFromBundle:kTutorialMusicID];
     if ([NSFileManager isFileExist:path]) {
@@ -1484,7 +1485,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
         self.baseView.alpha = kBaseViewAlphaVisible;
         self->m_Animating = NO;
         [self setEnableButton:YES];
-        NSString *musicPre = self.musicData.musicPre;
+        NSMutableData *musicPre = self.musicData.musicPre;
         [[RBBGMManager getInstance] LoadMusicWithPush:musicPre Loop:YES];
         [[RBBGMManager getInstance] PlayMusic:0.0];
         [self firstInfoAnimationCheck];
@@ -1511,7 +1512,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
           RBMusicView *strongSelf = weakSelf2;
           strongSelf->m_Animating = NO;
           [strongSelf setEnableButton:YES];
-          NSString *musicPre = strongSelf.musicData.musicPre;
+          NSMutableData *musicPre = strongSelf.musicData.musicPre;
           [[RBBGMManager getInstance] LoadMusicWithPush:musicPre Loop:YES];
           [[RBBGMManager getInstance] PlayMusic:0.0];
           [strongSelf firstInfoAnimationCheck];
@@ -1545,7 +1546,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
           /** @ghidraAddress 0xd5680 (PlaySelectedMusicBlockInvoke) */
           [weakSelf1.musicMenuView releaseSelectMusic];
         }];
-    PlayThemedSoundEffect(SoundEffectManager::GetInstance(), kSoundEffectCancel);
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectCancel);
 }
 
 - (void)ReplayMusic {

@@ -12,15 +12,26 @@
 #import "RBMenuTutorialView.h"
 
 #import "RBAnimationFactory.h"
+#import "RBCustomView.h"
 #import "RBExperienceData.h"
+#import "RBMenuButton.h"
 #import "RBMenuView.h"
+#import "RBMusicCell.h"
+#import "RBMusicView.h"
+#import "RBSettingView.h"
 #import "RBTutorialManager.h"
 #import "RBTutorialPastelLayer.h"
+#import "RBUnlockView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
+
+// The view sets itself as the delegate of the spotlight animation groups it builds, and implements
+// -animationDidStop:finished: to advance the walkthrough.
+@interface RBMenuTutorialView () <CAAnimationDelegate>
+@end
 
 // The per-texture-type source rectangles into the tutorial artwork atlas, read by -getClipRect:.
 // Seeded at load time by SetupDialogLayoutCoordTable. @ghidraAddress 0x3de058 (g_pTutorialClipRect)
@@ -459,7 +470,8 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     }
 
     self.tutorialStatus = tutorialType;
-    [[RBTutorialManager getInstance] updateStatus:self.tutorialStatus];
+    [[RBTutorialManager getInstance]
+        updateStatus:static_cast<RBTutorialStatus>(self.tutorialStatus)];
     self.animating = YES;
 
     // The clip-root view is one of several step-specific provider views (the difficulty selector,

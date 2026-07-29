@@ -400,6 +400,10 @@ public:
     int GetPastelBonusType() const {
         return m_nPastelBonusType;
     }
+    /** @brief Stores the pastel-bonus type for the current play. */
+    void SetPastelBonusType(int value) {
+        m_nPastelBonusType = value;
+    }
     /**
      * @brief Whether the finished play set a new record, which arms the result screen's celebration
      * cue.

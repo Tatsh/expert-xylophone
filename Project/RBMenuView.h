@@ -24,6 +24,7 @@
 #import "RBTermAgreeView.h"
 
 @class Downloader;
+@class MusicData;
 @class RBCollectionView;
 @class RBMenuBGEffectView;
 @class RBMenuButton;
@@ -32,7 +33,6 @@
 @class RBMenuPageSliderView;
 @class RBMenuTutorialView;
 @class RBMusicCell;
-@class RBMusicData;
 @class RBMusicGridLayout;
 @class RBMusicView;
 @class RBNotificationPagePhoneViewController;
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param animated Whether to animate the detail view in.
  * @ghidraAddress 0xaaff0
  */
-- (void)selectMusic:(nullable RBMusicData *)selectMusic animated:(BOOL)animated;
+- (void)selectMusic:(nullable MusicData *)selectMusic animated:(BOOL)animated;
 
 /**
  * @brief Pick and present a random music from the current list.
@@ -436,7 +436,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return @c YES when the music matches every search token.
  * @ghidraAddress 0xb1e4c
  */
-- (BOOL)matchTitle:(nullable RBMusicData *)matchTitle;
+- (BOOL)matchTitle:(nullable MusicData *)matchTitle;
 
 #pragma mark Tutorial
 
