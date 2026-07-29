@@ -284,10 +284,7 @@ static NSString *g_pStoreCountry = nil;
 #else
         // The binary passes the format string as the only argument, leaving its positional
         // %1$@/%2$@ placeholders unsubstituted.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat-security"
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
-#pragma clang diagnostic pop
 #endif
         [self.delegate extendNoteListDownloadError:self errorMessage:message];
         self.extendNotelistDownloader = nil;

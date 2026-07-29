@@ -252,10 +252,7 @@ static NSString *_lastProductCountryCode = nil;
 #else
         // The binary formats the version-mismatch message without substituting its positional
         // arguments.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat-security"
         NSString *message = [NSString stringWithFormat:g_pLocalizedUpdateRequiredFormat];
-#pragma clang diagnostic pop
 #endif
         [self.delegate packListDownloadError:self errorMessage:message];
     } else {

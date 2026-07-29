@@ -35,5 +35,6 @@ catalogue and the layout was stable, but it is not safe to rely on.
 The patch passes the string as an argument to a literal `@"%@"` format, so no specifier inside it is
 ever interpreted. The rendered text is unchanged for a catalogue string with no placeholders; for
 the two that do have them, the patched build shows the placeholders literally instead of reading
-absent arguments. The unpatched path keeps the original call and scopes off the
-`-Wformat-security` diagnostic it raises.
+absent arguments. The unpatched path keeps the original call and the `-Wformat-security` warning it
+raises, which is left in place deliberately: a faithful build should keep reporting that the
+original code is unsound.

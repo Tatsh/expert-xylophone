@@ -432,10 +432,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
         [NSString stringWithFormat:@"%@", RBLocalizedUIString(kColetteWelcomeMessageKey)];
 #else
     // The binary passes the localised string as the format itself, with no arguments.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat-security"
     NSString *message = [NSString stringWithFormat:RBLocalizedUIString(kColetteWelcomeMessageKey)];
-#pragma clang diagnostic pop
 #endif
     return [[UIAlertView alloc] initWithTitle:kColetteWelcomeTitle
                                       message:message
