@@ -1,10 +1,14 @@
 #import "ApplilinkWebAPI.h"
 
+#import <objc/runtime.h>
+
 #import <UIKit/UIKit.h>
 
 #import "ApplilinkConsts.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkUtilities.h"
+
+#import "neDebugLog.h"
 
 // HTTP method that selects the form-encoded POST body path; any other value uses the GET query.
 static NSString *const kApplilinkWebAPIPostMethod = @"POST";
@@ -291,7 +295,7 @@ static BOOL g_bApplilinkWebAPISessionStatus;
                      kApplilinkWebAPIServerErrorStatusSpan);
                 if (!error && !isServerError) {
                     finished = YES;
-                    [self responseFromContentsServer:request
+                    [self responseFromContentsServer:URL
                                              request:userInfo
                                                 data:data
                                        finishedBlock:finishedBlock
@@ -448,13 +452,20 @@ static BOOL g_bApplilinkWebAPISessionStatus;
 
 #pragma mark Contents-server transport
 
-- (id)responseFromContentsServer:(id)response
+- (id)responseFromContentsServer:(NSString *)response
                          request:(id)request
                             data:(NSData *)data
                    finishedBlock:(ApplilinkWebAPIFinishedBlock)finishedBlock
                      failedBlock:(ApplilinkWebAPIFailedBlock)failedBlock {
     NSString *appliURL =
         [[NSUserDefaults standardUserDefaults] objectForKey:kApplilinkWebAPIRewardAppliURLKey];
+    // RBPDBG: this argument used to be handed an NSURLRequest, which has no -isEqualToString: and
+    // aborted the process, so log the class alongside the comparison.
+    neDebugLog("contentsServer response=%s(%s) appliURL=%s bytes=%lu",
+               object_getClassName(response),
+               response.UTF8String,
+               appliURL.UTF8String,
+               (unsigned long)data.length);
     if (![response isEqualToString:appliURL]) {
         return response;
     }
@@ -548,7 +559,7 @@ static BOOL g_bApplilinkWebAPISessionStatus;
                                                                error:error];
 }
 
-+ (id)responseFromContentsServer:(id)response
++ (id)responseFromContentsServer:(NSString *)response
                          request:(id)request
                             data:(NSData *)data
                    finishedBlock:(ApplilinkWebAPIFinishedBlock)finishedBlock

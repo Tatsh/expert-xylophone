@@ -162,7 +162,7 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
  * @return The value forwarded from the invoked callback, or @c nil.
  * @ghidraAddress 0x222928
  */
-- (nullable id)responseFromContentsServer:(nullable id)response
+- (nullable id)responseFromContentsServer:(nullable NSString *)response
                                   request:(nullable id)request
                                      data:(nullable NSData *)data
                             finishedBlock:(nullable ApplilinkWebAPIFinishedBlock)finishedBlock
@@ -211,7 +211,7 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
  * @return The value forwarded from the invoked callback, or @c nil.
  * @ghidraAddress 0x223704
  */
-+ (nullable id)responseFromContentsServer:(nullable id)response
++ (nullable id)responseFromContentsServer:(nullable NSString *)response
                                   request:(nullable id)request
                                      data:(nullable NSData *)data
                             finishedBlock:(nullable ApplilinkWebAPIFinishedBlock)finishedBlock
