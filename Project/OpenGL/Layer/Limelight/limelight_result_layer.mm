@@ -11,6 +11,7 @@
 #include "ScoreTracker.h"
 #import "TwitterImageCreater.h"
 #include "deviceenvironment.h"
+#include "engineglobals.h"
 #include "fade_overlay_layer.h"
 #include "float_tween.h"
 #import "gamesystem.h"

@@ -12,6 +12,7 @@
 #import "TwitterImageCreater.h"
 #include "anchor_box_table.h"
 #import "deviceenvironment.h"
+#include "engineglobals.h"
 #include "engineruntime.h"
 #include "fade_overlay_layer.h"
 #include "float_tween.h"
@@ -3608,6 +3609,797 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                                 rivalColor.flGreen,
                                 rivalColor.flBlue);
     }
+}
+
+namespace {
+
+// The backdrop quad's width; its height is the live play-field height (@ghidraAddress 0x2fd04c).
+constexpr float kPhoneBackdropWidth = 768.0f;
+
+// The artwork quad's pixel extent on the phone layout, materialised by the binary as the paired
+// immediate 0x42a4000042a40000.
+constexpr float kPhoneArtworkExtent = 82.0f;
+
+// The vertical step between two rows of the eight-row stat grid. The binary accumulates this in
+// double precision and narrows only when writing the position back.
+constexpr double kPhoneStatRowStep = 10.5;
+
+// The vertical step between two bonus rows, by the portrait flag.
+constexpr float kPhoneBonusRowStep[] = {16.0f, 17.0f};
+
+// The horizontal offset of the bonus grid's second column, by the portrait flag (@ghidraAddress
+// 0x2fd068).
+constexpr float kPhoneBonusColumnOffset[] = {200.0f, 130.0f};
+
+// The rank plate's horizontal scale, by the portrait flag (@ghidraAddress 0x2fd060).
+constexpr float kPhoneRankPlateScaleX[] = {157.5f, 83.0f};
+
+// The nine parts of a stretched frame, as offsets from its base part id.
+enum PhoneFramePart {
+    kFramePartCornerTopLeft = 0,
+    kFramePartCornerTopRight = 1,
+    kFramePartEdgeTop = 2,
+    kFramePartEdgeLeft = 3,
+    kFramePartEdgeRight = 4,
+    kFramePartCornerBottomLeft = 5,
+    kFramePartCornerBottomRight = 6,
+    kFramePartEdgeBottom = 7,
+    kFramePartCentreFill = 8,
+};
+
+// The five stretched frames, each as its base part id, the part whose height the vertical span also
+// subtracts, and the two anchor positions it spans. The second height part is one of the frame's
+// bottom corners, but which one differs per frame, so it cannot be derived from the base.
+constexpr int kFrameWindowBase = 0x03;
+constexpr int kFrameWindowSpanHeightPart = 0x08;
+constexpr int kFrameMusicInfoBase = 0x4f;
+constexpr int kFrameMusicInfoSpanHeightPart = 0x54;
+constexpr int kFrameStatBase = 0x58;
+constexpr int kFrameStatSpanHeightPart = 0x5e;
+constexpr int kFrameScoreBase = 0x61;
+constexpr int kFrameScoreSpanHeightPart = 0x68;
+constexpr int kFrameBonusBase = 0x151;
+constexpr int kFrameBonusSpanHeightPart = 0x158;
+
+// The phone parts-atlas ids the panel emits, named for the element each draws. The individual
+// artwork behind an id is not recovered beyond its role here.
+enum PhoneResultPart {
+    kPhonePartBackdrop = 0x00,
+    kPhonePartPanelFrame = 0x01,
+    kPhonePartTwitterButton = 0x02,
+    kPhonePartMusicInfoUpper = 0x0c,
+    kPhonePartMusicInfoLower = 0x0d,
+    kPhonePartMusicInfoRule = 0x0e,
+    kPhonePartDifficultyLabelBase = 0x0f, // Plus the difficulty.
+    kPhonePartArtworkFrame = 0x13,
+    kPhonePartMusicNameRule = 0x14,
+    kPhonePartDifficultyNameBase = 0x15, // Plus the difficulty.
+    kPhonePartDifficultyMarkBase = 0x19, // Plus the difficulty.
+    kPhonePartArtistNameRule = 0x1d,
+    kPhonePartCaptionOffset = 0x0c, // Added to a caption's position index.
+    kPhonePartScoreLabel = 0x2e,
+    kPhonePartTargetDigitFamily = 0x2f,
+    kPhonePartDeltaPlusSign = 0x39,
+    kPhonePartDeltaMinusSign = 0x3a,
+    kPhonePartTargetRowLabel = 0x3b,
+    kPhonePartDeltaRowLabel = 0x3c,
+    kPhonePartScoreRowLabel = 0x3d,
+    kPhonePartRateFrameLeft = 0x3e,
+    kPhonePartRateFrameRight = 0x3f,
+    kPhonePartRateLabel = 0x40,
+    kPhonePartRankGlyphBase = 0x43, // Plus the earned rank.
+    kPhonePartNewRecordBadge = 0x49,
+    kPhonePartFullComboBadge = 0x4a,
+    kPhonePartNewRateBadgePortrait = 0x4c,
+    kPhonePartTargetBeatenBadge = 0x4d,
+    // The one badge part both the target-beaten and new-rate badges fall back to, on opposite
+    // settings of the portrait flag.
+    kPhonePartSharedBadgeAlternate = 0x4e,
+    kPhonePartStatRowColumnAPortrait = 0x6a,
+    kPhonePartStatRowColumnBPortrait = 0x72,
+    kPhonePartStatRowColumnCPortrait = 0x7a,
+    kPhonePartStatHeaderJust = 0x9a,
+    kPhonePartStatHeaderGreat = 0x9b,
+    kPhonePartStatHeaderGood = 0x9c,
+    kPhonePartSideColorLabelBase = 0x9d,  // Plus the play colour.
+    kPhonePartRivalColorLabelRed = 0x9f,  //
+    kPhonePartRivalColorLabelBlue = 0xa0, //
+    kPhonePartStatRowColumnADefault = 0x82,
+    kPhonePartStatRowColumnBDefault = 0x8a,
+    kPhonePartStatRowColumnCDefault = 0x92,
+    kPhonePartStatRowDecorationBase = 0xa1, // Eight parts, two of them drawn tinted instead.
+    kPhonePartLevelGlyphBase = 0xa9,        // Plus difficulty * 15 plus the level.
+    kPhonePartScoreDigitFamilyRed = 0xe5,
+    kPhonePartScoreDigitFamilyBlue = 0xef,
+    kPhonePartRateDigitFamily = 0xf9,
+    kPhonePartSideStatDigitFamily = 0x10f,
+    kPhonePartDiscardedRule = 0x130,
+    kPhonePartRankRowLabelLeft = 0x14c,
+    kPhonePartRankPlate = 0x14d,
+    kPhonePartRankRowLabelRight = 0x14e,
+    kPhonePartRankArrow = 0x14f,
+    kPhonePartRankTargetLabel = 0x150,
+    kPhonePartBonusRowLabelBase = 0x16e, // Plus the row.
+    kPhonePartBonusRowUnit = 0x174,
+    kPhonePartBonusTotalLabelLower = 0x175,
+    kPhonePartBonusTotalLabelUpper = 0x176,
+    kPhonePartBonusTotalRule = 0x177,
+    kPhonePartBonusTotalUnit = 0x178,
+    kPhonePartBonusRowSuffixPortrait = 0x179,
+    kPhonePartBonusRowSuffixDefault = 0x17a,
+    kPhonePartGrandTotalDigitFamily = 0x17b,
+    kPhonePartSideColorMarker = 0x18f,
+};
+
+// The phone anchor-position indices the panel resolves. Runs a loop walks are given their first
+// index; the digit rows pass their index to a number renderer, which walks the bank itself.
+enum PhoneResultPosition {
+    kPhonePosBackdrop = 0,
+    kPhonePosPanelFrame = 1,
+    kPhonePosTwitterButton = 2,
+    kPhonePosWindowFrameNear = 3,
+    kPhonePosWindowFrameFar = 4,
+    kPhonePosMusicInfoLower = 5,
+    kPhonePosMusicInfoUpper = 6,
+    kPhonePosMusicInfoRule = 7,
+    kPhonePosMusicNameImage = 8,
+    kPhonePosArtworkFrame = 9,
+    kPhonePosArtistNameImage = 10,
+    kPhonePosDifficultyLabel = 0xb,
+    kPhonePosArtwork = 0xc,
+    kPhonePosMusicNameRule = 0xd,
+    kPhonePosDifficultyName = 0xe,
+    kPhonePosDifficultyMark = 0xf,
+    kPhonePosLevelGlyph = 0x10,
+    kPhonePosArtistNameRule = 0x11,
+    kPhonePosClearedCaptionBase = 0x13,
+    kPhonePosFailedCaptionBase = 0x19,
+    kPhonePosCaptionEnd = 0x22,
+    kPhonePosScoreLabel = 0x22,
+    kPhonePosTargetDigits = 0x26,
+    kPhonePosTargetRowLabel = 0x27,
+    kPhonePosDeltaSign = 0x28,
+    kPhonePosDeltaDigits = 0x2c,
+    kPhonePosDeltaRowLabel = 0x2d,
+    kPhonePosScoreRowLabel = 0x2e,
+    kPhonePosScoreDigits = 0x32,
+    kPhonePosRateFrameLeft = 0x33,
+    kPhonePosRateFrameRight = 0x34,
+    kPhonePosRateDigits = 0x3a,
+    kPhonePosRateLabel = 0x3b,
+    kPhonePosRankGlyph = 0x3e,
+    kPhonePosNewRecordBadge = 0x3f,
+    kPhonePosFullComboBadge = 0x40,
+    kPhonePosTargetBeatenBadge = 0x41,
+    kPhonePosNewRateBadge = 0x42,
+    kPhonePosMusicInfoFrameNear = 0x43,
+    kPhonePosMusicInfoFrameFar = 0x44,
+    kPhonePosStatFrameNear = 0x45,
+    kPhonePosStatFrameFar = 0x46,
+    kPhonePosScoreFrameNear = 0x47,
+    kPhonePosScoreFrameFar = 0x48,
+    kPhonePosStatRowColumnA = 0x49,
+    kPhonePosStatRowColumnB = 0x4a,
+    kPhonePosStatRowColumnC = 0x4b,
+    kPhonePosStatHeaderJust = 0x4c,
+    kPhonePosStatHeaderGreat = 0x4d,
+    kPhonePosStatHeaderGood = 0x4e,
+    kPhonePosSideColorLabel = 0x4f,
+    kPhonePosRivalColorLabel = 0x50,
+    kPhonePosStatRowDecorationBase = 0x51,
+    kPhonePosStatJustCount = 0x59,
+    kPhonePosStatGreatCount = 0x5b,
+    kPhonePosStatGoodCount = 0x5d,
+    kPhonePosStatMissCount = 0x5f,
+    kPhonePosStatJustReflecPair = 0x61,
+    kPhonePosStatMaxComboPair = 0x67,
+    kPhonePosStatScore = 0x69,
+    kPhonePosStatRate = 0x6b,
+    kPhonePosRankRowLabelLeft = 0x6d,
+    kPhonePosRankPlate = 0x6e,
+    kPhonePosRankArrow = 0x6f,
+    kPhonePosRankRowLabelRight = 0x70,
+    kPhonePosRankTargetLabel = 0x71,
+    kPhonePosBonusFrameNear = 0x72,
+    kPhonePosBonusFrameFar = 0x73,
+    kPhonePosBonusUnusedA = 0x74,
+    kPhonePosBonusUnusedB = 0x75,
+    kPhonePosBonusUnusedC = 0x76,
+    kPhonePosBonusRowLabel = 0x77,
+    kPhonePosBonusRowUnit = 0x78,
+    kPhonePosBonusRowSuffix = 0x79,
+    kPhonePosBonusClearDigits = 0x7d,
+    kPhonePosBonusRankDigits = 0x81,
+    kPhonePosBonusMissDigits = 0x85,
+    kPhonePosBonusFirstPlayDigits = 0x89,
+    kPhonePosBonusEarlyPlayDigits = 0x8d,
+    kPhonePosBonusHotMusicDigits = 0x91,
+    kPhonePosBonusSubtotalDigits = 0x95,
+    kPhonePosBonusTotalLabelUpper = 0x96,
+    kPhonePosDiscardedRule = 0x97,
+    kPhonePosBonusTotalUnit = 0x98,
+    kPhonePosBonusTotalLabelLower = 0x99,
+    kPhonePosBonusTotalRule = 0x9a,
+    kPhonePosGrandTotalDigits = 0xa5,
+    kPhonePosSideColorMarkerLocal = 0xa6,
+    kPhonePosSideColorMarkerRival = 0xa7,
+};
+
+// The run lengths the phone panel's loops walk.
+constexpr int kPhoneStatRowCount = 8;
+constexpr int kPhoneStatDecorationCount = 8;
+
+} // namespace
+
+/** @ghidraAddress 0x7799c */
+void ResultWindowColetteLayer::RenderColetteResultPanel() {
+    // The alpha model is identical to the pad path's.
+    const unsigned int nFrameAlpha =
+        static_cast<unsigned int>(m_aTween[kTweenAlpha].flCurrent * kAlphaScale);
+    const float flFrameAlpha = static_cast<float>(nFrameAlpha);
+    const unsigned int nAlphaArtwork =
+        static_cast<unsigned int>(m_aTween[kTweenChannel1].flCurrent * flFrameAlpha);
+    const unsigned int nAlphaMusicInfo =
+        static_cast<unsigned int>(m_aTween[kTweenChannel2].flCurrent * flFrameAlpha);
+    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].flCurrent;
+    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].flCurrent;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const int nPlayColor = pGameSystem->GetPlayColor();
+    const int nTargetScore = pGameSystem->GetTargetScore();
+    const float flLocalRate = pTracker->GetPlayRecordRate(kSideLocal);
+    const float flTargetRate = pGameSystem->GetTargetAR();
+    const int nLocalScore = pTracker->GetPlayRecordCell(kSideLocal, kCellScore);
+    const int nRivalScore = pTracker->GetPlayRecordCell(kSideRival, kCellScore);
+    const int nLocalRank = pTracker->GetPlayRecordRank(kSideLocal);
+
+    for (auto *pSlot : m_apSlots) {
+        pSlot->SetSpriteCount(0);
+    }
+
+    const int nClampedTargetScore = nTargetScore < 0 ? 0 : nTargetScore;
+
+    if (nFrameAlpha == 0) {
+        return;
+    }
+
+    // As on the pad path, the ignored rotation slot is always zero; the compiler elides setting it
+    // because the number renderers provably never read it.
+    constexpr float kNoRotation = 0.0f;
+    const int nPortrait = m_bPortrait ? 1 : 0;
+
+    // Emits one glyph at a resolved phone anchor position.
+    const auto emitAt = [&](int nPartId, int nPositionIndex, unsigned int nAlpha) {
+        S_VECTOR2 position{};
+        getPosition_Phone(nPositionIndex, &position);
+        RenderDimmableGlyphFromTable(
+            kPartsSlot, nPartId, position, nAlpha, false, kNoRotation, kScaleNormal, kScaleNormal);
+    };
+
+    // The nine-part stretched frame: four corners, the four edges scaled to span the gap between the
+    // two resolved anchors, and a centre fill. Five frames on this panel share the shape, so it is
+    // de-inlined here. The vertical span subtracts half the base part's height and half a second
+    // part's height; that second part is a bottom corner, but which one differs per frame, so it is
+    // a parameter rather than something derived from the base.
+    const auto emitStretchedFrame = [&](int nBasePart,
+                                        int nSpanHeightPart,
+                                        int nNearPositionIndex,
+                                        int nFarPositionIndex,
+                                        unsigned int nAlpha) {
+        S_VECTOR2 nearCorner{};
+        S_VECTOR2 farCorner{};
+        getPosition_Phone(nNearPositionIndex, &nearCorner);
+        getPosition_Phone(nFarPositionIndex, &farCorner);
+        const float flSpanX =
+            (farCorner.x - nearCorner.x) - g_aColettePartsPhone[nBasePart].flWidth;
+        const float flSpanY =
+            ((farCorner.y - nearCorner.y) - g_aColettePartsPhone[nBasePart].flHeight * kHalf) -
+            g_aColettePartsPhone[nSpanHeightPart].flHeight * kHalf;
+        const float flMidX = (farCorner.x + nearCorner.x) * kHalf;
+        const float flMidY = (nearCorner.y + farCorner.y) * kHalf;
+
+        const auto emitPiece =
+            [&](int nPartOffset, const S_VECTOR2 &position, float flScaleX, float flScaleY) {
+                RenderDimmableGlyphFromTable(kPartsSlot,
+                                             nBasePart + nPartOffset,
+                                             position,
+                                             nAlpha,
+                                             false,
+                                             kNoRotation,
+                                             flScaleX,
+                                             flScaleY);
+            };
+
+        emitPiece(kFramePartEdgeTop, S_VECTOR2{flMidX, nearCorner.y}, flSpanX, kScaleNormal);
+        emitPiece(kFramePartEdgeBottom, S_VECTOR2{flMidX, farCorner.y}, flSpanX, kScaleNormal);
+        emitPiece(kFramePartEdgeLeft, S_VECTOR2{nearCorner.x, flMidY}, kScaleNormal, flSpanY);
+        emitPiece(kFramePartEdgeRight, S_VECTOR2{farCorner.x, flMidY}, kScaleMirrored, flSpanY);
+        emitPiece(kFramePartCornerTopLeft, nearCorner, kScaleNormal, kScaleNormal);
+        emitPiece(kFramePartCornerTopRight,
+                  S_VECTOR2{farCorner.x, nearCorner.y},
+                  kScaleMirrored,
+                  kScaleNormal);
+        emitPiece(kFramePartCornerBottomLeft,
+                  S_VECTOR2{nearCorner.x, farCorner.y},
+                  kScaleNormal,
+                  kScaleNormal);
+        emitPiece(kFramePartCornerBottomRight, farCorner, kScaleMirrored, kScaleNormal);
+        emitPiece(kFramePartCentreFill, S_VECTOR2{flMidX, flMidY}, flSpanX, flSpanY);
+    };
+
+    // The backdrop stretches to the full screen width and the live play-field height.
+    S_VECTOR2 backdropPosition{};
+    getPosition_Phone(kPhonePosBackdrop, &backdropPosition);
+    RenderGlyphPartFromTable(
+        kBackdropSlot,
+        kPhonePartBackdrop,
+        backdropPosition,
+        static_cast<unsigned int>((flFrameAlpha * kBackdropAlphaNumerator) / kAlphaScale),
+        kNoRotation,
+        kPhoneBackdropWidth,
+        static_cast<float>(g_nPlayfieldFieldHeight),
+        kColorBlack.flRed,
+        kColorBlack.flGreen,
+        kColorBlack.flBlue);
+
+    // The window and music-info frames.
+    emitStretchedFrame(kFrameWindowBase,
+                       kFrameWindowSpanHeightPart,
+                       kPhonePosWindowFrameNear,
+                       kPhonePosWindowFrameFar,
+                       nFrameAlpha);
+    emitStretchedFrame(kFrameMusicInfoBase,
+                       kFrameMusicInfoSpanHeightPart,
+                       kPhonePosMusicInfoFrameNear,
+                       kPhonePosMusicInfoFrameFar,
+                       nFrameAlpha);
+
+    // The music-info block, its artwork, and the two name images the scene rendered into slots three
+    // and four.
+    const int nDifficulty = pGameSystem->GetDifficulty();
+    const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
+    emitAt(kPhonePartMusicInfoUpper, kPhonePosMusicInfoUpper, nAlphaMusicInfo);
+    emitAt(kPhonePartMusicInfoLower, kPhonePosMusicInfoLower, nAlphaMusicInfo);
+    emitAt(kPhonePartMusicInfoRule, kPhonePosMusicInfoRule, nAlphaMusicInfo);
+    emitAt(kPhonePartDifficultyLabelBase + nDifficulty, kPhonePosDifficultyLabel, nAlphaMusicInfo);
+    S_VECTOR2 musicNamePosition{};
+    getPosition_Phone(kPhonePosMusicNameImage, &musicNamePosition);
+    blitSpriteInstanceHalfScale(kMusicNameSlot, musicNamePosition, nAlphaArtwork);
+    emitAt(kPhonePartArtworkFrame, kPhonePosArtworkFrame, nAlphaMusicInfo);
+    S_VECTOR2 artistNamePosition{};
+    getPosition_Phone(kPhonePosArtistNameImage, &artistNamePosition);
+    blitSpriteInstanceHalfScale(kArtistNameSlot, artistNamePosition, nAlphaArtwork);
+    S_VECTOR2 artworkPosition{};
+    getPosition_Phone(kPhonePosArtwork, &artworkPosition);
+    renderSpriteInstanceFromSlot(kArtworkSlot,
+                                 artworkPosition,
+                                 S_VECTOR2{kPhoneArtworkExtent, kPhoneArtworkExtent},
+                                 nAlphaArtwork);
+    emitAt(kPhonePartMusicNameRule, kPhonePosMusicNameRule, nAlphaArtwork);
+    emitAt(kPhonePartDifficultyNameBase + nDifficulty, kPhonePosDifficultyName, nAlphaArtwork);
+    emitAt(kPhonePartDifficultyMarkBase + nDifficulty, kPhonePosDifficultyMark, nAlphaArtwork);
+    emitAt(kPhonePartLevelGlyphBase + nDifficulty * kLevelGlyphsPerDifficulty + nDifficultyLevel,
+           kPhonePosLevelGlyph,
+           nAlphaArtwork);
+    emitAt(kPhonePartArtistNameRule, kPhonePosArtistNameRule, nAlphaMusicInfo);
+
+    // The caption walks a contiguous run of anchor positions, each part id being its position index
+    // plus a fixed offset. The cleared caption is the shorter of the two.
+    const bool bCleared = pTracker->GetPlayRecordRate(kSideLocal) >= kClearRateThreshold ||
+                          GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0;
+    const int nCaptionBase = bCleared ? kPhonePosClearedCaptionBase : kPhonePosFailedCaptionBase;
+    const int nCaptionEnd = bCleared ? kPhonePosFailedCaptionBase : kPhonePosCaptionEnd;
+    for (int nPosition = nCaptionBase; nPosition < nCaptionEnd; ++nPosition) {
+        emitAt(nPosition + kPhonePartCaptionOffset, nPosition, nAlphaArtwork);
+    }
+
+    // The target score, the signed difference from it, and the achieved score.
+    emitAt(kPhonePartScoreLabel, kPhonePosScoreLabel, nAlphaMusicInfo);
+    RenderPhoneNumberGlyphs(nClampedTargetScore,
+                            kDigitsScore,
+                            kPhonePosTargetDigits,
+                            kPhonePartTargetDigitFamily,
+                            false,
+                            false,
+                            true,
+                            nAlphaArtwork,
+                            kNoRotation,
+                            kColorWhite.flRed,
+                            kColorWhite.flGreen,
+                            kColorWhite.flBlue);
+    emitAt(kPhonePartTargetRowLabel, kPhonePosTargetRowLabel, nAlphaArtwork);
+    const int nScoreDelta = nLocalScore - nClampedTargetScore;
+    emitAt(nScoreDelta < 0 ? kPhonePartDeltaMinusSign : kPhonePartDeltaPlusSign,
+           kPhonePosDeltaSign,
+           nAlphaArtwork);
+    RenderPhoneNumberGlyphs(nScoreDelta < 0 ? -nScoreDelta : nScoreDelta,
+                            kDigitsScore,
+                            kPhonePosDeltaDigits,
+                            kPhonePartTargetDigitFamily,
+                            false,
+                            false,
+                            true,
+                            nAlphaArtwork,
+                            kNoRotation,
+                            kColorWhite.flRed,
+                            kColorWhite.flGreen,
+                            kColorWhite.flBlue);
+    emitAt(kPhonePartDeltaRowLabel, kPhonePosDeltaRowLabel, nAlphaArtwork);
+    emitAt(kPhonePartScoreRowLabel, kPhonePosScoreRowLabel, nAlphaMusicInfo);
+    RenderPhoneNumberGlyphs(nLocalScore,
+                            kDigitsScore,
+                            kPhonePosScoreDigits,
+                            nPlayColor != 0 ? kPhonePartScoreDigitFamilyBlue :
+                                              kPhonePartScoreDigitFamilyRed,
+                            false,
+                            false,
+                            true,
+                            nAlphaArtwork,
+                            kNoRotation,
+                            kColorWhite.flRed,
+                            kColorWhite.flGreen,
+                            kColorWhite.flBlue);
+
+    // The achievement rate and the personal-best badges.
+    emitAt(kPhonePartRateFrameLeft, kPhonePosRateFrameLeft, nAlphaMusicInfo);
+    emitAt(kPhonePartRateFrameRight, kPhonePosRateFrameRight, nAlphaMusicInfo);
+    const int nDisplayRate = static_cast<int>(flLocalRate * kRateDisplayScale);
+    RenderPhoneNumberGlyphs(nDisplayRate,
+                            kDigitsScore,
+                            kPhonePosRateDigits,
+                            kPhonePartRateDigitFamily,
+                            true,
+                            true,
+                            false,
+                            nAlphaArtwork,
+                            kNoRotation,
+                            kColorRate.flRed,
+                            kColorRate.flGreen,
+                            kColorRate.flBlue);
+    emitAt(kPhonePartRateLabel, kPhonePosRateLabel, nAlphaMusicInfo);
+    emitAt(kPhonePartRankGlyphBase + nLocalRank, kPhonePosRankGlyph, nAlphaArtwork);
+    if (nRivalScore < nLocalScore) {
+        emitAt(kPhonePartNewRecordBadge, kPhonePosNewRecordBadge, nAlphaArtwork);
+    }
+    if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(kSideLocal, kCellMaxCombo)) {
+        emitAt(kPhonePartFullComboBadge, kPhonePosFullComboBadge, nAlphaArtwork);
+    }
+    // The two remaining badges each fall back to the same alternate part, but on opposite settings
+    // of the portrait flag.
+    if (nClampedTargetScore < nLocalScore) {
+        emitAt(m_bPortrait ? kPhonePartSharedBadgeAlternate : kPhonePartTargetBeatenBadge,
+               kPhonePosTargetBeatenBadge,
+               nAlphaArtwork);
+    }
+    if (flTargetRate < pTracker->GetPlayRecordRate(kSideLocal)) {
+        emitAt(m_bPortrait ? kPhonePartNewRateBadgePortrait : kPhonePartSharedBadgeAlternate,
+               kPhonePosNewRateBadge,
+               nAlphaArtwork);
+    }
+
+    // The page cross-fade, on the same two channels and in the same direction as the pad path.
+    const float flSwipe = std::fabs(m_flSwipeDir);
+    const bool bSecondPageActive = m_nActive != 1;
+    const float flStatsSweep = static_cast<float>(static_cast<unsigned int>(flAlphaStats));
+    const float flBonusSweep = static_cast<float>(static_cast<unsigned int>(flAlphaBonus));
+    const unsigned int nAlphaStatsNear = static_cast<unsigned int>(
+        bSecondPageActive ? flStatsSweep * flSwipe : flStatsSweep * (1.0f - flSwipe));
+    const unsigned int nAlphaBonusNear = static_cast<unsigned int>(
+        bSecondPageActive ? flBonusSweep * flSwipe : flBonusSweep * (1.0f - flSwipe));
+    // The stat block draws at the near page's bonus alpha, the bonus block below at the far page's,
+    // so a flick swaps the two blocks rather than fading them together.
+    const unsigned int nAlphaBonusFar = static_cast<unsigned int>(
+        bSecondPageActive ? flBonusSweep * (1.0f - flSwipe) : flBonusSweep * flSwipe);
+
+    // The stat and score frames, then the column headers and side colour labels.
+    emitStretchedFrame(kFrameStatBase,
+                       kFrameStatSpanHeightPart,
+                       kPhonePosStatFrameNear,
+                       kPhonePosStatFrameFar,
+                       nAlphaBonusNear);
+    emitStretchedFrame(kFrameScoreBase,
+                       kFrameScoreSpanHeightPart,
+                       kPhonePosScoreFrameNear,
+                       kPhonePosScoreFrameFar,
+                       nAlphaBonusNear);
+    emitAt(kPhonePartStatHeaderJust, kPhonePosStatHeaderJust, nAlphaBonusNear);
+    emitAt(kPhonePartStatHeaderGood, kPhonePosStatHeaderGood, nAlphaBonusNear);
+    emitAt(kPhonePartStatHeaderGreat, kPhonePosStatHeaderGreat, nAlphaBonusNear);
+    emitAt(kPhonePartSideColorLabelBase + nPlayColor, kPhonePosSideColorLabel, nAlphaBonusNear);
+    emitAt(nPlayColor == 0 ? kPhonePartRivalColorLabelBlue : kPhonePartRivalColorLabelRed,
+           kPhonePosRivalColorLabel,
+           nAlphaBonusNear);
+
+    // The eight-row stat grid: three columns, each row stepped down by a fractional row height the
+    // binary accumulates in double precision.
+    for (int nRow = 0; nRow < kPhoneStatRowCount; ++nRow) {
+        const double flRowOffset = static_cast<double>(nRow) * kPhoneStatRowStep;
+        const auto emitStatCell = [&](int nPositionIndex, int nPortraitBase, int nDefaultBase) {
+            S_VECTOR2 position{};
+            getPosition_Phone(nPositionIndex, &position);
+            position.y = static_cast<float>(flRowOffset + static_cast<double>(position.y));
+            RenderDimmableGlyphFromTable(kPartsSlot,
+                                         (m_bPortrait ? nPortraitBase : nDefaultBase) + nRow,
+                                         position,
+                                         nAlphaBonusNear,
+                                         false,
+                                         kNoRotation,
+                                         kScaleNormal,
+                                         kScaleNormal);
+        };
+        emitStatCell(kPhonePosStatRowColumnA,
+                     kPhonePartStatRowColumnAPortrait,
+                     kPhonePartStatRowColumnADefault);
+        emitStatCell(kPhonePosStatRowColumnB,
+                     kPhonePartStatRowColumnBPortrait,
+                     kPhonePartStatRowColumnBDefault);
+        emitStatCell(kPhonePosStatRowColumnC,
+                     kPhonePartStatRowColumnCPortrait,
+                     kPhonePartStatRowColumnCDefault);
+    }
+
+    // The eight stat-row decorations. Unlike the pad path, the first and fifth draw *instead* as a
+    // tinted pass in the rotating decoration colour rather than in addition to the plain one.
+    for (int nDecoration = 0; nDecoration < kPhoneStatDecorationCount; ++nDecoration) {
+        S_VECTOR2 position{};
+        getPosition_Phone(kPhonePosStatRowDecorationBase + nDecoration, &position);
+        const int nPartId = kPhonePartStatRowDecorationBase + nDecoration;
+        if ((static_cast<unsigned int>(nDecoration) & kStatRowTintedIndexMask) == 0) {
+            const ResultBonusColor &tint = g_aResultBonusColor[m_nRotationFrame];
+            RenderGlyphPartFromTable(kPartsSlot,
+                                     nPartId,
+                                     position,
+                                     nAlphaBonusNear,
+                                     kNoRotation,
+                                     kScaleNormal,
+                                     kScaleNormal,
+                                     tint.flRed,
+                                     tint.flGreen,
+                                     tint.flBlue);
+        } else {
+            RenderDimmableGlyphFromTable(kPartsSlot,
+                                         nPartId,
+                                         position,
+                                         nAlphaBonusNear,
+                                         false,
+                                         kNoRotation,
+                                         kScaleNormal,
+                                         kScaleNormal);
+        }
+    }
+
+    // The per-side judgement columns.
+    for (int nSide = 0; nSide < kResultSideCount; ++nSide) {
+        const unsigned int nUside = static_cast<unsigned int>(nSide);
+        const int nJust = pTracker->GetPlayRecordCell(nUside, kCellJust);
+        const int nGreat = pTracker->GetPlayRecordCell(nUside, kCellGreat);
+        const int nGood = pTracker->GetPlayRecordCell(nUside, kCellGood);
+        const int nMiss = pTracker->GetPlayRecordCell(nUside, kCellMiss);
+        const int nJustReflec = pTracker->GetPlayRecordCell(nUside, kCellJustReflec);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(nUside, kCellMaxCombo);
+        const int nSideScore = pTracker->GetPlayRecordCell(nUside, kCellScore);
+        const int nTotalNotes = pTracker->GetTotalNotes();
+        const float flSideRate = pTracker->GetPlayRecordRate(nUside);
+        const int nQuotaIndex = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1 : 0);
+        const int nSideQuota = m_anResultScore[nQuotaIndex];
+
+        const auto emitSideStat =
+            [&](int nValue, int nPositionIndex, bool bWideLeading, const ResultBonusColor &color) {
+                RenderPhoneNumberProportional(nValue,
+                                              kDigitsScore,
+                                              nPositionIndex + nSide,
+                                              kPhonePartSideStatDigitFamily,
+                                              bWideLeading,
+                                              false,
+                                              nAlphaStatsNear,
+                                              kNoRotation,
+                                              color.flRed,
+                                              color.flGreen,
+                                              color.flBlue);
+            };
+        emitSideStat(nJust, kPhonePosStatJustCount, false, kColorJudgeCount);
+        emitSideStat(nGreat, kPhonePosStatGreatCount, false, kColorJudgeCount);
+        emitSideStat(nGood, kPhonePosStatGoodCount, false, kColorGoodCount);
+        emitSideStat(nMiss, kPhonePosStatMissCount, false, kColorMissCount);
+
+        S_VECTOR2 justReflecPosition{};
+        getPosition_Phone(kPhonePosStatJustReflecPair + nSide, &justReflecPosition);
+        RenderPhoneNumberPairSeparated(nJustReflec,
+                                       nSideQuota,
+                                       &justReflecPosition,
+                                       nAlphaStatsNear,
+                                       kResultBonusColorAmber,
+                                       kResultBonusColorTaupe);
+        S_VECTOR2 maxComboPosition{};
+        getPosition_Phone(kPhonePosStatMaxComboPair + nSide, &maxComboPosition);
+        RenderPhoneNumberPairSeparated(nMaxCombo,
+                                       nTotalNotes,
+                                       &maxComboPosition,
+                                       nAlphaStatsNear,
+                                       kResultBonusColorGreen,
+                                       kResultBonusColorTaupe);
+
+        emitSideStat(nSideScore, kPhonePosStatScore, false, kColorScore);
+        emitSideStat(
+            static_cast<int>(flSideRate * kRateDisplayScale), kPhonePosStatRate, true, kColorRate);
+    }
+
+    // The bonus frame and the rank row.
+    emitStretchedFrame(kFrameBonusBase,
+                       kFrameBonusSpanHeightPart,
+                       kPhonePosBonusFrameNear,
+                       kPhonePosBonusFrameFar,
+                       nAlphaBonusFar);
+    emitAt(kPhonePartRankRowLabelLeft, kPhonePosRankRowLabelLeft, nAlphaBonusFar);
+    emitAt(kPhonePartRankRowLabelRight, kPhonePosRankRowLabelRight, nAlphaBonusFar);
+    RenderAnchoredGlyphWithAlpha(kPartsSlot,
+                                 kPhonePartRankPlate,
+                                 kPhonePosRankPlate,
+                                 S_VECTOR2{0.0f, 0.0f},
+                                 nAlphaBonusFar,
+                                 false,
+                                 kNoRotation,
+                                 kPhoneRankPlateScaleX[nPortrait],
+                                 kScaleNormal);
+    emitAt(kPhonePartRankTargetLabel, kPhonePosRankTargetLabel, nAlphaBonusFar);
+    emitAt(kPhonePartRankArrow, kPhonePosRankArrow, nAlphaBonusFar);
+
+    // These three anchor positions are resolved and then never used. Faithful to the binary.
+    S_VECTOR2 unusedBonusAnchor{};
+    getPosition_Phone(kPhonePosBonusUnusedA, &unusedBonusAnchor);
+    getPosition_Phone(kPhonePosBonusUnusedB, &unusedBonusAnchor);
+    getPosition_Phone(kPhonePosBonusUnusedC, &unusedBonusAnchor);
+
+    // The bonus rows form a two-column grid: even rows in the left column, odd rows in the right,
+    // each pair sharing a row of the grid. The early-play and hot-music rows are gated by their
+    // feature toggles.
+    const float flBonusRowStep = kPhoneBonusRowStep[nPortrait];
+    for (int nRow = 0; nRow < kBonusRowCount; ++nRow) {
+        if (nRow == kBonusRowEarlyPlay && ![AppDelegate.appDelegate isEnableEarlyBonus]) {
+            continue;
+        }
+        if (nRow == kBonusRowHotMusic && ![AppDelegate.appDelegate isEnableHotBonus]) {
+            break;
+        }
+
+        const bool bRightColumn = (nRow & 1) != 0;
+        const float flColumnOffset = bRightColumn ? kPhoneBonusColumnOffset[nPortrait] : 0.0f;
+        const float flRowOffset = flBonusRowStep * static_cast<float>(nRow / 2);
+        const auto emitBonusCell = [&](int nPartId, int nPositionIndex) {
+            S_VECTOR2 position{};
+            getPosition_Phone(nPositionIndex, &position);
+            position.x += flColumnOffset;
+            position.y += flRowOffset;
+            RenderDimmableGlyphFromTable(kPartsSlot,
+                                         nPartId,
+                                         position,
+                                         nAlphaBonusFar,
+                                         false,
+                                         kNoRotation,
+                                         kScaleNormal,
+                                         kScaleNormal);
+        };
+        emitBonusCell(kPhonePartBonusRowLabelBase + nRow, kPhonePosBonusRowLabel);
+        emitBonusCell(kPhonePartBonusRowUnit, kPhonePosBonusRowUnit);
+        emitBonusCell(m_bPortrait ? kPhonePartBonusRowSuffixPortrait :
+                                    kPhonePartBonusRowSuffixDefault,
+                      kPhonePosBonusRowSuffix);
+    }
+
+    // The bonus total block. The second of these resolves its anchor position and then draws at a
+    // fixed entry of the pad layout bank instead, discarding the resolved position; reproduced as
+    // the binary has it.
+    emitAt(kPhonePartBonusTotalLabelUpper, kPhonePosBonusTotalLabelUpper, nAlphaBonusFar);
+    S_VECTOR2 discardedRulePosition{};
+    getPosition_Phone(kPhonePosDiscardedRule, &discardedRulePosition);
+    RenderDimmableGlyphFromTable(kPartsSlot,
+                                 kPhonePartDiscardedRule,
+                                 g_aResultLayoutPosition[kPosBonusTotalPlus],
+                                 nAlphaBonusFar,
+                                 false,
+                                 kNoRotation,
+                                 kScaleNormal,
+                                 kScaleNormal);
+    emitAt(kPhonePartBonusTotalUnit, kPhonePosBonusTotalUnit, nAlphaBonusFar);
+    emitAt(kPhonePartBonusTotalLabelLower, kPhonePosBonusTotalLabelLower, nAlphaBonusFar);
+    emitAt(kPhonePartBonusTotalRule, kPhonePosBonusTotalRule, nAlphaBonusFar);
+
+    // Each bonus value is shown to one decimal place, at the far page's stat alpha (the stat
+    // channel's other half, which is what the per-side columns above draw at).
+    const unsigned int nAlphaBonusValues = static_cast<unsigned int>(
+        bSecondPageActive ? flStatsSweep * (1.0f - flSwipe) : flStatsSweep * flSwipe);
+    const auto emitBonusValue = [&](float flBonus, int nPositionIndex) {
+        RenderPhoneNumberGlyphs(static_cast<int>(flBonus * kBonusDisplayScale),
+                                kDigitsBonus,
+                                nPositionIndex,
+                                kPhonePartRateDigitFamily,
+                                true,
+                                false,
+                                true,
+                                nAlphaBonusValues,
+                                kNoRotation,
+                                kColorRate.flRed,
+                                kColorRate.flGreen,
+                                kColorRate.flBlue);
+    };
+    emitBonusValue(m_flClearBonus, kPhonePosBonusClearDigits);
+    emitBonusValue(m_flRankBonus, kPhonePosBonusRankDigits);
+    emitBonusValue(m_flMissBonus, kPhonePosBonusMissDigits);
+    emitBonusValue(m_flFirstPlayBonus, kPhonePosBonusFirstPlayDigits);
+    if ([AppDelegate.appDelegate isEnableEarlyBonus]) {
+        emitBonusValue(m_flEarlyPlayBonus, kPhonePosBonusEarlyPlayDigits);
+    }
+    if ([AppDelegate.appDelegate isEnableHotBonus]) {
+        emitBonusValue(m_flHotMusicBonus, kPhonePosBonusHotMusicDigits);
+    }
+
+    const float flBonusSubtotal = m_flClearBonus + m_flMissBonus + m_flRankBonus +
+                                  m_flFirstPlayBonus + m_flEarlyPlayBonus + m_flHotMusicBonus;
+    emitBonusValue(flBonusSubtotal, kPhonePosBonusSubtotalDigits);
+    // The grand total draws from the family that goes through the dimmable glyph path, which ignores
+    // the colour channels the call still passes as zero.
+    RenderPhoneNumberGlyphs(
+        static_cast<int>((flBonusSubtotal + m_flExperienceBonus) * kBonusDisplayScale),
+        kDigitsGrandTotal,
+        kPhonePosGrandTotalDigits,
+        kPhonePartGrandTotalDigitFamily,
+        true,
+        false,
+        true,
+        nAlphaBonusValues,
+        kNoRotation,
+        kColorBlack.flRed,
+        kColorBlack.flGreen,
+        kColorBlack.flBlue);
+
+    // The panel frame and share button dim while their touch regions are held.
+    S_VECTOR2 panelFramePosition{};
+    getPosition_Phone(kPhonePosPanelFrame, &panelFramePosition);
+    RenderDimmableGlyphFromTable(kPartsSlot,
+                                 kPhonePartPanelFrame,
+                                 panelFramePosition,
+                                 nFrameAlpha,
+                                 m_aTouchRegion[0].bDown,
+                                 kNoRotation,
+                                 kScaleNormal,
+                                 kScaleNormal);
+    if (m_bTwitterAvailable) {
+        S_VECTOR2 twitterPosition{};
+        getPosition_Phone(kPhonePosTwitterButton, &twitterPosition);
+        RenderDimmableGlyphFromTable(kPartsSlot,
+                                     kPhonePartTwitterButton,
+                                     twitterPosition,
+                                     nFrameAlpha,
+                                     m_aTouchRegion[3].bDown,
+                                     kNoRotation,
+                                     kScaleNormal,
+                                     kScaleNormal);
+    }
+
+    // The pair of per-side colour markers. Unlike the pad path these are not gated on the game type
+    // and are not dimmed, and they take the mid and light grey palette entries.
+    const int nLocalMarkerColor =
+        bSecondPageActive ? kResultBonusColorLightGray : kResultBonusColorMidGray;
+    const int nRivalMarkerColor =
+        bSecondPageActive ? kResultBonusColorMidGray : kResultBonusColorLightGray;
+    const auto emitColorMarker = [&](int nPositionIndex, int nColorIndex) {
+        S_VECTOR2 position{};
+        getPosition_Phone(nPositionIndex, &position);
+        const ResultBonusColor &color = g_aResultBonusColor[nColorIndex];
+        RenderGlyphPartFromTable(kPartsSlot,
+                                 kPhonePartSideColorMarker,
+                                 position,
+                                 nAlphaArtwork,
+                                 kNoRotation,
+                                 kScaleNormal,
+                                 kScaleNormal,
+                                 color.flRed,
+                                 color.flGreen,
+                                 color.flBlue);
+    };
+    emitColorMarker(kPhonePosSideColorMarkerLocal, nLocalMarkerColor);
+    emitColorMarker(kPhonePosSideColorMarkerRival, nRivalMarkerColor);
 }
 
 // Seeds every Colette result-screen layout table at load time, the largest of the three layout

@@ -11,6 +11,7 @@
 #import "TwitterImageCreater.h"
 #include "classic_parts_data_table.h"
 #import "deviceenvironment.h"
+#include "engineglobals.h"
 #include "engineruntime.h"
 #include "fade_overlay_layer.h"
 #include "float_tween.h"

@@ -191,7 +191,25 @@ public:
     void RenderResultScoreBonusPanel();
 
     /**
-     * @brief Renders the Colette result panel (the phone/portrait path). Reconstruction pending.
+     * @brief Renders the whole result panel in the phone layout: the portrait and landscape path.
+     *
+     * The phone twin of @c RenderResultScoreBonusPanel, sharing its alpha model exactly: the frame
+     * alpha is the alpha tween channel scaled by 255 and a zero value returns immediately, the four
+     * remaining channels give the artwork, music-info, stat, and bonus sub-alphas, and the stat and
+     * bonus channels cross-fade the two result pages between @c |swipeDirection| and its complement,
+     * swapped by the active page. Every slot's sprite count is reset first.
+     *
+     * Where the pad path positions each element from the flat layout bank, this path resolves every
+     * position through @c getPosition_Phone and builds its panels from nine-part stretched frames:
+     * four corners, four edges scaled to span the gap between two resolved anchors, and a centre
+     * fill. Five such frames make up the window, the music-info block, the stat block, the score
+     * block, and the bonus block.
+     *
+     * It then emits the music-info block with its artwork and name images, the clear or failed
+     * caption, the score and rate with their sign glyphs and personal-best badges, an eight-row stat
+     * grid stepped by a fractional row height, the per-side judgement columns, a two-column bonus
+     * grid, the bonus values and totals, the panel frame and share button, and the pair of per-side
+     * colour markers. Several part ids and offsets are selected by the portrait flag.
      * @ghidraAddress 0x7799c
      */
     void RenderColetteResultPanel();
