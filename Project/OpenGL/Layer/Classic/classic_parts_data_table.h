@@ -8,6 +8,7 @@
 #include "../Colette/phone_anchor_table.h"
 #include "../Limelight/limelight_parts_data_table.h"
 #include "parts_data_table.h"
+#include "s_vector2.h"
 
 // The number of records in the Classic result-window phone parts table (the static one), and the
 // upper bound the device-selecting accessor uses for both tables.
@@ -68,6 +69,24 @@ struct PhoneLayoutRect {
     float flHeight = {}; // +0x0c: the carried secondary Y coordinate or height.
 };
 
+// The Classic pad parts anchor table: one {x, y} anchor per parts slot, zero-initialised in the
+// binary's @c __common segment and filled at runtime alongside the parts table itself.
+constexpr int kClassicPartsAnchorRecordCount = 131;
+// @ghidraAddress 0x3d7cd0
+extern S_VECTOR2 g_aClassicPartsAnchorPad[kClassicPartsAnchorRecordCount];
+
+// The Classic colour-marker rectangles, zero-initialised in the binary's @c __common segment and
+// filled at runtime. @c InitColorMarkerLayer reaches them through the pointer table at 0x3cf458.
+// The record count and the four-float shape are proven by the initialiser's writes; the individual
+// coordinates' roles are not yet recovered, so they carry the shared rectangle field names.
+constexpr int kClassicColorMarkerRectCount = 39;
+// @ghidraAddress 0x3dd080
+extern PhoneLayoutRect g_aClassicColorMarkerRects[kClassicColorMarkerRectCount];
+
+// The single colour-marker origin the initialiser writes just past the rectangle table, immediately
+// before the layer singleton pointer at 0x3dd2f8.
+extern S_VECTOR2 g_ClassicColorMarkerOrigin; // @ghidraAddress 0x3dd2f0
+
 // The Classic phone-layout separator tables, zero-initialised in the binary's @c __common segment
 // and filled at runtime; the portrait flag selects between them.
 extern PhoneLayoutRecord
@@ -89,6 +108,17 @@ extern PhoneLayoutRecord g_aClassicPositionPhoneStateLandscape[]; // @ghidraAddr
 extern PhoneLayoutRect g_ClassicCenterPositionPhoneState;     // @ghidraAddress 0x3d90d0
 extern PhoneLayoutRect g_ClassicCenterPositionPhonePortrait;  // @ghidraAddress 0x3d90e0
 extern PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape; // @ghidraAddress 0x3d90f0
+
+/**
+ * @brief Fills every Classic result-screen layout table with its shipped values.
+ *
+ * A one-time initialiser: the tables it writes are zero-initialised in the binary's @c __common
+ * segment, and this seeds each field inline inside an autorelease pool. Every value is a constant
+ * except the first parts record's height, which takes the play-field height. The binary has no
+ * direct callers; it is reached through the two data references at 0x3e8f60 and 0x358ca8.
+ * @ghidraAddress 0x11c9b8
+ */
+void InitializeResultLayoutTable();
 
 // code: language=C++
 // kate: hl C++;

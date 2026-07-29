@@ -56,7 +56,7 @@ PARTS = ["nEnabled", "flX", "flY", "flWidth", "flHeight", "nUvPaletteIndex"]
 ANCHOR = ["flX", "flY", "nAnchorMode"]
 LAYOUT = ["flX", "flY", "flWidth", "flHeight", "nAnchorMode"]
 RECT = ["flX", "flY", "flWidth", "flHeight"]
-PAIR = ["flX", "flY"]
+PAIR = ["x", "y"]
 INT_FIELDS = {"nEnabled", "nUvPaletteIndex", "nAnchorMode"}
 
 TABLES = [
@@ -72,6 +72,8 @@ TABLES = [
     (0x1003D90D0, "g_ClassicCenterPositionPhoneState", 0x10, 1, RECT),
     (0x1003D90E0, "g_ClassicCenterPositionPhonePortrait", 0x10, 1, RECT),
     (0x1003D90F0, "g_ClassicCenterPositionPhoneLandscape", 0x10, 1, RECT),
+    (0x1003DD080, "g_aClassicColorMarkerRects", 0x10, 39, RECT),
+    (0x1003DD2F0, "g_ClassicColorMarkerOrigin", 0x08, 1, PAIR),
 ]
 
 
@@ -102,6 +104,7 @@ neon = {}
 mem = {}
 stmts = []
 bad = []
+saves = {}
 
 PIECE = re.compile(r"^\s*(auVar\d+)\._(0|8)_8_\s*=\s*(.+?);\s*$")
 STMT = re.compile(r"^\s*(?:(auVar\d+)\s*=\s*(.+?)"
@@ -143,6 +146,16 @@ for line in text.splitlines():
         off = int(pm.group(2))
         cur[off:off + 8] = b
         neon[pm.group(1)] = bytes(cur)
+        continue
+    sm = re.fullmatch(r"\s*(uVar\d+)\s*=\s*_?(?:DAT|UNK)_(1003d[0-9a-f]{4});\s*", line)
+    if sm:
+        d = dest(int(sm.group(2), 16))
+        if d is None:
+            bad.append(("save", line.strip()))
+            continue
+        rec = d[0].rsplit(".", 1)[0]   # the 8-byte save covers the whole two-float record
+        saves[sm.group(1)] = rec
+        stmts.append(("SAVE:" + sm.group(1), rec))
         continue
     m = STMT.match(line)
     if not m:
@@ -234,6 +247,11 @@ for line in text.splitlines():
             continue
         emit(addr, list(struct.unpack("<II" if wide else "<I", b)))
         continue
+    if rhs in saves:
+        d = dest(addr)
+        if d:
+            stmts.append((d[0], "sav_" + rhs))
+            continue
     bad.append(("rhs", line.strip()))
 
 print("statements:", len(stmts), " unresolved:", len(bad))
@@ -245,5 +263,11 @@ for t, l in bad[:10]:
     print("   ", t, "|", l)
 with open(SCRATCH + "/" + _args.out, "w") as fh:
     for e, v in stmts:
+        if e.startswith("SAVE:"):
+            fh.write(f"    const S_VECTOR2 savedAnchor = {v};\n")
+            continue
+        if v.startswith("sav_"):
+            fh.write(f"    {e.rsplit('.', 1)[0]} = savedAnchor;\n")
+            continue
         fh.write(f"    {e} = {v};\n")
 print("wrote", _args.out)
