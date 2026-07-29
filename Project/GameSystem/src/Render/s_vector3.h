@@ -25,15 +25,17 @@ struct S_VECTOR3 {
     }
 
     union {
+        /** @brief The position or direction reading of the three components. */
         struct {
-            float x; // +0x0
-            float y; // +0x4
-            float z; // +0x8
+            float x; /*!< The first component as a horizontal position or direction. +0x0 */
+            float y; /*!< The second component as a vertical position or direction. +0x4 */
+            float z; /*!< The third component as a depth position or direction. +0x8 */
         };
+        /** @brief The colour reading of the same three components. */
         struct {
-            float r;
-            float g;
-            float b;
+            float r; /*!< The first component as a red channel. Aliases @c x. */
+            float g; /*!< The second component as a green channel. Aliases @c y. */
+            float b; /*!< The third component as a blue channel. Aliases @c z. */
         };
     };
 };

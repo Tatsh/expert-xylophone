@@ -53,20 +53,20 @@ extern const UvPaletteEntry g_aClassicGlyphUvPalette[]; // @ghidraAddress 0x2f4d
  * document the original member offsets for reference only.
  */
 struct PhoneLayoutRecord {
-    float flX = {};       // +0x00: the base X coordinate (viewport-anchored).
-    float flY = {};       // +0x04: the base Y coordinate (viewport-anchored).
-    float flWidth = {};   // +0x08: the carried secondary X coordinate or width.
-    float flHeight = {};  // +0x0c: the carried secondary Y coordinate or height.
-    int nAnchorMode = {}; // +0x10: the viewport-relative anchor mode (0 through 8).
+    float flX = {};       /*!< The base X coordinate (viewport-anchored). +0x00 */
+    float flY = {};       /*!< The base Y coordinate (viewport-anchored). +0x04 */
+    float flWidth = {};   /*!< The carried secondary X coordinate or width. +0x08 */
+    float flHeight = {};  /*!< The carried secondary Y coordinate or height. +0x0c */
+    int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x10 */
 };
 
 // One anchored phone-layout rectangle, as returned by the position and centre accessors: the leading
 // coordinate after viewport anchoring, plus the record's carried secondary coordinate.
 struct PhoneLayoutRect {
-    float flX = {};      // +0x00: the anchored X coordinate.
-    float flY = {};      // +0x04: the anchored Y coordinate.
-    float flWidth = {};  // +0x08: the carried secondary X coordinate or width.
-    float flHeight = {}; // +0x0c: the carried secondary Y coordinate or height.
+    float flX = {};      /*!< The anchored X coordinate. +0x00 */
+    float flY = {};      /*!< The anchored Y coordinate. +0x04 */
+    float flWidth = {};  /*!< The carried secondary X coordinate or width. +0x08 */
+    float flHeight = {}; /*!< The carried secondary Y coordinate or height. +0x0c */
 };
 
 // The Classic pad parts anchor table: one {x, y} anchor per parts slot, zero-initialised in the

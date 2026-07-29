@@ -12,10 +12,10 @@
  * A 16-byte record; the trailing @c // +0xNN comments document the byte offsets.
  */
 struct RbffStreamCursor {
-    int nField0 = {}; // +0x00: cursor state (reset to zero on init).
-    int nField4 = {}; // +0x04: cursor state.
-    int nField8 = {}; // +0x08: cursor state.
-    int nFieldC = {}; // +0x0c: cursor state.
+    int nField0 = {}; /*!< Cursor state (reset to zero on init). +0x00 */
+    int nField4 = {}; /*!< Cursor state. +0x04 */
+    int nField8 = {}; /*!< Cursor state. +0x08 */
+    int nFieldC = {}; /*!< Cursor state. +0x0c */
 };
 
 /**

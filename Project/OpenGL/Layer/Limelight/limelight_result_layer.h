@@ -25,11 +25,11 @@ class C_SPRITE_INSTANCING_2D;
  * sentinel and clears the flags.
  */
 struct ResultButtonRecord {
-    int nTouchId = {};      // +0x00: the tracked touch id (-1 when none).
-    bool bDown = {};        // +0x04: whether a tracked touch is currently pressing the button.
-    bool bTapEdge = {};     // +0x05: latched when a tracked touch is released inside the button.
-    bool bInitialised = {}; // +0x06: whether the button has been initialised.
-    unsigned char m_aPad07[1] = {}; // +0x07: alignment padding to the 8-byte stride.
+    int nTouchId = {};  /*!< The tracked touch id (-1 when none). +0x00 */
+    bool bDown = {};    /*!< Whether a tracked touch is currently pressing the button. +0x04 */
+    bool bTapEdge = {}; /*!< Latched when a tracked touch is released inside the button. +0x05 */
+    bool bInitialised = {};         /*!< Whether the button has been initialised. +0x06 */
+    unsigned char m_aPad07[1] = {}; /*!< Alignment padding to the 8-byte stride. +0x07 */
 };
 
 /**

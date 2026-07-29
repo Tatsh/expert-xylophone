@@ -16,8 +16,8 @@ typedef struct objc_object NSData;
  * position (plus one) in the table.
  */
 struct LevelUnlockEntry {
-    int nCategory = {}; // +0x00: the unlock category (0 through 4).
-    int nItem = {};     // +0x04: the item index within the category.
+    int nCategory = {}; /*!< The unlock category, 0 through 4. +0x00 */
+    int nItem = {};     /*!< The item index within the category. +0x04 */
 };
 
 /**

@@ -16,12 +16,13 @@
  * the screen height each frame. The 24-byte stride matches the binary's layout.
  */
 struct AltFrameMarkerLayout {
-    int nSpriteKind = {};  // +0x00: the sprite-kind row (indexes the alt-frame sprite-kind table).
-    float flX = {};        // +0x04: the marker's base X.
-    float flY = {};        // +0x08: the marker's base Y (relative to the layout centre split).
-    float flRotation = {}; // +0x0c: the marker's rotation, in radians.
-    float flScaleX = {};   // +0x10: the marker's X scale.
-    float flScaleY = {};   // +0x14: the marker's Y scale.
+    /** The sprite-kind row (indexes the alt-frame sprite-kind table). +0x00 */
+    int nSpriteKind = {};
+    float flX = {};        /*!< The marker's base X. +0x04 */
+    float flY = {};        /*!< The marker's base Y (relative to the layout centre split). +0x08 */
+    float flRotation = {}; /*!< The marker's rotation, in radians. +0x0c */
+    float flScaleX = {};   /*!< The marker's X scale. +0x10 */
+    float flScaleY = {};   /*!< The marker's Y scale. +0x14 */
 };
 
 // The number of records in each difficulty's marker layout table.
@@ -45,12 +46,12 @@ extern AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9]; // @ghidr
  * matches the binary's layout.
  */
 struct AltFrameSpriteDescriptor {
-    int nBatch = {};        // +0x00: the sprite batch (instancer) index this descriptor draws into.
-    float flAnchorX = {};   // +0x04: the sprite anchor X.
-    float flAnchorY = {};   // +0x08: the sprite anchor Y.
-    float flSizeX = {};     // +0x0c: the sprite pixel width.
-    float flSizeY = {};     // +0x10: the sprite pixel height.
-    int nUvFrameIndex = {}; // +0x14: the UV atlas-frame index.
+    int nBatch = {}; /*!< The sprite batch (instancer) index this descriptor draws into. +0x00 */
+    float flAnchorX = {};   /*!< The sprite anchor X. +0x04 */
+    float flAnchorY = {};   /*!< The sprite anchor Y. +0x08 */
+    float flSizeX = {};     /*!< The sprite pixel width. +0x0c */
+    float flSizeY = {};     /*!< The sprite pixel height. +0x10 */
+    int nUvFrameIndex = {}; /*!< The UV atlas-frame index. +0x14 */
 };
 
 // The number of descriptor records in each difficulty's sprite-descriptor table.

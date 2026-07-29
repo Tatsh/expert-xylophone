@@ -20,14 +20,19 @@ class RbffNoteRecord;
  * and rescales @c endPos into a per-unit-time velocity.
  */
 struct WaypointNode {
-    float flStartTime = {};  // +0x00: the node's start time.
-    S_VECTOR2 startPos = {}; // +0x04: the interpolation start position.
-    S_VECTOR2 endPos = {};   // +0x0c: the interpolation end position (the per-fraction delta).
-    float flLength = {};     // +0x14: the segment's length, traded for its traversal time.
-    // +0x18..+0x27: the node's trailing four words. No routine in the binary reads or writes them —
-    // the route pass's block-wide clear is their only writer — so they carry no recovered meaning
-    // and are named for their position rather than a guessed role.
-    float aflSpare18[4] = {}; // +0x18
+    float flStartTime = {};  /*!< The node's start time. +0x00 */
+    S_VECTOR2 startPos = {}; /*!< The interpolation start position. +0x04 */
+    /** @brief The interpolation end position (the per-fraction delta). +0x0c */
+    S_VECTOR2 endPos = {};
+    float flLength = {}; /*!< The segment's length, traded for its traversal time. +0x14 */
+    /**
+     * @brief The node's trailing four words. +0x18
+     *
+     * No routine in the binary reads or writes them — the route pass's block-wide clear is their
+     * only writer — so they carry no recovered meaning and are named for their position rather
+     * than a guessed role.
+     */
+    float aflSpare18[4] = {};
 };
 
 /** @brief The number of path nodes a note's waypoint block holds. */
@@ -763,16 +768,16 @@ private:
  * padding preceding the seeded fields.
  */
 struct NoteLaneTable {
-    unsigned char m_aReserved00[0x28] = {}; // +0x00: unused padding before the seeded fields.
-    float flLaneFrac0 = {};                 // +0x28: lane 0 fraction (leftmost).
-    float flLaneFrac1 = {};                 // +0x2c: lane 1 fraction.
-    float flLaneFrac2 = {};                 // +0x30: lane 2 fraction.
-    float flLaneFrac4 = {};                 // +0x34: lane 4 fraction (lane 3 is the zero centre).
-    float flLaneFrac5 = {};                 // +0x38: lane 5 fraction.
-    float flLaneFrac6 = {};                 // +0x3c: lane 6 fraction (rightmost).
-    float flLaneSpread = {};                // +0x40: the lane spread span.
-    float flWideLaneLeft = {};              // +0x44: the alternate kind's left wide-lane fraction.
-    float flWideLaneRight = {};             // +0x48: the alternate kind's right wide-lane fraction.
+    unsigned char m_aReserved00[0x28] = {}; /*!< Unused padding before the seeded fields. +0x00 */
+    float flLaneFrac0 = {};                 /*!< Lane 0 fraction (leftmost). +0x28 */
+    float flLaneFrac1 = {};                 /*!< Lane 1 fraction. +0x2c */
+    float flLaneFrac2 = {};                 /*!< Lane 2 fraction. +0x30 */
+    float flLaneFrac4 = {};     /*!< Lane 4 fraction (lane 3 is the zero centre). +0x34 */
+    float flLaneFrac5 = {};     /*!< Lane 5 fraction. +0x38 */
+    float flLaneFrac6 = {};     /*!< Lane 6 fraction (rightmost). +0x3c */
+    float flLaneSpread = {};    /*!< The lane spread span. +0x40 */
+    float flWideLaneLeft = {};  /*!< The alternate kind's left wide-lane fraction. +0x44 */
+    float flWideLaneRight = {}; /*!< The alternate kind's right wide-lane fraction. +0x48 */
 };
 
 /**

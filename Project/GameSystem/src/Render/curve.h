@@ -10,8 +10,8 @@
  *        ascending by x.
  */
 struct FloatCurve {
-    int nCount = {};          // +0x00: the number of keyframe pairs.
-    const float *pPairs = {}; // +0x08: the flat {x, y} keyframe pairs.
+    int nCount = {};          /*!< The number of keyframe pairs. +0x00 */
+    const float *pPairs = {}; /*!< The flat @c {x,y} keyframe pairs. +0x08 */
 };
 
 /**

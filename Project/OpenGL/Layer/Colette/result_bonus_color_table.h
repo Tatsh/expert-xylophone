@@ -9,9 +9,9 @@
  * @brief One result-bonus colour: a red, green, and blue channel, each in @c [0, 255] as a float.
  */
 struct ResultBonusColor {
-    float flRed = {};   // +0x00: the red channel.
-    float flGreen = {}; // +0x04: the green channel.
-    float flBlue = {};  // +0x08: the blue channel.
+    float flRed = {};   /*!< The red channel. +0x00 */
+    float flGreen = {}; /*!< The green channel. +0x04 */
+    float flBlue = {};  /*!< The blue channel. +0x08 */
 };
 
 // The number of colours in the result-bonus palette. The table ends where the per-slot instancer

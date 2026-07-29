@@ -13,28 +13,28 @@
  * document the on-disk byte offsets.
  */
 struct RbffChartNote {
-    int nTimeA = {};              // +0x00: the note's primary time.
-    int nTimeB = {};              // +0x04: the note's secondary (end) time.
-    short nNoteId = {};           // +0x08: the note identifier.
-    short nStartTime = {};        // +0x0a: the note's start time.
-    signed char nKind = {};       // +0x0c: the note kind.
-    signed char nPointCount = {}; // +0x0d: the number of path points.
-    short pathPoints[8] = {};     // +0x0e: the eight path-point coordinates.
-    signed char nSide = {};       // +0x1e: the play side.
-    signed char nType = {};       // +0x1f: the note type.
-    signed char nHoldFlag = {};   // +0x20: the hold flag.
-    signed char reserved1 = {};   // +0x21: reserved.
-    short nChainLink = {};        // +0x22: the chain-link id.
-    short nChainPartner = {};     // +0x24: the chain-partner id.
-    short reserved2 = {};         // +0x26: reserved.
+    int nTimeA = {};              /*!< The note's primary time. +0x00 */
+    int nTimeB = {};              /*!< The note's secondary (end) time. +0x04 */
+    short nNoteId = {};           /*!< The note identifier. +0x08 */
+    short nStartTime = {};        /*!< The note's start time. +0x0a */
+    signed char nKind = {};       /*!< The note kind. +0x0c */
+    signed char nPointCount = {}; /*!< The number of path points. +0x0d */
+    short pathPoints[8] = {};     /*!< The eight path-point coordinates. +0x0e */
+    signed char nSide = {};       /*!< The play side. +0x1e */
+    signed char nType = {};       /*!< The note type. +0x1f */
+    signed char nHoldFlag = {};   /*!< The hold flag. +0x20 */
+    signed char reserved1 = {};   /*!< Reserved. +0x21 */
+    short nChainLink = {};        /*!< The chain-link id. +0x22 */
+    short nChainPartner = {};     /*!< The chain-partner id. +0x24 */
+    short reserved2 = {};         /*!< Reserved. +0x26 */
 };
 
 /**
  * @brief A note path-point staging record used while parsing (28 bytes), zeroed before use.
  */
 struct RbffPathPoint {
-    unsigned char aData[28] =
-        {}; // The path-point fields, cleared to zero before the reader fills them.
+    /** @brief The path-point fields, cleared to zero before the reader fills them. */
+    unsigned char aData[28] = {};
 };
 
 /**
@@ -45,34 +45,38 @@ struct RbffPathPoint {
  * @c // +0xNN comments document the byte offsets.
  */
 struct RbffNoteReadRecord {
-    int nTimeA = {};             // +0x00
-    int nTimeB = {};             // +0x04
-    short nNoteId = {};          // +0x08
-    short nStartTime = {};       // +0x0a
-    short nPointCount = {};      // +0x0c: the number of path points that follow.
-    short reserved0e = {};       // +0x0e: padding before the aligned path-point pointer.
-    short *pPathPoints = {};     // +0x10: the allocated path-point array.
-    signed char nKind = {};      // +0x18
-    signed char nSide = {};      // +0x19
-    signed char nHoldKind = {};  // +0x1a
-    signed char reserved1b = {}; // +0x1b
-    short aTargetCoords[4] = {}; // +0x1c: the four target coordinates.
-    unsigned int nFlags = {};    // +0x24
-    signed char nField28 = {};   // +0x28
-    signed char nField29 = {};   // +0x29
-    short nField2a = {};         // +0x2a
-    int nType = {};              // +0x2c
-    short nChainLink = {};       // +0x30: chain-link sentinel (0xffff when unset).
-    short nChainPartner = {};    // +0x32: chain-partner sentinel (0xffff when unset).
-    int nField34 = {};           // +0x34: filled with the chain payload's high word.
-    int nChainExtra = {};        // +0x38: extra chain payload read only when the flag bit is set.
+    int nTimeA = {};             /*!< The note's primary time. +0x00 */
+    int nTimeB = {};             /*!< The note's secondary (end) time. +0x04 */
+    short nNoteId = {};          /*!< The note identifier. +0x08 */
+    short nStartTime = {};       /*!< The note's start time. +0x0a */
+    short nPointCount = {};      /*!< The number of path points that follow. +0x0c */
+    short reserved0e = {};       /*!< Padding before the aligned path-point pointer. +0x0e */
+    short *pPathPoints = {};     /*!< The allocated path-point array. +0x10 */
+    signed char nKind = {};      /*!< The note kind. +0x18 */
+    signed char nSide = {};      /*!< The play side. +0x19 */
+    signed char nHoldKind = {};  /*!< The hold-note kind. +0x1a */
+    signed char reserved1b = {}; /*!< Reserved. +0x1b */
+    short aTargetCoords[4] = {}; /*!< The four target coordinates. +0x1c */
+    unsigned int nFlags = {};    /*!< The note flag bits; bit 3 heads a long note. +0x24 */
+    /** @brief Read from the stream but never unpacked into the note record. +0x28 */
+    signed char nField28 = {};
+    /** @brief Read from the stream but never unpacked into the note record. +0x29 */
+    signed char nField29 = {};
+    /** @brief Read from the stream but never unpacked into the note record. +0x2a */
+    short nField2a = {};
+    int nType = {};           /*!< The note type; an on-disk 2 is remapped to 0. +0x2c */
+    short nChainLink = {};    /*!< Chain-link sentinel (0xffff when unset). +0x30 */
+    short nChainPartner = {}; /*!< Chain-partner sentinel (0xffff when unset). +0x32 */
+    int nField34 = {};        /*!< Filled with the chain payload's high word. +0x34 */
+    int nChainExtra = {};     /*!< Extra chain payload read only when the flag bit is set. +0x38 */
 };
 
 /**
  * @brief One RBFF tempo/speed-change event as stored in the chart stream (36 bytes).
  */
 struct RbffTempoEvent {
-    unsigned char aData[36] = {}; // The raw 36-byte event payload, copied verbatim by the reader.
+    /** @brief The raw 36-byte event payload, copied verbatim by the reader. */
+    unsigned char aData[36] = {};
 };
 
 /**
@@ -80,13 +84,13 @@ struct RbffTempoEvent {
  * ints, with four trailing reserved bytes.
  */
 struct RbffChartHeaderRecord {
-    unsigned short nField0 = {}; // +0x00
-    unsigned short nField2 = {}; // +0x02
-    unsigned short nField4 = {}; // +0x04
-    // +0x06 is two bytes of padding before the first int.
+    unsigned short nField0 = {}; /*!< The first of the record's three leading shorts. +0x00 */
+    unsigned short nField2 = {}; /*!< The second of the record's three leading shorts. +0x02 */
+    unsigned short nField4 = {}; /*!< The third of the record's three leading shorts. +0x04 */
+    /** @brief Two bytes of padding before the first int. +0x06 */
     unsigned short reserved6 = {};
-    int nValueA = {}; // +0x08
-    int nValueB = {}; // +0x0c
+    int nValueA = {}; /*!< The first of the record's two trailing ints. +0x08 */
+    int nValueB = {}; /*!< The second of the record's two trailing ints. +0x0c */
 };
 
 /**

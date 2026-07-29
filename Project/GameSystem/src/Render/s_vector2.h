@@ -25,17 +25,20 @@ struct S_VECTOR2 {
     }
 
     union {
+        /** @brief The position or offset reading of the two components. */
         struct {
-            float x; // +0x0
-            float y; // +0x4
+            float x; /*!< The first component as a horizontal position or offset. +0x0 */
+            float y; /*!< The second component as a vertical position or offset. +0x4 */
         };
+        /** @brief The size reading of the same two components. */
         struct {
-            float width;
-            float height;
+            float width;  /*!< The first component as a horizontal extent. Aliases @c x. */
+            float height; /*!< The second component as a vertical extent. Aliases @c y. */
         };
+        /** @brief The texture-coordinate reading of the same two components. */
         struct {
-            float u;
-            float v;
+            float u; /*!< The first component as a horizontal texture coordinate. Aliases @c x. */
+            float v; /*!< The second component as a vertical texture coordinate. Aliases @c y. */
         };
     };
 };

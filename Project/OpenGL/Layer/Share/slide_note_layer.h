@@ -21,28 +21,25 @@ class C_TEXTURE;
  * per-endpoint flags. The trailing @c // +0xNN comments document the byte offsets within the record.
  */
 struct SlideNoteTrail {
-    bool bActive = {};         // +0x00: whether the trail slot is in use.
-    unsigned char nFlagA = {}; // +0x01: the first per-trail flag byte.
-    // +0x02..+0x03 is alignment padding.
-    unsigned char aPad02[2] = {}; // +0x02
-    int nKind = {};               // +0x04: the trail kind/type.
-    int nColor = {};              // +0x08: the note colour (0 or 1).
+    bool bActive = {};            /*!< Whether the trail slot is in use. +0x00 */
+    unsigned char nFlagA = {};    /*!< The first per-trail flag byte. +0x01 */
+    unsigned char aPad02[2] = {}; /*!< Alignment padding. +0x02..+0x03 */
+    int nKind = {};               /*!< The trail kind/type. +0x04 */
+    int nColor = {};              /*!< The note colour (0 or 1). +0x08 */
     // +0x0c..+0x18: the trail's two endpoints (the animated end at +0x0c, the target at +0x14); the
     // update draws the comet between them.
-    float flEndX = {};         // +0x0c: the animated endpoint X.
-    float flEndY = {};         // +0x10: the animated endpoint Y.
-    float flTargetX = {};      // +0x14: the target endpoint X.
-    float flTargetY = {};      // +0x18: the target endpoint Y.
-    unsigned char nFlagB = {}; // +0x1c: the second per-trail flag byte.
-    unsigned char nFlagC = {}; // +0x1d: the third per-trail flag byte.
-    unsigned char nFlagD = {}; // +0x1e: the fourth per-trail flag byte.
-    // +0x1f is alignment padding.
-    unsigned char aPad1f[1] = {}; // +0x1f
-    float flAlphaScale = {};      // +0x20: a per-trail alpha/scale value seeded by Create.
-    float flRotation = {};     // +0x24: the trail rotation (pi when the note is on the far side).
-    unsigned char nFlagE = {}; // +0x28: the fifth per-trail flag byte.
-    // +0x29..+0x2b is alignment padding to the 44-byte stride.
-    unsigned char aPad29[3] = {}; // +0x29
+    float flEndX = {};            /*!< The animated endpoint X. +0x0c */
+    float flEndY = {};            /*!< The animated endpoint Y. +0x10 */
+    float flTargetX = {};         /*!< The target endpoint X. +0x14 */
+    float flTargetY = {};         /*!< The target endpoint Y. +0x18 */
+    unsigned char nFlagB = {};    /*!< The second per-trail flag byte. +0x1c */
+    unsigned char nFlagC = {};    /*!< The third per-trail flag byte. +0x1d */
+    unsigned char nFlagD = {};    /*!< The fourth per-trail flag byte. +0x1e */
+    unsigned char aPad1f[1] = {}; /*!< Alignment padding. +0x1f */
+    float flAlphaScale = {};      /*!< A per-trail alpha/scale value seeded by Create. +0x20 */
+    float flRotation = {}; /*!< The trail rotation (pi when the note is on the far side). +0x24 */
+    unsigned char nFlagE = {};    /*!< The fifth per-trail flag byte. +0x28 */
+    unsigned char aPad29[3] = {}; /*!< Alignment padding to the 44-byte stride. +0x29..+0x2b */
 };
 
 /**

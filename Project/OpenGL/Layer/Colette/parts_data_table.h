@@ -13,12 +13,13 @@
  * The trailing @c // +0xNN comments document the original member offsets for reference only.
  */
 struct PartsDataRecord {
-    int nEnabled = {};        // +0x00: non-zero when the part is drawn.
-    float flX = {};           // +0x04: the part's X placement offset.
-    float flY = {};           // +0x08: the part's Y placement offset.
-    float flWidth = {};       // +0x0c: the part's width, in pixels.
-    float flHeight = {};      // +0x10: the part's height, in pixels.
-    int nUvPaletteIndex = {}; // +0x14: index into the UV-palette table for the part's texture rect.
+    int nEnabled = {};   /*!< Non-zero when the part is drawn. +0x00 */
+    float flX = {};      /*!< The part's X placement offset. +0x04 */
+    float flY = {};      /*!< The part's Y placement offset. +0x08 */
+    float flWidth = {};  /*!< The part's width, in pixels. +0x0c */
+    float flHeight = {}; /*!< The part's height, in pixels. +0x10 */
+    /** Index into the UV-palette table for the part's texture rect. +0x14 */
+    int nUvPaletteIndex = {};
 };
 
 // The number of pad records, and the (larger) number of phone records. The device-selecting

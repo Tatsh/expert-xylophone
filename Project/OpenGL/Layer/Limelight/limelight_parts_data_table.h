@@ -43,10 +43,10 @@ extern S_VECTOR2 g_LimelightColorMarkerOrigin; // @ghidraAddress 0x3de000
  * size to place the sprite's texture rectangle. Each entry is sixteen bytes.
  */
 struct UvPaletteEntry {
-    float flU = {};        // +0x00: the U texture coordinate of the rectangle's origin.
-    float flV = {};        // +0x04: the V texture coordinate of the rectangle's origin.
-    float flUvWidth = {};  // +0x08: the U extent of the rectangle.
-    float flUvHeight = {}; // +0x0c: the V extent of the rectangle.
+    float flU = {};        /*!< The U texture coordinate of the rectangle's origin. +0x00 */
+    float flV = {};        /*!< The V texture coordinate of the rectangle's origin. +0x04 */
+    float flUvWidth = {};  /*!< The U extent of the rectangle. +0x08 */
+    float flUvHeight = {}; /*!< The V extent of the rectangle. +0x0c */
 };
 
 // The shared UV-palette table indexed by a parts record's UV-palette index. Its length is not

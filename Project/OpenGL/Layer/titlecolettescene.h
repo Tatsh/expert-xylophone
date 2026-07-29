@@ -31,10 +31,10 @@ namespace rb {
  * against @c x <= p <= x + width on each axis.
  */
 struct TitleHitRect {
-    float x = {};      // +0x00: the left edge.
-    float y = {};      // +0x04: the top edge.
-    float width = {};  // +0x08: the horizontal extent.
-    float height = {}; // +0x0c: the vertical extent.
+    float x = {};      /*!< The left edge. +0x00 */
+    float y = {};      /*!< The top edge. +0x04 */
+    float width = {};  /*!< The horizontal extent. +0x08 */
+    float height = {}; /*!< The vertical extent. +0x0c */
 };
 
 /**

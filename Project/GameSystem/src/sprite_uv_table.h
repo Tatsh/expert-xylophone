@@ -13,10 +13,10 @@
  * binary's layout. This is read-only data embedded in the binary.
  */
 struct SpriteUvEntry {
-    float flOriginU = {}; // +0x00: the U coordinate of the quad's top-left corner.
-    float flOriginV = {}; // +0x04: the V coordinate of the quad's top-left corner.
-    float flSizeU = {};   // +0x08: the U span added to the origin for the quad's far corner.
-    float flSizeV = {};   // +0x0c: the V span added to the origin for the quad's far corner.
+    float flOriginU = {}; /*!< The U coordinate of the quad's top-left corner. +0x00 */
+    float flOriginV = {}; /*!< The V coordinate of the quad's top-left corner. +0x04 */
+    float flSizeU = {};   /*!< The U span added to the origin for the far corner. +0x08 */
+    float flSizeV = {};   /*!< The V span added to the origin for the far corner. +0x0c */
 };
 
 // The shared sprite UV atlas the layout records index by atlas-frame number.

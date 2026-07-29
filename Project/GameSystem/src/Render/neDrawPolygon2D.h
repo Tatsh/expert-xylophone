@@ -18,10 +18,10 @@ class C_TEXTURE;
  * @brief A packed 8-bit-per-channel RGBA colour, in memory order.
  */
 struct S_RGBA {
-    unsigned char nRed = {};   // +0x00
-    unsigned char nGreen = {}; // +0x01
-    unsigned char nBlue = {};  // +0x02
-    unsigned char nAlpha = {}; // +0x03
+    unsigned char nRed = {};   /*!< The red channel, 0 through 255. +0x00 */
+    unsigned char nGreen = {}; /*!< The green channel, 0 through 255. +0x01 */
+    unsigned char nBlue = {};  /*!< The blue channel, 0 through 255. +0x02 */
+    unsigned char nAlpha = {}; /*!< The alpha channel, 0 through 255. +0x03 */
 };
 
 /**

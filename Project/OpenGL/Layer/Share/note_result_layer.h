@@ -22,9 +22,9 @@ class C_TEXTURE;
  * value plus seven (records 7 through 16).
  */
 struct StarSpriteDescriptor {
-    S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
-    S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
-    int nAtlasFrame = {};  // +0x10: the atlas-frame number indexing the shared sprite UV table.
+    S_VECTOR2 anchor = {}; /*!< The sprite anchor offset. +0x00 */
+    S_VECTOR2 size = {};   /*!< The sprite pixel size. +0x08 */
+    int nAtlasFrame = {};  /*!< The atlas-frame number indexing the shared sprite UV table. +0x10 */
 };
 
 // The star-glyph layout tables: one record per star frame (0 through 6) then one per digit glyph

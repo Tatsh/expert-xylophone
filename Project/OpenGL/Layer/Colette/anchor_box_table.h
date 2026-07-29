@@ -19,11 +19,11 @@
  * comments document the original member offsets for reference only.
  */
 struct AnchorBoxRecord {
-    float flX = {};       // +0x00: the base X coordinate.
-    float flY = {};       // +0x04: the base Y coordinate.
-    float flWidth = {};   // +0x08: the carried box width (or secondary X).
-    float flHeight = {};  // +0x0c: the carried box height (or secondary Y).
-    int nAnchorMode = {}; // +0x10: the viewport-relative anchor mode (0 through 8).
+    float flX = {};       /*!< The base X coordinate. +0x00 */
+    float flY = {};       /*!< The base Y coordinate. +0x04 */
+    float flWidth = {};   /*!< The carried box width (or secondary X). +0x08 */
+    float flHeight = {};  /*!< The carried box height (or secondary Y). +0x0c */
+    int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x10 */
 };
 
 // The number of records in each non-phone anchor-box table.

@@ -14,13 +14,14 @@
  * it. The trailing @c // +0xNN comments document the original 24-byte layout.
  */
 struct RbffSlideRecord {
-    short nNoteIndex = {};  // +0x00: the owning note's index in the record pool.
-    short nField2 = {};     // +0x02: a secondary slide field, still being worked out.
-    int nTimingSel = {};    // +0x04: the timing selector.
-    int nValueA = {};       // +0x08: the primary slide value.
-    int nValueB = {};       // +0x0c: the secondary slide value.
-    int nValueAScaled = {}; // +0x10: the primary value in scaled units.
-    int nValueBScaled = {}; // +0x14: the secondary value in scaled units.
+    short nNoteIndex = {}; /*!< The owning note's index in the record pool. +0x00 */
+    /** @brief Copied from the chart sub-record's second short and never read back. +0x02 */
+    short nField2 = {};
+    int nTimingSel = {};    /*!< The timing selector. +0x04 */
+    int nValueA = {};       /*!< The primary slide value. +0x08 */
+    int nValueB = {};       /*!< The secondary slide value. +0x0c */
+    int nValueAScaled = {}; /*!< The primary value in scaled units. +0x10 */
+    int nValueBScaled = {}; /*!< The secondary value in scaled units. +0x14 */
 };
 
 /**

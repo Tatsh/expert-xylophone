@@ -19,9 +19,9 @@ class C_SPRITE_INSTANCING_2D;
  * size, and the atlas-frame index it draws from.
  */
 struct ClassicThemeSpriteTransform {
-    S_VECTOR2 anchor = {}; // +0x00: the sprite anchor offset.
-    S_VECTOR2 size = {};   // +0x08: the sprite pixel size.
-    int nUvIndex = {};     // +0x10: the atlas-frame index into the shared sprite UV table.
+    S_VECTOR2 anchor = {}; /*!< The sprite anchor offset. +0x00 */
+    S_VECTOR2 size = {};   /*!< The sprite pixel size. +0x08 */
+    int nUvIndex = {};     /*!< The atlas-frame index into the shared sprite UV table. +0x10 */
 };
 
 // The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.

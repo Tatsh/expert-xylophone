@@ -22,11 +22,11 @@ class C_TEXTURE;
  * a tap-edge (a press that ended inside).
  */
 struct ResultTouchRegion {
-    int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
-    bool bDown = {};                // +0x04: whether a touch is currently inside the region.
-    bool bTapEdge = {};             // +0x05: latched when a press ends inside the region.
-    bool bEnabled = {};             // +0x06: whether the region accepts input this frame.
-    unsigned char m_aPad07[1] = {}; // +0x07
+    int nTouchId = {};              /*!< The tracked touch id (-1 when none). +0x00 */
+    bool bDown = {};                /*!< Whether a touch is currently inside the region. +0x04 */
+    bool bTapEdge = {};             /*!< Latched when a press ends inside the region. +0x05 */
+    bool bEnabled = {};             /*!< Whether the region accepts input this frame. +0x06 */
+    unsigned char m_aPad07[1] = {}; /*!< Alignment padding. +0x07 */
 };
 
 /**
@@ -34,12 +34,12 @@ struct ResultTouchRegion {
  * @c flDuration, with the interpolated result held in @c flCurrent.
  */
 struct ResultTweenChannel {
-    float flFrom = {};     // +0x00: the start value.
-    float flTo = {};       // +0x04: the target value.
-    float flDuration = {}; // +0x08: the tween duration.
-    float flElapsed = {};  // +0x0c: the elapsed time.
-    float flReserved = {}; // +0x10: an unused slot.
-    float flCurrent = {};  // +0x14: the current interpolated value.
+    float flFrom = {};     /*!< The start value. +0x00 */
+    float flTo = {};       /*!< The target value. +0x04 */
+    float flDuration = {}; /*!< The tween duration. +0x08 */
+    float flElapsed = {};  /*!< The elapsed time. +0x0c */
+    float flReserved = {}; /*!< An unused slot. +0x10 */
+    float flCurrent = {};  /*!< The current interpolated value. +0x14 */
 };
 
 /**

@@ -14,11 +14,11 @@
  * document the byte offsets within the record.
  */
 struct ClassicFullComboSpriteType {
-    float flAnchorX = {};       // +0x00: the sprite anchor x.
-    float flAnchorY = {};       // +0x04: the sprite anchor y.
-    float flSizeW = {};         // +0x08: the sprite width.
-    float flSizeH = {};         // +0x0c: the sprite height.
-    unsigned int nUvIndex = {}; // +0x10: the index into the shared sprite-UV table.
+    float flAnchorX = {};       /*!< The sprite anchor x. +0x00 */
+    float flAnchorY = {};       /*!< The sprite anchor y. +0x04 */
+    float flSizeW = {};         /*!< The sprite width. +0x08 */
+    float flSizeH = {};         /*!< The sprite height. +0x0c */
+    unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x10 */
 };
 
 // The number of Classic full-combo sprite types, and the number of object types (each selecting a

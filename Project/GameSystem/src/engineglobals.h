@@ -201,8 +201,8 @@ extern int g_nGaugeBottomBaseY;
  * binary lays the entries out on a 0x10 stride, the natural size of this structure.
  */
 typedef struct ChartDecodeKey {
-    const char *pKey; // +0x00
-    int nLength;      // +0x08
+    const char *pKey; /*!< The obfuscated key bytes, not NUL-terminated. +0x00 */
+    int nLength;      /*!< The key's length in bytes. +0x08 */
 } ChartDecodeKey;
 
 /**

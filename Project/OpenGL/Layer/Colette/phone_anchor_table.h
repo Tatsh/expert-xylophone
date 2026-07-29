@@ -14,9 +14,9 @@
  * member offsets for reference only.
  */
 struct PhoneAnchorRecord {
-    float flX = {};       // +0x00: the base X coordinate.
-    float flY = {};       // +0x04: the base Y coordinate.
-    int nAnchorMode = {}; // +0x08: the viewport-relative anchor mode (0 through 8).
+    float flX = {};       /*!< The base X coordinate. +0x00 */
+    float flY = {};       /*!< The base Y coordinate. +0x04 */
+    int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x08 */
 };
 
 // The number of records in each phone-layout anchor-position table.

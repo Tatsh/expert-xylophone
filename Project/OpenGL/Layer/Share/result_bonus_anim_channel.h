@@ -10,12 +10,12 @@
  * target over a duration. A 24-byte record (six floats).
  */
 struct ResultBonusAnimChannel {
-    float flStart = {};    // +0x00: the animation's start value.
-    float flTarget = {};   // +0x04: the animation's target value.
-    float flDuration = {}; // +0x08: the animation's duration.
-    float flElapsed = {};  // +0x0c: the animation's elapsed time.
-    float flReserved = {}; // +0x10: a further per-channel value.
-    float flCurrent = {};  // +0x14: the current (shown) value.
+    float flStart = {};    /*!< The animation's start value. +0x00 */
+    float flTarget = {};   /*!< The animation's target value. +0x04 */
+    float flDuration = {}; /*!< The animation's duration. +0x08 */
+    float flElapsed = {};  /*!< The animation's elapsed time. +0x0c */
+    float flReserved = {}; /*!< A further per-channel value. +0x10 */
+    float flCurrent = {};  /*!< The current (shown) value. +0x14 */
 };
 
 // code: language=C++

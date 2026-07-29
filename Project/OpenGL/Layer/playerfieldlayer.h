@@ -22,12 +22,12 @@ class C_SPRITE_INSTANCING_2D;
  * The trailing @c // +0xNN comments document the original 32-bit member offsets for reference only.
  */
 struct ScoreDigitField {
-    int nTarget = {};      // +0x00: the target score value.
-    float flFrom = {};     // +0x04: the animation's start value (the current value when armed).
-    float flTo = {};       // +0x08: the animation's end value (the target as a float).
-    float flCurrent = {};  // +0x0c: the current animated value.
-    float flElapsed = {};  // +0x10: the elapsed animation time.
-    float flDuration = {}; // +0x14: the animation duration, in seconds.
+    int nTarget = {};      /*!< The target score value. +0x00 */
+    float flFrom = {};     /*!< The animation's start value (the current value when armed). +0x04 */
+    float flTo = {};       /*!< The animation's end value (the target as a float). +0x08 */
+    float flCurrent = {};  /*!< The current animated value. +0x0c */
+    float flElapsed = {};  /*!< The elapsed animation time. +0x10 */
+    float flDuration = {}; /*!< The animation duration, in seconds. +0x14 */
 
     /**
      * @brief Rolls the animated value toward the target by @p flDeltaTime, snapping to the end value

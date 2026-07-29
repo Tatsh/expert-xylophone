@@ -16,8 +16,15 @@
  * @ghidraAddress NotePathPoint (engine chart-parse struct)
  */
 struct NotePathPoint {
-    int x = {}; // +0x00
-    int y = {}; // +0x04
+    /**
+     * @brief The node's scroll speed, held as the raw bit pattern of a float.
+     *
+     * The chart stores the speed in this int slot and the readers copy the bits out rather than
+     * converting them, so the value is only meaningful once reinterpreted as a float.
+     * +0x00
+     */
+    int x = {};
+    int y = {}; /*!< The node's time, in milliseconds, along the chart. +0x04 */
 };
 
 /**

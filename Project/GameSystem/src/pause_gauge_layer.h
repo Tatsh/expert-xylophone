@@ -17,8 +17,8 @@ class C_TEXTURE;
  * @brief One pause-gauge rectangle size: the width and height of a lane's gauge hit rectangle.
  */
 struct PauseGaugeRectSize {
-    int nWidth = {};  // +0x00: the rectangle width.
-    int nHeight = {}; // +0x04: the rectangle height.
+    int nWidth = {};  /*!< The rectangle width. +0x00 */
+    int nHeight = {}; /*!< The rectangle height. +0x04 */
 };
 
 /**
@@ -28,13 +28,13 @@ struct PauseGaugeRectSize {
  * @c // +0xNN comments document the byte offsets.
  */
 struct PauseGaugeSpriteLayout {
-    float flOffsetX = {}; // +0x00: the menu-item x offset from the viewport centre.
-    float flOffsetY = {}; // +0x04: the menu-item y offset from the viewport centre.
-    float flAnchorX = {}; // +0x08: the sprite anchor x.
-    float flAnchorY = {}; // +0x0c: the sprite anchor y.
-    float flSizeW = {};   // +0x10: the sprite size width.
-    float flSizeH = {};   // +0x14: the sprite size height.
-    int nUvIndex = {};    // +0x18: the index into the UV table.
+    float flOffsetX = {}; /*!< The menu-item x offset from the viewport centre. +0x00 */
+    float flOffsetY = {}; /*!< The menu-item y offset from the viewport centre. +0x04 */
+    float flAnchorX = {}; /*!< The sprite anchor x. +0x08 */
+    float flAnchorY = {}; /*!< The sprite anchor y. +0x0c */
+    float flSizeW = {};   /*!< The sprite size width. +0x10 */
+    float flSizeH = {};   /*!< The sprite size height. +0x14 */
+    int nUvIndex = {};    /*!< The index into the UV table. +0x18 */
 };
 
 /**
@@ -43,11 +43,11 @@ struct PauseGaugeSpriteLayout {
  * The trailing @c // +0xNN comments document the byte offsets within the 16-byte per-lane entry.
  */
 struct PauseGaugeLaneGeometry {
-    float flCenterX = {};              // +0x00: the gauge rectangle's centre x.
-    float flCenterY = {};              // +0x04: the gauge rectangle's centre y.
-    unsigned char aReserved08[4] = {}; // +0x08: further per-lane state.
-    bool bDimmed = {};                 // +0x0c: whether the lane's gauge is drawn dimmed.
-    unsigned char aReserved0d[3] = {}; // +0x0d
+    float flCenterX = {};              /*!< The gauge rectangle's centre x. +0x00 */
+    float flCenterY = {};              /*!< The gauge rectangle's centre y. +0x04 */
+    unsigned char aReserved08[4] = {}; /*!< Further per-lane state, not yet identified. +0x08 */
+    bool bDimmed = {};                 /*!< Whether the lane's gauge is drawn dimmed. +0x0c */
+    unsigned char aReserved0d[3] = {}; /*!< Trailing padding to the 16-byte entry. +0x0d */
 };
 
 /**

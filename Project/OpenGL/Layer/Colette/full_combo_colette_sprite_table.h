@@ -13,12 +13,12 @@
  * comments document the byte offsets within the record.
  */
 struct ColetteFullComboSpriteType {
-    unsigned int nGroup = {};   // +0x00: the sprite batch group (1 or 2) this type draws into.
-    float flAnchorX = {};       // +0x04: the sprite anchor x.
-    float flAnchorY = {};       // +0x08: the sprite anchor y.
-    float flSizeW = {};         // +0x0c: the sprite width.
-    float flSizeH = {};         // +0x10: the sprite height.
-    unsigned int nUvIndex = {}; // +0x14: the index into the shared sprite-UV table.
+    unsigned int nGroup = {};   /*!< The sprite batch group (1 or 2) this type draws into. +0x00 */
+    float flAnchorX = {};       /*!< The sprite anchor x. +0x04 */
+    float flAnchorY = {};       /*!< The sprite anchor y. +0x08 */
+    float flSizeW = {};         /*!< The sprite width. +0x0c */
+    float flSizeH = {};         /*!< The sprite height. +0x10 */
+    unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x14 */
 };
 
 // The number of Colette full-combo sprite types.

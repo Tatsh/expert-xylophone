@@ -12,11 +12,11 @@
  * override the anchor X with a per-position value; the label paths use every field.
  */
 struct GaugeGlyphDesc {
-    float flAnchorX = {}; // +0x00: the pivot X offset (used by the labels only).
-    float flAnchorY = {}; // +0x04: the pivot Y offset.
-    float flSizeX = {};   // +0x08: the quad width.
-    float flSizeY = {};   // +0x0c: the quad height.
-    int nAtlasFrame = {}; // +0x10: the sprite atlas frame.
+    float flAnchorX = {}; /*!< The pivot X offset (used by the labels only). +0x00 */
+    float flAnchorY = {}; /*!< The pivot Y offset. +0x04 */
+    float flSizeX = {};   /*!< The quad width. +0x08 */
+    float flSizeY = {};   /*!< The quad height. +0x0c */
+    int nAtlasFrame = {}; /*!< The sprite atlas frame. +0x10 */
 };
 
 // The two fixed gauge labels (a separator drawn into batch five and the percent sign drawn
