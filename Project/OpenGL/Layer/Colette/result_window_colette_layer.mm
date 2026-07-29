@@ -1,6 +1,7 @@
 #include "result_window_colette_layer.h"
 
 #include <cassert>
+#include <cmath>
 
 #include "../Classic/classic_parts_data_table.h"
 #include "../Limelight/limelight_parts_data_table.h"
@@ -11,6 +12,7 @@
 #import "TwitterImageCreater.h"
 #include "anchor_box_table.h"
 #import "deviceenvironment.h"
+#include "engineruntime.h"
 #include "fade_overlay_layer.h"
 #include "float_tween.h"
 #import "gamesystem.h"
@@ -1542,12 +1544,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
                                  nPartId,
                                  S_VECTOR2{flX, flY},
                                  nGlyphAlpha,
-                                 static_cast<unsigned int>(flRed),
-                                 static_cast<unsigned int>(flGreen),
-                                 static_cast<unsigned int>(flBlue),
                                  kPhoneGlyphRotation,
                                  kPhoneGlyphScale,
-                                 kPhoneGlyphScale);
+                                 kPhoneGlyphScale,
+                                 flRed,
+                                 flGreen,
+                                 flBlue);
         return getPartsData_Phone(nPartId)->flWidth;
     };
 
@@ -1644,9 +1646,13 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
                                                        bool bDrawPrefix,
                                                        bool bLeftPad,
                                                        unsigned int nAlpha,
+                                                       float flRotation,
                                                        float flRed,
                                                        float flGreen,
                                                        float flBlue) {
+    // The rotation argument is accepted and never read: every glyph below emits upright.
+    (void)flRotation;
+
     // Draws one phone glyph at a position-bank index. The 0x17b family draws through the dimmable
     // glyph path (never dimmed here); every other family through the coloured path.
     const auto drawGlyph = [&](int nPartId, int nPosIndex, unsigned int nGlyphAlpha) {
@@ -1666,12 +1672,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
                                      nPartId,
                                      position,
                                      nGlyphAlpha,
-                                     static_cast<unsigned int>(flRed),
-                                     static_cast<unsigned int>(flGreen),
-                                     static_cast<unsigned int>(flBlue),
                                      kPhoneGlyphRotation,
                                      kPhoneGlyphScale,
-                                     kPhoneGlyphScale);
+                                     kPhoneGlyphScale,
+                                     flRed,
+                                     flGreen,
+                                     flBlue);
         }
     };
 
@@ -1915,12 +1921,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                  aRightDigits[nSlot] + kPhonePairDigitBase,
                                  S_VECTOR2{flCursorX, flBaseY},
                                  nAlpha,
-                                 static_cast<unsigned int>(rightColor.flRed),
-                                 static_cast<unsigned int>(rightColor.flGreen),
-                                 static_cast<unsigned int>(rightColor.flBlue),
                                  kPhonePairRotation,
                                  kPhonePairScale,
-                                 kPhonePairScale);
+                                 kPhonePairScale,
+                                 rightColor.flRed,
+                                 rightColor.flGreen,
+                                 rightColor.flBlue);
     }
 
     // The slash separator draws next, in the right colour, then the cursor steps past it by one pixel.
@@ -1929,12 +1935,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                              kPhonePairSeparatorPart,
                              S_VECTOR2{flCursorX, flBaseY},
                              nAlpha,
-                             static_cast<unsigned int>(rightColor.flRed),
-                             static_cast<unsigned int>(rightColor.flGreen),
-                             static_cast<unsigned int>(rightColor.flBlue),
                              kPhonePairRotation,
                              kPhonePairScale,
-                             kPhonePairScale);
+                             kPhonePairScale,
+                             rightColor.flRed,
+                             rightColor.flGreen,
+                             rightColor.flBlue);
     flCursorX -= kPhonePairSeparatorGap;
 
     // The left number draws last, in the left colour, continuing to step the cursor left per digit.
@@ -1944,12 +1950,12 @@ void ResultWindowColetteLayer::RenderPhoneNumberPairSeparated(int nLeftValue,
                                  aLeftDigits[nSlot] + kPhonePairDigitBase,
                                  S_VECTOR2{flCursorX, flBaseY},
                                  nAlpha,
-                                 static_cast<unsigned int>(leftColor.flRed),
-                                 static_cast<unsigned int>(leftColor.flGreen),
-                                 static_cast<unsigned int>(leftColor.flBlue),
                                  kPhonePairRotation,
                                  kPhonePairScale,
-                                 kPhonePairScale);
+                                 kPhonePairScale,
+                                 leftColor.flRed,
+                                 leftColor.flGreen,
+                                 leftColor.flBlue);
     }
 }
 
@@ -2188,23 +2194,24 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
                                                         int nPartId,
                                                         const S_VECTOR2 &position,
                                                         unsigned int nAlpha,
-                                                        unsigned int nRed,
-                                                        unsigned int nGreen,
-                                                        unsigned int nBlue,
                                                         float flRotation,
                                                         float flScaleX,
-                                                        float flScaleY) {
+                                                        float flScaleY,
+                                                        float flRed,
+                                                        float flGreen,
+                                                        float flBlue) {
     if (nPartId >= kColettePhonePartsRecordCount) {
         return;
     }
     // The glyph metrics come from the phone parts table indexed by the part id; the texture
-    // rectangle from the Colette glyph UV palette.
+    // rectangle from the Colette glyph UV palette. The three colour channels arrive as floats and
+    // are truncated toward zero into byte channels.
     const PartsDataRecord *pGlyph = &g_aColettePartsPhone[nPartId];
     const UvPaletteEntry &palette = g_aColetteGlyphUvPalette[pGlyph->nUvPaletteIndex];
     appendSpriteToSlotRgba(nSlot,
-                           nRed,
-                           nGreen,
-                           nBlue,
+                           static_cast<unsigned int>(flRed),
+                           static_cast<unsigned int>(flGreen),
+                           static_cast<unsigned int>(flBlue),
                            nAlpha,
                            position,
                            S_VECTOR2{pGlyph->flX, pGlyph->flY},
@@ -2213,6 +2220,1394 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
                            S_VECTOR2{palette.flUvWidth, palette.flUvHeight},
                            flRotation,
                            S_VECTOR2{flScaleX, flScaleY});
+}
+
+namespace {
+
+// The alpha scale that turns a normalised tween level into a 0-255 channel (@ghidraAddress
+// 0x2eed00).
+constexpr float kAlphaScale = 255.0f;
+
+// The backdrop's alpha numerator over the alpha scale, so the backdrop draws at 178/255 of the
+// frame alpha (@ghidraAddress 0x2fd004).
+constexpr float kBackdropAlphaNumerator = 178.0f;
+
+// The achievement rate is stored as a normalised fraction and shown in tenths of a percent, so a
+// displayed rate is the fraction times this scale (@ghidraAddress 0x2f8540). The negated twin
+// (@ghidraAddress 0x2f8544) turns a shortfall into a positive magnitude for the delta row.
+constexpr float kRateDisplayScale = 1000.0f;
+constexpr float kRateDisplayScaleNegated = -1000.0f;
+
+// The achievement rate a play must reach to earn the cleared caption (@ghidraAddress 0x2fd008).
+constexpr float kClearRateThreshold = 0.7f;
+
+// The bonus values are shown to one decimal place, as the stored value times this scale.
+constexpr float kBonusDisplayScale = 10.0f;
+
+// The vertical step between two bonus rows (@ghidraAddress 0x2fd048).
+constexpr float kBonusRowStep = 40.0f;
+
+// Centres a leader rule between the two glyphs it spans, and halves the marker alpha.
+constexpr float kHalf = 0.5f;
+
+// The upright and horizontally mirrored sprite X scales.
+constexpr float kScaleNormal = 1.0f;
+constexpr float kScaleMirrored = -1.0f;
+
+// The panel's fixed text colours, each channel in [0, 255]. The binary materialises them from its
+// own literal pool (@ghidraAddress 0x2fd00c through 0x2fd044) rather than reading the bonus palette,
+// even though the first six repeat palette entries; they reuse the palette record's plain
+// red/green/blue triple as their type.
+constexpr ResultBonusColor kColorRate{34.0f, 149.0f, 238.0f};
+constexpr ResultBonusColor kColorJudgeCount{231.0f, 174.0f, 0.0f};
+constexpr ResultBonusColor kColorGoodCount{255.0f, 120.0f, 20.0f};
+constexpr ResultBonusColor kColorMissCount{180.0f, 94.0f, 191.0f};
+constexpr ResultBonusColor kColorScore{252.0f, 86.0f, 244.0f};
+constexpr ResultBonusColor kColorTarget{115.0f, 101.0f, 85.0f};
+constexpr ResultBonusColor kColorWhite{255.0f, 255.0f, 255.0f};
+constexpr ResultBonusColor kColorBlack{0.0f, 0.0f, 0.0f};
+
+// The two play-record sides: the rival's column and the local player's.
+constexpr unsigned int kSideRival = 0;
+constexpr unsigned int kSideLocal = 1;
+constexpr int kResultSideCount = 2;
+
+// The sprite-instancer slots the panel draws through. Slot 1 carries every parts-atlas sprite; the
+// three single-image slots are bound by the scene (@c kResultInstancerArtwork and friends in
+// game_scene.mm).
+constexpr int kBackdropSlot = 0;
+constexpr int kArtworkSlot = 2;
+constexpr int kMusicNameSlot = 3;
+constexpr int kArtistNameSlot = 4;
+
+// The artwork quad's pixel extent, materialised on the stack by the binary as the paired immediate
+// 0x4334000043340000.
+constexpr float kArtworkExtent = 180.0f;
+
+// The digit families the number renderers draw from. The score family is chosen by the play colour.
+constexpr int kFamilyScoreRed = 0xb6;
+constexpr int kFamilyScoreBlue = 0xc0;
+constexpr int kFamilyMedium = 0xca;
+constexpr int kFamilySmall = 0xf7;
+constexpr int kFamilyRateSmall = 0x105;
+constexpr int kFamilySideStat = 0xe0;
+constexpr int kFamilyGrandTotal = 0x147;
+
+// The digit counts the panel's number rows draw.
+constexpr int kDigitsScore = 4;
+constexpr int kDigitsBonus = 3;
+constexpr int kDigitsGrandTotal = 6;
+
+// The parts-atlas ids the panel emits. Runs that a loop walks are given their base id; the rest name
+// the element they draw. The individual artwork each id selects is not recovered beyond its role
+// here.
+enum ResultPanelPart {
+    kPartBackdrop = 0x00,
+    kPartPanelFrame = 0x01,
+    kPartTwitterButton = 0x02,
+    kPartDecorationBase = 0x03,      // Twelve alternately mirrored decorations.
+    kPartMusicInfoUpper = 0x0f,      //
+    kPartMusicInfoLower = 0x10,      //
+    kPartMusicInfoFrame = 0x11,      //
+    kPartDifficultyLabelBase = 0x12, // Plus the difficulty.
+    kPartArtworkFrame = 0x16,
+    kPartDifficultyNameBase = 0x17, // Plus the difficulty.
+    kPartDifficultyMarkBase = 0x1b, // Plus the difficulty.
+    kPartMusicNameLeft = 0x1f,
+    kPartMusicNameRight = 0x20,
+    kPartArtistNameLeft = 0x21,
+    kPartArtistNameRight = 0x22,
+    kPartMusicInfoRule = 0x23,
+    kPartClearedCaptionBase = 0x25, // Six parts.
+    kPartFailedCaptionBase = 0x2b,  // Nine parts.
+    kPartScoreLabel = 0x34,
+    kPartScoreFrameLeft = 0x35,
+    kPartScoreFrameRight = 0x36,
+    kPartRateFrameLeft = 0x37,
+    kPartRateFrameRight = 0x38,
+    kPartRateLabel = 0x39,
+    kPartRankGlyphBase = 0x3a,       // Plus the earned rank.
+    kPartNewRecordBadge = 0x40,      //
+    kPartFullComboBadge = 0x41,      //
+    kPartTargetBeatenBadge = 0x42,   //
+    kPartNewRateBadge = 0x43,        //
+    kPartStatFrameBase = 0x44,       // Nineteen parts.
+    kPartSideColorLabelBase = 0x57,  // Plus the play colour.
+    kPartRivalColorLabelRed = 0x59,  //
+    kPartRivalColorLabelBlue = 0x5a, //
+    kPartStatRowBase = 0x5b,         // Eight parts, two of them also drawn tinted.
+    kPartStatHeaderJust = 0x63,
+    kPartStatHeaderGreat = 0x64,
+    kPartStatHeaderGood = 0x65,
+    kPartStatHeaderMiss = 0x66,
+    kPartScoreRowLabel = 0x67,
+    kPartTargetRowLabelLeft = 0x68,
+    kPartTargetRowLabelRight = 0x69,
+    kPartRateRowLabel = 0x6a,
+    kPartRankRowLabel = 0x6b,
+    kPartRankPlateBase = 0x6c, // Plus a rank.
+    kPartRankArrow = 0x72,
+    kPartRankTargetLabel = 0x79,
+    kPartLevelGlyphBase = 0x7a, // Plus difficulty * 15 plus the level.
+    kPartPlusSign = 0x101,
+    kPartMinusSign = 0x102,
+    kPartDeltaBracketOpen = 0x103,
+    kPartDeltaBracketClose = 0x104,
+    kPartSideColorMarker = 0x10f,
+    kPartBonusPanelBase = 0x11d,      // Five separately positioned panel pieces.
+    kPartBonusDecorationBase = 0x122, // Six alternately mirrored decorations.
+    kPartBonusRowBase = 0x128,        // Three parts per row, over six rows.
+    kPartBonusUnitGlyph = 0x13a,
+    kPartBonusUnitLeader = 0x13b,
+    kPartBonusRowSuffixBase = 0x13c, // Plus the row.
+    kPartBonusRowTrailing = 0x142,
+    kPartBonusTotalLabelLower = 0x143,
+    kPartBonusTotalLabelUpper = 0x144,
+    kPartBonusTotalRule = 0x145,
+    kPartBonusTotalUnit = 0x146,
+};
+
+// The layout-bank slots the panel positions its fixed elements at. Runs a loop walks are given their
+// first slot. The digit rows pass their slot to a number renderer, which walks the bank itself.
+enum ResultPanelPosition {
+    kPosBackdrop = 0,
+    kPosPanelFrame = 1,
+    kPosTwitterButton = 2,
+    kPosDecorationBase = 3,
+    kPosMusicInfoUpper = 15,
+    kPosMusicInfoLower = 16,
+    kPosMusicInfoFrame = 17,
+    kPosDifficultyLabel = 18,
+    kPosArtwork = 19,
+    kPosArtworkFrame = 20,
+    kPosDifficultyName = 21,
+    kPosDifficultyMark = 22,
+    kPosLevelGlyph = 23,
+    kPosMusicNameLeft = 24,
+    kPosMusicNameRight = 25,
+    kPosMusicName = 26,
+    kPosArtistNameLeft = 27,
+    kPosArtistNameRight = 28,
+    kPosArtistName = 29,
+    kPosMusicInfoRule = 30,
+    kPosClearedCaptionBase = 32,
+    kPosFailedCaptionBase = 38,
+    kPosScoreLabel = 47,
+    kPosScoreDigits = 51,
+    kPosScoreFrameLeft = 52,
+    kPosScoreFrameRight = 53,
+    kPosRateDigits = 59,
+    kPosRateFrameLeft = 60,
+    kPosRateFrameRight = 61,
+    kPosRateLabel = 62,
+    kPosRankGlyph = 63,
+    kPosNewRecordBadge = 64,
+    kPosFullComboBadge = 65,
+    kPosTargetBeatenBadge = 66,
+    kPosNewRateBadge = 67,
+    kPosStatFrameBase = 68,
+    kPosSideColorLabel = 87,
+    kPosRivalColorLabel = 88,
+    kPosStatRowBase = 89,
+    kPosStatJustCount = 0x61,
+    kPosStatGreatCount = 0x63,
+    kPosStatGoodCount = 0x65,
+    kPosStatMissCount = 0x67,
+    kPosStatJustReflecPair = 105,
+    kPosStatMaxComboPair = 111,
+    kPosStatScore = 0x71,
+    kPosStatRate = 0x73,
+    kPosStatHeaderGreat = 117,
+    kPosStatHeaderJust = 118,
+    kPosStatHeaderGood = 119,
+    kPosStatHeaderMiss = 120,
+    kPosScoreRowDigits = 0x7c,
+    kPosScoreRowLabel = 125,
+    kPosTargetScoreDigits = 0x81,
+    kPosScoreDeltaBracketOpen = 130,
+    kPosScoreDeltaSign = 131,
+    kPosScoreDeltaDigits = 0x87,
+    kPosScoreDeltaBracketClose = 136,
+    kPosTargetRowLabelLeft = 137,
+    kPosTargetRowLabelRight = 138,
+    kPosRateRowDigits = 0x90,
+    kPosRateRowLabel = 145,
+    kPosTargetRateDigits = 0x97,
+    kPosRateDeltaBracketOpen = 152,
+    kPosRateDeltaDigits = 0x9f,
+    kPosRateDeltaBracketClose = 160,
+    kPosRankRowLabel = 161,
+    kPosRankEarnedPlate = 162,
+    kPosRankArrow = 163,
+    kPosRankTargetPlate = 164,
+    kPosRankTargetLabel = 165,
+    kPosSideColorMarkerLocal = 166,
+    kPosSideColorMarkerRival = 167,
+    kPosBonusPanelBase = 168,
+    kPosBonusDecorationBase = 173,
+    kPosBonusRowOrigin = 179,
+    kPosBonusValueColumn = 180,
+    kPosBonusUnitColumn = 181,
+    kPosBonusSuffixColumn = 182,
+    kPosBonusTrailingColumn = 183,
+    kPosBonusClearDigits = 0xbb,
+    kPosBonusRankDigits = 0xbf,
+    kPosBonusMissDigits = 0xc3,
+    kPosBonusFirstPlayDigits = 0xc7,
+    kPosBonusEarlyPlayDigits = 0xcb,
+    kPosBonusHotMusicDigits = 0xcf,
+    kPosBonusSubtotalDigits = 0xd3,
+    kPosBonusTotalLabelUpper = 212,
+    kPosBonusTotalPlus = 213,
+    kPosBonusTotalUnit = 214,
+    kPosBonusTotalLabelLower = 215,
+    kPosBonusTotalRule = 216,
+    kPosBonusGrandTotalDigits = 0xe3,
+};
+
+// The run lengths the panel's sprite loops walk.
+constexpr int kDecorationCount = 12;
+constexpr int kClearedCaptionCount = 6;
+constexpr int kFailedCaptionCount = 9;
+constexpr int kStatFrameCount = 19;
+constexpr int kStatRowCount = 8;
+constexpr int kBonusDecorationCount = 6;
+constexpr int kBonusPanelPieceCount = 5;
+constexpr int kBonusRowCount = 6;
+constexpr int kBonusRowParts = 3;
+
+// The level-glyph family holds this many level glyphs per difficulty.
+constexpr int kLevelGlyphsPerDifficulty = 15;
+
+// Within the nineteen-part stat frame, these parts draw mirrored and these draw at the page alpha
+// rather than the frame alpha. The binary tests them as the bit masks 0x2a and 0x1c0 over the run
+// index.
+constexpr unsigned int kStatFrameMirroredMask = 0x2a;
+constexpr unsigned int kStatFramePageAlphaMask = 0x1c0;
+// Only the first nine pieces are tested against those masks; the rest always draw plain.
+constexpr int kStatFrameMaskedPieceCount = 9;
+
+// Within the eight-part stat row, these two parts get a second, colour-tinted pass. The binary tests
+// them by clearing bit two and comparing against zero.
+constexpr unsigned int kStatRowTintedIndexMask = ~4u;
+
+// The bonus rows the two feature toggles gate: the early-play row and the hot-music row.
+constexpr int kBonusRowEarlyPlay = 4;
+constexpr int kBonusRowHotMusic = 5;
+
+// The parts whose half widths inset the two bonus-row leader rules. The binary hoists row zero's
+// label width and reuses it for every row.
+constexpr int kPartBonusRowLabelRowZero = kPartBonusRowBase;
+
+// The game types that show the pair of per-side colour markers. The binary tests
+// (gameType | 2) == 2, which admits exactly these two.
+inline bool ShowsSideColorMarkers(int nGameType) {
+    return (nGameType | 2) == 2;
+}
+
+} // namespace
+
+/** @ghidraAddress 0x74f2c */
+void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
+    // The frame alpha drives everything on the panel; the four remaining tween channels scale it
+    // into the sub-alphas the individual element groups draw at.
+    const unsigned int nFrameAlpha =
+        static_cast<unsigned int>(m_aTween[kTweenAlpha].flCurrent * kAlphaScale);
+    const float flFrameAlpha = static_cast<float>(nFrameAlpha);
+    const float flAlphaArtwork = m_aTween[kTweenChannel1].flCurrent * flFrameAlpha;
+    const float flAlphaMusicInfo = m_aTween[kTweenChannel2].flCurrent * flFrameAlpha;
+    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].flCurrent;
+    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].flCurrent;
+
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    ScoreTracker *pTracker = ScoreTracker::shared();
+    const int nPlayColor = pGameSystem->GetPlayColor();
+    const int nTargetScore = pGameSystem->GetTargetScore();
+    const float flLocalRate = pTracker->GetPlayRecordRate(kSideLocal);
+    const float flTargetRate = pGameSystem->GetTargetAR();
+    const int nLocalScore = pTracker->GetPlayRecordCell(kSideLocal, kCellScore);
+    const int nRivalScore = pTracker->GetPlayRecordCell(kSideRival, kCellScore);
+    const int nLocalRank = pTracker->GetPlayRecordRank(kSideLocal);
+
+    // Every slot's sprite list is rebuilt from scratch each frame. The binary does not null-check the
+    // instancers here, because the builder has already created all eight.
+    for (auto *pSlot : m_apSlots) {
+        pSlot->SetSpriteCount(0);
+    }
+
+    // A negative target score displays as zero.
+    const int nClampedTargetScore = nTargetScore < 0 ? 0 : nTargetScore;
+
+    // A fully faded panel emits nothing at all.
+    if (nFrameAlpha == 0) {
+        return;
+    }
+
+    const unsigned int nAlphaArtwork = static_cast<unsigned int>(flAlphaArtwork);
+    const unsigned int nAlphaMusicInfo = static_cast<unsigned int>(flAlphaMusicInfo);
+    const unsigned int nAlphaStats = static_cast<unsigned int>(flAlphaStats);
+
+    // Every emit below leaves the rotation argument at zero. The number renderers take a rotation
+    // slot they never read, and the compiler correspondingly skips setting it at those call sites,
+    // which is why the disassembly leaves stale register content there.
+    constexpr float kNoRotation = 0.0f;
+
+    // The backdrop dims the play field behind the panel.
+    RenderPartSpriteByIndex(
+        kBackdropSlot,
+        kPartBackdrop,
+        g_aResultLayoutPosition[kPosBackdrop],
+        static_cast<unsigned int>((flFrameAlpha * kBackdropAlphaNumerator) / kAlphaScale),
+        kNoRotation,
+        kScaleNormal,
+        kScaleNormal,
+        kColorBlack.flRed,
+        kColorBlack.flGreen,
+        kColorBlack.flBlue);
+
+    // The panel frame and the share button dim while their touch regions are held.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartPanelFrame,
+                              g_aResultLayoutPosition[kPosPanelFrame],
+                              nFrameAlpha,
+                              m_aTouchRegion[0].bDown,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    if (m_bTwitterAvailable) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartTwitterButton,
+                                  g_aResultLayoutPosition[kPosTwitterButton],
+                                  nAlphaStats,
+                                  m_aTouchRegion[3].bDown,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+
+    // The border decorations alternate their horizontal mirroring.
+    for (int nDecoration = 0; nDecoration < kDecorationCount; ++nDecoration) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartDecorationBase + nDecoration,
+                                  g_aResultLayoutPosition[kPosDecorationBase + nDecoration],
+                                  nFrameAlpha,
+                                  false,
+                                  kNoRotation,
+                                  (nDecoration & 1) != 0 ? kScaleMirrored : kScaleNormal,
+                                  kScaleNormal);
+    }
+
+    // The music-info block: its frame, the difficulty label, the artwork, and the music and artist
+    // name images the scene rendered into slots three and four.
+    const int nDifficulty = pGameSystem->GetDifficulty();
+    const int nDifficultyLevel = pGameSystem->GetDifficultyLevel();
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicInfoUpper,
+                              g_aResultLayoutPosition[kPosMusicInfoUpper],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicInfoLower,
+                              g_aResultLayoutPosition[kPosMusicInfoLower],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicInfoFrame,
+                              g_aResultLayoutPosition[kPosMusicInfoFrame],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartDifficultyLabelBase + nDifficulty,
+                              g_aResultLayoutPosition[kPosDifficultyLabel],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    renderSpriteInstanceFromSlot(kArtworkSlot,
+                                 g_aResultLayoutPosition[kPosArtwork],
+                                 S_VECTOR2{kArtworkExtent, kArtworkExtent},
+                                 nAlphaArtwork);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartArtworkFrame,
+                              g_aResultLayoutPosition[kPosArtworkFrame],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    // The difficulty name is emitted twice at the same position and alpha, so it draws over itself.
+    for (int nPass = 0; nPass < 2; ++nPass) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartDifficultyNameBase + nDifficulty,
+                                  g_aResultLayoutPosition[kPosDifficultyName],
+                                  nAlphaArtwork,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartDifficultyMarkBase + nDifficulty,
+                              g_aResultLayoutPosition[kPosDifficultyMark],
+                              nAlphaArtwork,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartLevelGlyphBase + nDifficulty * kLevelGlyphsPerDifficulty +
+                                  nDifficultyLevel,
+                              g_aResultLayoutPosition[kPosLevelGlyph],
+                              nAlphaArtwork,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicNameLeft,
+                              g_aResultLayoutPosition[kPosMusicNameLeft],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicNameRight,
+                              g_aResultLayoutPosition[kPosMusicNameRight],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    renderSpriteInstanceScaled(
+        kMusicNameSlot, g_aResultLayoutPosition[kPosMusicName], nAlphaArtwork);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartArtistNameLeft,
+                              g_aResultLayoutPosition[kPosArtistNameLeft],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartArtistNameRight,
+                              g_aResultLayoutPosition[kPosArtistNameRight],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    renderSpriteInstanceScaled(
+        kArtistNameSlot, g_aResultLayoutPosition[kPosArtistName], nAlphaArtwork);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartMusicInfoRule,
+                              g_aResultLayoutPosition[kPosMusicInfoRule],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+
+    // The cleared caption replaces the longer failed caption once the rate reaches the clear
+    // threshold, or whenever the menu tutorial is suppressing input.
+    if (pTracker->GetPlayRecordRate(kSideLocal) >= kClearRateThreshold ||
+        GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+        for (int nPiece = 0; nPiece < kClearedCaptionCount; ++nPiece) {
+            RenderPartSpriteWithAlpha(kPartsSlot,
+                                      kPartClearedCaptionBase + nPiece,
+                                      g_aResultLayoutPosition[kPosClearedCaptionBase + nPiece],
+                                      nAlphaArtwork,
+                                      false,
+                                      kNoRotation,
+                                      kScaleNormal,
+                                      kScaleNormal);
+        }
+    } else {
+        for (int nPiece = 0; nPiece < kFailedCaptionCount; ++nPiece) {
+            RenderPartSpriteWithAlpha(kPartsSlot,
+                                      kPartFailedCaptionBase + nPiece,
+                                      g_aResultLayoutPosition[kPosFailedCaptionBase + nPiece],
+                                      nAlphaArtwork,
+                                      false,
+                                      kNoRotation,
+                                      kScaleNormal,
+                                      kScaleNormal);
+        }
+    }
+
+    // The headline score and achievement rate, with the badges that mark a personal best.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartScoreLabel,
+                              g_aResultLayoutPosition[kPosScoreLabel],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderNumberDigitsAsParts(nLocalScore,
+                              kDigitsScore,
+                              kPosScoreDigits,
+                              nPlayColor != 0 ? kFamilyScoreBlue : kFamilyScoreRed,
+                              false,
+                              false,
+                              true,
+                              nAlphaArtwork,
+                              kNoRotation,
+                              kColorWhite.flRed,
+                              kColorWhite.flGreen,
+                              kColorWhite.flBlue);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartScoreFrameLeft,
+                              g_aResultLayoutPosition[kPosScoreFrameLeft],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartScoreFrameRight,
+                              g_aResultLayoutPosition[kPosScoreFrameRight],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    const int nDisplayRate = static_cast<int>(flLocalRate * kRateDisplayScale);
+    RenderNumberDigitsAsParts(nDisplayRate,
+                              kDigitsScore,
+                              kPosRateDigits,
+                              kFamilyMedium,
+                              true,
+                              true,
+                              false,
+                              nAlphaArtwork,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRateFrameLeft,
+                              g_aResultLayoutPosition[kPosRateFrameLeft],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRateFrameRight,
+                              g_aResultLayoutPosition[kPosRateFrameRight],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRateLabel,
+                              g_aResultLayoutPosition[kPosRateLabel],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    if (nRivalScore < nLocalScore) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartNewRecordBadge,
+                                  g_aResultLayoutPosition[kPosNewRecordBadge],
+                                  nAlphaArtwork,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+    if (pTracker->GetTotalNotes() == pTracker->GetPlayRecordCell(kSideLocal, kCellMaxCombo)) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartFullComboBadge,
+                                  g_aResultLayoutPosition[kPosFullComboBadge],
+                                  nAlphaArtwork,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+    const int nScoreDelta = nLocalScore - nClampedTargetScore;
+    if (nScoreDelta != 0 && nClampedTargetScore <= nLocalScore) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartTargetBeatenBadge,
+                                  g_aResultLayoutPosition[kPosTargetBeatenBadge],
+                                  nAlphaArtwork,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+    if (pTracker->GetPlayRecordRate(kSideLocal) > flTargetRate) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartNewRateBadge,
+                                  g_aResultLayoutPosition[kPosNewRateBadge],
+                                  nAlphaArtwork,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankGlyphBase + nLocalRank,
+                              g_aResultLayoutPosition[kPosRankGlyph],
+                              nAlphaMusicInfo,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+
+    // A vertical flick cross-fades the two result pages: the stats and bonus channels each split
+    // between the swipe progress and its complement, and which half belongs to which page swaps with
+    // the active page.
+    const float flSwipe = std::fabs(m_flSwipeDir);
+    const bool bSecondPageActive = m_nActive != 1;
+    const float flStatsSweep = static_cast<float>(nAlphaStats);
+    const float flBonusSweep = static_cast<float>(static_cast<unsigned int>(flAlphaBonus));
+    const unsigned int nAlphaStatsNear = static_cast<unsigned int>(
+        bSecondPageActive ? flStatsSweep * flSwipe : flStatsSweep * (1.0f - flSwipe));
+    const unsigned int nAlphaStatsFar = static_cast<unsigned int>(
+        bSecondPageActive ? flStatsSweep * (1.0f - flSwipe) : flStatsSweep * flSwipe);
+    const unsigned int nAlphaBonusNear = static_cast<unsigned int>(
+        bSecondPageActive ? flBonusSweep * flSwipe : flBonusSweep * (1.0f - flSwipe));
+    const unsigned int nAlphaBonusFar = static_cast<unsigned int>(
+        bSecondPageActive ? flBonusSweep * (1.0f - flSwipe) : flBonusSweep * flSwipe);
+
+    // The stat frame: three of its parts draw mirrored and three at the near page alpha.
+    for (int nPiece = 0; nPiece < kStatFrameCount; ++nPiece) {
+        const unsigned int nPieceBit = 1u << static_cast<unsigned int>(nPiece);
+        unsigned int nPieceAlpha = nFrameAlpha;
+        float flPieceScaleX = kScaleNormal;
+        if (nPiece < kStatFrameMaskedPieceCount) {
+            if ((nPieceBit & kStatFrameMirroredMask) != 0) {
+                flPieceScaleX = kScaleMirrored;
+            } else if ((nPieceBit & kStatFramePageAlphaMask) != 0) {
+                nPieceAlpha = nAlphaBonusNear;
+            }
+        }
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartStatFrameBase + nPiece,
+                                  g_aResultLayoutPosition[kPosStatFrameBase + nPiece],
+                                  nPieceAlpha,
+                                  false,
+                                  kNoRotation,
+                                  flPieceScaleX,
+                                  kScaleNormal);
+    }
+
+    // The two side colour labels, then the eight stat rows; the first and fifth also take a tinted
+    // pass in the rotating decoration colour.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartSideColorLabelBase + nPlayColor,
+                              g_aResultLayoutPosition[kPosSideColorLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              nPlayColor == 0 ? kPartRivalColorLabelBlue : kPartRivalColorLabelRed,
+                              g_aResultLayoutPosition[kPosRivalColorLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    for (int nRow = 0; nRow < kStatRowCount; ++nRow) {
+        const S_VECTOR2 &rowPosition = g_aResultLayoutPosition[kPosStatRowBase + nRow];
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartStatRowBase + nRow,
+                                  rowPosition,
+                                  nAlphaBonusNear,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+        if ((static_cast<unsigned int>(nRow) & kStatRowTintedIndexMask) == 0) {
+            const ResultBonusColor &tint = g_aResultBonusColor[m_nRotationFrame];
+            RenderPartSpriteByIndex(kPartsSlot,
+                                    kPartStatRowBase + nRow,
+                                    rowPosition,
+                                    nAlphaBonusNear,
+                                    kNoRotation,
+                                    kScaleNormal,
+                                    kScaleNormal,
+                                    tint.flRed,
+                                    tint.flGreen,
+                                    tint.flBlue);
+        }
+    }
+
+    // The per-side judgement columns.
+    for (int nSide = 0; nSide < kResultSideCount; ++nSide) {
+        const unsigned int nUside = static_cast<unsigned int>(nSide);
+        const int nJust = pTracker->GetPlayRecordCell(nUside, kCellJust);
+        const int nGreat = pTracker->GetPlayRecordCell(nUside, kCellGreat);
+        const int nGood = pTracker->GetPlayRecordCell(nUside, kCellGood);
+        const int nMiss = pTracker->GetPlayRecordCell(nUside, kCellMiss);
+        const int nJustReflec = pTracker->GetPlayRecordCell(nUside, kCellJustReflec);
+        const int nMaxCombo = pTracker->GetPlayRecordCell(nUside, kCellMaxCombo);
+        const int nSideScore = pTracker->GetPlayRecordCell(nUside, kCellScore);
+        const float flSideRate = pTracker->GetPlayRecordRate(nUside);
+        // Each side's just-reflec quota is the object count of the colour that side played.
+        const int nQuotaIndex = nSide == 0 ? nPlayColor : (nPlayColor == 0 ? 1 : 0);
+        const int nSideQuota = m_anResultScore[nQuotaIndex];
+
+        RenderNumberDigitsProportional(nJust,
+                                       kDigitsScore,
+                                       kPosStatJustCount + nSide,
+                                       kFamilySideStat,
+                                       false,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorJudgeCount.flRed,
+                                       kColorJudgeCount.flGreen,
+                                       kColorJudgeCount.flBlue);
+        RenderNumberDigitsProportional(nGreat,
+                                       kDigitsScore,
+                                       kPosStatGreatCount + nSide,
+                                       kFamilySideStat,
+                                       false,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorJudgeCount.flRed,
+                                       kColorJudgeCount.flGreen,
+                                       kColorJudgeCount.flBlue);
+        RenderNumberDigitsProportional(nGood,
+                                       kDigitsScore,
+                                       kPosStatGoodCount + nSide,
+                                       kFamilySideStat,
+                                       false,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorGoodCount.flRed,
+                                       kColorGoodCount.flGreen,
+                                       kColorGoodCount.flBlue);
+        RenderNumberDigitsProportional(nMiss,
+                                       kDigitsScore,
+                                       kPosStatMissCount + nSide,
+                                       kFamilySideStat,
+                                       false,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorMissCount.flRed,
+                                       kColorMissCount.flGreen,
+                                       kColorMissCount.flBlue);
+        RenderNumberPairWithSeparator(nJustReflec,
+                                      nSideQuota,
+                                      &g_aResultLayoutPosition[kPosStatJustReflecPair + nSide],
+                                      nAlphaStatsNear,
+                                      kResultBonusColorAmber,
+                                      kResultBonusColorTaupe);
+        RenderNumberPairWithSeparator(nMaxCombo,
+                                      pTracker->GetTotalNotes(),
+                                      &g_aResultLayoutPosition[kPosStatMaxComboPair + nSide],
+                                      nAlphaStatsNear,
+                                      kResultBonusColorGreen,
+                                      kResultBonusColorTaupe);
+        RenderNumberDigitsProportional(nSideScore,
+                                       kDigitsScore,
+                                       kPosStatScore + nSide,
+                                       kFamilySideStat,
+                                       false,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorScore.flRed,
+                                       kColorScore.flGreen,
+                                       kColorScore.flBlue);
+        RenderNumberDigitsProportional(static_cast<int>(flSideRate * kRateDisplayScale),
+                                       kDigitsScore,
+                                       kPosStatRate + nSide,
+                                       kFamilySideStat,
+                                       true,
+                                       false,
+                                       nAlphaStatsNear,
+                                       kNoRotation,
+                                       kColorRate.flRed,
+                                       kColorRate.flGreen,
+                                       kColorRate.flBlue);
+    }
+
+    // The column headers, in the binary's out-of-order emit sequence.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartStatHeaderGood,
+                              g_aResultLayoutPosition[kPosStatHeaderGood],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartStatHeaderJust,
+                              g_aResultLayoutPosition[kPosStatHeaderJust],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartStatHeaderGreat,
+                              g_aResultLayoutPosition[kPosStatHeaderGreat],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartStatHeaderMiss,
+                              g_aResultLayoutPosition[kPosStatHeaderMiss],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+
+    // The score row: the achieved score, the target, and their signed difference.
+    RenderNumberDigitsAsParts(nLocalScore,
+                              kDigitsScore,
+                              kPosScoreRowDigits,
+                              kFamilyMedium,
+                              false,
+                              false,
+                              true,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              kColorScore.flRed,
+                              kColorScore.flGreen,
+                              kColorScore.flBlue);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartScoreRowLabel,
+                              g_aResultLayoutPosition[kPosScoreRowLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderNumberDigitsAsParts(nClampedTargetScore,
+                              kDigitsScore,
+                              kPosTargetScoreDigits,
+                              kFamilySmall,
+                              false,
+                              false,
+                              true,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              kColorTarget.flRed,
+                              kColorTarget.flGreen,
+                              kColorTarget.flBlue);
+    RenderPartSpriteByIndex(kPartsSlot,
+                            kPartDeltaBracketOpen,
+                            g_aResultLayoutPosition[kPosScoreDeltaBracketOpen],
+                            nAlphaStatsNear,
+                            kNoRotation,
+                            kScaleNormal,
+                            kScaleNormal,
+                            kColorTarget.flRed,
+                            kColorTarget.flGreen,
+                            kColorTarget.flBlue);
+    int nScoreDeltaMagnitude = nScoreDelta;
+    ResultBonusColor scoreDeltaColor = kColorScore;
+    if (nScoreDelta < 0) {
+        RenderPartSpriteByIndex(kPartsSlot,
+                                kPartMinusSign,
+                                g_aResultLayoutPosition[kPosScoreDeltaSign],
+                                nAlphaStatsNear,
+                                kNoRotation,
+                                kScaleNormal,
+                                kScaleNormal,
+                                kColorMissCount.flRed,
+                                kColorMissCount.flGreen,
+                                kColorMissCount.flBlue);
+        nScoreDeltaMagnitude = -nScoreDelta;
+        scoreDeltaColor = kColorMissCount;
+    } else {
+        RenderPartSpriteByIndex(kPartsSlot,
+                                kPartPlusSign,
+                                g_aResultLayoutPosition[kPosScoreDeltaSign],
+                                nAlphaStatsNear,
+                                kNoRotation,
+                                kScaleNormal,
+                                kScaleNormal,
+                                kColorScore.flRed,
+                                kColorScore.flGreen,
+                                kColorScore.flBlue);
+    }
+    RenderNumberDigitsAsParts(nScoreDeltaMagnitude,
+                              kDigitsScore,
+                              kPosScoreDeltaDigits,
+                              kFamilySmall,
+                              false,
+                              false,
+                              true,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              scoreDeltaColor.flRed,
+                              scoreDeltaColor.flGreen,
+                              scoreDeltaColor.flBlue);
+    RenderPartSpriteByIndex(kPartsSlot,
+                            kPartDeltaBracketClose,
+                            g_aResultLayoutPosition[kPosScoreDeltaBracketClose],
+                            nAlphaStatsNear,
+                            kNoRotation,
+                            kScaleNormal,
+                            kScaleNormal,
+                            kColorTarget.flRed,
+                            kColorTarget.flGreen,
+                            kColorTarget.flBlue);
+
+    // The rate row, laid out like the score row.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartTargetRowLabelLeft,
+                              g_aResultLayoutPosition[kPosTargetRowLabelLeft],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartTargetRowLabelRight,
+                              g_aResultLayoutPosition[kPosTargetRowLabelRight],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderNumberDigitsAsParts(nDisplayRate,
+                              kDigitsScore,
+                              kPosRateRowDigits,
+                              kFamilyMedium,
+                              true,
+                              true,
+                              false,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRateRowLabel,
+                              g_aResultLayoutPosition[kPosRateRowLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderNumberDigitsAsParts(static_cast<int>(flTargetRate * kRateDisplayScale),
+                              kDigitsScore,
+                              kPosTargetRateDigits,
+                              kFamilyRateSmall,
+                              true,
+                              true,
+                              false,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              kColorTarget.flRed,
+                              kColorTarget.flGreen,
+                              kColorTarget.flBlue);
+    RenderPartSpriteByIndex(kPartsSlot,
+                            kPartDeltaBracketOpen,
+                            g_aResultLayoutPosition[kPosRateDeltaBracketOpen],
+                            nAlphaStatsNear,
+                            kNoRotation,
+                            kScaleNormal,
+                            kScaleNormal,
+                            kColorTarget.flRed,
+                            kColorTarget.flGreen,
+                            kColorTarget.flBlue);
+    // A shortfall is scaled by the negated rate scale, which turns it into a positive magnitude.
+    const float flRateDelta = flLocalRate - flTargetRate;
+    ResultBonusColor rateDeltaColor = kColorMissCount;
+    float flRateDeltaMagnitude = flRateDelta * kRateDisplayScaleNegated;
+    if (flRateDelta > 0.0f) {
+        flRateDeltaMagnitude = flRateDelta * kRateDisplayScale;
+        rateDeltaColor = kColorScore;
+    }
+    RenderNumberDigitsAsParts(static_cast<int>(flRateDeltaMagnitude),
+                              kDigitsScore,
+                              kPosRateDeltaDigits,
+                              kFamilyRateSmall,
+                              true,
+                              true,
+                              true,
+                              nAlphaStatsNear,
+                              kNoRotation,
+                              rateDeltaColor.flRed,
+                              rateDeltaColor.flGreen,
+                              rateDeltaColor.flBlue);
+    RenderPartSpriteByIndex(kPartsSlot,
+                            kPartDeltaBracketClose,
+                            g_aResultLayoutPosition[kPosRateDeltaBracketClose],
+                            nAlphaStatsNear,
+                            kNoRotation,
+                            kScaleNormal,
+                            kScaleNormal,
+                            kColorTarget.flRed,
+                            kColorTarget.flGreen,
+                            kColorTarget.flBlue);
+
+    // The rank row: the earned plate, an arrow, and the plate the target rate would have earned.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankRowLabel,
+                              g_aResultLayoutPosition[kPosRankRowLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankPlateBase + nLocalRank,
+                              g_aResultLayoutPosition[kPosRankEarnedPlate],
+                              nAlphaStatsNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    const int nTargetRank = GetClearRank(pGameSystem->GetTargetAR());
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankArrow,
+                              g_aResultLayoutPosition[kPosRankArrow],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankPlateBase + nTargetRank,
+                              g_aResultLayoutPosition[kPosRankTargetPlate],
+                              nAlphaStatsNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartRankTargetLabel,
+                              g_aResultLayoutPosition[kPosRankTargetLabel],
+                              nAlphaBonusNear,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+
+    // The bonus page: its decorations, panel pieces, six rows, and the two totals.
+    for (int nDecoration = 0; nDecoration < kBonusDecorationCount; ++nDecoration) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartBonusDecorationBase + nDecoration,
+                                  g_aResultLayoutPosition[kPosBonusDecorationBase + nDecoration],
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  (nDecoration & 1) != 0 ? kScaleMirrored : kScaleNormal,
+                                  kScaleNormal);
+    }
+    // The five panel pieces are emitted in the binary's own order, which is not their part order.
+    constexpr int kBonusPanelPartOrder[] = {kPartBonusPanelBase,
+                                            kPartBonusPanelBase + 1,
+                                            kPartBonusPanelBase + 3,
+                                            kPartBonusPanelBase + 2,
+                                            kPartBonusPanelBase + 4};
+    for (int nPiece = 0; nPiece < kBonusPanelPieceCount; ++nPiece) {
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kBonusPanelPartOrder[nPiece],
+                                  g_aResultLayoutPosition[kPosBonusPanelBase + nPiece],
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+
+    // The bonus rows. Each row draws its label, a leader rule stretched across the gap to the value
+    // column, the value's unit glyph, a second leader, and the row's suffix and trailing glyphs. The
+    // two leader rules are stretched by the column gap less the half widths of the glyphs flanking
+    // them; the binary hoists row zero's label width and reuses it for every row.
+    const S_VECTOR2 &bonusOrigin = g_aResultLayoutPosition[kPosBonusRowOrigin];
+    const float flBonusValueX = g_aResultLayoutPosition[kPosBonusValueColumn].x;
+    const float flBonusUnitX = g_aResultLayoutPosition[kPosBonusUnitColumn].x;
+    const float flHalfLabelWidth = g_aColettePartsPad[kPartBonusRowLabelRowZero].flWidth * kHalf;
+    const float flHalfUnitWidth = g_aColettePartsPad[kPartBonusUnitGlyph].flWidth * kHalf;
+    const float flHalfValueWidth = g_aColettePartsPad[kPartBonusRowBase + 2].flWidth * kHalf;
+    for (int nRow = 0; nRow < kBonusRowCount; ++nRow) {
+        if (nRow == kBonusRowEarlyPlay && ![AppDelegate.appDelegate isEnableEarlyBonus]) {
+            continue;
+        }
+        if (nRow == kBonusRowHotMusic && ![AppDelegate.appDelegate isEnableHotBonus]) {
+            break;
+        }
+
+        S_VECTOR2 rowPosition{bonusOrigin.x,
+                              static_cast<float>(nRow) * kBonusRowStep + bonusOrigin.y};
+        const int nRowPartBase = kPartBonusRowBase + nRow * kBonusRowParts;
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  nRowPartBase,
+                                  rowPosition,
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+        rowPosition.x = (bonusOrigin.x + flBonusValueX) * kHalf;
+        RenderPartSpriteByIndex(kPartsSlot,
+                                nRowPartBase + 1,
+                                rowPosition,
+                                nAlphaBonusFar,
+                                kNoRotation,
+                                (flBonusValueX - bonusOrigin.x) - flHalfLabelWidth -
+                                    flHalfValueWidth,
+                                kScaleNormal,
+                                kColorWhite.flRed,
+                                kColorWhite.flGreen,
+                                kColorWhite.flBlue);
+        rowPosition.x = flBonusValueX;
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  nRowPartBase + 2,
+                                  rowPosition,
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+        rowPosition.x = (flBonusValueX + flBonusUnitX) * kHalf;
+        RenderPartSpriteByIndex(kPartsSlot,
+                                kPartBonusUnitLeader,
+                                rowPosition,
+                                nAlphaBonusFar,
+                                kNoRotation,
+                                (flBonusUnitX - flBonusValueX) - flHalfValueWidth - flHalfUnitWidth,
+                                kScaleNormal,
+                                kColorWhite.flRed,
+                                kColorWhite.flGreen,
+                                kColorWhite.flBlue);
+        rowPosition.x = flBonusUnitX;
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartBonusUnitGlyph,
+                                  rowPosition,
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+        rowPosition.x = g_aResultLayoutPosition[kPosBonusSuffixColumn].x;
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartBonusRowSuffixBase + nRow,
+                                  rowPosition,
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+        rowPosition.x = g_aResultLayoutPosition[kPosBonusTrailingColumn].x;
+        RenderPartSpriteWithAlpha(kPartsSlot,
+                                  kPartBonusRowTrailing,
+                                  rowPosition,
+                                  nAlphaBonusFar,
+                                  false,
+                                  kNoRotation,
+                                  kScaleNormal,
+                                  kScaleNormal);
+    }
+
+    // The bonus total block.
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartBonusTotalLabelUpper,
+                              g_aResultLayoutPosition[kPosBonusTotalLabelUpper],
+                              nAlphaBonusFar,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartPlusSign,
+                              g_aResultLayoutPosition[kPosBonusTotalPlus],
+                              nAlphaBonusFar,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartBonusTotalUnit,
+                              g_aResultLayoutPosition[kPosBonusTotalUnit],
+                              nAlphaBonusFar,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartBonusTotalLabelLower,
+                              g_aResultLayoutPosition[kPosBonusTotalLabelLower],
+                              nAlphaBonusFar,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+    RenderPartSpriteWithAlpha(kPartsSlot,
+                              kPartBonusTotalRule,
+                              g_aResultLayoutPosition[kPosBonusTotalRule],
+                              nAlphaBonusFar,
+                              false,
+                              kNoRotation,
+                              kScaleNormal,
+                              kScaleNormal);
+
+    // Each bonus value is shown to one decimal place. The early-play and hot-music rows only print
+    // when their feature toggle is on, but both are still summed into the totals below.
+    const unsigned int nAlphaBonusValues = nAlphaStatsFar;
+    RenderNumberDigitsAsParts(static_cast<int>(m_flClearBonus * kBonusDisplayScale),
+                              kDigitsBonus,
+                              kPosBonusClearDigits,
+                              kFamilySmall,
+                              true,
+                              false,
+                              true,
+                              nAlphaBonusValues,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderNumberDigitsAsParts(static_cast<int>(m_flRankBonus * kBonusDisplayScale),
+                              kDigitsBonus,
+                              kPosBonusRankDigits,
+                              kFamilySmall,
+                              true,
+                              false,
+                              true,
+                              nAlphaBonusValues,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderNumberDigitsAsParts(static_cast<int>(m_flMissBonus * kBonusDisplayScale),
+                              kDigitsBonus,
+                              kPosBonusMissDigits,
+                              kFamilySmall,
+                              true,
+                              false,
+                              true,
+                              nAlphaBonusValues,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderNumberDigitsAsParts(static_cast<int>(m_flFirstPlayBonus * kBonusDisplayScale),
+                              kDigitsBonus,
+                              kPosBonusFirstPlayDigits,
+                              kFamilySmall,
+                              true,
+                              false,
+                              true,
+                              nAlphaBonusValues,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    if ([AppDelegate.appDelegate isEnableEarlyBonus]) {
+        RenderNumberDigitsAsParts(static_cast<int>(m_flEarlyPlayBonus * kBonusDisplayScale),
+                                  kDigitsBonus,
+                                  kPosBonusEarlyPlayDigits,
+                                  kFamilySmall,
+                                  true,
+                                  false,
+                                  true,
+                                  nAlphaBonusValues,
+                                  kNoRotation,
+                                  kColorRate.flRed,
+                                  kColorRate.flGreen,
+                                  kColorRate.flBlue);
+    }
+    if ([AppDelegate.appDelegate isEnableHotBonus]) {
+        RenderNumberDigitsAsParts(static_cast<int>(m_flHotMusicBonus * kBonusDisplayScale),
+                                  kDigitsBonus,
+                                  kPosBonusHotMusicDigits,
+                                  kFamilySmall,
+                                  true,
+                                  false,
+                                  true,
+                                  nAlphaBonusValues,
+                                  kNoRotation,
+                                  kColorRate.flRed,
+                                  kColorRate.flGreen,
+                                  kColorRate.flBlue);
+    }
+
+    // The subtotal sums the six bonuses; the grand total adds the experience points on top. Both
+    // sums include the early-play and hot-music bonuses whether or not their rows printed.
+    const float flBonusSubtotal = m_flClearBonus + m_flMissBonus + m_flRankBonus +
+                                  m_flFirstPlayBonus + m_flEarlyPlayBonus + m_flHotMusicBonus;
+    RenderNumberDigitsAsParts(static_cast<int>(flBonusSubtotal * kBonusDisplayScale),
+                              kDigitsBonus,
+                              kPosBonusSubtotalDigits,
+                              kFamilySmall,
+                              true,
+                              false,
+                              true,
+                              nAlphaBonusValues,
+                              kNoRotation,
+                              kColorRate.flRed,
+                              kColorRate.flGreen,
+                              kColorRate.flBlue);
+    RenderNumberDigitsAsParts(
+        static_cast<int>((flBonusSubtotal + m_flExperienceBonus) * kBonusDisplayScale),
+        kDigitsGrandTotal,
+        kPosBonusGrandTotalDigits,
+        kFamilyGrandTotal,
+        true,
+        false,
+        true,
+        nAlphaBonusValues,
+        kNoRotation,
+        kColorRate.flRed,
+        kColorRate.flGreen,
+        kColorRate.flBlue);
+
+    // The pair of per-side colour markers only shows on the two-player game types, at half the
+    // stats alpha, each taking the bonus palette entry for its side's colour.
+    if (ShowsSideColorMarkers(pGameSystem->GetGameType())) {
+        const bool bSecondPage = m_nActive != 1;
+        const int nLocalColorIndex =
+            bSecondPage ? kResultBonusColorLightGray : kResultBonusColorBlack;
+        const int nRivalColorIndex =
+            bSecondPage ? kResultBonusColorBlack : kResultBonusColorLightGray;
+        const unsigned int nMarkerAlpha =
+            static_cast<unsigned int>(static_cast<float>(nAlphaStats) * kHalf);
+        const ResultBonusColor &localColor = g_aResultBonusColor[nLocalColorIndex];
+        RenderPartSpriteByIndex(kPartsSlot,
+                                kPartSideColorMarker,
+                                g_aResultLayoutPosition[kPosSideColorMarkerLocal],
+                                nMarkerAlpha,
+                                kNoRotation,
+                                kScaleNormal,
+                                kScaleNormal,
+                                localColor.flRed,
+                                localColor.flGreen,
+                                localColor.flBlue);
+        const ResultBonusColor &rivalColor = g_aResultBonusColor[nRivalColorIndex];
+        RenderPartSpriteByIndex(kPartsSlot,
+                                kPartSideColorMarker,
+                                g_aResultLayoutPosition[kPosSideColorMarkerRival],
+                                nMarkerAlpha,
+                                kNoRotation,
+                                kScaleNormal,
+                                kScaleNormal,
+                                rivalColor.flRed,
+                                rivalColor.flGreen,
+                                rivalColor.flBlue);
+    }
 }
 
 // Seeds every Colette result-screen layout table at load time, the largest of the three layout

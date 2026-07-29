@@ -60,6 +60,14 @@ public:
     static constexpr int kTweenChannelCount = 5;
     // The number of touch hit-regions the input pass tracks.
     static constexpr int kTouchRegionCount = 4;
+    // The number of per-colour result score values the scene seeds.
+    static constexpr int kResultScoreColorCount = 2;
+
+    /** @brief The play colour a seeded result score belongs to. */
+    enum ResultScoreColor {
+        kResultScoreRed = 0,  /*!< The red side's score. */
+        kResultScoreBlue = 1, /*!< The blue side's score. */
+    };
 
     /**
      * @brief The process-wide Colette result-window layer, created on first use.
@@ -160,7 +168,24 @@ public:
     void Update(float flDeltaTime);
 
     /**
-     * @brief Renders the result-score bonus panel (the iPad/landscape path). Reconstruction pending.
+     * @brief Renders the whole result-score and bonus panel: the pad-layout result screen.
+     *
+     * Derives the frame's alpha from the alpha tween channel scaled by 255 and returns immediately
+     * when that is zero, so a fully faded panel costs nothing. The four remaining tween channels give
+     * four further sub-alphas, and the swipe direction cross-fades the two result pages: the page
+     * alphas are the third and fourth sub-alphas split between @c |swipeDirection| and its
+     * complement, swapped according to the active page. Every slot's sprite count is reset first, so
+     * the pass rebuilds the panel from scratch each frame.
+     *
+     * The body then emits, in order: the backdrop; the music-info block and its difficulty and level
+     * glyphs; the clear or failed caption (the cleared caption when the rate reaches 70% or the menu
+     * tutorial is suppressing input, otherwise the longer failed caption); the score and achievement
+     * rate with their new-record, full-combo, and new-rate badges; the nineteen-part stat frame; the
+     * per-side judgement columns with their just, great, good, and miss counts, the just-reflec and
+     * max-combo pairs, and the per-side score and rate; the score and rate deltas against the target,
+     * each with its sign glyph and a colour chosen by the sign; the earned and target rank glyphs;
+     * and the six bonus rows with their stretched leader rules, values, and grand total. Off a
+     * two-player game type the trailing pair of side colour markers is skipped.
      * @ghidraAddress 0x74f2c
      */
     void RenderResultScoreBonusPanel();
@@ -289,10 +314,10 @@ public:
         m_flExperienceBonus = flExperience;
     }
 
-    /** @brief Stores the pair of result score values the scene seeds at set-up. */
+    /** @brief Stores the pair of per-colour result score values the scene seeds at set-up. */
     void SetResultScores(int nScore, int nScoreHi) {
-        m_nResultScore = nScore;
-        m_nResultScoreHi = nScoreHi;
+        m_anResultScore[kResultScoreRed] = nScore;
+        m_anResultScore[kResultScoreBlue] = nScoreHi;
     }
 
 private:
@@ -393,6 +418,8 @@ private:
      * @param bDrawPrefix Whether, in wide-leading mode, to draw the standalone prefix glyph first.
      * @param bLeftPad Whether to fill the unused leading slots with a padding glyph.
      * @param nAlpha The glyph alpha, in @c [0, 255].
+     * @param flRotation The glyph rotation, in radians. Accepted but ignored: every glyph below
+     * emits upright, so each call site passes zero.
      * @param flRed The red colour channel.
      * @param flGreen The green colour channel.
      * @param flBlue The blue colour channel.
@@ -406,6 +433,7 @@ private:
                                  bool bDrawPrefix,
                                  bool bLeftPad,
                                  unsigned int nAlpha,
+                                 float flRotation,
                                  float flRed,
                                  float flGreen,
                                  float flBlue);
@@ -747,29 +775,30 @@ private:
      * placement rectangle from the phone parts table indexed by @p nPartId and its texture rectangle
      * from the Colette glyph UV palette, then appends the quad to the slot at @p position with the
      * given rotation, scale, and red, green, and blue channels. Part ids at or above the phone parts
-     * table count are ignored.
+     * table count are ignored. The three colour channels arrive as floats and are truncated to byte
+     * channels, exactly as in @c RenderPartSpriteByIndex, whose argument order this shares.
      * @param nSlot The slot index (0 through 7).
      * @param nPartId The glyph part id (below the phone parts table count).
      * @param position The glyph's world position.
      * @param nAlpha The glyph alpha.
-     * @param nRed The glyph's red channel.
-     * @param nGreen The glyph's green channel.
-     * @param nBlue The glyph's blue channel.
      * @param flRotation The glyph rotation, in radians.
      * @param flScaleX The glyph X scale.
      * @param flScaleY The glyph Y scale.
+     * @param flRed The glyph's red channel (truncated to an integer).
+     * @param flGreen The glyph's green channel (truncated to an integer).
+     * @param flBlue The glyph's blue channel (truncated to an integer).
      * @ghidraAddress 0x79d54
      */
     void RenderGlyphPartFromTable(int nSlot,
                                   int nPartId,
                                   const S_VECTOR2 &position,
                                   unsigned int nAlpha,
-                                  unsigned int nRed,
-                                  unsigned int nGreen,
-                                  unsigned int nBlue,
                                   float flRotation,
                                   float flScaleX,
-                                  float flScaleY);
+                                  float flScaleY,
+                                  float flRed,
+                                  float flGreen,
+                                  float flBlue);
 
     // +0x08/+0x09: the tutorial touch-hint flags the touch pass drives from the live touch count
     // (whether a touch is present, and whether one was just released).
@@ -825,9 +854,11 @@ private:
     float m_flHotMusicBonus = {};  // +0x168: the hot-music bonus.
     float m_flEarlyPlayBonus = {}; // +0x16c: the early-play bonus.
     float m_flExperienceBonus =
-        {};                    // +0x170: the experience-point total shown on the result screen.
-    int m_nResultScore = {};   // +0x174: the result score value seeded from the scene.
-    int m_nResultScoreHi = {}; // +0x178: the second result score value seeded from the scene.
+        {}; // +0x170: the experience-point total shown on the result screen.
+    // +0x174: the two per-colour result score values seeded from the scene (the chart's per-side
+    // object counts). The bonus panel indexes this pair by the side's play colour, which is what
+    // makes it one array rather than two scalars.
+    int m_anResultScore[kResultScoreColorCount] = {}; // +0x174
     // +0x17c..+0x17f: trailing presentation state to the allocation size.
     unsigned char m_aReserved17c[4] = {}; // +0x17c
 };

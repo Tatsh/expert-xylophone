@@ -17,4 +17,8 @@ const ResultBonusColor g_aResultBonusColor[kResultBonusColorCount] = {
     {180.0f, 94.0f, 191.0f},
     {115.0f, 101.0f, 85.0f},
     {252.0f, 86.0f, 244.0f},
+    {0.0f, 0.0f, 0.0f},
+    {128.0f, 128.0f, 128.0f},
+    {192.0f, 192.0f, 192.0f},
+    {255.0f, 255.0f, 255.0f},
 };
