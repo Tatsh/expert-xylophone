@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x5487c (getter)
  * @ghidraAddress 0x5488c (setter)
  */
-@property(nonatomic, assign) NSInteger unreadRecommendCount;
+@property(nonatomic, assign) int unreadRecommendCount;
 /**
  * @brief Whether the Applilink (KONAMI ID) network layer has finished initialising.
  * @ghidraAddress 0x5489c (getter)

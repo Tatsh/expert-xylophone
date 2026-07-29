@@ -764,8 +764,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                      adLocation:kRecommendUnreadAdLocation
                                        callback:^(NSInteger status, NSError *error) {
                                          /** @ghidraAddress 0x50a20 */
+                                         // The count field is four bytes in the binary, so the
+                                         // callback's wider status narrows on the way in.
                                          AppDelegate.appDelegate.unreadRecommendCount =
-                                             error == nil ? status : 0;
+                                             static_cast<int>(error == nil ? status : 0);
                                        }];
 }
 
