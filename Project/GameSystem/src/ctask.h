@@ -104,12 +104,12 @@ protected:
 
     // +0x00: the compiler-emitted vtable pointer (the class is polymorphic; see the virtual
     // methods).
-    C_TASK *m_pPrev = {};                   // +0x08: the previous node.
-    C_TASK *m_pNext = {};                   // +0x10: the next node.
-    int m_nPriority = {};                   // +0x18: the sort key (the task state field).
-    unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
-    unsigned char *m_pBuffer = {};          // +0x40: an owned heap buffer, freed on destruction.
-    bool m_bDead = {};                      // +0x48: set when the node should be destroyed.
+    C_TASK *m_pPrev = {}; // +0x08: the previous node.
+    C_TASK *m_pNext = {}; // +0x10: the next node.
+    int m_nPriority = {}; // +0x18: the sort key (the task state field).
+    // unsigned char m_aReserved1c[0x24] = {}; // +0x1c: node-specific state.
+    unsigned char *m_pBuffer = {}; // +0x40: an owned heap buffer, freed on destruction.
+    bool m_bDead = {};             // +0x48: set when the node should be destroyed.
 };
 
 } // namespace ne

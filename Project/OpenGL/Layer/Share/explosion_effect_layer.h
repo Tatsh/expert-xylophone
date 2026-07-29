@@ -121,11 +121,11 @@ private:
 
     /** @brief One live burst: its activity, animation timer, judgement, and position. */
     struct EffectEntry {
-        bool bActive = {};              // +0x00: whether the slot holds a live burst.
-        unsigned char m_aPad01[3] = {}; // +0x01
-        float flTimer = {};             // +0x04: the burst animation timer, advanced each frame.
-        int nJudge = {};                // +0x08: the judgement type that spawned the burst.
-        S_VECTOR2 position = {};        // +0x0c: the burst position.
+        bool bActive = {}; // +0x00: whether the slot holds a live burst.
+        // unsigned char m_aPad01[3] = {}; // +0x01
+        float flTimer = {};      // +0x04: the burst animation timer, advanced each frame.
+        int nJudge = {};         // +0x08: the judgement type that spawned the burst.
+        S_VECTOR2 position = {}; // +0x0c: the burst position.
     };
 
     // +0x08: the two world-space sprite instancers, one per bank.
@@ -133,14 +133,14 @@ private:
     int m_aSpriteCount[kBankCount] = {};    // +0x18: each bank's live sprite count.
     int m_aSpriteCapacity[kBankCount] = {}; // +0x20: each instancer's capacity.
     bool m_bBuilt = {};                     // +0x28: set once the sprites are built.
-    unsigned char m_aPad29[3] = {};         // +0x29
-    int m_aEffectType[kBankCount] = {};     // +0x2c: each bank's current explosion texture type.
+    // unsigned char m_aPad29[3] = {};         // +0x29
+    int m_aEffectType[kBankCount] = {}; // +0x2c: each bank's current explosion texture type.
     EffectEntry m_aBanks[kBankCount][kSlotsPerBank] = {}; // +0x34: the two effect-slot banks.
     unsigned char m_aPlayColorAlpha[kBankCount] = {}; // +0x32c: per-lane play-colour alpha bytes.
     // +0x32e..+0x32f is alignment padding before the effect size.
-    unsigned char m_aPad32e[2] = {};      // +0x32e
-    float m_flEffectSize = {};            // +0x330: the burst size from the user setting.
-    unsigned char m_aReserved334[4] = {}; // +0x334
+    // unsigned char m_aPad32e[2] = {};      // +0x32e
+    float m_flEffectSize = {}; // +0x330: the burst size from the user setting.
+    // unsigned char m_aReserved334[4] = {}; // +0x334
 };
 
 // code: language=Objective-C++

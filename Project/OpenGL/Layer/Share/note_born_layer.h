@@ -104,8 +104,8 @@ private:
 
     // One pooled spawn-burst effect record (20 bytes): its animation state.
     struct EffectRecord {
-        bool bActive = {};                 // +0x00: whether the record holds a live burst.
-        unsigned char aReserved01[3] = {}; // +0x01
+        bool bActive = {}; // +0x00: whether the record holds a live burst.
+        // unsigned char aReserved01[3] = {}; // +0x01
         // +0x04: non-zero when the note's colour is the second player colour; it also selects the
         // burst's atlas UV row.
         unsigned int nColorRow = {};
@@ -118,10 +118,10 @@ private:
     int m_nSlotCount = {};                      // +0x18: the live sprite-slot count this frame.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};        // +0x21
+    // unsigned char m_aReserved21[3] = {};        // +0x21
     EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled burst records.
     float m_aScale[2] = {};                           // +0xa24: the default scale pair (one, one).
-    unsigned char m_aReservedA2c[4] = {}; // +0xa2c: trailing state to the 0xa30-byte size.
+    // unsigned char m_aReservedA2c[4] = {}; // +0xa2c: trailing state to the 0xa30-byte size.
 };
 
 // code: language=Objective-C++

@@ -148,20 +148,20 @@ private:
     // +0x00..+0x07: the inherited PlayFieldLayerBase fields (is-pad, hardware type, theme).
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the gm_parts2 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the four sprite instancers.
-    LinearTween m_fadeChannel;           // +0x30 (five floats, ending at +0x44)
-    bool m_bFadeActive = {};             // +0x44 raised once the channel advances a frame
-    unsigned char m_aReserved45[3] = {}; // +0x45
+    LinearTween m_fadeChannel; // +0x30 (five floats, ending at +0x44)
+    bool m_bFadeActive = {};   // +0x44 raised once the channel advances a frame
+    // unsigned char m_aReserved45[3] = {}; // +0x45
     float m_flCachedViewportWidth = {};  // +0x48: the last-seen viewport width (re-anchor trigger).
     float m_flCachedViewportHeight = {}; // +0x4c: the last-seen viewport height.
     bool m_bWideScreen = {};             // +0x50: set when the viewport is wider than the split.
     // +0x54/+0x58: the two slider touch targets' tracked touch ids (the track and the knob), each
     // the "none" sentinel when unclaimed.
     int m_anSliderTouchId[kSliderTargetCount] = {}; // +0x54
-    bool m_bSliderHeld = {};             // +0x5c: set while the brightness slider is being dragged.
-    unsigned char m_aReserved5d[3] = {}; // +0x5d
-    float m_flBrightness = {};           // +0x60: the layer brightness (0 to 1).
-    bool m_bBuilt = {};                  // +0x64: set once the instancers are built.
-    unsigned char m_aReserved65[3] = {}; // +0x65
+    bool m_bSliderHeld = {}; // +0x5c: set while the brightness slider is being dragged.
+    // unsigned char m_aReserved5d[3] = {}; // +0x5d
+    float m_flBrightness = {}; // +0x60: the layer brightness (0 to 1).
+    bool m_bBuilt = {};        // +0x64: set once the instancers are built.
+    // unsigned char m_aReserved65[3] = {}; // +0x65
     // +0x68: the side-dependent transform block seeded when the instancers are built.
     float m_aTransform[kTransformWordCount] = {};
 };

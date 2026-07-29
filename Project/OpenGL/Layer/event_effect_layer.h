@@ -112,16 +112,16 @@ private:
     ne::C_SPRITE_INSTANCING_2D *m_pRootSprite = {}; // +0x18: the single-sprite root instancer.
     int m_nSpriteCount = {}; // +0x20: the main instancer's initial sprite count.
     bool m_bBuilt = {};      // +0x24: set once the sprites are built.
-    unsigned char m_aReserved25[3] =
-        {};                        // +0x25: alignment padding before the cached viewport size.
+    // unsigned char m_aReserved25[3] = {}; // +0x25: alignment padding before the cached viewport
+    // size.
     float m_flViewportWidth = {};  // +0x28: the viewport width cached each frame.
     float m_flViewportHeight = {}; // +0x2c: the viewport height cached each frame.
     bool m_bActive = {};           // +0x30: whether the effect is currently playing.
-    unsigned char m_aReserved31[3] = {}; // +0x31
-    float m_flTimer = {};                // +0x34: the effect animation timer, in frames.
-    int m_nMode = {};                    // +0x38: a mode field the getter zero-clears.
-    bool m_bSoundFlag = {};              // +0x3c: a sound flag the getter zero-clears.
-    unsigned char m_aReserved3d[3] = {}; // +0x3d: padding to the 0x40-byte allocation size.
+    // unsigned char m_aReserved31[3] = {}; // +0x31
+    float m_flTimer = {};   // +0x34: the effect animation timer, in frames.
+    int m_nMode = {};       // +0x38: a mode field the getter zero-clears.
+    bool m_bSoundFlag = {}; // +0x3c: a sound flag the getter zero-clears.
+    // unsigned char m_aReserved3d[3] = {}; // +0x3d: padding to the 0x40-byte allocation size.
 };
 
 // code: language=C++

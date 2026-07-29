@@ -136,7 +136,7 @@ private:
     int m_nSpriteCapacity = {}; // +0x1c: the accumulated instancer capacity (sprite count).
     bool m_bBuilt = {};         // +0x20: set once the sprite is built.
     // +0x21..+0x23 is alignment padding before the spin phases.
-    unsigned char m_aReserved21[3] = {};        // +0x21
+    // unsigned char m_aReserved21[3] = {};        // +0x21
     float m_flSpinPhaseA = {};                  // +0x24: a spin phase, wrapped to 400/3.
     float m_flSpinPhaseB = {};                  // +0x28: a spin phase, wrapped to 50/3.
     ChargeRecord m_aCharges[kChargeCount] = {}; // +0x2c: the pooled charge records.

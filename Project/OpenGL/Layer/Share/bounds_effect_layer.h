@@ -119,11 +119,11 @@ private:
 
     /** @brief One pooled bounds-effect record (16 bytes): its active flag, timer, and position. */
     struct EffectRecord {
-        bool bActive = {};                 // +0x00: whether the record holds a live effect.
-        unsigned char aReserved01[3] = {}; // +0x01
-        float flTimer = {};                // +0x04: the effect's animation timer, in frame-time.
-        float flPosX = {};                 // +0x08: the effect's screen x.
-        float flPosY = {};                 // +0x0c: the effect's screen y.
+        bool bActive = {}; // +0x00: whether the record holds a live effect.
+        // unsigned char aReserved01[3] = {}; // +0x01
+        float flTimer = {}; // +0x04: the effect's animation timer, in frame-time.
+        float flPosX = {};  // +0x08: the effect's screen x.
+        float flPosY = {};  // +0x0c: the effect's screen y.
     };
 
     ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.
@@ -131,16 +131,16 @@ private:
     int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};        // +0x21
+    // unsigned char m_aReserved21[3] = {};        // +0x21
     // +0x24: the two per-colour effect banks (each kRecordsPerBank records, stride 0x170 per bank).
     EffectRecord m_aEffects[kBankCount][kRecordsPerBank] = {};
     unsigned char m_nLaneLightAlpha0 =
         {}; // +0x304: the first lane's bounds-light alpha (0 hides the
             //         lane's effects, 0xff shows them fully).
     unsigned char m_nLaneLightAlpha1 = {}; // +0x305: the second lane's bounds-light alpha.
-    unsigned char m_aReserved306[2] = {};  // +0x306
-    float m_flEffectSize = {};             // +0x308: the user's effect size.
-    int m_nStyle = {};                     // +0x30c: the bounds-effect style (0/1/2).
+    // unsigned char m_aReserved306[2] = {};  // +0x306
+    float m_flEffectSize = {}; // +0x308: the user's effect size.
+    int m_nStyle = {};         // +0x30c: the bounds-effect style (0/1/2).
 };
 
 // code: language=C++

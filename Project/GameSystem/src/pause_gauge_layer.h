@@ -44,11 +44,11 @@ struct PauseGaugeSpriteLayout {
  * The trailing @c // +0xNN comments document the byte offsets within the 16-byte per-lane entry.
  */
 struct PauseGaugeLaneGeometry {
-    float flCenterX = {};              /*!< The gauge rectangle's centre x. +0x00 */
-    float flCenterY = {};              /*!< The gauge rectangle's centre y. +0x04 */
-    unsigned char aReserved08[4] = {}; /*!< Further per-lane state, not yet identified. +0x08 */
-    bool bDimmed = {};                 /*!< Whether the lane's gauge is drawn dimmed. +0x0c */
-    unsigned char aReserved0d[3] = {}; /*!< Trailing padding to the 16-byte entry. +0x0d */
+    float flCenterX = {}; /*!< The gauge rectangle's centre x. +0x00 */
+    float flCenterY = {}; /*!< The gauge rectangle's centre y. +0x04 */
+    // unsigned char aReserved08[4] = {}; /*!< Further per-lane state, not yet identified. +0x08 */
+    bool bDimmed = {}; /*!< Whether the lane's gauge is drawn dimmed. +0x0c */
+    // unsigned char aReserved0d[3] = {}; /*!< Trailing padding to the 16-byte entry. +0x0d */
 };
 
 /**

@@ -186,7 +186,7 @@ private:
                             S_VECTOR2 size,
                             S_VECTOR2 anchor);
 
-    unsigned char m_aReserved4b[1] = {};             // +0x4b
+    // unsigned char m_aReserved4b[1] = {};             // +0x4b
     int m_nState = {};                               // +0x4c: the dispatch state.
     int m_nFadeTimer = {};                           // +0x50: the fade/ready timer.
     int m_nReadyDelay = {};                          // +0x54: the start ready delay.
@@ -194,13 +194,13 @@ private:
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kSpriteSlotCount] = {}; // +0x90: the sprite instancers.
     int m_aSpriteCount[kSpriteSlotCount] = {}; // +0xd0: each instancer's live sprite count.
     // +0xf0..+0x10f: further per-slot presentation state, still being worked out.
-    unsigned char m_aReserved0f0[0x20] = {}; // +0xf0
-    LinearTween m_fadeChannel;               // +0x110: the title fade tween.
-    float m_flStartDelayClock = {};          // +0x124: counts up until input is accepted.
-    bool m_bLeaving = {};                    // +0x128: latched once the player commits to starting.
-    unsigned char m_aReserved129[3] = {};    // +0x129
-    float m_flPromptFadeClock = {};          // +0x12c: the start prompt's one-shot fade-in clock.
-    float m_flPromptPulseClock = {};         // +0x130: the start prompt's repeating pulse clock.
+    // unsigned char m_aReserved0f0[0x20] = {}; // +0xf0
+    LinearTween m_fadeChannel;      // +0x110: the title fade tween.
+    float m_flStartDelayClock = {}; // +0x124: counts up until input is accepted.
+    bool m_bLeaving = {};           // +0x128: latched once the player commits to starting.
+    // unsigned char m_aReserved129[3] = {};    // +0x129
+    float m_flPromptFadeClock = {};  // +0x12c: the start prompt's one-shot fade-in clock.
+    float m_flPromptPulseClock = {}; // +0x130: the start prompt's repeating pulse clock.
     int m_anStarScrollClock[kStarLayerCount] = {};  // +0x134: each star layer's scroll clock.
     int m_anStarTwinkleClock[kStarLayerCount] = {}; // +0x13c: each star layer's twinkle clock.
     int m_anRingScaleClock[kRingCount] = {};        // +0x144: each ring's scale-sweep clock.
@@ -210,7 +210,7 @@ private:
     int m_nSwipeState = {};      // +0x160: the hidden-swipe sequence step.
     bool m_bSwipeTriggered = {}; // +0x164: latched once the hidden sequence completes; also drives
                                  //         the five-times animation speed-up.
-    unsigned char m_aReserved165[3] = {}; // +0x165
+    // unsigned char m_aReserved165[3] = {}; // +0x165
 };
 
 } // namespace rb

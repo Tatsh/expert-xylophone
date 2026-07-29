@@ -261,9 +261,9 @@ private:
     int m_aPartBaseIndex[kPartGroupCount] = {}; // +0x40: each part group's base index.
     bool m_bBuilt = {};                         // +0x58: set once the batches are built.
     // +0x59..+0x5f: further state, still being worked out.
-    unsigned char m_aReserved59[7] = {}; // +0x59
-    LinearTween m_fadeChannel;           // +0x60: the gauge fade channel.
-    bool m_bFadeDone = {};               // +0x74: set when the fade snaps to its endpoint.
+    // unsigned char m_aReserved59[7] = {}; // +0x59
+    LinearTween m_fadeChannel; // +0x60: the gauge fade channel.
+    bool m_bFadeDone = {};     // +0x74: set when the fade snaps to its endpoint.
     // +0x75..+0x77 is alignment padding before the scales.
     // unsigned char m_aPad75[3]; // +0x75 (alignment padding, compiler-inserted)
     float m_aScales[2] = {};             // +0x78: two scales the constructor seeds to 1.
@@ -272,7 +272,7 @@ private:
     SideGauge m_aSides[kSideCount] = {}; // +0x84: the per-side gauge state (stride 8).
     int m_nGaugeStyle = {};              // +0x94: the gauge style / sprite-layout variant.
     int m_nMirrorSide = {};              // +0x98: the mirror/side flag (drives sprite X-flip).
-    unsigned char m_aReserved9c[4] = {}; // +0x9c: trailing layer state.
+    // unsigned char m_aReserved9c[4] = {}; // +0x9c: trailing layer state.
 };
 
 // code: language=Objective-C++

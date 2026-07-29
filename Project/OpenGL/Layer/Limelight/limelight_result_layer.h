@@ -28,8 +28,8 @@ struct ResultButtonRecord {
     int nTouchId = {};  /*!< The tracked touch id (-1 when none). +0x00 */
     bool bDown = {};    /*!< Whether a tracked touch is currently pressing the button. +0x04 */
     bool bTapEdge = {}; /*!< Latched when a tracked touch is released inside the button. +0x05 */
-    bool bInitialised = {};         /*!< Whether the button has been initialised. +0x06 */
-    unsigned char m_aPad07[1] = {}; /*!< Alignment padding to the 8-byte stride. +0x07 */
+    bool bInitialised = {}; /*!< Whether the button has been initialised. +0x06 */
+    // unsigned char m_aPad07[1] = {}; /*!< Alignment padding to the 8-byte stride. +0x07 */
 };
 
 /**
@@ -730,7 +730,7 @@ private:
     // +0x0a: set on a frame the side-slider commits a left/right swipe, cleared otherwise.
     bool m_bSliderSwiped = {}; // +0x0a
     // +0x0b..+0x0f: further descriptor state preceding the textures, still being worked out.
-    unsigned char m_aReserved0b[5] = {};      // +0x0b
+    // unsigned char m_aReserved0b[5] = {};      // +0x0b
     ne::C_TEXTURE *m_pBackgroundTexture = {}; // +0x10: the selection-background atlas.
     ne::C_TEXTURE *m_pPartsTexture = {};      // +0x18: the result-parts atlas.
     ne::C_TEXTURE *m_pOverlayTexture = {};    // +0x20: the overlay atlas (left unset).
@@ -765,13 +765,13 @@ private:
                                                            //        animation channels.
     bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
     // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
-    unsigned char m_aPad13d[3] = {}; // +0x13d
-    float m_flBonusCueTimer = {};    // +0x140: time accumulated toward the bonus voice cue.
+    // unsigned char m_aPad13d[3] = {}; // +0x13d
+    float m_flBonusCueTimer = {}; // +0x140: time accumulated toward the bonus voice cue.
     // +0x144..+0x14b: further presentation state, still being worked out.
-    unsigned char m_aReserved144[8] = {}; // +0x144
-    bool m_bTwitterAvailable = {};        // +0x14c: whether the Twitter share API is available.
+    // unsigned char m_aReserved144[8] = {}; // +0x144
+    bool m_bTwitterAvailable = {}; // +0x14c: whether the Twitter share API is available.
     // +0x14d..+0x14f is alignment padding before the bonus values.
-    unsigned char m_aPad14d[3] = {}; // +0x14d
+    // unsigned char m_aPad14d[3] = {}; // +0x14d
     // +0x150..+0x163: the five result-bonus display values, computed by
     // rb::GameScene::ComputeResultBonusesAndExperience and cleared together by
     // ResetThemeSelectState.

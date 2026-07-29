@@ -151,7 +151,7 @@ private:
     bool m_bBuilt = {};                        // +0x70: set once the batches are built.
     bool m_bGaugeColorDirty = {}; // +0x71: set when a gauge animation snaps or the fill is set.
     // +0x72..+0x73 is alignment padding before the shrink-animation block.
-    unsigned char m_aPad72[2] = {}; // +0x72
+    // unsigned char m_aPad72[2] = {}; // +0x72
     float m_flAnimFrom = {};        // +0x74: the shrink/grow animation's cached from-value.
     LinearTween m_shrinkChannel;    // +0x78: the shared gauge shrink/grow channel (fill at +0x88).
     float m_flPulseClock = {};      // +0x8c: the wrapping clock driving the glow phase.

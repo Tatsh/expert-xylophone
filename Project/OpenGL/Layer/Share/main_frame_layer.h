@@ -197,7 +197,7 @@ private:
     // C_DRAW_POLYGON_2D::SetPos).
     ne::C_DRAW_POLYGON_2D *m_pFrameMesh2d = {};
     // +0x30..+0x37: further layout state, still being worked out.
-    unsigned char m_aReserved30[8] = {}; // +0x30
+    // unsigned char m_aReserved30[8] = {}; // +0x30
     // +0x38, +0x40: the two instancers EmitMainFrameSprite fills, indexed by MainFrameInstancer.
     // [MainFrameInstancerFrame] is the frame mesh whose first slot carries the frame texture.
     ne::C_SPRITE_INSTANCING_2D *m_apInstancers[2] = {};
@@ -206,10 +206,10 @@ private:
     int m_nDifficulty = {}; // +0x4c: the difficulty index shown on the frame.
     int m_nMarker = {};     // +0x50: the frame marker, seeded to 5.
     bool m_bReady = {};     // +0x54: cleared when the frame type changes (rebuild flag).
-    unsigned char m_aReserved55[3] = {}; // +0x55
-    LinearTween m_fadeChannel;           // +0x58: the frame alpha fade channel.
-    bool m_bFadeDone = {};               // +0x6c: set when the fade snaps to its endpoint.
-    unsigned char m_aReserved6d[3] = {}; // +0x6d
+    // unsigned char m_aReserved55[3] = {}; // +0x55
+    LinearTween m_fadeChannel; // +0x58: the frame alpha fade channel.
+    bool m_bFadeDone = {};     // +0x6c: set when the fade snaps to its endpoint.
+    // unsigned char m_aReserved6d[3] = {}; // +0x6d
     // +0x70, +0x74: the viewport size the current layout and 3D mesh were built for; the per-frame
     // step rebuilds both when the viewport changes.
     float m_flLayoutWidth = {};

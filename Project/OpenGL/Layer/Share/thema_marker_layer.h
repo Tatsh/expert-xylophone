@@ -128,7 +128,7 @@ private:
     bool m_bBuilt = {};                              // +0x48: set once the sprites are built.
     bool m_bFadeColorDirty = {};                     // +0x49: set when the fade snaps or advances.
     // +0x4a..+0x4b is alignment padding before the active-marker value.
-    unsigned char m_aPad4a[2] = {};  // +0x4a
+    // unsigned char m_aPad4a[2] = {};  // +0x4a
     float m_flActiveMarker = {};     // +0x4c: the active marker value the fade-in selects.
     LinearTween m_fadeChannel;       // +0x50: the marker fade channel.
     float m_flScaleX = {};           // +0x64: a scale the constructor seeds to 1.
@@ -138,7 +138,7 @@ private:
     float m_flWobbleTimer = {};      // +0x88: the marker-wobble animation timer.
     float m_flDangerBrightness = {}; // +0x8c: the low-gauge danger/warning brightness.
     int m_nMarkerCount = {};         // +0x90: the active marker count (6 for theme 0, else 4).
-    unsigned char m_aReserved94[4] = {}; // +0x94: padding to the 0x98-byte allocation size.
+    // unsigned char m_aReserved94[4] = {}; // +0x94: padding to the 0x98-byte allocation size.
 };
 
 // code: language=C++

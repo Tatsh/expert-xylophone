@@ -81,13 +81,13 @@ public:
 private:
     caSource *m_pSource = {};   // +0x00: the sound bound to this voice, or nullptr when free.
     bool m_bCallbackBound = {}; // +0x04: whether the render callback is installed.
-    unsigned char m_aReserved05[7] = {}; // +0x05
-    int m_nBytesRead = {};               // +0x0c: running consumed-byte counter for the ring read.
-    int m_nReadPos = {};                 // +0x10: current read offset into the source PCM block.
-    unsigned short m_wGeneration = {};   // +0x14: rolling generation, packed into the play handle.
-    unsigned char m_aReserved16[2] = {}; // +0x16
-    int m_nState = {};                   // +0x18: one of State.
-    unsigned char m_aReserved1c[4] = {}; // +0x1c
+    // unsigned char m_aReserved05[7] = {}; // +0x05
+    int m_nBytesRead = {};             // +0x0c: running consumed-byte counter for the ring read.
+    int m_nReadPos = {};               // +0x10: current read offset into the source PCM block.
+    unsigned short m_wGeneration = {}; // +0x14: rolling generation, packed into the play handle.
+    // unsigned char m_aReserved16[2] = {}; // +0x16
+    int m_nState = {}; // +0x18: one of State.
+    // unsigned char m_aReserved1c[4] = {}; // +0x1c
 };
 
 // code: language=Objective-C++

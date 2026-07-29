@@ -96,9 +96,9 @@ private:
 
     /** @brief One per-colour glow effect slot: its active flag and animation timer. */
     struct EffectSlot {
-        bool bActive = {};                 // +0x00: whether the colour's glow is animating.
-        unsigned char aReserved01[3] = {}; // +0x01
-        float flTimer = {};                // +0x04: the glow's animation timer, in frames.
+        bool bActive = {}; // +0x00: whether the colour's glow is animating.
+        // unsigned char aReserved01[3] = {}; // +0x01
+        float flTimer = {}; // +0x04: the glow's animation timer, in frames.
     };
 
     /**
@@ -113,10 +113,10 @@ private:
     int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count this frame.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};        // +0x21
-    EffectSlot m_aEffects[kColorCount] = {};    // +0x24: the two per-colour glow slots (stride 8).
-    float m_aScale[2] = {};                     // +0x34: the default scale pair (one, one).
-    unsigned char m_aReserved3c[4] = {};        // +0x3c: trailing state to the 0x40-byte size.
+    // unsigned char m_aReserved21[3] = {};        // +0x21
+    EffectSlot m_aEffects[kColorCount] = {}; // +0x24: the two per-colour glow slots (stride 8).
+    float m_aScale[2] = {};                  // +0x34: the default scale pair (one, one).
+    // unsigned char m_aReserved3c[4] = {};        // +0x3c: trailing state to the 0x40-byte size.
 };
 
 // code: language=C++

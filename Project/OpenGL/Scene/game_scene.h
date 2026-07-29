@@ -488,30 +488,30 @@ private:
      */
     void RunPlayStateMachineDispatch(int nDeltaFrames);
 
-    int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
-                                         //        frame).
-    int m_nPlayTime = {};                // +0x50: the accumulated play time.
-    int m_nPlayCursor = {};              // +0x54: the play cursor, cleared on a playback reset.
-    CMusicSheet2 *m_pMusicSheet = {};    // +0x58: the owned active note chart, or null.
-    unsigned char m_aReserved5c[4] = {}; // +0x5c
-    float m_flFirstPathSpeed = {};       // +0x60: the chart's first path speed, cached at set-up,
-                                         //        reset to 0 when the BGM stops.
-    bool m_bPauseGaugeHeld = {};         // +0x64: whether the pause gauge is being held down.
-    unsigned char m_aReserved65[0x03] = {}; // +0x65
-    PauseGaugeLayer *m_pPauseGauge = {};    // +0x68: the owned pause-gauge layer, or null.
-    int m_nMode = {};                       // +0x70: the play mode (0 normal, 1 alternate; the
-                                            //        constructor seeds 2).
-    float m_flPresentationDelay = {};       // +0x74: the play-ready intro threshold, in play time.
-    float m_flIntroSecondDelay = {};        // +0x78: the intro's second threshold, in play time,
-                                            //        seeded to 700 beside the other two; no
-                                            //        reconstructed reader yet.
-    float m_flReadyDelay = {};              // +0x7c: the intro ready-delay threshold, in play time.
+    int m_nState = {};                // +0x4c: the current state-machine state (dispatched each
+                                      //        frame).
+    int m_nPlayTime = {};             // +0x50: the accumulated play time.
+    int m_nPlayCursor = {};           // +0x54: the play cursor, cleared on a playback reset.
+    CMusicSheet2 *m_pMusicSheet = {}; // +0x58: the owned active note chart, or null.
+    // unsigned char m_aReserved5c[4] = {}; // +0x5c
+    float m_flFirstPathSpeed = {}; // +0x60: the chart's first path speed, cached at set-up,
+                                   //        reset to 0 when the BGM stops.
+    bool m_bPauseGaugeHeld = {};   // +0x64: whether the pause gauge is being held down.
+    // unsigned char m_aReserved65[0x03] = {}; // +0x65
+    PauseGaugeLayer *m_pPauseGauge = {}; // +0x68: the owned pause-gauge layer, or null.
+    int m_nMode = {};                    // +0x70: the play mode (0 normal, 1 alternate; the
+                                         //        constructor seeds 2).
+    float m_flPresentationDelay = {};    // +0x74: the play-ready intro threshold, in play time.
+    float m_flIntroSecondDelay = {};     // +0x78: the intro's second threshold, in play time,
+                                         //        seeded to 700 beside the other two; no
+                                         //        reconstructed reader yet.
+    float m_flReadyDelay = {};           // +0x7c: the intro ready-delay threshold, in play time.
     int m_nResultScore = {};             // +0x80: the chart's result score, handed to the theme's
                                          //        result layer at set-up.
     int m_nResultScoreHi = {};           // +0x84: the second result score value, likewise.
     int m_nThema = {};                   // +0x88: the active theme (0 Classic, 1 Limelight, 2
                                          //        Colette), selecting the full-combo layer.
-    unsigned char m_aReserved8c[4] = {}; // +0x8c: trailing play state to the 0x90-byte size.
+    // unsigned char m_aReserved8c[4] = {}; // +0x8c: trailing play state to the 0x90-byte size.
 };
 
 /**

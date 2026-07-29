@@ -205,15 +205,15 @@ private:
     int m_aBatchState[kBatchStateCount] = {}; // +0x50
     bool m_bBuilt = {};                       // +0x118: whether the sprite batches have been built.
     // +0x119..+0x11f is alignment padding before the fade-tween block.
-    unsigned char m_aPad119[7] = {}; // +0x119
-    float m_flFadeFrom = {};         // +0x120: the reveal fade's start value.
-    float m_flFadeTo = {};           // +0x124: the reveal fade's target value.
-    float m_flFadeDuration = {};     // +0x128: the reveal fade's duration, in frames.
-    float m_flFadeElapsed = {};      // +0x12c: the reveal fade's elapsed time, in frames.
-    float m_flFadeCurrent = {};      // +0x130: the reveal fade's current value.
-    bool m_bColorDirty = {};         // +0x134: set when the fade advances.
+    // unsigned char m_aPad119[7] = {}; // +0x119
+    float m_flFadeFrom = {};     // +0x120: the reveal fade's start value.
+    float m_flFadeTo = {};       // +0x124: the reveal fade's target value.
+    float m_flFadeDuration = {}; // +0x128: the reveal fade's duration, in frames.
+    float m_flFadeElapsed = {};  // +0x12c: the reveal fade's elapsed time, in frames.
+    float m_flFadeCurrent = {};  // +0x130: the reveal fade's current value.
+    bool m_bColorDirty = {};     // +0x134: set when the fade advances.
     // +0x135..+0x137 is alignment padding before the per-side alpha-scale floats.
-    unsigned char m_aPad135[3] = {};              // +0x135
+    // unsigned char m_aPad135[3] = {};              // +0x135
     float m_aSideAlphaScale[kSideCount] = {1, 1}; // +0x138: each side's alpha multiplier (from 1).
     int m_nGaugeStyle = {}; // +0x140: the gauge style / sprite-layout variant.
     // Each side's clear-gauge value occupies an eight-byte slot (the float followed by four unused

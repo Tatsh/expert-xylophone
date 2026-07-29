@@ -119,7 +119,7 @@ private:
     // unsigned char m_aPad36[2]; // +0x36 (alignment padding, compiler-inserted)
     float m_flTimer = {}; // +0x38: the zoom effect's accumulated time, reset on activation and
     //        advanced by the frame delta until it reaches the effect duration.
-    unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
+    // unsigned char m_aReserved3c[4] = {}; // +0x3c: padding to the 0x40-byte allocation size.
 };
 
 // code: language=C++

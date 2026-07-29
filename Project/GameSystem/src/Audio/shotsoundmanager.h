@@ -84,9 +84,9 @@ private:
     // @ghidraAddress 0x1ccf30
     ShotSoundManager();
 
-    bool m_aSlotLoaded[kSlotCount] = {};               // +0x00 per-slot loaded flags
-    bool m_bSharedLoaded = {};                         // +0x21 whether the whole bank is loaded
-    unsigned char m_aPad22[2] = {};                    // +0x22
+    bool m_aSlotLoaded[kSlotCount] = {}; // +0x00 per-slot loaded flags
+    bool m_bSharedLoaded = {};           // +0x21 whether the whole bank is loaded
+    // unsigned char m_aPad22[2] = {};                    // +0x22
     int m_aResourceId[kSlotCount][kVariantCount] = {}; // +0x24 per-slot per-variant resource ids
     unsigned int m_aChannelHandle[kChannelCount] = {}; // +0x234 per-channel active play handles
     int m_nPendingSlot = {};                           // +0x23c the pending slot to retrigger

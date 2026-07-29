@@ -154,13 +154,13 @@ private:
     int m_anSpriteCount[kBackgroundBatchCount] = {};                         // +0x28
     bool m_fInitialized = {};                                                // +0x34
     // +0x35..+0x37 is alignment padding before the colour index.
-    unsigned char m_aPad35[3] = {}; // +0x35
-    int m_nColor = {};              // +0x38: the theme colour index (defaults to one).
-    bool m_bAnimActive = {};        // +0x3c: whether the reveal-progress timer is still advancing.
-    bool m_bAnimEnabled = {};       // +0x3d: whether the theme animation is running this frame.
+    // unsigned char m_aPad35[3] = {}; // +0x35
+    int m_nColor = {};        // +0x38: the theme colour index (defaults to one).
+    bool m_bAnimActive = {};  // +0x3c: whether the reveal-progress timer is still advancing.
+    bool m_bAnimEnabled = {}; // +0x3d: whether the theme animation is running this frame.
     // +0x3e..+0x3f is alignment padding before the animation clock.
-    unsigned char m_aPad3e[2] = {}; // +0x3e
-    float m_flClock = {};           // +0x40: the theme animation clock, advanced each frame.
+    // unsigned char m_aPad3e[2] = {}; // +0x3e
+    float m_flClock = {}; // +0x40: the theme animation clock, advanced each frame.
     // +0x44..+0x57: the eased reveal-progress channel; its current value scales the emitted
     // sprites.
     LinearTween m_easeChannel;                 // +0x44

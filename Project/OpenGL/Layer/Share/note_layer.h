@@ -148,22 +148,22 @@ private:
     /** @brief One pooled particle (28 bytes): its active flag, kind, position, rotation, and scale.
      */
     struct Particle {
-        bool bActive = {};                 // +0x00: whether the slot holds a live particle.
-        unsigned char aReserved01[3] = {}; // +0x01
-        int nKind = {};                    // +0x04: the particle kind (0 through 11).
-        float flX = {};                    // +0x08: the particle X.
-        float flY = {};                    // +0x0c: the particle Y.
-        float flRotation = {};             // +0x10: the particle rotation, in radians.
-        float flScaleX = {};               // +0x14: the particle X scale.
-        float flScaleY = {};               // +0x18: the particle Y scale.
+        bool bActive = {}; // +0x00: whether the slot holds a live particle.
+        // unsigned char aReserved01[3] = {}; // +0x01
+        int nKind = {};        // +0x04: the particle kind (0 through 11).
+        float flX = {};        // +0x08: the particle X.
+        float flY = {};        // +0x0c: the particle Y.
+        float flRotation = {}; // +0x10: the particle rotation, in radians.
+        float flScaleX = {};   // +0x14: the particle X scale.
+        float flScaleY = {};   // +0x18: the particle Y scale.
     };
 
     ne::C_TEXTURE *m_pTexture = {};                            // +0x08: the particle atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] = {}; // +0x10: the three sprite batches.
     int m_anBatchCount[kBatchCount] = {};                      // +0x28: each batch's live count.
     int m_anBatchCapacity[kBatchCount] = {};                   // +0x34: each batch's capacity.
-    bool m_bBuilt = {};                           // +0x40: set once the batches are built.
-    unsigned char m_aReserved41[3] = {};          // +0x41
+    bool m_bBuilt = {}; // +0x40: set once the batches are built.
+    // unsigned char m_aReserved41[3] = {};          // +0x41
     float m_aScrollPhase[kScrollPhaseCount] = {}; // +0x44: the three scroll phases.
     Particle m_aParticles[kParticleCount] = {};   // +0x50: the pooled particles.
 };

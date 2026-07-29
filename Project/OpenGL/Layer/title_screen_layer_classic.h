@@ -76,17 +76,17 @@ private:
      */
     void SetTitleSprite(unsigned int nKind, const S_VECTOR2 *pPosition, float flScale, int nAlpha);
 
-    unsigned char m_aReserved00[0x4c] = {}; // +0x000
-    int m_nState = {};                      // +0x04c the title state (2 = start selected)
-    int m_nElapsed = {};                    // +0x050 the title animation clock, advanced each frame
-    unsigned char m_aReserved54[0x1c] = {}; // +0x054
+    // unsigned char m_aReserved00[0x4c] = {}; // +0x000
+    int m_nState = {};   // +0x04c the title state (2 = start selected)
+    int m_nElapsed = {}; // +0x050 the title animation clock, advanced each frame
+    // unsigned char m_aReserved54[0x1c] = {}; // +0x054
     ne::C_SPRITE_INSTANCING_2D *m_apInstancers[kInstancerCount] =
-        {};                                   // +0x070 the five title sprite instancers
-    unsigned char m_aReserved98[0x28] = {};   // +0x098
-    bool m_bStartTriggered = {};              // +0x0c0 latched once the title starts fading to play
-    unsigned char m_aReservedC1[3] = {};      // +0x0c1
-    LinearTween m_fadeChannel;                // +0x0c4 title fade tween
-    unsigned char m_aReserved0d8[0x7c0] = {}; // +0x0d8 remainder of the object
+        {}; // +0x070 the five title sprite instancers
+    // unsigned char m_aReserved98[0x28] = {};   // +0x098
+    bool m_bStartTriggered = {}; // +0x0c0 latched once the title starts fading to play
+    // unsigned char m_aReservedC1[3] = {};      // +0x0c1
+    LinearTween m_fadeChannel; // +0x0c4 title fade tween
+    // unsigned char m_aReserved0d8[0x7c0] = {}; // +0x0d8 remainder of the object
 };
 
 // code: language=C++

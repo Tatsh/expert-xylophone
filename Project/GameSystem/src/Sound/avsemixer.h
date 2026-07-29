@@ -129,8 +129,8 @@ public:
     void ResumeAllBuses();
 
 private:
-    bool m_bReady = {};                     // +0x00: whether the pool has been built.
-    unsigned char m_aReserved01[3] = {};    // +0x01: alignment before the voice count.
+    bool m_bReady = {}; // +0x00: whether the pool has been built.
+    // unsigned char m_aReserved01[3] = {};    // +0x01: alignment before the voice count.
     int m_nVoiceCount = {};                 // +0x04: the number of voices in the pool.
     NSMutableArray<AVBus *> *m_pBuses = {}; // +0x08: the voice pool.
 };

@@ -236,7 +236,7 @@ private:
     int m_aGradeValues[kSideCount] = {}; // +0x88: the per-side grade value from the play record.
     float m_flGradeRevealDuration = {};  // +0x90: the reveal clock's threshold (3000 or 5000).
     // +0x94..+0x97: the remaining layer state, still being worked out.
-    unsigned char m_aReserved94[4] = {}; // +0x94
+    // unsigned char m_aReserved94[4] = {}; // +0x94
 };
 
 // code: language=C++

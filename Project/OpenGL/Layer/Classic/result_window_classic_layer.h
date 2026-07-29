@@ -773,11 +773,11 @@ private:
     // result-screen gesture are never live at the same time, so the binary overlaps them in the
     // same byte.
     struct GestureTouchRegion {
-        int nTouchId = {};              // +0x00: the tracked touch id (-1 when none).
-        bool bDown = {};                // +0x04: whether a touch is currently inside the region.
-        bool bTapEdge = {};             // +0x05: latched when a press ends inside the region.
-        bool bEnabled = {};             // +0x06: whether the region accepts input this frame.
-        unsigned char m_aPad07[1] = {}; // +0x07
+        int nTouchId = {};  // +0x00: the tracked touch id (-1 when none).
+        bool bDown = {};    // +0x04: whether a touch is currently inside the region.
+        bool bTapEdge = {}; // +0x05: latched when a press ends inside the region.
+        bool bEnabled = {}; // +0x06: whether the region accepts input this frame.
+        // unsigned char m_aPad07[1] = {}; // +0x07
     };
     GestureTouchRegion m_aGestureRegions[kGestureRegionCount] = {}; // +0x6c
     // +0x8c..+0x93: the in-game side-slider drag region. It shares the region stride but carries a
@@ -791,17 +791,17 @@ private:
         {};                    // +0x98: a decoration rotation counter, wrapping every 192 frames.
     int m_nRotationFrame = {}; // +0x9c: the decoration animation frame index (0 through 3).
     // +0xa0..+0xb7: further layer state, still being worked out.
-    unsigned char m_aReservedA0[0x18] = {}; // +0xa0
+    // unsigned char m_aReservedA0[0x18] = {}; // +0xa0
     // +0xb8..+0x12f: the five result-score/effect display animation channels.
     FloatTween m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
     Polygon2dTrail *m_apTrails[kTrailCount] = {};          // +0x130: the ribbon trails.
     bool m_bScoreAnimActive =
         {}; // +0x150: set while the score animation (and gesture hold) is active.
     // +0x151..+0x153 is alignment padding before the gesture-hold timer.
-    unsigned char m_aPad151[3] = {}; // +0x151
+    // unsigned char m_aPad151[3] = {}; // +0x151
     float m_flGestureHoldTimer = {}; // +0x154: accumulates toward the gesture-hold release timeout.
     // +0x158..+0x15f: further layer state, still being worked out.
-    unsigned char m_aReserved158[8] = {}; // +0x158
+    // unsigned char m_aReserved158[8] = {}; // +0x158
     int m_nPlayerLevel = {};      // +0x160: the player's level, copied from the game system.
     int m_nPlayerExp = {};        // +0x164: the player's experience, from the game system.
     int m_nGainedExp = {};        // +0x168: the experience gained this play (when levelling).
@@ -810,7 +810,7 @@ private:
                                   //         (cleared when the asset is unavailable or the level cap
                                   //         has no threshold).
     // +0x171..+0x173 is alignment padding.
-    unsigned char m_aPad171[3] = {}; // +0x171
+    // unsigned char m_aPad171[3] = {}; // +0x171
     // +0x174: the result screen's own elapsed-time accumulator, advanced by the frame delta on the
     // pad render path and reset to zero each round. Read and written with float instructions
     // (`ldr s0` / `fadd` / `str s0`), so it is a float despite being reset from an integer zero.
@@ -818,24 +818,24 @@ private:
     float m_flExpAnimTimer = {};  // +0x178: the level-up experience-bar reveal timer (0 at reset).
     bool m_bExpAnimSettled = {};  // +0x17c: set once the experience-bar reveal reaches its target.
     // +0x17d..+0x17f is alignment padding.
-    unsigned char m_aPad17d[3] = {}; // +0x17d
-    int m_nLevelUpStep = {};         // +0x180: the level-up animation step.
-    int m_nRevealSeHandle = {};      // +0x184: the experience-bar reveal sound-effect play handle
-                                     //         (-1 when none is playing).
-    bool m_bCustomizePending = {};   // +0x188: whether a customize asset swap is pending.
+    // unsigned char m_aPad17d[3] = {}; // +0x17d
+    int m_nLevelUpStep = {};       // +0x180: the level-up animation step.
+    int m_nRevealSeHandle = {};    // +0x184: the experience-bar reveal sound-effect play handle
+                                   //         (-1 when none is playing).
+    bool m_bCustomizePending = {}; // +0x188: whether a customize asset swap is pending.
     // +0x189..+0x18b is alignment padding.
-    unsigned char m_aPad189[3] = {};  // +0x189
+    // unsigned char m_aPad189[3] = {};  // +0x189
     float m_flPhoneOverlayTimer = {}; // +0x18c: the phone customize-overlay slide timer (0 to 300).
     int m_nMainAssetId = {};          // +0x190: the main customize asset id being shown.
     int m_nTrackIndexC = {};          // +0x194: the resolved music-track index (-1 when unset).
     // +0x198: a customize-asset sub-state byte cleared when the main asset loads.
     bool m_bMainAssetSubState = {}; // +0x198
     // +0x199..+0x19b is alignment padding.
-    unsigned char m_aPad199[3] = {};    // +0x199
+    // unsigned char m_aPad199[3] = {};    // +0x199
     float m_flMainAssetScale = {};      // +0x19c: the main customize asset scale, reset to 1.0.
     bool m_bCustomizePreviewShown = {}; // +0x1a0: whether the customize character preview is shown.
     // +0x1a1..+0x1a3 is alignment padding.
-    unsigned char m_aPad1a1[3] = {}; // +0x1a1
+    // unsigned char m_aPad1a1[3] = {}; // +0x1a1
     float m_flNameplateTimer =
         {}; // +0x1a4: the customize nameplate-overlay slide timer (0 to 500).
     int m_nCustomizeCharacterId = {}; // +0x1a8: the shown customize character/costume id (-1 none).
@@ -845,7 +845,7 @@ private:
     bool m_bTwitterAvailable = {};  // +0x1b4: whether the Twitter share API is available.
     bool m_bPortrait = {};          // +0x1b5: selects the portrait position/separator tables.
     // +0x1b6..+0x1b7 is alignment padding before the result scores.
-    unsigned char m_aPad1b6[2] = {}; // +0x1b6
+    // unsigned char m_aPad1b6[2] = {}; // +0x1b6
     // +0x1b8: the two result score values seeded from the scene. The pad render path indexes them
     // by a computed side/colour index, so they are one array rather than two scalars.
     int m_aResultScores[kSideCount] = {};

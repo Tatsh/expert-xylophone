@@ -110,25 +110,26 @@ private:
      * optional rotation override.
      */
     struct NoteRecord {
-        bool bActive = {};              // +0x00: whether the slot holds a live connector.
-        unsigned char nFlagA = {};      // +0x01: the first shape selector.
-        unsigned char nFlagB = {};      // +0x02: the second shape selector.
-        unsigned char m_aPad03[1] = {}; // +0x03
-        int nColor = {};                // +0x04: the note colour.
-        S_VECTOR2 startPoint;           // +0x08: the connector's start point.
-        S_VECTOR2 endPoint;             // +0x10: the connector's end point.
-        unsigned char nFlagC = {};      // +0x18: gates the pulse-phase sprite.
-        unsigned char nFlagD = {};      // +0x19: indexes the frame-alpha table.
-        unsigned char nFlagE = {};      // +0x1a: set when the record carries its own rotation.
-        unsigned char m_aPad1b[1] = {}; // +0x1b
-        float flAlphaScale = {};        // +0x1c: scales the record's emitted alpha.
-        float flRotation = {};          // +0x20: the rotation used when nFlagE is set.
+        bool bActive = {};         // +0x00: whether the slot holds a live connector.
+        unsigned char nFlagA = {}; // +0x01: the first shape selector.
+        unsigned char nFlagB = {}; // +0x02: the second shape selector.
+        // unsigned char m_aPad03[1] = {}; // +0x03
+        int nColor = {};           // +0x04: the note colour.
+        S_VECTOR2 startPoint;      // +0x08: the connector's start point.
+        S_VECTOR2 endPoint;        // +0x10: the connector's end point.
+        unsigned char nFlagC = {}; // +0x18: gates the pulse-phase sprite.
+        unsigned char nFlagD = {}; // +0x19: indexes the frame-alpha table.
+        unsigned char nFlagE = {}; // +0x1a: set when the record carries its own rotation.
+        // unsigned char m_aPad1b[1] = {}; // +0x1b
+        float flAlphaScale = {}; // +0x1c: scales the record's emitted alpha.
+        float flRotation = {};   // +0x20: the rotation used when nFlagE is set.
     };
     // The number of pooled connector draw records.
     static constexpr int kNoteRecordCount = 30;
     // +0x3c..+0x473: the pooled connector draw records.
     NoteRecord m_aNoteRecords[kNoteRecordCount] = {}; // +0x3c
-    unsigned char m_aReserved474[0xc] = {};           // +0x474: trailing state to the 0x480 size.
+    // unsigned char m_aReserved474[0xc] = {};           // +0x474: trailing state to the 0x480
+    // size.
 
 public:
     /**

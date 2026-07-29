@@ -118,8 +118,8 @@ private:
 
     // A per-lane judge popup record.
     struct JudgeRecord {
-        bool m_bActive = {};            // +0x00: whether the popup is showing.
-        unsigned char m_aPad01[3] = {}; // +0x01
+        bool m_bActive = {}; // +0x00: whether the popup is showing.
+        // unsigned char m_aPad01[3] = {}; // +0x01
         unsigned int m_nScore = {};     // +0x04: the displayed score value.
         unsigned int m_nJudgeType = {}; // +0x08: the judgement kind.
         float m_flTimer = {};           // +0x0c: the popup animation timer, in frame-time.

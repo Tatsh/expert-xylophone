@@ -116,25 +116,25 @@ private:
 
     // One pooled per-hit effect record (20 bytes): an active flag, colour, position, and timer.
     struct EffectRecord {
-        bool bActive = {};                 // +0x00: whether the record holds a live effect.
-        unsigned char aReserved01[3] = {}; // +0x01
-        int nColor = {};                   // +0x04: the effect's player colour.
-        float flPosX = {};                 // +0x08: the effect's screen x.
-        float flPosY = {};                 // +0x0c: the effect's screen y.
-        float flTimer = {};                // +0x10: the effect's animation timer, in frames.
+        bool bActive = {}; // +0x00: whether the record holds a live effect.
+        // unsigned char aReserved01[3] = {}; // +0x01
+        int nColor = {};    // +0x04: the effect's player colour.
+        float flPosX = {};  // +0x08: the effect's screen x.
+        float flPosY = {};  // +0x0c: the effect's screen y.
+        float flTimer = {}; // +0x10: the effect's animation timer, in frames.
     };
 
-    ne::C_TEXTURE *m_pTexture = {};                   // +0x08: the bound effect atlas.
-    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {};       // +0x10: the effect sprite instancer.
-    int m_nSpriteCount = {};                          // +0x18: the batch's live sprite count.
-    int m_nCapacity = {};                             // +0x1c: the sprite-batch capacity.
-    bool m_bLoaded = {};                              // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};              // +0x21
+    ne::C_TEXTURE *m_pTexture = {};             // +0x08: the bound effect atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_pSprite = {}; // +0x10: the effect sprite instancer.
+    int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
+    int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
+    bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
+    // unsigned char m_aReserved21[3] = {};              // +0x21
     EffectRecord m_aEffects[kEffectRecordCount] = {}; // +0x24: the pooled effect records.
     float m_aLaneValue[kLaneCount] = {};              // +0x2a4: the per-lane display values (1).
     float m_flEffectSize = {};                        // +0x2ac: the user's effect size (1).
     int m_nStyle = {};                                // +0x2b0: the bounds-effect style (0/1/2).
-    unsigned char m_aReserved2b4[4] = {};             // +0x2b4: trailing state to 0x2b8.
+    // unsigned char m_aReserved2b4[4] = {};             // +0x2b4: trailing state to 0x2b8.
 };
 
 // code: language=C++

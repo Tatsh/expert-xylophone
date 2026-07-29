@@ -677,12 +677,12 @@ private:
     S_VECTOR2 m_prevPos = {};       // +0x3c: the previous-frame position.
     S_VECTOR2 m_velocity = {};      // +0x44: the per-frame velocity.
     bool m_bShotActive = {};        // +0x4c: whether the note is in its shot (reflect) phase.
-    unsigned char m_aReserved4d[3] = {}; // +0x4d
-    float m_flShotDecayTimer = {};       // +0x50: the shot phase's decaying lifetime timer.
-    float m_flShotSpeed = {};            // +0x54: the shot step's travel speed.
-    float m_flShotProgress = {};         // +0x58: the shot step's travel progress.
-    float m_flRenderX = {};              // +0x5c: the note's render X coordinate.
-    float m_flRenderY = {};              // +0x60: the note's render Y coordinate.
+    // unsigned char m_aReserved4d[3] = {}; // +0x4d
+    float m_flShotDecayTimer = {}; // +0x50: the shot phase's decaying lifetime timer.
+    float m_flShotSpeed = {};      // +0x54: the shot step's travel speed.
+    float m_flShotProgress = {};   // +0x58: the shot step's travel progress.
+    float m_flRenderX = {};        // +0x5c: the note's render X coordinate.
+    float m_flRenderY = {};        // +0x60: the note's render Y coordinate.
     int m_nLongGrade = {}; // +0x64: a held long note's stored timing grade (set when it is hit).
     int m_nActiveKind =
         {}; // +0x68: the active segment kind (5 = none); a resolved slide note stores
@@ -711,7 +711,7 @@ private:
         float flSlopeX = {};  // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
         float flSlopeY = {};  // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
         bool bLastPoint = {}; // +0x34: set on the slide path's final point by the activation pass.
-        unsigned char aReserved35[3] = {}; // +0x35
+        // unsigned char aReserved35[3] = {}; // +0x35
         int nResolvedGrade =
             {}; // +0x38: the slide point's resolved judge grade (constructed to 5).
         int nSlidePointJudge = {}; // +0x3c: the slide point's judge result / per-point hit tally.
@@ -725,16 +725,16 @@ private:
     int m_nField4f4 = {};
     int m_nField4f8 = {};
     // +0x4fc..+0x507: twelve bytes no method of the class touches at all, not even to clear them.
-    unsigned char m_aReserved4fc[0xc] = {};
+    // unsigned char m_aReserved4fc[0xc] = {};
     // +0x508: eight bytes the constructor zeroes in one store (str xzr at 0x131a7c) and that
     // nothing reads. Their type is unknown, so they are modelled as raw storage rather than a
     // pointer.
-    unsigned char m_aReserved508[8] = {};
-    bool m_bPlayStateFlag510 = {};        // +0x510: a play-state flag cleared on a play reset.
-    unsigned char m_aReserved511[3] = {}; // +0x511
-    int m_nDirectionSign = {};            // +0x514: the shot direction, clamped to [-2, 2].
-    int m_nWaypointCount = {};            // +0x518: the shot's waypoint count (abs of direction).
-    int m_nWaypointIndex = {};            // +0x51c: the current waypoint's index into the block.
+    // unsigned char m_aReserved508[8] = {};
+    bool m_bPlayStateFlag510 = {}; // +0x510: a play-state flag cleared on a play reset.
+    // unsigned char m_aReserved511[3] = {}; // +0x511
+    int m_nDirectionSign = {}; // +0x514: the shot direction, clamped to [-2, 2].
+    int m_nWaypointCount = {}; // +0x518: the shot's waypoint count (abs of direction).
+    int m_nWaypointIndex = {}; // +0x51c: the current waypoint's index into the block.
     // +0x520..+0x5bf: the waypoint/path block, zeroed on construction and re-laid-out by SetRoute.
     // The route fills the first m_nWaypointCount + 2 nodes: the spawn point, one node per bounce,
     // and the target line.
@@ -742,7 +742,7 @@ private:
     WaypointNode *m_pCurrentWaypoint = {}; // +0x5c0: the current path waypoint node, or null.
     bool m_bLongNoteActive = {};           // +0x5c8: set while a long note is held, cleared when
                                            //         the note is hit and finalised.
-    unsigned char m_aReserved5c9[3] = {};  // +0x5c9
+    // unsigned char m_aReserved5c9[3] = {};  // +0x5c9
     float m_flAppearScale = {}; // +0x5cc: the approach step's appearance scale, eased in.
     float m_flFadeTimer =
         {};                  // +0x5d0: the fade-out step's decaying timer, also the approach step's
@@ -761,15 +761,15 @@ private:
     bool m_bTouched = {};       // +0x5df: the frame's nearest-hit winner flag.
     bool m_bOwnSide = {};       // +0x5e0: the note's own side flag, used when it has no record.
     bool m_bIsPad = {};         // +0x5e1: whether the device is an iPad, set at construction.
-    unsigned char m_aReserved5e2[2] = {}; // +0x5e2
+    // unsigned char m_aReserved5e2[2] = {}; // +0x5e2
     int m_nAutoShotMode = {}; // +0x5e4: the shot's auto-play mode (0 user-driven, 1 CPU, else off).
     int m_nColorLockState =
         {}; // +0x5e8: the recorded/assigned note result: the replay ghost stores the recorded judge
     //         here, and the random colour pass leaves it open when it is above the threshold.
-    bool m_bEmphasisFallback = {};        // +0x5ec: the versus-mode emphasis fallback / JR flag.
-    unsigned char m_aReserved5ed[3] = {}; // +0x5ed
-    float m_flLongRate = {};              // +0x5f0: the recorded long-note rate (from the replay).
-    unsigned char m_aReserved5f4[4] = {}; // +0x5f4: trailing state to the 0x5f8-byte size.
+    bool m_bEmphasisFallback = {}; // +0x5ec: the versus-mode emphasis fallback / JR flag.
+    // unsigned char m_aReserved5ed[3] = {}; // +0x5ed
+    float m_flLongRate = {}; // +0x5f0: the recorded long-note rate (from the replay).
+    // unsigned char m_aReserved5f4[4] = {}; // +0x5f4: trailing state to the 0x5f8-byte size.
 };
 
 /**
@@ -781,10 +781,11 @@ private:
  * padding preceding the seeded fields.
  */
 struct NoteLaneTable {
-    unsigned char m_aReserved00[0x28] = {}; /*!< Unused padding before the seeded fields. +0x00 */
-    float flLaneFrac0 = {};                 /*!< Lane 0 fraction (leftmost). +0x28 */
-    float flLaneFrac1 = {};                 /*!< Lane 1 fraction. +0x2c */
-    float flLaneFrac2 = {};                 /*!< Lane 2 fraction. +0x30 */
+    // unsigned char m_aReserved00[0x28] = {}; /*!< Unused padding before the seeded fields. +0x00
+    // */
+    float flLaneFrac0 = {};     /*!< Lane 0 fraction (leftmost). +0x28 */
+    float flLaneFrac1 = {};     /*!< Lane 1 fraction. +0x2c */
+    float flLaneFrac2 = {};     /*!< Lane 2 fraction. +0x30 */
     float flLaneFrac4 = {};     /*!< Lane 4 fraction (lane 3 is the zero centre). +0x34 */
     float flLaneFrac5 = {};     /*!< Lane 5 fraction. +0x38 */
     float flLaneFrac6 = {};     /*!< Lane 6 fraction (rightmost). +0x3c */

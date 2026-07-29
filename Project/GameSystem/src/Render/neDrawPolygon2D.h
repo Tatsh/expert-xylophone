@@ -195,18 +195,18 @@ private:
     bool m_bVertexDirty = {};          // +0xfd: set when a vertex attribute is modified.
     bool m_bColorDirty = {};           // +0xfe: set when a vertex colour is modified.
     // +0xff is alignment padding before the vertex VBO handle.
-    unsigned char m_aPadFf[1] = {};  // +0xff
+    // unsigned char m_aPadFf[1] = {};  // +0xff
     unsigned int m_dwVertexVbo = {}; // +0x100: the vertex-buffer GL handle.
     // +0x104 is alignment padding before the vertex-buffer pointer.
-    unsigned char m_aPad104[4] = {}; // +0x104
-    void *m_pVertexArray = {};       // +0x108: the interleaved vertex-attribute buffer.
-    S_RGBA *m_pColorArray = {};      // +0x110: the per-vertex colour array (a.k.a. texcoord slot).
-    int m_nIndexCount = {};          // +0x118: the number of entries in the index buffer.
+    // unsigned char m_aPad104[4] = {}; // +0x104
+    void *m_pVertexArray = {};  // +0x108: the interleaved vertex-attribute buffer.
+    S_RGBA *m_pColorArray = {}; // +0x110: the per-vertex colour array (a.k.a. texcoord slot).
+    int m_nIndexCount = {};     // +0x118: the number of entries in the index buffer.
     unsigned int m_nDrawIndexCount = {}; // +0x11c: the element count passed to the indexed draw.
     bool m_bIndexBufferExternal = {};    // +0x120: whether the index buffer is externally owned.
     bool m_bIndexDirty = {};             // +0x121: set when the index buffer is modified.
     // +0x122 is alignment padding before the index VBO handle.
-    unsigned char m_aPad122[2] = {};    // +0x122
+    // unsigned char m_aPad122[2] = {};    // +0x122
     unsigned int m_dwIndexVbo = {};     // +0x124: the index-buffer GL handle.
     unsigned short *m_pIndexArray = {}; // +0x128: the 16-bit index buffer.
     float m_flTranslateX = {};          // +0x130: the model translation X.

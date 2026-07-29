@@ -298,13 +298,13 @@ private:
     static constexpr long kActiveSlotNone = -1;
 
     int m_nShotSoundSlot = {}; // +0x00: the shot-sound slot id dispatched on a note judge.
-    unsigned char m_aReserved04[4] = {};  // +0x04: header state, still being worked out.
-    NoteModel **m_ppNotePool = {};        // +0x08: the pooled NoteModel-object array.
-    NoteModel **m_ppActiveList = {};      // +0x10: the active-note pointer array.
-    int m_nNoteCount = {};                // +0x18: the active note count (the chart's note count).
-    int m_nPoolCapacity = {};             // +0x1c: the note-object pool/array capacity.
-    int m_nActiveCount = {};              // +0x20: the number of active notes.
-    unsigned char m_aReserved24[4] = {};  // +0x24
+    // unsigned char m_aReserved04[4] = {};  // +0x04: header state, still being worked out.
+    NoteModel **m_ppNotePool = {};   // +0x08: the pooled NoteModel-object array.
+    NoteModel **m_ppActiveList = {}; // +0x10: the active-note pointer array.
+    int m_nNoteCount = {};           // +0x18: the active note count (the chart's note count).
+    int m_nPoolCapacity = {};        // +0x1c: the note-object pool/array capacity.
+    int m_nActiveCount = {};         // +0x20: the number of active notes.
+    // unsigned char m_aReserved24[4] = {};  // +0x24
     rb::CMusicSheet2 *m_pMusicSheet = {}; // +0x28: the bound active chart, or null.
     int m_nDensityTier = {};              // +0x30: the note-density tier (0, 1, or 2).
     int m_nFrameTouchScratch =
@@ -320,10 +320,10 @@ private:
     // +0x68..+0x157: the 20-entry per-note render sub-table (each kRenderEntryStride bytes).
     RenderEntry m_aRenderTable[kRenderEntryCount] = {}; // +0x68
     bool m_bIsPad = {};                                 // +0x158: whether the device is an iPad.
-    unsigned char m_aReserved159[3] = {};               // +0x159
+    // unsigned char m_aReserved159[3] = {};               // +0x159
     int m_nThema = {};    // +0x15c: the active player theme, from the user settings.
     int m_nHitCount = {}; // +0x160: the accumulated hit (judged-note) count.
-    unsigned char m_aReserved164[4] = {}; // +0x164
+    // unsigned char m_aReserved164[4] = {}; // +0x164
 };
 
 // code: language=C++

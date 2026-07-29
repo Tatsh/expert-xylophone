@@ -130,11 +130,11 @@ private:
 
     /** @brief One animated result quad: its activity, judgement kind, timer, and numeric label. */
     struct ResultQuad {
-        bool bActive = {};              // +0x00: whether the quad is animating.
-        unsigned char m_aPad01[3] = {}; // +0x01
-        int nJudge = {};                // +0x04: the judgement kind, selecting its animation frame.
-        float flTimer = {};             // +0x08: the quad's elapsed animation time.
-        int nNumber = {};               // +0x0c: the numeric label drawn beside the quad.
+        bool bActive = {}; // +0x00: whether the quad is animating.
+        // unsigned char m_aPad01[3] = {}; // +0x01
+        int nJudge = {};    // +0x04: the judgement kind, selecting its animation frame.
+        float flTimer = {}; // +0x08: the quad's elapsed animation time.
+        int nNumber = {};   // +0x0c: the numeric label drawn beside the quad.
     };
 
     ne::C_TEXTURE *m_pTexture = {};              // +0x08: the gm_parts2 atlas.
@@ -143,11 +143,11 @@ private:
     S_VECTOR2 m_aQuadPos[kPositionCount] = {}; // +0x1c: each quad's screen position.
     int m_nState = {};                         // +0x7c: the layer's animation state.
     bool m_bCreated = {};                      // +0x80: set once the effect is created.
-    unsigned char m_aPad81[3] = {};            // +0x81
-    float m_flBaseSize = {};                   // +0x84: the base sprite size the quads scale by.
-    ResultQuad m_aQuads[kPositionCount] = {};  // +0x88: the twelve quad records (end at +0x148).
-    float m_flScaleA = {};                     // +0x148: the scale for the first six quads.
-    float m_flScaleB = {};                     // +0x14c: the scale for the last six quads.
+    // unsigned char m_aPad81[3] = {};            // +0x81
+    float m_flBaseSize = {};                  // +0x84: the base sprite size the quads scale by.
+    ResultQuad m_aQuads[kPositionCount] = {}; // +0x88: the twelve quad records (end at +0x148).
+    float m_flScaleA = {};                    // +0x148: the scale for the first six quads.
+    float m_flScaleB = {};                    // +0x14c: the scale for the last six quads.
 };
 
 // code: language=Objective-C++

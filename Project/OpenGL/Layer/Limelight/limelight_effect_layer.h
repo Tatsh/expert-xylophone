@@ -128,8 +128,8 @@ private:
     float m_flCachedViewportHeight = {}; // +0x38: the last-seen viewport height.
     bool m_bActive = {};                 // +0x3c: whether the effect is active.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    float m_flClock = {};                // +0x40: the effect animation clock, reset on activation.
-    unsigned char m_aReserved44[4] = {}; // +0x44
+    float m_flClock = {}; // +0x40: the effect animation clock, reset on activation.
+    // unsigned char m_aReserved44[4] = {}; // +0x44
 };
 
 // code: language=C++

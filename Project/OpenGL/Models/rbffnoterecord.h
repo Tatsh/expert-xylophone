@@ -317,12 +317,12 @@ private:
     int m_nSideIndex = {}; // +0x50: the note's index within its side (assigned on install).
     int m_nLane = {};      // +0x54: the note's lane.
     int m_nLaneSlot = {};  // +0x58: the lane slot.
-    unsigned char m_aReserved5c[4] = {}; // +0x5c: an unused four-byte gap.
-    int m_nRoute = {};                   // +0x60: the note's route.
-    int m_nTargetCopy = {};              // +0x64: a copy of the first target coordinate.
-    int m_nChainOffset = {};             // +0x68: the chain offset.
-    int m_nColorTone = {};               // +0x6c: the colour tone.
-    bool m_bBasicNote = {};              // +0x70: whether the note is a basic note.
+    // unsigned char m_aReserved5c[4] = {}; // +0x5c: an unused four-byte gap.
+    int m_nRoute = {};       // +0x60: the note's route.
+    int m_nTargetCopy = {};  // +0x64: a copy of the first target coordinate.
+    int m_nChainOffset = {}; // +0x68: the chain offset.
+    int m_nColorTone = {};   // +0x6c: the colour tone.
+    bool m_bBasicNote = {};  // +0x70: whether the note is a basic note.
     // unsigned char m_aPad71[3]; // +0x71 (alignment padding, compiler-inserted)
     int m_nDisplayLane = {};          // +0x74: the display lane.
     int m_nColorIndex = {};           // +0x78: the colour index.

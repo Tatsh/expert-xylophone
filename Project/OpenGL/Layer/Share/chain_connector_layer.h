@@ -122,7 +122,7 @@ private:
     int m_nSpriteCount = {};                    // +0x18: the batch's live sprite count.
     int m_nCapacity = {};                       // +0x1c: the sprite-batch capacity.
     bool m_bLoaded = {};                        // +0x20: set once the sprite batch is built.
-    unsigned char m_aReserved21[3] = {};        // +0x21
+    // unsigned char m_aReserved21[3] = {};        // +0x21
     ChainRecord m_aChains[kChainRecordCount] =
         {}; // +0x24: the pooled connector records (to 0xc24).
 };
