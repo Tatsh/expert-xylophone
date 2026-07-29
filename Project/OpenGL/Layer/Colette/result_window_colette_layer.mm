@@ -793,10 +793,12 @@ enum AnchorMode {
 // slot and the real per-channel duration (the base duration plus a stagger) in the elapsed slot,
 // which cascades the four channels in.
 constexpr float kShowTweenTarget = 1.0f;
-constexpr float kShowTweenStartScale = 300.0f; // @ghidraAddress 0x439600003f800000 (high word)
-constexpr float kShowStagger0 = -100.0f;       // @ghidraAddress 0x2fcfec
-constexpr float kShowStagger1 = 700.0f;        // @ghidraAddress 0x2fcff0
-constexpr float kShowStagger2 = 1500.0f;       // @ghidraAddress 0x2fcff4
+// The offset/scale channels' ramp duration, in milliseconds; the paired 1.0 target is the low
+// word of the same 64-bit store. @ghidraAddress 0x439600003f800000 (high word)
+constexpr float kShowTweenChannelDuration = 300.0f;
+constexpr float kShowStagger0 = -100.0f; // @ghidraAddress 0x2fcfec
+constexpr float kShowStagger1 = 700.0f;  // @ghidraAddress 0x2fcff0
+constexpr float kShowStagger2 = 1500.0f; // @ghidraAddress 0x2fcff4
 
 // The pixel distance a tracked swipe touch must travel from its start to register, and the themed
 // sound-effect slot the result-page toggle plays.
@@ -881,30 +883,30 @@ void ResultWindowColetteLayer::InitializeResultScreenFlags() {
 void ResultWindowColetteLayer::StartShowTween(float flDuration) {
     // The alpha channel fades from its current value to fully opaque over the duration; a
     // non-positive duration snaps it opaque immediately.
-    ResultTweenChannel &alpha = m_aTween[kTweenAlpha];
-    alpha.flFrom = alpha.flCurrent;
-    alpha.flTo = kShowTweenTarget;
-    alpha.flDuration = flDuration;
-    alpha.flElapsed = 0.0f;
-    alpha.flReserved = 0.0f;
+    FloatTween &alpha = m_aTween[kTweenAlpha];
+    alpha.SetFrom(alpha.GetCurrent());
+    alpha.SetTo(kShowTweenTarget);
+    alpha.SetDuration(flDuration);
+    alpha.SetDelay(0.0f);
+    alpha.SetElapsed(0.0f);
     if (flDuration <= 0.0f) {
-        alpha.flCurrent = kShowTweenTarget;
+        alpha.SetCurrent(kShowTweenTarget);
     }
 
-    // The four offset/scale channels each ease from their current value toward one, carrying the
-    // fixed start-scale in the duration slot and the staggered real duration in the elapsed slot, so
-    // the channels cascade in. The stagger order matches the binary (channel 2, 1, then 4 and 3).
+    // The four offset/scale channels each ease from their current value toward one over a fixed
+    // ramp, and stagger their lead-in delays so they cascade. The stagger order matches the binary
+    // (channel 2, 1, then 4 and 3).
     const float aStaggered[] = {
         flDuration + kShowStagger0, flDuration + kShowStagger1, flDuration + kShowStagger2};
     const int aChannel[] = {kTweenChannel2, kTweenChannel1, kTweenChannel4, kTweenChannel3};
-    const float aElapsed[] = {aStaggered[0], aStaggered[1], aStaggered[2], aStaggered[2]};
+    const float aDelay[] = {aStaggered[0], aStaggered[1], aStaggered[2], aStaggered[2]};
     for (int i = 0; i < 4; ++i) {
-        ResultTweenChannel &channel = m_aTween[aChannel[i]];
-        channel.flFrom = channel.flCurrent;
-        channel.flTo = kShowTweenTarget;
-        channel.flDuration = kShowTweenStartScale;
-        channel.flElapsed = aElapsed[i];
-        channel.flReserved = 0.0f;
+        FloatTween &channel = m_aTween[aChannel[i]];
+        channel.SetFrom(channel.GetCurrent());
+        channel.SetTo(kShowTweenTarget);
+        channel.SetDuration(kShowTweenChannelDuration);
+        channel.SetDelay(aDelay[i]);
+        channel.SetElapsed(0.0f);
     }
 }
 
@@ -912,14 +914,14 @@ void ResultWindowColetteLayer::StartShowTween(float flDuration) {
 void ResultWindowColetteLayer::StartHideTween(float flDuration) {
     // Every channel eases from its current value to zero over the duration; a non-positive duration
     // snaps each to zero immediately.
-    for (ResultTweenChannel &channel : m_aTween) {
-        channel.flFrom = channel.flCurrent;
-        channel.flTo = 0.0f;
-        channel.flDuration = flDuration;
-        channel.flElapsed = 0.0f;
-        channel.flReserved = 0.0f;
+    for (FloatTween &channel : m_aTween) {
+        channel.SetFrom(channel.GetCurrent());
+        channel.SetTo(0.0f);
+        channel.SetDuration(flDuration);
+        channel.SetDelay(0.0f);
+        channel.SetElapsed(0.0f);
         if (flDuration <= 0.0f) {
-            channel.flCurrent = 0.0f;
+            channel.SetCurrent(0.0f);
         }
     }
     // The panel is no longer active once it begins hiding.
@@ -1338,8 +1340,8 @@ constexpr float kAlphaScale = 255.0f;
 void ResultWindowColetteLayer::ProcessResultScreenInput() {
     // The panel is interactive only once its reveal is complete and the screen fade has cleared: the
     // alpha channel must read fully opaque and the fade overlay must be gone.
-    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kAlphaScale;
-    const float flChannel3 = m_aTween[kTweenChannel3].flCurrent;
+    const float flPanelAlpha = m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale;
+    const float flChannel3 = m_aTween[kTweenChannel3].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
     UpdateTouchHitRegions();
 
@@ -1423,8 +1425,8 @@ applySwipe:
 
 /** @ghidraAddress 0x74c70 */
 void ResultWindowColetteLayer::UpdateResultTouchInput() {
-    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kAlphaScale;
-    const float flChannel3 = m_aTween[kTweenChannel3].flCurrent;
+    const float flPanelAlpha = m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale;
+    const float flChannel3 = m_aTween[kTweenChannel3].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
     UpdateTouchHitRegions();
 
@@ -1565,7 +1567,7 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
     // Advance the five open/close tween channels. Each shares FloatTween's six-float layout and the
     // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kTweenAdvanceOrder) {
-        reinterpret_cast<FloatTween *>(&m_aTween[nChannel])->Advance(flDeltaTime);
+        m_aTween[nChannel].Advance(flDeltaTime);
     }
 
     // Decay the signed swipe impulse toward zero, at differing rates by sign, clamping on the zero
@@ -3159,12 +3161,12 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     // The frame alpha drives everything on the panel; the four remaining tween channels scale it
     // into the sub-alphas the individual element groups draw at.
     const unsigned int nFrameAlpha =
-        static_cast<unsigned int>(m_aTween[kTweenAlpha].flCurrent * kAlphaScale);
+        static_cast<unsigned int>(m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale);
     const float flFrameAlpha = static_cast<float>(nFrameAlpha);
-    const float flAlphaArtwork = m_aTween[kTweenChannel1].flCurrent * flFrameAlpha;
-    const float flAlphaMusicInfo = m_aTween[kTweenChannel2].flCurrent * flFrameAlpha;
-    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].flCurrent;
-    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].flCurrent;
+    const float flAlphaArtwork = m_aTween[kTweenChannel1].GetCurrent() * flFrameAlpha;
+    const float flAlphaMusicInfo = m_aTween[kTweenChannel2].GetCurrent() * flFrameAlpha;
+    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].GetCurrent();
+    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].GetCurrent();
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();
@@ -4481,14 +4483,14 @@ constexpr int kPhoneStatDecorationCount = 8;
 void ResultWindowColetteLayer::RenderColetteResultPanel() {
     // The alpha model is identical to the pad path's.
     const unsigned int nFrameAlpha =
-        static_cast<unsigned int>(m_aTween[kTweenAlpha].flCurrent * kAlphaScale);
+        static_cast<unsigned int>(m_aTween[kTweenAlpha].GetCurrent() * kAlphaScale);
     const float flFrameAlpha = static_cast<float>(nFrameAlpha);
     const unsigned int nAlphaArtwork =
-        static_cast<unsigned int>(m_aTween[kTweenChannel1].flCurrent * flFrameAlpha);
+        static_cast<unsigned int>(m_aTween[kTweenChannel1].GetCurrent() * flFrameAlpha);
     const unsigned int nAlphaMusicInfo =
-        static_cast<unsigned int>(m_aTween[kTweenChannel2].flCurrent * flFrameAlpha);
-    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].flCurrent;
-    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].flCurrent;
+        static_cast<unsigned int>(m_aTween[kTweenChannel2].GetCurrent() * flFrameAlpha);
+    const float flAlphaStats = flFrameAlpha * m_aTween[kTweenChannel3].GetCurrent();
+    const float flAlphaBonus = flFrameAlpha * m_aTween[kTweenChannel4].GetCurrent();
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();

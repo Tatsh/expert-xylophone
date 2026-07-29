@@ -53,7 +53,6 @@ target_sources(rbplus PRIVATE
     note_trail_layer.h
     play_color_layer.h
     reflec_gauge_layer.h
-    result_bonus_anim_channel.h
     slide_note_layer.h
     slide_note_result_layer.h
     slide_note_sprite_table.h

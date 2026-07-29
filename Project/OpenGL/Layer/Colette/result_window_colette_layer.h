@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "float_tween.h"
 #include "playfieldlayerbase.h"
 
 struct S_VECTOR2;
@@ -27,19 +28,6 @@ struct ResultTouchRegion {
     bool bTapEdge = {};             /*!< Latched when a press ends inside the region. +0x05 */
     bool bEnabled = {};             /*!< Whether the region accepts input this frame. +0x06 */
     unsigned char m_aPad07[1] = {}; /*!< Alignment padding. +0x07 */
-};
-
-/**
- * @brief One result-panel display animation channel: a value easing from @c flFrom to @c flTo over
- * @c flDuration, with the interpolated result held in @c flCurrent.
- */
-struct ResultTweenChannel {
-    float flFrom = {};     /*!< The start value. +0x00 */
-    float flTo = {};       /*!< The target value. +0x04 */
-    float flDuration = {}; /*!< The tween duration. +0x08 */
-    float flElapsed = {};  /*!< The elapsed time. +0x0c */
-    float flReserved = {}; /*!< An unused slot. +0x10 */
-    float flCurrent = {};  /*!< The current interpolated value. +0x14 */
 };
 
 /**
@@ -853,7 +841,7 @@ private:
     unsigned char m_aReservedB4[0x18] = {}; // +0xb4
     // +0xcc: the five open/close display animation channels (an alpha fade plus four offset/scale
     // channels) the show and hide tweens keyframe.
-    ResultTweenChannel m_aTween[kTweenChannelCount] = {}; // +0xcc
+    FloatTween m_aTween[kTweenChannelCount] = {}; // +0xcc
     bool m_bBonusCueArmed = {}; // +0x144: whether the bonus voice cue is still pending.
     // +0x145..+0x147 is alignment padding before the bonus-cue timer.
     unsigned char m_aPad145[3] = {}; // +0x145

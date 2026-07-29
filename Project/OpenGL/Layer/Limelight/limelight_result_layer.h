@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "float_tween.h"
 #include "playfieldlayerbase.h"
-#include "result_bonus_anim_channel.h"
 
 struct S_VECTOR2;
 struct PartsDataRecord;
@@ -745,11 +745,11 @@ private:
     int m_nRotationFrame = {}; // +0xa8: the decoration animation frame index (0 through 3).
     // +0xac..+0xc3: the two result-step animation slots the constructor clears (three parallel int
     // fields per slot at +0xac, +0xb4, and +0xbc, stride 4).
-    int m_aStepAnimA[kStepAnimSlotCount] = {};                         // +0xac
-    int m_aStepAnimB[kStepAnimSlotCount] = {};                         // +0xb4
-    int m_aStepAnimC[kStepAnimSlotCount] = {};                         // +0xbc
-    ResultBonusAnimChannel m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
-                                                                       //        animation channels.
+    int m_aStepAnimA[kStepAnimSlotCount] = {};             // +0xac
+    int m_aStepAnimB[kStepAnimSlotCount] = {};             // +0xb4
+    int m_aStepAnimC[kStepAnimSlotCount] = {};             // +0xbc
+    FloatTween m_aBonusAnimChannels[kBonusAnimCount] = {}; // +0xc4: the bonus/EX
+                                                           //        animation channels.
     bool m_bBonusCueArmed = {}; // +0x13c: whether the bonus voice cue is still pending.
     // +0x13d..+0x13f is alignment padding before the bonus-cue timer.
     unsigned char m_aPad13d[3] = {}; // +0x13d

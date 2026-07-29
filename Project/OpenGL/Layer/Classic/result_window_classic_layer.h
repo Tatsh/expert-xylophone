@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "float_tween.h"
 #include "playfieldlayerbase.h"
-#include "result_bonus_anim_channel.h"
 
 struct PartsDataRecord;
 struct PhoneLayoutRecord;
@@ -788,8 +788,8 @@ private:
     // +0xa0..+0xb7: further layer state, still being worked out.
     unsigned char m_aReservedA0[0x18] = {}; // +0xa0
     // +0xb8..+0x12f: the five result-score/effect display animation channels.
-    ResultBonusAnimChannel m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
-    Polygon2dTrail *m_apTrails[kTrailCount] = {};                      // +0x130: the ribbon trails.
+    FloatTween m_aScoreAnimChannels[kScoreAnimCount] = {}; // +0xb8
+    Polygon2dTrail *m_apTrails[kTrailCount] = {};          // +0x130: the ribbon trails.
     bool m_bScoreAnimActive =
         {}; // +0x150: set while the score animation (and gesture hold) is active.
     // +0x151..+0x153 is alignment padding before the gesture-hold timer.

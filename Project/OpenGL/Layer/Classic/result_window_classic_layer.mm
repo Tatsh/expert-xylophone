@@ -978,8 +978,8 @@ void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
     // The result panel is interactive only once its reveal is complete and the screen fade is gone:
     // the panel alpha channel must read fully opaque and the fade overlay must be fully clear.
     const int nPanelAlpha =
-        static_cast<int>(m_aScoreAnimChannels[kScoreChannel].flCurrent * kFullyOpaqueAlpha);
-    const float flChannelC = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
+        static_cast<int>(m_aScoreAnimChannels[kScoreChannel].GetCurrent() * kFullyOpaqueAlpha);
+    const float flChannelC = m_aScoreAnimChannels[kEffectChannelC].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
 
     UpdateGestureTouchTracking();
@@ -2244,14 +2244,14 @@ void ResultWindowClassicLayer::InitSpriteSetsLazy() {
 void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
     // Each channel eases from its current shown value toward zero over the start time; a non-positive
     // start time snaps the target to zero immediately.
-    for (ResultBonusAnimChannel &channel : m_aScoreAnimChannels) {
-        channel.flStart = channel.flCurrent;
-        channel.flTarget = 0.0f;
-        channel.flDuration = flStartTime;
-        channel.flElapsed = 0.0f;
-        channel.flReserved = 0.0f;
+    for (FloatTween &channel : m_aScoreAnimChannels) {
+        channel.SetFrom(channel.GetCurrent());
+        channel.SetTo(0.0f);
+        channel.SetDuration(flStartTime);
+        channel.SetDelay(0.0f);
+        channel.SetElapsed(0.0f);
         if (flStartTime <= 0.0f) {
-            channel.flCurrent = 0.0f;
+            channel.SetCurrent(0.0f);
         }
     }
 
@@ -2266,14 +2266,14 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
 void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
     // The score channel eases from its current shown value to one over the base start time; a
     // non-positive time snaps it to the final value immediately.
-    ResultBonusAnimChannel &scoreChannel = m_aScoreAnimChannels[kScoreChannel];
-    scoreChannel.flStart = scoreChannel.flCurrent;
-    scoreChannel.flTarget = kScoreAnimShownTarget;
-    scoreChannel.flDuration = flStartTime;
-    scoreChannel.flElapsed = 0.0f;
-    scoreChannel.flReserved = 0.0f;
+    FloatTween &scoreChannel = m_aScoreAnimChannels[kScoreChannel];
+    scoreChannel.SetFrom(scoreChannel.GetCurrent());
+    scoreChannel.SetTo(kScoreAnimShownTarget);
+    scoreChannel.SetDuration(flStartTime);
+    scoreChannel.SetDelay(0.0f);
+    scoreChannel.SetElapsed(0.0f);
     if (flStartTime <= 0.0f) {
-        scoreChannel.flCurrent = kScoreAnimShownTarget;
+        scoreChannel.SetCurrent(kScoreAnimShownTarget);
     }
 
     // The first ribbon-trail pair starts at the base time.
@@ -2282,38 +2282,38 @@ void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {
 
     // Each effect channel eases from its current value to one over a fixed duration, its start
     // staggered past the base time by holding the delay in the elapsed slot.
-    ResultBonusAnimChannel &effectB = m_aScoreAnimChannels[kEffectChannelB];
-    effectB.flStart = effectB.flCurrent;
-    effectB.flTarget = kScoreAnimShownTarget;
-    effectB.flDuration = kEffectDurationShort;
-    effectB.flElapsed = flStartTime;
-    effectB.flReserved = 0.0f;
+    FloatTween &effectB = m_aScoreAnimChannels[kEffectChannelB];
+    effectB.SetFrom(effectB.GetCurrent());
+    effectB.SetTo(kScoreAnimShownTarget);
+    effectB.SetDuration(kEffectDurationShort);
+    effectB.SetDelay(flStartTime);
+    effectB.SetElapsed(0.0f);
 
-    ResultBonusAnimChannel &effectA = m_aScoreAnimChannels[kEffectChannelA];
-    effectA.flStart = effectA.flCurrent;
-    effectA.flTarget = kScoreAnimShownTarget;
-    effectA.flDuration = kEffectDurationLong;
-    effectA.flElapsed = flStartTime + kEffectDelayA;
-    effectA.flReserved = 0.0f;
+    FloatTween &effectA = m_aScoreAnimChannels[kEffectChannelA];
+    effectA.SetFrom(effectA.GetCurrent());
+    effectA.SetTo(kScoreAnimShownTarget);
+    effectA.SetDuration(kEffectDurationLong);
+    effectA.SetDelay(flStartTime + kEffectDelayA);
+    effectA.SetElapsed(0.0f);
 
     // The second ribbon-trail pair is delayed past the base time.
     const int nDelayedTrailStart = static_cast<int>(flStartTime + kEffectDelayC);
     m_apTrails[2]->Start(kTrailDuration, nDelayedTrailStart);
     m_apTrails[3]->Start(kTrailDuration, nDelayedTrailStart);
 
-    ResultBonusAnimChannel &effectD = m_aScoreAnimChannels[kEffectChannelD];
-    effectD.flStart = effectD.flCurrent;
-    effectD.flTarget = kScoreAnimShownTarget;
-    effectD.flDuration = kEffectDurationShort;
-    effectD.flElapsed = flStartTime + kEffectDelayC;
-    effectD.flReserved = 0.0f;
+    FloatTween &effectD = m_aScoreAnimChannels[kEffectChannelD];
+    effectD.SetFrom(effectD.GetCurrent());
+    effectD.SetTo(kScoreAnimShownTarget);
+    effectD.SetDuration(kEffectDurationShort);
+    effectD.SetDelay(flStartTime + kEffectDelayC);
+    effectD.SetElapsed(0.0f);
 
-    ResultBonusAnimChannel &effectC = m_aScoreAnimChannels[kEffectChannelC];
-    effectC.flStart = effectC.flCurrent;
-    effectC.flTarget = kScoreAnimShownTarget;
-    effectC.flDuration = kEffectDurationLong;
-    effectC.flElapsed = flStartTime + kEffectDelayD;
-    effectC.flReserved = 0.0f;
+    FloatTween &effectC = m_aScoreAnimChannels[kEffectChannelC];
+    effectC.SetFrom(effectC.GetCurrent());
+    effectC.SetTo(kScoreAnimShownTarget);
+    effectC.SetDuration(kEffectDurationLong);
+    effectC.SetDelay(flStartTime + kEffectDelayD);
+    effectC.SetElapsed(0.0f);
 
     // Reset the reveal sound-effect handle to "none".
     m_nRevealSeHandle = -1;
@@ -2415,7 +2415,7 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
     // Advance the five score/effect channels. Each shares FloatTween's six-float layout and the
     // binary drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kScoreAdvanceOrder) {
-        reinterpret_cast<FloatTween *>(&m_aScoreAnimChannels[nChannel])->Advance(flDeltaTime);
+        m_aScoreAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
     // Advance the signed slide/settle timer toward zero, at differing rates by sign, clamping on the
@@ -2741,9 +2741,9 @@ inline S_VECTOR2 AnchorWithSlide(float flSlideX, int nAnchor) {
 /** @ghidraAddress 0x117b84 */
 void ResultWindowClassicLayer::RenderResultScoreLayerActive(float flDeltaTime) {
     const unsigned int nPanelAlpha = static_cast<unsigned int>(
-        m_aScoreAnimChannels[kScoreChannel].flCurrent * static_cast<float>(kFullyOpaqueAlpha));
-    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].flCurrent;
-    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
+        m_aScoreAnimChannels[kScoreChannel].GetCurrent() * static_cast<float>(kFullyOpaqueAlpha));
+    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].GetCurrent();
+    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].GetCurrent();
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();
@@ -3662,11 +3662,11 @@ constexpr int kPhoneScoreDigitCount = 4;
 /** @ghidraAddress 0x11a10c */
 void ResultWindowClassicLayer::RenderResultScoreLayerIdle(float flDeltaTime) {
     const unsigned int nPanelAlpha = static_cast<unsigned int>(
-        m_aScoreAnimChannels[kScoreChannel].flCurrent * static_cast<float>(kFullyOpaqueAlpha));
+        m_aScoreAnimChannels[kScoreChannel].GetCurrent() * static_cast<float>(kFullyOpaqueAlpha));
     const float flPanelAlpha = static_cast<float>(nPanelAlpha);
-    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].flCurrent;
-    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].flCurrent;
-    const float flTabScale = m_aScoreAnimChannels[kEffectChannelD].flCurrent;
+    const float flBodyScale = m_aScoreAnimChannels[kEffectChannelA].GetCurrent();
+    const float flShareScale = m_aScoreAnimChannels[kEffectChannelC].GetCurrent();
+    const float flTabScale = m_aScoreAnimChannels[kEffectChannelD].GetCurrent();
 
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();

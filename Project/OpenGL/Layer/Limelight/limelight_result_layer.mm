@@ -698,7 +698,7 @@ void LimelightResultLayer::Update(float flDeltaTime) {
     // Advance the five bonus channels. The channel shares FloatTween's six-float layout and the binary
     // drives it through FloatTween::Advance, so advance each through that view.
     for (int nChannel : kBonusAdvanceOrder) {
-        reinterpret_cast<FloatTween *>(&m_aBonusAnimChannels[nChannel])->Advance(flDeltaTime);
+        m_aBonusAnimChannels[nChannel].Advance(flDeltaTime);
     }
 
     // Advance the signed slide/settle timer toward zero, at differing rates by sign, and clamp on the
@@ -2083,61 +2083,61 @@ void LimelightResultLayer::SetupOpenTweenPhone(float flBaseTime) {
 
     // Channel 0: the base channel, its duration the caller's base time; snaps to shown when the base
     // time is non-positive.
-    ResultBonusAnimChannel &ch0 = m_aBonusAnimChannels[0];
-    ch0.flStart = ch0.flCurrent;
-    ch0.flTarget = kShown;
-    ch0.flDuration = flBaseTime;
-    ch0.flElapsed = 0.0f;
-    ch0.flReserved = 0.0f;
+    FloatTween &ch0 = m_aBonusAnimChannels[0];
+    ch0.SetFrom(ch0.GetCurrent());
+    ch0.SetTo(kShown);
+    ch0.SetDuration(flBaseTime);
+    ch0.SetDelay(0.0f);
+    ch0.SetElapsed(0.0f);
     if (flBaseTime <= 0.0f) {
-        ch0.flCurrent = kShown;
+        ch0.SetCurrent(kShown);
     }
 
     // Channel 2: a 200-unit fade whose elapsed time starts at the base time.
-    ResultBonusAnimChannel &ch2 = m_aBonusAnimChannels[2];
-    ch2.flStart = ch2.flCurrent;
-    ch2.flTarget = kShown;
-    ch2.flDuration = kDuration200;
-    ch2.flElapsed = flBaseTime;
-    ch2.flReserved = 0.0f;
+    FloatTween &ch2 = m_aBonusAnimChannels[2];
+    ch2.SetFrom(ch2.GetCurrent());
+    ch2.SetTo(kShown);
+    ch2.SetDuration(kDuration200);
+    ch2.SetDelay(flBaseTime);
+    ch2.SetElapsed(0.0f);
 
     // Channel 1: a 300-unit fade staggered 300 units after the base time.
-    ResultBonusAnimChannel &ch1 = m_aBonusAnimChannels[1];
-    ch1.flStart = ch1.flCurrent;
-    ch1.flTarget = kShown;
-    ch1.flDuration = kDuration300;
-    ch1.flElapsed = flBaseTime + kStagger300;
-    ch1.flReserved = 0.0f;
+    FloatTween &ch1 = m_aBonusAnimChannels[1];
+    ch1.SetFrom(ch1.GetCurrent());
+    ch1.SetTo(kShown);
+    ch1.SetDuration(kDuration300);
+    ch1.SetDelay(flBaseTime + kStagger300);
+    ch1.SetElapsed(0.0f);
 
     // Channel 4: a 200-unit fade staggered 900 units after the base time.
-    ResultBonusAnimChannel &ch4 = m_aBonusAnimChannels[4];
-    ch4.flStart = ch4.flCurrent;
-    ch4.flTarget = kShown;
-    ch4.flDuration = kDuration200;
-    ch4.flElapsed = flBaseTime + kStagger900;
-    ch4.flReserved = 0.0f;
+    FloatTween &ch4 = m_aBonusAnimChannels[4];
+    ch4.SetFrom(ch4.GetCurrent());
+    ch4.SetTo(kShown);
+    ch4.SetDuration(kDuration200);
+    ch4.SetDelay(flBaseTime + kStagger900);
+    ch4.SetElapsed(0.0f);
 
     // Channel 3: a 300-unit fade staggered 900 units after the base time.
-    ResultBonusAnimChannel &ch3 = m_aBonusAnimChannels[3];
-    ch3.flStart = ch3.flCurrent;
-    ch3.flTarget = kShown;
-    ch3.flDuration = kDuration300;
-    ch3.flElapsed = flBaseTime + kStagger900;
-    ch3.flReserved = 0.0f;
+    FloatTween &ch3 = m_aBonusAnimChannels[3];
+    ch3.SetFrom(ch3.GetCurrent());
+    ch3.SetTo(kShown);
+    ch3.SetDuration(kDuration300);
+    ch3.SetDelay(flBaseTime + kStagger900);
+    ch3.SetElapsed(0.0f);
 }
 
 /** @ghidraAddress 0x124000 */
 void LimelightResultLayer::ResetResultBonusAnimations(float flStartTime) {
     // Each channel eases from its current shown value toward zero over the start time; a non-positive
     // start time snaps the target to zero immediately.
-    for (ResultBonusAnimChannel &channel : m_aBonusAnimChannels) {
-        channel.flStart = channel.flCurrent;
-        channel.flTarget = 0.0f;
-        channel.flDuration = flStartTime;
-        channel.flElapsed = 0.0f;
-        channel.flReserved = 0.0f;
+    for (FloatTween &channel : m_aBonusAnimChannels) {
+        channel.SetFrom(channel.GetCurrent());
+        channel.SetTo(0.0f);
+        channel.SetDuration(flStartTime);
+        channel.SetDelay(0.0f);
+        channel.SetElapsed(0.0f);
         if (flStartTime <= 0.0f) {
-            channel.flCurrent = 0.0f;
+            channel.SetCurrent(0.0f);
         }
     }
     m_bBonusCueArmed = false;
@@ -2251,8 +2251,8 @@ constexpr int kToggleOn = 1;
 void LimelightResultLayer::UpdatePhoneTouchAndShare() {
     // The result panel is interactive only once its reveal is complete and the screen fade is gone.
     const int nPanelAlpha =
-        static_cast<int>(m_aBonusAnimChannels[kPanelAlphaChannel].flCurrent * kFullyOpaqueAlpha);
-    const float flChannelC = m_aBonusAnimChannels[kEffectAlphaChannel].flCurrent;
+        static_cast<int>(m_aBonusAnimChannels[kPanelAlphaChannel].GetCurrent() * kFullyOpaqueAlpha);
+    const float flChannelC = m_aBonusAnimChannels[kEffectAlphaChannel].GetCurrent();
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
 
     UpdatePhonePartTouchStates();
@@ -2666,10 +2666,10 @@ inline void EmitArComparison(LimelightResultLayer *pLayer,
 
 /** @ghidraAddress 0x124acc */
 void LimelightResultLayer::RenderLimelightResultWindow() {
-    const unsigned int nWindowAlpha =
-        static_cast<unsigned int>(m_aBonusAnimChannels[kChannelWindowFade].flCurrent * kAlphaScale);
-    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].flCurrent;
-    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].flCurrent;
+    const unsigned int nWindowAlpha = static_cast<unsigned int>(
+        m_aBonusAnimChannels[kChannelWindowFade].GetCurrent() * kAlphaScale);
+    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].GetCurrent();
+    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].GetCurrent();
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();
     const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
@@ -3365,11 +3365,11 @@ constexpr int kPhoneBonusRowCount = 4;
 
 /** @ghidraAddress 0x127b04 */
 void LimelightResultLayer::RenderPhoneResultWindow() {
-    const unsigned int nWindowAlpha =
-        static_cast<unsigned int>(m_aBonusAnimChannels[kChannelWindowFade].flCurrent * kAlphaScale);
-    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].flCurrent;
-    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].flCurrent;
-    const float flTitleFade = m_aBonusAnimChannels[kBonusAnimCount - 1].flCurrent;
+    const unsigned int nWindowAlpha = static_cast<unsigned int>(
+        m_aBonusAnimChannels[kChannelWindowFade].GetCurrent() * kAlphaScale);
+    const float flPanelFade = m_aBonusAnimChannels[kChannelPanelFade].GetCurrent();
+    const float flPageFade = m_aBonusAnimChannels[kChannelPageFade].GetCurrent();
+    const float flTitleFade = m_aBonusAnimChannels[kBonusAnimCount - 1].GetCurrent();
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     ScoreTracker *pTracker = ScoreTracker::shared();
     const unsigned int nPlayColor = static_cast<unsigned int>(pGameSystem->GetPlayColor());
