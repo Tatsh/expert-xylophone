@@ -319,7 +319,16 @@ public:
 
     /**
      * @brief Initialises the note for activation: seeds its full play state from its chart record
-     * before it enters the active list. Reconstruction pending.
+     * before it enters the active list.
+     *
+     * Resolves the base position from the first of three sources that applies — a chain-mate's base
+     * position, a mirrored partner's live position negated through the field centre, or the note's
+     * own lane at the mid-lane row — and lays out the slide path's sub-entries when the record names
+     * a chosen target. It then seeds the position, shot, render, and spawn-time state, derives the
+     * shot direction and rival mode, clears the waypoint block and the per-play flags, and (for a
+     * note with no mirrored partner) enters the pre-spawn state and emits its spawn burst. Finally
+     * it routes the note and, when its hit time has already passed, snaps it onto the target line in
+     * the passed state.
      * @ghidraAddress 0x134128
      */
     void Init();
@@ -585,11 +594,12 @@ private:
         float flEndY = {};   // +0x20: the point's end Y.
         // +0x24..+0x28: the point's live interpolated position, advanced each frame by the slide step
         // (UpdateStepSlideExisted) along the two axis slopes.
-        float flCurX = {};   // +0x24: the point's current interpolated X.
-        float flCurY = {};   // +0x28: the point's current interpolated Y.
-        float flSlopeX = {}; // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
-        float flSlopeY = {}; // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
-        unsigned char aReserved34[4] = {}; // +0x34
+        float flCurX = {};    // +0x24: the point's current interpolated X.
+        float flCurY = {};    // +0x28: the point's current interpolated Y.
+        float flSlopeX = {};  // +0x2c: the X slope over the first time span (endX-startX)/(t1-t0).
+        float flSlopeY = {};  // +0x30: the Y slope over the second time span (endY-startY)/(t2-t1).
+        bool bLastPoint = {}; // +0x34: set on the slide path's final point by the activation pass.
+        unsigned char aReserved35[3] = {}; // +0x35
         int nResolvedGrade =
             {}; // +0x38: the slide point's resolved judge grade (constructed to 5).
         int nSlidePointJudge = {}; // +0x3c: the slide point's judge result / per-point hit tally.

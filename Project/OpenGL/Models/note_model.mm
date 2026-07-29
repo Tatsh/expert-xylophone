@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <cstring>
 
 #include "Render/neRenderer.h"
 #include "Render/s_vector3.h"
@@ -21,6 +22,7 @@
 #include "engineglobals.h"
 #include "explosion_effect_layer.h"
 #include "gamesystem.h"
+#include "note_born_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
 #include "playtimer.h"
@@ -1963,4 +1965,331 @@ float NoteModel::GetVirtualBoundY(int nBand) {
     const float flSlope =
         nBand < kCenterBand ? g_flPlayfieldNearLaneSlope : g_flPlayfieldNearLaneSlopeNeg;
     return (flSlope * kBandFractions[nBand]) + (flSlope * kBandFractions[nBand]);
+}
+
+namespace {
+
+// The five-entry lane-fraction lookup the activation pass builds on the stack: the three left lane
+// fractions, the zero centre lane, and the first right lane fraction. It is an inlined
+// GetNoteLaneFraction over the ordinary lane kind.
+constexpr int kActivationLaneCount = 5;
+constexpr int kActivationCenterLane = 3;
+
+// The lane the activation pass falls back to when the note has no chart record.
+constexpr int kActivationFallbackLane = 2;
+
+// The chosen-target value marking a note that takes the plain lane placement rather than a slide
+// path.
+constexpr int kNoChosenTarget = -1;
+
+// The note-state seeds: the activated state, and the pre-spawn state a freshly born note enters.
+constexpr int kNoteStateActivated = 2;
+constexpr int kNoteStateSpawning = 1;
+// The state a note that is already past its hit time snaps straight to.
+constexpr int kNoteStatePassed = 8;
+
+// The shot phase's seeded lifetime, speed, and progress.
+constexpr float kInitialShotDecayTimer = 100.0f;
+constexpr float kInitialShotSpeed = 0.0f;
+constexpr float kInitialShotProgress = 1.0f;
+
+// The long-note grade sentinel meaning "not yet judged".
+constexpr int kLongGradeUnset = 5;
+
+// The appearance scale and fade a note is seeded fully shown at.
+constexpr float kInitialAppearScale = 1.0f;
+constexpr float kInitialFadeTimer = 1.0f;
+
+// The mirrored-source position is negated to place the note on the opposite side.
+constexpr float kMirrorScale = -1.0f;
+
+// The slide segment kinds a point takes from its successor's lane: level, rising, falling, and the
+// terminating kind the final point takes.
+constexpr int kSlideKindLevel = 0;
+constexpr int kSlideKindRising = 1;
+constexpr int kSlideKindFalling = 2;
+constexpr int kSlideKindTerminal = 3;
+
+// The active-segment index sentinel meaning "none".
+constexpr int kActiveIndexNone = -1;
+
+// The size of the waypoint block the activation pass clears in one span: the leading reserved run,
+// the active flag, and the trailing reserved run.
+constexpr int kWaypointBlockSize = 0xa0;
+
+// The game types whose rival side is drawn: the versus type, and the replay type.
+constexpr int kGameTypeVersus = 1;
+constexpr int kGameTypeReplay = 2;
+
+// The rival modes a note takes when it belongs to the other side, by game type.
+constexpr int kRivalModeOther = 1;
+constexpr int kRivalModeOtherReplay = 2;
+
+// The hold-note kind that leaves an activated note's shot direction undirected.
+constexpr int kHoldKindHeld = 1;
+
+// Builds the activation pass's five-entry lane-fraction lookup.
+inline void BuildActivationLaneFractions(float (&aFractions)[kActivationLaneCount]) {
+    aFractions[0] = g_noteLaneTable.flLaneFrac0;
+    aFractions[1] = g_noteLaneTable.flLaneFrac1;
+    aFractions[2] = g_noteLaneTable.flLaneFrac2;
+    aFractions[kActivationCenterLane] = 0.0f;
+    aFractions[4] = g_noteLaneTable.flLaneFrac4;
+}
+
+} // namespace
+
+/** @ghidraAddress 0x134128 */
+void NoteModel::Init() {
+    RbffNoteRecord *pRecord = m_pRecord;
+    NoteModel *pMirrorSource = nullptr;
+    bool bBasePosSet = false;
+
+    // The base position comes from one of three sources, in order: a chain-mate's base position, a
+    // mirrored partner's live position, or the note's own lane placement.
+    if (pRecord != nullptr) {
+        if (pRecord->GetStartTime() >= 0) {
+            pMirrorSource =
+                static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(pRecord->GetStartTime());
+            pRecord = m_pRecord;
+        }
+        if (pRecord != nullptr) {
+            // A note that is not its chain's head inherits the head's base position.
+            const short nChainId = pRecord->GetChainLink().GetChainId();
+            if (nChainId >= 0) {
+                NoteModel *pChainNote =
+                    static_cast<NoteEffectMgr *>(m_pSheet)->FindNoteByIndex(nChainId);
+                if (pChainNote != nullptr) {
+                    m_basePos = pChainNote->m_basePos;
+                    bBasePosSet = true;
+                }
+            }
+        }
+    }
+
+    if (!bBasePosSet && pMirrorSource != nullptr) {
+        // A mirrored note takes its partner's live position, negated through the field centre.
+        S_VECTOR2 mirrored = pMirrorSource->m_pos;
+        ScaleVector2(&mirrored, kMirrorScale);
+        m_basePos = mirrored;
+        bBasePosSet = true;
+    }
+
+    if (!bBasePosSet) {
+        pRecord = m_pRecord;
+        // The binary reads the chosen target through the record without a null check, so a note with
+        // no record faults here; activation only ever runs for recorded notes, so it does not fire
+        // in practice.
+        const bool bSlidePath = pRecord->GetChosenTarget() != kNoChosenTarget;
+
+        float aLaneFractions[kActivationLaneCount];
+        BuildActivationLaneFractions(aLaneFractions);
+
+        // The note sits on its own lane, at the mid-lane row.
+        const int nOwnLane = pRecord != nullptr ? pRecord->GetColor() : kActivationFallbackLane;
+        m_basePos = S_VECTOR2{
+            aLaneFractions[nOwnLane] * GameSystem::GetGameSystem()->GetSheetInsetHalfX(),
+            g_flPlayfieldMidLaneSlope * GameSystem::GetGameSystem()->GetSheetInsetHalfY()};
+
+        // A note with a chosen target also lays out a slide path: one sub-entry per slide point,
+        // each running from the previous point's end to its own lane.
+        if (bSlidePath) {
+            pRecord = m_pRecord;
+            if (pRecord->GetSlidePointCount() > 0) {
+                m_nActiveIndex = kActiveIndexNone;
+                for (int nPoint = 0; nPoint < m_pRecord->GetSlidePointCount(); ++nPoint) {
+                    SubEntry &entry = m_aSubEntries[nPoint];
+                    const RbffSlideRecord &slide = m_pRecord->GetSlideRecord()[nPoint];
+                    entry.nIndex = slide.nTimingSel;
+
+                    // The segment kind follows the step to the next point's lane; the last point
+                    // terminates the path.
+                    if (nPoint == m_pRecord->GetSlidePointCount() - 1) {
+                        entry.bLastPoint = true;
+                        entry.nKind = kSlideKindTerminal;
+                    } else {
+                        const int nNextLane = m_pRecord->GetSlideRecord()[nPoint + 1].nTimingSel;
+                        if (entry.nIndex == nNextLane) {
+                            entry.nKind = kSlideKindLevel;
+                        } else if (entry.nIndex < nNextLane) {
+                            entry.nKind = kSlideKindRising;
+                        } else {
+                            entry.nKind = kSlideKindFalling;
+                        }
+                    }
+
+                    // All three interpolation times start equal; the approach step spreads them out
+                    // once the note's scroll speed is known.
+                    const RbffSlideRecord &times = m_pRecord->GetSlideRecord()[nPoint];
+                    const float flTime = static_cast<float>(times.nValueB + times.nValueA);
+                    entry.flTime0 = flTime;
+                    entry.flTime1 = flTime;
+                    entry.flTime2 = flTime;
+
+                    // The first point starts on the note's own lane; every later point starts where
+                    // its predecessor ends, so the path is continuous.
+                    if (nPoint == 0) {
+                        entry.flStartX = aLaneFractions[nOwnLane] *
+                                         GameSystem::GetGameSystem()->GetSheetInsetHalfX();
+                    } else {
+                        entry.flStartX = m_aSubEntries[nPoint - 1].flEndX;
+                    }
+                    entry.flStartY = g_flPlayfieldExtraLaneSlopeNeg *
+                                     GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+                    entry.flEndX = aLaneFractions[entry.nIndex] *
+                                   GameSystem::GetGameSystem()->GetSheetInsetHalfX();
+                    entry.flEndY = g_flPlayfieldNearLaneSlopeNeg *
+                                   GameSystem::GetGameSystem()->GetSheetInsetHalfY();
+
+                    // The live position starts at the segment's start. Both slopes divide by a zero
+                    // time span here (the three times are still equal); the approach step recomputes
+                    // them once it has spread the times.
+                    entry.flCurX = entry.flStartX;
+                    entry.flCurY = entry.flStartY;
+                    entry.flSlopeX =
+                        (entry.flEndX - entry.flStartX) / (entry.flTime1 - entry.flTime0);
+                    entry.flSlopeY =
+                        (entry.flEndY - entry.flStartY) / (entry.flTime2 - entry.flTime1);
+                }
+
+                // The path's leading segment kind follows the step from the note's own lane to the
+                // first slide point.
+                const int nFirstLane = m_aSubEntries[0].nIndex;
+                if (nOwnLane == nFirstLane) {
+                    m_nActiveKind2 = kSlideKindLevel;
+                } else if (nOwnLane < nFirstLane) {
+                    m_nActiveKind2 = kSlideKindRising;
+                } else {
+                    m_nActiveKind2 = kSlideKindFalling;
+                }
+            }
+        }
+    }
+
+    // Seed the note's live play state from the base position.
+    m_pos = m_basePos;
+    m_prevPos = m_basePos;
+    m_velocity = S_VECTOR2{0.0f, 0.0f};
+    m_nState = kNoteStateActivated;
+    m_nSubState = 0;
+    m_flShotDecayTimer = kInitialShotDecayTimer;
+    m_flShotSpeed = kInitialShotSpeed;
+    m_flShotProgress = kInitialShotProgress;
+    m_flRenderX = m_basePos.x;
+    m_flRenderY = m_basePos.y;
+    m_nLongGrade = kLongGradeUnset;
+    m_flSpawnTime = GetCurrentJudgeTime();
+
+    // A mirrored note that has already been scored takes its partner's shot direction; every other
+    // note starts undirected.
+    int nDirection = 0;
+    if (pMirrorSource != nullptr && pMirrorSource->m_bScored) {
+        // A held note keeps the undirected default; every other note maps its colour index to a
+        // direction, and a note with no record takes the zero index (and so the leftward direction).
+        bool bDirected = true;
+        int nColorIndex = 0;
+        if (m_pRecord != nullptr) {
+            if (m_pRecord->GetHoldKind() == kHoldKindHeld) {
+                bDirected = false;
+            } else {
+                nColorIndex = m_pRecord->GetColorIndex();
+            }
+        }
+        if (bDirected) {
+            nDirection = nColorIndex == 0 ? -1 : (nColorIndex == 1 ? 1 : 0);
+        }
+    }
+    m_nDirectionSign = nDirection;
+    m_nWaypointCount = nDirection < 0 ? -nDirection : nDirection;
+    m_nWaypointIndex = 0;
+    m_pCurrentWaypoint = reinterpret_cast<WaypointNode *>(m_aWaypointBlock0);
+
+    // The rival mode records whether this note belongs to the other play side, and how the current
+    // game type draws it.
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    int nRivalMode = 0;
+    bool bOtherSide = false;
+    if (pGameSystem->GetGameType() != kGameTypeVersus) {
+        const int nSide =
+            m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kNoSideSentinel);
+        bOtherSide = pGameSystem->GetPlayColor() != nSide;
+        if (bOtherSide) {
+            nRivalMode = pGameSystem->GetGameType() == kGameTypeReplay ? kRivalModeOtherReplay :
+                                                                         kRivalModeOther;
+        } else {
+            nRivalMode = pGameSystem->GetUserFullCombo();
+        }
+    }
+    // Only a note on the other side keeps its auto-shot mode; every other note has it cleared.
+    if (!bOtherSide) {
+        m_nAutoShotMode = 0;
+    }
+    m_nRivalMode = nRivalMode;
+
+    // The whole waypoint block is cleared as one span: the two reserved runs and the active flag
+    // between them.
+    memset(m_aWaypointBlock0, 0, kWaypointBlockSize);
+    m_flBornTime = 0.0f;
+    m_flAppearScale = kInitialAppearScale;
+    m_flFadeTimer = kInitialFadeTimer;
+    m_bPlayStateFlag510 = false;
+    m_bScored = false;
+    m_bJustHit = false;
+    m_bShotDecaying = false;
+    if (pMirrorSource == nullptr) {
+        m_bShotResolved = false;
+        m_bShotActive = false;
+    } else {
+        // A mirrored note inherits its partner's scored and just-hit flags: both set marks the shot
+        // as already decaying, and the scored flag alone drives the shot phase.
+        if (pMirrorSource->m_bScored && pMirrorSource->m_bJustHit) {
+            m_bShotDecaying = true;
+        }
+        m_bShotResolved = false;
+        m_bShotActive = pMirrorSource->m_bScored;
+    }
+    m_bRenderReflectPath = false;
+    m_bRenderShotTail = false;
+    m_bMissProcessed = false;
+    m_bLongNoteActive = true;
+    m_bTouched = false;
+
+    if (pMirrorSource == nullptr) {
+        // A note with no mirrored partner spawns fresh: it enters the pre-spawn state hidden, and
+        // emits its spawn burst when its side is drawn.
+        m_nState = kNoteStateSpawning;
+        m_nSubState = 0;
+        m_flAppearScale = 0.0f;
+        m_flFadeTimer = 0.0f;
+        if (GameSystem::GetGameSystem()->GetRivalAlpha() != 0.0f ||
+            GameSystem::GetGameSystem()->GetGameType() == kGameTypeVersus || IsOnPlaySide()) {
+            NoteBornLayer *pBornLayer = NoteBornLayer::shared();
+            const int nSide =
+                m_pRecord != nullptr ? m_pRecord->GetSide() : (m_bOwnSide ? 0 : kNoSideSentinel);
+            // A flipped side mirrors the burst through both axes.
+            const float flX = m_pos.x * (IsSideFlipped() ? 1.0f : -1.0f);
+            const float flY = m_pos.y * (IsSideFlipped() ? -1.0f : 1.0f);
+            pBornLayer->Create(nSide, flX, flY);
+        }
+        m_flBornTime = m_flSpawnTime;
+    }
+
+    SetRoute();
+
+    // A slide note drives its own path rather than the long-note hold.
+    if (m_pRecord->GetSlidePointCount() > 0) {
+        m_bLongNoteActive = false;
+    }
+
+    // A note whose hit time has already passed skips straight to the passed state, snapped onto the
+    // target line.
+    const float flHitTime = m_pRecord != nullptr ?
+                                static_cast<float>(m_pRecord->GetTimeB() + m_pRecord->GetTimeA()) :
+                                (m_bOwnSide ? m_flSpawnTime + kSyntheticHitLead : 0.0f);
+    if (flHitTime < m_flSpawnTime) {
+        m_pos = S_VECTOR2{GetLaneX(), GetTargetLineY()};
+        UpdateNotePathLinks();
+        m_nState = kNoteStatePassed;
+        m_nSubState = 0;
+    }
 }
