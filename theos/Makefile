@@ -16,6 +16,19 @@ else
 PATCH_DEFINES :=
 endif
 
+# RBPDBG mirrors the CMake option of the same name: it compiles in the os_log diagnostics declared
+# in Project/GameSystem/src/neDebugLog.h. Off by default so a plain build matches the binary; enable
+# with `make -C theos RBPDBG=1`. The build SHA stamps the startup banner so a captured log
+# identifies which build produced it.
+RBPDBG ?= 0
+ifneq ($(RBPDBG),0)
+RBPDBG_BUILD_SHA := $(shell git -C $(PROJECT_ROOT) rev-parse --short=12 HEAD 2>/dev/null \
+                            || echo unknown)
+DEBUG_DEFINES := -DRBPDBG=1 -DRBPDBG_BUILD_SHA='"$(RBPDBG_BUILD_SHA)"'
+else
+DEBUG_DEFINES :=
+endif
+
 include $(THEOS)/makefiles/common.mk
 
 APPLICATION_NAME = ReflecBeatPlus
@@ -35,7 +48,7 @@ ReflecBeatPlus_WARNINGS = -Wall -Wextra -Wshadow -Wcomma -Wnewline-eof -Wpointer
                           -Wimplicit-retain-self
 ReflecBeatPlus_CFLAGS  = -std=gnu2x -ftrivial-auto-var-init=zero -fobjc-arc -fobjc-exceptions \
                          -DGLES_SILENCE_DEPRECATION \
-                         $(PATCH_DEFINES) \
+                         $(PATCH_DEFINES) $(DEBUG_DEFINES) \
                          $(ReflecBeatPlus_WARNINGS) \
                          -I$(PROJECT_ROOT)/Project \
                          $(addprefix -I,$(shell find $(PROJECT_ROOT)/Project -type d)) \

@@ -42,6 +42,7 @@
 #import "gamesystem.h"
 #import "leveltables.h"
 #import "logo_scene.h"
+#import "neDebugLog.h"
 #import "neWindow.h"
 #import "playtimer.h"
 #import "s_vector2.h"
@@ -235,7 +236,33 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // RBPDBG: stamp the build's git SHA at startup so any captured log identifies exactly which
+    // build produced it. idevicesyslog | grep RBPDBG.
+    neDebugLog("build sha=%s", RBPDBG_BUILD_SHA);
+
     InitializeDeviceEnvironment();
+
+    // RBPDBG: the keychain key whose MD5 is the BFCodec key for the purchased-content lists
+    // (mulist, prodlist, nolist), so those blobs can be decrypted offline, plus the resolved
+    // filesystem paths and the free-space reading. The keychain query and the volume stat are real
+    // side effects, so they stay inside the block that compiles away entirely.
+    if (NE_DBG_FIRST(1)) {
+        NSString *listKey = [AppDelegate musicListKey];
+        neDebugLog("mulist/prodlist key uuid=%s", listKey.length ? listKey.UTF8String : "(nil)");
+        neDebugLog("documents=%s", GetDocumentsDirectoryPath().UTF8String);
+        neDebugLog("privateDocuments=%s", GetPrivateDocumentsPath().UTF8String);
+        neDebugLog("imageAssets=%s", GetImageAssetDirectoryPath().UTF8String);
+        neDebugLog("download=%s", GetDownloadDirectoryPath().UTF8String);
+        neDebugLog("caches=%s", GetCachesDirectoryPath().UTF8String);
+        neDebugLog("freeBytes=%llu overThreshold=%d",
+                   [NSFileManager freeFileSystemSize],
+                   [NSFileManager isFreeSystemSize] ? 1 : 0);
+        neDebugLog("isPad=%d screen=%.0fx%.0f scale=%.1f",
+                   IsPad() ? 1 : 0,
+                   UIScreen.mainScreen.bounds.size.width,
+                   UIScreen.mainScreen.bounds.size.height,
+                   UIScreen.mainScreen.scale);
+    }
 
     // Grow the shared URL cache to disk-back it under Caches, keeping the memory cap at 0.
     NSURLCache *cache =

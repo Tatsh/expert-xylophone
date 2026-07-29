@@ -121,6 +121,7 @@ djyoshitaka
 docstrings
 doxyfile
 dplatform
+drbpdbg
 dresources
 eagl
 eeac
@@ -301,6 +302,7 @@ rbbgm
 rbff
 rbffnoterecord
 rbmacros
+rbpdbg
 rbplus
 rbscorehash
 rdparty

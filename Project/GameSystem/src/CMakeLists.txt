@@ -31,6 +31,7 @@ target_sources(rbplus PRIVATE
     leveltables.h
     linear_tween.h
     ne_c_time.h
+    neDebugLog.h
     note_path_point_array.h
     note_replay.h
     number_effect_layer.h

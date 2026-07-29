@@ -75,6 +75,13 @@ set(RESOURCES_DIR    "" CACHE PATH "Directory of the ORIGINAL extracted .app who
 # -DENABLE_PATCHES=ON.
 option(ENABLE_PATCHES "Compile in preservation patches (skip dead service flows)" OFF)
 
+# RBPDBG compiles in the optional runtime os_log diagnostics (tagged "RBPDBG"; see
+# Project/GameSystem/src/neDebugLog.h). It is NOT part of the original binary, so it
+# defaults OFF and the shipped build matches the binary. It is a plain cache option,
+# so it can be enabled in ANY build configuration with -DRBPDBG=ON. Call sites need
+# no #ifdef: with RBPDBG off the helpers collapse to no-ops.
+option(RBPDBG "Compile in the RBPDBG runtime diagnostics (os_log)" OFF)
+
 # ---------------------------------------------------------------------------
 # Toolchain discovery (informational)
 # ---------------------------------------------------------------------------
@@ -227,6 +234,24 @@ target_compile_definitions(rbplus PRIVATE GLES_SILENCE_DEPRECATION)
 # generator expression is config-agnostic, so it applies in Debug, Release, and
 # any other configuration alike.
 target_compile_definitions(rbplus PRIVATE $<$<BOOL:${ENABLE_PATCHES}>:ENABLE_PATCHES=1>)
+
+# When RBPDBG is enabled, define it for every translation unit; the generator
+# expression is config-agnostic, so it applies in Debug, Release, and any other
+# configuration alike.
+target_compile_definitions(rbplus PRIVATE $<$<BOOL:${RBPDBG}>:RBPDBG=1>)
+
+# Build git SHA, captured at configure time for the RBPDBG startup banner so a
+# captured log always identifies exactly which build produced it. Diagnostics only
+# (the banner is compiled out unless RBPDBG); falls back to "unknown" when git is
+# unavailable.
+execute_process(COMMAND git -C ${CMAKE_SOURCE_DIR} rev-parse --short=12 HEAD
+                OUTPUT_VARIABLE RBPDBG_BUILD_SHA
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET)
+if(NOT RBPDBG_BUILD_SHA)
+    set(RBPDBG_BUILD_SHA "unknown")
+endif()
+target_compile_definitions(rbplus PRIVATE RBPDBG_BUILD_SHA="${RBPDBG_BUILD_SHA}")
 
 set_target_properties(rbplus PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST "${INFO_PLIST}"
