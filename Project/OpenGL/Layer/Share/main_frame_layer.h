@@ -125,7 +125,15 @@ public:
                              float flY);
 
     /**
-     * @brief (Re)builds the frame sprites for the current frame type. Reconstruction pending.
+     * @brief (Re)builds the frame's meshes and sprite instancers for the current frame type.
+     *
+     * Resolves the frame type (substituting the game system's when the layer still holds the default
+     * sentinel), releases and reloads the frame and overlay atlases, then creates any of the three
+     * meshes and two instancers that do not exist yet: the marker's eight-vertex ring, the border's
+     * sixteen-vertex textured strip, and the overlay's twenty-four-vertex strip parented to the
+     * border. Every vertex is seeded at the origin with its atlas UV and a cleared alpha, and both
+     * instancers are left empty. Finally it lays the overlay out, rebuilds the 3D vertices, and marks
+     * the layer ready.
      * @ghidraAddress 0x17b654
      */
     void BuildSprites();

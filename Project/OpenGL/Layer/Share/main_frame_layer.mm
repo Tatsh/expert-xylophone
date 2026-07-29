@@ -2,16 +2,21 @@
 
 #include "RBMacros.h"
 #include "RBUserSettingData.h"
+#include "frame_texture_table.h"
 #include "gamesystem.h"
 #include "neDrawPolygon2D.h"
 #include "neDrawPolygon3D.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
+#include "s_vector3.h"
 #include "sprite_uv_table.h"
 
 // The process-wide main-frame layer, created lazily by shared().
 static MainFrameLayer *g_pMainFrameLayer = nullptr; // @ghidraAddress 0x3dedb0
+
+// The shared parts atlas the frame's overlay mesh and sprites draw from.
+static const char *const g_szGmParts2TextureKey = "00_texture/gm_parts2"; // @ghidraAddress 0x3ceaa8
 
 namespace {
 
@@ -422,4 +427,274 @@ void MainFrameLayer::SetMarker(int nMarker, int nDifficulty) {
         return;
     }
     SetOverlayLayout();
+}
+
+namespace {
+
+// The marker mesh's vertex and index counts: an eight-vertex ring closed by repeating its first two
+// vertices. The two textured meshes' vertex counts are kFrameMesh3dVertexCount and
+// kFrameMesh2dVertexCount above; these are their index counts.
+constexpr unsigned int kMarkerMesh3dVertexCount = 8;
+constexpr unsigned int kMarkerMesh3dIndexCount = 10;
+constexpr int kFrameMesh3dIndexCount = 22;
+constexpr int kFrameMesh2dIndexCount = 28;
+
+// The mesh factory's draw mode, its two vertex formats (the untextured marker and the textured frame
+// meshes), and its buffer-ownership flags.
+constexpr unsigned int kMeshDrawMode = 4;
+constexpr unsigned int kMarkerVertexFormat = 5;
+constexpr unsigned int kTexturedVertexFormat = 7;
+constexpr bool kVertexBufferExternal = true;
+constexpr bool kIndexBufferExternal = false;
+
+// The border mesh's two texture-environment parameter slots, both set to one.
+constexpr int kTexEnvParamSlotA = 1;
+constexpr int kTexEnvParamSlotB = 0;
+constexpr int kTexEnvParamValue = 1;
+
+// The 3D border is four quads of four vertices; the last two walk their atlas corners in a different
+// order from the first two.
+constexpr int kFrameQuadCount = 4;
+constexpr int kQuadVertexCount = 4;
+constexpr int kBorderFlippedQuadStart = 2;
+
+// The 2D overlay is three eight-vertex bands: the centre tab, then the two bottom-strip bands.
+constexpr int kOverlayBandCount = 3;
+constexpr int kOverlayBandVertexCount = 8;
+constexpr int kOverlayTabBandCount = 1;
+
+// The two instancers' capacities: six overlay sprites, and the frame mesh's single slot.
+constexpr unsigned int kOverlayInstancerCapacity = 6;
+constexpr unsigned int kFrameInstancerCapacity = 1;
+
+// The sprite count each instancer is rebuilt empty at.
+constexpr int kInstancerEmptyCount = 0;
+
+// The colours freshly built vertices take: the marker's opaque black, and the frame meshes' white at
+// zero alpha (the fade pass in Process supplies the real alpha).
+constexpr unsigned char kVertexChannelMin = 0;
+constexpr unsigned char kVertexChannelMax = 255;
+constexpr unsigned char kVertexAlphaClear = 0;
+constexpr unsigned char kVertexAlphaOpaque = 255;
+
+// The marker mesh's ten strip indices: its eight ring vertices, then the first two again to close
+// the ring (@ghidraAddress 0x30ce28).
+constexpr int kMarkerMeshIndices[] = {0, 1, 2, 3, 4, 5, 6, 7, 0, 1};
+
+// The 2D overlay mesh's twenty-eight strip indices: three eight-vertex bands joined by a degenerate
+// index pair each (@ghidraAddress 0x30ce50).
+constexpr short kFrameMesh2dIndices[] = {0,  1,  2,  3,  4,  5,  6,  7,  7,  8,  8,  9,  10, 11,
+                                         12, 13, 14, 15, 15, 16, 16, 17, 18, 19, 20, 21, 22, 23};
+
+// The 3D border's four atlas rectangles, one per quad (@ghidraAddress 0x2f1ae8).
+constexpr SpriteUvEntry kFrameBorderUv[kFrameQuadCount] = {
+    {0.0f, 0.0f, 0.2578125f, 0.625f},
+    {0.2890625f, 0.0f, 0.2578125f, 0.625f},
+    {0.5625f, 0.0009765625f, 0.1875f, 0.8183594f},
+    {0.765625f, 0.0009765625f, 0.1875f, 0.8183594f},
+};
+
+// The shared-atlas rows the overlay's centre tab and bottom strip draw from. The Colette theme takes
+// a different pair.
+constexpr int kOverlayTabUvIndexDefault = 443;
+constexpr int kOverlayStripUvIndexDefault = 444;
+constexpr int kOverlayTabUvIndexColette = 451;
+constexpr int kOverlayStripUvIndexColette = 452;
+
+// Whether each corner takes the rectangle's far U and far V edge rather than its origin. The border's
+// first two quads walk their corners in one order and its last two in another; every overlay band
+// uses the third order.
+constexpr bool kBorderCornerOrderA[kQuadVertexCount][2] = {
+    {false, true}, {false, false}, {true, true}, {true, false}};
+constexpr bool kBorderCornerOrderB[kQuadVertexCount][2] = {
+    {false, false}, {true, false}, {false, true}, {true, true}};
+constexpr bool kOverlayCornerOrder[kOverlayBandVertexCount][2] = {{false, false},
+                                                                  {false, true},
+                                                                  {true, false},
+                                                                  {true, true},
+                                                                  {true, false},
+                                                                  {true, true},
+                                                                  {false, false},
+                                                                  {false, true}};
+
+// Expands one corner of an atlas rectangle into a UV pair.
+inline S_VECTOR2 CornerUv(const SpriteUvEntry &rect, bool bFarU, bool bFarV) {
+    return S_VECTOR2{bFarU ? rect.flOriginU + rect.flSizeU : rect.flOriginU,
+                     bFarV ? rect.flOriginV + rect.flSizeV : rect.flOriginV};
+}
+
+// The 3D border mesh's sixteen UV pairs. The binary computes them once from the four atlas
+// rectangles above into a one-shot-guarded function-local static (@ghidraAddress 0x3dedb8).
+struct FrameBorderUvTable {
+    S_VECTOR2 aUv[kFrameMesh3dVertexCount] = {};
+};
+
+FrameBorderUvTable BuildFrameBorderUvTable() {
+    FrameBorderUvTable table;
+    for (int nQuad = 0; nQuad < kFrameQuadCount; ++nQuad) {
+        const auto &order =
+            nQuad < kBorderFlippedQuadStart ? kBorderCornerOrderA : kBorderCornerOrderB;
+        for (int nCorner = 0; nCorner < kQuadVertexCount; ++nCorner) {
+            table.aUv[nQuad * kQuadVertexCount + nCorner] =
+                CornerUv(kFrameBorderUv[nQuad], order[nCorner][0], order[nCorner][1]);
+        }
+    }
+    return table;
+}
+
+} // namespace
+
+/** @ghidraAddress 0x17b654 */
+void MainFrameLayer::BuildSprites() {
+    // The default frame type is a sentinel meaning "whatever frame the player has equipped"; resolve
+    // it once and keep the resolved type.
+    if (m_nFrameType == kDefaultFrameType) {
+        m_nFrameType = GameSystem::GetGameSystem()->GetFrameType();
+    }
+
+    // Drop both atlases before reloading them, so a frame-type change does not leak the old ones.
+    if (m_pFrameTexture != nullptr) {
+        m_pFrameTexture->Release();
+        m_pFrameTexture = nullptr;
+    }
+    if (m_pOverlayTexture != nullptr) {
+        m_pOverlayTexture->Release();
+        m_pOverlayTexture = nullptr;
+    }
+    // The sentinel survives only when the game system is itself unset, in which case the layer builds
+    // its meshes untextured.
+    if (m_nFrameType != kDefaultFrameType) {
+        m_pFrameTexture = ne::C_TEXTURE::FindOrLoadCached(g_aFrameTextureNames[m_nFrameType]);
+        m_pOverlayTexture = ne::C_TEXTURE::FindOrLoadCached(g_szGmParts2TextureKey);
+    }
+
+    // The marker's ring, built once. Its vertices stay at the origin until Build3dVertices lays them
+    // out, and it starts hidden.
+    if (m_pMarkerMesh3d == nullptr) {
+        m_pMarkerMesh3d = ne::CreatePolygon3dMesh(kMeshDrawMode,
+                                                  kMarkerMesh3dVertexCount,
+                                                  kMarkerVertexFormat,
+                                                  kVertexBufferExternal,
+                                                  kMarkerMesh3dIndexCount,
+                                                  kIndexBufferExternal);
+        m_pMarkerMesh3d->RegisterGlobal();
+        m_pMarkerMesh3d->SetVisible(false);
+        for (int nVertex = 0; nVertex < static_cast<int>(kMarkerMesh3dVertexCount); ++nVertex) {
+            m_pMarkerMesh3d->SetPos(nVertex, S_VECTOR3{0.0f, 0.0f, 0.0f});
+            m_pMarkerMesh3d->SetRGBA(nVertex,
+                                     kVertexChannelMin,
+                                     kVertexChannelMin,
+                                     kVertexChannelMin,
+                                     kVertexAlphaOpaque);
+        }
+        for (int nIndex = 0; nIndex < static_cast<int>(kMarkerMesh3dIndexCount); ++nIndex) {
+            m_pMarkerMesh3d->SetIndex(nIndex,
+                                      static_cast<unsigned short>(kMarkerMeshIndices[nIndex]));
+        }
+    }
+
+    // The frame border's mesh. Unlike the marker it is re-textured on every build.
+    if (m_pFrameMesh3d == nullptr) {
+        m_pFrameMesh3d = ne::CreatePolygon3dMesh(kMeshDrawMode,
+                                                 kFrameMesh3dVertexCount,
+                                                 kTexturedVertexFormat,
+                                                 kVertexBufferExternal,
+                                                 kFrameMesh3dIndexCount,
+                                                 kIndexBufferExternal);
+        m_pFrameMesh3d->RegisterGlobal();
+    }
+    m_pFrameMesh3d->SetTexture(m_pFrameTexture);
+    m_pFrameMesh3d->SetVisible(true);
+    m_pFrameMesh3d->SetTexEnvParam(kTexEnvParamSlotA, kTexEnvParamValue);
+    m_pFrameMesh3d->SetTexEnvParam(kTexEnvParamSlotB, kTexEnvParamValue);
+
+    static const FrameBorderUvTable kBorderUv = BuildFrameBorderUvTable();
+    for (int nVertex = 0; nVertex < kFrameMesh3dVertexCount; ++nVertex) {
+        m_pFrameMesh3d->SetPos(nVertex, S_VECTOR3{0.0f, 0.0f, 0.0f});
+        m_pFrameMesh3d->SetRGBA(
+            nVertex, kVertexChannelMax, kVertexChannelMax, kVertexChannelMax, kVertexAlphaClear);
+        m_pFrameMesh3d->SetUvFromVec(nVertex, &kBorderUv.aUv[nVertex]);
+    }
+
+    // Stitch the four quads into one triangle strip, repeating the vertex on each side of a quad
+    // boundary so the connecting triangles collapse.
+    int nStripIndex = 0;
+    for (int nVertex = 0; nVertex < kFrameMesh3dVertexCount; nVertex += kQuadVertexCount) {
+        if (nVertex != 0) {
+            m_pFrameMesh3d->SetIndex(nStripIndex++, static_cast<unsigned short>(nVertex));
+        }
+        for (int nCorner = 0; nCorner < kQuadVertexCount; ++nCorner) {
+            m_pFrameMesh3d->SetIndex(nStripIndex++, static_cast<unsigned short>(nVertex + nCorner));
+        }
+        if (nVertex + kQuadVertexCount >= kFrameMesh3dVertexCount) {
+            break;
+        }
+        m_pFrameMesh3d->SetIndex(nStripIndex++,
+                                 static_cast<unsigned short>(nVertex + kQuadVertexCount - 1));
+    }
+
+    // The 2D overlay mesh hangs off the border mesh, so it inherits its transform.
+    if (m_pFrameMesh2d == nullptr) {
+        m_pFrameMesh2d = ne::CreatePolygon2dMesh(kMeshDrawMode,
+                                                 kFrameMesh2dVertexCount,
+                                                 kTexturedVertexFormat,
+                                                 kVertexBufferExternal,
+                                                 kFrameMesh2dIndexCount,
+                                                 kIndexBufferExternal);
+        m_pFrameMesh3d->AttachChild(m_pFrameMesh2d);
+    }
+    m_pFrameMesh2d->SetTexture(m_pOverlayTexture);
+    m_pFrameMesh2d->SetVisible(true);
+
+    // The Colette theme draws the overlay from a different pair of atlas rows.
+    const RBUserSettingDataTheme theme = [RBUserSettingData sharedInstance].thema;
+    const bool bColette = theme == RBUserSettingDataThemeColette;
+    const SpriteUvEntry &tabRect =
+        g_aSpriteUvTable[bColette ? kOverlayTabUvIndexColette : kOverlayTabUvIndexDefault];
+    const SpriteUvEntry &stripRect =
+        g_aSpriteUvTable[bColette ? kOverlayStripUvIndexColette : kOverlayStripUvIndexDefault];
+
+    // The centre tab takes the first rectangle and the two bottom-strip bands the second; all three
+    // walk their corners in the same order.
+    S_VECTOR2 aOverlayUv[kFrameMesh2dVertexCount];
+    for (int nBand = 0; nBand < kOverlayBandCount; ++nBand) {
+        const SpriteUvEntry &rect = nBand < kOverlayTabBandCount ? tabRect : stripRect;
+        for (int nCorner = 0; nCorner < kOverlayBandVertexCount; ++nCorner) {
+            aOverlayUv[nBand * kOverlayBandVertexCount + nCorner] =
+                CornerUv(rect, kOverlayCornerOrder[nCorner][0], kOverlayCornerOrder[nCorner][1]);
+        }
+    }
+
+    for (int nVertex = 0; nVertex < kFrameMesh2dVertexCount; ++nVertex) {
+        m_pFrameMesh2d->SetPos(nVertex, S_VECTOR2{0.0f, 0.0f});
+        m_pFrameMesh2d->SetRGBA(
+            nVertex, kVertexChannelMax, kVertexChannelMax, kVertexChannelMax, kVertexAlphaClear);
+        m_pFrameMesh2d->SetUVFromVec(nVertex, &aOverlayUv[nVertex]);
+    }
+    for (int nIndex = 0; nIndex < kFrameMesh2dIndexCount; ++nIndex) {
+        m_pFrameMesh2d->SetIndex(nIndex, static_cast<unsigned short>(kFrameMesh2dIndices[nIndex]));
+    }
+
+    // Both sprite instancers hang off the overlay mesh and are rebuilt empty. Only the overlay
+    // instancer is textured here; the frame instancer's texture comes from SetMainFrameTexture.
+    if (m_apInstancers[MainFrameInstancerOverlay] == nullptr) {
+        m_apInstancers[MainFrameInstancerOverlay] =
+            ne::CreateSpriteInstancer(kOverlayInstancerCapacity);
+        m_pFrameMesh2d->AttachChild(m_apInstancers[MainFrameInstancerOverlay]);
+    }
+    m_apInstancers[MainFrameInstancerOverlay]->SetVisible(true);
+    m_apInstancers[MainFrameInstancerOverlay]->SetRefCountedMember(m_pOverlayTexture);
+    m_apInstancers[MainFrameInstancerOverlay]->SetSpriteCount(kInstancerEmptyCount);
+
+    if (m_apInstancers[MainFrameInstancerFrame] == nullptr) {
+        m_apInstancers[MainFrameInstancerFrame] =
+            ne::CreateSpriteInstancer(kFrameInstancerCapacity);
+        m_pFrameMesh2d->AttachChild(m_apInstancers[MainFrameInstancerFrame]);
+    }
+    m_apInstancers[MainFrameInstancerFrame]->SetVisible(true);
+    m_apInstancers[MainFrameInstancerFrame]->SetSpriteCount(kInstancerEmptyCount);
+
+    SetOverlayLayout();
+    Build3dVertices();
+    m_bReady = true;
 }
