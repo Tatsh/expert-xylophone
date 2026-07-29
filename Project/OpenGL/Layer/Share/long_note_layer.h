@@ -1,13 +1,12 @@
 /**
  * @file
- * The long-note particle effect layer, @c LongNoteLayer.
+ * The long-note layer, @c LongNoteLayer.
  */
 
 #pragma once
 
-#include "note_layer.h"
-
-struct S_VECTOR2;
+#include "playfieldlayerbase.h"
+#include "s_vector2.h"
 
 namespace ne {
 class C_TEXTURE;
@@ -15,86 +14,54 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The long-note particle effect layer: a 256-slot particle pool drawn through three sprite
- * batches.
+ * @brief The long-note layer (the held-note connector graphics).
  *
- * A process-wide singleton, built on first access, deriving from the shared @c NoteLayer particle
- * base (which owns the pool, batches, counts, capacities, and scroll phases, and provides the
- * per-frame @c Update and low-level @c CreateSprite). This layer adds the long-note-specific batch
- * build, particle spawn, and connector-sprite emission. The class carries no RTTI, so the name is
- * inferred from its @c GetLongNoteLayer accessor. The trailing @c // +0xNN comments document the
- * original offsets for reference only.
- * @ghidraAddress LongNoteLayer (engine effect layer, 0x1c50 bytes)
+ * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
+ * atlas and three sprite instancers, drawn beneath the shared background layer, that present the
+ * long-note connectors, plus a pool of per-note draw records. The class carries no RTTI (it is
+ * non-polymorphic), so the name is taken from the @c long_note_layer.mm path its assertions embed.
+ * The trailing @c // +0xNN comments document the original 32-bit offsets for reference only.
  */
-class LongNoteLayer : public NoteLayer {
+class LongNoteLayer : public PlayFieldLayerBase {
 public:
+    // The number of connector sprite instancers the layer builds.
+    static constexpr int kBatchCount = 3;
+    // The sprite-instancer capacity each batch is built with.
+    static constexpr unsigned int kSpriteCapacity = 0x5a;
+
     /**
-     * @brief The process-wide long-note particle layer, created on first use.
+     * @brief The process-wide long-note layer, created on first use.
      * @return The shared layer.
-     * @ghidraAddress 0x188904
+     * @ghidraAddress 0x181310
      */
     static LongNoteLayer *shared();
 
     /**
-     * @brief Builds the three gm_parts1 particle sprite batches on first use.
+     * @brief Lazily builds the long-note sprites: loads the gm_parts1 atlas and creates the three
+     * sprite instancers (attaching each under the background layer's render object, making it
+     * visible, binding the atlas, flagging additive blend on the outer two, and, except on the
+     * tutorial hardware, enabling each batch's two texture-environment parameters), then resets the
+     * shared draw count.
      *
-     * Loads the atlas, creates each batch sized to its seeded capacity, attaches them under the
-     * background layer, makes them visible, flags additive blend on the outer two, seeds two texture
-     * parameters on the middle batch (non-tutorial build), and resets the shared particle active
-     * index. Guarded so it runs only once.
-     * @ghidraAddress 0x188954
+     * Guarded so the sprites are built only once.
+     * @ghidraAddress 0x181360
      */
-    void CreateSpriteBatches();
+    void LoadSprites();
 
     /**
-     * @brief Spawns a particle from the pool with a position, scale, and kind.
+     * @brief Consumes every queued note record and emits the connector sprites it describes.
      *
-     * Scans the pool from the shared active index for a free slot; on finding one it stores the
-     * particle kind (7 for @p nType 1, else 6), position, and scale, and advances the active index.
-     * A full pool drops the particle.
-     * @param flX The spawn X.
-     * @param flY The spawn Y.
-     * @param flScaleX The particle X scale.
-     * @param flScaleY The particle Y scale.
-     * @param nType The particle type selector (1 selects kind 7, else kind 6).
-     * @ghidraAddress 0x188c50
+     * Restarts the batch counts and advances the shared pulse clock, wrapping it into its period,
+     * then walks the record pool up to the shared draw count. Each live record is consumed and
+     * emits four body segments — plus a pulse segment while it is flagged and the clock is in its
+     * first half, and a tail once the connector is long enough — at the alpha its frame-table entry,
+     * side factor, and own alpha scale give it, rotated to the connector's direction (or to the
+     * record's own rotation when it carries one). The second shape selector chooses the alternate
+     * sprite set. Finally each batch's emitted count is published and the shared pool is released.
+     * @param flDelta The elapsed frame count.
+     * @ghidraAddress 0x181510
      */
-    void SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType);
-
-    /**
-     * @brief Spawns a long-note head/tail particle into the pool with a resolved sprite kind and
-     * rotation.
-     *
-     * Resolves the particle sprite kind from the note colour and end type (a head, @p nEndType 0,
-     * selects one of four fixed kinds from the two shape flags; a tail, end type 1, uses the colour's
-     * kind), and its rotation (a head is mirrored a half turn when its colour differs from the current
-     * play colour; a tail faces its travel direction from @c atan2 plus a quarter turn). It stores the
-     * particle in the first free pool slot from the shared active index, and — when @p bSpawnTrail is
-     * set — also spawns a trailing particle at the same position and scale.
-     * @param nColor The note's player colour (0 or 1).
-     * @param nEndType The note end type (0 head, 1 tail).
-     * @param nShapeFlagA The first head shape selector.
-     * @param nShapeFlagB The second head shape selector.
-     * @param bSpawnTrail Whether to also spawn a trailing particle.
-     * @param flX The spawn X.
-     * @param flY The spawn Y.
-     * @param flDirX The tail travel-direction X (for the tail rotation).
-     * @param flDirY The tail travel-direction Y (for the tail rotation).
-     * @param flScaleX The particle X scale.
-     * @param flScaleY The particle Y scale.
-     * @ghidraAddress 0x188a48
-     */
-    void Create(int nColor,
-                int nEndType,
-                int nShapeFlagA,
-                int nShapeFlagB,
-                int bSpawnTrail,
-                float flX,
-                float flY,
-                float flDirX,
-                float flDirY,
-                float flScaleX,
-                float flScaleY);
+    void BuildLongNoteConnectorSprites(float flDelta);
 
     /**
      * @brief Emits one long-note sprite of the given type into its batch.
@@ -120,14 +87,81 @@ public:
 
 private:
     /**
-     * @brief Constructs the layer: chains the base constructor, clears the header and particle pool,
-     * resets the shared active index, and seeds each sprite batch's capacity from the seed tables.
-     * @ghidraAddress 0x188850
+     * @brief Constructs the layer, chaining the base constructor and zero-clearing its own state.
+     * @ghidraAddress 0x1812a0
      */
     LongNoteLayer();
 
-    // The pool, sprite batches, counts, capacities, built flag, and scroll phases are inherited from
-    // NoteLayer.
+    ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts1 atlas.
+    ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
+        {};                                // +0x10: the per-batch sprite instancers.
+    int m_aSpriteCounts[kBatchCount] = {}; // +0x28: each batch's initial count.
+    bool m_bBuilt = {};                    // +0x34: set once the sprites are built.
+    // +0x35..+0x37 is alignment padding before the base offset.
+    // unsigned char m_aPad35[3]; // +0x35 (alignment padding, compiler-inserted)
+    // +0x38: the shared pulse clock, advanced each frame and wrapped into its period. The
+    // constructor seeds it to -1.
+    float m_flPulseClock = {};
+
+    /**
+     * @brief One pooled connector draw record (36 bytes): its active flag, the two shape selectors,
+     * the note colour, the connector's two endpoints, three more flags, an alpha scale, and an
+     * optional rotation override.
+     */
+    struct NoteRecord {
+        bool bActive = {};              // +0x00: whether the slot holds a live connector.
+        unsigned char nFlagA = {};      // +0x01: the first shape selector.
+        unsigned char nFlagB = {};      // +0x02: the second shape selector.
+        unsigned char m_aPad03[1] = {}; // +0x03
+        int nColor = {};                // +0x04: the note colour.
+        S_VECTOR2 startPoint;           // +0x08: the connector's start point.
+        S_VECTOR2 endPoint;             // +0x10: the connector's end point.
+        unsigned char nFlagC = {};      // +0x18: gates the pulse-phase sprite.
+        unsigned char nFlagD = {};      // +0x19: indexes the frame-alpha table.
+        unsigned char nFlagE = {};      // +0x1a: set when the record carries its own rotation.
+        unsigned char m_aPad1b[1] = {}; // +0x1b
+        float flAlphaScale = {};        // +0x1c: scales the record's emitted alpha.
+        float flRotation = {};          // +0x20: the rotation used when nFlagE is set.
+    };
+    // The number of pooled connector draw records.
+    static constexpr int kNoteRecordCount = 30;
+    // +0x3c..+0x473: the pooled connector draw records.
+    NoteRecord m_aNoteRecords[kNoteRecordCount] = {}; // +0x3c
+    unsigned char m_aReserved474[0xc] = {};           // +0x474: trailing state to the 0x480 size.
+
+public:
+    /**
+     * @brief Queues a connector into the first free pool slot.
+     *
+     * Scans the pool from its head for a free slot and, on finding one, stores the note colour, the
+     * two shape selectors and three flags, the connector's two endpoints, the alpha scale, and the
+     * rotation override, then advances the shared draw count. A full pool drops the note.
+     * @param nColor The note colour (0 or 1).
+     * @param nFlagA The first shape selector.
+     * @param nFlagB The second shape selector.
+     * @param flStartX The connector's start X.
+     * @param flStartY The connector's start Y.
+     * @param flEndX The connector's end X.
+     * @param flEndY The connector's end Y.
+     * @param nFlagC Gates the pulse-phase sprite.
+     * @param nFlagD Indexes the frame-alpha table.
+     * @param flAlphaScale Scales the record's emitted alpha.
+     * @param nFlagE Set when @p flRotation is used instead of the derived angle.
+     * @param flRotation The rotation used when @p nFlagE is set.
+     * @ghidraAddress 0x181440
+     */
+    void Create(int nColor,
+                unsigned char nFlagA,
+                unsigned char nFlagB,
+                float flStartX,
+                float flStartY,
+                float flEndX,
+                float flEndY,
+                unsigned char nFlagC,
+                unsigned char nFlagD,
+                float flAlphaScale,
+                unsigned char nFlagE,
+                float flRotation);
 };
 
 // code: language=C++

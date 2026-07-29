@@ -1,11 +1,3 @@
-//
-//  long_note_layer.mm
-//  REFLEC BEAT plus
-//
-//  The long-note particle effect layer (LongNoteLayer). Reconstructed from Ghidra project rb458,
-//  program rb458. @ghidraAddress values are relative to the program image base.
-//
-
 #include "long_note_layer.h"
 
 #include <cassert>
@@ -19,29 +11,6 @@
 #include "neTexture.h"
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
-
-namespace {
-// The particle kinds: type 1 spawns kind 7, every other type kind 6.
-constexpr int kParticleKindDefault = 6;
-constexpr int kParticleKindAlt = 7;
-constexpr int kParticleTypeAlt = 1;
-
-// The per-batch capacity seed tables: for each of the twelve entries, the destination batch index
-// and the count added to that batch's capacity (@ghidraAddress 0x30f6f4 indices, 0x30f724 counts).
-constexpr int kBatchSeedIndex[] = {0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1};
-constexpr int kBatchSeedCount[] = {512, 256, 256, 256, 256, 256, 256, 512, 256, 256, 256, 256};
-constexpr int kBatchSeedEntryCount = 12;
-
-// The atlas the particle sprites draw from.
-constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
-
-// The particle batches draw additively; the middle batch seeds two texture parameters.
-constexpr int kAdditiveBlendMode = 1;
-constexpr int kTexParamValue = 1;
-} // namespace
-
-// The process-wide long-note particle layer, created lazily by shared().
-static LongNoteLayer *g_pLongNoteLayer = nullptr; // @ghidraAddress 0x3df230
 
 // The shared sprite-UV atlas the sprite types index (@ghidraAddress 0x2ef668).
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
@@ -88,53 +57,118 @@ const LongNoteSpriteType g_aLongNoteSpriteTypes[kLongNoteSpriteTypeCount] = {
     {0, 40.0f, 0.0f, 80.0f, 18.0f, 52},   // 35
 };
 
-/** @ghidraAddress 0x188904 */
+// The process-wide long-note layer, created lazily by shared().
+static LongNoteLayer *g_pLongNoteLayer = nullptr; // @ghidraAddress 0x3def00
+
+// The shared note-body draw count, reset when the layer's sprites are built.
+static int g_nLongNoteDrawCount = 0; // @ghidraAddress 0x3def08
+
+namespace {
+
+// The atlas the note bodies draw from (@ghidraAddress 0x3ceaa0).
+constexpr const char *kTextureName = "00_texture/gm_parts1";
+
+// The additive blend-mode identifier the outer two batches use.
+constexpr int kAdditiveBlendMode = 1;
+
+// The two texture-environment parameter slots the builder seeds (to 1 each), and that value.
+constexpr int kTexParamSlotHigh = 1;
+constexpr int kTexParamSlotLow = 0;
+constexpr int kTexParamEnabled = 1;
+
+} // namespace
+
+/** @ghidraAddress 0x1812a0 */
+LongNoteLayer::LongNoteLayer() {
+    m_flBaseOffset = -1.0f;
+}
+
+/** @ghidraAddress 0x181310 */
 LongNoteLayer *LongNoteLayer::shared() {
     if (g_pLongNoteLayer == nullptr) {
+        // The binary allocates the raw 0x480-byte object and runs the constructor.
         g_pLongNoteLayer = new LongNoteLayer();
     }
     return g_pLongNoteLayer;
 }
 
-/** @ghidraAddress 0x188850 */
-LongNoteLayer::LongNoteLayer() {
-    // The base constructor and member initialisers clear the header and particle pool; reset the
-    // shared active index and accumulate each batch's capacity from the seed tables.
-    g_nParticleActiveIndex = 0;
-    for (int i = 0; i < kBatchSeedEntryCount; ++i) {
-        m_anBatchCapacity[kBatchSeedIndex[i]] += kBatchSeedCount[i];
-    }
-}
-
-/** @ghidraAddress 0x188954 */
-void LongNoteLayer::CreateSpriteBatches() {
+/** @ghidraAddress 0x181360 */
+void LongNoteLayer::LoadSprites() {
     if (m_bBuilt) {
         return;
     }
 
-    ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
-    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
-    for (int i = 0; i < kBatchCount; ++i) {
-        ne::C_SPRITE_INSTANCING_2D *pSprite =
-            ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_anBatchCapacity[i]));
-        m_apSprites[i] = pSprite;
+    // The sprites hang beneath the shared background layer's render object rather than the global
+    // scene root.
+    BgLayer *pBackgroundLayer = BgLayer::GetBackgroundLayer();
+    ne::C_RENDER *pParent = pBackgroundLayer->GetBackgroundRenderObject();
+
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kTextureName);
+
+    // Build the three sprite batches, attach each under the background render object, make it
+    // visible, bind the atlas, clear its sprite count, flag additive blend on the outer two, and,
+    // except on the tutorial hardware, enable each batch's two texture-environment parameters.
+    for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
+        ne::C_SPRITE_INSTANCING_2D *pSprite = ne::CreateWorldSpriteBatch(kSpriteCapacity);
+        m_apSprites[nBatch] = pSprite;
         pParent->AttachChild(pSprite);
         pSprite->SetVisible(true);
         pSprite->SetRefCountedMember(m_pTexture);
         pSprite->SetSpriteCount(0);
-        // The outer two batches (0 and 2) draw additively.
-        if (i != 1) {
+        if (nBatch != 1) {
             pSprite->SetBlendMode(kAdditiveBlendMode);
         }
-        // The middle batch seeds two texture parameters on a non-tutorial build.
-        if (i == 1 && !IsHardwareType9()) {
-            pSprite->SetTexParam(1, kTexParamValue);
-            pSprite->SetTexParam(0, kTexParamValue);
+        if (!IsHardwareType9()) {
+            pSprite->SetTexParam(kTexParamSlotHigh, kTexParamEnabled);
+            pSprite->SetTexParam(kTexParamSlotLow, kTexParamEnabled);
         }
     }
 
     m_bBuilt = true;
-    g_nParticleActiveIndex = 0;
+    g_nLongNoteDrawCount = 0;
+}
+
+namespace {
+// The player-colour count the spawner asserts against.
+constexpr int kPlayerColorMax = 2;
+} // namespace
+
+/** @ghidraAddress 0x181440 */
+void LongNoteLayer::Create(int nColor,
+                           unsigned char nFlagA,
+                           unsigned char nFlagB,
+                           float flStartX,
+                           float flStartY,
+                           float flEndX,
+                           float flEndY,
+                           unsigned char nFlagC,
+                           unsigned char nFlagD,
+                           float flAlphaScale,
+                           unsigned char nFlagE,
+                           float flRotation) {
+    assert(nColor >= 0 && nColor < kPlayerColorMax);
+
+    // Scan the pool from its head for a free slot; a full pool drops the note.
+    for (int nSlot = g_nLongNoteDrawCount; nSlot < kNoteRecordCount; ++nSlot) {
+        NoteRecord &record = m_aNoteRecords[nSlot];
+        if (!record.bActive) {
+            record.nColor = nColor;
+            record.bActive = true;
+            record.nFlagA = nFlagA;
+            record.nFlagB = nFlagB;
+            record.startPoint.x = flStartX;
+            record.startPoint.y = flStartY;
+            record.endPoint.x = flEndX;
+            record.endPoint.y = flEndY;
+            record.nFlagC = nFlagC;
+            record.nFlagD = nFlagD;
+            record.flAlphaScale = flAlphaScale;
+            record.nFlagE = nFlagE;
+            record.flRotation = flRotation;
+            ++g_nLongNoteDrawCount;
+            return;
+        }
+    }
 }
 
 /** @ghidraAddress 0x1818b4 */
@@ -150,7 +184,7 @@ void LongNoteLayer::CreateSprite(int nType,
     const LongNoteSpriteType &spriteType = g_aLongNoteSpriteTypes[nType];
     const SpriteUvEntry &uv = g_aScoreGaugeUvTable[spriteType.nUvIndex];
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[spriteType.nBatchIndex];
-    const int nIndex = m_anBatchCount[spriteType.nBatchIndex];
+    const int nIndex = m_aSpriteCounts[spriteType.nBatchIndex];
 
     pBatch->SetSpritePosition(nIndex, *pPosition);
     pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{spriteType.flAnchorX, spriteType.flAnchorY});
@@ -174,96 +208,180 @@ void LongNoteLayer::CreateSprite(int nType,
     }
     pBatch->SetSpriteScale(nIndex, flScale, flScaleY);
 
-    ++m_anBatchCount[spriteType.nBatchIndex];
-}
-
-/** @ghidraAddress 0x188c50 */
-void LongNoteLayer::SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType) {
-    const int nKind = nType == kParticleTypeAlt ? kParticleKindAlt : kParticleKindDefault;
-    // Scan from the shared active index for a free slot; a full pool drops the particle.
-    for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
-        Particle &particle = m_aParticles[nSlot];
-        if (!particle.bActive) {
-            particle.nKind = nKind;
-            particle.bActive = true;
-            particle.flX = flX;
-            particle.flY = flY;
-            particle.flRotation = 0.0f;
-            particle.flScaleX = flScaleX;
-            particle.flScaleY = flScaleY;
-            ++g_nParticleActiveIndex;
-            return;
-        }
-    }
+    ++m_aSpriteCounts[spriteType.nBatchIndex];
 }
 
 namespace {
-// The two note end types the spawner accepts.
-constexpr int kEndTypeHead = 0;
-constexpr int kEndTypeTail = 1;
-// The player-colour count.
-constexpr int kPlayerColorMax = 2;
-// The quarter-turn added to a tail particle's travel-direction angle (@ghidraAddress 0x2fedd8).
-constexpr double kTailAngleBias = 1.5707963267948966;
-// The half-turn a head particle is mirrored by when its colour differs from the play colour
-// (@ghidraAddress 0x2fe894).
-constexpr float kHeadMirrorRotation = 3.1415927f;
-// The tail particle sprite kinds, by colour.
-constexpr int kTailKindColor0 = 4;
-constexpr int kTailKindColor1 = 5;
+// The pulse clock's period and its negative (subtracted to wrap) (@ghidraAddress 0x2fee08/0x2fee0c).
+constexpr float kPulsePeriod = 66.66666412f;
+constexpr float kPulseWrap = -66.66666412f;
+// The pulse phase below which the flagged extra connector sprite is drawn (@ghidraAddress 0x2fee10).
+constexpr float kPulseSpritePhase = 33.33333206f;
+// The frame-alpha table (@ghidraAddress 0x2fee30), indexed by the record's fourth flag byte.
+constexpr float kFrameAlphaTable[] = {255.0f, 128.0f};
+// The quarter-turn added to the connector's travel-direction angle (@ghidraAddress 0x2fedd8).
+constexpr double kConnectorAngleBias = 1.5707963267948966;
+// The length at or above which the connector is long enough to carry an angle and a tail sprite.
+constexpr float kMinConnectorLength = 1.0f;
+// The player colour whose own side keeps full intensity.
+constexpr int kPlayColorSecond = 1;
+// The sprite-type offsets each connector emits, relative to the record's base type. The four body
+// segments always draw; the pulse segment draws only while the record is flagged and the pulse clock
+// is in its first half, and the tail only once the connector is long enough.
+constexpr int kOffsetBody0 = 0;
+constexpr int kOffsetBody1 = 4;
+constexpr int kOffsetBody2 = 8;
+constexpr int kOffsetBody3 = 0xc;
+constexpr int kOffsetPulse = 0x10;
+constexpr int kOffsetTail = 0x14;
+// The same six sprites in the alternate (second-selector) set, which is packed two apart.
+constexpr int kAltOffsetBody0 = 0x18;
+constexpr int kAltOffsetBody1 = 0x1a;
+constexpr int kAltOffsetBody2 = 0x1c;
+constexpr int kAltOffsetBody3 = 0x1e;
+constexpr int kAltOffsetPulse = 0x20;
+constexpr int kAltOffsetTail = 0x22;
+// The base sprite type is the note colour, shifted by this when the first selector is set.
+constexpr int kFirstSelectorTypeShift = 2;
 } // namespace
 
-/** @ghidraAddress 0x188a48 */
-void LongNoteLayer::Create(int nColor,
-                           int nEndType,
-                           int nShapeFlagA,
-                           int nShapeFlagB,
-                           int bSpawnTrail,
-                           float flX,
-                           float flY,
-                           float flDirX,
-                           float flDirY,
-                           float flScaleX,
-                           float flScaleY) {
-    assert(nColor >= 0 && nColor < kPlayerColorMax);
-    assert(nEndType >= 0 && nEndType < kPlayerColorMax);
-
-    int nKind;
-    float flRotation;
-    if (nEndType != kEndTypeHead) {
-        // A tail faces its travel direction, a quarter turn past the raw angle.
-        nKind = nColor == 1 ? kTailKindColor1 : kTailKindColor0;
-        flRotation = static_cast<float>(
-            std::atan2(static_cast<double>(-flDirY), static_cast<double>(flDirX)) + kTailAngleBias);
-    } else {
-        // A head selects one of four fixed kinds from the two shape flags, per colour.
-        if (nColor == 1) {
-            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
-        } else {
-            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 0xb : 0xa) : (nShapeFlagB != 0 ? 3 : 1);
-        }
-        // It is mirrored a half turn when its colour differs from the current play colour.
-        flRotation =
-            GameSystem::GetGameSystem()->GetPlayColor() == nColor ? 0.0f : kHeadMirrorRotation;
+/** @ghidraAddress 0x181510 */
+void LongNoteLayer::BuildLongNoteConnectorSprites(float flDelta) {
+    // Restart the batch counts and advance the shared pulse clock, wrapping it into its period.
+    for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
+        m_aSpriteCounts[nBatch] = 0;
+    }
+    m_flPulseClock += flDelta;
+    while (m_flPulseClock > kPulsePeriod) {
+        m_flPulseClock += kPulseWrap;
     }
 
-    // Store the particle in the first free pool slot from the shared active index.
-    for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
-        Particle &particle = m_aParticles[nSlot];
-        if (!particle.bActive) {
-            particle.nKind = nKind;
-            particle.bActive = true;
-            particle.flX = flX;
-            particle.flY = flY;
-            particle.flRotation = flRotation;
-            particle.flScaleX = flScaleX;
-            particle.flScaleY = flScaleY;
-            ++g_nParticleActiveIndex;
-            // Optionally spawn a trailing particle at the same position and scale.
-            if (bSpawnTrail != 0) {
-                SpawnParticle(flX, flY, flScaleX, flScaleY, nColor);
+    // The two per-side alpha factors: the note's own side keeps full intensity, the far side dims to
+    // the game system's cross-side alpha (chosen by which side is the current play colour).
+    GameSystem *pGameSystem = GameSystem::GetGameSystem();
+    const bool bColorIsOne = pGameSystem->GetPlayColor() == kPlayColorSecond;
+    const float flCrossAlpha = pGameSystem->GetRivalAlpha();
+    const float flSideFactor0 = bColorIsOne ? flCrossAlpha : 1.0f;
+    const float flSideFactor1 = bColorIsOne ? 1.0f : flCrossAlpha;
+    const float flBaseScale = pGameSystem->GetSheetRadiusScaled();
+
+    for (int nSlot = 0; nSlot < kNoteRecordCount; ++nSlot) {
+        NoteRecord &record = m_aNoteRecords[nSlot];
+        // Slots past the shared draw count are retired without drawing.
+        if (nSlot >= g_nLongNoteDrawCount) {
+            record.bActive = false;
+            continue;
+        }
+        if (!record.bActive) {
+            continue;
+        }
+        record.bActive = false;
+
+        // The connector vector between the record's two endpoints, its length, and its angle.
+        S_VECTOR2 vConnector = record.startPoint;
+        SubtractVector2(&vConnector, &record.endPoint);
+        const float flLength = Vector2Length(&vConnector);
+        float flAngle = 0.0f;
+        if (record.nFlagE != 0) {
+            // A flagged record carries its own rotation instead of deriving one.
+            flAngle = record.flRotation;
+        } else if (flLength >= kMinConnectorLength) {
+            flAngle = static_cast<float>(
+                std::atan2(static_cast<double>(-vConnector.y), static_cast<double>(vConnector.x)) +
+                kConnectorAngleBias);
+        }
+
+        const float flFrameAlpha = kFrameAlphaTable[record.nFlagD];
+        const float flSideFactor = record.nColor == 0 ? flSideFactor0 : flSideFactor1;
+        const int nBaseAlpha = static_cast<int>(flFrameAlpha * flSideFactor);
+        const auto nAlpha = static_cast<unsigned int>(
+            static_cast<int>(record.flAlphaScale * static_cast<float>(nBaseAlpha)));
+
+        // The base sprite type is the note colour, shifted when the first selector is set.
+        const int nBaseType =
+            record.nFlagA == 0 ? record.nColor : record.nColor + kFirstSelectorTypeShift;
+        const bool bPulseSprite = record.nFlagC != 0 && m_flPulseClock < kPulseSpritePhase;
+
+        if (record.nFlagB != 0 && record.nFlagA == 0) {
+            CreateSprite(nBaseType + kAltOffsetBody0,
+                         &record.startPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            CreateSprite(nBaseType + kAltOffsetBody1,
+                         &record.endPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            CreateSprite(nBaseType + kAltOffsetBody2,
+                         &record.startPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            CreateSprite(nBaseType + kAltOffsetBody3,
+                         &record.endPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            if (bPulseSprite) {
+                CreateSprite(nBaseType + kAltOffsetPulse,
+                             &record.endPoint,
+                             nAlpha,
+                             flLength,
+                             flAngle,
+                             flBaseScale);
             }
-            return;
+            if (flLength >= kMinConnectorLength) {
+                CreateSprite(nBaseType + kAltOffsetTail,
+                             &record.endPoint,
+                             nAlpha,
+                             flLength,
+                             flAngle,
+                             flBaseScale);
+            }
+        } else {
+            CreateSprite(nBaseType + kOffsetBody0,
+                         &record.startPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            CreateSprite(
+                nBaseType + kOffsetBody1, &record.endPoint, nAlpha, flLength, flAngle, flBaseScale);
+            CreateSprite(nBaseType + kOffsetBody2,
+                         &record.startPoint,
+                         nAlpha,
+                         flLength,
+                         flAngle,
+                         flBaseScale);
+            CreateSprite(
+                nBaseType + kOffsetBody3, &record.endPoint, nAlpha, flLength, flAngle, flBaseScale);
+            if (bPulseSprite) {
+                CreateSprite(nBaseType + kOffsetPulse,
+                             &record.endPoint,
+                             nAlpha,
+                             flLength,
+                             flAngle,
+                             flBaseScale);
+            }
+            if (flLength >= kMinConnectorLength) {
+                CreateSprite(nBaseType + kOffsetTail,
+                             &record.endPoint,
+                             nAlpha,
+                             flLength,
+                             flAngle,
+                             flBaseScale);
+            }
         }
     }
+
+    // Publish each batch's emitted count and release the shared pool.
+    for (int nBatch = 0; nBatch < kBatchCount; ++nBatch) {
+        m_apSprites[nBatch]->SetSpriteCount(m_aSpriteCounts[nBatch]);
+    }
+    g_nLongNoteDrawCount = 0;
 }

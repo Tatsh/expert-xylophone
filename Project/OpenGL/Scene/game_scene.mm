@@ -59,10 +59,10 @@
 #include "main_frame_layer.h"
 #include "music_sheet.h"
 #include "neTexture.h"
-#include "note_body_layer.h"
 #include "note_charge_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
+#include "note_layer.h"
 #include "note_model.h"
 #include "note_replay.h"
 #include "note_result_layer.h"
@@ -1717,12 +1717,12 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
     ExplosionEffectLayer::shared()->Process(flDelta);
     JudgeScoreLayer::shared()->RenderScoreGaugeEffects(flDelta);
     NoteResultLayer::shared()->Update(flDelta);
-    NoteBodyLayer::shared()->BuildLongNoteConnectorSprites(flDelta);
+    LongNoteLayer::shared()->BuildLongNoteConnectorSprites(flDelta);
     NoteTrailLayer::shared()->Update(flDelta);
     SlideNoteLayer::shared()->Update(flDelta);
     SlideNoteResultLayer::shared()->Update(flDelta);
     NoteChargeLayer::shared()->Update(flDelta);
-    LongNoteLayer::shared()->Update(flDelta);
+    NoteLayer::shared()->Update(flDelta);
     // The frame delta is set up for this call too, but the chain layer takes no argument: it
     // overwrites the register from the game system before ever reading it.
     ChainConnectorLayer::shared()->Update();
@@ -1787,8 +1787,8 @@ void GameScene::InitializePlayFieldLayersForTheme() {
     ClearGaugeLayer::shared()->CreateSprites();
     JudgeScoreLayer::shared()->LoadSprites();
     ChainConnectorLayer::shared()->CreateSprites();
-    NoteBodyLayer::shared()->LoadNoteBodySprites();
-    LongNoteLayer::shared()->CreateSpriteBatches();
+    LongNoteLayer::shared()->LoadSprites();
+    NoteLayer::shared()->CreateSpriteBatches();
     NoteTrailLayer::shared()->LoadNoteTrailSprites();
     SlideNoteLayer::shared()->BuildSprites();
     SlideNoteResultLayer::shared()->BuildSpriteBatch();

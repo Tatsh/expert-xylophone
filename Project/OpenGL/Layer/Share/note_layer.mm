@@ -2,18 +2,23 @@
 //  note_layer.mm
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458.
+//  The note particle layer (NoteLayer). Reconstructed from Ghidra project rb458,
+//  program rb458. @ghidraAddress values are relative to the program image base.
 //
 
 #include "note_layer.h"
 
 #include <cassert>
+#include <cmath>
 
+#include "bg_layer.h"
 #include "gamesystem.h"
+#include "neRender.h"
 #include "neSpriteInstancing.h"
+#include "neTexture.h"
 #include "s_vector2.h"
 
-// The shared particle active index (defined here as the note-layer base owns it).
+// The shared particle active index (defined here as the note layer owns it).
 int g_nParticleActiveIndex = {}; // @ghidraAddress 0x3df228
 
 namespace {
@@ -312,4 +317,167 @@ void NoteLayer::Update(float flDelta) {
         m_apSprites[nBatch]->SetSpriteCount(m_anBatchCount[nBatch]);
     }
     g_nParticleActiveIndex = 0;
+}
+
+namespace {
+// The particle kinds: type 1 spawns kind 7, every other type kind 6.
+constexpr int kParticleKindDefault = 6;
+constexpr int kParticleKindAlt = 7;
+constexpr int kParticleTypeAlt = 1;
+
+// The per-batch capacity seed tables: for each of the twelve entries, the destination batch index
+// and the count added to that batch's capacity (@ghidraAddress 0x30f6f4 indices, 0x30f724 counts).
+constexpr int kBatchSeedIndex[] = {0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1};
+constexpr int kBatchSeedCount[] = {512, 256, 256, 256, 256, 256, 256, 512, 256, 256, 256, 256};
+constexpr int kBatchSeedEntryCount = 12;
+
+// The atlas the particle sprites draw from.
+constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+
+// The particle batches draw additively; the middle batch seeds two texture parameters.
+constexpr int kAdditiveBlendMode = 1;
+constexpr int kTexParamValue = 1;
+} // namespace
+
+// The process-wide note particle layer, created lazily by shared().
+static NoteLayer *g_pNoteLayer = nullptr; // @ghidraAddress 0x3df230
+
+/** @ghidraAddress 0x188904 */
+NoteLayer *NoteLayer::shared() {
+    if (g_pNoteLayer == nullptr) {
+        g_pNoteLayer = new NoteLayer();
+    }
+    return g_pNoteLayer;
+}
+
+/** @ghidraAddress 0x188850 */
+NoteLayer::NoteLayer() {
+    // The base constructor and member initialisers clear the header and particle pool; reset the
+    // shared active index and accumulate each batch's capacity from the seed tables.
+    g_nParticleActiveIndex = 0;
+    for (int i = 0; i < kBatchSeedEntryCount; ++i) {
+        m_anBatchCapacity[kBatchSeedIndex[i]] += kBatchSeedCount[i];
+    }
+}
+
+/** @ghidraAddress 0x188954 */
+void NoteLayer::CreateSpriteBatches() {
+    if (m_bBuilt) {
+        return;
+    }
+
+    ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
+    m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
+    for (int i = 0; i < kBatchCount; ++i) {
+        ne::C_SPRITE_INSTANCING_2D *pSprite =
+            ne::CreateWorldSpriteBatch(static_cast<unsigned int>(m_anBatchCapacity[i]));
+        m_apSprites[i] = pSprite;
+        pParent->AttachChild(pSprite);
+        pSprite->SetVisible(true);
+        pSprite->SetRefCountedMember(m_pTexture);
+        pSprite->SetSpriteCount(0);
+        // The outer two batches (0 and 2) draw additively.
+        if (i != 1) {
+            pSprite->SetBlendMode(kAdditiveBlendMode);
+        }
+        // The middle batch seeds two texture parameters on a non-tutorial build.
+        if (i == 1 && !IsHardwareType9()) {
+            pSprite->SetTexParam(1, kTexParamValue);
+            pSprite->SetTexParam(0, kTexParamValue);
+        }
+    }
+
+    m_bBuilt = true;
+    g_nParticleActiveIndex = 0;
+}
+
+/** @ghidraAddress 0x188c50 */
+void NoteLayer::SpawnParticle(float flX, float flY, float flScaleX, float flScaleY, int nType) {
+    const int nKind = nType == kParticleTypeAlt ? kParticleKindAlt : kParticleKindDefault;
+    // Scan from the shared active index for a free slot; a full pool drops the particle.
+    for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
+        Particle &particle = m_aParticles[nSlot];
+        if (!particle.bActive) {
+            particle.nKind = nKind;
+            particle.bActive = true;
+            particle.flX = flX;
+            particle.flY = flY;
+            particle.flRotation = 0.0f;
+            particle.flScaleX = flScaleX;
+            particle.flScaleY = flScaleY;
+            ++g_nParticleActiveIndex;
+            return;
+        }
+    }
+}
+
+namespace {
+// The two note end types the spawner accepts.
+constexpr int kEndTypeHead = 0;
+constexpr int kEndTypeTail = 1;
+// The player-colour count.
+constexpr int kPlayerColorMax = 2;
+// The quarter-turn added to a tail particle's travel-direction angle (@ghidraAddress 0x2fedd8).
+constexpr double kTailAngleBias = 1.5707963267948966;
+// The half-turn a head particle is mirrored by when its colour differs from the play colour
+// (@ghidraAddress 0x2fe894).
+constexpr float kHeadMirrorRotation = 3.1415927f;
+// The tail particle sprite kinds, by colour.
+constexpr int kTailKindColor0 = 4;
+constexpr int kTailKindColor1 = 5;
+} // namespace
+
+/** @ghidraAddress 0x188a48 */
+void NoteLayer::Create(int nColor,
+                       int nEndType,
+                       int nShapeFlagA,
+                       int nShapeFlagB,
+                       int bSpawnTrail,
+                       float flX,
+                       float flY,
+                       float flDirX,
+                       float flDirY,
+                       float flScaleX,
+                       float flScaleY) {
+    assert(nColor >= 0 && nColor < kPlayerColorMax);
+    assert(nEndType >= 0 && nEndType < kPlayerColorMax);
+
+    int nKind;
+    float flRotation;
+    if (nEndType != kEndTypeHead) {
+        // A tail faces its travel direction, a quarter turn past the raw angle.
+        nKind = nColor == 1 ? kTailKindColor1 : kTailKindColor0;
+        flRotation = static_cast<float>(
+            std::atan2(static_cast<double>(-flDirY), static_cast<double>(flDirX)) + kTailAngleBias);
+    } else {
+        // A head selects one of four fixed kinds from the two shape flags, per colour.
+        if (nColor == 1) {
+            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
+        } else {
+            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 0xb : 0xa) : (nShapeFlagB != 0 ? 3 : 1);
+        }
+        // It is mirrored a half turn when its colour differs from the current play colour.
+        flRotation =
+            GameSystem::GetGameSystem()->GetPlayColor() == nColor ? 0.0f : kHeadMirrorRotation;
+    }
+
+    // Store the particle in the first free pool slot from the shared active index.
+    for (int nSlot = g_nParticleActiveIndex; nSlot < kParticleCount; ++nSlot) {
+        Particle &particle = m_aParticles[nSlot];
+        if (!particle.bActive) {
+            particle.nKind = nKind;
+            particle.bActive = true;
+            particle.flX = flX;
+            particle.flY = flY;
+            particle.flRotation = flRotation;
+            particle.flScaleX = flScaleX;
+            particle.flScaleY = flScaleY;
+            ++g_nParticleActiveIndex;
+            // Optionally spawn a trailing particle at the same position and scale.
+            if (bSpawnTrail != 0) {
+                SpawnParticle(flX, flY, flScaleX, flScaleY, nColor);
+            }
+            return;
+        }
+    }
 }
