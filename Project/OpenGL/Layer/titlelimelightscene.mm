@@ -44,7 +44,7 @@ constexpr int kStateFinish = 3;
 constexpr float kTitleBgmFadeInTime = 0.3f;
 
 // The three title textures, in load order (indices into m_apTextures).
-constexpr const char *kTitleTextureNames[TitleLimelightScene::kTextureCount] = {
+constexpr const char *kTitleTextureNames[rb::TitleLimelightScene::kTextureCount] = {
     "00_texture/ti_bg",
     "00_texture/ti_parts",
     "00_texture/ti_parts_eff",
