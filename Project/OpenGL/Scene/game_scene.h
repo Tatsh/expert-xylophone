@@ -420,6 +420,21 @@ private:
      */
     void PersistScoreAndSaveReplay();
 
+    /**
+     * @brief Builds every play-field layer's sprites for the active UI theme.
+     *
+     * Refreshes the cached theme from the user settings when it has changed, then walks the shared
+     * play-field layers in turn — background, the iPad alt-frame or the phone main frame, player
+     * field, judge effect, thema marker, play colour, reflec and clear gauges, judge score, chain
+     * connector, the note body, long-note, trail, slide, slide-result, and charge layers, the damage
+     * and bounds effects, the note result, explosion, and glow layers — asking each singleton to
+     * build its sprites. It then runs the theme's own set (Classic, Limelight, or Colette) and the
+     * fade overlay. Finally, on the first call it constructs the pause-gauge layer and registers it
+     * in the engine's per-frame listener list at priority 2.
+     * @ghidraAddress 0x14a298
+     */
+    void InitializePlayFieldLayersForTheme();
+
     int m_nState = {};                   // +0x4c: the current state-machine state (dispatched each
                                          //        frame).
     int m_nPlayTime = {};                // +0x50: the accumulated play time.

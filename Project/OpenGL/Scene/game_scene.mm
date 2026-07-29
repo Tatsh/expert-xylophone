@@ -34,29 +34,39 @@
 #include "alt_frame_layer.h"
 #include "background_sprite_manager.h"
 #include "bg_layer.h"
+#include "bounds_effect_layer.h"
+#include "chain_connector_layer.h"
 #include "classicthemelayer.h"
 #include "clear_gauge_layer.h"
 #include "colette_theme_layer.h"
+#include "damage_effect_layer.h"
 #include "deviceenvironment.h"
 #include "engineruntime.h"
 #include "event_effect_layer.h"
+#include "explosion_effect_layer.h"
 #include "fade_overlay_layer.h"
 #include "full_combo_classic_layer.h"
 #include "full_combo_colette_layer.h"
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
 #include "judge_effect_layer.h"
+#include "judge_score_layer.h"
 #include "leveltables.h"
 #include "limelight_effect_layer.h"
 #include "limelight_result_layer.h"
 #include "limelight_theme_layer.h"
+#include "long_note_layer.h"
 #include "main_frame_layer.h"
 #include "music_sheet.h"
 #include "neTexture.h"
+#include "note_body_layer.h"
+#include "note_charge_layer.h"
 #include "note_effect_mgr.h"
+#include "note_glow_layer.h"
 #include "note_model.h"
 #include "note_replay.h"
 #include "note_result_layer.h"
+#include "note_trail_layer.h"
 #include "number_effect_layer.h"
 #include "number_layer.h"
 #include "pause_gauge_layer.h"
@@ -67,6 +77,8 @@
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
 #include "result_window_colette_layer.h"
+#include "slide_note_layer.h"
+#include "slide_note_result_layer.h"
 #include "soundeffectmanager.h"
 #include "thema_marker_layer.h"
 #include "touch_point.h"
@@ -1365,6 +1377,9 @@ void EnsureOrientationNotificationsEnabled(void) {
 }
 
 namespace {
+// The listener-list priority the pause-gauge layer is registered at.
+constexpr int kPauseGaugeListenerPriority = 2;
+
 // The two player sides the judgement tally covers.
 constexpr int kPlayerSideCount = 2;
 
@@ -1413,6 +1428,76 @@ constexpr int kTutorialMusicId = 999999998;
 // The judgement a replay note carries for a note the opposing side's ghost shot resolved.
 constexpr int kGhostShotJudge = 5;
 } // namespace
+
+/** @ghidraAddress 0x14a298 */
+void GameScene::InitializePlayFieldLayersForTheme() {
+    // Re-read the active theme only when the user has changed it since the last play.
+    if (m_nThema != static_cast<int>(RBUserSettingData.sharedInstance.thema)) {
+        m_nThema = static_cast<int>(RBUserSettingData.sharedInstance.thema);
+    }
+
+    BgLayer::GetBackgroundLayer()->InitializeBackgroundLayer();
+    // The iPad draws the alternate play-field frame; every other device draws the main frame.
+    if (IsPad()) {
+        AltFrameLayer::shared()->BuildSprites();
+    } else {
+        MainFrameLayer::shared()->BuildSprites();
+    }
+    PlayerFieldLayer::shared()->CreateScoreNumberSpriteBatch();
+    JudgeEffectLayer::shared()->LoadJudgeEffectSprites();
+    ThemaMarkerLayer::shared()->LoadThemaMarkerSprites();
+    PlayColorLayer::shared()->BuildGaugePartsSpriteBatches();
+    ReflecGaugeLayer::shared()->CreateGaugeSliderSprites();
+    ClearGaugeLayer::shared()->CreateSprites();
+    JudgeScoreLayer::shared()->LoadSprites();
+    ChainConnectorLayer::shared()->CreateSprites();
+    NoteBodyLayer::shared()->LoadNoteBodySprites();
+    LongNoteLayer::shared()->CreateSpriteBatches();
+    NoteTrailLayer::shared()->LoadNoteTrailSprites();
+    SlideNoteLayer::shared()->BuildSprites();
+    SlideNoteResultLayer::shared()->BuildSpriteBatch();
+    NoteChargeLayer::shared()->LoadNoteChargeSprites();
+    DamageEffectLayer::shared()->InitializeSprites();
+    BoundsEffectLayer::shared()->InitializeSprites();
+    NoteResultLayer::shared()->CreateSpriteInstancer();
+    ExplosionEffectLayer::shared()->InitializeSprites();
+    NoteGlowLayer::shared()->InitializeSprites();
+
+    switch (m_nThema) {
+    case kThemaColette:
+        FullComboColetteLayer::shared()->InitializeBackgroundSpriteLayers();
+        NumberLayer::shared()->InitializeNumberLayer();
+        ColetteThemeLayer::shared()->CreateFcEffectSprites();
+        ResultWindowColetteLayer::shared()->InitializeResultWindowSprites();
+        EventEffectLayer::shared()->CreateEventEffectSprites();
+        TutorialGuideLayer::shared()->BuildTutorialGuideSpriteTable();
+        break;
+    case kThemaLimelight:
+        FullComboLimelightLayer::shared()->LoadTexturesAndBatchesForLimelightLayer();
+        LimelightEffectLayer::shared()->InitializeBackgroundSprites();
+        LimelightThemeLayer::shared()->InitFullComboLayerTextures();
+        LimelightResultLayer::shared()->InitializePhoneSpriteInstancers();
+        EventEffectLayer::shared()->CreateEventEffectSprites();
+        break;
+    case kThemaClassic:
+        FullComboClassicLayer::shared()->InitializeBackgroundSprites();
+        BackgroundSpriteManager::shared()->BuildBackgroundSpriteNodes();
+        ClassicThemeLayer::shared()->InitializeBackgroundSceneNodes();
+        ResultWindowClassicLayer::shared()->InitSpriteSetsLazy();
+        break;
+    default:
+        break;
+    }
+
+    FadeOverlayLayer::shared()->EnsureInstancer();
+    (void)ScoreTracker::shared(); // Yes, the binary discards this call's result.
+
+    // The pause gauge is built once and left registered for the scene's lifetime.
+    if (m_pPauseGauge == nullptr) {
+        m_pPauseGauge = new PauseGaugeLayer();
+        m_pPauseGauge->InsertSorted(kPauseGaugeListenerPriority);
+    }
+}
 
 /** @ghidraAddress 0x14d600 */
 void GameScene::PersistScoreAndSaveReplay() {
