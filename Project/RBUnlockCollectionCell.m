@@ -205,10 +205,10 @@ static const CGFloat kCenterFactor = 0.5;
             cell.imageDownloader = [[ImageDownloader alloc] initWithGetURL:itemData.path
                                                                unUseRetina:NO];
             [cell.imageDownloader
-                startDownloadWithProceed:^{
+                startDownloadWithProceed:^(ImageDownloader *downloader) {
                   // No-op progress callback.
                 }
-                success:^{
+                success:^(ImageDownloader *downloader) {
                   /** @ghidraAddress 0x190ac8 */
                   RBUnlockCollectionCell *strongCell = weakSelf;
                   strongCell.imageView.image = [strongCell.imageDownloader getImage];
@@ -230,7 +230,7 @@ static const CGFloat kCenterFactor = 0.5;
                   strongCell.frameImageView.hidden = NO;
                   [strongCell.imageDownloader cancelDownload];
                 }
-                failure:^{
+                failure:^(ImageDownloader *downloader) {
                   /** @ghidraAddress 0x190fcc */
                   [weakSelf.imageDownloader cancelDownload];
                 }];

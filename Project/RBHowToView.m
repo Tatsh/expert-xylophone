@@ -12,6 +12,7 @@
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
+#import "deviceenvironment.h"
 
 // The default (non-typed) variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
 static const NSInteger kMusicMenuPopupViewTypeDefault = 0;

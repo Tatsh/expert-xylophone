@@ -69,14 +69,9 @@ enum {
 // stale view instead of rebuilding it.
 @property(nonatomic) BOOL viewCloseFlg;
 
-// Whether the web view's scroll view is allowed to bounce. The stored value is inverted: it is
-// cleared after -loadView applies it to the scroll view.
-@property(nonatomic) BOOL webViewBounces;
-
 // The reference bounds the layout is derived from, captured in -loadView.
 @property(nonatomic) CGRect baseFrame;
 
-- (void)updateIndicator:(BOOL)show;
 - (void)activeWebView;
 - (int)redirectWithRequest:(NSURLRequest *)request;
 - (void)appListDidStart;

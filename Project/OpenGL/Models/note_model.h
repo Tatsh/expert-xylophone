@@ -352,13 +352,6 @@ public:
     void Init();
 
     /**
-     * @brief Resets the note's play state to its pre-play defaults for a replay. Reconstruction
-     * pending.
-     * @ghidraAddress 0x131ae8
-     */
-    void ResetPlayState();
-
-    /**
      * @brief Lays out the note's path through the waypoint block for the coming play.
      *
      * Clears the block, then fills the start position of each live node. A note partway along a

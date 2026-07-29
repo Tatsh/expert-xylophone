@@ -13,10 +13,12 @@
 #import "RBExperienceData.h"
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
+#import "RBNumberLabel.h"
 #import "RBUnlockCollectionCell.h"
 #import "RBUnlockPackageData.h"
 #import "RBUnlockPackageItemData.h"
 #import "RBUserSettingData.h"
+#import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
 

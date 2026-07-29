@@ -34,6 +34,9 @@ static const CGFloat kVolumeSliderBarHeightWide = 6.0;
 
 @implementation RBVolumeSlider
 
+// The overridden accessors suppress auto-synthesis; the binary keeps the backing ivar.
+@synthesize value = _value;
+
 - (instancetype)init {
     self = [super init];
     if (!self) {

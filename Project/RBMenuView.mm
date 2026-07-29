@@ -18,8 +18,10 @@
 #import "RBMenuNewsTickerView.h"
 #import "RBMenuPageSliderView.h"
 #import "RBMenuTutorialView.h"
+#import "RBMusicCell.h"
 #import "RBMusicGridLayout.h"
 #import "RBMusicManager.h"
+#import "RBMusicView.h"
 #import "RBNewsHUDView.h"
 #import "RBNotificationPageView.h"
 #import "RBPlaylistManager.h"
@@ -270,8 +272,8 @@ static BOOL g_bRandamIntSeeded = NO;
 - (BOOL)buildCampaignBackground:(BOOL)isPad;
 /** @brief Build the button bar, grid, mascot, search UI, news ticker, cover, and gestures. */
 - (void)buildMenuBarWithThema:(NSInteger)thema
-                        isPad:static_cast<BOOL>(isPad)
-     backgroundUsesEffectView:static_cast<BOOL>(bgUsesEffectView);
+                        isPad:(BOOL)isPad
+     backgroundUsesEffectView:(BOOL)bgUsesEffectView;
 /** @brief Re-lay the wrapping paging background scroll view and its image pages. */
 - (void)layoutPagingBackground;
 /** @brief Lay out the search bar, cancel button, and pastel mascot for the search state. */
@@ -919,8 +921,8 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)buildMenuBarWithThema:(NSInteger)thema
-                        isPad:static_cast<BOOL>(isPad)
-     backgroundUsesEffectView:static_cast<BOOL>(bgUsesEffectView) {
+                        isPad:(BOOL)isPad
+     backgroundUsesEffectView:(BOOL)bgUsesEffectView {
     /** @ghidraAddress 0xa5380 */
     // The six side-menu buttons; the play-list add and delete buttons start disabled.
     for (NSInteger type = 0; type < 6; ++type) {
@@ -1267,12 +1269,12 @@ static BOOL g_bRandamIntSeeded = NO;
     self.coverView.hidden = NO;
     [self stopNews];
     [self stopBGEffect];
-    GetGameSystem()->SetMenuTutorialActive(0);
+    GameSystem::GetGameSystem()->SetMenuTutorialActive(0);
 
     if (self.tutorialView != nil && [RBTutorialManager isTutorialMusicselect]) {
         [self.tutorialView startTutorialWithType:kTutorialTypeMenuHide withAnimation:YES];
         [self.tutorialView hideAnimation];
-        GetGameSystem()->SetMenuTutorialActive(1);
+        GameSystem::GetGameSystem()->SetMenuTutorialActive(1);
     }
 
     [self.coverView SetAlphaAnimationDuration:kCoverFadeDuration End:1];
@@ -2010,11 +2012,11 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)SetServerDateYear:(int)year
-                    Month:static_cast<int>(month)
-                      Day:static_cast<int>(day)
-                     Hour:static_cast<int>(hour)
-                   Minute:static_cast<int>(minute)
-                   Second:static_cast<int>(second) {
+                    Month:(int)month
+                      Day:(int)day
+                     Hour:(int)hour
+                   Minute:(int)minute
+                   Second:(int)second {
     // The binary body is empty; this is a deliberate no-op stub.
 }
 
@@ -2360,7 +2362,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView
-     numberOfItemsInSection:static_cast<NSInteger>(section) {
+     numberOfItemsInSection:(NSInteger)section {
     return self.musicList.count;
 }
 

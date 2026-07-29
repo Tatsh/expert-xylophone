@@ -6,6 +6,7 @@
 #import "ApplilinkParameters.h"
 #import "ApplilinkUdid.h"
 #import "ApplilinkUtilities.h"
+#import "ApplilinkViewDelegate.h"
 #import "RecommendCore.h"
 #import "RecommendWebAPI.h"
 

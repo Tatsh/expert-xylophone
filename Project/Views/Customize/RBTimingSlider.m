@@ -104,6 +104,9 @@ enum {
 
 @implementation RBTimingSlider
 
+// The overridden accessors suppress auto-synthesis; the binary keeps the backing ivar.
+@synthesize value = _value;
+
 - (instancetype)initWithDigit:(int)digit {
     self = [super init];
     if (!self) {

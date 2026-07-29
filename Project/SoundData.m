@@ -165,7 +165,7 @@ static const long long kSoundDataWrapDestinationFrameStride = 4;
     ExtAudioFileRead(m_ExtAudioFile, &framesToRead, bufferList);
     free(bufferList);
     ExtAudioFileDispose(m_ExtAudioFile);
-    m_ExtAudioFile = nullptr;
+    m_ExtAudioFile = NULL;
 }
 
 - (BOOL)getData:(long long)startFrame

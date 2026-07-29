@@ -150,6 +150,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)CreateDisplayLinkTimer;
 
 /**
+ * @brief The display-link callback that runs one task and draw pass.
+ * @ghidraAddress 0x8b3a8
+ */
+- (void)mainLoop;
+
+/**
  * @brief Sets the loop frame interval (in units of display refreshes) and recreates the timer.
  * @param milliSec The frame interval to store.
  * @ghidraAddress 0x8b288

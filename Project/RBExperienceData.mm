@@ -17,6 +17,7 @@
 // speculative-import style already used by AppDelegate.mm, ScoreData.m, and ReplayData.m.
 #import "AppDelegate.h"
 #import "BFCodec.h"
+#import "MusicData.h"
 #import "NSArray+RB.h"
 #import "RBBonusData.h"
 #import "RBCoreDataManager.h"
@@ -749,8 +750,8 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
     NSMutableArray *musicDatas =
         [NSMutableArray arrayWithArray:[[RBMusicManager getInstance] getMusicDataArray]];
     NSMutableArray *tuneIDs = [NSMutableArray array];
-    for (id musicData in musicDatas) {
-        [tuneIDs addObject:[NSNumber numberWithInt:[[musicData musicID] intValue]]];
+    for (MusicData *musicData in musicDatas) {
+        [tuneIDs addObject:[NSNumber numberWithInt:musicData.MusicID]];
     }
     NSManagedObjectContext *context = [RBCoreDataManager sharedInstance].managedObjectContext;
     NSArray *records = [ScoreData getScoreDatas:tuneIDs inManagedObjectContext:context];

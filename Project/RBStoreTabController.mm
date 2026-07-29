@@ -347,7 +347,7 @@ static NSString *const kBackButtonTitle = @"Back";
     if (self.musicMenuView != nil) {
         [self.musicMenuView RemoveStoreViewController];
     }
-    PlayThemedSoundEffect(SoundEffectManager::GetInstance(), kSoundEffectCancel);
+    SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectCancel);
 }
 
 @end

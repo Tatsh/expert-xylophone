@@ -83,8 +83,11 @@ public:
      * @return The assigned lane index (0 to 6), or @c -1 when the span is empty.
      * @ghidraAddress 0x148dd8
      */
-    int AssignNoteLane(
-        int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed);
+    int AssignNoteLane(int nTimeStart,
+                       int nDuration,
+                       int nPlayer,
+                       int bShortTail,
+                       const unsigned char *pLaneAllowed);
 
 private:
     /**

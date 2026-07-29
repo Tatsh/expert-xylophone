@@ -8,6 +8,7 @@
 #include "neDrawPolygon2D.h"
 #include "neRender.h"
 
+class neGLESRenderer;
 struct S_VECTOR2;
 struct S_VECTOR3;
 

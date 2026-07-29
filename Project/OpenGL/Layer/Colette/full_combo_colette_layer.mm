@@ -3,7 +3,6 @@
 #include <cassert>
 
 #include "../Share/bg_layer.h"
-#include "../Share/sprite_uv_table.h"
 #import "AudioManager.h"
 #include "curve.h"
 #include "engineglobals.h"
@@ -14,6 +13,7 @@
 #include "neTexture.h"
 #include "s_vector2.h"
 #include "soundeffectmanager.h"
+#include "sprite_uv_table.h"
 #include "vectormath.h"
 
 // The process-wide Colette full-combo layer, created lazily by shared().

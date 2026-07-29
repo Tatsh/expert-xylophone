@@ -231,7 +231,7 @@ static NSString *_lastProductCountryCode = nil;
     int lastPurchaseMonth = [RBUserSettingData sharedInstance].lastPurchaseMonth;
     NSNumber *date = json[kStoreJSONKeyDate];
     if (date != nil) {
-        int month = json[kStoreJSONKeyDate].intValue;
+        int month = date.intValue;
         if (lastPurchaseMonth < month) {
             if ([RBUserSettingData sharedInstance].purchaseLimitType < kPurchaseLimitTypeCount) {
                 [RBUserSettingData sharedInstance].purchaseLimitType = kPurchaseLimitTypeUnset;

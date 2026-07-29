@@ -53,11 +53,14 @@
 #import "RBBGMManager.h"
 #import "RBCorporateViewController.h"
 #import "RBErosionMarkUpdater.h"
+#import "RBMenuButton.h"
 #import "RBMenuView.h"
 #import "RBPlaylistViewController.h"
 #import "RBPopoverBackgroundView.h"
 #import "RBTermAgreeView.h"
 #import "StoreUtil.h"
+#import "TwitterImageCreater.h"
+#import "UIImage+RB.h"
 #import "neGLView.h"
 
 // The music id the bundle preview song is registered under.
@@ -168,10 +171,10 @@ constexpr int kTermTypeAgreement = 1;
 // The default play colour that the preview restores before showing the bundled preview song.
 constexpr int kDefaultPlayColor = 0;
 
-@interface RBViewController () <NSURLConnectionDataDelegate, SKStoreProductViewControllerDelegate>
-
-// The display-link callback that runs one task and draw pass.
-- (void)mainLoop;
+@interface RBViewController () <NSURLConnectionDataDelegate,
+                                SKStoreProductViewControllerDelegate,
+                                RBPlaylistViewControllerDelegate,
+                                UIPopoverControllerDelegate>
 
 // The shared tail of -startPreview that copies the user settings into the game system.
 - (void)applyPreviewSettingsToGameSystem:(GameSystem *)gameSystem music:(MusicData *)music;
@@ -336,10 +339,10 @@ constexpr int kDefaultPlayColor = 0;
                                       0,
                                       viewW,
                                       viewH);
-        float eye[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), -distance};
-        float target[] = {gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
-        float up[] = {0.0f, -1.0f, 0.0f};
-        ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
+        S_VECTOR3 eye{gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), -distance};
+        S_VECTOR3 target{gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
+        S_VECTOR3 up{0.0f, -1.0f, 0.0f};
+        ne::CameraNode *camera = CreateLookAtCamera(&eye, &target, &up);
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
         viewport->Release();
@@ -418,12 +421,12 @@ constexpr int kDefaultPlayColor = 0;
             gameSystem->SetSheetLayerFlags(0);
             ne::Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
-            float eye[] = {kSheetCenterX,
-                           kSheetCenterY,
-                           static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
-            float target[] = {kSheetCenterX, kSheetCenterY, 0.0f};
-            float up[] = {0.0f, -1.0f, 0.0f};
-            ne::CameraNode *camera = CreateLookAtCamera(eye, target, up);
+            S_VECTOR3 eye{kSheetCenterX,
+                          kSheetCenterY,
+                          static_cast<float>(sheetFarY / (tanHalfFov + tanHalfFov))};
+            S_VECTOR3 target{kSheetCenterX, kSheetCenterY, 0.0f};
+            S_VECTOR3 up{0.0f, -1.0f, 0.0f};
+            ne::CameraNode *camera = CreateLookAtCamera(&eye, &target, &up);
             SetActiveViewCamera(viewport);
             SetCurrentModelNode(camera);
             viewport->Release();
@@ -763,7 +766,7 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x89798 */
     self.playlistViewController = [[RBPlaylistViewController alloc] init];
     [self.playlistViewController setPlaylistType:kPlaylistTypeAddToSet];
-    [self.playlistViewController setPlaylistNode:nil];
+    [self.playlistViewController setPlaylistNode:0];
     self.playlistViewController.delegate = self;
     [self.playlistViewController setMusicSet:musicSet];
     [self showPresentViewController:[self.musicMenuView playlistAddButton]];
@@ -778,7 +781,7 @@ constexpr int kDefaultPlayColor = 0;
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     self.playlistViewController = [[RBPlaylistViewController alloc] init];
     [self.playlistViewController setPlaylistType:kPlaylistTypeCreate];
-    [self.playlistViewController setPlaylistNode:nil];
+    [self.playlistViewController setPlaylistNode:0];
     self.playlistViewController.delegate = self;
     [self showPresentViewController];
     [self.musicMenuView playlistInfoView].hidden = YES;
@@ -966,7 +969,8 @@ constexpr int kDefaultPlayColor = 0;
     if (!url) {
         return;
     }
-    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
+    // The binary passes the NSURL itself to the NSString-typed parameter (see StoreUtil).
+    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:static_cast<id>(url)];
     if (!affiliateParameters) {
         [[UIApplication sharedApplication] openURL:url];
         return;
@@ -1036,7 +1040,9 @@ constexpr int kDefaultPlayColor = 0;
     __weak RBViewController *weakSelf = self;
     compose.completionHandler = ^(SLComposeViewControllerResult result) {
       /** @ghidraAddress 0x8d928 */
-      weakSelf->m_Tweeting = NO;
+      // Like the binary, no nil check before the ivar store (a nil weakSelf would crash there too).
+      RBViewController *strongSelf = weakSelf;
+      strongSelf->m_Tweeting = NO;
     };
     [self presentViewController:compose animated:YES completion:nil];
 }

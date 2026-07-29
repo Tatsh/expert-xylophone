@@ -22,8 +22,8 @@
 constexpr int kSoundEffectCancel = 1;
 
 // The player scope passed to each ranking table view.
-constexpr int kPlayerScopeTotal = 0;
-constexpr int kPlayerScopeFriend = 1;
+constexpr GKLeaderboardPlayerScope kPlayerScopeTotal = GKLeaderboardPlayerScopeGlobal;
+constexpr GKLeaderboardPlayerScope kPlayerScopeFriend = GKLeaderboardPlayerScopeFriendsOnly;
 
 // The two ranking boards fill the same frame within the content view. The three layout regimes are
 // selected by the iPad idiom flag and, within the wide (iPad) regime, by the theme.

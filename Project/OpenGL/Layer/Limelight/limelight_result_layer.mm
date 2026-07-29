@@ -413,7 +413,7 @@ PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
     // "Phone" (0x3d9100, filled by InitializePhoneResultLayoutTable) and the table the phone branch
     // selects is the one named "Pad" (0x307cf0, constant rodata). The selector below follows the
     // binary's `csel x0,x9,x8,ne`; the naming is left as landed rather than renamed here.
-    return IsPad() ? &g_aLimelightPartsPhone[nIndex] : &g_aLimelightPartsPad[nIndex];
+    return ::IsPad() ? &g_aLimelightPartsPhone[nIndex] : &g_aLimelightPartsPad[nIndex];
 }
 
 /** @ghidraAddress 0x1238d0 */

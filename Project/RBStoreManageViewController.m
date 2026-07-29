@@ -5,6 +5,7 @@
 #import "Downloader.h"
 #import "MusicDataExtend.h"
 #import "NSFileManager+RB.h"
+#import "RBCampaignViewController.h"
 #import "RBExtendNoteManager.h"
 #import "RBManageSortData.h"
 #import "RBMusicManager.h"
@@ -12,6 +13,7 @@
 #import "RBStoreManageHeaderCell.h"
 #import "RBStoreManageSortViewController.h"
 #import "RBStoreTabController.h"
+#import "StoreDialogView.h"
 #import "StoreDownloadManager.h"
 #import "StoreDownloadTask.h"
 #import "StoreExtendNoteInfo.h"
@@ -377,7 +379,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 // sort. @p collationSelector is @c \@selector(m_yomi) for the title sort and @c \@selector(a_yomi)
 // for the artist sort; @p miscSelector is the reading queried to decide whether a "#"-bucketed
 // entry can shift one section earlier.
-- (NSArray *)collatedListForSort:(NSDictionary *)list collationSelector:(SEL)collationSelector {
+- (NSArray *)collatedListForSort:(NSArray *)list collationSelector:(SEL)collationSelector {
     NSArray *entries = [list copy];
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
     NSUInteger sectionTitleCount = collation.sectionTitles.count;
@@ -431,7 +433,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 }
 
 /** @ghidraAddress 0x1cfb48 */
-- (NSArray *)sortList:(NSDictionary *)list {
+- (NSArray *)sortList:(NSArray *)list {
     [self.notFoundMusicList removeAllObjects];
 
     NSArray *result;
@@ -474,7 +476,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 /** @ghidraAddress 0x1d1130 */
 - (void)toggleOpen:(id)sender {
-    NSInteger section = [[sender view] section];
+    NSInteger section = [(RBStoreManageHeaderCell *)[sender view] section];
     sectionOpenList[section] ^= 1;
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
                   withRowAnimation:UITableViewRowAnimationNone];

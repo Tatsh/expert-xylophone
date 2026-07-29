@@ -418,7 +418,7 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
     auto *pScratch = static_cast<unsigned char *>(m_pVertexScratch);
     pRenderer->SetTexCoordPointer(pScratch + kVertexUvOffset, kVertexStride);
     for (int nParam = 0; nParam < kTextureParamCount; ++nParam) {
-        UpdateTextureParameterIfChanged(m_pTexture, pRenderer, nParam, m_aTexParams[nParam]);
+        m_pTexture->SetCachedTextureParameter(pRenderer, nParam, m_aTexParams[nParam]);
     }
 }
 

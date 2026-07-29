@@ -98,13 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSDictionary *)getSortedDictionary:(NSUInteger)section row:(NSUInteger)row;
 
 /**
- * @brief Rebuilds the sorted, sectioned tune list from the given purchased-tune dictionary for the
- *        current sort order and records the purchased-tune count.
- * @param list The purchased-tune dictionary to sort.
+ * @brief Rebuilds the sorted, sectioned tune list from the given purchased-tune dictionaries for
+ *        the current sort order and records the purchased-tune count.
+ * @param list The purchased-tune dictionary list to sort.
  * @return The sorted, sectioned array.
  * @ghidraAddress 0x1cfb48
  */
-- (nullable NSArray *)sortList:(nullable NSDictionary *)list;
+- (nullable NSArray *)sortList:(nullable NSArray *)list;
 
 /**
  * @brief Scrolls the table back to the top.

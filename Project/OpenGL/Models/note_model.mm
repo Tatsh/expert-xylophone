@@ -1913,6 +1913,8 @@ constexpr int kAutoShotModeUser = 0;
 constexpr int kAutoShotModeCpu = 1;
 // The random threshold that splits a bounce into its two directions, and the display lanes.
 constexpr float kShotDirectionSplit = 0.5f;
+// Folds a rand() result into the unit interval (@ghidraAddress 0x3014d0 = 1 / RAND_MAX).
+constexpr float kInverseRandMax = 1.0f / 2147483647.0f;
 constexpr int kDisplayLaneCentre = 0;
 constexpr int kDisplayLaneLeft = 1;
 constexpr int kDisplayLaneRight = 2;
@@ -2213,8 +2215,6 @@ namespace {
 constexpr float kEmphasisProbability[] = {
     0.02f, 0.02f, 0.02f, 0.02f, 0.05f, 0.1f, 0.1f, 0.6f, 0.6f, 0.7f};
 constexpr int kEmphasisProbabilityMax = 9;
-// Folds a rand() result into the unit interval (@ghidraAddress 0x3014d0 = 1 / RAND_MAX).
-constexpr float kInverseRandMax = 1.0f / 2147483647.0f;
 // The versus game type: game type zero or two are the two-side versus modes.
 constexpr int kGameTypeVersusMask = 2;
 // The side value a recordless note reports when its own-side flag is unset.

@@ -10,6 +10,7 @@
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
+#include "soundeffectmanager.h"
 #include "sprite_uv_table.h"
 
 // The process-wide Colette-theme layer, created lazily by shared().
@@ -166,17 +167,17 @@ constexpr int kResultPosCurveFloats = kResultPosCurvePairs * 2;
 constexpr unsigned int kResultSpriteSlotBase = 0x11; // the result sprites emit at slots 0x11..0x19.
 constexpr float kResultReferenceY = 860.0f;
 
-ok The nine result sprites' alpha curves (two {time, value} pairs each). @ghidraAddress 0x30f17c constexpr float kResultAlphaCurve
-    [kResultSpriteCount][kResultAlphaCurveFloats] = {
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
-        {2000.0f, 1.0f, 2333.3333f, 0.0f},
+// The nine result sprites' alpha curves (two {time, value} pairs each). @ghidraAddress 0x30f17c
+constexpr float kResultAlphaCurve[kResultSpriteCount][kResultAlphaCurveFloats] = {
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
+    {2000.0f, 1.0f, 2333.3333f, 0.0f},
 };
 
 // The nine result sprites' scale curves (nine {time, value} pairs each). @ghidraAddress 0x30f20c

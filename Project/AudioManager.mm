@@ -515,7 +515,7 @@ constexpr double kResumeFadeInTime = 0.3;
             self.seType[callName] = [NSNumber numberWithInt:group];
             return kInvalidHandle;
         }
-        unsigned int index = seAVPlayer->AddSourceToManager(url, loop);
+        unsigned int index = seAVPlayer->AddSource(url, loop);
         if (index != kInvalidHandle) {
             [self.seRidList addObject:[NSNumber numberWithInt:static_cast<int>(index)]];
         }
@@ -553,8 +553,8 @@ constexpr double kResumeFadeInTime = 0.3;
             sePlayer->FreeSoundDataByIndex(static_cast<unsigned int>(resourceId) &
                                            kResourceIndexMask);
         } else {
-            seAVPlayer->RemoveAudioSourceByIndex(static_cast<unsigned int>(resourceId) &
-                                                 kResourceIndexMask);
+            seAVPlayer->RemoveSourceByIndex(static_cast<unsigned int>(resourceId) &
+                                            kResourceIndexMask);
         }
         for (NSUInteger i = 0; i < self.seRidList.count; ++i) {
             if ([self.seRidList[i] intValue] == resourceId) {
@@ -567,7 +567,7 @@ constexpr double kResumeFadeInTime = 0.3;
         if (group == kSeGroupCaPlayer) {
             sePlayer->FreeSoundForKey(callName);
         } else {
-            seAVPlayer->RemoveAudioSourceByKey(callName);
+            seAVPlayer->RemoveSourceByKey(callName);
         }
         for (NSUInteger i = 0; i < self.seNameList.count; ++i) {
             if ([callName compare:self.seNameList[i]] == NSOrderedSame) {
@@ -587,7 +587,7 @@ constexpr double kResumeFadeInTime = 0.3;
         if (group == kSeGroupCaPlayer) {
             sePlayer->FreeSoundForKey(callName);
         } else {
-            seAVPlayer->RemoveAudioSourceByKey(callName);
+            seAVPlayer->RemoveSourceByKey(callName);
         }
     }
     [self.seNameList removeAllObjects];
@@ -599,8 +599,8 @@ constexpr double kResumeFadeInTime = 0.3;
             sePlayer->FreeSoundDataByIndex(static_cast<unsigned int>(rid.intValue) &
                                            kResourceIndexMask);
         } else {
-            seAVPlayer->RemoveAudioSourceByIndex(static_cast<unsigned int>(rid.intValue) &
-                                                 kResourceIndexMask);
+            seAVPlayer->RemoveSourceByIndex(static_cast<unsigned int>(rid.intValue) &
+                                            kResourceIndexMask);
         }
     }
     [self.seRidList removeAllObjects];
@@ -640,13 +640,13 @@ constexpr double kResumeFadeInTime = 0.3;
                 static_cast<int>(static_cast<unsigned int>(resourceId) & kResourceIndexMask),
                 volume);
         }
-        return seAVPlayer->AcquireAudioBusForSourceIndex(static_cast<unsigned int>(resourceId) &
-                                                         kResourceIndexMask);
+        return seAVPlayer->AcquireBusForSourceIndex(static_cast<unsigned int>(resourceId) &
+                                                    kResourceIndexMask);
     }
     if (group == kSeGroupCaPlayer) {
         return sePlayer->PlaySoundForKey(callName, volume);
     }
-    return seAVPlayer->AcquireAudioBusForSourceKey(callName, volume);
+    return seAVPlayer->AcquireBusForSourceKey(callName, volume);
 }
 
 - (unsigned int)playSe:(nullable NSString *)callName resourceId:(int)resourceId {
@@ -656,7 +656,7 @@ constexpr double kResumeFadeInTime = 0.3;
         unsigned int handle = [self prepare:callName resourceId:resourceId volume:seVolume[group]];
         if (handle != kInvalidHandle) {
             if (group != kSeGroupCaPlayer) {
-                seAVPlayer->PlaySourceByHandle(handle);
+                seAVPlayer->PlayByHandle(handle);
             } else {
                 sePlayer->ResumeVoiceByHandle(handle);
             }
@@ -673,7 +673,7 @@ constexpr double kResumeFadeInTime = 0.3;
         unsigned int handle = [self prepare:callName resourceId:resourceId volume:volume];
         if (handle != kInvalidHandle) {
             if (group != kSeGroupCaPlayer) {
-                seAVPlayer->PlaySourceByHandle(handle);
+                seAVPlayer->PlayByHandle(handle);
             } else {
                 sePlayer->ResumeVoiceByHandle(handle);
             }
@@ -730,7 +730,7 @@ constexpr double kResumeFadeInTime = 0.3;
                 sePlayer->StopVoiceByHandle(handle);
                 return YES;
             }
-            return seAVPlayer->StopAudioBusByHandleWrapper(handle);
+            return seAVPlayer->StopByHandle(handle);
         }
     }
     return NO;
@@ -744,7 +744,7 @@ constexpr double kResumeFadeInTime = 0.3;
                 sePlayer->PauseVoiceByHandle(handle);
                 return YES;
             }
-            seAVPlayer->PauseAudioBusByPlayHandle(handle);
+            seAVPlayer->PauseByHandle(handle);
             return YES;
         }
     }
@@ -759,7 +759,7 @@ constexpr double kResumeFadeInTime = 0.3;
                 sePlayer->ResumeVoiceByHandle(handle);
                 return YES;
             }
-            seAVPlayer->PlaySourceByHandle(handle);
+            seAVPlayer->PlayByHandle(handle);
             return YES;
         }
     }
@@ -774,7 +774,7 @@ constexpr double kResumeFadeInTime = 0.3;
             if (seList[slot].group == kSeGroupCaPlayer) {
                 status = sePlayer->GetVoiceStateByHandle(handle);
             } else {
-                status = seAVPlayer->QueryAudioBusPlaybackStatus(handle);
+                status = seAVPlayer->GetStatusByHandle(handle);
             }
             return status == kPlaybackStatusPlaying;
         }
@@ -788,7 +788,7 @@ constexpr double kResumeFadeInTime = 0.3;
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->PauseVoiceByHandle(seList[slot].instanceId);
         } else {
-            seAVPlayer->PauseAudioBusByPlayHandle(seList[slot].instanceId);
+            seAVPlayer->PauseByHandle(seList[slot].instanceId);
         }
     }
     return YES;
@@ -800,7 +800,7 @@ constexpr double kResumeFadeInTime = 0.3;
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->ResumeVoiceByHandle(seList[slot].instanceId);
         } else {
-            seAVPlayer->PlaySourceByHandle(seList[slot].instanceId);
+            seAVPlayer->PlayByHandle(seList[slot].instanceId);
         }
     }
     return YES;
@@ -812,7 +812,7 @@ constexpr double kResumeFadeInTime = 0.3;
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->StopVoiceByHandle(seList[slot].instanceId);
         } else {
-            seAVPlayer->StopAudioBusByHandleWrapper(seList[slot].instanceId);
+            seAVPlayer->StopByHandle(seList[slot].instanceId);
         }
     }
     return YES;
@@ -838,13 +838,13 @@ constexpr double kResumeFadeInTime = 0.3;
         if (seList[slot].group == kSeGroupCaPlayer) {
             status = sePlayer->GetVoiceStateByHandle(seList[slot].instanceId);
         } else {
-            status = seAVPlayer->QueryAudioBusPlaybackStatus(seList[slot].instanceId);
+            status = seAVPlayer->GetStatusByHandle(seList[slot].instanceId);
         }
         if (status == kPlaybackStatusFinished || status == kPlaybackStatusStopped) {
             if (seList[slot].group == kSeGroupCaPlayer) {
                 sePlayer->ReleaseVoiceByHandle(seList[slot].instanceId);
             } else {
-                seAVPlayer->StopAudioBusByPlayHandle(seList[slot].instanceId);
+                seAVPlayer->StopAndClearByHandle(seList[slot].instanceId);
             }
             seList[slot].instanceId = kInvalidHandle;
             seList[slot].group = kInstanceSlotStateFree;
@@ -921,7 +921,7 @@ constexpr double kResumeFadeInTime = 0.3;
     if (seList[kOldestInstanceSlot].group == kSeGroupCaPlayer) {
         sePlayer->ReleaseVoiceByHandle(seList[kOldestInstanceSlot].instanceId);
     } else {
-        seAVPlayer->StopAudioBusByPlayHandle(seList[kOldestInstanceSlot].instanceId);
+        seAVPlayer->StopAndClearByHandle(seList[kOldestInstanceSlot].instanceId);
     }
     for (int slot = 0; slot < kInstanceSlotCount - 1; ++slot) {
         seList[slot].instanceId = seList[slot + 1].instanceId;

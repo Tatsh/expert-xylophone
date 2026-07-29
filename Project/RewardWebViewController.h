@@ -60,6 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic, nullable) ApplilinkIndicator *indicator;
 
 /**
+ * @brief Whether the web view's scroll view is allowed to bounce.
+ *
+ * The stored value is inverted: it is cleared after @c -loadView applies it to the scroll view.
+ */
+@property(nonatomic) BOOL webViewBounces;
+
+/**
+ * @brief Show or hide the loading overlay.
+ * @param show @c YES to show the overlay, @c NO to hide it.
+ */
+- (void)updateIndicator:(BOOL)show;
+
+/**
  * @brief Whether the advert screen hides its navigation bar.
  */
 @property(nonatomic) BOOL isNavigationBarHidden;

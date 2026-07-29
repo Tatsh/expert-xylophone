@@ -869,8 +869,8 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
     const unsigned int nNotes = static_cast<unsigned int>(pTracker->GetTotalNotes());
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const unsigned int nDifficulty = static_cast<unsigned int>(pGameSystem->GetDifficulty());
-    const unsigned int nMusicId =
-        static_cast<unsigned int>(AppDelegate.appDelegate.musicData.MusicID);
+    MusicData *pMusicData = AppDelegate.appDelegate.musicData;
+    const unsigned int nMusicId = static_cast<unsigned int>(pMusicData.MusicID);
     if ((!pGameSystem->GetUserFullCombo() || !pGameSystem->GetCpuFullCombo()) &&
         !pGameSystem->GetFullJustReflec()) {
         [RBServerAPIManager playedV2APIWithMusicID:nMusicId
@@ -885,7 +885,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
                                                              value:1];
         }
         if (pGameSystem->GetMenuTutorialActive() != 0) {
-            [RBTutorialManager
+            [[RBTutorialManager getInstance]
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
             TutorialGuideLayer::destroyShared();
             pGameSystem->SetMenuTutorialActive(0);
@@ -978,7 +978,8 @@ void GameScene::LoadResultScreenAndMusic() {
 
     // A tutorial play advances the walkthrough to the result step and resets the guide.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
-        [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
+        [[RBTutorialManager getInstance]
+            updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
         TutorialGuideLayer::shared()->Reset();
     }
 }
@@ -1104,9 +1105,10 @@ void GameScene::ActivateDueNotes() {
             continue;
         }
         const NoteChainLink &link = pRecord->GetChainLink();
-        const bool bHasPair = (pRecord->GetFlags() & kNoteHasPairFlag) != 0 && link.nTimingSel != 0;
+        const bool bHasPair =
+            (pRecord->GetFlags() & kNoteHasPairFlag) != 0 && link.GetPartner() != 0;
         if (bHasPair) {
-            RbffNoteRecord *pPair = m_pMusicSheet->GetNoteRecordByIndex(link.nNoteIndex);
+            RbffNoteRecord *pPair = m_pMusicSheet->GetNoteRecordByIndex(link.GetChainId());
             if (static_cast<float>(pPair->GetTimeA()) > flLine) {
                 continue;
             }
@@ -1359,7 +1361,8 @@ void GameScene::AdvancePreviewPlaybackFrame(int nDeltaFrames) {
         ResetNotePlaybackState(false);
 
         PlayTimer *pTimer = PlayTimer::shared();
-        if (AppDelegate.appDelegate.musicData.MusicID == kPreviewMusicID) {
+        MusicData *pMusicData = AppDelegate.appDelegate.musicData;
+        if (pMusicData.MusicID == kPreviewMusicID) {
             // The no-song demo loops its background music from the top and runs a music-driven timer.
             [RBBGMManager.getInstance StopMusic:0.0f];
             [RBBGMManager.getInstance SeekToTop];

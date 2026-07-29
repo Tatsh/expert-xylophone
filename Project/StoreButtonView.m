@@ -44,6 +44,11 @@ static const int kRGBAComponentCount = 4;
 
 @implementation StoreButtonView
 
+// The overridden accessors suppress auto-synthesis; the binary keeps the backing ivar.
+@synthesize buttonColor = _buttonColor;
+@synthesize cornerRadius = _cornerRadius;
+@synthesize disabledColor = _disabledColor;
+
 /** @ghidraAddress 0xbddc */
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];

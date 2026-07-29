@@ -429,6 +429,9 @@ constexpr float kMeterUvSizeU = 0.166015625f;
 constexpr float kMeterUvSizeV = 0.146484375f;
 constexpr float kMeterSpriteScale = 1.0f;
 
+// The number of play sides the meter tracks.
+constexpr int kSideCount = 2;
+
 // The meter needle's per-side vertical position: absolute Y on iPad (@ghidraAddress 0x30531c,
 // 0x305320), and a small relative offset on the phone.
 constexpr float kMeterPadAbsoluteY[kSideCount] = {640.0f, 740.0f};

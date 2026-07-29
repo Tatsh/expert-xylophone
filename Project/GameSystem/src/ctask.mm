@@ -20,7 +20,7 @@ namespace {
 
 // The list's sentinel (also its head and tail terminator): a node whose per-frame callback does
 // nothing. Seeded by InitializeGlobalContainer.
-class ListenerListSentinel : public C_TASK {
+class ListenerListSentinel : public ne::C_TASK {
 public:
     void OnFrame(void *) override {
     }

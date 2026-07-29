@@ -158,7 +158,7 @@ static NSString *g_adId = nil;
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kDefaultsKeyRewardReLoginFlg];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kDefaultsKeyRecommendReLoginFlg];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        [[RecommendCore sharedInstance] startSessionWithCallback:^{
+        [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *error) {
             /** @ghidraAddress 0x205a14 */
             // The binary passes an empty completion block here.
         }];

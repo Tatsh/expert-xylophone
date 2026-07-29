@@ -13,6 +13,7 @@
 
 #import "Downloader.h"
 #import "NetworkUtil.h"
+#import "RBMenuView.h"
 #import "RBUserSettingData.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
@@ -319,11 +320,11 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
                                                  post:postData
                                           contentType:kTermsRequestContentType];
     [weakSelf.downloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35d180 */
           // Global no-op proceed block.
         }
-        success:^{
+        success:^(Downloader *downloader) {
           /** @ghidraAddress 0x111be8 */
           // Parse the JSON list into termsList, then show it (or the network-error alert) and stop
           // the spinner, all marshalled to the main queue.
@@ -345,7 +346,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
             [weakSelf endLoadAnimation];
           });
         }
-        failure:^{
+        failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x111f48 */
           // Schedule the network-error alert and spinner stop on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -369,11 +370,11 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
                                                  post:postData
                                           contentType:kTermsRequestContentType];
     [weakSelf.downloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x35d370 */
           // Global no-op proceed block.
         }
-        success:^{
+        success:^(Downloader *downloader) {
           /** @ghidraAddress 0x113468 */
           // Cache the JSON body keyed by the term id and show it (or an error), then stop the
           // spinner, all on the main queue.
@@ -395,7 +396,7 @@ static const UIViewAutoresizing kIndicatorAutoresizingMask = (UIViewAutoresizing
             [weakSelf endLoadAnimation];
           });
         }
-        failure:^{
+        failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x11380c */
           // Schedule the terms network-error alert and spinner stop on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{

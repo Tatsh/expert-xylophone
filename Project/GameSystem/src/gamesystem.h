@@ -521,22 +521,28 @@ private:
      */
     GameSystem();
 
-    rb::GameScene *m_pCurrentScene = {};   // +0x00: the active game scene, or null when none runs.
-    double m_dScreenX = {};                // +0x08
-    double m_dScreenY = {};                // +0x10
-    double m_dScreenWidth = {};            // +0x18
-    double m_dScreenHeight = {};           // +0x20
-    float m_flScreenScale = {};            // +0x28
-    float m_flViewportWidth = {};          // +0x2c
-    float m_flViewportHeight = {};         // +0x30
-    bool m_fBackgroundFadeComplete = {};   // +0x34
-    bool m_fUse3dTiltProjection = {};      // +0x35
-    ne::C_TEXTURE *m_pArtworkTexture = {}; // +0x40: the song jacket/artwork texture, loaded by
-                                           //        LoadArtworkTexture and released at teardown.
+    rb::GameScene *m_pCurrentScene = {}; // +0x00: the active game scene, or null when none runs.
+    double m_dScreenX = {};              // +0x08
+    double m_dScreenY = {};              // +0x10
+    double m_dScreenWidth = {};          // +0x18
+    double m_dScreenHeight = {};         // +0x20
+    float m_flScreenScale = {};          // +0x28
+    float m_flViewportWidth = {};        // +0x2c
+    float m_flViewportHeight = {};       // +0x30
+    bool m_fBackgroundFadeComplete = {}; // +0x34
+    bool m_fUse3dTiltProjection = {};    // +0x35
+
+public:
+    // The three cached song textures are torn down (released and nulled) directly by the game
+    // scene, matching the binary's cross-class field access, so they are public.
+    ne::C_TEXTURE *m_pArtworkTexture = {};   // +0x40: the song jacket/artwork texture, loaded by
+                                             //        LoadArtworkTexture and released at teardown.
     ne::C_TEXTURE *m_pMusicNameTexture = {}; // +0x48: the rendered music-name text texture.
     ne::C_TEXTURE *m_pArtistNameTexture =
-        {};                           // +0x50: the rendered artist-name text texture, loaded
-                                      //        by LoadArtistNameTexture.
+        {}; // +0x50: the rendered artist-name text texture, loaded
+            //        by LoadArtistNameTexture.
+
+private:
     float m_flSheetPosX = {};         // +0x58
     float m_flSheetPosY = {};         // +0x5c
     float m_flSheetMarginLeft = {};   // +0x60

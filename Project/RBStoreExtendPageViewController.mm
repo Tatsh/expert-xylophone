@@ -26,6 +26,7 @@
 #import "RBStoreTabController.h"
 #import "RBTermView.h"
 #import "RBUserSettingData.h"
+#import "RBViewController.h"
 #import "StoreDialogView.h"
 #import "StoreDownloadManager.h"
 #import "StoreDownloadTask.h"
@@ -575,7 +576,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     __weak __typeof__(self) weakSelf = self;
     [self.userAgeSender
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x15ce0c */
           // No-op proceed handler.
         }
@@ -596,7 +597,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
           }
           [strongSelf setUserAgeSender:nil];
         }
-        failure:^{
+        failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x15d0e0 */
           dispatch_async(dispatch_get_main_queue(), ^{
             /** @ghidraAddress 0x15d1a4 */

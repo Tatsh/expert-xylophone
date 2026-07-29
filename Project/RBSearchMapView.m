@@ -459,7 +459,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
             [self.mapView.userLocation addObserver:self
                                         forKeyPath:kUserLocationKeyPath
                                            options:0
-                                           context:nullptr];
+                                           context:NULL];
             m_IsObservingLocation = YES;
         }
         return;
@@ -471,7 +471,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
             [self.mapView.userLocation addObserver:self
                                         forKeyPath:kUserLocationKeyPath
                                            options:0
-                                           context:nullptr];
+                                           context:NULL];
             m_IsObservingLocation = YES;
         }
         [self toggleTrackingMode];

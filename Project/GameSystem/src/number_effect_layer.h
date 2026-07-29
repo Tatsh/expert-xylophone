@@ -98,6 +98,18 @@ public:
      */
     void ComputeAnchorPos(unsigned int nElement, S_VECTOR2 *pOut) const;
 
+    /**
+     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes the
+     * brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
+     *
+     * On the landscape layout it emits the track element (and its wide-variant extension), then the
+     * knob element (half alpha while held), and finally the brightness-fill element plus a second
+     * sprite offset along the track vector by the current brightness.
+     * @param flDeltaTime The frame's elapsed time.
+     * @ghidraAddress 0x18a4ac
+     */
+    void Update(float flDeltaTime);
+
 private:
     /**
      * @brief Emits one number-glyph sprite into a batch.
@@ -115,18 +127,6 @@ private:
      */
     void EmitNumberSprite(
         float flX, float flY, unsigned int nBatch, unsigned int nDescIndex, unsigned int nColour);
-
-    /**
-     * @brief The per-frame update: re-anchors on a viewport change, advances the fade, processes the
-     * brightness-slider touch, and emits the track, knob, and brightness-fill sprites.
-     *
-     * On the landscape layout it emits the track element (and its wide-variant extension), then the
-     * knob element (half alpha while held), and finally the brightness-fill element plus a second
-     * sprite offset along the track vector by the current brightness.
-     * @param flDeltaTime The frame's elapsed time.
-     * @ghidraAddress 0x18a4ac
-     */
-    void Update(float flDeltaTime);
 
     /**
      * @brief Handles the brightness-slider touch for the frame.

@@ -15,6 +15,7 @@
 #include "engineglobals.h"
 #include "gamesystem.h"
 #include "neRender.h"
+#include "neRenderer.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "sprite_uv_table.h"

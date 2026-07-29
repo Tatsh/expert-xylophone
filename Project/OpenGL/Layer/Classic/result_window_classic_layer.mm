@@ -576,6 +576,23 @@ constexpr float kSliderDirectionLeft = -1.0f;
 constexpr int kSliderToggleSoundEffect = 7;
 } // namespace
 
+// The score-animation channel indices, their fixed effect-channel durations, and the per-channel
+// stagger delays past the base start time.
+namespace {
+constexpr int kScoreChannel = 0;
+constexpr int kEffectChannelA = 1;
+constexpr int kEffectChannelB = 2;
+constexpr int kEffectChannelC = 3;
+constexpr int kEffectChannelD = 4;
+constexpr float kScoreAnimShownTarget = 1.0f;
+constexpr float kEffectDurationShort = 200.0f;
+constexpr float kEffectDurationLong = 300.0f;
+constexpr float kEffectDelayA = 150.0f;  // @ghidraAddress 0x2eedcc
+constexpr float kEffectDelayC = 2600.0f; // @ghidraAddress 0x302d54
+constexpr float kEffectDelayD = 2900.0f; // @ghidraAddress 0x302d58
+constexpr int kTrailDuration = 500;
+} // namespace
+
 /** @ghidraAddress 0x1173d8 */
 void ResultWindowClassicLayer::UpdateTouchAndPostTwitterShare() {
     // The result panel is interactive only once its reveal is complete and the screen fade is gone:
@@ -1864,23 +1881,6 @@ void ResultWindowClassicLayer::ResetResultScoreAnimations(float flStartTime) {
     }
     m_bScoreAnimActive = false;
 }
-
-// The score-animation channel indices, their fixed effect-channel durations, and the per-channel
-// stagger delays past the base start time.
-namespace {
-constexpr int kScoreChannel = 0;
-constexpr int kEffectChannelA = 1;
-constexpr int kEffectChannelB = 2;
-constexpr int kEffectChannelC = 3;
-constexpr int kEffectChannelD = 4;
-constexpr float kScoreAnimShownTarget = 1.0f;
-constexpr float kEffectDurationShort = 200.0f;
-constexpr float kEffectDurationLong = 300.0f;
-constexpr float kEffectDelayA = 150.0f;  // @ghidraAddress 0x2eedcc
-constexpr float kEffectDelayC = 2600.0f; // @ghidraAddress 0x302d54
-constexpr float kEffectDelayD = 2900.0f; // @ghidraAddress 0x302d58
-constexpr int kTrailDuration = 500;
-} // namespace
 
 /** @ghidraAddress 0x116f90 */
 void ResultWindowClassicLayer::StartResultScoreAnimations(float flStartTime) {

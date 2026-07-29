@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x21f524
  */
 + (void)openAdScreenWithAdLocation:(nullable NSString *)adLocation
-                       requestCode:(NSInteger)requestCode
+                       requestCode:(nullable id)requestCode
                           delegate:(nullable id)delegate;
 
 /**
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)openAdScreenWithParentView:(nullable UIView *)parentView
                         adLocation:(nullable NSString *)adLocation
-                       requestCode:(NSInteger)requestCode
+                       requestCode:(nullable id)requestCode
                           delegate:(nullable id)delegate;
 
 /**

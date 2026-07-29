@@ -32,6 +32,9 @@
 #import "gamesystem.h"
 #import "soundeffectmanager.h"
 
+// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+extern const double g_dMascotMessageAnimDuration;
+
 // The per-difficulty score, achievement-rate, rank, play-count, and full-combo tables are indexed by
 // difficulty. Four difficulty slots exist (basic, medium, hard, and the extended chart).
 enum { kDifficultyCount = 4 };
@@ -57,6 +60,7 @@ enum {
 // The extended (level 4) difficulty selects the extended music record.
 enum { kDifficultyExtended = 3 };
 enum {
+    kDifficultyBasic = 0,
     kDifficultyMedium = 1,
     kDifficultyHard = 2,
 };

@@ -56,11 +56,6 @@ constexpr int kVertexFlagMode = 1;
 constexpr float kGaugeFillBrightnessRange = 0.7f;
 constexpr float kGaugeFillBrightnessBase = 0.3f;
 
-// The two far-lane slopes the sheet-inset half-height is scaled by for the gauge Y positions.
-// @ghidraAddress 0x3ce96c and 0x3ce970
-constexpr float g_flPlayfieldFarLaneSlopeNeg = -0.35354489f;
-constexpr float g_flPlayfieldFarLaneSlope = 0.35354489f;
-
 // The glow-pulse clock's wrap period, in milliseconds, and its two ends. @ghidraAddress 0x2f8540
 // (period) and 0x2f8544 (the -1000 wrap subtrahend).
 constexpr float kPulseClockPeriod = 1000.0f;

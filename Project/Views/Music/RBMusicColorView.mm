@@ -469,7 +469,7 @@ struct ColorGeometry {
     if (self.color != static_cast<int>(SelectButton.tag)) {
         self.color = static_cast<int>(SelectButton.tag);
         [self ShowSelect];
-        PlayThemedSoundEffect(SoundEffectManager::GetInstance(), kSoundEffectSelect);
+        SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectSelect);
     }
 }
 

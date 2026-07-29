@@ -115,7 +115,7 @@ typedef void (^RecommendAdDisplayStatusCallback)(NSDictionary *_Nullable status,
 + (void)touchOwnAdWithAdLocation:(nullable NSString *)adLocation
                        toAppliId:(nullable NSString *)appliId
                       creativeId:(nullable NSString *)creativeId
-                     requestCode:(NSInteger)requestCode
+                     requestCode:(nullable id)requestCode
                         delegate:(nullable id)delegate;
 
 /**
@@ -135,7 +135,7 @@ typedef void (^RecommendAdDisplayStatusCallback)(NSDictionary *_Nullable status,
  * @ghidraAddress 0x212774
  */
 + (void)openAppListWithAdLocation:(nullable NSString *)adLocation
-                      requestCode:(NSInteger)requestCode
+                      requestCode:(nullable id)requestCode
                          delegate:(nullable id)delegate;
 
 /**
@@ -160,7 +160,7 @@ typedef void (^RecommendAdDisplayStatusCallback)(NSDictionary *_Nullable status,
  */
 + (void)openAdScreenWithAdModel:(RecommendAdModel)adModel
                      adLocation:(nullable NSString *)adLocation
-                    requestCode:(NSInteger)requestCode
+                    requestCode:(nullable id)requestCode
                        delegate:(nullable id)delegate;
 
 /**
@@ -198,7 +198,7 @@ typedef void (^RecommendAdDisplayStatusCallback)(NSDictionary *_Nullable status,
                          adModel:(RecommendAdModel)adModel
                       adLocation:(nullable NSString *)adLocation
                    verticalAlign:(int)verticalAlign
-                     requestCode:(NSInteger)requestCode
+                     requestCode:(nullable id)requestCode
                         delegate:(nullable id)delegate;
 
 /**
@@ -218,7 +218,7 @@ typedef void (^RecommendAdDisplayStatusCallback)(NSDictionary *_Nullable status,
  * @ghidraAddress 0x212f0c
  */
 + (void)openInterstitialWithAdLocation:(nullable NSString *)adLocation
-                           requestCode:(NSInteger)requestCode
+                           requestCode:(nullable id)requestCode
                               delegate:(nullable id)delegate;
 
 /**

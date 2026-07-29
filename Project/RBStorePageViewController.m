@@ -1245,7 +1245,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
     // Pin the first floating banner inside the visible region as the user scrolls.
     CGFloat bannerHeight = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
-    UIView *bannerContainer = [self.view viewWithTag:kTagPackTable];
+    UIScrollView *bannerContainer = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *firstBanner = [bannerContainer viewWithTag:kTagFunBanner];
     CGRect bannerFrame = firstBanner.frame;
     CGFloat contentBottom = bannerContainer.contentSize.height;
@@ -1272,7 +1272,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (![RBCampaignData sharedInstance].isCampaignHinabita201703) {
         return;
     }
-    UIView *container2 = [self.view viewWithTag:kTagPackTable];
+    UIScrollView *container2 = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *secondBanner = [container2 viewWithTag:kTagCampaignBanner];
     CGFloat bannerHeight2 = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
     CGRect frame2 = secondBanner.frame;
@@ -1448,7 +1448,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         self.packDetailViewPad.alpha = kDetailAlphaHidden;
         self.coverViewPad.hidden = NO;
         self.packDetailViewPad.hidden = NO;
-        [UIView beginAnimations:nil context:nullptr];
+        [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
         [UIView setAnimationDuration:kDetailAnimDuration];
         [UIView setAnimationDelegate:self];
@@ -1657,7 +1657,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     int limitType = [RBUserSettingData sharedInstance].purchaseLimitType;
     int limit = (limitType < 3) ? kPurchaseLimitAmounts[limitType] : kPurchaseLimitNone;
     // Only JPY prices are added to the running total; other currencies never trip the limit.
-    if ([product.priceLocale[NSLocaleCurrencyCode] isEqualToString:kCurrencyCodeJPY]) {
+    if ([[product.priceLocale objectForKey:NSLocaleCurrencyCode]
+            isEqualToString:kCurrencyCodeJPY]) {
         total += product.price.intValue;
     }
     BOOL limited = NO;
@@ -1755,7 +1756,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     [self updatePurchasedTableCell:self.purchasingPackInfo];
 
     SKProduct *product = self.purchasingPackInfo.product;
-    if ([product.priceLocale[NSLocaleCurrencyCode] isEqualToString:kCurrencyCodeJPY]) {
+    if ([[product.priceLocale objectForKey:NSLocaleCurrencyCode]
+            isEqualToString:kCurrencyCodeJPY]) {
         int price = product.price.intValue;
         int total = [RBUserSettingData sharedInstance].totalPurchase;
         [RBUserSettingData sharedInstance].totalPurchase = total + price;

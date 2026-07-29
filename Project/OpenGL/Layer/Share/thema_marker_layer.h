@@ -112,6 +112,13 @@ private:
      */
     ThemaMarkerLayer();
 
+    /**
+     * @brief Advances the danger ramp and wobble clocks and writes the animated marker sprites.
+     * @param flDelta The frame time step, in milliseconds.
+     * @ghidraAddress 0x18066c
+     */
+    void AnimateEffects(float flDelta);
+
     ne::C_TEXTURE *m_pTexture = {}; // +0x08: the gm_parts1 atlas.
     ne::C_SPRITE_INSTANCING_2D *m_apSprites[kBatchCount] =
         {};                                          // +0x10: the 2D and 3D sprite batches.

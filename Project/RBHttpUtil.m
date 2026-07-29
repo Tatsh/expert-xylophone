@@ -6,7 +6,7 @@
 //  arm64 disassembly: the variadic stringWithFormat: and setValue:forHTTPHeaderField: argument
 //  lists are dropped by the decompiler, the block completion handlers invoke through the block's
 //  +0x10 pointer, and the delegate selector names (including the binary's downloadProceed: and
-//  downloaderFinished:: typos) were read straight from the selector references.
+//  downloaderFinished: typos) were read straight from the selector references.
 //
 
 #import "RBHttpUtil.h"
@@ -397,7 +397,7 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     if (self.proceedBlock) {
         self.proceedBlock(self);
     } else if (self.delegate) {
-        [self.delegate performSelectorOnMainThread:@selector(downloadProceed:)
+        [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloadProceed:)
                                         withObject:self
                                      waitUntilDone:NO];
     }
@@ -411,12 +411,12 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     NSError *error = nil;
     [fileManager moveItemAtURL:location toURL:destination error:&error];
     if (error == nil) {
-        [self.delegate performSelectorOnMainThread:@selector(downloaderFinished::)
+        [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderFinished:)
                                         withObject:self
                                      waitUntilDone:NO];
     } else {
         self.systemErrorMessage = error.userInfo.description;
-        [self.delegate performSelectorOnMainThread:@selector(downloaderError:)
+        [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloaderError:)
                                         withObject:self
                                      waitUntilDone:NO];
     }

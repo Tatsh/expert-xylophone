@@ -96,11 +96,6 @@ static const int kCampaignHideTypeVisible = 0;
 
 @implementation StoreCampaignItemInfo
 
-// The unlock-terms kind and terms table are private ivars with no matching property, so they are
-// synthesised explicitly.
-@synthesize unlockType = unlockType;
-@synthesize termsTable = termsTable;
-
 #pragma mark - Initialisation
 
 /** @ghidraAddress 0x108b90 */

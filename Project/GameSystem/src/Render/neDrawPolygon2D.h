@@ -7,6 +7,7 @@
 
 #include "neRender.h"
 
+class neGLESRenderer;
 struct S_VECTOR2;
 
 namespace ne {

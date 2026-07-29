@@ -131,6 +131,11 @@ typedef struct {
 
 @implementation RBPopoverBackgroundView
 
+// The superclass's abstract accessors need explicit storage in the subclass; the binary keeps the
+// underscore-named ivars.
+@synthesize arrowOffset = _arrowOffset;
+@synthesize arrowDirection = _arrowDirection;
+
 #pragma mark Required geometry
 
 + (CGFloat)arrowHeight {

@@ -18,6 +18,9 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
+// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+extern const double g_dMascotMessageAnimDuration;
+
 // The number of speed steps the bar is divided into. The marker glides across ten equal slots and
 // SPEED is clamped to zero through ten.
 constexpr int kSpeedSlotCount = 10;

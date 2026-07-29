@@ -341,7 +341,7 @@ void C_DRAW_POLYGON_3D::LoadBoneMatrices(neGLESRenderer *pRenderer) {
         MakeTranslationMatrix(boneMatrix, pTranslate[nBone].x, pTranslate[nBone].y, 0.0f);
         if (pRotation[nBone] != 0.0f) {
             float rotationMatrix[16];
-            MakeRotationMatrixZ(rotationMatrix, -pRotation[nBone]);
+            MakeRotationMatrixZ(-pRotation[nBone], rotationMatrix);
             MultiplyMatrixInPlace(boneMatrix, rotationMatrix);
         }
         if (pScale[nBone] != 1.0f) {
@@ -369,7 +369,7 @@ void C_DRAW_POLYGON_3D::Render() {
     MakeTranslationMatrix(pLocal, m_flTranslateX, m_flTranslateY, m_flTranslateZ);
     if (m_flRotationZ != 0.0f) {
         float rotationMatrix[16];
-        MakeRotationMatrixZ(rotationMatrix, -m_flRotationZ);
+        MakeRotationMatrixZ(-m_flRotationZ, rotationMatrix);
         MultiplyMatrixInPlace(pLocal, rotationMatrix);
     }
     if (m_flScale != 1.0f) {
@@ -418,8 +418,7 @@ void C_DRAW_POLYGON_3D::Render() {
             pRenderer->SetGlClientState(kClientTexCoord, 1);
             pRenderer->SetTexCoordPointer(pVertexBytes + m_nUvOffset, m_nVertexStride);
             for (int nParam = 0; nParam < kTextureParamCount; ++nParam) {
-                UpdateTextureParameterIfChanged(
-                    m_pTexture, pRenderer, nParam, m_aTexEnvParams[nParam]);
+                m_pTexture->SetCachedTextureParameter(pRenderer, nParam, m_aTexEnvParams[nParam]);
             }
         }
         if (m_nBoneComponentCount == 0) {
@@ -469,8 +468,8 @@ void C_DRAW_POLYGON_3D::Render() {
                 pRenderer->SetGlEnableState(kEnableTexture2d, 1);
                 pRenderer->BindTexture2d(m_pTexture->GetGLHandle());
                 for (int nParam = 0; nParam < kTextureParamCount; ++nParam) {
-                    UpdateTextureParameterIfChanged(
-                        m_pTexture, pRenderer, nParam, m_aTexEnvParams[nParam]);
+                    m_pTexture->SetCachedTextureParameter(
+                        pRenderer, nParam, m_aTexEnvParams[nParam]);
                 }
             } else {
                 pRenderer->SetGlEnableState(kEnableTexture2d, 0);

@@ -57,7 +57,7 @@ constexpr int kLaneTailShort = 10;
 
 /** @ghidraAddress 0x148dd8 */
 int NoteLaneTracker::AssignNoteLane(
-    int nTimeStart, int nDuration, int nPlayer, int bShortTail, const char *pLaneAllowed) {
+    int nTimeStart, int nDuration, int nPlayer, int bShortTail, const unsigned char *pLaneAllowed) {
     if (nDuration < 1) {
         return -1;
     }

@@ -28,7 +28,7 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
 
 // @ 0x21f524
 + (void)openAdScreenWithAdLocation:(NSString *)adLocation
-                       requestCode:(NSInteger)requestCode
+                       requestCode:(id)requestCode
                           delegate:(id)delegate {
     [RewardNetwork openAdScreenWithParentView:nil
                                    adLocation:adLocation
@@ -42,14 +42,14 @@ static NSString *const kRewardNetworkAppListTitleKey = @"RewardNetworkAppListTit
                           delegate:(id)delegate {
     [RewardNetwork openAdScreenWithParentView:parentView
                                    adLocation:adLocation
-                                  requestCode:0
+                                  requestCode:nil
                                      delegate:delegate];
 }
 
 // @ 0x21f60c
 + (void)openAdScreenWithParentView:(UIView *)parentView
                         adLocation:(NSString *)adLocation
-                       requestCode:(NSInteger)requestCode
+                       requestCode:(id)requestCode
                           delegate:(id)delegate {
     if (![ApplilinkConsts checkUseSDKWithAdModel:0
                                       adLocation:adLocation

@@ -457,7 +457,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 #pragma mark - Base64
 
 + (NSString *)encodedStringWithBase64:(NSData *)data {
-    const char *bytes = data.bytes;
+    const char *bytes = static_cast<const char *>(data.bytes);
     NSUInteger length = data.length;
     NSUInteger capacity = ((length * 8 + 23) / 6 & ~3UL) + kBase64OutputGroup;
     char *out = new char[capacity];
@@ -500,7 +500,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 }
 
 + (NSString *)encodedStringWithBase64V2:(NSData *)data {
-    const unsigned char *bytes = data.bytes;
+    const unsigned char *bytes = static_cast<const unsigned char *>(data.bytes);
     NSUInteger length = data.length;
     NSUInteger groups = length / kBase64InputGroup;
     if (length != groups * 2 + length / kBase64InputGroup) {

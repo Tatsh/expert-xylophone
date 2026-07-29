@@ -5,6 +5,7 @@
 #import "ApplilinkCore.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkParameters.h"
+#import "ApplilinkStore.h"
 #import "ApplilinkURLConnection.h"
 #import "ApplilinkUdid.h"
 #import "ApplilinkUtilities.h"
@@ -140,7 +141,7 @@ static NSDate *g_recommendCoreLoginValidUntil = nil;
 static RecommendCore *g_recommendCoreInstance = nil;
 static dispatch_queue_t g_recommendCoreQueue = nil;
 
-@interface RecommendCore ()
+@interface RecommendCore () <SdkViewDelegate>
 
 // The installed-application-list callback body for the advert-screen presentation.
 - (void)openAdScreenAppliList:(nullable id)appliList
@@ -584,7 +585,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
       if (self.adScreenViewController == nil) {
           self.adScreenViewController = [[RecommendWebViewController alloc] init];
       }
-      [self.adScreenViewController setSdkDelegate];
+      [self.adScreenViewController setSdkDelegate:self];
       [self.adScreenViewController setNavigationBarHidden:self.navigationBarHidden];
       if (parentView == nil) {
           UIWindow *window = [ApplilinkCore mainWindow];
@@ -592,7 +593,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
               [window addSubview:self.adScreenViewController.view];
           }
       } else {
-          [self.adScreenViewController setParentView];
+          [self.adScreenViewController setParentView:parentView];
           [parentView addSubview:self.adScreenViewController.view];
       }
       [self.adScreenViewController updateIndicator:YES];
@@ -808,9 +809,10 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
           self.interstitialViewController.view.frame = [UIScreen mainScreen].bounds;
           [self.interstitialViewController openAdViewWithAdModel:adModel
                                                       adLocation:adLocation
-                                                          adType:verticalAlign
-                                                        appParam:self.applilinkParams
-                                                        delegate:delegate];
+                                                   verticalAlign:verticalAlign
+                                                 applilinkParams:self.applilinkParams
+                                                        delegate:delegate
+                                                   closeDelegate:self];
         });
         return;
     }

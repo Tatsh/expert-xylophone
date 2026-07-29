@@ -11,6 +11,7 @@
 
 #import "RBCustomView.h"
 
+#import "RBMenuTutorialView.h"
 #import "RBMenuView.h"
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"

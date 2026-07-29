@@ -120,6 +120,7 @@ extern NSString *const g_pStoreDownloadInProgressMessage;
                             StoreDownloadManagerDelegate,
                             StoreTableCellViewBaseDelegate,
                             StoreExtendNoteInfoDownloaderDelegate,
+                            UIAlertViewDelegate,
                             UIPopoverControllerDelegate>
 
 /**

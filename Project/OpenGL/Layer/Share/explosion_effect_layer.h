@@ -6,8 +6,7 @@
 #pragma once
 
 #include "playfieldlayerbase.h"
-
-struct S_VECTOR2;
+#include "s_vector2.h"
 
 namespace ne {
 class C_SPRITE_INSTANCING_2D;
@@ -125,8 +124,7 @@ private:
         unsigned char m_aPad01[3] = {}; // +0x01
         float flTimer = {};             // +0x04: the burst animation timer, advanced each frame.
         int nJudge = {};                // +0x08: the judgement type that spawned the burst.
-        float flPosX = {};              // +0x0c: the burst X position.
-        float flPosY = {};              // +0x10: the burst Y position.
+        S_VECTOR2 position = {};        // +0x0c: the burst position.
     };
 
     // +0x08: the two world-space sprite instancers, one per bank.

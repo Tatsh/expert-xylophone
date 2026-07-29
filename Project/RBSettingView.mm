@@ -14,6 +14,7 @@
 
 #import "AppDelegate.h"
 #import "RBMacros.h"
+#import "RBMenuView.h"
 #import "RBMusicView.h"
 #import "RBSettingMenuButton.h"
 #import "RBTutorialManager.h"
@@ -24,6 +25,12 @@
 // Themed sound-effect slots. The panel plays a theme-specific slot when it opens: the Classic theme
 // uses its own slot, and the Limelight and Colette themes share another. Dismissal and every
 // sub-screen selection reuse the shared cancel and decide slots.
+// parentView is typed RBMusicView per the binary's ivar metadata, but the installed object is the
+// menu hub (see RBMenuView.mm); the menu-view messages below go through the real class.
+static inline RBMenuView *MenuParentView(RBSettingView *view) {
+    return reinterpret_cast<RBMenuView *>(view.parentView);
+}
+
 constexpr int kSoundEffectDecide = 1;
 constexpr int kSoundEffectCancel = 4;
 constexpr int kSoundEffectSettingOpenClassic = 3;
@@ -288,8 +295,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
           // The Colette theme launches the customise tutorial the first time the panel closes.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               [RBTutorialManager isTutorialCustomize]) {
-              [weakSelf.parentView.tutorialView startTutorialWithType:kTutorialTypeCustomize
-                                                         withRootView:weakSelf.parentView];
+              [MenuParentView(weakSelf).tutorialView startTutorialWithType:kTutorialTypeCustomize
+                                                              withRootView:weakSelf.parentView];
           }
           self->m_Animating = NO;
         }];
@@ -321,9 +328,9 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 }
 
 - (void)hideAnimationEnd {
-    [self.parentView showInfomation];
+    [MenuParentView(self) showInfomation];
     [self removeFromSuperview];
-    self.parentView.settingView = nil;
+    MenuParentView(self).settingView = nil;
 }
 
 #pragma mark Touch handling
@@ -363,7 +370,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
 - (void)SelectCustomizeButton {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showCustomizeView];
+    [MenuParentView(self) showCustomizeView];
     [RBUserSettingData sharedInstance].newCustomItem = NO;
     [[RBUserSettingData sharedInstance] save];
     [self.customButton removeFlashEffect];
@@ -374,13 +381,13 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     [RBUserSettingData sharedInstance].newThema = NO;
     [[RBUserSettingData sharedInstance] save];
-    [self.parentView showThema];
+    [MenuParentView(self) showThema];
     [self hideAnimation];
 }
 
 - (void)SelectHowToPlayButton {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showHowToView];
+    [MenuParentView(self) showHowToView];
     [RBUserSettingData sharedInstance].howtoFirstInfo = YES;
     [[RBUserSettingData sharedInstance] save];
     [self.howToButton removeFlashEffect];
@@ -389,19 +396,19 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
 - (void)SelectInfoButton {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showNotificationPageView];
+    [MenuParentView(self) showNotificationPageView];
     [self hideAnimation];
 }
 
 - (void)SelectTermButton {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showTermView];
+    [MenuParentView(self) showTermView];
     [self hideAnimation];
 }
 
 - (void)SelectApplilinkButton {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showApplilinkView];
+    [MenuParentView(self) showApplilinkView];
     [AppDelegate appDelegate].unreadRecommendCount = 0;
     [self hideAnimation];
 }
@@ -415,7 +422,7 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
 
 - (void)selectMap:(id)sender {
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
-    [self.parentView showSearchView];
+    [MenuParentView(self) showSearchView];
     [self hideAnimation];
 }
 

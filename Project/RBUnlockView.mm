@@ -339,7 +339,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
     self.downloader = [[Downloader alloc] initWithURL:[NetworkUtil unlockListURL] save:nil];
     __weak RBUnlockView *weakSelf = self;
     [self.downloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x195858 */
@@ -441,7 +441,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
                                                  post:body
                                           contentType:kJsonContentType];
     [self.downloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
         }
         success:^(Downloader *downloader) {
           /** @ghidraAddress 0x196be0 */

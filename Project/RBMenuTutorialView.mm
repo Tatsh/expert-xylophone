@@ -18,6 +18,7 @@
 #import "RBTutorialPastelLayer.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 

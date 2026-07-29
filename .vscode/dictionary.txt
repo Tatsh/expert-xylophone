@@ -91,6 +91,7 @@ dakuten
 dashcam
 datablock
 datas
+dbuild
 dcmake
 ddeployment
 deadcode
@@ -158,6 +159,7 @@ ghidra
 ghidra's
 gles
 grage
+graphviz
 halfwidth
 handakuten
 handoff
@@ -256,6 +258,7 @@ nssq
 nsurl
 nsutf
 nullability
+nulled
 nullptr
 objc
 objcpp

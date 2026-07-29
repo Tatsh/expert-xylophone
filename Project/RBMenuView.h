@@ -18,6 +18,7 @@
 
 #import "Downloader.h"
 #import "RBCollectionView.h"
+#import "RBMenuMascot.h"
 #import "RBMenuNewsTickerView.h"
 #import "RBMenuPageSlider.h"
 #import "RBTermAgreeView.h"
@@ -59,7 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 UIGestureRecognizerDelegate,
                                 RBTermAgreeViewDelegate,
                                 DownloaderDelegate,
-                                UISearchBarDelegate>
+                                UISearchBarDelegate,
+                                RBMenuMascotDelegate>
 
 #pragma mark Lifecycle
 

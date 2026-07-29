@@ -50,7 +50,6 @@
 // Private web-info-response helpers messaged from the startup-request success block and each other.
 @interface AppDelegate ()
 - (void)handleWebInfoResponse:(nullable Downloader *)response;
-- (void)setWebInfoURL:(nullable NSString *)webInfoURL;
 - (void)setPreWebInfoURL:(nullable NSString *)preWebInfoURL;
 @end
 
@@ -456,7 +455,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         ReleaseAllCachedTextures();
     }
     if (self.viewController) {
-        [self.viewController closeItunes];
+        [self.viewController closeItunesWithURL];
     }
 }
 
@@ -986,7 +985,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 }
 
 /** @ghidraAddress 0x517fc */
-- (NSString *)saveDataKey {
++ (NSString *)saveDataKey {
     return kSaveDataPassphrase;
 }
 
@@ -1175,30 +1174,34 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
               }
 
               switch ([DownloadResourceManager onlineChek:response]) {
-              case DownloadResourceManagerResultMissing:
+              case DownloadResourceManagerResultMissing: {
                   dispatch_async(dispatch_get_main_queue(), ^{
                     /** @ghidraAddress 0x4e7b8 */
                     [UIAlertView showAlertNeedResourceUpdate:weakSelf];
                   });
                   break;
-              case DownloadResourceManagerResultOutdated:
+              }
+              case DownloadResourceManagerResultOutdated: {
                   dispatch_async(dispatch_get_main_queue(), ^{
                     /** @ghidraAddress 0x4e830 */
                     [UIAlertView showDownloadWithDelegate:weakSelf];
                   });
                   break;
-              case DownloadResourceManagerResultUpdate:
+              }
+              case DownloadResourceManagerResultUpdate: {
                   dispatch_async(dispatch_get_main_queue(), ^{
                     /** @ghidraAddress 0x4e8a8 */
                     [weakSelf showDownload];
                   });
                   break;
-              case DownloadResourceManagerResultCurrent:
+              }
+              case DownloadResourceManagerResultCurrent: {
                   dispatch_async(dispatch_get_main_queue(), ^{
                     /** @ghidraAddress 0x4e904 */
                     [weakSelf showTitle];
                   });
                   break;
+              }
               }
           } else {
               // Missing credentials: show the startup network-error alert (tag 10).

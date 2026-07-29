@@ -293,6 +293,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)getWebInfoURL;
 
 /**
+ * @brief Store the news web-info URL, parsed from its string form (or cleared by @c nil).
+ * @param webInfoURL The URL string from the news response, or @c nil to clear.
+ * @ghidraAddress 0x4eb88
+ */
+- (void)setWebInfoURL:(nullable NSString *)webInfoURL;
+
+/**
  * @brief The pre-release news web-info URL.
  * @ghidraAddress 0x4eca4
  */
@@ -369,7 +376,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The fixed passphrase used to encrypt persisted save data.
  * @ghidraAddress 0x517fc
  */
-- (nullable NSString *)saveDataKey;
++ (nullable NSString *)saveDataKey;
 
 /**
  * @brief The campaign identifier queued for a launch-time open of the campaign store tab.

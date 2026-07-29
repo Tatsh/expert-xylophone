@@ -175,8 +175,8 @@ static const NSUInteger kInvalidMusicID = 0;
     NSString *identifier = Md5StringToHex(seed.UTF8String);
 
     NSMutableArray *tuneList = [NSMutableArray arrayWithCapacity:kPlaylistTuneListCapacity];
-    NSArray *values = @[ identifier, name, tuneList ];
-    NSArray *keys = @[ kPlaylistKeyIdentifier, kPlaylistKeyName, kPlaylistKeyList ];
+    id values[] = {identifier, name, tuneList};
+    id<NSCopying> keys[] = {kPlaylistKeyIdentifier, kPlaylistKeyName, kPlaylistKeyList};
     NSDictionary *playlist = [NSDictionary dictionaryWithObjects:values
                                                          forKeys:keys
                                                            count:kNewPlaylistKeyCount];

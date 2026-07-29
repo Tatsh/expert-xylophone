@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The phone news / information page controller that hosts an @c RBWebView on the navigation
  * stack.
  */
-@interface RBNotificationPagePhoneViewController : RBBaseViewController <UIWebViewDelegate>
+@interface RBNotificationPagePhoneViewController
+    : RBBaseViewController <UIAlertViewDelegate, UIWebViewDelegate>
 
 #pragma mark Lifecycle
 

@@ -338,6 +338,18 @@ public:
         m_anResultScore[kResultScoreBlue] = nScoreHi;
     }
 
+    /**
+     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
+     *
+     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
+     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
+     * sets its UV size to the used region. Does nothing if the slot is empty or @p pTexture is null.
+     * @param nSlot The slot index (0 through 7).
+     * @param pTexture The texture to bind.
+     * @ghidraAddress 0x74018
+     */
+    void applySpriteInstancerTexture(int nSlot, ne::C_TEXTURE *pTexture);
+
 private:
     /**
      * @brief Renders a non-negative integer as a row of parts-atlas digit sprites.
@@ -550,18 +562,6 @@ private:
      * @ghidraAddress 0x7aba8
      */
     ResultWindowColetteLayer();
-
-    /**
-     * @brief Binds a texture into a slot and refreshes every existing sprite's size and UV rect.
-     *
-     * Sets the slot's ref-counted bound texture to @p pTexture, then, for each sprite already in the
-     * slot, resizes it to the texture image size over its scale factor, zeroes its UV origin, and
-     * sets its UV size to the used region. Does nothing if the slot is empty or @p pTexture is null.
-     * @param nSlot The slot index (0 through 7).
-     * @param pTexture The texture to bind.
-     * @ghidraAddress 0x74018
-     */
-    void applySpriteInstancerTexture(int nSlot, ne::C_TEXTURE *pTexture);
 
     /**
      * @brief Draws a slot's whole bound texture centred on a position (half-size anchor), tinted.

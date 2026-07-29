@@ -19,6 +19,7 @@
 #include "s_vector2.h"
 #include "slide_note_sprite_table.h"
 #include "sprite_uv_table.h"
+#include "vectormath.h"
 
 // The process-wide slide-note layer, created lazily by shared().
 static SlideNoteLayer *g_pSlideNoteLayer = nullptr; // @ghidraAddress 0x3dc658

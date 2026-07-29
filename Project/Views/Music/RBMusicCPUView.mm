@@ -18,6 +18,9 @@
 #import "deviceenvironment.h"
 #import "soundeffectmanager.h"
 
+// @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
+extern const double g_dMascotMessageAnimDuration;
+
 // The number of CPU-rival LEVEL slots the bar is divided into. The marker glides across nine equal
 // slots and LEVEL is clamped to zero through nine.
 constexpr int kLevelSlotCount = 9;

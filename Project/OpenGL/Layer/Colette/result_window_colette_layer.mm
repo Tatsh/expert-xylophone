@@ -667,13 +667,17 @@ void PostResultToTwitter() {
     [pViewController PostTwitter:pCreater Text:tweet];
 }
 
+// The alpha scale that turns a normalised tween level into a 0-255 channel (@ghidraAddress
+// 0x2eed00).
+constexpr float kAlphaScale = 255.0f;
+
 } // namespace
 
 /** @ghidraAddress 0x7427c */
 void ResultWindowColetteLayer::ProcessResultScreenInput() {
     // The panel is interactive only once its reveal is complete and the screen fade has cleared: the
     // alpha channel must read fully opaque and the fade overlay must be gone.
-    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kFullColor;
+    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kAlphaScale;
     const float flChannel3 = m_aTween[kTweenChannel3].flCurrent;
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
     UpdateTouchHitRegions();
@@ -758,7 +762,7 @@ applySwipe:
 
 /** @ghidraAddress 0x74c70 */
 void ResultWindowColetteLayer::UpdateResultTouchInput() {
-    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kFullColor;
+    const float flPanelAlpha = m_aTween[kTweenAlpha].flCurrent * kAlphaScale;
     const float flChannel3 = m_aTween[kTweenChannel3].flCurrent;
     const float flFadeAlpha = FadeOverlayLayer::shared()->GetCurrentAlpha();
     UpdateTouchHitRegions();
@@ -2224,10 +2228,6 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
 }
 
 namespace {
-
-// The alpha scale that turns a normalised tween level into a 0-255 channel (@ghidraAddress
-// 0x2eed00).
-constexpr float kAlphaScale = 255.0f;
 
 // The backdrop's alpha numerator over the alpha scale, so the backdrop draws at 178/255 of the
 // frame alpha (@ghidraAddress 0x2fd004).

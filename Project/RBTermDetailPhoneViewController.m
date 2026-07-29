@@ -214,11 +214,11 @@ static const UIViewAutoresizing kTermTextAutoresizingMask = (UIViewAutoresizing)
                                                  post:postData
                                           contentType:kTermsRequestContentType];
     [weakSelf.downloader
-        startDownloadingWithProceed:^{
+        startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x49684 */
           // Global no-op proceed block.
         }
-        success:^{
+        success:^(Downloader *downloader) {
           /** @ghidraAddress 0x49688 */
           // Cache the parsed JSON body and present it (or just stop the spinner when there is no
           // data), then always stop the spinner, all marshalled to the main queue.
@@ -240,7 +240,7 @@ static const UIViewAutoresizing kTermTextAutoresizingMask = (UIViewAutoresizing)
             [weakSelf endLoadAnimation];
           });
         }
-        failure:^{
+        failure:^(Downloader *downloader) {
           /** @ghidraAddress 0x49988 */
           // Schedule the network-error alert and spinner stop on the main queue.
           dispatch_async(dispatch_get_main_queue(), ^{

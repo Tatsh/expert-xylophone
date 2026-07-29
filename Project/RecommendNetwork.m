@@ -38,9 +38,6 @@ static NSString *const kRecommendBannerDisplayStatusKey = @"bannerDisplayStatus"
 static const int kRecommendUnreadCountNone = 0;
 static const int kRecommendBannerDisplayStatusNone = 0;
 
-// The implicit request code the convenience entry points forward when the caller supplies none.
-static const NSInteger kRecommendRequestCodeNone = 0;
-
 // The vertical alignment the app-list and interstitial flows request; they do not expose it.
 static const int kRecommendVerticalAlignDefault = 0;
 
@@ -119,7 +116,7 @@ static const int kRecommendVerticalAlignDefault = 0;
 + (void)touchOwnAdWithAdLocation:(NSString *)adLocation
                        toAppliId:(NSString *)appliId
                       creativeId:(NSString *)creativeId
-                     requestCode:(NSInteger)requestCode
+                     requestCode:(id)requestCode
                         delegate:(id)delegate {
     if ([ApplilinkConsts checkUseSDKWithAdModel:(int)RecommendAdModelOwnAd
                                      adLocation:adLocation
@@ -138,12 +135,12 @@ static const int kRecommendVerticalAlignDefault = 0;
 
 + (void)openAppListWithAdLocation:(NSString *)adLocation delegate:(id)delegate {
     [self openAppListWithAdLocation:adLocation
-                        requestCode:kRecommendRequestCodeNone
+                        requestCode:nil
                            delegate:delegate];
 }
 
 + (void)openAppListWithAdLocation:(NSString *)adLocation
-                      requestCode:(NSInteger)requestCode
+                      requestCode:(id)requestCode
                          delegate:(id)delegate {
     if (![ApplilinkConsts checkUseSDKWithAdModel:(int)RecommendAdModelAppList
                                       adLocation:adLocation
@@ -178,13 +175,13 @@ static const int kRecommendVerticalAlignDefault = 0;
                        delegate:(id)delegate {
     [self openAdScreenWithAdModel:adModel
                        adLocation:adLocation
-                      requestCode:kRecommendRequestCodeNone
+                      requestCode:nil
                          delegate:delegate];
 }
 
 + (void)openAdScreenWithAdModel:(RecommendAdModel)adModel
                      adLocation:(NSString *)adLocation
-                    requestCode:(NSInteger)requestCode
+                    requestCode:(id)requestCode
                        delegate:(id)delegate {
     if (![ApplilinkConsts checkUseSDKWithAdModel:(int)adModel
                                       adLocation:adLocation
@@ -223,7 +220,7 @@ static const int kRecommendVerticalAlignDefault = 0;
                            adModel:adModel
                         adLocation:adLocation
                      verticalAlign:verticalAlign
-                       requestCode:kRecommendRequestCodeNone
+                       requestCode:nil
                           delegate:delegate];
 }
 
@@ -232,7 +229,7 @@ static const int kRecommendVerticalAlignDefault = 0;
                          adModel:(RecommendAdModel)adModel
                       adLocation:(NSString *)adLocation
                    verticalAlign:(int)verticalAlign
-                     requestCode:(NSInteger)requestCode
+                     requestCode:(id)requestCode
                         delegate:(id)delegate {
     if (![ApplilinkConsts checkUseSDKWithAdModel:(int)adModel
                                       adLocation:adLocation
@@ -263,12 +260,12 @@ static const int kRecommendVerticalAlignDefault = 0;
 
 + (void)openInterstitialWithAdLocation:(NSString *)adLocation delegate:(id)delegate {
     [self openInterstitialWithAdLocation:adLocation
-                             requestCode:kRecommendRequestCodeNone
+                             requestCode:nil
                                 delegate:delegate];
 }
 
 + (void)openInterstitialWithAdLocation:(NSString *)adLocation
-                           requestCode:(NSInteger)requestCode
+                           requestCode:(id)requestCode
                               delegate:(id)delegate {
     if (![ApplilinkConsts checkUseSDKWithAdModel:(int)RecommendAdModelInterstitial
                                       adLocation:adLocation

@@ -19,6 +19,7 @@
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
 #import "NSFileManager+RB.h"
+#import "StoreExtendNoteInfo.h"
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 

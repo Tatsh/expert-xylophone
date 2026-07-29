@@ -11,6 +11,7 @@
 #include "neTexture.h"
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
+#include "vectormath.h"
 
 // The shared sprite-UV atlas the sprite types index (@ghidraAddress 0x2ef668).
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
@@ -80,7 +81,7 @@ constexpr int kTexParamEnabled = 1;
 
 /** @ghidraAddress 0x1812a0 */
 LongNoteLayer::LongNoteLayer() {
-    m_flBaseOffset = -1.0f;
+    m_flPulseClock = -1.0f;
 }
 
 /** @ghidraAddress 0x181310 */

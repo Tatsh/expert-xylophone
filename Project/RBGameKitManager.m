@@ -53,7 +53,7 @@ static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
         return;
     }
     __weak GKLocalPlayer *weakLocalPlayer = localPlayer;
-    [localPlayer setAuthenticateHandler:^(NSError *error) {
+    [localPlayer setAuthenticateHandler:^(UIViewController *viewController, NSError *error) {
       /** @ghidraAddress 0x202ea4 */
       if (error == nil) {
           (void)weakLocalPlayer.playerID;

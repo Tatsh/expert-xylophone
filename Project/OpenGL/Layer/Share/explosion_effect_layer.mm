@@ -114,8 +114,8 @@ void ExplosionEffectLayer::CreateExplosionEffect(unsigned int nColor,
             entry.flTimer = 0.0f;
             entry.nJudge = nJudge;
             entry.bActive = true;
-            entry.flPosX = flPosX;
-            entry.flPosY = flPosY;
+            entry.position.x = flPosX;
+            entry.position.y = flPosY;
             return;
         }
     }
@@ -252,7 +252,7 @@ void ExplosionEffectLayer::Process(float flDeltaTime) {
             }
             const S_VECTOR2 &uvOrigin = kBurstUvCells[entry.nJudge * kBurstPhaseCount + nPhase];
             SetExplosionEffectSprite(static_cast<unsigned int>(nBank),
-                                     &entry.flPosX,
+                                     &entry.position,
                                      &uvOrigin,
                                      static_cast<int>(nAlpha),
                                      flRotation);

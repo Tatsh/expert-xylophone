@@ -778,7 +778,7 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
                 pOwner->SetSlideRecord(&m_pSlideRecords[i]);
                 nLastIndex = nIndex;
             }
-            ++pOwner->GetSlidePointCount();
+            pOwner->SetSlidePointCount(pOwner->GetSlidePointCount() + 1);
         }
     }
 
