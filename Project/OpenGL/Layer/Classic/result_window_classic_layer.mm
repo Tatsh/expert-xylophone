@@ -2066,10 +2066,12 @@ void ResultWindowClassicLayer::Update(float flDeltaTime) {
     }
 }
 
+// Seeds every Classic result-screen layout table at load time. Nothing calls this by name: its
+// address sits in the binary's __mod_init_func list (0x358ca8), so dyld runs it when the image
+// loads. The binary wraps the whole fill in an autorelease pool, then writes every field inline.
+// Only the play-field height below is not a constant.
 /** @ghidraAddress 0x11c9b8 */
-void InitializeResultLayoutTable() {
-    // The binary wraps the whole fill in an autorelease pool, then writes every field of the
-    // result-screen layout tables inline. Only the play-field height below is not a constant.
+__attribute__((constructor)) void InitializeResultLayoutTable() {
     @autoreleasepool {
         g_aClassicPartsPad[0].nEnabled = 1;
         g_aClassicPartsPad[0].flX = 0.0f;

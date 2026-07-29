@@ -109,17 +109,6 @@ extern PhoneLayoutRect g_ClassicCenterPositionPhoneState;     // @ghidraAddress 
 extern PhoneLayoutRect g_ClassicCenterPositionPhonePortrait;  // @ghidraAddress 0x3d90e0
 extern PhoneLayoutRect g_ClassicCenterPositionPhoneLandscape; // @ghidraAddress 0x3d90f0
 
-/**
- * @brief Fills every Classic result-screen layout table with its shipped values.
- *
- * A one-time initialiser: the tables it writes are zero-initialised in the binary's @c __common
- * segment, and this seeds each field inline inside an autorelease pool. Every value is a constant
- * except the first parts record's height, which takes the play-field height. The binary has no
- * direct callers; it is reached through the two data references at 0x3e8f60 and 0x358ca8.
- * @ghidraAddress 0x11c9b8
- */
-void InitializeResultLayoutTable();
-
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :
