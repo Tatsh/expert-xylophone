@@ -5,7 +5,9 @@
 
 #pragma once
 
+#include "../Classic/classic_parts_data_table.h"
 #include "parts_data_table.h"
+#include "s_vector2.h"
 
 // The maximum number of records the Limelight parts accessor will index (the accessor asserts the
 // index is below this bound).
@@ -16,6 +18,22 @@ constexpr int kLimelightPartsRecordBound = 255;
 extern PartsDataRecord
     g_aLimelightPartsPhone[kLimelightPartsRecordBound];                  // @ghidraAddress 0x3d9100
 extern PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound]; // @ghidraAddress 0x307cf0
+
+// The Limelight phone parts anchor table: one {x, y} anchor per parts slot, zero-initialised in the
+// binary's @c __common segment and filled at runtime alongside the phone parts table. Its 8-byte
+// stride and count run exactly up to the first phone-layout anchor table.
+constexpr int kLimelightPartsAnchorRecordCount = 133;
+// @ghidraAddress 0x3da8e8
+extern S_VECTOR2 g_aLimelightPartsAnchorPhone[kLimelightPartsAnchorRecordCount];
+
+// The Limelight colour-marker rectangles and their origin, zero-initialised in the binary's
+// @c __common segment and filled at runtime. Same shape as the Classic pair: the record count and
+// four-float shape are proven by the initialiser's writes, but the individual coordinates' roles
+// are not yet recovered, so they carry the shared rectangle field names.
+constexpr int kLimelightColorMarkerRectCount = 39;
+// @ghidraAddress 0x3ddd90
+extern PhoneLayoutRect g_aLimelightColorMarkerRects[kLimelightColorMarkerRectCount];
+extern S_VECTOR2 g_LimelightColorMarkerOrigin; // @ghidraAddress 0x3de000
 
 /**
  * @brief One entry of the shared UV-palette table: the texture-coordinate rectangle a part draws

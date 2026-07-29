@@ -74,6 +74,21 @@ TABLES = [
     (0x1003D90F0, "g_ClassicCenterPositionPhoneLandscape", 0x10, 1, RECT),
     (0x1003DD080, "g_aClassicColorMarkerRects", 0x10, 39, RECT),
     (0x1003DD2F0, "g_ClassicColorMarkerOrigin", 0x08, 1, PAIR),
+    # Limelight (0x12af9c)
+    (0x1003D9100, "g_aLimelightPartsPhone", 0x18, 255, PARTS),
+    (0x1003DA8E8, "g_aLimelightPartsAnchorPhone", 0x08, 133, PAIR),
+    (0x1003DAD10, "g_aLimelightPhoneAnchorDefault", 0x0C, 88, ANCHOR),
+    (0x1003DB130, "g_aLimelightPhoneAnchorPortrait", 0x0C, 88, ANCHOR),
+    (0x1003DB550, "g_aLimelightSeparatorPhoneDefault", 0x14, 52, LAYOUT),
+    (0x1003DB960, "g_aLimelightSeparatorPhonePortrait", 0x14, 52, LAYOUT),
+    (0x1003DBD70, "g_aLimelightPositionPhoneState", 0x14, 4, LAYOUT),
+    (0x1003DBDC0, "g_aLimelightPositionPhoneStatePortrait", 0x14, 4, LAYOUT),
+    (0x1003DBE10, "g_aLimelightPositionPhoneStateDefault", 0x14, 4, LAYOUT),
+    (0x1003DBE60, "g_LimelightCenterPositionPhoneState", 0x10, 1, RECT),
+    (0x1003DBE70, "g_LimelightCenterPositionPhonePortrait", 0x10, 1, RECT),
+    (0x1003DBE80, "g_LimelightCenterPositionPhoneDefault", 0x10, 1, RECT),
+    (0x1003DDD90, "g_aLimelightColorMarkerRects", 0x10, 39, RECT),
+    (0x1003DE000, "g_LimelightColorMarkerOrigin", 0x08, 1, PAIR),
 ]
 
 
