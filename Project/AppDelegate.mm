@@ -37,6 +37,7 @@
 #import "clear_gauge_layer.h"
 #import "ctask.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 #import "engineruntime.h"
 #import "game_scene.h"
 #import "gamesystem.h"

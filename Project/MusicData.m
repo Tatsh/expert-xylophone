@@ -18,6 +18,7 @@
 // use); they resolve once those classes land.
 #import "BFCodec.h"
 #import "MusicDataExtend.h"
+#import "NSData+RB.h"
 #import "RBExtendNoteManager.h"
 #import "RBMusicManager.h"
 #import "StringConvert.h"

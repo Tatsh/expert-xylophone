@@ -32,7 +32,7 @@
     if (_unzFile == NULL) {
         return nil;
     }
-    if (unzLocateFile(_unzFile, [entryName UTF8String], 1) != UNZ_OK) {
+    if (unzLocateFile(_unzFile, [entryName UTF8String], NULL) != UNZ_OK) {
         return nil;
     }
     if (unzOpenCurrentFile(_unzFile) != UNZ_OK) {
@@ -103,35 +103,21 @@
     time(&current);
 
     zip_fileinfo zipInfo = {0};
-    zipInfo.dosDate = (unsigned long)current;
+    zipInfo.mz_dos_date = (unsigned long)current;
 
     NSError *error = nil;
     NSDictionary *attr = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:&error];
     if (error == nil && attr) {
         NSDate *fileDate = (NSDate *)[attr objectForKey:NSFileModificationDate];
         if (fileDate) {
-            zipInfo.dosDate = [fileDate timeIntervalSinceDate:[self Date1980]];
+            zipInfo.mz_dos_date = [fileDate timeIntervalSinceDate:[self Date1980]];
         }
     }
 
     int ret;
     NSData *data = nil;
     if ([_password length] == 0) {
-        ret = zipOpenNewFileInZip(_zipFile,
-                                  (const char *)[newname UTF8String],
-                                  &zipInfo,
-                                  NULL,
-                                  0,
-                                  NULL,
-                                  0,
-                                  NULL, // comment
-                                  Z_DEFLATED,
-                                  Z_DEFAULT_COMPRESSION);
-    } else {
-        data = [NSData dataWithContentsOfFile:file];
-        uLong crcValue = crc32(0L, NULL, 0L);
-        crcValue = crc32(crcValue, (const Bytef *)[data bytes], static_cast<uInt>([data length]));
-        ret = zipOpenNewFileInZip3(_zipFile,
+        ret = zipOpenNewFileInZip5(_zipFile,
                                    (const char *)[newname UTF8String],
                                    &zipInfo,
                                    NULL,
@@ -142,11 +128,37 @@
                                    Z_DEFLATED,
                                    Z_DEFAULT_COMPRESSION,
                                    0,
-                                   15,
-                                   8,
+                                   MAX_WBITS,
+                                   DEF_MEM_LEVEL,
+                                   Z_DEFAULT_STRATEGY,
+                                   NULL, // password
+                                   0,
+                                   0,
+                                   0,
+                                   0);
+    } else {
+        data = [NSData dataWithContentsOfFile:file];
+        uLong crcValue = crc32(0L, NULL, 0L);
+        crcValue = crc32(crcValue, (const Bytef *)[data bytes], static_cast<uInt>([data length]));
+        ret = zipOpenNewFileInZip5(_zipFile,
+                                   (const char *)[newname UTF8String],
+                                   &zipInfo,
+                                   NULL,
+                                   0,
+                                   NULL,
+                                   0,
+                                   NULL, // comment
+                                   Z_DEFLATED,
+                                   Z_DEFAULT_COMPRESSION,
+                                   0,
+                                   MAX_WBITS,
+                                   DEF_MEM_LEVEL,
                                    Z_DEFAULT_STRATEGY,
                                    [_password cStringUsingEncoding:NSASCIIStringEncoding],
-                                   crcValue);
+                                   0,
+                                   0,
+                                   0,
+                                   0);
     }
     if (ret != Z_OK) {
         return NO;
@@ -276,9 +288,9 @@
         if (fp) {
             fclose(fp);
             // set the orignal datetime property
-            if (fileInfo.dosDate != 0) {
+            if (fileInfo.mz_dos_date != 0) {
                 NSDate *orgDate =
-                    [[NSDate alloc] initWithTimeInterval:(NSTimeInterval)fileInfo.dosDate
+                    [[NSDate alloc] initWithTimeInterval:(NSTimeInterval)fileInfo.mz_dos_date
                                                sinceDate:[self Date1980]];
 
                 NSDictionary *attr =

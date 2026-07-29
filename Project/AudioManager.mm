@@ -951,7 +951,7 @@ constexpr double kResumeFadeInTime = 0.3;
     }
     seVolume[groupId] = seVolumeValue;
     if (groupId != kSeGroupCaPlayer) {
-        seAVPlayer->SetAllAudioBusVolumeWrapper(seVolumeValue);
+        seAVPlayer->SetAllVolume(seVolumeValue);
         return;
     }
     for (int channel = 0; channel < kVoiceChannelCount; ++channel) {

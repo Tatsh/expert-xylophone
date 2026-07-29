@@ -31,6 +31,7 @@
 #import "UIImageView+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 #import "engineruntime.h"
 #import "gamesystem.h"
 #import "leveltables.h"

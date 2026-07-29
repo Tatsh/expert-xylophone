@@ -1874,7 +1874,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 #pragma mark - iTunes product page
 
-- (void)storeDetailViewOpenItunesWithURL:(NSString *)url {
+- (void)storeDetailViewOpenItunesWithURL:(NSURL *)url {
     if (url != nil) {
         [[AppDelegate appDelegate].viewController openItunesWithURL:url];
     }

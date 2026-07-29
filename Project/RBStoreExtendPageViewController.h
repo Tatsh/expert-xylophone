@@ -377,7 +377,7 @@ extern NSString *const g_pStoreDownloadInProgressMessage;
  * @param url The iTunes URL forwarded from the detail view.
  * @ghidraAddress 0x167340
  */
-- (void)storeDetailViewOpenItunesWithURL:(nullable NSString *)url;
+- (void)storeDetailViewOpenItunesWithURL:(nullable NSURL *)url;
 
 /**
  * @brief Opens the given iTunes URL, in-app when it carries affiliate parameters.

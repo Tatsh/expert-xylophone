@@ -77,6 +77,7 @@
 #include "reflec_gauge_layer.h"
 #include "result_window_classic_layer.h"
 #include "result_window_colette_layer.h"
+#include "shotsoundmanager.h"
 #include "slide_note_layer.h"
 #include "slide_note_result_layer.h"
 #include "soundeffectmanager.h"
@@ -1839,14 +1840,14 @@ void GameScene::ExecMain() {
 
         // Only a real (non-preview, non-tutorial) song's play is banked and reported.
         bool bComputeBonuses = false;
-        const int nMusicId = AppDelegate.appDelegate.musicData.MusicID;
-        if (nMusicId >= kFirstScoredMusicId &&
-            AppDelegate.appDelegate.musicData.MusicID <= kLastScoredMusicId) {
+        MusicData *pPlayedMusic = [AppDelegate.appDelegate musicData];
+        const int nMusicId = pPlayedMusic.MusicID;
+        if (nMusicId >= kFirstScoredMusicId && nMusicId <= kLastScoredMusicId) {
             PersistScoreAndSaveReplay();
             (void)NSDate.date; // Yes, the binary discards this call's result.
             ReportTotalScoreToGameCenter();
             bComputeBonuses = true;
-        } else if (AppDelegate.appDelegate.musicData.MusicID == kTutorialMusicId) {
+        } else if (nMusicId == kTutorialMusicId) {
             bComputeBonuses = true;
         }
         if (bComputeBonuses) {

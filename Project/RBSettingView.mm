@@ -14,6 +14,7 @@
 
 #import "AppDelegate.h"
 #import "RBMacros.h"
+#import "RBMenuTutorialView.h"
 #import "RBMenuView.h"
 #import "RBMusicView.h"
 #import "RBSettingMenuButton.h"
