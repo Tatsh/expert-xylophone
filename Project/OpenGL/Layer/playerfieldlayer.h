@@ -73,6 +73,18 @@ public:
         return m_aScoreFields[uSide];
     }
 
+    /**
+     * @brief Arms a side's score-digit roll-up.
+     *
+     * Seeds the side's @c ScoreDigitField so the digits animate from the value currently shown to
+     * @p nValue over @p flDuration, restarting the animation clock.
+     * @param uSide The player side.
+     * @param nValue The target score value.
+     * @param flDuration The roll-up duration, in seconds.
+     * @ghidraAddress 0x18b7cc
+     */
+    void SetScoreDigitTarget(unsigned int uSide, int nValue, float flDuration);
+
     // The score-number sprite-instancer capacity the layer builds.
     static constexpr unsigned int kSpriteCapacity = 0x14;
 

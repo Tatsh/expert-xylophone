@@ -90,7 +90,6 @@ UPDATES = {
     '0x10012af38': 'float FloatTween::Advance(float flDeltaTime)',
     '0x1001240a8': 'void LimelightResultLayer::UpdateBonusSoundCueTimer(float flDeltaTime)',
     '0x100109e04': 'void PlayFieldLayerBase::RefreshThema()',
-    '0x10002f638': 'void neSpriteInstancing::tempAssert(bool bCondition)',
     '0x100135e84': 'int NoteModel::IsSideFlipped() const',
     '0x1001360a8': 'float NoteModel::GetVirtualBoundY(int nBand)',
     '0x100176e18': 'ExplosionEffectLayer::ExplosionEffectLayer()',
@@ -252,18 +251,9 @@ UPDATES = {
     '0x100028964': 'void ne::C_DRAW_POLYGON_3D::Render()',
     '0x100055638': 'float CalculateCurveInterpolation(const float * pPairs, int nCount, float flQueryX)',
     '0x1000556d0': 'float CalculateCurveValue(const FloatCurve * pCurve, float flQueryX)',
-    '0x100058570': 'float TitleScreenLayerClassic::ComputeSwingParticleX(float flBaseX, float flBaseY) const',
-    '0x100058610': 'float TitleScreenLayerClassic::ComputeSwingParticleY(float flBaseX, float flBaseY) const',
-    '0x1000597a8': 'unsigned int TitleScreenLayerClassic::AdvanceGestureState(int inputCode)',
-    '0x100152cc8': 'void TitleScreenLayerClassic::AdvanceSwipeState(int iSwipeEvent)',
-    '0x1001549b8': 'void TitleScreenLayerColette::AdvanceSwipeState(int iSwipeEvent)',
     '0x100149ff4': 'void TitleScreenLayerClassic::CalculateFade(int nDeltaFrames)',
-    '0x100152548': 'void TitleScreenLayerClassic::AdvanceFadeValue(int nDeltaFrames)',
-    '0x10010a5fc': 'void ClassicThemeAnimation::AdvanceEasedProgress(float flDelta)',
-    '0x10018795c': 'void FullComboEffectLayer::AdvanceFadeInterp(float flDeltaTime)',
     '0x100120a74': 'void LimelightThemeLayer::AdvanceGradeChannel(float flDeltaTime)',
     '0x100189ef0': 'void NumberEffectLayer::AdvanceFadeInterp(float flDeltaTime)',
-    '0x10018bd58': 'void ScoreDigitAnim::Advance(float flDeltaTime)',
     '0x10012f5b0': 'NotePathPoint * NotePathPointArray::AllocateEntries(int nCount)',
     '0x10012f648': 'void NotePathPointArray::Append(const NotePathPoint & point)',
     '0x100017c90': 'TouchManager::TouchManager()',
@@ -339,9 +329,6 @@ UPDATES = {
     '0x10017fccc': 'ThemaMarkerLayer * ThemaMarkerLayer::shared()',
     '0x10017fc00': 'ThemaMarkerLayer::ThemaMarkerLayer()',
     '0x10018b6fc': 'void PlayerFieldLayer::CreateScoreNumberSpriteBatch()',
-    '0x100181360': 'void NoteBodyLayer::LoadNoteBodySprites()',
-    '0x100181310': 'NoteBodyLayer * NoteBodyLayer::shared()',
-    '0x1001812a0': 'NoteBodyLayer::NoteBodyLayer()',
     '0x100184758': 'void NoteTrailLayer::LoadNoteTrailSprites()',
     '0x100184708': 'NoteTrailLayer * NoteTrailLayer::shared()',
     '0x1001846b0': 'NoteTrailLayer::NoteTrailLayer()',
@@ -873,7 +860,11 @@ def tag_defines(lines, idx):
     return False
 
 
-_TAG_RE = re.compile(r'@ghidraAddress\s+(0x[0-9a-fA-F]+)')
+# A tag only binds to a declaration when it *leads* its comment's content, as the doc form
+# ``/** @ghidraAddress 0x... */`` or `` * @ghidraAddress 0x...`` does. An address mentioned
+# part-way through a prose sentence is describing some other routine -- typically the caller a
+# body is inlined into -- and must not be credited with the declaration that happens to follow it.
+_TAG_RE = re.compile(r'^[ \t]*(?:/\*\*?|//+|\*)?[ \t]*@ghidraAddress\s+(0x[0-9a-fA-F]+)')
 
 
 def _both_keys(value):
@@ -1295,7 +1286,7 @@ if '--audit-only' not in sys.argv:
 def collect_defined_addresses():
     """Return the set of image-base-stripped addresses that carry an @ghidraAddress tag preceding an
     actual definition (function body) in source. A bare header declaration does NOT count."""
-    tag_re = re.compile(r'@ghidraAddress\s+(0x[0-9a-fA-F]+)')
+    tag_re = _TAG_RE
     defined = set()
     for pattern in SOURCE_GLOBS:
         for path in glob.glob(pattern, recursive=True):
@@ -1330,7 +1321,7 @@ def _ghidra_entry(raw_addr):
 def collect_source_tags():
     """Every @ghidraAddress value tagged in source, with the file:line and whether it precedes a
     definition body. Returns a list of (value, path, lineno, is_def)."""
-    tag_re = re.compile(r'@ghidraAddress\s+(0x[0-9a-fA-F]+)')
+    tag_re = _TAG_RE
     tags = []
     for pattern in SOURCE_GLOBS:
         for path in glob.glob(pattern, recursive=True):
@@ -1391,6 +1382,36 @@ def audit_invented_addresses():
     return len(invented)
 
 
+def audit_stale_overrides():
+    """Flag manual signature overrides whose class disagrees with the reconstruction in the tree.
+
+    ``UPDATES`` and ``EXPLICIT_SIGNATURES`` outrank the signature extracted from source, so an entry
+    left behind after a class was renamed or a method moved keeps publishing the old owner
+    while the source says otherwise. That is invisible in the table itself -- the row simply reads
+    wrong -- so it is checked here instead.
+    """
+    stale = []
+    for table in (UPDATES, EXPLICIT_SIGNATURES):
+        for raw, sig in table.items():
+            try:
+                addr = int(raw, 16)
+            except ValueError:
+                continue
+            short = addr - IMAGE_BASE if addr >= IMAGE_BASE else addr
+            src = SOURCE_SIGS.get(short, SOURCE_SIGS.get(addr))
+            if not src:
+                continue
+            over_cls = re.search(r'\b([A-Za-z_]\w*)::[~A-Za-z_]\w*\s*\(', sig)
+            src_cls = re.search(r'\b([A-Za-z_]\w*)::[~A-Za-z_]\w*\s*\(', src)
+            if over_cls and src_cls and over_cls.group(1) != src_cls.group(1):
+                stale.append((raw, over_cls.group(1), src_cls.group(1)))
+    if stale:
+        print(f'AUDIT: {len(stale)} manual override(s) disagree with the source class:')
+        for raw, o, sc in stale:
+            print(f'  {raw} override={o} source={sc}')
+    return len(stale)
+
+
 def audit(rows_):
     """Verify every done entry has a source definition and a real (non-placeholder) signature."""
     defined = DEFINED_ADDRS
@@ -1418,9 +1439,10 @@ def audit(rows_):
         print(f'AUDIT: {len(placeholder_sig)} done entries with a placeholder/undefined signature:')
         for addr, name, sig in placeholder_sig[:40]:
             print(f'  {addr} {name}: {sig}')
-    if not missing_def and not placeholder_sig:
+    stale = audit_stale_overrides()
+    if not missing_def and not placeholder_sig and not stale:
         print('AUDIT: OK — every done entry has a source definition and a real signature.')
-    return len(missing_def) + len(placeholder_sig)
+    return len(missing_def) + len(placeholder_sig) + stale
 
 
 audit_problems = audit(parsed)

@@ -154,7 +154,7 @@ void ScoreTracker::ResetLaneGaugeState() {
         for (int &nCell : record.nCells) {
             nCell = 0;
         }
-        SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), nSide, record.nCells[0]);
+        PlayerFieldLayer::shared()->SetScoreDigitTarget(nSide, record.nCells[0], 0.0f);
         ApplyLaneGaugeValueAndBackground(0.0f, nSide);
     }
 }
@@ -168,19 +168,6 @@ void ScoreTracker::ApplyLaneGaugeValueAndBackground(float flValue, unsigned int 
     if (uSide == kSecondPlayerSide) {
         BgLayer::GetBackgroundLayer()->SetClearEffectActive(kLowGaugeWarningThreshold <= flValue);
     }
-}
-
-/** @ghidraAddress 0x18b7cc */
-void ScoreTracker::SetScoreDigitTarget(float flDuration,
-                                       PlayerFieldLayer *pLayer,
-                                       unsigned int uSide,
-                                       int nValue) {
-    ScoreDigitField &field = pLayer->GetScoreDigitField(uSide);
-    field.nTarget = nValue;
-    field.flFrom = field.flCurrent;
-    field.flTo = static_cast<float>(nValue);
-    field.flElapsed = 0.0f;
-    field.flDuration = flDuration;
 }
 
 /** @ghidraAddress 0x1492cc */
@@ -263,7 +250,7 @@ void ScoreTracker::AddScore(
 
     // Fire the result-quad and score-digit effects.
     NoteResultLayer::shared()->Create(static_cast<unsigned int>(nBand), nJudge, nCombo);
-    SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), bSideMatch ? 1 : 0, nScore);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(bSideMatch ? 1 : 0, nScore, 0.0f);
 }
 
 /** @ghidraAddress 0x149610 */
@@ -276,7 +263,7 @@ void ScoreTracker::AddScoreDelta(int nPlayer, int nPosX, int nPosY, int nDelta) 
         nScore = 0;
     }
     m_aRecords[nSide].nCells[kCellScore] = nScore;
-    SetScoreDigitTarget(0.0f, PlayerFieldLayer::shared(), nSide, nScore);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(nSide, nScore, 0.0f);
 }
 
 /** @ghidraAddress 0x149678 */
@@ -303,8 +290,8 @@ void ScoreTracker::AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags)
     // judge effect.
     record.nCells[kCellScore] += kLaneJudgeScore;
     ++record.nCells[kCellHitCount];
-    SetScoreDigitTarget(
-        kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSlot, record.nCells[kCellScore]);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(
+        nSlot, record.nCells[kCellScore], kBonusScoreAnimDuration);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSlot, kLaneJudgeScore, 1);
 }
 
@@ -312,7 +299,7 @@ void ScoreTracker::AddLaneJudgeResult(int nPlayerSide, unsigned int nJudgeFlags)
 void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus0;
-    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(nSide, nScore, kBonusScoreAnimDuration);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus0, 0);
 }
 
@@ -320,7 +307,7 @@ void ScoreTracker::SetJudgeScore0(unsigned int nSide) {
 void ScoreTracker::SetJudgeScore2(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus2;
-    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(nSide, nScore, kBonusScoreAnimDuration);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus2, 2);
 }
 
@@ -328,7 +315,7 @@ void ScoreTracker::SetJudgeScore2(unsigned int nSide) {
 void ScoreTracker::SetJudgeScore3(unsigned int nSide) {
     int &nScore = m_aRecords[nSide].nCells[0];
     nScore += kJudgeBonus3;
-    SetScoreDigitTarget(kBonusScoreAnimDuration, PlayerFieldLayer::shared(), nSide, nScore);
+    PlayerFieldLayer::shared()->SetScoreDigitTarget(nSide, nScore, kBonusScoreAnimDuration);
     JudgeEffectLayer::shared()->TriggerJudgeEffect(nSide, kJudgeBonus3, 3);
 }
 

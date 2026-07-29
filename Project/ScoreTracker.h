@@ -116,20 +116,6 @@ public:
     void ApplyLaneGaugeValueAndBackground(float flValue, unsigned int uSide);
 
     /**
-     * @brief Arms a side's score-digit roll-up on the given player-field layer.
-     *
-     * Seeds the layer's per-side @c ScoreDigitField so the digits animate from the current value to
-     * @p nValue over @p flDuration.
-     * @param flDuration The roll-up duration, in seconds.
-     * @param pLayer The player-field layer whose score digits are updated.
-     * @param uSide The player side.
-     * @param nValue The target score value.
-     * @ghidraAddress 0x18b7cc
-     */
-    static void
-    SetScoreDigitTarget(float flDuration, PlayerFieldLayer *pLayer, unsigned int uSide, int nValue);
-
-    /**
      * @brief Applies one note's judgement to a player's record and fires the score effects.
      *
      * The binary qualifies this @c ScoreManager::AddScore (in @c score_manager.mm), but it takes the

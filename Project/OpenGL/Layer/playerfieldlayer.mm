@@ -68,6 +68,16 @@ constexpr float kAlphaByteScale = 255.0f;
 
 } // namespace
 
+/** @ghidraAddress 0x18b7cc */
+void PlayerFieldLayer::SetScoreDigitTarget(unsigned int uSide, int nValue, float flDuration) {
+    ScoreDigitField &field = m_aScoreFields[uSide];
+    field.nTarget = nValue;
+    field.flFrom = field.flCurrent;
+    field.flTo = static_cast<float>(nValue);
+    field.flElapsed = 0.0f;
+    field.flDuration = flDuration;
+}
+
 /** @ghidraAddress 0x18bd58 */
 void ScoreDigitField::Advance(float flDeltaTime) {
     // Unlike the shared linear tween, this snaps the displayed value to the end once complete.
