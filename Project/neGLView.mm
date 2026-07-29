@@ -40,12 +40,12 @@ static neGLView *g_pGLView = nil;
     return [CAEAGLLayer class];
 }
 
-+ (nullable instancetype)GetInstance {
++ (instancetype)GetInstance {
     /** @ghidraAddress 0x39e10 */
     return g_pGLView;
 }
 
-- (nullable instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame {
     /** @ghidraAddress 0x39e30 */
     self = [super initWithFrame:frame];
     if (!self) {
