@@ -168,9 +168,10 @@ private:
      */
     MainFrameLayer();
 
-    // +0x08..+0x0f: further layer state, still being worked out.
-    unsigned char m_aReserved08[8] = {}; // +0x08
-    ne::C_TEXTURE *m_pFrameTexture = {}; // +0x10: the frame atlas, from the texture cache.
+    // +0x08: the frame atlas for the current frame type; +0x10 the shared gm_parts2 overlay atlas.
+    // BuildSprites releases and reloads both.
+    ne::C_TEXTURE *m_pFrameTexture = {};
+    ne::C_TEXTURE *m_pOverlayTexture = {};
     // +0x18: the frame border's 16-vertex 3D mesh, whose vertices Build3dVertices lays out and whose
     // per-vertex alpha follows the fade channel.
     ne::C_DRAW_POLYGON_3D *m_pFrameMesh3d = {};
