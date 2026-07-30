@@ -376,6 +376,7 @@ shellcheck
 shellformat
 shotsoundmanager
 signedness
+smulh
 snapcraft
 sota
 soundeffectmanager

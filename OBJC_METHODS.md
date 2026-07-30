@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4309 verified
-(67.9%).
+Total: 6343 — 6203 reconstructed, 4345 verified
+(68.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4941,43 +4941,43 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageHeaderCell` | `-` | `setOpenedLabel:` | prop | ✅ | ✅ | `0x1cdd90` |
 | `RBStoreManageHeaderCell` | `-` | `titleLabel` | prop | ✅ | ✅ | `0x1cdda0` |
 | `RBStoreManageHeaderCell` | `-` | `setTitleLabel:` | prop | ✅ | ✅ | `0x1cddb0` |
-| `RBStoreManageViewController` | `-` | `initWithParent:` |  | ✅ | ❌ | `0x1cddc0` |
-| `RBStoreManageViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1ce97c` |
-| `RBStoreManageViewController` | `-` | `presentSortSelect:` |  | ✅ | ❌ | `0x1cf0ec` |
-| `RBStoreManageViewController` | `-` | `hideSortSelect:` |  | ✅ | ❌ | `0x1cf2cc` |
-| `RBStoreManageViewController` | `-` | `switchToSort:title:` |  | ✅ | ❌ | `0x1cf3f4` |
-| `RBStoreManageViewController` | `-` | `SelectSort` |  | ✅ | ❌ | `0x1cf77c` |
-| `RBStoreManageViewController` | `-` | `getSortedDictionary:row:` |  | ✅ | ❌ | `0x1cf9ec` |
-| `RBStoreManageViewController` | `-` | `sortList:` |  | ✅ | ❌ | `0x1cfb48` |
-| `RBStoreManageViewController` | `-` | `goToTop:` |  | ✅ | ❌ | `0x1d1080` |
-| `RBStoreManageViewController` | `-` | `toggleOpen:` |  | ✅ | ❌ | `0x1d1130` |
-| `RBStoreManageViewController` | `-` | `tableView:heightForHeaderInSection:` |  | ✅ | ❌ | `0x1d1280` |
-| `RBStoreManageViewController` | `-` | `tableView:viewForHeaderInSection:` |  | ✅ | ❌ | `0x1d1364` |
-| `RBStoreManageViewController` | `-` | `tableView:titleForHeaderInSection:` |  | ✅ | ❌ | `0x1d15b4` |
-| `RBStoreManageViewController` | `-` | `sectionIndexTitlesForTableView:` |  | ✅ | ❌ | `0x1d16dc` |
-| `RBStoreManageViewController` | `-` | `tableView:sectionForSectionIndexTitle:atIndex:` |  | ✅ | ❌ | `0x1d172c` |
-| `RBStoreManageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1d175c` |
-| `RBStoreManageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1d2220` |
-| `RBStoreManageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1d22e8` |
-| `RBStoreManageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1d2434` |
-| `RBStoreManageViewController` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x1d24bc` |
-| `RBStoreManageViewController` | `-` | `startDownloadMusic` |  | ✅ | ❌ | `0x1d2ab8` |
-| `RBStoreManageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ❌ | `0x1d2fc4` |
-| `RBStoreManageViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1d3058` |
-| `RBStoreManageViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1d39e0` |
-| `RBStoreManageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x1d3b10` |
-| `RBStoreManageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1d3c5c` |
-| `RBStoreManageViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1d414c` |
-| `RBStoreManageViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1d416c` |
-| `RBStoreManageViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1d418c` |
-| `RBStoreManageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1d41ac` |
-| `RBStoreManageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1d42ec` |
-| `RBStoreManageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1d4494` |
-| `RBStoreManageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1d454c` |
+| `RBStoreManageViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1cddc0` |
+| `RBStoreManageViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1ce97c` |
+| `RBStoreManageViewController` | `-` | `presentSortSelect:` |  | ✅ | ✅ | `0x1cf0ec` |
+| `RBStoreManageViewController` | `-` | `hideSortSelect:` |  | ✅ | ✅ | `0x1cf2cc` |
+| `RBStoreManageViewController` | `-` | `switchToSort:title:` |  | ✅ | ✅ | `0x1cf3f4` |
+| `RBStoreManageViewController` | `-` | `SelectSort` |  | ✅ | ✅ | `0x1cf77c` |
+| `RBStoreManageViewController` | `-` | `getSortedDictionary:row:` |  | ✅ | ✅ | `0x1cf9ec` |
+| `RBStoreManageViewController` | `-` | `sortList:` |  | ✅ | ✅ | `0x1cfb48` |
+| `RBStoreManageViewController` | `-` | `goToTop:` |  | ✅ | ✅ | `0x1d1080` |
+| `RBStoreManageViewController` | `-` | `toggleOpen:` |  | ✅ | ✅ | `0x1d1130` |
+| `RBStoreManageViewController` | `-` | `tableView:heightForHeaderInSection:` |  | ✅ | ✅ | `0x1d1280` |
+| `RBStoreManageViewController` | `-` | `tableView:viewForHeaderInSection:` |  | ✅ | ✅ | `0x1d1364` |
+| `RBStoreManageViewController` | `-` | `tableView:titleForHeaderInSection:` |  | ✅ | ✅ | `0x1d15b4` |
+| `RBStoreManageViewController` | `-` | `sectionIndexTitlesForTableView:` |  | ✅ | ✅ | `0x1d16dc` |
+| `RBStoreManageViewController` | `-` | `tableView:sectionForSectionIndexTitle:atIndex:` |  | ✅ | ✅ | `0x1d172c` |
+| `RBStoreManageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ✅ | `0x1d175c` |
+| `RBStoreManageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1d2220` |
+| `RBStoreManageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1d22e8` |
+| `RBStoreManageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1d2434` |
+| `RBStoreManageViewController` | `-` | `pushCellButton:` |  | ✅ | ✅ | `0x1d24bc` |
+| `RBStoreManageViewController` | `-` | `startDownloadMusic` |  | ✅ | ✅ | `0x1d2ab8` |
+| `RBStoreManageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ✅ | `0x1d2fc4` |
+| `RBStoreManageViewController` | `-` | `downloaderFinished:` |  | ✅ | ✅ | `0x1d3058` |
+| `RBStoreManageViewController` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x1d39e0` |
+| `RBStoreManageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x1d3b10` |
+| `RBStoreManageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1d3c5c` |
+| `RBStoreManageViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1d414c` |
+| `RBStoreManageViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1d416c` |
+| `RBStoreManageViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1d418c` |
+| `RBStoreManageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x1d41ac` |
+| `RBStoreManageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ✅ | `0x1d42ec` |
+| `RBStoreManageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1d4494` |
+| `RBStoreManageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x1d454c` |
 | `RBStoreManageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1d465c` |
-| `RBStoreManageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1d4664` |
-| `RBStoreManageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1d47f8` |
-| `RBStoreManageViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1d48c0` |
+| `RBStoreManageViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1d4664` |
+| `RBStoreManageViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1d47f8` |
+| `RBStoreManageViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x1d48c0` |
 | `RBStoreManageViewController` | `-` | `parent` | prop | ✅ | ✅ | `0x1d4ab4` |
 | `RBStoreManageViewController` | `-` | `setParent:` | prop | ✅ | ✅ | `0x1d4ad4` |
 | `RBStoreManageViewController` | `-` | `tableView` | prop | ✅ | ✅ | `0x1d4ae8` |

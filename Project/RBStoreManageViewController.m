@@ -385,10 +385,10 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
 
 #pragma mark - Sorting
 
-// Builds the collated, sectioned tune list for a title (kSortByTitle) or artist (kSortByArtist)
-// sort. @p collationSelector is @c \@selector(m_yomi) for the title sort and @c \@selector(a_yomi)
-// for the artist sort; @p miscSelector is the reading queried to decide whether a "#"-bucketed
-// entry can shift one section earlier.
+// Builds the collated, sectioned tune list for a title or artist sort. @p collationSelector is
+// @c \@selector(m_yomi) for the title sort and @c \@selector(a_yomi) for the artist sort. Both
+// sorts query a_yomi to decide whether a "#"-bucketed entry can shift one section earlier: the
+// title arm collates on m_yomi at 0x1d0484 but still tests a_yomi at 0x1d0494.
 - (NSArray *)collatedListForSort:(NSArray *)list collationSelector:(SEL)collationSelector {
     NSArray *entries = [list copy];
     UILocalizedIndexedCollation *collation = [UILocalizedIndexedCollation currentCollation];
@@ -682,10 +682,11 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
                       [NSFileManager isFileExist:[RBMusicManager getPathFromPurchesed:musicId]];
 
     if (!fileExists) {
-        // The tune is missing locally: show the modal dialog and start its info download.
+        // The tune is missing locally: show the modal dialog and start its info download. The
+        // dialog is laid out before its message is set, not after.
+        [self.parent.modalDialog layout:NO];
         self.parent.modalDialog.labelMessage.text =
             [NSString stringWithFormat:g_pDownloadingMessageFormat, entry[kMusicKeyName]];
-        [self.parent.modalDialog layoutIfNeeded];
         if ([self.parent showModalDialog:self]) {
             self.infoDownloader = [[Downloader alloc] initWithURL:[StoreUtil musicInfoURL:musicId]
                                                              save:nil];

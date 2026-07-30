@@ -1447,6 +1447,82 @@ VERIFIED = {
             '(0xfb7c, 0xfb8c), cancel button is YES',
     0xfcb0: 'UIAlertView(RB) +showAlertUpdateErosionMark:: NSMutableString from the Japanese '
             'literal, NO/YES',
+    # RBStoreManageViewController. Every non-ASCII literal in this file had been recovered wrongly
+    # and two colour constants were the wrong component; see the fixes in the same change.
+    0x1cddc0: 'RBStoreManageViewController -initWithParent: the sort button exists only when the '
+              'version string contains "ja_" (rangeOfString: at 0x1ce010 against NSNotFound), and '
+              'the right bar items branch three ways on which of the two buttons exist',
+    0x1ce97c: 'RBStoreManageViewController -loadView autoresizing mask 0x12 from 0x310458, row '
+              'height from the {50,60} table at 0x3107b0 indexed by the isPad ivar, popover only '
+              'on the pad, then every navigation-bar subview made exclusive-touch',
+    0x1cf0ec: 'RBStoreManageViewController -presentSortSelect:: phone pushes, pad toggles the '
+              'popover and disables the left bar item, arrow direction 1 (up)',
+    0x1cf2cc: 'RBStoreManageViewController -hideSortSelect:: both idiom arms, then re-enables',
+    0x1cf3f4: 'RBStoreManageViewController -switchToSort:title:: a nil sortDict defers the switch '
+              'behind the download prompt, otherwise the whole list is re-sorted and the '
+              'not-found names are alerted then cleared',
+    0x1cf77c: 'RBStoreManageViewController -SelectSort toggles between the two sort titles at '
+              '0x36ec40 and 0x36ec60, reloading on either match',
+    0x1cf9ec: 'RBStoreManageViewController -getSortedDictionary:row:: the collated orders unwrap '
+              'an RBManageSortData, the download orders return the entry itself (b.hi at 0x1cfa44)',
+    # Both collation arms test a_yomi for the misc re-bucket, even the title arm which collates on
+    # m_yomi: 0x1d0484 selects m_yomi, 0x1d0494 still queries a_yomi.
+    0x1cfb48: 'RBStoreManageViewController -sortList: four arms, 26 leading collation sections '
+              'dropped at 0x1d0a30, section 0x24 shifted one earlier when a_yomi is non-empty',
+    0x1d1080: 'RBStoreManageViewController -goToTop:: scrollRectToVisible: with the unit square, '
+              'animated, and only when the table exists',
+    0x1d1130: 'RBStoreManageViewController -toggleOpen:: eor #1 at 0x1d1198, row animation 0x64',
+    0x1d1280: 'RBStoreManageViewController -tableView:heightForHeaderInSection:: 30 on the pad, 25 '
+              'on the phone, and 0 for an empty or uncollated section',
+    0x1d1364: 'RBStoreManageViewController -tableView:viewForHeaderInSection:: the expanded glyph '
+              'is the plain triangle at 0x36eba0, the collapsed one the U+FE0E form at 0x36ed20',
+    0x1d15b4: 'RBStoreManageViewController -tableView:titleForHeaderInSection:: nil unless '
+              'collated and the section is non-empty',
+    0x1d16dc: 'RBStoreManageViewController -sectionIndexTitlesForTableView:: nil below sort 2',
+    0x1d172c: 'RBStoreManageViewController -tableView:sectionForSectionIndexTitle:atIndex:: csel '
+              'at 0x1d174c returns 0 below sort 2, else the index unchanged',
+    # The action button is right-aligned: x is cellWidth - buttonWidth - inset and y centres it,
+    # from the fsub/fmul at 0x1d1f94 and 0x1d1f9c. The inset is the fmov -10.0 at 0x1d1f30 in
+    # download order, else the index-bar width (40 on the pad from 0x2ee950, 25 on the phone).
+    0x1d175c: 'RBStoreManageViewController -tableView:cellForRowAtIndexPath:: button frame, fonts '
+              'by idiom, and the title label white 50/255 from 0x2eeef8',
+    0x1d2220: 'RBStoreManageViewController -tableView:numberOfRowsInSection:: 0 when collapsed',
+    0x1d22e8: 'RBStoreManageViewController -tableView:willDisplayCell:forRowAtIndexPath:: tbnz on '
+              'bit 0 of the row, even rows 193/255 from 0x310790, odd the 0.8 at 0x2ec6a0',
+    0x1d2434: 'RBStoreManageViewController -numberOfSectionsInTableView:: 1 below sort 2',
+    # The tag packs section and row: the smulh/asr pair at 0x1d252c is the division by the
+    # 1000000 built by the mov/movk at 0x1d2514, and 0x1d2554 is the matching remainder.
+    0x1d24bc: 'RBStoreManageViewController -pushCellButton:: the same purchased path is tested '
+              'twice at 0x1d2600 and 0x1d2640, and the modal dialog is laid out before its '
+              'message is set, with layout:NO rather than layoutIfNeeded',
+    0x1d2ab8: 'RBStoreManageViewController -startDownloadMusic queues the tune task then one per '
+              'purchased extend note, then starts the manager',
+    0x1d2fc4: 'RBStoreManageViewController -popoverControllerDidDismissPopover: re-enables the '
+              'left bar item',
+    0x1d3058: 'RBStoreManageViewController -downloaderFinished:: the info arm registers the tune '
+              'and its notes, the sort arm normalises both readings to yomigana and re-enters '
+              '-switchToSort:title: with the deferred index',
+    0x1d39e0: 'RBStoreManageViewController -downloaderError:: the info arm still starts the '
+              'download, the sort arm alerts instead',
+    0x1d3b10: 'RBStoreManageViewController -storeDialogCancel:: the info downloader is cleared '
+              'after cancelling, the download manager is not',
+    0x1d3c5c: 'RBStoreManageViewController -alertView:clickedButtonAtIndex:: the delete arm needs '
+              'only button 1, the download arm needs button 1 and the matching alert',
+    0x1d414c: 'RBStoreManageViewController -alertView:didDismissWithButtonIndex: clears both '
+              'working indices to -1',
+    0x1d416c: 'RBStoreManageViewController -alertView:willDismissWithButtonIndex: the same',
+    0x1d418c: 'RBStoreManageViewController -alertViewCancel: the same',
+    0x1d41ac: 'RBStoreManageViewController -didPresentAlertView: walks keyWindow to the presented '
+              "controller's view and makes it exclusive-touch",
+    0x1d42ec: 'RBStoreManageViewController -downloadManagerCompleted: rebuilds the tune array and '
+              'marks it dirty before clearing the working indices',
+    0x1d4494: 'RBStoreManageViewController -downloadManagerFailed: alerts with a nil delegate',
+    0x1d454c: 'RBStoreManageViewController -downloadManagerProceed: forwards overallProgress',
+    0x1d4664: 'RBStoreManageViewController -viewWillAppear: re-sorts only when the purchased count '
+              'differs from latestArrayCount',
+    0x1d47f8: 'RBStoreManageViewController -viewDidAppear: reloads then flashes the indicators',
+    0x1d48c0: 'RBStoreManageViewController -dealloc clears the alert and table delegates, cancels '
+              'both downloaders, and removes the view',
 }
 
 
