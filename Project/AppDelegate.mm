@@ -1307,6 +1307,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     self.resourceDownloadViewController = downloadViewController;
     downloadViewController.downloadPath = self.urlString;
     downloadViewController.version = self.version;
+    // Not in the binary, and not a deviation from it either: presenting a controller gave a
+    // full-screen canvas on the iOS this was built for, and since iOS 13 the default is an inset
+    // sheet instead. Without this the download screen lays out inside 704x944 of a 768x1024 screen.
+    // Stating the original's style restores the original's behaviour, so it is not gated.
+    downloadViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.viewController presentViewController:downloadViewController animated:NO completion:nil];
 }
 
