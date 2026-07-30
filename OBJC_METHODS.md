@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4304 verified
+Total: 6343 — 6203 reconstructed, 4309 verified
 (67.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3539,19 +3539,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterAlertController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x142b1c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `orientationMask` | prop | ✅ | ✅ | `0x142b2c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `setOrientationMask:` | prop | ✅ | ✅ | `0x142b3c` |
-| `RBErosionMarkUpdater` | `+` | `updateCheckStart:` |  | ✅ | ❌ | `0x142b4c` |
-| `RBErosionMarkUpdater` | `-` | `updateStartBasic:Medium:Hard:` |  | ✅ | ❌ | `0x142d4c` |
+| `RBErosionMarkUpdater` | `+` | `updateCheckStart:` |  | ✅ | ✅ | `0x142b4c` |
+| `RBErosionMarkUpdater` | `-` | `updateStartBasic:Medium:Hard:` |  | ✅ | ✅ | `0x142d4c` |
 | `RBErosionMarkUpdater` | `-` | `setupView` |  | ✅ | ❌ | `0x142e08` |
 | `RBErosionMarkUpdater` | `-` | `getPickerViewScore:` |  | ✅ | ❌ | `0x1433ec` |
 | `RBErosionMarkUpdater` | `-` | `setPickerViewScore:score:` |  | ✅ | ❌ | `0x14370c` |
 | `RBErosionMarkUpdater` | `-` | `pickerOpen` |  | ✅ | ✅ | `0x143b8c` |
 | `RBErosionMarkUpdater` | `-` | `pickerClose` |  | ✅ | ✅ | `0x143cc8` |
-| `RBErosionMarkUpdater` | `-` | `reset` |  | ✅ | ❌ | `0x143d8c` |
+| `RBErosionMarkUpdater` | `-` | `reset` |  | ✅ | ✅ | `0x143d8c` |
 | `RBErosionMarkUpdater` | `-` | `scoreValidate` |  | ✅ | ❌ | `0x144080` |
 | `RBErosionMarkUpdater` | `-` | `updatePerform` |  | ✅ | ✅ | `0x144418` |
 | `RBErosionMarkUpdater` | `-` | `updateCancel` |  | ✅ | ✅ | `0x14445c` |
-| `RBErosionMarkUpdater` | `-` | `needUpdateScore` |  | ✅ | ❌ | `0x14451c` |
-| `RBErosionMarkUpdater` | `-` | `getScore` |  | ✅ | ❌ | `0x144820` |
+| `RBErosionMarkUpdater` | `-` | `needUpdateScore` |  | ✅ | ✅ | `0x14451c` |
+| `RBErosionMarkUpdater` | `-` | `getScore` |  | ✅ | ✅ | `0x144820` |
 | `RBErosionMarkUpdater` | `-` | `updateScore` |  | ✅ | ❌ | `0x1448d8` |
 | `RBErosionMarkUpdater` | `-` | `remove` |  | ✅ | ❌ | `0x144d38` |
 | `RBErosionMarkUpdater` | `-` | `dealloc` |  | ❌ | ✅ | `0x144fc8` |

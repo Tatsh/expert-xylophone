@@ -1088,6 +1088,16 @@ VERIFIED = {
     # RBErosionMarkUpdater, partial: the picker, text-field and alert delegates plus the two update
     # outcomes. The ivar list types every score as q, so the NSInteger properties are right, and the
     # shared updater really is the global at 0x3de498. The rest of the class is not read yet.
+    # The fcsel at 0x142bf0 picks 1.0 on the pad and the 0x2ec6a0 double otherwise, which is
+    # g_dTranslucentAlpha, a float 0.8f widened; its neighbour at 0x2ec698 is 168.0. The 1.0 is an
+    # fmov immediate whose imm8 at 0x142bec is 0x70.
+    0x142B4C: 'RBErosionMarkUpdater +updateCheckStart:: lazy singleton, then the pad display rate',
+    0x142D4C: 'RBErosionMarkUpdater -updateStartBasic:Medium:Hard:: base and edit set pairwise',
+    # cmp 2 then cmp 1 then cbnz, and the three arms pass 0, 1 and 2 to setPickerViewScore:score:
+    # at 0x143e7c, 0x143f4c and 0x144014.
+    0x143D8C: 'RBErosionMarkUpdater -reset: three arms plus a default that does nothing',
+    0x14451C: 'RBErosionMarkUpdater -needUpdateScore: three lower-bound compares, short-circuited',
+    0x144820: 'RBErosionMarkUpdater -getScore: tune id 0x5f5e470 out of the shared context',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',
