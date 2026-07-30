@@ -39,6 +39,9 @@ IMAGE_BASE = 0x100000000
 # Sections whose contents are not in the file, so nothing can be read from them.
 _ZERO_FILL = ('__bss', '__common')
 _LC_SEGMENT_64 = 0x19
+# The share of annotated methods that must disagree before the binary itself is judged to be the
+# wrong build rather than the annotations being wrong.
+_WRONG_BINARY_RATIO = 0.5
 # A double is considered to match a declaration within this absolute tolerance, a float within a
 # looser one, since a float literal loses precision.
 _DOUBLE_TOLERANCE = 1e-6
@@ -434,6 +437,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     checked, method_findings, unknown = audit_methods(args.root, binary)
     print(f'methods: {checked} annotated, {len(method_findings)} mismatched, '
           f'{unknown} selector(s) absent from the metadata')
+    # An annotation set that disagrees with the binary this wholesale is not a set of defects: the
+    # annotations follow whichever build the Ghidra project holds, so a different build of the same
+    # application mismatches on nearly every address at once. Reporting those as findings sends the
+    # reader chasing thousands of phantom defects, so refuse instead.
+    if checked and len(method_findings) > checked * _WRONG_BINARY_RATIO:
+        print(f'error: {len(method_findings)} of {checked} annotated methods disagree, which means '
+              'this binary is not the build the annotations were taken from. Point the audit at '
+              'the binary loaded in the Ghidra project.',
+              file=sys.stderr)
+        return 1
     if not args.quiet:
         for finding in method_findings:
             actual = 'none' if finding.actual is None else f'{finding.actual - IMAGE_BASE:#x}'
