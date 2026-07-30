@@ -49,6 +49,7 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 #import "gamesystem.h"
+#import "neDebugLog.h"
 #import "soundeffectmanager.h"
 
 // Theme identifiers returned by RBUserSettingData.thema.
@@ -605,6 +606,40 @@ static BOOL g_bRandamIntSeeded = NO;
                                               static_cast<double>(playlistRowY),
                                               static_cast<double>(menuButtonWidth),
                                               self.playlistFinButton.height);
+    // RBPDBG: the setting, ranking and store buttons are reported as too small, surrounded by grey,
+    // and unresponsive. This is where they are actually placed, and buildMenuBarWithThema: only
+    // writes back the frame it read, so the metrics below decide everything. The earlier logging in
+    // RBMenuButton ran during construction, before this, so it said nothing about the final frames.
+    if (NE_DBG_FIRST(3)) {
+        neDebugLog("menuBar bounds=%.0fx%.0f isPad=%d thema=%ld editMode=%d width=%d",
+                   bounds.width,
+                   bounds.height,
+                   isPad ? 1 : 0,
+                   (long)thema,
+                   editMode,
+                   menuButtonWidth);
+        neDebugLog(
+            "  cols setting=%.0f col1=%d col2=%d rowY=%d", settingColX, col1, col2, settingRowY);
+        neDebugLog("  setting=(%.0f,%.0f %.0fx%.0f) rank=(%.0f,%.0f %.0fx%.0f)",
+                   self.settingButton.frame.origin.x,
+                   self.settingButton.frame.origin.y,
+                   self.settingButton.frame.size.width,
+                   self.settingButton.frame.size.height,
+                   self.rankButton.frame.origin.x,
+                   self.rankButton.frame.origin.y,
+                   self.rankButton.frame.size.width,
+                   self.rankButton.frame.size.height);
+        // A container whose frame leaves its parent is not hit-tested there, so print the parent's
+        // bounds and whether the buttons are enabled and inside it.
+        neDebugLog("  store=(%.0f,%.0f %.0fx%.0f) settingEnabled=%d storeEnabled=%d",
+                   self.storeButton.frame.origin.x,
+                   self.storeButton.frame.origin.y,
+                   self.storeButton.frame.size.width,
+                   self.storeButton.frame.size.height,
+                   self.settingButton.enabled ? 1 : 0,
+                   self.storeButton.enabled ? 1 : 0);
+    }
+
     self.playListButton.frame = CGRectMake(static_cast<double>(playlistX),
                                            sideButtonRowY,
                                            static_cast<double>(sideButtonSize),
