@@ -98,19 +98,22 @@ public:
     unsigned int PlaySoundForKeyOnBus(NSString *callName, int busId, int volume);
     /**
      * @brief Resumes or starts the voice identified by a handle.
+     * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb6c
      */
-    void ResumeVoiceByHandle(unsigned int handle);
+    bool ResumeVoiceByHandle(unsigned int handle);
     /**
      * @brief Pauses the voice identified by a handle.
+     * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb9c
      */
-    void PauseVoiceByHandle(unsigned int handle);
+    bool PauseVoiceByHandle(unsigned int handle);
     /**
      * @brief Stops the voice identified by a handle.
+     * @return Whether a voice was found for the handle.
      * @ghidraAddress 0x4bb84
      */
-    void StopVoiceByHandle(unsigned int handle);
+    bool StopVoiceByHandle(unsigned int handle);
     /**
      * @brief Releases the voice identified by a handle.
      * @ghidraAddress 0x4bcac

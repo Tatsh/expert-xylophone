@@ -87,9 +87,10 @@ public:
     unsigned int AcquireBusForSourceKey(NSString *callName, int volume);
     /**
      * @brief Starts playback of the bus identified by a play handle.
+     * @return Whether a bus was found for the handle.
      * @ghidraAddress 0x4aa34
      */
-    void PlayByHandle(unsigned int handle);
+    bool PlayByHandle(unsigned int handle);
     /**
      * @brief Stops the bus identified by a play handle, returning whether it was playing.
      * @ghidraAddress 0x4aa4c
@@ -97,9 +98,10 @@ public:
     bool StopByHandle(unsigned int handle);
     /**
      * @brief Pauses the bus identified by a play handle.
+     * @return Whether a bus was found for the handle.
      * @ghidraAddress 0x4aa64
      */
-    void PauseByHandle(unsigned int handle);
+    bool PauseByHandle(unsigned int handle);
     /**
      * @brief Returns the playback status of the bus identified by a play handle.
      * @ghidraAddress 0x4aa7c

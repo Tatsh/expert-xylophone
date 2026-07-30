@@ -727,8 +727,7 @@ constexpr double kResumeFadeInTime = 0.3;
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].instanceId == handle) {
             if (seList[slot].group == kSeGroupCaPlayer) {
-                sePlayer->StopVoiceByHandle(handle);
-                return YES;
+                return sePlayer->StopVoiceByHandle(handle);
             }
             return seAVPlayer->StopByHandle(handle);
         }
@@ -741,11 +740,9 @@ constexpr double kResumeFadeInTime = 0.3;
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].instanceId == handle) {
             if (seList[slot].group == kSeGroupCaPlayer) {
-                sePlayer->PauseVoiceByHandle(handle);
-                return YES;
+                return sePlayer->PauseVoiceByHandle(handle);
             }
-            seAVPlayer->PauseByHandle(handle);
-            return YES;
+            return seAVPlayer->PauseByHandle(handle);
         }
     }
     return NO;
@@ -756,11 +753,9 @@ constexpr double kResumeFadeInTime = 0.3;
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].instanceId == handle) {
             if (seList[slot].group == kSeGroupCaPlayer) {
-                sePlayer->ResumeVoiceByHandle(handle);
-                return YES;
+                return sePlayer->ResumeVoiceByHandle(handle);
             }
-            seAVPlayer->PlayByHandle(handle);
-            return YES;
+            return seAVPlayer->PlayByHandle(handle);
         }
     }
     return NO;
@@ -784,6 +779,8 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (BOOL)onPauseSeAll {
     /** @ghidraAddress 0x3f090 */
+    // The binary walks all four slots without testing for a free one, so an empty slot's
+    // 0xffffffff handle is passed to the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->PauseVoiceByHandle(seList[slot].instanceId);
@@ -796,6 +793,8 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (BOOL)offPauseSeAll {
     /** @ghidraAddress 0x3f110 */
+    // The binary walks all four slots without testing for a free one, so an empty slot's
+    // 0xffffffff handle is passed to the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->ResumeVoiceByHandle(seList[slot].instanceId);
@@ -808,6 +807,8 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (BOOL)stopSeAll {
     /** @ghidraAddress 0x3f190 */
+    // The binary walks all four slots without testing for a free one, so an empty slot's
+    // 0xffffffff handle is passed to the engine.
     for (int slot = 0; slot < kInstanceSlotCount; ++slot) {
         if (seList[slot].group == kSeGroupCaPlayer) {
             sePlayer->StopVoiceByHandle(seList[slot].instanceId);
@@ -946,7 +947,9 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (void)setSeVolume:(int)seVolumeValue groupId:(int)groupId {
     /** @ghidraAddress 0x3f624 */
-    if (seVolumeValue >= kMaxVolume) {
+    // The guard at 0x3f640 is b.hi, which is unsigned, so a negative volume reads as a large
+    // value and is rejected as well. The accepted range is 0 to kMaxVolume - 1.
+    if (seVolumeValue < 0 || seVolumeValue >= kMaxVolume) {
         return;
     }
     seVolume[groupId] = seVolumeValue;
@@ -954,6 +957,8 @@ constexpr double kResumeFadeInTime = 0.3;
         seAVPlayer->SetAllVolume(seVolumeValue);
         return;
     }
+    // Yes, the binary repeats this call with identical arguments; the channel is never passed, and
+    // the wrapper hardcodes voice zero, so only the first iteration can have any effect.
     for (int channel = 0; channel < kVoiceChannelCount; ++channel) {
         sePlayer->SetMasterVoiceParameter(seVolumeValue);
     }
