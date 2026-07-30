@@ -43,6 +43,7 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    0x200778: 'RBNumberLabel -initWithFrame:: the clear background and a zero number from movi',
     0xf2468: 'StoreDownloadManager -initWithTasks:delegate:: nil tasks return nil before super',
     0xf3678: 'StoreDownloadManager -dealloc: cancels an in-flight downloader and clears it',
     0xf25c4: 'StoreDownloadManager -currentProgress: forwards to the file downloader',

@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6200 reconstructed, 3549 verified
-(56.0%).
+Total: 6343 — 6200 reconstructed, 3597 verified
+(56.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1229,59 +1229,59 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `getZipData:` |  | ✅ | ❌ | `0x600cc` |
 | `MusicData` | `-` | `getOptionalZipData:` |  | ✅ | ❌ | `0x60190` |
 | `MusicData` | `-` | `getOptionalZipData:withDefaultName:` |  | ✅ | ❌ | `0x601b8` |
-| `MusicData` | `-` | `music` | prop | ✅ | ❌ | `0x602d8` |
+| `MusicData` | `-` | `music` | prop | ✅ | ✅ | `0x602d8` |
 | `MusicData` | `-` | `musicBasic` | prop | ✅ | ❌ | `0x602ec` |
 | `MusicData` | `-` | `musicMedium` | prop | ✅ | ❌ | `0x60308` |
 | `MusicData` | `-` | `musicHard` | prop | ✅ | ❌ | `0x60324` |
-| `MusicData` | `-` | `musicPre` | prop | ✅ | ❌ | `0x60340` |
-| `MusicData` | `-` | `sheetBasic` | prop | ✅ | ❌ | `0x60354` |
+| `MusicData` | `-` | `musicPre` | prop | ✅ | ✅ | `0x60340` |
+| `MusicData` | `-` | `sheetBasic` | prop | ✅ | ✅ | `0x60354` |
 | `MusicData` | `-` | `sheetBasicLight` | prop | ✅ | ❌ | `0x60368` |
-| `MusicData` | `-` | `sheetMedium` | prop | ✅ | ❌ | `0x60384` |
+| `MusicData` | `-` | `sheetMedium` | prop | ✅ | ✅ | `0x60384` |
 | `MusicData` | `-` | `sheetMediumLight` | prop | ✅ | ❌ | `0x60398` |
-| `MusicData` | `-` | `sheetHard` | prop | ✅ | ❌ | `0x603b4` |
+| `MusicData` | `-` | `sheetHard` | prop | ✅ | ✅ | `0x603b4` |
 | `MusicData` | `-` | `sheetHardLight` | prop | ✅ | ❌ | `0x603c8` |
 | `MusicData` | `-` | `sheetSpecial` |  | ✅ | ❌ | `0x603e4` |
 | `MusicData` | `-` | `sheetSpecialLight` |  | ✅ | ❌ | `0x60484` |
-| `MusicData` | `-` | `artworkData` | prop | ✅ | ❌ | `0x60524` |
-| `MusicData` | `-` | `artworkDataBasic` | prop | ✅ | ❌ | `0x60538` |
-| `MusicData` | `-` | `artworkDataMedium` | prop | ✅ | ❌ | `0x6054c` |
-| `MusicData` | `-` | `artworkDataHard` | prop | ✅ | ❌ | `0x60560` |
-| `MusicData` | `-` | `musicNameImageWhiteData` | prop | ✅ | ❌ | `0x60574` |
-| `MusicData` | `-` | `musicNameImageWhiteDataBasic` | prop | ✅ | ❌ | `0x60588` |
-| `MusicData` | `-` | `musicNameImageWhiteDataMedium` | prop | ✅ | ❌ | `0x6059c` |
-| `MusicData` | `-` | `musicNameImageWhiteDataHard` | prop | ✅ | ❌ | `0x605b0` |
-| `MusicData` | `-` | `artistNameImageWhiteData` | prop | ✅ | ❌ | `0x605c4` |
-| `MusicData` | `-` | `artistNameImageWhiteDataBasic` | prop | ✅ | ❌ | `0x605d8` |
-| `MusicData` | `-` | `artistNameImageWhiteDataMedium` | prop | ✅ | ❌ | `0x605ec` |
-| `MusicData` | `-` | `artistNameImageWhiteDataHard` | prop | ✅ | ❌ | `0x60600` |
-| `MusicData` | `-` | `musicNameImageBlackData` | prop | ✅ | ❌ | `0x60614` |
-| `MusicData` | `-` | `musicNameImageBlackDataBasic` | prop | ✅ | ❌ | `0x60628` |
-| `MusicData` | `-` | `musicNameImageBlackDataMedium` | prop | ✅ | ❌ | `0x6063c` |
-| `MusicData` | `-` | `musicNameImageBlackDataHard` | prop | ✅ | ❌ | `0x60650` |
-| `MusicData` | `-` | `artistNameImageBlackData` | prop | ✅ | ❌ | `0x60664` |
-| `MusicData` | `-` | `artistNameImageBlackDataBasic` | prop | ✅ | ❌ | `0x60678` |
-| `MusicData` | `-` | `artistNameImageBlackDataMedium` | prop | ✅ | ❌ | `0x6068c` |
-| `MusicData` | `-` | `artistNameImageBlackDataHard` | prop | ✅ | ❌ | `0x606a0` |
-| `MusicData` | `-` | `artwork2xData` | prop | ✅ | ❌ | `0x606b4` |
-| `MusicData` | `-` | `artwork2xDataBasic` | prop | ✅ | ❌ | `0x606c8` |
-| `MusicData` | `-` | `artwork2xDataMedium` | prop | ✅ | ❌ | `0x606dc` |
-| `MusicData` | `-` | `artwork2xDataHard` | prop | ✅ | ❌ | `0x606f0` |
-| `MusicData` | `-` | `musicNameImageWhite2xData` | prop | ✅ | ❌ | `0x60704` |
-| `MusicData` | `-` | `musicNameImageWhite2xDataBasic` | prop | ✅ | ❌ | `0x60718` |
-| `MusicData` | `-` | `musicNameImageWhite2xDataMedium` | prop | ✅ | ❌ | `0x6072c` |
-| `MusicData` | `-` | `musicNameImageWhite2xDataHard` | prop | ✅ | ❌ | `0x60740` |
-| `MusicData` | `-` | `artistNameImageWhite2xData` | prop | ✅ | ❌ | `0x60754` |
-| `MusicData` | `-` | `artistNameImageWhite2xDataBasic` | prop | ✅ | ❌ | `0x60768` |
-| `MusicData` | `-` | `artistNameImageWhite2xDataMedium` | prop | ✅ | ❌ | `0x6077c` |
-| `MusicData` | `-` | `artistNameImageWhite2xDataHard` | prop | ✅ | ❌ | `0x60790` |
-| `MusicData` | `-` | `musicNameImageBlack2xData` | prop | ✅ | ❌ | `0x607a4` |
-| `MusicData` | `-` | `musicNameImageBlack2xDataBasic` | prop | ✅ | ❌ | `0x607b8` |
-| `MusicData` | `-` | `musicNameImageBlack2xDataMedium` | prop | ✅ | ❌ | `0x607cc` |
-| `MusicData` | `-` | `musicNameImageBlack2xDataHard` | prop | ✅ | ❌ | `0x607e0` |
-| `MusicData` | `-` | `artistNameImageBlack2xData` | prop | ✅ | ❌ | `0x607f4` |
-| `MusicData` | `-` | `artistNameImageBlack2xDataBasic` | prop | ✅ | ❌ | `0x60808` |
-| `MusicData` | `-` | `artistNameImageBlack2xDataMedium` | prop | ✅ | ❌ | `0x6081c` |
-| `MusicData` | `-` | `artistNameImageBlack2xDataHard` | prop | ✅ | ❌ | `0x60830` |
+| `MusicData` | `-` | `artworkData` | prop | ✅ | ✅ | `0x60524` |
+| `MusicData` | `-` | `artworkDataBasic` | prop | ✅ | ✅ | `0x60538` |
+| `MusicData` | `-` | `artworkDataMedium` | prop | ✅ | ✅ | `0x6054c` |
+| `MusicData` | `-` | `artworkDataHard` | prop | ✅ | ✅ | `0x60560` |
+| `MusicData` | `-` | `musicNameImageWhiteData` | prop | ✅ | ✅ | `0x60574` |
+| `MusicData` | `-` | `musicNameImageWhiteDataBasic` | prop | ✅ | ✅ | `0x60588` |
+| `MusicData` | `-` | `musicNameImageWhiteDataMedium` | prop | ✅ | ✅ | `0x6059c` |
+| `MusicData` | `-` | `musicNameImageWhiteDataHard` | prop | ✅ | ✅ | `0x605b0` |
+| `MusicData` | `-` | `artistNameImageWhiteData` | prop | ✅ | ✅ | `0x605c4` |
+| `MusicData` | `-` | `artistNameImageWhiteDataBasic` | prop | ✅ | ✅ | `0x605d8` |
+| `MusicData` | `-` | `artistNameImageWhiteDataMedium` | prop | ✅ | ✅ | `0x605ec` |
+| `MusicData` | `-` | `artistNameImageWhiteDataHard` | prop | ✅ | ✅ | `0x60600` |
+| `MusicData` | `-` | `musicNameImageBlackData` | prop | ✅ | ✅ | `0x60614` |
+| `MusicData` | `-` | `musicNameImageBlackDataBasic` | prop | ✅ | ✅ | `0x60628` |
+| `MusicData` | `-` | `musicNameImageBlackDataMedium` | prop | ✅ | ✅ | `0x6063c` |
+| `MusicData` | `-` | `musicNameImageBlackDataHard` | prop | ✅ | ✅ | `0x60650` |
+| `MusicData` | `-` | `artistNameImageBlackData` | prop | ✅ | ✅ | `0x60664` |
+| `MusicData` | `-` | `artistNameImageBlackDataBasic` | prop | ✅ | ✅ | `0x60678` |
+| `MusicData` | `-` | `artistNameImageBlackDataMedium` | prop | ✅ | ✅ | `0x6068c` |
+| `MusicData` | `-` | `artistNameImageBlackDataHard` | prop | ✅ | ✅ | `0x606a0` |
+| `MusicData` | `-` | `artwork2xData` | prop | ✅ | ✅ | `0x606b4` |
+| `MusicData` | `-` | `artwork2xDataBasic` | prop | ✅ | ✅ | `0x606c8` |
+| `MusicData` | `-` | `artwork2xDataMedium` | prop | ✅ | ✅ | `0x606dc` |
+| `MusicData` | `-` | `artwork2xDataHard` | prop | ✅ | ✅ | `0x606f0` |
+| `MusicData` | `-` | `musicNameImageWhite2xData` | prop | ✅ | ✅ | `0x60704` |
+| `MusicData` | `-` | `musicNameImageWhite2xDataBasic` | prop | ✅ | ✅ | `0x60718` |
+| `MusicData` | `-` | `musicNameImageWhite2xDataMedium` | prop | ✅ | ✅ | `0x6072c` |
+| `MusicData` | `-` | `musicNameImageWhite2xDataHard` | prop | ✅ | ✅ | `0x60740` |
+| `MusicData` | `-` | `artistNameImageWhite2xData` | prop | ✅ | ✅ | `0x60754` |
+| `MusicData` | `-` | `artistNameImageWhite2xDataBasic` | prop | ✅ | ✅ | `0x60768` |
+| `MusicData` | `-` | `artistNameImageWhite2xDataMedium` | prop | ✅ | ✅ | `0x6077c` |
+| `MusicData` | `-` | `artistNameImageWhite2xDataHard` | prop | ✅ | ✅ | `0x60790` |
+| `MusicData` | `-` | `musicNameImageBlack2xData` | prop | ✅ | ✅ | `0x607a4` |
+| `MusicData` | `-` | `musicNameImageBlack2xDataBasic` | prop | ✅ | ✅ | `0x607b8` |
+| `MusicData` | `-` | `musicNameImageBlack2xDataMedium` | prop | ✅ | ✅ | `0x607cc` |
+| `MusicData` | `-` | `musicNameImageBlack2xDataHard` | prop | ✅ | ✅ | `0x607e0` |
+| `MusicData` | `-` | `artistNameImageBlack2xData` | prop | ✅ | ✅ | `0x607f4` |
+| `MusicData` | `-` | `artistNameImageBlack2xDataBasic` | prop | ✅ | ✅ | `0x60808` |
+| `MusicData` | `-` | `artistNameImageBlack2xDataMedium` | prop | ✅ | ✅ | `0x6081c` |
+| `MusicData` | `-` | `artistNameImageBlack2xDataHard` | prop | ✅ | ✅ | `0x60830` |
 | `MusicData` | `-` | `musicNameImageBrown2xData` |  | ✅ | ❌ | `0x60844` |
 | `MusicData` | `-` | `musicNameImageBrown2xDataBasic` |  | ✅ | ❌ | `0x60988` |
 | `MusicData` | `-` | `musicNameImageBrown2xDataMedium` |  | ✅ | ❌ | `0x60ad8` |
@@ -2390,7 +2390,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicColorBar` | `-` | `initWithFrame:MusicSelectedColor:` |  | ✅ | ❌ | `0xc20d0` |
 | `RBMusicColorBar` | `-` | `SetupView` |  | ✅ | ❌ | `0xc21b8` |
 | `RBMusicColorBar` | `-` | `SetBar:` |  | ✅ | ❌ | `0xc27c8` |
-| `RBMusicColorBar` | `-` | `setAlphaValue:` | prop | ✅ | ❌ | `0xc2968` |
+| `RBMusicColorBar` | `-` | `setAlphaValue:` | prop | ✅ | ✅ | `0xc2968` |
 | `RBMusicColorBar` | `-` | `alphaValue` | prop | ✅ | ❌ | `0xc2974` |
 | `RBMusicColorBar` | `-` | `tap:` |  | ✅ | ❌ | `0xc2994` |
 | `RBMusicColorBar` | `-` | `pan:` |  | ✅ | ❌ | `0xc2a88` |
@@ -5580,7 +5580,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `setCoverViewPad:` | prop | ✅ | ✅ | `0x200554` |
 | `RBCampaignViewController` | `-` | `itemDetailViewPad` | prop | ✅ | ✅ | `0x20058c` |
 | `RBCampaignViewController` | `-` | `setItemDetailViewPad:` | prop | ✅ | ✅ | `0x20059c` |
-| `RBNumberLabel` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x200778` |
+| `RBNumberLabel` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x200778` |
 | `RBNumberLabel` | `-` | `setNumber:` | prop | ✅ | ✅ | `0x20084c` |
 | `RBNumberLabel` | `-` | `setImageType:` | prop | ✅ | ✅ | `0x200874` |
 | `RBNumberLabel` | `-` | `drawRect:` |  | ✅ | ❌ | `0x20089c` |
@@ -5937,7 +5937,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardNetwork` | `+` | `getAdDisplayStatusWithCallback:` |  | ✅ | ❌ | `0x21f9e0` |
 | `RewardNetwork` | `+` | `getAdStatusWithBlock:` |  | ✅ | ❌ | `0x21fc14` |
 | `RewardNetwork` | `+` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x21fd74` |
-| `RewardNetwork` | `+` | `getNavigationTitle` |  | ✅ | ❌ | `0x21fdcc` |
+| `RewardNetwork` | `+` | `getNavigationTitle` |  | ✅ | ✅ | `0x21fdcc` |
 | `RewardNetwork` | `-` | `dealloc` |  | ❌ | ✅ | `0x21fdec` |
 | `ApplilinkMessage` | `+` | `localizedMessage:` |  | ✅ | ❌ | `0x21fe28` |
 | `ApplilinkIndicator` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x21ff40` |

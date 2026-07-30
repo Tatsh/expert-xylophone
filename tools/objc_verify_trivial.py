@@ -126,14 +126,35 @@ def class_names(metadata: Metadata) -> dict[int, str]:
     return out
 
 
+def _constant_string(metadata: Metadata, address: int) -> str | None:
+    """Read the text of the constant string object at an address, or None if it is not one.
+
+    A literal `@"..."` is a four-field structure and the characters are behind the pointer in its
+    third field, sixteen bytes in.
+    """
+    try:
+        pointer = metadata._word(address + 16)
+    except (TypeError, struct.error):
+        return None
+    if not pointer:
+        return None
+    try:
+        return metadata.string_at(pointer)
+    except (TypeError, struct.error):
+        return None
+
+
 def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int, str],
-                    address: int) -> tuple[str, str, int | None] | None:
+                    address: int) -> tuple[str, str, int | str | None] | None:
     """
     Recover a body that is nothing but a tail-call send, as receiver, selector, and argument.
 
-    These bodies set up at most a receiver in x0, a selector in x1 and one immediate argument in
-    x2, then branch to objc_msgSend. A receiver left untouched is self; one loaded from a class
-    reference is that class. Anything else means it is not a plain forward, and it is rejected.
+    These bodies set up at most a receiver in x0, a selector in x1 and one argument in x2, then
+    branch to objc_msgSend. A receiver left untouched is self; one loaded from a class reference is
+    that class. The argument is either an immediate or a constant string, the latter formed as an
+    `adrp` and an `add` rather than loaded, and returned as its text so the comparison can be made
+    against what the reconstruction actually spells. Anything else means it is not a plain forward,
+    and it is rejected.
     """
     offset = metadata.offset_of(address)
     if offset is None:
@@ -141,7 +162,7 @@ def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int
     pages: dict[int, int] = {}
     receiver = 'self'
     selector: str | None = None
-    argument: int | None = None
+    argument: int | str | None = None
     for index in range(8):
         word = struct.unpack_from('<I', metadata._data, offset + index * 4)[0]
         here = address + index * 4
@@ -164,6 +185,18 @@ def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int
             else:
                 return None
             continue
+        # `add xD,xN,#imm`, which completes the address an `adrp` began. Only a constant string
+        # being passed as the argument is accepted here; anything else is an address this cannot
+        # account for.
+        if (word & 0xFF800000) == 0x91000000:
+            destination, base = word & 0x1F, (word >> 5) & 0x1F
+            if destination != 2 or base not in pages:
+                return None
+            text = _constant_string(metadata, pages[base] + ((word >> 10) & 0xFFF))
+            if text is None:
+                return None
+            argument = text
+            continue
         immediate = _immediate_into(word, 2)
         if immediate is not None:
             argument = immediate
@@ -174,6 +207,24 @@ def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int
             return (receiver, selector, argument)
         return None
     return None
+
+
+def _spelled_string(spelled: str, path: str) -> str | None:
+    """Read the text a source argument carries, as an `@"..."` literal or a constant the file names."""
+    text = spelled.strip()
+    literal = re.fullmatch(r'@"([^"\\]*)"', text)
+    if literal is not None:
+        return literal.group(1)
+    named = re.search(rf'\b{re.escape(text)}\s*=\s*@"([^"\\]*)"\s*;', _file_text(path))
+    return named.group(1) if named is not None else None
+
+
+def _file_text(path: str) -> str:
+    """The text of a reconstruction file, or empty when it cannot be read."""
+    try:
+        return Path(path).read_text()
+    except OSError:
+        return ''
 
 
 def _sent_send(body: list[str]) -> tuple[str, str, str | None] | None:
@@ -405,7 +456,12 @@ def main(argv=None) -> int:
     findings: list[str] = []
     skipped: Counter = Counter()
     for method in metadata.methods():
-        if method.accessor or method.selector.startswith('.cxx_'):
+        # A method a property declares is normally the accessor pass's to verify, but that pass can
+        # only speak for one that moves a backing ivar, and some declared properties are computed
+        # instead. Where such a body is one of the shapes here, usually a forward to another
+        # method, this pass can settle it, so an accessor is offered rather than skipped. One that
+        # really does move an ivar matches none of these shapes and falls through untouched.
+        if method.selector.startswith('.cxx_'):
             continue
         offset = metadata.offset_of(method.address)
         if offset is None:
@@ -458,7 +514,19 @@ def main(argv=None) -> int:
                     f'{selector} to {receiver} at {relative:#x}, reconstruction sends '
                     f'{got_selector} to {got_receiver}')
                 continue
-            if argument is not None:
+            if isinstance(argument, str):
+                # The reconstruction has to pass the same text. It may spell it as a literal or
+                # name a file constant holding it, and either is compared on the text itself.
+                spelled_text = None
+                if got_argument is not None:
+                    spelled_text = _spelled_string(got_argument, path)
+                if spelled_text != argument:
+                    findings.append(
+                        f'{path}:{line} {method.kind}[{method.class_name} {method.selector}] '
+                        f'passes "{argument}" at {relative:#x}, reconstruction passes '
+                        f'{got_argument}')
+                    continue
+            elif argument is not None:
                 if got_argument is None or not _matches(argument, got_argument,
                                                         file_constants(path)):
                     findings.append(

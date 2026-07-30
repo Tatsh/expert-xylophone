@@ -62,6 +62,51 @@
 0x5a614 MusicDataExtend createCache: empty
 0x5a618 MusicDataExtend releaseCache: empty
 0x5a61c MusicDataExtend isArtworkCache: returns 0
+0x602d8 MusicData music: sends getZipData: to self
+0x60340 MusicData musicPre: sends getZipData: to self
+0x60354 MusicData sheetBasic: sends getZipData: to self
+0x60384 MusicData sheetMedium: sends getZipData: to self
+0x603b4 MusicData sheetHard: sends getZipData: to self
+0x60524 MusicData artworkData: sends getZipData: to self
+0x60538 MusicData artworkDataBasic: sends getOptionalZipData: to self
+0x6054c MusicData artworkDataMedium: sends getOptionalZipData: to self
+0x60560 MusicData artworkDataHard: sends getOptionalZipData: to self
+0x60574 MusicData musicNameImageWhiteData: sends getZipData: to self
+0x60588 MusicData musicNameImageWhiteDataBasic: sends getOptionalZipData: to self
+0x6059c MusicData musicNameImageWhiteDataMedium: sends getOptionalZipData: to self
+0x605b0 MusicData musicNameImageWhiteDataHard: sends getOptionalZipData: to self
+0x605c4 MusicData artistNameImageWhiteData: sends getZipData: to self
+0x605d8 MusicData artistNameImageWhiteDataBasic: sends getOptionalZipData: to self
+0x605ec MusicData artistNameImageWhiteDataMedium: sends getOptionalZipData: to self
+0x60600 MusicData artistNameImageWhiteDataHard: sends getOptionalZipData: to self
+0x60614 MusicData musicNameImageBlackData: sends getZipData: to self
+0x60628 MusicData musicNameImageBlackDataBasic: sends getOptionalZipData: to self
+0x6063c MusicData musicNameImageBlackDataMedium: sends getOptionalZipData: to self
+0x60650 MusicData musicNameImageBlackDataHard: sends getOptionalZipData: to self
+0x60664 MusicData artistNameImageBlackData: sends getZipData: to self
+0x60678 MusicData artistNameImageBlackDataBasic: sends getOptionalZipData: to self
+0x6068c MusicData artistNameImageBlackDataMedium: sends getOptionalZipData: to self
+0x606a0 MusicData artistNameImageBlackDataHard: sends getOptionalZipData: to self
+0x606b4 MusicData artwork2xData: sends getZipData: to self
+0x606c8 MusicData artwork2xDataBasic: sends getOptionalZipData: to self
+0x606dc MusicData artwork2xDataMedium: sends getOptionalZipData: to self
+0x606f0 MusicData artwork2xDataHard: sends getOptionalZipData: to self
+0x60704 MusicData musicNameImageWhite2xData: sends getZipData: to self
+0x60718 MusicData musicNameImageWhite2xDataBasic: sends getOptionalZipData: to self
+0x6072c MusicData musicNameImageWhite2xDataMedium: sends getOptionalZipData: to self
+0x60740 MusicData musicNameImageWhite2xDataHard: sends getOptionalZipData: to self
+0x60754 MusicData artistNameImageWhite2xData: sends getZipData: to self
+0x60768 MusicData artistNameImageWhite2xDataBasic: sends getOptionalZipData: to self
+0x6077c MusicData artistNameImageWhite2xDataMedium: sends getOptionalZipData: to self
+0x60790 MusicData artistNameImageWhite2xDataHard: sends getOptionalZipData: to self
+0x607a4 MusicData musicNameImageBlack2xData: sends getZipData: to self
+0x607b8 MusicData musicNameImageBlack2xDataBasic: sends getOptionalZipData: to self
+0x607cc MusicData musicNameImageBlack2xDataMedium: sends getOptionalZipData: to self
+0x607e0 MusicData musicNameImageBlack2xDataHard: sends getOptionalZipData: to self
+0x607f4 MusicData artistNameImageBlack2xData: sends getZipData: to self
+0x60808 MusicData artistNameImageBlack2xDataBasic: sends getOptionalZipData: to self
+0x6081c MusicData artistNameImageBlack2xDataMedium: sends getOptionalZipData: to self
+0x60830 MusicData artistNameImageBlack2xDataHard: sends getOptionalZipData: to self
 0x65b3c MusicData releaseChache: sends setArtworkCache: to self
 0x67498 MusicDataFromDoc dealloc: ARC writes it; correctly omitted
 0x674cc MusicDataFromDoc MusicID: returns 1
@@ -135,6 +180,7 @@
 0xbf50c RBStoreExtendNoteList extendMusicInfos: sends arrayExtendNoteInfo to self
 0xbf518 RBStoreExtendNoteList extendNoteProductIDList: sends listProductID to self
 0xc07f0 RBStoreExtendNoteList downloaderProceed:: empty
+0xc2968 RBMusicColorBar setAlphaValue:: sends SetBar: to self
 0xc6a50 RBMusicCPUView dealloc: ARC writes it; correctly omitted
 0xc8e8c RBMusicDifficultyView SetFlashEffectDuration:Start:End:: empty
 0xd6b1c RBMusicView getDecideButton: sends decideButton to self
@@ -290,6 +336,7 @@
 0x21d570 RewardWebViewController btnCloseClicked:: sends appListDidDisappear to self
 0x21e0d0 RewardWebViewController shouldAutorotate: returns 1
 0x21e0d8 RewardWebViewController supportedInterfaceOrientations: returns 30
+0x21fdcc RewardNetwork getNavigationTitle: sends localizedMessage: to ApplilinkMessage
 0x21fdec RewardNetwork dealloc: ARC writes it; correctly omitted
 0x220254 ApplilinkIndicator dealloc: super call only
 0x220e5c ApplilinkDebug countryCode: sends countryCode to ApplilinkConsts
