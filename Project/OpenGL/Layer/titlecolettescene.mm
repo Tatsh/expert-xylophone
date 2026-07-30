@@ -68,10 +68,12 @@ static NSString *const kTitleSeType = @"m4a";
 // The part name spliced into the theme sound-effect path (@ghidraAddress 0x35dca8).
 static NSString *const kTitleSePartName = @"JUMP";
 
-// The background part fills the screen from its texture; the logo parts carry a distinct render
-// type.
+// The background part fills the screen from its texture.
 constexpr unsigned int kBackgroundPartId = 0;
-constexpr int kPartTypeLogo = 3;
+// The campaign-portrait parts (ids 0x62 to 0x67) are the only ones binding the campaign texture, in
+// both layout tables, and it doubles as their UV-table selector. The title letters bind texture 1,
+// so this index never selects them despite the name it used to carry.
+constexpr int kPartTextureIndexCampaign = 3;
 
 // The landscape layout recentres each part around the viewport: it offsets by half the design
 // resolution, scales to 0.8, halves, and adds the viewport centre.
@@ -414,7 +416,7 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         const TitlePartLayoutRecord &layout =
             (bIsPad ? g_aTitleCampaignLayoutAltFrame : g_aTitleCampaignLayoutDefault)[nPartId];
         const SpriteUvEntry *pUvTable;
-        if (layout.nTextureIndex == kPartTypeLogo) {
+        if (layout.nTextureIndex == kPartTextureIndexCampaign) {
             pUvTable = bIsPad ? g_aTitlePartUvLogoPad : g_aTitlePartUvLogoPhone;
         } else {
             pUvTable = bIsPad ? g_aTitlePartUvLetterPad : g_aTitlePartUvLetterPhone;
@@ -444,7 +446,7 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         // RBPDBG: this is the theme that actually runs, so record what the mapping is handed and
         // what it produces for the logo. The pad path leaves the caller's position untouched while
         // the other centres on the viewport, which is the asymmetry to judge against these numbers.
-        if (layout.nTextureIndex == kPartTypeLogo && NE_DBG_FIRST(4)) {
+        if (layout.nTextureIndex == kPartTextureIndexCampaign && NE_DBG_FIRST(4)) {
             neDebugLog("colettePart id=%u isPad=%d tex=%d viewport=%.0fx%.0f",
                        nPartId,
                        bIsPad ? 1 : 0,
@@ -1062,11 +1064,16 @@ void TitleColetteScene::RenderSprites() {
     // at the table plus twelve (0x58c4c) and is read eight back, so the first pair is skipped.
     if (static_cast<unsigned int>(m_nIdleTimer - 0xa7) < 0x1a0b) {
         for (int i = 0; i < 6; ++i) {
+            // Both this window's curve and position tables hold seven rows, and the pre-header
+            // advances one row before the loop starts (0x58c40), so rows one through six are read
+            // and row zero is dead data. The position table already carried that offset; the curve
+            // never did.
+            const int nRow = i + 1;
             const float flScale = CalculateCurveInterpolation(
-                &g_aTitleAnim06Curve[i * 0xe], 7, static_cast<float>(m_nIdleTimer));
+                &g_aTitleAnim06Curve[nRow * 0xe], 7, static_cast<float>(m_nIdleTimer));
             EmitPartSprite(0x50 + static_cast<unsigned int>(i),
                            0xff,
-                           S_VECTOR2{g_aTitleAnim06Pos[i + 1][0], g_aTitleAnim06Pos[i + 1][1]},
+                           S_VECTOR2{g_aTitleAnim06Pos[nRow][0], g_aTitleAnim06Pos[nRow][1]},
                            S_VECTOR2{flScale, flScale},
                            0.0f,
                            S_VECTOR3{kFullColor, kFullColor, kFullColor});
@@ -1078,8 +1085,17 @@ void TitleColetteScene::RenderSprites() {
     // single solid texel, which is the white box that appeared beside the logo.
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 6; ++i) {
-            EmitAnimatedPart(
-                0x57 + i, i, &g_aTitleAnim07Scale[i * 0x2a], 0x15, &g_aTitleAnim07Alpha[i * 4], 2);
+            // Seven-row tables read from row one, as in window 6: the pre-header advances both
+            // pointers a row before the loop (0x58cf0 and 0x58cf4). This window also takes its
+            // positions from window 6's table rather than the anchor ring, which the shared emit
+            // helper below cannot express; that part is still outstanding.
+            const int nRow = i + 1;
+            EmitAnimatedPart(0x57 + i,
+                             i,
+                             &g_aTitleAnim07Scale[nRow * 0x2a],
+                             0x15,
+                             &g_aTitleAnim07Alpha[nRow * 4],
+                             2);
         }
     }
 
@@ -1115,7 +1131,10 @@ void TitleColetteScene::RenderSprites() {
         for (int i = 0; i < 2; ++i) {
             const float flTime = static_cast<float>(m_nIdleTimer);
             const float flRotation =
-                CalculateCurveInterpolation(&g_aTitleAnim13Rotation[i * 0x14], 0xa, flTime);
+                // Both sprites share row zero: the memcpy at 0x5932c copies 0x50 bytes, one
+                // ten-knot curve, and 0x59378 recomputes the pointer every iteration with no
+                // stride. Indexing by the sprite read twenty floats past the end of the array.
+                CalculateCurveInterpolation(g_aTitleAnim13Rotation, 0xa, flTime);
             const int nAlpha = static_cast<int>(
                 CalculateCurveInterpolation(g_aTitleAnim13Alpha, 2, flTime) * kFullColor);
             EmitPartSprite(0x3f + static_cast<unsigned int>(i),
