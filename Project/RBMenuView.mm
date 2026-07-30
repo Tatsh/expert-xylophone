@@ -250,7 +250,9 @@ static const int kLayoutWideCampaignHorizontalMargin = 0x28; // 40-point campaig
 
 // The settingButton X for the wide classic theme is a design double.
 static const CGFloat kLayoutWideThemaClassicSettingX = 20.0;
-static const CGFloat kLayoutTallThemaWhiteSideButton = 44.0; // 0x4036 double.
+// The wide white arm's collection origin X. The pool holds 0x4036000000000000, which is 22.0;
+// this was declared 44.0 while its own comment named the 0x4036 slot. @ghidraAddress 0xa2e20
+static const CGFloat kLayoutWideWhiteCollectionOriginX = 22.0;
 
 // The computed (base/3) tall-layout row and column arithmetic constants. The tall layouts derive
 // the button rows from a row base rather than from a fixed design coordinate.
@@ -264,7 +266,9 @@ static const int kLayoutTallRandomXBias = -15;    // randomX = (sixth + col2) + 
 static const int kLayoutTallBaseInsetPastel = -2; // base = (bounds.width - 8) - 2.
 static const CGFloat kLayoutTallWhiteStoreInfoInset = -3.0; // storeInfoInsetWidth = width + this.
 static const CGFloat kLayoutTallWhiteWidthExtra = -22.0; // wide white storeInfoInset = width - 22.
-static const CGFloat kLayoutTallWhiteCollectionOriginXExtra = -3.0;
+// The fmov at 0xa2f50 is word 0x1e611000, imm8 0x08, which expands to +3.0. The sign was
+// inverted here; the arm's width is bounds.width - 3.0, so 3 + (W - 3) = W exactly.
+static const CGFloat kLayoutTallWhiteCollectionOriginXExtra = 3.0;
 static const CGFloat kLayoutTallSettingXClassicPastel = 4.0; // settingButton X (the 4.0 slot).
 static const CGFloat kLayoutTallSettingXWhite = 12.0;        // settingButton X for the tall white.
 
@@ -398,10 +402,10 @@ static BOOL g_bRandamIntSeeded = NO;
     CGFloat settingColX = 0.0; // The setting/add/del column X (a design double).
     CGFloat collectionOriginX = 0.0;
     CGFloat collectionOriginY = 0.0;
-    // Zero means keep the height the view was built with. Only the wide pastel arm's height has
-    // been recovered so far; the other arms still fall through to the old behaviour rather than
-    // borrow a constant that was proved for one arm only.
+    // Zero means keep the size the view was built with. CreateView builds the collection view at
+    // the full bounds, so every arm that does not set these keeps a full-screen grid.
     CGFloat collectionHeight = 0.0;
+    CGFloat collectionWidth = 0.0;
     CGFloat sideButtonRowY = 0.0; // The playlist/random side-button (and info badge) row Y.
     CGFloat storeInfoInsetWidth = 0.0;
     int editMode = self.playListEditMode;
@@ -435,6 +439,8 @@ static BOOL g_bRandamIntSeeded = NO;
             pageLabelInnerY = kLayoutWideThemaClassicCol0;
             collectionOriginX = 0.0;
             collectionOriginY = kLayoutWideCollectionOriginY;
+            collectionWidth = bounds.width;
+            collectionHeight = kLayoutWideCollectionHeight;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeWide;
         } else if (thema == kThemaPastel) {
@@ -463,6 +469,7 @@ static BOOL g_bRandamIntSeeded = NO;
             pageLabelInnerY = kLayoutWideThemaOtherCol0;
             collectionOriginX = 0.0;
             collectionOriginY = kLayoutWideCollectionOriginY;
+            collectionWidth = bounds.width;
             collectionHeight = kLayoutWideCollectionHeight;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeWide;
@@ -490,7 +497,9 @@ static BOOL g_bRandamIntSeeded = NO;
             playlistX = kLayoutWideThemaOtherPlaylistX;
             randomX = kLayoutWideThemaOtherRandomX;
             pageLabelInnerY = kLayoutWideThemaOtherCol0;
-            collectionOriginX = kLayoutTallThemaWhiteSideButton; // 0x4036 slot (44.0) reused here.
+            collectionOriginX = kLayoutWideWhiteCollectionOriginX;
+            collectionWidth = bounds.width - kLayoutWideWhiteCollectionOriginX;
+            collectionHeight = kLayoutWideCollectionHeight;
             collectionOriginY = kLayoutWideCollectionOriginY;
             storeInfoInsetWidth = bounds.width + kLayoutTallWhiteWidthExtra; // width - 22.
             sideButtonSize = kLayoutSideButtonSizeWide;
@@ -694,7 +703,7 @@ static BOOL g_bRandamIntSeeded = NO;
     self.collectionView.frame =
         CGRectMake(collectionOriginX,
                    collectionOriginY,
-                   collectionHeight > 0.0 ? bounds.width : self.collectionView.frame.size.width,
+                   collectionWidth > 0.0 ? collectionWidth : self.collectionView.frame.size.width,
                    collectionHeight > 0.0 ? collectionHeight
                                           : self.collectionView.frame.size.height);
 
