@@ -210,7 +210,7 @@ def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int
 
 
 def _spelled_string(spelled: str, path: str) -> str | None:
-    """Read the text a source argument carries, as an `@"..."` literal or a constant the file names."""
+    """Read the text a source argument carries, as a literal or a constant the file defines."""
     text = spelled.strip()
     literal = re.fullmatch(r'@"([^"\\]*)"', text)
     if literal is not None:
