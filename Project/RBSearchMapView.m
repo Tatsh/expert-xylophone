@@ -53,7 +53,29 @@ static const CLLocationDegrees kInitialSpanLatitudeDelta = 0.01004;
 static const CLLocationDegrees kInitialSpanLongitudeDelta = 0.01159;
 
 // The map rectangle for a region is widened by 60% of its span on each axis.
-static const double kMapRectSpanScale = 0.6;
+static const double kMapRectSpanScale = 0.6; // @ghidraAddress 0x3015c8
+
+// A longitude span wider than this means the map is zoomed too far out to plot spots on: every
+// annotation is dropped and the message label is shown instead.
+static const CLLocationDegrees kSpotPlottingMaxLongitudeDelta = 0.26; // @ghidraAddress 0x3015d8
+
+// The box the spot list is served for. The map's centre has to fall inside it before a new list
+// is requested at all.
+static const CLLocationDegrees kSearchAreaMaxLongitude = 154.0; // @ghidraAddress 0x3015e0
+static const CLLocationDegrees kSearchAreaMinLongitude = 24.45; // @ghidraAddress 0x3015e8
+static const CLLocationDegrees kSearchAreaMinLatitude = 20.5;   // @ghidraAddress 0x3015f0
+static const CLLocationDegrees kSearchAreaMaxLatitude = 45.6;   // @ghidraAddress 0x3015f8
+
+// Metres in one degree, used to turn the distance since the last request back into degrees, and
+// the distance the centre has to travel before the list is requested again.
+static const double kMetersPerDegree = 111133.3;                     // @ghidraAddress 0x301600
+static const CLLocationDegrees kRequestMoveThreshold = 0.15;         // @ghidraAddress 0x301608
+static const NSUInteger kPlottedSpotArrayCapacity = 0;
+
+// The range the spot list is always requested for. It reaches the format call as an immediate
+// (the mov/movk run at 0xe0d2c), not as a measurement of the region, so +rangeOfRegion: has no
+// part in the request.
+static const double kSpotListRequestRange = 0.27;
 
 // The activity indicator, 32 points square, sits centred on the map with a rounded, dimmed
 // backdrop. Its edge length reuses the shared 32-point layout metric.
@@ -67,6 +89,7 @@ static const CGFloat kMessageLabelCenterY = 70.0;
 static const CGFloat kMessageLabelFontSize = 18.0;
 static const CGFloat kMessageLabelCornerRadius = 8.0;
 static const CGFloat kMessageLabelHiddenAlpha = 0.0;
+static const CGFloat kMessageLabelVisibleAlpha = 1.0;
 static const NSInteger kMessageLabelLineCount = 2;
 
 // The spot-information overlay panel and its drop shadow. The dimmed backdrop reuses the shared
@@ -116,8 +139,12 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     if (![CLLocationManager respondsToSelector:@selector(authorizationStatus)]) {
         return YES;
     }
+    // The binary asks whether the when-in-use request exists before it reads the status, and
+    // reads the status only once.
+    BOOL usesWhenInUseAuthorization =
+        [CLLocationManager instancesRespondToSelector:@selector(requestWhenInUseAuthorization)];
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    if ([CLLocationManager instancesRespondToSelector:@selector(requestWhenInUseAuthorization)]) {
+    if (usesWhenInUseAuthorization) {
         return status == kCLAuthorizationStatusAuthorizedWhenInUse;
     }
     return status == kCLAuthorizationStatusAuthorizedAlways;
@@ -131,15 +158,22 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 }
 
 + (MKMapRect)mapRectForCoordinateRegion:(MKCoordinateRegion)region {
+    // The two corners are the region's centre pushed out by six tenths of each span: north-west
+    // takes the latitude up and the longitude down, south-east the reverse.
     double latitudeInset = region.span.latitudeDelta * kMapRectSpanScale;
     double longitudeInset = region.span.longitudeDelta * kMapRectSpanScale;
-    double top = region.center.latitude - longitudeInset;
-    MKMapPoint topLeft = MKMapPointForCoordinate(
-        CLLocationCoordinate2DMake(region.center.latitude + latitudeInset, top));
-    double bottom = region.center.latitude + longitudeInset;
-    MKMapPoint bottomRight = MKMapPointForCoordinate(
-        CLLocationCoordinate2DMake(region.center.latitude - latitudeInset, top));
-    return MKMapRectMake(topLeft.x, top, fabs(bottomRight.x - topLeft.x), fabs(bottom - top));
+    MKMapPoint topLeft =
+        MKMapPointForCoordinate(CLLocationCoordinate2DMake(region.center.latitude + latitudeInset,
+                                                           region.center.longitude -
+                                                               longitudeInset));
+    MKMapPoint bottomRight =
+        MKMapPointForCoordinate(CLLocationCoordinate2DMake(region.center.latitude - latitudeInset,
+                                                           region.center.longitude +
+                                                               longitudeInset));
+    return MKMapRectMake(topLeft.x,
+                         topLeft.y,
+                         fabs(bottomRight.x - topLeft.x),
+                         fabs(bottomRight.y - topLeft.y));
 }
 
 #pragma mark - Lifecycle
@@ -409,7 +443,7 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     NSString *body = [NSString stringWithFormat:kSpotListRequestFormat,
                                                 region.center.latitude,
                                                 region.center.longitude,
-                                                [RBSearchMapView rangeOfRegion:region]];
+                                                kSpotListRequestRange];
     [self addIndicator];
     if (self.listDownloader) {
         [self.listDownloader cancel];
@@ -492,6 +526,63 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
+    // Nothing is plotted until the master and its images have arrived.
+    if (!m_LoadedImages) {
+        return;
+    }
+
+    MKCoordinateRegion region = self.mapView.region;
+    MKMapRect visibleRect = [RBSearchMapView mapRectForCoordinateRegion:region];
+
+    if (region.span.longitudeDelta > kSpotPlottingMaxLongitudeDelta) {
+        // Zoomed out past the plotting limit: drop every spot and show the message instead.
+        for (id<MKAnnotation> annotation in self.mapView.annotations) {
+            if (self.mapView.userLocation != annotation) {
+                [self.mapView removeAnnotation:annotation];
+            }
+        }
+        self.messageLabel.alpha = kMessageLabelVisibleAlpha;
+        return;
+    }
+
+    self.messageLabel.alpha = kMessageLabelHiddenAlpha;
+    for (id<MKAnnotation> annotation in self.mapView.annotations) {
+        if (self.mapView.userLocation != annotation) {
+            if (!MKMapRectContainsPoint(visibleRect,
+                                        MKMapPointForCoordinate(annotation.coordinate))) {
+                [self.mapView removeAnnotation:annotation];
+            }
+        }
+    }
+
+    NSMutableArray *plotted = [NSMutableArray arrayWithCapacity:kPlottedSpotArrayCapacity];
+    for (id key in self.dictSpot) {
+        id<MKAnnotation> spot = self.dictSpot[key];
+        if (MKMapRectContainsPoint(visibleRect, MKMapPointForCoordinate(spot.coordinate))) {
+            [plotted addObject:spot];
+        }
+    }
+    if (plotted.count != 0) {
+        [self.mapView addAnnotations:plotted];
+    }
+
+    // Outside the served box, or too little movement since the last request, and no list is asked
+    // for. The distance is taken in metres and converted back to degrees to compare.
+    if (region.center.longitude >= kSearchAreaMaxLongitude ||
+        region.center.longitude <= kSearchAreaMinLongitude ||
+        region.center.latitude <= kSearchAreaMinLatitude ||
+        region.center.latitude >= kSearchAreaMaxLatitude) {
+        return;
+    }
+    CLLocation *previousCenter =
+        [[CLLocation alloc] initWithLatitude:m_LastRegion.center.latitude
+                                   longitude:m_LastRegion.center.longitude];
+    CLLocation *currentCenter = [[CLLocation alloc] initWithLatitude:region.center.latitude
+                                                          longitude:region.center.longitude];
+    if ([previousCenter distanceFromLocation:currentCenter] / kMetersPerDegree >
+        kRequestMoveThreshold) {
+        [self requestList:region];
+    }
 }
 
 - (void)mapViewWillStartLoadingMap:(MKMapView *)mapView {
