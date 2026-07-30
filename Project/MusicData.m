@@ -20,6 +20,7 @@
 #import "MusicDataExtend.h"
 #import "NSData+RB.h"
 #import "RBExtendNoteManager.h"
+#import "RBMacros.h"
 #import "RBMusicManager.h"
 #import "StringConvert.h"
 #import "UnZipArchive.h"
@@ -98,8 +99,9 @@ static NSString *const kInfoKeyBpmMin = @"BpmMin";
 static NSString *const kInfoKeyBpmMax = @"BpmMax";
 static NSString *const kInfoKeyOptions = @"Options";
 
-// The empty initial used when a tune has no sortable reading.
-static NSString *const kEmptyInitial = @"";
+// The initial used when a tune has no sortable reading, or its reading falls in no katakana row.
+// @ghidraAddress 0x3cebb8
+static NSString *const kNoYomiInitial = @"#";
 
 // The number of decode types with a registered decryption key; a larger index selects no key.
 static const int kDecodeTypeCount = 2;
@@ -111,16 +113,15 @@ static const int kLevelMaximum = 15;
 // The blowfish key length used for the derived MD5 key.
 static const int kBlowfishKeyLength = 16;
 
-// The brown tint applied to the brown name-strip artwork.
+// The brown tint applied to the brown name-strip artwork. Each pooled constant is a single
+// precision quotient widened to double, so the divisions are spelled in float to reproduce the
+// stored bits exactly rather than the nearer double a double division would give.
 // @ghidraAddress 0x2fcf38 (g_dBrownTintRed)
 // @ghidraAddress 0x2fcf40 (g_dBrownTintGreen)
 // @ghidraAddress 0x2fcf48 (g_dBrownTintBlue)
-static const CGFloat kBrownTintRed = 78.0 / 255.0;
-static const CGFloat kBrownTintGreen = 69.0 / 255.0;
-static const CGFloat kBrownTintBlue = 58.0 / 255.0;
-
-// The greyscale components of the black tint applied to the black name-strip artwork.
-static const CGFloat kBlackTintComponent = 0.0;
+static const CGFloat kBrownTintRed = 78.0f / 255.0f;
+static const CGFloat kBrownTintGreen = 69.0f / 255.0f;
+static const CGFloat kBrownTintBlue = 58.0f / 255.0f;
 
 // The opaque alpha component used for every tint colour.
 static const CGFloat kTintAlpha = 1.0;
@@ -137,10 +138,33 @@ static const CGFloat kRetinaScaleThreshold = 1.0;
 static NSMutableDictionary *g_pMusicSortNameOverrides;
 static NSMutableDictionary *g_pArtistSortNameOverrides;
 
+// Builds the two sort-name caches. The binary registers this in __mod_init_func rather than
+// hanging it off a +load or +initialize, so it runs before any tune is loaded.
+// @ghidraAddress 0x669e8
+__attribute__((constructor)) static void InitializeGlobalDictionaries(void) {
+    g_pMusicSortNameOverrides = [[NSMutableDictionary alloc] init];
+    g_pArtistSortNameOverrides = [[NSMutableDictionary alloc] init];
+}
+
 // The katakana rows, in the reading order used to pick a title's index bucket.
-static NSArray *g_yomiGroups;
+// @ghidraAddress 0x3ceb18
+static NSString *const g_yomiGroups[] = {
+    @"ァアィイゥウェエォオ",
+    @"カガキギクグケゲコゴ",
+    @"サザシジスズセゼソゾ",
+    @"タダチヂッツヅテデトド",
+    @"ナニヌネノ",
+    @"ハバパヒビピフブプヘベペホボポ",
+    @"マミムメモ",
+    @"ャヤュユョヨ",
+    @"ラリルレロ",
+    @"ヮワヰヱヲンヴヵヶ",
+};
+
 // The hiragana initial labelling each katakana row.
-static NSArray *g_yomiLabels;
+// @ghidraAddress 0x3ceb68
+static NSString *const g_yomiLabels[] = {@"あ", @"か", @"さ", @"た", @"な",
+                                         @"は", @"ま", @"や", @"ら", @"わ"};
 
 // Decodes @p data into an image, preferring nil over an empty image.
 static UIImage *ImageFromData(NSData *data) {
@@ -161,12 +185,10 @@ static UIImage *DoubleResolutionImageFromData(NSData *data) {
                          orientation:UIImageOrientationUp];
 }
 
-// The black tint colour used by the black name-strip images.
+// The black tint colour used by the black name-strip images. The binary spells this out as
+// colorWithRed:0 green:0 blue:0 alpha:1, which is exactly +blackColor.
 static UIColor *BlackTintColor(void) {
-    return [UIColor colorWithRed:kBlackTintComponent
-                           green:kBlackTintComponent
-                            blue:kBlackTintComponent
-                           alpha:kTintAlpha];
+    return UIColor.blackColor;
 }
 
 // The brown tint colour used by the brown name-strip images.
@@ -198,34 +220,12 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 // or -1 when @p text is empty.
 // @ghidraAddress 0x5ea48
 + (int)GetYomiIndex:(NSString *)text;
-// Returns the hiragana initial for a katakana-row bucket, or the empty string when out of range.
+// Returns the hiragana initial for a katakana-row bucket, or @c "#" when out of range.
 // @ghidraAddress 0x5eb44
 + (NSString *)GetYomiString:(int)index;
 @end
 
 @implementation MusicData
-
-+ (void)initialize {
-    if (self != [MusicData class]) {
-        return;
-    }
-    /** @ghidraAddress 0x669e8 (InitializeGlobalDictionaries) */
-    g_pMusicSortNameOverrides = [[NSMutableDictionary alloc] init];
-    g_pArtistSortNameOverrides = [[NSMutableDictionary alloc] init];
-    g_yomiGroups = @[
-        @"ァアィイゥウェエォオ",
-        @"カガキギクグケゲコゴ",
-        @"サザシジスズセゼソゾ",
-        @"タダチヂッツヅテデトド",
-        @"ナニヌネノ",
-        @"ハバパヒビピフブプヘベペホボポ",
-        @"マミムメモ",
-        @"ャヤュユョヨ",
-        @"ラリルレロ",
-        @"ヮワヰヱヲンヴヵヶ"
-    ];
-    g_yomiLabels = @[ @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ" ];
-}
 
 - (void)dealloc {
     /** @ghidraAddress 0x60044 */
@@ -240,23 +240,25 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
         return -1;
     }
     unichar first = [text characterAtIndex:0];
-    NSUInteger groupCount = g_yomiGroups.count;
-    for (NSUInteger group = 0; group < groupCount; ++group) {
+    for (int group = 0; group < (int)ARRAY_SIZE(g_yomiGroups); ++group) {
         NSString *members = g_yomiGroups[group];
         NSUInteger memberCount = members.length;
         for (NSUInteger index = 0; index < memberCount; ++index) {
             if ([members characterAtIndex:index] == first) {
-                return (int)group;
+                return group;
             }
         }
     }
-    return (int)(groupCount - 1);
+    // A reading in no row is bucketed with the last one rather than rejected.
+    return (int)ARRAY_SIZE(g_yomiGroups) - 1;
 }
 
 + (NSString *)GetYomiString:(int)index {
     /** @ghidraAddress 0x5eb44 */
-    if (index >= (int)g_yomiLabels.count) {
-        return kEmptyInitial;
+    // The binary range-checks unsigned, so the -1 GetYomiIndex: returns for an empty reading lands
+    // here rather than reading off the front of the table.
+    if (index < 0 || index >= (int)ARRAY_SIZE(g_yomiLabels)) {
+        return kNoYomiInitial;
     }
     return g_yomiLabels[index];
 }
@@ -266,6 +268,8 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 + (NSMutableData *)decodeBF:(NSMutableData *)data Key:(const char *)key KeyLength:(int)keyLength {
     /** @ghidraAddress 0x5eb78 */
     unsigned char digest[kBlowfishKeyLength];
+    // The binary allocates this with operator new[] and frees it with operator delete[], so the
+    // original translation unit was Objective-C++; malloc stands in until the file is renamed.
     char *derived = (char *)malloc((size_t)keyLength);
     for (int index = 0; index < keyLength; ++index) {
         derived[index] = (char)index + key[index];
@@ -285,7 +289,7 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
                          Path:(NSString *)zipPath
                    DecodeType:(int)decodeType {
     /** @ghidraAddress 0x5ecd4 */
-    if (decodeType >= kDecodeTypeCount) {
+    if (decodeType < 0 || decodeType >= kDecodeTypeCount) {
         return nil;
     }
     UnZipArchive *archive = [[UnZipArchive alloc] init];
@@ -393,13 +397,13 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
     (void)[data.artistNameHira isEqualToString:data.artistSortName];
 
     if (data.musicSortName.length == 0) {
-        data.musicNameInitial = [[NSString alloc] initWithString:kEmptyInitial];
+        data.musicNameInitial = [[NSString alloc] initWithString:kNoYomiInitial];
     } else {
         int bucket = [MusicData GetYomiIndex:[data.musicSortName substringToIndex:1]];
         data.musicNameInitial = [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
     }
     if (data.artistSortName.length == 0) {
-        data.artistNameInitial = [[NSString alloc] initWithString:kEmptyInitial];
+        data.artistNameInitial = [[NSString alloc] initWithString:kNoYomiInitial];
     } else {
         int bucket = [MusicData GetYomiIndex:[data.artistSortName substringToIndex:1]];
         data.artistNameInitial = [[NSString alloc] initWithString:[MusicData GetYomiString:bucket]];
@@ -743,11 +747,17 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 
 // Tints @p imageData's decoded image brown and PNG-encodes it.
 static NSData *BrownImageData(MusicData *self, NSData *imageData) {
+    UIImage *image = [UIImage imageWithData:imageData];
+    return UIImagePNGRepresentation([self setColor:image withColor:BrownTintColor()]);
+}
+
+// The same, for the six accessors that reject a missing member before decoding it. The two
+// accessors that read the archive directly skip this guard.
+static NSData *GuardedBrownImageData(MusicData *self, NSData *imageData) {
     if (imageData == nil) {
         return nil;
     }
-    UIImage *image = [UIImage imageWithData:imageData];
-    return UIImagePNGRepresentation([self setColor:image withColor:BrownTintColor()]);
+    return BrownImageData(self, imageData);
 }
 
 - (NSData *)musicNameImageBrown2xData {
@@ -757,17 +767,17 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
 
 - (NSData *)musicNameImageBrown2xDataBasic {
     /** @ghidraAddress 0x60988 */
-    return BrownImageData(self, [self musicNameImageWhite2xDataBasic]);
+    return GuardedBrownImageData(self, [self musicNameImageWhite2xDataBasic]);
 }
 
 - (NSData *)musicNameImageBrown2xDataMedium {
     /** @ghidraAddress 0x60ad8 */
-    return BrownImageData(self, [self musicNameImageWhite2xDataMedium]);
+    return GuardedBrownImageData(self, [self musicNameImageWhite2xDataMedium]);
 }
 
 - (NSData *)musicNameImageBrown2xDataHard {
     /** @ghidraAddress 0x60c28 */
-    return BrownImageData(self, [self musicNameImageWhite2xDataHard]);
+    return GuardedBrownImageData(self, [self musicNameImageWhite2xDataHard]);
 }
 
 - (NSData *)artistNameImageBrown2xData {
@@ -777,30 +787,31 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
 
 - (NSData *)artistNameImageBrown2xDataBasic {
     /** @ghidraAddress 0x60ebc */
-    return BrownImageData(self, [self artistNameImageWhite2xDataBasic]);
+    return GuardedBrownImageData(self, [self artistNameImageWhite2xDataBasic]);
 }
 
 - (NSData *)artistNameImageBrown2xDataMedium {
     /** @ghidraAddress 0x6100c */
-    return BrownImageData(self, [self artistNameImageWhite2xDataMedium]);
+    return GuardedBrownImageData(self, [self artistNameImageWhite2xDataMedium]);
 }
 
 - (NSData *)artistNameImageBrown2xDataHard {
     /** @ghidraAddress 0x6115c */
-    return BrownImageData(self, [self artistNameImageWhite2xDataHard]);
+    return GuardedBrownImageData(self, [self artistNameImageWhite2xDataHard]);
 }
 
 #pragma mark - Tinting
 
 - (UIImage *)setColor:(UIImage *)image withColor:(UIColor *)color {
     /** @ghidraAddress 0x657e4 */
-    CGSize size = image.size;
-    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
+    // The binary reads image.size twice, taking the width from one send and the height from the
+    // other, so the rect is built component-wise and its size reused for the context.
+    CGRect bounds = CGRectMake(0, 0, image.size.width, image.size.height);
+    UIGraphicsBeginImageContextWithOptions(bounds.size, NO, image.scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect bounds = CGRectMake(0, 0, size.width, size.height);
     [image drawInRect:bounds];
     CGContextSetFillColorWithColor(context, color.CGColor);
-    CGContextSetBlendMode(context, kCGBlendModeSourceIn);
+    CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
     CGContextFillRect(context, bounds);
     UIImage *tinted = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -872,7 +883,8 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         }
     }
     if (image == nil) {
-        return nil;
+        // Unlike -artworkBasic, the medium and hard accessors fall back to the shared artwork.
+        return [self artwork];
     }
     self.artworkCacheMedium = image;
     return image;
@@ -895,7 +907,7 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
         }
     }
     if (image == nil) {
-        return nil;
+        return [self artwork];
     }
     self.artworkCacheHard = image;
     return image;
@@ -903,58 +915,92 @@ static NSData *BrownImageData(MusicData *self, NSData *imageData) {
 
 #pragma mark - Name-strip images
 
-// Fetches a white name-strip image, preferring the double-resolution variant on a retina screen.
-static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
-    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold && retina2x != nil) {
-        return retina2x;
-    }
-    return ImageFromData(singleData);
-}
-
 - (UIImage *)musicNameImageWhite {
     /** @ghidraAddress 0x61a94 */
-    return WhitePreferringRetina2x([self musicNameImageWhite2x], [self musicNameImageWhiteData]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self musicNameImageWhite2x];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self musicNameImageWhiteData]);
 }
 
 - (UIImage *)musicNameImageWhiteBasic {
     /** @ghidraAddress 0x61ba4 */
-    return WhitePreferringRetina2x([self musicNameImageWhite2xBasic],
-                                   [self musicNameImageWhiteDataBasic]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self musicNameImageWhite2xBasic];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self musicNameImageWhiteDataBasic]);
 }
 
 - (UIImage *)musicNameImageWhiteMedium {
     /** @ghidraAddress 0x61cb4 */
-    return WhitePreferringRetina2x([self musicNameImageWhite2xMedium],
-                                   [self musicNameImageWhiteDataMedium]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self musicNameImageWhite2xMedium];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self musicNameImageWhiteDataMedium]);
 }
 
 - (UIImage *)musicNameImageWhiteHard {
     /** @ghidraAddress 0x61dc4 */
-    return WhitePreferringRetina2x([self musicNameImageWhite2xHard],
-                                   [self musicNameImageWhiteDataHard]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self musicNameImageWhite2xHard];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self musicNameImageWhiteDataHard]);
 }
 
 - (UIImage *)artistNameImageWhite {
     /** @ghidraAddress 0x61ed4 */
-    return WhitePreferringRetina2x([self artistNameImageWhite2x], [self artistNameImageWhiteData]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self artistNameImageWhite2x];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self artistNameImageWhiteData]);
 }
 
 - (UIImage *)artistNameImageWhiteBasic {
     /** @ghidraAddress 0x61fe4 */
-    return WhitePreferringRetina2x([self artistNameImageWhite2xBasic],
-                                   [self artistNameImageWhiteDataBasic]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self artistNameImageWhite2xBasic];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self artistNameImageWhiteDataBasic]);
 }
 
 - (UIImage *)artistNameImageWhiteMedium {
     /** @ghidraAddress 0x620f4 */
-    return WhitePreferringRetina2x([self artistNameImageWhite2xMedium],
-                                   [self artistNameImageWhiteDataMedium]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self artistNameImageWhite2xMedium];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self artistNameImageWhiteDataMedium]);
 }
 
 - (UIImage *)artistNameImageWhiteHard {
     /** @ghidraAddress 0x62204 */
-    return WhitePreferringRetina2x([self artistNameImageWhite2xHard],
-                                   [self artistNameImageWhiteDataHard]);
+    if ([UIScreen mainScreen].scale > kRetinaScaleThreshold) {
+        UIImage *image = [self artistNameImageWhite2xHard];
+        if (image != nil) {
+            return image;
+        }
+    }
+    return ImageFromData([self artistNameImageWhiteDataHard]);
 }
 
 - (UIImage *)musicNameImageBlack {
@@ -989,12 +1035,14 @@ static UIImage *WhitePreferringRetina2x(UIImage *retina2x, NSData *singleData) {
 
 - (UIImage *)artistNameImageBlackMedium {
     /** @ghidraAddress 0x62c8c */
-    return [self setColor:[self artistNameImageWhiteMedium] withColor:BlackTintColor()];
+    // Yes, the medium and hard accessors tint the unsuffixed artist strip. The binary sends
+    // -artistNameImageWhite2x and -artistNameImageWhiteData here, not the medium or hard variants.
+    return [self setColor:[self artistNameImageWhite] withColor:BlackTintColor()];
 }
 
 - (UIImage *)artistNameImageBlackHard {
     /** @ghidraAddress 0x62e24 */
-    return [self setColor:[self artistNameImageWhiteHard] withColor:BlackTintColor()];
+    return [self setColor:[self artistNameImageWhite] withColor:BlackTintColor()];
 }
 
 - (UIImage *)musicNameImageBrown {
