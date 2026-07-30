@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3305 verified
-(52.1%).
+Total: 6343 — 6198 reconstructed, 3308 verified
+(52.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -613,15 +613,15 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x356b8` |
 | `RBTutorialManager` | `+` | `isTutorial` |  | ✅ | ❌ | `0x35724` |
 | `RBTutorialManager` | `+` | `needStartTutorialMusicselect` |  | ✅ | ❌ | `0x3578c` |
-| `RBTutorialManager` | `+` | `startTutorialMusicselect` |  | ✅ | ❌ | `0x35820` |
+| `RBTutorialManager` | `+` | `startTutorialMusicselect` |  | ✅ | ✅ | `0x35820` |
 | `RBTutorialManager` | `+` | `isTutorialMusicselect` |  | ✅ | ❌ | `0x35838` |
 | `RBTutorialManager` | `+` | `needStartTutorialPlay` |  | ✅ | ❌ | `0x358ec` |
 | `RBTutorialManager` | `+` | `isTutorialPlay` |  | ✅ | ❌ | `0x3597c` |
 | `RBTutorialManager` | `+` | `needStartTutorialCustomize` |  | ✅ | ❌ | `0x35a40` |
-| `RBTutorialManager` | `+` | `startTutorialCustomize` |  | ✅ | ❌ | `0x35b24` |
+| `RBTutorialManager` | `+` | `startTutorialCustomize` |  | ✅ | ✅ | `0x35b24` |
 | `RBTutorialManager` | `+` | `isTutorialCustomize` |  | ✅ | ❌ | `0x35b3c` |
 | `RBTutorialManager` | `+` | `needStartTutorialStore` |  | ✅ | ❌ | `0x35c50` |
-| `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ❌ | `0x35ce4` |
+| `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ✅ | `0x35ce4` |
 | `RBTutorialManager` | `+` | `getStatus:` |  | ❌ | ❌ | `0x35cfc` |
 | `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ❌ | `0x35d6c` |
 | `RBTutorialManager` | `+` | `updateStatus:` |  | ❌ | ❌ | `0x35dd4` |

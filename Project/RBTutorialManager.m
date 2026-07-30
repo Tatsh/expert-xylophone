@@ -78,7 +78,10 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (void)startTutorialMusicselect {
     /** @ghidraAddress 0x35820 */
-    [[self getInstance] updateStatus:RBTutorialStatusMusicSelectStart];
+    // The status update goes to the class, not to the shared instance: the body loads the
+    // RBTutorialManager class reference into x0 and tail-calls updateStatus:, with no
+    // getInstance send anywhere in it. +updateStatus: is itself a class method.
+    [RBTutorialManager updateStatus:RBTutorialStatusMusicSelectStart];
 }
 
 + (BOOL)isTutorialMusicselect {
@@ -121,7 +124,7 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (void)startTutorialCustomize {
     /** @ghidraAddress 0x35b24 */
-    [[self getInstance] updateStatus:RBTutorialStatusCustomizeStart];
+    [RBTutorialManager updateStatus:RBTutorialStatusCustomizeStart];
 }
 
 + (BOOL)isTutorialCustomize {
@@ -149,7 +152,7 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (void)startTutorialStore {
     /** @ghidraAddress 0x35ce4 */
-    [[self getInstance] updateStatus:RBTutorialStatusStoreStart];
+    [RBTutorialManager updateStatus:RBTutorialStatusStoreStart];
 }
 
 #pragma mark - Status mutation

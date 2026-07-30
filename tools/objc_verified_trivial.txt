@@ -20,6 +20,9 @@
 0x25dec StoreExtendNoteDetailViewPad alertView:willDismissWithButtonIndex:: empty
 0x26424 StoreExtendNoteDetailViewPad setDownloadFlag:: empty
 0x34170 StorePackListGenre packIDList: sends arrayPackInfo to self
+0x35820 RBTutorialManager startTutorialMusicselect: sends updateStatus: to RBTutorialManager
+0x35b24 RBTutorialManager startTutorialCustomize: sends updateStatus: to RBTutorialManager
+0x35ce4 RBTutorialManager startTutorialStore: sends updateStatus: to RBTutorialManager
 0x38fbc RBHttpUtil URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:: empty
 0x39430 RBHttpUtil getData: sends downloadedData to self
 0x39520 RBHttpUtil getHeader: sends downloadedHeader to self

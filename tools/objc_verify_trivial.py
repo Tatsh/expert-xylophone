@@ -346,25 +346,32 @@ def _evaluate(expression: str, known: dict[str, int]) -> int | None:
 
 def file_constants(path: str) -> dict[str, int]:
     """
-    Collect the integer constants a source file defines, including enumerated ones.
+    Collect the integer constants a source file and its header define.
 
-    The rules require a named constant rather than a bare number, so a method that returns one
-    returns a name, and the name has to be resolved before the value can be compared. Definitions
-    are matched across newlines, since a mask built from several named bits is usually wrapped.
+    The rules require a named constant rather than a bare number, so a method that returns or passes
+    one names it, and the name has to be resolved before the value can be compared. Definitions are
+    matched across newlines, since a mask built from several named bits is usually wrapped.
+
+    In a header any identifier assigned a constant counts, which is what picks up an ``NS_ENUM``'s
+    members. In an implementation file only the k-prefixed form does, because a bare assignment
+    there is as likely to be ordinary code as a definition.
     """
-    text = Path(path).read_text(errors='replace')
     known: dict[str, int] = dict(_FRAMEWORK)
-    patterns = (
-        # static const T kName = <expression>;
-        re.compile(r'(?:static\s+)?const(?:expr)?\s+[\w\s*]*?\b(k\w+)\s*=\s*([^;]+);'),
-        # enum { kName = <expression>, ... }
-        re.compile(r'\b(k\w+)\s*=\s*([^,;}]+)'),
-    )
-    for pattern in patterns:
-        for found in pattern.finditer(text):
-            value = _evaluate(' '.join(found.group(2).split()), known)
-            if value is not None:
-                known.setdefault(found.group(1), value)
+    definition = re.compile(r'(?:static\s+)?const(?:expr)?\s+[\w\s*]*?\b(k\w+)\s*=\s*([^;]+);')
+    enumerated = re.compile(r'\b(k\w+)\s*=\s*([^,;}]+)')
+    header_enumerated = re.compile(r'^\s*([A-Za-z_]\w*)\s*=\s*([^,;}]+?)\s*,?\s*(?:/\*|$)',
+                                   re.MULTILINE)
+    header = Path(path).with_suffix('.h')
+    for source, patterns in ((Path(path), (definition, enumerated)),
+                             (header, (definition, enumerated, header_enumerated))):
+        if not source.is_file():
+            continue
+        text = source.read_text(errors='replace')
+        for pattern in patterns:
+            for found in pattern.finditer(text):
+                value = _evaluate(' '.join(found.group(2).split()), known)
+                if value is not None:
+                    known.setdefault(found.group(1), value)
     return known
 
 
