@@ -303,7 +303,11 @@ _IMPLEMENTATION = re.compile(r'^@implementation\s+(\w+)')
 _END = re.compile(r'^@end')
 _METHOD_START = re.compile(r'^\s*([-+])\s*\([^)]*\)\s*(.+)$')
 _NUMBER = r'[-+]?\d+(?:\.\d+)?f?'
+# The value may be a bare literal or a division of two literals. The latter is how an eight-bit
+# colour component is spelled — 47.0f / 255.0f — and reading it keeps those constants checked
+# rather than dropping them for being an expression.
 _ANNOTATED_CONSTANT = re.compile(r'\b(k\w+|g_\w+)\s*=\s*(' + _NUMBER +
+                                 r'(?:\s*/\s*' + _NUMBER + r')?'
                                  r')\s*;.*@ghidraAddress\s+(0x[0-9a-fA-F]+)')
 
 
@@ -473,7 +477,14 @@ def audit_constants(root: Path, binary: Binary) -> tuple[int, list[ConstantFindi
             if values is None:
                 continue
             as_double, as_float = values
-            declared = float(found.group(2).rstrip('f'))
+            spelled = found.group(2)
+            if '/' in spelled:
+                # Divide at single precision, which is what the f-suffixed literals compile to.
+                numerator, denominator = (float(part.strip().rstrip('f'))
+                                          for part in spelled.split('/'))
+                declared = struct.unpack('<f', struct.pack('<f', numerator / denominator))[0]
+            else:
+                declared = float(spelled.rstrip('f'))
             checked += 1
             if (abs(as_double - declared) > _DOUBLE_TOLERANCE
                     and abs(as_float - declared) > _FLOAT_TOLERANCE):

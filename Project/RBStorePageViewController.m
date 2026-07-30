@@ -216,9 +216,9 @@ static const CGFloat kSampleButtonInsetBottom = 13.0;
 
 // Colour white components used for the various translucent fills. Each is a byte over 255 rounded
 // through a float, so the pool value is not the tidy decimal it looks like.
-static const CGFloat kTableBackgroundWhite = 0.18431372940540314; // @ghidraAddress 0x1002eef38
-static const CGFloat kPadTableBorderWhite = 0.5607843399047852;   // @ghidraAddress 0x1002ec730
-static const CGFloat kLabelTextWhite = 0.6196078658103943;        // @ghidraAddress 0x1002eecb8
+static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x1002eef38
+static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x1002ec730
+static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x1002eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
 
 // The loading label's text shadow. This is its own pool slot, not the animation duration it
@@ -227,9 +227,9 @@ static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x1002ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
-static const CGFloat kDefaultBackgroundRed = 0.886274516582489;    // @ghidraAddress 0x30be90
-static const CGFloat kDefaultBackgroundGreen = 0.8901960849761963; // @ghidraAddress 0x30be98
-static const CGFloat kDefaultBackgroundBlue = 0.8941176533699036;  // @ghidraAddress 0x30bea0
+static const CGFloat kDefaultBackgroundRed = 226.0f / 255.0f;    // @ghidraAddress 0x30be90
+static const CGFloat kDefaultBackgroundGreen = 227.0f / 255.0f; // @ghidraAddress 0x30be98
+static const CGFloat kDefaultBackgroundBlue = 228.0f / 255.0f;  // @ghidraAddress 0x30bea0
 
 // The half-scale used to centre a view in its host's bounds.
 static const CGFloat kCenterScale = 0.5;
@@ -1019,12 +1019,13 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
                     reuseIdentifier:kStorePromotionSampleLabelCellID];
             }
             [cell.contentView addSubview:self.sampleMusicLabel];
+            // The binary reads the width through the UIView+RB -width getter, not -frame.
             self.sampleMusicLabel.frame = CGRectMake(kSampleLabelInsetLeft,
                                                      0.0,
-                                                     cell.frame.size.width - kSampleLabelInsetRight,
+                                                     cell.width - kSampleLabelInsetRight,
                                                      kSampleSectionHeight);
             [cell.contentView addSubview:self.samplePlayButton];
-            self.samplePlayButton.frame = CGRectMake(cell.frame.size.width - kSamplePlayButtonWidth,
+            self.samplePlayButton.frame = CGRectMake(cell.width - kSamplePlayButtonWidth,
                                                      0.0,
                                                      kSamplePlayButtonWidth,
                                                      kSampleSectionHeight);

@@ -110,7 +110,7 @@ static const CGFloat kSampleOverlayAlpha = 0.4;
 static const CGFloat kSampleOverlayWhite = 0.0;
 static const CGFloat kOpaqueAlpha = 1.0;
 // The detail panel background white value and its shadow border white value.
-static const CGFloat kDetailPanelWhite = 0.5607843399047852;
+static const CGFloat kDetailPanelWhite = 143.0f / 255.0f;
 static const CGFloat kDividerWhite = 0.5;
 // The banner corner radius and the detail-panel vertical growth increments.
 static const CGFloat kBannerCornerRadius = 8.0;

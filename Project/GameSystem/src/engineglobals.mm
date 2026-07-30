@@ -39,21 +39,21 @@ UIColor *g_pPaletteLeafGreenColor3;
 UIColor *g_pPaletteSteelBlueColor2;
 UIColor *g_pPaletteGoldColor;
 UIColor *g_pPaletteSteelBlueColor3;
-const double g_PaletteColorGreenGrassRed = 0.24705882370471954;
+const double g_PaletteColorGreenGrassRed = 63.0f / 255.0f;
 const double g_PaletteColorGreenGrassGreen = 0.654902f;
-const double g_PaletteColorMagentaRed = 0.99607843160629272;
-const double g_PaletteColorMagentaGreen = 0.12941177189350128;
+const double g_PaletteColorMagentaRed = 254.0f / 255.0f;
+const double g_PaletteColorMagentaGreen = 33.0f / 255.0f;
 const double g_PaletteColorMagentaBlue = 0.972549f;
-const double g_PaletteColorDarkGreenRed = 0.0078431377187371254;
-const double g_PaletteColorDarkGreenGreen = 0.43529412150382996;
-const double g_PaletteColorLeafGreenRed = 0.10196078568696976;
-const double g_PaletteColorLeafGreenGreen = 0.59215688705444336;
-const double g_PaletteColorSteelBlueRed = 0.52156865596771240;
-const double g_PaletteColorSteelBlueGreen = 0.67843139171600342;
-const double g_PaletteColorSteelBlueBlue = 0.85098040103912354;
-const double g_PaletteColorGoldRed = 0.89803922176361084;
-const double g_PaletteColorGoldGreen = 0.71764707565307617;
-const double g_PaletteColorGoldBlue = 0.19215686619281769;
+const double g_PaletteColorDarkGreenRed = 2.0f / 255.0f;
+const double g_PaletteColorDarkGreenGreen = 111.0f / 255.0f;
+const double g_PaletteColorLeafGreenRed = 26.0f / 255.0f;
+const double g_PaletteColorLeafGreenGreen = 151.0f / 255.0f;
+const double g_PaletteColorSteelBlueRed = 133.0f / 255.0f;
+const double g_PaletteColorSteelBlueGreen = 173.0f / 255.0f;
+const double g_PaletteColorSteelBlueBlue = 217.0f / 255.0f;
+const double g_PaletteColorGoldRed = 229.0f / 255.0f;
+const double g_PaletteColorGoldGreen = 183.0f / 255.0f;
+const double g_PaletteColorGoldBlue = 49.0f / 255.0f;
 
 // The shared layout metrics and timings the UI code reads. Each value is transcribed from the
 // binary's read-only data at the address in its comment.
@@ -370,8 +370,8 @@ constexpr double kSliderRowHeightPhone = 20.0;
 // The cached off-white brightness and the blue accent's red and green components. The blue's blue
 // channel and every alpha are 1.
 constexpr CGFloat kOffWhiteBrightness = 0.97;
-constexpr CGFloat kBlueRed = 0.0117647061124444;
-constexpr CGFloat kBlueGreen = 0.47843137383461;
+constexpr CGFloat kBlueRed = 3.0f / 255.0f;
+constexpr CGFloat kBlueGreen = 122.0f / 255.0f;
 } // namespace
 
 /** @ghidraAddress 0x1c0a78 */

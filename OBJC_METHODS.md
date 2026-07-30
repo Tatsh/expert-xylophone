@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3940 verified
-(62.1%).
+Total: 6343 — 6201 reconstructed, 3947 verified
+(62.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5063,11 +5063,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `stopSample` |  | ✅ | ❌ | `0x1d8aa0` |
 | `RBStoreDetailViewController` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x1d8c18` |
 | `RBStoreDetailViewController` | `-` | `doPurchase:` |  | ✅ | ❌ | `0x1d8d84` |
-| `RBStoreDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ❌ | `0x1d9028` |
+| `RBStoreDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ✅ | `0x1d9028` |
 | `RBStoreDetailViewController` | `-` | `allDownloaded` |  | ✅ | ❌ | `0x1d90f4` |
 | `RBStoreDetailViewController` | `-` | `selfCheckButtonText` |  | ✅ | ❌ | `0x1d9290` |
-| `RBStoreDetailViewController` | `-` | `setButtonTextBuy` |  | ✅ | ❌ | `0x1d9408` |
-| `RBStoreDetailViewController` | `-` | `setButtonTextInstall` |  | ✅ | ❌ | `0x1d95d8` |
+| `RBStoreDetailViewController` | `-` | `setButtonTextBuy` |  | ✅ | ✅ | `0x1d9408` |
+| `RBStoreDetailViewController` | `-` | `setButtonTextInstall` |  | ✅ | ✅ | `0x1d95d8` |
 | `RBStoreDetailViewController` | `-` | `setButtonTextInstalling` |  | ✅ | ❌ | `0x1d96e8` |
 | `RBStoreDetailViewController` | `-` | `setButtonTextInstalled` |  | ✅ | ❌ | `0x1d97f8` |
 | `RBStoreDetailViewController` | `-` | `storePackInfoDownloaderFinished:` |  | ✅ | ❌ | `0x1d9908` |
@@ -5076,7 +5076,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1d9dd4` |
 | `RBStoreDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1d9f4c` |
 | `RBStoreDetailViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1d9f50` |
-| `RBStoreDetailViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1d9f58` |
+| `RBStoreDetailViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1d9f58` |
 | `RBStoreDetailViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1d9ffc` |
 | `RBStoreDetailViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1daeec` |
 | `RBStoreDetailViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1db224` |
@@ -5090,8 +5090,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1dc0a4` |
 | `RBStoreDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1dc1e4` |
 | `RBStoreDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1dc3ec` |
-| `RBStoreDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1dc3fc` |
-| `RBStoreDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x1dc430` |
+| `RBStoreDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1dc3fc` |
+| `RBStoreDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x1dc430` |
 | `RBStoreDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1dc480` |
 | `RBStoreDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1dc5b4` |
 | `RBStoreDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1dc610` |
@@ -5172,7 +5172,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x1e931c` |
 | `RBStorePageViewController` | `-` | `restoreDownloadCancel` |  | ✅ | ✅ | `0x1e942c` |
 | `RBStorePageViewController` | `-` | `numPackRows` |  | ✅ | ✅ | `0x1e9628` |
-| `RBStorePageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1e96b4` |
+| `RBStorePageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ✅ | `0x1e96b4` |
 | `RBStorePageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1eb708` |
 | `RBStorePageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1eb728` |
 | `RBStorePageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1eb838` |

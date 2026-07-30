@@ -86,7 +86,7 @@ static const CGFloat kPageControlHeight = 20.0;
 static const CGFloat kPageControlScale = 0.8;
 
 // The page-indicator tint white components, by theme.
-static const CGFloat kPageIndicatorWhiteThemed = 0.66666668653488159;
+static const CGFloat kPageIndicatorWhiteThemed = 170.0f / 255.0f;
 static const CGFloat kCurrentPageIndicatorWhiteThemed = 0.5;
 static const CGFloat kCurrentPageIndicatorWhiteDefault = 1.0;
 

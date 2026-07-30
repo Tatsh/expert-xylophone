@@ -56,15 +56,15 @@ static const CGFloat kRowHeightPhone = 50.0;
 static const CGFloat kRowHeightPad = 60.0;
 
 // The loading-label text colour, a light grey. @ghidraAddress 0x30be90
-static const CGFloat kLoadingLabelRed = 0.886274516582489;
-static const CGFloat kLoadingLabelGreen = 0.8901960849761963;
-static const CGFloat kLoadingLabelBlue = 0.8941176533699036;
+static const CGFloat kLoadingLabelRed = 226.0f / 255.0f;
+static const CGFloat kLoadingLabelGreen = 227.0f / 255.0f;
+static const CGFloat kLoadingLabelBlue = 228.0f / 255.0f;
 static const CGFloat kOpaqueAlpha = 1.0;
 
 // The label shadow white value used for the loading and error text. @ghidraAddress 0x2eecb8
-static const CGFloat kLabelShadowWhite = 0.6196078658103943;
+static const CGFloat kLabelShadowWhite = 158.0f / 255.0f;
 // The even-row background white value. @ghidraAddress 0x310790
-static const CGFloat kAlternateRowWhite = 0.7568627595901489;
+static const CGFloat kAlternateRowWhite = 193.0f / 255.0f;
 // The sample-playback BGM fade-in time.
 static const float kSampleBGMFadeTime = 0.5f;
 // The loading-label point size, and the error-label point sizes per device idiom.
@@ -88,8 +88,8 @@ static const CGFloat kCenterScale = 0.5;
 // engine globals the reconstruction named. A real global reference would be an adrp/ldr pair
 // against __const, which is how the neighbouring kAlternateRowWhite is in fact loaded.
 static const CGFloat kSampleBGMStopFadeTime = 0.2f;  // @ghidraAddress 0x2ec6b4
-static const CGFloat kAlternateRowWhiteOdd = 0.8;    // @ghidraAddress 0x2ec6a0
-static const CGFloat kPadCoverFadeDuration = 0.3;    // @ghidraAddress 0x2ec718
+static const CGFloat kAlternateRowWhiteOdd = 0.8f;   // @ghidraAddress 0x2ec6a0
+static const CGFloat kPadCoverFadeDuration = 0.3f;   // @ghidraAddress 0x2ec718
 
 // The dimming cover behind the pad detail overlay is black at 50% opacity.
 static const CGFloat kPadCoverBlackWhite = 0.0;

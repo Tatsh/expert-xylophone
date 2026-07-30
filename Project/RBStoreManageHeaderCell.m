@@ -31,8 +31,8 @@ static const CGFloat kBackgroundWhiteEven = 1.0;
 static const CGFloat kBackgroundWhiteOdd = 0.97f;
 
 // The label text colour components.
-static const CGFloat kLabelColorRed = 0.0117647061124444;
-static const CGFloat kLabelColorGreen = 0.47843137383461;
+static const CGFloat kLabelColorRed = 3.0f / 255.0f;
+static const CGFloat kLabelColorGreen = 122.0f / 255.0f;
 static const CGFloat kLabelColorBlue = 1.0;
 
 // The factor that centres a label vertically within the header.

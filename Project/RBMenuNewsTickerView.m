@@ -44,7 +44,7 @@ enum {
 // The near-white background colour component used by the two darker themes. It is 0xda/0xff
 // rounded to single precision and widened again, which is how the constant sits in the pool.
 static const CGFloat kNewsTickerDarkThemeBackgroundComponent =
-    0.8549019694328308; /** @ghidraAddress 0x300fa8 */
+    218.0f / 255.0f; /** @ghidraAddress 0x300fa8 */
 static const CGFloat kNewsTickerDarkThemeBackgroundAlpha = 1.0;
 
 // The marquee scroll speed, expressed as the divisor that converts the text's overflow width in

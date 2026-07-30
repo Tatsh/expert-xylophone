@@ -118,8 +118,8 @@ static const CGFloat kArtworkShadowOpacity = 0.6;
 static const CGFloat kTitleShadowOffsetY = -1.0;
 
 // White / alpha colour components.
-static const CGFloat kCommentTextWhite = 0.19607843458652496;
-static const CGFloat kDisabledTitleWhite = 0.6196078658103943;
+static const CGFloat kCommentTextWhite = 50.0f / 255.0f;
+static const CGFloat kDisabledTitleWhite = 158.0f / 255.0f;
 static const CGFloat kLoadedBackgroundWhite = 0.863f;
 static const CGFloat kTermStripBackgroundWhite = 0.863f;
 static const CGFloat kLoadingShadowAlpha = 0.4f;

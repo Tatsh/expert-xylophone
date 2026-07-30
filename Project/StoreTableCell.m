@@ -1,7 +1,7 @@
 #import "StoreTableCell.h"
 
 // The cell background and content-view background share a dark neutral grey (47/255).
-static const CGFloat kCellBackgroundWhite = 0.18431372940540314;
+static const CGFloat kCellBackgroundWhite = 47.0f / 255.0f;
 static const CGFloat kCellBackgroundAlpha = 1.0;
 
 // The two pack tiles are a fixed 365x140 point rectangle each; the right tile sits immediately to

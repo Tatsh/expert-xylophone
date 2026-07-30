@@ -70,11 +70,11 @@ static const CGFloat kArtistFontSize = 13.0;
 static const CGFloat kLevelsFontSize = 15.0;
 
 // Artist label text colour (white component).
-static const CGFloat kArtistTextWhite = 0.19607843458652496; // @ghidraAddress 0x2eeef8
+static const CGFloat kArtistTextWhite = 50.0f / 255.0f; // @ghidraAddress 0x2eeef8
 
 // Levels label text colour components (a dark green-blue).
 static const CGFloat kLevelsColorRed = 0.3333333333333333;    // @ghidraAddress 0x2eec78
-static const CGFloat kLevelsColorGreen = 0.03529411926865578; // @ghidraAddress 0x2eec80
+static const CGFloat kLevelsColorGreen = 9.0f / 255.0f; // @ghidraAddress 0x2eec80
 static const CGFloat kLevelsColorBlue = 0.47058823529411764;  // @ghidraAddress 0x2eec88
 
 // Jacket layer shadow and border parameters.

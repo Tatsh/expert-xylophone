@@ -604,6 +604,21 @@ VERIFIED = {
     0x4f7e0: 'AppDelegate -showTitle: the explosion size is a pool load of 0.9f taken '
               'at single width, its neighbour being 96.0f; the other two effect sizes '
               'are fmov immediates',
+    # RBStoreDetailViewController opens with two clean screens: the class has no class
+    # methods at all, so no kind disagreement, and all 43 selectors it defines are in the
+    # metadata, so no invented ones. Both recorded as negatives before any body was read.
+    0x1e96b4: 'RBStorePageViewController -tableView:cellForRowAtIndexPath:: fully read '
+              'across two passes, nine defects; the sample-label width comes from the '
+              'category getter, not from frame.size.width',
+    0x1d9028: 'RBStoreDetailViewController -setPurchaseState:: guarded on the header '
+              'view, and the argument is inverted before setEnabled:',
+    0x1d9408: 'RBStoreDetailViewController -setButtonTextBuy: one vararg slot for one specifier',
+    0x1d95d8: 'RBStoreDetailViewController -setButtonTextInstall: normal state and '
+              'enabled, unlike the installing and installed pair which use the disabled '
+              'state',
+    0x1d9f58: 'RBStoreDetailViewController -tableView:numberOfRowsInSection:: count plus two',
+    0x1dc3fc: 'RBStoreDetailViewController -didReceiveMemoryWarning: the super call only',
+    0x1dc430: 'RBStoreDetailViewController -viewDidUnload: super first, then the artwork stop',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

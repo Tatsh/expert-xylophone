@@ -267,9 +267,9 @@ static const int kCampaignHideTypeVisible = 0;
     case kCampaignButtonTypeDownloaded:
         return UIColor.grayColor;
     case kCampaignButtonTypeUnlockCond:
-        return [UIColor colorWithRed:0 green:0 blue:0.501960813999176f alpha:1];
+        return [UIColor colorWithRed:0 green:0 blue:128.0f / 255.0f alpha:1];
     case kCampaignButtonTypeUpdate:
-        return [UIColor colorWithRed:0 green:0.5882353186607361f blue:1 alpha:1];
+        return [UIColor colorWithRed:0 green:150.0f / 255.0f blue:1 alpha:1];
     case kCampaignButtonTypeSerialInput:
         return UIColor.greenColor;
     case kCampaignButtonTypePointUnlocked:
