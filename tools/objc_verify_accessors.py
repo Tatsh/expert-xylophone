@@ -254,10 +254,15 @@ class AccessorCheck:
         words = self._words(address, _SCAN)
         if not words:
             return False, 'unreadable'
-        # Stop at the first return. These bodies are only a few instructions long, so a fixed
-        # window would run into the next method and appear to touch a second ivar.
-        if _RET in words:
-            words = words[:words.index(_RET) + 1]
+        # Stop at the first instruction that ends the body. These are only a few instructions long,
+        # so a fixed window would run into the next method and appear to touch a second ivar. A
+        # return is one ending; an unconditional branch is the other, and it is the easier one to
+        # miss, because a body that ends by tail-calling a runtime helper contains no return at all
+        # and so is never truncated by looking for one.
+        for index, word in enumerate(words):
+            if word == _RET or (word & 0xFC000000) == 0x14000000:
+                words = words[:index + 1]
+                break
         touched: set[str] = set()
         for index, word in enumerate(words):
             page = _adrp(word, address + index * 4)

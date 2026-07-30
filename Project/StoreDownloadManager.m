@@ -7,10 +7,14 @@
 #import "RBMusicManager.h"
 #import "StoreDownloadTask.h"
 
-@interface StoreDownloadManager ()
-
-@property(nonatomic, assign) BOOL m_IsStarted;
-@property(nonatomic, assign, readwrite) unsigned int currentIndex;
+@interface StoreDownloadManager () {
+    // The binary reaches both of these as ivars rather than through accessors. m_IsStarted has no
+    // accessor at all, and currentIndex has only the getter the header declares, so making either
+    // a writable property would add a selector the shipped class does not carry. The flag keeps
+    // the binary's name, which has no leading underscore.
+    BOOL m_IsStarted;
+    unsigned int _currentIndex;
+}
 
 @end
 
@@ -23,9 +27,6 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 
 @implementation StoreDownloadManager
 
-// The binary's flag ivar has no leading underscore, so keep its exact name.
-@synthesize m_IsStarted = m_IsStarted;
-
 #pragma mark Lifecycle
 
 - (instancetype)initWithTasks:(NSArray<StoreDownloadTask *> *)tasks
@@ -37,21 +38,30 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
     if (self) {
         self.tasks = [[NSArray alloc] initWithArray:tasks];
         self.delegate = delegate;
-        self.m_IsStarted = NO;
+        m_IsStarted = NO;
     }
     return self;
+}
+
+- (void)dealloc {
+    // The binary cancels an in-flight download here, so a manager released mid-transfer does not
+    // leave its downloader running. Its own [super dealloc] is not reproduced: ARC emits that.
+    if (self.fileDownloader) {
+        [self.fileDownloader cancel];
+        self.fileDownloader = nil;
+    }
 }
 
 #pragma mark Running the batch
 
 - (void)start {
-    if (self.m_IsStarted) {
+    if (m_IsStarted) {
         return;
     }
     [UIApplication sharedApplication].idleTimerDisabled = YES;
-    self.currentIndex = 0;
+    _currentIndex = 0;
     StartTaskAtCurrentIndex(self);
-    self.m_IsStarted = YES;
+    m_IsStarted = YES;
     NotifyDelegate(self, @selector(downloadManagerStartTask:));
 }
 
@@ -64,12 +74,12 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 }
 
 - (void)restart {
-    if (!self.m_IsStarted) {
+    if (!m_IsStarted) {
         [self start];
         return;
     }
     self.fileDownloader = nil;
-    if (self.currentIndex < self.tasks.count) {
+    if (_currentIndex < self.tasks.count) {
         StartTaskAtCurrentIndex(self);
         NotifyDelegate(self, @selector(downloadManagerStartTask:));
     } else {
@@ -82,7 +92,7 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 // manager. The task's own file path is applied later, when the body is written in
 // -downloaderFinished:.
 static void StartTaskAtCurrentIndex(StoreDownloadManager *manager) {
-    StoreDownloadTask *task = manager.tasks[manager.currentIndex];
+    StoreDownloadTask *task = manager.tasks[manager->_currentIndex];
     NSURL *url = [NSURL URLWithString:task.fileURL];
     manager.fileDownloader = [[Downloader alloc] initWithURL:url save:nil];
     [manager.fileDownloader startDownloadingWithDelegate:manager];
@@ -122,16 +132,18 @@ static void NotifyDelegate(StoreDownloadManager *manager, SEL selector) {
 - (void)downloaderFinished:(Downloader *)downloader {
     NSData *data = [self.fileDownloader getData];
     self.fileDownloader = nil;
-    StoreDownloadTask *task = self.tasks[self.currentIndex];
-    BOOL written = [data writeToFile:task.filePath options:NSDataWritingAtomic error:nil];
+    StoreDownloadTask *task = self.tasks[_currentIndex];
+    NSError *error = nil;
+    // The error is collected and never read; only ARC touches it after the call.
+    BOOL written = [data writeToFile:task.filePath options:NSDataWritingAtomic error:&error];
     if (!written) {
         NotifyDelegate(self, @selector(downloadManagerFailed:));
         return;
     }
     [[RBMusicManager getInstance] setMusicDataArrayDirty];
     [[RBExtendNoteManager getInstance] setExtendNoteDataArrayDirty];
-    self.currentIndex = self.currentIndex + 1;
-    if (self.currentIndex < self.tasks.count) {
+    _currentIndex = _currentIndex + 1;
+    if (_currentIndex < self.tasks.count) {
         StartTaskAtCurrentIndex(self);
         NotifyDelegate(self, @selector(downloadManagerStartTask:));
     } else {
