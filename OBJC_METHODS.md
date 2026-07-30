@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4504 verified
-(71.0%).
+Total: 6343 — 6203 reconstructed, 4517 verified
+(71.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1598,7 +1598,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPurchaseManager` | `-` | `addProductID:Save:` |  | ✅ | ✅ | `0x6e110` |
 | `RBPurchaseManager` | `-` | `addProductFromPurchaseCheckedProducts` |  | ✅ | ✅ | `0x6e21c` |
 | `RBPurchaseManager` | `-` | `addPurchaseCheckTransaction:` |  | ✅ | ✅ | `0x6e370` |
-| `RBPurchaseManager` | `-` | `checkNextReceipt` |  | ✅ | ❌ | `0x6e468` |
+| `RBPurchaseManager` | `-` | `checkNextReceipt` |  | ✅ | ✅ | `0x6e468` |
 | `RBPurchaseManager` | `-` | `requestDidFinish:` |  | ✅ | ✅ | `0x6e834` |
 | `RBPurchaseManager` | `-` | `request:didFailWithError:` |  | ✅ | ✅ | `0x6e854` |
 | `RBPurchaseManager` | `-` | `paymentQueue:updatedTransactions:` |  | ✅ | ✅ | `0x6e858` |
@@ -4880,18 +4880,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNavigationController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x1c988c` |
 | `RBNavigationController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x1c9894` |
 | `RBNavigationController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x1c98f4` |
-| `(RB)` | `+` | `isFileExist:` |  | ✅ | ❌ | `0x1c9954` |
-| `(RB)` | `+` | `isDirectoryExist:` |  | ✅ | ❌ | `0x1c9a0c` |
-| `(RB)` | `+` | `createDirectory:` |  | ✅ | ❌ | `0x1c9ac0` |
-| `(RB)` | `+` | `isFreeSystemSize` |  | ✅ | ❌ | `0x1c9b70` |
-| `(RB)` | `+` | `freeFileSystemSize` |  | ✅ | ❌ | `0x1c9ba0` |
-| `(RB)` | `+` | `createDirectorysAtPath:` |  | ✅ | ❌ | `0x1c9cec` |
-| `(RB)` | `+` | `paddingDirName` |  | ✅ | ❌ | `0x1ca0c8` |
-| `(RB)` | `+` | `documentDirectoryPath` |  | ✅ | ❌ | `0x1ca130` |
-| `(RB)` | `+` | `applicationSupportDirectoryPath` |  | ✅ | ❌ | `0x1ca248` |
-| `(RB)` | `+` | `cachesDirectoryPath` |  | ✅ | ❌ | `0x1ca360` |
-| `(RB)` | `+` | `temporaryDirectoryPath` |  | ✅ | ❌ | `0x1ca478` |
-| `(RB)` | `+` | `resourcePath` |  | ✅ | ❌ | `0x1ca560` |
+| `(RB)` | `+` | `isFileExist:` |  | ✅ | ✅ | `0x1c9954` |
+| `(RB)` | `+` | `isDirectoryExist:` |  | ✅ | ✅ | `0x1c9a0c` |
+| `(RB)` | `+` | `createDirectory:` |  | ✅ | ✅ | `0x1c9ac0` |
+| `(RB)` | `+` | `isFreeSystemSize` |  | ✅ | ✅ | `0x1c9b70` |
+| `(RB)` | `+` | `freeFileSystemSize` |  | ✅ | ✅ | `0x1c9ba0` |
+| `(RB)` | `+` | `createDirectorysAtPath:` |  | ✅ | ✅ | `0x1c9cec` |
+| `(RB)` | `+` | `paddingDirName` |  | ✅ | ✅ | `0x1ca0c8` |
+| `(RB)` | `+` | `documentDirectoryPath` |  | ✅ | ✅ | `0x1ca130` |
+| `(RB)` | `+` | `applicationSupportDirectoryPath` |  | ✅ | ✅ | `0x1ca248` |
+| `(RB)` | `+` | `cachesDirectoryPath` |  | ✅ | ✅ | `0x1ca360` |
+| `(RB)` | `+` | `temporaryDirectoryPath` |  | ✅ | ✅ | `0x1ca478` |
+| `(RB)` | `+` | `resourcePath` |  | ✅ | ✅ | `0x1ca560` |
 | `RBStoreGenreViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1ca638` |
 | `RBStoreGenreViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1cab0c` |
 | `RBStoreGenreViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1cabe8` |

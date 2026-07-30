@@ -988,6 +988,8 @@ VERIFIED = {
     0x6e21c: 'RBPurchaseManager -addProductFromPurchaseCheckedProducts: adds with Save NO, then '
              'one save at the end',
     0x6e370: 'RBPurchaseManager -addPurchaseCheckTransaction:: nil and isPurchased guards',
+    0x6e468: 'RBPurchaseManager -checkNextReceipt: empty-queue and in-flight-downloader guards, '
+             'nonce 32 and post body encoding 4, downloader set before addData',
     # RBPurchaseManager's three Base64 routines, worked instruction by instruction. The alphabet is
     # the 64 bytes at 0x337e6e, and the decoder's linear search bounds itself at 0x41, one past the
     # alphabet, so it can also match the NUL terminator at 0x337eae; the source's
@@ -1952,6 +1954,43 @@ VERIFIED = {
     0x1A4134: 'UIView(RB) -SetJumpEffectBaseX:BaseY: builds the PopAnim position path, duration '
               '3.0, control points 0.25/0.1 (0x2fd000)/0.5/0.5, released before -addAnimation:',
     0x1A4414: 'UIView(RB) -RemoveJumpEffect removes the PopAnim key',
+    # NSFileManager(RB). The two existence checks share a body and differ only in the byte they
+    # seed the isDirectory out-parameter with and the condition they close on: strb w8 (1) then
+    # cset eq at 0x1c99b8, against strb wzr then cset ne at 0x1c9a6c.
+    0x1C9954: 'NSFileManager(RB) +isFileExist: seeds isDirectory YES and requires it to come back '
+              'clear',
+    0x1C9A0C: 'NSFileManager(RB) +isDirectoryExist: seeds it NO and requires it to come back set',
+    # Three defects fixed across this category, all in the same direction: the reconstruction was
+    # tidier than the binary. Every -error: argument is the address of a local (add x5,sp,#0x8 at
+    # 0x1c9b10, add x3,sp,#0x8 at 0x1c9bf4, sub x5,x29,#0x58 at 0x1c9f48), not nil.
+    0x1C9AC0: 'NSFileManager(RB) +createDirectory: withIntermediateDirectories:YES, no attributes, '
+              'error into a local',
+    0x1C9B70: 'NSFileManager(RB) +isFreeSystemSize compares against 0x3200000 (50 MiB) with cset '
+              'hi, so it is a strict greater-than',
+    0x1C9BA0: 'NSFileManager(RB) +freeFileSystemSize measures the documents path from 0x1a1624, '
+              'then valueForKey: the imported NSFileSystemFreeSize and -longLongValue',
+    # The walk is an explicit -objectEnumerator/-nextObject pair (0x1c9db0 and 0x1c9e38), not fast
+    # enumeration, and the error local lives outside the loop in x23. The attributes dictionary is
+    # variadic: the stack writes from 0x1c9ec8 give the exact list, and only the modification-date
+    # key is the Foundation symbol. The other four keys are constant strings spelled the same way,
+    # at 0x36e920, 0x36e960, 0x36e980 and 0x36e9a0. The fourth object is nil, so the list really
+    # terminates before the permissions and extension-hidden pairs.
+    0x1C9CEC: 'NSFileManager(RB) +createDirectorysAtPath: chdir to / then one level per path '
+              'component, creating what is missing and bailing out on the first failure',
+    0x1CA0C8: 'NSFileManager(RB) +paddingDirName appends "padding" (0x36e9c0) to the documents '
+              'path',
+    # Two defects fixed. The search-path constants are w0 = 9 at 0x1ca170, so NSDocumentDirectory
+    # and not the NSCachesDirectory claimed, and w0 = 0xd at 0x1ca3a0, so NSCachesDirectory and not
+    # NSLibraryDirectory. Each getter also stores its global twice, the searched path at 0x1ca1a4
+    # and the owned copy at 0x1ca1e0, rather than holding the first in a local.
+    0x1CA130: 'NSFileManager(RB) +documentDirectoryPath is NSDocumentDirectory, synchronised on '
+              '+[NSFileManager class]',
+    0x1CA248: 'NSFileManager(RB) +applicationSupportDirectoryPath is 0xe, the same shape',
+    0x1CA360: 'NSFileManager(RB) +cachesDirectoryPath is NSCachesDirectory, the same shape',
+    0x1CA478: 'NSFileManager(RB) +temporaryDirectoryPath has no @synchronized and falls back to '
+              '"Temporary Files" (0x36e9e0) under the caches path only when NSTemporaryDirectory '
+              'returns nil',
+    0x1CA560: 'NSFileManager(RB) +resourcePath copies mainBundle.resourcePath once, no lock',
 }
 
 
