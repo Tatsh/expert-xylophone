@@ -109,15 +109,43 @@ Recording these so a later pass does not spend the effort again.
 - `appliURL` being nil is the original's behaviour. Only two references to its defaults key exist,
   one removing it and one reading it, so nothing writes it and the comparison always fails.
 
+## The annotation audit
+
+`tools/audit_ghidra_addresses.py` now reports **no method mismatches** (from 42) and **one**
+constant (from 16). Getting there took three fixes to the tool as well as to the annotations.
+
+- It probed four lines past a method's opening brace for a tag without noticing a block literal
+  opening in between, so it read a block's address as the enclosing method's. Five findings were
+  that; it now stops at the block literal.
+- It walked only `__objc_classlist`, so every category method was invisible — 86 of the 107 "absent"
+  selectors. It now walks `__objc_catlist` too. A category cannot be attributed to its class from
+  the file, since the class is reached through a load-time bind and the category's own name is the
+  category's, so category methods match on the selector alone and a selector defined by two
+  categories is reported unverifiable rather than checked against whichever came first.
+- The remaining 37 method findings were genuine, and are corrected to the metadata's addresses after
+  spot-checking those against Ghidra. Most were four bytes high, which in a run of four-byte stub
+  methods means the tag named the next stub.
+
+For constants the decisive test is whether the declared value sits in a **neighbouring pool slot**:
+if it does the address is wrong, if it does not the value is. Eleven were value errors, including
+four colour components transcribed at single precision. Two were address errors:
+`kPastelViewHeightWide`'s 96 lives at `0x2ec6d8`, three slots below the annotated `0x2ec6f0` which
+holds 70; and `kEffectDelayA`'s 150 is a float at `0x2eedc8` where the tag said `0x2eedcc` and so
+read the neighbouring 300. Two tags were removed rather than corrected: `kTermBarWhite` and
+`kLoadingTextWhite` are single-precision and exist as no double anywhere in `__const`, so their tags
+named other constants' doubles, and pointing at an unverified address is worse than carrying none.
+
+The one remaining constant report is **not a defect**: the binary holds −60 where
+`kProgressWidthInset` declares 60 and the use site subtracts it. The checker is left strict rather
+than taught to accept a negated match, since that would also pass a real sign error.
+
 ## Open
 
-| Item                           | State                                                                                                                                                                                  |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The `0x58e08` window           | Four parts `0x4b`–`0x4e`, not modelled at all. It is the `!m_bAttractMode` arm of the split at `0x58d90`, whose other arm is the attract hint currently emitted as a standalone block. |
-| Window 5 and 7 positions       | Window 5 takes its from a dedicated ten-entry table at `0x2f9fb8` this tree does not declare; window 7 shares window 6's table at `0x2fab40 + 0xc`. Both read the anchor ring instead. |
-| `-[RBMenuView layoutSubviews]` | `0xa22ec`–`0xa467b`, never audited. It owns the three visible buttons' frames, so it is where the size complaint must be settled.                                                      |
-| Five unimplemented selectors   | Unguarded uses of selectors nothing implements; two fire without any interaction.                                                                                                      |
-| Annotation backlog             | 42 method addresses and 16 constants disagree with the correct binary; 107 annotated selectors are absent from the metadata.                                                           |
+| Item                           | State                                                                                                                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-[RBMenuView layoutSubviews]` | `0xa22ec`–`0xa467b`, still unaudited as a body. Its width arithmetic and constants are verified (below) but it owns the three visible buttons' frames, so only a device log settles the size complaint. |
+| Category annotations           | 45 annotated selectors cannot be attributed, because a category on a framework class does not name that class in the binary. A known limitation, not a defect.                                          |
+| Unannotated constants          | 143 of 6140 constants carry a same-line address. The other 98% are unreachable by the annotation audit and need the disassembly-driven pass.                                                            |
 
 ### The side-menu buttons
 
