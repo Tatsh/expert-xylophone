@@ -9,9 +9,9 @@
 //  +isAdvertisingTrackingEnabled messages the class directly.
 //
 //  ApplilinkUdid is the Applilink reward-network SDK's device-identifier manager. It is a lazily
-//  created singleton whose +sharedInstance owns a serial dispatch queue and one
-//  ApplilinkPasteBoard; every operation is a class method that routes through that shared
-//  pasteboard and the keychain.
+//  created singleton owning a serial dispatch queue, which +allocWithZone: creates, and one
+//  ApplilinkPasteBoard, which +sharedInstance creates; every operation is a class method that
+//  routes through that shared pasteboard and the keychain.
 //
 //  In the KONAMI PopnRhythmin build this class is RewardNetworkUdid; rb458 renamed it to
 //  ApplilinkUdid and added a few nil guards, but the algorithms match.
@@ -57,6 +57,14 @@ typedef enum {
     kApplilinkUdidRewardNetworkTypeAdvertising = 1,
 } ApplilinkUdidRewardNetworkType;
 
+// The isUDIDPriorityType selector passed to +setUdidParameters:isUDIDPriorityType:, which picks
+// which secondary identifier is sent as old_udid.
+typedef enum {
+    kApplilinkUdidPriorityTypeDefault = 0,
+    kApplilinkUdidPriorityTypeOld = 1,
+    kApplilinkUdidPriorityTypePasteBoard = 2,
+} ApplilinkUdidPriorityType;
+
 // The keychain account key that records the storage index for the advertising service.
 static NSString *const kApplilinkUdidAdStorageIndexKey = @"adStorageIndex";
 // The default storage index used when the keychain holds no account string.
@@ -96,10 +104,10 @@ static NSString *const kApplilinkUdidQueueName = @"ApplilinkUdid";
 static NSString *const kApplilinkUdidNullAdvertisingIdentifier =
     @"00000000-0000-0000-0000-000000000000";
 
-// The advertising-identifier framework is reached by name so it does not appear in the binary's
-// import table. The stored names are each shifted forward by one character; decoding subtracts one
-// from every byte to recover "ASIdentifierManager", "advertisingIdentifier", "sharedManager", and
-// "UUIDString".
+// Only these two names are resolved at runtime, by +getAdUdid: each is shifted forward by one
+// character, and decoding subtracts one from every byte to recover "ASIdentifierManager" and
+// "advertisingIdentifier". The sharedManager, UUIDString, and isAdvertisingTrackingEnabled
+// selectors are all sent directly.
 static NSString *const kApplilinkUdidEncodedIdentifierManagerClass = @"BTJefoujgjfsNbobhfs";
 static NSString *const kApplilinkUdidEncodedAdvertisingIdentifierSelector =
     @"bewfsujtjohJefoujgjfs";
@@ -312,7 +320,7 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     NSString *serviceName = [ApplilinkUdid getServiceName];
     NSString *storageIndex = [ApplilinkUdid getServiceIndex:kApplilinkUdidAdStorageIndexKey];
     NSError *readError = nil;
-    NSDictionary *record =
+    NSString *record =
         [ApplilinkUdid getUdidWithService:serviceName
                              storageIndex:storageIndex
                     rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
@@ -321,7 +329,7 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         *error = readError;
         return [ApplilinkUdid getAdvertisingUdid];
     }
-    return (NSString *)record;
+    return record;
 }
 
 /** @ghidraAddress 0x22c63c */
@@ -333,10 +341,10 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     NSString *storageIndex = [ApplilinkUdid getServiceIndex:kApplilinkUdidAdStorageIndexKey];
     NSError *readError = nil;
     NSString *storedUdid =
-        (NSString *)[ApplilinkUdid getUdidWithService:serviceName
-                                         storageIndex:storageIndex
-                                rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
-                                                error:&readError];
+        [ApplilinkUdid getUdidWithService:serviceName
+                             storageIndex:storageIndex
+                    rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeAdvertising
+                                    error:&readError];
     NSString *newUdid = [ApplilinkUdid getAdvertisingUdid];
     if (storedUdid == nil) {
         NSError *setError = readError;
@@ -407,10 +415,10 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
 /** @ghidraAddress 0x22cb28 */
 + (NSString *)getOldUdidWithError:(NSError **)error {
     NSString *serviceName = [ApplilinkUdid getServiceNameOld];
-    return (NSString *)[ApplilinkUdid getUdidWithService:serviceName
-                                            storageIndex:kApplilinkUdidDefaultStorageIndex
-                                   rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeOld
-                                                   error:error];
+    return [ApplilinkUdid getUdidWithService:serviceName
+                                storageIndex:kApplilinkUdidDefaultStorageIndex
+                       rewardNetworkUDIDType:kApplilinkUdidRewardNetworkTypeOld
+                                       error:error];
 }
 
 /** @ghidraAddress 0x22cba4 */
@@ -475,13 +483,14 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
 }
 
 /** @ghidraAddress 0x22d040 */
-+ (NSDictionary *)getUdidWithService:(NSString *)service
-                        storageIndex:(NSString *)storageIndex
-               rewardNetworkUDIDType:(int)rewardNetworkUDIDType
-                               error:(NSError **)error {
-    (void)[NSDate date]; // Yes, the binary evaluates and discards [NSDate date] here.
-    if (storageIndex != nil) {
-        (void)storageIndex.length; // Yes, the binary reads and discards the length here.
++ (NSString *)getUdidWithService:(NSString *)service
+                    storageIndex:(NSString *)storageIndex
+           rewardNetworkUDIDType:(int)rewardNetworkUDIDType
+                           error:(NSError **)error {
+    // This date is read once here and reused below as the record's new modification date.
+    NSDate *now = [NSDate date];
+    if (storageIndex == nil || storageIndex.length == 0) {
+        storageIndex = kApplilinkUdidDefaultStorageIndex;
     }
     NSString *serviceKey =
         [NSString stringWithFormat:kApplilinkUdidServiceIndexFormat, service, storageIndex];
@@ -507,13 +516,15 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         (__bridge id)kSecAttrService : serviceKey,
     };
     NSDictionary *update = @{
-        (__bridge id)kSecAttrModificationDate : [NSDate date],
+        (__bridge id)kSecAttrModificationDate : now,
     };
-    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)matchQuery, NULL);
+    CFTypeRef match = NULL;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)matchQuery, &match);
     if (status == errSecSuccess) {
         SecItemUpdate((__bridge CFDictionaryRef)matchQuery, (__bridge CFDictionaryRef)update);
     }
-    return account != nil ? attributes : nil;
+    // The attribute dictionary is only a staging area; the account string is what is returned.
+    return account;
 }
 
 /** @ghidraAddress 0x22d3ec */
@@ -719,11 +730,11 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
         }
         [udidParameters setValue:adUdid forKey:kApplilinkUdidParamKeyUdid];
         NSString *secondaryUdid;
-        if (isUDIDPriorityType == 0) {
+        if (isUDIDPriorityType == kApplilinkUdidPriorityTypeDefault) {
             secondaryUdid = (udid == nil || [adUdid isEqualToString:udid]) ? oldUdid : udid;
-        } else if (isUDIDPriorityType == kApplilinkUdidRewardNetworkTypeAdvertising) {
+        } else if (isUDIDPriorityType == kApplilinkUdidPriorityTypeOld) {
             secondaryUdid = oldUdid;
-        } else if (isUDIDPriorityType == 2 && udid != nil &&
+        } else if (isUDIDPriorityType == kApplilinkUdidPriorityTypePasteBoard && udid != nil &&
                    ![udid isEqualToString:pasteBoardUdid]) {
             secondaryUdid = pasteBoardUdid;
         } else {
@@ -747,7 +758,8 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
             [udidParameters setValue:oldUdid forKey:kApplilinkUdidParamKeyOldUdid];
         }
     }
-    if (isUDIDPriorityType == 2 && udid != nil && ![udid isEqualToString:pasteBoardUdid]) {
+    if (isUDIDPriorityType == kApplilinkUdidPriorityTypePasteBoard && udid != nil &&
+        ![udid isEqualToString:pasteBoardUdid]) {
         [udidParameters setValue:pasteBoardUdid forKey:kApplilinkUdidParamKeyOldUdid];
     }
     return YES;
@@ -899,7 +911,9 @@ static dispatch_queue_t g_pApplilinkUdidQueue = nil;
     if (env == nil) {
         return;
     }
-    [[ApplilinkUdid sharedInstance].pasteBoard debugLog];
+    // The binary reads the singleton slot directly rather than going through +sharedInstance, so
+    // this is a no-op when the singleton has not been created yet.
+    [g_pApplilinkUdidSharedInstance.pasteBoard debugLog];
     (void)[ApplilinkCore ad_udid]; // Yes, the binary evaluates and discards these accessors.
     (void)[ApplilinkCore udid];
     (void)[ApplilinkCore old_udid];

@@ -195,13 +195,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @param storageIndex The storage index appended to the service key.
  * @param rewardNetworkUDIDType The reward-network UDID type selector.
  * @param error Set to a localised error when validation fails.
- * @return The validated keychain attributes, or @c nil.
+ * @return The stored UDID, taken from the record's account attribute, or @c nil when there is no
+ * record, when validation fails, or when the account is not a string.
  * @ghidraAddress 0x22d040
  */
-+ (nullable NSDictionary *)getUdidWithService:(nullable NSString *)service
-                                 storageIndex:(nullable NSString *)storageIndex
-                        rewardNetworkUDIDType:(int)rewardNetworkUDIDType
-                                        error:(NSError *_Nullable *_Nullable)error;
++ (nullable NSString *)getUdidWithService:(nullable NSString *)service
+                             storageIndex:(nullable NSString *)storageIndex
+                    rewardNetworkUDIDType:(int)rewardNetworkUDIDType
+                                    error:(NSError *_Nullable *_Nullable)error;
 
 /**
  * @brief Look up a single keychain generic-password item by service key.

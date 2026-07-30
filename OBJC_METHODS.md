@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3792 verified
-(59.8%).
+Total: 6343 — 6201 reconstructed, 3798 verified
+(59.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -6063,7 +6063,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkUdid` | `+` | `deleteOldUdidWithError:` |  | ✅ | ✅ | `0x22cba4` |
 | `ApplilinkUdid` | `+` | `setNewUdid:error:` |  | ✅ | ✅ | `0x22cc98` |
 | `ApplilinkUdid` | `+` | `setUdidWithService:withUDID:` |  | ✅ | ✅ | `0x22ce18` |
-| `ApplilinkUdid` | `+` | `getUdidWithService:storageIndex:rewardNetworkUDIDType:error:` |  | ✅ | ❌ | `0x22d040` |
+| `ApplilinkUdid` | `+` | `getUdidWithService:storageIndex:rewardNetworkUDIDType:error:` |  | ✅ | ✅ | `0x22d040` |
 | `ApplilinkUdid` | `+` | `searchWithService:` |  | ✅ | ✅ | `0x22d3ec` |
 | `ApplilinkUdid` | `+` | `deleteKeyChainService:error:` |  | ✅ | ✅ | `0x22d52c` |
 | `ApplilinkUdid` | `+` | `validate:error:` |  | ✅ | ✅ | `0x22d69c` |
@@ -6073,18 +6073,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkUdid` | `+` | `getAdvertisingUdid` |  | ✅ | ✅ | `0x22dcf8` |
 | `ApplilinkUdid` | `+` | `isAdvertisingTrackingEnabled` |  | ✅ | ✅ | `0x22ddac` |
 | `ApplilinkUdid` | `+` | `isAdvertisingTrackingOSVersion` |  | ✅ | ✅ | `0x22de2c` |
-| `ApplilinkUdid` | `+` | `md5WithString:` |  | ✅ | ❌ | `0x22dec0` |
-| `ApplilinkUdid` | `+` | `setUdidParameters:isUDIDPriorityType:` |  | ✅ | ❌ | `0x22dfd8` |
-| `ApplilinkUdid` | `+` | `setUdidParameters:` |  | ✅ | ❌ | `0x22e2cc` |
+| `ApplilinkUdid` | `+` | `md5WithString:` |  | ✅ | ✅ | `0x22dec0` |
+| `ApplilinkUdid` | `+` | `setUdidParameters:isUDIDPriorityType:` |  | ✅ | ✅ | `0x22dfd8` |
+| `ApplilinkUdid` | `+` | `setUdidParameters:` |  | ✅ | ✅ | `0x22e2cc` |
 | `ApplilinkUdid` | `+` | `isUdidThreeKinds` |  | ✅ | ✅ | `0x22e42c` |
 | `ApplilinkUdid` | `+` | `isUdidSDKPasteBoard` |  | ✅ | ✅ | `0x22e52c` |
 | `ApplilinkUdid` | `+` | `getServiceName` |  | ✅ | ✅ | `0x22e5d4` |
 | `ApplilinkUdid` | `+` | `getServiceNameOld` |  | ✅ | ✅ | `0x22e6bc` |
-| `ApplilinkUdid` | `+` | `setUdidKeychainFromPasteBoard` |  | ✅ | ❌ | `0x22e7a4` |
+| `ApplilinkUdid` | `+` | `setUdidKeychainFromPasteBoard` |  | ✅ | ✅ | `0x22e7a4` |
 | `ApplilinkUdid` | `+` | `isPasteBoardStatus` |  | ✅ | ✅ | `0x22e9c4` |
 | `ApplilinkUdid` | `+` | `getAdUdid` |  | ✅ | ✅ | `0x22ea4c` |
 | `ApplilinkUdid` | `-` | `bundleSeedID` |  | ✅ | ✅ | `0x22ec0c` |
-| `ApplilinkUdid` | `+` | `debugLog` |  | ✅ | ❌ | `0x22edb4` |
+| `ApplilinkUdid` | `+` | `debugLog` |  | ✅ | ✅ | `0x22edb4` |
 | `ApplilinkUdid` | `-` | `dealloc` |  | ❌ | ✅ | `0x22eec8` |
 | `ApplilinkUdid` | `-` | `pasteBoard` | prop | ✅ | ✅ | `0x22ef04` |
 | `ApplilinkUdid` | `-` | `setPasteBoard:` | prop | ✅ | ✅ | `0x22ef14` |

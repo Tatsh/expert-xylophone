@@ -300,6 +300,18 @@ VERIFIED = {
     0x23d330: 'RecommendCore -setUniqueAdWithAdLocation:impressionId:: remove on a nil '
               'impression, else set',
     0x23d4cc: 'RecommendCore -getUniqueAdWithAdLocation:: nil-guarded unarchive then objectForKey:',
+    # ApplilinkUdid, the last six; the class is now complete at 42 of 42.
+    0x22d040: 'ApplilinkUdid: the date and the length are both used, not discarded; the '
+              'return is the account string, not the attribute dictionary',
+    0x22dec0: 'ApplilinkUdid: sixteen appendFormat: iterations over a stack digest',
+    0x22dfd8: 'ApplilinkUdid: four arms on the tracking path, and the two NO returns '
+              'differ by one instruction',
+    0x22e2cc: 'ApplilinkUdid: the same all-nil guard, but this one does not clear the '
+              'initialise flag',
+    0x22e7a4: 'ApplilinkUdid: a nil record, not merely a nil index, falls through to '
+              'the old-service branch',
+    0x22edb4: 'ApplilinkUdid: reads the singleton slot directly, so it is a no-op when '
+              'nothing created it',
     0x2202ec: 'ApplilinkStore -init: the queue is the private serial one from +allocWithZone:',
     0x2204c0: 'ApplilinkStore +allocWithZone:: creates the queue, then re-tests the singleton',
     0xa9108: 'RBMenuView -createMusicList: the csel at 0xa939c picks the artist comparator on 1',
