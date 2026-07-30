@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param tryShow The zero-based stage index to attempt to show.
  * @return @c YES when the stage may be shown, @c NO when an earlier stage is still outstanding.
  */
-+ (BOOL)tryShow:(unsigned int)tryShow;
+- (BOOL)tryShow:(unsigned int)tryShow;
 
 #pragma mark Properties
 

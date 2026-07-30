@@ -49,7 +49,7 @@ static NSString *const kManagedObjectModelType = @"mom";
 
 #pragma mark - Store names
 
-+ (NSString *)scoreDataFileName {
+- (NSString *)scoreDataFileName {
     /** @ghidraAddress 0x1cb2e8 */
     return IsPad() ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
 }

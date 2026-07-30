@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6205 reconstructed, 3962 verified
+Total: 6343 — 6203 reconstructed, 3962 verified
 (62.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -391,7 +391,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPastelManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x20a30` |
 | `RBPastelManager` | `-` | `init` |  | ✅ | ❌ | `0x20a88` |
 | `RBPastelManager` | `-` | `allReset` |  | ✅ | ❌ | `0x20afc` |
-| `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
+| `RBPastelManager` | `+` | `tryShow:` |  | ❌ | ❌ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x20f48` |
@@ -4907,7 +4907,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `tableView` | prop | ✅ | ✅ | `0x1cb1d8` |
 | `RBStoreGenreViewController` | `-` | `setTableView:` | prop | ✅ | ✅ | `0x1cb1e8` |
 | `RBCoreDataManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x1cb234` |
-| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ✅ | ❌ | `0x1cb2e8` |
+| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ❌ | ❌ | `0x1cb2e8` |
 | `RBCoreDataManager` | `-` | `managedObjectContext` | prop | ✅ | ❌ | `0x1cb314` |
 | `RBCoreDataManager` | `-` | `managedObjectModel` | prop | ✅ | ❌ | `0x1cb3c8` |
 | `RBCoreDataManager` | `-` | `persistentStoreCoordinator` | prop | ✅ | ❌ | `0x1cb4e8` |
