@@ -99,9 +99,6 @@ static NSString *const kKonamiInfoURLString = @"http://www.konami.jp/";
 // The stringWithFormat: template producing the decimal pack identifier stored on the app delegate.
 static NSString *const kPackIDFormat = @"%d";
 
-// The purchase/restore error message format ("%@" over error.localizedDescription).
-static NSString *const kErrorMessageFormat = @"%@";
-
 // The StoreExtendNoteInfoDownloader age-check server "status" success value.
 static const int kAgeCheckStatusOK = 0;
 
@@ -1165,8 +1162,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     self.purchasingExtendNoteInfo = nil;
     [self.parent hideModalDialog];
 
-    NSString *message =
-        [[NSString alloc] initWithFormat:kErrorMessageFormat, [error localizedDescription]];
+    // The format is the localised "The purchase was cancelled.\n\n%@" string, not a bare "%@".
+    NSString *message = [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
+                                                         [error localizedDescription]];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 
@@ -1373,8 +1371,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
 - (void)restoreFailed:(NSError *)error {
     [self.parent hideModalDialog];
-    NSString *message =
-        [[NSString alloc] initWithFormat:kErrorMessageFormat, [error localizedDescription]];
+    // The same localised cancellation format the purchase failure uses.
+    NSString *message = [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
+                                                         [error localizedDescription]];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 

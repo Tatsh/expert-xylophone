@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4060 verified
-(64.0%).
+Total: 6343 — 6203 reconstructed, 4168 verified
+(65.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1220,28 +1220,28 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ScoreData` | `-` | `getFrameBonusType` |  | ✅ | ✅ | `0x5df3c` |
 | `ScoreData` | `-` | `checkOverScore` |  | ✅ | ❌ | `0x5e150` |
 | `ScoreData` | `+` | `totalRecordCount` |  | ✅ | ❌ | `0x5e820` |
-| `MusicData` | `+` | `GetYomiIndex:` |  | ✅ | ❌ | `0x5ea48` |
-| `MusicData` | `+` | `GetYomiString:` |  | ✅ | ❌ | `0x5eb44` |
-| `MusicData` | `+` | `decodeBF:Key:KeyLength:` |  | ✅ | ❌ | `0x5eb78` |
-| `MusicData` | `+` | `getZipData:Path:DecodeType:` |  | ✅ | ❌ | `0x5ecd4` |
-| `MusicData` | `+` | `dataWithPath:ID:` |  | ✅ | ❌ | `0x5ee64` |
+| `MusicData` | `+` | `GetYomiIndex:` |  | ✅ | ✅ | `0x5ea48` |
+| `MusicData` | `+` | `GetYomiString:` |  | ✅ | ✅ | `0x5eb44` |
+| `MusicData` | `+` | `decodeBF:Key:KeyLength:` |  | ✅ | ✅ | `0x5eb78` |
+| `MusicData` | `+` | `getZipData:Path:DecodeType:` |  | ✅ | ✅ | `0x5ecd4` |
+| `MusicData` | `+` | `dataWithPath:ID:` |  | ✅ | ✅ | `0x5ee64` |
 | `MusicData` | `-` | `dealloc` |  | ✅ | ✅ | `0x60044` |
-| `MusicData` | `-` | `getZipData:` |  | ✅ | ❌ | `0x600cc` |
-| `MusicData` | `-` | `getOptionalZipData:` |  | ✅ | ❌ | `0x60190` |
-| `MusicData` | `-` | `getOptionalZipData:withDefaultName:` |  | ✅ | ❌ | `0x601b8` |
+| `MusicData` | `-` | `getZipData:` |  | ✅ | ✅ | `0x600cc` |
+| `MusicData` | `-` | `getOptionalZipData:` |  | ✅ | ✅ | `0x60190` |
+| `MusicData` | `-` | `getOptionalZipData:withDefaultName:` |  | ✅ | ✅ | `0x601b8` |
 | `MusicData` | `-` | `music` | prop | ✅ | ✅ | `0x602d8` |
-| `MusicData` | `-` | `musicBasic` | prop | ✅ | ❌ | `0x602ec` |
-| `MusicData` | `-` | `musicMedium` | prop | ✅ | ❌ | `0x60308` |
-| `MusicData` | `-` | `musicHard` | prop | ✅ | ❌ | `0x60324` |
+| `MusicData` | `-` | `musicBasic` | prop | ✅ | ✅ | `0x602ec` |
+| `MusicData` | `-` | `musicMedium` | prop | ✅ | ✅ | `0x60308` |
+| `MusicData` | `-` | `musicHard` | prop | ✅ | ✅ | `0x60324` |
 | `MusicData` | `-` | `musicPre` | prop | ✅ | ✅ | `0x60340` |
 | `MusicData` | `-` | `sheetBasic` | prop | ✅ | ✅ | `0x60354` |
-| `MusicData` | `-` | `sheetBasicLight` | prop | ✅ | ❌ | `0x60368` |
+| `MusicData` | `-` | `sheetBasicLight` | prop | ✅ | ✅ | `0x60368` |
 | `MusicData` | `-` | `sheetMedium` | prop | ✅ | ✅ | `0x60384` |
-| `MusicData` | `-` | `sheetMediumLight` | prop | ✅ | ❌ | `0x60398` |
+| `MusicData` | `-` | `sheetMediumLight` | prop | ✅ | ✅ | `0x60398` |
 | `MusicData` | `-` | `sheetHard` | prop | ✅ | ✅ | `0x603b4` |
-| `MusicData` | `-` | `sheetHardLight` | prop | ✅ | ❌ | `0x603c8` |
-| `MusicData` | `-` | `sheetSpecial` |  | ✅ | ❌ | `0x603e4` |
-| `MusicData` | `-` | `sheetSpecialLight` |  | ✅ | ❌ | `0x60484` |
+| `MusicData` | `-` | `sheetHardLight` | prop | ✅ | ✅ | `0x603c8` |
+| `MusicData` | `-` | `sheetSpecial` |  | ✅ | ✅ | `0x603e4` |
+| `MusicData` | `-` | `sheetSpecialLight` |  | ✅ | ✅ | `0x60484` |
 | `MusicData` | `-` | `artworkData` | prop | ✅ | ✅ | `0x60524` |
 | `MusicData` | `-` | `artworkDataBasic` | prop | ✅ | ✅ | `0x60538` |
 | `MusicData` | `-` | `artworkDataMedium` | prop | ✅ | ✅ | `0x6054c` |
@@ -1282,79 +1282,79 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `artistNameImageBlack2xDataBasic` | prop | ✅ | ✅ | `0x60808` |
 | `MusicData` | `-` | `artistNameImageBlack2xDataMedium` | prop | ✅ | ✅ | `0x6081c` |
 | `MusicData` | `-` | `artistNameImageBlack2xDataHard` | prop | ✅ | ✅ | `0x60830` |
-| `MusicData` | `-` | `musicNameImageBrown2xData` |  | ✅ | ❌ | `0x60844` |
-| `MusicData` | `-` | `musicNameImageBrown2xDataBasic` |  | ✅ | ❌ | `0x60988` |
-| `MusicData` | `-` | `musicNameImageBrown2xDataMedium` |  | ✅ | ❌ | `0x60ad8` |
-| `MusicData` | `-` | `musicNameImageBrown2xDataHard` |  | ✅ | ❌ | `0x60c28` |
-| `MusicData` | `-` | `artistNameImageBrown2xData` |  | ✅ | ❌ | `0x60d78` |
-| `MusicData` | `-` | `artistNameImageBrown2xDataBasic` |  | ✅ | ❌ | `0x60ebc` |
-| `MusicData` | `-` | `artistNameImageBrown2xDataMedium` |  | ✅ | ❌ | `0x6100c` |
-| `MusicData` | `-` | `artistNameImageBrown2xDataHard` |  | ✅ | ❌ | `0x6115c` |
-| `MusicData` | `-` | `artwork` | prop | ✅ | ❌ | `0x612ac` |
-| `MusicData` | `-` | `artworkBasic` | prop | ✅ | ❌ | `0x61498` |
-| `MusicData` | `-` | `artworkMedium` | prop | ✅ | ❌ | `0x61684` |
-| `MusicData` | `-` | `artworkHard` | prop | ✅ | ❌ | `0x6188c` |
-| `MusicData` | `-` | `musicNameImageWhite` | prop | ✅ | ❌ | `0x61a94` |
-| `MusicData` | `-` | `musicNameImageWhiteBasic` | prop | ✅ | ❌ | `0x61ba4` |
-| `MusicData` | `-` | `musicNameImageWhiteMedium` | prop | ✅ | ❌ | `0x61cb4` |
-| `MusicData` | `-` | `musicNameImageWhiteHard` | prop | ✅ | ❌ | `0x61dc4` |
-| `MusicData` | `-` | `artistNameImageWhite` | prop | ✅ | ❌ | `0x61ed4` |
-| `MusicData` | `-` | `artistNameImageWhiteBasic` | prop | ✅ | ❌ | `0x61fe4` |
-| `MusicData` | `-` | `artistNameImageWhiteMedium` | prop | ✅ | ❌ | `0x620f4` |
-| `MusicData` | `-` | `artistNameImageWhiteHard` | prop | ✅ | ❌ | `0x62204` |
-| `MusicData` | `-` | `musicNameImageBlack` | prop | ✅ | ❌ | `0x62314` |
-| `MusicData` | `-` | `musicNameImageBlackBasic` | prop | ✅ | ❌ | `0x624a0` |
-| `MusicData` | `-` | `musicNameImageBlackMedium` | prop | ✅ | ❌ | `0x62638` |
-| `MusicData` | `-` | `musicNameImageBlackHard` | prop | ✅ | ❌ | `0x627d0` |
-| `MusicData` | `-` | `artistNameImageBlack` | prop | ✅ | ❌ | `0x62968` |
-| `MusicData` | `-` | `artistNameImageBlackBasic` | prop | ✅ | ❌ | `0x62af4` |
-| `MusicData` | `-` | `artistNameImageBlackMedium` | prop | ✅ | ❌ | `0x62c8c` |
-| `MusicData` | `-` | `artistNameImageBlackHard` | prop | ✅ | ❌ | `0x62e24` |
-| `MusicData` | `-` | `musicNameImageBrown` | prop | ✅ | ❌ | `0x62fbc` |
-| `MusicData` | `-` | `musicNameImageBrownBasic` | prop | ✅ | ❌ | `0x63154` |
-| `MusicData` | `-` | `musicNameImageBrownMedium` | prop | ✅ | ❌ | `0x632f8` |
-| `MusicData` | `-` | `musicNameImageBrownHard` | prop | ✅ | ❌ | `0x6349c` |
-| `MusicData` | `-` | `artistNameImageBrown` | prop | ✅ | ❌ | `0x63640` |
-| `MusicData` | `-` | `artistNameImageBrownBasic` | prop | ✅ | ❌ | `0x637d8` |
-| `MusicData` | `-` | `artistNameImageBrownMedium` | prop | ✅ | ❌ | `0x6397c` |
-| `MusicData` | `-` | `artistNameImageBrownHard` | prop | ✅ | ❌ | `0x63b20` |
-| `MusicData` | `-` | `artwork2x` | prop | ✅ | ❌ | `0x63cc4` |
-| `MusicData` | `-` | `artwork2xBasic` | prop | ✅ | ❌ | `0x63dbc` |
-| `MusicData` | `-` | `artwork2xMedium` | prop | ✅ | ❌ | `0x63eb4` |
-| `MusicData` | `-` | `artwork2xHard` | prop | ✅ | ❌ | `0x63fac` |
-| `MusicData` | `-` | `musicNameImageWhite2x` | prop | ✅ | ❌ | `0x640a4` |
-| `MusicData` | `-` | `musicNameImageWhite2xBasic` | prop | ✅ | ❌ | `0x6419c` |
-| `MusicData` | `-` | `musicNameImageWhite2xMedium` | prop | ✅ | ❌ | `0x64294` |
-| `MusicData` | `-` | `musicNameImageWhite2xHard` | prop | ✅ | ❌ | `0x6438c` |
-| `MusicData` | `-` | `artistNameImageWhite2x` | prop | ✅ | ❌ | `0x64484` |
-| `MusicData` | `-` | `artistNameImageWhite2xBasic` | prop | ✅ | ❌ | `0x6457c` |
-| `MusicData` | `-` | `artistNameImageWhite2xMedium` | prop | ✅ | ❌ | `0x64674` |
-| `MusicData` | `-` | `artistNameImageWhite2xHard` | prop | ✅ | ❌ | `0x6476c` |
-| `MusicData` | `-` | `musicNameImageBlack2x` | prop | ✅ | ❌ | `0x64864` |
-| `MusicData` | `-` | `musicNameImageBlack2xBasic` | prop | ✅ | ❌ | `0x6495c` |
-| `MusicData` | `-` | `musicNameImageBlack2xMedium` | prop | ✅ | ❌ | `0x64a54` |
-| `MusicData` | `-` | `musicNameImageBlack2xHard` | prop | ✅ | ❌ | `0x64b4c` |
-| `MusicData` | `-` | `artistNameImageBlack2x` | prop | ✅ | ❌ | `0x64c44` |
-| `MusicData` | `-` | `artistNameImageBlack2xBasic` | prop | ✅ | ❌ | `0x64d3c` |
-| `MusicData` | `-` | `artistNameImageBlack2xMedium` | prop | ✅ | ❌ | `0x64e34` |
-| `MusicData` | `-` | `artistNameImageBlack2xHard` | prop | ✅ | ❌ | `0x64f2c` |
-| `MusicData` | `-` | `musicNameImageBrown2x` | prop | ✅ | ❌ | `0x65024` |
-| `MusicData` | `-` | `musicNameImageBrown2xBasic` | prop | ✅ | ❌ | `0x6511c` |
-| `MusicData` | `-` | `musicNameImageBrown2xMedium` | prop | ✅ | ❌ | `0x65214` |
-| `MusicData` | `-` | `musicNameImageBrown2xHard` | prop | ✅ | ❌ | `0x6530c` |
-| `MusicData` | `-` | `artistNameImageBrown2x` | prop | ✅ | ❌ | `0x65404` |
-| `MusicData` | `-` | `artistNameImageBrown2xBasic` | prop | ✅ | ❌ | `0x654fc` |
-| `MusicData` | `-` | `artistNameImageBrown2xMedium` | prop | ✅ | ❌ | `0x655f4` |
-| `MusicData` | `-` | `artistNameImageBrown2xHard` | prop | ✅ | ❌ | `0x656ec` |
-| `MusicData` | `-` | `setColor:withColor:` |  | ✅ | ❌ | `0x657e4` |
-| `MusicData` | `-` | `createCache` |  | ✅ | ❌ | `0x65964` |
+| `MusicData` | `-` | `musicNameImageBrown2xData` |  | ✅ | ✅ | `0x60844` |
+| `MusicData` | `-` | `musicNameImageBrown2xDataBasic` |  | ✅ | ✅ | `0x60988` |
+| `MusicData` | `-` | `musicNameImageBrown2xDataMedium` |  | ✅ | ✅ | `0x60ad8` |
+| `MusicData` | `-` | `musicNameImageBrown2xDataHard` |  | ✅ | ✅ | `0x60c28` |
+| `MusicData` | `-` | `artistNameImageBrown2xData` |  | ✅ | ✅ | `0x60d78` |
+| `MusicData` | `-` | `artistNameImageBrown2xDataBasic` |  | ✅ | ✅ | `0x60ebc` |
+| `MusicData` | `-` | `artistNameImageBrown2xDataMedium` |  | ✅ | ✅ | `0x6100c` |
+| `MusicData` | `-` | `artistNameImageBrown2xDataHard` |  | ✅ | ✅ | `0x6115c` |
+| `MusicData` | `-` | `artwork` | prop | ✅ | ✅ | `0x612ac` |
+| `MusicData` | `-` | `artworkBasic` | prop | ✅ | ✅ | `0x61498` |
+| `MusicData` | `-` | `artworkMedium` | prop | ✅ | ✅ | `0x61684` |
+| `MusicData` | `-` | `artworkHard` | prop | ✅ | ✅ | `0x6188c` |
+| `MusicData` | `-` | `musicNameImageWhite` | prop | ✅ | ✅ | `0x61a94` |
+| `MusicData` | `-` | `musicNameImageWhiteBasic` | prop | ✅ | ✅ | `0x61ba4` |
+| `MusicData` | `-` | `musicNameImageWhiteMedium` | prop | ✅ | ✅ | `0x61cb4` |
+| `MusicData` | `-` | `musicNameImageWhiteHard` | prop | ✅ | ✅ | `0x61dc4` |
+| `MusicData` | `-` | `artistNameImageWhite` | prop | ✅ | ✅ | `0x61ed4` |
+| `MusicData` | `-` | `artistNameImageWhiteBasic` | prop | ✅ | ✅ | `0x61fe4` |
+| `MusicData` | `-` | `artistNameImageWhiteMedium` | prop | ✅ | ✅ | `0x620f4` |
+| `MusicData` | `-` | `artistNameImageWhiteHard` | prop | ✅ | ✅ | `0x62204` |
+| `MusicData` | `-` | `musicNameImageBlack` | prop | ✅ | ✅ | `0x62314` |
+| `MusicData` | `-` | `musicNameImageBlackBasic` | prop | ✅ | ✅ | `0x624a0` |
+| `MusicData` | `-` | `musicNameImageBlackMedium` | prop | ✅ | ✅ | `0x62638` |
+| `MusicData` | `-` | `musicNameImageBlackHard` | prop | ✅ | ✅ | `0x627d0` |
+| `MusicData` | `-` | `artistNameImageBlack` | prop | ✅ | ✅ | `0x62968` |
+| `MusicData` | `-` | `artistNameImageBlackBasic` | prop | ✅ | ✅ | `0x62af4` |
+| `MusicData` | `-` | `artistNameImageBlackMedium` | prop | ✅ | ✅ | `0x62c8c` |
+| `MusicData` | `-` | `artistNameImageBlackHard` | prop | ✅ | ✅ | `0x62e24` |
+| `MusicData` | `-` | `musicNameImageBrown` | prop | ✅ | ✅ | `0x62fbc` |
+| `MusicData` | `-` | `musicNameImageBrownBasic` | prop | ✅ | ✅ | `0x63154` |
+| `MusicData` | `-` | `musicNameImageBrownMedium` | prop | ✅ | ✅ | `0x632f8` |
+| `MusicData` | `-` | `musicNameImageBrownHard` | prop | ✅ | ✅ | `0x6349c` |
+| `MusicData` | `-` | `artistNameImageBrown` | prop | ✅ | ✅ | `0x63640` |
+| `MusicData` | `-` | `artistNameImageBrownBasic` | prop | ✅ | ✅ | `0x637d8` |
+| `MusicData` | `-` | `artistNameImageBrownMedium` | prop | ✅ | ✅ | `0x6397c` |
+| `MusicData` | `-` | `artistNameImageBrownHard` | prop | ✅ | ✅ | `0x63b20` |
+| `MusicData` | `-` | `artwork2x` | prop | ✅ | ✅ | `0x63cc4` |
+| `MusicData` | `-` | `artwork2xBasic` | prop | ✅ | ✅ | `0x63dbc` |
+| `MusicData` | `-` | `artwork2xMedium` | prop | ✅ | ✅ | `0x63eb4` |
+| `MusicData` | `-` | `artwork2xHard` | prop | ✅ | ✅ | `0x63fac` |
+| `MusicData` | `-` | `musicNameImageWhite2x` | prop | ✅ | ✅ | `0x640a4` |
+| `MusicData` | `-` | `musicNameImageWhite2xBasic` | prop | ✅ | ✅ | `0x6419c` |
+| `MusicData` | `-` | `musicNameImageWhite2xMedium` | prop | ✅ | ✅ | `0x64294` |
+| `MusicData` | `-` | `musicNameImageWhite2xHard` | prop | ✅ | ✅ | `0x6438c` |
+| `MusicData` | `-` | `artistNameImageWhite2x` | prop | ✅ | ✅ | `0x64484` |
+| `MusicData` | `-` | `artistNameImageWhite2xBasic` | prop | ✅ | ✅ | `0x6457c` |
+| `MusicData` | `-` | `artistNameImageWhite2xMedium` | prop | ✅ | ✅ | `0x64674` |
+| `MusicData` | `-` | `artistNameImageWhite2xHard` | prop | ✅ | ✅ | `0x6476c` |
+| `MusicData` | `-` | `musicNameImageBlack2x` | prop | ✅ | ✅ | `0x64864` |
+| `MusicData` | `-` | `musicNameImageBlack2xBasic` | prop | ✅ | ✅ | `0x6495c` |
+| `MusicData` | `-` | `musicNameImageBlack2xMedium` | prop | ✅ | ✅ | `0x64a54` |
+| `MusicData` | `-` | `musicNameImageBlack2xHard` | prop | ✅ | ✅ | `0x64b4c` |
+| `MusicData` | `-` | `artistNameImageBlack2x` | prop | ✅ | ✅ | `0x64c44` |
+| `MusicData` | `-` | `artistNameImageBlack2xBasic` | prop | ✅ | ✅ | `0x64d3c` |
+| `MusicData` | `-` | `artistNameImageBlack2xMedium` | prop | ✅ | ✅ | `0x64e34` |
+| `MusicData` | `-` | `artistNameImageBlack2xHard` | prop | ✅ | ✅ | `0x64f2c` |
+| `MusicData` | `-` | `musicNameImageBrown2x` | prop | ✅ | ✅ | `0x65024` |
+| `MusicData` | `-` | `musicNameImageBrown2xBasic` | prop | ✅ | ✅ | `0x6511c` |
+| `MusicData` | `-` | `musicNameImageBrown2xMedium` | prop | ✅ | ✅ | `0x65214` |
+| `MusicData` | `-` | `musicNameImageBrown2xHard` | prop | ✅ | ✅ | `0x6530c` |
+| `MusicData` | `-` | `artistNameImageBrown2x` | prop | ✅ | ✅ | `0x65404` |
+| `MusicData` | `-` | `artistNameImageBrown2xBasic` | prop | ✅ | ✅ | `0x654fc` |
+| `MusicData` | `-` | `artistNameImageBrown2xMedium` | prop | ✅ | ✅ | `0x655f4` |
+| `MusicData` | `-` | `artistNameImageBrown2xHard` | prop | ✅ | ✅ | `0x656ec` |
+| `MusicData` | `-` | `setColor:withColor:` |  | ✅ | ✅ | `0x657e4` |
+| `MusicData` | `-` | `createCache` |  | ✅ | ✅ | `0x65964` |
 | `MusicData` | `-` | `releaseChache` |  | ✅ | ✅ | `0x65b3c` |
-| `MusicData` | `-` | `compare:` |  | ✅ | ❌ | `0x65b4c` |
+| `MusicData` | `-` | `compare:` |  | ✅ | ✅ | `0x65b4c` |
 | `MusicData` | `-` | `compareMusicID:` |  | ✅ | ✅ | `0x65c5c` |
-| `MusicData` | `-` | `compareMusicNameCustom:` |  | ✅ | ❌ | `0x65ce0` |
-| `MusicData` | `-` | `compareArtistNameCustom:` |  | ✅ | ❌ | `0x65df4` |
-| `MusicData` | `-` | `compareMusicNameHira:` |  | ✅ | ❌ | `0x65eec` |
-| `MusicData` | `-` | `compareArtistNameHira:` |  | ✅ | ❌ | `0x66000` |
+| `MusicData` | `-` | `compareMusicNameCustom:` |  | ✅ | ✅ | `0x65ce0` |
+| `MusicData` | `-` | `compareArtistNameCustom:` |  | ✅ | ✅ | `0x65df4` |
+| `MusicData` | `-` | `compareMusicNameHira:` |  | ✅ | ✅ | `0x65eec` |
+| `MusicData` | `-` | `compareArtistNameHira:` |  | ✅ | ✅ | `0x66000` |
 | `MusicData` | `-` | `compareDifficultyBasic:` |  | ✅ | ✅ | `0x660f8` |
 | `MusicData` | `-` | `compareDifficultyMedium:` |  | ✅ | ✅ | `0x6617c` |
 | `MusicData` | `-` | `compareDifficultyHard:` |  | ✅ | ✅ | `0x66200` |
@@ -3688,27 +3688,27 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x15ff4c` |
 | `RBStoreExtendPageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1601d0` |
 | `RBStoreExtendPageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1601d4` |
-| `RBStoreExtendPageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ❌ | `0x1601d8` |
-| `RBStoreExtendPageViewController` | `-` | `updatePurchasedTableCell:` |  | ✅ | ❌ | `0x1602b8` |
-| `RBStoreExtendPageViewController` | `-` | `reDownloadPackMusics:` |  | ✅ | ❌ | `0x160838` |
-| `RBStoreExtendPageViewController` | `-` | `purchaseSucceeded:` |  | ✅ | ❌ | `0x1608a4` |
-| `RBStoreExtendPageViewController` | `-` | `purchaseFailed:error:` |  | ✅ | ❌ | `0x160d44` |
-| `RBStoreExtendPageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ❌ | `0x160ed8` |
-| `RBStoreExtendPageViewController` | `-` | `nextRestoreExtendNoteInfo` |  | ✅ | ❌ | `0x161040` |
-| `RBStoreExtendPageViewController` | `-` | `askDownloadAllNotes` |  | ✅ | ❌ | `0x161314` |
-| `RBStoreExtendPageViewController` | `-` | `restoreDownloadAllNotes` |  | ✅ | ❌ | `0x161804` |
-| `RBStoreExtendPageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x161d34` |
-| `RBStoreExtendPageViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1621f0` |
-| `RBStoreExtendPageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x162258` |
-| `RBStoreExtendPageViewController` | `-` | `restoreSucceeded` |  | ✅ | ❌ | `0x162398` |
-| `RBStoreExtendPageViewController` | `-` | `restoreFailed:` |  | ✅ | ❌ | `0x162604` |
-| `RBStoreExtendPageViewController` | `-` | `restoreNothing` |  | ✅ | ❌ | `0x16273c` |
-| `RBStoreExtendPageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ❌ | `0x162790` |
-| `RBStoreExtendPageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ❌ | `0x1628b0` |
-| `RBStoreExtendPageViewController` | `-` | `downloadManagerStartTask:` |  | ✅ | ❌ | `0x162988` |
-| `RBStoreExtendPageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x162b7c` |
-| `RBStoreExtendPageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x162dbc` |
-| `RBStoreExtendPageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x16304c` |
+| `RBStoreExtendPageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ✅ | `0x1601d8` |
+| `RBStoreExtendPageViewController` | `-` | `updatePurchasedTableCell:` |  | ✅ | ✅ | `0x1602b8` |
+| `RBStoreExtendPageViewController` | `-` | `reDownloadPackMusics:` |  | ✅ | ✅ | `0x160838` |
+| `RBStoreExtendPageViewController` | `-` | `purchaseSucceeded:` |  | ✅ | ✅ | `0x1608a4` |
+| `RBStoreExtendPageViewController` | `-` | `purchaseFailed:error:` |  | ✅ | ✅ | `0x160d44` |
+| `RBStoreExtendPageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ✅ | `0x160ed8` |
+| `RBStoreExtendPageViewController` | `-` | `nextRestoreExtendNoteInfo` |  | ✅ | ✅ | `0x161040` |
+| `RBStoreExtendPageViewController` | `-` | `askDownloadAllNotes` |  | ✅ | ✅ | `0x161314` |
+| `RBStoreExtendPageViewController` | `-` | `restoreDownloadAllNotes` |  | ✅ | ✅ | `0x161804` |
+| `RBStoreExtendPageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x161d34` |
+| `RBStoreExtendPageViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1621f0` |
+| `RBStoreExtendPageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x162258` |
+| `RBStoreExtendPageViewController` | `-` | `restoreSucceeded` |  | ✅ | ✅ | `0x162398` |
+| `RBStoreExtendPageViewController` | `-` | `restoreFailed:` |  | ✅ | ✅ | `0x162604` |
+| `RBStoreExtendPageViewController` | `-` | `restoreNothing` |  | ✅ | ✅ | `0x16273c` |
+| `RBStoreExtendPageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ✅ | `0x162790` |
+| `RBStoreExtendPageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ✅ | `0x1628b0` |
+| `RBStoreExtendPageViewController` | `-` | `downloadManagerStartTask:` |  | ✅ | ✅ | `0x162988` |
+| `RBStoreExtendPageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ✅ | `0x162b7c` |
+| `RBStoreExtendPageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x162dbc` |
+| `RBStoreExtendPageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x16304c` |
 | `RBStoreExtendPageViewController` | `-` | `numPackRows` |  | ✅ | ❌ | `0x16315c` |
 | `RBStoreExtendPageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x163240` |
 | `RBStoreExtendPageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x164f4c` |

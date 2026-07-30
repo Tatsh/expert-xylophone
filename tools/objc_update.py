@@ -1009,6 +1009,176 @@ VERIFIED = {
               'pops animated',
     0x15ff4c: 'RBStoreExtendPageViewController -storeDialogCancel:: both idiom arms, then both '
               'managers save',
+    0x1601d8: 'RBStoreExtendPageViewController -updateExtendNoteInfo:Save:: the save arm re-reads '
+              'the singleton',
+    0x1602b8: 'RBStoreExtendPageViewController -updatePurchasedTableCell:: the pad halves the '
+              'index with the signed fix-up at 0x160408, the phone walks section 1, both reload '
+              'with animation 5 (None)',
+    0x160838: 'RBStoreExtendPageViewController -reDownloadPackMusics:: update with Save:YES, then '
+              'the download',
+    0x1608a4: 'RBStoreExtendPageViewController -purchaseSucceeded:: the PID guard at 0x160928, '
+              'JPY-only accumulation, save runs on both arms',
+    # The format is the localised global at 0x3cfd08, seeded from the purchase-cancelled key at
+    # 0x110bc, not the bare "%@" the reconstruction had.
+    0x160d44: 'RBStoreExtendPageViewController -purchaseFailed:error:: localised cancellation '
+              'format over error.localizedDescription',
+    0x160ed8: 'RBStoreExtendPageViewController -addRestoreExtendNoteInfo:: appends, then drops the '
+              'resolved product ID when the pending set holds it',
+    0x161040: 'RBStoreExtendPageViewController -nextRestoreExtendNoteInfo: the copy is empty-'
+              'tested at 0x1610b4, each ID resolved then added',
+    0x161314: 'RBStoreExtendPageViewController -askDownloadAllNotes: the missing count is the '
+              'branchless eor/add at 0x16166c, prompt tag 0x1e',
+    0x161804: 'RBStoreExtendPageViewController -restoreDownloadAllNotes: the nil-array arm at '
+              '0x161ae8 is unreachable and kept',
+    # The jump table at 0x1621dc covers tags 0x1e through 0x22 in order.
+    0x161d34: 'RBStoreExtendPageViewController -alertView:clickedButtonAtIndex:: five tags, the '
+              'limit alert splits at button index 3 (0x161edc)',
+    0x1621f0: 'RBStoreExtendPageViewController -alertViewCancel:: only the pack tag 0x21 clears '
+              'moveToPackID',
+    0x162258: 'RBStoreExtendPageViewController -didPresentAlertView:: the presented root view',
+    0x162398: 'RBStoreExtendPageViewController -restoreSucceeded: both working sets rebuilt, then '
+              'the download prompt on a NO return',
+    0x162604: 'RBStoreExtendPageViewController -restoreFailed:: the same 0x3cfd08 format as the '
+              'purchase failure',
+    0x16273c: 'RBStoreExtendPageViewController -restoreNothing: tail-call to hideModalDialog',
+    0x162790: 'RBStoreExtendPageViewController -storeExtendNoteInfoDownloaderFinished:: the '
+              'polarity really is inverted against -restoreSucceeded (cbz at 0x162860)',
+    0x1628b0: 'RBStoreExtendPageViewController -storeExtendNoteInfoDownloaderError:: detach, drop, '
+              'hide',
+    0x162988: 'RBStoreExtendPageViewController -downloadManagerStartTask:: g_pDownloadingMessage'
+              'Format at 0x3cfbd8 over the current task name',
+    0x162b7c: 'RBStoreExtendPageViewController -downloadManagerCompleted:: both idiom arms, then '
+              'both managers save and the dialog hides',
+    0x162dbc: 'RBStoreExtendPageViewController -downloadManagerFailed:: alert first, then both '
+              'idiom arms, then the saves',
+    0x16304c: 'RBStoreExtendPageViewController -downloadManagerProceed:: the ivar supplies the '
+              'progress, the argument is ignored',
+    # MusicData. The yomi tables are static arrays of ten CFString constants at 0x3ceb18 (rows) and
+    # 0x3ceb68 (labels), with the no-row initial @"#" in the slot at 0x3cebb8; the reconstruction
+    # had built them as NSArrays in an invented +initialize and used @"" for that initial.
+    0x5ea48: 'MusicData +GetYomiIndex: the loop bound is the literal 10 at 0x5eaf0 and the '
+             'no-row answer the literal 9 at 0x5eaf8; nil or empty returns -1',
+    0x5eb44: 'MusicData +GetYomiString: the range check at 0x5eb50 is unsigned (b.cc), so the -1 '
+             'GetYomiIndex: can return selects @"#" rather than reading off the table',
+    # The key buffer is allocated by the array form of operator new at 0x5ebc4 and released by the
+    # array form of operator delete at 0x5ec08, so the shipped translation unit was Objective-C++;
+    # the reconstruction still spells them malloc and free, which is the only difference.
+    0x5eb78: 'MusicData +decodeBF:Key:KeyLength: derived[i] = i + key[i], MD5 at 0x5ec00, then '
+             'cipherInit: with the 16-byte digest and decipher: in place',
+    0x5ecd4: 'MusicData +getZipData:Path:DecodeType: the guard at 0x5ed0c is unsigned (b.ls), so '
+             'a negative type is rejected too; the key table stride is 16 at 0x5ed88',
+    # The archive is closed on the found and the missing path but not when openFile: fails
+    # (0x5edd4 skips it). Level range is value-1 in 0..14, from the subs/b.lt and cmp #0xe pairs
+    # at 0x5f0dc, 0x5f0fc and 0x5f120.
+    0x5ee64: 'MusicData +dataWithPath:ID: decode types 0 and 1 are tried in turn, the sort-name '
+             'caches are re-read rather than reused, and the isEqualToString: at 0x5f7f8 is '
+             'discarded',
+    0x600cc: 'MusicData -getZipData: forwards self.filePath and self.decodeType',
+    0x60190: 'MusicData -getOptionalZipData: tail-calls with withDefaultName:nil (x3 = 0)',
+    0x601b8: 'MusicData -getOptionalZipData:withDefaultName: the optionalDataDict hit is only a '
+             'gate; a nil member still falls through to the default name',
+    0x602ec: 'MusicData -musicBasic getOptionalZipData:@"bgm_b" withDefaultName:@"bgm"',
+    0x60308: 'MusicData -musicMedium getOptionalZipData:@"bgm_m" withDefaultName:@"bgm"',
+    0x60324: 'MusicData -musicHard getOptionalZipData:@"bgm_h" withDefaultName:@"bgm"',
+    0x60368: 'MusicData -sheetBasicLight @"note_bas2" defaulting to @"note_bas"',
+    0x60398: 'MusicData -sheetMediumLight @"note_med2" defaulting to @"note_med"',
+    0x603c8: 'MusicData -sheetHardLight @"note_har2" defaulting to @"note_har"',
+    0x603e4: 'MusicData -sheetSpecial nil spData short-circuits at 0x60418',
+    0x60484: 'MusicData -sheetSpecialLight nil spData short-circuits at 0x604b8',
+    # The two unsuffixed brown accessors read the archive directly and have no cbz on the member;
+    # the six suffixed ones reject a nil member before decoding (0x6009b8 and its siblings).
+    0x60844: 'MusicData -musicNameImageBrown2xData reads @"title_w2x" and tints unguarded',
+    0x60988: 'MusicData -musicNameImageBrown2xDataBasic guarded, cbz at 0x6009b8',
+    0x60ad8: 'MusicData -musicNameImageBrown2xDataMedium guarded, cbz at 0x60b08',
+    0x60c28: 'MusicData -musicNameImageBrown2xDataHard guarded, cbz at 0x60c58',
+    0x60d78: 'MusicData -artistNameImageBrown2xData reads @"artist_w2x" and tints unguarded',
+    0x60ebc: 'MusicData -artistNameImageBrown2xDataBasic guarded, cbz at 0x60eec',
+    0x6100c: 'MusicData -artistNameImageBrown2xDataMedium guarded, cbz at 0x6103c',
+    0x6115c: 'MusicData -artistNameImageBrown2xDataHard guarded, cbz at 0x6118c',
+    # IsPad() is the bl to 0x1a1200; the cbz on its result takes the phone arm, and the pad arm
+    # prefers the 2x asset only when mainScreen.scale > 1.0 (fcmp against the fmov #1.0).
+    0x612ac: 'MusicData -artwork both idiom arms, returns nil when no image decodes',
+    0x61498: 'MusicData -artworkBasic both idiom arms, returns nil when no image decodes',
+    0x61684: 'MusicData -artworkMedium falls back to -artwork at 0x61814 instead of nil',
+    0x6188c: 'MusicData -artworkHard falls back to -artwork at 0x61a1c instead of nil',
+    # The 2x variant is fetched only inside the scale > 1.0 arm (b.le at 0x61ae8 skips it) and the
+    # single-resolution member only when that returns nil, so neither send is unconditional.
+    0x61a94: 'MusicData -musicNameImageWhite lazy 2x preference',
+    0x61ba4: 'MusicData -musicNameImageWhiteBasic lazy 2x preference, b.le at 0x61bf8',
+    0x61cb4: 'MusicData -musicNameImageWhiteMedium lazy 2x preference, b.le at 0x61d08',
+    0x61dc4: 'MusicData -musicNameImageWhiteHard lazy 2x preference, b.le at 0x61e18',
+    0x61ed4: 'MusicData -artistNameImageWhite lazy 2x preference, b.le at 0x61f28',
+    0x61fe4: 'MusicData -artistNameImageWhiteBasic lazy 2x preference, b.le at 0x62038',
+    0x620f4: 'MusicData -artistNameImageWhiteMedium lazy 2x preference, b.le at 0x62148',
+    0x62204: 'MusicData -artistNameImageWhiteHard lazy 2x preference, b.le at 0x62258',
+    # The black tint is colorWithRed:0 green:0 blue:0 alpha:1 (movi v0-v2, fmov d3 #1.0), which is
+    # exactly +blackColor. Each accessor inlines the matching white getter rather than sending it.
+    0x62314: 'MusicData -musicNameImageBlack tints the white strip black',
+    0x624a0: 'MusicData -musicNameImageBlackBasic tints the basic white strip',
+    0x62638: 'MusicData -musicNameImageBlackMedium tints the medium white strip',
+    0x627d0: 'MusicData -musicNameImageBlackHard tints the hard white strip',
+    0x62968: 'MusicData -artistNameImageBlack tints the artist white strip',
+    0x62af4: 'MusicData -artistNameImageBlackBasic tints the basic artist white strip',
+    # Both of these send the unsuffixed artistNameImageWhite2x/artistNameImageWhiteData, a shipped
+    # copy-paste that the reconstruction had silently corrected to the suffixed variants.
+    0x62c8c: 'MusicData -artistNameImageBlackMedium tints the unsuffixed strip, 0x62cf0/0x62d14',
+    0x62e24: 'MusicData -artistNameImageBlackHard tints the unsuffixed strip, 0x62e88/0x62eac',
+    # The brown family, unlike the black one, does use its own suffix throughout. Its components
+    # come from the pool at 0x2fcf38/0x2fcf40/0x2fcf48 and are float quotients widened to double.
+    0x62fbc: 'MusicData -musicNameImageBrown tints the white strip brown',
+    0x63154: 'MusicData -musicNameImageBrownBasic sends musicNameImageWhite2xBasic at 0x631b8',
+    0x632f8: 'MusicData -musicNameImageBrownMedium sends musicNameImageWhite2xMedium at 0x6335c',
+    0x6349c: 'MusicData -musicNameImageBrownHard sends musicNameImageWhite2xHard at 0x63500',
+    0x63640: 'MusicData -artistNameImageBrown tints the artist white strip brown',
+    0x637d8: 'MusicData -artistNameImageBrownBasic sends artistNameImageWhite2xBasic at 0x6383c',
+    0x6397c: 'MusicData -artistNameImageBrownMedium sends artistNameImageWhite2xMedium at 0x639e0',
+    0x63b20: 'MusicData -artistNameImageBrownHard sends artistNameImageWhite2xHard at 0x63b84',
+    # Every 2x accessor has the same body: nil member and nil image both return nil, then
+    # imageWithCGImage:scale:orientation: with the fmov #2.0 in d0 and UIImageOrientationUp in x3.
+    0x63cc4: 'MusicData -artwork2x rewraps artwork2xData at scale 2',
+    0x63dbc: 'MusicData -artwork2xBasic rewraps artwork2xDataBasic at scale 2',
+    0x63eb4: 'MusicData -artwork2xMedium rewraps artwork2xDataMedium at scale 2',
+    0x63fac: 'MusicData -artwork2xHard rewraps artwork2xDataHard at scale 2',
+    0x640a4: 'MusicData -musicNameImageWhite2x rewraps musicNameImageWhite2xData at scale 2',
+    0x6419c: 'MusicData -musicNameImageWhite2xBasic rewraps the basic member at scale 2',
+    0x64294: 'MusicData -musicNameImageWhite2xMedium rewraps the medium member at scale 2',
+    0x6438c: 'MusicData -musicNameImageWhite2xHard rewraps the hard member at scale 2',
+    0x64484: 'MusicData -artistNameImageWhite2x rewraps artistNameImageWhite2xData at scale 2',
+    0x6457c: 'MusicData -artistNameImageWhite2xBasic rewraps the basic member at scale 2',
+    0x64674: 'MusicData -artistNameImageWhite2xMedium rewraps the medium member at scale 2',
+    0x6476c: 'MusicData -artistNameImageWhite2xHard rewraps the hard member at scale 2',
+    0x64864: 'MusicData -musicNameImageBlack2x rewraps musicNameImageBlack2xData at scale 2',
+    0x6495c: 'MusicData -musicNameImageBlack2xBasic rewraps the basic member at scale 2',
+    0x64a54: 'MusicData -musicNameImageBlack2xMedium rewraps the medium member at scale 2',
+    0x64b4c: 'MusicData -musicNameImageBlack2xHard rewraps the hard member at scale 2',
+    0x64c44: 'MusicData -artistNameImageBlack2x rewraps artistNameImageBlack2xData at scale 2',
+    0x64d3c: 'MusicData -artistNameImageBlack2xBasic rewraps the basic member at scale 2',
+    0x64e34: 'MusicData -artistNameImageBlack2xMedium rewraps the medium member at scale 2',
+    0x64f2c: 'MusicData -artistNameImageBlack2xHard rewraps the hard member at scale 2',
+    0x65024: 'MusicData -musicNameImageBrown2x rewraps musicNameImageBrown2xData at scale 2',
+    0x6511c: 'MusicData -musicNameImageBrown2xBasic rewraps the basic member at scale 2',
+    0x65214: 'MusicData -musicNameImageBrown2xMedium rewraps the medium member at scale 2',
+    0x6530c: 'MusicData -musicNameImageBrown2xHard rewraps the hard member at scale 2',
+    0x65404: 'MusicData -artistNameImageBrown2x rewraps artistNameImageBrown2xData at scale 2',
+    0x654fc: 'MusicData -artistNameImageBrown2xBasic rewraps the basic member at scale 2',
+    0x655f4: 'MusicData -artistNameImageBrown2xMedium rewraps the medium member at scale 2',
+    0x656ec: 'MusicData -artistNameImageBrown2xHard rewraps the hard member at scale 2',
+    # size is sent twice, at 0x6582c for the width and 0x65840 for the height, and the blend mode
+    # is the literal 0x14 at 0x658d4, which is kCGBlendModeSourceAtop rather than SourceIn.
+    0x657e4: 'MusicData -setColor:withColor: draws into an options context at image.scale, then '
+             'fills the same rect source-atop',
+    0x65964: 'MusicData -createCache the same two idiom arms as -artwork, storing instead of '
+             'returning and with no -artwork fallback',
+    # Every comparator settles a tie the same way: cset w8,hi and csel with -1 under cc, an
+    # unsigned length ordering that ranks the longer string later.
+    0x65b4c: 'MusicData -compare: musicNameHira with plain compare:, then length',
+    0x65ce0: 'MusicData -compareMusicNameCustom: musicSortName with options 2 (NSLiteralSearch), '
+             'then length',
+    0x65df4: 'MusicData -compareArtistNameCustom: artistSortName, ties fall to '
+             '-compareMusicNameCustom: at 0x65e74',
+    0x65eec: 'MusicData -compareMusicNameHira: musicNameHira with options 2, then length',
+    0x66000: 'MusicData -compareArtistNameHira: artistNameHira, ties fall to '
+             '-compareMusicNameHira: at 0x66080',
 }
 
 
