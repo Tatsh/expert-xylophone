@@ -848,6 +848,13 @@ VERIFIED = {
     0x1f934: 'RBResourceDownloadViewController -scrollViewDidScroll:: round-half-up in float32',
     0x1fa5c: 'RBResourceDownloadViewController -viewDidDisappear:: both tasks cancelled and '
              'cleared, the subview sweep, then seven image views nilled and showTitle',
+    # One defect fixed: the page view takes ALL SIX autoresizing flags, not the width-and-height
+    # pair. 0x1e984 loads the same 0x310450 slot that -viewDidLoad loads, and the bytes there are
+    # 3f 00 00 00 00 00 00 00. The guard is a signed cmp against 5 with b.le at 0x1e874, matching
+    # kHelpPageCount - 1, and the six names in the table at 0x35a388 decode to how_1..how_6, which
+    # is what we had. The frame is (index * scrollWidth, 0, image width, image height) and the two
+    # separate -size sends at 0x1e92c and 0x1e93c supply d0 and d1 respectively.
+    0x1e84c: 'RBResourceDownloadViewController -createViewSame:: one page per index, mask 0x3f',
     0x16d5c0: 'RBMusicGridLayout -init: both idiom arms, every constant decoded from the pool',
     0x16d7d8: 'RBMusicGridLayout -prepareLayout: ceiling division, slack, item frames',
     0x16de78: 'RBMusicGridLayout -collectionViewContentSize: tail-call to the ivar',

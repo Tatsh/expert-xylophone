@@ -875,7 +875,12 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGRect scrollFrame = self.scrollView.frame;
     pageView.frame = CGRectMake(
         (CGFloat)index * scrollFrame.size.width, 0, pageImage.size.width, pageImage.size.height);
-    pageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    // All six flags again: 0x1e984 loads the same 0x3f slot at 0x310450 that -viewDidLoad uses,
+    // not the width-and-height pair.
+    pageView.autoresizingMask =
+        UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+        UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.scrollView addSubview:pageView];
 }
 
