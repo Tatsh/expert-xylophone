@@ -81,7 +81,6 @@ static const CGFloat kOddRowBackgroundWhite = 0.71;
 static const CGFloat kTermLinkGreen = 0.4784313725490196;
 
 // The full sample-play fade time is zero (an immediate stop).
-static const CGFloat kSampleStopFadeTime = 0.0;
 
 // The half-scale used to centre a view in its host's bounds.
 static const CGFloat kCenterScale = 0.5;
@@ -236,7 +235,7 @@ static const int kNoExtendNotePid = -1;
 
     [self stopSample];
     if ([RBBGMManager getInstance].isPushMusic) {
-        [[RBBGMManager getInstance] StopMusic:kSampleStopFadeTime];
+        [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
         [[RBBGMManager getInstance] popMusic];
     }
     [self.sampleDownloader cancel];
@@ -405,7 +404,7 @@ static const int kNoExtendNotePid = -1;
 /** @ghidraAddress 0x1d8aa0 */
 - (void)stopSample {
     if ([RBBGMManager getInstance].isPushMusic) {
-        [[RBBGMManager getInstance] StopMusic:kSampleStopFadeTime];
+        [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
         [[RBBGMManager getInstance] popMusic];
     }
     [self.sampleDownloader cancel];
@@ -599,7 +598,7 @@ static const int kNoExtendNotePid = -1;
     if (indexPath.row == rowSamplePlayed) {
         // Tapping the playing row stops it.
         if ([RBBGMManager getInstance].isPushMusic) {
-            [[RBBGMManager getInstance] StopMusic:kSampleStopFadeTime];
+            [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
             [[RBBGMManager getInstance] popMusic];
         }
         NSIndexPath *playingIndexPath = [NSIndexPath indexPathForRow:rowSamplePlayed inSection:0];
@@ -612,7 +611,7 @@ static const int kNoExtendNotePid = -1;
     // Switching to a new row: stop the currently-playing sample first.
     if (rowSamplePlayed >= 0 && (NSUInteger)rowSamplePlayed < self.packInfo.musicInfos.count) {
         if ([RBBGMManager getInstance].isPushMusic) {
-            [[RBBGMManager getInstance] StopMusic:kSampleStopFadeTime];
+            [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
             [[RBBGMManager getInstance] popMusic];
         }
         NSIndexPath *playingIndexPath = [NSIndexPath indexPathForRow:rowSamplePlayed inSection:0];

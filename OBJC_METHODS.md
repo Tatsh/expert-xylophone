@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 3964 verified
+Total: 6343 — 6203 reconstructed, 3967 verified
 (62.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -5060,9 +5060,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1d7a1c` |
 | `RBStoreDetailViewController` | `-` | `showPackInfo` |  | ✅ | ❌ | `0x1d8510` |
 | `RBStoreDetailViewController` | `-` | `loadInfo` |  | ✅ | ❌ | `0x1d88a4` |
-| `RBStoreDetailViewController` | `-` | `stopSample` |  | ✅ | ❌ | `0x1d8aa0` |
-| `RBStoreDetailViewController` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x1d8c18` |
-| `RBStoreDetailViewController` | `-` | `doPurchase:` |  | ✅ | ❌ | `0x1d8d84` |
+| `RBStoreDetailViewController` | `-` | `stopSample` |  | ✅ | ✅ | `0x1d8aa0` |
+| `RBStoreDetailViewController` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x1d8c18` |
+| `RBStoreDetailViewController` | `-` | `doPurchase:` |  | ✅ | ✅ | `0x1d8d84` |
 | `RBStoreDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ✅ | `0x1d9028` |
 | `RBStoreDetailViewController` | `-` | `allDownloaded` |  | ✅ | ❌ | `0x1d90f4` |
 | `RBStoreDetailViewController` | `-` | `selfCheckButtonText` |  | ✅ | ❌ | `0x1d9290` |

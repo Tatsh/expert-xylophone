@@ -613,6 +613,16 @@ VERIFIED = {
     0x1d7964: 'RBStoreDetailViewController -init: the navigation title is "info", not the '
               'empty-copyright constant that had been reused for it; that constant keeps its '
               'name and its own correct use on the copyright cell',
+    # RBStoreDetailViewController. The inverse sweep has its first confirmed catch here and
+    # it was a wrong value, not merely a wrong name.
+    0x1d8aa0: 'RBStoreDetailViewController -stopSample:: the fade is '
+              'g_flFlashMinOpacity at four bytes, not a local constant of zero; the '
+              'local had the wrong value, an instant stop against a 0.2 second fade',
+    0x1d8c18: 'RBStoreDetailViewController -finishBgm:: a 64-bit pair, tbnz on bit 63 '
+              'then an unsigned compare, which is exactly what the source cast makes '
+              'correct',
+    0x1d8d84: 'RBStoreDetailViewController -doPurchase:: the sample stop runs only on '
+              'the not-purchased arm',
     0x1d9028: 'RBStoreDetailViewController -setPurchaseState:: guarded on the header '
               'view, and the argument is inverted before setEnabled:',
     0x1d9408: 'RBStoreDetailViewController -setButtonTextBuy: one argument slot for one specifier',

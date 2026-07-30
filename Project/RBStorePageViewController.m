@@ -163,11 +163,9 @@ static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x10030bed0
 static const CGFloat kPackRowTintEvenWhite = 0.8;
 static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
-static const CGFloat kPadMoreRowGrayWhite = 0.6f; // @ghidraAddress 0x1002ec708
 
-// The "load more" row text: 0.8 white idle, 0.4 white while loading. The loading text and the
-// idle shadow read the same pool slot, and both values are float-rounded.
-static const CGFloat kMoreCellTextWhiteIdle = 0.8f;    // @ghidraAddress 0x1002ec6a0
+// The "load more" row text while loading; the idle colour is the shared g_dTranslucentAlpha.
+// This value and the idle shadow read the same pool slot, which carries no engine global.
 static const CGFloat kMoreCellTextWhiteLoading = 0.4f; // @ghidraAddress 0x1002ec720
 static const CGFloat kMoreCellShadowWhite = 0.4f;      // @ghidraAddress 0x1002ec720
 
@@ -199,8 +197,6 @@ static const CGFloat kPadTableScrollInset = 4.0;
 static const CGFloat kPadTitleLabelWidth = 720.0;
 static const CGFloat kPadTitleVerticalOffset = 20.0;
 static const CGFloat kPadContentTop = 330.0;
-// The pad promotion banner is taller than the phone one and has its own pool slot.
-static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x1002eea38
 // How far above the view's bottom edge the "show more" button sits.
 static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
@@ -221,10 +217,6 @@ static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0
 static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x1002ec730
 static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x1002eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
-
-// The loading label's text shadow. This is its own pool slot, not the animation duration it
-// happens to equal.
-static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x1002ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
@@ -261,11 +253,6 @@ static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 // The modal-dialog message shown while a pack's tunes download. The binary uses a short local
 // literal here rather than one of the shared store-message globals.
 static NSString *const kStoreDownloadDialogMessage = @"";
-
-// The cover-tap dismissal fade. It is a different pool slot from kDetailAnimDuration and holds
-// the float-rounded 0.3, not the exact double; the slot carries no symbol, so this is a source
-// literal rather than the engine global the name once claimed.
-static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002ec718
 
 @interface RBStorePageViewController () {
     // Whether the wide (pad) iPad idiom is active; cached from IsPad().
@@ -426,7 +413,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
         // promotion view's own bounds rather than from the height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
             initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width,
-                                     kPadPromotionHeight)];
+                                     g_dPopupBaseOriginYWide)];
         self.promotionView = promotion;
         self.promotionView.center =
             CGPointMake(bounds.origin.x,
@@ -615,7 +602,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
                                                   alpha:1.0];
         loading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
         loading.textColor = [UIColor colorWithWhite:kLabelTextWhite alpha:1.0];
-        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:kLoadingShadowAlpha];
+        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:g_dAudioManagerResumeFadeInTime];
         loading.shadowOffset = CGSizeMake(0.0, 1.0);
         loading.textAlignment = NSTextAlignmentCenter;
         loading.center = CGPointMake(bounds.size.width * kCenterScale,
@@ -1148,7 +1135,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
 - (void)configureMoreCell:(UITableViewCell *)cell {
     if (!m_IsLoadingMoreList) {
         cell.accessoryView = nil;
-        cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhiteIdle alpha:1.0];
+        cell.textLabel.textColor = [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0];
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellShadowWhite alpha:1.0];
         cell.textLabel.text = g_pLocalizedShowMore;
     } else {
@@ -1214,14 +1201,14 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
             CGFloat white = (indexPath.row & 1) ? kPackRowTintOddWhite : kPackRowTintEvenWhite;
             packCell.bgColor = [UIColor colorWithRed:white green:white blue:white alpha:1.0];
         } else {
-            cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGrayWhite alpha:1.0];
+            cell.backgroundColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
         }
         return;
     }
     if (indexPath.row < [self numPackRows]) {
         cell.backgroundColor = [UIColor colorWithWhite:kPadPackRowTintWhite alpha:1.0];
     } else {
-        cell.backgroundColor = [UIColor colorWithWhite:kPadMoreRowGrayWhite alpha:1.0];
+        cell.backgroundColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
     }
 }
 
@@ -1487,7 +1474,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     [self.packDetailViewPad cancelLoading];
     [self.packDetailViewPad stopSample];
-    [UIView animateWithDuration:kCoverFadeDuration
+    [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
         animations:^{
           /** @ghidraAddress 0x1e44c4 */
           self.coverViewPad.alpha = kDetailAlphaHidden;
