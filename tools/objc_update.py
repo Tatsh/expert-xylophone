@@ -953,6 +953,68 @@ VERIFIED = {
     # 0x40f04 onwards nils seNameList, seRidList, bgmPlayer, voicePlayer, fadeTimer, stackBgm and
     # seType by hand before the superclass call.
     0x40E90: 'AudioManager -dealloc: engine teardown then seven explicit property clears',
+    # RBViewController. Its ivar list confirms the layout the header documents (m_LoopTime +0x08
+    # through m_PreviewPlayerColorCache +0x28), and every float below was decoded either from the
+    # pool address the adrp/ldr names or from the fmov's own imm8 field, because Ghidra's rendering
+    # of an fmov immediate is a bit pattern rather than a value.
+    0x89050: 'RBViewController -loadView: mask 0x12, scale guarded by respondsToSelector:',
+    # Popover size from 0x2ee918 and 0x2fedd0; the neighbours are 90.0 and 312.0, both plausible.
+    0x8945c: 'RBViewController -showPresentViewController:: two arms, popover 320x480 on the pad',
+    0x89798: 'RBViewController -playListAddMusicSet:: type 1, anchored on the add button',
+    0x8997c: 'RBViewController -playListButtonPush:: guarded on selectedView, themed effect 1',
+    # Three defects fixed. The cover mask at 0x310450 is 0x3f and 0x12 is its pool neighbour at
+    # 0x310458; the indicator style is 1 (White); the spinner bounds are a 20-point square from the
+    # fmov at 0x89fb4, not the cover's bounds.
+    0x89c90: 'RBViewController -createView: menu view then tweet cover, both built once',
+    # One defect fixed: w3 is 2 at 0x8a24c, which is Slide.
+    0x8a134: 'RBViewController -viewWillAppear:: status bar hidden with the slide animation',
+    0x8a294: 'RBViewController -didSelectPlaylistViewController:: popover on the pad, modal off it',
+    # d2 and d3 of the frame are taken, so it really is the size and not the origin.
+    0x8a444: 'RBViewController -navigationController:willShowViewController:animated:: size only',
+    0x8a5d8: 'RBViewController -viewWillTransitionToSize:withTransitionCoordinator:: willRotate '
+             'in the animation block (0x8a704), didRotate in the completion (0x8a774)',
+    0x8b288: 'RBViewController -SetLoopTimeMilliSec:: str s0 then CreateTimer',
+    0x8b2a0: 'RBViewController -CreateTimer: both flags, then Start on each C_TIME',
+    0x8b314: 'RBViewController -RemoveTimer: invalidate then nil',
+    0x8b3bc: 'RBViewController -showMusicListView: takeover point read before the flag is set',
+    # Four defects fixed. 0x8bbcc is PlayGameStateSoundEffect (0x1ccb08); 0x8bc08 is
+    # LoadAndSetThemedVoice (0x1ccc18), not the themed effect player; 0x8bc4c starts the loop a
+    # second time; and the hide-animation block at 0x8bd9c sets up the camera, calls
+    # UpdateProjection and enters normal scene mode rather than only starting the loop.
+    0x8b5b8: 'RBViewController -playGameWithMusicData:RandSeed:: difficulty switch 1/2/default',
+    # Three defects fixed. PauseMusic takes the 0.2f at 0x2ec6b4, whose neighbour 0x2ec6b0 is the
+    # 100.0f tilt near plane; the dispatch delay is 0x05f5e101 from the movz/movk at 0x8c3f0, a
+    # tenth of a second and not a whole one; and its block at 0x8c884 enters alternate scene mode
+    # rather than calling -showPreview.
+    0x8be40: 'RBViewController -startPreview: pad speed-type clamp, then the shared settings tail',
+    0x8c8cc: 'RBViewController -showPreview: hides the menu and the cover',
+    # The retry loop runs 101 times; PlayMusic takes the 1.5f from the fmov at 0x8cae4.
+    0x8c970: 'RBViewController -hidePreview: three store-id checks short-circuit onto one call',
+    0x8ce28: 'RBViewController -openItunesWithURL:: falls back to openURL: when there are no '
+             'affiliate parameters',
+    0x8d204: 'RBViewController -closeItunesWithURL: forwards to the finish handler',
+    0x8d264: 'RBViewController -getTopViewController:: navigation controllers take lastObject',
+    0x8d40c: 'RBViewController -productViewControllerDidFinish:: guarded on itunesViewCtrl',
+    0x8d540: 'RBViewController +hasTwitterAPI: NSClassFromString compared against nil',
+    0x8d564: 'RBViewController +canTweet: short-circuits on hasTwitterAPI',
+    0x8d5b4: 'RBViewController -PostTwitter:Images:URLs:: fast enumeration over both arrays',
+    0x8d9c0: 'RBViewController -PostTweet: arrayWithObject: then both fields cleared',
+    0x8dacc: 'RBViewController -PostImageCreater: creates the image, then hops to the main thread',
+    # One defect fixed: w3 is 4 at 0x8dd4c, ReloadIgnoringLocalAndRemoteCacheData.
+    0x8dbbc: 'RBViewController -PostTwitter:Text:: four-way guard, 15 second probe timeout',
+    0x8de58: 'RBViewController -cancelTwitterConnection: clears the flag and hides the cover',
+    0x8df10: 'RBViewController -connection:didReceiveResponse:: cmp against 0x194, which is 404',
+    0x8dfc8: 'RBViewController -connection:didFailWithError:: forwards to the cancel path',
+    0x8dfe4: 'RBViewController -connectionDidFinishLoading:: lazily creates the queue',
+    0x8e118: 'RBViewController -showTermsWithDelegate:: term type 1 at 0x8e1b0',
+    0x8e2d8: 'RBViewController -updateErosionMarkScore: tail call to the updater',
+    # One defect fixed: the width comes from the UIView(RB) -width category, whose selector is at
+    # 0x3bf998, and the two margins are fmov immediates of -10.0 and 10.0 at 0x8e420 and 0x8e430.
+    0x8e2f4: 'RBViewController -setupCorporateButton: top-right inset by 10, mask 0x21',
+    # Two defects fixed: the duration at 0x2ec718 is a float 0.3f widened, and the options word is
+    # 3 at 0x8e634, LayoutSubviews with AllowUserInteraction rather than an ease curve.
+    0x8e550: 'RBViewController -fadeCorporateButton:: weak self, 0.5 second delay',
+    0x8e898: 'RBViewController -tapCorporateButton:: Safari when available, openURL otherwise',
     # RBStoreExtendPageViewController, read against the disassembly one routine at a time.
     0x15a0b8: 'RBStoreExtendPageViewController -initWithParent:: IsPad() at 0x15a2e4 stores the '
               'idiom byte, moveToPackID starts at -1 (0x15a300)',

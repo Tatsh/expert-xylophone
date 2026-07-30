@@ -35,9 +35,11 @@
 #import "RBUserSettingData.h"
 #import "ScoreData.h"
 #import "UIAlertView+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 #import "engineruntime.h"
+#import "game_scene.h"
 #import "gamesystem.h"
 #import "matrixmath.h"
 #import "neRenderer.h"
@@ -97,8 +99,16 @@ constexpr float kStandardCameraPitchHeight = 25.0f;
 // The camera target y offset used for the standard (non-variant) font layout, in points.
 constexpr float kStandardCameraTargetY = 26.0f;
 
-// The number of nanoseconds in one second (the preview dispatch delay).
-constexpr int64_t kOneSecondInNanoseconds = 1000000000LL;
+// The delay before the preview scene enters its alternate mode, in nanoseconds. The movz/movk pair
+// builds 0x05f5e101 exactly, which is a tenth of a second computed in single precision and
+// truncated (0.1f is 0.100000001490116, and times a billion that is 100000001).
+// @ghidraAddress 0x8c3f0
+constexpr int64_t kPreviewSceneDelayNanoseconds = 100000001LL;
+
+// The fade time passed to the menu music when the preview starts, in seconds. Its pool neighbour at
+// 0x2ec6b0 is 100.0f, the tilt near plane.
+// @ghidraAddress 0x2ec6b4
+constexpr float kPreviewBgmPauseTime = 0.2f;
 
 // The sheet height used while a preview/gameplay scene is on screen, in points.
 constexpr float kPreviewSheetHeight = 25.0f;
@@ -112,25 +122,41 @@ constexpr unsigned int kClearColorAndDepth = 0x4100;
 // @ghidraAddress 0x2f8540
 constexpr float kMaxRenderFrameElapsed = 1000.0f;
 
-// The corporate-button fade duration, in seconds, shared with the audio resume fade.
+// The corporate-button fade duration, in seconds, shared with the audio resume fade. The pool holds
+// a float widened to double, so the literal keeps its suffix.
 // @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
-constexpr double kCorporateFadeDuration = 0.3;
+constexpr double kCorporateFadeDuration = 0.3f;
+
+// The delay before the corporate-button fade begins, in seconds; an fmov immediate at 0x8e630.
+constexpr double kCorporateFadeDelay = 0.5;
 
 // The point height of the variant (wide-font) layout screen used to centre the preview camera.
 // @ghidraAddress 0x3c8834 (g_nVariantScreenHeight)
 constexpr int kVariantScreenHeightPoints = 1024;
 
-// The playlist popover content size, in points.
+// The playlist popover content size, in points. The two values come from separate pool runs, and
+// each has a plausible neighbour: 0x2fedc8 holds 312.0 and 0x2ee920 holds 90.0.
+// @ghidraAddress 0x2ee918
 constexpr CGFloat kPopoverContentWidth = 320.0;
+// @ghidraAddress 0x2fedd0
 constexpr CGFloat kPopoverContentHeight = 480.0;
+
+// The dimming alpha of the tweet cover view, an fmov immediate rather than a pool load.
+// @ghidraAddress 0x89f28
+constexpr CGFloat kTweetCoverAlpha = 0.5;
+
+// The side length of the tweet cover's activity indicator, in points, also an fmov immediate.
+// @ghidraAddress 0x89fb4
+constexpr CGFloat kSpinnerSide = 20.0;
 
 // The corporate-button inset from the view's top-right corner, in points.
 constexpr CGFloat kCorporateButtonMargin = 10.0;
 
-// The game-start sound-effect identifier played when a song begins.
-constexpr int kSoundEffectGameStart = 17;
+// The themed voice identifier loaded and armed when a song begins. The call at 0x8bc08 is
+// LoadAndSetThemedVoice (0x1ccc18), not the themed sound-effect player.
+constexpr int kGameStartVoiceID = 17;
 
-// The Twitter reachability-probe request timeout, in seconds.
+// The Twitter reachability-probe request timeout, in seconds; an fmov immediate at 0x8dd48.
 constexpr NSTimeInterval kTwitterProbeTimeout = 15.0;
 
 // Projection constants used by -UpdateProjection.
@@ -252,8 +278,9 @@ constexpr int kDefaultPlayColor = 0;
         [self performSelector:@selector(prefersStatusBarHidden)];
         [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
     } else {
+        // w3 is 2 at 0x8a24c, which is Slide rather than Fade.
         [[UIApplication sharedApplication] setStatusBarHidden:YES
-                                                withAnimation:UIStatusBarAnimationFade];
+                                                withAnimation:UIStatusBarAnimationSlide];
     }
 }
 
@@ -531,15 +558,19 @@ constexpr int kDefaultPlayColor = 0;
     }
     if (!self.tweetCoverView) {
         UIView *cover = [[UIView alloc] initWithFrame:self.view.bounds];
-        cover.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        cover.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+        // The mask constant at 0x310450 is 0x3f, every margin and both dimensions.
+        cover.autoresizingMask =
+            UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+            UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+            UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
+        cover.backgroundColor = [UIColor colorWithWhite:0 alpha:kTweetCoverAlpha];
         cover.hidden = YES;
         UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc]
-            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         spinner.autoresizingMask =
             UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin |
             UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
-        spinner.bounds = cover.bounds;
+        spinner.bounds = CGRectMake(0, 0, kSpinnerSide, kSpinnerSide);
         spinner.center = cover.center;
         [spinner startAnimating];
         [cover addSubview:spinner];
@@ -611,11 +642,10 @@ constexpr int kDefaultPlayColor = 0;
     [self applyPreviewSettingsToGameSystem:gameSystem music:previewMusic];
 }
 
-// Shared tail of -startPreview: caches the difficulty and play-colour, copies the user settings
-// into the game system, reveals the loading cover, pauses the menu BGM, starts the loop, and
-// schedules the deferred preview reveal.
+// Shared tail of -startPreview, beginning at the cbz on the music at 0x8c01c: caches the difficulty
+// and play-colour, copies the user settings into the game system, reveals the loading cover, pauses
+// the menu BGM, starts the loop, and schedules the deferred scene-mode change.
 - (void)applyPreviewSettingsToGameSystem:(GameSystem *)gameSystem music:(MusicData *)music {
-    /** @ghidraAddress 0x8bf40 */
     if (music) {
         [AppDelegate.appDelegate setMusicData:music];
         if (!IsPad()) {
@@ -626,9 +656,11 @@ constexpr int kDefaultPlayColor = 0;
         } else {
             gameSystem->SetSheetHeight(0.0f);
             gameSystem->SetCameraPitchHeight(0.0f);
+            // The csel at 0x8c088 is the divide-by-two correction, so this rounds toward zero
+            // rather than toward minus infinity.
             int delta = g_nVariantScreenHeight - kVariantScreenHeightPoints;
             gameSystem->SetCameraTargetX(0.0f);
-            gameSystem->SetCameraTargetY(static_cast<float>(delta >> 1));
+            gameSystem->SetCameraTargetY(static_cast<float>(delta / 2));
         }
         [self UpdateProjection];
         gameSystem->SetRandSeed(static_cast<unsigned int>(rand()));
@@ -657,13 +689,18 @@ constexpr int kDefaultPlayColor = 0;
     gameSystem->SetFullJustReflec([settings fullJustReflec]);
     self.tweetCoverView.hidden = NO;
     [settings save];
-    [[RBBGMManager getInstance] PauseMusic:YES];
+    [[RBBGMManager getInstance] PauseMusic:kPreviewBgmPauseTime];
     [self.musicMenuView stopBGEffect];
     [self StartLoop];
-    dispatch_after(dispatch_time(0, kOneSecondInNanoseconds), dispatch_get_main_queue(), ^{
-      /** @ghidraAddress 0x8bd60 */
-      [self showPreview];
-    });
+    dispatch_after(
+        dispatch_time(0, kPreviewSceneDelayNanoseconds), dispatch_get_main_queue(), ^{
+          /** @ghidraAddress 0x8c884 */
+          // A global block: it captures nothing and never touches the view controller.
+          rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
+          if (scene) {
+              scene->EnterModeAlternate();
+          }
+        });
 }
 
 - (void)showPreview {
@@ -754,13 +791,30 @@ constexpr int kDefaultPlayColor = 0;
     gameSystem->SetRandSeed(static_cast<unsigned int>(randSeed));
     [self.musicMenuView hideAnimation:^{
       /** @ghidraAddress 0x8bd9c */
+      GameSystem *blockGameSystem = GameSystem::GetGameSystem();
+      BOOL isPad = IsPad();
+      // The pair of fields is written by one 8-byte store at 0x8bdbc, so the pitch height is
+      // cleared in both arms.
+      blockGameSystem->SetSheetHeight(kPreviewSheetHeight);
+      blockGameSystem->SetCameraPitchHeight(0.0f);
+      blockGameSystem->SetCameraTargetX(0.0f);
+      if (isPad) {
+          int delta = g_nVariantScreenHeight - kVariantScreenHeightPoints;
+          blockGameSystem->SetCameraTargetY(static_cast<float>(delta / 2));
+      } else {
+          blockGameSystem->SetCameraTargetY(-kStandardCameraTargetY);
+      }
+      [self UpdateProjection];
       [self StartLoop];
+      GameSystem::GetGameSystem()->GetCurrentScene()->EnterModeNormal();
     }];
     [[RBUserSettingData sharedInstance] save];
-    SoundEffectManager *soundManager = SoundEffectManager::GetInstance();
+    SoundEffectManager::GetInstance()->PlayGameStateSoundEffect();
     [[AudioManager sharedManager] releaseVoice];
-    soundManager->PlayThemedSoundEffect(kSoundEffectGameStart);
+    SoundEffectManager::GetInstance()->LoadAndSetThemedVoice(kGameStartVoiceID);
     [[RBBGMManager getInstance] StopMusic:0.0f];
+    // Yes, the loop is started here as well as inside the hide-animation block above.
+    [self StartLoop];
 }
 
 - (void)clientIsGameEnd {
@@ -900,11 +954,12 @@ constexpr int kDefaultPlayColor = 0;
     }
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setImage:logo forState:UIControlStateNormal];
-    button.frame =
-        CGRectMake(CGRectGetWidth(self.view.bounds) - logo.size.width - kCorporateButtonMargin,
-                   kCorporateButtonMargin,
-                   logo.size.width,
-                   logo.size.height);
+    // The width comes from the UIView(RB) -width category (the selector at 0x3bf998), not from the
+    // view's bounds.
+    button.frame = CGRectMake(self.view.width - logo.size.width - kCorporateButtonMargin,
+                              kCorporateButtonMargin,
+                              logo.size.width,
+                              logo.size.height);
     button.exclusiveTouch = YES;
     button.autoresizingMask =
         UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -920,9 +975,11 @@ constexpr int kDefaultPlayColor = 0;
     /** @ghidraAddress 0x8e550 */
     __weak RBViewController *weakSelf = self;
     [self setupCorporateButton];
+    // w2 is 3 at 0x8e634, which is LayoutSubviews together with AllowUserInteraction; the ease
+    // curve is not requested at all (EaseInOut is zero and would not show up here).
     [UIView animateWithDuration:kCorporateFadeDuration
-        delay:0.5
-        options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAllowUserInteraction
+        delay:kCorporateFadeDelay
+        options:UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionAllowUserInteraction
         animations:^{
           /** @ghidraAddress 0x8e6b0 */
           weakSelf.corporateButton.alpha = alpha;
@@ -1072,9 +1129,11 @@ constexpr int kDefaultPlayColor = 0;
     self.twitterImageCreater = imageCreater;
     self.tweetText = text;
     NSURL *url = [NSURL URLWithString:@"http://twitter.com"];
-    self.twitterRequestTest = [[NSURLRequest alloc] initWithURL:url
-                                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                timeoutInterval:kTwitterProbeTimeout];
+    // w3 is 4 at 0x8dd4c, which is ReloadIgnoringLocalAndRemoteCacheData, not the protocol default.
+    self.twitterRequestTest = [[NSURLRequest alloc]
+             initWithURL:url
+             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+        timeoutInterval:kTwitterProbeTimeout];
     self.twitterConnectionTest = [[NSURLConnection alloc] initWithRequest:self.twitterRequestTest
                                                                  delegate:self];
     return YES;

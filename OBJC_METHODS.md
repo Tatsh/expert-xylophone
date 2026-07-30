@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4192 verified
-(66.1%).
+Total: 6343 — 6203 reconstructed, 4228 verified
+(66.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1815,20 +1815,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setColor:` | prop | ✅ | ✅ | `0x88ea8` |
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x88fb8` |
 | `RBViewController` | `-` | `init` |  | ✅ | ✅ | `0x88fc0` |
-| `RBViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x89050` |
+| `RBViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x89050` |
 | `RBViewController` | `-` | `showPresentViewController` |  | ✅ | ✅ | `0x893c4` |
-| `RBViewController` | `-` | `showPresentViewController:` |  | ✅ | ❌ | `0x8945c` |
-| `RBViewController` | `-` | `playListAddMusicSet:` |  | ✅ | ❌ | `0x89798` |
-| `RBViewController` | `-` | `playListButtonPush:` |  | ✅ | ❌ | `0x8997c` |
+| `RBViewController` | `-` | `showPresentViewController:` |  | ✅ | ✅ | `0x8945c` |
+| `RBViewController` | `-` | `playListAddMusicSet:` |  | ✅ | ✅ | `0x89798` |
+| `RBViewController` | `-` | `playListButtonPush:` |  | ✅ | ✅ | `0x8997c` |
 | `RBViewController` | `-` | `removeView` |  | ✅ | ✅ | `0x89c24` |
-| `RBViewController` | `-` | `createView` |  | ✅ | ❌ | `0x89c90` |
-| `RBViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x8a134` |
-| `RBViewController` | `-` | `didSelectPlaylistViewController:` |  | ✅ | ❌ | `0x8a294` |
+| `RBViewController` | `-` | `createView` |  | ✅ | ✅ | `0x89c90` |
+| `RBViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x8a134` |
+| `RBViewController` | `-` | `didSelectPlaylistViewController:` |  | ✅ | ✅ | `0x8a294` |
 | `RBViewController` | `-` | `didSelectMenuSortViewController:` |  | ✅ | ✅ | `0x8a3e8` |
-| `RBViewController` | `-` | `navigationController:willShowViewController:animated:` |  | ✅ | ❌ | `0x8a444` |
+| `RBViewController` | `-` | `navigationController:willShowViewController:animated:` |  | ✅ | ✅ | `0x8a444` |
 | `RBViewController` | `-` | `willRotateToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x8a530` |
 | `RBViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x8a584` |
-| `RBViewController` | `-` | `viewWillTransitionToSize:withTransitionCoordinator:` |  | ✅ | ❌ | `0x8a5d8` |
+| `RBViewController` | `-` | `viewWillTransitionToSize:withTransitionCoordinator:` |  | ✅ | ✅ | `0x8a5d8` |
 | `RBViewController` | `-` | `LayoutedGLView:` |  | ✅ | ✅ | `0x8a7e4` |
 | `RBViewController` | `-` | `UpdateProjection` |  | ✅ | ✅ | `0x8a800` |
 | `RBViewController` | `-` | `openGLView` |  | ✅ | ✅ | `0x8af30` |
@@ -1840,34 +1840,34 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBViewController` | `-` | `ResumeLoop` |  | ✅ | ✅ | `0x8b0dc` |
 | `RBViewController` | `-` | `RestartLoop` |  | ✅ | ✅ | `0x8b0f8` |
 | `RBViewController` | `-` | `CreateDisplayLinkTimer` |  | ✅ | ✅ | `0x8b110` |
-| `RBViewController` | `-` | `SetLoopTimeMilliSec:` |  | ✅ | ❌ | `0x8b288` |
-| `RBViewController` | `-` | `CreateTimer` |  | ✅ | ❌ | `0x8b2a0` |
-| `RBViewController` | `-` | `RemoveTimer` |  | ✅ | ❌ | `0x8b314` |
-| `RBViewController` | `-` | `showMusicListView` |  | ✅ | ❌ | `0x8b3bc` |
+| `RBViewController` | `-` | `SetLoopTimeMilliSec:` |  | ✅ | ✅ | `0x8b288` |
+| `RBViewController` | `-` | `CreateTimer` |  | ✅ | ✅ | `0x8b2a0` |
+| `RBViewController` | `-` | `RemoveTimer` |  | ✅ | ✅ | `0x8b314` |
+| `RBViewController` | `-` | `showMusicListView` |  | ✅ | ✅ | `0x8b3bc` |
 | `RBViewController` | `-` | `clientIsGameEnd` |  | ✅ | ✅ | `0x8b5b4` |
-| `RBViewController` | `-` | `playGameWithMusicData:RandSeed:` |  | ✅ | ❌ | `0x8b5b8` |
-| `RBViewController` | `-` | `startPreview` |  | ✅ | ❌ | `0x8be40` |
-| `RBViewController` | `-` | `showPreview` |  | ✅ | ❌ | `0x8c8cc` |
-| `RBViewController` | `-` | `hidePreview` |  | ✅ | ❌ | `0x8c970` |
-| `RBViewController` | `-` | `openItunesWithURL:` |  | ✅ | ❌ | `0x8ce28` |
-| `RBViewController` | `-` | `closeItunesWithURL` |  | ✅ | ❌ | `0x8d204` |
-| `RBViewController` | `-` | `getTopViewController:` |  | ✅ | ❌ | `0x8d264` |
-| `RBViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ❌ | `0x8d40c` |
-| `RBViewController` | `+` | `hasTwitterAPI` |  | ✅ | ❌ | `0x8d540` |
-| `RBViewController` | `+` | `canTweet` |  | ✅ | ❌ | `0x8d564` |
-| `RBViewController` | `-` | `PostTwitter:Images:URLs:` |  | ✅ | ❌ | `0x8d5b4` |
-| `RBViewController` | `-` | `PostTweet` |  | ✅ | ❌ | `0x8d9c0` |
-| `RBViewController` | `-` | `PostImageCreater` |  | ✅ | ❌ | `0x8dacc` |
-| `RBViewController` | `-` | `PostTwitter:Text:` |  | ✅ | ❌ | `0x8dbbc` |
-| `RBViewController` | `-` | `cancelTwitterConnection` |  | ✅ | ❌ | `0x8de58` |
-| `RBViewController` | `-` | `connection:didReceiveResponse:` |  | ✅ | ❌ | `0x8df10` |
-| `RBViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ❌ | `0x8dfc8` |
-| `RBViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ❌ | `0x8dfe4` |
-| `RBViewController` | `-` | `showTermsWithDelegate:` |  | ✅ | ❌ | `0x8e118` |
-| `RBViewController` | `-` | `updateErosionMarkScore` |  | ✅ | ❌ | `0x8e2d8` |
-| `RBViewController` | `-` | `setupCorporateButton` |  | ✅ | ❌ | `0x8e2f4` |
-| `RBViewController` | `-` | `fadeCorporateButton:` |  | ✅ | ❌ | `0x8e550` |
-| `RBViewController` | `-` | `tapCorporateButton:` |  | ✅ | ❌ | `0x8e898` |
+| `RBViewController` | `-` | `playGameWithMusicData:RandSeed:` |  | ✅ | ✅ | `0x8b5b8` |
+| `RBViewController` | `-` | `startPreview` |  | ✅ | ✅ | `0x8be40` |
+| `RBViewController` | `-` | `showPreview` |  | ✅ | ✅ | `0x8c8cc` |
+| `RBViewController` | `-` | `hidePreview` |  | ✅ | ✅ | `0x8c970` |
+| `RBViewController` | `-` | `openItunesWithURL:` |  | ✅ | ✅ | `0x8ce28` |
+| `RBViewController` | `-` | `closeItunesWithURL` |  | ✅ | ✅ | `0x8d204` |
+| `RBViewController` | `-` | `getTopViewController:` |  | ✅ | ✅ | `0x8d264` |
+| `RBViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ✅ | `0x8d40c` |
+| `RBViewController` | `+` | `hasTwitterAPI` |  | ✅ | ✅ | `0x8d540` |
+| `RBViewController` | `+` | `canTweet` |  | ✅ | ✅ | `0x8d564` |
+| `RBViewController` | `-` | `PostTwitter:Images:URLs:` |  | ✅ | ✅ | `0x8d5b4` |
+| `RBViewController` | `-` | `PostTweet` |  | ✅ | ✅ | `0x8d9c0` |
+| `RBViewController` | `-` | `PostImageCreater` |  | ✅ | ✅ | `0x8dacc` |
+| `RBViewController` | `-` | `PostTwitter:Text:` |  | ✅ | ✅ | `0x8dbbc` |
+| `RBViewController` | `-` | `cancelTwitterConnection` |  | ✅ | ✅ | `0x8de58` |
+| `RBViewController` | `-` | `connection:didReceiveResponse:` |  | ✅ | ✅ | `0x8df10` |
+| `RBViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x8dfc8` |
+| `RBViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x8dfe4` |
+| `RBViewController` | `-` | `showTermsWithDelegate:` |  | ✅ | ✅ | `0x8e118` |
+| `RBViewController` | `-` | `updateErosionMarkScore` |  | ✅ | ✅ | `0x8e2d8` |
+| `RBViewController` | `-` | `setupCorporateButton` |  | ✅ | ✅ | `0x8e2f4` |
+| `RBViewController` | `-` | `fadeCorporateButton:` |  | ✅ | ✅ | `0x8e550` |
+| `RBViewController` | `-` | `tapCorporateButton:` |  | ✅ | ✅ | `0x8e898` |
 | `RBViewController` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0x8eac0` |
 | `RBViewController` | `-` | `setMusicMenuView:` | prop | ✅ | ✅ | `0x8ead0` |
 | `RBViewController` | `-` | `playlistPopoverController` | prop | ✅ | ✅ | `0x8eb08` |
