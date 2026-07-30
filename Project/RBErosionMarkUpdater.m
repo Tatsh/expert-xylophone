@@ -47,38 +47,29 @@ static const NSInteger kPickerDigitRowCount = 10;
 /// Sentinel for @c activeFieldIndex meaning no field is being edited.
 static const NSInteger kNoActiveField = -1;
 
-/// The height of the picker's accessory toolbar, in points. Its pool neighbours are 284.0 and
-/// 79.0, so the slot has to be read exactly.
-/// @ghidraAddress 0x2eec40
-static const CGFloat kAccessoryToolbarHeight = 44.0;
+// The height of the picker's accessory toolbar, in points. Its pool neighbours are 284.0 and
+// 79.0, so the slot has to be read exactly.
+static const CGFloat kAccessoryToolbarHeight = 44.0; // @ghidraAddress 0x2eec40
 
-/// The legacy dialog's field container starts this far down, scaled by the display rate. The
-/// neighbouring pool slots are 0.83 and -110.0.
-/// @ghidraAddress 0x301820
-static const CGFloat kContainerTop = 85.0;
+// The legacy dialog's field container starts this far down, scaled by the display rate. The
+// neighbouring pool slots are 0.83 and -110.0.
+static const CGFloat kContainerTop = 85.0; // @ghidraAddress 0x301820
 
-/// The container's initial width on the pad. It is replaced by @c kContainerGrownWidth as soon as
-/// the first field is added, so it only shows when no difficulty qualifies.
-/// @ghidraAddress 0x301028
-static const CGFloat kContainerWidthPad = 150.0;
+// The container's initial widths. Both are replaced by kContainerGrownWidth as soon as the first
+// field is added, so they only show when no difficulty qualifies.
+static const CGFloat kContainerWidthPad = 150.0;   // @ghidraAddress 0x301028
+static const CGFloat kContainerWidthPhone = 120.0; // @ghidraAddress 0x2ef168
 
-/// The container's initial width on the phone.
-/// @ghidraAddress 0x2ef168
-static const CGFloat kContainerWidthPhone = 120.0;
+// The width the container takes once it holds at least one field, scaled by the display rate. Its
+// lower neighbour is 63.0, so this slot is easy to misread.
+static const CGFloat kContainerGrownWidth = 290.0; // @ghidraAddress 0x301808
 
-/// The width the container takes once it holds at least one field, scaled by the display rate.
-/// Its lower neighbour is 63.0, so this slot is easy to misread.
-/// @ghidraAddress 0x301808
-static const CGFloat kContainerGrownWidth = 290.0;
+// Each score field's width, scaled by the display rate.
+static const CGFloat kScoreFieldWidth = 260.0; // @ghidraAddress 0x308cd8
 
-/// Each score field's width, scaled by the display rate.
-/// @ghidraAddress 0x308cd8
-static const CGFloat kScoreFieldWidth = 260.0;
-
-/// Each score field's height, scaled by the display rate. It is also the amount the container
-/// grows per field. Its lower neighbour is 33.0.
-/// @ghidraAddress 0x2eeec0
-static const CGFloat kScoreFieldHeight = 38.0;
+// Each score field's height, scaled by the display rate. It is also the amount the container grows
+// per field. Its lower neighbour is 33.0.
+static const CGFloat kScoreFieldHeight = 38.0; // @ghidraAddress 0x2eeec0
 
 /// The shared updater instance, allocated lazily by @c +updateCheckStart:.
 /// @ghidraAddress 0x3de498
