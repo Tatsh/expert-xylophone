@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3947 verified
-(62.2%).
+Total: 6343 — 6201 reconstructed, 3952 verified
+(62.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5201,16 +5201,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `stopPromotion` |  | ✅ | ✅ | `0x1eec14` |
 | `RBStorePageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ✅ | `0x1eeca8` |
 | `RBStorePageViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ✅ | `0x1eedb0` |
-| `RBStorePageViewController` | `-` | `openItunesWithURL:` |  | ✅ | ❌ | `0x1eee74` |
+| `RBStorePageViewController` | `-` | `openItunesWithURL:` |  | ✅ | ✅ | `0x1eee74` |
 | `RBStorePageViewController` | `-` | `closeItunesWithURL` |  | ✅ | ✅ | `0x1ef1ec` |
 | `RBStorePageViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ✅ | `0x1ef24c` |
 | `RBStorePageViewController` | `-` | `goToTop:` |  | ✅ | ✅ | `0x1ef324` |
 | `RBStorePageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ✅ | `0x1ef40c` |
-| `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ❌ | `0x1ef574` |
-| `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ❌ | `0x1ef694` |
+| `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ✅ | `0x1ef574` |
+| `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ✅ | `0x1ef694` |
 | `RBStorePageViewController` | `-` | `switchToSpecialStore` |  | ✅ | ✅ | `0x1ef76c` |
-| `RBStorePageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ❌ | `0x1ef7c0` |
-| `RBStorePageViewController` | `-` | `showTerms` |  | ✅ | ❌ | `0x1ef8a0` |
+| `RBStorePageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ✅ | `0x1ef7c0` |
+| `RBStorePageViewController` | `-` | `showTerms` |  | ✅ | ✅ | `0x1ef8a0` |
 | `RBStorePageViewController` | `-` | `parent` | prop | ✅ | ✅ | `0x1ef9c4` |
 | `RBStorePageViewController` | `-` | `setParent:` | prop | ✅ | ✅ | `0x1ef9e4` |
 | `RBStorePageViewController` | `-` | `packListCtrl` | prop | ✅ | ✅ | `0x1ef9f8` |

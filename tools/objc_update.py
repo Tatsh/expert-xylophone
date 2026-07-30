@@ -619,6 +619,21 @@ VERIFIED = {
     0x1d9f58: 'RBStoreDetailViewController -tableView:numberOfRowsInSection:: count plus two',
     0x1dc3fc: 'RBStoreDetailViewController -didReceiveMemoryWarning: the super call only',
     0x1dc430: 'RBStoreDetailViewController -viewDidUnload: super first, then the artwork stop',
+    # RBStorePageViewController closes out. Every method is now ticked or accounted for:
+    # -viewDidLoad and -scrollViewDidScroll: are recommended for rewrite rather than
+    # patching, packListDownloadSuccess: is unread, and five invented selectors are left
+    # in place deliberately so the rewrite diff stays readable.
+    0x1eee74: 'RBStorePageViewController -openItunesWithURL:: both arms; the affiliate '
+              'call takes the NSURL object itself, with no absoluteString send '
+              'anywhere, which the committed header disagrees with',
+    0x1ef574: 'RBStorePageViewController -storeExtendNoteInfoDownloaderFinished:: '
+              'guarded clear, then the next restore',
+    0x1ef694: 'RBStorePageViewController -storeExtendNoteInfoDownloaderError:: hides '
+              'the dialog, where the pack equivalent deliberately does not, the two '
+              'being otherwise identical',
+    0x1ef7c0: 'RBStorePageViewController -updateExtendNoteInfo:Save:: the save flag '
+              'gates the persist',
+    0x1ef8a0: 'RBStorePageViewController -showTerms: mask 0x3f, five sends in order',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
