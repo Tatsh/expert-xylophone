@@ -6,8 +6,10 @@
 0x78b8 RBCampaignDetailViewController itemInfoDownload: empty
 0x78bc RBCampaignDetailViewController alertView:clickedButtonAtIndex:: empty
 0x79b0 RBCampaignDetailViewController alertView:willDismissWithButtonIndex:: empty
+0xd810 RBMenuBGEffectPartView setAnimationLoopFlag:: forwards to setIsAnimationEnableLoop:
 0x18ae0 SystemHardware dealloc: ARC writes it; correctly omitted
 0x19dd4 RBResourceDownloadViewController shouldAutorotate: returns 1
+0x19e10 RBResourceDownloadViewController preferredInterfaceOrientationForPresentation: forwards to interfaceOrientation
 0x1ca40 RBResourceDownloadViewController zipArchiveWillUnzipArchiveAtPath:zipInfo:: empty
 0x1caf4 RBResourceDownloadViewController zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:fileInfo:: empty
 0x2034c RBResourceDownloadViewController dealloc: super call only
@@ -17,7 +19,11 @@
 0x25de8 StoreExtendNoteDetailViewPad alertView:didDismissWithButtonIndex:: empty
 0x25dec StoreExtendNoteDetailViewPad alertView:willDismissWithButtonIndex:: empty
 0x26424 StoreExtendNoteDetailViewPad setDownloadFlag:: empty
+0x34170 StorePackListGenre packIDList: forwards to arrayPackInfo
 0x38fbc RBHttpUtil URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:: empty
+0x39430 RBHttpUtil getData: forwards to downloadedData
+0x39520 RBHttpUtil getHeader: forwards to downloadedHeader
+0x3952c RBHttpUtil hashChecked: forwards to hashCheck
 0x3a4d8 neGLView SetDefaultFrameBuffer: empty
 0x3a4dc neGLView SetDefaultColorBuffer: empty
 0x3cf50 RBMusicExtendNoteView SetFlashEffectDuration:Start:End:: empty
@@ -64,24 +70,57 @@
 0x6751c MusicDataFromDoc artistNameHira: returns 0
 0x67524 MusicDataFromDoc artistNameRoman: returns 0
 0x675e4 MusicDataFromDoc musicPre: returns 0
+0x676a4 MusicDataFromDoc sheetBasic: forwards to loadSheet
+0x676b0 MusicDataFromDoc sheetBasicLight: forwards to loadSheet
+0x676bc MusicDataFromDoc sheetMedium: forwards to loadSheet
+0x676c8 MusicDataFromDoc sheetMediumLight: forwards to loadSheet
+0x676d4 MusicDataFromDoc sheetHard: forwards to loadSheet
+0x676e0 MusicDataFromDoc sheetHardLight: forwards to loadSheet
+0x676ec MusicDataFromDoc sheetSpecial: forwards to loadSheet
+0x676f8 MusicDataFromDoc sheetSpecialLight: forwards to loadSheet
 0x684d4 StoreMusicInfo dealloc: ARC writes it; correctly omitted
+0x69cc8 StorePackInfoDownloader getPackInfo: forwards to packInfo
+0x69cd4 StorePackInfoDownloader getErrorMessage: forwards to errorMessage
 0x6aeac RBMusicManager dealloc: ARC writes it; correctly omitted
+0x6b7c4 RBMusicManager getPurchasedMusicDictionaris: forwards to purchasedMusicDictionaries
+0x6e024 RBPurchaseManager purchaseCheckedProducts: forwards to purchaseCheckedProductsIn
 0x6e854 RBPurchaseManager request:didFailWithError:: empty
 0x7048c RBPurchaseManager downloaderProceed:: empty
 0x70e3c PurchaseTransactionCache dealloc: ARC writes it; correctly omitted
+0x84b3c ImageDownloader getImage: forwards to downloadedImage
 0x875f4 TwitterImageCreaterScoreElement dealloc: ARC writes it; correctly omitted
+0x8af30 RBViewController openGLView: forwards to glView
 0x8b5b4 RBViewController clientIsGameEnd: empty
 0x94d98 RBPlaylistViewController tableView:moveRowAtIndexPath:toIndexPath:: empty
 0x966f0 RBCustomView dealloc: ARC writes it; correctly omitted
+0x99b30 RBCustomView getUnlockButtonView: forwards to experienceUnlockButton
+0x99b3c RBCustomView getCustomButtonView: forwards to experienceSetButton
+0x99b48 RBCustomView getCustomizeItemView: forwards to customizeItemView
+0x9d3bc RBCampaignData setHinabitaMode:: forwards to setIsCampaignHinabita201703:
+0x9f160 RBMenuNewsTickerView getPackID: forwards to packID
+0x9f16c RBMenuNewsTickerView getCampaignID: forwards to campaignID
+0x9f178 RBMenuNewsTickerView getSequenceID: forwards to sequenceID
+0x9f184 RBMenuNewsTickerView getWebID: forwards to webID
+0xaafe4 RBMenuView isShow: forwards to showed
+0xab9d4 RBMenuView SelectSettingButton: forwards to toggleSettingView
+0xae3a4 RBMenuView didFinishedSendAgree: forwards to StoreOpen
 0xaf8bc RBMenuView SetServerDateYear:Month:Day:Hour:Minute:Second:: empty
 0xb35f4 RBMenuView numberOfSectionsInCollectionView:: returns 1
 0xb43a0 RBMenuView willLayoutSubviews:: empty
 0xb4740 RBMenuView touchesBeganFromRBCollectionView:withEvent:: empty
+0xb5be8 RBMenuView getCollectionView: forwards to collectionView
+0xb5bf4 RBMenuView getSettingButton: forwards to settingButton
+0xb5c00 RBMenuView getStoreButton: forwards to storeButton
+0xbe8a8 RBNewsHUDView tapped: forwards to hideAnimation
+0xbf50c RBStoreExtendNoteList extendMusicInfos: forwards to arrayExtendNoteInfo
+0xbf518 RBStoreExtendNoteList extendNoteProductIDList: forwards to listProductID
 0xc07f0 RBStoreExtendNoteList downloaderProceed:: empty
 0xc6a50 RBMusicCPUView dealloc: ARC writes it; correctly omitted
 0xc8e8c RBMusicDifficultyView SetFlashEffectDuration:Start:End:: empty
+0xd6b1c RBMusicView getDecideButton: forwards to decideButton
 0xd9cd8 RBRankingTableCell dealloc: super call only
 0xdb42c RBRankingTableView dealloc: super call only
+0xdc508 RBRankingTableView clear: forwards to reloadData
 0xdc590 RBRankingTableView numberOfSectionsInTableView:: returns 1
 0xddab8 RBRankingView dealloc: super call only
 0xdf364 RBMapAnnotation dealloc: ARC writes it; correctly omitted
@@ -96,6 +135,7 @@
 0xeb9c0 RBSettingView touchesBegan:withEvent:: empty
 0xeb9c4 RBSettingView touchesMoved:withEvent:: empty
 0xebbbc RBSettingView touchesCancelled:withEvent:: empty
+0xec164 RBSettingView getCustomizeButtonView: forwards to customButton
 0xec908 StoreDetailCopyrightCell dealloc: ARC writes it; correctly omitted
 0xefb90 StoreDetailMusicCell dealloc: ARC writes it; correctly omitted
 0xefd88 StoreDetailMusicCell alertViewCancel:: empty
@@ -105,10 +145,13 @@
 0xfac80 StorePackDetailViewPad alertView:didDismissWithButtonIndex:: empty
 0xfac84 StorePackDetailViewPad alertView:willDismissWithButtonIndex:: empty
 0xfd35c StorePackMusicView alertViewCancel:: empty
+0xff9e8 BannerView getIsSamplePlaying: forwards to isSamplePlaying
 0x1008c8 StorePromotionView setImageViewSize:: empty
 0x102280 StorePromotionView nextShowEnd: empty
+0x102a14 StorePromotionView startSamplePlay: forwards to startAnimation
 0x103c48 StorePromotionView scrollViewDidEndDragging:willDecelerate:: empty
 0x103c4c StorePromotionView scrollViewWillBeginDecelerating:: empty
+0x10d918 RBRewardListView pushCloseButton: forwards to appListDidDisappear
 0x10e124 RBMusicSpeedView dealloc: ARC writes it; correctly omitted
 0x114848 RBTermView alertView:didDismissWithButtonIndex:: empty
 0x11484c RBTermView alertView:willDismissWithButtonIndex:: empty
@@ -128,15 +171,20 @@
 0x165c3c RBStoreExtendPageViewController imageDownloaderDidFail:didLoad:: empty
 0x166d40 RBStoreExtendPageViewController shouldAutorotateToInterfaceOrientation:: returns 1
 0x166d7c RBStoreExtendPageViewController didRotateFromInterfaceOrientation:: empty
+0x16de78 RBMusicGridLayout collectionViewContentSize: forwards to contentSize
 0x16e0a0 RBMusicGridLayout shouldInvalidateLayoutForBoundsChange:: returns 1
 0x16f6e4 RBTermPhoneViewController dealloc: ARC writes it; correctly omitted
 0x171da8 RBTermPhoneViewController alertView:didDismissWithButtonIndex:: empty
 0x171dac RBTermPhoneViewController alertView:willDismissWithButtonIndex:: empty
 0x171db0 RBTermPhoneViewController alertViewCancel:: empty
+0x172ff0 RBWebView setUseGrayView:: forwards to setIsUseGrayView:
 0x173d78 RBWebView dealloc: ARC writes it; correctly omitted
 0x177d20 StoreTableCellViewBase reset: empty
+0x17a31c StoreExtendNoteInfoDownloader getExtendNoteInfo: forwards to extendNoteInfo
+0x17a328 StoreExtendNoteInfoDownloader getErrorMessage: forwards to errorMessage
 0x17dca0 RBServerAPIManager downloaderProceed:: empty
 0x181f98 RBExtendNoteManager dealloc: ARC writes it; correctly omitted
+0x182960 RBExtendNoteManager getPurchasedExtendNoteDictionaries: forwards to purchasedExtendNoteDictionaries
 0x191e88 RBNotificationPagePhoneViewController dealloc: ARC writes it; correctly omitted
 0x19412c RBNotificationPageView alertView:didDismissWithButtonIndex:: empty
 0x194130 RBNotificationPageView alertView:willDismissWithButtonIndex:: empty
@@ -144,6 +192,7 @@
 0x194148 RBNotificationPageView supportedInterfaceOrientations: returns 6
 0x194150 RBNotificationPageView shouldAutorotate: returns 1
 0x194158 RBNotificationPageView dealloc: ARC writes it; correctly omitted
+0x1973b4 RBUnlockView getUnlockItemView: forwards to scrollView
 0x1991a4 RBUnlockView dealloc: ARC writes it; correctly omitted
 0x19954c RBUnlockView downloaderProceed:: empty
 0x1996e8 RBUnlockView downloadManagerStartTask:: empty
@@ -182,6 +231,7 @@
 0x1ec5ec RBStorePageViewController imageDownloaderDidFail:didLoad:: empty
 0x1ed9f0 RBStorePageViewController shouldAutorotateToInterfaceOrientation:: returns 1
 0x1edae4 RBStorePageViewController didRotateFromInterfaceOrientation:: empty
+0x1f09d0 RBStorePackList packInfos: forwards to arrayPackInfo
 0x1f2a84 RBStorePackList downloaderProceed:: empty
 0x1fb0dc RBCampaignViewController numberOfSectionsInTableView:: returns 1
 0x1fc74c RBCampaignViewController alertView:didDismissWithButtonIndex:: empty

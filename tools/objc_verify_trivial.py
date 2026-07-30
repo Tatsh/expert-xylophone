@@ -40,7 +40,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from objc_update import IMAGE_BASE, Metadata, _selector_of  # noqa: E402
-from objc_verify_accessors import (AccessorCheck, _branch_target,  # noqa: E402
+from objc_verify_accessors import (AccessorCheck, _adrp, _branch_target,  # noqa: E402
                                   _is_branch_with_link)
 
 OUTPUT = 'tools/objc_verified_trivial.txt'
@@ -90,6 +90,59 @@ def _is_super_only(metadata: Metadata, stubs: dict[int, str], address: int) -> b
         if word == _RET:
             return calls == ['_objc_msgSendSuper2']
     return False
+
+
+def _forwarded_selector(metadata: Metadata, stubs: dict[int, str], address: int) -> str | None:
+    """
+    Recover the selector of a body that is nothing but a tail-call forward to ``self``.
+
+    The shape is three instructions: an adrp and ldr putting a selector reference in x1, then a
+    branch to objc_msgSend. x0 is never touched, so the receiver is still self, and the
+    reconstruction should be a single send of that selector to self.
+    """
+    offset = metadata.offset_of(address)
+    if offset is None:
+        return None
+    words = [struct.unpack_from('<I', metadata._data, offset + i * 4)[0] for i in range(3)]
+    page = _adrp(words[0], address)
+    if page is None:
+        return None
+    # LDR Xt,[Xn,#imm] into x1, which is where the runtime takes the selector from.
+    if (words[1] & 0xFFC00000) != 0xF9400000 or (words[1] & 0x1F) != 1:
+        return None
+    if (words[2] & 0xFC000000) != 0x14000000:
+        return None
+    if stubs.get(_branch_target(words[2], address + 8)) != '_objc_msgSend':
+        return None
+    pointer = metadata._word(page + ((words[1] >> 10) & 0xFFF) * 8)
+    return metadata.string_at(pointer) if pointer else None
+
+
+def _sent_selector(body: list[str]) -> str | None:
+    """
+    Find the sole selector a body sends to self, when a single send is all it does.
+
+    Dot syntax counts, and is the common spelling here because the rules require it: `return
+    self.foo;` is a send of `foo`, and `self.foo = x;` is a send of `setFoo:`.
+    """
+    meaningful = _meaningful(body)
+    if len(meaningful) != 1:
+        return None
+    line = meaningful[0]
+    getter = re.match(r'^\s*return\s+self\.(\w+)\s*;\s*$', line)
+    if getter:
+        return getter.group(1)
+    setter = re.match(r'^\s*self\.(\w+)\s*=\s*[^;=]+;\s*$', line)
+    if setter:
+        name = setter.group(1)
+        return f'set{name[:1].upper()}{name[1:]}:'
+    found = re.match(r'^\s*(?:return\s+)?\[self\s+([^\[\]]+)\]\s*;\s*$', line)
+    if not found:
+        return None
+    inner = found.group(1).strip()
+    if ':' in inner:
+        return ''.join(f'{k}:' for k in re.findall(r'(\w+)\s*:', inner))
+    return inner if re.fullmatch(r'\w+', inner) else None
 
 
 def _bitmask_immediate(n: int, immr: int, imms: int, width: int) -> int | None:
@@ -271,7 +324,8 @@ def main(argv=None) -> int:
                 constant = _orr_immediate(words[0])
         super_only = (method.selector == 'dealloc'
                       and _is_super_only(metadata, stubs, method.address))
-        if not empty and constant is None and not super_only:
+        forwarded = _forwarded_selector(metadata, stubs, method.address)
+        if not empty and constant is None and not super_only and forwarded is None:
             continue
         key = (method.class_name, method.kind, method.selector)
         found = bodies.get(key)
@@ -295,6 +349,19 @@ def main(argv=None) -> int:
                     f'{relative:#x} but the reconstruction does {len(extra)} thing(s)')
                 continue
             passed.append((relative, f'{method.class_name} dealloc: super call only'))
+            continue
+        if forwarded is not None:
+            sent = _sent_selector(body)
+            if sent is None:
+                skipped['forward, but the reconstruction is not a lone send to self'] += 1
+                continue
+            if sent != forwarded:
+                findings.append(
+                    f'{path}:{line} {method.kind}[{method.class_name} {method.selector}] forwards '
+                    f'to {forwarded} at {relative:#x}, reconstruction sends {sent}')
+                continue
+            passed.append((relative, f'{method.class_name} {method.selector}: forwards to '
+                                     f'{forwarded}'))
             continue
         if empty:
             extra = _meaningful(body)
