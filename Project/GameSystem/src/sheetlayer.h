@@ -19,11 +19,6 @@ public:
      */
     static void SetSheetLayerMargins(
         float fLeft, float fTop, float fRight, float fBottom, GameSystem *pGameSystem);
-    /**
-     * @brief Stores the sheet-layer corner radius on @p pGameSystem and recomputes the insets.
-     * @ghidraAddress 0x12f3c4
-     */
-    static void SetSheetLayerRadius(float fRadius, GameSystem *pGameSystem);
 };
 
 // code: language=C++

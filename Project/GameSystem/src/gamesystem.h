@@ -111,6 +111,12 @@ public:
     float GetSheetRadius() const {
         return m_flSheetRadius;
     }
+    /**
+     * @brief Stores the note sheet's corner radius and recomputes everything derived from it.
+     * @param fRadius The corner radius.
+     * @ghidraAddress 0x12f3c4
+     */
+    void SetSheetLayerRadius(float fRadius);
     /** @brief Returns the note sheet's half radius, the off-screen cull margin below the field. */
     float GetSheetRadiusHalf() const {
         return m_flSheetRadiusHalf;
