@@ -393,15 +393,18 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         return;
     }
     NSMutableString *summary = [[NSMutableString alloc] init];
+    // The three labels are padded to a common six-column width before the colon: the constants at
+    // 0x36d220, 0x36d240, and 0x36d260 are each 22 characters long.
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
-        [summary appendFormat:@"BASIC: %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
+        [summary
+            appendFormat:@"BASIC : %04zd → %04zd\n", self.baseBasicScore, self.editBasicScore];
     }
     if (self.baseMediumScore == g_lowerScoreBounds[kDifficultyMedium].integerValue) {
         [summary
             appendFormat:@"MEDIUM: %04zd → %04zd\n", self.baseMediumScore, self.editMediumScore];
     }
     if (self.baseHardScore == g_lowerScoreBounds[kDifficultyHard].integerValue) {
-        [summary appendFormat:@"HARD: %04zd → %04zd\n", self.baseHardScore, self.editHardScore];
+        [summary appendFormat:@"HARD  : %04zd → %04zd\n", self.baseHardScore, self.editHardScore];
     }
     if (NSClassFromString(@"UIAlertController") == nil) {
         [self pickerClose];
