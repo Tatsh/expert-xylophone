@@ -190,6 +190,10 @@ static NSString *const kCampaignIdFormat = @"%d";
     self.imgDelete = [UIImage imageWithName:kDeleteImageName];
     self.imgDownload = [UIImage imageWithName:kDownloadImageName];
 
+    // storeEnd: is the selector the binary registers here (0x3c6190, referenced only from
+    // initWithParent:), and nothing implements it: the sole data reference to the string is that
+    // reference slot, so no method list names it. The back button therefore throws in the original
+    // too. Left as it is rather than given a stand-in.
     UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithTitle:kBackButtonTitle
                                                              style:UIBarButtonItemStyleBordered
                                                             target:parent

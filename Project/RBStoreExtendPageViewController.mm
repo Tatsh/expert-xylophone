@@ -334,8 +334,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
                                             kShowMoreButtonBottomInset)];
         [showMore setAutoresizingMask:kMaskFlexibleBottomWidth];
         [showMore setHidden:YES];
+        // The selector reference at 0x3c4798 decodes to "selectShowMore", with no argument, and
+        // that is the method this class implements at 0x165708. Registering the colon form named a
+        // selector nothing implements, so the button threw when tapped.
         [showMore addTarget:self
-                      action:@selector(selectShowMore:)
+                      action:@selector(selectShowMore)
             forControlEvents:UIControlEventTouchUpInside];
         [showMore setExclusiveTouch:YES];
         [self.view addSubview:showMore];

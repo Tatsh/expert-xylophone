@@ -397,6 +397,10 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     if (self.proceedBlock) {
         self.proceedBlock(self);
     } else if (self.delegate) {
+        // No class in the binary implements downloadProceed:, so this send throws whenever a
+        // delegate is set and no proceed block is. That is the original's behaviour. Whether the
+        // combination is reachable has not been established: delegates are assigned in the store
+        // controllers and the block is not always set, so it may well be.
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(downloadProceed:)
                                                     withObject:self
                                                  waitUntilDone:NO];
