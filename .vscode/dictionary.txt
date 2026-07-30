@@ -286,6 +286,7 @@ nsjson
 nssq
 nsurl
 nsutf
+nsuuid
 nullability
 nulled
 nullptr

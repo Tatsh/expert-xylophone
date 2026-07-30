@@ -3,9 +3,10 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkUdid). This is a plain
-//  Objective-C file: the advertising-identifier framework is reached through NSClassFromString and
-//  NSSelectorFromString, the keychain through the Security framework's SecItem C API, and the MD5
-//  digest through CommonCrypto, so there is no C++.
+//  Objective-C file: the keychain is reached through the Security framework's SecItem C API and the
+//  MD5 digest through CommonCrypto, so there is no C++. AdSupport is linked and +getAdUdid reaches
+//  ASIdentifierManager indirectly, by decoding the class and selector names at runtime, while
+//  +isAdvertisingTrackingEnabled messages the class directly.
 //
 //  ApplilinkUdid is the Applilink reward-network SDK's device-identifier manager. It is a lazily
 //  created singleton whose +sharedInstance owns a serial dispatch queue and one
@@ -20,6 +21,8 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
+
+#import <AdSupport/ASIdentifierManager.h>
 
 #import "ApplilinkCore.h"
 #import "ApplilinkNetworkError.h"
@@ -112,6 +115,15 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     return [NSString stringWithCString:out encoding:NSASCIIStringEncoding];
 }
 
+// The singleton and its serial queue live in one block of globals at 0x3df6a0, which
+// +allocWithZone: and +sharedInstance share: 0x3df6a0 holds the instance, 0x3df6a8 the queue, and
+// 0x3df6b0 and 0x3df6b8 the two methods' separate once tokens. They cannot be method-local statics
+// because a single slot is read and written from both methods and from -init.
+// @ghidraAddress 0x3df6a0 (instance)
+static ApplilinkUdid *g_pApplilinkUdidSharedInstance = nil;
+// @ghidraAddress 0x3df6a8 (queue)
+static dispatch_queue_t g_pApplilinkUdidQueue = nil;
+
 @implementation ApplilinkUdid
 
 #pragma mark Lifecycle
@@ -119,34 +131,33 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 /** @ghidraAddress 0x22b7c4 */
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     static dispatch_once_t onceToken;
-    static ApplilinkUdid *instance = nil;
     dispatch_once(&onceToken, ^{
       /** @ghidraAddress 0x22b83c */
-      // The binary lazily creates the shared serial queue here and allocates the singleton
-      // through the superclass, returning the just-allocated instance for +sharedInstance to
-      // finish initialising.
-      instance = [super allocWithZone:zone];
+      // The shared serial queue is created here, before the singleton, and -init only reads it.
+      g_pApplilinkUdidQueue = dispatch_queue_create(kApplilinkUdidQueueName.UTF8String, NULL);
+      if (g_pApplilinkUdidSharedInstance == nil) {
+          g_pApplilinkUdidSharedInstance = [super allocWithZone:zone];
+      }
     });
-    return instance;
+    return g_pApplilinkUdidSharedInstance;
 }
 
 /** @ghidraAddress 0x22b8c4 */
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;
-    static ApplilinkUdid *instance = nil;
     dispatch_once(&onceToken, ^{
       /** @ghidraAddress 0x22b908 */
-      instance = [[ApplilinkUdid alloc] init];
-      instance.pasteBoard = [[ApplilinkPasteBoard alloc] init];
+      g_pApplilinkUdidSharedInstance = [[ApplilinkUdid alloc] init];
+      g_pApplilinkUdidSharedInstance.pasteBoard = [[ApplilinkPasteBoard alloc] init];
     });
-    return instance;
+    return g_pApplilinkUdidSharedInstance;
 }
 
 /** @ghidraAddress 0x22b5f0 */
 - (instancetype)init {
-    // The binary runs [super init] synchronously on the shared serial queue.
+    // The binary runs [super init] synchronously on the queue +allocWithZone: already created.
     __block ApplilinkUdid *initialized = nil;
-    dispatch_sync(dispatch_queue_create(kApplilinkUdidQueueName.UTF8String, NULL), ^{
+    dispatch_sync(g_pApplilinkUdidQueue, ^{
       /** @ghidraAddress 0x22b700 */
       initialized = [super init];
     });
@@ -182,7 +193,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 /** @ghidraAddress 0x22bb94 */
 + (NSDictionary *)writeUDIDForFirstEmptyLocationWithUdid:(NSString *)udid {
     ApplilinkUdid *shared = [ApplilinkUdid sharedInstance];
-    NSDictionary *written = [shared.pasteBoard writeStorageData:udid error:NULL];
+    NSError *writeError = nil;
+    NSDictionary *written = [shared.pasteBoard writeStorageData:udid error:&writeError];
     if (written != nil) {
         [ApplilinkUdid sharedInstance].pasteBoard.nonPasteBoardUdidFlag = NO;
     }
@@ -214,9 +226,10 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
                          storageIndex:(int)storageIndex
                                 error:(NSError **)error {
     ApplilinkUdid *shared = [ApplilinkUdid sharedInstance];
+    NSError *readError = nil;
     NSDictionary *data = [shared.pasteBoard storageDataWithServiceName:serviceName
                                                           storageIndex:storageIndex
-                                                                 error:NULL];
+                                                                 error:&readError];
     if (data == nil && error != NULL) {
         *error = [ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkUdidErrorNoData];
     }
@@ -349,7 +362,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 
 /** @ghidraAddress 0x22c8b8 */
 + (BOOL)deleteAdvertisingRewardUdidIndex:(int)index error:(NSError **)error {
-    if (index >= kApplilinkUdidStorageIndexCount) {
+    // The bound test is unsigned in the binary, so a negative index is out of range, not below it.
+    if ((unsigned int)index >= (unsigned int)kApplilinkUdidStorageIndexCount) {
         if (error == NULL) {
             return NO;
         }
@@ -438,7 +452,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 /** @ghidraAddress 0x22ce18 */
 + (BOOL)setUdidWithService:(NSString *)service withUDID:(NSString *)udid {
     NSDate *now = [NSDate date];
-    NSNumber *initialUseCount = @1;
+    // Spelled out because the binary boxes this with -numberWithInteger:, which @1 cannot express.
+    NSNumber *initialUseCount = [NSNumber numberWithInteger:1];
     if (udid == nil) {
         return NO;
     }
@@ -508,7 +523,10 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     }
     NSDictionary *query = @{
         (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
+        // The binary really does key this pair on kSecMatchLimitOne with kSecMatchLimit as the
+        // value. SecItemCopyMatching ignores the unknown key and defaults the limit to one, so the
+        // transposition is invisible at runtime.
+        (__bridge id)kSecMatchLimitOne : (__bridge id)kSecMatchLimit,
         (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
         (__bridge id)kSecAttrService : service,
     };
@@ -598,7 +616,8 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
 + (NSString *)getServiceIndex:(NSString *)service {
     NSDictionary *query = @{
         (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
+        // Transposed in the binary, exactly as in +searchWithService:.
+        (__bridge id)kSecMatchLimitOne : (__bridge id)kSecMatchLimit,
         (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
         (__bridge id)kSecAttrService : service,
     };
@@ -655,9 +674,9 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
     if (![ApplilinkUdid isAdvertisingTrackingOSVersion]) {
         return YES;
     }
-    id identifierManager = [NSClassFromString(ApplilinkUdidDecodeShiftedName(
-        kApplilinkUdidEncodedIdentifierManagerClass)) performSelector:@selector(sharedManager)];
-    return (BOOL)[identifierManager performSelector:@selector(isAdvertisingTrackingEnabled)];
+    // Unlike +getAdUdid, this one messages ASIdentifierManager directly through its class
+    // reference; it does not go through the encoded names.
+    return ASIdentifierManager.sharedManager.isAdvertisingTrackingEnabled;
 }
 
 /** @ghidraAddress 0x22de2c */
@@ -841,11 +860,14 @@ static NSString *ApplilinkUdidDecodeShiftedName(NSString *encoded) {
         ApplilinkUdidDecodeShiftedName(kApplilinkUdidEncodedAdvertisingIdentifierSelector);
     SEL advertisingIdentifierSelector = NSSelectorFromString(selectorName);
     id identifierManager = [identifierManagerClass performSelector:@selector(sharedManager)];
-    id advertisingIdentifier = [identifierManager performSelector:advertisingIdentifierSelector];
+    NSUUID *advertisingIdentifier =
+        [identifierManager performSelector:advertisingIdentifierSelector];
     if (advertisingIdentifier == nil) {
         return nil;
     }
-    return [advertisingIdentifier performSelector:@selector(UUIDString)];
+    // Only the class and the advertisingIdentifier selector are resolved by name; -UUIDString is
+    // sent directly.
+    return advertisingIdentifier.UUIDString;
 }
 
 /** @ghidraAddress 0x22ec0c */
