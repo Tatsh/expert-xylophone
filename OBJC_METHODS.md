@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6206 reconstructed, 4534 verified
+Total: 6343 — 6206 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -209,7 +209,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ✅ | `0xee34` |
 | `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ✅ | `0xef18` |
 | `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ✅ | `0xeffc` |
-| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ❌ | `0xf150` |
+| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ✅ | `0xf150` |
 | `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ✅ | `0xf2e0` |
 | `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ✅ | `0xf3e4` |
 | `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ✅ | `0xf588` |

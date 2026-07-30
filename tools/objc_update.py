@@ -2058,6 +2058,15 @@ VERIFIED = {
     0x20F48: 'SFSafariViewController(RB) -prefersStatusBarHidden is mov w0,#1 then ret',
     0x366F0: 'UITextView(RB) -canBecomeFirstResponder is mov w0,#0 then ret',
     0x88FB8: 'SKStoreProductViewController(RB) -prefersStatusBarHidden is mov w0,#1 then ret',
+    # The last UIAlertView(RB) row. It reads as unreconstructed only because _selector_of cannot
+    # spell showAddLimepointByApplilink::, whose second keyword is empty; the reconstruction is
+    # there. Both cache slots were resolved from the initialiser blocks that fill them: 0x1003cfe00
+    # is written at 0x119f0 from the key at 0x362680, "App Installed Reward", and 0x1003cfe08 at
+    # 0x11a3c from 0x3626a0, "\"%d Lime Point\" has been Added.". One specifier, and the str x20 at
+    # 0xf194 is the one variadic argument. The cancel title is not a cache slot but an inline
+    # -localizedStringForKey:"OK" value:"" table:nil at 0xf1fc.
+    0xF150: 'UIAlertView(RB) +showAddLimepointByApplilink:: nil otherButtonTitles (x6 = 0), then '
+            '-show, then the alert is returned',
 }
 
 

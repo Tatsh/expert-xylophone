@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIAlertView *)showAlertNeedResourceUpdate:(nullable id<UIAlertViewDelegate>)delegate;
 
 /**
- * @brief Show the "App Installed Reward: %\@ lime points have been added." alert (OK).
+ * @brief Show the "App Installed Reward" / "%d Lime Point" has been Added. alert (OK).
  * @param limePoint The number of lime points substituted into the message.
  * @param delegate The alert delegate.
  * @return The shown alert.
