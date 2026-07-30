@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4455 verified
-(70.2%).
+Total: 6343 — 6203 reconstructed, 4460 verified
+(70.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -323,7 +323,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `request` |  | ✅ | ❌ | `0x1aad8` |
 | `RBResourceDownloadViewController` | `-` | `downloadWithURLString:` |  | ✅ | ❌ | `0x1b994` |
 | `RBResourceDownloadViewController` | `-` | `unzip:` |  | ✅ | ❌ | `0x1bdfc` |
-| `RBResourceDownloadViewController` | `-` | `success` |  | ✅ | ❌ | `0x1c0d8` |
+| `RBResourceDownloadViewController` | `-` | `success` |  | ✅ | ✅ | `0x1c0d8` |
 | `RBResourceDownloadViewController` | `+` | `checkFile` |  | ✅ | ❌ | `0x1c2bc` |
 | `RBResourceDownloadViewController` | `-` | `updateProgress:` |  | ✅ | ✅ | `0x1c72c` |
 | `RBResourceDownloadViewController` | `-` | `zipArchiveWillUnzipArchiveAtPath:zipInfo:` |  | ✅ | ✅ | `0x1ca40` |
@@ -335,12 +335,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `updateLayout` |  | ✅ | ✅ | `0x1ea20` |
 | `RBResourceDownloadViewController` | `-` | `layoutScrollView` |  | ✅ | ✅ | `0x1f600` |
 | `RBResourceDownloadViewController` | `-` | `pageDidChangeValue:` |  | ✅ | ✅ | `0x1f6c4` |
-| `RBResourceDownloadViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1f934` |
-| `RBResourceDownloadViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x1fa5c` |
+| `RBResourceDownloadViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ✅ | `0x1f934` |
+| `RBResourceDownloadViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1fa5c` |
 | `RBResourceDownloadViewController` | `-` | `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:` |  | ✅ | ✅ | `0x1fef0` |
 | `RBResourceDownloadViewController` | `-` | `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:` |  | ✅ | ✅ | `0x1ff7c` |
-| `RBResourceDownloadViewController` | `-` | `URLSession:downloadTask:didFinishDownloadingToURL:` |  | ✅ | ❌ | `0x2002c` |
-| `RBResourceDownloadViewController` | `-` | `URLSession:task:didCompleteWithError:` |  | ✅ | ❌ | `0x20298` |
+| `RBResourceDownloadViewController` | `-` | `URLSession:downloadTask:didFinishDownloadingToURL:` |  | ✅ | ✅ | `0x2002c` |
+| `RBResourceDownloadViewController` | `-` | `URLSession:task:didCompleteWithError:` |  | ✅ | ✅ | `0x20298` |
 | `RBResourceDownloadViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x2034c` |
 | `RBResourceDownloadViewController` | `-` | `downloadPath` | prop | ✅ | ✅ | `0x20380` |
 | `RBResourceDownloadViewController` | `-` | `setDownloadPath:` | prop | ✅ | ✅ | `0x20390` |

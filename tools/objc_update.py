@@ -827,6 +827,27 @@ VERIFIED = {
     # the skip too. The ratio is totalBytesWritten (x5) over totalBytesExpectedToWrite (x6), not
     # the per-call bytesWritten in x4.
     0x1ff7c: 'RBResourceDownloadViewController -URLSession:...didWriteData:...: ratio under 1.0f',
+    # -success carries a neDebugLog and -URLSession:...didFinishDownloadingToURL: an NE_DBG_FIRST
+    # block, and NEITHER is invented content. neDebugLog is the project's own instrumentation from
+    # GameSystem/src/neDebugLog.h, compiled in only under RBPDBG and collapsing to an empty inline
+    # otherwise, and NE_DBG_FIRST(n) collapses to if (0). Every bl in -success goes to objc_msgSend,
+    # objc_retainAutoreleasedReturnValue or objc_release, so the binary really does contain no C
+    # call, which is the expected result rather than a discrepancy. Recorded because this looks
+    # exactly like the invented-NSLog defect until the header is checked. The one wrinkle: an empty
+    # inline still evaluates its arguments, and -success passes GetImageAssetDirectoryPath(), which
+    # is a pure read of a global, so nothing is executed that the binary would not do.
+    0x1c0d8: 'RBResourceDownloadViewController -success: version, flag, save, then checkFile picks '
+             'dismiss at 0x1c1c4 or the error alert at 0x1c204',
+    0x2002c: 'RBResourceDownloadViewController -URLSession:...didFinishDownloadingToURL:: move, '
+             'then cbz on the error picks unzip on a new thread or the error path',
+    0x20298: 'RBResourceDownloadViewController -URLSession:task:didCompleteWithError:: the cbz at '
+             '0x2022a8 is on x4, the error, and the body runs only when it is non-nil',
+    # The page is rounded in float32: the double quotient is narrowed once by the fcvt at 0x1f97c
+    # and that float32 feeds both the truncation and the fractional subtraction. Ours narrows from
+    # the double twice, which agrees for every reachable value. Threshold is a strict > 0.5f.
+    0x1f934: 'RBResourceDownloadViewController -scrollViewDidScroll:: round-half-up in float32',
+    0x1fa5c: 'RBResourceDownloadViewController -viewDidDisappear:: both tasks cancelled and '
+             'cleared, the subview sweep, then seven image views nilled and showTitle',
     0x16d5c0: 'RBMusicGridLayout -init: both idiom arms, every constant decoded from the pool',
     0x16d7d8: 'RBMusicGridLayout -prepareLayout: ceiling division, slack, item frames',
     0x16de78: 'RBMusicGridLayout -collectionViewContentSize: tail-call to the ivar',
