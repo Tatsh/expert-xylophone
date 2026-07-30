@@ -1122,8 +1122,10 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
 - (void)SetRankView:(int)SetRankView {
     if (SetRankView == -1) {
         [self.rankView setImage:nil];
+        // The badge keeps its origin but collapses to nothing: only d0 and d1 survive the -frame
+        // call, and the width and height passed to setFrame: are zeroed at 0xd2f6c and 0xd2f70.
         CGRect frame = self.rankView.frame;
-        [self.rankView setFrame:frame];
+        [self.rankView setFrame:CGRectMake(frame.origin.x, frame.origin.y, 0.0, 0.0)];
     } else {
         UIImage *rankImage = [UIImage imageWithName:kRankImageNames[SetRankView]];
         [self.rankView setImage:rankImage];

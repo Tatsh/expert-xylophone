@@ -108,21 +108,21 @@ constexpr double kFadeStepInterval = 0.05;
 constexpr double kResumeFadeInTime = 0.3;
 
 @interface AudioManager () {
-    // Engine-side subsystems and the instance-tracking tables, laid out to match the binary's ivar
-    // block. The 32-bit offsets are documentation only; access always goes through these named
+    // Engine-side subsystems and the instance-tracking tables, in the order and at the offsets the
+    // ivar list gives. The offsets are documentation only; access always goes through these named
     // fields.
     caPlayerMgr *sePlayer;                                  // +0x08
     AudioSourceSlot *seAVPlayer;                            // +0x10
-    BOOL isSuspend;                                         // +0x18
-    float unitVolume;                                       // +0x48
-    SeManageId seManageId[kGroupCount][kInstanceSlotCount]; // +0xb8
-    SeManageId seList[kInstanceSlotCount];                  // +0xc0
+    SeManageId seList[kInstanceSlotCount];                  // +0x18
+    BOOL isSuspend;                                         // +0x48
     BOOL isInterruption[kGroupCount];                       // +0x49
     BOOL isPlaying[kGroupCount];                            // +0x4b
-    BOOL isOnPause;                                         // +0x55
-    BOOL isOnPauseVoice;                                    // +0x54
-    int seVolume[kGroupCount];                              // +0x58
-    BOOL _isStart;                                          // +0x50
+    float unitVolume;                                       // +0x50
+    BOOL isOnPause;                                         // +0x54
+    BOOL isOnPauseVoice;                                    // +0x55
+    SeManageId seManageId[kGroupCount][kInstanceSlotCount]; // +0x58
+    int seVolume[kGroupCount];                              // +0xb8
+    BOOL _isStart;                                          // +0xc0
 }
 @end
 

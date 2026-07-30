@@ -40,10 +40,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark System lifecycle
 
 /**
- * @brief Schedule the deferred engine start on the current run loop and mark the manager started.
+ * @brief Schedule the deferred engine start on the current run loop.
+ *
+ * The manager is not marked started here: only @c -onStartPlayer: writes that flag, when the timer
+ * fires.
  * @ghidraAddress 0x3d3ec
  */
 - (void)systemStart;
+/**
+ * @brief Start the engine subsystems now rather than waiting for the next run-loop pass.
+ * @ghidraAddress 0x3d4b4
+ */
+- (void)systemStartBlock;
 /**
  * @brief Tear down the engine audio context and release the background-music and voice players.
  * @ghidraAddress 0x3d4c4
