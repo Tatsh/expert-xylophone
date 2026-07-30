@@ -1015,6 +1015,12 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x4ee50 */
 - (BOOL)needUpdateTerms {
+#ifdef ENABLE_PATCHES
+    // Accepting the terms POSTs to a Konami endpoint that no longer answers, so the acceptance can
+    // never be recorded and the screen returns on every launch. All three title scenes gate on this
+    // one answer, so reporting no outstanding terms skips it everywhere, first install included.
+    return NO;
+#else
     NSString *accepted = RBUserSettingData.sharedInstance.termVersion;
     NSString *latest = self.latestTermVer;
     if (accepted == nil) {
@@ -1026,6 +1032,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     }
     // The accepted version being older than the latest means a re-accept is needed.
     return [accepted compare:latest options:NSNumericSearch] == NSOrderedAscending;
+#endif
 }
 
 /** @ghidraAddress 0x4f4d0 */

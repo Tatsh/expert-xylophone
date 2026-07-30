@@ -55,3 +55,15 @@ over a screen meant only to be read and scrolled.
 The patch sets `editable` to `NO`. The delegate is left in place either way, because the scroll
 callback is what enables the Agree button once the reader reaches the bottom. Nothing else about the
 screen changes, and an unpatched build keeps the original's behaviour.
+
+### The Terms of Service agreement
+
+**File:** `Project/AppDelegate.mm` — `-needUpdateTerms` (0x4ee50)
+
+Accepting the terms POSTs to `[NetworkUtil termAgree]`, a Konami endpoint that no longer answers, so
+`-sendAgree`'s success path can never run and the acceptance is never recorded. An unpatched build
+therefore shows the screen again on every launch, and there is no way past it.
+
+All three themed title scenes gate the screen on `-needUpdateTerms`, so the patch reports no
+outstanding terms and the screen is skipped everywhere, first install included. The screen and its
+whole agree flow are left intact for an unpatched build.
