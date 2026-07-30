@@ -640,7 +640,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     if (NE_DBG_FIRST(60)) {
         neDebugLog("tutorialStep step=%ld root=%s target=%s clip=(%.0f,%.0f %.0fx%.0f) "
                    "forTouch=%d laidOut=%d touchAnim=%d cursorAnim=%d anim=%d",
-                   (long)type,
+                   (long)tutorialType,
                    clipRoot ? [clipRoot class].description.UTF8String : "(nil)",
                    self.clipTargetView ? self.clipTargetView.class.description.UTF8String : "(nil)",
                    self.clipRect.origin.x,
