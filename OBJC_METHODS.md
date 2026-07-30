@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4404 verified
-(69.4%).
+Total: 6343 — 6203 reconstructed, 4413 verified
+(69.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -308,17 +308,17 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResoureDownloadBGEffectView` | `-` | `setupView` |  | ✅ | ❌ | `0x19c40` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0x19c90` |
 | `RBResourceDownloadViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x19dd4` |
-| `RBResourceDownloadViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x19ddc` |
+| `RBResourceDownloadViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x19ddc` |
 | `RBResourceDownloadViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x19e00` |
 | `RBResourceDownloadViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x19e10` |
-| `RBResourceDownloadViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x19e1c` |
-| `RBResourceDownloadViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x19e50` |
-| `RBResourceDownloadViewController` | `-` | `download` |  | ✅ | ❌ | `0x19f74` |
-| `RBResourceDownloadViewController` | `-` | `resume` |  | ✅ | ❌ | `0x1a01c` |
-| `RBResourceDownloadViewController` | `-` | `pause` |  | ✅ | ❌ | `0x1a0e8` |
-| `RBResourceDownloadViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1a1b4` |
-| `RBResourceDownloadViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1a2ac` |
-| `RBResourceDownloadViewController` | `-` | `viewWillLayoutSubviews` |  | ✅ | ❌ | `0x1a56c` |
+| `RBResourceDownloadViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x19e1c` |
+| `RBResourceDownloadViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x19e50` |
+| `RBResourceDownloadViewController` | `-` | `download` |  | ✅ | ✅ | `0x19f74` |
+| `RBResourceDownloadViewController` | `-` | `resume` |  | ✅ | ✅ | `0x1a01c` |
+| `RBResourceDownloadViewController` | `-` | `pause` |  | ✅ | ✅ | `0x1a0e8` |
+| `RBResourceDownloadViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1a1b4` |
+| `RBResourceDownloadViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1a2ac` |
+| `RBResourceDownloadViewController` | `-` | `viewWillLayoutSubviews` |  | ✅ | ✅ | `0x1a56c` |
 | `RBResourceDownloadViewController` | `-` | `animation` |  | ✅ | ❌ | `0x1a5bc` |
 | `RBResourceDownloadViewController` | `-` | `request` |  | ✅ | ❌ | `0x1aad8` |
 | `RBResourceDownloadViewController` | `-` | `downloadWithURLString:` |  | ✅ | ❌ | `0x1b994` |

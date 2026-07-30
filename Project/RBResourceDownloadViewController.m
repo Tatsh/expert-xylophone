@@ -84,8 +84,10 @@ enum { kHelpPageCount = 6 };
 // The background-music type played for the resource-download flow.
 enum { kResourceDownloadBgmType = 15 };
 
-// The resource-download background-music start volume, and the fade timings.
-static const float kResourceDownloadBgmVolume = 0.3f;
+// The resource-download background-music start volume, and the fade timings. The volume is a
+// 4-byte ldr s0, so it really is a float32; the duration is an fmov immediate and so has no pool
+// address to cite.
+static const float kResourceDownloadBgmVolume = 0.3f; // @ghidraAddress 0x2ee910
 static const NSTimeInterval kFadeOutDuration = 1.0;
 
 // The progress-fill scale factors for the download and unzip phases.

@@ -785,6 +785,22 @@ VERIFIED = {
     0x1a1b08: 'UIImage +imageNamedWithoutCache:: the two passes use mirrored iPad tags',
     0x1a2fa4: 'UIImage -clipImageWithRect:: all twelve items, including the d0-d3 mapping',
     0x1ea20: 'RBResourceDownloadViewController -updateLayout: three arms, aligned not centred',
+    # RBResourceDownloadViewController, read one routine at a time against the disassembly. The
+    # csel at 0x19df4 is the only idiom branch in this group and it runs the wrong way round from
+    # the usual: the pad gets the RESTRICTIVE mask 6, the phone gets 0x1e. Both LoadMusicType: 0xf
+    # and the PlayMusic: volume held, the latter a 4-byte ldr s0 at 0x19f34 off 0x2ee910, so 0.3f
+    # is correctly spelled float32 rather than a double.
+    0x19ddc: 'RBResourceDownloadViewController -supportedInterfaceOrientations: pad 6, phone 0x1e',
+    0x19e1c: 'RBResourceDownloadViewController -willAnimateRotation...: super only, args untouched',
+    0x19e50: 'RBResourceDownloadViewController -viewDidLoad: mask 0x3f, setupView, then the BGM',
+    0x19f74: 'RBResourceDownloadViewController -download: downloadPath or fall back to -request',
+    0x1a01c: 'RBResourceDownloadViewController -resume: task resume, pause flag NO, then save',
+    0x1a0e8: 'RBResourceDownloadViewController -pause: task suspend, pause flag YES, then save',
+    0x1a1b4: 'RBResourceDownloadViewController -alertView:clickedButtonAtIndex:: tag 3, then the '
+             'cancel-index compare at 0x1a208; every other tag just downloads',
+    0x1a2ac: 'RBResourceDownloadViewController -viewDidAppear:: 1.0 fade to alpha 0, then the '
+             'completion runs -animation and -download in that order',
+    0x1a56c: 'RBResourceDownloadViewController -viewWillLayoutSubviews: super then -updateLayout',
     0x16d5c0: 'RBMusicGridLayout -init: both idiom arms, every constant decoded from the pool',
     0x16d7d8: 'RBMusicGridLayout -prepareLayout: ceiling division, slack, item frames',
     0x16de78: 'RBMusicGridLayout -collectionViewContentSize: tail-call to the ivar',
