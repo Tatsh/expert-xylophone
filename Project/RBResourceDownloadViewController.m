@@ -634,16 +634,35 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 // the clipImageWithRect: at 0x1d130; the narrow one is half its size, matching kMeterSpriteScale.
 static const CGRect kPastelClipRectNarrow = {{0, 0}, {86, 91}};
 static const CGRect kPastelClipRectWide = {{0, 0}, {173, 182}};
-static const CGRect kPopClipRect = {{87, 0}, {128, 84}};
-static const CGRect kTrackClipRect = {{0, 92}, {155, 7}};
-static const CGRect kFillClipRect = {{0, 100}, {155, 7}};
-// Progress-meter placement offsets within the pastel container (phone (standard) layout).
-static const CGFloat kPastelImageOriginX = 42;
-static const CGFloat kPastelImageOriginY = 32;
-static const CGFloat kTrackImageOriginX = 5;
-static const CGFloat kTrackImageOriginY = 78;
-// The half-scale applied to each cropped meter sprite so it renders at point resolution.
+// The remaining crops from the dl_info atlas, per idiom. The narrow set is what this file already
+// had; the wide set comes from the pad arm of the branch at 0x1d10c, whose clip calls sit at
+// 0x1d274, 0x1d398 and 0x1d3c4.
+static const CGRect kPopClipRectNarrow = {{87, 0}, {128, 84}};
+static const CGRect kPopClipRectWide = {{175, 0}, {256, 169}};
+static const CGRect kTrackClipRectNarrow = {{0, 92}, {155, 7}};
+static const CGRect kTrackClipRectWide = {{0, 184}, {310, 14}};
+static const CGRect kFillClipRectNarrow = {{0, 100}, {155, 7}};
+static const CGRect kFillClipRectWide = {{0, 200}, {310, 14}};
+// Progress-meter placement within the pastel container, per idiom. Only the narrow set was here, so
+// on a pad the whole meter was laid out for a phone. The wide origins are the 132 and 68 at
+// 0x2ee9f8, the 62 at 0x2eea20, and the 160 at 0x2eea38; the pop sprite takes y zero in both.
+static const CGFloat kPastelImageOriginXNarrow = 42;
+static const CGFloat kPastelImageOriginYNarrow = 32;
+static const CGFloat kPastelImageOriginXWide = 132;
+static const CGFloat kPastelImageOriginYWide = 68;
+static const CGFloat kPopImageOriginXNarrow = 0;
+static const CGFloat kPopImageOriginXWide = 62;
+static const CGFloat kTrackImageOriginXNarrow = 5;
+static const CGFloat kTrackImageOriginYNarrow = 78;
+static const CGFloat kTrackImageOriginXWide = 0;
+static const CGFloat kTrackImageOriginYWide = 160;
+// The half-scale applied to each cropped meter sprite so it renders at point resolution. The pad
+// draws its track and fill at the crop's own size instead: the pad arm moves the size straight into
+// the frame at 0x1d49c where the phone arm multiplies it, and an unscaled 310 is what spans the
+// 320-wide container.
 static const CGFloat kMeterSpriteScale = 0.5;
+static const CGFloat kTrackSpriteScaleNarrow = 0.5;
+static const CGFloat kTrackSpriteScaleWide = 1.0;
 // The resizable cap inset used for the help background (and the wide-variant progress fill).
 static const CGFloat kHelpBackgroundCapInset = 10;
 // The help-carousel container geometry (phone (standard) layout).
@@ -714,39 +733,48 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // the pop artwork, the track, and the clipped fill. Each cropped sprite is drawn at half size.
     UIImage *info = [UIImage imageWithName:kInfoImageName useCache:NO];
 
+    const BOOL narrow = !IsPad();
+
     UIImage *pastel =
-        [info clipImageWithRect:!IsPad() ? kPastelClipRectNarrow : kPastelClipRectWide];
+        [info clipImageWithRect:narrow ? kPastelClipRectNarrow : kPastelClipRectWide];
     self.pastelImageView = [[UIImageView alloc] initWithImage:pastel];
-    self.pastelImageView.frame = CGRectMake(kPastelImageOriginX,
-                                            kPastelImageOriginY,
-                                            pastel.size.width * kMeterSpriteScale,
-                                            pastel.size.height * kMeterSpriteScale);
+    self.pastelImageView.frame =
+        CGRectMake(narrow ? kPastelImageOriginXNarrow : kPastelImageOriginXWide,
+                   narrow ? kPastelImageOriginYNarrow : kPastelImageOriginYWide,
+                   pastel.size.width * kMeterSpriteScale,
+                   pastel.size.height * kMeterSpriteScale);
     [self.pastelView addSubview:self.pastelImageView];
 
-    UIImage *pop = [info clipImageWithRect:kPopClipRect];
+    UIImage *pop = [info clipImageWithRect:narrow ? kPopClipRectNarrow : kPopClipRectWide];
     self.popImageView = [[UIImageView alloc] initWithImage:pop];
-    self.popImageView.frame =
-        CGRectMake(0, 0, pop.size.width * kMeterSpriteScale, pop.size.height * kMeterSpriteScale);
+    self.popImageView.frame = CGRectMake(narrow ? kPopImageOriginXNarrow : kPopImageOriginXWide,
+                                         0,
+                                         pop.size.width * kMeterSpriteScale,
+                                         pop.size.height * kMeterSpriteScale);
     [self.pastelView addSubview:self.popImageView];
 
-    UIImage *track = [info clipImageWithRect:kTrackClipRect];
-    UIImage *fill = [info clipImageWithRect:kFillClipRect];
-    if (IsPad()) {
+    UIImage *track = [info clipImageWithRect:narrow ? kTrackClipRectNarrow : kTrackClipRectWide];
+    UIImage *fill = [info clipImageWithRect:narrow ? kFillClipRectNarrow : kFillClipRectWide];
+    const CGFloat trackScale = narrow ? kTrackSpriteScaleNarrow : kTrackSpriteScaleWide;
+    if (!narrow) {
         fill = [fill resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset,
                                                                   kHelpBackgroundCapInset,
                                                                   kHelpBackgroundCapInset,
                                                                   kHelpBackgroundCapInset)];
     }
     self.trackImageView = [[UIImageView alloc] initWithImage:track];
-    self.trackImageView.frame = CGRectMake(kTrackImageOriginX,
-                                           kTrackImageOriginY,
-                                           track.size.width * kMeterSpriteScale,
-                                           track.size.height * kMeterSpriteScale);
+    self.trackImageView.frame = CGRectMake(narrow ? kTrackImageOriginXNarrow
+                                                  : kTrackImageOriginXWide,
+                                           narrow ? kTrackImageOriginYNarrow
+                                                  : kTrackImageOriginYWide,
+                                           track.size.width * trackScale,
+                                           track.size.height * trackScale);
     [self.pastelView addSubview:self.trackImageView];
 
     self.progressImageView = [[UIImageView alloc] initWithImage:fill];
-    self.progressImageView.frame =
-        CGRectMake(0, 0, fill.size.width * kMeterSpriteScale, fill.size.height * kMeterSpriteScale);
+    // The fill starts with no width at all, in both arms, and -updateProgress: grows it. Giving it
+    // the crop's width showed a full progress bar before anything had downloaded.
+    self.progressImageView.frame = CGRectMake(0, 0, 0, fill.size.height * trackScale);
     self.progressImageView.clipsToBounds = YES;
     [self.trackImageView addSubview:self.progressImageView];
     if (!IsPad()) {
