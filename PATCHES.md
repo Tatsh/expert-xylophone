@@ -103,3 +103,19 @@ tutorial: its unlock-item step cannot be completed if completing it terminates t
 The patch converts a non-string value with `-description` before escaping. String values take the
 same path they always did, so an unpatched build is unaffected and a patched one differs only
 where the binary would have crashed.
+
+### The unzip completion callback's thread
+
+**File:** `Project/RBResourceDownloadViewController.m` —
+`-zipArchiveDidUnzipArchiveAtPath:zipInfo:unzippedPath:` (0x1ca44)
+
+The binary is seven instructions that tail-call `-success` at 0x1ca54. SSZipArchive delivers that
+callback on the detached thread running `-unzip:`, so `-success` — which dismisses the controller —
+runs off the main thread. Current iOS traps that with an `EXC_BREAKPOINT` out of
+`FBSMainRunLoopSerialQueue`, where the iOS this was built for tolerated it.
+
+The patch marshals the call to the main queue. An unpatched build makes the direct call the binary
+makes, and crashes on a modern device at the end of the resource download.
+
+This deviation predates the patch convention and ran ungated for some time; it is gated and
+recorded here now rather than being left as an undocumented exception.

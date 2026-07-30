@@ -554,13 +554,19 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 - (void)zipArchiveDidUnzipArchiveAtPath:(NSString *)path
                                 zipInfo:(unz_global_info)zipInfo
                            unzippedPath:(NSString *)unzippedPath {
+    /** @ghidraAddress 0x1ca44 */
     // SSZipArchive calls this back on the detached thread that runs -unzip:, and -success dismisses
-    // this controller. The binary calls -success straight through from here; current iOS traps that
-    // with an EXC_BREAKPOINT out of FBSMainRunLoopSerialQueue, so the call is marshalled to the
-    // main thread.
+    // this controller. The binary is seven instructions that tail-call -success at 0x1ca54, from
+    // that thread.
+#ifdef ENABLE_PATCHES
+    // Current iOS traps the direct call with an EXC_BREAKPOINT out of FBSMainRunLoopSerialQueue,
+    // so the call is marshalled to the main thread. See PATCHES.md.
     dispatch_async(dispatch_get_main_queue(), ^{
       [self success];
     });
+#else
+    [self success];
+#endif
 }
 
 - (void)zipArchiveWillUnzipFileAtIndex:(NSInteger)fileIndex
