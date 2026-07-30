@@ -142,6 +142,7 @@ extraout
 fabsf
 falied
 fastcall
+fcsel
 fcvtzs
 floatloopcounter
 fmla

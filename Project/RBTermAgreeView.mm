@@ -104,8 +104,9 @@ constexpr CGFloat kTermsTextInsetHorizontal = 5.0;
 constexpr CGFloat kGradationCornerRadiusWide = 10.0;
 constexpr CGFloat kGradationCornerRadiusNarrow = 5.0;
 
-// The Classic-theme gradation overlay origin and the wide-variant title-bar drop.
-constexpr CGFloat kGradationOriginX = 2.0;
+// The inset applied to the gradation overlay on both edges, and the wide-variant title-bar drop.
+// @ghidraAddress 0x1c436c
+constexpr CGFloat kGradationOrigin = 2.0;
 constexpr CGFloat kGradationWideOriginYInset = 2.0;
 constexpr CGFloat kClassicTitleDrop = 16.0;
 
@@ -125,6 +126,11 @@ constexpr CGFloat kGrayViewWhite = 0.9;
 // The origin-y baseline the wide Classic layout shifts the content panel up to.
 // @ghidraAddress 0x2ec6f8 (g_dPopupWideContentOriginYBase)
 constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
+// The content offset the Classic theme uses on a phone, where the wide arithmetic does not apply.
+// @ghidraAddress 0x1c4198
+constexpr CGFloat kClassicNarrowContentTopOffset = 12.0;
+// The extra height taken off the terms text view on a phone. @ghidraAddress 0x1c5194
+constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
 
 @interface RBTermAgreeView ()
 
@@ -164,10 +170,11 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
         self.gradationImageView.image = gradation;
         self.gradationImageView.layer.cornerRadius = cornerRadius;
         self.gradationImageView.layer.masksToBounds = YES;
-        self.gradationImageView.frame = CGRectMake(kTermsTextInsetVertical,
-                                                   kTermsTextInsetVertical,
-                                                   gradation.size.width,
-                                                   gradation.size.height);
+        // Both edges inset by kGradationOrigin, from the pair of 2.0 the setFrame: at 0x1c437c is
+        // handed. Insetting by the text inset instead left the bar short of the panel's top edge,
+        // and the terms text scrolled through the strip above it.
+        self.gradationImageView.frame = CGRectMake(
+            kGradationOrigin, kGradationOrigin, gradation.size.width, gradation.size.height);
     } else if (theme == RBUserSettingDataThemeClassic) {
         self.gradationImageView = [[UIImageView alloc] initWithImage:gradation];
         self.gradationImageView.layer.cornerRadius = kGradationCornerRadiusNarrow;
@@ -177,7 +184,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
         self.gradationImageView.layer.masksToBounds = YES;
         CGFloat originY = !IsPad() ? kTermsTextInsetVertical + kGradationWideOriginYInset : 0.0;
         self.gradationImageView.frame =
-            CGRectMake(kGradationOriginX, originY, gradation.size.width, gradation.size.height);
+            CGRectMake(kGradationOrigin, originY, gradation.size.width, gradation.size.height);
         [self.baseView addSubview:self.gradationImageView];
         [self.baseView bringSubviewToFront:self.titleImageView];
     }
@@ -250,17 +257,24 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     // Shift the content and background panels up for the wide layout of the Classic theme so the
     // taller terms text view fits; the other themes keep the base layout. The exact per-edge frame
     // arithmetic below the offset is a soft-float pattern recovered from the disassembly.
+    // The branch at 0x1c3f20 has three arms, not two: a non-Classic theme takes no offset, Classic
+    // on a pad computes one and shifts the panels up by it, and Classic on a phone takes a flat 12.
     CGFloat contentTopOffset = 0.0;
-    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic && IsPad()) {
-        contentTopOffset = self.baseView.y - kPopupWideContentOriginYBase;
-        self.contentView.frame = CGRectMake(self.contentView.x,
-                                            self.contentView.y - contentTopOffset,
-                                            self.contentView.width,
-                                            self.contentView.height);
-        self.backgroundImageView.frame = CGRectMake(self.backgroundImageView.x,
-                                                    self.backgroundImageView.y - contentTopOffset,
-                                                    self.backgroundImageView.width,
-                                                    self.backgroundImageView.height);
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeClassic) {
+        if (IsPad()) {
+            contentTopOffset = self.baseView.y - kPopupWideContentOriginYBase;
+            self.contentView.frame = CGRectMake(self.contentView.x,
+                                                self.contentView.y - contentTopOffset,
+                                                self.contentView.width,
+                                                self.contentView.height);
+            self.backgroundImageView.frame =
+                CGRectMake(self.backgroundImageView.x,
+                           self.backgroundImageView.y - contentTopOffset,
+                           self.backgroundImageView.width,
+                           self.backgroundImageView.height);
+        } else {
+            contentTopOffset = kClassicNarrowContentTopOffset;
+        }
     }
 
     [self setupGradationOverlay];
@@ -351,12 +365,15 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     [self.contentView addSubview:cancel];
     self.disAgreeButton = cancel;
 
-    // The terms text view fills the term view, leaving room for the button row.
-    UITextView *textView =
-        [[UITextView alloc] initWithFrame:CGRectMake(0.0,
-                                                     contentTopOffset,
-                                                     self.termView.width,
-                                                     self.termView.height - buttonRowHeight)];
+    // The terms text view fills the term view, leaving room for the button row and then for the
+    // content offset again on a pad, or a fixed 6 elsewhere (the fcsel at 0x1c519c). The offset is
+    // zero for every theme but Classic, so this only shortens the view where the panel was shifted.
+    CGFloat textViewInset = IsPad() ? contentTopOffset : kNarrowTextViewBottomInset;
+    UITextView *textView = [[UITextView alloc]
+        initWithFrame:CGRectMake(0.0,
+                                 contentTopOffset,
+                                 self.termView.width,
+                                 (self.termView.height - buttonRowHeight) - textViewInset)];
     textView.textContainerInset = UIEdgeInsetsMake(kTermsTextInsetVertical,
                                                    kTermsTextInsetHorizontal,
                                                    kTermsTextInsetVertical,
