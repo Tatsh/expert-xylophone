@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4228 verified
-(66.7%).
+Total: 6343 — 6203 reconstructed, 4238 verified
+(66.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3544,12 +3544,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `setupView` |  | ✅ | ❌ | `0x142e08` |
 | `RBErosionMarkUpdater` | `-` | `getPickerViewScore:` |  | ✅ | ❌ | `0x1433ec` |
 | `RBErosionMarkUpdater` | `-` | `setPickerViewScore:score:` |  | ✅ | ❌ | `0x14370c` |
-| `RBErosionMarkUpdater` | `-` | `pickerOpen` |  | ✅ | ❌ | `0x143b8c` |
-| `RBErosionMarkUpdater` | `-` | `pickerClose` |  | ✅ | ❌ | `0x143cc8` |
+| `RBErosionMarkUpdater` | `-` | `pickerOpen` |  | ✅ | ✅ | `0x143b8c` |
+| `RBErosionMarkUpdater` | `-` | `pickerClose` |  | ✅ | ✅ | `0x143cc8` |
 | `RBErosionMarkUpdater` | `-` | `reset` |  | ✅ | ❌ | `0x143d8c` |
 | `RBErosionMarkUpdater` | `-` | `scoreValidate` |  | ✅ | ❌ | `0x144080` |
-| `RBErosionMarkUpdater` | `-` | `updatePerform` |  | ✅ | ❌ | `0x144418` |
-| `RBErosionMarkUpdater` | `-` | `updateCancel` |  | ✅ | ❌ | `0x14445c` |
+| `RBErosionMarkUpdater` | `-` | `updatePerform` |  | ✅ | ✅ | `0x144418` |
+| `RBErosionMarkUpdater` | `-` | `updateCancel` |  | ✅ | ✅ | `0x14445c` |
 | `RBErosionMarkUpdater` | `-` | `needUpdateScore` |  | ✅ | ❌ | `0x14451c` |
 | `RBErosionMarkUpdater` | `-` | `getScore` |  | ✅ | ❌ | `0x144820` |
 | `RBErosionMarkUpdater` | `-` | `updateScore` |  | ✅ | ❌ | `0x1448d8` |
@@ -3562,14 +3562,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `reshowAlertSetScore:` |  | ✅ | ❌ | `0x147868` |
 | `RBErosionMarkUpdater` | `-` | `showAlertCancel` |  | ✅ | ❌ | `0x147af4` |
 | `RBErosionMarkUpdater` | `-` | `showAlertConfirm` |  | ✅ | ❌ | `0x147c5c` |
-| `RBErosionMarkUpdater` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1480ac` |
-| `RBErosionMarkUpdater` | `-` | `textFieldDidBeginEditing:` |  | ✅ | ❌ | `0x1481a4` |
-| `RBErosionMarkUpdater` | `-` | `textFieldDidEndEditing:` |  | ✅ | ❌ | `0x148204` |
+| `RBErosionMarkUpdater` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1480ac` |
+| `RBErosionMarkUpdater` | `-` | `textFieldDidBeginEditing:` |  | ✅ | ✅ | `0x1481a4` |
+| `RBErosionMarkUpdater` | `-` | `textFieldDidEndEditing:` |  | ✅ | ✅ | `0x148204` |
 | `RBErosionMarkUpdater` | `-` | `textField:shouldChangeCharactersInRange:replacementString:` |  | ✅ | ✅ | `0x148268` |
-| `RBErosionMarkUpdater` | `-` | `numberOfComponentsInPickerView:` |  | ✅ | ❌ | `0x148270` |
+| `RBErosionMarkUpdater` | `-` | `numberOfComponentsInPickerView:` |  | ✅ | ✅ | `0x148270` |
 | `RBErosionMarkUpdater` | `-` | `pickerView:numberOfRowsInComponent:` |  | ✅ | ✅ | `0x1482a0` |
-| `RBErosionMarkUpdater` | `-` | `pickerView:titleForRow:forComponent:` |  | ✅ | ❌ | `0x1482a8` |
-| `RBErosionMarkUpdater` | `-` | `pickerView:didSelectRow:inComponent:` |  | ✅ | ❌ | `0x1482e4` |
+| `RBErosionMarkUpdater` | `-` | `pickerView:titleForRow:forComponent:` |  | ✅ | ✅ | `0x1482a8` |
+| `RBErosionMarkUpdater` | `-` | `pickerView:didSelectRow:inComponent:` |  | ✅ | ✅ | `0x1482e4` |
 | `RBErosionMarkUpdater` | `-` | `viewController` | prop | ✅ | ✅ | `0x148540` |
 | `RBErosionMarkUpdater` | `-` | `setViewController:` | prop | ✅ | ✅ | `0x148550` |
 | `RBErosionMarkUpdater` | `-` | `displayRate` | prop | ✅ | ✅ | `0x148560` |

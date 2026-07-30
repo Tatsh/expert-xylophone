@@ -1015,6 +1015,21 @@ VERIFIED = {
     # 3 at 0x8e634, LayoutSubviews with AllowUserInteraction rather than an ease curve.
     0x8e550: 'RBViewController -fadeCorporateButton:: weak self, 0.5 second delay',
     0x8e898: 'RBViewController -tapCorporateButton:: Safari when available, openURL otherwise',
+    # RBErosionMarkUpdater, partial: the picker, text-field and alert delegates plus the two update
+    # outcomes. The ivar list types every score as q, so the NSInteger properties are right, and the
+    # shared updater really is the global at 0x3de498. The rest of the class is not read yet.
+    0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
+    0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
+    0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',
+    0x14445C: 'RBErosionMarkUpdater -updateCancel: remove, mark updated, save, clear the global',
+    # Both zero-index arms reach the same reshowAlertSetScore:nil at 0x148160 and 0x148178.
+    0x1480AC: 'RBErosionMarkUpdater -alertView:clickedButtonAtIndex:: cancel and confirm views',
+    0x1481A4: 'RBErosionMarkUpdater -textFieldDidBeginEditing:: stores the tag',
+    0x148204: 'RBErosionMarkUpdater -textFieldDidEndEditing:: stores -1 then resigns',
+    # sub/cmp/cinc at 0x148288 gives four components for tag 1 or 2 and three otherwise.
+    0x148270: 'RBErosionMarkUpdater -numberOfComponentsInPickerView:: 4 for medium and hard',
+    0x1482A8: 'RBErosionMarkUpdater -pickerView:titleForRow:forComponent:: bare %zd of the row',
+    0x1482E4: 'RBErosionMarkUpdater -pickerView:didSelectRow:inComponent:: %04zd into the field',
     # RBStoreExtendPageViewController, read against the disassembly one routine at a time.
     0x15a0b8: 'RBStoreExtendPageViewController -initWithParent:: IsPad() at 0x15a2e4 stores the '
               'idiom byte, moveToPackID starts at -1 (0x15a300)',
