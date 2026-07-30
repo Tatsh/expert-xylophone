@@ -44,9 +44,9 @@ static const double kArtworkFadeDuration = 0.2;   // @ghidraAddress 0x2eece8
 static const double kArtworkShadowOpacity = 0.6;  // @ghidraAddress 0x2ec6b8
 static const double kDetailBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
 static const double kLoadingShadowAlpha = 0.4;    // @ghidraAddress 0x2ec720
-static const double kLevelColorRed = 0.3333333333333333;       // @ghidraAddress 0x2eec78
+static const double kLevelColorRed = 85.0 / 255.0;       // @ghidraAddress 0x2eec78
 static const double kLevelColorGreen = 9.0f / 255.0f;   // @ghidraAddress 0x2eec80
-static const double kLevelColorBlue = 0.47058823529411764;     // @ghidraAddress 0x2eec88
+static const double kLevelColorBlue = 120.0 / 255.0;     // @ghidraAddress 0x2eec88
 static const double kBackgroundDimWhite = 0.863f; // @ghidraAddress 0x2eecd0
 // These two are single-precision in the binary, and their addresses were never recovered: neither
 // value exists as a double anywhere in __const, while both exist as floats at several addresses, so
