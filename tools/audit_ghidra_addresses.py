@@ -43,7 +43,10 @@ _LC_SEGMENT_64 = 0x19
 # wrong build rather than the annotations being wrong.
 _WRONG_BINARY_RATIO = 0.5
 # The start of an Objective-C block literal, which ends the search for a method's own annotation.
-_BLOCK_LITERAL = '^{'
+# A block literal opens with a caret, optionally a return type, optionally a parameter list, then
+# the brace. Matching only '^{' missed every block that declares parameters, so a tag belonging to
+# such a block was read as the enclosing method's and reported as a mismatch.
+_BLOCK_LITERAL = re.compile(r'\^\s*\w*\s*(?:\([^)]*\)\s*)?\{')
 # A double is considered to match a declaration within this absolute tolerance, a float within a
 # looser one, since a float literal loses precision.
 _DOUBLE_TOLERANCE = 1e-6
@@ -423,7 +426,7 @@ def audit_methods(root: Path, binary: Binary) -> tuple[int, list[MethodFinding],
                 # By convention an implementation file carries a tag inside a block body, where it
                 # records the block's own address. Once a block literal opens, any tag below belongs
                 # to that block and must not be read as the enclosing method's.
-                if _BLOCK_LITERAL in lines[probe]:
+                if _BLOCK_LITERAL.search(lines[probe]):
                     break
             if annotated is None:
                 continue

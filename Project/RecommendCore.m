@@ -145,38 +145,34 @@ static RecommendCore *g_recommendCoreInstance = nil;
 static dispatch_queue_t g_recommendCoreQueue = nil;
 
 @interface RecommendCore () <SdkViewDelegate>
+@end
+
+// The two block bodies below are de-inlined into file-private C functions rather than methods,
+// because the shipped class metadata carries no selector for either of them.
 
 // The installed-application-list callback body for the advert-screen presentation.
-- (void)openAdScreenAppliList:(nullable id)appliList
-                        error:(nullable NSError *)error
-                   adLocation:(nullable NSString *)adLocation
-                      adModel:(int)adModel
-                verticalAlign:(int)verticalAlign
-                     delegate:(nullable id)delegate;
+static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList, NSError *error,
+                                               NSString *adLocation, int adModel, int verticalAlign,
+                                               id delegate);
 
 // The session-gated click-registration callback body for a first-party advert touch.
-- (void)postAnalysisClickRegistWithError:(nullable NSError *)error
-                              adLocation:(nullable NSString *)adLocation
-                                 appliId:(nullable NSString *)appliId
-                              creativeId:(nullable NSString *)creativeId
-                             requestCode:(nullable id)requestCode
-                                delegate:(nullable id)delegate;
-
-@end
+static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *error,
+                                                 NSString *adLocation, NSString *appliId,
+                                                 NSString *creativeId, id requestCode,
+                                                 id delegate);
 
 @implementation RecommendCore
 
 #pragma mark - Singleton
 
 + (instancetype)sharedInstance {
-    static RecommendCore *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       /** @ghidraAddress 0x236ca8 */
-      instance = [[RecommendCore alloc] init];
-      instance.initializeFlg = NO;
+      g_recommendCoreInstance = [[RecommendCore alloc] init];
+      g_recommendCoreInstance.initializeFlg = NO;
     });
-    return instance;
+    return g_recommendCoreInstance;
 }
 
 /**
@@ -229,10 +225,10 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 
 - (void)startWithCallback:(void (^)(NSError *_Nullable error))callback {
     if ([ApplilinkConsts appliId] == nil) {
-        if (callback) {
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoAppliId]);
-        }
+        // Unguarded in the binary: unlike the other exits, this one calls the block without a nil
+        // test.
+        callback([ApplilinkNetworkError
+            localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoAppliId]);
         return;
     }
     if (![ApplilinkCore checkUdid]) {
@@ -319,19 +315,16 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 }
 
 - (void)startSessionWithCallback:(void (^)(NSError *_Nullable error))callback {
+    // Unlike -startWithCallback:, nothing on this path nil-tests the block before invoking it.
     if (![ApplilinkUdid isAdvertisingTrackingEnabled]) {
-        if (callback) {
-            callback([ApplilinkNetworkError
-                localizedApplilinkErrorWithCode:RecommendCoreErrorCodeAdTrackingDisabled]);
-        }
+        callback([ApplilinkNetworkError
+            localizedApplilinkErrorWithCode:RecommendCoreErrorCodeAdTrackingDisabled]);
         return;
     }
     [ApplilinkCore appAuthSessionRegenerateWithBlock:^(NSError *_Nullable error) {
       /** @ghidraAddress 0x237868 */
       if (error != nil) {
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
           return;
       }
       if (g_recommendCoreLoginValidUntil == nil || [ApplilinkConsts isNeedRecommendLogin] ||
@@ -342,41 +335,31 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
               checkLoginWithCallback:^(BOOL loggedIn, BOOL userIdPresent, NSError *checkError) {
                 /** @ghidraAddress 0x237960 */
                 if (checkError != nil) {
-                    if (callback) {
-                        callback(checkError);
-                    }
+                    callback(checkError);
                     return;
                 }
                 if (!loggedIn) {
                     [RecommendWebAPI startLoginWithCallback:^(NSError *_Nullable loginError) {
                       /** @ghidraAddress 0x237a94 */
                       if (loginError != nil) {
-                          if (callback) {
-                              callback(loginError);
-                          }
+                          callback(loginError);
                           return;
                       }
                       [ApplilinkUdid setUdidKeychainFromPasteBoard];
                       [ApplilinkConsts loggedInRecommend];
                       g_recommendCoreLoginValidUntil = [[NSDate date]
                           dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
-                      if (callback) {
-                          callback(nil);
-                      }
+                      callback(nil);
                     }];
                     return;
                 }
                 g_recommendCoreLoginValidUntil =
                     [[NSDate date] dateByAddingTimeInterval:kRecommendCoreLoginValiditySeconds];
-                if (callback) {
-                    callback(nil);
-                }
+                callback(nil);
               }];
           return;
       }
-      if (callback) {
-          callback(nil);
-      }
+      callback(nil);
     }];
 }
 
@@ -384,11 +367,9 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 
 - (void)appliListWithCallBack:(void (^)(id _Nullable list, NSError *_Nullable error))callback {
     [self startSessionWithCallback:^(NSError *_Nullable error) {
-      /** @ghidraAddress 0x237bb0 */
+      /** @ghidraAddress 0x237c48 */
       if (error != nil) {
-          if (callback) {
-              callback(nil, error);
-          }
+          callback(nil, error);
           return;
       }
       [self appliListCacheWithCallBack:callback];
@@ -401,9 +382,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         [RecommendWebAPI installAppliListWithCallBack:callback];
         return;
     }
-    if (callback) {
-        callback(list, nil);
-    }
+    callback(list, nil);
 }
 
 #pragma mark - Advert status queries
@@ -424,26 +403,20 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
     } else {
         NSNumber *cached = [self getTemporaryCacheWithAdModel:adModel];
         if ([cached intValue] == kRecommendCoreBannerAvailable) {
-            if (callback) {
-                callback([cached intValue], nil);
-            }
+            callback([cached intValue], nil); // Yes, the binary sends -intValue a second time.
             return;
         }
         [self startSessionWithCallback:^(NSError *_Nullable sessionError) {
           /** @ghidraAddress 0x237f8c */
           if (sessionError != nil) {
-              if (callback) {
-                  callback(0, sessionError);
-              }
+              callback(0, sessionError);
               return;
           }
           [RecommendWebAPI getBannerDetailWithAdModel:adModel callback:callback];
         }];
         return;
     }
-    if (callback) {
-        callback(0, error);
-    }
+    callback(0, error);
 }
 
 - (void)getUnreadCountWithAdModel:(int)adModel
@@ -464,9 +437,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         [self startSessionWithCallback:^(NSError *_Nullable sessionError) {
           /** @ghidraAddress 0x2381c8 */
           if (sessionError != nil) {
-              if (callback) {
-                  callback(0, sessionError);
-              }
+              callback(0, sessionError);
               return;
           }
           [RecommendWebAPI getUnreadCountWithAdModel:adModel
@@ -475,9 +446,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         }];
         return;
     }
-    if (callback) {
-        callback(0, error);
-    }
+    callback(0, error);
 }
 
 - (void)getAdDisplayStatusWithAdModel:(int)adModel
@@ -502,18 +471,14 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         [self startSessionWithCallback:^(NSError *_Nullable sessionError) {
           /** @ghidraAddress 0x23852c */
           if (sessionError != nil) {
-              if (callback) {
-                  callback(status, sessionError);
-              }
+              callback(status, sessionError);
               return;
           }
           [RecommendWebAPI getPreInfoWithAdModel:adModel adLocation:adLocation callback:callback];
         }];
         return;
     }
-    if (callback) {
-        callback(status, error);
-    }
+    callback(status, error);
 }
 
 - (void)getAllAdStatusWithCallback:(void (^)(NSError *_Nullable error))callback {
@@ -531,15 +496,11 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
           if (sessionError == nil) {
               [RecommendAdCache getAllAdStatus];
           }
-          if (callback) {
-              callback(sessionError);
-          }
+          callback(sessionError);
         }];
         return;
     }
-    if (callback) {
-        callback(error);
-    }
+    callback(error);
 }
 
 - (void)clearAllAdData {
@@ -603,25 +564,27 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
       if (adModel == RecommendCoreAdModelInterstitial) {
           [self.adScreenViewController setWebViewBounces:NO];
       }
-      if ((adModel - RecommendCoreAdModelOwnAdBase < RecommendCoreAdModelDirectRangeLength) ||
+      if ((unsigned int)(adModel - RecommendCoreAdModelOwnAdBase) <
+              RecommendCoreAdModelDirectRangeLength ||
           adModel == RecommendCoreAdModelInterstitial) {
-          [self openAdAreaWithParentView:self.adScreenViewController.baseView
-                                    rect:self.adScreenViewController.baseView.frame
+          UIView *baseView = self.adScreenViewController.baseView;
+          CGRect baseFrame = baseView.frame;
+          // The rect is the base view's size placed at the origin, and the binary hands itself in
+          // as the delegate rather than the caller's.
+          [self openAdAreaWithParentView:baseView
+                                    rect:CGRectMake(0.0, 0.0, baseFrame.size.width,
+                                                    baseFrame.size.height)
                                  adModel:adModel
                               adLocation:adLocation
                            verticalAlign:verticalAlign
                              requestCode:requestCode
-                                delegate:delegate];
+                                delegate:self];
           g_recommendCoreScreenOpen = NO;
       } else {
           [self appliListWithCallBack:^(id _Nullable list, NSError *_Nullable error) {
             /** @ghidraAddress 0x238e84 */
-            [self openAdScreenAppliList:list
-                                  error:error
-                             adLocation:adLocation
-                                adModel:adModel
-                          verticalAlign:verticalAlign
-                               delegate:delegate];
+            RecommendCoreOpenAdScreenAppliList(self, list, error, adLocation, adModel,
+                                               verticalAlign, delegate);
           }];
       }
     });
@@ -629,16 +592,13 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 
 // The installed-application-list callback for the advert-screen presentation.
 /** @ghidraAddress 0x238e84 */
-- (void)openAdScreenAppliList:(nullable id)appliList
-                        error:(nullable NSError *)error
-                   adLocation:(nullable NSString *)adLocation
-                      adModel:(int)adModel
-                verticalAlign:(int)verticalAlign
-                     delegate:(nullable id)delegate {
-    if (error != nil || self.adScreenviewCloseFlg) {
-        [self releaseAdScreenViewController];
+static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList, NSError *error,
+                                               NSString *adLocation, int adModel, int verticalAlign,
+                                               id delegate) {
+    if (error != nil || core.adScreenviewCloseFlg) {
+        [core releaseAdScreenViewController];
         [ApplilinkCore toDelegateFailOpenWithError:error
-                                          appParam:self.applilinkParams
+                                          appParam:core.applilinkParams
                                           delegate:delegate];
         return;
     }
@@ -649,7 +609,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         }
         NSString *scheme = entry[kRecommendCoreKeyDefaultScheme];
         NSString *adId = entry[kRecommendCoreKeyAdId];
-        if ([scheme isKindOfClass:[NSString class]] && [self isInstalledAppliWithScheme:scheme] &&
+        if ([scheme isKindOfClass:[NSString class]] && [core isInstalledAppliWithScheme:scheme] &&
             adId != nil) {
             [installedAdIds addObject:adId];
         }
@@ -672,7 +632,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
     }
     NSString *url =
         [[ApplilinkConsts baseUrlSsl] stringByAppendingString:kRecommendCoreAdExternalIndexPath];
-    [self.adScreenViewController loadRequestWithURL:url parameters:parameters];
+    [core.adScreenViewController loadRequestWithURL:url parameters:parameters];
     g_recommendCoreScreenOpen = NO;
 }
 
@@ -1014,7 +974,8 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
     if (table == nil) {
         return nil;
     }
-    NSString *modelKey = [@(adModel) stringValue];
+    // The binary boxes the model with -numberWithUnsignedInt:, not -numberWithInt:.
+    NSString *modelKey = [@((unsigned int)adModel) stringValue];
     NSDictionary *entry = table[modelKey];
     if (entry == nil) {
         return nil;
@@ -1023,7 +984,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         return entry[kRecommendCoreKeyStatus];
     }
     NSMutableDictionary *mutableTable = [table mutableCopy];
-    [mutableTable removeObjectForKey:[@(adModel) stringValue]];
+    [mutableTable removeObjectForKey:[@((unsigned int)adModel) stringValue]];
     NSData *archived = [NSKeyedArchiver archivedDataWithRootObject:mutableTable];
     [[NSUserDefaults standardUserDefaults] setObject:archived forKey:kRecommendCoreBannerInfoKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -1192,12 +1153,8 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
     } else {
         [self startSessionWithCallback:^(NSError *_Nullable sessionError) {
           /** @ghidraAddress 0x23c934 */
-          [self postAnalysisClickRegistWithError:sessionError
-                                      adLocation:adLocation
-                                         appliId:appliId
-                                      creativeId:creativeId
-                                     requestCode:requestCode
-                                        delegate:delegate];
+          RecommendCorePostAnalysisClickRegist(self, sessionError, adLocation, appliId, creativeId,
+                                               requestCode, delegate);
         }];
         return;
     }
@@ -1210,12 +1167,10 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 
 // The session-gated click-registration callback for a first-party advert touch.
 /** @ghidraAddress 0x23c934 */
-- (void)postAnalysisClickRegistWithError:(nullable NSError *)error
-                              adLocation:(nullable NSString *)adLocation
-                                 appliId:(nullable NSString *)appliId
-                              creativeId:(nullable NSString *)creativeId
-                             requestCode:(nullable id)requestCode
-                                delegate:(nullable id)delegate {
+static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *error,
+                                                 NSString *adLocation, NSString *appliId,
+                                                 NSString *creativeId, id requestCode,
+                                                 id delegate) {
     if (error != nil) {
         ApplilinkParameters *appParam = [[ApplilinkParameters alloc] init];
         [appParam setRequestWithAdModel:RecommendCoreAdModelOwnAdBase
@@ -1224,7 +1179,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         [ApplilinkCore toDelegateFailOpenWithError:error appParam:appParam delegate:delegate];
         return;
     }
-    NSString *impressionId = [self getUniqueAdWithAdLocation:adLocation];
+    NSString *impressionId = [core getUniqueAdWithAdLocation:adLocation];
     if ([impressionId length] == 0) {
         impressionId = [ApplilinkUtilities getImpressionId];
     }
@@ -1271,15 +1226,15 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
                                                                          delegate:delegate];
                                        return;
                                    }
-                                   if (self.uniqueApplilinkParams == nil) {
-                                       self.uniqueApplilinkParams =
+                                   if (core.uniqueApplilinkParams == nil) {
+                                       core.uniqueApplilinkParams =
                                            [[ApplilinkParameters alloc] init];
                                    }
-                                   [self.uniqueApplilinkParams
+                                   [core.uniqueApplilinkParams
                                        setRequestWithAdModel:RecommendCoreAdModelOwnAdBase
                                                   adLocation:adLocation
                                                  requestCode:requestCode];
-                                   [self
+                                   [core
                                        linkActionWithDefaultScheme:defaultScheme
                                                             adIdTo:adId
                                                             adType:
@@ -1577,14 +1532,14 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 }
 
 - (void)appStoreFailLoadNoticeWithError:(NSError *)error appParam:(ApplilinkParameters *)appParam {
+    // The unique-advert path fails open; the advert-screen path fails the link. The appParam
+    // argument is unused.
     if (self.adScreenViewController == nil) {
-        // The unique-advert path fails open; the advert-screen path fails the link. Both go
-        // through toDelegateFailOpenWithError:appParam:delegate: in the binary.
         [ApplilinkCore toDelegateFailOpenWithError:error
                                           appParam:self.uniqueApplilinkParams
                                           delegate:self.uniqueAdDelegate];
     } else {
-        [ApplilinkCore toDelegateFailOpenWithError:error
+        [ApplilinkCore toDelegateFailLinkWithError:error
                                           appParam:self.applilinkParams
                                           delegate:self.applilinkDelegate];
     }

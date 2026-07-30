@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3706 verified
-(58.4%).
+Total: 6343 — 6201 reconstructed, 3748 verified
+(59.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -6135,36 +6135,36 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkParameters` | `-` | `setVerticalAlign:` | prop | ✅ | ✅ | `0x2368fc` |
 | `ApplilinkParameters` | `-` | `requestCode` | prop | ✅ | ✅ | `0x23690c` |
 | `ApplilinkParameters` | `-` | `setRequestCode:` | prop | ✅ | ✅ | `0x23691c` |
-| `RecommendCore` | `-` | `init` |  | ✅ | ❌ | `0x236978` |
-| `RecommendCore` | `+` | `allocWithZone:` |  | ✅ | ❌ | `0x236b4c` |
-| `RecommendCore` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x236c64` |
+| `RecommendCore` | `-` | `init` |  | ✅ | ✅ | `0x236978` |
+| `RecommendCore` | `+` | `allocWithZone:` |  | ✅ | ✅ | `0x236b4c` |
+| `RecommendCore` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x236c64` |
 | `RecommendCore` | `-` | `initializeFlg` | prop | ✅ | ✅ | `0x236d14` |
-| `RecommendCore` | `-` | `isInitialized` |  | ✅ | ❌ | `0x236d24` |
-| `RecommendCore` | `-` | `clearInitialize` |  | ✅ | ❌ | `0x236d3c` |
-| `RecommendCore` | `-` | `isInstalledAppliWithScheme:` |  | ✅ | ❌ | `0x236d4c` |
-| `RecommendCore` | `-` | `startWithCallback:` |  | ✅ | ❌ | `0x236e4c` |
-| `RecommendCore` | `-` | `startSessionWithCallback:` |  | ✅ | ❌ | `0x237778` |
-| `RecommendCore` | `-` | `appliListWithCallBack:` |  | ✅ | ❌ | `0x237bb0` |
-| `RecommendCore` | `-` | `appliListCacheWithCallBack:` |  | ✅ | ❌ | `0x237cd0` |
-| `RecommendCore` | `-` | `getAdStatusWithAdModel:callback:` |  | ✅ | ❌ | `0x237d6c` |
-| `RecommendCore` | `-` | `getUnreadCountWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x237fe4` |
-| `RecommendCore` | `-` | `getAdDisplayStatusWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x238260` |
-| `RecommendCore` | `-` | `getAllAdStatusWithCallback:` |  | ✅ | ❌ | `0x2385d8` |
+| `RecommendCore` | `-` | `isInitialized` |  | ✅ | ✅ | `0x236d24` |
+| `RecommendCore` | `-` | `clearInitialize` |  | ✅ | ✅ | `0x236d3c` |
+| `RecommendCore` | `-` | `isInstalledAppliWithScheme:` |  | ✅ | ✅ | `0x236d4c` |
+| `RecommendCore` | `-` | `startWithCallback:` |  | ✅ | ✅ | `0x236e4c` |
+| `RecommendCore` | `-` | `startSessionWithCallback:` |  | ✅ | ✅ | `0x237778` |
+| `RecommendCore` | `-` | `appliListWithCallBack:` |  | ✅ | ✅ | `0x237bb0` |
+| `RecommendCore` | `-` | `appliListCacheWithCallBack:` |  | ✅ | ✅ | `0x237cd0` |
+| `RecommendCore` | `-` | `getAdStatusWithAdModel:callback:` |  | ✅ | ✅ | `0x237d6c` |
+| `RecommendCore` | `-` | `getUnreadCountWithAdModel:adLocation:callback:` |  | ✅ | ✅ | `0x237fe4` |
+| `RecommendCore` | `-` | `getAdDisplayStatusWithAdModel:adLocation:callback:` |  | ✅ | ✅ | `0x238260` |
+| `RecommendCore` | `-` | `getAllAdStatusWithCallback:` |  | ✅ | ✅ | `0x2385d8` |
 | `RecommendCore` | `-` | `clearAllAdData` |  | ✅ | ✅ | `0x2387b8` |
-| `RecommendCore` | `-` | `reloadAllAdData` |  | ✅ | ❌ | `0x2387d0` |
-| `RecommendCore` | `-` | `openAdScreenWithParentView:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x238848` |
+| `RecommendCore` | `-` | `reloadAllAdData` |  | ✅ | ✅ | `0x2387d0` |
+| `RecommendCore` | `-` | `openAdScreenWithParentView:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ✅ | `0x238848` |
 | `RecommendCore` | `-` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x239480` |
 | `RecommendCore` | `-` | `openFullViewControllerWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x239ed8` |
-| `RecommendCore` | `-` | `closeAdScreen` |  | ✅ | ❌ | `0x23a40c` |
-| `RecommendCore` | `-` | `rotateWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x23a5ac` |
+| `RecommendCore` | `-` | `closeAdScreen` |  | ✅ | ✅ | `0x23a40c` |
+| `RecommendCore` | `-` | `rotateWithInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x23a5ac` |
 | `RecommendCore` | `-` | `setNavigationBarHidden:` | prop | ✅ | ✅ | `0x23a634` |
-| `RecommendCore` | `-` | `redirectViewContollerWithRequest:` |  | ✅ | ❌ | `0x23a644` |
-| `RecommendCore` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x23a660` |
+| `RecommendCore` | `-` | `redirectViewContollerWithRequest:` |  | ✅ | ✅ | `0x23a644` |
+| `RecommendCore` | `-` | `redirectWithRequest:` |  | ✅ | ✅ | `0x23a660` |
 | `RecommendCore` | `-` | `redirectWithRequest:appParam:` |  | ✅ | ❌ | `0x23a674` |
-| `RecommendCore` | `-` | `getTemporaryCacheWithAdModel:` |  | ✅ | ❌ | `0x23b420` |
-| `RecommendCore` | `-` | `canUseBannerCache` |  | ✅ | ❌ | `0x23b758` |
-| `RecommendCore` | `-` | `clearAdStatus` |  | ✅ | ❌ | `0x23b82c` |
-| `RecommendCore` | `-` | `clearSession` |  | ✅ | ❌ | `0x23b8c0` |
+| `RecommendCore` | `-` | `getTemporaryCacheWithAdModel:` |  | ✅ | ✅ | `0x23b420` |
+| `RecommendCore` | `-` | `canUseBannerCache` |  | ✅ | ✅ | `0x23b758` |
+| `RecommendCore` | `-` | `clearAdStatus` |  | ✅ | ✅ | `0x23b82c` |
+| `RecommendCore` | `-` | `clearSession` |  | ✅ | ✅ | `0x23b8c0` |
 | `RecommendCore` | `+` | `clearData` |  | ❌ | ❌ | `0x23ba24` |
 | `RecommendCore` | `-` | `postAnalysisListRegistWithAdType:AdModel:adLocation:impressionId:` |  | ✅ | ❌ | `0x23bb5c` |
 | `RecommendCore` | `-` | `showOwnAdWithAdLocation:toAppliId:creativeId:` |  | ✅ | ❌ | `0x23c11c` |
@@ -6172,26 +6172,26 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `linkActionWithDefaultScheme:adIdTo:adType:adModel:delegate:` |  | ✅ | ❌ | `0x23d0dc` |
 | `RecommendCore` | `-` | `setUniqueAdWithAdLocation:impressionId:` |  | ✅ | ❌ | `0x23d330` |
 | `RecommendCore` | `-` | `getUniqueAdWithAdLocation:` |  | ✅ | ❌ | `0x23d4cc` |
-| `RecommendCore` | `-` | `failLoadWithError:` |  | ✅ | ❌ | `0x23d5c0` |
+| `RecommendCore` | `-` | `failLoadWithError:` |  | ✅ | ✅ | `0x23d5c0` |
 | `RecommendCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ✅ | `0x23d740` |
-| `RecommendCore` | `-` | `redirectStartLoad:` |  | ✅ | ❌ | `0x23d744` |
-| `RecommendCore` | `-` | `releaseAdScreenViewController` |  | ✅ | ❌ | `0x23d7f8` |
-| `RecommendCore` | `-` | `releaseInterstitialViewController` |  | ✅ | ❌ | `0x23d84c` |
-| `RecommendCore` | `-` | `appListDidStart` |  | ✅ | ❌ | `0x23d8cc` |
-| `RecommendCore` | `-` | `appListDidAppear` |  | ✅ | ❌ | `0x23d9d4` |
-| `RecommendCore` | `-` | `appListDidDisappear` |  | ✅ | ❌ | `0x23daf4` |
-| `RecommendCore` | `-` | `appListFailOpenWithError:` |  | ✅ | ❌ | `0x23dc50` |
-| `RecommendCore` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x23ddf8` |
-| `RecommendCore` | `-` | `appListFailWithError:` |  | ✅ | ❌ | `0x23dfa0` |
-| `RecommendCore` | `-` | `startedNotice` |  | ✅ | ❌ | `0x23e148` |
-| `RecommendCore` | `-` | `openedNotice` |  | ✅ | ❌ | `0x23e1b0` |
-| `RecommendCore` | `-` | `closeNotice` |  | ✅ | ❌ | `0x23e250` |
-| `RecommendCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x23e300` |
-| `RecommendCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x23e3d0` |
-| `RecommendCore` | `-` | `appStoreOpenedNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e454` |
+| `RecommendCore` | `-` | `redirectStartLoad:` |  | ✅ | ✅ | `0x23d744` |
+| `RecommendCore` | `-` | `releaseAdScreenViewController` |  | ✅ | ✅ | `0x23d7f8` |
+| `RecommendCore` | `-` | `releaseInterstitialViewController` |  | ✅ | ✅ | `0x23d84c` |
+| `RecommendCore` | `-` | `appListDidStart` |  | ✅ | ✅ | `0x23d8cc` |
+| `RecommendCore` | `-` | `appListDidAppear` |  | ✅ | ✅ | `0x23d9d4` |
+| `RecommendCore` | `-` | `appListDidDisappear` |  | ✅ | ✅ | `0x23daf4` |
+| `RecommendCore` | `-` | `appListFailOpenWithError:` |  | ✅ | ✅ | `0x23dc50` |
+| `RecommendCore` | `-` | `appListFailLoadWithError:` |  | ✅ | ✅ | `0x23ddf8` |
+| `RecommendCore` | `-` | `appListFailWithError:` |  | ✅ | ✅ | `0x23dfa0` |
+| `RecommendCore` | `-` | `startedNotice` |  | ✅ | ✅ | `0x23e148` |
+| `RecommendCore` | `-` | `openedNotice` |  | ✅ | ✅ | `0x23e1b0` |
+| `RecommendCore` | `-` | `closeNotice` |  | ✅ | ✅ | `0x23e250` |
+| `RecommendCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ✅ | `0x23e300` |
+| `RecommendCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ✅ | `0x23e3d0` |
+| `RecommendCore` | `-` | `appStoreOpenedNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e454` |
 | `RecommendCore` | `-` | `appStoreCloseNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e4dc` |
-| `RecommendCore` | `-` | `appStoreClosedNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e4e0` |
-| `RecommendCore` | `-` | `appStoreFailLoadNoticeWithError:appParam:` |  | ✅ | ❌ | `0x23e5ac` |
+| `RecommendCore` | `-` | `appStoreClosedNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e4e0` |
+| `RecommendCore` | `-` | `appStoreFailLoadNoticeWithError:appParam:` |  | ✅ | ✅ | `0x23e5ac` |
 | `RecommendCore` | `-` | `appStoreTransitionNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e684` |
 | `RecommendCore` | `-` | `setInitializeFlg:` | prop | ✅ | ✅ | `0x23e688` |
 | `RecommendCore` | `-` | `interstitialViewController` | prop | ✅ | ✅ | `0x23e698` |
