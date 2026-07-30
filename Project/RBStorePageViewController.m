@@ -9,6 +9,7 @@
 #import "RBCampaignData.h"
 #import "RBCampaignViewController.h"
 #import "RBExtendNoteManager.h"
+#import "RBMacros.h"
 #import "RBMusicManager.h"
 #import "RBPurchaseManager.h"
 #import "RBStoreDetailViewController.h"
@@ -115,6 +116,12 @@ static NSString *const kStoreRestoreImageName = @"09_store/store_restore";
 // Localised bar-button and status strings looked up through the main bundle.
 static NSString *const kStoreCategoryKey = @"Category";
 static NSString *const kStoreTopKey = @"TOP ";
+
+// The genre bar-button title is a prefix followed by the genre name, and the prefix differs by
+// idiom: the pad spells the word out, the phone uses a bullet.
+static NSString *const kGenreTitleFormat = @"%@%@";
+static NSString *const kGenreTitlePrefixPad = @"Category : ";
+static NSString *const kGenreTitlePrefixPhone = @"\u25cf";
 
 // The empty string used as the `value:` fallback of the bundle lookups below, and as the cleared
 // text of the sample label. The store-tab title and the pack-table title are not literals at all:
@@ -231,7 +238,7 @@ static const CGFloat kDetailAlphaHidden = 0.0;
 static const CGFloat kDetailAlphaVisible = 1.0;
 
 // The pad pack-detail open/close animation fades over three tenths of a second.
-static const NSTimeInterval kDetailAnimDuration = 0.3;
+static const NSTimeInterval kDetailAnimDuration = 0.3; // @ghidraAddress 0x1003010a0
 
 // The stretchable pack-cell background caps.
 static const int kPackBgStretchCap = 4;
@@ -253,9 +260,10 @@ static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 // literal here rather than one of the shared store-message globals.
 static NSString *const kStoreDownloadDialogMessage = @"";
 
-// The cover-tap dismissal fade. The slot it loads from carries no symbol, so this is a source
+// The cover-tap dismissal fade. It is a different pool slot from kDetailAnimDuration and holds
+// the float-rounded 0.3, not the exact double; the slot carries no symbol, so this is a source
 // literal rather than the engine global the name once claimed.
-static const NSTimeInterval kCoverFadeDuration = 0.3;
+static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidraAddress 0x1002ec718
 
 @interface RBStorePageViewController () {
     // Whether the wide (pad) iPad idiom is active; cached from IsPad().
@@ -689,7 +697,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         NSIndexPath *selected = table.indexPathForSelectedRow;
         if (selected != nil) {
             [table reloadRowsAtIndexPaths:@[ selected ]
-                         withRowAnimation:UITableViewRowAnimationMiddle];
+                         withRowAnimation:UITableViewRowAnimationNone];
             [table deselectRowAtIndexPath:selected animated:animated];
         }
         if (m_IsPad == NO) {
@@ -823,7 +831,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         NSDictionary *attrs =
             @{NSFontAttributeName : [UIFont systemFontOfSize:kBarButtonTitleFontSize]};
         [self.genreButton setTitleTextAttributes:attrs forState:UIControlStateNormal];
-        if (!IsPad()) {
+        if (!m_IsPad) {
             self.navigationItem.title = kStoreEmptyString;
         }
     }
@@ -1375,7 +1383,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     self.packDetailViewPad.hidden = NO;
     [UIView animateWithDuration:kDetailAnimDuration
         delay:0.0
-        options:UIViewAnimationOptionCurveEaseInOut
+        options:UIViewAnimationOptionCurveLinear
         animations:^{
           /** @ghidraAddress 0x1e35fc */
           self.coverViewPad.alpha = kDetailAlphaVisible;
@@ -1574,7 +1582,11 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
             [self.packListCtrl startFetchGenre:self.currentGenre];
         } else {
             [tableView reloadData];
-            [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableView.frame.size.width, 0.0)
+            // Both dimensions come from -frame; the binary sends it twice and keeps the width from
+            // the first call and the height from the second.
+            CGRect tableFrame = tableView.frame;
+            [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width,
+                                                      tableFrame.size.height)
                                   animated:NO];
         }
         if (genreIndex == 0) {
@@ -1582,7 +1594,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                                                                             value:kStoreEmptyString
                                                                             table:nil];
         } else {
-            self.genreButton.title = genre.genreName;
+            NSString *prefix = IsPad() ? kGenreTitlePrefixPad : kGenreTitlePrefixPhone;
+            self.genreButton.title = [[NSString alloc] initWithFormat:kGenreTitleFormat, prefix,
+                                                                      genre.genreName];
         }
     }
 }
@@ -1676,11 +1690,15 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 - (BOOL)checkAttainLimitPurchase:(SKProduct *)product {
     int total = [RBUserSettingData sharedInstance].totalPurchase;
     int limitType = [RBUserSettingData sharedInstance].purchaseLimitType;
-    int limit = (limitType < 3) ? kPurchaseLimitAmounts[limitType] : kPurchaseLimitNone;
+    // The bound is tested unsigned, so a negative type falls to the no-limit arm rather than
+    // indexing the table.
+    int limit = ((unsigned int)limitType < ARRAY_SIZE(kPurchaseLimitAmounts)) ?
+                    kPurchaseLimitAmounts[limitType] :
+                    kPurchaseLimitNone;
     // Only JPY prices are added to the running total; other currencies never trip the limit.
     if ([[product.priceLocale objectForKey:NSLocaleCurrencyCode]
             isEqualToString:kCurrencyCodeJPY]) {
-        total += product.price.intValue;
+        total += product.price.integerValue;
     }
     BOOL limited = NO;
     if (limit >= 0 && limit < total) {

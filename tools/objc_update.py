@@ -438,6 +438,27 @@ VERIFIED = {
     0x1ffa44: 'RBCampaignViewController -showDetailViewForPhone:: the identifier is '
               'cleared before the search, not after',
     0x1ffe00: 'RBCampaignViewController -itemInfoDownload: UTF-8 body and the JSON content type',
+    # RBStorePageViewController, nine more. The IsPad sweep now closes: eight call sites in
+    # the binary against eight in the source, one to one, every other idiom test the ivar.
+    # -packListDownloadSuccess: had its idiom source corrected but is NOT ticked, its body
+    # being unfinished.
+    0x1ede24: 'RBStorePageViewController -switchToGenre:: a missing arm — the title '
+              'takes an idiom-chosen prefix through a two-argument format — and the '
+              'scroll rect keeps the height left in d3',
+    0x1ecd54: 'RBStorePageViewController -viewWillAppear:: the row animation is None, '
+              'not Middle; all five idiom sites placed',
+    0x1e31ac: 'RBStorePageViewController -openPackDetailViewWithPackId:: the curve is '
+              'Linear, not EaseInOut',
+    0x1e432c: 'RBStorePageViewController -handleTapCoverView:: its duration is a '
+              'different pool slot, float-rounded',
+    0x1e50ac: 'RBStorePageViewController -checkAttainLimitPurchase:: b.cs is unsigned, '
+              'so a negative type cannot index the table; the price is read with '
+              'integerValue',
+    0x1e5890: 'RBStorePageViewController -updateMusicInfo:Save:: three guards, then the '
+              'save flag gates the persist',
+    0x1e6058: 'RBStorePageViewController -reDownloadPackMusics:: update then start, nothing else',
+    0x1e60c4: 'RBStorePageViewController -purchaseSucceeded:: the identifier mismatch '
+              'early-returns; this one really does use intValue, unlike its sibling',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
