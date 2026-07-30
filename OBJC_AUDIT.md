@@ -7,7 +7,8 @@ same way the engine was.
 from the binary's runtime metadata — every method, whether it is reconstructed, and whether
 it is verified. That file is the counterpart to [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md) and is
 where to look for what remains. As of the last regeneration it stands at 6343 methods, 6198
-reconstructed and **15 verified**, so the audit has barely started.
+reconstructed and **3097 verified**, so about half is done and all of the remaining half is
+non-accessor bodies that have to be read one at a time.
 
 This file is the findings record behind those verifications: what each routine turned out to be, so
 that a negative result is recorded once rather than re-derived, and a claim is never acted on before
@@ -116,6 +117,34 @@ Recording these so a later pass does not spend the effort again.
 - `RBCollectionView initWithFrame:self.bounds` — faithful (`bl [RBMenuView bounds]` at `0xa601c`).
 - `appliURL` being nil is the original's behaviour. Only two references to its defaults key exist,
   one removing it and one reading it, so nothing writes it and the comparison always fails.
+
+## Verifying every method
+
+[OBJC_METHODS.md](OBJC_METHODS.md) tracks all 6343 methods, and the count verified against the
+disassembly now stands at **3097**, up from 15. Two mechanical passes account for 3082 of those, and
+both record per-address evidence so their reasoning can be audited rather than taken on trust:
+
+- `tools/objc_verify_accessors.py` shows a property accessor moves exactly the ivar its property
+  declares. That is a comparison of two independent statements of the same fact, because a synthesised
+  accessor reaches its ivar through the `_OBJC_IVAR_$_` offset variable rather than an immediate: the
+  ivar the instructions reach is resolved through that variable into the class's ivar list, and
+  compared with the backing ivar the property list names. The body must also call nothing but the ARC
+  and property runtime helpers, so a hand-written method that merely opens with an ivar load is not
+  mistaken for a synthesised one. 2890 of 3260 pass; the 370 that do not are genuinely custom.
+- `tools/objc_verify_trivial.py` shows an empty body, a constant return, or a `dealloc` that only
+  calls the superclass agrees with its reconstruction. 192 pass. Resolving named constants was
+  necessary, since the rules require a name rather than a bare number. The 47 super-only `dealloc`
+  bodies also correct how part of the checklist reads: ARC writes that method and forbids writing it
+  by hand, so its absence from the tree is right rather than a gap.
+
+The remaining ~3000 are non-accessor bodies that need reading one at a time, which is the slow part
+and is where the per-routine findings below come from.
+
+One tool was written and deliberately not shipped. It compared the ordered selectors a method sends
+against the sends in its reconstruction — the shape every screen defect so far has had — and it works,
+but its source-side reading cannot handle a nested send, because matching brackets by regular
+expression takes the innermost pair. A defect finder that cries wolf costs more attention than it
+saves.
 
 ## The annotation audit
 
