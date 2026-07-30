@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3844 verified
-(60.6%).
+Total: 6343 — 6201 reconstructed, 3866 verified
+(60.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5129,24 +5129,24 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1dd25c` |
 | `RBStorePageViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x1dd5b0` |
 | `RBStorePageViewController` | `-` | `showError:` |  | ✅ | ✅ | `0x1e0a90` |
-| `RBStorePageViewController` | `-` | `sendUserAge` |  | ✅ | ❌ | `0x1e0c40` |
+| `RBStorePageViewController` | `-` | `sendUserAge` |  | ✅ | ✅ | `0x1e0c40` |
 | `RBStorePageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ✅ | `0x1e14fc` |
 | `RBStorePageViewController` | `-` | `packListDownloadSuccess:` |  | ✅ | ❌ | `0x1e156c` |
-| `RBStorePageViewController` | `-` | `forceOpenPackDetailView` |  | ✅ | ❌ | `0x1e26d0` |
-| `RBStorePageViewController` | `-` | `packListDownloadError:errorMessage:` |  | ✅ | ❌ | `0x1e2a6c` |
+| `RBStorePageViewController` | `-` | `forceOpenPackDetailView` |  | ✅ | ✅ | `0x1e26d0` |
+| `RBStorePageViewController` | `-` | `packListDownloadError:errorMessage:` |  | ✅ | ✅ | `0x1e2a6c` |
 | `RBStorePageViewController` | `-` | `packListDownloadNothing:` |  | ✅ | ✅ | `0x1e2f24` |
 | `RBStorePageViewController` | `-` | `packViewSelected:` |  | ✅ | ✅ | `0x1e3018` |
 | `RBStorePageViewController` | `-` | `openPackDetailViewWithPackId:` |  | ✅ | ❌ | `0x1e31ac` |
-| `RBStorePageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ❌ | `0x1e3848` |
+| `RBStorePageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ✅ | `0x1e3848` |
 | `RBStorePageViewController` | `-` | `storePromotionViewTaped:PackID:` |  | ✅ | ❌ | `0x1e3a48` |
-| `RBStorePageViewController` | `-` | `pushSampleButton:` |  | ✅ | ❌ | `0x1e3f3c` |
-| `RBStorePageViewController` | `-` | `openDetailAnimStopFromPromotion:finished:context:` |  | ✅ | ❌ | `0x1e41a8` |
+| `RBStorePageViewController` | `-` | `pushSampleButton:` |  | ✅ | ✅ | `0x1e3f3c` |
+| `RBStorePageViewController` | `-` | `openDetailAnimStopFromPromotion:finished:context:` |  | ✅ | ✅ | `0x1e41a8` |
 | `RBStorePageViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x1e432c` |
 | `RBStorePageViewController` | `-` | `startDownloadPackMusics:` |  | ✅ | ❌ | `0x1e4858` |
 | `RBStorePageViewController` | `-` | `checkAttainLimitPurchase:` |  | ✅ | ❌ | `0x1e50ac` |
 | `RBStorePageViewController` | `-` | `detailViewStartPurchase:` |  | ✅ | ❌ | `0x1e52f8` |
 | `RBStorePageViewController` | `-` | `detailViewClose` |  | ✅ | ✅ | `0x1e55cc` |
-| `RBStorePageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x1e5658` |
+| `RBStorePageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x1e5658` |
 | `RBStorePageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1e5888` |
 | `RBStorePageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1e588c` |
 | `RBStorePageViewController` | `-` | `updateMusicInfo:Save:` |  | ✅ | ❌ | `0x1e5890` |
@@ -5154,7 +5154,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `reDownloadPackMusics:` |  | ✅ | ❌ | `0x1e6058` |
 | `RBStorePageViewController` | `-` | `purchaseSucceeded:` |  | ✅ | ❌ | `0x1e60c4` |
 | `RBStorePageViewController` | `-` | `purchaseFailed:error:` |  | ✅ | ❌ | `0x1e6564` |
-| `RBStorePageViewController` | `-` | `addRestorePackInfo:` |  | ✅ | ❌ | `0x1e66f8` |
+| `RBStorePageViewController` | `-` | `addRestorePackInfo:` |  | ✅ | ✅ | `0x1e66f8` |
 | `RBStorePageViewController` | `-` | `nextRestorePackInfo` |  | ✅ | ❌ | `0x1e6860` |
 | `RBStorePageViewController` | `-` | `askDownloadAllMusics` |  | ✅ | ❌ | `0x1e6f30` |
 | `RBStorePageViewController` | `-` | `restoreDownloadAllMusics` |  | ✅ | ❌ | `0x1e7788` |
@@ -5205,7 +5205,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `closeItunesWithURL` |  | ✅ | ❌ | `0x1ef1ec` |
 | `RBStorePageViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ❌ | `0x1ef24c` |
 | `RBStorePageViewController` | `-` | `goToTop:` |  | ✅ | ❌ | `0x1ef324` |
-| `RBStorePageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ❌ | `0x1ef40c` |
+| `RBStorePageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ✅ | `0x1ef40c` |
 | `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ❌ | `0x1ef574` |
 | `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ❌ | `0x1ef694` |
 | `RBStorePageViewController` | `-` | `switchToSpecialStore` |  | ✅ | ❌ | `0x1ef76c` |
@@ -5509,32 +5509,32 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc74c` |
 | `RBCampaignViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc750` |
 | `RBCampaignViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1fc754` |
-| `RBCampaignViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1fc758` |
-| `RBCampaignViewController` | `-` | `alertViewClose` |  | ✅ | ❌ | `0x1fc898` |
+| `RBCampaignViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x1fc758` |
+| `RBCampaignViewController` | `-` | `alertViewClose` |  | ✅ | ✅ | `0x1fc898` |
 | `RBCampaignViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1fc988` |
 | `RBCampaignViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1fda70` |
-| `RBCampaignViewController` | `-` | `showError:` |  | ✅ | ❌ | `0x1fdcb4` |
-| `RBCampaignViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x1fddf4` |
+| `RBCampaignViewController` | `-` | `showError:` |  | ✅ | ✅ | `0x1fdcb4` |
+| `RBCampaignViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x1fddf4` |
 | `RBCampaignViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1fdfb8` |
-| `RBCampaignViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1fe2bc` |
-| `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1fe368` |
+| `RBCampaignViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1fe2bc` |
+| `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x1fe368` |
 | `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ✅ | `0x1fe4f8` |
 | `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ❌ | `0x1fe4fc` |
 | `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ✅ | `0x1fec00` |
 | `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ❌ | `0x1fec34` |
 | `RBCampaignViewController` | `-` | `refreshUnlockTable` |  | ✅ | ❌ | `0x1ff038` |
-| `RBCampaignViewController` | `-` | `refreshUnlockBadge` |  | ✅ | ❌ | `0x1ff470` |
+| `RBCampaignViewController` | `-` | `refreshUnlockBadge` |  | ✅ | ✅ | `0x1ff470` |
 | `RBCampaignViewController` | `-` | `setBadgeCnt:` |  | ✅ | ✅ | `0x1ff5cc` |
 | `RBCampaignViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1ff6a0` |
 | `RBCampaignViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x1ff6d4` |
-| `RBCampaignViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1ff728` |
-| `RBCampaignViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ff7bc` |
-| `RBCampaignViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ff91c` |
-| `RBCampaignViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x1ff9d4` |
+| `RBCampaignViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1ff728` |
+| `RBCampaignViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1ff7bc` |
+| `RBCampaignViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x1ff91c` |
+| `RBCampaignViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1ff9d4` |
 | `RBCampaignViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x1ffa44` |
 | `RBCampaignViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1ffc30` |
-| `RBCampaignViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ffc38` |
-| `RBCampaignViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ffc6c` |
+| `RBCampaignViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x1ffc38` |
+| `RBCampaignViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ✅ | `0x1ffc6c` |
 | `RBCampaignViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ffdfc` |
 | `RBCampaignViewController` | `-` | `itemInfoDownload` |  | ✅ | ❌ | `0x1ffe00` |
 | `RBCampaignViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x1ffff4` |

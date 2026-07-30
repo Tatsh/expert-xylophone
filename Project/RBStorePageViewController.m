@@ -989,7 +989,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray<NSNumber *> *packIDList = self.currentGenre.packIDList;
 
-    if (!IsPad()) {
+    if (!m_IsPad) {
         if (indexPath.section == kStoreSectionPromotion) {
             StorePromotionTableCell *cell =
                 [tableView dequeueReusableCellWithIdentifier:kStorePromotionCellID];
@@ -1046,7 +1046,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:kStorePacklistMoreCellID];
-            CGFloat fontSize = (!IsPad()) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
+            CGFloat fontSize = (!m_IsPad) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
         }
@@ -1098,7 +1098,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:kStorePacklistMoreCellID];
-        CGFloat fontSize = (!IsPad()) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
+        CGFloat fontSize = (!m_IsPad) ? kMoreCellFontSizePhone : kMoreCellFontSizePad;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }
@@ -1185,7 +1185,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 - (void)tableView:(UITableView *)tableView
       willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (!IsPad()) {
+    if (!m_IsPad) {
         if (indexPath.section == kStoreSectionPromotion ||
             indexPath.section == kStoreSectionSampleLabel) {
             return;
@@ -1222,7 +1222,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (indexPath.row == [self numPackRows]) {
         return;
     }
-    if (IsPad()) {
+    if (m_IsPad) {
         return;
     }
     if (indexPath.section == kStoreSectionSampleLabel) {
@@ -1264,7 +1264,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
 
     // Pin the first floating banner inside the visible region as the user scrolls.
-    CGFloat bannerHeight = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
+    CGFloat bannerHeight = (!m_IsPad) ? kBannerHeightPhone : kBannerHeightPad;
     UIScrollView *bannerContainer = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *firstBanner = [bannerContainer viewWithTag:kTagFunBanner];
     CGRect bannerFrame = firstBanner.frame;
@@ -1294,7 +1294,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
     UIScrollView *container2 = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
     UIView *secondBanner = [container2 viewWithTag:kTagCampaignBanner];
-    CGFloat bannerHeight2 = (!IsPad()) ? kBannerHeightPhone : kBannerHeightPad;
+    CGFloat bannerHeight2 = (!m_IsPad) ? kBannerHeightPhone : kBannerHeightPad;
     CGRect frame2 = secondBanner.frame;
     CGFloat contentBottom2 = container2.contentSize.height;
     CGFloat containerOriginY2 = container2.bounds.origin.y;
@@ -1324,16 +1324,17 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1e26d0 */
 - (void)forceOpenPackDetailView {
-    if ([AppDelegate appDelegate].packIDForOpenStore == nil) {
+    // The binary sends -getPackIDForOpenStore, not the same-named property getter.
+    if ([[AppDelegate appDelegate] getPackIDForOpenStore] == nil) {
         return;
     }
-    int packId = [AppDelegate appDelegate].packIDForOpenStore.intValue;
+    int packId = [[AppDelegate appDelegate] getPackIDForOpenStore].intValue;
     StorePackInfo *packInfo = [self.packListCtrl getPackInfo:packId];
     if (packInfo == nil) {
         [self.packListCtrl optionalProductsRequest];
         return;
     }
-    if (IsPad()) {
+    if (m_IsPad) {
         [self.packDetailViewPad cancelLoading];
         [self.packDetailViewPad stopSample];
         self.coverViewPad.alpha = kDetailAlphaHidden;
@@ -1442,7 +1443,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (packId < 0) {
         return;
     }
-    if (!IsPad()) {
+    if (!m_IsPad) {
         [self showDetailViewForPhone:packId];
         return;
     }
@@ -1531,13 +1532,13 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 - (void)pushSampleButton:(id)sender {
     if ([RBUserSettingData sharedInstance].refuseStoreSampleBGM) {
         [RBUserSettingData sharedInstance].refuseStoreSampleBGM = NO;
+        [self.samplePlayButton setImage:self.playImage forState:UIControlStateNormal];
+        [self.promotionView startSamplePlay];
+    } else {
+        [RBUserSettingData sharedInstance].refuseStoreSampleBGM = YES;
         [self.samplePlayButton setImage:self.stopImage forState:UIControlStateNormal];
         self.sampleMusicLabel.text = kStoreEmptyString;
         [self.promotionView stopSamplePlay];
-    } else {
-        [RBUserSettingData sharedInstance].refuseStoreSampleBGM = YES;
-        [self.samplePlayButton setImage:self.playImage forState:UIControlStateNormal];
-        [self.promotionView startSamplePlay];
     }
 }
 
@@ -2423,7 +2424,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         self.downloadManager = nil;
     }
     [self.parent hideModalDialog];
-    if (!IsPad()) {
+    if (!m_IsPad) {
         UIViewController *top = self.navigationController.topViewController;
         if (![top isKindOfClass:[RBStoreDetailViewController class]]) {
             return;

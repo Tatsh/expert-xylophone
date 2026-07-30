@@ -382,6 +382,49 @@ VERIFIED = {
     0x1eec14: 'RBStorePageViewController -stopPromotion: nil-guarded cancel',
     0x1ecb34: 'RBStorePageViewController -stopDownloadArtworks: clear each delegate, '
               'cancel, then remove all',
+    # RBCampaignViewController, thirteen more, no defects. The super-call position is not
+    # uniform across the four lifecycle methods and each was checked rather than inferred.
+    0x1fc758: 'RBCampaignViewController -didPresentAlertView:: the five-send chain to '
+              'the presented view',
+    0x1fc898: 'RBCampaignViewController -alertViewClose: the index reset sits inside the nil guard',
+    0x1fdcb4: 'RBCampaignViewController -showError:: three hides and a text, in order',
+    0x1fddf4: 'RBCampaignViewController -storeDialogCancel:: two independent guards, '
+              'and the reset is unconditional here',
+    0x1fe2bc: 'RBCampaignViewController -downloadManagerFailed:: clear, alert, hide, reset',
+    0x1fe368: 'RBCampaignViewController -downloadManagerProceed:: the dialog is fetched '
+              'before the type test',
+    0x1ff470: 'RBCampaignViewController -refreshUnlockBadge: unsigned loop, nil entries '
+              'skipped, counts accumulated',
+    0x1ff728: 'RBCampaignViewController -viewWillAppear:: super last',
+    0x1ff7bc: 'RBCampaignViewController -viewDidAppear:: super first, then the two-part guard',
+    0x1ff91c: 'RBCampaignViewController -viewWillDisappear:: super last, sample stopped on the pad',
+    0x1ff9d4: 'RBCampaignViewController -viewDidDisappear:: super last, guarded on the '
+              'played index',
+    0x1ffc38: 'RBCampaignViewController '
+              '-willAnimateRotationToInterfaceOrientation:duration:: super only',
+    0x1ffc6c: 'RBCampaignViewController -imageDownloader:didLoad:: a fresh index path, '
+              'not the argument reused',
+    # RBStorePageViewController, nine more. A class-wide sweep also converted ten IsPad()
+    # calls to the ivar the binary reads; five of those methods stay unticked, since an
+    # idiom fix proved from the call sites is not a verification of the body.
+    0x1e0c40: 'RBStorePageViewController -sendUserAge: four keys, and both blocks read in full',
+    0x1e26d0: 'RBStorePageViewController -forceOpenPackDetailView: the idiom is the '
+              'ivar, and the pack id comes from the getter, not the same-named property',
+    0x1e2a6c: 'RBStorePageViewController -packListDownloadError:errorMessage:: the nil '
+              'message substitutes the connect-failed global; centre, size, centre in '
+              'that order',
+    0x1e3848: 'RBStorePageViewController -openDetailAnimStop:finished:context:: the '
+              'context is the fourth argument',
+    0x1e3f3c: 'RBStorePageViewController -pushSampleButton:: the two arms were swapped, '
+              'so the icon and the action were both the wrong way round',
+    0x1e41a8: 'RBStorePageViewController '
+              '-openDetailAnimStopFromPromotion:finished:context:: the pack id from the '
+              'promotion',
+    0x1e5658: 'RBStorePageViewController -storeDialogCancel:: the idiom is the ivar; '
+              'both arms verified',
+    0x1e66f8: 'RBStorePageViewController -addRestorePackInfo:: add, map to a product '
+              'id, then remove if present',
+    0x1ef40c: 'RBStorePageViewController -addRestoreExtendNoteInfo:: the same shape on the note id',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
