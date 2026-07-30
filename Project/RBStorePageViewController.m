@@ -162,7 +162,7 @@ static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x10030bed0
 static const CGFloat kPackRowTintEvenWhite = 0.8;
 static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
-static const CGFloat kPadMoreRowGrayWhite = 0.6;
+static const CGFloat kPadMoreRowGrayWhite = 0.6000000238418579; // @ghidraAddress 0x1002ec708
 
 // The "load more" row text: 0.8 white idle, 0.4 white (matching the shadow) while loading.
 static const CGFloat kMoreCellTextWhiteIdle = 0.8;

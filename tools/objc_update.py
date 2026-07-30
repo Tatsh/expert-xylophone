@@ -511,6 +511,26 @@ VERIFIED = {
               'list with two shapes — the search runs to completion accumulating a flag, the two '
               'idiom loops break on a match — and the idiom test here calls IsPad() directly '
               'where its neighbours read the cached ivar',
+    # RBStorePageViewController, nine more from batch five.
+    0x1e4858: 'RBStorePageViewController -startDownloadPackMusics:: three-way early '
+              'return, and the manager is stored before the dialog work',
+    0x1e8110: 'RBStorePageViewController -alertView:clickedButtonAtIndex:: a jump table '
+              'over tags 30 to 34; tag 32 compares signed, so index four and above '
+              'opens the external page',
+    0x1e8608: 'RBStorePageViewController -didPresentAlertView:: one chain to the presented view',
+    0x1e9058: 'RBStorePageViewController -downloadManagerCompleted:: both idiom arms, '
+              'then hide and restart',
+    0x1eb954: 'RBStorePageViewController -tableView:willDisplayCell:forRowAtIndexPath:: '
+              'the grey white is the float-rounded value, not a tidy 0.6; the two row '
+              'tints were already exact',
+    0x1ebc90: 'RBStorePageViewController -tableView:willSelectRowAtIndexPath:: nil only '
+              'for the sample-label section',
+    0x1ebcfc: 'RBStorePageViewController -tableView:didSelectRowAtIndexPath:: the row '
+              'guard is an equality, not a bound',
+    0x1ebe6c: 'RBStorePageViewController -showDetailViewForPhone:: the open-store '
+              'identifier is cleared before the push',
+    0x1ec078: 'RBStorePageViewController -selectShowMore: the loading flag latches, '
+              'then centre, size, centre',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
