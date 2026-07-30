@@ -189,16 +189,16 @@ static const int kCampaignBackgroundMaxImages = 10;
 static const int kSearchMascotMaxImages = 99;
 
 // Artwork basenames used by CreateView.
-static NSString *const kTextureBackgroundName = @"01_music_select/bg";
-static NSString *const kHeaderImageName = @"01_music_select/header";
-static NSString *const kFooterImageName = @"01_music_select/footer";
+static NSString *const kTextureBackgroundName = @"00_texture/sel_bg";
+static NSString *const kHeaderImageName = @"01_music_select/sel_header";
+static NSString *const kFooterImageName = @"01_music_select/sel_footer";
 static NSString *const kPlaylistImageName = @"01_music_select/sel_playlist";
 static NSString *const kPlaylistSelImageName = @"01_music_select/sel_playlist_sel";
 static NSString *const kRandomImageName = @"01_music_select/sel_random";
 static NSString *const kRandomSelImageName = @"01_music_select/sel_random_sel";
-static NSString *const kInfoPlaylistName = @"01_music_select/info_playlist";
-static NSString *const kInfoRandomName = @"01_music_select/info_random";
-static NSString *const kInfoNewName = @"01_music_select/info_new";
+static NSString *const kInfoPlaylistName = @"11_info/info_playlist";
+static NSString *const kInfoRandomName = @"11_info/info_random";
+static NSString *const kInfoNewName = @"11_info/info_new";
 static NSString *const kSearchBackgroundName = @"01_music_select/search_bg";
 static NSString *const kSearchMascotDefaultPrefix = @"01_music_select/search_mascot_";
 static NSString *const kSearchCancelImageNameWide = @"01_music_select/search_cancel_btn_pn2";
