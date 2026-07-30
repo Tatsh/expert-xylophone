@@ -47,10 +47,10 @@ static NSString *const kBundleVersionKey = @"CFBundleVersion";
 static NSString *const kUserLocationKeyPath = @"location";
 
 // Initial map region: Tokyo Station, framing roughly a one-kilometre box.
-static const CLLocationDegrees kInitialCenterLatitude = 35.681382;
-static const CLLocationDegrees kInitialCenterLongitude = 139.766084;
-static const CLLocationDegrees kInitialSpanLatitudeDelta = 0.01004;
-static const CLLocationDegrees kInitialSpanLongitudeDelta = 0.01159;
+static const CLLocationDegrees kInitialCenterLatitude = 35.681382;   // @ghidraAddress 0x301610
+static const CLLocationDegrees kInitialCenterLongitude = 139.766084; // @ghidraAddress 0x301618
+static const CLLocationDegrees kInitialSpanLatitudeDelta = 0.01004;  // @ghidraAddress 0x301620
+static const CLLocationDegrees kInitialSpanLongitudeDelta = 0.01159; // @ghidraAddress 0x301628
 
 // The map rectangle for a region is widened by 60% of its span on each axis.
 static const double kMapRectSpanScale = 0.6; // @ghidraAddress 0x3015c8
@@ -405,9 +405,10 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
 }
 
 - (void)subIndicator {
-    int previous = m_IndicatorCount;
-    m_IndicatorCount = previous - 1;
-    if (m_IndicatorCount == 0 || previous < 1) {
+    // The binary decrements first and tests the result with one signed compare (subs/b.gt at
+    // 0xe50cc), so the indicator also stops if the count was already at or below zero.
+    --m_IndicatorCount;
+    if (m_IndicatorCount <= 0) {
         [self.indicator stopAnimating];
     }
 }
@@ -461,11 +462,12 @@ static const NSInteger kModelOrderSentinel = 0x7fffffff;
     if ([self.errorLabel isHidden]) {
         [self.errorLabel setAlpha:kMessageLabelHiddenAlpha];
         [self.errorLabel setHidden:NO];
-        __weak RBSearchMapView *weakSelf = self;
+        // The block captures self strongly: the capture is an objc_retain at 0xe0bd0 and a plain
+        // load at 0xe0c74, not the weak pair.
         [UIView animateWithDuration:kErrorLabelFadeInDuration
                          animations:^{
                            /** @ghidraAddress 0xe0c68 */
-                           [weakSelf.errorLabel setAlpha:kErrorLabelVisibleAlpha];
+                           [self.errorLabel setAlpha:kErrorLabelVisibleAlpha];
                          }];
     }
 }
