@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3301 verified
-(52.0%).
+Total: 6343 — 6198 reconstructed, 3305 verified
+(52.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2149,13 +2149,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `configureCell:` |  | ✅ | ❌ | `0xb2280` |
 | `RBMenuView` | `-` | `scrollViewDidEndScroll:` |  | ✅ | ❌ | `0xb2fec` |
 | `RBMenuView` | `-` | `numberOfSectionsInCollectionView:` |  | ✅ | ✅ | `0xb35f4` |
-| `RBMenuView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ❌ | `0xb35fc` |
+| `RBMenuView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0xb35fc` |
 | `RBMenuView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ❌ | `0xb3664` |
 | `RBMenuView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0xb3cdc` |
-| `RBMenuView` | `-` | `scrollViewWillBeginDragging:` |  | ✅ | ❌ | `0xb42e8` |
-| `RBMenuView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ❌ | `0xb4304` |
+| `RBMenuView` | `-` | `scrollViewWillBeginDragging:` |  | ✅ | ✅ | `0xb42e8` |
+| `RBMenuView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ✅ | `0xb4304` |
 | `RBMenuView` | `-` | `scrollViewDidEndDragging:willDecelerate:` |  | ✅ | ❌ | `0xb4320` |
-| `RBMenuView` | `-` | `scrollViewDidEndScrollingAnimation:` |  | ✅ | ❌ | `0xb4384` |
+| `RBMenuView` | `-` | `scrollViewDidEndScrollingAnimation:` |  | ✅ | ✅ | `0xb4384` |
 | `RBMenuView` | `-` | `willLayoutSubviews:` |  | ✅ | ✅ | `0xb43a0` |
 | `RBMenuView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0xb43a4` |
 | `RBMenuView` | `-` | `touchesBeganFromRBCollectionView:withEvent:` |  | ✅ | ✅ | `0xb4740` |

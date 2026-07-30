@@ -124,6 +124,11 @@ VERIFIED = {
     0x4efa4: 'AppDelegate -getInfoLastUpdateTimeString',
     0x4efec: 'AppDelegate -getPackIDForOpenStore',
     0x4f034: 'AppDelegate -getCampaignIDForOpenStore',
+    # RBMenuView's collection and scroll-view delegates, on the song-selection screen.
+    0xb35fc: 'RBMenuView -collectionView:numberOfItemsInSection:: musicList then count',
+    0xb42e8: 'RBMenuView -scrollViewWillBeginDragging:: sends setSearchBarNonActive',
+    0xb4304: 'RBMenuView -scrollViewDidEndDecelerating:: forwards to scrollViewDidEndScroll:',
+    0xb4384: 'RBMenuView -scrollViewDidEndScrollingAnimation:: forwards the same way',
 }
 
 
