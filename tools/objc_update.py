@@ -801,6 +801,32 @@ VERIFIED = {
     0x1a2ac: 'RBResourceDownloadViewController -viewDidAppear:: 1.0 fade to alpha 0, then the '
              'completion runs -animation and -download in that order',
     0x1a56c: 'RBResourceDownloadViewController -viewWillLayoutSubviews: super then -updateLayout',
+    # The progress fill's height is the subtle one and our source already had it right, with a
+    # comment saying so. Each of the three arms zeroes only d0 and d1 and computes d2; d3 is never
+    # written, so the height survives from the second -[trackImageView frame] send, which exists
+    # solely to reload it. Widths per mode: 0 is trackWidth * (p * 0.5) at 0x1c8cc, 1 is
+    # (trackWidth * (p + 1.0f)) * 0.5 at 0x1c818, 2 is trackWidth * p at 0x1c98c. Mode 0 groups the
+    # multiply differently from our source, which is arithmetically the same and not worth churn.
+    # The + 1.0f really is a float32 add at 0x1c808 before the widening, as we spell it.
+    0x1c72c: 'RBResourceDownloadViewController -updateProgress:: three modes, height from d3',
+    # DELIBERATE DEVIATION, not a defect and NOT gated: the binary tail-calls -success straight
+    # from this callback at 0x1ca54, on SSZipArchive's detached thread. Our source wraps it in a
+    # dispatch_async to the main queue with a comment explaining that current iOS traps the direct
+    # call. That deviation is neither behind ENABLE_PATCHES nor recorded in PATCHES.md, which is
+    # the project's convention for one. Ticked because the routine has been read, not because the
+    # body matches. Flagged for a decision.
+    0x1ca44: 'RBResourceDownloadViewController -zipArchiveDidUnzipArchiveAtPath:...: -success, '
+             'but ours marshals it to the main queue and the binary does not',
+    0x1ca60: 'RBResourceDownloadViewController -zipArchiveWillUnzipFileAtIndex:...: float32 '
+             'fileIndex/totalFiles from x2 and x3, then updateProgress: on the main thread',
+    0x1f600: 'RBResourceDownloadViewController -layoutScrollView: width * m_PageNum, height kept',
+    0x1f6c4: 'RBResourceDownloadViewController -pageDidChangeValue:: four guards, non-nil then '
+             'not tracking, dragging or decelerating, then scrollRectToVisible animated YES',
+    0x1fef0: 'RBResourceDownloadViewController -URLSession:...didResumeAtOffset:...: progress 0',
+    # b.pl at 0x1ffa4 skips the update, so it runs only when the ratio is below 1.0f; a NaN takes
+    # the skip too. The ratio is totalBytesWritten (x5) over totalBytesExpectedToWrite (x6), not
+    # the per-call bytesWritten in x4.
+    0x1ff7c: 'RBResourceDownloadViewController -URLSession:...didWriteData:...: ratio under 1.0f',
     0x16d5c0: 'RBMusicGridLayout -init: both idiom arms, every constant decoded from the pool',
     0x16d7d8: 'RBMusicGridLayout -prepareLayout: ceiling division, slack, item frames',
     0x16de78: 'RBMusicGridLayout -collectionViewContentSize: tail-call to the ivar',
