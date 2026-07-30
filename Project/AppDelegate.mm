@@ -267,6 +267,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                    UIScreen.mainScreen.bounds.size.width,
                    UIScreen.mainScreen.bounds.size.height,
                    UIScreen.mainScreen.scale);
+        // The theme selects which of the three title scenes runs.
+        neDebugLog("thema=%d", static_cast<int>(RBUserSettingData.sharedInstance.thema));
     }
 
     // Grow the shared URL cache to disk-back it under Caches, keeping the memory cap at 0.
@@ -293,6 +295,15 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     } else {
         gameSystem->SetScreenScale(1.0f);
     }
+
+    // The GL layers, including the title screen's parts, position themselves from these values
+    // rather than from any UIKit view's bounds.
+    neDebugLog("gameSystemScreen=(%.0f,%.0f %.0fx%.0f) scale=%.2f",
+               gameSystem->GetScreenX(),
+               gameSystem->GetScreenY(),
+               gameSystem->GetScreenWidth(),
+               gameSystem->GetScreenHeight(),
+               gameSystem->GetScreenScale());
 
     // Ensure the private Documents directory exists and is excluded from backup.
     NSString *privateDocuments = GetPrivateDocumentsPath();
