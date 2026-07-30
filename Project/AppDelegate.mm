@@ -1225,8 +1225,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         payload = @{
             kResourceInfoKeyTarget : GetRegionCode(),
             kResourceInfoKeyVersion : GetBundleVersionString(),
-            kResourceInfoKeyUserID : serverData[0],
-            kResourceInfoKeyPasswd : serverData[1],
+            kResourceInfoKeyUserID : [serverData objectAtIndex:kServerDataUserIdIndex],
+            kResourceInfoKeyPasswd : [serverData objectAtIndex:kServerDataTokenIndex],
             kResourceInfoKeyUUID : [AppDelegate musicListKey],
         };
     } else {
