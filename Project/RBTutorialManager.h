@@ -169,7 +169,7 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  * @ghidraAddress 0x35dd4
  * @param updateStatus The new tutorial status.
  */
-- (void)updateStatus:(RBTutorialStatus)updateStatus;
++ (void)updateStatus:(RBTutorialStatus)updateStatus;
 
 /**
  * @brief Record the type and item identifier of an item unlocked during the customise walkthrough,

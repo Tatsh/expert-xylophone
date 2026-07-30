@@ -157,8 +157,10 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 #pragma mark - Status mutation
 
-- (void)updateStatus:(RBTutorialStatus)updateStatus {
++ (void)updateStatus:(RBTutorialStatus)updateStatus {
     /** @ghidraAddress 0x35dd4 */
+    // A class method: the metadata lists this selector in the metaclass, and the body reaches
+    // the shared instance through +getInstance rather than through self.
     [[RBUserSettingData sharedInstance] updateTutorialStatus:updateStatus value:kTutorialSeenValue];
     [[RBTutorialManager getInstance] setCurrentStatus:updateStatus];
 

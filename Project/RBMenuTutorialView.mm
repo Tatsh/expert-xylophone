@@ -471,8 +471,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     }
 
     self.tutorialStatus = tutorialType;
-    [[RBTutorialManager getInstance]
-        updateStatus:static_cast<RBTutorialStatus>(self.tutorialStatus)];
+    [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(self.tutorialStatus)];
     self.animating = YES;
 
     // The clip-root view is one of several step-specific provider views (the difficulty selector,

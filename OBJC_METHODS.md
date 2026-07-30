@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3308 verified
+Total: 6343 — 6199 reconstructed, 3308 verified
 (52.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -624,7 +624,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ✅ | `0x35ce4` |
 | `RBTutorialManager` | `+` | `getStatus:` |  | ❌ | ❌ | `0x35cfc` |
 | `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ❌ | `0x35d6c` |
-| `RBTutorialManager` | `+` | `updateStatus:` |  | ❌ | ❌ | `0x35dd4` |
+| `RBTutorialManager` | `+` | `updateStatus:` |  | ✅ | ❌ | `0x35dd4` |
 | `RBTutorialManager` | `+` | `setUnlockedItemInfo:itemId:` |  | ✅ | ❌ | `0x36098` |
 | `RBTutorialManager` | `+` | `getUnlockedItemInfo` |  | ✅ | ❌ | `0x36308` |
 | `RBTutorialManager` | `+` | `resetUnlockedItemInfo` |  | ✅ | ❌ | `0x363a8` |

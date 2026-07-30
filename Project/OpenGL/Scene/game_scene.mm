@@ -888,7 +888,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
                                                              value:1];
         }
         if (pGameSystem->GetMenuTutorialActive() != 0) {
-            [[RBTutorialManager getInstance]
+            [RBTutorialManager
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
             TutorialGuideLayer::destroyShared();
             pGameSystem->SetMenuTutorialActive(0);
@@ -981,7 +981,7 @@ void GameScene::LoadResultScreenAndMusic() {
 
     // A tutorial play advances the walkthrough to the result step and resets the guide.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
-        [[RBTutorialManager getInstance]
+        [RBTutorialManager
             updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
         TutorialGuideLayer::shared()->Reset();
     }

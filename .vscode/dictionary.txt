@@ -247,6 +247,7 @@ maxmaximizer
 mdfile
 memcpy
 memset
+metaclass
 milli
 minizip
 mispacked
