@@ -217,6 +217,10 @@ static const CGFloat kLayoutWideThemaClassicFooterNormal = 865.0;  // @0x1003010
 static const CGFloat kLayoutWideThemaClassicFooterEdit = 908.0;    // @0x100301018
 static const CGFloat kLayoutWidePastelWhiteSettingX = 49.0; // @0x100300ff0 (settingButton X).
 static const CGFloat kLayoutWideCollectionOriginY = 60.0;   // @0x1002ee948 (all wide themes).
+// The grid's height on the wide pastel arm. CreateView builds the collection view at the full
+// bounds, so layoutSubviews has to shrink it; at 60 + 797 its bottom edge is 857, which clears the
+// menu button row at 912. Recovered for that arm only. @ghidraAddress 0x300ff8
+static const CGFloat kLayoutWideCollectionHeight = 797.0;
 
 static const CGFloat kLayoutTallBoundsInset8 = -8.0;
 static const CGFloat kLayoutTallBoundsInset16 = -16.0;
@@ -394,6 +398,10 @@ static BOOL g_bRandamIntSeeded = NO;
     CGFloat settingColX = 0.0; // The setting/add/del column X (a design double).
     CGFloat collectionOriginX = 0.0;
     CGFloat collectionOriginY = 0.0;
+    // Zero means keep the height the view was built with. Only the wide pastel arm's height has
+    // been recovered so far; the other arms still fall through to the old behaviour rather than
+    // borrow a constant that was proved for one arm only.
+    CGFloat collectionHeight = 0.0;
     CGFloat sideButtonRowY = 0.0; // The playlist/random side-button (and info badge) row Y.
     CGFloat storeInfoInsetWidth = 0.0;
     int editMode = self.playListEditMode;
@@ -455,6 +463,7 @@ static BOOL g_bRandamIntSeeded = NO;
             pageLabelInnerY = kLayoutWideThemaOtherCol0;
             collectionOriginX = 0.0;
             collectionOriginY = kLayoutWideCollectionOriginY;
+            collectionHeight = kLayoutWideCollectionHeight;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeWide;
         } else if (thema == kThemaWhite) {
@@ -679,10 +688,15 @@ static BOOL g_bRandamIntSeeded = NO;
                    static_cast<double>(pageLabelInnerY),
                    kPageLabelWidth,
                    static_cast<double>(sideButtonSize));
-    self.collectionView.frame = CGRectMake(collectionOriginX,
-                                           collectionOriginY,
-                                           self.collectionView.frame.size.width,
-                                           self.collectionView.frame.size.height);
+    // The binary passes the view's own bounds width and a recovered height here, not the grid's
+    // current frame. Re-reading the frame left the height at the full bounds CreateView built it
+    // with, so the grid covered the menu button row and swallowed every tap on it.
+    self.collectionView.frame =
+        CGRectMake(collectionOriginX,
+                   collectionOriginY,
+                   collectionHeight > 0.0 ? bounds.width : self.collectionView.frame.size.width,
+                   collectionHeight > 0.0 ? collectionHeight
+                                          : self.collectionView.frame.size.height);
 
     // Information badges sit beside their owning buttons.
     self.playlistInfoView.frame = CGRectMake(static_cast<double>((playlistX + sideButtonSize)),
