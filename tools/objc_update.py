@@ -1314,6 +1314,59 @@ VERIFIED = {
     0x65eec: 'MusicData -compareMusicNameHira: musicNameHira with options 2, then length',
     0x66000: 'MusicData -compareArtistNameHira: artistNameHira, ties fall to '
              '-compareMusicNameHira: at 0x66080',
+    # UIAlertView(RB). Every string operand is an ldr from the shared string cache in
+    # __DATA,__common at 0x1003cfb60, which reads as zero in the file, so each key was recovered
+    # from the initialiser that fills the cache (one block every 0x4c bytes from 0x100010100,
+    # loading the key literal into x2 before -localizedStringForKey:value:table:). Sixteen keys
+    # were wrong, mostly a newline smoothed into ". " and " quoting where the binary uses '.
+    0xdc98: 'UIAlertView(RB) +deleteAlertViewWithDelegate:: DELETE SONG, nil message, NO/YES, '
+            'no -show',
+    0xdd38: 'UIAlertView(RB) +strageAlertView: Caution, nil delegate, Close, no -show',
+    0xdd94: 'UIAlertView(RB) +showRestoreDownloadWithDelegate:: Install PACKs at 0x1003cfd38, '
+            'Cancel/OK',
+    0xde64: 'UIAlertView(RB) +showRestoreMessageWithDelegate:: title is Restore purchases at '
+            '0x1003cfd30 (0xdea0), not Install PACKs',
+    0xdf34: 'UIAlertView(RB) +showGameCenterError: Error/Failed to connect Game Center., nil '
+            'delegate, OK',
+    0xdfc0: 'UIAlertView(RB) +showNetworkErrorWithDelegate:: setTag 0 at 0xe03c before -show',
+    0xe090: 'UIAlertView(RB) +showDownloadErrorWithDelegate:: cancelButtonTitle really is nil '
+            '(x5=0), Close is the other button',
+    0xe158: 'UIAlertView(RB) +showTakeoverMessage: Took over the data, nil delegate, Close',
+    0xe1e4: 'UIAlertView(RB) +showInfomation: the location-service key has two newlines and '
+            "single quotes",
+    0xe270: 'UIAlertView(RB) +showMapWithTitle:delegate:: title is the parameter, Cancel/OK',
+    0xe358: 'UIAlertView(RB) +showWithErrorMessage:delegate:: message is the parameter, OK only',
+    0xe42c: 'UIAlertView(RB) +showConnectRetryWithErrorMessage:delegate:: OK cancel, Retry other',
+    0xe514: 'UIAlertView(RB) +showConnectRetryOrCancel:: Close cancel, Retry other',
+    0xe5e4: 'UIAlertView(RB) +showUnlockedMusicInfoWithDelegate:musicName:: format is '
+            '"%@" has been added! at 0x1003cfde8, empty title literal',
+    0xe6e8: 'UIAlertView(RB) +showSelectPurchaseLimitTypeWithDelegate:: three "%@ (%@)" buttons '
+            'terminated by stp x26,xzr at 0xe83c; the third limit is 無制限',
+    0xe93c: 'UIAlertView(RB) +showPurchaseOverMessageWithDelegate:: both Japanese literals, nil '
+            'delegate, inline OK lookup',
+    0xea50: 'UIAlertView(RB) +showUnlockTermsDescription2:: title from 0x1003cfdf0 at 0xeaec, '
+            'message from -campaignTermsDescription',
+    0xebc0: 'UIAlertView(RB) +showAlertUpdateForUnlock:: the AppStore button is the bare literal '
+            'at 0x100361b20 (0xec68), not a bundle lookup',
+    0xed10: 'UIAlertView(RB) +showAlertShortageOfPoint: Insufficient Points. with a full stop',
+    0xee34: 'UIAlertView(RB) +showAlertLatestApplication:: -show then setTag 3 at 0xeed0',
+    0xef18: 'UIAlertView(RB) +showDownloadWithDelegate:: -show then setTag 1 at 0xefb4',
+    0xeffc: 'UIAlertView(RB) +showAlertNeedResourceUpdate:: -show then setTag 2 at 0xf0e8',
+    0xf2e0: 'UIAlertView(RB) +showAlertNeedDownloadMusicNameList:: the Japanese literal is passed '
+            'as the format itself, NO/YES',
+    0xf3e4: 'UIAlertView(RB) +showColetteThemaUnlockMessage: localised string used as the format, '
+            'no -show',
+    0xf588: 'UIAlertView(RB) +showSerialcodeDialog:: nil title, inline Cancel and OK lookups, '
+            'no -show',
+    0xf764: 'UIAlertView(RB) +setExclusiveTouchForView:: fast enumeration, sets the flag then '
+            'recurses at 0xf840',
+    0xf8cc: 'UIAlertView(RB) +showPurchasePack:delegate:: stp x19,x19 at 0xf930 passes the '
+            'requirement twice for %1$@ and %2$@',
+    0xf9e0: 'UIAlertView(RB) +showMovePackDetailToExtendDetail:: empty title, NO/YES, no -show',
+    0xfa84: 'UIAlertView(RB) +showAlertNotFoundMusics:: appends "\\n" then the name each pass '
+            '(0xfb7c, 0xfb8c), cancel button is YES',
+    0xfcb0: 'UIAlertView(RB) +showAlertUpdateErosionMark:: NSMutableString from the Japanese '
+            'literal, NO/YES',
 }
 
 

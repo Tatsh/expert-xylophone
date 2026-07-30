@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4238 verified
-(66.8%).
+Total: 6343 — 6203 reconstructed, 4268 verified
+(67.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -187,37 +187,37 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectPartView` | `-` | `setIsAnimationEnableLoop:` | prop | ✅ | ✅ | `0xdb90` |
 | `RBMenuBGEffectPartView` | `-` | `m_screenSize` | prop | ✅ | ✅ | `0xdba0` |
 | `RBMenuBGEffectPartView` | `-` | `setM_screenSize:` | prop | ✅ | ✅ | `0xdbc0` |
-| `(RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ❌ | `0xdc98` |
-| `(RB)` | `+` | `strageAlertView` |  | ✅ | ❌ | `0xdd38` |
-| `(RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ❌ | `0xdd94` |
-| `(RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ❌ | `0xde64` |
-| `(RB)` | `+` | `showGameCenterError` |  | ✅ | ❌ | `0xdf34` |
-| `(RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ❌ | `0xdfc0` |
-| `(RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ❌ | `0xe090` |
-| `(RB)` | `+` | `showTakeoverMessage` |  | ✅ | ❌ | `0xe158` |
-| `(RB)` | `+` | `showInfomation` |  | ✅ | ❌ | `0xe1e4` |
-| `(RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ❌ | `0xe270` |
-| `(RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ❌ | `0xe358` |
-| `(RB)` | `+` | `showConnectRetryWithErrorMessage:delegate:` |  | ✅ | ❌ | `0xe42c` |
-| `(RB)` | `+` | `showConnectRetryOrCancel:` |  | ✅ | ❌ | `0xe514` |
-| `(RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ❌ | `0xe5e4` |
-| `(RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ❌ | `0xe6e8` |
-| `(RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ❌ | `0xe93c` |
-| `(RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ❌ | `0xea50` |
-| `(RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ❌ | `0xebc0` |
-| `(RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ❌ | `0xed10` |
-| `(RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ❌ | `0xee34` |
-| `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ❌ | `0xef18` |
-| `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ❌ | `0xeffc` |
+| `(RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ✅ | `0xdc98` |
+| `(RB)` | `+` | `strageAlertView` |  | ✅ | ✅ | `0xdd38` |
+| `(RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ✅ | `0xdd94` |
+| `(RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ✅ | `0xde64` |
+| `(RB)` | `+` | `showGameCenterError` |  | ✅ | ✅ | `0xdf34` |
+| `(RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ✅ | `0xdfc0` |
+| `(RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ✅ | `0xe090` |
+| `(RB)` | `+` | `showTakeoverMessage` |  | ✅ | ✅ | `0xe158` |
+| `(RB)` | `+` | `showInfomation` |  | ✅ | ✅ | `0xe1e4` |
+| `(RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ✅ | `0xe270` |
+| `(RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe358` |
+| `(RB)` | `+` | `showConnectRetryWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe42c` |
+| `(RB)` | `+` | `showConnectRetryOrCancel:` |  | ✅ | ✅ | `0xe514` |
+| `(RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ✅ | `0xe5e4` |
+| `(RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ✅ | `0xe6e8` |
+| `(RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ✅ | `0xe93c` |
+| `(RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ✅ | `0xea50` |
+| `(RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ✅ | `0xebc0` |
+| `(RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ✅ | `0xed10` |
+| `(RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ✅ | `0xee34` |
+| `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ✅ | `0xef18` |
+| `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ✅ | `0xeffc` |
 | `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ❌ | `0xf150` |
-| `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ❌ | `0xf2e0` |
-| `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ❌ | `0xf3e4` |
-| `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ❌ | `0xf588` |
-| `(RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ❌ | `0xf764` |
-| `(RB)` | `+` | `showPurchasePack:delegate:` |  | ✅ | ❌ | `0xf8cc` |
-| `(RB)` | `+` | `showMovePackDetailToExtendDetail:` |  | ✅ | ❌ | `0xf9e0` |
-| `(RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ❌ | `0xfa84` |
-| `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ❌ | `0xfcb0` |
+| `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ✅ | `0xf2e0` |
+| `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ✅ | `0xf3e4` |
+| `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ✅ | `0xf588` |
+| `(RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ✅ | `0xf764` |
+| `(RB)` | `+` | `showPurchasePack:delegate:` |  | ✅ | ✅ | `0xf8cc` |
+| `(RB)` | `+` | `showMovePackDetailToExtendDetail:` |  | ✅ | ✅ | `0xf9e0` |
+| `(RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ✅ | `0xfa84` |
+| `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
 | `StoreExtendNoteCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xfdb8` |
 | `UnZipArchive` | `-` | `init` |  | ❌ | ❌ | `0x14d40` |
 | `UnZipArchive` | `-` | `dealloc` |  | ❌ | ❌ | `0x14d84` |
