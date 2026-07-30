@@ -171,6 +171,53 @@ VERIFIED = {
     0x16deb0: 'RBMusicGridLayout supplementary attributes: the same frameless shape',
     0x16df1c: 'RBMusicGridLayout -layoutAttributesForElementsInRect:: intersection order',
     0x16e0a0: 'RBMusicGridLayout -shouldInvalidateLayoutForBoundsChange:: returns 1',
+    # RBMenuTutorialView, all fourteen read against the disassembly. Thirteen defects were fixed
+    # in the process; the touch path was found clean, which is what ruled the tutorial out as the
+    # cause of the stuck overlay on the device.
+    0x137b0c: 'RBMenuTutorialView -initWithFrame:: ldr s0, so the content dimensions are single '
+              'precision; cbz at 0x137b6c sends the phone to 300x100',
+    0x137bfc: 'RBMenuTutorialView -setupView: the -0.85 window offset at 0x308cb8, the pastel drop '
+              'scales 1.5 and 0.8, and the message size taken from clip table entries 9 and 10',
+    0x139af8: 'RBMenuTutorialView -showAnimationWithTutorialType:withRootView:: the animating '
+              'early-out and both weak-captured blocks',
+    0x139e04: 'RBMenuTutorialView -hideAnimation: the same shape, 0.25 duration',
+    0x13aac4: 'RBMenuTutorialView -tap:: b.cc at 0x13ab14 is unsigned lower',
+    0x13ab34: 'RBMenuTutorialView -startTutorialWithType:withAnimation:: every arm of the '
+              'thirty-five entry jump table at 0x13b870 walked, and the 1000.0 reward at 0x2f8540',
+    0x13b8fc: 'RBMenuTutorialView -startTutorialWithType:withRootView:: sets the root then '
+              'forwards with animation true',
+    0x13b974: 'RBMenuTutorialView -setClipRect: receivers traced by register, so the rect really '
+              "is the target's frame converted from its superview to self",
+    0x13ba8c: 'RBMenuTutorialView -layoutBackground:withAnimation:: the animation flag is never '
+              "read, and the grey control's width comes from its own frame",
+    0x13c8a0: 'RBMenuTutorialView -hitTest:withEvent:: nil only when the touch target is set and '
+              'all four containment guards fall through; read independently and agreed',
+    0x13cb4c: 'RBMenuTutorialView -willRotate: the sublayer opacity sweep and both stops',
+    0x13cdd4: 'RBMenuTutorialView -didRotate: the content alpha is zero, not the dim value',
+    0x13cfe8: 'RBMenuTutorialView -contentViewSettingWithTouchAnim:cursorAnim:stay:useAnimation:: '
+              'the default rect is the zero constant, and the side test is against self.height',
+    0x13d510: 'RBMenuTutorialView -startCursorAnimation:: the frame terms and the 0.5 bob; the '
+              'repeat count at 0x13d740 is NOT proven, the caller setting no argument register',
+    # RBMenuNewsTickerView, all nine read. Eleven defects fixed, and between them they account for
+    # the blank ticker on the device: the layer anchor, the parked y keyframes, the label frame,
+    # and an empty format string that dropped the NEWS prefix.
+    0x9e670: 'RBMenuNewsTickerView -initWithFrame:: the rect is forwarded to super untouched',
+    0x9e6f0: 'RBMenuNewsTickerView -SetUpView: both fcsel pairs take the pad value first, the '
+             'anchor is parked at the origin, and the format string carries NEWS',
+    0x9f150: 'RBMenuNewsTickerView -setDuration:: a direct ivar store, no accessor send',
+    0xa0730: 'RBMenuNewsTickerView -animationDidStop:finished:: the point is captured before the '
+             'replacement animation is built',
+    0xa0a3c: 'RBMenuNewsTickerView -stopNews: guarded on animationKeys and its count',
+    0xa0b7c: 'RBMenuNewsTickerView -isLinkToStore: three instructions, a byte load',
+    0xa0b8c: 'RBMenuNewsTickerView -toLink: nil test, canOpenURL: guard, then openURL:',
+    0xa0cf4: 'RBMenuNewsTickerView -parseQuery:: the binary tests host, not scheme, and discards '
+             'the pathComponents result',
+    # RBExperienceData, five read and all already correct.
+    0x1b8910: 'RBExperienceData -init: seven sets in the source order, dictionary capacity 20',
+    0x1b9cfc: 'RBExperienceData +sharedInstance: a plain nil test, not @synchronized or once',
+    0x1b9e50: 'RBExperienceData -save: archived under NSStringFromClass, then synchronize',
+    0x1b9f74: 'RBExperienceData -unlockWithBGMtype:: bgmItems, the standard enumeration',
+    0x1ba0c8: 'RBExperienceData -unlockWithShotType:: shotItems, byte-identical shape',
     0x9f190: 'RBMenuNewsTickerView -setText:LINK:: the label frame is (0, 0, measured text '
              'width, base view height); sizeWithFont: supplies d2 and the textBaseView frame send '
              'leaves the height in d3, which is why copying the base frame wholesale left the '

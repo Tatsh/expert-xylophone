@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3656 verified
-(57.6%).
+Total: 6343 — 6201 reconstructed, 3683 verified
+(58.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2056,19 +2056,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuButton` | `-` | `setEffectImageView:` | prop | ✅ | ✅ | `0x9e59c` |
 | `RBMenuButton` | `-` | `effectTextImageView` | prop | ✅ | ✅ | `0x9e5d4` |
 | `RBMenuButton` | `-` | `setEffectTextImageView:` | prop | ✅ | ✅ | `0x9e5e4` |
-| `RBMenuNewsTickerView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x9e670` |
-| `RBMenuNewsTickerView` | `-` | `SetUpView` |  | ✅ | ❌ | `0x9e6f0` |
-| `RBMenuNewsTickerView` | `-` | `setDuration:` |  | ✅ | ❌ | `0x9f150` |
+| `RBMenuNewsTickerView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x9e670` |
+| `RBMenuNewsTickerView` | `-` | `SetUpView` |  | ✅ | ✅ | `0x9e6f0` |
+| `RBMenuNewsTickerView` | `-` | `setDuration:` |  | ✅ | ✅ | `0x9f150` |
 | `RBMenuNewsTickerView` | `-` | `getPackID` |  | ✅ | ✅ | `0x9f160` |
 | `RBMenuNewsTickerView` | `-` | `getCampaignID` |  | ✅ | ✅ | `0x9f16c` |
 | `RBMenuNewsTickerView` | `-` | `getSequenceID` |  | ✅ | ✅ | `0x9f178` |
 | `RBMenuNewsTickerView` | `-` | `getWebID` |  | ✅ | ✅ | `0x9f184` |
 | `RBMenuNewsTickerView` | `-` | `setText:LINK:` |  | ✅ | ✅ | `0x9f190` |
-| `RBMenuNewsTickerView` | `-` | `animationDidStop:finished:` |  | ✅ | ❌ | `0xa0730` |
-| `RBMenuNewsTickerView` | `-` | `stopNews` |  | ✅ | ❌ | `0xa0a3c` |
-| `RBMenuNewsTickerView` | `-` | `isLinkToStore` |  | ✅ | ❌ | `0xa0b7c` |
-| `RBMenuNewsTickerView` | `-` | `toLink` |  | ✅ | ❌ | `0xa0b8c` |
-| `RBMenuNewsTickerView` | `-` | `parseQuery:` |  | ✅ | ❌ | `0xa0cf4` |
+| `RBMenuNewsTickerView` | `-` | `animationDidStop:finished:` |  | ✅ | ✅ | `0xa0730` |
+| `RBMenuNewsTickerView` | `-` | `stopNews` |  | ✅ | ✅ | `0xa0a3c` |
+| `RBMenuNewsTickerView` | `-` | `isLinkToStore` |  | ✅ | ✅ | `0xa0b7c` |
+| `RBMenuNewsTickerView` | `-` | `toLink` |  | ✅ | ✅ | `0xa0b8c` |
+| `RBMenuNewsTickerView` | `-` | `parseQuery:` |  | ✅ | ✅ | `0xa0cf4` |
 | `RBMenuNewsTickerView` | `-` | `textBaseView` | prop | ✅ | ✅ | `0xa0dec` |
 | `RBMenuNewsTickerView` | `-` | `setTextBaseView:` | prop | ✅ | ✅ | `0xa0dfc` |
 | `RBMenuNewsTickerView` | `-` | `textView` | prop | ✅ | ✅ | `0xa0e34` |
@@ -3431,20 +3431,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `viewType` | prop | ✅ | ✅ | `0x114af4` |
 | `RBTermView` | `-` | `setViewType:` | prop | ✅ | ✅ | `0x114b04` |
 | `(FromData)` | `+` | `arrayFromPropertyListData:` |  | ✅ | ❌ | `0x12f410` |
-| `RBMenuTutorialView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x137b0c` |
-| `RBMenuTutorialView` | `-` | `setupView` |  | ✅ | ❌ | `0x137bfc` |
-| `RBMenuTutorialView` | `-` | `showAnimationWithTutorialType:withRootView:` |  | ✅ | ❌ | `0x139af8` |
-| `RBMenuTutorialView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x139e04` |
-| `RBMenuTutorialView` | `-` | `tap:` |  | ✅ | ❌ | `0x13aac4` |
-| `RBMenuTutorialView` | `-` | `startTutorialWithType:withAnimation:` |  | ✅ | ❌ | `0x13ab34` |
-| `RBMenuTutorialView` | `-` | `startTutorialWithType:withRootView:` |  | ✅ | ❌ | `0x13b8fc` |
-| `RBMenuTutorialView` | `-` | `setClipRect` |  | ✅ | ❌ | `0x13b974` |
-| `RBMenuTutorialView` | `-` | `layoutBackground:withAnimation:` |  | ✅ | ❌ | `0x13ba8c` |
-| `RBMenuTutorialView` | `-` | `hitTest:withEvent:` |  | ✅ | ❌ | `0x13c8a0` |
-| `RBMenuTutorialView` | `-` | `willRotate` |  | ✅ | ❌ | `0x13cb4c` |
-| `RBMenuTutorialView` | `-` | `didRotate` |  | ✅ | ❌ | `0x13cdd4` |
-| `RBMenuTutorialView` | `-` | `contentViewSettingWithTouchAnim:cursorAnim:stay:useAnimation:` |  | ✅ | ❌ | `0x13cfe8` |
-| `RBMenuTutorialView` | `-` | `startCursorAnimation:` |  | ✅ | ❌ | `0x13d510` |
+| `RBMenuTutorialView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x137b0c` |
+| `RBMenuTutorialView` | `-` | `setupView` |  | ✅ | ✅ | `0x137bfc` |
+| `RBMenuTutorialView` | `-` | `showAnimationWithTutorialType:withRootView:` |  | ✅ | ✅ | `0x139af8` |
+| `RBMenuTutorialView` | `-` | `hideAnimation` |  | ✅ | ✅ | `0x139e04` |
+| `RBMenuTutorialView` | `-` | `tap:` |  | ✅ | ✅ | `0x13aac4` |
+| `RBMenuTutorialView` | `-` | `startTutorialWithType:withAnimation:` |  | ✅ | ✅ | `0x13ab34` |
+| `RBMenuTutorialView` | `-` | `startTutorialWithType:withRootView:` |  | ✅ | ✅ | `0x13b8fc` |
+| `RBMenuTutorialView` | `-` | `setClipRect` |  | ✅ | ✅ | `0x13b974` |
+| `RBMenuTutorialView` | `-` | `layoutBackground:withAnimation:` |  | ✅ | ✅ | `0x13ba8c` |
+| `RBMenuTutorialView` | `-` | `hitTest:withEvent:` |  | ✅ | ✅ | `0x13c8a0` |
+| `RBMenuTutorialView` | `-` | `willRotate` |  | ✅ | ✅ | `0x13cb4c` |
+| `RBMenuTutorialView` | `-` | `didRotate` |  | ✅ | ✅ | `0x13cdd4` |
+| `RBMenuTutorialView` | `-` | `contentViewSettingWithTouchAnim:cursorAnim:stay:useAnimation:` |  | ✅ | ✅ | `0x13cfe8` |
+| `RBMenuTutorialView` | `-` | `startCursorAnimation:` |  | ✅ | ✅ | `0x13d510` |
 | `RBMenuTutorialView` | `-` | `stopCursorAnimation:` |  | ✅ | ❌ | `0x13d878` |
 | `RBMenuTutorialView` | `-` | `startTouchAnimation:` |  | ✅ | ❌ | `0x13d920` |
 | `RBMenuTutorialView` | `-` | `stopTouchAnimation:` |  | ✅ | ❌ | `0x13dbc4` |
@@ -4655,13 +4655,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `-` | `drawInRect:withFont:` |  | ✅ | ❌ | `0x1b8578` |
 | `(RB)` | `-` | `drawInRect:withFont:lineBreakMode:alignment:` |  | ✅ | ❌ | `0x1b8684` |
 | `(RB)` | `-` | `drawAtPoint:withFont:` |  | ✅ | ❌ | `0x1b881c` |
-| `RBExperienceData` | `-` | `init` |  | ✅ | ❌ | `0x1b8910` |
+| `RBExperienceData` | `-` | `init` |  | ✅ | ✅ | `0x1b8910` |
 | `RBExperienceData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x1b8bf0` |
 | `RBExperienceData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x1b9788` |
-| `RBExperienceData` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x1b9cfc` |
-| `RBExperienceData` | `-` | `save` |  | ✅ | ❌ | `0x1b9e50` |
-| `RBExperienceData` | `-` | `unlockWithBGMtype:` |  | ✅ | ❌ | `0x1b9f74` |
-| `RBExperienceData` | `-` | `unlockWithShotType:` |  | ✅ | ❌ | `0x1ba0c8` |
+| `RBExperienceData` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x1b9cfc` |
+| `RBExperienceData` | `-` | `save` |  | ✅ | ✅ | `0x1b9e50` |
+| `RBExperienceData` | `-` | `unlockWithBGMtype:` |  | ✅ | ✅ | `0x1b9f74` |
+| `RBExperienceData` | `-` | `unlockWithShotType:` |  | ✅ | ✅ | `0x1ba0c8` |
 | `RBExperienceData` | `-` | `unlockWithExprosionType:` |  | ✅ | ✅ | `0x1ba21c` |
 | `RBExperienceData` | `-` | `unlockWithFrameType:` |  | ✅ | ✅ | `0x1ba370` |
 | `RBExperienceData` | `-` | `unlockWithBackgroundType:` |  | ✅ | ✅ | `0x1ba4c4` |
