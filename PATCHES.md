@@ -134,3 +134,26 @@ the binary's unguarded call.
 
 Note this is a symptom guard, not a cause fix: the real question is why the music-name artwork
 does not resolve, which is the same unresolved asset question as the menu buttons' background.
+
+### The menu buttons' cap insets
+
+**File:** `Project/RBMenuButton.m` — `-setupView:` (0x9dab4)
+
+The binary computes both horizontal caps as `art width / 2 - 1`, so they always sum to the art's
+width less two and leave a 2-point stretchable seam. For this artwork the caps *are* the pill's
+rounded ends, and the arrangement only renders correctly while the destination is at least as wide
+as the art.
+
+`-[RBMenuView layoutSubviews]` lays these buttons out at 215 points and the artwork is 220 points
+wide, so 218 points of caps do not fit. UIKit cannot draw the ends and falls back to the 2-point
+middle — the pill's solid interior — across the whole button, which is the flat grey with no
+transparent border.
+
+The patch clamps each cap to half the art's height. A pill's cap is its corner radius, which is
+half its height, so this keeps both rounded ends intact and stretches only the flat middle, at any
+width the button is used at. An unpatched build keeps the binary's arithmetic.
+
+The 5-point shortfall between the 220-point artwork and the 215-point layout is not explained. Both
+numbers are verified — 215 is derived in the binary at 0xa27e4, and the artwork resolves and
+measures 220x72 on device — so the shipped app had the same mismatch and presumably rendered
+correctly, which suggests old UIKit clamped over-large caps where current UIKit does not.
