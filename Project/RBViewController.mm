@@ -326,7 +326,9 @@ constexpr int kDefaultPlayColor = 0;
         if (sheetFarX / sheetFarY < aspect) {
             distance = sheetFarY * halfCot;
         }
-        if (IsPad()) {
+        // The width-fitted distance is forced on the phone, not the pad: the fcsel at 0x8a9c0 takes
+        // it on `eq`, which is IsPad() returning zero. On a pad the ratio test above stands.
+        if (!IsPad()) {
             distance = (sheetFarX / aspect) * halfCot;
         }
         ne::Viewport *viewport =
@@ -348,14 +350,17 @@ constexpr int kDefaultPlayColor = 0;
     } else {
         // Landscape: either a flat perspective or a 3D-tilt projection depending on whether the
         // sheet still fits when tilted.
-        float pitchRef = gameSystem->GetCameraPitchHeight();
         float halfViewH = scaledSize.y * 0.5f;
+        // Both ratios are divided out up front by the fdiv pair at 0x8aa54 and 0x8aa58, and each is
+        // used more than once below. They are not interchangeable: the sheet ratio's register is
+        // reused for the pitch angle at 0x8ab64, so only the pitch ratio reaches the y offset.
         float sheetRatio = gameSystem->GetSheetHeight() / halfViewH;
+        float pitchRatio = gameSystem->GetCameraPitchHeight() / halfViewH;
         float sheetFarX = gameSystem->GetSheetFarX();
         float sheetFarY = gameSystem->GetSheetFarY();
         double tanHalfFov = tan(fovY * 0.5f);
         float slope = (1.0f - sheetRatio) * static_cast<float>(tanHalfFov);
-        float shift = ((2.0f - pitchRef / halfViewH) - sheetRatio) *
+        float shift = ((2.0f - pitchRatio) - sheetRatio) *
                       (sheetFarX / (aspect * (sheetFarY + sheetFarY)));
         float a = slope * slope + 1.0f;
         float b = shift * (slope + slope);
@@ -370,8 +375,9 @@ constexpr int kDefaultPlayColor = 0;
             float pitch = acosf(root);
             // Build the tilted view matrix, following the arm64 SIMD sequence: look at the sheet
             // mid-plane, rotate by the pitch about x, offset the sheet in y, and push it back in z.
-            // The four ComposeMatrices calls fold the look-at, y-offset, rotation, and z-offset
-            // matrices into the accumulator in that order.
+            // The four ComposeMatrices calls fold the look-at, rotation, y-offset, and z-offset
+            // matrices into the accumulator in that order (0x8ac80 through 0x8aca4); composition
+            // does not commute, so the rotation really does precede the offset.
             float sheetMidY = sheetFarY * 0.5f;
             float lookAt[16] = {};
             // Eye and target verified against the binary call site (x1 = eye at z = 0, x2 = target
@@ -384,7 +390,9 @@ constexpr int kDefaultPlayColor = 0;
             MakeRotationMatrixX(-(static_cast<float>(kPiOverTwo) - pitch), rotation);
             float sheetHalfDepth = sheetFarX / (2.0f * aspect);
             float yOffset[16] = {};
-            MakeTranslationMatrix(yOffset, 0.0f, -sheetHalfDepth * (1.0f - sheetRatio), 0.0f);
+            // The y offset uses the camera-pitch ratio, not the sheet ratio: 0x8ac20 reads the
+            // register holding the pitch ratio, the sheet ratio's having been reused at 0x8ab64.
+            MakeTranslationMatrix(yOffset, 0.0f, -sheetHalfDepth * (1.0f - pitchRatio), 0.0f);
             float zOffset[16] = {};
             float pitchDepth = sheetHalfDepth / static_cast<float>(tanHalfFov);
             MakeTranslationMatrix(zOffset, 0.0f, 0.0f, -pitchDepth);
@@ -407,8 +415,8 @@ constexpr int kDefaultPlayColor = 0;
                                   0.0f,
                                   1.0f};
             ComposeMatrices(viewMatrix, lookAt);
-            ComposeMatrices(viewMatrix, yOffset);
             ComposeMatrices(viewMatrix, rotation);
+            ComposeMatrices(viewMatrix, yOffset);
             ComposeMatrices(viewMatrix, zOffset);
             ne::Viewport *viewport = CreatePerspectiveViewport(
                 fovY, aspect, kTiltNearPlane, kTiltFarPlane, 0, 0, viewW, viewH);
