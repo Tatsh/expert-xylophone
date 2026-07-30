@@ -78,13 +78,20 @@ static UIImage *RBBundleImage(NSString *resourceName) {
     return [UIImage imageWithContentsOfFile:path];
 }
 
-// Chooses the device-and-scale asset-name suffix for the running build: the iPad variant build
-// uses "@2x~ipad" or "~ipad" by Retina, and the iPhone build uses "@2x~iphone".
-static NSString *RBDeviceAssetTag(void) {
-    if (IsPad()) {
-        return GetIsRetinaFlag() ? kRetinaPadDeviceTag : kNonRetinaPadDeviceTag;
+// Chooses the device-and-scale asset-name suffix for one lookup pass. On iPad the two passes use
+// opposite tags: the csel at 0x1a1fc0 loads its two candidates in the reverse order to the one at
+// 0x1a1b6c, so a Retina iPad tries "@2x~ipad" and then "~ipad". Only the second pass can find
+// dl_info, which is the one atlas shipping no "@2x~ipad" variant. On iPhone the retag is skipped
+// entirely (the cbz at 0x1a1fa0), so both passes use "@2x~iphone".
+static NSString *RBDeviceAssetTag(BOOL secondPass) {
+    if (!IsPad()) {
+        return kRetinaPhoneDeviceTag;
     }
-    return kRetinaPhoneDeviceTag;
+    BOOL retina = GetIsRetinaFlag();
+    if (secondPass) {
+        retina = !retina;
+    }
+    return retina ? kRetinaPadDeviceTag : kNonRetinaPadDeviceTag;
 }
 
 // Runs one localised bundle-image lookup pass for a base name and device tag: the plain
@@ -215,13 +222,13 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
 
 + (UIImage *)imageNamedWithoutCache:(NSString *)name {
     /** @ghidraAddress 0x1a1b08 */
-    // The binary runs the localised lookup twice against the device-and-scale tag, then falls back
-    // to the untagged resource name.
-    UIImage *image = RBLocalizedBundleImage(name, RBDeviceAssetTag());
+    // The binary runs the localised lookup twice: once with the tag its screen scale calls for, and
+    // once with the other iPad tag, before falling back to the untagged resource name.
+    UIImage *image = RBLocalizedBundleImage(name, RBDeviceAssetTag(NO));
     if (image != nil) {
         return image;
     }
-    image = RBLocalizedBundleImage(name, RBDeviceAssetTag());
+    image = RBLocalizedBundleImage(name, RBDeviceAssetTag(YES));
     if (image != nil) {
         return image;
     }
