@@ -229,7 +229,13 @@ public:
      *
      * Read from the renderer's capability block; used to size a skinned mesh's per-bone arrays.
      */
-    int GetMaxVertexUnits() const;
+    int GetMaxVertexUnits() const {
+        // The probe reads GL_MAX_VERTEX_UNITS_OES into the one capability field, so this and
+        // GetMaxPaletteMatrices return the same member; the binary keeps no separate slot. Inline
+        // because the binary inlines it too: AllocateBuffers reads the field directly with the
+        // ldrsw at 0x275fc rather than calling anything, which is why no out-of-line copy exists.
+        return m_nMaxPaletteMatrices;
+    }
     /**
      * @brief The maximum number of palette matrices a single instanced draw call may use.
      *
