@@ -639,6 +639,22 @@ static BOOL g_bRandamIntSeeded = NO;
                    self.settingButton.button.frame.origin.y,
                    self.settingButton.button.frame.size.width,
                    self.settingButton.button.frame.size.height);
+        // The inner button does stretch and does cover the tap, the tutorial passes the touch
+        // through, and SelectSettingButton still never fires. So ask UIKit directly which view
+        // owns the button's centre rather than guessing at a fifth cause: hitTest from the menu
+        // view names the receiver, and the interaction flags say whether anything opted out.
+        CGPoint probe = self.settingButton.center;
+        UIView *hit = [self hitTest:probe withEvent:nil];
+        neDebugLog("  probe=(%.0f,%.0f) hit=%s containerUI=%d innerUI=%d selfUI=%d "
+                   "alpha=%.2f hidden=%d",
+                   probe.x,
+                   probe.y,
+                   hit ? hit.class.description.UTF8String : "(nil)",
+                   self.settingButton.userInteractionEnabled ? 1 : 0,
+                   self.settingButton.button.userInteractionEnabled ? 1 : 0,
+                   self.userInteractionEnabled ? 1 : 0,
+                   self.settingButton.alpha,
+                   self.settingButton.hidden ? 1 : 0);
         // A container whose frame leaves its parent is not hit-tested there, so these frames decide
         // whether a tap can land at all. RBMenuButton's enabled is write-only, as in the binary,
         // so it cannot be printed here.
