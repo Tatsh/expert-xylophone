@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4461 verified
-(70.3%).
+Total: 6343 — 6203 reconstructed, 4473 verified
+(70.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1581,30 +1581,30 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `setMusicDataArray:` | prop | ✅ | ✅ | `0x6d1a0` |
 | `RBMusicManager` | `-` | `musicDataArrayDirtyFlag` | prop | ✅ | ✅ | `0x6d1d8` |
 | `RBMusicManager` | `-` | `setMusicDataArrayDirtyFlag:` | prop | ✅ | ✅ | `0x6d1e8` |
-| `RBPurchaseManager` | `+` | `sharedManager` |  | ✅ | ❌ | `0x6d260` |
+| `RBPurchaseManager` | `+` | `sharedManager` |  | ✅ | ✅ | `0x6d260` |
 | `RBPurchaseManager` | `-` | `init` |  | ✅ | ❌ | `0x6d2b8` |
-| `RBPurchaseManager` | `+` | `isPurchasable` |  | ✅ | ❌ | `0x6d4d0` |
+| `RBPurchaseManager` | `+` | `isPurchasable` |  | ✅ | ✅ | `0x6d4d0` |
 | `RBPurchaseManager` | `-` | `dealloc` |  | ✅ | ❌ | `0x6d4e4` |
-| `RBPurchaseManager` | `-` | `start` |  | ✅ | ❌ | `0x6d5ac` |
-| `RBPurchaseManager` | `-` | `end` |  | ✅ | ❌ | `0x6d610` |
+| `RBPurchaseManager` | `-` | `start` |  | ✅ | ✅ | `0x6d5ac` |
+| `RBPurchaseManager` | `-` | `end` |  | ✅ | ✅ | `0x6d610` |
 | `RBPurchaseManager` | `-` | `saveProductList` |  | ✅ | ❌ | `0x6d674` |
 | `RBPurchaseManager` | `-` | `loadProductList` |  | ✅ | ❌ | `0x6d8e8` |
-| `RBPurchaseManager` | `-` | `isPurchased:` |  | ✅ | ❌ | `0x6dc30` |
+| `RBPurchaseManager` | `-` | `isPurchased:` |  | ✅ | ✅ | `0x6dc30` |
 | `RBPurchaseManager` | `-` | `beginPurchase:` |  | ✅ | ❌ | `0x6dcc8` |
 | `RBPurchaseManager` | `-` | `beginRestore` |  | ✅ | ❌ | `0x6de88` |
 | `RBPurchaseManager` | `-` | `purchaseCheckedProducts` |  | ✅ | ✅ | `0x6e024` |
-| `RBPurchaseManager` | `-` | `removePurchaseCheckedProduct:` |  | ✅ | ❌ | `0x6e030` |
-| `RBPurchaseManager` | `-` | `clearPurchaseCheckedProducts` |  | ✅ | ❌ | `0x6e0bc` |
+| `RBPurchaseManager` | `-` | `removePurchaseCheckedProduct:` |  | ✅ | ✅ | `0x6e030` |
+| `RBPurchaseManager` | `-` | `clearPurchaseCheckedProducts` |  | ✅ | ✅ | `0x6e0bc` |
 | `RBPurchaseManager` | `-` | `addProductID:Save:` |  | ✅ | ❌ | `0x6e110` |
 | `RBPurchaseManager` | `-` | `addProductFromPurchaseCheckedProducts` |  | ✅ | ❌ | `0x6e21c` |
 | `RBPurchaseManager` | `-` | `addPurchaseCheckTransaction:` |  | ✅ | ❌ | `0x6e370` |
 | `RBPurchaseManager` | `-` | `checkNextReceipt` |  | ✅ | ❌ | `0x6e468` |
-| `RBPurchaseManager` | `-` | `requestDidFinish:` |  | ✅ | ❌ | `0x6e834` |
+| `RBPurchaseManager` | `-` | `requestDidFinish:` |  | ✅ | ✅ | `0x6e834` |
 | `RBPurchaseManager` | `-` | `request:didFailWithError:` |  | ✅ | ✅ | `0x6e854` |
-| `RBPurchaseManager` | `-` | `paymentQueue:updatedTransactions:` |  | ✅ | ❌ | `0x6e858` |
-| `RBPurchaseManager` | `-` | `paymentQueue:removedTransactions:` |  | ✅ | ❌ | `0x6ee94` |
-| `RBPurchaseManager` | `-` | `paymentQueueRestoreCompletedTransactionsFinished:` |  | ✅ | ❌ | `0x6efb4` |
-| `RBPurchaseManager` | `-` | `paymentQueue:restoreCompletedTransactionsFailedWithError:` |  | ✅ | ❌ | `0x6f288` |
+| `RBPurchaseManager` | `-` | `paymentQueue:updatedTransactions:` |  | ✅ | ✅ | `0x6e858` |
+| `RBPurchaseManager` | `-` | `paymentQueue:removedTransactions:` |  | ✅ | ✅ | `0x6ee94` |
+| `RBPurchaseManager` | `-` | `paymentQueueRestoreCompletedTransactionsFinished:` |  | ✅ | ✅ | `0x6efb4` |
+| `RBPurchaseManager` | `-` | `paymentQueue:restoreCompletedTransactionsFailedWithError:` |  | ✅ | ✅ | `0x6f288` |
 | `RBPurchaseManager` | `+` | `encodedStringWithBase64:` |  | ✅ | ❌ | `0x6f3b8` |
 | `RBPurchaseManager` | `+` | `encodedStringWithBase64V2:` |  | ✅ | ❌ | `0x6f544` |
 | `RBPurchaseManager` | `+` | `decodedStringWithBase64:` |  | ✅ | ❌ | `0x6f784` |

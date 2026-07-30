@@ -970,6 +970,27 @@ VERIFIED = {
     0x8a3e8: 'RBViewController -didSelectMenuSortViewController:',
     0x8a530: 'RBViewController -willRotateToInterfaceOrientation:duration:',
     0x8a584: 'RBViewController -didRotateFromInterfaceOrientation:',
+    # RBPurchaseManager's StoreKit observer. The transaction-state dispatch at 0x6ea0c is a compare
+    # chain, not a jump table: 1 Purchased goes to 0x6ec34, 2 Failed to 0x6eb70, 3 Restored falls
+    # through at 0x6ea24, and every other state - 0 Purchasing and 4 Deferred - lands on 0x6ed64,
+    # which is the loop continuation, so they are deliberate no-ops rather than a missing arm. The
+    # two byte guards on the Restored arm are the ivar-offset globals at 0x3c8728 and 0x3c872c,
+    # which hold 8 and 9, so they are _transactioing and _isRestored in that order.
+    0x6d260: 'RBPurchaseManager +sharedManager: bare nil check, no dispatch_once',
+    0x6d4d0: 'RBPurchaseManager +isPurchasable: tail call to SKPaymentQueue canMakePayments',
+    0x6d5ac: 'RBPurchaseManager -start: addTransactionObserver: self',
+    0x6d610: 'RBPurchaseManager -end: removeTransactionObserver: self',
+    0x6dc30: 'RBPurchaseManager -isPurchased:: containsObject: on purchasedProducts',
+    0x6e030: 'RBPurchaseManager -removePurchaseCheckedProduct:: removeObject:',
+    0x6e0bc: 'RBPurchaseManager -clearPurchaseCheckedProducts: removeAllObjects',
+    0x6e834: 'RBPurchaseManager -requestDidFinish:: cbz on the request, then checkNextReceipt',
+    0x6e858: 'RBPurchaseManager -paymentQueue:updatedTransactions:: three real arms and a no-op '
+             'default; only Purchased and Failed clear _transactioing, Restored does not',
+    0x6ee94: 'RBPurchaseManager -paymentQueue:removedTransactions:: enumerates and does nothing',
+    0x6efb4: 'RBPurchaseManager -paymentQueueRestoreCompletedTransactionsFinished:: the tbz at '
+             '0x6f158 loops back to 0x6f0b0 while addPurchaseCheckTransaction: is false',
+    0x6f288: 'RBPurchaseManager -paymentQueue:restoreCompletedTransactionsFailedWithError:: '
+             'isRestored cleared before transactioing, matching the two strb at 0x6f358/0x6f364',
     # RecommendAdData's archived-payload readers. Every __cfstring the class references was decoded
     # from its struct (flags/ptr/length) rather than from a decompiler label, which is what exposed
     # the four sub-key literals: the archive keys its entries by the fully qualified name, so the

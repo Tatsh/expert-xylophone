@@ -445,10 +445,12 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 
 #pragma mark - Helpers
 
-// Build the empty-domain, empty-description failure error the verification callbacks report.
+// Build the empty-domain, empty-description failure error the verification callbacks report. The
+// format takes no arguments: the stringWithFormat: at 0x6fe58 loads the empty string at 0x361a20
+// into x2 and writes no stack slots before the call, and the same constant is the error domain
+// below. It is the value kEmptyErrorText holds, spelled as a literal so it stays a format literal.
 - (NSError *)errorWithEmptyDescription {
-    NSString *description =
-        [NSString stringWithString:[NSString stringWithFormat:@"%@", kEmptyErrorText]];
+    NSString *description = [NSString stringWithString:[NSString stringWithFormat:@""]];
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:description
                                                          forKey:NSLocalizedDescriptionKey];
     return [NSError errorWithDomain:kEmptyErrorText code:kErrorCode userInfo:userInfo];
