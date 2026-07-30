@@ -39,6 +39,7 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 

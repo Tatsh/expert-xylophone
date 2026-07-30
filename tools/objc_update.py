@@ -612,7 +612,7 @@ VERIFIED = {
               'category getter, not from frame.size.width',
     0x1d9028: 'RBStoreDetailViewController -setPurchaseState:: guarded on the header '
               'view, and the argument is inverted before setEnabled:',
-    0x1d9408: 'RBStoreDetailViewController -setButtonTextBuy: one vararg slot for one specifier',
+    0x1d9408: 'RBStoreDetailViewController -setButtonTextBuy: one argument slot for one specifier',
     0x1d95d8: 'RBStoreDetailViewController -setButtonTextInstall: normal state and '
               'enabled, unlike the installing and installed pair which use the disabled '
               'state',
