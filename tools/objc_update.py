@@ -425,6 +425,19 @@ VERIFIED = {
     0x1e66f8: 'RBStorePageViewController -addRestorePackInfo:: add, map to a product '
               'id, then remove if present',
     0x1ef40c: 'RBStorePageViewController -addRestoreExtendNoteInfo:: the same shape on the note id',
+    # RBCampaignViewController, five more, no defects. -downloaderError: carries two
+    # faithful-but-surprising behaviours that are documented so nobody "fixes" them.
+    0x1fda70: 'RBCampaignViewController -downloaderError:: five identity arms; the '
+              'music-info arm clears the info downloader, and only three of the five '
+              'reach the shared index reset',
+    0x1fdfb8: 'RBCampaignViewController -downloadManagerCompleted:: b.lt is signed, '
+              'matching the NSInteger count',
+    0x1fec34: 'RBCampaignViewController -refreshMusicList: outer bound b.cs unsigned, '
+              'inner fast enumeration b.cc, and the break really does leave the inner '
+              'loop',
+    0x1ffa44: 'RBCampaignViewController -showDetailViewForPhone:: the identifier is '
+              'cleared before the search, not after',
+    0x1ffe00: 'RBCampaignViewController -itemInfoDownload: UTF-8 body and the JSON content type',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

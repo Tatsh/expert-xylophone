@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3866 verified
-(60.9%).
+Total: 6343 — 6201 reconstructed, 3871 verified
+(61.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5512,16 +5512,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x1fc758` |
 | `RBCampaignViewController` | `-` | `alertViewClose` |  | ✅ | ✅ | `0x1fc898` |
 | `RBCampaignViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1fc988` |
-| `RBCampaignViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1fda70` |
+| `RBCampaignViewController` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x1fda70` |
 | `RBCampaignViewController` | `-` | `showError:` |  | ✅ | ✅ | `0x1fdcb4` |
 | `RBCampaignViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x1fddf4` |
-| `RBCampaignViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1fdfb8` |
+| `RBCampaignViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ✅ | `0x1fdfb8` |
 | `RBCampaignViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1fe2bc` |
 | `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x1fe368` |
 | `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ✅ | `0x1fe4f8` |
 | `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ❌ | `0x1fe4fc` |
 | `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ✅ | `0x1fec00` |
-| `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ❌ | `0x1fec34` |
+| `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ✅ | `0x1fec34` |
 | `RBCampaignViewController` | `-` | `refreshUnlockTable` |  | ✅ | ❌ | `0x1ff038` |
 | `RBCampaignViewController` | `-` | `refreshUnlockBadge` |  | ✅ | ✅ | `0x1ff470` |
 | `RBCampaignViewController` | `-` | `setBadgeCnt:` |  | ✅ | ✅ | `0x1ff5cc` |
@@ -5531,12 +5531,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1ff7bc` |
 | `RBCampaignViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x1ff91c` |
 | `RBCampaignViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1ff9d4` |
-| `RBCampaignViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x1ffa44` |
+| `RBCampaignViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ✅ | `0x1ffa44` |
 | `RBCampaignViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1ffc30` |
 | `RBCampaignViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x1ffc38` |
 | `RBCampaignViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ✅ | `0x1ffc6c` |
 | `RBCampaignViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ffdfc` |
-| `RBCampaignViewController` | `-` | `itemInfoDownload` |  | ✅ | ❌ | `0x1ffe00` |
+| `RBCampaignViewController` | `-` | `itemInfoDownload` |  | ✅ | ✅ | `0x1ffe00` |
 | `RBCampaignViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x1ffff4` |
 | `RBCampaignViewController` | `-` | `alertView` | prop | ✅ | ✅ | `0x200028` |
 | `RBCampaignViewController` | `-` | `setAlertView:` | prop | ✅ | ✅ | `0x200038` |
