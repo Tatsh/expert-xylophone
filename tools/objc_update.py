@@ -990,6 +990,10 @@ VERIFIED = {
     0x6e370: 'RBPurchaseManager -addPurchaseCheckTransaction:: nil and isPurchased guards',
     0x6e468: 'RBPurchaseManager -checkNextReceipt: empty-queue and in-flight-downloader guards, '
              'nonce 32 and post body encoding 4, downloader set before addData',
+    0x70490: 'RBPurchaseManager -downloaderError:: the branch guard is _isRestored, the ivar '
+             'offset global at 0x3c872c holding 9; the restore arm builds its error after the '
+             'respondsToSelector: check and the purchase arm before it, which the source keeps; '
+             'transactioing is cleared before isRestored at 0x707f4 and 0x707f8',
     # RBPurchaseManager's three Base64 routines, worked instruction by instruction. The alphabet is
     # the 64 bytes at 0x337e6e, and the decoder's linear search bounds itself at 0x41, one past the
     # alphabet, so it can also match the NUL terminator at 0x337eae; the source's

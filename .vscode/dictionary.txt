@@ -11,6 +11,7 @@ allseasons
 analyzer
 analyzer's
 cbz
+eor
 subdata
 tbz
 Ångström
