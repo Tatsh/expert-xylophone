@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3143 verified
-(49.6%).
+Total: 6343 — 6198 reconstructed, 3153 verified
+(49.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1431,16 +1431,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `-` | `music` |  | ✅ | ❌ | `0x6752c` |
 | `MusicDataFromDoc` | `-` | `musicPre` |  | ✅ | ✅ | `0x675e4` |
 | `MusicDataFromDoc` | `-` | `loadSheet` |  | ✅ | ❌ | `0x675ec` |
-| `MusicDataFromDoc` | `-` | `sheetBasic` |  | ✅ | ❌ | `0x676a4` |
-| `MusicDataFromDoc` | `-` | `sheetBasicLight` |  | ✅ | ❌ | `0x676b0` |
-| `MusicDataFromDoc` | `-` | `sheetMedium` |  | ✅ | ❌ | `0x676bc` |
-| `MusicDataFromDoc` | `-` | `sheetMediumLight` |  | ✅ | ❌ | `0x676c8` |
-| `MusicDataFromDoc` | `-` | `sheetHard` |  | ✅ | ❌ | `0x676d4` |
-| `MusicDataFromDoc` | `-` | `sheetHardLight` |  | ✅ | ❌ | `0x676e0` |
-| `MusicDataFromDoc` | `-` | `sheetSpecial` |  | ✅ | ❌ | `0x676ec` |
-| `MusicDataFromDoc` | `-` | `sheetSpecialLight` |  | ✅ | ❌ | `0x676f8` |
-| `MusicDataFromDoc` | `-` | `artwork2xData` |  | ✅ | ❌ | `0x67704` |
-| `MusicDataFromDoc` | `-` | `artworkData` |  | ✅ | ❌ | `0x67718` |
+| `MusicDataFromDoc` | `-` | `sheetBasic` |  | ✅ | ✅ | `0x676a4` |
+| `MusicDataFromDoc` | `-` | `sheetBasicLight` |  | ✅ | ✅ | `0x676b0` |
+| `MusicDataFromDoc` | `-` | `sheetMedium` |  | ✅ | ✅ | `0x676bc` |
+| `MusicDataFromDoc` | `-` | `sheetMediumLight` |  | ✅ | ✅ | `0x676c8` |
+| `MusicDataFromDoc` | `-` | `sheetHard` |  | ✅ | ✅ | `0x676d4` |
+| `MusicDataFromDoc` | `-` | `sheetHardLight` |  | ✅ | ✅ | `0x676e0` |
+| `MusicDataFromDoc` | `-` | `sheetSpecial` |  | ✅ | ✅ | `0x676ec` |
+| `MusicDataFromDoc` | `-` | `sheetSpecialLight` |  | ✅ | ✅ | `0x676f8` |
+| `MusicDataFromDoc` | `-` | `artwork2xData` |  | ✅ | ✅ | `0x67704` |
+| `MusicDataFromDoc` | `-` | `artworkData` |  | ✅ | ✅ | `0x67718` |
 | `MusicDataFromDoc` | `-` | `artworkDataWithScale:Luminance:` |  | ✅ | ❌ | `0x6772c` |
 | `MusicDataFromDoc` | `-` | `musicNameImageWhite2xData` |  | ✅ | ❌ | `0x67944` |
 | `MusicDataFromDoc` | `-` | `musicNameImageWhiteData` |  | ✅ | ❌ | `0x67958` |

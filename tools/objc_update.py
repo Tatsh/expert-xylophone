@@ -69,6 +69,19 @@ VERIFIED = {
     0x1a9300: 'RBStoreExtendNoteDetailViewController -shouldAutorotateToInterfaceOrientation:',
     0x1c9478: 'RBTermAgreeView -shouldAutorotateToInterfaceOrientation:',
     0x1dc3ec: 'RBStoreDetailViewController -shouldAutorotateToInterfaceOrientation:',
+    # MusicDataFromDoc's eight sheet accessors are each `adrp/ldr loadSheet; b _objc_msgSend`,
+    # forwarding to the same selector with no argument, which is what this file does.
+    0x676a4: 'MusicDataFromDoc -sheetBasic: tail-calls loadSheet',
+    0x676b0: 'MusicDataFromDoc -sheetBasicLight: tail-calls loadSheet',
+    0x676bc: 'MusicDataFromDoc -sheetMedium: tail-calls loadSheet',
+    0x676c8: 'MusicDataFromDoc -sheetMediumLight: tail-calls loadSheet',
+    0x676d4: 'MusicDataFromDoc -sheetHard: tail-calls loadSheet',
+    0x676e0: 'MusicDataFromDoc -sheetHardLight: tail-calls loadSheet',
+    0x676ec: 'MusicDataFromDoc -sheetSpecial: tail-calls loadSheet',
+    0x676f8: 'MusicDataFromDoc -sheetSpecialLight: tail-calls loadSheet',
+    # The artwork pair passes its scale and luminance as fmov immediates, 2.0/1.0 and 1.0/1.0.
+    0x67704: 'MusicDataFromDoc -artwork2xData: artworkDataWithScale:2.0 Luminance:1.0',
+    0x67718: 'MusicDataFromDoc -artworkData: artworkDataWithScale:1.0 Luminance:1.0',
 }
 
 
