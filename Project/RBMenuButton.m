@@ -44,8 +44,8 @@ static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
 // The fmov at 0x9dcb0 is an instruction immediate, not a pool slot, so it carries no
 // @ghidraAddress: the audit tool would read the instruction bytes as a float. Its word is
 // 0x1e7e100a, whose imm8 field (bits 20:13) is 0xf0, and VFPExpandImm(0xf0) is -1.0. Ghidra
-// renders this one as -0x4010000000000000, which would be -4.0 and is wrong; it prints the
-// positive immediates in this function correctly.
+// renders this one as -0x4010000000000000, which is easy to misread as -4.0; -4.0 would need
+// imm8 0x90 and the word 0x1e72100a. Decode the field rather than the printed form.
 static const CGFloat kMenuButtonCapInsetMargin = 1.0;
 
 // The number of image-name slots per button type in the setup table. Only the first four are used;

@@ -161,6 +161,7 @@ fcvtzs
 floatloopcounter
 fmla
 fmov
+fmov's
 fmul
 fobjc
 fori
@@ -245,10 +246,10 @@ mainpage
 malloc
 malloc'd
 maru
-maxfloat
 math
 matrixf
 matrixmath
+maxfloat
 maxmaximizer
 mdfile
 memcpy
