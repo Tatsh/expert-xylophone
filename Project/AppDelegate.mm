@@ -410,6 +410,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         URLWithString:[NSString
                           stringWithFormat:@"https://%@/akx/main/news/passed_info.jsp?target=JP",
                                            GetApiHostString()]];
+    // The terms endpoint is stored as a string, not wrapped in an NSURL like the two above.
     self.urlBaseTerm = [NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
                                                   GetApiHostString()];
 
@@ -992,12 +993,12 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 - (NSString *)getTermURLWithID:(NSString *)termID {
     if (termID == nil) {
         // No id: the resolved terms URL is just the base terms URL.
-        self.urlTerm = self.urlBaseTerm;
+        self->_urlTerm = self->_urlBaseTerm;
     } else {
-        self.urlTerm = [NSString stringWithFormat:kTermURLFormat, self.urlBaseTerm,
-                                                  GetRegionCode(), termID];
+        self->_urlTerm = [NSString stringWithFormat:kTermURLFormat, self->_urlBaseTerm,
+                                                    GetRegionCode(), termID];
     }
-    return self.urlTerm;
+    return self->_urlTerm;
 }
 
 /** @ghidraAddress 0x4efa4 */
@@ -1037,10 +1038,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     if (self.earlyBonusList == nil || self.earlyBonusList.count == 0) {
         return NO;
     }
-    // The bonus lists are keyed by the current music id (the binary treats them as dictionaries).
-    MusicData *music = static_cast<MusicData *>(self.musicData);
+    MusicData *music = self.musicData;
     NSString *key = [NSString stringWithFormat:kBonusListKeyFormat, music.MusicID];
-    return [static_cast<id>(self.earlyBonusList) objectForKey:key] != nil;
+    // The binary sends -objectForKey:, not the subscript form.
+    return [self.earlyBonusList objectForKey:key] != nil;
 }
 
 /** @ghidraAddress 0x4f658 */
@@ -1048,9 +1049,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     if (self.hotBonusList == nil || self.hotBonusList.count == 0) {
         return NO;
     }
-    MusicData *music = static_cast<MusicData *>(self.musicData);
+    MusicData *music = self.musicData;
     NSString *key = [NSString stringWithFormat:kBonusListKeyFormat, music.MusicID];
-    return [static_cast<id>(self.hotBonusList) objectForKey:key] != nil;
+    // The binary sends -objectForKey:, not the subscript form.
+    return [self.hotBonusList objectForKey:key] != nil;
 }
 
 /** @ghidraAddress 0x517fc */
@@ -1116,6 +1118,13 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 }
 
 #pragma mark - Terms
+
+/** @ghidraAddress 0x4ee08 */
+- (void)setTermLastUpdateTimeString:(NSString *)termLastUpdateTimeString {
+    // Written out rather than synthesised, and it retains rather than copying, so the declared
+    // copy attribute does not apply here.
+    self->_termLastUpdateTimeString = termLastUpdateTimeString;
+}
 
 /** @ghidraAddress 0x4ee40 */
 - (NSString *)getTermLastUpdateTimeString {

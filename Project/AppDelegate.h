@@ -11,7 +11,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class neWindow, RBViewController, RBNavigationController, RBResourceDownloadViewController;
+@class Downloader, MusicData, neWindow, RBNavigationController, RBResourceDownloadViewController,
+    RBViewController, ReplayData;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,13 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x547a4 (getter)
  * @ghidraAddress 0x547b4 (setter)
  */
-@property(nonatomic, strong, nullable) id musicData;
+@property(nonatomic, strong, nullable) MusicData *musicData;
 /**
  * @brief The loaded replay/ghost data for the current play.
  * @ghidraAddress 0x547ec (getter)
  * @ghidraAddress 0x547fc (setter)
  */
-@property(nonatomic, strong, nullable) id replayData;
+@property(nonatomic, strong, nullable) ReplayData *replayData;
 /**
  * @brief The active music-list search string.
  * @ghidraAddress 0x54834 (getter)
@@ -86,17 +87,17 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, assign) BOOL applilinkInitialized;
 /**
- * @brief The early-bird bonus campaign list.
+ * @brief The early-bird bonus campaign table, keyed by music id.
  * @ghidraAddress 0x548c0 (getter)
  * @ghidraAddress 0x548d0 (setter)
  */
-@property(nonatomic, strong, nullable) NSArray *earlyBonusList;
+@property(nonatomic, strong, nullable) NSDictionary *earlyBonusList;
 /**
- * @brief The hot bonus campaign list.
+ * @brief The hot bonus campaign table, keyed by music id.
  * @ghidraAddress 0x54908 (getter)
  * @ghidraAddress 0x54918 (setter)
  */
-@property(nonatomic, strong, nullable) NSArray *hotBonusList;
+@property(nonatomic, strong, nullable) NSDictionary *hotBonusList;
 /**
  * @brief Whether the treasure map screen has already been shown this session.
  * @ghidraAddress 0x54950 (getter)
@@ -127,19 +128,19 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x549f8 (getter)
  * @ghidraAddress 0x54a08 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *urlString;
+@property(nonatomic, copy, nullable) NSString *urlString;
 /**
  * @brief The server-reported latest app version string.
  * @ghidraAddress 0x54a14 (getter)
  * @ghidraAddress 0x54a24 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *version;
+@property(nonatomic, copy, nullable) NSString *version;
 /**
  * @brief The server time string from the last info fetch.
  * @ghidraAddress 0x54a30 (getter)
  * @ghidraAddress 0x54a40 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *serverTime;
+@property(nonatomic, copy, nullable) NSString *serverTime;
 /**
  * @brief The server's mandatory-update flag string (@c "1" when a mandatory update is required,
  * otherwise @c "0"), taken verbatim from the startup response's @c "Type" field.
@@ -158,40 +159,40 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x54a98 (getter)
  * @ghidraAddress 0x54aa8 (setter)
  */
-@property(nonatomic, strong) NSURL *urlBaseWebInfo;
+@property(nonatomic, copy) NSURL *urlBaseWebInfo;
 /**
  * @brief The resolved news web-info URL.
  * @ghidraAddress 0x54ab4 (getter)
  * @ghidraAddress 0x54ac4 (setter)
  */
-@property(nonatomic, strong, nullable) NSURL *urlWebInfo;
+@property(nonatomic, copy, nullable) NSURL *urlWebInfo;
 /**
  * @brief The pre-release news web-info endpoint URL.
  * @ghidraAddress 0x54ad0 (getter)
  * @ghidraAddress 0x54ae0 (setter)
  */
-@property(nonatomic, strong) NSURL *urlPreWebInfo;
+@property(nonatomic, copy) NSURL *urlPreWebInfo;
 /**
  * @brief The last-update time string for the news info feed.
  * @ghidraAddress 0x54aec (getter)
  * @ghidraAddress 0x4ef6c (setter)
  */
-@property(nonatomic, strong, nullable) NSString *infoLastUpdateTimeString;
+@property(nonatomic, copy, nullable) NSString *infoLastUpdateTimeString;
 /**
  * @brief The pack identifier to open in the store on next launch.
  * @ghidraAddress 0x54afc (getter)
  */
-@property(nonatomic, strong, nullable) NSString *packIDForOpenStore;
+@property(nonatomic, copy, nullable) NSString *packIDForOpenStore;
 /**
  * @brief The campaign identifier to open in the store on next launch.
  * @ghidraAddress 0x54b0c (getter)
  */
-@property(nonatomic, strong, nullable) NSString *campaignIDForOpenStore;
+@property(nonatomic, copy, nullable) NSString *campaignIDForOpenStore;
 /**
  * @brief The extend-note product identifier to open in the store on next launch.
  * @ghidraAddress 0x54b1c (getter)
  */
-@property(nonatomic, strong, nullable) NSString *extendNotePIDForOpenStore;
+@property(nonatomic, copy, nullable) NSString *extendNotePIDForOpenStore;
 /**
  * @brief The base terms-of-service endpoint URL.
  * @ghidraAddress 0x54b2c (getter)
@@ -205,9 +206,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString *urlTerm;
 /**
  * @brief The last-update time string for the terms document.
+ *
+ * The setter is written out rather than synthesised, and assigns without copying.
  * @ghidraAddress 0x54b64 (getter)
+ * @ghidraAddress 0x4ee08 (setter)
  */
-@property(nonatomic, strong, readonly, nullable) NSString *termLastUpdateTimeString;
+@property(nonatomic, copy, nullable) NSString *termLastUpdateTimeString;
 /**
  * @brief Convenience accessor for the last-update time string of the terms document.
  * @return The last-update time string, or @c nil when none has been recorded.
@@ -218,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The latest accepted terms version.
  * @ghidraAddress 0x54b84 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *latestTermVer;
+@property(nonatomic, copy, nullable) NSString *latestTermVer;
 /**
  * @brief The pending push-notification payloads captured at launch.
  * @ghidraAddress 0x54b90 (getter)
@@ -230,19 +234,19 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x54bd8 (getter)
  * @ghidraAddress 0x54be8 (setter)
  */
-@property(nonatomic, strong, nullable) NSURL *outerUrl;
+@property(nonatomic, copy, nullable) NSURL *outerUrl;
 /**
  * @brief The resource downloader driving update fetches.
  * @ghidraAddress 0x54bf4 (getter)
  * @ghidraAddress 0x54c04 (setter)
  */
-@property(nonatomic, strong, nullable) id downloader;
+@property(nonatomic, strong, nullable) Downloader *downloader;
 /**
  * @brief The APNs device-token uploader.
  * @ghidraAddress 0x54c3c (getter)
  * @ghidraAddress 0x54c4c (setter)
  */
-@property(nonatomic, strong, nullable) id apnsUploader;
+@property(nonatomic, strong, nullable) Downloader *apnsUploader;
 
 /**
  * @brief The pack identifier a deep link ("open store") queued for the store to open, as a string.
