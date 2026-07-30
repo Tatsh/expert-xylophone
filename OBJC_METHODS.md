@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3825 verified
-(60.3%).
+Total: 6343 — 6201 reconstructed, 3833 verified
+(60.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5491,19 +5491,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUserSettingData` | `-` | `setTutorialStatuses:` | prop | ✅ | ✅ | `0x1f8d28` |
 | `RBCampaignViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1f8e2c` |
 | `RBCampaignViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1f9220` |
-| `RBCampaignViewController` | `-` | `downloadCampaignList` |  | ✅ | ❌ | `0x1fa700` |
+| `RBCampaignViewController` | `-` | `downloadCampaignList` |  | ✅ | ✅ | `0x1fa700` |
 | `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fa878` |
 | `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1faf5c` |
-| `RBCampaignViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1faf90` |
+| `RBCampaignViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1faf90` |
 | `RBCampaignViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1fb0dc` |
 | `RBCampaignViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1fb0e4` |
-| `RBCampaignViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1fb118` |
-| `RBCampaignViewController` | `-` | `sampleStart` |  | ✅ | ❌ | `0x1fb228` |
-| `RBCampaignViewController` | `-` | `sampleStop` |  | ✅ | ❌ | `0x1fb410` |
-| `RBCampaignViewController` | `-` | `pushExternalLink:` |  | ✅ | ❌ | `0x1fb5c0` |
-| `RBCampaignViewController` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x1fb72c` |
+| `RBCampaignViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ✅ | `0x1fb118` |
+| `RBCampaignViewController` | `-` | `sampleStart` |  | ✅ | ✅ | `0x1fb228` |
+| `RBCampaignViewController` | `-` | `sampleStop` |  | ✅ | ✅ | `0x1fb410` |
+| `RBCampaignViewController` | `-` | `pushExternalLink:` |  | ✅ | ✅ | `0x1fb5c0` |
+| `RBCampaignViewController` | `-` | `pushCellButton:` |  | ✅ | ✅ | `0x1fb72c` |
 | `RBCampaignViewController` | `-` | `showDetailView:` |  | ✅ | ❌ | `0x1fb934` |
-| `RBCampaignViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x1fbdac` |
+| `RBCampaignViewController` | `-` | `handleTapCoverView:` |  | ✅ | ✅ | `0x1fbdac` |
 | `RBCampaignViewController` | `-` | `updateExperienceData` |  | ✅ | ✅ | `0x1fc128` |
 | `RBCampaignViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1fc3fc` |
 | `RBCampaignViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc74c` |

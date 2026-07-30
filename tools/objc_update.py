@@ -342,6 +342,25 @@ VERIFIED = {
               'receiver is the application',
     # RBCampaignViewController, first eight. -downloaderFinished: at 0x1fc988 is NOT
     # ticked: its strings and its de-inlining were corrected, its body was not read.
+    # RBCampaignViewController, eight more. Three constants had been attributed to engine
+    # globals that do not exist: the binary loads them as PC-relative literals out of
+    # __text, which is what a source literal compiles to, not an adrp against __const.
+    0x1fa700: 'RBCampaignViewController -downloadCampaignList: offset 0, limit 20, '
+              'UTF-8, the JSON content type',
+    0x1faf90: 'RBCampaignViewController -tableView:willDisplayCell:forRowAtIndexPath:: '
+              'the odd-row white is a literal, not a global; both mechanisms appear in '
+              'this one function',
+    0x1fb118: 'RBCampaignViewController -tableView:didSelectRowAtIndexPath:: both idiom arms',
+    0x1fb228: 'RBCampaignViewController -sampleStart: loop true, fade 0.5f, and a '
+              'discarded cell fetch',
+    0x1fb410: 'RBCampaignViewController -sampleStop: the -1 early return, and the index '
+              'reset sits inside the cell branch',
+    0x1fb5c0: 'RBCampaignViewController -pushExternalLink:: tbnz #0x1f is a 32-bit sign '
+              'test, so the row is an int',
+    0x1fb72c: 'RBCampaignViewController -pushCellButton:: the jump table read, not '
+              'inferred; b.hi is unsigned and case 1 is the default block',
+    0x1fbdac: 'RBCampaignViewController -handleTapCoverView:: the method only; its two '
+              'block bodies are not read',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

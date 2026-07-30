@@ -84,6 +84,13 @@ static const CGFloat kActivityIndicatorSize = 24.0;
 static const CGFloat kActivityIndicatorHostSize = 40.0; // @ghidraAddress 0x2ee950
 static const CGFloat kCenterScale = 0.5;
 
+// Three values the binary loads as PC-relative literals out of __text, not as references to the
+// engine globals the reconstruction named. A real global reference would be an adrp/ldr pair
+// against __const, which is how the neighbouring kAlternateRowWhite is in fact loaded.
+static const CGFloat kSampleBGMStopFadeTime = 0.2f;  // @ghidraAddress 0x2ec6b4
+static const CGFloat kAlternateRowWhiteOdd = 0.8;    // @ghidraAddress 0x2ec6a0
+static const CGFloat kPadCoverFadeDuration = 0.3;    // @ghidraAddress 0x2ec718
+
 // The dimming cover behind the pad detail overlay is black at 50% opacity.
 static const CGFloat kPadCoverBlackWhite = 0.0;
 static const CGFloat kPadCoverAlpha = 0.5;
@@ -305,9 +312,8 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
                                                             alpha:kOpaqueAlpha];
         self.loadingLabel.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
         self.loadingLabel.textColor = [UIColor colorWithWhite:kLabelShadowWhite alpha:kOpaqueAlpha];
-        // The binary reuses the resume-fade-in time (0.3) as the shadow alpha here.
         self.loadingLabel.shadowColor = [UIColor colorWithWhite:kOpaqueAlpha
-                                                          alpha:g_dAudioManagerResumeFadeInTime];
+                                                          alpha:kPadCoverFadeDuration];
         self.loadingLabel.shadowOffset = CGSizeMake(0, kLabelShadowOffset);
         self.loadingLabel.textAlignment = NSTextAlignmentCenter;
         // Only the y is truncated to an integer here; the x keeps its fraction.
@@ -519,7 +525,7 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
       willDisplayCell:(UITableViewCell *)cell
     forRowAtIndexPath:(NSIndexPath *)indexPath {
     // Alternate rows carry a slightly different translucent background.
-    CGFloat white = (indexPath.row & 1) == 0 ? kAlternateRowWhite : g_dTranslucentAlpha;
+    CGFloat white = (indexPath.row & 1) == 0 ? kAlternateRowWhite : kAlternateRowWhiteOdd;
     cell.backgroundColor = [UIColor colorWithWhite:white alpha:kOpaqueAlpha];
 }
 
@@ -588,7 +594,7 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
     [self.itemDetailViewPad sampleStop];
 
     __weak RBCampaignViewController *weakSelf = self;
-    [UIView animateWithDuration:g_dAudioManagerResumeFadeInTime
+    [UIView animateWithDuration:kPadCoverFadeDuration
         animations:^{
           /** @ghidraAddress 0x1fbf44 (animation block) */
           weakSelf.coverViewPad.alpha = kPadCoverBlackWhite;
@@ -680,7 +686,7 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         return;
     }
     if ([[RBBGMManager getInstance] isPushMusic]) {
-        [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
+        [[RBBGMManager getInstance] StopMusic:kSampleBGMStopFadeTime];
         [[RBBGMManager getInstance] popMusic];
     }
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.samplePlayedIndex inSection:0];
@@ -695,7 +701,8 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
 
 /** @ghidraAddress 0x1fb5c0 */
 - (void)pushExternalLink:(id)sender {
-    NSInteger row = [sender tag];
+    // The binary tests bit 31 of the 32-bit tag, so the sign test is a 32-bit one.
+    int row = (int)[sender tag];
     if (row < 0) {
         return;
     }
