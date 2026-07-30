@@ -308,7 +308,8 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)createAlertConfirm {
-    NSString *title = [NSString stringWithFormat:@"スコアの反映"];
+    // The UTF-16 constant at 0x36d200.
+    NSString *title = [NSString stringWithFormat:@"スコアを更新します"];
     if (NSClassFromString(@"UIAlertController") == nil) {
         self.alertConfirmView = [[UIAlertView alloc] initWithTitle:title
                                                            message:@""
@@ -317,10 +318,12 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
                                                  otherButtonTitles:g_pLocalizedOK, nil];
         return;
     }
-    self.alertConfirmController =
-        [RBErosionMarkUpdaterAlertController alertControllerWithTitle:title
-                                                              message:@""
-                                                       preferredStyle:UIAlertControllerStyleAlert];
+    // Yes, this arm passes the literal rather than the formatted string: 0x1471a0 reloads the
+    // constant, so the stringWithFormat: result is used only by the legacy arm at 0x14738c.
+    self.alertConfirmController = [RBErosionMarkUpdaterAlertController
+        alertControllerWithTitle:@"スコアを更新します"
+                         message:@""
+                  preferredStyle:UIAlertControllerStyleAlert];
     [self.alertConfirmController
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedCancel
                                            style:UIAlertActionStyleCancel

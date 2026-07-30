@@ -1135,6 +1135,12 @@ VERIFIED = {
     # the legacy arm's variadic really does carry one other title plus the nil that 0x146fb0 writes
     # to the stack.
     0x146D3C: 'RBErosionMarkUpdater -createAlertCancel: two arms, Default then Cancel actions',
+    # Two defects fixed. The title is the UTF-16 constant at 0x36d200, not what we had. And the two
+    # arms disagree about which string they use: 0x1471a0 reloads the literal for the controller
+    # while 0x14738c passes the stringWithFormat: result, so that result reaches only the legacy
+    # arm. The button titles are the globals at 0x3cfb80 and 0x3cfce0, g_pLocalizedCancel and
+    # g_pLocalizedOK at their declared addresses, and the styles are Cancel then Default.
+    0x147134: 'RBErosionMarkUpdater -createAlertConfirm: empty message, literal title on one arm',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',
