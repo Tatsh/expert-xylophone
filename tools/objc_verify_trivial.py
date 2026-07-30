@@ -6,7 +6,7 @@ judgement, and both are worth checking rather than assuming: a method the binary
 the reconstruction gives it real work is a fidelity defect, and a constant return is exactly the
 kind of value that gets transcribed wrong without anything noticing.
 
-Three shapes are recognised, all read from the instruction words:
+Four shapes are recognised, all read from the instruction words:
 
 ``ret``
     The body does nothing. The reconstruction must also do nothing, ignoring documentation comments
@@ -14,7 +14,14 @@ Three shapes are recognised, all read from the instruction words:
 
 ``mov w0,#imm; ret`` and ``mov x0,#imm; ret``
     The body returns a constant. The reconstruction must return the same value, in any of the
-    spellings that mean it — a bare integer, ``YES``/``NO``, ``nil``, or a hex literal.
+    spellings that mean it — a bare integer, ``YES``/``NO``, ``nil``, a hex literal, or a named
+    constant the file defines, since the rules require a name rather than a bare number.
+
+a ``dealloc`` that only calls the superclass
+    This is the ``dealloc`` ARC writes, and ARC forbids writing it by hand, so the reconstruction
+    must either omit it entirely or leave it empty. Its absence is the correct reconstruction rather
+    than a gap, which is why some of the methods the checklist counts as unreconstructed should be
+    read that way.
 
 This is disassembly, not decompiler output: the instruction words are decoded here, from the bytes.
 Anything that does not match one of the shapes, or whose reconstruction cannot be located, is left
@@ -33,6 +40,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from objc_update import IMAGE_BASE, Metadata, _selector_of  # noqa: E402
+from objc_verify_accessors import (AccessorCheck, _branch_target,  # noqa: E402
+                                  _is_branch_with_link)
 
 OUTPUT = 'tools/objc_verified_trivial.txt'
 _RET = 0xD65F03C0
@@ -42,6 +51,26 @@ _INERT = re.compile(r'^\s*(?:/\*|\*|//|\(void\)\s*\w+\s*;|\}?\s*$)')
 # `return` spellings that mean zero, and the ones that mean one.
 _ZERO = {'0', 'NO', 'nil', 'NULL', 'nullptr', 'false', '0.0', '0x0'}
 _ONE = {'1', 'YES', 'true', '0x1'}
+
+
+def _is_super_only(metadata: Metadata, stubs: dict[int, str], address: int) -> bool:
+    """
+    Decide whether a body does nothing but call through to the superclass.
+
+    Under ARC a ``dealloc`` of this shape is the one the compiler writes, and writing it by hand is
+    not allowed, so the reconstruction should have no ``dealloc`` at all.
+    """
+    offset = metadata.offset_of(address)
+    if offset is None:
+        return False
+    calls: list[str] = []
+    for index in range(30):
+        word = struct.unpack_from('<I', metadata._data, offset + index * 4)[0]
+        if _is_branch_with_link(word):
+            calls.append(stubs.get(_branch_target(word, address + index * 4), '?'))
+        if word == _RET:
+            return calls == ['_objc_msgSendSuper2']
+    return False
 
 
 def _mov_immediate(word: int) -> int | None:
@@ -153,6 +182,7 @@ def main(argv=None) -> int:
         print(f'error: no such binary: {args.binary}', file=sys.stderr)
         return 1
     metadata = Metadata(args.binary)
+    stubs = AccessorCheck(metadata)._stubs
     bodies = source_bodies()
     passed: list[tuple[int, str]] = []
     findings: list[str] = []
@@ -166,15 +196,33 @@ def main(argv=None) -> int:
         words = [struct.unpack_from('<I', metadata._data, offset + i * 4)[0] for i in range(2)]
         empty = words[0] == _RET
         constant = _mov_immediate(words[0]) if words[1] == _RET else None
-        if not empty and constant is None:
+        super_only = (method.selector == 'dealloc'
+                      and _is_super_only(metadata, stubs, method.address))
+        if not empty and constant is None and not super_only:
             continue
         key = (method.class_name, method.kind, method.selector)
         found = bodies.get(key)
         if found is None:
+            # A dealloc the binary leaves as nothing but the super call is one ARC writes itself,
+            # and ARC forbids writing it by hand, so its absence from the tree is the correct
+            # reconstruction rather than a gap.
+            if super_only or (method.selector == 'dealloc' and empty):
+                passed.append((method.address - IMAGE_BASE,
+                               f'{method.class_name} dealloc: ARC writes it; correctly omitted'))
+                continue
             skipped['no reconstruction located'] += 1
             continue
         path, line, body = found
         relative = method.address - IMAGE_BASE
+        if super_only:
+            extra = _meaningful(body)
+            if extra:
+                findings.append(
+                    f'{path}:{line} -[{method.class_name} dealloc] is only the super call at '
+                    f'{relative:#x} but the reconstruction does {len(extra)} thing(s)')
+                continue
+            passed.append((relative, f'{method.class_name} dealloc: super call only'))
+            continue
         if empty:
             extra = _meaningful(body)
             if extra:
