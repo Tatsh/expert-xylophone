@@ -197,6 +197,9 @@ static const CGFloat kPadTableScrollInset = 4.0;
 static const CGFloat kPadTitleLabelWidth = 720.0;
 static const CGFloat kPadTitleVerticalOffset = 20.0;
 static const CGFloat kPadContentTop = 330.0;
+// The pad promotion banner's height. 160.0 is a heavily pooled value and this slot is
+// also annotated for g_dPopupBaseOriginYWide, which is an origin rather than a height.
+static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x1002eea38
 // How far above the view's bottom edge the "show more" button sits.
 static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
@@ -217,6 +220,9 @@ static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0
 static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x1002ec730
 static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x1002eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
+// The loading label's text shadow alpha. It shares a slot with the audio-manager resume
+// fade, but a colour alpha and a duration are not the same constant.
+static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x1002ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
@@ -413,7 +419,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         // promotion view's own bounds rather than from the height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
             initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width,
-                                     g_dPopupBaseOriginYWide)];
+                                     kPadPromotionHeight)];
         self.promotionView = promotion;
         self.promotionView.center =
             CGPointMake(bounds.origin.x,
@@ -602,7 +608,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
                                                   alpha:1.0];
         loading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
         loading.textColor = [UIColor colorWithWhite:kLabelTextWhite alpha:1.0];
-        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:g_dAudioManagerResumeFadeInTime];
+        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:kLoadingShadowAlpha];
         loading.shadowOffset = CGSizeMake(0.0, 1.0);
         loading.textAlignment = NSTextAlignmentCenter;
         loading.center = CGPointMake(bounds.size.width * kCenterScale,
