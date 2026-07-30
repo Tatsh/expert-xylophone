@@ -77,6 +77,15 @@ def _is_branch_with_link(word: int) -> bool:
     return (word & 0xFC000000) == 0x94000000
 
 
+def _is_conditional_branch(word: int) -> bool:
+    """Say whether a word is a conditional branch: `b.cond`, `cbz`/`cbnz`, or `tbz`/`tbnz`."""
+    if (word & 0xFF000010) == 0x54000000:
+        return True
+    if (word & 0x7E000000) == 0x34000000:
+        return True
+    return (word & 0x7E000000) == 0x36000000
+
+
 def _branch_target(word: int, address: int) -> int:
     imm = word & 0x03FFFFFF
     if imm & 0x02000000:
@@ -277,6 +286,28 @@ class AccessorCheck:
             symbol = self._stubs.get(target, '')
             if symbol.lstrip('_') not in _ALLOWED_HELPERS:
                 return False, f'calls {symbol or hex(target - IMAGE_BASE)}, not a runtime helper'
+        # A conditional branch means the instructions after the first return are reachable, so the
+        # window read above is not the whole body and nothing here can speak for the rest of it.
+        # These are real: the shape it admits is the setter that compares before storing and then
+        # redraws, which does more than move its ivar and must not pass as though it did not.
+        for word in words:
+            if word == _RET:
+                break
+            if _is_conditional_branch(word):
+                return False, 'branches before returning, so this window is not the whole body'
+        # An unconditional branch is a tail call rather than a jump within the body, and it has to
+        # be held to the same standard as a call: a body that ends by branching to objc_msgSend
+        # performs a send, whatever its prefix looks like.
+        for index, word in enumerate(words):
+            if word == _RET:
+                break
+            if (word & 0xFC000000) != 0x14000000:
+                continue
+            target = _branch_target(word, address + index * 4)
+            symbol = self._stubs.get(target, '')
+            if symbol.lstrip('_') not in _ALLOWED_HELPERS:
+                return False, (f'tail-calls {symbol or hex(target - IMAGE_BASE)}, '
+                               'not a runtime helper')
         return True, f'{class_name}.{name}'
 
 

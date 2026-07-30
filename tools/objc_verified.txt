@@ -1729,7 +1729,6 @@
 0x148980 RBErosionMarkUpdater._editHardScore
 0x1550e8 DAProgressOverlayView._innerRadiusRatio
 0x15510c DAProgressOverlayView._outerRadiusRatio
-0x155130 DAProgressOverlayView._progress
 0x155458 DAProgressOverlayView._overlayColor
 0x155468 DAProgressOverlayView._overlayColor
 0x1554a0 DAProgressOverlayView._innerRadiusRatio
@@ -2617,7 +2616,6 @@
 0x1f41e4 RBBonusData._earlyPlayBonus
 0x1f41f4 RBBonusData._hotMusicBonus
 0x1f4204 RBBonusData._hotMusicBonus
-0x1f7594 RBUserSettingData._thema
 0x1f8610 RBUserSettingData._version
 0x1f8620 RBUserSettingData._version
 0x1f8658 RBUserSettingData._thema
@@ -2758,8 +2756,6 @@
 0x200554 RBCampaignViewController._coverViewPad
 0x20058c RBCampaignViewController._itemDetailViewPad
 0x20059c RBCampaignViewController._itemDetailViewPad
-0x20084c RBNumberLabel._number
-0x200874 RBNumberLabel._imageType
 0x200f50 RBNumberLabel._number
 0x200f60 RBNumberLabel._imageType
 0x2075d0 ApplilinkURLConnection._connectionDelegate

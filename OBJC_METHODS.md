@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6199 reconstructed, 3313 verified
+Total: 6343 — 6199 reconstructed, 3312 verified
 (52.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3622,7 +3622,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `DAProgressOverlayView` | `-` | `drawRect:` |  | ❌ | ❌ | `0x154ddc` |
 | `DAProgressOverlayView` | `-` | `setInnerRadiusRatio:` | prop | ❌ | ✅ | `0x1550e8` |
 | `DAProgressOverlayView` | `-` | `setOuterRadiusRatio:` | prop | ❌ | ✅ | `0x15510c` |
-| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ❌ | ✅ | `0x155130` |
+| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ❌ | ❌ | `0x155130` |
 | `DAProgressOverlayView` | `-` | `innerRadius` |  | ❌ | ❌ | `0x1551d4` |
 | `DAProgressOverlayView` | `-` | `outerRadius` |  | ❌ | ❌ | `0x1552b8` |
 | `DAProgressOverlayView` | `-` | `update` |  | ❌ | ❌ | `0x15539c` |

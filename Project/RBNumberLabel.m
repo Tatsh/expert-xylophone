@@ -102,6 +102,29 @@ static NSString *const kLimePrefixName = @"04_customize/cus_unlock_lime";
     return self;
 }
 
+#pragma mark - Properties
+
+// Both setters compare before storing and redraw only on a change, which is why neither can be
+// left to synthesis: a synthesized setter stores the value and the control never repaints.
+
+- (void)setNumber:(float)number {
+    if (_number == number) {
+        return;
+    }
+    _number = number;
+    [self setNeedsDisplay];
+}
+
+- (void)setImageType:(RBNumberLabelImageType)imageType {
+    if (_imageType == imageType) {
+        return;
+    }
+    _imageType = imageType;
+    [self setNeedsDisplay];
+}
+
+#pragma mark - Drawing
+
 // Look up the glyph image for a digit under a style, honouring the small/big split of the decimal
 // style's fractional slot.
 static UIImage *

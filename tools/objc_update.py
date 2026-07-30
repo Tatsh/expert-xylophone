@@ -43,6 +43,12 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    0x1f7594: 'RBUserSettingData -setThema:: b.ls is unsigned, all six fallback defaults, the '
+              'nine coder keys in order, and the trailing switch that leaves an unknown theme '
+              "alone; the binary re-sends customizeItems per key where the source caches it, "
+              'and sends objectAtIndex:/objectForKey: where the style rules require subscripting',
+    0x20084c: 'RBNumberLabel -setNumber:: compares, stores, then redraws',
+    0x200874: 'RBNumberLabel -setImageType:: the same shape on a 64-bit ivar',
     0x2202ec: 'ApplilinkStore -init: the queue is the private serial one from +allocWithZone:',
     0x2204c0: 'ApplilinkStore +allocWithZone:: creates the queue, then re-tests the singleton',
     0xa9108: 'RBMenuView -createMusicList: the csel at 0xa939c picks the artist comparator on 1',
