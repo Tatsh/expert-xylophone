@@ -197,12 +197,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x54b2c (getter)
  * @ghidraAddress 0x54b3c (setter)
  */
-@property(nonatomic, strong) NSURL *urlBaseTerm;
+@property(nonatomic, copy) NSString *urlBaseTerm;
 /**
  * @brief The resolved terms-of-service URL.
  * @ghidraAddress 0x54b58 (setter)
  */
-@property(nonatomic, strong) NSURL *urlTerm;
+@property(nonatomic, copy) NSString *urlTerm;
 /**
  * @brief The last-update time string for the terms document.
  * @ghidraAddress 0x54b64 (getter)
@@ -320,13 +320,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @param baseTermURL The base terms URL.
  * @ghidraAddress 0x4ecb4
  */
-- (void)setBaseTermURL:(nullable NSURL *)baseTermURL;
+- (void)setBaseTermURL:(nullable NSString *)baseTermURL;
 
 /**
  * @brief The base terms URL.
  * @ghidraAddress 0x4ecec
  */
-- (nullable NSURL *)getBaseTermURL;
+- (nullable NSString *)getBaseTermURL;
 
 /**
  * @brief The terms URL for a given terms id, built from the base terms URL and the region code.
@@ -337,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The resolved terms URL.
  * @ghidraAddress 0x4ecfc
  */
-- (nullable NSURL *)getTermURLWithID:(nullable NSString *)termID;
+- (nullable NSString *)getTermURLWithID:(nullable NSString *)termID;
 
 /**
  * @brief The last-update time string for the news info feed.

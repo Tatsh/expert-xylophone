@@ -410,9 +410,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         URLWithString:[NSString
                           stringWithFormat:@"https://%@/akx/main/news/passed_info.jsp?target=JP",
                                            GetApiHostString()]];
-    self.urlBaseTerm =
-        [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
-                                                        GetApiHostString()]];
+    self.urlBaseTerm = [NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
+                                                  GetApiHostString()];
 
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(audioSessionInterrupted:)
@@ -952,13 +951,13 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x4eb88 */
 - (void)setWebInfoURL:(NSString *)webInfoURL {
-    self.urlWebInfo = webInfoURL ? [NSURL URLWithString:webInfoURL] : nil;
+    self->_urlWebInfo = webInfoURL ? [NSURL URLWithString:webInfoURL] : nil;
 }
 
 /** @ghidraAddress 0x4ec28 */
 - (void)setPreWebInfoURL:(NSString *)preWebInfoURL {
     if (preWebInfoURL) {
-        self.urlPreWebInfo = [NSURL URLWithString:preWebInfoURL];
+        self->_urlPreWebInfo = [NSURL URLWithString:preWebInfoURL];
     }
 }
 
@@ -966,46 +965,44 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x4eb78 */
 - (NSURL *)getBaseWebInfoURL {
-    return self.urlBaseWebInfo;
+    return self->_urlBaseWebInfo;
 }
 
 /** @ghidraAddress 0x4ec18 */
 - (NSURL *)getWebInfoURL {
-    return self.urlWebInfo;
+    return self->_urlWebInfo;
 }
 
 /** @ghidraAddress 0x4eca4 */
 - (NSURL *)getPreWebInfoURL {
-    return self.urlPreWebInfo;
+    return self->_urlPreWebInfo;
 }
 
 /** @ghidraAddress 0x4ecb4 */
-- (void)setBaseTermURL:(NSURL *)baseTermURL {
-    self.urlBaseTerm = baseTermURL;
+- (void)setBaseTermURL:(NSString *)baseTermURL {
+    self->_urlBaseTerm = baseTermURL;
 }
 
 /** @ghidraAddress 0x4ecec */
-- (NSURL *)getBaseTermURL {
-    return self.urlBaseTerm;
+- (NSString *)getBaseTermURL {
+    return self->_urlBaseTerm;
 }
 
 /** @ghidraAddress 0x4ecfc */
-- (NSURL *)getTermURLWithID:(NSString *)termID {
+- (NSString *)getTermURLWithID:(NSString *)termID {
     if (termID == nil) {
         // No id: the resolved terms URL is just the base terms URL.
         self.urlTerm = self.urlBaseTerm;
     } else {
-        self.urlTerm = [NSURL URLWithString:[NSString stringWithFormat:kTermURLFormat,
-                                                                       self.urlBaseTerm,
-                                                                       GetRegionCode(),
-                                                                       termID]];
+        self.urlTerm = [NSString stringWithFormat:kTermURLFormat, self.urlBaseTerm,
+                                                  GetRegionCode(), termID];
     }
     return self.urlTerm;
 }
 
 /** @ghidraAddress 0x4efa4 */
 - (NSString *)getInfoLastUpdateTimeString {
-    return self.infoLastUpdateTimeString;
+    return self->_infoLastUpdateTimeString;
 }
 
 /** @ghidraAddress 0x4f07c */
