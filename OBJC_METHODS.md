@@ -16,10 +16,12 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 2905 verified
-(45.8%).
-3260 are property accessors, of which 2890 were verified mechanically by
-`tools/objc_verify_accessors.py`; `tools/objc_verified.txt` records what each was shown to move.
+Total: 6343 — 6198 reconstructed, 3050 verified
+(48.1%).
+3260 are property accessors. Two mechanical passes account for most of the verified
+count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
+moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
+constant-returning body agrees with its reconstruction. Everything else was read by hand.
 
 Regenerate with `tools/objc_update.py <binary>`, where the binary is the one **inside the .ipa**;
 the unpacked copy under `rb458orig` is a different build and matches nothing.
@@ -29,7 +31,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicHistoryView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x480c` |
 | `RBMusicHistoryView` | `-` | `CreateView` |  | ✅ | ❌ | `0x4980` |
 | `RBMusicHistoryView` | `-` | `createGraphData` |  | ✅ | ❌ | `0x4b98` |
-| `RBMusicHistoryView` | `-` | `drawRect:` |  | ✅ | ❌ | `0x4e3c` |
+| `RBMusicHistoryView` | `-` | `drawRect:` |  | ✅ | ✅ | `0x4e3c` |
 | `RBMusicHistoryView` | `-` | `showAnimation:difficulty:` |  | ✅ | ❌ | `0x4e40` |
 | `RBMusicHistoryView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x5010` |
 | `RBMusicHistoryView` | `-` | `musicID` | prop | ✅ | ✅ | `0x5368` |
@@ -69,11 +71,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `pushLink:` |  | ✅ | ❌ | `0x7508` |
 | `RBCampaignDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x7648` |
 | `RBCampaignDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x77fc` |
-| `RBCampaignDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x78b4` |
-| `RBCampaignDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ❌ | `0x78b8` |
-| `RBCampaignDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x78bc` |
+| `RBCampaignDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x78b4` |
+| `RBCampaignDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ✅ | `0x78b8` |
+| `RBCampaignDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x78bc` |
 | `RBCampaignDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x78c0` |
-| `RBCampaignDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x79b0` |
+| `RBCampaignDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x79b0` |
 | `RBCampaignDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x79b4` |
 | `RBCampaignDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x7aac` |
 | `RBCampaignDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x7bec` |
@@ -324,10 +326,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `success` |  | ✅ | ❌ | `0x1c0d8` |
 | `RBResourceDownloadViewController` | `+` | `checkFile` |  | ✅ | ❌ | `0x1c2bc` |
 | `RBResourceDownloadViewController` | `-` | `updateProgress:` |  | ✅ | ❌ | `0x1c72c` |
-| `RBResourceDownloadViewController` | `-` | `zipArchiveWillUnzipArchiveAtPath:zipInfo:` |  | ✅ | ❌ | `0x1ca40` |
+| `RBResourceDownloadViewController` | `-` | `zipArchiveWillUnzipArchiveAtPath:zipInfo:` |  | ✅ | ✅ | `0x1ca40` |
 | `RBResourceDownloadViewController` | `-` | `zipArchiveDidUnzipArchiveAtPath:zipInfo:unzippedPath:` |  | ✅ | ❌ | `0x1ca44` |
 | `RBResourceDownloadViewController` | `-` | `zipArchiveWillUnzipFileAtIndex:totalFiles:archivePath:fileInfo:` |  | ✅ | ❌ | `0x1ca60` |
-| `RBResourceDownloadViewController` | `-` | `zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:fileInfo:` |  | ✅ | ❌ | `0x1caf4` |
+| `RBResourceDownloadViewController` | `-` | `zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:fileInfo:` |  | ✅ | ✅ | `0x1caf4` |
 | `RBResourceDownloadViewController` | `-` | `setupView` |  | ✅ | ❌ | `0x1caf8` |
 | `RBResourceDownloadViewController` | `-` | `createViewSame:` |  | ✅ | ❌ | `0x1e84c` |
 | `RBResourceDownloadViewController` | `-` | `updateLayout` |  | ✅ | ✅ | `0x1ea20` |
@@ -395,27 +397,27 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x20f48` |
 | `StoreExtendNoteDetailViewPad` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x22068` |
 | `StoreExtendNoteDetailViewPad` | `-` | `removeNoteInfo` |  | ✅ | ❌ | `0x24b78` |
-| `StoreExtendNoteDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ❌ | `0x24f68` |
+| `StoreExtendNoteDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x24f68` |
 | `StoreExtendNoteDetailViewPad` | `-` | `stopSample` |  | ✅ | ❌ | `0x24f6c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushSampleBtn` |  | ✅ | ❌ | `0x250d4` |
 | `StoreExtendNoteDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ❌ | `0x2534c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `sampleViewDownloading` |  | ✅ | ❌ | `0x25444` |
 | `StoreExtendNoteDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ❌ | `0x25540` |
 | `StoreExtendNoteDetailViewPad` | `-` | `showNoteInfo` |  | ✅ | ❌ | `0x2563c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `pushLink:` |  | ✅ | ❌ | `0x2585c` |
+| `StoreExtendNoteDetailViewPad` | `-` | `pushLink:` |  | ✅ | ✅ | `0x2585c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x25860` |
 | `StoreExtendNoteDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x259c4` |
 | `StoreExtendNoteDetailViewPad` | `-` | `showTerm` |  | ✅ | ❌ | `0x259e0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x25ab0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x25c50` |
-| `StoreExtendNoteDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x25d08` |
+| `StoreExtendNoteDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x25d08` |
 | `StoreExtendNoteDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x25d0c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x25de8` |
-| `StoreExtendNoteDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x25dec` |
+| `StoreExtendNoteDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x25de8` |
+| `StoreExtendNoteDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x25dec` |
 | `StoreExtendNoteDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x25df0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x25ecc` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setInfo:` |  | ✅ | ❌ | `0x2600c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x26424` |
+| `StoreExtendNoteDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x26424` |
 | `StoreExtendNoteDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x26428` |
 | `StoreExtendNoteDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ❌ | `0x2653c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ❌ | `0x26548` |
@@ -653,7 +655,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `URLSession:dataTask:didReceiveResponse:completionHandler:` |  | ✅ | ❌ | `0x38388` |
 | `RBHttpUtil` | `-` | `URLSession:dataTask:didReceiveData:` |  | ✅ | ❌ | `0x38744` |
 | `RBHttpUtil` | `-` | `URLSession:task:didCompleteWithError:` |  | ✅ | ❌ | `0x38938` |
-| `RBHttpUtil` | `-` | `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:` |  | ✅ | ❌ | `0x38fbc` |
+| `RBHttpUtil` | `-` | `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:` |  | ✅ | ✅ | `0x38fbc` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:` |  | ✅ | ❌ | `0x38fc0` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didFinishDownloadingToURL:` |  | ✅ | ❌ | `0x390c0` |
 | `RBHttpUtil` | `-` | `currentSize` |  | ✅ | ❌ | `0x3930c` |
@@ -710,8 +712,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `neGLView` | `-` | `GetFrontBufferWidth` |  | ✅ | ❌ | `0x3a448` |
 | `neGLView` | `-` | `GetFrontBufferHeight` |  | ✅ | ❌ | `0x3a458` |
 | `neGLView` | `-` | `BeginRender` |  | ✅ | ❌ | `0x3a468` |
-| `neGLView` | `-` | `SetDefaultFrameBuffer` |  | ✅ | ❌ | `0x3a4d8` |
-| `neGLView` | `-` | `SetDefaultColorBuffer` |  | ✅ | ❌ | `0x3a4dc` |
+| `neGLView` | `-` | `SetDefaultFrameBuffer` |  | ✅ | ✅ | `0x3a4d8` |
+| `neGLView` | `-` | `SetDefaultColorBuffer` |  | ✅ | ✅ | `0x3a4dc` |
 | `neGLView` | `-` | `Present` |  | ✅ | ❌ | `0x3a4e0` |
 | `neGLView` | `-` | `touchesBegan:withEvent:` |  | ✅ | ❌ | `0x3a550` |
 | `neGLView` | `-` | `touchesMoved:withEvent:` |  | ✅ | ❌ | `0x3a704` |
@@ -750,7 +752,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBEffectSizeSlider` | `-` | `setStepValue:` | prop | ✅ | ✅ | `0x3c2a0` |
 | `RBMusicExtendNoteView` | `-` | `initWithFrame:ExtendNoteID:MusicSelectedBase:` |  | ✅ | ❌ | `0x3c318` |
 | `RBMusicExtendNoteView` | `-` | `SetupView` |  | ✅ | ❌ | `0x3c4c8` |
-| `RBMusicExtendNoteView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ❌ | `0x3cf50` |
+| `RBMusicExtendNoteView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0x3cf50` |
 | `RBMusicExtendNoteView` | `-` | `extendNoteID` | prop | ✅ | ✅ | `0x3cf54` |
 | `RBMusicExtendNoteView` | `-` | `setExtendNoteID:` | prop | ✅ | ✅ | `0x3cf64` |
 | `RBMusicExtendNoteView` | `-` | `musicSelectedBase` | prop | ✅ | ✅ | `0x3cf74` |
@@ -760,10 +762,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicExtendNoteView` | `-` | `layoutOffset` | prop | ✅ | ✅ | `0x3cff0` |
 | `RBMusicExtendNoteView` | `-` | `setLayoutOffset:` | prop | ✅ | ✅ | `0x3d000` |
 | `neWindow` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x3d080` |
-| `neWindow` | `-` | `touchesBegan:withEvent:` |  | ✅ | ❌ | `0x3d0b4` |
-| `neWindow` | `-` | `touchesMoved:withEvent:` |  | ✅ | ❌ | `0x3d0b8` |
-| `neWindow` | `-` | `touchesEnded:withEvent:` |  | ✅ | ❌ | `0x3d0bc` |
-| `neWindow` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ❌ | `0x3d0c0` |
+| `neWindow` | `-` | `touchesBegan:withEvent:` |  | ✅ | ✅ | `0x3d0b4` |
+| `neWindow` | `-` | `touchesMoved:withEvent:` |  | ✅ | ✅ | `0x3d0b8` |
+| `neWindow` | `-` | `touchesEnded:withEvent:` |  | ✅ | ✅ | `0x3d0bc` |
+| `neWindow` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ✅ | `0x3d0c0` |
 | `AudioManager` | `+` | `sharedManager` |  | ✅ | ❌ | `0x3d0c4` |
 | `AudioManager` | `-` | `init` |  | ✅ | ❌ | `0x3d154` |
 | `AudioManager` | `-` | `systemStart` |  | ✅ | ❌ | `0x3d3ec` |
@@ -878,7 +880,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreTableCellBase` | `-` | `setRightView:` | prop | ✅ | ✅ | `0x42360` |
 | `StoreCampaignDetailViewPad` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x423d8` |
 | `StoreCampaignDetailViewPad` | `-` | `removeItemInfo` |  | ✅ | ❌ | `0x44f74` |
-| `StoreCampaignDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ❌ | `0x45364` |
+| `StoreCampaignDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x45364` |
 | `StoreCampaignDetailViewPad` | `-` | `sampleStop` |  | ✅ | ❌ | `0x45368` |
 | `StoreCampaignDetailViewPad` | `-` | `pushSampleBtn` |  | ✅ | ❌ | `0x454d0` |
 | `StoreCampaignDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ❌ | `0x45748` |
@@ -889,10 +891,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x45d08` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x45d24` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x45ec4` |
-| `StoreCampaignDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x45f7c` |
+| `StoreCampaignDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x45f7c` |
 | `StoreCampaignDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x45f80` |
-| `StoreCampaignDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x4605c` |
-| `StoreCampaignDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x46060` |
+| `StoreCampaignDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4605c` |
+| `StoreCampaignDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x46060` |
 | `StoreCampaignDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x46064` |
 | `StoreCampaignDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x46140` |
 | `StoreCampaignDetailViewPad` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x46280` |
@@ -959,9 +961,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x4a130` |
 | `RBTermDetailPhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x4a200` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x4a2c8` |
-| `RBTermDetailPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x4a340` |
-| `RBTermDetailPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x4a344` |
-| `RBTermDetailPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x4a348` |
+| `RBTermDetailPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4a340` |
+| `RBTermDetailPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4a344` |
+| `RBTermDetailPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x4a348` |
 | `RBTermDetailPhoneViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0x4a34c` |
 | `RBTermDetailPhoneViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x4a35c` |
 | `RBTermDetailPhoneViewController` | `-` | `isAnimating` | prop | ✅ | ✅ | `0x4a36c` |
@@ -1009,7 +1011,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteView` | `-` | `setPurchasedLabel:` | prop | ❌ | ✅ | `0x4d218` |
 | `StoreExtendNoteView` | `-` | `linkURL` | prop | ❌ | ✅ | `0x4d250` |
 | `StoreExtendNoteView` | `-` | `setLinkURL:` | prop | ❌ | ✅ | `0x4d260` |
-| `AppDelegate` | `+` | `initialize` |  | ✅ | ❌ | `0x4d778` |
+| `AppDelegate` | `+` | `initialize` |  | ✅ | ✅ | `0x4d778` |
 | `AppDelegate` | `-` | `startApplication` |  | ✅ | ❌ | `0x4d77c` |
 | `AppDelegate` | `-` | `requestResourceInfo` |  | ✅ | ❌ | `0x4da2c` |
 | `AppDelegate` | `-` | `getBaseWebInfoURL` |  | ✅ | ❌ | `0x4eb78` |
@@ -1063,19 +1065,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `applicationWillTerminate:` |  | ✅ | ❌ | `0x531a4` |
 | `AppDelegate` | `+` | `launchAppStore` |  | ❌ | ❌ | `0x53268` |
 | `AppDelegate` | `-` | `applicationDidReceiveMemoryWarning:` |  | ✅ | ❌ | `0x53350` |
-| `AppDelegate` | `-` | `applicationSignificantTimeChange:` |  | ✅ | ❌ | `0x533b4` |
-| `AppDelegate` | `-` | `application:willChangeStatusBarOrientation:duration:` |  | ✅ | ❌ | `0x533b8` |
-| `AppDelegate` | `-` | `application:didChangeStatusBarOrientation:` |  | ✅ | ❌ | `0x533bc` |
-| `AppDelegate` | `-` | `application:willChangeStatusBarFrame:` |  | ✅ | ❌ | `0x533c0` |
-| `AppDelegate` | `-` | `application:didChangeStatusBarFrame:` |  | ✅ | ❌ | `0x533c4` |
+| `AppDelegate` | `-` | `applicationSignificantTimeChange:` |  | ✅ | ✅ | `0x533b4` |
+| `AppDelegate` | `-` | `application:willChangeStatusBarOrientation:duration:` |  | ✅ | ✅ | `0x533b8` |
+| `AppDelegate` | `-` | `application:didChangeStatusBarOrientation:` |  | ✅ | ✅ | `0x533bc` |
+| `AppDelegate` | `-` | `application:willChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c0` |
+| `AppDelegate` | `-` | `application:didChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c4` |
 | `AppDelegate` | `-` | `startRegisterForRemoteNotification` |  | ✅ | ❌ | `0x533c8` |
 | `AppDelegate` | `-` | `application:didRegisterUserNotificationSettings:` |  | ✅ | ❌ | `0x53628` |
 | `AppDelegate` | `-` | `application:didRegisterForRemoteNotificationsWithDeviceToken:` |  | ✅ | ❌ | `0x53678` |
-| `AppDelegate` | `-` | `application:didFailToRegisterForRemoteNotificationsWithError:` |  | ✅ | ❌ | `0x53cd4` |
+| `AppDelegate` | `-` | `application:didFailToRegisterForRemoteNotificationsWithError:` |  | ✅ | ✅ | `0x53cd4` |
 | `AppDelegate` | `-` | `application:didReceiveRemoteNotification:` |  | ✅ | ❌ | `0x53cd8` |
 | `AppDelegate` | `-` | `application:didReceiveLocalNotification:` |  | ✅ | ❌ | `0x54210` |
-| `AppDelegate` | `-` | `applicationProtectedDataWillBecomeUnavailable:` |  | ✅ | ❌ | `0x54548` |
-| `AppDelegate` | `-` | `applicationProtectedDataDidBecomeAvailable:` |  | ✅ | ❌ | `0x5454c` |
+| `AppDelegate` | `-` | `applicationProtectedDataWillBecomeUnavailable:` |  | ✅ | ✅ | `0x54548` |
+| `AppDelegate` | `-` | `applicationProtectedDataDidBecomeAvailable:` |  | ✅ | ✅ | `0x5454c` |
 | `AppDelegate` | `-` | `audioSessionInterrupted:` |  | ✅ | ❌ | `0x54550` |
 | `AppDelegate` | `-` | `window` | prop | ✅ | ✅ | `0x54684` |
 | `AppDelegate` | `-` | `setWindow:` | prop | ✅ | ✅ | `0x54694` |
@@ -1147,7 +1149,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageSortViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x55d80` |
 | `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x56064` |
 | `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x5606c` |
-| `RBStoreManageSortViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x56088` |
+| `RBStoreManageSortViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x56088` |
 | `RBStoreManageSortViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x5608c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x56098` |
 | `RBStoreManageSortViewController` | `-` | `manageViewCtrl` | prop | ✅ | ✅ | `0x56330` |
@@ -1171,16 +1173,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignTableViewCell` | `-` | `campaignID` | prop | ✅ | ✅ | `0x5724c` |
 | `StoreCampaignTableViewCell` | `-` | `indicator` | prop | ✅ | ✅ | `0x5725c` |
 | `StoreCampaignTableViewCell` | `-` | `setIndicator:` | prop | ✅ | ✅ | `0x5726c` |
-| `MusicDataExtend` | `-` | `setExtendSheetWithPath:ID:` |  | ✅ | ❌ | `0x5a22c` |
+| `MusicDataExtend` | `-` | `setExtendSheetWithPath:ID:` |  | ✅ | ✅ | `0x5a22c` |
 | `MusicDataExtend` | `+` | `dataWithPath:dictionary:` |  | ✅ | ❌ | `0x5a230` |
 | `MusicDataExtend` | `-` | `sheetSpecial` | prop | ✅ | ❌ | `0x5a428` |
 | `MusicDataExtend` | `-` | `sheetSpecialLight` | prop | ✅ | ❌ | `0x5a4fc` |
 | `MusicDataExtend` | `+` | `getExtendZipData:Path:DecodeType:` |  | ❌ | ❌ | `0x5a5d0` |
 | `MusicDataExtend` | `-` | `dealloc` |  | ❌ | ❌ | `0x5a5d8` |
-| `MusicDataExtend` | `-` | `getZipData:` |  | ✅ | ❌ | `0x5a60c` |
-| `MusicDataExtend` | `-` | `createCache` |  | ✅ | ❌ | `0x5a614` |
-| `MusicDataExtend` | `-` | `releaseCache` |  | ✅ | ❌ | `0x5a618` |
-| `MusicDataExtend` | `-` | `isArtworkCache` |  | ✅ | ❌ | `0x5a61c` |
+| `MusicDataExtend` | `-` | `getZipData:` |  | ✅ | ✅ | `0x5a60c` |
+| `MusicDataExtend` | `-` | `createCache` |  | ✅ | ✅ | `0x5a614` |
+| `MusicDataExtend` | `-` | `releaseCache` |  | ✅ | ✅ | `0x5a618` |
+| `MusicDataExtend` | `-` | `isArtworkCache` |  | ✅ | ✅ | `0x5a61c` |
 | `MusicDataExtend` | `-` | `ExtMusicID` | prop | ✅ | ✅ | `0x5a624` |
 | `MusicDataExtend` | `-` | `setExtMusicID:` | prop | ✅ | ✅ | `0x5a634` |
 | `MusicDataExtend` | `-` | `MusicID` | prop | ✅ | ✅ | `0x5a644` |
@@ -1415,19 +1417,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `+` | `dataWithPath:PlyName:` |  | ✅ | ❌ | `0x6734c` |
 | `MusicDataFromDoc` | `-` | `dealloc` |  | ❌ | ❌ | `0x67498` |
 | `MusicDataFromDoc` | `-` | `MusicID` |  | ✅ | ❌ | `0x674cc` |
-| `MusicDataFromDoc` | `-` | `difficultyBasic` |  | ✅ | ❌ | `0x674d4` |
-| `MusicDataFromDoc` | `-` | `difficultyMedium` |  | ✅ | ❌ | `0x674dc` |
-| `MusicDataFromDoc` | `-` | `difficultyHard` |  | ✅ | ❌ | `0x674e4` |
-| `MusicDataFromDoc` | `-` | `difficultySpecial` |  | ✅ | ❌ | `0x674ec` |
-| `MusicDataFromDoc` | `-` | `bpm_MIN` |  | ✅ | ❌ | `0x674f4` |
-| `MusicDataFromDoc` | `-` | `bpm_MAX` |  | ✅ | ❌ | `0x674fc` |
-| `MusicDataFromDoc` | `-` | `musicNameHira` |  | ✅ | ❌ | `0x67504` |
-| `MusicDataFromDoc` | `-` | `musicNameRoman` |  | ✅ | ❌ | `0x6750c` |
-| `MusicDataFromDoc` | `-` | `artistName` |  | ✅ | ❌ | `0x67514` |
-| `MusicDataFromDoc` | `-` | `artistNameHira` |  | ✅ | ❌ | `0x6751c` |
-| `MusicDataFromDoc` | `-` | `artistNameRoman` |  | ✅ | ❌ | `0x67524` |
+| `MusicDataFromDoc` | `-` | `difficultyBasic` |  | ✅ | ✅ | `0x674d4` |
+| `MusicDataFromDoc` | `-` | `difficultyMedium` |  | ✅ | ✅ | `0x674dc` |
+| `MusicDataFromDoc` | `-` | `difficultyHard` |  | ✅ | ✅ | `0x674e4` |
+| `MusicDataFromDoc` | `-` | `difficultySpecial` |  | ✅ | ✅ | `0x674ec` |
+| `MusicDataFromDoc` | `-` | `bpm_MIN` |  | ✅ | ✅ | `0x674f4` |
+| `MusicDataFromDoc` | `-` | `bpm_MAX` |  | ✅ | ✅ | `0x674fc` |
+| `MusicDataFromDoc` | `-` | `musicNameHira` |  | ✅ | ✅ | `0x67504` |
+| `MusicDataFromDoc` | `-` | `musicNameRoman` |  | ✅ | ✅ | `0x6750c` |
+| `MusicDataFromDoc` | `-` | `artistName` |  | ✅ | ✅ | `0x67514` |
+| `MusicDataFromDoc` | `-` | `artistNameHira` |  | ✅ | ✅ | `0x6751c` |
+| `MusicDataFromDoc` | `-` | `artistNameRoman` |  | ✅ | ✅ | `0x67524` |
 | `MusicDataFromDoc` | `-` | `music` |  | ✅ | ❌ | `0x6752c` |
-| `MusicDataFromDoc` | `-` | `musicPre` |  | ✅ | ❌ | `0x675e4` |
+| `MusicDataFromDoc` | `-` | `musicPre` |  | ✅ | ✅ | `0x675e4` |
 | `MusicDataFromDoc` | `-` | `loadSheet` |  | ✅ | ❌ | `0x675ec` |
 | `MusicDataFromDoc` | `-` | `sheetBasic` |  | ✅ | ❌ | `0x676a4` |
 | `MusicDataFromDoc` | `-` | `sheetBasicLight` |  | ✅ | ❌ | `0x676b0` |
@@ -1598,7 +1600,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPurchaseManager` | `-` | `addPurchaseCheckTransaction:` |  | ✅ | ❌ | `0x6e370` |
 | `RBPurchaseManager` | `-` | `checkNextReceipt` |  | ✅ | ❌ | `0x6e468` |
 | `RBPurchaseManager` | `-` | `requestDidFinish:` |  | ✅ | ❌ | `0x6e834` |
-| `RBPurchaseManager` | `-` | `request:didFailWithError:` |  | ✅ | ❌ | `0x6e854` |
+| `RBPurchaseManager` | `-` | `request:didFailWithError:` |  | ✅ | ✅ | `0x6e854` |
 | `RBPurchaseManager` | `-` | `paymentQueue:updatedTransactions:` |  | ✅ | ❌ | `0x6e858` |
 | `RBPurchaseManager` | `-` | `paymentQueue:removedTransactions:` |  | ✅ | ❌ | `0x6ee94` |
 | `RBPurchaseManager` | `-` | `paymentQueueRestoreCompletedTransactionsFinished:` |  | ✅ | ❌ | `0x6efb4` |
@@ -1607,7 +1609,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPurchaseManager` | `+` | `encodedStringWithBase64V2:` |  | ✅ | ❌ | `0x6f544` |
 | `RBPurchaseManager` | `+` | `decodedStringWithBase64:` |  | ✅ | ❌ | `0x6f784` |
 | `RBPurchaseManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x6f944` |
-| `RBPurchaseManager` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x7048c` |
+| `RBPurchaseManager` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x7048c` |
 | `RBPurchaseManager` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x70490` |
 | `RBPurchaseManager` | `-` | `delegate` | prop | ✅ | ✅ | `0x70908` |
 | `RBPurchaseManager` | `-` | `setDelegate:` | prop | ✅ | ❌ | `0x70928` |
@@ -1842,7 +1844,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBViewController` | `-` | `CreateTimer` |  | ✅ | ❌ | `0x8b2a0` |
 | `RBViewController` | `-` | `RemoveTimer` |  | ✅ | ❌ | `0x8b314` |
 | `RBViewController` | `-` | `showMusicListView` |  | ✅ | ❌ | `0x8b3bc` |
-| `RBViewController` | `-` | `clientIsGameEnd` |  | ✅ | ❌ | `0x8b5b4` |
+| `RBViewController` | `-` | `clientIsGameEnd` |  | ✅ | ✅ | `0x8b5b4` |
 | `RBViewController` | `-` | `playGameWithMusicData:RandSeed:` |  | ✅ | ❌ | `0x8b5b8` |
 | `RBViewController` | `-` | `startPreview` |  | ✅ | ❌ | `0x8be40` |
 | `RBViewController` | `-` | `showPreview` |  | ✅ | ❌ | `0x8c8cc` |
@@ -1932,7 +1934,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistViewController` | `-` | `tableView:canEditRowAtIndexPath:` |  | ✅ | ❌ | `0x94c3c` |
 | `RBPlaylistViewController` | `-` | `tableView:commitEditingStyle:forRowAtIndexPath:` |  | ✅ | ❌ | `0x94c64` |
 | `RBPlaylistViewController` | `-` | `tableView:canMoveRowAtIndexPath:` |  | ✅ | ❌ | `0x94d70` |
-| `RBPlaylistViewController` | `-` | `tableView:moveRowAtIndexPath:toIndexPath:` |  | ✅ | ❌ | `0x94d98` |
+| `RBPlaylistViewController` | `-` | `tableView:moveRowAtIndexPath:toIndexPath:` |  | ✅ | ✅ | `0x94d98` |
 | `RBPlaylistViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x94d9c` |
 | `RBPlaylistViewController` | `-` | `delegate` | prop | ✅ | ✅ | `0x955e4` |
 | `RBPlaylistViewController` | `-` | `setDelegate:` | prop | ✅ | ❌ | `0x95604` |
@@ -2131,7 +2133,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `startNewsFromTimer` |  | ✅ | ❌ | `0xaf2a8` |
 | `RBMenuView` | `-` | `showNextNewsText` |  | ✅ | ❌ | `0xaf350` |
 | `RBMenuView` | `-` | `stopNews` |  | ✅ | ❌ | `0xaf7e8` |
-| `RBMenuView` | `-` | `SetServerDateYear:Month:Day:Hour:Minute:Second:` |  | ✅ | ❌ | `0xaf8bc` |
+| `RBMenuView` | `-` | `SetServerDateYear:Month:Day:Hour:Minute:Second:` |  | ✅ | ✅ | `0xaf8bc` |
 | `RBMenuView` | `-` | `showInfomation` |  | ✅ | ❌ | `0xaf8c0` |
 | `RBMenuView` | `-` | `createSearchDictionary` |  | ✅ | ❌ | `0xafa84` |
 | `RBMenuView` | `-` | `showSearchBar` |  | ✅ | ❌ | `0xb0274` |
@@ -2154,9 +2156,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ❌ | `0xb4304` |
 | `RBMenuView` | `-` | `scrollViewDidEndDragging:willDecelerate:` |  | ✅ | ❌ | `0xb4320` |
 | `RBMenuView` | `-` | `scrollViewDidEndScrollingAnimation:` |  | ✅ | ❌ | `0xb4384` |
-| `RBMenuView` | `-` | `willLayoutSubviews:` |  | ✅ | ❌ | `0xb43a0` |
+| `RBMenuView` | `-` | `willLayoutSubviews:` |  | ✅ | ✅ | `0xb43a0` |
 | `RBMenuView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0xb43a4` |
-| `RBMenuView` | `-` | `touchesBeganFromRBCollectionView:withEvent:` |  | ✅ | ❌ | `0xb4740` |
+| `RBMenuView` | `-` | `touchesBeganFromRBCollectionView:withEvent:` |  | ✅ | ✅ | `0xb4740` |
 | `RBMenuView` | `-` | `touchesEndedFromRBCollectionView:withEvent:` |  | ✅ | ❌ | `0xb4744` |
 | `RBMenuView` | `-` | `showPushNotificationView` |  | ✅ | ❌ | `0xb4810` |
 | `RBMenuView` | `-` | `actionFromPushNotificationView` |  | ✅ | ❌ | `0xb4ae8` |
@@ -2354,7 +2356,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteList` | `-` | `updateExtendNoteInfo:SKProductsResponse:` |  | ✅ | ❌ | `0xbf768` |
 | `RBStoreExtendNoteList` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xbfe24` |
 | `RBStoreExtendNoteList` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xc0768` |
-| `RBStoreExtendNoteList` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0xc07f0` |
+| `RBStoreExtendNoteList` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0xc07f0` |
 | `RBStoreExtendNoteList` | `-` | `optionalProductsRequest` |  | ✅ | ❌ | `0xc07f4` |
 | `RBStoreExtendNoteList` | `-` | `productsRequest:didReceiveResponse:` |  | ✅ | ❌ | `0xc0b20` |
 | `RBStoreExtendNoteList` | `-` | `request:didFailWithError:` |  | ✅ | ❌ | `0xc0f64` |
@@ -2459,7 +2461,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicDifficultyView` | `-` | `SetupView` |  | ✅ | ❌ | `0xc7c68` |
 | `RBMusicDifficultyView` | `-` | `CreateButton:Position:Number:` |  | ✅ | ❌ | `0xc8240` |
 | `RBMusicDifficultyView` | `-` | `ShowSelectDifficulty` |  | ✅ | ❌ | `0xc8b7c` |
-| `RBMusicDifficultyView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ❌ | `0xc8e8c` |
+| `RBMusicDifficultyView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0xc8e8c` |
 | `RBMusicDifficultyView` | `-` | `SelectDifficultyButton:` |  | ✅ | ❌ | `0xc8e90` |
 | `RBMusicDifficultyView` | `-` | `setEnableButton:` |  | ✅ | ❌ | `0xc9000` |
 | `RBMusicDifficultyView` | `-` | `getDifficultyButton:` |  | ✅ | ❌ | `0xc911c` |
@@ -2738,17 +2740,17 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapView` | `-` | `observeValueForKeyPath:ofObject:change:context:` |  | ✅ | ❌ | `0xe1274` |
 | `RBSearchMapView` | `-` | `mapView:didChangeUserTrackingMode:animated:` |  | ✅ | ❌ | `0xe1350` |
 | `RBSearchMapView` | `-` | `toggleTrackingMode` |  | ✅ | ❌ | `0xe1430` |
-| `RBSearchMapView` | `-` | `mapView:regionWillChangeAnimated:` |  | ✅ | ❌ | `0xe162c` |
-| `RBSearchMapView` | `-` | `mapViewWillStartLoadingMap:` |  | ✅ | ❌ | `0xe1630` |
-| `RBSearchMapView` | `-` | `mapViewDidFinishLoadingMap:` |  | ✅ | ❌ | `0xe1634` |
-| `RBSearchMapView` | `-` | `mapViewDidFailLoadingMap:withError:` |  | ✅ | ❌ | `0xe1638` |
+| `RBSearchMapView` | `-` | `mapView:regionWillChangeAnimated:` |  | ✅ | ✅ | `0xe162c` |
+| `RBSearchMapView` | `-` | `mapViewWillStartLoadingMap:` |  | ✅ | ✅ | `0xe1630` |
+| `RBSearchMapView` | `-` | `mapViewDidFinishLoadingMap:` |  | ✅ | ✅ | `0xe1634` |
+| `RBSearchMapView` | `-` | `mapViewDidFailLoadingMap:withError:` |  | ✅ | ✅ | `0xe1638` |
 | `RBSearchMapView` | `-` | `mapView:regionDidChangeAnimated:` |  | ✅ | ❌ | `0xe163c` |
 | `RBSearchMapView` | `-` | `mapView:viewForAnnotation:` |  | ✅ | ❌ | `0xe1e60` |
 | `RBSearchMapView` | `-` | `mapView:annotationView:calloutAccessoryControlTapped:` |  | ✅ | ❌ | `0xe227c` |
 | `RBSearchMapView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xe24ec` |
-| `RBSearchMapView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0xe2614` |
-| `RBSearchMapView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0xe2618` |
-| `RBSearchMapView` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0xe261c` |
+| `RBSearchMapView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0xe2614` |
+| `RBSearchMapView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0xe2618` |
+| `RBSearchMapView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xe261c` |
 | `RBSearchMapView` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xe2620` |
 | `RBSearchMapView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xe2760` |
 | `RBSearchMapView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xe3d28` |
@@ -2855,10 +2857,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xeb194` |
 | `RBSettingView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xeb674` |
 | `RBSettingView` | `-` | `hideAnimationEnd` |  | ✅ | ❌ | `0xeb910` |
-| `RBSettingView` | `-` | `touchesBegan:withEvent:` |  | ✅ | ❌ | `0xeb9c0` |
-| `RBSettingView` | `-` | `touchesMoved:withEvent:` |  | ✅ | ❌ | `0xeb9c4` |
+| `RBSettingView` | `-` | `touchesBegan:withEvent:` |  | ✅ | ✅ | `0xeb9c0` |
+| `RBSettingView` | `-` | `touchesMoved:withEvent:` |  | ✅ | ✅ | `0xeb9c4` |
 | `RBSettingView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ❌ | `0xeb9c8` |
-| `RBSettingView` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ❌ | `0xebbbc` |
+| `RBSettingView` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ✅ | `0xebbbc` |
 | `RBSettingView` | `-` | `SelectCustomizeButton` |  | ✅ | ❌ | `0xebbc0` |
 | `RBSettingView` | `-` | `selectThema:` |  | ✅ | ❌ | `0xebcec` |
 | `RBSettingView` | `-` | `SelectHowToPlayButton` |  | ✅ | ❌ | `0xebdf0` |
@@ -2916,7 +2918,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreDetailMusicCell` | `-` | `dealloc` |  | ❌ | ❌ | `0xefb90` |
 | `StoreDetailMusicCell` | `-` | `tapSp:` |  | ✅ | ❌ | `0xefbc4` |
 | `StoreDetailMusicCell` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xefc30` |
-| `StoreDetailMusicCell` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0xefd88` |
+| `StoreDetailMusicCell` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xefd88` |
 | `StoreDetailMusicCell` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xefd8c` |
 | `StoreDetailMusicCell` | `-` | `artworkView` | prop | ✅ | ✅ | `0xefecc` |
 | `StoreDetailMusicCell` | `-` | `setArtworkView:` | prop | ✅ | ✅ | `0xefedc` |
@@ -3060,12 +3062,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackDetailViewPad` | `-` | `showTerm` |  | ✅ | ❌ | `0xfa45c` |
 | `StorePackDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xfa52c` |
 | `StorePackDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xfa72c` |
-| `StorePackDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0xfa868` |
+| `StorePackDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0xfa868` |
 | `StorePackDetailViewPad` | `-` | `storePackInfoDownloaderFinished:` |  | ✅ | ❌ | `0xfa86c` |
 | `StorePackDetailViewPad` | `-` | `storePackInfoDownloaderError:` |  | ✅ | ❌ | `0xfaa58` |
 | `StorePackDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xfaba4` |
-| `StorePackDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0xfac80` |
-| `StorePackDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0xfac84` |
+| `StorePackDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0xfac80` |
+| `StorePackDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0xfac84` |
 | `StorePackDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0xfac88` |
 | `StorePackDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xfad64` |
 | `StorePackDetailViewPad` | `-` | `switchToSpecialStore:` |  | ✅ | ❌ | `0xfaea4` |
@@ -3105,7 +3107,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackMusicView` | `-` | `setBG:` |  | ✅ | ❌ | `0xfd100` |
 | `StorePackMusicView` | `-` | `tapSp` |  | ✅ | ❌ | `0xfd208` |
 | `StorePackMusicView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xfd26c` |
-| `StorePackMusicView` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0xfd35c` |
+| `StorePackMusicView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xfd35c` |
 | `StorePackMusicView` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xfd360` |
 | `StorePackMusicView` | `-` | `artworkView` | prop | ✅ | ✅ | `0xfd4a0` |
 | `StorePackMusicView` | `-` | `setArtworkView:` | prop | ✅ | ✅ | `0xfd4b0` |
@@ -3182,14 +3184,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `cancel` |  | ✅ | ❌ | `0x100138` |
 | `StorePromotionView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x100464` |
 | `StorePromotionView` | `-` | `SetupView` |  | ✅ | ❌ | `0x100498` |
-| `StorePromotionView` | `-` | `setImageViewSize:` |  | ✅ | ❌ | `0x1008c8` |
+| `StorePromotionView` | `-` | `setImageViewSize:` |  | ✅ | ✅ | `0x1008c8` |
 | `StorePromotionView` | `-` | `getPackID` |  | ✅ | ❌ | `0x1008cc` |
 | `StorePromotionView` | `-` | `setImageURLs:` |  | ✅ | ❌ | `0x1009e8` |
 | `StorePromotionView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x101788` |
 | `StorePromotionView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x101898` |
 | `StorePromotionView` | `-` | `getImageCount` |  | ✅ | ❌ | `0x101924` |
 | `StorePromotionView` | `-` | `setNext` |  | ✅ | ❌ | `0x101984` |
-| `StorePromotionView` | `-` | `nextShowEnd` |  | ✅ | ❌ | `0x102280` |
+| `StorePromotionView` | `-` | `nextShowEnd` |  | ✅ | ✅ | `0x102280` |
 | `StorePromotionView` | `-` | `setImage:Index:` |  | ✅ | ❌ | `0x102284` |
 | `StorePromotionView` | `-` | `startSamplePlay` |  | ✅ | ❌ | `0x102a14` |
 | `StorePromotionView` | `-` | `stopSamplePlay` |  | ✅ | ❌ | `0x102a20` |
@@ -3200,8 +3202,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1037fc` |
 | `StorePromotionView` | `-` | `scrollViewWillBeginDragging:` |  | ✅ | ❌ | `0x103a50` |
 | `StorePromotionView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x103a6c` |
-| `StorePromotionView` | `-` | `scrollViewDidEndDragging:willDecelerate:` |  | ✅ | ❌ | `0x103c48` |
-| `StorePromotionView` | `-` | `scrollViewWillBeginDecelerating:` |  | ✅ | ❌ | `0x103c4c` |
+| `StorePromotionView` | `-` | `scrollViewDidEndDragging:willDecelerate:` |  | ✅ | ✅ | `0x103c48` |
+| `StorePromotionView` | `-` | `scrollViewWillBeginDecelerating:` |  | ✅ | ✅ | `0x103c4c` |
 | `StorePromotionView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ❌ | `0x103c50` |
 | `StorePromotionView` | `-` | `scrollViewDidRotate:` |  | ✅ | ❌ | `0x103c6c` |
 | `StorePromotionView` | `-` | `delegate` | prop | ✅ | ✅ | `0x103f58` |
@@ -3391,9 +3393,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x11436c` |
 | `RBTermView` | `-` | `setTermsTitle:` |  | ✅ | ❌ | `0x114420` |
 | `RBTermView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1147bc` |
-| `RBTermView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x114848` |
-| `RBTermView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x11484c` |
-| `RBTermView` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x114850` |
+| `RBTermView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x114848` |
+| `RBTermView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x11484c` |
+| `RBTermView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x114850` |
 | `RBTermView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x114854` |
 | `RBTermView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x114864` |
 | `RBTermView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x11486c` |
@@ -3563,9 +3565,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1480ac` |
 | `RBErosionMarkUpdater` | `-` | `textFieldDidBeginEditing:` |  | ✅ | ❌ | `0x1481a4` |
 | `RBErosionMarkUpdater` | `-` | `textFieldDidEndEditing:` |  | ✅ | ❌ | `0x148204` |
-| `RBErosionMarkUpdater` | `-` | `textField:shouldChangeCharactersInRange:replacementString:` |  | ✅ | ❌ | `0x148268` |
+| `RBErosionMarkUpdater` | `-` | `textField:shouldChangeCharactersInRange:replacementString:` |  | ✅ | ✅ | `0x148268` |
 | `RBErosionMarkUpdater` | `-` | `numberOfComponentsInPickerView:` |  | ✅ | ❌ | `0x148270` |
-| `RBErosionMarkUpdater` | `-` | `pickerView:numberOfRowsInComponent:` |  | ✅ | ❌ | `0x1482a0` |
+| `RBErosionMarkUpdater` | `-` | `pickerView:numberOfRowsInComponent:` |  | ✅ | ✅ | `0x1482a0` |
 | `RBErosionMarkUpdater` | `-` | `pickerView:titleForRow:forComponent:` |  | ✅ | ❌ | `0x1482a8` |
 | `RBErosionMarkUpdater` | `-` | `pickerView:didSelectRow:inComponent:` |  | ✅ | ❌ | `0x1482e4` |
 | `RBErosionMarkUpdater` | `-` | `viewController` | prop | ✅ | ✅ | `0x148540` |
@@ -3676,7 +3678,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `cellViewSelected:` |  | ✅ | ❌ | `0x15e340` |
 | `RBStoreExtendPageViewController` | `-` | `selectButton:` |  | ✅ | ❌ | `0x15e4e0` |
 | `RBStoreExtendPageViewController` | `-` | `openExtendNoteDetailViewWithPID:` |  | ✅ | ❌ | `0x15e6f4` |
-| `RBStoreExtendPageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ❌ | `0x15eb70` |
+| `RBStoreExtendPageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ✅ | `0x15eb70` |
 | `RBStoreExtendPageViewController` | `-` | `pushSampleButton:` |  | ✅ | ❌ | `0x15eb74` |
 | `RBStoreExtendPageViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x15ed78` |
 | `RBStoreExtendPageViewController` | `-` | `startDownloadExtendNote:` |  | ✅ | ❌ | `0x15f160` |
@@ -3684,8 +3686,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `startPurchase:` |  | ✅ | ❌ | `0x15fbec` |
 | `RBStoreExtendPageViewController` | `-` | `detailViewClose` |  | ✅ | ❌ | `0x15fec0` |
 | `RBStoreExtendPageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x15ff4c` |
-| `RBStoreExtendPageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ❌ | `0x1601d0` |
-| `RBStoreExtendPageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ❌ | `0x1601d4` |
+| `RBStoreExtendPageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1601d0` |
+| `RBStoreExtendPageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1601d4` |
 | `RBStoreExtendPageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ❌ | `0x1601d8` |
 | `RBStoreExtendPageViewController` | `-` | `updatePurchasedTableCell:` |  | ✅ | ❌ | `0x1602b8` |
 | `RBStoreExtendPageViewController` | `-` | `reDownloadPackMusics:` |  | ✅ | ❌ | `0x160838` |
@@ -3718,7 +3720,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x165598` |
 | `RBStoreExtendPageViewController` | `-` | `selectShowMore` |  | ✅ | ❌ | `0x165708` |
 | `RBStoreExtendPageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x165938` |
-| `RBStoreExtendPageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x165c3c` |
+| `RBStoreExtendPageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x165c3c` |
 | `RBStoreExtendPageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x165c40` |
 | `RBStoreExtendPageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x166184` |
 | `RBStoreExtendPageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1663a4` |
@@ -3726,7 +3728,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x166ad0` |
 | `RBStoreExtendPageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x166d40` |
 | `RBStoreExtendPageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x166d48` |
-| `RBStoreExtendPageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ❌ | `0x166d7c` |
+| `RBStoreExtendPageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x166d7c` |
 | `RBStoreExtendPageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x166d80` |
 | `RBStoreExtendPageViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x166e04` |
 | `RBStoreExtendPageViewController` | `-` | `showLoadingView` |  | ✅ | ❌ | `0x166f14` |
@@ -3909,9 +3911,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x171aa4` |
 | `RBTermPhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x171c68` |
 | `RBTermPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x171d30` |
-| `RBTermPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x171da8` |
-| `RBTermPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x171dac` |
-| `RBTermPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x171db0` |
+| `RBTermPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x171da8` |
+| `RBTermPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x171dac` |
+| `RBTermPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x171db0` |
 | `RBTermPhoneViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0x171db4` |
 | `RBTermPhoneViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x171dc4` |
 | `RBTermPhoneViewController` | `-` | `isAnimating` | prop | ✅ | ✅ | `0x171dd4` |
@@ -3970,7 +3972,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreTableCellViewBase` | `-` | `setBgImage:` |  | ✅ | ❌ | `0x177ac0` |
 | `StoreTableCellViewBase` | `-` | `setIsNew:` |  | ✅ | ❌ | `0x177b4c` |
 | `StoreTableCellViewBase` | `-` | `handleTap:` |  | ✅ | ❌ | `0x177c40` |
-| `StoreTableCellViewBase` | `-` | `reset` |  | ✅ | ❌ | `0x177d20` |
+| `StoreTableCellViewBase` | `-` | `reset` |  | ✅ | ✅ | `0x177d20` |
 | `StoreTableCellViewBase` | `-` | `delegate` | prop | ✅ | ✅ | `0x177d24` |
 | `StoreTableCellViewBase` | `-` | `setDelegate:` | prop | ✅ | ❌ | `0x177d44` |
 | `StoreTableCellViewBase` | `-` | `index` | prop | ✅ | ✅ | `0x177d58` |
@@ -4038,7 +4040,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBServerAPIManager` | `+` | `unlockedAPIWithType:identity:point:` |  | ✅ | ❌ | `0x17d484` |
 | `RBServerAPIManager` | `+` | `tutorialAPI` |  | ✅ | ❌ | `0x17d860` |
 | `RBServerAPIManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x17dc08` |
-| `RBServerAPIManager` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x17dca0` |
+| `RBServerAPIManager` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x17dca0` |
 | `RBServerAPIManager` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x17dca4` |
 | `RBServerAPIManager` | `-` | `httpArray` | prop | ✅ | ✅ | `0x17dd3c` |
 | `RBServerAPIManager` | `-` | `setHttpArray:` | prop | ✅ | ✅ | `0x17dd4c` |
@@ -4233,9 +4235,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x194000` |
 | `RBNotificationPageView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x194064` |
 | `RBNotificationPageView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1940dc` |
-| `RBNotificationPageView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x19412c` |
-| `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x194130` |
-| `RBNotificationPageView` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x194134` |
+| `RBNotificationPageView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x19412c` |
+| `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x194130` |
+| `RBNotificationPageView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x194134` |
 | `RBNotificationPageView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x194138` |
 | `RBNotificationPageView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x194148` |
 | `RBNotificationPageView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x194150` |
@@ -4263,9 +4265,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `downloadWithMusicInfo:` |  | ✅ | ❌ | `0x198e54` |
 | `RBUnlockView` | `-` | `dealloc` |  | ❌ | ❌ | `0x1991a4` |
 | `RBUnlockView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1991d8` |
-| `RBUnlockView` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x19954c` |
+| `RBUnlockView` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x19954c` |
 | `RBUnlockView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x199550` |
-| `RBUnlockView` | `-` | `downloadManagerStartTask:` |  | ✅ | ❌ | `0x1996e8` |
+| `RBUnlockView` | `-` | `downloadManagerStartTask:` |  | ✅ | ✅ | `0x1996e8` |
 | `RBUnlockView` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1996ec` |
 | `RBUnlockView` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1998e0` |
 | `RBUnlockView` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x19991c` |
@@ -4332,7 +4334,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockPackageData` | `-` | `setData:` | prop | ✅ | ✅ | `0x19a9ec` |
 | `RBUnlockData` | `-` | `description` |  | ✅ | ❌ | `0x19aa64` |
 | `RBUnlockData` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x19ab70` |
-| `RBUnlockData` | `-` | `save` |  | ✅ | ❌ | `0x19abd4` |
+| `RBUnlockData` | `-` | `save` |  | ✅ | ✅ | `0x19abd4` |
 | `RBUnlockData` | `-` | `parseDictionary:` |  | ✅ | ❌ | `0x19abd8` |
 | `RBUnlockData` | `-` | `getPackage` |  | ✅ | ❌ | `0x19b28c` |
 | `RBUnlockData` | `-` | `setTutorialData` |  | ✅ | ❌ | `0x19b348` |
@@ -4515,7 +4517,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteDetailViewController` | `-` | `initWithExtendNoteInfo:` |  | ✅ | ❌ | `0x1a76bc` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1a78c0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setExtendNoteInfo:` |  | ✅ | ❌ | `0x1a78f4` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x1a7db0` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x1a7db0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ❌ | `0x1a7db4` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x1a7f2c` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `showItemInfo` |  | ✅ | ❌ | `0x1a8040` |
@@ -4530,11 +4532,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteDetailViewController` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x1a8b38` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1a8b54` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1a8d08` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x1a8dc0` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ❌ | `0x1a8dc4` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1a8dc8` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1a8dc0` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ✅ | `0x1a8dc4` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1a8dc8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1a8dcc` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1a8ebc` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1a8ebc` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1a8ec0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1a8fb8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1a90f8` |
@@ -4687,7 +4689,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `encodeAppliIds:` |  | ✅ | ❌ | `0x1bc9f4` |
 | `RBExperienceData` | `-` | `decodeAppliIds:` |  | ✅ | ❌ | `0x1bcbd8` |
 | `RBExperienceData` | `-` | `noUnlocked` |  | ✅ | ❌ | `0x1bce1c` |
-| `RBExperienceData` | `-` | `writeLog:` |  | ✅ | ❌ | `0x1bd0cc` |
+| `RBExperienceData` | `-` | `writeLog:` |  | ✅ | ✅ | `0x1bd0cc` |
 | `RBExperienceData` | `-` | `installedAppliId` | prop | ✅ | ✅ | `0x1bd0d0` |
 | `RBExperienceData` | `-` | `setInstalledAppliId:` | prop | ✅ | ✅ | `0x1bd0e0` |
 | `RBExperienceData` | `-` | `point` | prop | ✅ | ✅ | `0x1bd0f0` |
@@ -4786,7 +4788,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteCellPhone` | `-` | `setIsPurchased:` | prop | ✅ | ❌ | `0x1c1bd8` |
 | `StoreExtendNoteCellPhone` | `-` | `loadExtendNoteInfo:index:` |  | ✅ | ❌ | `0x1c1c34` |
 | `StoreExtendNoteCellPhone` | `-` | `setBgImage:` |  | ✅ | ❌ | `0x1c1fa0` |
-| `StoreExtendNoteCellPhone` | `-` | `setBgColor:` |  | ✅ | ❌ | `0x1c202c` |
+| `StoreExtendNoteCellPhone` | `-` | `setBgColor:` |  | ✅ | ✅ | `0x1c202c` |
 | `StoreExtendNoteCellPhone` | `-` | `artworkLayer` | prop | ✅ | ✅ | `0x1c2030` |
 | `StoreExtendNoteCellPhone` | `-` | `setArtworkLayer:` | prop | ✅ | ✅ | `0x1c2040` |
 | `StoreExtendNoteCellPhone` | `-` | `bgImageView` | prop | ✅ | ✅ | `0x1c2078` |
@@ -4818,7 +4820,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `initWithFrame:termType:` |  | ✅ | ❌ | `0x1c3d58` |
 | `RBTermAgreeView` | `-` | `setupView` |  | ✅ | ❌ | `0x1c3e7c` |
 | `RBTermAgreeView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x1c664c` |
-| `RBTermAgreeView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1c6a38` |
+| `RBTermAgreeView` | `-` | `hideAnimation` |  | ✅ | ✅ | `0x1c6a38` |
 | `RBTermAgreeView` | `-` | `_hideAnimation` |  | ✅ | ❌ | `0x1c6a3c` |
 | `RBTermAgreeView` | `-` | `showTermView` |  | ✅ | ❌ | `0x1c6c50` |
 | `RBTermAgreeView` | `-` | `selectAgree` |  | ✅ | ❌ | `0x1c7698` |
@@ -4829,9 +4831,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `sendAgree` |  | ✅ | ❌ | `0x1c813c` |
 | `RBTermAgreeView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1c8c88` |
 | `RBTermAgreeView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1c9320` |
-| `RBTermAgreeView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1c946c` |
-| `RBTermAgreeView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1c9470` |
-| `RBTermAgreeView` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1c9474` |
+| `RBTermAgreeView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c946c` |
+| `RBTermAgreeView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c9470` |
+| `RBTermAgreeView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1c9474` |
 | `RBTermAgreeView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1c9478` |
 | `RBTermAgreeView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x1c9488` |
 | `RBTermAgreeView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x1c9490` |
@@ -4895,7 +4897,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1cabe8` |
 | `RBStoreGenreViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1caf08` |
 | `RBStoreGenreViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1caf10` |
-| `RBStoreGenreViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf78` |
+| `RBStoreGenreViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf78` |
 | `RBStoreGenreViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf7c` |
 | `RBStoreGenreViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf88` |
 | `RBStoreGenreViewController` | `-` | `packListCtrl` | prop | ✅ | ✅ | `0x1cb198` |
@@ -5072,7 +5074,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `storePackInfoDownloaderError:` |  | ✅ | ❌ | `0x1d9a50` |
 | `RBStoreDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1d9b88` |
 | `RBStoreDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1d9dd4` |
-| `RBStoreDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x1d9f4c` |
+| `RBStoreDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1d9f4c` |
 | `RBStoreDetailViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1d9f50` |
 | `RBStoreDetailViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1d9f58` |
 | `RBStoreDetailViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1d9ffc` |
@@ -5080,10 +5082,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1db224` |
 | `RBStoreDetailViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1db51c` |
 | `RBStoreDetailViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1dbca0` |
-| `RBStoreDetailViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x1dbeb0` |
-| `RBStoreDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1dbeb4` |
+| `RBStoreDetailViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1dbeb0` |
+| `RBStoreDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1dbeb4` |
 | `RBStoreDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1dbeb8` |
-| `RBStoreDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1dbfa8` |
+| `RBStoreDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1dbfa8` |
 | `RBStoreDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1dbfac` |
 | `RBStoreDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1dc0a4` |
 | `RBStoreDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1dc1e4` |
@@ -5145,8 +5147,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `detailViewStartPurchase:` |  | ✅ | ❌ | `0x1e52f8` |
 | `RBStorePageViewController` | `-` | `detailViewClose` |  | ✅ | ❌ | `0x1e55cc` |
 | `RBStorePageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x1e5658` |
-| `RBStorePageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ❌ | `0x1e5888` |
-| `RBStorePageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ❌ | `0x1e588c` |
+| `RBStorePageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1e5888` |
+| `RBStorePageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1e588c` |
 | `RBStorePageViewController` | `-` | `updateMusicInfo:Save:` |  | ✅ | ❌ | `0x1e5890` |
 | `RBStorePageViewController` | `-` | `updatePurchasedTableCell:` |  | ✅ | ❌ | `0x1e5ad8` |
 | `RBStorePageViewController` | `-` | `reDownloadPackMusics:` |  | ✅ | ❌ | `0x1e6058` |
@@ -5157,7 +5159,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `askDownloadAllMusics` |  | ✅ | ❌ | `0x1e6f30` |
 | `RBStorePageViewController` | `-` | `restoreDownloadAllMusics` |  | ✅ | ❌ | `0x1e7788` |
 | `RBStorePageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1e8110` |
-| `RBStorePageViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1e8604` |
+| `RBStorePageViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1e8604` |
 | `RBStorePageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1e8608` |
 | `RBStorePageViewController` | `-` | `restoreSucceeded` |  | ✅ | ❌ | `0x1e8748` |
 | `RBStorePageViewController` | `-` | `restoreFailed:` |  | ✅ | ❌ | `0x1e8a80` |
@@ -5180,7 +5182,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x1ebe6c` |
 | `RBStorePageViewController` | `-` | `selectShowMore` |  | ✅ | ❌ | `0x1ec078` |
 | `RBStorePageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ec2e8` |
-| `RBStorePageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x1ec5ec` |
+| `RBStorePageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ec5ec` |
 | `RBStorePageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1ec5f0` |
 | `RBStorePageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1ecb34` |
 | `RBStorePageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1ecd54` |
@@ -5188,7 +5190,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ed6e4` |
 | `RBStorePageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1ed9f0` |
 | `RBStorePageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ed9f8` |
-| `RBStorePageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ❌ | `0x1edae4` |
+| `RBStorePageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x1edae4` |
 | `RBStorePageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1edae8` |
 | `RBStorePageViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1edb6c` |
 | `RBStorePageViewController` | `-` | `switchToGenre:` |  | ✅ | ❌ | `0x1ede24` |
@@ -5293,7 +5295,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePackList` | `-` | `updatePackInfo:SKProductsResponse:` |  | ✅ | ❌ | `0x1f15f8` |
 | `RBStorePackList` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1f1ca0` |
 | `RBStorePackList` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1f29fc` |
-| `RBStorePackList` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x1f2a84` |
+| `RBStorePackList` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1f2a84` |
 | `RBStorePackList` | `-` | `optionalProductsRequest` |  | ✅ | ❌ | `0x1f2a88` |
 | `RBStorePackList` | `-` | `productsRequest:didReceiveResponse:` |  | ✅ | ❌ | `0x1f2db4` |
 | `RBStorePackList` | `-` | `request:didFailWithError:` |  | ✅ | ❌ | `0x1f31f8` |
@@ -5504,9 +5506,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x1fbdac` |
 | `RBCampaignViewController` | `-` | `updateExperienceData` |  | ✅ | ❌ | `0x1fc128` |
 | `RBCampaignViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1fc3fc` |
-| `RBCampaignViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1fc74c` |
-| `RBCampaignViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1fc750` |
-| `RBCampaignViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1fc754` |
+| `RBCampaignViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc74c` |
+| `RBCampaignViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc750` |
+| `RBCampaignViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1fc754` |
 | `RBCampaignViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1fc758` |
 | `RBCampaignViewController` | `-` | `alertViewClose` |  | ✅ | ❌ | `0x1fc898` |
 | `RBCampaignViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1fc988` |
@@ -5516,7 +5518,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1fdfb8` |
 | `RBCampaignViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1fe2bc` |
 | `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1fe368` |
-| `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ❌ | `0x1fe4f8` |
+| `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ✅ | `0x1fe4f8` |
 | `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ❌ | `0x1fe4fc` |
 | `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ❌ | `0x1fec00` |
 | `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ❌ | `0x1fec34` |
@@ -5533,7 +5535,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1ffc30` |
 | `RBCampaignViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ffc38` |
 | `RBCampaignViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ffc6c` |
-| `RBCampaignViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x1ffdfc` |
+| `RBCampaignViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ffdfc` |
 | `RBCampaignViewController` | `-` | `itemInfoDownload` |  | ✅ | ❌ | `0x1ffe00` |
 | `RBCampaignViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1ffff4` |
 | `RBCampaignViewController` | `-` | `alertView` | prop | ✅ | ✅ | `0x200028` |
@@ -5617,7 +5619,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendWebViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x202f90` |
 | `RecommendWebViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x202fcc` |
 | `RecommendWebViewController` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x203048` |
-| `RecommendWebViewController` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0x20310c` |
+| `RecommendWebViewController` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0x20310c` |
 | `RecommendWebViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x203110` |
 | `RecommendAdId` | `-` | `initWithCountryCode:categoryId:` |  | ✅ | ❌ | `0x20314c` |
 | `RecommendAdId` | `-` | `getWithCountryCode:categoryId:error:` |  | ✅ | ❌ | `0x203224` |
@@ -5698,7 +5700,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `closeNotice` |  | ✅ | ❌ | `0x20bbc8` |
 | `RewardCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x20bc5c` |
 | `RewardCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x20bccc` |
-| `RewardCore` | `-` | `openCancelWithError:` |  | ✅ | ❌ | `0x20bd3c` |
+| `RewardCore` | `-` | `openCancelWithError:` |  | ✅ | ✅ | `0x20bd3c` |
 | `RewardCore` | `-` | `canUseBannerCache` |  | ✅ | ❌ | `0x20bd40` |
 | `RewardCore` | `-` | `clearAdStatus` |  | ✅ | ❌ | `0x20be1c` |
 | `RewardCore` | `-` | `clearSession` |  | ✅ | ❌ | `0x20be50` |
@@ -5725,7 +5727,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkUtilities` | `+` | `getImpressionId` |  | ✅ | ❌ | `0x20d160` |
 | `ApplilinkUtilities` | `+` | `narrowedListWithList:object:forKey:` |  | ✅ | ❌ | `0x20d240` |
 | `ApplilinkUtilities` | `+` | `geFileNameFromPath:` |  | ✅ | ❌ | `0x20d38c` |
-| `ApplilinkUtilities` | `+` | `debugLog` |  | ✅ | ❌ | `0x20d418` |
+| `ApplilinkUtilities` | `+` | `debugLog` |  | ✅ | ✅ | `0x20d418` |
 | `ApplilinkBundle` | `+` | `rewardBundle` |  | ✅ | ❌ | `0x20d41c` |
 | `AnalysisNetworkCore` | `+` | `postInitalizeWithCallback:` |  | ✅ | ❌ | `0x20d650` |
 | `AnalysisNetworkCore` | `+` | `postDAUWithCallback:` |  | ✅ | ❌ | `0x20da4c` |
@@ -5764,7 +5766,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x21371c` |
 | `ApplilinkViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x213758` |
 | `ApplilinkViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x213794` |
-| `ApplilinkViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x2137d0` |
+| `ApplilinkViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2137d0` |
 | `ApplilinkViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x2137d4` |
 | `ApplilinkViewController` | `-` | `showSKStore:appParam:delegate:` |  | ✅ | ❌ | `0x213810` |
 | `ApplilinkViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ❌ | `0x213f3c` |
@@ -5834,7 +5836,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdWebView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x217fec` |
 | `RecommendAdWebView` | `-` | `setScrollBarEnabled:` |  | ✅ | ❌ | `0x2182c4` |
 | `RecommendAdWebView` | `-` | `unloadRecommendView` |  | ✅ | ❌ | `0x2184a0` |
-| `RecommendAdWebView` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x2184b0` |
+| `RecommendAdWebView` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2184b0` |
 | `RecommendAdWebView` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x2184b4` |
 | `RecommendAdWebView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x218508` |
 | `RecommendAdWebView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x218530` |
@@ -6171,7 +6173,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `setUniqueAdWithAdLocation:impressionId:` |  | ✅ | ❌ | `0x23d330` |
 | `RecommendCore` | `-` | `getUniqueAdWithAdLocation:` |  | ✅ | ❌ | `0x23d4cc` |
 | `RecommendCore` | `-` | `failLoadWithError:` |  | ✅ | ❌ | `0x23d5c0` |
-| `RecommendCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ❌ | `0x23d740` |
+| `RecommendCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ✅ | `0x23d740` |
 | `RecommendCore` | `-` | `redirectStartLoad:` |  | ✅ | ❌ | `0x23d744` |
 | `RecommendCore` | `-` | `releaseAdScreenViewController` |  | ✅ | ❌ | `0x23d7f8` |
 | `RecommendCore` | `-` | `releaseInterstitialViewController` |  | ✅ | ❌ | `0x23d84c` |
@@ -6187,10 +6189,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x23e300` |
 | `RecommendCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x23e3d0` |
 | `RecommendCore` | `-` | `appStoreOpenedNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e454` |
-| `RecommendCore` | `-` | `appStoreCloseNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e4dc` |
+| `RecommendCore` | `-` | `appStoreCloseNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e4dc` |
 | `RecommendCore` | `-` | `appStoreClosedNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e4e0` |
 | `RecommendCore` | `-` | `appStoreFailLoadNoticeWithError:appParam:` |  | ✅ | ❌ | `0x23e5ac` |
-| `RecommendCore` | `-` | `appStoreTransitionNoticeWithAppParam:` |  | ✅ | ❌ | `0x23e684` |
+| `RecommendCore` | `-` | `appStoreTransitionNoticeWithAppParam:` |  | ✅ | ✅ | `0x23e684` |
 | `RecommendCore` | `-` | `setInitializeFlg:` | prop | ✅ | ✅ | `0x23e688` |
 | `RecommendCore` | `-` | `interstitialViewController` | prop | ✅ | ✅ | `0x23e698` |
 | `RecommendCore` | `-` | `setInterstitialViewController:` | prop | ✅ | ✅ | `0x23e6a8` |
@@ -6232,14 +6234,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x23fcd4` |
 | `RecommendAdAreaView` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x23fe44` |
 | `RecommendAdAreaView` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x23ffa8` |
-| `RecommendAdAreaView` | `-` | `openedNotice` |  | ✅ | ❌ | `0x241364` |
+| `RecommendAdAreaView` | `-` | `openedNotice` |  | ✅ | ✅ | `0x241364` |
 | `RecommendAdAreaView` | `-` | `closeNotice` |  | ✅ | ❌ | `0x241368` |
-| `RecommendAdAreaView` | `-` | `openErrorNotice` |  | ✅ | ❌ | `0x2413a4` |
-| `RecommendAdAreaView` | `-` | `appStoreOpenedNotice` |  | ✅ | ❌ | `0x2413a8` |
+| `RecommendAdAreaView` | `-` | `openErrorNotice` |  | ✅ | ✅ | `0x2413a4` |
+| `RecommendAdAreaView` | `-` | `appStoreOpenedNotice` |  | ✅ | ✅ | `0x2413a8` |
 | `RecommendAdAreaView` | `-` | `appStoreCloseNotice` |  | ✅ | ❌ | `0x2413ac` |
-| `RecommendAdAreaView` | `-` | `appStoreClosedNotice` |  | ✅ | ❌ | `0x2413d4` |
-| `RecommendAdAreaView` | `-` | `appStoreFailLoadNoticeWithError:` |  | ✅ | ❌ | `0x2413d8` |
-| `RecommendAdAreaView` | `-` | `appStoreTransitionNotice` |  | ✅ | ❌ | `0x2413dc` |
+| `RecommendAdAreaView` | `-` | `appStoreClosedNotice` |  | ✅ | ✅ | `0x2413d4` |
+| `RecommendAdAreaView` | `-` | `appStoreFailLoadNoticeWithError:` |  | ✅ | ✅ | `0x2413d8` |
+| `RecommendAdAreaView` | `-` | `appStoreTransitionNotice` |  | ✅ | ✅ | `0x2413dc` |
 | `RecommendAdAreaView` | `-` | `dealloc` |  | ✅ | ❌ | `0x2413e0` |
 | `RecommendAdAreaView` | `-` | `applilinkDelegate` | prop | ✅ | ✅ | `0x2414fc` |
 | `RecommendAdAreaView` | `-` | `setApplilinkDelegate:` | prop | ✅ | ❌ | `0x24151c` |

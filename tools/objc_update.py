@@ -297,22 +297,23 @@ def _selector_of(signature: str) -> str:
 
 def mechanically_verified() -> dict[int, str]:
     """
-    Read the accessor addresses ``objc_verify_accessors.py`` proved against the instructions.
+    Read the addresses the mechanical passes proved against the instructions.
 
     Returns
     -------
     dict[int, str]
-        Each verified address and the ivar it was shown to move.
+        Each verified address and what it was shown to do.
     """
-    path = Path('tools/objc_verified.txt')
-    if not path.is_file():
-        return {}
     out: dict[int, str] = {}
-    for line in path.read_text().splitlines():
-        if line.startswith('#') or not line.strip():
+    for name in ('tools/objc_verified.txt', 'tools/objc_verified_trivial.txt'):
+        path = Path(name)
+        if not path.is_file():
             continue
-        address, _, why = line.partition(' ')
-        out[int(address, 16)] = why
+        for line in path.read_text().splitlines():
+            if line.startswith('#') or not line.strip():
+                continue
+            address, _, why = line.partition(' ')
+            out[int(address, 16)] = why
     return out
 
 
@@ -356,8 +357,10 @@ category's. Those rows carry the category name in parentheses and are matched on
 
 Total: {len(listed)} — {done} reconstructed, {verified} verified
 ({100.0 * verified / len(listed):.1f}%).
-{accessors} are property accessors, of which {mechanical_count} were verified mechanically by
-`tools/objc_verify_accessors.py`; `tools/objc_verified.txt` records what each was shown to move.
+{accessors} are property accessors. Two mechanical passes account for most of the verified
+count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
+moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
+constant-returning body agrees with its reconstruction. Everything else was read by hand.
 
 Regenerate with `tools/objc_update.py <binary>`, where the binary is the one **inside the .ipa**;
 the unpacked copy under `rb458orig` is a different build and matches nothing.

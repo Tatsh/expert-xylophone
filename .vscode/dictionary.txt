@@ -129,6 +129,7 @@ doxyfile
 dplatform
 drbpdbg
 dresources
+dysymtab
 eagl
 eeac
 encp
@@ -145,6 +146,7 @@ extitem
 extmusicinfo
 extmusiclist
 extraout
+extreloff
 fabsf
 falied
 fastcall
@@ -184,7 +186,10 @@ ifndef
 ifrm
 igles
 immediates
+immhi
+immlo
 incomp
+indirectsymoff
 infomation
 initalize
 initilize
@@ -215,6 +220,7 @@ korsk
 kuropastelkun
 layouted
 ldrb
+ldrsw
 leetal
 lelist
 leveltables
@@ -246,6 +252,7 @@ mobileprovision
 modelines
 modelview
 movi
+movz
 msdos
 mtype
 mulist
@@ -255,6 +262,8 @@ musicselect
 mypy
 nbobhfs
 nekomata
+nextrel
+nindirectsyms
 nolist
 nonatomic
 nonlocalized
@@ -377,6 +386,7 @@ superlayer
 superview
 superview's
 supportedi
+symtab
 sysctlbyname
 tabletennis
 tatsh

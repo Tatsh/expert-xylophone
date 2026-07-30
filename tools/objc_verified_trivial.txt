@@ -1,0 +1,148 @@
+# Trivially-shaped methods verified against their instructions by
+# tools/objc_verify_trivial.py. Each either does nothing, and its reconstruction
+# does nothing either, or returns a constant its reconstruction also returns.
+0x4e3c RBMusicHistoryView drawRect:: empty
+0x78b4 RBCampaignDetailViewController downloaderProceed:: empty
+0x78b8 RBCampaignDetailViewController itemInfoDownload: empty
+0x78bc RBCampaignDetailViewController alertView:clickedButtonAtIndex:: empty
+0x79b0 RBCampaignDetailViewController alertView:willDismissWithButtonIndex:: empty
+0x1ca40 RBResourceDownloadViewController zipArchiveWillUnzipArchiveAtPath:zipInfo:: empty
+0x1caf4 RBResourceDownloadViewController zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:fileInfo:: empty
+0x24f68 StoreExtendNoteDetailViewPad cancelLoading: empty
+0x2585c StoreExtendNoteDetailViewPad pushLink:: empty
+0x25d08 StoreExtendNoteDetailViewPad downloaderProceed:: empty
+0x25de8 StoreExtendNoteDetailViewPad alertView:didDismissWithButtonIndex:: empty
+0x25dec StoreExtendNoteDetailViewPad alertView:willDismissWithButtonIndex:: empty
+0x26424 StoreExtendNoteDetailViewPad setDownloadFlag:: empty
+0x38fbc RBHttpUtil URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:: empty
+0x3a4d8 neGLView SetDefaultFrameBuffer: empty
+0x3a4dc neGLView SetDefaultColorBuffer: empty
+0x3cf50 RBMusicExtendNoteView SetFlashEffectDuration:Start:End:: empty
+0x3d0b4 neWindow touchesBegan:withEvent:: empty
+0x3d0b8 neWindow touchesMoved:withEvent:: empty
+0x3d0bc neWindow touchesEnded:withEvent:: empty
+0x3d0c0 neWindow touchesCancelled:withEvent:: empty
+0x45364 StoreCampaignDetailViewPad cancelLoading: empty
+0x45f7c StoreCampaignDetailViewPad downloaderProceed:: empty
+0x4605c StoreCampaignDetailViewPad alertView:didDismissWithButtonIndex:: empty
+0x46060 StoreCampaignDetailViewPad alertView:willDismissWithButtonIndex:: empty
+0x4a340 RBTermDetailPhoneViewController alertView:didDismissWithButtonIndex:: empty
+0x4a344 RBTermDetailPhoneViewController alertView:willDismissWithButtonIndex:: empty
+0x4a348 RBTermDetailPhoneViewController alertViewCancel:: empty
+0x4d778 AppDelegate initialize: empty
+0x533b4 AppDelegate applicationSignificantTimeChange:: empty
+0x533b8 AppDelegate application:willChangeStatusBarOrientation:duration:: empty
+0x533bc AppDelegate application:didChangeStatusBarOrientation:: empty
+0x533c0 AppDelegate application:willChangeStatusBarFrame:: empty
+0x533c4 AppDelegate application:didChangeStatusBarFrame:: empty
+0x53cd4 AppDelegate application:didFailToRegisterForRemoteNotificationsWithError:: empty
+0x54548 AppDelegate applicationProtectedDataWillBecomeUnavailable:: empty
+0x5454c AppDelegate applicationProtectedDataDidBecomeAvailable:: empty
+0x56088 RBStoreManageSortViewController tableView:willDisplayCell:forRowAtIndexPath:: empty
+0x5a22c MusicDataExtend setExtendSheetWithPath:ID:: empty
+0x5a60c MusicDataExtend getZipData:: returns 0
+0x5a614 MusicDataExtend createCache: empty
+0x5a618 MusicDataExtend releaseCache: empty
+0x5a61c MusicDataExtend isArtworkCache: returns 0
+0x674d4 MusicDataFromDoc difficultyBasic: returns 0
+0x674dc MusicDataFromDoc difficultyMedium: returns 0
+0x674e4 MusicDataFromDoc difficultyHard: returns 0
+0x674ec MusicDataFromDoc difficultySpecial: returns 0
+0x674f4 MusicDataFromDoc bpm_MIN: returns 100
+0x674fc MusicDataFromDoc bpm_MAX: returns 100
+0x67504 MusicDataFromDoc musicNameHira: returns 0
+0x6750c MusicDataFromDoc musicNameRoman: returns 0
+0x67514 MusicDataFromDoc artistName: returns 0
+0x6751c MusicDataFromDoc artistNameHira: returns 0
+0x67524 MusicDataFromDoc artistNameRoman: returns 0
+0x675e4 MusicDataFromDoc musicPre: returns 0
+0x6e854 RBPurchaseManager request:didFailWithError:: empty
+0x7048c RBPurchaseManager downloaderProceed:: empty
+0x8b5b4 RBViewController clientIsGameEnd: empty
+0x94d98 RBPlaylistViewController tableView:moveRowAtIndexPath:toIndexPath:: empty
+0xaf8bc RBMenuView SetServerDateYear:Month:Day:Hour:Minute:Second:: empty
+0xb43a0 RBMenuView willLayoutSubviews:: empty
+0xb4740 RBMenuView touchesBeganFromRBCollectionView:withEvent:: empty
+0xc07f0 RBStoreExtendNoteList downloaderProceed:: empty
+0xc8e8c RBMusicDifficultyView SetFlashEffectDuration:Start:End:: empty
+0xe162c RBSearchMapView mapView:regionWillChangeAnimated:: empty
+0xe1630 RBSearchMapView mapViewWillStartLoadingMap:: empty
+0xe1634 RBSearchMapView mapViewDidFinishLoadingMap:: empty
+0xe1638 RBSearchMapView mapViewDidFailLoadingMap:withError:: empty
+0xe2614 RBSearchMapView alertView:didDismissWithButtonIndex:: empty
+0xe2618 RBSearchMapView alertView:willDismissWithButtonIndex:: empty
+0xe261c RBSearchMapView alertViewCancel:: empty
+0xeb9c0 RBSettingView touchesBegan:withEvent:: empty
+0xeb9c4 RBSettingView touchesMoved:withEvent:: empty
+0xebbbc RBSettingView touchesCancelled:withEvent:: empty
+0xefd88 StoreDetailMusicCell alertViewCancel:: empty
+0xfa868 StorePackDetailViewPad downloaderProceed:: empty
+0xfac80 StorePackDetailViewPad alertView:didDismissWithButtonIndex:: empty
+0xfac84 StorePackDetailViewPad alertView:willDismissWithButtonIndex:: empty
+0xfd35c StorePackMusicView alertViewCancel:: empty
+0x1008c8 StorePromotionView setImageViewSize:: empty
+0x102280 StorePromotionView nextShowEnd: empty
+0x103c48 StorePromotionView scrollViewDidEndDragging:willDecelerate:: empty
+0x103c4c StorePromotionView scrollViewWillBeginDecelerating:: empty
+0x114848 RBTermView alertView:didDismissWithButtonIndex:: empty
+0x11484c RBTermView alertView:willDismissWithButtonIndex:: empty
+0x114850 RBTermView alertViewCancel:: empty
+0x148268 RBErosionMarkUpdater textField:shouldChangeCharactersInRange:replacementString:: returns 0
+0x1482a0 RBErosionMarkUpdater pickerView:numberOfRowsInComponent:: returns 10
+0x15eb70 RBStoreExtendPageViewController openDetailAnimStop:finished:context:: empty
+0x1601d0 RBStoreExtendPageViewController connectionDidFinishLoading:: empty
+0x1601d4 RBStoreExtendPageViewController connection:didFailWithError:: empty
+0x165c3c RBStoreExtendPageViewController imageDownloaderDidFail:didLoad:: empty
+0x166d7c RBStoreExtendPageViewController didRotateFromInterfaceOrientation:: empty
+0x171da8 RBTermPhoneViewController alertView:didDismissWithButtonIndex:: empty
+0x171dac RBTermPhoneViewController alertView:willDismissWithButtonIndex:: empty
+0x171db0 RBTermPhoneViewController alertViewCancel:: empty
+0x177d20 StoreTableCellViewBase reset: empty
+0x17dca0 RBServerAPIManager downloaderProceed:: empty
+0x19412c RBNotificationPageView alertView:didDismissWithButtonIndex:: empty
+0x194130 RBNotificationPageView alertView:willDismissWithButtonIndex:: empty
+0x194134 RBNotificationPageView alertViewCancel:: empty
+0x19954c RBUnlockView downloaderProceed:: empty
+0x1996e8 RBUnlockView downloadManagerStartTask:: empty
+0x19abd4 RBUnlockData save: empty
+0x1a7db0 RBStoreExtendNoteDetailViewController setDownloadFlag:: empty
+0x1a8dc0 RBStoreExtendNoteDetailViewController downloaderProceed:: empty
+0x1a8dc4 RBStoreExtendNoteDetailViewController itemInfoDownload: empty
+0x1a8dc8 RBStoreExtendNoteDetailViewController alertView:clickedButtonAtIndex:: empty
+0x1a8ebc RBStoreExtendNoteDetailViewController alertView:willDismissWithButtonIndex:: empty
+0x1bd0cc RBExperienceData writeLog:: empty
+0x1c202c StoreExtendNoteCellPhone setBgColor:: empty
+0x1c6a38 RBTermAgreeView hideAnimation: empty
+0x1c946c RBTermAgreeView alertView:didDismissWithButtonIndex:: empty
+0x1c9470 RBTermAgreeView alertView:willDismissWithButtonIndex:: empty
+0x1c9474 RBTermAgreeView alertViewCancel:: empty
+0x1caf78 RBStoreGenreViewController tableView:willDisplayCell:forRowAtIndexPath:: empty
+0x1d9f4c RBStoreDetailViewController downloaderProceed:: empty
+0x1dbeb0 RBStoreDetailViewController imageDownloaderDidFail:didLoad:: empty
+0x1dbeb4 RBStoreDetailViewController alertView:clickedButtonAtIndex:: empty
+0x1dbfa8 RBStoreDetailViewController alertView:willDismissWithButtonIndex:: empty
+0x1e5888 RBStorePageViewController connectionDidFinishLoading:: empty
+0x1e588c RBStorePageViewController connection:didFailWithError:: empty
+0x1e8604 RBStorePageViewController alertViewCancel:: empty
+0x1ec5ec RBStorePageViewController imageDownloaderDidFail:didLoad:: empty
+0x1edae4 RBStorePageViewController didRotateFromInterfaceOrientation:: empty
+0x1f2a84 RBStorePackList downloaderProceed:: empty
+0x1fc74c RBCampaignViewController alertView:didDismissWithButtonIndex:: empty
+0x1fc750 RBCampaignViewController alertView:willDismissWithButtonIndex:: empty
+0x1fc754 RBCampaignViewController alertViewCancel:: empty
+0x1fe4f8 RBCampaignViewController storeClose: empty
+0x1ffdfc RBCampaignViewController imageDownloaderDidFail:didLoad:: empty
+0x20310c RecommendWebViewController removeFromSuperview: empty
+0x20bd3c RewardCore openCancelWithError:: empty
+0x20d418 ApplilinkUtilities debugLog: empty
+0x2137d0 ApplilinkViewController viewDidDisappear:: empty
+0x2184b0 RecommendAdWebView viewDidDisappear:: empty
+0x23d740 RecommendCore finishLoadWithResponse:: empty
+0x23e4dc RecommendCore appStoreCloseNoticeWithAppParam:: empty
+0x23e684 RecommendCore appStoreTransitionNoticeWithAppParam:: empty
+0x241364 RecommendAdAreaView openedNotice: empty
+0x2413a4 RecommendAdAreaView openErrorNotice: empty
+0x2413a8 RecommendAdAreaView appStoreOpenedNotice: empty
+0x2413d4 RecommendAdAreaView appStoreClosedNotice: empty
+0x2413d8 RecommendAdAreaView appStoreFailLoadNoticeWithError:: empty
+0x2413dc RecommendAdAreaView appStoreTransitionNotice: empty
