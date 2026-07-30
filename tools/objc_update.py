@@ -1098,6 +1098,14 @@ VERIFIED = {
     0x143D8C: 'RBErosionMarkUpdater -reset: three arms plus a default that does nothing',
     0x14451C: 'RBErosionMarkUpdater -needUpdateScore: three lower-bound compares, short-circuited',
     0x144820: 'RBErosionMarkUpdater -getScore: tune id 0x5f5e470 out of the shared context',
+    # Three defects fixed. The types string is B16@0:8 and the binary returns w21, 0 at 0x144be8 and
+    # 1 at 0x144c50, so it is not void. There is no NSLog anywhere in the routine: every bl is
+    # msgSend or an ARC helper, and the only selector sent to the error is userInfo (0x3bfb10). The
+    # save-failure path instead reads __got[8], which the indirect symbol table binds to
+    # _NSDetailedErrorsKey, tests the result for nil at 0x144b20 and for count at 0x144b34, and
+    # enumerates it with an empty body. The single return test at 0x144be4 is on the error, not on
+    # the result of -save:.
+    0x1448D8: 'RBErosionMarkUpdater -updateScore: BOOL return, empty detailed-error walk',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',

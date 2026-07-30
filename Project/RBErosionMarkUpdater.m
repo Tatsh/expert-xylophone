@@ -517,7 +517,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     return [ScoreData getScoreData:kErosionMarkTuneID inManagedObjectContext:context];
 }
 
-- (void)updateScore {
+- (BOOL)updateScore {
     NSManagedObjectContext *context = [RBCoreDataManager sharedInstance].managedObjectContext;
     ScoreData *score = [ScoreData getScoreData:kErosionMarkTuneID inManagedObjectContext:context];
     score.scoBas = @(self.editBasicScore);
@@ -526,11 +526,23 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     score.chksco = [ScoreData hashScore:score];
     NSError *error = nil;
     if (![context save:&error]) {
-        NSLog(@"%@", error.localizedDescription);
-        return;
+        NSArray<NSError *> *detailedErrors = error.userInfo[NSDetailedErrorsKey];
+        if (detailedErrors != nil && detailedErrors.count != 0) {
+            for (NSError *detailedError in detailedErrors) {
+                // The loop body really is empty: between 0x144b84 and 0x144ba4 the binary runs only
+                // the enumeration mutation guard, and never reads the object buffer it filled.
+                (void)detailedError;
+            }
+        }
+    }
+    // The test at 0x144be4 is on the error rather than on the result of -save:, and both the
+    // success branch and the save-failure fall-through reach it.
+    if (error != nil) {
+        return NO;
     }
     [RBUserSettingData sharedInstance].updatedErosionMark = YES;
     [[RBUserSettingData sharedInstance] save];
+    return YES;
 }
 
 - (NSString *)scoreValidate {
@@ -560,7 +572,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)updatePerform {
-    [self updateScore];
+    (void)[self updateScore]; // Yes, the binary discards this call's result.
     [self remove];
     g_sharedUpdater = nil;
 }

@@ -163,9 +163,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Write the edited scores into the tune's score record, refresh its tamper hash, persist
  * the context, and mark the erosion mark as updated.
+ * @return @c YES when the save left no error behind, @c NO otherwise. The only caller discards it.
  * @ghidraAddress 0x1448d8
  */
-- (void)updateScore;
+- (BOOL)updateScore;
 
 /**
  * @brief Validate the edited scores against the stored bounds.
