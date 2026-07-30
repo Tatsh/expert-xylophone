@@ -67,3 +67,21 @@ therefore shows the screen again on every launch, and there is no way past it.
 All three themed title scenes gate the screen on `-needUpdateTerms`, so the patch reports no
 outstanding terms and the screen is skipped everywhere, first install included. The screen and its
 whole agree flow are left intact for an unpatched build.
+
+### The first-info overlay's close button
+
+**File:** `Project/Views/Music/RBMusicFirstInfoView.m` — `-selectExit`
+
+`-SetupView` (0xc93e4) registers the close button's action as `@selector(selectExit)` on both device
+idioms, at 0xc9558 and 0xc97b4. No class in the binary implements that method: the only data
+reference to the `selectExit` string at 0x31fbd4 is its own selector reference at 0x3c2be8, and no
+method list names it. `RBMusicFirstInfoView` itself declares five methods, `-initWithFrame:`,
+`-SetupView`, `-tap:`, `-showAnimation` and `-hideAnimation`, and none of them is the action.
+
+So tapping the close button raises an unrecognised selector in the shipped app too. In practice the
+overlay is dismissed by the tap recogniser that `-SetupView` also installs, which covers the whole
+view and calls `-hideAnimation`, so a player who taps anywhere but the button never sees it.
+
+The patch implements `-selectExit` as `-hideAnimation`, making the button dismiss the overlay like
+any other tap. An unpatched build omits the method entirely and keeps the original's behaviour,
+including the throw.

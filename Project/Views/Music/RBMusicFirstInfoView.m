@@ -179,6 +179,17 @@ static const NSTimeInterval kShowFadeDelay = 0.75;
     [self hideAnimation];
 }
 
+// The close button's action is @selector(selectExit), which no class in the binary implements: the
+// only data reference to the selector string is its own reference slot, and no method list names
+// it. Tapping the close button therefore throws in the original too, and the overlay is dismissed
+// in practice by the tap recogniser above, which covers the whole view. The patched build supplies
+// the method so the button dismisses as well.
+#ifdef ENABLE_PATCHES
+- (void)selectExit {
+    [self hideAnimation];
+}
+#endif
+
 - (void)showAnimation {
     if (m_IsAnimation) {
         return;
