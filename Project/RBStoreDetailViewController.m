@@ -43,6 +43,8 @@ static NSString *const kLevelFormat = @"LEVEL:  %d / %d / %d";
 
 // The empty copyright placeholder shown when a pack carries no copyright notice.
 static NSString *const kEmptyCopyright = @"";
+// The navigation-bar title set in -init. @ghidraAddress 0x36afc0
+static NSString *const kNavigationTitle = @"info";
 
 // The terms-and-precautions label shown in the trailing terms row, a fixed Japanese literal
 // embedded in the binary and decoded from its UTF-16 data.
@@ -113,7 +115,7 @@ static const int kNoExtendNotePid = -1;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.navigationItem.title = kEmptyCopyright;
+        self.navigationItem.title = kNavigationTitle;
     }
     return self;
 }

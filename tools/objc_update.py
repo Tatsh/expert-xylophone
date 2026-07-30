@@ -610,6 +610,9 @@ VERIFIED = {
     0x1e96b4: 'RBStorePageViewController -tableView:cellForRowAtIndexPath:: fully read '
               'across two passes, nine defects; the sample-label width comes from the '
               'category getter, not from frame.size.width',
+    0x1d7964: 'RBStoreDetailViewController -init: the navigation title is "info", not the '
+              'empty-copyright constant that had been reused for it; that constant keeps its '
+              'name and its own correct use on the copyright cell',
     0x1d9028: 'RBStoreDetailViewController -setPurchaseState:: guarded on the header '
               'view, and the argument is inverted before setEnabled:',
     0x1d9408: 'RBStoreDetailViewController -setButtonTextBuy: one argument slot for one specifier',
