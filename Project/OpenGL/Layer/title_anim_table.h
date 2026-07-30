@@ -254,6 +254,22 @@ constexpr float g_aTitleAnim04Scale[] = {
     12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f, 13850.0f, 2.5f,
 };
 
+// The ten title letters' positions (window 5). The loop reads these directly, with no swing or
+// anchor selection, so the letters do not follow the logo swing. Ten pairs, ending exactly where
+// g_aTitleAnim05Alpha begins. @ghidraAddress 0x2f9fb8
+constexpr float g_aTitleLetterPos[][2] = {
+    {97.0f, 468.0f},  // 0x2f9fb8
+    {157.0f, 468.0f}, // 0x2f9fc0
+    {210.0f, 468.0f}, // 0x2f9fc8
+    {267.0f, 468.0f}, // 0x2f9fd0
+    {318.0f, 468.0f}, // 0x2f9fd8
+    {390.0f, 467.0f}, // 0x2f9fe0
+    {495.0f, 468.0f}, // 0x2f9fe8
+    {553.0f, 468.0f}, // 0x2f9ff0
+    {620.0f, 468.0f}, // 0x2f9ff8
+    {674.0f, 467.0f}, // 0x2fa000
+};
+
 // Window 5 (>0xa6 main) alpha 10x2 / scale 10x0x1d. @ghidraAddress 0x2fa008
 constexpr float g_aTitleAnim05Alpha[] = {
     516.6666870117188f, 0.0f, 1200.0f, 1.0f, 466.6666564941406f, 0.0f, 1150.0f, 1.0f,

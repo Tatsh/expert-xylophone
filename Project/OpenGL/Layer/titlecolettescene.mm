@@ -1004,6 +1004,24 @@ void TitleColetteScene::EmitAnimatedPart(unsigned int nPartId,
                    S_VECTOR3{kFullColor, kFullColor, kFullColor});
 }
 
+void TitleColetteScene::EmitTablePositionedPart(unsigned int nPartId,
+                                                const S_VECTOR2 &position,
+                                                const float *pScaleTable,
+                                                int nScaleKnots,
+                                                const float *pAlphaTable,
+                                                int nAlphaKnots) {
+    const float flTime = static_cast<float>(m_nIdleTimer);
+    const float flScale = CalculateCurveInterpolation(pScaleTable, nScaleKnots, flTime);
+    const int nAlpha = static_cast<int>(
+        CalculateCurveInterpolation(pAlphaTable, nAlphaKnots, flTime) * kFullColor);
+    EmitPartSprite(nPartId,
+                   static_cast<unsigned int>(nAlpha),
+                   position,
+                   S_VECTOR2{flScale, flScale},
+                   0.0f,
+                   S_VECTOR3{kFullColor, kFullColor, kFullColor});
+}
+
 /** @ghidraAddress 0x5872c */
 void TitleColetteScene::RenderSprites() {
     const int nClock = m_nIdleTimer;
@@ -1053,8 +1071,15 @@ void TitleColetteScene::RenderSprites() {
     // the first. These ten are the logo's letters.
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 10; ++i) {
-            EmitAnimatedPart(
-                0x41 + i, i, &g_aTitleAnim05Scale[i * 0x3a], 0x1d, &g_aTitleAnim05Alpha[i * 4], 2);
+            // The positions come from the letters' own table, read at 0x58bac and 0x58bb0 from the
+            // pointer set up at 0x58b84. This loop has no swing-phase test and no anchor selection,
+            // unlike the standard windows, so the letters keep these positions throughout.
+            EmitTablePositionedPart(0x41 + static_cast<unsigned int>(i),
+                                    S_VECTOR2{g_aTitleLetterPos[i][0], g_aTitleLetterPos[i][1]},
+                                    &g_aTitleAnim05Scale[i * 0x3a],
+                                    0x1d,
+                                    &g_aTitleAnim05Alpha[i * 4],
+                                    2);
         }
     }
 
@@ -1086,17 +1111,46 @@ void TitleColetteScene::RenderSprites() {
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 6; ++i) {
             // Seven-row tables read from row one, as in window 6: the pre-header advances both
-            // pointers a row before the loop (0x58cf0 and 0x58cf4). This window also takes its
-            // positions from window 6's table rather than the anchor ring, which the shared emit
-            // helper below cannot express; that part is still outstanding.
+            // pointers a row before the loop (0x58cf0 and 0x58cf4). This window shares window 6's
+            // position table too — both compute the same base at 0x58c4c and 0x58d00 — and likewise
+            // performs no swing selection.
             const int nRow = i + 1;
-            EmitAnimatedPart(0x57 + i,
-                             i,
-                             &g_aTitleAnim07Scale[nRow * 0x2a],
-                             0x15,
-                             &g_aTitleAnim07Alpha[nRow * 4],
-                             2);
+            EmitTablePositionedPart(
+                0x57 + static_cast<unsigned int>(i),
+                S_VECTOR2{g_aTitleAnim06Pos[nRow][0], g_aTitleAnim06Pos[nRow][1]},
+                &g_aTitleAnim07Scale[nRow * 0x2a],
+                0x15,
+                &g_aTitleAnim07Alpha[nRow * 4],
+                2);
         }
+    }
+
+    // Window 8 and the attract hint are the two arms of one split, at 0x58d90: past the intro the
+    // four idle extras animate their own position, and in attract mode the single hint sprite
+    // replaces them. Each extra interpolates its x, its y and its alpha from a three-knot curve and
+    // its scale from a two-knot one, so unlike the standard windows it consults no position table.
+    if (m_nIdleTimer > 0xa6 && !m_bAttractMode) {
+        for (int i = 0; i < 4; ++i) {
+            const float flTime = static_cast<float>(m_nIdleTimer);
+            const float flPosX = CalculateCurveInterpolation(&g_aTitleAnim08A[i * 6], 3, flTime);
+            const float flPosY = CalculateCurveInterpolation(&g_aTitleAnim08B[i * 6], 3, flTime);
+            const int nAlpha = static_cast<int>(
+                CalculateCurveInterpolation(&g_aTitleAnim08C[i * 6], 3, flTime) * kFullColor);
+            const float flScale = CalculateCurveInterpolation(&g_aTitleAnim08D[i * 4], 2, flTime);
+            EmitPartSprite(0x4b + static_cast<unsigned int>(i),
+                           static_cast<unsigned int>(nAlpha),
+                           S_VECTOR2{flPosX, flPosY},
+                           S_VECTOR2{flScale, flScale},
+                           0.0f,
+                           S_VECTOR3{kFullColor, kFullColor, kFullColor});
+        }
+    } else if (m_bAttractMode) {
+        EmitPartSprite(kPartAttractHint,
+                       0xff,
+                       S_VECTOR2{g_aTitleHintPos[0], g_aTitleHintPos[1]},
+                       S_VECTOR2{kOne, kOne},
+                       0.0f,
+                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
     }
 
     // Window 9 through 12: further standard windows over their own timer ranges.
@@ -1144,16 +1198,6 @@ void TitleColetteScene::RenderSprites() {
                            flRotation,
                            S_VECTOR3{kFullColor, kFullColor, kFullColor});
         }
-    }
-
-    // The standalone attract hint sprite, shown only in attract mode.
-    if (m_bAttractMode) {
-        EmitPartSprite(kPartAttractHint,
-                       0xff,
-                       S_VECTOR2{g_aTitleHintPos[0], g_aTitleHintPos[1]},
-                       S_VECTOR2{kOne, kOne},
-                       0.0f,
-                       S_VECTOR3{kFullColor, kFullColor, kFullColor});
     }
 
     // The standalone logo sprite (window 14), always drawn, with a two-knot alpha curve.

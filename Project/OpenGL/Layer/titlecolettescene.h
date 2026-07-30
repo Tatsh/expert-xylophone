@@ -183,6 +183,26 @@ private:
                           int nAlphaKnots);
 
     /**
+     * @brief Emits one animated part sprite at an explicit position.
+     *
+     * The same shape as @c EmitAnimatedPart, except the position is given rather than taken from
+     * the swing or anchor tables. Windows 5 and 7 read their positions from their own tables and
+     * consult neither, so neither performs the swing selection.
+     * @param nPartId The part index to emit.
+     * @param position The part's position.
+     * @param pScaleTable The uniform-scale keyframe table.
+     * @param nScaleKnots The scale table's knot count.
+     * @param pAlphaTable The alpha keyframe table.
+     * @param nAlphaKnots The alpha table's knot count.
+     */
+    void EmitTablePositionedPart(unsigned int nPartId,
+                                 const S_VECTOR2 &position,
+                                 const float *pScaleTable,
+                                 int nScaleKnots,
+                                 const float *pAlphaTable,
+                                 int nAlphaKnots);
+
+    /**
      * @brief Emits one title part's sprite into its instancer slot and records its hit-box rect.
      *
      * Appends one quad to part @p nPartId's sprite instancer (doing nothing once the instancer is
