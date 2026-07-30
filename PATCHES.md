@@ -85,3 +85,21 @@ cell is laid out with no size and the song grid renders empty.
 The patch answers with the attributes `-prepareLayout` already prepared for that index, which is
 exactly what `-layoutAttributesForElementsInRect:` hands back for the same item, so the two routes
 agree. An unpatched build returns the frameless object and keeps the original's behaviour.
+
+### The query-string builder's non-string values
+
+**File:** `Project/RBHttpUtil.m` — `+dictionaryToQueryData:` (0x36754)
+
+The binary hands each dictionary value straight to `CFURLCreateStringByAddingPercentEscapes`,
+which requires a `CFStringRef`. Several callers put `NSNumber`s in that dictionary:
+`+[RBServerAPIManager unlockedAPIWithType:identity:point:]` boxes all three of its arguments, at
+0x17d52c, 0x17d554 and 0x17d580, and the escape then sends `-length` to a `__NSCFNumber`.
+
+The shipped app has the same defect. It is reached on a modern build because CoreFoundation now
+forwards the unrecognised selector and raises, where the CoreFoundation this was built against did
+not. The result is an abort the moment an item is unlocked for points, which also strands the
+tutorial: its unlock-item step cannot be completed if completing it terminates the process.
+
+The patch converts a non-string value with `-description` before escaping. String values take the
+same path they always did, so an unpatched build is unaffected and a patched one differs only
+where the binary would have crashed.

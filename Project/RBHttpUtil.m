@@ -86,10 +86,25 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
                     NULL,
                     escapeSet,
                     kCFStringEncodingUTF8);
+            id escapeValue = value;
+#ifdef ENABLE_PATCHES
+            // The binary hands the dictionary's value straight to
+            // CFURLCreateStringByAddingPercentEscapes, which requires a CFStringRef. Several
+            // callers put NSNumbers in that dictionary -- +[RBServerAPIManager
+            // unlockedAPIWithType:identity:point:] boxes all three of its arguments at 0x17d52c,
+            // 0x17d554 and 0x17d580 -- so the escape is handed a __NSCFNumber and sends it
+            // -length. That aborts the process, and it takes the customise unlock with it, which
+            // is the step the tutorial cannot get past. The shipped app has the same defect; it
+            // is reached on this build because the modern CoreFoundation forwards rather than
+            // tolerating it. Stringify first, which changes nothing for the string values.
+            if (![escapeValue isKindOfClass:NSString.class]) {
+                escapeValue = [escapeValue description];
+            }
+#endif
             NSString *escapedValue =
                 (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(
                     kCFAllocatorDefault,
-                    (__bridge CFStringRef)value,
+                    (__bridge CFStringRef)escapeValue,
                     NULL,
                     escapeSet,
                     kCFStringEncodingUTF8);
