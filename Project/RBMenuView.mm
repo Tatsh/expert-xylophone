@@ -629,6 +629,16 @@ static BOOL g_bRandamIntSeeded = NO;
                    self.rankButton.frame.origin.y,
                    self.rankButton.frame.size.width,
                    self.rankButton.frame.size.height);
+        // The tutorial passes the tap through and SelectSettingButton never fires, so the touch
+        // dies inside the container. setupView sizes the inner button to a 92-wide bounds and
+        // relies on the 0x12 mask to stretch it when this frame widens it to 215; if it did not
+        // stretch, everything right of x + 92 is container, which is both the dead zone and the
+        // grey. This is the inner button's width after the resize.
+        neDebugLog("  settingInner=(%.0f,%.0f %.0fx%.0f)",
+                   self.settingButton.button.frame.origin.x,
+                   self.settingButton.button.frame.origin.y,
+                   self.settingButton.button.frame.size.width,
+                   self.settingButton.button.frame.size.height);
         // A container whose frame leaves its parent is not hit-tested there, so these frames decide
         // whether a tap can land at all. RBMenuButton's enabled is write-only, as in the binary,
         // so it cannot be printed here.
