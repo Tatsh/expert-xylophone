@@ -116,12 +116,17 @@ enum {
     } else {
         background = [UIImage imageWithName:backgroundName];
     }
+    // Both horizontal caps come from the WIDTH. The binary sends -size twice and takes d0, the
+    // width, from each (0x9dc94 and 0x9dca4), so the left inset at 0x9dcb4 and the right at 0x9dcbc
+    // are the same expression. Taking the right one from the height makes the two caps exceed the
+    // image whenever it is taller than it is wide, which leaves an invalid resizable image that
+    // draws as a flat block rather than a stretched button face.
     background = [background
         resizableImageWithCapInsets:UIEdgeInsetsMake(
                                         0.0,
                                         background.size.width * 0.5 - kMenuButtonCapInsetMargin,
                                         0.0,
-                                        background.size.height * 0.5 - kMenuButtonCapInsetMargin)];
+                                        background.size.width * 0.5 - kMenuButtonCapInsetMargin)];
     [self.button setBackgroundImage:background forState:UIControlStateNormal];
     self.button.frame = self.bounds;
     self.button.autoresizingMask = kMenuButtonAutoresizingMask;
@@ -146,12 +151,13 @@ enum {
     }
 
     UIImage *flashBackground = [UIImage imageWithName:imageNames[kMenuButtonImageFlashBackground]];
+    // The same shape again at 0x9de70 and 0x9de7c: both caps from the width.
     flashBackground = [flashBackground
         resizableImageWithCapInsets:UIEdgeInsetsMake(0.0,
                                                      flashBackground.size.width * 0.5 -
                                                          kMenuButtonCapInsetMargin,
                                                      0.0,
-                                                     flashBackground.size.height * 0.5 -
+                                                     flashBackground.size.width * 0.5 -
                                                          kMenuButtonCapInsetMargin)];
     self.effectImageView = [[UIImageView alloc] initWithImage:flashBackground];
     self.effectImageView.hidden = YES;
