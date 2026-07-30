@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3136 verified
-(49.4%).
+Total: 6343 — 6198 reconstructed, 3143 verified
+(49.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -79,7 +79,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x79b4` |
 | `RBCampaignDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x7aac` |
 | `RBCampaignDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x7bec` |
-| `RBCampaignDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x7df4` |
+| `RBCampaignDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x7df4` |
 | `RBCampaignDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x7e04` |
 | `RBCampaignDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x7e38` |
 | `RBCampaignDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x7e88` |
@@ -309,7 +309,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResoureDownloadBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0x19c90` |
 | `RBResourceDownloadViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x19dd4` |
 | `RBResourceDownloadViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x19ddc` |
-| `RBResourceDownloadViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x19e00` |
+| `RBResourceDownloadViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x19e00` |
 | `RBResourceDownloadViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ❌ | `0x19e10` |
 | `RBResourceDownloadViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x19e1c` |
 | `RBResourceDownloadViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x19e50` |
@@ -3396,7 +3396,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x114848` |
 | `RBTermView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x11484c` |
 | `RBTermView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x114850` |
-| `RBTermView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x114854` |
+| `RBTermView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x114854` |
 | `RBTermView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x114864` |
 | `RBTermView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x11486c` |
 | `RBTermView` | `-` | `dealloc` |  | ❌ | ✅ | `0x114874` |
@@ -4238,7 +4238,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x19412c` |
 | `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x194130` |
 | `RBNotificationPageView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x194134` |
-| `RBNotificationPageView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x194138` |
+| `RBNotificationPageView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x194138` |
 | `RBNotificationPageView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x194148` |
 | `RBNotificationPageView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x194150` |
 | `RBNotificationPageView` | `-` | `dealloc` |  | ❌ | ✅ | `0x194158` |
@@ -4540,7 +4540,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1a8ec0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1a8fb8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1a90f8` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1a9300` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1a9300` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1a9310` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x1a9344` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1a9394` |
@@ -4834,7 +4834,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c946c` |
 | `RBTermAgreeView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c9470` |
 | `RBTermAgreeView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1c9474` |
-| `RBTermAgreeView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1c9478` |
+| `RBTermAgreeView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1c9478` |
 | `RBTermAgreeView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x1c9488` |
 | `RBTermAgreeView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x1c9490` |
 | `RBTermAgreeView` | `-` | `dealloc` |  | ❌ | ✅ | `0x1c9498` |
@@ -5089,7 +5089,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1dbfac` |
 | `RBStoreDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1dc0a4` |
 | `RBStoreDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1dc1e4` |
-| `RBStoreDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1dc3ec` |
+| `RBStoreDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1dc3ec` |
 | `RBStoreDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1dc3fc` |
 | `RBStoreDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x1dc430` |
 | `RBStoreDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1dc480` |

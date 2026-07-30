@@ -60,6 +60,15 @@ VERIFIED = {
     0x9d9fc: 'RBMenuButton -initWithType:: super init then setupView:',
     0x5df3c: 'ScoreData -getFrameBonusType: the three-way csel and the 2-collapses-to-1 return',
     0x5d3bc: 'ScoreData +hashScore:: send order, the 1000.0 scale at 0x2f8540, the 16-byte digest',
+    # The seven -shouldAutorotateToInterfaceOrientation: bodies that are one unsigned range test,
+    # `sub x8,x2,#1; cmp x8,#2; cset w0,cc`, accepting only the two portrait orientations.
+    0x7df4: 'RBCampaignDetailViewController -shouldAutorotateToInterfaceOrientation:',
+    0x19e00: 'RBResourceDownloadViewController -shouldAutorotateToInterfaceOrientation:',
+    0x114854: 'RBTermView -shouldAutorotateToInterfaceOrientation:',
+    0x194138: 'RBNotificationPageView -shouldAutorotateToInterfaceOrientation:',
+    0x1a9300: 'RBStoreExtendNoteDetailViewController -shouldAutorotateToInterfaceOrientation:',
+    0x1c9478: 'RBTermAgreeView -shouldAutorotateToInterfaceOrientation:',
+    0x1dc3ec: 'RBStoreDetailViewController -shouldAutorotateToInterfaceOrientation:',
 }
 
 

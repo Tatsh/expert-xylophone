@@ -390,7 +390,11 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
-    return (NSInteger)(orientation - kFirstSupportedOrientation) < kSupportedOrientationCount;
+    // The range test is unsigned: the binary sets the result with `cset w0,cc` at 0x1a9308, and cc
+    // is carry-clear, an unsigned lower-than. Signed, the unknown orientation subtracts to -1 and
+    // compares less than two, so it would report YES where the binary reports NO.
+    return (NSUInteger)(orientation - kFirstSupportedOrientation) <
+           (NSUInteger)kSupportedOrientationCount;
 }
 
 #pragma mark - Content
