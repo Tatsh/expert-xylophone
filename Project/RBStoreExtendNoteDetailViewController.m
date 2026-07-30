@@ -22,6 +22,7 @@
 #import "StoreImageView.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
+#import "UIView+RB.h"
 #import "engineglobals.h"
 
 // The shared translucent-panel white value defined in another store screen; declared here rather
@@ -38,8 +39,8 @@ static NSString *const kDetailNavigationTitle = @"info";
 // The difficulty-level label format.
 static NSString *const kLevelLabelFormat = @"LEVEL %d";
 
-// The terms-of-service link label text.
-static NSString *const kTermsLinkText = @"Terms of Use";
+// The terms-of-service link label text, a literal in the binary rather than a localised global.
+static NSString *const kTermsLinkText = @"規約等および各種注意事項";
 
 // Sample-image asset names.
 static NSString *const kArtworkPlaceholderImageName = @"09_store/store_jacket_80";
@@ -66,36 +67,42 @@ static const NSInteger kFirstSupportedOrientation = 1;
 static const NSInteger kSupportedOrientationCount = 2;
 
 // Layout metrics (points), recovered from the __const double loads referenced by the disassembly.
-static const CGFloat kArtworkOrigin = 8.0;             // Artwork frame origin (x and y).
-static const CGFloat kArtworkSide = 80.0;              // Artwork square side.
-static const CGFloat kItemViewHeight = 140.0;          // Upper card height.
-static const CGFloat kLabelBlockRightInset = -104.0;   // Right-hand inset of the label block.
-static const CGFloat kMusicLabelWidthBase = 96.0;      // Base width used for the music-name label.
-static const CGFloat kLabelBlockOriginX = 96.0;        // X origin of the label block.
-static const CGFloat kLabelRowStep = 50.0;             // Vertical step between label rows.
-static const CGFloat kDetailWidthInset = -20.0;        // Detail-card content inset.
-static const CGFloat kDescriptionInsetX = 10.0;        // Description text-view left inset.
-static const CGFloat kSectionTopInset = 104.0;         // Content top offset for the detail card.
-static const CGFloat kArtworkBorderWidth = 1.0;        // Artwork layer border width.
-static const CGFloat kArtworkShadowOffset = 2.0;       // Artwork layer shadow offset (x and y).
-static const CGFloat kArtworkShadowOpacity = 0.15;     // Artwork layer shadow opacity.
-static const CGFloat kArtworkShadowRadius = 2.0;       // Artwork layer shadow radius.
-static const CGFloat kMusicLabelFontSize = 18.0;       // Music-name label bold font size.
-static const CGFloat kArtistLabelFontSize = 12.0;      // Artist-name label font size.
-static const CGFloat kLevelLabelFontSize = 12.0;       // Difficulty-level label bold font size.
-static const CGFloat kButtonFontSize = 10.0;           // Action-button title font size.
-static const CGFloat kDescriptionFontSize = 12.0;      // Description text-view font size.
-static const CGFloat kBannerCornerRadius = 8.0;        // Banner layer corner radius.
-static const CGFloat kButtonCornerRadius = 4.0;        // Action-button corner radius.
-static const CGFloat kSampleViewAlpha = 0.4;           // Sample dimming overlay alpha.
-static const CGFloat kBorderWhite = 143.0 / 255.0;     // Detail-card border white.
-static const CGFloat kLineViewWhite = 0.71;            // Divider-line white.
-static const CGFloat kTermsTextWhite = 0.478431372549; // Terms-link label white.
-static const CGFloat kDividerHeight = 30.0;            // Divider strip height.
-static const CGFloat kSeparatorTop = 5.0;              // Vertical padding above wrapped rows.
-static const CGFloat kTermsLinkFontSize = 10.0;        // Terms-link label font size.
-static const CGFloat kBannerHeight = 25.0;             // Banner view height.
-static const CGFloat kDescriptionTopInset = 34.0;      // Description/label left inset.
+static const CGFloat kArtworkOrigin = 8.0;           // Artwork frame origin (x and y).
+static const CGFloat kArtworkSide = 80.0;            // @ghidraAddress 0x2ec6c8
+static const CGFloat kItemViewHeight = 140.0;        // @ghidraAddress 0x2ec6c0
+static const CGFloat kLabelBlockRightInset = -104.0; // @ghidraAddress 0x2ec6d0
+static const CGFloat kLabelBlockOriginX = 96.0;      // @ghidraAddress 0x2ec6d8
+static const CGFloat kMusicLabelHeight = 50.0;       // @ghidraAddress 0x2ec6e0
+static const CGFloat kArtistLabelOriginY = 50.0;     // Same slot as the music-label height.
+static const CGFloat kLabelRowHeight = 20.0;         // Artist and level label heights.
+static const CGFloat kLevelLabelWidthInset = -230.0; // @ghidraAddress 0x2ec6e8
+static const CGFloat kLevelLabelOriginY = 70.0;      // @ghidraAddress 0x2ec6f0
+static const CGFloat kButtonOriginXInset = -8.0;     // Added to the label block's right inset.
+static const CGFloat kButtonOriginY = 100.0;         // @ghidraAddress 0x2ec6f8
+static const CGFloat kButtonWidth = 104.0;           // @ghidraAddress 0x2ec700
+static const CGFloat kDetailWidthInset = -20.0;      // Detail-card content inset.
+static const CGFloat kDetailHeightInset = -140.0;    // @ghidraAddress 0x2ec728
+static const CGFloat kDescriptionInsetX = 10.0;      // Description text-view left inset.
+static const CGFloat kDescriptionHeightInset = -30.0; // Divider strip removed from the card.
+static const CGFloat kArtworkBorderWidth = 1.0;       // Artwork layer border width.
+static const CGFloat kArtworkShadowOffset = 2.0;      // Artwork layer shadow offset (x and y).
+static const CGFloat kArtworkShadowOpacity = 0.15f;   // @ghidraAddress 0x2ec6b8 (a float slot).
+static const CGFloat kArtworkShadowRadius = 2.0;      // Artwork layer shadow radius.
+static const CGFloat kMusicLabelFontSize = 18.0;      // Music-name label bold font size.
+static const CGFloat kArtistLabelFontSize = 12.0;     // Artist-name label font size.
+static const CGFloat kLevelLabelFontSize = 12.0;      // Difficulty-level label bold font size.
+static const CGFloat kButtonFontSize = 10.0;          // Action-button title font size.
+static const CGFloat kDescriptionFontSize = 12.0;     // Description text-view font size.
+static const CGFloat kBannerCornerRadius = 8.0;       // Banner layer corner radius.
+static const CGFloat kButtonCornerRadius = 4.0;       // Action-button corner radius.
+static const CGFloat kSampleViewAlpha = 0.4f;         // @ghidraAddress 0x2ec720
+static const CGFloat kBorderWhite = 143.0 / 255.0;    // @ghidraAddress 0x2ec730
+static const CGFloat kLineViewWhite = 0.71f;          // @ghidraAddress 0x3becc0
+static const CGFloat kTermsTextWhite = 122.0 / 255.0; // @ghidraAddress 0x3becc8
+static const CGFloat kDividerHeight = 30.0;           // Divider strip height.
+static const CGFloat kSeparatorTop = 5.0;             // Vertical padding above wrapped rows.
+static const CGFloat kTermsLinkFontSize = 10.0;       // Terms-link label font size.
+static const CGFloat kButtonHeight = 25.0;            // Action-button height.
 
 // The maximum number of font-shrink iterations tried while fitting the music-name label.
 static const int kMusicLabelFitAttempts = 9;
@@ -103,6 +110,8 @@ static const int kMusicLabelFitAttempts = 9;
 // The autoresizing masks the binary assigns, named by their flag combinations.
 static const UIViewAutoresizing kMaskFlexibleWidthHeight = 0x12;    // W|H centred.
 static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bottom.
+static const UIViewAutoresizing kMaskFlexibleWidth = 0x2;           // W only.
+static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left margin only.
 
 @interface RBStoreExtendNoteDetailViewController () <UIAlertViewDelegate> {
     // The sample overlay state machine (see SampleStatus).
@@ -166,49 +175,49 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     [self.itemView addSubview:self.artworkView];
 }
 
-// Builds the music-name, artist-name, and difficulty-level labels stacked below the artwork.
+// Builds the music-name, artist-name, and difficulty-level labels stacked beside the artwork.
 - (void)buildItemLabels {
-    const CGFloat labelWidth = self.view.bounds.size.width + kLabelBlockRightInset;
+    const CGFloat viewWidth = self.view.bounds.size.width;
 
     self.labelMusicName = [[UILabel alloc]
-        initWithFrame:CGRectMake(
-                          kLabelBlockOriginX, kArtworkOrigin, labelWidth, kMusicLabelWidthBase)];
+        initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                 kArtworkOrigin,
+                                 viewWidth + kLabelBlockRightInset,
+                                 kMusicLabelHeight)];
     [self.labelMusicName setNumberOfLines:2];
     [self.labelMusicName setLineBreakMode:NSLineBreakByWordWrapping];
     [self.labelMusicName setFont:[UIFont boldSystemFontOfSize:kMusicLabelFontSize]];
     [self.labelMusicName setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.itemView addSubview:self.labelMusicName];
 
-    const CGFloat artistY = kArtworkOrigin + kMusicLabelWidthBase + kLabelRowStep;
     self.labelArtistName = [[UILabel alloc]
-        initWithFrame:CGRectMake(
-                          kLabelBlockOriginX, artistY, labelWidth, kLevelLabelFontSize * 2.0)];
+        initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                 kArtistLabelOriginY,
+                                 viewWidth + kLabelBlockRightInset,
+                                 kLabelRowHeight)];
     [self.labelArtistName setFont:[UIFont systemFontOfSize:kArtistLabelFontSize]];
     [self.labelArtistName setAdjustsFontSizeToFitWidth:YES];
     [self.labelArtistName setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.itemView addSubview:self.labelArtistName];
 
-    const CGFloat levelY = artistY + kLevelLabelFontSize * 2.0;
+    // The level label is inset much further from the right edge than the two above it.
     self.labelLevel = [[UILabel alloc]
-        initWithFrame:CGRectMake(
-                          kLabelBlockOriginX, levelY, labelWidth, kLevelLabelFontSize * 2.0)];
+        initWithFrame:CGRectMake(kLabelBlockOriginX,
+                                 kLevelLabelOriginY,
+                                 viewWidth + kLevelLabelWidthInset,
+                                 kLabelRowHeight)];
     [self.labelLevel setFont:[UIFont boldSystemFontOfSize:kLevelLabelFontSize]];
     [self.labelLevel setAdjustsFontSizeToFitWidth:YES];
     [self.labelLevel setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.itemView addSubview:self.labelLevel];
 }
 
-// Builds the purchase / download action button beneath the labels. Its frame is provisional; it is
-// re-laid out by -updateLayout once the label sizes are known.
+// Builds the purchase / download action button, right-aligned in the upper card.
 - (void)buildActionButton {
-    const CGFloat levelBottom =
-        kArtworkOrigin + kMusicLabelWidthBase + kLabelRowStep + kLevelLabelFontSize * 2.0;
-    const CGFloat buttonOriginX = levelBottom - kArtworkOrigin + kLabelRowStep;
-    self.downloadBtn =
-        [[StoreButtonView alloc] initWithFrame:CGRectMake(buttonOriginX,
-                                                          g_dCustomizeLayoutMetric100,
-                                                          kSectionTopInset,
-                                                          kBannerHeight)];
+    const CGFloat buttonOriginX =
+        self.view.bounds.size.width + kButtonOriginXInset + kLabelBlockRightInset;
+    self.downloadBtn = [[StoreButtonView alloc]
+        initWithFrame:CGRectMake(buttonOriginX, kButtonOriginY, kButtonWidth, kButtonHeight)];
     [self.downloadBtn setDisabledColor:[UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                          alpha:1.0]];
     [self.downloadBtn.layer setCornerRadius:kButtonCornerRadius];
@@ -219,22 +228,30 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     [self.downloadBtn addTarget:self
                          action:@selector(selectButton)
                forControlEvents:UIControlEventTouchUpInside];
-    [self.downloadBtn setAutoresizingMask:UIViewAutoresizingFlexibleRightMargin];
+    [self.downloadBtn setAutoresizingMask:kMaskFlexibleLeftMargin];
     [self.itemView addSubview:self.downloadBtn];
 }
 
 // Builds the sample overlay glyphs (dimming view, spinner, and playing icon) over the artwork.
 - (void)buildSampleOverlay {
-    self.sampleView = [[UIView alloc] initWithFrame:self.artworkView.frame];
+    // The overlay takes the artwork's size but sits at the artwork's own origin, not its frame.
+    self.sampleView = [[UIView alloc] initWithFrame:CGRectMake(0.0,
+                                                               0.0,
+                                                               self.artworkView.frame.size.width,
+                                                               self.artworkView.frame.size.height)];
     [self.sampleView setOpaque:YES];
     [self.sampleView setAlpha:0.0];
     [self.sampleView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:kSampleViewAlpha]];
 
-    const CGFloat centreX = (CGFloat)(float)(self.artworkView.frame.size.width * 0.5);
-    const CGFloat centreY = (CGFloat)(float)(self.artworkView.frame.size.height * 0.5);
+    // Both halves are rounded through float before being widened back, so the centre lands on a
+    // single-precision value.
+    const CGFloat centreX = (CGFloat)(float)(self.sampleView.frame.size.width * 0.5);
+    const CGFloat centreY = (CGFloat)(float)(self.sampleView.frame.size.height * 0.5);
 
-    self.indicatorSample = [[UIActivityIndicatorView alloc] initWithFrame:self.sampleView.frame];
-    [self.indicatorSample setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
+    // The spinner is framed at the overlay's half size, then centred on that same point.
+    self.indicatorSample =
+        [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0.0, 0.0, centreX, centreY)];
+    [self.indicatorSample setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [self.indicatorSample setHidesWhenStopped:YES];
     [self.indicatorSample setCenter:CGPointMake(centreX, centreY)];
     [self.sampleView addSubview:self.indicatorSample];
@@ -254,15 +271,16 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 // Builds the lower detail card: the banner image, the description text view, the divider strip,
 // and the terms-of-service link label.
 - (CGFloat)buildDetailCardBelow:(CGFloat)contentBottom {
+    const CGFloat viewWidth = self.view.bounds.size.width;
     self.detailView = [[UIView alloc]
-        initWithFrame:CGRectMake(0.0, kItemViewHeight, self.view.bounds.size.width, contentBottom)];
+        initWithFrame:CGRectMake(0.0, kItemViewHeight, viewWidth, contentBottom)];
     [self.detailView setOpaque:YES];
     [self.detailView setBackgroundColor:[UIColor colorWithRed:g_dTranslucentAlpha
                                                         green:g_dTranslucentAlpha
                                                          blue:g_dTranslucentAlpha
                                                         alpha:1.0]];
     [self.detailView.layer setBorderColor:[UIColor colorWithWhite:kBorderWhite alpha:1.0].CGColor];
-    [self.detailView setAutoresizingMask:kMaskFlexibleWidthHeight];
+    [self.detailView setAutoresizingMask:kMaskFlexibleWidth];
 
     self.bannerView = [[StoreImageView alloc] initWithFrame:CGRectZero];
     [self.bannerView.layer setShouldRasterize:YES];
@@ -270,11 +288,13 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     [self.bannerView setClipsToBounds:YES];
     [self.detailView addSubview:self.bannerView];
 
-    const CGFloat descriptionHeight = contentBottom - kDividerHeight;
+    // The description sits one inset below the (still empty) banner and stops short of the
+    // divider strip.
+    const CGFloat descriptionHeight = contentBottom + kDescriptionHeightInset;
     self.descriptionTextView = [[UITextView alloc]
-        initWithFrame:CGRectMake(kDescriptionTopInset,
-                                 kDescriptionInsetX,
-                                 self.view.bounds.size.width + kDetailWidthInset,
+        initWithFrame:CGRectMake(kDescriptionInsetX,
+                                 self.bannerView.frame.size.height + kDescriptionInsetX,
+                                 viewWidth + kDetailWidthInset,
                                  descriptionHeight)];
     [self.bannerView setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.descriptionTextView setBackgroundColor:UIColor.clearColor];
@@ -284,17 +304,17 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     [self.descriptionTextView setAutoresizingMask:kMaskFlexibleWidthTopBottom];
     [self.detailView addSubview:self.descriptionTextView];
 
+    // The divider strip and its label take their widths from UIView(RB) -width, which reads the
+    // frame rather than the bounds.
     UIView *lineView = [[UIView alloc]
-        initWithFrame:CGRectMake(
-                          0.0, descriptionHeight, self.view.bounds.size.width, kBannerHeight)];
+        initWithFrame:CGRectMake(0.0, descriptionHeight, self.view.width, kDividerHeight)];
     [lineView setBackgroundColor:[UIColor colorWithWhite:kLineViewWhite alpha:1.0]];
     [self.detailView addSubview:lineView];
 
-    UILabel *termsLabel =
-        [[UILabel alloc] initWithFrame:CGRectMake(kDescriptionTopInset,
-                                                  0.0,
-                                                  lineView.frame.size.width + kDetailWidthInset,
-                                                  kBannerHeight)];
+    UILabel *termsLabel = [[UILabel alloc] initWithFrame:CGRectMake(kDescriptionInsetX,
+                                                                    0.0,
+                                                                    lineView.width + kDetailWidthInset,
+                                                                    kDividerHeight)];
     [termsLabel setFont:[UIFont systemFontOfSize:kTermsLinkFontSize]];
     [termsLabel setTextColor:[UIColor colorWithRed:0.0 green:kTermsTextWhite blue:1.0 alpha:1.0]];
     [termsLabel setTextAlignment:NSTextAlignmentLeft];
@@ -333,7 +353,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 
     self.itemView = [[UIView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, kItemViewHeight)];
-    [self.itemView setAutoresizingMask:kMaskFlexibleWidthHeight];
+    [self.itemView setAutoresizingMask:kMaskFlexibleWidth];
 
     UIImageView *itemBackground = [[UIImageView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, self.view.bounds.size.width, kItemViewHeight)];
@@ -350,7 +370,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     self.iconNew = [[UIImageView alloc] initWithImage:[UIImage imageWithName:kNewBadgeImageName]];
     [self.itemView addSubview:self.iconNew];
 
-    const CGFloat detailHeight = self.view.bounds.size.height + kSectionTopInset;
+    const CGFloat detailHeight = self.view.bounds.size.height + kDetailHeightInset;
     [self buildDetailCardBelow:detailHeight];
     [self.mainView addSubview:self.detailView];
 
@@ -366,8 +386,8 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 
 - (void)viewWillDisappear:(BOOL)animated {
     _closingFlag = YES;
-    if (self.packinfoDownloadAlertView != nil) {
-        [self.packinfoDownloadAlertView dismissWithClickedButtonIndex:0 animated:NO];
+    if (_packinfoDownloadAlertView != nil) {
+        [_packinfoDownloadAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }
     [super viewWillDisappear:animated];
     [self sampleStop];
@@ -463,59 +483,77 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
     }
 
     NSString *musicName = self.labelMusicName.text;
-    const CGFloat availableWidth =
-        self.view.bounds.size.width + kLabelBlockRightInset + kMusicLabelWidthBase;
+    const CGFloat availableWidth = self.view.bounds.size.width + kLabelBlockRightInset;
 
-    // Shrink the music-name font until the text fits two rows, up to nine attempts.
+    // Shrink the music-name font until the text fits the label block's width and its two-row
+    // height, up to nine attempts. The constraint height is unbounded; only the fit test caps it.
     UIFont *fittedFont = nil;
     int attempt = 0;
     do {
         fittedFont = [UIFont boldSystemFontOfSize:(CGFloat)(kMusicLabelFontSize - (float)attempt)];
         CGSize fitted = [musicName sizeWithFont:fittedFont
-                              constrainedToSize:CGSizeMake(availableWidth, kMusicLabelWidthBase)
+                              constrainedToSize:CGSizeMake(availableWidth, MAXFLOAT)
                                   lineBreakMode:NSLineBreakByWordWrapping];
         ++attempt;
-        if (fitted.width <= availableWidth && fitted.height <= kMusicLabelWidthBase) {
+        if (fitted.width <= availableWidth && fitted.height <= kMusicLabelHeight) {
             break;
         }
     } while (attempt < kMusicLabelFitAttempts);
     [self.labelMusicName setFont:fittedFont];
 
-    const CGFloat labelWidth = self.view.bounds.size.width + kLabelBlockRightInset;
-    CGRect musicFrame = self.labelMusicName.frame;
-    musicFrame.size.width = labelWidth;
-    [self.labelMusicName setFrame:musicFrame];
+    const CGRect musicFrame = self.labelMusicName.frame;
+    [self.labelMusicName setFrame:CGRectMake(musicFrame.origin.x,
+                                             musicFrame.origin.y,
+                                             availableWidth,
+                                             kMusicLabelHeight)];
     [self.labelMusicName sizeToFit];
+
+    // Snapshot the frames the two wrapped views had before -sizeToFit rewrites them.
+    const CGRect bannerFrame = self.bannerView.frame;
+    const CGFloat descriptionOriginX = self.descriptionTextView.frame.origin.x;
+    const CGRect termsFrameBefore = self.termLinkView.frame;
 
     [self.descriptionTextView sizeToFit];
     [self.termLinkView sizeToFit];
 
-    // Stack the description text view below the music labels, then the terms link below it, and
-    // finally grow the detail card and scroll content to fit.
-    const CGFloat descriptionTop =
-        self.labelMusicName.frame.size.height + kMusicLabelWidthBase + kSeparatorTop;
-    CGRect descriptionFrame = self.descriptionTextView.frame;
-    descriptionFrame.origin.y = descriptionTop;
-    descriptionFrame.size.width = self.view.bounds.size.width + kDetailWidthInset;
-    [self.descriptionTextView setFrame:descriptionFrame];
+    const CGFloat viewWidth = self.view.bounds.size.width;
+    const CGFloat descriptionHeight = CGRectGetHeight(self.descriptionTextView.frame);
+    const CGFloat descriptionTop = bannerFrame.origin.y + bannerFrame.size.height + kSeparatorTop;
+    [self.descriptionTextView setFrame:CGRectMake(descriptionOriginX,
+                                                  descriptionTop,
+                                                  viewWidth + kDetailWidthInset,
+                                                  descriptionHeight)];
 
-    const CGFloat descriptionBottom =
-        descriptionTop + CGRectGetHeight(descriptionFrame) + kSeparatorTop;
     const CGFloat termsHeight = CGRectGetHeight(self.termLinkView.frame);
-    CGRect termsFrame = self.termLinkView.frame;
-    termsFrame.origin.y = descriptionBottom;
-    termsFrame.size.width = self.view.bounds.size.width;
-    termsFrame.size.height = termsHeight;
-    [self.termLinkView setFrame:termsFrame];
+    const CGFloat descriptionBottom = descriptionTop + descriptionHeight + kSeparatorTop;
+    const CGFloat cardHeight = self.view.bounds.size.height + kDetailHeightInset;
 
-    CGRect detailFrame = self.detailView.frame;
-    detailFrame.size.height = descriptionBottom + termsHeight + kSectionTopInset;
-    [self.detailView setFrame:detailFrame];
+    // When the description is short enough the terms strip is pinned to the bottom of a
+    // fixed-height card; otherwise it trails the description and the card grows to suit.
+    CGFloat termsOriginY;
+    CGFloat detailHeight;
+    if (descriptionBottom + termsHeight < cardHeight) {
+        termsOriginY = cardHeight - termsHeight;
+        detailHeight = cardHeight;
+    } else {
+        termsOriginY = descriptionBottom;
+        detailHeight = descriptionBottom + termsHeight;
+    }
+    [self.termLinkView setFrame:CGRectMake(termsFrameBefore.origin.x,
+                                           termsOriginY,
+                                           termsFrameBefore.size.width,
+                                           termsHeight)];
 
-    [self.mainView setContentSize:CGSizeMake(self.view.bounds.size.width,
-                                             CGRectGetMaxY(self.detailView.frame) +
-                                                 CGRectGetMaxY(self.detailView.frame))];
-    [self.iconNew setHidden:self.info.isNew ? NO : YES];
+    const CGRect detailFrame = self.detailView.frame;
+    [self.detailView setFrame:CGRectMake(detailFrame.origin.x,
+                                         detailFrame.origin.y,
+                                         viewWidth,
+                                         detailHeight)];
+
+    [self.mainView setContentSize:CGSizeMake(self.mainView.frame.size.width,
+                                             CGRectGetHeight(self.itemView.frame) +
+                                                 CGRectGetHeight(self.detailView.frame))];
+    [self.iconNew setHidden:!self.info.isNew];
 }
 
 #pragma mark - Action button
@@ -554,7 +592,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 #pragma mark - Selection
 
 - (void)selectButton {
-    if (_samplePlayedIndex != kNoSamplePlayedIndex) {
+    if (self.samplePlayedIndex != kNoSamplePlayedIndex) {
         [self sampleStop];
     }
     [self.delegate performSelector:@selector(selectButton:) withObject:@(self.info.pid)];
@@ -578,13 +616,13 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
 }
 
 - (void)sampleStop {
-    if (_samplePlayedIndex != kNoSamplePlayedIndex) {
+    if (self.samplePlayedIndex != kNoSamplePlayedIndex) {
         if ([[RBBGMManager getInstance] isPushMusic]) {
             [[RBBGMManager getInstance] StopMusic:g_flFlashMinOpacity];
             [[RBBGMManager getInstance] popMusic];
         }
         [self sampleViewStop];
-        _samplePlayedIndex = kNoSamplePlayedIndex;
+        self.samplePlayedIndex = kNoSamplePlayedIndex;
     }
     sampleStatus = SampleStatusIdle;
 }
@@ -654,7 +692,7 @@ static const UIViewAutoresizing kMaskFlexibleWidthTopBottom = 0x22; // W|Top|Bot
             [[RBBGMManager getInstance] LoadMusicWithPush:data Loop:YES];
             [[RBBGMManager getInstance] PlayMusic:0.0];
             [self sampleViewPlaying];
-            _samplePlayedIndex = 1;
+            self.samplePlayedIndex = 1;
         }
         self.sampleDownloader = nil;
     }

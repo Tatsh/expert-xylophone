@@ -93,6 +93,76 @@ VERIFIED = {
     0xd88b0: 'RBPopoverBackgroundView -isArrowBetweenTopAndBottomEdgesOfPopover: top first',
     0xd88f8: 'RBPopoverBackgroundView -isArrowAtTopEdgeOfPopover: fsub against top at +0x10',
     0xd8930: 'RBPopoverBackgroundView -isArrowAtBottomEdgeOfPopover: fadd against bottom at +0x18',
+    # RBStoreExtendNoteDetailViewController, read against the disassembly one routine at a time.
+    0x1a76bc: 'RBStoreExtendNoteDetailViewController -initWithExtendNoteInfo:: the title is set '
+              'twice when the note has a name',
+    0x1a78c0: 'RBStoreExtendNoteDetailViewController -loadView: bare super call',
+    0x1a78f4: 'RBStoreExtendNoteDetailViewController -setExtendNoteInfo:: the nil arm blanks the '
+              'three labels and drops the placeholder jacket in',
+    0x1a7db4: 'RBStoreExtendNoteDetailViewController -setPurchaseState:: the argument is unused; '
+              'the colour and title come from the info',
+    0x1a7f2c: 'RBStoreExtendNoteDetailViewController -hasItem:itemID:: a non-zero hasItem short-'
+              'circuits to NO at 0x1a7f40',
+    0x1a8040: 'RBStoreExtendNoteDetailViewController -showItemInfo: the artwork download only '
+              'starts when nothing is loaded',
+    0x1a8224: 'RBStoreExtendNoteDetailViewController -loadInfo: nil-guarded tail call',
+    0x1a8278: 'RBStoreExtendNoteDetailViewController -sampleStart: PlayMusic takes the float 0.5 '
+              'at 0x1a834c',
+    0x1a83d4: 'RBStoreExtendNoteDetailViewController -sampleStop: g_flFlashMinOpacity from '
+              '0x2ec6b4, index reset through the setter',
+    0x1a8508: 'RBStoreExtendNoteDetailViewController -selectButton: the played index is read '
+              'through its accessor, then selectButton: is performed on the delegate',
+    0x1a8628: 'RBStoreExtendNoteDetailViewController -sampleViewStop: alpha 0, status 0',
+    0x1a8700: 'RBStoreExtendNoteDetailViewController -sampleViewDownloading: alpha 1, status 1',
+    0x1a87e4: 'RBStoreExtendNoteDetailViewController -sampleViewPlaying: alpha 1, status 2',
+    0x1a88c0: 'RBStoreExtendNoteDetailViewController -handleTapArtworkView: the playing and '
+              'downloading arms really are identical (0x1a8a48 joins them)',
+    0x1a8b38: 'RBStoreExtendNoteDetailViewController -finishBgm:: tail call to sampleStop',
+    0x1a8b54: 'RBStoreExtendNoteDetailViewController -downloaderFinished:: identity check on the '
+              'downloader, PlayMusic 0.0, index 1',
+    0x1a8d08: 'RBStoreExtendNoteDetailViewController -downloaderError:: stop, drop, network alert',
+    0x1a8dcc: 'RBStoreExtendNoteDetailViewController -alertView:didDismissWithButtonIndex:: acts '
+              'only while the closing flag is clear (cbnz at 0x1a8df0)',
+    0x1a8ec0: 'RBStoreExtendNoteDetailViewController -alertViewCancel:: the mirrored polarity, '
+              'acting only while the flag is set',
+    0x1a8fb8: 'RBStoreExtendNoteDetailViewController -didPresentAlertView:: the presented root view',
+    0x1a90f8: 'RBStoreExtendNoteDetailViewController -stopDownloadArtworks: cancel then detach, '
+              'in that order',
+    0x1a9310: 'RBStoreExtendNoteDetailViewController -didReceiveMemoryWarning: bare super call',
+    0x1a9344: 'RBStoreExtendNoteDetailViewController -viewDidUnload: super, then the artwork '
+              'downloads stop',
+    0x1a9394: 'RBStoreExtendNoteDetailViewController -dealloc: sample cancelled, artworks stopped',
+    # Eleven defects fixed. The item view and detail card flex in width only (masks 0x2 at
+    # 0x1a9834 and 0x1aad74) and the button in its left margin (0x1aa4d4); the music label is 50
+    # tall (0x2ec6e0) and the artist and level rows 20, at y = 50 and y = 70 with the level inset
+    # -230 (0x2ec6e8); the button sits at width - 112 by 100 (0x2ec6f8); the card is the view
+    # height less 140 (0x2ec728); the description starts at x = 10 under the banner; the divider
+    # and its label are 30 tall and take UIView(RB) -width; the sample overlay is at the origin
+    # and its spinner is a half-sized WhiteLarge indicator; the terms text is a Japanese literal.
+    0x1a9458: 'RBStoreExtendNoteDetailViewController -viewWillAppear:: the whole hierarchy, every '
+              'constant decoded from the pool',
+    0x1ab7fc: 'RBStoreExtendNoteDetailViewController -viewDidAppear:: nil-guarded loadInfo',
+    0x1ab870: 'RBStoreExtendNoteDetailViewController -viewWillDisappear:: the alert is dismissed '
+              'before super, and the delegate read at 0x1ab9d4 is discarded',
+    # Six defects fixed: the constraint height is MAXFLOAT (0x2ec748) and the fit cap 50, the
+    # description top is the banner's maxY, the terms strip has two arms around the card height,
+    # and the content size is itemView.height + detailView.height.
+    0x1aba24: 'RBStoreExtendNoteDetailViewController -updateLayout: the nine-attempt font shrink '
+              'and both card-height arms (fcmp at 0x1abed4)',
+    0x1ac3ec: 'RBStoreExtendNoteDetailViewController -viewDidDisappear:: bare super call',
+    0x1ac420: 'RBStoreExtendNoteDetailViewController -willAnimateRotationToInterfaceOrientation:'
+              'duration:: super, then updateLayout',
+    0x1ac470: 'RBStoreExtendNoteDetailViewController -setButtonTextBuy: g_pLocalizedBuyFormat over '
+              'the boxed price, enabled',
+    0x1ac5fc: 'RBStoreExtendNoteDetailViewController -setButtonTextInstall: normal state, enabled',
+    0x1ac6ac: 'RBStoreExtendNoteDetailViewController -setButtonTextInstalling: disabled state '
+              '(w3 = 2), disabled',
+    0x1ac75c: 'RBStoreExtendNoteDetailViewController -setButtonTextInstalled: the same shape with '
+              'the installed global',
+    0x1ac80c: 'RBStoreExtendNoteDetailViewController -selfCheckButtonText: the unsigned compare at '
+              '0x1ac99c disables the error state too',
+    0x1aca50: 'RBStoreExtendNoteDetailViewController -showTerm: store term controller, pushed '
+              'animated',
     # MusicData. Each comparator's selector reference was resolved on its own rather than
     # extrapolated from the first, and all five are distinct.
     0x60044: 'MusicData -dealloc: clears artworkCache, then the ARC-emitted super call',

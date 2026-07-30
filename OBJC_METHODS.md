@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4268 verified
-(67.3%).
+Total: 6343 — 6203 reconstructed, 4304 verified
+(67.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4514,48 +4514,48 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicOtherView` | `-` | `setPastelBarRect:` | prop | ✅ | ✅ | `0x1a7674` |
 | `RBMusicOtherView` | `-` | `pastelSelectedImage` | prop | ✅ | ✅ | `0x1a768c` |
 | `RBMusicOtherView` | `-` | `setPastelSelectedImage:` | prop | ✅ | ✅ | `0x1a769c` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `initWithExtendNoteInfo:` |  | ✅ | ❌ | `0x1a76bc` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1a78c0` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setExtendNoteInfo:` |  | ✅ | ❌ | `0x1a78f4` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `initWithExtendNoteInfo:` |  | ✅ | ✅ | `0x1a76bc` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1a78c0` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setExtendNoteInfo:` |  | ✅ | ✅ | `0x1a78f4` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x1a7db0` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ❌ | `0x1a7db4` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x1a7f2c` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `showItemInfo` |  | ✅ | ❌ | `0x1a8040` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `loadInfo` |  | ✅ | ❌ | `0x1a8224` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `sampleStart` |  | ✅ | ❌ | `0x1a8278` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `sampleStop` |  | ✅ | ❌ | `0x1a83d4` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `selectButton` |  | ✅ | ❌ | `0x1a8508` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewStop` |  | ✅ | ❌ | `0x1a8628` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewDownloading` |  | ✅ | ❌ | `0x1a8700` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewPlaying` |  | ✅ | ❌ | `0x1a87e4` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `handleTapArtworkView` |  | ✅ | ❌ | `0x1a88c0` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x1a8b38` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1a8b54` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1a8d08` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setPurchaseState:` |  | ✅ | ✅ | `0x1a7db4` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x1a7f2c` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `showItemInfo` |  | ✅ | ✅ | `0x1a8040` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `loadInfo` |  | ✅ | ✅ | `0x1a8224` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `sampleStart` |  | ✅ | ✅ | `0x1a8278` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `sampleStop` |  | ✅ | ✅ | `0x1a83d4` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `selectButton` |  | ✅ | ✅ | `0x1a8508` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewStop` |  | ✅ | ✅ | `0x1a8628` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewDownloading` |  | ✅ | ✅ | `0x1a8700` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `sampleViewPlaying` |  | ✅ | ✅ | `0x1a87e4` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `handleTapArtworkView` |  | ✅ | ✅ | `0x1a88c0` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x1a8b38` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ✅ | `0x1a8b54` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x1a8d08` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1a8dc0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ✅ | `0x1a8dc4` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1a8dc8` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ❌ | `0x1a8dcc` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1a8dcc` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1a8ebc` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x1a8ec0` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1a8fb8` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1a90f8` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1a8ec0` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x1a8fb8` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x1a90f8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1a9300` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1a9310` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x1a9344` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1a9394` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1a9458` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ab7fc` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ab870` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `updateLayout` |  | ✅ | ❌ | `0x1aba24` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x1ac3ec` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ac420` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextBuy` |  | ✅ | ❌ | `0x1ac470` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstall` |  | ✅ | ❌ | `0x1ac5fc` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstalling` |  | ✅ | ❌ | `0x1ac6ac` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstalled` |  | ✅ | ❌ | `0x1ac75c` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `selfCheckButtonText` |  | ✅ | ❌ | `0x1ac80c` |
-| `RBStoreExtendNoteDetailViewController` | `-` | `showTerm` |  | ✅ | ❌ | `0x1aca50` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1a9310` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x1a9344` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x1a9394` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1a9458` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1ab7fc` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x1ab870` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `updateLayout` |  | ✅ | ✅ | `0x1aba24` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1ac3ec` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x1ac420` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextBuy` |  | ✅ | ✅ | `0x1ac470` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstall` |  | ✅ | ✅ | `0x1ac5fc` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstalling` |  | ✅ | ✅ | `0x1ac6ac` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `setButtonTextInstalled` |  | ✅ | ✅ | `0x1ac75c` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `selfCheckButtonText` |  | ✅ | ✅ | `0x1ac80c` |
+| `RBStoreExtendNoteDetailViewController` | `-` | `showTerm` |  | ✅ | ✅ | `0x1aca50` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `info` | prop | ✅ | ✅ | `0x1acb04` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setInfo:` | prop | ✅ | ✅ | `0x1acb14` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `delegate` | prop | ✅ | ✅ | `0x1acb4c` |
