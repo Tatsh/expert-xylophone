@@ -284,8 +284,8 @@ nonnull
 noparam
 notelist
 nsascii
-nscferror
 nscf
+nscferror
 nsec
 nshttp
 nshttpurl
