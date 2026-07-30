@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3194 verified
-(50.4%).
+Total: 6343 — 6198 reconstructed, 3252 verified
+(51.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -769,7 +769,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `+` | `sharedManager` |  | ✅ | ❌ | `0x3d0c4` |
 | `AudioManager` | `-` | `init` |  | ✅ | ❌ | `0x3d154` |
 | `AudioManager` | `-` | `systemStart` |  | ✅ | ❌ | `0x3d3ec` |
-| `AudioManager` | `-` | `systemStartBlock` |  | ✅ | ❌ | `0x3d4b4` |
+| `AudioManager` | `-` | `systemStartBlock` |  | ✅ | ✅ | `0x3d4b4` |
 | `AudioManager` | `-` | `systemTerminate` |  | ✅ | ❌ | `0x3d4c4` |
 | `AudioManager` | `-` | `onStartPlayer:` |  | ✅ | ❌ | `0x3d50c` |
 | `AudioManager` | `-` | `initBgm:` |  | ✅ | ❌ | `0x3d560` |
@@ -783,7 +783,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `-` | `releaseSe:resourceId:` |  | ✅ | ❌ | `0x3e1a4` |
 | `AudioManager` | `-` | `releaseSeAll` |  | ✅ | ❌ | `0x3e580` |
 | `AudioManager` | `-` | `releaseBgm` |  | ✅ | ❌ | `0x3e868` |
-| `AudioManager` | `-` | `releaseVoice` |  | ✅ | ❌ | `0x3e8d4` |
+| `AudioManager` | `-` | `releaseVoice` |  | ✅ | ✅ | `0x3e8d4` |
 | `AudioManager` | `-` | `prepare:resourceId:volume:` |  | ✅ | ❌ | `0x3e8e4` |
 | `AudioManager` | `-` | `prepareSetGroup:resourceId:groupId:` |  | ✅ | ❌ | `0x3eab0` |
 | `AudioManager` | `-` | `playSe:resourceId:` |  | ✅ | ❌ | `0x3ec00` |
@@ -948,7 +948,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `indicatorSample` | prop | ✅ | ✅ | `0x47a7c` |
 | `StoreCampaignDetailViewPad` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0x47a8c` |
 | `RBTermDetailPhoneViewController` | `-` | `initWithID:title:` |  | ✅ | ❌ | `0x48508` |
-| `RBTermDetailPhoneViewController` | `-` | `setViewTypeStore` |  | ✅ | ❌ | `0x4888c` |
+| `RBTermDetailPhoneViewController` | `-` | `setViewTypeStore` |  | ✅ | ✅ | `0x4888c` |
 | `RBTermDetailPhoneViewController` | `-` | `dealloc` |  | ❌ | ✅ | `0x4889c` |
 | `RBTermDetailPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x488d0` |
 | `RBTermDetailPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x490c8` |
@@ -1348,7 +1348,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `artistNameImageBrown2xHard` | prop | ✅ | ❌ | `0x656ec` |
 | `MusicData` | `-` | `setColor:withColor:` |  | ✅ | ❌ | `0x657e4` |
 | `MusicData` | `-` | `createCache` |  | ✅ | ❌ | `0x65964` |
-| `MusicData` | `-` | `releaseChache` |  | ✅ | ❌ | `0x65b3c` |
+| `MusicData` | `-` | `releaseChache` |  | ✅ | ✅ | `0x65b3c` |
 | `MusicData` | `-` | `compare:` |  | ✅ | ❌ | `0x65b4c` |
 | `MusicData` | `-` | `compareMusicID:` |  | ✅ | ❌ | `0x65c5c` |
 | `MusicData` | `-` | `compareMusicNameCustom:` |  | ✅ | ❌ | `0x65ce0` |
@@ -1561,12 +1561,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `getPurchasedMusicDictionaris` |  | ✅ | ✅ | `0x6b7c4` |
 | `RBMusicManager` | `-` | `addPurchasedMusic:` |  | ✅ | ❌ | `0x6b7d0` |
 | `RBMusicManager` | `-` | `createMusicDataArray` |  | ✅ | ❌ | `0x6c18c` |
-| `RBMusicManager` | `-` | `setMusicDataArrayDirty` |  | ✅ | ❌ | `0x6c6a8` |
+| `RBMusicManager` | `-` | `setMusicDataArrayDirty` |  | ✅ | ✅ | `0x6c6a8` |
 | `RBMusicManager` | `-` | `getMusicDataArray` |  | ✅ | ❌ | `0x6c6b8` |
 | `RBMusicManager` | `-` | `getMusicData:` |  | ✅ | ❌ | `0x6c754` |
 | `RBMusicManager` | `-` | `releaseChacheMusicData` |  | ✅ | ❌ | `0x6c8b4` |
 | `RBMusicManager` | `-` | `getMusicIDs` |  | ✅ | ❌ | `0x6c9e4` |
-| `RBMusicManager` | `-` | `releaseClientMusic` |  | ✅ | ❌ | `0x6cc80` |
+| `RBMusicManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x6cc80` |
 | `RBMusicManager` | `-` | `setClientMusicPageNum:` | prop | ✅ | ❌ | `0x6cc90` |
 | `RBMusicManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x6cd2c` |
 | `RBMusicManager` | `-` | `getClientCompareMusics` |  | ✅ | ❌ | `0x6cdf8` |
@@ -1731,15 +1731,15 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ImageDownloader` | `-` | `setProceedBlock:` | prop | ✅ | ❌ | `0x85720` |
 | `ImageDownloader` | `-` | `failureBlock` | prop | ✅ | ✅ | `0x8572c` |
 | `ImageDownloader` | `-` | `setFailureBlock:` | prop | ✅ | ❌ | `0x8573c` |
-| `StoreUtil` | `+` | `packListURL:limit:genre:` |  | ✅ | ❌ | `0x85944` |
-| `StoreUtil` | `+` | `packInfoURL:UserOpen:` |  | ✅ | ❌ | `0x85958` |
-| `StoreUtil` | `+` | `musicInfoURL:` |  | ✅ | ❌ | `0x8596c` |
-| `StoreUtil` | `+` | `receiptV3URL` |  | ✅ | ❌ | `0x85980` |
-| `StoreUtil` | `+` | `campaignListURL` |  | ✅ | ❌ | `0x85994` |
-| `StoreUtil` | `+` | `campaignSerialCheckURL` |  | ✅ | ❌ | `0x859a8` |
-| `StoreUtil` | `+` | `campaignItemInfoURL` |  | ✅ | ❌ | `0x859bc` |
-| `StoreUtil` | `+` | `manageSortListURL` |  | ✅ | ❌ | `0x859d0` |
-| `StoreUtil` | `+` | `userAgeURL` |  | ✅ | ❌ | `0x859e4` |
+| `StoreUtil` | `+` | `packListURL:limit:genre:` |  | ✅ | ✅ | `0x85944` |
+| `StoreUtil` | `+` | `packInfoURL:UserOpen:` |  | ✅ | ✅ | `0x85958` |
+| `StoreUtil` | `+` | `musicInfoURL:` |  | ✅ | ✅ | `0x8596c` |
+| `StoreUtil` | `+` | `receiptV3URL` |  | ✅ | ✅ | `0x85980` |
+| `StoreUtil` | `+` | `campaignListURL` |  | ✅ | ✅ | `0x85994` |
+| `StoreUtil` | `+` | `campaignSerialCheckURL` |  | ✅ | ✅ | `0x859a8` |
+| `StoreUtil` | `+` | `campaignItemInfoURL` |  | ✅ | ✅ | `0x859bc` |
+| `StoreUtil` | `+` | `manageSortListURL` |  | ✅ | ✅ | `0x859d0` |
+| `StoreUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x859e4` |
 | `StoreUtil` | `+` | `productIDForPackID:` |  | ✅ | ❌ | `0x859f8` |
 | `StoreUtil` | `+` | `packIDForProductID:` |  | ✅ | ❌ | `0x85a4c` |
 | `StoreUtil` | `+` | `priceString:` |  | ✅ | ❌ | `0x85b4c` |
@@ -1754,8 +1754,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `createCampaignSerialCheckJSON:code:` |  | ✅ | ❌ | `0x868e4` |
 | `StoreUtil` | `+` | `createCampaignItemInfoJSON:` |  | ✅ | ❌ | `0x86a54` |
 | `StoreUtil` | `+` | `affiliateParametersFromURL:` |  | ✅ | ❌ | `0x86b9c` |
-| `StoreUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ❌ | `0x87478` |
-| `StoreUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ❌ | `0x8748c` |
+| `StoreUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ✅ | `0x87478` |
+| `StoreUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ✅ | `0x8748c` |
 | `StoreUtil` | `+` | `pidToProductID:` |  | ✅ | ❌ | `0x874a0` |
 | `StoreUtil` | `+` | `productIDToPid:` |  | ✅ | ❌ | `0x874f4` |
 | `TwitterImageCreaterScoreElement` | `-` | `dealloc` |  | ❌ | ✅ | `0x875f4` |
@@ -3164,8 +3164,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `PagingScrollView` | `-` | `hitTest:withEvent:` |  | ✅ | ❌ | `0xff494` |
 | `BannerView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xff624` |
 | `BannerView` | `-` | `setCornerRadius:` |  | ✅ | ❌ | `0xff910` |
-| `BannerView` | `-` | `startSamplePlay` |  | ✅ | ❌ | `0xff9c8` |
-| `BannerView` | `-` | `stopSamplePlay` |  | ✅ | ❌ | `0xff9d8` |
+| `BannerView` | `-` | `startSamplePlay` |  | ✅ | ✅ | `0xff9c8` |
+| `BannerView` | `-` | `stopSamplePlay` |  | ✅ | ✅ | `0xff9d8` |
 | `BannerView` | `-` | `getIsSamplePlaying` |  | ✅ | ✅ | `0xff9e8` |
 | `BannerView` | `-` | `imageView` | prop | ✅ | ✅ | `0xff9f4` |
 | `BannerView` | `-` | `setImageView:` | prop | ✅ | ✅ | `0xffa04` |
@@ -3381,7 +3381,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicSpeedView` | `-` | `sliderType` | prop | ✅ | ✅ | `0x10f1fc` |
 | `RBMusicSpeedView` | `-` | `setSliderType:` | prop | ✅ | ✅ | `0x10f20c` |
 | `RBTermView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x110064` |
-| `RBTermView` | `-` | `setViewTypeStore` |  | ✅ | ❌ | `0x11019c` |
+| `RBTermView` | `-` | `setViewTypeStore` |  | ✅ | ✅ | `0x11019c` |
 | `RBTermView` | `-` | `setupView` |  | ✅ | ❌ | `0x1101ac` |
 | `RBTermView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1116c4` |
 | `RBTermView` | `-` | `loadList` |  | ✅ | ❌ | `0x1118dc` |
@@ -3897,7 +3897,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBVolumeSlider` | `-` | `barRect` | prop | ✅ | ✅ | `0x16f334` |
 | `RBVolumeSlider` | `-` | `setBarRect:` | prop | ✅ | ✅ | `0x16f34c` |
 | `RBTermPhoneViewController` | `-` | `init` |  | ✅ | ❌ | `0x16f3a4` |
-| `RBTermPhoneViewController` | `-` | `setViewTypeStore` |  | ✅ | ❌ | `0x16f6d4` |
+| `RBTermPhoneViewController` | `-` | `setViewTypeStore` |  | ✅ | ✅ | `0x16f6d4` |
 | `RBTermPhoneViewController` | `-` | `dealloc` |  | ❌ | ✅ | `0x16f6e4` |
 | `RBTermPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x16f718` |
 | `RBTermPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x16fe00` |
@@ -4084,14 +4084,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExtendNoteManager` | `-` | `getPurchasedExtendNoteDictionaries` |  | ✅ | ✅ | `0x182960` |
 | `RBExtendNoteManager` | `-` | `addPurchasedExtendNote:` |  | ✅ | ❌ | `0x18296c` |
 | `RBExtendNoteManager` | `-` | `createExtendNoteDataArray` |  | ✅ | ❌ | `0x1834ec` |
-| `RBExtendNoteManager` | `-` | `setExtendNoteDataArrayDirty` |  | ✅ | ❌ | `0x1837e8` |
+| `RBExtendNoteManager` | `-` | `setExtendNoteDataArrayDirty` |  | ✅ | ✅ | `0x1837e8` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteDataArray` |  | ✅ | ❌ | `0x1837f8` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteData:` |  | ✅ | ❌ | `0x183894` |
 | `RBExtendNoteManager` | `-` | `releaseCacheMusicData` |  | ✅ | ❌ | `0x1839f4` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteIDs` |  | ✅ | ❌ | `0x183b24` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteIDsWithMusicID:` |  | ✅ | ❌ | `0x183cf0` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteDataWithMusicID:` |  | ✅ | ❌ | `0x183f14` |
-| `RBExtendNoteManager` | `-` | `releaseClientMusic` |  | ✅ | ❌ | `0x1840c0` |
+| `RBExtendNoteManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x1840c0` |
 | `RBExtendNoteManager` | `-` | `setClientMusicPageNum:` |  | ✅ | ❌ | `0x1840d0` |
 | `RBExtendNoteManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x18416c` |
 | `RBExtendNoteManager` | `-` | `getClientCompareExtendNotes` |  | ✅ | ❌ | `0x184238` |
@@ -5835,7 +5835,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdWebView` | `-` | `setScrollEnabled:` |  | ✅ | ❌ | `0x217ce4` |
 | `RecommendAdWebView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x217fec` |
 | `RecommendAdWebView` | `-` | `setScrollBarEnabled:` |  | ✅ | ❌ | `0x2182c4` |
-| `RecommendAdWebView` | `-` | `unloadRecommendView` |  | ✅ | ❌ | `0x2184a0` |
+| `RecommendAdWebView` | `-` | `unloadRecommendView` |  | ✅ | ✅ | `0x2184a0` |
 | `RecommendAdWebView` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2184b0` |
 | `RecommendAdWebView` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x2184b4` |
 | `RecommendAdWebView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x218508` |
@@ -5885,7 +5885,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x21d2cc` |
 | `RewardWebViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x21d2dc` |
 | `RewardWebViewController` | `-` | `loadRequestWithURL:parameters:` |  | ✅ | ❌ | `0x21d2e4` |
-| `RewardWebViewController` | `-` | `btnCloseClicked:` |  | ✅ | ❌ | `0x21d570` |
+| `RewardWebViewController` | `-` | `btnCloseClicked:` |  | ✅ | ✅ | `0x21d570` |
 | `RewardWebViewController` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x21d580` |
 | `RewardWebViewController` | `-` | `updateIndicator:` |  | ✅ | ❌ | `0x21d620` |
 | `RewardWebViewController` | `-` | `activeWebView` |  | ✅ | ❌ | `0x21d6e4` |
@@ -5965,24 +5965,24 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `DestinationCore` | `-` | `failLoadWithError:` |  | ❌ | ❌ | `0x220e4c` |
 | `DestinationCore` | `-` | `finishLoadWithResponse:` |  | ❌ | ❌ | `0x220e50` |
 | `DestinationCore` | `-` | `redirectStartLoad:` |  | ❌ | ❌ | `0x220e54` |
-| `ApplilinkDebug` | `+` | `countryCode` |  | ✅ | ❌ | `0x220e5c` |
-| `ApplilinkDebug` | `+` | `categoryId` |  | ✅ | ❌ | `0x220e74` |
-| `ApplilinkDebug` | `+` | `udid` |  | ✅ | ❌ | `0x220e8c` |
-| `ApplilinkDebug` | `+` | `ad_udid` |  | ✅ | ❌ | `0x220ea4` |
-| `ApplilinkDebug` | `+` | `old_udid` |  | ✅ | ❌ | `0x220ebc` |
-| `ApplilinkDebug` | `+` | `clearUDID` |  | ✅ | ❌ | `0x220ed4` |
-| `ApplilinkDebug` | `+` | `clearKeyChainOldUDID` |  | ✅ | ❌ | `0x220eec` |
-| `ApplilinkDebug` | `+` | `clearAdUDID` |  | ✅ | ❌ | `0x220f04` |
+| `ApplilinkDebug` | `+` | `countryCode` |  | ✅ | ✅ | `0x220e5c` |
+| `ApplilinkDebug` | `+` | `categoryId` |  | ✅ | ✅ | `0x220e74` |
+| `ApplilinkDebug` | `+` | `udid` |  | ✅ | ✅ | `0x220e8c` |
+| `ApplilinkDebug` | `+` | `ad_udid` |  | ✅ | ✅ | `0x220ea4` |
+| `ApplilinkDebug` | `+` | `old_udid` |  | ✅ | ✅ | `0x220ebc` |
+| `ApplilinkDebug` | `+` | `clearUDID` |  | ✅ | ✅ | `0x220ed4` |
+| `ApplilinkDebug` | `+` | `clearKeyChainOldUDID` |  | ✅ | ✅ | `0x220eec` |
+| `ApplilinkDebug` | `+` | `clearAdUDID` |  | ✅ | ✅ | `0x220f04` |
 | `ApplilinkDebug` | `+` | `versionDev` |  | ✅ | ❌ | `0x220f1c` |
 | `ApplilinkDebug` | `+` | `clearSession` |  | ✅ | ❌ | `0x220f68` |
 | `ApplilinkDebug` | `+` | `clearAdStatus` |  | ✅ | ❌ | `0x220ff4` |
-| `ApplilinkDebug` | `+` | `clearInitalize` |  | ✅ | ❌ | `0x221080` |
-| `ApplilinkDebug` | `+` | `clearDAU` |  | ✅ | ❌ | `0x221098` |
-| `ApplilinkDebug` | `+` | `debugMode:` |  | ✅ | ❌ | `0x2210b0` |
-| `ApplilinkDebug` | `+` | `getDebugMode` |  | ✅ | ❌ | `0x2210c8` |
-| `ApplilinkDebug` | `+` | `allClearCacheBannerImage` |  | ✅ | ❌ | `0x2210e0` |
-| `ApplilinkDebug` | `+` | `getFrequencyStatus` |  | ✅ | ❌ | `0x2210f8` |
-| `ApplilinkDebug` | `+` | `getDisplaySpec` |  | ✅ | ❌ | `0x221110` |
+| `ApplilinkDebug` | `+` | `clearInitalize` |  | ✅ | ✅ | `0x221080` |
+| `ApplilinkDebug` | `+` | `clearDAU` |  | ✅ | ✅ | `0x221098` |
+| `ApplilinkDebug` | `+` | `debugMode:` |  | ✅ | ✅ | `0x2210b0` |
+| `ApplilinkDebug` | `+` | `getDebugMode` |  | ✅ | ✅ | `0x2210c8` |
+| `ApplilinkDebug` | `+` | `allClearCacheBannerImage` |  | ✅ | ✅ | `0x2210e0` |
+| `ApplilinkDebug` | `+` | `getFrequencyStatus` |  | ✅ | ✅ | `0x2210f8` |
+| `ApplilinkDebug` | `+` | `getDisplaySpec` |  | ✅ | ✅ | `0x221110` |
 | `ApplilinkWebAPI` | `-` | `init` |  | ✅ | ❌ | `0x221128` |
 | `ApplilinkWebAPI` | `-` | `commonParameters` |  | ✅ | ❌ | `0x221184` |
 | `ApplilinkWebAPI` | `-` | `requestWithURL:method:parameters:timeout:cachePolicy:` |  | ✅ | ❌ | `0x2211dc` |
@@ -6150,7 +6150,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `getUnreadCountWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x237fe4` |
 | `RecommendCore` | `-` | `getAdDisplayStatusWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x238260` |
 | `RecommendCore` | `-` | `getAllAdStatusWithCallback:` |  | ✅ | ❌ | `0x2385d8` |
-| `RecommendCore` | `-` | `clearAllAdData` |  | ✅ | ❌ | `0x2387b8` |
+| `RecommendCore` | `-` | `clearAllAdData` |  | ✅ | ✅ | `0x2387b8` |
 | `RecommendCore` | `-` | `reloadAllAdData` |  | ✅ | ❌ | `0x2387d0` |
 | `RecommendCore` | `-` | `openAdScreenWithParentView:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x238848` |
 | `RecommendCore` | `-` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x239480` |
@@ -6221,7 +6221,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `startPath:` |  | ✅ | ❌ | `0x23ea44` |
 | `RecommendAdAreaView` | `-` | `setAdModel:adLocation:adType:requestCode:delegate:` |  | ✅ | ❌ | `0x23eb70` |
 | `RecommendAdAreaView` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0x23ed30` |
-| `RecommendAdAreaView` | `-` | `closeAdArea` |  | ✅ | ❌ | `0x23ed6c` |
+| `RecommendAdAreaView` | `-` | `closeAdArea` |  | ✅ | ✅ | `0x23ed6c` |
 | `RecommendAdAreaView` | `-` | `setScrollEnabled:` |  | ✅ | ❌ | `0x23ed7c` |
 | `RecommendAdAreaView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x23f078` |
 | `RecommendAdAreaView` | `-` | `setScrollBarEnabled:` |  | ✅ | ❌ | `0x23f350` |
@@ -6330,14 +6330,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendFullScreenController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x246fac` |
 | `RecommendFullScreenController` | `-` | `setViewSize` |  | ✅ | ❌ | `0x246fb4` |
 | `RecommendFullScreenController` | `-` | `rotateWebViewWithDuration:` |  | ✅ | ❌ | `0x247674` |
-| `RecommendFullScreenController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x247a90` |
+| `RecommendFullScreenController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x247a90` |
 | `RecommendFullScreenController` | `-` | `webViewDidStartLoad` |  | ✅ | ❌ | `0x247aa0` |
 | `RecommendFullScreenController` | `-` | `appListDidAppear` |  | ✅ | ❌ | `0x247bc0` |
-| `RecommendFullScreenController` | `-` | `appListDidDisappear` |  | ✅ | ❌ | `0x247d90` |
+| `RecommendFullScreenController` | `-` | `appListDidDisappear` |  | ✅ | ✅ | `0x247d90` |
 | `RecommendFullScreenController` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x247da0` |
 | `RecommendFullScreenController` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x247e50` |
-| `RecommendFullScreenController` | `-` | `openedNotice` |  | ✅ | ❌ | `0x247ed4` |
-| `RecommendFullScreenController` | `-` | `closeNotice` |  | ✅ | ❌ | `0x247ee4` |
+| `RecommendFullScreenController` | `-` | `openedNotice` |  | ✅ | ✅ | `0x247ed4` |
+| `RecommendFullScreenController` | `-` | `closeNotice` |  | ✅ | ✅ | `0x247ee4` |
 | `RecommendFullScreenController` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x247ef4` |
 | `RecommendFullScreenController` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x247f8c` |
 | `RecommendFullScreenController` | `-` | `closeShadeView` |  | ✅ | ❌ | `0x248010` |
@@ -6358,16 +6358,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendFullScreenController` | `-` | `applilinkFullViewDelegate` | prop | ✅ | ✅ | `0x2483a8` |
 | `RecommendFullScreenController` | `-` | `setApplilinkFullViewDelegate:` | prop | ✅ | ✅ | `0x2483c8` |
 | `ApplilinkNetwork` | `+` | `initializeWithAppliId:env:callback:` |  | ✅ | ❌ | `0x248464` |
-| `ApplilinkNetwork` | `+` | `resume` |  | ✅ | ❌ | `0x2484d8` |
-| `ApplilinkNetwork` | `+` | `setUserId:` |  | ✅ | ❌ | `0x2484f0` |
-| `ApplilinkNetwork` | `+` | `setNavigationBarCommonAppearance:` |  | ✅ | ❌ | `0x248508` |
-| `ApplilinkNetwork` | `+` | `setPriorityDeviceLanguages:` |  | ✅ | ❌ | `0x248520` |
-| `ApplilinkNetwork` | `+` | `setIndicatorColor:` |  | ✅ | ❌ | `0x248538` |
-| `ApplilinkNetwork` | `+` | `unusedInStore` |  | ✅ | ❌ | `0x248550` |
-| `ApplilinkNetwork` | `+` | `buildUnderXcode6` |  | ✅ | ❌ | `0x248568` |
-| `ApplilinkNetwork` | `+` | `appliId` |  | ✅ | ❌ | `0x248580` |
-| `ApplilinkNetwork` | `+` | `version` |  | ✅ | ❌ | `0x248598` |
-| `ApplilinkNetwork` | `+` | `versionDev` |  | ✅ | ❌ | `0x2485b0` |
-| `ApplilinkNetwork` | `+` | `isSupportediOSVersion` |  | ✅ | ❌ | `0x2485c8` |
-| `ApplilinkNetwork` | `+` | `currentUdid` |  | ✅ | ❌ | `0x2485e0` |
+| `ApplilinkNetwork` | `+` | `resume` |  | ✅ | ✅ | `0x2484d8` |
+| `ApplilinkNetwork` | `+` | `setUserId:` |  | ✅ | ✅ | `0x2484f0` |
+| `ApplilinkNetwork` | `+` | `setNavigationBarCommonAppearance:` |  | ✅ | ✅ | `0x248508` |
+| `ApplilinkNetwork` | `+` | `setPriorityDeviceLanguages:` |  | ✅ | ✅ | `0x248520` |
+| `ApplilinkNetwork` | `+` | `setIndicatorColor:` |  | ✅ | ✅ | `0x248538` |
+| `ApplilinkNetwork` | `+` | `unusedInStore` |  | ✅ | ✅ | `0x248550` |
+| `ApplilinkNetwork` | `+` | `buildUnderXcode6` |  | ✅ | ✅ | `0x248568` |
+| `ApplilinkNetwork` | `+` | `appliId` |  | ✅ | ✅ | `0x248580` |
+| `ApplilinkNetwork` | `+` | `version` |  | ✅ | ✅ | `0x248598` |
+| `ApplilinkNetwork` | `+` | `versionDev` |  | ✅ | ✅ | `0x2485b0` |
+| `ApplilinkNetwork` | `+` | `isSupportediOSVersion` |  | ✅ | ✅ | `0x2485c8` |
+| `ApplilinkNetwork` | `+` | `currentUdid` |  | ✅ | ✅ | `0x2485e0` |
 | `ApplilinkNetwork` | `+` | `rotateWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x2485f8` |

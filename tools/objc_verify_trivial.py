@@ -92,30 +92,117 @@ def _is_super_only(metadata: Metadata, stubs: dict[int, str], address: int) -> b
     return False
 
 
-def _forwarded_selector(metadata: Metadata, stubs: dict[int, str], address: int) -> str | None:
-    """
-    Recover the selector of a body that is nothing but a tail-call forward to ``self``.
+def _immediate_into(word: int, register: int) -> int | None:
+    """Decode a MOVZ or an ORR-against-zero that puts a small constant into a given register."""
+    if (word & 0x1F) != register:
+        return None
+    if (word & 0xFFE00000) in (0x52800000, 0xD2800000):
+        return (word >> 5) & 0xFFFF
+    if word in (0xAA1F03E0 | register, 0x2A1F03E0 | register):
+        return 0
+    if (word & 0x7F800000) == 0x32000000 and ((word >> 5) & 0x1F) == 31:
+        width = 64 if (word >> 31) & 1 else 32
+        return _bitmask_immediate((word >> 22) & 1, (word >> 16) & 0x3F, (word >> 10) & 0x3F, width)
+    return None
 
-    The shape is three instructions: an adrp and ldr putting a selector reference in x1, then a
-    branch to objc_msgSend. x0 is never touched, so the receiver is still self, and the
-    reconstruction should be a single send of that selector to self.
+
+def class_names(metadata: Metadata) -> dict[int, str]:
+    """Map each class object's address to its name, so a class receiver can be identified."""
+    out: dict[int, str] = {}
+    classlist = metadata.section('__objc_classlist')
+    if classlist is None:
+        return out
+    for index in range(classlist.size // 8):
+        address, = struct.unpack_from('<Q', metadata._data, classlist.offset + index * 8)
+        offset = metadata.offset_of(address)
+        if offset is None:
+            continue
+        ro, = struct.unpack_from('<Q', metadata._data, offset + 32)
+        ro_offset = metadata.offset_of(ro)
+        if ro_offset is None:
+            continue
+        out[address] = metadata.string_at(
+            struct.unpack_from('<Q', metadata._data, ro_offset + 24)[0])
+    return out
+
+
+def _forwarded_send(metadata: Metadata, stubs: dict[int, str], classes: dict[int, str],
+                    address: int) -> tuple[str, str, int | None] | None:
+    """
+    Recover a body that is nothing but a tail-call send, as receiver, selector, and argument.
+
+    These bodies set up at most a receiver in x0, a selector in x1 and one immediate argument in
+    x2, then branch to objc_msgSend. A receiver left untouched is self; one loaded from a class
+    reference is that class. Anything else means it is not a plain forward, and it is rejected.
     """
     offset = metadata.offset_of(address)
     if offset is None:
         return None
-    words = [struct.unpack_from('<I', metadata._data, offset + i * 4)[0] for i in range(3)]
-    page = _adrp(words[0], address)
-    if page is None:
+    pages: dict[int, int] = {}
+    receiver = 'self'
+    selector: str | None = None
+    argument: int | None = None
+    for index in range(8):
+        word = struct.unpack_from('<I', metadata._data, offset + index * 4)[0]
+        here = address + index * 4
+        if word == 0xD503201F:  # nop, emitted between an adrp and its load
+            continue
+        page = _adrp(word, here)
+        if page is not None:
+            pages[word & 0x1F] = page
+            continue
+        if (word & 0xFFC00000) == 0xF9400000:  # ldr xT,[xN,#imm]
+            byte_offset = ((word >> 10) & 0xFFF) * 8
+            base, target = (word >> 5) & 0x1F, word & 0x1F
+            if base not in pages or target not in (0, 1):
+                return None
+            pointer = metadata._word(pages[base] + byte_offset)
+            if target == 1:
+                selector = metadata.string_at(pointer) if pointer else None
+            elif pointer in classes:
+                receiver = classes[pointer]
+            else:
+                return None
+            continue
+        immediate = _immediate_into(word, 2)
+        if immediate is not None:
+            argument = immediate
+            continue
+        if (word & 0xFC000000) == 0x14000000:
+            if stubs.get(_branch_target(word, here)) != '_objc_msgSend' or selector is None:
+                return None
+            return (receiver, selector, argument)
         return None
-    # LDR Xt,[Xn,#imm] into x1, which is where the runtime takes the selector from.
-    if (words[1] & 0xFFC00000) != 0xF9400000 or (words[1] & 0x1F) != 1:
+    return None
+
+
+def _sent_send(body: list[str]) -> tuple[str, str, str | None] | None:
+    """
+    Recover the single send a body performs, as receiver, selector, and argument text.
+
+    Dot syntax counts, and is the common spelling here because the rules require it: `return
+    self.foo;` is a send of `foo` to self, and `self.foo = x;` is a send of `setFoo:`.
+    """
+    meaningful = _meaningful(body)
+    if len(meaningful) != 1:
         return None
-    if (words[2] & 0xFC000000) != 0x14000000:
+    line = meaningful[0]
+    getter = re.match(r'^\s*return\s+self\.(\w+)\s*;\s*$', line)
+    if getter:
+        return ('self', getter.group(1), None)
+    setter = re.match(r'^\s*self\.(\w+)\s*=\s*([^;=]+);\s*$', line)
+    if setter:
+        name = setter.group(1)
+        return ('self', f'set{name[:1].upper()}{name[1:]}:', setter.group(2).strip())
+    found = re.match(r'^\s*(?:return\s+)?\[(\w+)\s+([^\[\]]+)\]\s*;\s*$', line)
+    if not found:
         return None
-    if stubs.get(_branch_target(words[2], address + 8)) != '_objc_msgSend':
-        return None
-    pointer = metadata._word(page + ((words[1] >> 10) & 0xFFF) * 8)
-    return metadata.string_at(pointer) if pointer else None
+    receiver, inner = found.group(1), found.group(2).strip()
+    if ':' in inner:
+        selector = ''.join(f'{k}:' for k in re.findall(r'(\w+)\s*:', inner))
+        argument = inner.split(':', 1)[1].strip()
+        return (receiver, selector, argument)
+    return (receiver, inner, None) if re.fullmatch(r'\w+', inner) else None
 
 
 def _sent_selector(body: list[str]) -> str | None:
@@ -305,6 +392,7 @@ def main(argv=None) -> int:
         return 1
     metadata = Metadata(args.binary)
     stubs = AccessorCheck(metadata)._stubs
+    classes = class_names(metadata)
     bodies = source_bodies()
     passed: list[tuple[int, str]] = []
     findings: list[str] = []
@@ -324,7 +412,7 @@ def main(argv=None) -> int:
                 constant = _orr_immediate(words[0])
         super_only = (method.selector == 'dealloc'
                       and _is_super_only(metadata, stubs, method.address))
-        forwarded = _forwarded_selector(metadata, stubs, method.address)
+        forwarded = _forwarded_send(metadata, stubs, classes, method.address)
         if not empty and constant is None and not super_only and forwarded is None:
             continue
         key = (method.class_name, method.kind, method.selector)
@@ -351,17 +439,28 @@ def main(argv=None) -> int:
             passed.append((relative, f'{method.class_name} dealloc: super call only'))
             continue
         if forwarded is not None:
-            sent = _sent_selector(body)
+            sent = _sent_send(body)
             if sent is None:
-                skipped['forward, but the reconstruction is not a lone send to self'] += 1
+                skipped['forward, but the reconstruction is not a lone send'] += 1
                 continue
-            if sent != forwarded:
+            receiver, selector, argument = forwarded
+            got_receiver, got_selector, got_argument = sent
+            if (got_receiver, got_selector) != (receiver, selector):
                 findings.append(
-                    f'{path}:{line} {method.kind}[{method.class_name} {method.selector}] forwards '
-                    f'to {forwarded} at {relative:#x}, reconstruction sends {sent}')
+                    f'{path}:{line} {method.kind}[{method.class_name} {method.selector}] sends '
+                    f'{selector} to {receiver} at {relative:#x}, reconstruction sends '
+                    f'{got_selector} to {got_receiver}')
                 continue
-            passed.append((relative, f'{method.class_name} {method.selector}: forwards to '
-                                     f'{forwarded}'))
+            if argument is not None:
+                if got_argument is None or not _matches(argument, got_argument,
+                                                        file_constants(path)):
+                    findings.append(
+                        f'{path}:{line} {method.kind}[{method.class_name} {method.selector}] '
+                        f'passes {argument} at {relative:#x}, reconstruction passes '
+                        f'{got_argument}')
+                    continue
+            passed.append((relative, f'{method.class_name} {method.selector}: sends {selector} '
+                                     f'to {receiver}'))
             continue
         if empty:
             extra = _meaningful(body)
