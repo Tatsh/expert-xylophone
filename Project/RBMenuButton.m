@@ -41,7 +41,8 @@ static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
 
 // The cap-inset inset applied when stretching the background and flash images: the resizable region
 // is a single centre pixel, so the caps are half the image size less one pixel.
-static const CGFloat kMenuButtonCapInsetMargin = 1.0;
+// The fmov at 0x9dcb0 encodes -4.0 (0x4010000000000000); 1.0 would have been 0x3ff0000000000000.
+static const CGFloat kMenuButtonCapInsetMargin = 4.0; /** @ghidraAddress 0x9dcb0 */
 
 // The number of image-name slots per button type in the setup table. Only the first four are used;
 // the fifth is a shared fallback image name.
