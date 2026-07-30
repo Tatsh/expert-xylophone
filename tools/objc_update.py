@@ -152,6 +152,38 @@ VERIFIED = {
     0x1ba76c: 'RBExperienceData -unlockWithThemaID:: themaItems',
     0x1ba8c0: 'RBExperienceData -unlockWithType:ID:: the jump table at 0x1ba954 gives 0-4, 7 and '
               '10, with 5, 6, 8 and 9 falling to the b.hi #0xa default that returns NO',
+    # RBUserSettingData, all twenty-three read. Twelve defects, of which ten were one invented
+    # selector shared across the reset family.
+    0x1f4214: 'RBUserSettingData -init: super, then setDefault under a nil guard',
+    0x1f4288: 'RBUserSettingData -setDefault: the three customise dictionaries in key order, and '
+              'the 0.9 effect size at 0x2ef17c rather than its 96.0 neighbour',
+    0x1f5038: 'RBUserSettingData -initWithCoder:: the version re-read decides the default arm, and '
+              'totalPurchase precedes purchaseLimitType, the reverse of encode',
+    0x1f6214: 'RBUserSettingData -encodeWithCoder:: all fifty-three encodes, including the two '
+              'orderings inverted relative to the decoder',
+    0x1f6ba0: 'RBUserSettingData -resetBgmType: writes its key directly',
+    0x1f6cac: 'RBUserSettingData -resetShotType: writes its key directly',
+    0x1f6db8: 'RBUserSettingData -resetExplosionType: writes its key directly',
+    0x1f6ec4: 'RBUserSettingData -resetFrameType: writes its key directly',
+    0x1f6fd0: 'RBUserSettingData -resetBackgroundType: writes its key directly',
+    0x1f70dc: 'RBUserSettingData -resetNoteType: writes its key directly',
+    0x1f71e8: 'RBUserSettingData -resetGaugeStyle: writes its key directly',
+    0x1f736c: 'RBUserSettingData -resetShotVolume: writes its key directly',
+    0x1f7480: 'RBUserSettingData -resetBackgroundBrightness: writes its key directly',
+    0x1f72f4: 'RBUserSettingData -resetGhostStyle:: the guard compares a ghost-style value, not a '
+              'theme; right number, wrong domain before',
+    0x1f7cb4: 'RBUserSettingData +sharedInstance: a plain nil test, re-checked after the unarchive',
+    0x1f7ee8: 'RBUserSettingData -save: the defaults are fetched twice, as the source has it',
+    0x1f800c: 'RBUserSettingData -themaName: tail-calls +themaNameWithID: with the current theme',
+    0x1f8048: 'RBUserSettingData -themaPath: pathForResource:ofType: with the bundle type',
+    0x1f80fc: 'RBUserSettingData +themaNameWithID:: four arms, each string read from its literal',
+    0x1f8160: 'RBUserSettingData -needUpdateTerms:: NSNumericSearch, and cset eq on cmn is exactly '
+              'the ascending test',
+    0x1f8234: 'RBUserSettingData -updateTutorialStatus:value:: the binary boxes both halves with '
+              'numberWithInt:, so an unsigned boxing would not match on the read side',
+    0x1f83a4: 'RBUserSettingData -getTutorialStatus:: numberWithInt: on the lookup key, agreeing '
+              'with the write side',
+    0x1f8494: 'RBUserSettingData -getTutorialStatusList: fast enumeration, b.cc is unsigned',
     0x1f7594: 'RBUserSettingData -setThema:: b.ls is unsigned, all six fallback defaults, the '
               'nine coder keys in order, and the trailing switch that leaves an unknown theme '
               "alone; the binary re-sends customizeItems per key where the source caches it, "

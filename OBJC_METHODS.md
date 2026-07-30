@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3683 verified
-(58.1%).
+Total: 6343 — 6201 reconstructed, 3706 verified
+(58.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5354,30 +5354,30 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBonusData` | `-` | `setEarlyPlayBonus:` | prop | ✅ | ✅ | `0x1f41e4` |
 | `RBBonusData` | `-` | `hotMusicBonus` | prop | ✅ | ✅ | `0x1f41f4` |
 | `RBBonusData` | `-` | `setHotMusicBonus:` | prop | ✅ | ✅ | `0x1f4204` |
-| `RBUserSettingData` | `-` | `init` |  | ✅ | ❌ | `0x1f4214` |
-| `RBUserSettingData` | `-` | `setDefault` |  | ✅ | ❌ | `0x1f4288` |
-| `RBUserSettingData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x1f5038` |
-| `RBUserSettingData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x1f6214` |
-| `RBUserSettingData` | `-` | `resetBgmType:` |  | ✅ | ❌ | `0x1f6ba0` |
-| `RBUserSettingData` | `-` | `resetShotType:` |  | ✅ | ❌ | `0x1f6cac` |
-| `RBUserSettingData` | `-` | `resetExplosionType:` |  | ✅ | ❌ | `0x1f6db8` |
-| `RBUserSettingData` | `-` | `resetFrameType:` |  | ✅ | ❌ | `0x1f6ec4` |
-| `RBUserSettingData` | `-` | `resetBackgroundType:` |  | ✅ | ❌ | `0x1f6fd0` |
-| `RBUserSettingData` | `-` | `resetNoteType:` |  | ✅ | ❌ | `0x1f70dc` |
-| `RBUserSettingData` | `-` | `resetGaugeStyle:` |  | ✅ | ❌ | `0x1f71e8` |
-| `RBUserSettingData` | `-` | `resetGhostStyle:` |  | ✅ | ❌ | `0x1f72f4` |
-| `RBUserSettingData` | `-` | `resetShotVolume:` |  | ✅ | ❌ | `0x1f736c` |
-| `RBUserSettingData` | `-` | `resetBackgroundBrightness:` |  | ✅ | ❌ | `0x1f7480` |
+| `RBUserSettingData` | `-` | `init` |  | ✅ | ✅ | `0x1f4214` |
+| `RBUserSettingData` | `-` | `setDefault` |  | ✅ | ✅ | `0x1f4288` |
+| `RBUserSettingData` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x1f5038` |
+| `RBUserSettingData` | `-` | `encodeWithCoder:` |  | ✅ | ✅ | `0x1f6214` |
+| `RBUserSettingData` | `-` | `resetBgmType:` |  | ✅ | ✅ | `0x1f6ba0` |
+| `RBUserSettingData` | `-` | `resetShotType:` |  | ✅ | ✅ | `0x1f6cac` |
+| `RBUserSettingData` | `-` | `resetExplosionType:` |  | ✅ | ✅ | `0x1f6db8` |
+| `RBUserSettingData` | `-` | `resetFrameType:` |  | ✅ | ✅ | `0x1f6ec4` |
+| `RBUserSettingData` | `-` | `resetBackgroundType:` |  | ✅ | ✅ | `0x1f6fd0` |
+| `RBUserSettingData` | `-` | `resetNoteType:` |  | ✅ | ✅ | `0x1f70dc` |
+| `RBUserSettingData` | `-` | `resetGaugeStyle:` |  | ✅ | ✅ | `0x1f71e8` |
+| `RBUserSettingData` | `-` | `resetGhostStyle:` |  | ✅ | ✅ | `0x1f72f4` |
+| `RBUserSettingData` | `-` | `resetShotVolume:` |  | ✅ | ✅ | `0x1f736c` |
+| `RBUserSettingData` | `-` | `resetBackgroundBrightness:` |  | ✅ | ✅ | `0x1f7480` |
 | `RBUserSettingData` | `-` | `setThema:` | prop | ✅ | ✅ | `0x1f7594` |
-| `RBUserSettingData` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x1f7cb4` |
-| `RBUserSettingData` | `-` | `save` |  | ✅ | ❌ | `0x1f7ee8` |
-| `RBUserSettingData` | `-` | `themaName` |  | ✅ | ❌ | `0x1f800c` |
-| `RBUserSettingData` | `-` | `themaPath` |  | ✅ | ❌ | `0x1f8048` |
-| `RBUserSettingData` | `+` | `themaNameWithID:` |  | ✅ | ❌ | `0x1f80fc` |
-| `RBUserSettingData` | `-` | `needUpdateTerms:` |  | ✅ | ❌ | `0x1f8160` |
-| `RBUserSettingData` | `-` | `updateTutorialStatus:value:` |  | ✅ | ❌ | `0x1f8234` |
-| `RBUserSettingData` | `-` | `getTutorialStatus:` |  | ✅ | ❌ | `0x1f83a4` |
-| `RBUserSettingData` | `-` | `getTutorialStatusList` |  | ✅ | ❌ | `0x1f8494` |
+| `RBUserSettingData` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x1f7cb4` |
+| `RBUserSettingData` | `-` | `save` |  | ✅ | ✅ | `0x1f7ee8` |
+| `RBUserSettingData` | `-` | `themaName` |  | ✅ | ✅ | `0x1f800c` |
+| `RBUserSettingData` | `-` | `themaPath` |  | ✅ | ✅ | `0x1f8048` |
+| `RBUserSettingData` | `+` | `themaNameWithID:` |  | ✅ | ✅ | `0x1f80fc` |
+| `RBUserSettingData` | `-` | `needUpdateTerms:` |  | ✅ | ✅ | `0x1f8160` |
+| `RBUserSettingData` | `-` | `updateTutorialStatus:value:` |  | ✅ | ✅ | `0x1f8234` |
+| `RBUserSettingData` | `-` | `getTutorialStatus:` |  | ✅ | ✅ | `0x1f83a4` |
+| `RBUserSettingData` | `-` | `getTutorialStatusList` |  | ✅ | ✅ | `0x1f8494` |
 | `RBUserSettingData` | `-` | `version` | prop | ✅ | ✅ | `0x1f8610` |
 | `RBUserSettingData` | `-` | `setVersion:` | prop | ✅ | ✅ | `0x1f8620` |
 | `RBUserSettingData` | `-` | `thema` | prop | ✅ | ✅ | `0x1f8658` |

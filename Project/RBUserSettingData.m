@@ -3,8 +3,9 @@
 //  REFLEC BEAT plus
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class RBUserSettingData). Verified
-//  against the arm64 disassembly (the coder and reset message sends are variadic and their float
-//  arguments travel the soft-float path, so the decompiler drops them).
+//  against the arm64 disassembly: every archive key was read from its literal, the archive order
+//  was taken from the send order, and each customise dictionary was recovered from the key and
+//  value arrays that -dictionaryWithObjects:forKeys:count: is handed.
 //
 
 #import "RBUserSettingData.h"
@@ -97,11 +98,17 @@ static const float kDefaultBoundsEffectSize = 1.0f;
 static const float kDefaultDamageEffectSize = 1.0f;
 static const int kDefaultCpuLevel = 2;
 static const int kDefaultPlayerColor = 2;
+static const int kDefaultBoundsEffectStyle = 1;
 // The bounds-effect style selected when a theme has no stored customise dictionary.
 static const int kBoundsEffectStyleFallback = 1;
+// The ghost style that clears the full-combo flags when selected.
+static const int kGhostStyleDanger = 1;
 
 // The classic-theme customise defaults (all effects off, unit volume and brightness).
 static const int kClassicBgmType = 0;
+static const int kClassicExplosionType = 0;
+static const int kClassicFrameType = 0;
+static const int kClassicBackgroundType = 0;
 // The limelight-theme customise defaults.
 static const int kLimelightBgmType = 1;
 static const int kLimelightExplosionType = 1;
@@ -127,6 +134,15 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
         kShotVolumeCoderKey : @(kDefaultShotVolume),
         kBackgroundBrighnessCoderKey : @(kDefaultBackgroundBrighness),
     } mutableCopy];
+}
+
+// Mirrors one option into the current theme's customise dictionary. The binary inlines this block
+// into each of the reset methods; it is a plain function rather than a method because the class
+// metadata defines no such selector.
+static void
+RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *key) {
+    NSMutableDictionary *item = settings.customizeItems[settings.thema];
+    [item setValue:value forKey:key];
 }
 
 @implementation RBUserSettingData
@@ -160,8 +176,8 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     self.rivalAlpha = kDefaultRivalAlpha;
     self.backgroundBrighness = kDefaultBackgroundBrighness;
 
-    NSMutableDictionary *classic =
-        RBMakeCustomizeItem(kClassicBgmType, kClassicBgmType, kClassicBgmType, kClassicBgmType);
+    NSMutableDictionary *classic = RBMakeCustomizeItem(
+        kClassicBgmType, kClassicExplosionType, kClassicFrameType, kClassicBackgroundType);
     NSMutableDictionary *limelight = RBMakeCustomizeItem(
         kLimelightBgmType, kLimelightExplosionType, kLimelightFrameType, kLimelightBackgroundType);
     NSMutableDictionary *colette = RBMakeCustomizeItem(
@@ -175,7 +191,7 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     self.difficultyLevel = 0;
     self.gameType = 0;
     self.speedType = 0;
-    self.boundsEffectStyle = 1;
+    self.boundsEffectStyle = kDefaultBoundsEffectStyle;
     self.explosionEffectSize = kDefaultExplosionEffectSize;
     self.boundsEffectSize = kDefaultBoundsEffectSize;
     self.damageEffectSize = kDefaultDamageEffectSize;
@@ -461,57 +477,52 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
 
 #pragma mark - Customise-item resets
 
-- (void)writeCustomizeValue:(NSNumber *)value forKey:(NSString *)key {
-    NSMutableDictionary *item = self.customizeItems[self.thema];
-    [item setValue:value forKey:key];
-}
-
 - (void)resetBgmType:(int)bgmType {
     /** @ghidraAddress 0x1f6ba0 */
     self.bgmType = bgmType;
-    [self writeCustomizeValue:@((NSUInteger)bgmType) forKey:kBGMTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)bgmType), kBGMTypeCoderKey);
 }
 
 - (void)resetShotType:(int)shotType {
     /** @ghidraAddress 0x1f6cac */
     self.shotType = shotType;
-    [self writeCustomizeValue:@((NSUInteger)shotType) forKey:kShotTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)shotType), kShotTypeCoderKey);
 }
 
 - (void)resetExplosionType:(int)explosionType {
     /** @ghidraAddress 0x1f6db8 */
     self.explosionType = explosionType;
-    [self writeCustomizeValue:@((NSUInteger)explosionType) forKey:kExplosionTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)explosionType), kExplosionTypeCoderKey);
 }
 
 - (void)resetFrameType:(int)frameType {
     /** @ghidraAddress 0x1f6ec4 */
     self.frameType = frameType;
-    [self writeCustomizeValue:@((NSUInteger)frameType) forKey:kFrameTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)frameType), kFrameTypeCoderKey);
 }
 
 - (void)resetBackgroundType:(int)backgroundType {
     /** @ghidraAddress 0x1f6fd0 */
     self.backgroundType = backgroundType;
-    [self writeCustomizeValue:@((NSUInteger)backgroundType) forKey:kBackgroundTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)backgroundType), kBackgroundTypeCoderKey);
 }
 
 - (void)resetNoteType:(int)noteType {
     /** @ghidraAddress 0x1f70dc */
     self.noteType = noteType;
-    [self writeCustomizeValue:@((NSUInteger)noteType) forKey:kNoteTypeCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)noteType), kNoteTypeCoderKey);
 }
 
 - (void)resetGaugeStyle:(int)gaugeStyle {
     /** @ghidraAddress 0x1f71e8 */
     self.gaugeStyle = gaugeStyle;
-    [self writeCustomizeValue:@((NSUInteger)gaugeStyle) forKey:kGaugeStyleCoderKey];
+    RBWriteCustomizeValue(self, @((NSUInteger)gaugeStyle), kGaugeStyleCoderKey);
 }
 
 - (void)resetGhostStyle:(int)ghostStyle {
     /** @ghidraAddress 0x1f72f4 */
     self.ghostStyle = ghostStyle;
-    if (ghostStyle == RBUserSettingDataThemeLimelight) {
+    if (ghostStyle == kGhostStyleDanger) {
         // The danger ghost style is incompatible with a scored full combo, so the flags are reset.
         self.userFullCombo = NO;
         self.cpuFullCombo = NO;
@@ -522,13 +533,13 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
 - (void)resetShotVolume:(float)shotVolume {
     /** @ghidraAddress 0x1f736c */
     self.shotVolume = shotVolume;
-    [self writeCustomizeValue:@(shotVolume) forKey:kShotVolumeCoderKey];
+    RBWriteCustomizeValue(self, @(shotVolume), kShotVolumeCoderKey);
 }
 
 - (void)resetBackgroundBrightness:(float)backgroundBrightness {
     /** @ghidraAddress 0x1f7480 */
     self.backgroundBrighness = backgroundBrightness;
-    [self writeCustomizeValue:@(backgroundBrightness) forKey:kBackgroundBrighnessCoderKey];
+    RBWriteCustomizeValue(self, @(backgroundBrightness), kBackgroundBrighnessCoderKey);
 }
 
 #pragma mark - Terms and tutorial
@@ -546,13 +557,14 @@ RBMakeCustomizeItem(int bgmType, int explosionType, int frameType, int backgroun
     if (self.tutorialStatuses == nil) {
         self.tutorialStatuses = [[NSMutableDictionary alloc] init];
     }
-    self.tutorialStatuses[@(status)] = @(value);
+    // The binary boxes both halves with -numberWithInt:, so the signed cast is deliberate.
+    self.tutorialStatuses[@((int)status)] = @((int)value);
     [self save];
 }
 
 - (unsigned int)getTutorialStatus:(unsigned int)status {
     /** @ghidraAddress 0x1f83a4 */
-    NSNumber *stored = self.tutorialStatuses[@(status)];
+    NSNumber *stored = self.tutorialStatuses[@((int)status)];
     if (stored == nil) {
         return 0;
     }
