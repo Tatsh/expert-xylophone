@@ -67,6 +67,8 @@ constexpr CGFloat kMascotFrameDuration = 0.5;
 constexpr CGFloat kHalf = 0.5;
 constexpr CGFloat kButtonRowHeightWide = 40.0;
 constexpr CGFloat kButtonRowHeightNarrow = 30.0;
+// The fixed width of each button in that row. @ghidraAddress 0x2ec6f8
+constexpr CGFloat kButtonWidth = 100.0;
 constexpr CGFloat kPastelViewHeightWide = 96.0;    // @ghidraAddress 0x2ec6f0
 constexpr CGFloat kPastelViewHeightNarrow = 140.0; // @ghidraAddress 0x2ec6c0
 constexpr CGFloat kMascotXOffsetWide = -23.0;
@@ -316,9 +318,16 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
 
     CGFloat buttonRowHeight = !IsPad() ? kButtonRowHeightNarrow : kButtonRowHeightWide;
 
+    // The row divides the content view's width into three equal gaps around the two fixed-width
+    // buttons, and sits flush with its bottom edge: Cancel on the left, Agree on the right.
+    CGFloat buttonGap = (self.contentView.width - (kButtonWidth * 2)) / 3.0;
+    CGFloat buttonY = self.contentView.height - buttonRowHeight;
+
     // The Agree and Cancel buttons share a row along the bottom of the content view; the Agree
     // button starts disabled and dimmed until the reader scrolls to the bottom.
     UIButton *agree = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    agree.frame =
+        CGRectMake((buttonGap * 2) + kButtonWidth, buttonY, kButtonWidth, buttonRowHeight);
     [agree setTitle:NSLocalizedString(@"OK", nil) forState:UIControlStateNormal];
     [agree addTarget:self
                   action:@selector(selectAgree)
@@ -331,6 +340,7 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
     self.agreeButton = agree;
 
     UIButton *cancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    cancel.frame = CGRectMake(buttonGap, buttonY, kButtonWidth, buttonRowHeight);
     [cancel setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
     [cancel addTarget:self
                   action:@selector(selectDisAgree)
@@ -352,6 +362,11 @@ constexpr CGFloat kPopupWideContentOriginYBase = 100.0;
                                                    kTermsTextInsetVertical,
                                                    kTermsTextInsetHorizontal);
     textView.delegate = self;
+#ifdef ENABLE_PATCHES
+    // A UITextView is editable by default and the binary never clears that, so the shipped terms
+    // raise the keyboard on a screen meant only to be read and scrolled.
+    textView.editable = NO;
+#endif
     [self.termView addSubview:textView];
     self.termTextView = textView;
 
