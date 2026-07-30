@@ -563,7 +563,7 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
             !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
             return;
         }
-        [[RBTutorialManager getInstance]
+        [RBTutorialManager
             updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
         nNextPhase = kTutorialPhaseHint2;
         break;
@@ -572,7 +572,7 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
             !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
             return;
         }
-        [[RBTutorialManager getInstance]
+        [RBTutorialManager
             updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
         nNextPhase = kTutorialPhaseResult;
         break;
@@ -581,7 +581,7 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
         if (!pResult->IsPageDirty() || pResult->GetActivePage() != 0) {
             return;
         }
-        [[RBTutorialManager getInstance]
+        [RBTutorialManager
             updateStatus:static_cast<RBTutorialStatus>(RBTutorialManager.getCurrentStatus + 1)];
         nNextPhase = kTutorialPhaseDone;
         break;
@@ -591,7 +591,7 @@ void TutorialGuideLayer::AdvanceStateMachine(float flDeltaTime) {
             !ResultWindowColetteLayer::shared()->IsTutorialTouchEnded()) {
             return;
         }
-        [[RBTutorialManager getInstance] updateStatus:RBTutorialStatusMusicSelectSeen];
+        [RBTutorialManager updateStatus:RBTutorialStatusMusicSelectSeen];
         nNextPhase = kTutorialPhaseComplete;
         break;
     default:
