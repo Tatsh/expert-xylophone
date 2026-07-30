@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4351 verified
+Total: 6343 — 6203 reconstructed, 4352 verified
 (68.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3541,7 +3541,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterAlertController` | `-` | `setOrientationMask:` | prop | ✅ | ✅ | `0x142b3c` |
 | `RBErosionMarkUpdater` | `+` | `updateCheckStart:` |  | ✅ | ✅ | `0x142b4c` |
 | `RBErosionMarkUpdater` | `-` | `updateStartBasic:Medium:Hard:` |  | ✅ | ✅ | `0x142d4c` |
-| `RBErosionMarkUpdater` | `-` | `setupView` |  | ✅ | ❌ | `0x142e08` |
+| `RBErosionMarkUpdater` | `-` | `setupView` |  | ✅ | ✅ | `0x142e08` |
 | `RBErosionMarkUpdater` | `-` | `getPickerViewScore:` |  | ✅ | ✅ | `0x1433ec` |
 | `RBErosionMarkUpdater` | `-` | `setPickerViewScore:score:` |  | ✅ | ✅ | `0x14370c` |
 | `RBErosionMarkUpdater` | `-` | `pickerOpen` |  | ✅ | ✅ | `0x143b8c` |

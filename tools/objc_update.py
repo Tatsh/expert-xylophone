@@ -1124,6 +1124,11 @@ VERIFIED = {
     # One defect fixed: the routine sends exactly two set...Controller: messages, so the confirm
     # controller is never cleared. Both bounds globals are cleared at 0x144f78 and 0x144f88.
     0x144D38: 'RBErosionMarkUpdater -remove: two arms off NSClassFromString(UIAlertController)',
+    # Three defects fixed. Only d2 of the frame at 0x142e9c survives into the toolbar: the origin is
+    # zeroed by the two movi at 0x142ee0 and the height is the 44.0 at 0x2eec40, whose neighbours
+    # are 284.0 and 79.0. Both bar-button titles were a single space where the binary carries
+    # UTF-16 string constants at 0x36d000 and 0x36d020.
+    0x142E08: 'RBErosionMarkUpdater -setupView: toolbar, three tagged pickers, three alert builders',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',

@@ -46,6 +46,11 @@ static const NSInteger kPickerDigitRowCount = 10;
 /// Sentinel for @c activeFieldIndex meaning no field is being edited.
 static const NSInteger kNoActiveField = -1;
 
+/// The height of the picker's accessory toolbar, in points. Its pool neighbours are 284.0 and
+/// 79.0, so the slot has to be read exactly.
+/// @ghidraAddress 0x2eec40
+static const CGFloat kAccessoryToolbarHeight = 44.0;
+
 /// The shared updater instance, allocated lazily by @c +updateCheckStart:.
 /// @ghidraAddress 0x3de498
 static RBErosionMarkUpdater *g_sharedUpdater = nil;
@@ -90,14 +95,17 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)setupView {
+    // Only d2, the width, is kept from the frame at 0x142e9c; the origin is zeroed and the height
+    // comes from the pool rather than from the view.
     CGRect frame = [AppDelegate appDelegate].viewController.view.frame;
-    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:frame];
+    UIToolbar *toolbar = [[UIToolbar alloc]
+        initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, kAccessoryToolbarHeight)];
     toolbar.barStyle = UIBarStyleDefault;
-    UIBarButtonItem *resetItem = [[UIBarButtonItem alloc] initWithTitle:@" "
+    UIBarButtonItem *resetItem = [[UIBarButtonItem alloc] initWithTitle:@"リセット"
                                                                   style:UIBarButtonItemStyleDone
                                                                  target:self
                                                                  action:@selector(reset)];
-    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@" "
+    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"閉じる"
                                                                   style:UIBarButtonItemStyleDone
                                                                  target:self
                                                                  action:@selector(pickerClose)];
