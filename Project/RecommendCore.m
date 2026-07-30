@@ -119,6 +119,9 @@ static NSString *const kRecommendCoreFormatBannerDisplayStatus =
 static NSString *const kRecommendCoreFormatAllAdDataMissing =
     @"allAdDataForDisplay fall in line with list by no appliId.";
 
+// The user-info key these diagnostic messages are filed under.
+static NSString *const kErrorUserInfoKey = @"Error";
+
 // The web-load error codes that are silently ignored when they come from WebKit.
 static const NSInteger kRecommendCoreWebKitCancelledCode = -999;
 static const NSInteger kRecommendCoreWebKitFrameLoadInterruptedCode = 102; // 0x66
@@ -820,6 +823,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         dictionaryWithObjectsAndKeys:[NSString
                                          stringWithFormat:kRecommendCoreFormatBannerDisplayStatus,
                                                           adModel],
+                                     kErrorUserInfoKey,
                                      nil];
     NSError *error =
         [ApplilinkNetworkError localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoBannerData
@@ -1229,6 +1233,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
         NSDictionary *userInfo = [NSDictionary
             dictionaryWithObjectsAndKeys:[NSString
                                              stringWithFormat:kRecommendCoreFormatAllAdDataMissing],
+                                         kErrorUserInfoKey,
                                          nil];
         NSError *noDataError =
             [ApplilinkNetworkError localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoAdData

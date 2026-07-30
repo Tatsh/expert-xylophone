@@ -109,6 +109,11 @@ enum { kServerDataUserIdIndex = 0, kServerDataTokenIndex = 1 };
 // The minimum iOS version supporting the do-not-back-up extended attribute, and the attribute name
 // itself, used by @c +setNoBackupAttribute:.
 static NSString *const kMinSystemVersionForNoBackup = @"5.0.1";
+
+// The keychain account name the music-list key is stored under, and the empty string the binary
+// files as that item's label and description.
+static NSString *const kApplicationUniqueIDAccount = @"ApplicationUniqueID";
+static NSString *const kEmptyKeychainAttribute = @"";
 static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 
 // The value written into the do-not-back-up extended attribute to mark a file as excluded.
@@ -694,6 +699,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                                           (__bridge id)kSecAttrAccount,
                                                           NSBundle.mainBundle.bundleIdentifier,
                                                           (__bridge id)kSecAttrService,
+                                                          kEmptyKeychainAttribute,
+                                                          (__bridge id)kSecAttrLabel,
+                                                          kEmptyKeychainAttribute,
+                                                          (__bridge id)kSecAttrDescription,
                                                           nil];
     if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
                                               options:NSNumericSearch] != NSOrderedAscending) {
@@ -709,9 +718,15 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 + (NSString *)musicListKey {
     NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
 
-    // Try to read the stored generic-password key for this app.
+    // Try to read the stored generic-password key for this app. The binary builds this with
+    // -dictionaryWithObjectsAndKeys:, whose five pairs were read from the stack setup at 0x50d2c
+    // rather than from the decompile, which shows only the first of them.
     NSDictionary *attributeQuery = @{
         (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount : kApplicationUniqueIDAccount,
+        (__bridge id)kSecAttrService : bundleIdentifier,
+        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
+        (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
     };
     CFTypeRef attributesResult = nullptr;
     if (SecItemCopyMatching((__bridge CFDictionaryRef)attributeQuery, &attributesResult) ==
@@ -741,11 +756,18 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     CFRelease(uuidString);
     CFRelease(uuid);
 
+    // The five pairs here were likewise read from the stack setup at 0x50f84, not the decompile.
     NSMutableDictionary *item =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                           (__bridge id)kSecClass,
+                                                          kApplicationUniqueIDAccount,
+                                                          (__bridge id)kSecAttrAccount,
                                                           bundleIdentifier,
                                                           (__bridge id)kSecAttrService,
+                                                          kEmptyKeychainAttribute,
+                                                          (__bridge id)kSecAttrLabel,
+                                                          kEmptyKeychainAttribute,
+                                                          (__bridge id)kSecAttrDescription,
                                                           nil];
     if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
                                               options:NSNumericSearch] != NSOrderedAscending) {

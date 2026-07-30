@@ -104,6 +104,10 @@ static NSString *const kRecommendAdCacheFormatZeroMatch =
 static NSString *const kRecommendAdCacheUnknownAdTypeMessage =
     @"advertising type is unknown problem";
 
+// The user-info keys the cache-creation errors file their strings under.
+static NSString *const kErrorUserInfoKey = @"Error";
+static NSString *const kSettingUserInfoKey = @"Setting";
+
 @implementation RecommendAdCache
 
 #pragma mark - Advert-status refresh
@@ -410,8 +414,12 @@ static NSString *const kRecommendAdCacheUnknownAdTypeMessage =
     default: {
         NSString *message =
             [NSString stringWithFormat:kRecommendAdCacheFormatUnknownAdType, adModel, adLocation];
-        NSDictionary *userInfo = [NSDictionary
-            dictionaryWithObjectsAndKeys:kRecommendAdCacheUnknownAdTypeMessage, message, nil];
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  kRecommendAdCacheUnknownAdTypeMessage,
+                                                  kErrorUserInfoKey,
+                                                  message,
+                                                  kSettingUserInfoKey,
+                                                  nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendAdCacheErrorCodeCacheCreate
                                    userInfo:userInfo];
@@ -419,7 +427,8 @@ static NSString *const kRecommendAdCacheUnknownAdTypeMessage =
     }
     if ([bannerList count] == 0) {
         NSString *message = [NSString stringWithFormat:kRecommendAdCacheFormatZeroMatch, adType];
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, nil];
+        NSDictionary *userInfo =
+            [NSDictionary dictionaryWithObjectsAndKeys:message, kErrorUserInfoKey, nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendAdCacheErrorCodeCacheCreate
                                    userInfo:userInfo];

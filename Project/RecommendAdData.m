@@ -63,6 +63,9 @@ static NSString *const kJapanTimeZoneAbbreviation = @"JST";
 static NSString *const kDateTimeFormat = @"yyyy-MM-dd HH:mm:ss";
 static NSString *const kDateFormat = @"yyyy-MM-dd";
 
+// The user-info key each lottery-suppression message is filed under.
+static NSString *const kErrorUserInfoKey = @"Error";
+
 // Lottery-suppression messages, reported through the ApplilinkNetworkError user-info.
 static NSString *const kInterstitialSpecListIsZeroMessage = @"interstitial_spec_list is zero";
 static NSString *const kInterstitialSpecFrequencyIsZeroMessage =
@@ -525,10 +528,10 @@ enum {
 + (nullable NSError *)lotteryInterstitialWithAdLocation:(nullable NSString *)adLocation {
     NSDictionary *specList = [self getInterstitialSpecList];
     if (specList.count == 0) {
-        // The binary calls -dictionaryWithObjectsAndKeys: with a lone message string and no
-        // terminating nil, yielding an empty user-info dictionary.
-        NSDictionary *userInfo =
-            [NSDictionary dictionaryWithObjectsAndKeys:kInterstitialSpecListIsZeroMessage, nil];
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  kInterstitialSpecListIsZeroMessage,
+                                                  kErrorUserInfoKey,
+                                                  nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kApplilinkErrorInterstitialSpecInvalid
                                    userInfo:userInfo];
@@ -545,8 +548,10 @@ enum {
         }
     }
     if (frequencyN == 0 || frequencyM == 0) {
-        NSDictionary *userInfo = [NSDictionary
-            dictionaryWithObjectsAndKeys:kInterstitialSpecFrequencyIsZeroMessage, nil];
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  kInterstitialSpecFrequencyIsZeroMessage,
+                                                  kErrorUserInfoKey,
+                                                  nil];
         return [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kApplilinkErrorInterstitialSpecInvalid
                                    userInfo:userInfo];
@@ -591,7 +596,8 @@ enum {
     }
     NSString *message = [NSString
         stringWithFormat:kLotteryMissFormat, frequencyN, recordedN, frequencyM, recordedM];
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:message, nil];
+    NSDictionary *userInfo =
+        [NSDictionary dictionaryWithObjectsAndKeys:message, kErrorUserInfoKey, nil];
     return [ApplilinkNetworkError
         localizedApplilinkErrorWithCode:kApplilinkErrorInterstitialLotteryMiss
                                userInfo:userInfo];
