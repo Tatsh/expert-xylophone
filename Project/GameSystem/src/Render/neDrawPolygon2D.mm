@@ -179,7 +179,7 @@ void C_DRAW_POLYGON_2D::AllocateBuffers() {
         m_nMatrixIndexOffset = static_cast<int>(nStride) + 0xc;
         nStride += 0xf;
         m_nVertexStride = static_cast<int>(nStride);
-        const int nMaxUnits = pRenderer->GetMaxVertexUnits();
+        const int nMaxUnits = pRenderer->GetMaxPaletteMatrices();
         auto **ppTranslate = new void *[nMaxUnits];
         for (int i = 0; i < nMaxUnits; ++i) {
             ppTranslate[i] = nullptr;
