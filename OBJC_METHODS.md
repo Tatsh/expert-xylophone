@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4517 verified
-(71.2%).
+Total: 6343 — 6203 reconstructed, 4526 verified
+(71.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4470,8 +4470,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `-` | `RemoveAlphaAnimation` |  | ✅ | ✅ | `0x1a40d8` |
 | `(RB)` | `-` | `SetJumpEffectBaseX:BaseY:` |  | ✅ | ✅ | `0x1a4134` |
 | `(RB)` | `-` | `RemoveJumpEffect` |  | ✅ | ✅ | `0x1a4414` |
-| `(RB)` | `-` | `dictionary` |  | ✅ | ❌ | `0x1a4470` |
-| `(RB)` | `-` | `mutableArray` |  | ✅ | ❌ | `0x1a45f8` |
+| `(RB)` | `-` | `dictionary` |  | ✅ | ✅ | `0x1a4470` |
+| `(RB)` | `-` | `mutableArray` |  | ✅ | ✅ | `0x1a45f8` |
 | `RBMusicOtherView` | `-` | `initWithFrame:MusicSelectedBase:` |  | ✅ | ❌ | `0x1a477c` |
 | `RBMusicOtherView` | `-` | `dealloc` |  | ❌ | ✅ | `0x1a4a04` |
 | `RBMusicOtherView` | `-` | `SetupView` |  | ✅ | ❌ | `0x1a4a38` |
@@ -4648,13 +4648,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialPastelLayer` | `-` | `setLeftLayer:` | prop | ✅ | ✅ | `0x1b814c` |
 | `RBTutorialPastelLayer` | `-` | `displayRate` | prop | ✅ | ✅ | `0x1b8160` |
 | `RBTutorialPastelLayer` | `-` | `setDisplayRate:` | prop | ✅ | ✅ | `0x1b8170` |
-| `(RB)` | `-` | `encodeURIComponent` |  | ✅ | ❌ | `0x1b82a4` |
-| `(RB)` | `-` | `sizeWithFont:` |  | ✅ | ❌ | `0x1b82d0` |
-| `(RB)` | `-` | `sizeWithFont:constrainedToSize:` |  | ✅ | ❌ | `0x1b83c4` |
-| `(RB)` | `-` | `sizeWithFont:constrainedToSize:lineBreakMode:` |  | ✅ | ❌ | `0x1b83e4` |
-| `(RB)` | `-` | `drawInRect:withFont:` |  | ✅ | ❌ | `0x1b8578` |
-| `(RB)` | `-` | `drawInRect:withFont:lineBreakMode:alignment:` |  | ✅ | ❌ | `0x1b8684` |
-| `(RB)` | `-` | `drawAtPoint:withFont:` |  | ✅ | ❌ | `0x1b881c` |
+| `(RB)` | `-` | `encodeURIComponent` |  | ✅ | ✅ | `0x1b82a4` |
+| `(RB)` | `-` | `sizeWithFont:` |  | ✅ | ✅ | `0x1b82d0` |
+| `(RB)` | `-` | `sizeWithFont:constrainedToSize:` |  | ✅ | ✅ | `0x1b83c4` |
+| `(RB)` | `-` | `sizeWithFont:constrainedToSize:lineBreakMode:` |  | ✅ | ✅ | `0x1b83e4` |
+| `(RB)` | `-` | `drawInRect:withFont:` |  | ✅ | ✅ | `0x1b8578` |
+| `(RB)` | `-` | `drawInRect:withFont:lineBreakMode:alignment:` |  | ✅ | ✅ | `0x1b8684` |
+| `(RB)` | `-` | `drawAtPoint:withFont:` |  | ✅ | ✅ | `0x1b881c` |
 | `RBExperienceData` | `-` | `init` |  | ✅ | ✅ | `0x1b8910` |
 | `RBExperienceData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x1b8bf0` |
 | `RBExperienceData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x1b9788` |

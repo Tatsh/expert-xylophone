@@ -1992,6 +1992,36 @@ VERIFIED = {
               '"Temporary Files" (0x36e9e0) under the caches path only when NSTemporaryDirectory '
               'returns nil',
     0x1CA560: 'NSFileManager(RB) +resourcePath copies mainBundle.resourcePath once, no lock',
+    # NSString(RB), faithful throughout. The escaped set was decoded from the __cfstring at
+    # 0x363f60 and is exactly the nineteen characters the reconstruction has, and the encoding is
+    # the mov/movk pair at 0x1b82bc that builds 0x8000100, kCFStringEncodingUTF8.
+    0x1B82A4: 'NSString(RB) -encodeURIComponent tail-calls CFURLCreateStringByAddingPercentEscapes '
+              'with a nil unescaped set',
+    # Every attribute dictionary is +dictionaryWithObjects:forKeys:count:, which is what a boxed
+    # literal compiles to; the keys are the imported NSFontAttributeName and, where the count is
+    # two, NSParagraphStyleAttributeName. Each of these carries a stack guard, and the CGSize and
+    # CGRect arguments were read from d0-d3 rather than the printed form.
+    0x1B82D0: 'NSString(RB) -sizeWithFont: one-entry dictionary into -sizeWithAttributes:',
+    0x1B83C4: 'NSString(RB) -sizeWithFont:constrainedToSize: forwards x3 = 0, which is '
+              'NSLineBreakByWordWrapping',
+    0x1B83E4: 'NSString(RB) -sizeWithFont:constrainedToSize:lineBreakMode: pins the alignment to '
+              'NSTextAlignmentLeft (x2 = 0 at 0x1b846c), asks for '
+              'NSStringDrawingUsesLineFragmentOrigin, and keeps only d2/d3 of the bounding rect',
+    0x1B8578: 'NSString(RB) -drawInRect:withFont: one-entry dictionary into '
+              '-drawInRect:withAttributes:',
+    0x1B8684: 'NSString(RB) -drawInRect:withFont:lineBreakMode:alignment: takes both the mode and '
+              'the alignment from its arguments, unlike the sizing pair',
+    0x1B881C: 'NSString(RB) -drawAtPoint:withFont: one-entry dictionary into '
+              '-drawAtPoint:withAttributes:',
+    # NSData(RB), faithful. Both methods inline the same version gate: -[UIDevice systemVersion]
+    # compared against "4.0" (0x3643e0) with options 0x40, NSNumericSearch, and the cmn x8,#1 at
+    # 0x1a44f4 sends only NSOrderedAscending down the CFPropertyListCreateFromXMLData arm. The
+    # newer arm is CFPropertyListCreateWithData with x2 through x4 all zero, so the option really
+    # is kCFPropertyListImmutable and both the format and error outputs are dropped.
+    0x1A4470: 'NSData(RB) -dictionary returns nil unless the parsed plist is an NSDictionary, then '
+              'copies it with +dictionaryWithDictionary:',
+    0x1A45F8: 'NSData(RB) -mutableArray takes the NSArray branch instead and copies into a fresh '
+              'NSMutableArray',
 }
 
 
