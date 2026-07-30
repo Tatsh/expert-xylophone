@@ -26,16 +26,18 @@ static const CGFloat kMenuButtonHeightWide = 72.0;
 // The theme index below which the button always uses the narrow artwork regardless of iPad idiom.
 static const NSInteger kMenuButtonWideArtworkTheme = 2;
 
-// The autoresizing mask applied to the button and its flash background: flexible right and bottom
-// margins so the button stays pinned to the top-left of the footer cell.
+// The autoresizing mask applied to the button and its flash background: 0x12 at 0x9dda0 and
+// 0x9df9c, which is flexible width and height, so both follow the container when the menu bar
+// widens it from the 92 points set here to the width of a footer cell.
 static const UIViewAutoresizing kMenuButtonAutoresizingMask =
-    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+    UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The autoresizing mask applied to the flash icon overlay, which additionally keeps flexible width
-// and height so it scales with the button.
+// The autoresizing mask applied to the flash icon overlay: 0x2d at 0x9e128, which is all four
+// flexible margins and no flexible size, so the overlay keeps its own size and stays centred while
+// the margins absorb the change.
 static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
-    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth |
-    UIViewAutoresizingFlexibleBottomMargin;
+    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+    UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
 // The cap-inset inset applied when stretching the background and flash images: the resizable region
 // is a single centre pixel, so the caps are half the image size less one pixel.
