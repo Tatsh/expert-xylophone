@@ -52,14 +52,16 @@ enum { kCollationMiscSection = 0x24 };
 // The number of leading placeholder sections the collation builds and this screen discards.
 enum { kCollationLeadingSectionsToDrop = 26 };
 
-// Row-selection colours: alternate rows tint slightly darker.
-static const CGFloat kRowColorWhiteEven = 0.7568627450980392; // @ghidraAddress 0x310790
+// Row-selection colours: even rows are a light grey, odd rows the shared translucent value. Each
+// pooled component is a single precision quotient widened to double, so the divisions are spelled
+// in float to reproduce the stored bits.
+static const CGFloat kRowColorWhiteEven = 193.0f / 255.0f; // @ghidraAddress 0x310790
 static const CGFloat kRowColorAlpha = 1.0;
 
-// The tune-title label white value and its opaque alpha. @ghidraAddress 0x2eeef8
-static const CGFloat kTitleLabelAlpha = 1.0;
-// The table background white value and its opaque alpha. @ghidraAddress 0x2eef38
-static const CGFloat kTableBackgroundAlpha = 1.0;
+// The tune-title label white value. Dark grey, not white.
+static const CGFloat kTitleLabelWhite = 50.0f / 255.0f; // @ghidraAddress 0x2eeef8
+// The table background white value. Dark grey, not white.
+static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x2eef38
 
 // The scroll-to-top rectangle: a unit square at the origin, animated.
 static const CGRect kTopRect = {{0.0, 0.0}, {1.0, 1.0}};
@@ -108,17 +110,23 @@ static NSString *const kCellReuseIdentifier = @"StoreManageCell";
 static NSString *const kJapaneseVersionMarker = @"ja_";
 
 // The localization keys and empty-value placeholder for the sort and top bar-button titles.
-static NSString *const kSortButtonKey = @"\xe4\xb8\xa6\xe3\x81\xb3\xe6\x9b\xbf\xe3\x81\x88";
+// @ghidraAddress 0x365fa0
+static NSString *const kSortButtonKey = @"並べ替え";
 static NSString *const kTopButtonKey = @"TOP";
 static NSString *const kEmptyLocalizedValue = @"";
 
 // The ascending and descending sort-button titles (Japanese: "purchase order" and "title order").
-static NSString *const kSortTitleAscending = @"\xe8\xb3\xbc\xe5\x85\xa5\xe9\xa0\x86";
-static NSString *const kSortTitleDescending = @"\xe6\x9b\xb2\xe5\x90\x8d\xe9\xa0\x86";
+// @ghidraAddress 0x36ec40
+static NSString *const kSortTitleAscending = @"購入順にする";
+// @ghidraAddress 0x36ec60
+static NSString *const kSortTitleDescending = @"曲名順にする";
 
 // The header expand and collapse glyphs.
-static NSString *const kHeaderExpandedGlyph = @"\xe2\x96\xbc";  // A downward triangle.
-static NSString *const kHeaderCollapsedGlyph = @"\xe2\x96\xb6"; // A rightward triangle.
+// @ghidraAddress 0x36eba0
+static NSString *const kHeaderExpandedGlyph = @"\u25bc";
+// The collapsed glyph carries a trailing U+FE0E, forcing the text rather than the emoji
+// presentation of the triangle. @ghidraAddress 0x36ed20
+static NSString *const kHeaderCollapsedGlyph = @"\u25b6\ufe0e";
 
 // The catalogue dictionary keys read while sorting and displaying tunes.
 static NSString *const kMusicKeyID = @"ID";
@@ -197,8 +205,10 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     }
 
     self.sortDict = nil;
+    // The ten katakana-row initials and the no-reading bucket, the same constants the tune loader
+    // buckets titles into.
     self.sectionList =
-        @[ @"B", @"K", @"U", @"_", @"j", @"o", @"~", @"\x84", @"\x89", @"\x8f", @"#" ];
+        @[ @"あ", @"か", @"さ", @"た", @"な", @"は", @"ま", @"や", @"ら", @"わ", @"#" ];
     ExpandAllSections(sectionOpenList);
     self.currentSortIndex = RBStoreManageSortOrderDownloadAscending;
 
@@ -250,7 +260,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     self.tableView.dataSource = self;
     self.tableView.allowsSelection = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [UIColor colorWithWhite:kTableBackgroundAlpha
+    self.tableView.backgroundColor = [UIColor colorWithWhite:kTableBackgroundWhite
                                                        alpha:kRowColorAlpha];
     if ([self.tableView respondsToSelector:@selector(setCellLayoutMarginsFollowReadableWidth:)]) {
         self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
@@ -562,7 +572,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
         self.labelName.backgroundColor = UIColor.clearColor;
         self.labelName.font =
             [UIFont boldSystemFontOfSize:isPad ? kCellTitleFontSizePad : kCellTitleFontSizePhone];
-        self.labelName.textColor = [UIColor colorWithWhite:kTitleLabelAlpha alpha:kRowColorAlpha];
+        self.labelName.textColor = [UIColor colorWithWhite:kTitleLabelWhite alpha:kRowColorAlpha];
         self.labelName.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         [cell addSubview:self.labelName];
 

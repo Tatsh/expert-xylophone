@@ -245,6 +245,7 @@ mainpage
 malloc
 malloc'd
 maru
+maxfloat
 math
 matrixf
 matrixmath
