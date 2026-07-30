@@ -312,6 +312,48 @@ VERIFIED = {
               'the old-service branch',
     0x22edb4: 'ApplilinkUdid: reads the singleton slot directly, so it is a no-op when '
               'nothing created it',
+    # AppDelegate, eighteen more; four defects, of which the startupRequest pair was the
+    # largest: the weak receiver and an invented handler that is really a block invoke.
+    0x4ecfc: 'AppDelegate -getTermURLWithID:: three format slots for three specifiers',
+    0x4ee50: 'AppDelegate -needUpdateTerms: NSNumericSearch, ascending tested across '
+              'the full register',
+    0x4f07c: 'AppDelegate -getExtendNotePIDForOpenStore: four instructions, the ivar direct',
+    0x4f08c: 'AppDelegate +getPushNotificationData: exactly one fetch',
+    0x4f0fc: 'AppDelegate +popPushNotificationData: four independent re-fetches, and '
+              'objectAtIndex: not the subscript form',
+    0x4f314: 'AppDelegate +addPushNotificationData:: one fetch, then addObject:',
+    0x4f3d4: 'AppDelegate +getOuterURL: fetch and tail autorelease',
+    0x4f444: 'AppDelegate +setOuterURL:: fetch then the setter',
+    0x4f4d0: 'AppDelegate -isEnableEarlyBonus: three separate list sends, MusicID is '
+              'int against one %d',
+    0x4f658: 'AppDelegate -isEnableHotBonus: the same shape on the hot list',
+    0x4faf4: 'AppDelegate -showTerms: the view controller with a nil delegate',
+    0x4fb4c: 'AppDelegate -startupRequest: the weak reference is to +appDelegate, not '
+              'self, and the web-info handler is a block invoke rather than a method',
+    0x50af0: 'AppDelegate +appDelegate: the application delegate, tail autoreleased',
+    0x50c8c: 'AppDelegate +totalScoreLeaderboardCategory: the pad takes '
+              'the plain category, not transposed',
+    0x517fc: 'AppDelegate +saveDataKey: the passphrase literal',
+    0x5307c: 'AppDelegate -applicationWillEnterForeground:: the reload is skipped '
+              'while the map is showing',
+    0x53350: 'AppDelegate -applicationDidReceiveMemoryWarning:: the binary keeps its '
+              'own misspelling',
+    0x53628: 'AppDelegate -application:didRegisterUserNotificationSettings:: the '
+              'receiver is the application',
+    # RBCampaignViewController, first eight. -downloaderFinished: at 0x1fc988 is NOT
+    # ticked: its strings and its de-inlining were corrected, its body was not read.
+    0x1f8e2c: 'RBCampaignViewController -initWithParent:: the three asset names are '
+              'paths with slashes',
+    0x1fc128: 'RBCampaignViewController -updateExperienceData: the unlock keys are Type '
+              'and ID, capitalised',
+    0x1faf5c: 'RBCampaignViewController -tableView:numberOfRowsInSection:: the list '
+              'ivar read directly',
+    0x1fb0e4: 'RBCampaignViewController -tableView:heightForRowAtIndexPath:: the idiom '
+              'flag passed straight through',
+    0x1fec00: 'RBCampaignViewController -reloadUnlockList: refresh then a tail call',
+    0x1ff5cc: 'RBCampaignViewController -setBadgeCnt:: b.lt is signed, one slot for one specifier',
+    0x1ff6a0: 'RBCampaignViewController -didReceiveMemoryWarning: nothing but the super call',
+    0x1ff6d4: 'RBCampaignViewController -viewDidUnload: super, then the table view cleared',
     0x2202ec: 'ApplilinkStore -init: the queue is the private serial one from +allocWithZone:',
     0x2204c0: 'ApplilinkStore +allocWithZone:: creates the queue, then re-tests the singleton',
     0xa9108: 'RBMenuView -createMusicList: the csel at 0xa939c picks the artist comparator on 1',

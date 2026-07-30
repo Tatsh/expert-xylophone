@@ -28,9 +28,9 @@
 static const int kNoActiveIndex = -1;
 
 // The campaign tab-bar item image and the two shared cell state images.
-static NSString *const kTabBarImageName = @"09_store_tab_present";
-static NSString *const kDeleteImageName = @"09_store_manage_delete";
-static NSString *const kDownloadImageName = @"09_store_manage_download";
+static NSString *const kTabBarImageName = @"09_store/tab_present";
+static NSString *const kDeleteImageName = @"09_store/manage_delete";
+static NSString *const kDownloadImageName = @"09_store/manage_download";
 
 // The reuse identifier for the campaign list cell.
 static NSString *const kCampaignCellIdentifier = @"StoreCampaignCell";
@@ -132,16 +132,16 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleSize =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 // The server unlock-list dictionary keys.
-static NSString *const kJSONKeyList = @"list";
-static NSString *const kJSONKeyError = @"error";
-static NSString *const kJSONKeyStatus = @"status";
-static NSString *const kJSONKeyURL = @"url";
+static NSString *const kJSONKeyList = @"List";
+static NSString *const kJSONKeyError = @"Error";
+static NSString *const kJSONKeyStatus = @"Status";
+static NSString *const kJSONKeyURL = @"URL";
 static NSString *const kJSONKeyCampaignId = @"campaignId";
 static NSString *const kJSONKeyUnlocked = @"unlocked";
 static NSString *const kJSONKeyTrue = @"true";
 // The unlock-dictionary keys carrying the granted experience type and identifier.
-static NSString *const kUnlockKeyType = @"type";
-static NSString *const kUnlockKeyID = @"id";
+static NSString *const kUnlockKeyType = @"Type";
+static NSString *const kUnlockKeyID = @"ID";
 // The campaign-identifier format used to match a checked item against a list entry.
 static NSString *const kCampaignIdFormat = @"%d";
 
@@ -156,12 +156,22 @@ static NSString *const kCampaignIdFormat = @"%d";
 // The row whose audio sample is playing, or kNoActiveIndex when none is playing.
 @property(nonatomic, assign) int samplePlayedIndex;
 
-// The info-downloader completion branches, de-inlined from the single binary downloaderFinished:.
-- (void)handleInfoDownloaderFinished:(Downloader *)downloader;
-- (void)handleMusicInfoDownloaderFinished:(Downloader *)downloader;
-- (void)handleTermsCheckerFinished:(Downloader *)downloader;
-- (void)handleItemURLDownloaderFinished:(Downloader *)downloader;
 @end
+
+// The four completion branches of the single binary -downloaderFinished:, de-inlined. They are
+// functions rather than methods because the class metadata defines no such selectors.
+static void
+RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
+                                       Downloader *downloader);
+static void
+RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
+                                            Downloader *downloader);
+static void
+RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
+                                     Downloader *downloader);
+static void
+RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
+                                          Downloader *downloader);
 
 @implementation RBCampaignViewController
 
@@ -781,16 +791,16 @@ static NSString *const kCampaignIdFormat = @"%d";
 /** @ghidraAddress 0x1fc988 */
 - (void)downloaderFinished:(Downloader *)downloader {
     if (self.infoDownloader == downloader) {
-        [self handleInfoDownloaderFinished:downloader];
+        RBCampaignHandleInfoDownloaderFinished(self, downloader);
     }
     if (self.musicInfoDownloader == downloader) {
-        [self handleMusicInfoDownloaderFinished:downloader];
+        RBCampaignHandleMusicInfoDownloaderFinished(self, downloader);
     }
     if (self.termsChecker == downloader) {
-        [self handleTermsCheckerFinished:downloader];
+        RBCampaignHandleTermsCheckerFinished(self, downloader);
     }
     if (self.itemURLDownloader == downloader) {
-        [self handleItemURLDownloaderFinished:downloader];
+        RBCampaignHandleItemURLDownloaderFinished(self, downloader);
     }
     if (self.sampleDownloader == downloader) {
         if (self.samplePlayedIndex >= 0) {
@@ -801,11 +811,13 @@ static NSString *const kCampaignIdFormat = @"%d";
 }
 
 /** @ghidraAddress 0x1fc988 (info-downloader branch) */
-- (void)handleInfoDownloaderFinished:(Downloader *)downloader {
-    self.loadingLabel.hidden = YES;
+static void
+RBCampaignHandleInfoDownloaderFinished(RBCampaignViewController *controller,
+                                       Downloader *downloader) {
+    controller.loadingLabel.hidden = YES;
     NSDictionary *json = [downloader getDataInJSON];
     if (json == nil || ![downloader hashChecked]) {
-        [self showError:g_pLocalizedServerConnectFailed];
+        [controller showError:g_pLocalizedServerConnectFailed];
         return;
     }
 
@@ -813,24 +825,26 @@ static NSString *const kCampaignIdFormat = @"%d";
     if (list.count == 0) {
         NSString *error = json[kJSONKeyError];
         if (error == nil || error.length == 0) {
-            [self showError:g_pLocalizedServerConnectFailed];
+            [controller showError:g_pLocalizedServerConnectFailed];
         } else {
-            [self showError:error];
+            [controller showError:error];
         }
     } else {
-        self.unlockMusicCheckList = [NSArray arrayWithArray:list];
-        [self refreshUnlockTable];
-        [self refreshMusicList];
+        controller.unlockMusicCheckList = [NSArray arrayWithArray:list];
+        [controller refreshUnlockTable];
+        [controller refreshMusicList];
     }
 
     if ([[AppDelegate appDelegate] getCampaignIDForOpenStore] != nil &&
-        self.downloadMusicList.count != 0) {
-        [self forceOpenCampaignDetailView];
+        controller.downloadMusicList.count != 0) {
+        [controller forceOpenCampaignDetailView];
     }
 }
 
 /** @ghidraAddress 0x1fc988 (music-info-downloader branch) */
-- (void)handleMusicInfoDownloaderFinished:(Downloader *)downloader {
+static void
+RBCampaignHandleMusicInfoDownloaderFinished(RBCampaignViewController *controller,
+                                            Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json == nil) {
         return;
@@ -840,35 +854,38 @@ static NSString *const kCampaignIdFormat = @"%d";
         return;
     }
 
-    StoreDialogView *dialog = self.parent.modalDialog;
+    StoreDialogView *dialog = controller.parent.modalDialog;
     [dialog layout:NO];
     dialog.labelMessage.text =
         [NSString stringWithFormat:g_pDownloadingMessageFormat, musicInfo.name];
     dialog.progressView.progress = 0;
-    [self.parent showModalDialog:self];
+    [controller.parent showModalDialog:controller];
 
     if ([[RBMusicManager getInstance] addPurchasedMusic:musicInfo]) {
         [[RBMusicManager getInstance] savePurchasedMusics];
     }
-    [self.downloadMusicList[self.workingIndex] termCheck];
-    [self refreshUnlockBadge];
-    [self updateExperienceData];
+    [controller.downloadMusicList[controller.workingIndex] termCheck];
+    [controller refreshUnlockBadge];
+    [controller updateExperienceData];
 
     NSString *path = [RBMusicManager getPathFromPurchesed:musicInfo.musicID];
     StoreDownloadTask *task = [[StoreDownloadTask alloc] initWithURL:musicInfo.itemURL
                                                                 path:path
                                                            AddObject:nil];
-    self.dlManager = [[StoreDownloadManager alloc] initWithTasks:@[ task ] delegate:self];
-    [self.dlManager start];
+    controller.dlManager = [[StoreDownloadManager alloc] initWithTasks:@[ task ]
+                                                             delegate:controller];
+    [controller.dlManager start];
 }
 
 /** @ghidraAddress 0x1fc988 (terms-checker branch) */
-- (void)handleTermsCheckerFinished:(Downloader *)downloader {
+static void
+RBCampaignHandleTermsCheckerFinished(RBCampaignViewController *controller,
+                                     Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json != nil) {
         if ([json[kJSONKeyStatus] intValue] == kServerStatusSuccess) {
-            StoreCampaignItemInfo *item = self.downloadMusicList[self.workingIndex];
-            for (NSMutableDictionary *checkItem in self.unlockMusicCheckList) {
+            StoreCampaignItemInfo *item = controller.downloadMusicList[controller.workingIndex];
+            for (NSMutableDictionary *checkItem in controller.unlockMusicCheckList) {
                 NSString *checkID = checkItem[kJSONKeyCampaignId];
                 NSString *itemID = [NSString stringWithFormat:kCampaignIdFormat, item.campaignID];
                 if ([checkID isEqualToString:itemID]) {
@@ -876,43 +893,45 @@ static NSString *const kCampaignIdFormat = @"%d";
                     StoreCampaignItemInfo *unlocked =
                         [[StoreCampaignItemInfo alloc] initWithDictionary:checkItem];
                     [unlocked termCheck];
-                    self.downloadMusicList[self.workingIndex] = unlocked;
-                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.workingIndex
+                    controller.downloadMusicList[controller.workingIndex] = unlocked;
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:controller.workingIndex
                                                                 inSection:0];
                     StoreCampaignTableViewCell *cell =
-                        [self.tableView cellForRowAtIndexPath:indexPath];
-                    [cell setInfo:unlocked tag:self.workingIndex];
-                    [self updateExperienceData];
+                        [controller.tableView cellForRowAtIndexPath:indexPath];
+                    [cell setInfo:unlocked tag:controller.workingIndex];
+                    [controller updateExperienceData];
                     break;
                 }
             }
-            [self.tableView reloadData];
-            [self itemInfoDownload];
+            [controller.tableView reloadData];
+            [controller itemInfoDownload];
         } else {
             [UIAlertView showWithErrorMessage:json[kJSONKeyError] delegate:nil];
-            self.workingIndex = kNoActiveIndex;
+            controller.workingIndex = kNoActiveIndex;
         }
     }
-    self.termsChecker = nil;
+    controller.termsChecker = nil;
 }
 
 /** @ghidraAddress 0x1fc988 (item-url-downloader branch) */
-- (void)handleItemURLDownloaderFinished:(Downloader *)downloader {
+static void
+RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
+                                          Downloader *downloader) {
     NSDictionary *json = [downloader getDataInJSON];
     if (json != nil) {
         if ([json[kJSONKeyStatus] intValue] == kServerStatusSuccess) {
-            StoreCampaignItemInfo *item = self.downloadMusicList[self.workingIndex];
+            StoreCampaignItemInfo *item = controller.downloadMusicList[controller.workingIndex];
             if (item.itemType == kCampaignItemTypeTune && json[kJSONKeyURL] != nil) {
                 NSURL *url = [StoreUtil musicInfoURL:item.itemID];
-                self.musicInfoDownloader = [[Downloader alloc] initWithURL:url save:nil];
-                [self.musicInfoDownloader startDownloadingWithDelegate:self];
+                controller.musicInfoDownloader = [[Downloader alloc] initWithURL:url save:nil];
+                [controller.musicInfoDownloader startDownloadingWithDelegate:controller];
             }
         } else {
             [UIAlertView showWithErrorMessage:json[kJSONKeyError] delegate:nil];
-            self.workingIndex = kNoActiveIndex;
+            controller.workingIndex = kNoActiveIndex;
         }
     }
-    self.itemURLDownloader = nil;
+    controller.itemURLDownloader = nil;
 }
 
 /** @ghidraAddress 0x1fda70 */

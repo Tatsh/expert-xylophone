@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3798 verified
-(59.9%).
+Total: 6343 — 6201 reconstructed, 3824 verified
+(60.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1021,10 +1021,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `getPreWebInfoURL` |  | ✅ | ✅ | `0x4eca4` |
 | `AppDelegate` | `-` | `setBaseTermURL:` |  | ✅ | ✅ | `0x4ecb4` |
 | `AppDelegate` | `-` | `getBaseTermURL` |  | ✅ | ✅ | `0x4ecec` |
-| `AppDelegate` | `-` | `getTermURLWithID:` |  | ✅ | ❌ | `0x4ecfc` |
+| `AppDelegate` | `-` | `getTermURLWithID:` |  | ✅ | ✅ | `0x4ecfc` |
 | `AppDelegate` | `-` | `setTermLastUpdateTimeString:` | prop | ✅ | ✅ | `0x4ee08` |
 | `AppDelegate` | `-` | `getTermLastUpdateTimeString` |  | ✅ | ✅ | `0x4ee40` |
-| `AppDelegate` | `-` | `needUpdateTerms` |  | ✅ | ❌ | `0x4ee50` |
+| `AppDelegate` | `-` | `needUpdateTerms` |  | ✅ | ✅ | `0x4ee50` |
 | `AppDelegate` | `-` | `setLatestTermsVersion:` |  | ✅ | ✅ | `0x4ef50` |
 | `AppDelegate` | `-` | `setInfoLastUpdateTimeString:` | prop | ✅ | ✅ | `0x4ef6c` |
 | `AppDelegate` | `-` | `getInfoLastUpdateTimeString` |  | ✅ | ✅ | `0x4efa4` |
@@ -1033,45 +1033,45 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `setCampaignIDForOpenStore:` | prop | ✅ | ✅ | `0x4effc` |
 | `AppDelegate` | `-` | `getCampaignIDForOpenStore` |  | ✅ | ✅ | `0x4f034` |
 | `AppDelegate` | `-` | `setExtendNotePIDForOpenStore:` | prop | ✅ | ✅ | `0x4f044` |
-| `AppDelegate` | `-` | `getExtendNotePIDForOpenStore` |  | ✅ | ❌ | `0x4f07c` |
-| `AppDelegate` | `+` | `getPushNotificationData` |  | ✅ | ❌ | `0x4f08c` |
-| `AppDelegate` | `+` | `popPushNotificationData` |  | ✅ | ❌ | `0x4f0fc` |
-| `AppDelegate` | `+` | `addPushNotificationData:` |  | ✅ | ❌ | `0x4f314` |
-| `AppDelegate` | `+` | `getOuterURL` |  | ✅ | ❌ | `0x4f3d4` |
-| `AppDelegate` | `+` | `setOuterURL:` |  | ✅ | ❌ | `0x4f444` |
-| `AppDelegate` | `-` | `isEnableEarlyBonus` |  | ✅ | ❌ | `0x4f4d0` |
-| `AppDelegate` | `-` | `isEnableHotBonus` |  | ✅ | ❌ | `0x4f658` |
+| `AppDelegate` | `-` | `getExtendNotePIDForOpenStore` |  | ✅ | ✅ | `0x4f07c` |
+| `AppDelegate` | `+` | `getPushNotificationData` |  | ✅ | ✅ | `0x4f08c` |
+| `AppDelegate` | `+` | `popPushNotificationData` |  | ✅ | ✅ | `0x4f0fc` |
+| `AppDelegate` | `+` | `addPushNotificationData:` |  | ✅ | ✅ | `0x4f314` |
+| `AppDelegate` | `+` | `getOuterURL` |  | ✅ | ✅ | `0x4f3d4` |
+| `AppDelegate` | `+` | `setOuterURL:` |  | ✅ | ✅ | `0x4f444` |
+| `AppDelegate` | `-` | `isEnableEarlyBonus` |  | ✅ | ✅ | `0x4f4d0` |
+| `AppDelegate` | `-` | `isEnableHotBonus` |  | ✅ | ✅ | `0x4f658` |
 | `AppDelegate` | `-` | `showTitle` |  | ✅ | ❌ | `0x4f7e0` |
-| `AppDelegate` | `-` | `showTerms` |  | ✅ | ❌ | `0x4faf4` |
-| `AppDelegate` | `-` | `startupRequest` |  | ✅ | ❌ | `0x4fb4c` |
+| `AppDelegate` | `-` | `showTerms` |  | ✅ | ✅ | `0x4faf4` |
+| `AppDelegate` | `-` | `startupRequest` |  | ✅ | ✅ | `0x4fb4c` |
 | `AppDelegate` | `-` | `showDownload` |  | ✅ | ❌ | `0x50398` |
 | `AppDelegate` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x504dc` |
 | `AppDelegate` | `+` | `ApplilinkInitialize` |  | ✅ | ❌ | `0x50698` |
 | `AppDelegate` | `+` | `setRecommendUnreadCount` |  | ✅ | ❌ | `0x50920` |
-| `AppDelegate` | `+` | `appDelegate` |  | ✅ | ❌ | `0x50af0` |
+| `AppDelegate` | `+` | `appDelegate` |  | ✅ | ✅ | `0x50af0` |
 | `AppDelegate` | `+` | `setNoBackupAttribute:` |  | ✅ | ❌ | `0x50b60` |
-| `AppDelegate` | `+` | `totalScoreLeaderboardCategory` |  | ✅ | ❌ | `0x50c8c` |
+| `AppDelegate` | `+` | `totalScoreLeaderboardCategory` |  | ✅ | ✅ | `0x50c8c` |
 | `AppDelegate` | `+` | `musicListKey` |  | ✅ | ❌ | `0x50cb8` |
 | `AppDelegate` | `+` | `getServerData` |  | ✅ | ❌ | `0x511cc` |
 | `AppDelegate` | `+` | `setServerData:andB:` |  | ✅ | ❌ | `0x514c8` |
-| `AppDelegate` | `+` | `saveDataKey` |  | ✅ | ❌ | `0x517fc` |
+| `AppDelegate` | `+` | `saveDataKey` |  | ✅ | ✅ | `0x517fc` |
 | `AppDelegate` | `-` | `resetGame` |  | ✅ | ❌ | `0x51828` |
 | `AppDelegate` | `-` | `application:openURL:sourceApplication:annotation:` |  | ✅ | ❌ | `0x51bc8` |
 | `AppDelegate` | `-` | `application:didFinishLaunchingWithOptions:` |  | ✅ | ❌ | `0x51c88` |
 | `AppDelegate` | `-` | `applicationDidBecomeActive:` |  | ✅ | ❌ | `0x52cbc` |
 | `AppDelegate` | `-` | `applicationWillResignActive:` |  | ✅ | ❌ | `0x52f8c` |
-| `AppDelegate` | `-` | `applicationWillEnterForeground:` |  | ✅ | ❌ | `0x5307c` |
+| `AppDelegate` | `-` | `applicationWillEnterForeground:` |  | ✅ | ✅ | `0x5307c` |
 | `AppDelegate` | `-` | `applicationDidEnterBackground:` |  | ✅ | ❌ | `0x530b4` |
 | `AppDelegate` | `-` | `applicationWillTerminate:` |  | ✅ | ❌ | `0x531a4` |
 | `AppDelegate` | `+` | `launchAppStore` |  | ❌ | ❌ | `0x53268` |
-| `AppDelegate` | `-` | `applicationDidReceiveMemoryWarning:` |  | ✅ | ❌ | `0x53350` |
+| `AppDelegate` | `-` | `applicationDidReceiveMemoryWarning:` |  | ✅ | ✅ | `0x53350` |
 | `AppDelegate` | `-` | `applicationSignificantTimeChange:` |  | ✅ | ✅ | `0x533b4` |
 | `AppDelegate` | `-` | `application:willChangeStatusBarOrientation:duration:` |  | ✅ | ✅ | `0x533b8` |
 | `AppDelegate` | `-` | `application:didChangeStatusBarOrientation:` |  | ✅ | ✅ | `0x533bc` |
 | `AppDelegate` | `-` | `application:willChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c0` |
 | `AppDelegate` | `-` | `application:didChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c4` |
 | `AppDelegate` | `-` | `startRegisterForRemoteNotification` |  | ✅ | ❌ | `0x533c8` |
-| `AppDelegate` | `-` | `application:didRegisterUserNotificationSettings:` |  | ✅ | ❌ | `0x53628` |
+| `AppDelegate` | `-` | `application:didRegisterUserNotificationSettings:` |  | ✅ | ✅ | `0x53628` |
 | `AppDelegate` | `-` | `application:didRegisterForRemoteNotificationsWithDeviceToken:` |  | ✅ | ❌ | `0x53678` |
 | `AppDelegate` | `-` | `application:didFailToRegisterForRemoteNotificationsWithError:` |  | ✅ | ✅ | `0x53cd4` |
 | `AppDelegate` | `-` | `application:didReceiveRemoteNotification:` |  | ✅ | ❌ | `0x53cd8` |
@@ -5489,14 +5489,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUserSettingData` | `-` | `setAlreadyReadTitleCaution:` | prop | ✅ | ✅ | `0x1f8d08` |
 | `RBUserSettingData` | `-` | `tutorialStatuses` | prop | ✅ | ✅ | `0x1f8d18` |
 | `RBUserSettingData` | `-` | `setTutorialStatuses:` | prop | ✅ | ✅ | `0x1f8d28` |
-| `RBCampaignViewController` | `-` | `initWithParent:` |  | ✅ | ❌ | `0x1f8e2c` |
+| `RBCampaignViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1f8e2c` |
 | `RBCampaignViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1f9220` |
 | `RBCampaignViewController` | `-` | `downloadCampaignList` |  | ✅ | ❌ | `0x1fa700` |
 | `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fa878` |
-| `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1faf5c` |
+| `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1faf5c` |
 | `RBCampaignViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1faf90` |
 | `RBCampaignViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1fb0dc` |
-| `RBCampaignViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fb0e4` |
+| `RBCampaignViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1fb0e4` |
 | `RBCampaignViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1fb118` |
 | `RBCampaignViewController` | `-` | `sampleStart` |  | ✅ | ❌ | `0x1fb228` |
 | `RBCampaignViewController` | `-` | `sampleStop` |  | ✅ | ❌ | `0x1fb410` |
@@ -5504,7 +5504,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x1fb72c` |
 | `RBCampaignViewController` | `-` | `showDetailView:` |  | ✅ | ❌ | `0x1fb934` |
 | `RBCampaignViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x1fbdac` |
-| `RBCampaignViewController` | `-` | `updateExperienceData` |  | ✅ | ❌ | `0x1fc128` |
+| `RBCampaignViewController` | `-` | `updateExperienceData` |  | ✅ | ✅ | `0x1fc128` |
 | `RBCampaignViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1fc3fc` |
 | `RBCampaignViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc74c` |
 | `RBCampaignViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1fc750` |
@@ -5520,13 +5520,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1fe368` |
 | `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ✅ | `0x1fe4f8` |
 | `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ❌ | `0x1fe4fc` |
-| `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ❌ | `0x1fec00` |
+| `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ✅ | `0x1fec00` |
 | `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ❌ | `0x1fec34` |
 | `RBCampaignViewController` | `-` | `refreshUnlockTable` |  | ✅ | ❌ | `0x1ff038` |
 | `RBCampaignViewController` | `-` | `refreshUnlockBadge` |  | ✅ | ❌ | `0x1ff470` |
-| `RBCampaignViewController` | `-` | `setBadgeCnt:` |  | ✅ | ❌ | `0x1ff5cc` |
-| `RBCampaignViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1ff6a0` |
-| `RBCampaignViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x1ff6d4` |
+| `RBCampaignViewController` | `-` | `setBadgeCnt:` |  | ✅ | ✅ | `0x1ff5cc` |
+| `RBCampaignViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1ff6a0` |
+| `RBCampaignViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x1ff6d4` |
 | `RBCampaignViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1ff728` |
 | `RBCampaignViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ff7bc` |
 | `RBCampaignViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ff91c` |

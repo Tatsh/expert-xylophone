@@ -49,9 +49,8 @@
 #import "sheetlayer.h"
 #import "touchmanager.h"
 
-// Private web-info-response helpers messaged from the startup-request success block and each other.
+// Messaged from the startup-request success block, which the binary emits inline there.
 @interface AppDelegate ()
-- (void)handleWebInfoResponse:(nullable Downloader *)response;
 - (void)setPreWebInfoURL:(nullable NSString *)preWebInfoURL;
 @end
 
@@ -896,58 +895,56 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x4fb4c */
 - (void)startupRequest {
+    // The receiver comes from +appDelegate and is held weakly; the binary never touches self here.
+    __weak AppDelegate *weakSelf = AppDelegate.appDelegate;
     // Cancel any in-flight startup download before issuing a fresh one.
-    if (self.downloader) {
-        [self.downloader cancel];
-        self.downloader = nil;
+    if (weakSelf.downloader) {
+        [weakSelf.downloader cancel];
+        weakSelf.downloader = nil;
     }
-    self.downloader = [[Downloader alloc] initWithURL:[NetworkUtil startupURL] save:nil];
-    [self.downloader
+    weakSelf.downloader = [[Downloader alloc] initWithURL:[NetworkUtil startupURL] save:nil];
+    [weakSelf.downloader
         startDownloadingWithProceed:^(Downloader *downloader) {
           /** @ghidraAddress 0x4fde8 */
           // The proceed handler is empty.
         }
         success:^(Downloader *downloader) {
-          [self handleWebInfoResponse:downloader];
+          /** @ghidraAddress 0x4fdec */
+          NSDictionary *json = [downloader getDataInJSON];
+          NSString *url = json[kWebInfoKeyURL];
+          NSString *updateTime = json[kWebInfoKeyUpdateTime];
+          NSString *lastRead = RBUserSettingData.sharedInstance.infoLastReadTimeString;
+          [weakSelf setPreWebInfoURL:json[kWebInfoKeyAnotherURL]];
+
+          NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+          formatter.dateFormat = kWebInfoDateFormat;
+          if (lastRead == nil) {
+              // No prior read: adopt the served info unconditionally.
+              [weakSelf setWebInfoURL:url];
+              weakSelf.infoLastUpdateTimeString = updateTime;
+          } else {
+              NSDate *last = [formatter dateFromString:lastRead];
+              if (last == nil) {
+                  last = [formatter dateFromString:kWebInfoEpochFallback];
+              }
+              NSDate *served = [formatter dateFromString:updateTime];
+              // Adopt the served info only when it is newer than what was last read.
+              if ([last compare:served] == NSOrderedAscending) {
+                  [weakSelf setWebInfoURL:url];
+                  weakSelf.infoLastUpdateTimeString = updateTime;
+              }
+          }
+
+          // Rebuild the base web-info URL from the served URL's scheme, host, and path.
+          NSURL *served = [NSURL URLWithString:url];
+          NSString *base = [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host,
+                                                      served.path];
+          weakSelf.urlBaseWebInfo = [NSURL URLWithString:base];
         }
         failure:^(Downloader *downloader){
             /** @ghidraAddress 0x50394 */
             // The failure handler is empty.
         }];
-}
-
-/** @ghidraAddress 0x4fdec */
-- (void)handleWebInfoResponse:(Downloader *)response {
-    NSDictionary *json = [response getDataInJSON];
-    NSString *url = json[kWebInfoKeyURL];
-    NSString *updateTime = json[kWebInfoKeyUpdateTime];
-    NSString *lastRead = RBUserSettingData.sharedInstance.infoLastReadTimeString;
-    [self setPreWebInfoURL:json[kWebInfoKeyAnotherURL]];
-
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = kWebInfoDateFormat;
-    if (lastRead == nil) {
-        // No prior read: adopt the served info unconditionally.
-        [self setWebInfoURL:url];
-        self.infoLastUpdateTimeString = updateTime;
-    } else {
-        NSDate *last = [formatter dateFromString:lastRead];
-        if (last == nil) {
-            last = [formatter dateFromString:kWebInfoEpochFallback];
-        }
-        NSDate *served = [formatter dateFromString:updateTime];
-        // Adopt the served info only when it is newer than what was last read.
-        if ([last compare:served] == NSOrderedAscending) {
-            [self setWebInfoURL:url];
-            self.infoLastUpdateTimeString = updateTime;
-        }
-    }
-
-    // Rebuild the base web-info URL from the served URL's scheme, host, and path.
-    NSURL *served = [NSURL URLWithString:url];
-    NSString *base =
-        [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host, served.path];
-    self.urlBaseWebInfo = [NSURL URLWithString:base];
 }
 
 /** @ghidraAddress 0x4eb88 */
@@ -1081,10 +1078,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x4f0fc */
 + (NSDictionary *)popPushNotificationData {
-    NSMutableArray *pushList = AppDelegate.appDelegate.pushList;
-    if (pushList != nil && pushList.count != 0) {
-        NSDictionary *data = pushList[0];
-        [pushList removeObjectAtIndex:0];
+    // The binary re-sends appDelegate and pushList for each step rather than holding the list in
+    // a local, and it sends -objectAtIndex:, not the subscript form.
+    if (AppDelegate.appDelegate.pushList != nil && AppDelegate.appDelegate.pushList.count != 0) {
+        NSDictionary *data = [AppDelegate.appDelegate.pushList objectAtIndex:0];
+        [AppDelegate.appDelegate.pushList removeObjectAtIndex:0];
         return data;
     }
     return nil;
