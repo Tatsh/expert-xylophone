@@ -394,6 +394,7 @@ symtab
 sysctlbyname
 tabletennis
 tatsh
+tbnz
 teardown
 tentei
 texel
@@ -411,6 +412,7 @@ totalscorephone
 totto
 touchmanager
 transactioing
+ucvtf
 udid
 udids
 udvare
