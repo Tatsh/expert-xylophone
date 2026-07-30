@@ -167,6 +167,8 @@ target_sources(rbplus PRIVATE
     RewardWebAPI.m
     RewardWebViewController.m
     RotateStoreProductViewController.m
+    SFSafariViewController+RB.m
+    SKStoreProductViewController+RB.m
     ScoreData.m
     ScoreTracker.cpp
     SePlayer.m
@@ -213,6 +215,7 @@ target_sources(rbplus PRIVATE
     UIColor+RB.m
     UIImage+RB.m
     UIImageView+RB.m
+    UITextView+RB.m
     UIView+RB.m
     main.m
     neGLView.mm
@@ -384,6 +387,8 @@ target_sources(rbplus PRIVATE
     RewardWebAPI.h
     RewardWebViewController.h
     RotateStoreProductViewController.h
+    SFSafariViewController+RB.h
+    SKStoreProductViewController+RB.h
     ScoreData.h
     ScoreTracker.h
     SePlayer.h
@@ -431,6 +436,7 @@ target_sources(rbplus PRIVATE
     UIColor+RB.h
     UIImage+RB.h
     UIImageView+RB.h
+    UITextView+RB.h
     UIView+RB.h
     neGLView.h
     neWindow.h

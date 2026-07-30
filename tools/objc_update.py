@@ -2050,6 +2050,14 @@ VERIFIED = {
     0x1A3268: 'UIImage(RB) -colorMatrixFilterWithRed:green:blue:alpha: builds the whole CIFilter '
               'in one variadic call, then sends -outputImage twice, once for the render and once '
               'for the extent',
+    # Three one-method categories that had no reconstruction at all, each a two-instruction body.
+    # A category does not name the class it extends, so each class was recovered from the import
+    # its class field binds to: the field reads as an EXTERNAL address 0x100 apart per import, and
+    # that ordering matches the undefined-symbol name table exactly, checked against the five
+    # categories whose class was already known (NSArray, NSData, NSString, NSFileManager, UIView).
+    0x20F48: 'SFSafariViewController(RB) -prefersStatusBarHidden is mov w0,#1 then ret',
+    0x366F0: 'UITextView(RB) -canBecomeFirstResponder is mov w0,#0 then ret',
+    0x88FB8: 'SKStoreProductViewController(RB) -prefersStatusBarHidden is mov w0,#1 then ret',
 }
 
 

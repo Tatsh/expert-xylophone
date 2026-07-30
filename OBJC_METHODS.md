@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4531 verified
-(71.4%).
+Total: 6343 — 6206 reconstructed, 4534 verified
+(71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -394,7 +394,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPastelManager` | `+` | `tryShow:` |  | ❌ | ❌ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
-| `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x20f48` |
+| `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x20f48` |
 | `StoreExtendNoteDetailViewPad` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x22068` |
 | `StoreExtendNoteDetailViewPad` | `-` | `removeNoteInfo` |  | ✅ | ❌ | `0x24b78` |
 | `StoreExtendNoteDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x24f68` |
@@ -638,7 +638,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `-` | `setTutorialView:` | prop | ✅ | ✅ | `0x364bc` |
 | `RBTutorialManager` | `-` | `unlockItemInfo` | prop | ✅ | ✅ | `0x364d0` |
 | `RBTutorialManager` | `-` | `setUnlockItemInfo:` | prop | ✅ | ✅ | `0x364e0` |
-| `(RB)` | `-` | `canBecomeFirstResponder` |  | ❌ | ❌ | `0x366f0` |
+| `(RB)` | `-` | `canBecomeFirstResponder` |  | ✅ | ✅ | `0x366f0` |
 | `RBHttpUtil` | `+` | `dictionaryToQueryData:` |  | ✅ | ❌ | `0x36754` |
 | `RBHttpUtil` | `+` | `dictionaryToJsonData:` |  | ✅ | ❌ | `0x36aa8` |
 | `RBHttpUtil` | `-` | `init` |  | ✅ | ❌ | `0x36b5c` |
@@ -1813,7 +1813,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setNoteNum:` | prop | ✅ | ✅ | `0x88e88` |
 | `TwitterImageCreater` | `-` | `color` | prop | ✅ | ✅ | `0x88e98` |
 | `TwitterImageCreater` | `-` | `setColor:` | prop | ✅ | ✅ | `0x88ea8` |
-| `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x88fb8` |
+| `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x88fb8` |
 | `RBViewController` | `-` | `init` |  | ✅ | ✅ | `0x88fc0` |
 | `RBViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x89050` |
 | `RBViewController` | `-` | `showPresentViewController` |  | ✅ | ✅ | `0x893c4` |
