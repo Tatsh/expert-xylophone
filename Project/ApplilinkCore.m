@@ -64,7 +64,9 @@ static NSString *const kApplilinkResponseErrorCodeKey = @"error_code";
 static NSString *const kApplilinkAdStorageService = @"adStorageIndex";
 static NSString *const kApplilinkAdStorageIndex = @"0";
 
-// The default environment string used when none is supplied.
+// The default environment string. It is both the value substituted when no environment is supplied
+// and the sentinel the clear methods compare against to decide whether a non-default environment is
+// configured. The binary uses one shared literal at 0x3641a0 for both roles.
 static NSString *const kApplilinkDefaultEnv = @"0";
 
 // The path appended to the SSL base URL for the session-regenerate request.
@@ -194,9 +196,9 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (void)appAuthSessionRegenerateWithBlock:(void (^)(NSError *_Nullable error))block {
     if (sSessionValid) {
-        if (block) {
-            block(nil);
-        }
+        // Unlike initializeWithAppliId:…:callback:, this method invokes its block without a nil
+        // check, so a nil block is a caller error rather than a no-op.
+        block(nil);
         return;
     }
     NSString *url =
@@ -223,18 +225,14 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
                   [ApplilinkNetworkError localizedApplilinkErrorWithCode:kApplilinkErrorCodeSession
                                                                 userInfo:response];
           }
-          if (block) {
-              block(error);
-          }
+          block(error);
           [ApplilinkWebAPI setSessionStatus:sSessionValid];
           [ApplilinkWebAPI setSessionConnectionWait:NO];
         }
         failedBlock:^(id request, NSError *error) {
           /** @ghidraAddress 0x21616c */
           [ApplilinkWebAPI setSessionConnectionWait:NO];
-          if (block) {
-              block(error);
-          }
+          block(error);
         }];
 }
 
@@ -430,7 +428,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (void)clearUDID {
     NSString *env = [ApplilinkConsts envServer];
-    if (env && ![env isEqualToString:@""]) {
+    if (env && ![env isEqualToString:kApplilinkDefaultEnv]) {
         [ApplilinkUdid deleteAllUDID];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApplilinkRewardStorageIndexKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -447,7 +445,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (void)clearKeyChainOldUDID {
     NSString *env = [ApplilinkConsts envServer];
-    if (env && ![env isEqualToString:@""]) {
+    if (env && ![env isEqualToString:kApplilinkDefaultEnv]) {
         NSError *error = nil;
         [ApplilinkUdid deleteOldUdidWithError:&error];
     }
@@ -462,7 +460,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 
 + (void)clearAdUDID {
     NSString *env = [ApplilinkConsts envServer];
-    if (env && ![env isEqualToString:@""]) {
+    if (env && ![env isEqualToString:kApplilinkDefaultEnv]) {
         [ApplilinkUdid deleteAllAdvertisingUDID];
         [ApplilinkUdid setService:kApplilinkAdStorageService
                  withStorageIndex:kApplilinkAdStorageIndex];
