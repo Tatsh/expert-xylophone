@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4391 verified
-(69.2%).
+Total: 6343 — 6203 reconstructed, 4404 verified
+(69.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5797,32 +5797,32 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkCore` | `+` | `isInitializeStatusFlg` |  | ✅ | ✅ | `0x214fc4` |
 | `ApplilinkCore` | `+` | `appliId` |  | ✅ | ✅ | `0x214fd4` |
 | `ApplilinkCore` | `+` | `currentUdid` |  | ✅ | ✅ | `0x215040` |
-| `ApplilinkCore` | `+` | `udid_cache` |  | ✅ | ❌ | `0x2150bc` |
-| `ApplilinkCore` | `+` | `ad_udid_cache` |  | ✅ | ❌ | `0x2150cc` |
-| `ApplilinkCore` | `+` | `old_udid_cache` |  | ✅ | ❌ | `0x2150dc` |
+| `ApplilinkCore` | `+` | `udid_cache` |  | ✅ | ✅ | `0x2150bc` |
+| `ApplilinkCore` | `+` | `ad_udid_cache` |  | ✅ | ✅ | `0x2150cc` |
+| `ApplilinkCore` | `+` | `old_udid_cache` |  | ✅ | ✅ | `0x2150dc` |
 | `ApplilinkCore` | `+` | `udid` |  | ✅ | ❌ | `0x2150ec` |
 | `ApplilinkCore` | `+` | `pasteBoard_udid` |  | ✅ | ❌ | `0x215260` |
 | `ApplilinkCore` | `+` | `ad_udid` |  | ✅ | ❌ | `0x2153a0` |
 | `ApplilinkCore` | `+` | `old_udid` |  | ✅ | ❌ | `0x21558c` |
 | `ApplilinkCore` | `+` | `checkUdid` |  | ✅ | ❌ | `0x215654` |
 | `ApplilinkCore` | `+` | `clearUDID` |  | ✅ | ❌ | `0x2156c4` |
-| `ApplilinkCore` | `+` | `setAdUdid:` |  | ✅ | ❌ | `0x2157f8` |
+| `ApplilinkCore` | `+` | `setAdUdid:` |  | ✅ | ✅ | `0x2157f8` |
 | `ApplilinkCore` | `+` | `clearKeyChainOldUDID` |  | ✅ | ❌ | `0x215864` |
 | `ApplilinkCore` | `+` | `clearAdUDID` |  | ✅ | ❌ | `0x2159bc` |
 | `ApplilinkCore` | `+` | `clearInitialize` |  | ✅ | ❌ | `0x215a90` |
-| `ApplilinkCore` | `+` | `signatureKey` |  | ✅ | ❌ | `0x215b2c` |
-| `ApplilinkCore` | `+` | `versionDev` |  | ✅ | ❌ | `0x215b58` |
+| `ApplilinkCore` | `+` | `signatureKey` |  | ✅ | ✅ | `0x215b2c` |
+| `ApplilinkCore` | `+` | `versionDev` |  | ✅ | ✅ | `0x215b58` |
 | `ApplilinkCore` | `+` | `showAppStoreId:appParam:delegate:` |  | ✅ | ❌ | `0x215ba4` |
 | `ApplilinkCore` | `+` | `closeAppStore` |  | ✅ | ❌ | `0x215c9c` |
 | `ApplilinkCore` | `+` | `updatePasteBoard` |  | ✅ | ❌ | `0x215cec` |
 | `ApplilinkCore` | `+` | `appAuthSessionRegenerateWithBlock:` |  | ✅ | ❌ | `0x215d7c` |
-| `ApplilinkCore` | `+` | `toDelegateDidStart:delegate:` |  | ✅ | ❌ | `0x2161ec` |
-| `ApplilinkCore` | `+` | `toDelegateDidAppear:delegate:` |  | ✅ | ❌ | `0x2162d4` |
-| `ApplilinkCore` | `+` | `toDelegateDidDisappear:delegate:` |  | ✅ | ❌ | `0x2163bc` |
-| `ApplilinkCore` | `+` | `toDelegateFailOpenWithError:appParam:delegate:` |  | ✅ | ❌ | `0x2164a4` |
-| `ApplilinkCore` | `+` | `toDelegateFailLoadWithError:appParam:delegate:` |  | ✅ | ❌ | `0x2165d8` |
-| `ApplilinkCore` | `+` | `toDelegateFailWithError:appParam:delegate:` |  | ✅ | ❌ | `0x21670c` |
-| `ApplilinkCore` | `+` | `toDelegateFailLinkWithError:appParam:delegate:` |  | ✅ | ❌ | `0x216814` |
+| `ApplilinkCore` | `+` | `toDelegateDidStart:delegate:` |  | ✅ | ✅ | `0x2161ec` |
+| `ApplilinkCore` | `+` | `toDelegateDidAppear:delegate:` |  | ✅ | ✅ | `0x2162d4` |
+| `ApplilinkCore` | `+` | `toDelegateDidDisappear:delegate:` |  | ✅ | ✅ | `0x2163bc` |
+| `ApplilinkCore` | `+` | `toDelegateFailOpenWithError:appParam:delegate:` |  | ✅ | ✅ | `0x2164a4` |
+| `ApplilinkCore` | `+` | `toDelegateFailLoadWithError:appParam:delegate:` |  | ✅ | ✅ | `0x2165d8` |
+| `ApplilinkCore` | `+` | `toDelegateFailWithError:appParam:delegate:` |  | ✅ | ✅ | `0x21670c` |
+| `ApplilinkCore` | `+` | `toDelegateFailLinkWithError:appParam:delegate:` |  | ✅ | ✅ | `0x216814` |
 | `RecommendAdWebView` | `-` | `init` |  | ✅ | ❌ | `0x21691c` |
 | `RecommendAdWebView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x216980` |
 | `RecommendAdWebView` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x2169e4` |

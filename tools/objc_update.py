@@ -1688,6 +1688,28 @@ VERIFIED = {
             'pack-info alert through the ivars (offset variables 0x3c808c and 0x3c8090), '
             'dismisses that alert, stops the sample, pops the pushed music, cancels the sample '
             'downloader, and tells the delegate the alert closed',
+    # ApplilinkCore's UDID caches are three file statics in one block at 0x3df630: ad at +0x20,
+    # udid at +0x28, old at +0x30. The accessors are bare loads and our offsets match.
+    0x2150bc: 'ApplilinkCore +udid_cache bare load of the static at 0x3df658',
+    0x2150cc: 'ApplilinkCore +ad_udid_cache bare load of the static at 0x3df650',
+    0x2150dc: 'ApplilinkCore +old_udid_cache bare load of the static at 0x3df660',
+    0x2157f8: 'ApplilinkCore +setAdUdid:: one stack slot at 0x21581c, so the %@ format takes the '
+              'argument alone, then the old-UDID cache is cleared',
+    # The key is 128 characters and was compared byte for byte against our literal, not eyeballed.
+    0x215b2c: 'ApplilinkCore +signatureKey returns the constant at 0x371180',
+    0x215b58: 'ApplilinkCore +versionDev: the stp at 0x215b88 puts "2.2.2" then "5" on the stack, '
+              'so the %@.%@ format renders 2.2.2.5',
+    # The six fan-outs share one shape: nil delegate returns, then the two-argument selector is
+    # preferred but only when requestCode is non-zero, else the one-argument form.
+    0x2161ec: 'ApplilinkCore +toDelegateDidStart:delegate: two-arm respondsToSelector: fan-out',
+    0x2162d4: 'ApplilinkCore +toDelegateDidAppear:delegate: the same shape',
+    0x2163bc: 'ApplilinkCore +toDelegateDidDisappear:delegate: the same shape',
+    0x2164a4: 'ApplilinkCore +toDelegateFailOpenWithError:appParam:delegate: chains to '
+              '+toDelegateFailWithError: afterwards (0x216594)',
+    0x2165d8: 'ApplilinkCore +toDelegateFailLoadWithError:appParam:delegate: chains likewise '
+              '(0x2166c8)',
+    0x21670c: 'ApplilinkCore +toDelegateFailWithError:appParam:delegate: does NOT chain onwards',
+    0x216814: 'ApplilinkCore +toDelegateFailLinkWithError:appParam:delegate: does not chain either',
 }
 
 
