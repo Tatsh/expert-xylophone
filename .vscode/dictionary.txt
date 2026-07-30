@@ -261,6 +261,7 @@ mobileprovision
 modelines
 modelview
 movi
+movk
 movz
 msdos
 mtype
@@ -338,6 +339,7 @@ rbplus
 rbscorehash
 rdparty
 receiptdata
+recentres
 recomputation
 rect
 rects
