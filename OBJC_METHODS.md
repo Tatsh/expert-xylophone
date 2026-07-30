@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 3962 verified
+Total: 6343 — 6203 reconstructed, 3964 verified
 (62.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1075,7 +1075,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `application:didRegisterForRemoteNotificationsWithDeviceToken:` |  | ✅ | ❌ | `0x53678` |
 | `AppDelegate` | `-` | `application:didFailToRegisterForRemoteNotificationsWithError:` |  | ✅ | ✅ | `0x53cd4` |
 | `AppDelegate` | `-` | `application:didReceiveRemoteNotification:` |  | ✅ | ❌ | `0x53cd8` |
-| `AppDelegate` | `-` | `application:didReceiveLocalNotification:` |  | ✅ | ❌ | `0x54210` |
+| `AppDelegate` | `-` | `application:didReceiveLocalNotification:` |  | ✅ | ✅ | `0x54210` |
 | `AppDelegate` | `-` | `applicationProtectedDataWillBecomeUnavailable:` |  | ✅ | ✅ | `0x54548` |
 | `AppDelegate` | `-` | `applicationProtectedDataDidBecomeAvailable:` |  | ✅ | ✅ | `0x5454c` |
 | `AppDelegate` | `-` | `audioSessionInterrupted:` |  | ✅ | ✅ | `0x54550` |
@@ -5183,7 +5183,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `selectShowMore` |  | ✅ | ✅ | `0x1ec078` |
 | `RBStorePageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ✅ | `0x1ec2e8` |
 | `RBStorePageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ec5ec` |
-| `RBStorePageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1ec5f0` |
+| `RBStorePageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ✅ | `0x1ec5f0` |
 | `RBStorePageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x1ecb34` |
 | `RBStorePageViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1ecd54` |
 | `RBStorePageViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1ed380` |

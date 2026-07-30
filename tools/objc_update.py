@@ -656,6 +656,13 @@ VERIFIED = {
               'fires when the result is false or the error is set',
     0x2088e0: 'RewardCore -createCFUdidWithError:: the pasteboard import runs only when '
               'one udid is present and the other is not',
+    0x1ec5f0: 'RBStorePageViewController -scrollViewDidScroll:: rewritten from the disassembly; '
+              'the arm test is the table content height against its bounds height, the frame is '
+              'captured three-quarters with origin.y replaced, and the second banner halves its '
+              'own height where the first uses the whole',
+    0x54210: 'AppDelegate -application:didReceiveLocalNotification:: the outer dictionary really '
+             'is a literal, three pairs read from the stack, but the inner lookup sends '
+             'objectForKey:',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

@@ -675,10 +675,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 - (void)application:(UIApplication *)application
     didReceiveLocalNotification:(UILocalNotification *)notification {
+    // The outer dictionary really is a literal here, but the userInfo lookup sends -objectForKey:.
     [self.pushList addObject:@{
         @"body" : notification.alertBody,
         @"sound" : notification.soundName,
-        @"url" : notification.userInfo[@"url"],
+        @"url" : [notification.userInfo objectForKey:@"url"],
     }];
 
     if (application.applicationState == UIApplicationStateActive && self.viewController &&

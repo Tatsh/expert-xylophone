@@ -1270,74 +1270,55 @@ static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002e
 
 /** @ghidraAddress 0x1ec5f0 */
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    // Kick off the next-page fetch when the list is scrolled near its content bottom and more is
-    // available.
-    if (!m_IsLoadingMoreList && (int)self.packListCtrl.packlistContinued != 0) {
+    // Kick off the next-page fetch once the visible bottom passes the content bottom.
+    if (!m_IsLoadingMoreList && self.packListCtrl.packlistContinued) {
         CGFloat offsetY = scrollView.contentOffset.y;
         CGFloat boundsHeight = scrollView.bounds.size.height;
-        CGFloat contentHeight = scrollView.contentSize.height;
-        // fadd d0,d8,d9 then fcmp d0,d1 with b.le skipping: the fetch fires once the visible
-        // bottom passes the content bottom, not on every scroll event.
-        if (offsetY + boundsHeight > contentHeight) {
+        if (offsetY + boundsHeight > scrollView.contentSize.height) {
             [self selectShowMore];
         }
     }
 
-    // Pin the first floating banner inside the visible region as the user scrolls.
-    CGFloat bannerHeight = (!m_IsPad) ? kBannerHeightPhone : kBannerHeightPad;
-    UIScrollView *bannerContainer = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
-    UIView *firstBanner = [bannerContainer viewWithTag:kTagFunBanner];
-    CGRect bannerFrame = firstBanner.frame;
-    CGFloat contentBottom = bannerContainer.contentSize.height;
-    CGFloat containerOriginY = bannerContainer.bounds.origin.y;
-    CGFloat newY;
-    if (containerOriginY <= contentBottom) {
-        CGFloat offsetY = scrollView.contentOffset.y;
-        CGFloat viewportHeight = scrollView.bounds.size.height;
-        newY = contentBottom + bannerHeight;
-        if (bannerFrame.size.height + newY < containerOriginY + offsetY) {
-            newY = (newY + offsetY) - viewportHeight;
-        }
-    } else {
-        CGFloat offsetY = scrollView.contentOffset.y;
-        newY = contentBottom + bannerHeight;
-        if (bannerFrame.size.height + newY < offsetY + containerOriginY) {
-            newY = (newY + containerOriginY) - contentBottom;
-        }
+    // Pin the "store fun" banner below the table's content as the user scrolls. The base the drop
+    // is added to is the scroll view's content height while the table can scroll, and its bounds
+    // height once it cannot.
+    UIScrollView *table = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
+    UIView *funBanner = [table viewWithTag:kTagFunBanner];
+    CGFloat funDrop = m_IsPad ? kBannerHeightPad : kBannerHeightPhone;
+    CGRect funFrame = funBanner.frame;
+    CGFloat funBase = (table.contentSize.height > table.bounds.size.height) ?
+                          scrollView.contentSize.height :
+                          scrollView.bounds.size.height;
+    CGFloat funY = funDrop + funBase;
+    if (scrollView.contentOffset.y + scrollView.bounds.size.height >
+        funFrame.size.height + funY) {
+        funY = scrollView.contentOffset.y + scrollView.bounds.size.height - funFrame.size.height;
     }
-    bannerFrame.origin.y = newY;
-    firstBanner.frame = bannerFrame;
+    funFrame.origin.y = funY;
+    funBanner.frame = funFrame;
 
-    // The second floating banner only exists during the March-2017 Hinabita campaign.
+    // The campaign banner exists only during the March-2017 Hinabita campaign. It repeats the
+    // block above, except that it offsets by half its own height rather than the whole of it.
     if (![RBCampaignData sharedInstance].isCampaignHinabita201703) {
         return;
     }
-    UIScrollView *container2 = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
-    UIView *secondBanner = [container2 viewWithTag:kTagCampaignBanner];
-    CGFloat bannerHeight2 = (!m_IsPad) ? kBannerHeightPhone : kBannerHeightPad;
-    CGRect frame2 = secondBanner.frame;
-    CGFloat contentBottom2 = container2.contentSize.height;
-    CGFloat containerOriginY2 = container2.bounds.origin.y;
-    CGFloat newY2;
-    if (frame2.origin.y <= contentBottom2) {
-        newY2 = contentBottom2 + bannerHeight2;
-        if (frame2.size.height + containerOriginY2 <=
-            newY2 + scrollView.bounds.size.height * kCenterScale) {
-            secondBanner.frame = frame2;
-            return;
-        }
-        newY2 = (newY2 + containerOriginY2) - scrollView.bounds.size.height * kCenterScale;
-    } else {
-        CGFloat offsetY = scrollView.contentOffset.y;
-        newY2 = frame2.origin.y + bannerHeight2;
-        if (contentBottom2 + offsetY <= newY2 + scrollView.bounds.size.height * kCenterScale) {
-            secondBanner.frame = frame2;
-            return;
-        }
-        newY2 = (newY2 + contentBottom2) - scrollView.bounds.size.height * kCenterScale;
+    UIScrollView *campaignTable = (UIScrollView *)[self.view viewWithTag:kTagPackTable];
+    UIView *campaignBanner = [campaignTable viewWithTag:kTagCampaignBanner];
+    CGFloat campaignDrop = m_IsPad ? kBannerHeightPad : kBannerHeightPhone;
+    CGRect campaignFrame = campaignBanner.frame;
+    CGFloat campaignBase =
+        (campaignTable.contentSize.height > campaignTable.bounds.size.height) ?
+            scrollView.contentSize.height :
+            scrollView.bounds.size.height;
+    CGFloat campaignY = campaignDrop + campaignBase;
+    CGFloat campaignHalfHeight = campaignFrame.size.height * kCenterScale;
+    if (scrollView.contentOffset.y + scrollView.bounds.size.height >
+        campaignHalfHeight + campaignY) {
+        campaignY =
+            scrollView.contentOffset.y + scrollView.bounds.size.height - campaignHalfHeight;
     }
-    frame2.origin.y = newY2;
-    secondBanner.frame = frame2;
+    campaignFrame.origin.y = campaignY;
+    campaignBanner.frame = campaignFrame;
 }
 
 #pragma mark - Detail view
