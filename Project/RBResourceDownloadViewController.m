@@ -810,7 +810,12 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // soft-float mangled, so the reconstruction centres both containers from their fixed sizes and
     // a 20-point gutter.
     CGRect bounds = self.view.bounds;
-    BOOL sideBySide = IsPad() || bounds.size.height <= bounds.size.width;
+    // Hypothesis under test, not a recovered predicate: the side-by-side arrangement needs
+    // kWideHelpCanvasWidth + kLayoutGap + the pastel width, which is 1010 points and so only fits a
+    // landscape iPad, yet this controller is locked to portrait on iPad. Selecting it purely on the
+    // idiom therefore cannot fit, while the stacked arrangement does. The competing explanation is
+    // that the bounds themselves are wrong, which the logging below is meant to settle.
+    BOOL sideBySide = bounds.size.height <= bounds.size.width;
 
     CGSize helpSize = self.helpView.frame.size;
     CGSize pastelSize = self.pastelView.frame.size;
@@ -847,6 +852,19 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
                    bounds.size.height,
                    sideBySide ? 1 : 0,
                    IsPad() ? 1 : 0);
+        // Is the container itself the wrong size? A full-screen controller should measure the whole
+        // screen, so print the chain from this view up to the window.
+        UIView *superview = self.view.superview;
+        UIWindow *window = self.view.window;
+        neDebugLog("  view.frame=(%.0f,%.0f %.0fx%.0f) super=%.0fx%.0f window=%.0fx%.0f",
+                   self.view.frame.origin.x,
+                   self.view.frame.origin.y,
+                   self.view.frame.size.width,
+                   self.view.frame.size.height,
+                   superview.bounds.size.width,
+                   superview.bounds.size.height,
+                   window.bounds.size.width,
+                   window.bounds.size.height);
         neDebugLog("  help  size=%.0fx%.0f frame=(%.0f,%.0f %.0fx%.0f)",
                    helpSize.width,
                    helpSize.height,
