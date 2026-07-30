@@ -21,6 +21,7 @@
 #include "curve.h"
 #include "game_scene.h"
 #include "gamesystem.h"
+#include "neDebugLog.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "shotsoundmanager.h"
@@ -439,6 +440,35 @@ void TitleColetteScene::EmitPartSprite(unsigned int nPartId,
         pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{layout.flPosX, layout.flPosY});
         pSprite->SetSpriteSize(nIndex, S_VECTOR2{layout.flWidth, layout.flHeight});
         pSprite->SetSpriteScale(nIndex, drawScale.width, drawScale.height);
+
+        // RBPDBG: this is the theme that actually runs, so record what the mapping is handed and
+        // what it produces for the logo. The pad path leaves the caller's position untouched while
+        // the other centres on the viewport, which is the asymmetry to judge against these numbers.
+        if (layout.nTextureIndex == kPartTypeLogo && NE_DBG_FIRST(4)) {
+            neDebugLog("colettePart id=%u isPad=%d tex=%d viewport=%.0fx%.0f",
+                       nPartId,
+                       bIsPad ? 1 : 0,
+                       layout.nTextureIndex,
+                       m_flViewportWidth,
+                       m_flViewportHeight);
+            neDebugLog("  in pos=(%.1f,%.1f) scale=(%.2f,%.2f) record anchor=(%.1f,%.1f) "
+                       "size=(%.1fx%.1f)",
+                       position.x,
+                       position.y,
+                       scale.width,
+                       scale.height,
+                       layout.flPosX,
+                       layout.flPosY,
+                       layout.flWidth,
+                       layout.flHeight);
+            neDebugLog("  out pos=(%.1f,%.1f) scale=(%.2f,%.2f) topLeft=(%.1f,%.1f)",
+                       drawPosition.x,
+                       drawPosition.y,
+                       drawScale.width,
+                       drawScale.height,
+                       drawPosition.x - layout.flPosX,
+                       drawPosition.y - layout.flPosY);
+        }
 
         // The touchable parts record their hit-box (top-left corner and extent) for the main loop.
         RecordPartHitBox(nPartId, drawPosition, layout);
