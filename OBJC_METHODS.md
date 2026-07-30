@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4473 verified
-(70.5%).
+Total: 6343 — 6203 reconstructed, 4476 verified
+(70.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1605,9 +1605,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPurchaseManager` | `-` | `paymentQueue:removedTransactions:` |  | ✅ | ✅ | `0x6ee94` |
 | `RBPurchaseManager` | `-` | `paymentQueueRestoreCompletedTransactionsFinished:` |  | ✅ | ✅ | `0x6efb4` |
 | `RBPurchaseManager` | `-` | `paymentQueue:restoreCompletedTransactionsFailedWithError:` |  | ✅ | ✅ | `0x6f288` |
-| `RBPurchaseManager` | `+` | `encodedStringWithBase64:` |  | ✅ | ❌ | `0x6f3b8` |
-| `RBPurchaseManager` | `+` | `encodedStringWithBase64V2:` |  | ✅ | ❌ | `0x6f544` |
-| `RBPurchaseManager` | `+` | `decodedStringWithBase64:` |  | ✅ | ❌ | `0x6f784` |
+| `RBPurchaseManager` | `+` | `encodedStringWithBase64:` |  | ✅ | ✅ | `0x6f3b8` |
+| `RBPurchaseManager` | `+` | `encodedStringWithBase64V2:` |  | ✅ | ✅ | `0x6f544` |
+| `RBPurchaseManager` | `+` | `decodedStringWithBase64:` |  | ✅ | ✅ | `0x6f784` |
 | `RBPurchaseManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x6f944` |
 | `RBPurchaseManager` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x7048c` |
 | `RBPurchaseManager` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x70490` |

@@ -970,6 +970,20 @@ VERIFIED = {
     0x8a3e8: 'RBViewController -didSelectMenuSortViewController:',
     0x8a530: 'RBViewController -willRotateToInterfaceOrientation:duration:',
     0x8a584: 'RBViewController -didRotateFromInterfaceOrientation:',
+    # RBPurchaseManager's three Base64 routines, worked instruction by instruction. The alphabet is
+    # the 64 bytes at 0x337e6e, and the decoder's linear search bounds itself at 0x41, one past the
+    # alphabet, so it can also match the NUL terminator at 0x337eae; the source's
+    # sizeof(kBase64Alphabet) is 65 and reproduces that exactly. The V1 encoder loads its bytes with
+    # ldrsb and then shifts at register width (lsr at 0x6f484 and 0x6f498), so the sign extension
+    # reaches the masked field for any byte above 0x7f; narrowing to unsigned char first would zero
+    # those bits. Its combines are add, at 0x6f488 and 0x6f49c, not or. The V2 encoder loads with
+    # ldrb throughout and needs no such care.
+    0x6f3b8: 'RBPurchaseManager +encodedStringWithBase64:: NUL-sentinel partial group, register '
+             'width shifts, pad count from the b2/b3 zero tests',
+    0x6f544: 'RBPurchaseManager +encodedStringWithBase64V2:: unsigned loads, bfi combines, the '
+             'two-byte and one-byte tails at 0x6f660 and 0x6f6c8',
+    0x6f784: 'RBPurchaseManager +decodedStringWithBase64:: 65-entry search, bfxil combines, the '
+             'written advance keyed on which of v2/v3 came back 0xff',
     # RBPurchaseManager's StoreKit observer. The transaction-state dispatch at 0x6ea0c is a compare
     # chain, not a jump table: 1 Purchased goes to 0x6ec34, 2 Failed to 0x6eb70, 3 Restored falls
     # through at 0x6ea24, and every other state - 0 Purchasing and 4 Deferred - lands on 0x6ed64,

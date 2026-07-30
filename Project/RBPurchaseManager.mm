@@ -482,9 +482,15 @@ constexpr NSUInteger kBase64OutputGroup = 4;
                 next = nextAfterSecond + 1;
                 padCount = secondIsNul ? 1 : 0;
             }
+            // The bytes are loaded with ldrsb and shifted at register width, not byte width: the
+            // lsr at 0x6f484 and 0x6f498 shift the sign-extended value, so a byte with its high
+            // bit set carries ones down into the masked field. Narrowing to unsigned char first
+            // would zero those, which is a different character for any input above 0x7f. The
+            // combines are add at 0x6f488 and 0x6f49c, not or, and the two differ once those
+            // fields overlap.
             cursor[0] = kBase64Alphabet[b1 >> 2];
-            cursor[1] = kBase64Alphabet[(b1 << 4 | static_cast<unsigned char>(b2) >> 4) & 0x3f];
-            cursor[2] = kBase64Alphabet[(b2 << 2 | static_cast<unsigned char>(b3) >> 6) & 0x3f];
+            cursor[1] = kBase64Alphabet[((b1 << 4) + (static_cast<unsigned int>(b2) >> 4)) & 0x3f];
+            cursor[2] = kBase64Alphabet[((b2 << 2) + (static_cast<unsigned int>(b3) >> 6)) & 0x3f];
             cursor[3] = padCount == 0 ? kBase64Alphabet[b3 & 0x3f] : kBase64Pad;
             if (padCount > 1) {
                 cursor[2] = kBase64Pad;
