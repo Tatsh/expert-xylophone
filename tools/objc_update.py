@@ -637,6 +637,25 @@ VERIFIED = {
     0x1ef7c0: 'RBStorePageViewController -updateExtendNoteInfo:Save:: the save flag '
               'gates the persist',
     0x1ef8a0: 'RBStorePageViewController -showTerms: mask 0x3f, five sends in order',
+    # RewardCore, first batch. Two of its three defects are exact repeats of RecommendCore's
+    # singleton pair, and a tree-wide sweep for that shape now returns nothing, so the two
+    # were the only instances and the pattern is closed.
+    0x2076e4: 'RewardCore -init: the whole body was dropped; the binary wraps the super '
+              'call in a dispatch_sync on the shared queue through a byref',
+    0x2078b8: 'RewardCore +allocWithZone:: creates the queue in its once body and '
+              'guards on the shared slot',
+    0x2079d0: 'RewardCore +sharedInstance: the instance slot is the file-scope one '
+              '+allocWithZone: writes, not a method-local static',
+    0x207a80: 'RewardCore -initializeFlg: tracking disabled returns zero before the ivar is read',
+    0x207acc: 'RewardCore -clearInitialize: clears the flag, removes the campaign key, '
+              'synchronises',
+    0x207b6c: 'RewardCore -campaignFlg: every failing arm falls to the same -2',
+    0x208624: 'RewardCore -startWithBlock:: the block tag named the method; the invoke '
+              'is at 0x2086bc',
+    0x208738: 'RewardCore -createUdidWithBlock:: an eor before the ccmp means the block '
+              'fires when the result is false or the error is set',
+    0x2088e0: 'RewardCore -createCFUdidWithError:: the pasteboard import runs only when '
+              'one udid is present and the other is not',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

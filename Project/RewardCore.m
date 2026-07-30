@@ -108,14 +108,13 @@ static dispatch_queue_t gRewardCoreQueue;
 
 // @ghidraAddress 0x2079d0
 + (instancetype)sharedInstance {
-    static RewardCore *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       /** @ghidraAddress 0x207a14 */
-      instance = [[RewardCore alloc] init];
-      instance.initializeFlg = 0;
+      gRewardCoreInstance = [[RewardCore alloc] init];
+      gRewardCoreInstance.initializeFlg = 0;
     });
-    return instance;
+    return gRewardCoreInstance;
 }
 
 /**
@@ -138,7 +137,14 @@ static dispatch_queue_t gRewardCoreQueue;
 // @ghidraAddress 0x2076e4 (init body dispatched onto a serial queue; InitRewardCoreBlockInvoke at
 // 0x2077f4 calls [super init]).
 - (instancetype)init {
-    return [super init];
+    // The super-init runs synchronously on the serial queue, so every initialisation of the
+    // singleton is serialised against its other work.
+    __block RewardCore *result = nil;
+    dispatch_sync(gRewardCoreQueue, ^{
+      /** @ghidraAddress 0x2077f4 */
+      result = [super init];
+    });
+    return result;
 }
 
 #pragma mark Properties
@@ -279,7 +285,7 @@ static dispatch_queue_t gRewardCoreQueue;
 // @ghidraAddress 0x208624.
 - (void)startWithBlock:(void (^)(NSError *error))block {
     [self startWithCallback:^(NSError *error) {
-      /** @ghidraAddress 0x208624 (RetrySessionStartBlockInvoke) */
+      /** @ghidraAddress 0x2086bc (RetrySessionStartBlockInvoke) */
       if (error) {
           block(error);
           return;

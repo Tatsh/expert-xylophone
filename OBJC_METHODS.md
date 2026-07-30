@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3953 verified
-(62.3%).
+Total: 6343 — 6201 reconstructed, 3962 verified
+(62.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5667,17 +5667,17 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkURLConnection` | `-` | `setReceivedData:` | prop | ✅ | ✅ | `0x207614` |
 | `ApplilinkURLConnection` | `-` | `responseData` | prop | ✅ | ✅ | `0x20764c` |
 | `ApplilinkURLConnection` | `-` | `setResponseData:` | prop | ✅ | ✅ | `0x20765c` |
-| `RewardCore` | `-` | `init` |  | ✅ | ❌ | `0x2076e4` |
-| `RewardCore` | `+` | `allocWithZone:` |  | ✅ | ❌ | `0x2078b8` |
-| `RewardCore` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x2079d0` |
-| `RewardCore` | `-` | `initializeFlg` | prop | ✅ | ❌ | `0x207a80` |
-| `RewardCore` | `-` | `clearInitialize` |  | ✅ | ❌ | `0x207acc` |
-| `RewardCore` | `-` | `campaignFlg` |  | ✅ | ❌ | `0x207b6c` |
+| `RewardCore` | `-` | `init` |  | ✅ | ✅ | `0x2076e4` |
+| `RewardCore` | `+` | `allocWithZone:` |  | ✅ | ✅ | `0x2078b8` |
+| `RewardCore` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x2079d0` |
+| `RewardCore` | `-` | `initializeFlg` | prop | ✅ | ✅ | `0x207a80` |
+| `RewardCore` | `-` | `clearInitialize` |  | ✅ | ✅ | `0x207acc` |
+| `RewardCore` | `-` | `campaignFlg` |  | ✅ | ✅ | `0x207b6c` |
 | `RewardCore` | `-` | `startWithCallback:` |  | ✅ | ❌ | `0x207c70` |
 | `RewardCore` | `-` | `startSessionWithBlock:` |  | ✅ | ❌ | `0x20810c` |
-| `RewardCore` | `-` | `startWithBlock:` |  | ✅ | ❌ | `0x208624` |
-| `RewardCore` | `-` | `createUdidWithBlock:` |  | ✅ | ❌ | `0x208738` |
-| `RewardCore` | `-` | `createCFUdidWithError:` |  | ✅ | ❌ | `0x2088e0` |
+| `RewardCore` | `-` | `startWithBlock:` |  | ✅ | ✅ | `0x208624` |
+| `RewardCore` | `-` | `createUdidWithBlock:` |  | ✅ | ✅ | `0x208738` |
+| `RewardCore` | `-` | `createCFUdidWithError:` |  | ✅ | ✅ | `0x2088e0` |
 | `RewardCore` | `-` | `allInstallFlgWithCallback:` |  | ✅ | ❌ | `0x208bf0` |
 | `RewardCore` | `-` | `getAdDisplayStatusWithCallback:` |  | ✅ | ❌ | `0x208e48` |
 | `RewardCore` | `-` | `postInstalledAppWithCallback:` |  | ✅ | ❌ | `0x209244` |

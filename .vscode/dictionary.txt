@@ -62,6 +62,7 @@ catlist
 cavoice
 cbnz
 ccflags
+ccmp
 ccontext
 cdecl
 cdevice
