@@ -1642,6 +1642,52 @@ VERIFIED = {
     0xb370: 'RBCampaignDetailViewController -viewDidDisappear: chains to super only',
     0xb3a4: 'RBCampaignDetailViewController -willAnimateRotationToInterfaceOrientation:duration: '
             'chains to super then re-runs -updateLayout',
+    # RBCampaignDetailViewController, the remaining eleven. The layout routine was the defective
+    # one: the panel height, three label frames, both button frames, the sample overlay, the
+    # detail block, the divider, and the copyright block were all misread, along with four of the
+    # five artwork names (all use a slash, not an underscore) and six autoresizing masks
+    # (0x22 is FlexibleWidth|FlexibleBottomMargin, not |FlexibleRightMargin).
+    0x58fc: 'RBCampaignDetailViewController -initWithItemInfo: sets the navigation title to the '
+            'inline literal at 0x361980 ("Gift") at 0x598c before binding the item, then '
+            'overwrites it with campaignName when that exists',
+    0x5b34: 'RBCampaignDetailViewController -setInfo:: campaignID goes straight to the ivar '
+            '(offset variable 0x3c807c) at 0x5bd4, the levels format at 0x3619a0 is '
+            '"LEVEL:  %d / %d / %d" with the three stack slots at 0x5d78/0x5d7c, the identifier '
+            'format at 0x3619c0 is "%d" with the one slot at 0x5df4, the locked placeholder at '
+            '0x3619e0 is six full-width question marks (UTF-16, length 6), and the nil arm at '
+            '0x603c uses the pointer at 0x35b360 to "09_store/store_jacket_80"',
+    0x6c08: 'RBCampaignDetailViewController -pushExternalLink: returns on a negative tag (tbnz at '
+            '0x6c38), stops a playing sample, then opens the link when both it and the item exist',
+    0x6dac: 'RBCampaignDetailViewController -pushButton: switches on itemInfo.buttonType through '
+            'the jump table at 0x6fc8: 0 downloads the info, 1 falls through, 2 shows the terms, '
+            '3 prompts to update, 4 opens the serial-code alert with style 2 and tag 1',
+    0x7274: 'RBCampaignDetailViewController -handleTapArtworkView reads sampleStatus at the ivar '
+            '(offset variable 0x3c8088), starting a download in state 0 and tail-calling '
+            '-sampleViewDownloading, and cancelling then stopping in states 1 and 2',
+    0x7648: 'RBCampaignDetailViewController -downloaderFinished: ignores a stale downloader, and '
+            'in state 1 plays the data with no fade (movi at 0x7744) and takes row index 1',
+    0x77fc: 'RBCampaignDetailViewController -downloaderError: ignores a stale downloader, else '
+            'stops the sample, clears it, and shows the network error with a nil delegate',
+    0x7e88: 'RBCampaignDetailViewController -dealloc cancels the sample downloader and stops the '
+            'artwork downloaders before chaining to super',
+    0x7f4c: 'RBCampaignDetailViewController -viewWillAppear:: closingFlag is cleared through the '
+            'ivar (strb wzr at 0x7fa4); the panel is 140 tall (0x2ec6c0) and the detail block '
+            'starts there; the name and artist rows are width-104 (0x2ec6d0) at y 8 and y 50, '
+            'the levels row width-230 (0x2ec6e8) at y 70 (0x2ec6f0); both buttons are 104 wide '
+            '(0x2ec700) at y 100, the download button at width-8-104 and the link button at '
+            'width-16-208 (0x2ec710); the link button takes -setButtonColor: with green 0.3 '
+            '(0x2ec718); the artwork shadow opacity is the float32 0.6 at 0x2ec6b8; the sample '
+            'overlay is sized from the artwork frame at the origin and its indicator is half '
+            'that, halved in single precision by the fcvt pair at 0x95e8, with style 0 '
+            '(WhiteLarge); the detail panel is filled with the shared 0.8 (0x2ec6a0) and only '
+            'bordered with 143/255 (0x2ec730); the divider is one point tall (fmov at 0x9f10); '
+            'and the copyright block is 50 tall at the description height',
+    0xa70c: 'RBCampaignDetailViewController -viewDidAppear: chains to super then loads the info '
+            'when an item is bound',
+    0xa780: 'RBCampaignDetailViewController -viewWillDisappear: sets closingFlag and reads the '
+            'pack-info alert through the ivars (offset variables 0x3c808c and 0x3c8090), '
+            'dismisses that alert, stops the sample, pops the pushed music, cancels the sample '
+            'downloader, and tells the delegate the alert closed',
 }
 
 

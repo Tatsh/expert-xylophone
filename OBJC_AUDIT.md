@@ -37,6 +37,8 @@ counted.
 | `-[RBMusicGridLayout layoutAttributesForItemAtIndexPath:]` | `0x16de84` | Deliberate deviation was ungated; now behind `ENABLE_PATCHES` and in [PATCHES.md](PATCHES.md)                                |
 | `-[RBMusicManager createPreInMusics]`                      | —          | The three preinstalled song ids were each 512 low                                                                            |
 | `deviceenvironment.mm` globals                             | `0x1a05f8` | The documents and application-support paths were swapped                                                                     |
+| `-[RBCampaignDetailViewController viewWillAppear:]`        | `0x7f4c`   | Almost every frame in the page was misread; see below                                                                        |
+| `-[RBCampaignDetailViewController setInfo:]`               | `0x5b34`   | Three of the four string literals were invented rather than decoded                                                          |
 
 ### Part-id runs in `RenderSprites`
 
@@ -219,6 +221,59 @@ downstream of the resource download, and so of the loader defect above.
 
 `217a09d7` logs the branch metrics and the final frames, which will separate a placement fault from
 either of these.
+
+## The campaign detail page
+
+`-[RBCampaignDetailViewController viewWillAppear:]` at `0x7f4c` builds the whole page, and the
+reconstruction had the right calls in the right order with the wrong numbers in almost all of them.
+Nothing in it was visible by reading the source, and the class had already passed the annotation
+audit.
+
+The header panel is 140 tall (`0x2ec6c0`), not the 200 that the doubled button width produced, so
+the detail block below it started 60 points too low. The three label rows are inset
+from the view width — 104 (`0x2ec6d0`) for the name and artist rows, 230 (`0x2ec6e8`) for the levels
+row — where the reconstruction gave each of them the full width; the artist row sits at y 50 and the
+levels row at y 70 (`0x2ec6f0`), not 80 and 100. Both action buttons are 104 wide (`0x2ec700`), not
+100, and both are right-aligned by two additions rather than one: the download button at
+`width - 8 - 104` and the link button at `width - 16 - 208` (`0x2ec710`). Those two frames are what
+makes the layout checkable — they leave an 8-point right margin and an 8-point gap between the
+buttons, and the previous link-button x, `width - (-208)`, put it off-screen entirely.
+
+Three whole properties were the wrong ones. The link button takes `-setButtonColor:`, not
+`backgroundColor`, and its green is 0.3 (`0x2ec718`) against the shared 0.8 on red and blue. The
+detail panel is **filled** with that same shared 0.8 (`0x2ec6a0`) and only **bordered** with 143/255
+(`0x2ec730`); the reconstruction used the border colour for both. The sample indicator's style is 0,
+`WhiteLarge`, not `White`.
+
+The sample overlay is sized from the artwork's frame **at the origin**, not from the artwork frame
+itself, and its indicator is half that size, halved once in single precision — the `fcvt s`/`fcvt d`
+round trip at `0x95e8` is a `float` local, and the same pair of values is reused for both subviews'
+centres. The divider is one point tall, not the whole view's bounds. The copyright block is 50 tall
+and sits at the description's height, so description and copyright together fill the detail panel
+exactly; the previous `CGRectGetMaxY` chain and 20-point height did not.
+
+Six autoresizing masks were wrong in the same way: the binary's `0x22` is
+`FlexibleWidth | FlexibleBottomMargin`, and each had been read as
+`FlexibleWidth | FlexibleRightMargin` (`0x06`).
+
+`-[RBCampaignDetailViewController setInfo:]` at `0x5b34` had three invented string literals. The
+levels format at `0x3619a0` is `LEVEL:  %d / %d / %d` — colon, two spaces, slashes — not
+`LEVEL %d %d %d`; the locked-item placeholder at `0x3619e0` is **six** full-width question marks,
+not three (UTF-16, length 6 in the CFString record); and the placeholder jacket is
+`09_store/store_jacket_80`, with a slash, as two already-verified sibling files spell it. The
+identifier format `%d` at `0x3619c0` was right. `-initWithItemInfo:` at `0x58fc` was missing a whole
+statement: it sets the navigation title to the inline literal `Gift` at `0x361980` before binding
+the item, and only then overwrites it with `campaignName`.
+
+Three ivars were reached through their accessors where the binary reaches them directly:
+`_campaignID` in `-setInfo:`, and `_closingFlag` and `_packinfoDownloadAlertView` in the two
+appearance callbacks.
+The sibling `RBStoreExtendNoteDetailViewController` already spells those two directly.
+
+One finding is outside this class and is left open: `kArtworkShadowOpacity` in
+`Project/RBStoreExtendNoteDetailViewController.m` is annotated `0x2ec6b8` and declared `0.15`, but
+that slot holds the float32 `0.6`. It is one of the four constants the annotation audit already
+reports as mismatched.
 
 ## Scale
 

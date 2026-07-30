@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4380 verified
-(69.1%).
+Total: 6343 — 6203 reconstructed, 4391 verified
+(69.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -52,25 +52,25 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeStoreController` | `-` | `packRbAction:` |  | ✅ | ❌ | `0x5668` |
 | `RBUrlSchemeStoreController` | `-` | `campaignRbAction:` |  | ✅ | ❌ | `0x5744` |
 | `RBUrlSchemeStoreController` | `-` | `seqRbAction:` |  | ✅ | ❌ | `0x5820` |
-| `RBCampaignDetailViewController` | `-` | `initWithItemInfo:` |  | ✅ | ❌ | `0x58fc` |
+| `RBCampaignDetailViewController` | `-` | `initWithItemInfo:` |  | ✅ | ✅ | `0x58fc` |
 | `RBCampaignDetailViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x5b00` |
-| `RBCampaignDetailViewController` | `-` | `setInfo:` |  | ✅ | ❌ | `0x5b34` |
+| `RBCampaignDetailViewController` | `-` | `setInfo:` |  | ✅ | ✅ | `0x5b34` |
 | `RBCampaignDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x64f8` |
 | `RBCampaignDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x6684` |
 | `RBCampaignDetailViewController` | `-` | `showItemInfo` |  | ✅ | ✅ | `0x6798` |
 | `RBCampaignDetailViewController` | `-` | `loadInfo` |  | ✅ | ✅ | `0x6924` |
 | `RBCampaignDetailViewController` | `-` | `sampleStart` |  | ✅ | ✅ | `0x6978` |
 | `RBCampaignDetailViewController` | `-` | `sampleStop` |  | ✅ | ✅ | `0x6ad4` |
-| `RBCampaignDetailViewController` | `-` | `pushExternalLink:` |  | ✅ | ❌ | `0x6c08` |
-| `RBCampaignDetailViewController` | `-` | `pushButton:` |  | ✅ | ❌ | `0x6dac` |
+| `RBCampaignDetailViewController` | `-` | `pushExternalLink:` |  | ✅ | ✅ | `0x6c08` |
+| `RBCampaignDetailViewController` | `-` | `pushButton:` |  | ✅ | ✅ | `0x6dac` |
 | `RBCampaignDetailViewController` | `-` | `sampleViewStop` |  | ✅ | ✅ | `0x6fdc` |
 | `RBCampaignDetailViewController` | `-` | `sampleViewDownloading` |  | ✅ | ✅ | `0x70b4` |
 | `RBCampaignDetailViewController` | `-` | `sampleViewPlaying` |  | ✅ | ✅ | `0x7198` |
-| `RBCampaignDetailViewController` | `-` | `handleTapArtworkView` |  | ✅ | ❌ | `0x7274` |
+| `RBCampaignDetailViewController` | `-` | `handleTapArtworkView` |  | ✅ | ✅ | `0x7274` |
 | `RBCampaignDetailViewController` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x74ec` |
 | `RBCampaignDetailViewController` | `-` | `pushLink:` |  | ✅ | ✅ | `0x7508` |
-| `RBCampaignDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x7648` |
-| `RBCampaignDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x77fc` |
+| `RBCampaignDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ✅ | `0x7648` |
+| `RBCampaignDetailViewController` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x77fc` |
 | `RBCampaignDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x78b4` |
 | `RBCampaignDetailViewController` | `-` | `itemInfoDownload` |  | ✅ | ✅ | `0x78b8` |
 | `RBCampaignDetailViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x78bc` |
@@ -82,10 +82,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x7df4` |
 | `RBCampaignDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x7e04` |
 | `RBCampaignDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x7e38` |
-| `RBCampaignDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x7e88` |
-| `RBCampaignDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x7f4c` |
-| `RBCampaignDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0xa70c` |
-| `RBCampaignDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0xa780` |
+| `RBCampaignDetailViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x7e88` |
+| `RBCampaignDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x7f4c` |
+| `RBCampaignDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0xa70c` |
+| `RBCampaignDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0xa780` |
 | `RBCampaignDetailViewController` | `-` | `updateLayout` |  | ✅ | ✅ | `0xa970` |
 | `RBCampaignDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0xb370` |
 | `RBCampaignDetailViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0xb3a4` |
