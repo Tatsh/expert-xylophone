@@ -71,13 +71,17 @@ static const float kSampleBGMFadeTime = 0.5f;
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kErrorLabelFontSizeDefault = 16.0;
 static const CGFloat kErrorLabelFontSizeWide = 18.0;
-// The error label's vertical offset above the view centre. @ghidraAddress 0x301220
-static const CGFloat kErrorLabelCenterYOffset = -44.0;
+// The error label sits this many points above the view centre. The binary truncates the halved
+// height to an integer and then subtracts, so the offset is an integer, not a CGFloat.
+static const int kErrorLabelCenterYOffset = 20;
+// The pad detail view's centre sits this far above the cover view's centre.
+static const CGFloat kPadDetailCenterYOffset = -44.0; // @ghidraAddress 0x301220
 // The one-point drop-shadow offset shared by the loading and error labels.
 static const CGFloat kLabelShadowOffset = 1.0;
 
-// The activity-indicator container is a fixed 24-point square centred over the loading label.
+// The activity indicator is a fixed 24-point square, hosted in a fixed 40-point square container.
 static const CGFloat kActivityIndicatorSize = 24.0;
+static const CGFloat kActivityIndicatorHostSize = 40.0; // @ghidraAddress 0x2ee950
 static const CGFloat kCenterScale = 0.5;
 
 // The dimming cover behind the pad detail overlay is black at 50% opacity.
@@ -130,6 +134,16 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 // The table view flexes only its width and height. @ghidraAddress 0x310458
 static const UIViewAutoresizing kAutoresizingMaskFlexibleSize =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+// A fixed-size view kept centred by its four margins: the pad detail view and the indicator host.
+static const UIViewAutoresizing kAutoresizingMaskFlexibleMargins =
+    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+    UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+
+// The activity indicator's mask: as above but without the top margin.
+static const UIViewAutoresizing kAutoresizingMaskIndicator =
+    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+    UIViewAutoresizingFlexibleBottomMargin;
 
 // The server unlock-list dictionary keys.
 static NSString *const kJSONKeyList = @"List";
@@ -272,9 +286,11 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         StoreCampaignDetailViewPad *detail = [[StoreCampaignDetailViewPad alloc]
             initWithFrame:CGRectMake(0, 0, kPadDetailViewSize, kPadDetailViewSize)];
         self.itemDetailViewPad = detail;
+        // Both components are truncated to an integer, and the y carries a fixed offset.
         self.itemDetailViewPad.center =
-            CGPointMake(self.coverViewPad.center.x, self.coverViewPad.center.y);
-        self.itemDetailViewPad.autoresizingMask = kAutoresizingMaskFlexibleAll;
+            CGPointMake((int)self.coverViewPad.center.x,
+                        (int)(self.coverViewPad.center.y + kPadDetailCenterYOffset));
+        self.itemDetailViewPad.autoresizingMask = kAutoresizingMaskFlexibleMargins;
         self.itemDetailViewPad.delegate = self;
         self.itemDetailViewPad.hidden = YES;
         [self.view addSubview:self.itemDetailViewPad];
@@ -294,16 +310,19 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
                                                           alpha:g_dAudioManagerResumeFadeInTime];
         self.loadingLabel.shadowOffset = CGSizeMake(0, kLabelShadowOffset);
         self.loadingLabel.textAlignment = NSTextAlignmentCenter;
-        self.loadingLabel.center = CGPointMake(self.view.bounds.size.width * kCenterScale,
-                                               self.view.bounds.size.height * kCenterScale);
+        // Only the y is truncated to an integer here; the x keeps its fraction.
+        self.loadingLabel.center =
+            CGPointMake(self.view.bounds.size.width * kCenterScale,
+                        (int)(self.view.bounds.size.height * kCenterScale));
         self.loadingLabel.autoresizingMask = kAutoresizingMaskFlexibleSize;
         self.loadingLabel.text = g_pLocalizedLoadingMixed;
         self.loadingLabel.hidden = NO;
         [self.view addSubview:self.loadingLabel];
 
-        UIView *indicatorHost = [[UIView alloc] initWithFrame:self.view.bounds];
+        UIView *indicatorHost = [[UIView alloc]
+            initWithFrame:CGRectMake(0, 0, kActivityIndicatorHostSize, kActivityIndicatorHostSize)];
         indicatorHost.backgroundColor = UIColor.clearColor;
-        indicatorHost.autoresizingMask = kAutoresizingMaskFlexibleSize;
+        indicatorHost.autoresizingMask = kAutoresizingMaskFlexibleMargins;
         indicatorHost.center = CGPointMake(self.loadingLabel.bounds.size.width * kCenterScale,
                                            self.loadingLabel.bounds.size.height * kCenterScale);
         [self.loadingLabel addSubview:indicatorHost];
@@ -311,11 +330,9 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0, 0, kActivityIndicatorSize, kActivityIndicatorSize)];
         indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
-        indicator.center = CGPointMake(indicatorHost.bounds.size.width * kCenterScale,
-                                       indicatorHost.bounds.size.height * kCenterScale);
-        indicator.autoresizingMask =
-            UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
-            UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        // The binary passes a literal zero for the y, not the halved height.
+        indicator.center = CGPointMake(indicatorHost.bounds.size.width * kCenterScale, 0);
+        indicator.autoresizingMask = kAutoresizingMaskIndicator;
         [indicator startAnimating];
         [indicatorHost addSubview:indicator];
     }
@@ -333,9 +350,11 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         self.errorLabel.textColor = [UIColor colorWithWhite:kLabelShadowWhite alpha:kOpaqueAlpha];
         self.errorLabel.textAlignment = NSTextAlignmentCenter;
         self.errorLabel.numberOfLines = 0;
+        // The halved height is truncated to an integer before the offset is subtracted.
         self.errorLabel.center =
             CGPointMake(self.view.bounds.size.width * kCenterScale,
-                        self.view.bounds.size.height * kCenterScale + kErrorLabelCenterYOffset);
+                        (int)(self.view.bounds.size.height * kCenterScale) -
+                            kErrorLabelCenterYOffset);
         self.errorLabel.autoresizingMask = kAutoresizingMaskFlexibleAll;
         self.errorLabel.hidden = YES;
         [self.view addSubview:self.errorLabel];

@@ -342,6 +342,9 @@ VERIFIED = {
               'receiver is the application',
     # RBCampaignViewController, first eight. -downloaderFinished: at 0x1fc988 is NOT
     # ticked: its strings and its de-inlining were corrected, its body was not read.
+    0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
+              'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
+              'to the pad detail view, and a fixed 40 by 40 indicator host',
     0x1f8e2c: 'RBCampaignViewController -initWithParent:: the three asset names are '
               'paths with slashes',
     0x1fc128: 'RBCampaignViewController -updateExperienceData: the unlock keys are Type '

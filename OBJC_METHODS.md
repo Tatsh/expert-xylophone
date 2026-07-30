@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3824 verified
+Total: 6343 — 6201 reconstructed, 3825 verified
 (60.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -5490,7 +5490,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUserSettingData` | `-` | `tutorialStatuses` | prop | ✅ | ✅ | `0x1f8d18` |
 | `RBUserSettingData` | `-` | `setTutorialStatuses:` | prop | ✅ | ✅ | `0x1f8d28` |
 | `RBCampaignViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1f8e2c` |
-| `RBCampaignViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1f9220` |
+| `RBCampaignViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1f9220` |
 | `RBCampaignViewController` | `-` | `downloadCampaignList` |  | ✅ | ❌ | `0x1fa700` |
 | `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fa878` |
 | `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1faf5c` |
