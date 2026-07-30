@@ -1293,7 +1293,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
                   spot.origin.y <= point.y && point.y <= spot.origin.y + spot.size.height;
     // RBPDBG: the tutorial still swallows the SETTING tap on device after the menu-button
     // autoresizing fix, so record which arm decides it and what the spotlight actually is.
-    if (NE_DBG_FIRST(12)) {
+    if (NE_DBG_FIRST(60)) {
         neDebugLog("tutorialHit status=%ld point=(%.1f,%.1f) clip=(%.1f,%.1f %.1fx%.1f) "
                    "targetForTouch=%d -> %s",
                    (long)[RBTutorialManager getCurrentStatus],

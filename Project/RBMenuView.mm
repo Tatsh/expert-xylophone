@@ -1270,6 +1270,25 @@ static BOOL g_bRandamIntSeeded = NO;
 
 #pragma mark - Presentation
 
+// RBPDBG: not in the binary. showAnimation disables interaction at 0xaa308 and the dispatch_after
+// block re-enables it at 0xaa5cc, both faithfully reconstructed, yet a probe during layout found
+// the flag still clear. This reports the flag at the moment of a tap, which the layout probe
+// cannot do, and otherwise defers to super so behaviour is unchanged.
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *result = [super hitTest:point withEvent:event];
+    if (NE_DBG_FIRST(40)) {
+        neDebugLog("menuHit point=(%.0f,%.0f) selfUI=%d hidden=%d alpha=%.2f showed=%d -> %s",
+                   point.x,
+                   point.y,
+                   self.userInteractionEnabled ? 1 : 0,
+                   self.hidden ? 1 : 0,
+                   self.alpha,
+                   self.showed ? 1 : 0,
+                   result ? result.class.description.UTF8String : "(nil)");
+    }
+    return result;
+}
+
 - (void)showAnimation {
     self.showed = YES;
     [self preStartTutorial];
