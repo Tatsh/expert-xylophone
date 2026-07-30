@@ -459,6 +459,54 @@ VERIFIED = {
     0x1e6058: 'RBStorePageViewController -reDownloadPackMusics:: update then start, nothing else',
     0x1e60c4: 'RBStorePageViewController -purchaseSucceeded:: the identifier mismatch '
               'early-returns; this one really does use intValue, unlike its sibling',
+    # RBCampaignViewController, three more.
+    0x1ff038: 'RBCampaignViewController -refreshUnlockTable: the badge adds the raw '
+              'unlock count, not a normalised BOOL; its sibling -refreshUnlockBadge '
+              'already added it raw',
+    0x1fb934: 'RBCampaignViewController -showDetailView:: the item is fetched before '
+              'the idiom test and discarded on the phone path; the method only, not its '
+              'two blocks',
+    0x1fc3fc: 'RBCampaignViewController -alertView:clickedButtonAtIndex:: three-way at '
+              'both levels, and the index reset is skipped only when the serial code '
+              'has length',
+    # RBStorePageViewController, eleven more.
+    0x1e3a48: 'RBStorePageViewController -storePromotionViewTaped:PackID:: the curve is '
+              'Linear through the older API',
+    0x1e52f8: 'RBStorePageViewController -detailViewStartPurchase:: both guards fall to '
+              'one error arm',
+    0x1e5ad8: 'RBStorePageViewController -updatePurchasedTableCell:: pad halves the row '
+              'with the signed divide idiom and passes section 0; phone passes the row '
+              'and section 2',
+    0x1e6564: 'RBStorePageViewController -purchaseFailed:error:: the product identifier '
+              'argument is never read',
+    0x1e6860: 'RBStorePageViewController -nextRestorePackInfo: a snapshot, then the -1 '
+              'route to the extend-note path',
+    0x1e8a80: 'RBStorePageViewController -restoreFailed:: the dialog, the message, then '
+              'the promotion restarts',
+    0x1e8c9c: 'RBStorePageViewController -storePackInfoDownloaderFinished:: guarded '
+              'clear, then the next restore',
+    0x1e8dbc: 'RBStorePageViewController -storePackInfoDownloaderError:: the guarded '
+              'clear is the whole body',
+    0x1e925c: 'RBStorePageViewController -downloadManagerFailed:: the retry alert, tagged 33',
+    0x1e931c: 'RBStorePageViewController -downloadManagerProceed:: one assignment; the '
+              'manager argument is unread',
+    0x1e942c: 'RBStorePageViewController -restoreDownloadCancel: both idiom arms',
+    # AppDelegate, eight more. Five methods in this class re-send a getter per use where
+    # the source cached it; where the source already repeated the read, it matched.
+    0x50398: 'AppDelegate -showDownload: the controller is stored before both property writes',
+    0x50698: 'AppDelegate +ApplilinkInitialize: the server data is re-sent, not cached',
+    0x50920: 'AppDelegate +setRecommendUnreadCount: the same re-fetch',
+    0x50b60: 'AppDelegate +setNoBackupAttribute:: NSNumericSearch against 5.0.1, and '
+              'the attribute value is one byte',
+    0x51828: 'AppDelegate -resetGame: the block loads the weak reference five times, '
+              'once per use, so there is no strong local; the loop time is an fmov '
+              'immediate, not a pool load',
+    0x52f8c: 'AppDelegate -applicationWillResignActive:: the controller is read twice, '
+              'as the source has it',
+    0x530b4: 'AppDelegate -applicationDidEnterBackground:: the texture release is '
+              'skipped while the map shows',
+    0x531a4: 'AppDelegate -applicationWillTerminate:: two reads of the download '
+              'controller, then the save',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

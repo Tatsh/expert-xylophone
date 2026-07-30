@@ -793,9 +793,10 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 /** @ghidraAddress 0x50698 */
 + (void)ApplilinkInitialize {
     // Only initialise when server data (a KONAMI ID login) is present; otherwise mark
-    // uninitialised.
-    NSArray *serverData = [AppDelegate getServerData];
-    if (serverData != nil && serverData[kServerDataUserIdIndex] != nil) {
+    // uninitialised. The binary re-sends +getServerData for the element read rather than holding
+    // the array in a local.
+    if ([AppDelegate getServerData] != nil &&
+        [AppDelegate getServerData][kServerDataUserIdIndex] != nil) {
         [ApplilinkNetwork
             initializeWithAppliId:kApplilinkAppId
                               env:kApplilinkEnv
@@ -817,8 +818,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x50920 */
 + (void)setRecommendUnreadCount {
-    NSArray *serverData = [AppDelegate getServerData];
-    if (serverData == nil || serverData[kServerDataUserIdIndex] == nil) {
+    // The binary re-sends +getServerData for the element read rather than holding it in a local.
+    if ([AppDelegate getServerData] == nil ||
+        [AppDelegate getServerData][kServerDataUserIdIndex] == nil) {
         return;
     }
     [RecommendNetwork getUnreadCountWithAdModel:RecommendAdModelAppList
@@ -846,25 +848,25 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     __weak AppDelegate *weakSelf = self;
     [self.viewController.musicMenuView hideAnimation:^{
       /** @ghidraAddress 0x51978 */
-      AppDelegate *strongSelf = weakSelf;
-      // Cycle the whole texture cache to reclaim GPU memory, then rebuild the title.
+      // Cycle the whole texture cache to reclaim GPU memory, then rebuild the title. Each use of
+      // weakSelf reloads the weak reference; the binary holds no strong local across the body.
       [UIImage clearImageCache];
       ne::C_TEXTURE::GetCacheList();
       ne::C_TEXTURE::ReleaseAllHandles();
       ne::C_TEXTURE::GetCacheList();
       ne::C_TEXTURE::ReloadAll();
-      [strongSelf.viewController removeView];
+      [weakSelf.viewController removeView];
       RBCampaignData.sharedInstance.hinabitaMode = 0;
-      [strongSelf showTitle];
-      [strongSelf.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
-      [strongSelf.viewController StartLoop];
+      [weakSelf showTitle];
+      [weakSelf.viewController SetLoopTimeMilliSec:kGameLoopTimeMs];
+      [weakSelf.viewController StartLoop];
       rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
       if (scene) {
           scene->ClearLayerStateField();
           scene->AdvanceGameSceneStateFrom11();
       }
       [AudioManager.sharedManager systemResume];
-      [strongSelf.viewController RestartLoop];
+      [weakSelf.viewController RestartLoop];
     }];
 }
 

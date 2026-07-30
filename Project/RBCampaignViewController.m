@@ -1086,7 +1086,7 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
     for (NSDictionary *rawItem in self.unlockMusicCheckList) {
         NSMutableDictionary *itemDict = [NSMutableDictionary dictionaryWithDictionary:rawItem];
         StoreCampaignItemInfo *item = [[StoreCampaignItemInfo alloc] initWithDictionary:itemDict];
-        BOOL isNewUnlock = [item checkNewUnlock] != 0;
+        int newUnlockCount = [item checkNewUnlock];
         if (item.hideType != kCampaignHideTypeHidden) {
             BOOL alreadyPresent = NO;
             for (StoreCampaignItemInfo *existing in self.downloadMusicList) {
@@ -1099,7 +1099,9 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
                 [self.downloadMusicList addObject:item];
             }
         }
-        badgeCount += isNewUnlock ? 1 : 0;
+        // The binary adds the raw -checkNewUnlock return value, as -refreshUnlockBadge does; it
+        // does not normalise it to 0 or 1.
+        badgeCount += newUnlockCount;
     }
     [self setBadgeCnt:badgeCount];
 }

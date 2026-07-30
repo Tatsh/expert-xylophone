@@ -1478,7 +1478,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
         self.coverViewPad.hidden = NO;
         self.packDetailViewPad.hidden = NO;
         [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+        [UIView setAnimationCurve:UIViewAnimationCurveLinear];
         [UIView setAnimationDuration:kDetailAnimDuration];
         [UIView setAnimationDelegate:self];
         SEL didStop = @selector(openDetailAnimStopFromPromotion:finished:context:);
