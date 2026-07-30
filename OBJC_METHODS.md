@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3901 verified
+Total: 6343 — 6201 reconstructed, 3902 verified
 (61.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -5519,7 +5519,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1fe2bc` |
 | `RBCampaignViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x1fe368` |
 | `RBCampaignViewController` | `-` | `storeClose` |  | ✅ | ✅ | `0x1fe4f8` |
-| `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ❌ | `0x1fe4fc` |
+| `RBCampaignViewController` | `-` | `forceOpenCampaignDetailView` |  | ✅ | ✅ | `0x1fe4fc` |
 | `RBCampaignViewController` | `-` | `reloadUnlockList` |  | ✅ | ✅ | `0x1fec00` |
 | `RBCampaignViewController` | `-` | `refreshMusicList` |  | ✅ | ✅ | `0x1fec34` |
 | `RBCampaignViewController` | `-` | `refreshUnlockTable` |  | ✅ | ✅ | `0x1ff038` |

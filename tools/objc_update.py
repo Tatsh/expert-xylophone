@@ -507,6 +507,10 @@ VERIFIED = {
               'skipped while the map shows',
     0x531a4: 'AppDelegate -applicationWillTerminate:: two reads of the download '
               'controller, then the save',
+    0x1fe4fc: 'RBCampaignViewController -forceOpenCampaignDetailView: three loops over the same '
+              'list with two shapes — the search runs to completion accumulating a flag, the two '
+              'idiom loops break on a match — and the idiom test here calls IsPad() directly '
+              'where its neighbours read the cached ivar',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
