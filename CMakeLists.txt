@@ -107,6 +107,7 @@ set(SYS_FRAMEWORKS
     OpenGLES AudioToolbox AVFoundation OpenAL
     CoreData StoreKit Social
     Security SafariServices
+    AdSupport
     GameKit CoreLocation MapKit)
 
 # =========================================================================
