@@ -804,6 +804,15 @@ static NSData *GuardedBrownImageData(MusicData *self, NSData *imageData) {
     // The binary reads image.size twice, taking the width from one send and the height from the
     // other, so the rect is built component-wise and its size reused for the context.
     CGRect bounds = CGRectMake(0, 0, image.size.width, image.size.height);
+#ifdef ENABLE_PATCHES
+    // The binary has no nil check: it sends -size straight to the argument. When the source image
+    // does not resolve, the size is zero and UIGraphicsBeginImageContextWithOptions raises on a
+    // modern iOS where the original only logged. Tapping a song reaches this through
+    // -musicNameImageBrownBasic and aborts. See PATCHES.md.
+    if (bounds.size.width <= 0.0 || bounds.size.height <= 0.0) {
+        return nil;
+    }
+#endif
     UIGraphicsBeginImageContextWithOptions(bounds.size, NO, image.scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     [image drawInRect:bounds];

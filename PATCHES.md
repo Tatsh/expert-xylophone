@@ -119,3 +119,18 @@ makes, and crashes on a modern device at the end of the resource download.
 
 This deviation predates the patch convention and ran ungated for some time; it is gated and
 recorded here now rather than being left as an undocumented exception.
+
+### The image tint helper's empty source image
+
+**File:** `Project/MusicData.m` — `-setColor:withColor:` (0x657e4)
+
+The binary sends `-size` straight to the image argument with no nil check, then opens an image
+context of that size. When the source image does not resolve, the size is zero, and
+`UIGraphicsBeginImageContextWithOptions` raises on a modern iOS where the original only logged a
+warning. Tapping a song reaches this through `-musicNameImageBrownBasic` and aborts the process.
+
+The patch returns nil for an empty size rather than opening the context. An unpatched build makes
+the binary's unguarded call.
+
+Note this is a symptom guard, not a cause fix: the real question is why the music-name artwork
+does not resolve, which is the same unresolved asset question as the menu buttons' background.
