@@ -117,6 +117,15 @@ public:
      * @ghidraAddress 0x12f3c4
      */
     void SetSheetLayerRadius(float fRadius);
+    /**
+     * @brief Stores the note sheet's margins and recomputes the far corner.
+     * @param fLeft The left margin.
+     * @param fTop The top margin.
+     * @param fRight The right margin.
+     * @param fBottom The bottom margin.
+     * @ghidraAddress 0x12f394
+     */
+    void SetSheetLayerMargins(float fLeft, float fTop, float fRight, float fBottom);
     /** @brief Returns the note sheet's half radius, the off-screen cull margin below the field. */
     float GetSheetRadiusHalf() const {
         return m_flSheetRadiusHalf;
