@@ -1566,6 +1566,13 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Setting view
 
 - (void)SelectSettingButton {
+    // RBPDBG: the tutorial's "Tap SETTING" step still does nothing on device. This distinguishes a
+    // touch that never reaches the inner button from one that arrives and opens nothing.
+    if (NE_DBG_FIRST(6)) {
+        neDebugLog("SelectSettingButton fired settingView=%p superview=%p",
+                   static_cast<void *>(self.settingView),
+                   static_cast<void *>(self.settingView.superview));
+    }
     [self toggleSettingView];
 }
 

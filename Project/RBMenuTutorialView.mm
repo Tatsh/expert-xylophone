@@ -29,6 +29,7 @@
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
+#import "neDebugLog.h"
 #import "soundeffectmanager.h"
 
 // The view sets itself as the delegate of the spotlight animation groups it builds, and implements
@@ -1288,8 +1289,24 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     // A spotlight that passes touches through: swallow the tap only when it lands inside the
     // spotlight (so the highlighted control receives it).
     CGRect spot = self.clipRect;
-    if (spot.origin.x <= point.x && point.x <= spot.origin.x + spot.size.width &&
-        spot.origin.y <= point.y && point.y <= spot.origin.y + spot.size.height) {
+    BOOL inside = spot.origin.x <= point.x && point.x <= spot.origin.x + spot.size.width &&
+                  spot.origin.y <= point.y && point.y <= spot.origin.y + spot.size.height;
+    // RBPDBG: the tutorial still swallows the SETTING tap on device after the menu-button
+    // autoresizing fix, so record which arm decides it and what the spotlight actually is.
+    if (NE_DBG_FIRST(12)) {
+        neDebugLog("tutorialHit status=%ld point=(%.1f,%.1f) clip=(%.1f,%.1f %.1fx%.1f) "
+                   "targetForTouch=%d -> %s",
+                   (long)[RBTutorialManager getCurrentStatus],
+                   point.x,
+                   point.y,
+                   spot.origin.x,
+                   spot.origin.y,
+                   spot.size.width,
+                   spot.size.height,
+                   self.clipTargetForTouch ? 1 : 0,
+                   inside ? "pass-through" : "swallowed");
+    }
+    if (inside) {
         return nil;
     }
     return self;
