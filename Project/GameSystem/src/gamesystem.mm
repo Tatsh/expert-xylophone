@@ -98,13 +98,13 @@ void GameSystem::LoadArtworkTexture(MusicData *pMusicData) {
     if (UIScreen.mainScreen.scale > 1.0) {
         NSData *pData2x = [pMusicData artwork2xData];
         if (pData2x != nil) {
-            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0f];
         }
     }
     if (m_pArtworkTexture == nullptr) {
         NSData *pData = [pMusicData artworkData];
         if (pData != nil) {
-            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+            m_pArtworkTexture = [neTextureForiOS LoadTexture:pData Scale:1.0f];
         }
     }
 }
@@ -125,13 +125,13 @@ void GameSystem::LoadMusicNameTexture(MusicData *pMusicData) {
     if (UIScreen.mainScreen.scale > 1.0) {
         NSData *pData2x = [pMusicData musicNameImageWhite2xData];
         if (pData2x != nil) {
-            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0f];
         }
     }
     if (m_pMusicNameTexture == nullptr) {
         NSData *pData = [pMusicData musicNameImageWhiteData];
         if (pData != nil) {
-            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+            m_pMusicNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0f];
         }
     }
 }
@@ -152,13 +152,13 @@ void GameSystem::LoadArtistNameTexture(MusicData *pMusicData) {
     if (UIScreen.mainScreen.scale > 1.0) {
         NSData *pData2x = [pMusicData artistNameImageWhite2xData];
         if (pData2x != nil) {
-            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0];
+            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData2x Scale:2.0f];
         }
     }
     if (m_pArtistNameTexture == nullptr) {
         NSData *pData = [pMusicData artistNameImageWhiteData];
         if (pData != nil) {
-            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0];
+            m_pArtistNameTexture = [neTextureForiOS LoadTexture:pData Scale:1.0f];
         }
     }
 }

@@ -43,6 +43,12 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    # Read in full against the disassembly, including the parts most likely to go wrong: the
+    # negative fmov at 0x3245c (word 0x1e7e1001, imm8 0xf0, so -1.0 and not the -4.0 the printed
+    # form suggests), the unsigned range trick at 0x32494 that selects RGBA for alphaInfo 1..4,
+    # and the zero-initialised RGBA allocation against the uninitialised RGB one. The types string
+    # ends f24, so the scale really is float rather than the double the header first declared.
+    0x32320: 'neTextureForiOS +LoadTexture:Scale: faithful; scale is float per the f24 encoding',
     # UIImage(RB)'s themed lookup. The fallback-language arm looked like a reconstruction bug and
     # is not: 0x1a1898 re-reads the count after the insert and 0x1a189c subtracts one, so the
     # binary itself replaces the file name rather than the language component, and that last
@@ -1141,6 +1147,20 @@ VERIFIED = {
     # arm. The button titles are the globals at 0x3cfb80 and 0x3cfce0, g_pLocalizedCancel and
     # g_pLocalizedOK at their declared addresses, and the styles are Cancel then Default.
     0x147134: 'RBErosionMarkUpdater -createAlertConfirm: empty message, literal title on one arm',
+    # Twelve defects fixed. The cbz at 0x145064 puts the UIAlertController arm on the fall-through
+    # and the legacy arm at 0x1454ac, the opposite of how we had read it. Title and message were
+    # both invented: they are the UTF-16 constants at 0x36d0c0 and 0x36d0e0. The medium and hard
+    # configuration blocks are at 0x1466e4 and 0x1469d0; the addresses we carried, 0x146524 and
+    # 0x146658, fall inside the basic block, which runs 0x1463f8..0x146658. The legacy container is
+    # (5.0, rate * 85.0, pad ? 150.0 : 120.0, 0.0) from the fmov at 0x145608 and the pool at
+    # 0x301820, 0x301028 and 0x2ef168, and it grows to rate * 290.0 (0x301808) by rate * 38.0
+    # (0x2eeec0) per field, each field being rate * 260.0 wide (0x308cd8). Every field label
+    # carries an ideographic space and its own name, 0x36d160, 0x36d180 and 0x36d1a0, where we had
+    # an empty string. The origin and height are read back through the UIView(RB) x, y and height
+    # accessors, not through -frame. The b.le at 0x14610c is the height > 0.0 guard, not a fourth
+    # arm. The three modern blocks and both actions held, as did g_dCustomizeLayoutMetric100: the
+    # label frames really do load 0x2ec6f8, which is 100.0.
+    0x144FFC: 'RBErosionMarkUpdater -createAlertSetScore: two arms, three unrolled fields each',
     # The class-name argument every arm switches on is the ASCII constant at 0x36d0a0, and the cbz
     # that follows means the fall-through is the UIAlertController arm and the branch target is the
     # legacy one. The block at 0x14780c loads the weak self and sends pickerOpen (selref 0x3c4458).
