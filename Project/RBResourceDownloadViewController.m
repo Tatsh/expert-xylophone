@@ -108,6 +108,11 @@ static const CGFloat kWideHelpCanvasWidth = 544;
 static const CGFloat kWideHelpCanvasHeight = 670;
 // @ghidraAddress 0x2ee970
 static const CGFloat kWidePastelCanvasHeight = 180;
+// The standard variant's pastel container is a 90-point square, not a second 320 canvas: the
+// initWithFrame: at 0x1cf1c takes 90 for both width and height. The meter subviews reach only
+// 85 by 81.5 points, and because -updateLayout reads this size back, a 320 square pushed the help
+// panel off the top of the screen. @ghidraAddress 0x2ee920
+static const CGFloat kPastelCanvasSize = 90;
 static const CGFloat kLayoutGap = 20;
 
 // Completion-animation constants.
@@ -624,10 +629,9 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 #pragma mark - View construction
 
 // The layout constants below are the sprite-atlas crop rectangles and container sizes baked into
-// the binary as double-precision literals, kept per device idiom. The frame arithmetic that the
-// decompiler recovered for several of the setFrame: calls is soft-float register-aliased and thus
-// unreliable in its exact operand order; the reconstruction preserves the structure, the atlas
-// crops, and the values that are recoverable, and centres the frames from the container sizes.
+// the binary as double-precision literals, kept per device idiom. Every frame in this block has
+// since been recovered exactly from the d0-d3 arguments of its setFrame: or clipImageWithRect:
+// call, so none of them is centred or inferred; each is an absolute pool constant.
 
 // dl_info atlas crop rectangles (phone (standard) layout).
 // The pastel meter's crop from the dl_info atlas, per idiom. The wide rect is the doubled one, from
@@ -665,6 +669,11 @@ static const CGFloat kTrackSpriteScaleNarrow = 0.5;
 static const CGFloat kTrackSpriteScaleWide = 1.0;
 // The resizable cap inset used for the help background (and the wide-variant progress fill).
 static const CGFloat kHelpBackgroundCapInset = 10;
+// The wide progress fill stretches horizontally only: the resizableImageWithCapInsets: at 0x1d3f0
+// takes zero top and bottom and 7 either side, which are the fill's rounded caps. The help
+// background's own call at 0x1dba0 really does take 10 on all four.
+static const CGFloat kProgressFillCapInsetHorizontal = 7;
+static const CGFloat kProgressFillCapInsetVertical = 0;
 // The help-carousel container geometry (phone (standard) layout).
 static const CGFloat kHelpScrollBackgroundOriginX = 2;
 static const CGFloat kHelpScrollBackgroundWidth = 316;
@@ -710,14 +719,14 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     }
     self.view.backgroundColor = UIColor.whiteColor;
 
-    // The wide variant lays the help carousel out over a 670x544 canvas; the standard variant uses
-    // a square 320x320 help canvas and a 320-tall pastel container.
+    // The wide variant lays the help carousel out over a 544x670 canvas; the standard variant uses
+    // a square 320x320 help canvas and a 90-point square pastel container.
     self->m_PageNum = kHelpPageCount;
     if (!IsPad()) {
         self.helpView =
             [[UIView alloc] initWithFrame:CGRectMake(0, 0, kHelpCanvasSize, kHelpCanvasSize)];
-        self.pastelView =
-            [[UIView alloc] initWithFrame:CGRectMake(0, 0, kHelpCanvasSize, kHelpCanvasSize)];
+        self.pastelView = [[UIView alloc]
+            initWithFrame:CGRectMake(0, 0, kPastelCanvasSize, kPastelCanvasSize)];
     } else {
         self.helpView = [[UIView alloc]
             initWithFrame:CGRectMake(0, 0, kWideHelpCanvasWidth, kWideHelpCanvasHeight)];
@@ -757,10 +766,11 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     UIImage *fill = [info clipImageWithRect:narrow ? kFillClipRectNarrow : kFillClipRectWide];
     const CGFloat trackScale = narrow ? kTrackSpriteScaleNarrow : kTrackSpriteScaleWide;
     if (!narrow) {
-        fill = [fill resizableImageWithCapInsets:UIEdgeInsetsMake(kHelpBackgroundCapInset,
-                                                                  kHelpBackgroundCapInset,
-                                                                  kHelpBackgroundCapInset,
-                                                                  kHelpBackgroundCapInset)];
+        fill = [fill
+            resizableImageWithCapInsets:UIEdgeInsetsMake(kProgressFillCapInsetVertical,
+                                                         kProgressFillCapInsetHorizontal,
+                                                         kProgressFillCapInsetVertical,
+                                                         kProgressFillCapInsetHorizontal)];
     }
     self.trackImageView = [[UIImageView alloc] initWithImage:track];
     self.trackImageView.frame = CGRectMake(narrow ? kTrackImageOriginXNarrow
@@ -777,7 +787,7 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     self.progressImageView.frame = CGRectMake(0, 0, 0, fill.size.height * trackScale);
     self.progressImageView.clipsToBounds = YES;
     [self.trackImageView addSubview:self.progressImageView];
-    if (!IsPad()) {
+    if (narrow) {
         [self.view addSubview:self.pastelView];
     }
 
