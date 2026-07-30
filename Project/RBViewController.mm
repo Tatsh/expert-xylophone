@@ -698,7 +698,7 @@ constexpr int kDefaultPlayColor = 0;
           // A global block: it captures nothing and never touches the view controller.
           rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
           if (scene) {
-              scene->EnterModeAlternate();
+              scene->EnterModeAlt();
           }
         });
 }
