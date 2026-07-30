@@ -50,10 +50,13 @@ static const SettingMenuArtwork kSettingMenuArtwork[] = {
      @"01_music_select/sel_set_sea_2",
      @"01_music_select/sel_set_sea_eff",
      @"01_music_select/sel_set_sea_eff_1"},
+    // Yes, the credits row really takes the search row's two effect images. There is no
+    // sel_set_cre_eff or sel_set_cre_eff_1 anywhere in the binary, and the table at 0x35a7e0
+    // repeats the sea_ pair here.
     {@"01_music_select/sel_set_cre_1",
      @"01_music_select/sel_set_cre_2",
-     @"01_music_select/sel_set_cre_eff",
-     @"01_music_select/sel_set_cre_eff_1"},
+     @"01_music_select/sel_set_sea_eff",
+     @"01_music_select/sel_set_sea_eff_1"},
     {@"01_music_select/sel_set_info_1",
      @"01_music_select/sel_set_info_2",
      @"01_music_select/sel_set_info_eff",

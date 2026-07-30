@@ -894,7 +894,7 @@ constexpr int kDefaultPlayColor = 0;
     if (self.corporateButton) {
         return;
     }
-    UIImage *logo = [UIImage imageWithName:@"00_texture/co/info"];
+    UIImage *logo = [UIImage imageWithName:@"00_texture/co_info"];
     if (!logo) {
         return;
     }
