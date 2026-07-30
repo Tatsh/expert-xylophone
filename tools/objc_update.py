@@ -43,7 +43,15 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
-    0x1f7594: 'RBUserSettingData -setThema:: b.ls is unsigned, all six fallback defaults, the '
+    0xf25c4: 'StoreDownloadManager -currentProgress: forwards to the file downloader',
+    0xf262c: 'StoreDownloadManager -overallProgress: both ucvtf are unsigned, matching the '
+             'unsigned index and count, and the operand order is (index + progress) / tasks',
+    0xf268c: 'StoreDownloadManager -numTasks: the task count, returned 64-bit',
+    0xf2a88: 'StoreDownloadManager -restart: tail-calls -start when not started, clears the '
+             'downloader before the bound test, and b.cs at 0xf2b14 is unsigned',
+    0x1ba8c0: 'RBExperienceData -unlockWithType:ID:: the jump table at 0x1ba954 gives 0-4, 7 and '
+              '10, with 5, 6, 8 and 9 falling to the b.hi #0xa default that returns NO',
+    0x1f7594:'RBUserSettingData -setThema:: b.ls is unsigned, all six fallback defaults, the '
               'nine coder keys in order, and the trailing switch that leaves an unknown theme '
               "alone; the binary re-sends customizeItems per key where the source caches it, "
               'and sends objectAtIndex:/objectForKey: where the style rules require subscripting',

@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6199 reconstructed, 3312 verified
-(52.2%).
+Total: 6343 — 6199 reconstructed, 3317 verified
+(52.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2989,12 +2989,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreDownloadTask` | `-` | `addObject` | prop | ✅ | ✅ | `0xf23f0` |
 | `StoreDownloadTask` | `-` | `setAddObject:` | prop | ✅ | ✅ | `0xf2400` |
 | `StoreDownloadManager` | `-` | `initWithTasks:delegate:` |  | ✅ | ❌ | `0xf2468` |
-| `StoreDownloadManager` | `-` | `currentProgress` | prop | ✅ | ❌ | `0xf25c4` |
-| `StoreDownloadManager` | `-` | `overallProgress` | prop | ✅ | ❌ | `0xf262c` |
-| `StoreDownloadManager` | `-` | `numTasks` | prop | ✅ | ❌ | `0xf268c` |
+| `StoreDownloadManager` | `-` | `currentProgress` | prop | ✅ | ✅ | `0xf25c4` |
+| `StoreDownloadManager` | `-` | `overallProgress` | prop | ✅ | ✅ | `0xf262c` |
+| `StoreDownloadManager` | `-` | `numTasks` | prop | ✅ | ✅ | `0xf268c` |
 | `StoreDownloadManager` | `-` | `start` |  | ✅ | ❌ | `0xf26ec` |
 | `StoreDownloadManager` | `-` | `cancel` |  | ✅ | ❌ | `0xf299c` |
-| `StoreDownloadManager` | `-` | `restart` |  | ✅ | ❌ | `0xf2a88` |
+| `StoreDownloadManager` | `-` | `restart` |  | ✅ | ✅ | `0xf2a88` |
 | `StoreDownloadManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xf2e40` |
 | `StoreDownloadManager` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0xf3434` |
 | `StoreDownloadManager` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xf3514` |
@@ -4667,7 +4667,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `unlockWithBackgroundType:` |  | ✅ | ❌ | `0x1ba4c4` |
 | `RBExperienceData` | `-` | `unlockWithMusicID:` |  | ✅ | ❌ | `0x1ba618` |
 | `RBExperienceData` | `-` | `unlockWithThemaID:` |  | ✅ | ❌ | `0x1ba76c` |
-| `RBExperienceData` | `-` | `unlockWithType:ID:` |  | ✅ | ❌ | `0x1ba8c0` |
+| `RBExperienceData` | `-` | `unlockWithType:ID:` |  | ✅ | ✅ | `0x1ba8c0` |
 | `RBExperienceData` | `-` | `addBGMType:` |  | ✅ | ❌ | `0x1ba980` |
 | `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ❌ | `0x1baa24` |
 | `RBExperienceData` | `-` | `addExprosionType:` |  | ✅ | ❌ | `0x1baac8` |

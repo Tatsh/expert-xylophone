@@ -12,12 +12,14 @@
 @property(nonatomic, assign) BOOL m_IsStarted;
 @property(nonatomic, assign, readwrite) unsigned int currentIndex;
 
-// De-inlined from the repeated download-start and delegate-dispatch blocks the binary inlines into
-// -start, -restart, and -downloaderFinished:; they have no selector of their own in the binary.
-- (void)_startTaskAtCurrentIndex;
-- (void)_notifyDelegateSelector:(SEL)selector;
-
 @end
+
+// The download-start and delegate-dispatch blocks below are repeated verbatim in -start, -restart,
+// and -downloaderFinished:. They are shared as file-static functions rather than as methods
+// because the binary has no selector for either, and a method would add a name to the class that
+// the runtime metadata does not carry.
+static void StartTaskAtCurrentIndex(StoreDownloadManager *manager);
+static void NotifyDelegate(StoreDownloadManager *manager, SEL selector);
 
 @implementation StoreDownloadManager
 
@@ -48,9 +50,9 @@
     }
     [UIApplication sharedApplication].idleTimerDisabled = YES;
     self.currentIndex = 0;
-    [self _startTaskAtCurrentIndex];
+    StartTaskAtCurrentIndex(self);
     self.m_IsStarted = YES;
-    [self _notifyDelegateSelector:@selector(downloadManagerStartTask:)];
+    NotifyDelegate(self, @selector(downloadManagerStartTask:));
 }
 
 - (void)cancel {
@@ -68,31 +70,31 @@
     }
     self.fileDownloader = nil;
     if (self.currentIndex < self.tasks.count) {
-        [self _startTaskAtCurrentIndex];
-        [self _notifyDelegateSelector:@selector(downloadManagerStartTask:)];
+        StartTaskAtCurrentIndex(self);
+        NotifyDelegate(self, @selector(downloadManagerStartTask:));
     } else {
         [UIApplication sharedApplication].idleTimerDisabled = NO;
-        [self _notifyDelegateSelector:@selector(downloadManagerCompleted:)];
+        NotifyDelegate(self, @selector(downloadManagerCompleted:));
     }
 }
 
 // Build a plain (in-memory) downloader for the current task's URL and start it against this
 // manager. The task's own file path is applied later, when the body is written in
 // -downloaderFinished:.
-- (void)_startTaskAtCurrentIndex {
-    StoreDownloadTask *task = self.tasks[self.currentIndex];
+static void StartTaskAtCurrentIndex(StoreDownloadManager *manager) {
+    StoreDownloadTask *task = manager.tasks[manager.currentIndex];
     NSURL *url = [NSURL URLWithString:task.fileURL];
-    self.fileDownloader = [[Downloader alloc] initWithURL:url save:nil];
-    [self.fileDownloader startDownloadingWithDelegate:self];
+    manager.fileDownloader = [[Downloader alloc] initWithURL:url save:nil];
+    [manager.fileDownloader startDownloadingWithDelegate:manager];
 }
 
 // Forward a lifecycle event to the delegate when it responds. The binary dispatches through
 // -performSelector:withObject: rather than a direct message.
-- (void)_notifyDelegateSelector:(SEL)selector {
-    if ([self.delegate respondsToSelector:selector]) {
+static void NotifyDelegate(StoreDownloadManager *manager, SEL selector) {
+    if ([manager.delegate respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [self.delegate performSelector:selector withObject:self];
+        [manager.delegate performSelector:selector withObject:manager];
 #pragma clang diagnostic pop
     }
 }
@@ -114,7 +116,7 @@
 #pragma mark DownloaderDelegate
 
 - (void)downloaderProceed:(Downloader *)downloader {
-    [self _notifyDelegateSelector:@selector(downloadManagerProceed:)];
+    NotifyDelegate(self, @selector(downloadManagerProceed:));
 }
 
 - (void)downloaderFinished:(Downloader *)downloader {
@@ -123,18 +125,18 @@
     StoreDownloadTask *task = self.tasks[self.currentIndex];
     BOOL written = [data writeToFile:task.filePath options:NSDataWritingAtomic error:nil];
     if (!written) {
-        [self _notifyDelegateSelector:@selector(downloadManagerFailed:)];
+        NotifyDelegate(self, @selector(downloadManagerFailed:));
         return;
     }
     [[RBMusicManager getInstance] setMusicDataArrayDirty];
     [[RBExtendNoteManager getInstance] setExtendNoteDataArrayDirty];
     self.currentIndex = self.currentIndex + 1;
     if (self.currentIndex < self.tasks.count) {
-        [self _startTaskAtCurrentIndex];
-        [self _notifyDelegateSelector:@selector(downloadManagerStartTask:)];
+        StartTaskAtCurrentIndex(self);
+        NotifyDelegate(self, @selector(downloadManagerStartTask:));
     } else {
         [UIApplication sharedApplication].idleTimerDisabled = NO;
-        [self _notifyDelegateSelector:@selector(downloadManagerCompleted:)];
+        NotifyDelegate(self, @selector(downloadManagerCompleted:));
     }
 }
 
@@ -143,7 +145,7 @@
     if (self.fileDownloader) {
         self.fileDownloader = nil;
     }
-    [self _notifyDelegateSelector:@selector(downloadManagerFailed:)];
+    NotifyDelegate(self, @selector(downloadManagerFailed:));
 }
 
 @end
