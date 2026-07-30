@@ -14,6 +14,7 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "deviceenvironment.h"
+#import "neDebugLog.h"
 
 // The inner button's bounds, chosen by the active iPad idiom. The wide variant uses a larger
 // button to fit the wider glyphs.
@@ -127,6 +128,22 @@ enum {
 
     UIImage *icon = [UIImage imageWithName:imageNames[kMenuButtonImageIcon]];
     [self.button setImage:icon forState:UIControlStateNormal];
+
+    // RBPDBG: the side-menu buttons do not respond to taps. Record the container's frame and the
+    // inner button's, since setting bounds rather than frame leaves the origin at minus half the
+    // size and a container outside its parent is never hit-tested.
+    if (NE_DBG_FIRST(6)) {
+        neDebugLog("menuButton type=%ld self=(%.0f,%.0f %.0fx%.0f) button=(%.0f,%.0f %.0fx%.0f)",
+                   (long)type,
+                   self.frame.origin.x,
+                   self.frame.origin.y,
+                   self.frame.size.width,
+                   self.frame.size.height,
+                   self.button.frame.origin.x,
+                   self.button.frame.origin.y,
+                   self.button.frame.size.width,
+                   self.button.frame.size.height);
+    }
 
     UIImage *flashBackground = [UIImage imageWithName:imageNames[kMenuButtonImageFlashBackground]];
     flashBackground = [flashBackground
