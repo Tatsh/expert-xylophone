@@ -350,6 +350,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)getInfoLastUpdateTimeString;
 
 /**
+ * @brief Store the extend-note product identifier to open on the next store presentation.
+ *
+ * The setter is written out rather than synthesised, and assigns without copying.
+ * @param extendNotePIDForOpenStore The product identifier, or @c nil to clear it.
+ * @ghidraAddress 0x4f044
+ */
+- (void)setExtendNotePIDForOpenStore:(nullable NSString *)extendNotePIDForOpenStore;
+
+/**
  * @brief The extend-note product identifier queued for a launch-time store open.
  * @ghidraAddress 0x4f07c
  */

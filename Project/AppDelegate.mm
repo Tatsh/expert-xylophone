@@ -1006,9 +1006,16 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     return self->_infoLastUpdateTimeString;
 }
 
+/** @ghidraAddress 0x4f044 */
+- (void)setExtendNotePIDForOpenStore:(NSString *)extendNotePIDForOpenStore {
+    // Written out rather than synthesised, and it retains rather than copying, so the declared
+    // copy attribute does not apply here.
+    self->_extendNotePIDForOpenStore = extendNotePIDForOpenStore;
+}
+
 /** @ghidraAddress 0x4f07c */
 - (NSString *)getExtendNotePIDForOpenStore {
-    return self.extendNotePIDForOpenStore;
+    return self->_extendNotePIDForOpenStore;
 }
 
 /** @ghidraAddress 0x4ee50 */
