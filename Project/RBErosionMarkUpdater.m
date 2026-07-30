@@ -272,8 +272,9 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 }
 
 - (void)createAlertCancel {
-    NSString *title = [NSString stringWithFormat:@"確認の中止"];
-    NSString *message = [NSString stringWithFormat:@"確認を中止してもよろしいですか？"];
+    // The two strings are UTF-16 constants at 0x36d1c0 and 0x36d1e0.
+    NSString *title = [NSString stringWithFormat:@"スコア修正を終了します"];
+    NSString *message = [NSString stringWithFormat:@"再修正はできません。よろしいですか？"];
     if (NSClassFromString(@"UIAlertController") == nil) {
         self.alertCancelView = [[UIAlertView alloc] initWithTitle:title
                                                           message:message

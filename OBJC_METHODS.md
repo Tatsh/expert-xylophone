@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4352 verified
+Total: 6343 — 6203 reconstructed, 4353 verified
 (68.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3556,7 +3556,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `remove` |  | ✅ | ✅ | `0x144d38` |
 | `RBErosionMarkUpdater` | `-` | `dealloc` |  | ❌ | ✅ | `0x144fc8` |
 | `RBErosionMarkUpdater` | `-` | `createAlertSetScore` |  | ✅ | ❌ | `0x144ffc` |
-| `RBErosionMarkUpdater` | `-` | `createAlertCancel` |  | ✅ | ❌ | `0x146d3c` |
+| `RBErosionMarkUpdater` | `-` | `createAlertCancel` |  | ✅ | ✅ | `0x146d3c` |
 | `RBErosionMarkUpdater` | `-` | `createAlertConfirm` |  | ✅ | ❌ | `0x147134` |
 | `RBErosionMarkUpdater` | `-` | `showAlertSetScore` |  | ✅ | ❌ | `0x1474e4` |
 | `RBErosionMarkUpdater` | `-` | `reshowAlertSetScore:` |  | ✅ | ❌ | `0x147868` |

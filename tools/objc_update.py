@@ -1129,6 +1129,12 @@ VERIFIED = {
     # are 284.0 and 79.0. Both bar-button titles were a single space where the binary carries
     # UTF-16 string constants at 0x36d000 and 0x36d020.
     0x142E08: 'RBErosionMarkUpdater -setupView: toolbar, three tagged pickers, three alert builders',
+    # Two defects fixed, both invented text: the title and message are the UTF-16 constants at
+    # 0x36d1c0 and 0x36d1e0. Everything else held. The button titles are the globals at 0x3cfd50
+    # and 0x3cfce0, which are g_pLocalizedRetry and g_pLocalizedOK at their declared addresses, and
+    # the legacy arm's variadic really does carry one other title plus the nil that 0x146fb0 writes
+    # to the stack.
+    0x146D3C: 'RBErosionMarkUpdater -createAlertCancel: two arms, Default then Cancel actions',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',
@@ -1554,6 +1560,13 @@ VERIFIED = {
     0x1d47f8: 'RBStoreManageViewController -viewDidAppear: reloads then flashes the indicators',
     0x1d48c0: 'RBStoreManageViewController -dealloc clears the alert and table delegates, cancels '
               'both downloaders, and removes the view',
+    # RBCampaignDetailViewController. The detail panel has a minimum height of viewHeight - 140
+    # (0x2ec728) and the b.pl at 0xae18 chooses between honouring it and letting the content
+    # exceed it. Both arms leave the copyright's bottom edge exactly on the panel's bottom.
+    0xa970: 'RBCampaignDetailViewController -updateLayout: the fitting loop measures against '
+            'MAXFLOAT (0x2ec748) and tests both dimensions (0xaad0..0xaadc), the label takes a '
+            'fixed 50-point height, descriptionTop is the banner\'s maxY, and the copyright, '
+            'divider and content size each keep their own width rather than the view\'s',
 }
 
 
