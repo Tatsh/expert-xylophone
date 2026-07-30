@@ -226,6 +226,46 @@ class Binary:
                 self._collect_methods(meta_data, '+', out)
         return out
 
+    def category_map(self) -> dict[tuple[str, str], int]:
+        """
+        Map every kind and selector defined in a category to its implementation address.
+
+        Categories are keyed without a class name. A category on a framework class points at that
+        class through a reference the linker binds at load time, so the name cannot be read from the
+        file, and the category's own name is the category's rather than the class's.
+
+        A selector defined by more than one category cannot be attributed, since the class each
+        belongs to is unreadable, so it maps to ``None`` and its annotation is left unverifiable
+        rather than reported against whichever category happened to come first.
+
+        Returns
+        -------
+        dict[tuple[str, str], int | None]
+            Keyed by ``'-'`` or ``'+'`` and the selector; ``None`` where two categories collide.
+        """
+        catlist = self.section('__objc_catlist')
+        out: dict[tuple[str, str], int | None] = {}
+        if catlist is None:
+            return out
+        for index in range(catlist.size // 8):
+            address, = struct.unpack_from('<Q', self._data, catlist.offset + index * 8)
+            offset = self.offset_of(address)
+            if offset is None:
+                continue
+            _, _, instance_methods, class_methods = struct.unpack_from('<QQQQ', self._data, offset)
+            for methods, kind in ((instance_methods, '-'), (class_methods, '+')):
+                if not methods:
+                    continue
+                keyed: dict[tuple[str, str, str], int] = {}
+                self._collect_method_list(methods, '', kind, keyed)
+                for (_, method_kind, selector), implementation in keyed.items():
+                    key = (method_kind, selector)
+                    if key in out and out[key] != implementation:
+                        out[key] = None
+                    else:
+                        out.setdefault(key, implementation)
+        return out
+
     def _collect_methods(self, class_ro: int, kind: str,
                          out: dict[tuple[str, str, str], int]) -> None:
         offset = self.offset_of(class_ro)
@@ -233,6 +273,10 @@ class Binary:
             return
         class_name = self.string_at(struct.unpack_from('<Q', self._data, offset + 24)[0])
         method_list = struct.unpack_from('<Q', self._data, offset + 32)[0]
+        self._collect_method_list(method_list, class_name, kind, out)
+
+    def _collect_method_list(self, method_list: int, class_name: str, kind: str,
+                             out: dict[tuple[str, str, str], int]) -> None:
         list_offset = self.offset_of(method_list) if method_list else None
         if list_offset is None:
             return
@@ -314,6 +358,9 @@ def audit_methods(root: Path, binary: Binary) -> tuple[int, list[MethodFinding],
         The number checked, the mismatches, and the count whose selector the metadata lacks.
     """
     metadata = binary.method_map()
+    # A category's methods are not in the class list, and a category on a framework class does not
+    # name that class in the file at all, so they are matched on the selector alone.
+    categories = binary.category_map()
     checked = 0
     mismatches: list[MethodFinding] = []
     unknown = 0
@@ -358,6 +405,8 @@ def audit_methods(root: Path, binary: Binary) -> tuple[int, list[MethodFinding],
                 continue
             checked += 1
             actual = metadata.get((class_name, start.group(1), selector))
+            if actual is None:
+                actual = categories.get((start.group(1), selector))
             if actual is None:
                 unknown += 1
             elif actual - IMAGE_BASE != annotated:

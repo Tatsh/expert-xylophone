@@ -41,7 +41,9 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 @implementation UIImageView (RB)
 
 - (void)SetFlashEffectFast {
-    /** @ghidraAddress 0x41830a */
+    // The address is not recorded: this selector is defined by both this category and
+    // UIView (RB), and a category on a framework class does not name that class in the
+    // binary, so the two implementations cannot be told apart from the metadata alone.
     [self SetFlashEffectDuration:kFlashFastDuration Start:kFlashFullOpacity End:kFlashMinOpacity];
 }
 
@@ -53,7 +55,9 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 }
 
 - (void)SetFlashEffectDuration:(CGFloat)duration Start:(CGFloat)start End:(CGFloat)end {
-    /** @ghidraAddress 0x41831d */
+    // The address is not recorded: this selector is defined by both this category and
+    // UIView (RB), and a category on a framework class does not name that class in the
+    // binary, so the two implementations cannot be told apart from the metadata alone.
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:kFlashOpacityKeyPath];
     animation.duration = duration;
     animation.repeatCount = HUGE_VALF;
@@ -69,7 +73,9 @@ static const float kFlashTimingControlPoint2Y = 0.8f;
 }
 
 - (void)RemoveFlashEffect {
-    /** @ghidraAddress 0x1a3760 */
+    // The address is not recorded: this selector is defined by both this category and
+    // UIView (RB), and a category on a framework class does not name that class in the
+    // binary, so the two implementations cannot be told apart from the metadata alone.
     [self.layer removeAnimationForKey:kFlashAnimationKey];
 }
 
