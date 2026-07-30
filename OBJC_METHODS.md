@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3655 verified
+Total: 6343 — 6201 reconstructed, 3656 verified
 (57.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2063,7 +2063,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuNewsTickerView` | `-` | `getCampaignID` |  | ✅ | ✅ | `0x9f16c` |
 | `RBMenuNewsTickerView` | `-` | `getSequenceID` |  | ✅ | ✅ | `0x9f178` |
 | `RBMenuNewsTickerView` | `-` | `getWebID` |  | ✅ | ✅ | `0x9f184` |
-| `RBMenuNewsTickerView` | `-` | `setText:LINK:` |  | ✅ | ❌ | `0x9f190` |
+| `RBMenuNewsTickerView` | `-` | `setText:LINK:` |  | ✅ | ✅ | `0x9f190` |
 | `RBMenuNewsTickerView` | `-` | `animationDidStop:finished:` |  | ✅ | ❌ | `0xa0730` |
 | `RBMenuNewsTickerView` | `-` | `stopNews` |  | ✅ | ❌ | `0xa0a3c` |
 | `RBMenuNewsTickerView` | `-` | `isLinkToStore` |  | ✅ | ❌ | `0xa0b7c` |

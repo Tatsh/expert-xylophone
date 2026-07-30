@@ -171,6 +171,10 @@ VERIFIED = {
     0x16deb0: 'RBMusicGridLayout supplementary attributes: the same frameless shape',
     0x16df1c: 'RBMusicGridLayout -layoutAttributesForElementsInRect:: intersection order',
     0x16e0a0: 'RBMusicGridLayout -shouldInvalidateLayoutForBoundsChange:: returns 1',
+    0x9f190: 'RBMenuNewsTickerView -setText:LINK:: the label frame is (0, 0, measured text '
+             'width, base view height); sizeWithFont: supplies d2 and the textBaseView frame send '
+             'leaves the height in d3, which is why copying the base frame wholesale left the '
+             'marquee nothing to scroll',
     0x9dab4: 'RBMenuButton -setupView:: the bounds fcsel and both cap-inset calls',
     0x9d9fc: 'RBMenuButton -initWithType:: super init then setupView:',
     0x5df3c: 'ScoreData -getFrameBonusType: the three-way csel and the 2-collapses-to-1 return',
