@@ -311,10 +311,9 @@ static const UIViewAutoresizing kMaskFlexibleLeftMargin = 0x1;      // Left marg
     [lineView setBackgroundColor:[UIColor colorWithWhite:kLineViewWhite alpha:1.0]];
     [self.detailView addSubview:lineView];
 
-    UILabel *termsLabel = [[UILabel alloc] initWithFrame:CGRectMake(kDescriptionInsetX,
-                                                                    0.0,
-                                                                    lineView.width + kDetailWidthInset,
-                                                                    kDividerHeight)];
+    const CGFloat termsWidth = lineView.width + kDetailWidthInset;
+    UILabel *termsLabel = [[UILabel alloc]
+        initWithFrame:CGRectMake(kDescriptionInsetX, 0.0, termsWidth, kDividerHeight)];
     [termsLabel setFont:[UIFont systemFontOfSize:kTermsLinkFontSize]];
     [termsLabel setTextColor:[UIColor colorWithRed:0.0 green:kTermsTextWhite blue:1.0 alpha:1.0]];
     [termsLabel setTextAlignment:NSTextAlignmentLeft];
