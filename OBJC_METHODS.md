@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3097 verified
-(48.8%).
+Total: 6343 — 6198 reconstructed, 3099 verified
+(48.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1214,10 +1214,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ScoreData` | `+` | `recordWithTuneID:inManagedObjectContext:` |  | ✅ | ❌ | `0x5cd7c` |
 | `ScoreData` | `+` | `reset:` |  | ✅ | ❌ | `0x5ce78` |
 | `ScoreData` | `+` | `hashScoreforTune:Basic:Medium:Hard:Hash:` |  | ✅ | ❌ | `0x5d300` |
-| `ScoreData` | `+` | `hashScore:` |  | ✅ | ❌ | `0x5d3bc` |
+| `ScoreData` | `+` | `hashScore:` |  | ✅ | ✅ | `0x5d3bc` |
 | `ScoreData` | `+` | `checkScore:` |  | ✅ | ❌ | `0x5d698` |
 | `ScoreData` | `+` | `totalScore` |  | ✅ | ❌ | `0x5d778` |
-| `ScoreData` | `-` | `getFrameBonusType` |  | ✅ | ❌ | `0x5df3c` |
+| `ScoreData` | `-` | `getFrameBonusType` |  | ✅ | ✅ | `0x5df3c` |
 | `ScoreData` | `-` | `checkOverScore` |  | ✅ | ❌ | `0x5e150` |
 | `ScoreData` | `+` | `totalRecordCount` |  | ✅ | ❌ | `0x5e820` |
 | `MusicData` | `+` | `GetYomiIndex:` |  | ✅ | ❌ | `0x5ea48` |
