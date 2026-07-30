@@ -77,6 +77,20 @@ discards this call's result.`). Do not write an extensive explanation.
   shows any hint of NEON / vectorisation (SIMD `v`/`q` registers, `ld1`/`st1`, `fmla`, `tbl`, …),
   work it from the **disassembly only**: no guessing, no "best effort" reconstruction from the
   garbled decompile.
+- **A variadic call must be reconstructed from the disassembly, never from the decompile.** Ghidra
+  renders a variadic `objc_msgSend` with only its first variadic argument, because the rest are
+  passed on the stack and the prototype does not describe them. The decompile is therefore not
+  merely imprecise here, it is _silently truncated_, and a reconstruction written from it drops
+  arguments while still compiling and running. Read the arm64 stack setup instead: the `stp`/`str`
+  writes to `[sp, #…]` before the `bl` are the argument list in order, and a
+  `stp xN,xzr,[sp, #…]` supplies the `nil` terminator, so the slot count is exact. Resolve each
+  `kFoo`-style constant from the Mach-O indirect symbol table rather than from a decompiler label.
+  This applies to every
+  nil-terminated constructor (`dictionaryWithObjectsAndKeys:`, `initWithObjectsAndKeys:`,
+  `arrayWithObjects:`, `setWithObjects:`, `UIAlertView`'s `otherButtonTitles:`) and to every
+  format-style call (`stringWithFormat:`, `initWithFormat:`, `appendFormat:`, `NSLog`) whose format
+  string is not a literal the compiler can check. An odd argument count in a pair-wise constructor,
+  or a specifier count that exceeds the argument count, is a defect provable from the source alone.
 - The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
   For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the
   decompile reads like normal C++ — the full signature, every local, the return, every global, and
