@@ -819,8 +819,11 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     self.scrollView.pagingEnabled = YES;
     self.scrollView.showsHorizontalScrollIndicator = NO;
     self.scrollView.showsVerticalScrollIndicator = NO;
+    // 0x1de78 sends the 0x3f loaded at 0x1de6c, all six flags, not the width-and-height pair.
     self.scrollView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+        UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.helpView addSubview:self.scrollView];
 
     UIImageView *gradient =
@@ -846,7 +849,11 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     [self.pageControl addTarget:self
                          action:@selector(pageDidChangeValue:)
                forControlEvents:UIControlEventValueChanged];
-    self.pageControl.autoresizingMask = UIViewAutoresizingNone;
+    // 0x1e194 sends the same 0x3f, not None; only the help and pastel containers get None.
+    self.pageControl.autoresizingMask =
+        UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+        UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     self.pageControl.pageIndicatorTintColor = [UIColor colorWithWhite:kPageIndicatorTintWhite
                                                                 alpha:1.0];
     self.pageControl.currentPageIndicatorTintColor =
@@ -861,8 +868,12 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     self.fadeImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
     self.fadeImageView.backgroundColor = UIColor.blackColor;
     self.fadeImageView.alpha = 1.0;
+    // 0x1e41c sends the same 0x3f. Of the six masks this routine sets, only the background at
+    // 0x1cce8 is the 0x12 width-and-height pair.
     self.fadeImageView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+        UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.view addSubview:self.fadeImageView];
 }
 
