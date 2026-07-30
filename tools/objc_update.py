@@ -1573,6 +1573,29 @@ VERIFIED = {
             'MAXFLOAT (0x2ec748) and tests both dimensions (0xaad0..0xaadc), the label takes a '
             'fixed 50-point height, descriptionTop is the banner\'s maxY, and the copyright, '
             'divider and content size each keep their own width rather than the view\'s',
+    # RBCampaignDetailViewController, continued. Two annotations in this class pointed one
+    # instruction short, at the empty stub next door: 0x78bc and 0x79b0 are bare ret, and the
+    # bodies they claimed are at 0x78c0 and 0x79b4.
+    0x5b00: 'RBCampaignDetailViewController -loadView chains to super and does nothing else',
+    0x6798: 'RBCampaignDetailViewController -showItemInfo unhides the four panels, then starts '
+            'the artwork download only when loadedImage is false (tbz at 0x68a8)',
+    0x6924: 'RBCampaignDetailViewController -loadInfo tail-calls -showItemInfo when bound',
+    0x6fdc: 'RBCampaignDetailViewController -sampleViewStop alpha 0 via movi, indicator stopped, '
+            'playing view hidden, status 0',
+    0x70b4: 'RBCampaignDetailViewController -sampleViewDownloading alpha 1, indicator started, '
+            'playing view hidden, status 1',
+    0x7198: 'RBCampaignDetailViewController -sampleViewPlaying alpha 1, indicator stopped, '
+            'playing view shown, status 2',
+    0x74ec: 'RBCampaignDetailViewController -finishBgm: tail-calls -sampleStop',
+    0x7508: 'RBCampaignDetailViewController -pushLink: opens the link only when it exists, '
+            're-reading itemInfo for the open',
+    0x78c0: 'RBCampaignDetailViewController -alertView:didDismissWithButtonIndex: runs only when '
+            'closingFlag is clear (cbnz at 0x78e4 returns otherwise)',
+    0x79b4: 'RBCampaignDetailViewController -alertViewCancel: the mirror image, running only when '
+            'closingFlag is set (cbz at 0x79e4)',
+    0x7e04: 'RBCampaignDetailViewController -didReceiveMemoryWarning chains to super only',
+    0x7e38: 'RBCampaignDetailViewController -viewDidUnload chains to super then stops the artwork '
+            'downloads',
 }
 
 

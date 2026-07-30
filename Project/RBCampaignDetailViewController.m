@@ -776,7 +776,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 }
 
-/** @ghidraAddress 0x78bc */
+/** @ghidraAddress 0x78c0 */
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (!self.closingFlag && [self.delegate respondsToSelector:@selector(detailViewClose)]) {
         [self.delegate performSelector:@selector(detailViewClose)];
@@ -787,7 +787,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
 }
 
-/** @ghidraAddress 0x79b0 */
+/** @ghidraAddress 0x79b4 */
 - (void)alertViewCancel:(UIAlertView *)alertView {
     if (self.closingFlag && [self.delegate respondsToSelector:@selector(detailViewClose)]) {
         [self.delegate performSelector:@selector(detailViewClose)];
