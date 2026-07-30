@@ -142,6 +142,14 @@ VERIFIED = {
              'else',
     0xf3514: 'StoreDownloadManager -downloaderError:: the idle timer is cleared first and the '
              'delegate is notified whether or not a downloader was present',
+    # RBExperienceData's unlock family: fast enumeration over one collection each, comparing
+    # intValue against the argument. Each was read separately, since the bodies are identical
+    # apart from the collection they enumerate.
+    0x1ba21c: 'RBExperienceData -unlockWithExprosionType:: explosionItems',
+    0x1ba370: 'RBExperienceData -unlockWithFrameType:: frameItems',
+    0x1ba4c4: 'RBExperienceData -unlockWithBackgroundType:: backgroundItems',
+    0x1ba618: 'RBExperienceData -unlockWithMusicID:: musicItems',
+    0x1ba76c: 'RBExperienceData -unlockWithThemaID:: themaItems',
     0x1ba8c0: 'RBExperienceData -unlockWithType:ID:: the jump table at 0x1ba954 gives 0-4, 7 and '
               '10, with 5, 6, 8 and 9 falling to the b.hi #0xa default that returns NO',
     0x1f7594: 'RBUserSettingData -setThema:: b.ls is unsigned, all six fallback defaults, the '

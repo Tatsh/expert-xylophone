@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6200 reconstructed, 3650 verified
-(57.5%).
+Total: 6343 — 6200 reconstructed, 3655 verified
+(57.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4662,11 +4662,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `save` |  | ✅ | ❌ | `0x1b9e50` |
 | `RBExperienceData` | `-` | `unlockWithBGMtype:` |  | ✅ | ❌ | `0x1b9f74` |
 | `RBExperienceData` | `-` | `unlockWithShotType:` |  | ✅ | ❌ | `0x1ba0c8` |
-| `RBExperienceData` | `-` | `unlockWithExprosionType:` |  | ✅ | ❌ | `0x1ba21c` |
-| `RBExperienceData` | `-` | `unlockWithFrameType:` |  | ✅ | ❌ | `0x1ba370` |
-| `RBExperienceData` | `-` | `unlockWithBackgroundType:` |  | ✅ | ❌ | `0x1ba4c4` |
-| `RBExperienceData` | `-` | `unlockWithMusicID:` |  | ✅ | ❌ | `0x1ba618` |
-| `RBExperienceData` | `-` | `unlockWithThemaID:` |  | ✅ | ❌ | `0x1ba76c` |
+| `RBExperienceData` | `-` | `unlockWithExprosionType:` |  | ✅ | ✅ | `0x1ba21c` |
+| `RBExperienceData` | `-` | `unlockWithFrameType:` |  | ✅ | ✅ | `0x1ba370` |
+| `RBExperienceData` | `-` | `unlockWithBackgroundType:` |  | ✅ | ✅ | `0x1ba4c4` |
+| `RBExperienceData` | `-` | `unlockWithMusicID:` |  | ✅ | ✅ | `0x1ba618` |
+| `RBExperienceData` | `-` | `unlockWithThemaID:` |  | ✅ | ✅ | `0x1ba76c` |
 | `RBExperienceData` | `-` | `unlockWithType:ID:` |  | ✅ | ✅ | `0x1ba8c0` |
 | `RBExperienceData` | `-` | `addBGMType:` |  | ✅ | ❌ | `0x1ba980` |
 | `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ❌ | `0x1baa24` |
