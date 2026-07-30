@@ -4,8 +4,8 @@
 //
 //  Reconstructed from Ghidra project rb458, program rb458 (class ApplilinkStore). This is a plain
 //  Objective-C file: it drives an ApplilinkViewController through ordinary message sends, guards
-//  its shared instance with dispatch_once, and hops to the main queue with dispatch_sync, so there
-//  is no C++.
+//  its shared instance with dispatch_once, and serialises on a private queue with dispatch_sync, so
+//  there is no C++.
 //
 //  ApplilinkStore is the SDK's App Store product-page facade singleton. It is created once,
 //  presents the store through an ApplilinkViewController (which owns the
@@ -24,6 +24,13 @@ static ApplilinkStore *sSharedInstance = nil;
 static dispatch_once_t sAllocOnceToken = 0;
 static dispatch_once_t sSharedOnceToken = 0;
 
+// The private serial queue -init synchronises its super call onto. It is created in
+// +allocWithZone:, which alloc always runs before init, so it is non-nil by the time -init reads it.
+static dispatch_queue_t sQueue = nil;
+
+// The label the binary passes to dispatch_queue_create.
+static const char *const kQueueLabel = "ApplilinkStore";
+
 // The view controller presenting the store product page while one is on screen, or nil when none
 // is. It survives across store requests, so it is a file-scope global rather than an instance ivar.
 static ApplilinkViewController *sViewController = nil;
@@ -38,7 +45,12 @@ static const float kMinimumStoreSystemVersion = 6.0f;
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     dispatch_once(&sAllocOnceToken, ^{
       /** @ghidraAddress 0x220538 */
-      sSharedInstance = [super allocWithZone:zone];
+      // The binary passes a null attribute, which makes this a serial queue.
+      sQueue = dispatch_queue_create(kQueueLabel, nil);
+      // The binary re-tests the singleton inside the once block, after creating the queue.
+      if (sSharedInstance == nil) {
+          sSharedInstance = [super allocWithZone:zone];
+      }
     });
     return sSharedInstance;
 }
@@ -46,7 +58,10 @@ static const float kMinimumStoreSystemVersion = 6.0f;
 // @ghidraAddress 0x2202ec
 - (instancetype)init {
     __block ApplilinkStore *initResult = self;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    // The queue is the private serial one created in +allocWithZone:, not the main queue. Syncing
+    // onto the main queue here would deadlock whenever +sharedInstance is first called from the
+    // main thread, which is what +[ApplilinkCore resume] does on entering the foreground.
+    dispatch_sync(sQueue, ^{
       /** @ghidraAddress 0x2203fc */
       initResult = [super init];
     });
