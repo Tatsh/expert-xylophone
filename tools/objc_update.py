@@ -910,6 +910,14 @@ VERIFIED = {
     0xb42e8: 'RBMenuView -scrollViewWillBeginDragging:: sends setSearchBarNonActive',
     0xb4304: 'RBMenuView -scrollViewDidEndDecelerating:: forwards to scrollViewDidEndScroll:',
     0xb4384: 'RBMenuView -scrollViewDidEndScrollingAnimation:: forwards the same way',
+    # neTextureForiOS's NSData decoder, the sibling of C_TEXTURE::LoadFromUIImage. The two loops at
+    # 0x323b8 and 0x323cc round the CGImage's width and height up to a power of two; the flip
+    # translates by the image height (scvtf d9,w23), not the allocated height. The alpha test at
+    # 0x100032494 is (alphaInfo - 1) unsigned-less-than 4, so formats 1 through 4 stay RGBA and 0,
+    # 5, and 6 take the tight-RGB repack at 0x3244b4. The scale is a float, not a double: the type
+    # encoding ends f24 and SetDataAndUpload stores the register it is forwarded in with str s0 at
+    # 0x31f84, with no fcvt anywhere on the path.
+    0x32320: 'neTextureForiOS +LoadTexture:Scale:: power-of-two RGBA decode, tight-RGB when opaque',
     # NetworkUtil's endpoint builders. Every format string and endpoint path was decoded from its
     # __cfstring entry rather than read off a label, and every stringWithFormat: argument list was
     # taken from the stp/str writes to [sp, #..] ahead of the bl.
@@ -1106,6 +1114,16 @@ VERIFIED = {
     # enumerates it with an empty body. The single return test at 0x144be4 is on the error, not on
     # the result of -save:.
     0x1448D8: 'RBErosionMarkUpdater -updateScore: BOOL return, empty detailed-error walk',
+    # Multipliers read off the arms: 0x64 then 0xa for the three-digit basic picker, 0x3e8 then
+    # 0x64 then 0xa for the four-digit medium and hard ones.
+    0x1433EC: 'RBErosionMarkUpdater -getPickerViewScore:: 3 digits basic, 4 medium and hard',
+    0x14370C: 'RBErosionMarkUpdater -setPickerViewScore:score:: the mirror, animated always NO',
+    # Two defects fixed, both invented text. The __cfstring at 0x36d060 is 13 characters with no
+    # trailing full stop, and 0x36d080 is a different sentence from the one we had.
+    0x144080: 'RBErosionMarkUpdater -scoreValidate: unchanged test, then three bounded ranges',
+    # One defect fixed: the routine sends exactly two set...Controller: messages, so the confirm
+    # controller is never cleared. Both bounds globals are cleared at 0x144f78 and 0x144f88.
+    0x144D38: 'RBErosionMarkUpdater -remove: two arms off NSClassFromString(UIAlertController)',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',

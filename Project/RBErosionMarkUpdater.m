@@ -548,24 +548,25 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 - (NSString *)scoreValidate {
     if (self.editBasicScore == self.baseBasicScore &&
         self.editMediumScore == self.baseMediumScore && self.editHardScore == self.baseHardScore) {
-        return @"スコアが変更されていません。";
+        // The __cfstring at 0x36d060 is 13 characters and carries no trailing full stop.
+        return @"スコアが変更されていません";
     }
     if (self.editBasicScore != self.baseBasicScore) {
         if (self.editBasicScore < g_lowerScoreBounds[kDifficultyBasic].integerValue ||
             g_upperScoreBounds[kDifficultyBasic].integerValue < self.editBasicScore) {
-            return @"入力されたスコアが範囲外です。";
+            return @"スコアに設定範囲外の値があります";
         }
     }
     if (self.editMediumScore != self.baseMediumScore) {
         if (self.editMediumScore < g_lowerScoreBounds[kDifficultyMedium].integerValue ||
             g_upperScoreBounds[kDifficultyMedium].integerValue < self.editMediumScore) {
-            return @"入力されたスコアが範囲外です。";
+            return @"スコアに設定範囲外の値があります";
         }
     }
     if (self.editHardScore != self.baseHardScore) {
         if (self.editHardScore < g_lowerScoreBounds[kDifficultyHard].integerValue ||
             g_upperScoreBounds[kDifficultyHard].integerValue < self.editHardScore) {
-            return @"入力されたスコアが範囲外です。";
+            return @"スコアに設定範囲外の値があります";
         }
     }
     return nil;
@@ -601,9 +602,10 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         self.alertConfirmView.delegate = nil;
         self.alertConfirmView = nil;
     } else {
+        // Only two of the three controllers are cleared: the routine sends exactly two
+        // set...Controller: messages, and setAlertConfirmController: is not among them.
         self.alertSetScoreController = nil;
         self.alertCancelController = nil;
-        self.alertConfirmController = nil;
     }
     g_lowerScoreBounds = nil;
     g_upperScoreBounds = nil;

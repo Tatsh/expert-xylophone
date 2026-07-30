@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4346 verified
-(68.5%).
+Total: 6343 — 6203 reconstructed, 4351 verified
+(68.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -534,7 +534,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuMascot` | `-` | `setCurrentMessageIndex:` | prop | ✅ | ✅ | `0x2f528` |
 | `RBMenuMascot` | `-` | `nextMessageIndex` | prop | ✅ | ✅ | `0x2f538` |
 | `RBMenuMascot` | `-` | `setNextMessageIndex:` | prop | ✅ | ✅ | `0x2f548` |
-| `neTextureForiOS` | `+` | `LoadTexture:Scale:` |  | ✅ | ❌ | `0x32320` |
+| `neTextureForiOS` | `+` | `LoadTexture:Scale:` |  | ✅ | ✅ | `0x32320` |
 | `NetworkUtil` | `+` | `createNonce:` |  | ✅ | ✅ | `0x32610` |
 | `NetworkUtil` | `+` | `deviceName` |  | ✅ | ✅ | `0x32740` |
 | `NetworkUtil` | `+` | `identifierParams` |  | ✅ | ✅ | `0x327b0` |
@@ -3542,18 +3542,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `+` | `updateCheckStart:` |  | ✅ | ✅ | `0x142b4c` |
 | `RBErosionMarkUpdater` | `-` | `updateStartBasic:Medium:Hard:` |  | ✅ | ✅ | `0x142d4c` |
 | `RBErosionMarkUpdater` | `-` | `setupView` |  | ✅ | ❌ | `0x142e08` |
-| `RBErosionMarkUpdater` | `-` | `getPickerViewScore:` |  | ✅ | ❌ | `0x1433ec` |
-| `RBErosionMarkUpdater` | `-` | `setPickerViewScore:score:` |  | ✅ | ❌ | `0x14370c` |
+| `RBErosionMarkUpdater` | `-` | `getPickerViewScore:` |  | ✅ | ✅ | `0x1433ec` |
+| `RBErosionMarkUpdater` | `-` | `setPickerViewScore:score:` |  | ✅ | ✅ | `0x14370c` |
 | `RBErosionMarkUpdater` | `-` | `pickerOpen` |  | ✅ | ✅ | `0x143b8c` |
 | `RBErosionMarkUpdater` | `-` | `pickerClose` |  | ✅ | ✅ | `0x143cc8` |
 | `RBErosionMarkUpdater` | `-` | `reset` |  | ✅ | ✅ | `0x143d8c` |
-| `RBErosionMarkUpdater` | `-` | `scoreValidate` |  | ✅ | ❌ | `0x144080` |
+| `RBErosionMarkUpdater` | `-` | `scoreValidate` |  | ✅ | ✅ | `0x144080` |
 | `RBErosionMarkUpdater` | `-` | `updatePerform` |  | ✅ | ✅ | `0x144418` |
 | `RBErosionMarkUpdater` | `-` | `updateCancel` |  | ✅ | ✅ | `0x14445c` |
 | `RBErosionMarkUpdater` | `-` | `needUpdateScore` |  | ✅ | ✅ | `0x14451c` |
 | `RBErosionMarkUpdater` | `-` | `getScore` |  | ✅ | ✅ | `0x144820` |
 | `RBErosionMarkUpdater` | `-` | `updateScore` |  | ✅ | ✅ | `0x1448d8` |
-| `RBErosionMarkUpdater` | `-` | `remove` |  | ✅ | ❌ | `0x144d38` |
+| `RBErosionMarkUpdater` | `-` | `remove` |  | ✅ | ✅ | `0x144d38` |
 | `RBErosionMarkUpdater` | `-` | `dealloc` |  | ❌ | ✅ | `0x144fc8` |
 | `RBErosionMarkUpdater` | `-` | `createAlertSetScore` |  | ✅ | ❌ | `0x144ffc` |
 | `RBErosionMarkUpdater` | `-` | `createAlertCancel` |  | ✅ | ❌ | `0x146d3c` |
