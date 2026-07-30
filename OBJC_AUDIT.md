@@ -1,9 +1,17 @@
 # Objective-C audit
 
 The Objective-C reconstruction is being re-checked routine by routine against the disassembly, the
-same way the engine was. [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md) tracks the C and C++ side; this file
-tracks what the Objective-C audit has established, so that a negative result is recorded once rather
-than re-derived, and a claim is never acted on before it is verified.
+same way the engine was.
+
+**Coverage lives in [OBJC_METHODS.md](OBJC_METHODS.md)**, the per-method checklist generated
+from the binary's runtime metadata — every method, whether it is reconstructed, and whether
+it is verified. That file is the counterpart to [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md) and is
+where to look for what remains. As of the last regeneration it stands at 6343 methods, 6198
+reconstructed and **15 verified**, so the audit has barely started.
+
+This file is the findings record behind those verifications: what each routine turned out to be, so
+that a negative result is recorded once rather than re-derived, and a claim is never acted on before
+it is checked.
 
 Addresses are relative to the image base (`0x100000000`). The reference binary is the one **inside
 `REFLEC BEAT plus 4.5.8.ipa`**; the unpacked copy under `rb458orig` is a different build and matches
