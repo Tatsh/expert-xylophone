@@ -4,6 +4,7 @@ accum
 actived
 addrs
 adid
+adrp
 advertisable
 akhuta
 allseasons
@@ -64,6 +65,8 @@ cdecl
 cdevice
 centered
 cfstr
+cbnz
+cbz
 cfstring
 cfurl
 cfuuid

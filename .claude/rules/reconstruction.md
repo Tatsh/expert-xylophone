@@ -91,6 +91,40 @@ discards this call's result.`). Do not write an extensive explanation.
   format-style call (`stringWithFormat:`, `initWithFormat:`, `appendFormat:`, `NSLog`) whose format
   string is not a literal the compiler can check. An odd argument count in a pair-wise constructor,
   or a specifier count that exceeds the argument count, is a defect provable from the source alone.
+- **The Objective-C phase follows the same five steps as the engine phase below, and for the same
+  reason.** The view and controller classes were originally reconstructed without it, and the result
+  is a recurring defect: the `@ghidraAddress` is right while the body is wrong. Specifically, a
+  `CGRect`'s fields arrive transposed out of the soft-float shuffle, a per-idiom branch is collapsed
+  to one arm so a pad gets the phone's metrics, or an arm is missed altogether. None of this is
+  visible by reading the source, and none of it is caught by the compiler. So for each routine, in
+  order: (1) read the decompile; (2) type it in Ghidra until it reads like ordinary Objective-C;
+  (3) work from the disassembly for anything the decompiler garbles — every `CGRect`, `CGPoint`
+  and `CGSize` argument, since those pass in `d0`–`d3` and the decompiler renders the shuffle as a
+  pseudo-double; (4) write the reconstruction; (5) verify it against the disassembly.
+- **A constant loaded from the pool must be decoded from the pool, not guessed from the decompile.**
+  Most layout numbers reach the code as `adrp xN, <page>` followed by `ldr dM, [xN, #<offset>]`,
+  which reads a `double` out of `__const`. The decompile frequently renders that as a pseudo-double,
+  an integer, or nothing at all, so the value has to be read from the binary at
+  `page + offset`. Two mistakes recur and both look plausible in the source: reading the _adjacent_
+  pool slot, since these constants sit in dense runs eight bytes apart and a neighbouring value is
+  usually in the same range; and taking an `fmov`'s immediate for a pool load or the reverse. Record
+  the address the value came from in an `@ghidraAddress` comment on the declaration so the audit
+  tool can re-check it later, and prefer one constant per address over reusing a name whose address
+  you did not verify.
+- **A frame must be checked for fit, not merely transcribed.** After recovering a frame, confirm it
+  sits inside its container: a subview's `x + width` within the parent's width, and likewise for
+  height. That one arithmetic check is what distinguishes a transposed `{width, height}` from a
+  correct one, since both orders are individually plausible numbers. A recovered layout whose parts
+  do not fit, or that leaves a container's width unaccounted for, has been misread.
+- **Count the arms of every `IsPad()` and theme branch.** A `cbz`/`cbnz` on the result of `IsPad()`
+  at `0x1a1200`, or on `[RBUserSettingData thema]`, marks a per-idiom or per-theme split, and a
+  routine may branch three ways rather than two. Reconstruct every arm. A constant that exists in
+  only one arm of the binary but is applied unconditionally in the reconstruction is a defect even
+  when its value is right, because it is right for one device only.
+- Run `tools/audit_ghidra_addresses.py` against the shipped binary after touching annotations. It
+  checks every annotated method against the runtime metadata and every constant annotated on its
+  declaration line against the bytes at that address. It cannot check a constant that carries no
+  annotation, which is the large majority of them, so a clean run is necessary and not sufficient.
 - The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
   For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the
   decompile reads like normal C++ — the full signature, every local, the return, every global, and
