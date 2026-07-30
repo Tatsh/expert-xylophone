@@ -128,22 +128,12 @@ enum {
     // are the same expression. Taking the right one from the height makes the two caps exceed the
     // image whenever it is taller than it is wide, which leaves an invalid resizable image that
     // draws as a flat block rather than a stretched button face.
-    CGFloat capInset = background.size.width * 0.5 - kMenuButtonCapInsetMargin;
-#ifdef ENABLE_PATCHES
-    // The binary's caps always sum to the art's width less two, leaving a 2-point stretchable
-    // seam: the two caps ARE the pill's rounded ends. That only works while the destination is at
-    // least as wide as the art. The menu bar lays these buttons out at 215 points and the art is
-    // 220, so the ends do not fit, and what UIKit draws instead is the 2-point middle -- the
-    // pill's solid interior -- across the whole button. That is the flat grey with no transparent
-    // border. A pill's cap is its corner radius, which is half its height, so deriving the cap
-    // from the height keeps both ends intact and stretches only the flat middle, at any width the
-    // button is used at. See PATCHES.md.
-    capInset = MIN(capInset, background.size.height * 0.5);
-#endif
-    background = [background resizableImageWithCapInsets:UIEdgeInsetsMake(0.0,
-                                                                          capInset,
-                                                                          0.0,
-                                                                          capInset)];
+    background = [background
+        resizableImageWithCapInsets:UIEdgeInsetsMake(
+                                        0.0,
+                                        background.size.width * 0.5 - kMenuButtonCapInsetMargin,
+                                        0.0,
+                                        background.size.width * 0.5 - kMenuButtonCapInsetMargin)];
     [self.button setBackgroundImage:background forState:UIControlStateNormal];
     self.button.frame = self.bounds;
     self.button.autoresizingMask = kMenuButtonAutoresizingMask;

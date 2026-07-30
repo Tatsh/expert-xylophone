@@ -185,12 +185,6 @@ static const NSTimeInterval kShowFadeDelay = 0.75;
 // without appearing in it, and the target the binary passes has not been confirmed to be self
 // rather than an owning view or controller that does implement the method. Left unresolved
 // deliberately, and no stand-in is supplied, so the build keeps whatever the original did.
-//
-// #ifdef ENABLE_PATCHES
-// - (void)selectExit {
-//     [self hideAnimation];
-// }
-// #endif
 
 - (void)showAnimation {
     if (m_IsAnimation) {
