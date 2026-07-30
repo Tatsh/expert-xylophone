@@ -1046,19 +1046,25 @@ void TitleColetteScene::RenderSprites() {
                 0x1b + i, i, &g_aTitleAnim04Scale[i * 6], 3, &g_aTitleAnim04Alpha[i * 4], 2);
         }
     }
+    // The counter starts at -9 and counts up to zero, with the increment at the top of the loop and
+    // skipped on entry, so the `add w1,w25,#0x4a` at 0x58be8 makes 0x4a the last part id and 0x41
+    // the first. These ten are the logo's letters.
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 10; ++i) {
             EmitAnimatedPart(
-                0x4a + i, i, &g_aTitleAnim05Scale[i * 0x3a], 0x1d, &g_aTitleAnim05Alpha[i * 4], 2);
+                0x41 + i, i, &g_aTitleAnim05Scale[i * 0x3a], 0x1d, &g_aTitleAnim05Alpha[i * 4], 2);
         }
     }
 
     // Window 6: six parts with a single seven-knot scale curve, from a dedicated position table.
+    // The `add w1,w22,#0x55` at 0x58c8c makes 0x55 the last id, so these run 0x50 to 0x55, and the
+    // start prompt is the first of them rather than one past the end. The position pointer starts
+    // at the table plus twelve (0x58c4c) and is read eight back, so the first pair is skipped.
     if (static_cast<unsigned int>(m_nIdleTimer - 0xa7) < 0x1a0b) {
         for (int i = 0; i < 6; ++i) {
             const float flScale = CalculateCurveInterpolation(
                 &g_aTitleAnim06Curve[i * 0xe], 7, static_cast<float>(m_nIdleTimer));
-            EmitPartSprite(0x55 + static_cast<unsigned int>(i),
+            EmitPartSprite(0x50 + static_cast<unsigned int>(i),
                            0xff,
                            S_VECTOR2{g_aTitleAnim06Pos[i + 1][0], g_aTitleAnim06Pos[i + 1][1]},
                            S_VECTOR2{flScale, flScale},
@@ -1067,10 +1073,13 @@ void TitleColetteScene::RenderSprites() {
         }
     }
 
+    // Same shape again: the `add w1,w25,#0x5c` at 0x58d64 makes 0x5c the last id, so these six run
+    // 0x57 to 0x5c. Emitting 0x5c to 0x61 instead reached part 0x61, a full-screen quad over a
+    // single solid texel, which is the white box that appeared beside the logo.
     if (m_nIdleTimer > 0xa6) {
         for (int i = 0; i < 6; ++i) {
             EmitAnimatedPart(
-                0x5c + i, i, &g_aTitleAnim07Scale[i * 0x2a], 0x15, &g_aTitleAnim07Alpha[i * 4], 2);
+                0x57 + i, i, &g_aTitleAnim07Scale[i * 0x2a], 0x15, &g_aTitleAnim07Alpha[i * 4], 2);
         }
     }
 
