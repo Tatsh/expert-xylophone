@@ -58,6 +58,7 @@ caeagl
 calcel
 caplayermgr
 casource
+catlist
 cavoice
 cbnz
 ccflags
@@ -74,6 +75,7 @@ chek
 chksco
 classess
 classicthemelayer
+classlist
 codegen
 codesign
 color
