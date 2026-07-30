@@ -30,7 +30,11 @@ static NSString *const kLocalizedKeyYes = @"YES";
 static NSString *const kLocalizedKeyCancel = @"Cancel";
 static NSString *const kLocalizedKeyClose = @"Close";
 static NSString *const kLocalizedKeyRetry = @"Retry";
-static NSString *const kLocalizedKeyAppStore = @"AppStore";
+
+// The App Store button of the unlock-update alert is a plain literal in the binary, not a bundle
+// lookup: the adrp/add at 0xec68 forms the CFString at 0x100361b20 straight into x6, and the only
+// -localizedStringForKey: call in that routine is the one for "Cancel".
+static NSString *const kAppStoreButtonTitle = @"AppStore";
 
 // Fixed English titles and sentences resolved from the main bundle.
 static NSString *const kLocalizedKeyCaution = @"Caution";
@@ -39,39 +43,40 @@ static NSString *const kLocalizedKeyInfomation = @"Infomation";
 static NSString *const kLocalizedKeyDeleteSong = @"DELETE SONG";
 static NSString *const kLocalizedKeyDownload = @"Download";
 static NSString *const kLocalizedKeyUnlockRequirement = @"Unlock Requirement";
-static NSString *const kLocalizedKeyAppInstalledReward = @"AppInstalledReward";
+static NSString *const kLocalizedKeyAppInstalledReward = @"App Installed Reward";
 static NSString *const kLocalizedKeyFreeSpaceLow =
-    @"Free space of the storage area is low. May not work correctly when you play the game as it "
+    @"Free space of the storage area is low. \nMay not work correctly when you play the game as it "
     @"is.";
 static NSString *const kLocalizedKeyGameCenterFailed = @"Failed to connect Game Center.";
 static NSString *const kLocalizedKeyDownloadFailed =
-    @"Falied to download. Please check your network connection.";
+    @"Falied to download.\nPlease check your network connection.";
 static NSString *const kLocalizedKeyServerConnectFailed =
-    @"Can't connect to the server. Please check your network connection.";
-static NSString *const kLocalizedKeyOpenInMap = @"Do you want to open in the \"map\" this place?";
+    @"Can't connect to the server\nPlease check your network connection.";
+static NSString *const kLocalizedKeyOpenInMap = @"Do you want to open in the 'map' this place?";
 static NSString *const kLocalizedKeyEnableLocationService =
-    @"To display the current position. From the \"Settings\" app. Please set to \"On\" position "
-    @"information service.";
+    @"To display the current position\nFrom the 'Settings' app\nPlease set to 'On' position "
+    @"information service";
 static NSString *const kLocalizedKeyTookOverData = @"Took over the data";
 static NSString *const kLocalizedKeyReflectedOnLimePoint = @"reflected on the lime point score.";
 static NSString *const kLocalizedKeyInstallRestoredPacks =
-    @"To install restored PACKs, select \"OK\".";
-static NSString *const kLocalizedKeyRestorePacks = @"To restore purchased PACKs, select \"OK\".";
+    @"To install restored PACKs, select 'OK'";
+static NSString *const kLocalizedKeyRestorePacks = @"To restore purchased PACKs, select 'OK'";
 static NSString *const kLocalizedKeyInstallPacks = @"Install PACKs";
+static NSString *const kLocalizedKeyRestorePurchases = @"Restore purchases";
 static NSString *const kLocalizedKeyNewVersionAvailable =
-    @"A new version is available. Do you want to move App Store?";
+    @"A new version is available. \nDo you want to move App Store?";
 static NSString *const kLocalizedKeyUpdateDataFound =
-    @"Update data found. Do you want to download?";
+    @"Update data found. \nDo you want to download?";
 static NSString *const kLocalizedKeyLatestGameDataRequired =
-    @"The latest game data is required. Download will commence.";
-static NSString *const kLocalizedKeyInsufficientPoints = @"Insufficient Points!";
+    @"The latest game data is required. \nDownload will commence.";
+static NSString *const kLocalizedKeyInsufficientPoints = @"Insufficient Points.";
 static NSString *const kLocalizedKeyUpdateToUnlockSong =
     @"This application must be updated to unlock this song.";
 static NSString *const kLocalizedKeyPurchaseAdditionalSequences = @"Purchase Additional Sequences?";
-static NSString *const kLocalizedKeyHasBeenAddedFormat = @"%@ has been added.";
-static NSString *const kLocalizedKeyLimePointAddedFormat = @"%d LimePoint has been Added.";
+static NSString *const kLocalizedKeyHasBeenAddedFormat = @"\"%@\" has been added!";
+static NSString *const kLocalizedKeyLimePointAddedFormat = @"\"%d Lime Point\" has been Added.";
 static NSString *const kLocalizedKeySequenceRequirementFormat =
-    @"%1$@ is required to purchase this Sequence. Purchase (%2$@)?";
+    @"\"%1$@\" is required to purchase this Sequence.\n\nPurchase \"%2$@\"?";
 
 // Hard-coded Japanese titles and messages baked into the binary as literal strings.
 static NSString *const kAgeConfirmationTitle = @"年齢確認";
@@ -99,7 +104,7 @@ static NSString *const kAgeBracketUnder20 = @"20歳未満";
 static NSString *const kAgeBracket20OrOver = @"20歳以上";
 static NSString *const kSpendingLimit5000 = @"¥5000/月";
 static NSString *const kSpendingLimit20000 = @"¥20000/月";
-static NSString *const kSpendingLimitNone = @"無";
+static NSString *const kSpendingLimitNone = @"無制限";
 
 // The "%@ (%@)" template used to build the age/spending-limit buttons.
 static NSString *const kLabelWithAmountFormat = @"%@ (%@)";
@@ -159,8 +164,10 @@ static NSString *RBLocalizedUIString(NSString *key) {
 
 + (UIAlertView *)showRestoreMessageWithDelegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xde64 */
+    // The title is the "Restore purchases" cache entry at 0x1003cfd30, loaded at 0xdea0, and not
+    // the "Install PACKs" entry at 0x1003cfd38 that -showRestoreDownloadWithDelegate: uses.
     UIAlertView *alert =
-        [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyInstallPacks)
+        [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyRestorePurchases)
                                    message:RBLocalizedUIString(kLocalizedKeyRestorePacks)
                                   delegate:delegate
                          cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyCancel)
@@ -343,8 +350,10 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showAddLimepointByApplilink:(int)limePoint:(id<UIAlertViewDelegate>)delegate {
 #pragma clang diagnostic pop
     /** @ghidraAddress 0xf150 */
-    NSString *message =
-        [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeyHasBeenAddedFormat), limePoint];
+    // The format is the lime-point cache entry at 0x1003cfe08, loaded at 0xf188, and not the
+    // "%@" entry at 0x1003cfde8 that -showUnlockedMusicInfoWithDelegate:musicName: uses.
+    NSString *message = [NSString
+        stringWithFormat:RBLocalizedUIString(kLocalizedKeyLimePointAddedFormat), limePoint];
     UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:RBLocalizedUIString(kLocalizedKeyAppInstalledReward)
                                    message:message
@@ -364,7 +373,7 @@ static NSString *RBLocalizedUIString(NSString *key) {
                                    message:RBLocalizedUIString(kLocalizedKeyUpdateToUnlockSong)
                                   delegate:delegate
                          cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyCancel)
-                         otherButtonTitles:RBLocalizedUIString(kLocalizedKeyAppStore), nil];
+                         otherButtonTitles:kAppStoreButtonTitle, nil];
     [alert show];
     return alert;
 }
@@ -454,8 +463,13 @@ static NSString *RBLocalizedUIString(NSString *key) {
 + (UIAlertView *)showPurchasePack:(NSString *)requirement
                          delegate:(id<UIAlertViewDelegate>)delegate {
     /** @ghidraAddress 0xf8cc */
-    NSString *message = [NSString
-        stringWithFormat:RBLocalizedUIString(kLocalizedKeySequenceRequirementFormat), requirement];
+    // The format takes two positional arguments and the binary passes the one requirement string
+    // for both: the stp at 0xf930 writes x19 to [sp] and to [sp, #8], and x19 is the retained
+    // first parameter.
+    NSString *message =
+        [NSString stringWithFormat:RBLocalizedUIString(kLocalizedKeySequenceRequirementFormat),
+                                   requirement,
+                                   requirement];
     return [[UIAlertView alloc] initWithTitle:kEmptyLocalizedValue
                                       message:message
                                      delegate:delegate
