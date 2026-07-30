@@ -1726,6 +1726,16 @@ VERIFIED = {
               '(0x2166c8)',
     0x21670c: 'ApplilinkCore +toDelegateFailWithError:appParam:delegate: does NOT chain onwards',
     0x216814: 'ApplilinkCore +toDelegateFailLinkWithError:appParam:delegate: does not chain either',
+    # RewardCore forwards the three lifecycle callbacks straight to ApplilinkCore, reading the
+    # ivars directly: _applilinkParams at offset var 0x3c9a98 and the WEAK _applilinkDelegate at
+    # 0x3c9aa4, which is loaded with objc_loadWeakRetained rather than a plain load.
+    0x20b9e4: 'RewardCore -appListDidStart: tail-calls ApplilinkCore with _applilinkParams',
+    0x20ba10: 'RewardCore -appListDidAppear: the same forward',
+    0x20ba3c: 'RewardCore -appListDidDisappear: the same forward',
+    0x20bb30: 'RewardCore -startedNotice one send, not two, with the weak delegate loaded first',
+    0x20bb7c: 'RewardCore -openedNotice the same shape for appListDidAppear:',
+    0x20bbc8: 'RewardCore -closeNotice sets the cancelled flag at 0x3df5d1 only when a view '
+              'controller exists, then always clears the open flag at 0x3df5d0 before notifying',
 }
 
 

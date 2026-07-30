@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4413 verified
-(69.6%).
+Total: 6343 — 6203 reconstructed, 4419 verified
+(69.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5690,14 +5690,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x20b62c` |
 | `RewardCore` | `-` | `setTemporaryCacheWithKey:value:expiration:` |  | ✅ | ❌ | `0x20b63c` |
 | `RewardCore` | `-` | `getTemporaryCacheWithKey:` |  | ✅ | ❌ | `0x20b7f0` |
-| `RewardCore` | `-` | `appListDidStart:` |  | ✅ | ❌ | `0x20b9e4` |
-| `RewardCore` | `-` | `appListDidAppear:` |  | ✅ | ❌ | `0x20ba10` |
-| `RewardCore` | `-` | `appListDidDisappear:` |  | ✅ | ❌ | `0x20ba3c` |
+| `RewardCore` | `-` | `appListDidStart:` |  | ✅ | ✅ | `0x20b9e4` |
+| `RewardCore` | `-` | `appListDidAppear:` |  | ✅ | ✅ | `0x20ba10` |
+| `RewardCore` | `-` | `appListDidDisappear:` |  | ✅ | ✅ | `0x20ba3c` |
 | `RewardCore` | `-` | `appListFailLoadWithError:delegate:` |  | ✅ | ❌ | `0x20ba68` |
 | `RewardCore` | `-` | `appListFailLinkWithError:delegate:` |  | ✅ | ❌ | `0x20bacc` |
-| `RewardCore` | `-` | `startedNotice` |  | ✅ | ❌ | `0x20bb30` |
-| `RewardCore` | `-` | `openedNotice` |  | ✅ | ❌ | `0x20bb7c` |
-| `RewardCore` | `-` | `closeNotice` |  | ✅ | ❌ | `0x20bbc8` |
+| `RewardCore` | `-` | `startedNotice` |  | ✅ | ✅ | `0x20bb30` |
+| `RewardCore` | `-` | `openedNotice` |  | ✅ | ✅ | `0x20bb7c` |
+| `RewardCore` | `-` | `closeNotice` |  | ✅ | ✅ | `0x20bbc8` |
 | `RewardCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x20bc5c` |
 | `RewardCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x20bccc` |
 | `RewardCore` | `-` | `openCancelWithError:` |  | ✅ | ✅ | `0x20bd3c` |
