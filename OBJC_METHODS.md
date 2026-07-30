@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4437 verified
-(70.0%).
+Total: 6343 — 6203 reconstructed, 4455 verified
+(70.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2728,41 +2728,41 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMapAnnotation` | `-` | `setSubtitle:` | prop | ✅ | ✅ | `0xdf40c` |
 | `RBMapAnnotation` | `-` | `coordinate` | prop | ✅ | ✅ | `0xdf418` |
 | `RBMapAnnotation` | `-` | `setCoordinate:` | prop | ✅ | ✅ | `0xdf42c` |
-| `RBSearchMapView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xdf494` |
-| `RBSearchMapView` | `+` | `rangeOfRegion:` |  | ✅ | ❌ | `0xdf634` |
-| `RBSearchMapView` | `+` | `mapRectForCoordinateRegion:` |  | ✅ | ❌ | `0xdf644` |
-| `RBSearchMapView` | `+` | `currentLocationEnabled` |  | ✅ | ❌ | `0xdf6c4` |
+| `RBSearchMapView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0xdf494` |
+| `RBSearchMapView` | `+` | `rangeOfRegion:` |  | ✅ | ✅ | `0xdf634` |
+| `RBSearchMapView` | `+` | `mapRectForCoordinateRegion:` |  | ✅ | ✅ | `0xdf644` |
+| `RBSearchMapView` | `+` | `currentLocationEnabled` |  | ✅ | ✅ | `0xdf6c4` |
 | `RBSearchMapView` | `-` | `setupView` |  | ✅ | ❌ | `0xdf768` |
-| `RBSearchMapView` | `-` | `showError:` |  | ✅ | ❌ | `0xe0aa4` |
-| `RBSearchMapView` | `-` | `requestList:` |  | ✅ | ❌ | `0xe0cd4` |
-| `RBSearchMapView` | `-` | `pushCurrent` |  | ✅ | ❌ | `0xe0f4c` |
-| `RBSearchMapView` | `-` | `locationManager:didChangeAuthorizationStatus:` |  | ✅ | ❌ | `0xe1084` |
-| `RBSearchMapView` | `-` | `observeValueForKeyPath:ofObject:change:context:` |  | ✅ | ❌ | `0xe1274` |
-| `RBSearchMapView` | `-` | `mapView:didChangeUserTrackingMode:animated:` |  | ✅ | ❌ | `0xe1350` |
-| `RBSearchMapView` | `-` | `toggleTrackingMode` |  | ✅ | ❌ | `0xe1430` |
+| `RBSearchMapView` | `-` | `showError:` |  | ✅ | ✅ | `0xe0aa4` |
+| `RBSearchMapView` | `-` | `requestList:` |  | ✅ | ✅ | `0xe0cd4` |
+| `RBSearchMapView` | `-` | `pushCurrent` |  | ✅ | ✅ | `0xe0f4c` |
+| `RBSearchMapView` | `-` | `locationManager:didChangeAuthorizationStatus:` |  | ✅ | ✅ | `0xe1084` |
+| `RBSearchMapView` | `-` | `observeValueForKeyPath:ofObject:change:context:` |  | ✅ | ✅ | `0xe1274` |
+| `RBSearchMapView` | `-` | `mapView:didChangeUserTrackingMode:animated:` |  | ✅ | ✅ | `0xe1350` |
+| `RBSearchMapView` | `-` | `toggleTrackingMode` |  | ✅ | ✅ | `0xe1430` |
 | `RBSearchMapView` | `-` | `mapView:regionWillChangeAnimated:` |  | ✅ | ✅ | `0xe162c` |
 | `RBSearchMapView` | `-` | `mapViewWillStartLoadingMap:` |  | ✅ | ✅ | `0xe1630` |
 | `RBSearchMapView` | `-` | `mapViewDidFinishLoadingMap:` |  | ✅ | ✅ | `0xe1634` |
 | `RBSearchMapView` | `-` | `mapViewDidFailLoadingMap:withError:` |  | ✅ | ✅ | `0xe1638` |
-| `RBSearchMapView` | `-` | `mapView:regionDidChangeAnimated:` |  | ✅ | ❌ | `0xe163c` |
+| `RBSearchMapView` | `-` | `mapView:regionDidChangeAnimated:` |  | ✅ | ✅ | `0xe163c` |
 | `RBSearchMapView` | `-` | `mapView:viewForAnnotation:` |  | ✅ | ❌ | `0xe1e60` |
 | `RBSearchMapView` | `-` | `mapView:annotationView:calloutAccessoryControlTapped:` |  | ✅ | ❌ | `0xe227c` |
 | `RBSearchMapView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xe24ec` |
 | `RBSearchMapView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0xe2614` |
 | `RBSearchMapView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0xe2618` |
 | `RBSearchMapView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xe261c` |
-| `RBSearchMapView` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xe2620` |
+| `RBSearchMapView` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0xe2620` |
 | `RBSearchMapView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xe2760` |
 | `RBSearchMapView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xe3d28` |
 | `RBSearchMapView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xe3e04` |
 | `RBSearchMapView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0xe47f0` |
-| `RBSearchMapView` | `-` | `selectHideInfo:` |  | ✅ | ❌ | `0xe4848` |
-| `RBSearchMapView` | `-` | `initialView` |  | ✅ | ❌ | `0xe496c` |
+| `RBSearchMapView` | `-` | `selectHideInfo:` |  | ✅ | ✅ | `0xe4848` |
+| `RBSearchMapView` | `-` | `initialView` |  | ✅ | ✅ | `0xe496c` |
 | `RBSearchMapView` | `-` | `getMaster` |  | ✅ | ❌ | `0xe4a18` |
-| `RBSearchMapView` | `-` | `viewDidDisappear` |  | ✅ | ❌ | `0xe4ba4` |
+| `RBSearchMapView` | `-` | `viewDidDisappear` |  | ✅ | ✅ | `0xe4ba4` |
 | `RBSearchMapView` | `-` | `dealloc` |  | ✅ | ❌ | `0xe4cec` |
-| `RBSearchMapView` | `-` | `addIndicator` |  | ✅ | ❌ | `0xe503c` |
-| `RBSearchMapView` | `-` | `subIndicator` |  | ✅ | ❌ | `0xe50b4` |
+| `RBSearchMapView` | `-` | `addIndicator` |  | ✅ | ✅ | `0xe503c` |
+| `RBSearchMapView` | `-` | `subIndicator` |  | ✅ | ✅ | `0xe50b4` |
 | `RBSearchMapView` | `-` | `delegate` | prop | ✅ | ✅ | `0xe512c` |
 | `RBSearchMapView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0xe514c` |
 | `RBSearchMapView` | `-` | `mapView` | prop | ✅ | ✅ | `0xe5160` |

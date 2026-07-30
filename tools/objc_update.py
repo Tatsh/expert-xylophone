@@ -1782,6 +1782,56 @@ VERIFIED = {
     0x20bb7c: 'RewardCore -openedNotice the same shape for appListDidAppear:',
     0x20bbc8: 'RewardCore -closeNotice sets the cancelled flag at 0x3df5d1 only when a view '
               'controller exists, then always clears the open flag at 0x3df5d0 before notifying',
+    # RBSearchMapView, eighteen of the twenty-eight. The class's ivar offset variables are
+    # m_IndicatorCount 0x3c8ce0 (+8), m_LoadedMaster 0x3c8cd8 (+12), m_LoadedImages 0x3c8cdc
+    # (+13), m_LastRegion 0x3c8ce4 (+16, four doubles), m_IsObservingLocation 0x3c8cd0 (+48) and
+    # m_FirstLocationObserved 0x3c8cd4 (+49), which is the order the reconstruction declares.
+    0xdf494: 'RBSearchMapView -initWithFrame: makes the location manager and the 64-entry spot '
+             'dictionary, zeroes the five state ivars, and calls -setupView',
+    0xdf634: 'RBSearchMapView +rangeOfRegion: really is sqrt(latDelta^2 + latDelta^2) — the '
+             'fmul at 0xdf634 squares d2 and the fadd doubles it, so the longitude delta in d3 '
+             'is never read',
+    0xdf644: 'RBSearchMapView +mapRectForCoordinateRegion: pushes the centre out by six tenths '
+             'of each span (0x3015c8) to a north-west and a south-east corner, and returns the '
+             'first corner with the absolute differences of the two',
+    0xdf6c4: 'RBSearchMapView +currentLocationEnabled asks instancesRespondToSelector: at '
+             '0xdf720 before reading the status once at 0xdf730, then compares against 4 or 3',
+    0xe0aa4: 'RBSearchMapView -showError: sets the text, and only when the label is hidden fades '
+             'it in over 0.3 (0x3010a0) from alpha 0; the block at 0xe0c68 captures self '
+             'strongly (objc_retain at 0xe0bd0, plain ldr at 0xe0c74)',
+    0xe0cd4: 'RBSearchMapView -requestList: returns unless m_LoadedImages is set, posts the '
+             'centre and the immediate range 0.27 (mov/movk at 0xe0d2c) as three %.6f slots, '
+             'and records the region in m_LastRegion at 0xe0e64 before starting the download',
+    0xe0f4c: 'RBSearchMapView -pushCurrent centres the map on the user location, but only when '
+             '+currentLocationEnabled says so',
+    0xe1084: 'RBSearchMapView -locationManager:didChangeAuthorizationStatus: branches on whether '
+             'the manager answers requestWhenInUseAuthorization: the new arm accepts status 3 or '
+             '4 (sub/cmp at 0xe10c8) and always ends in -toggleTrackingMode, the old arm accepts '
+             'only 3 and does not, and status 0 asks for authorisation',
+    0xe1274: 'RBSearchMapView -observeValueForKeyPath:ofObject:change:context: unhooks itself '
+             'and flips both observation ivars',
+    0xe1350: 'RBSearchMapView -mapView:didChangeUserTrackingMode:animated: forwards mode != 0 to '
+             'the delegate when it responds',
+    0xe1430: 'RBSearchMapView -toggleTrackingMode shows the information alert unless location '
+             'services and the authorisation status allow it, falls back to -pushCurrent when '
+             'the map cannot set a tracking mode, and otherwise toggles between 1 and 0',
+    0xe163c: 'RBSearchMapView -mapView:regionDidChangeAnimated: was an empty body and is 459 '
+             'instructions: past a 0.26 longitude span (0x3015d8) it clears the annotations and '
+             'shows the message label, else it prunes the annotations outside the map rect, adds '
+             'the dictSpot entries inside it, and re-requests the list when the centre is inside '
+             'the served box (0x3015e0/e8/f0/f8) and has moved past 0.15 degrees (0x301608)',
+    0xe2620: 'RBSearchMapView -didPresentAlertView: walks keyWindow to the presented view and '
+             'makes it exclusive-touch',
+    0xe4848: 'RBSearchMapView -selectHideInfo: hides the three information views then re-requests '
+             "the list for the map's current region",
+    0xe496c: 'RBSearchMapView -initialView sets the region to 35.681382/139.766084 with a '
+             '0.01004/0.01159 span (0x301610-0x301628) unanimated, then tail-calls -getMaster',
+    0xe4ba4: 'RBSearchMapView -viewDidDisappear removes every annotation, stops showing the user '
+             'location, and unhooks the map delegate',
+    0xe503c: 'RBSearchMapView -addIndicator post-increments and starts the spinner when the old '
+             'count was not negative (tbnz on the sign bit at 0xe505c)',
+    0xe50b4: 'RBSearchMapView -subIndicator decrements first and stops the spinner on a single '
+             'signed compare of the result (subs/b.gt at 0xe50cc)',
 }
 
 
