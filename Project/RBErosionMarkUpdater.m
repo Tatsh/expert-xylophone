@@ -357,7 +357,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         addAction:[UIAlertAction actionWithTitle:g_pLocalizedCancel
                                            style:UIAlertActionStyleCancel
                                          handler:^(UIAlertAction *action) {
-                                           /** @ghidraAddress 0x146cfc */
+                                           /** @ghidraAddress 0x147464 */
                                            [self performSelector:@selector(showAlertSetScore)
                                                       withObject:nil
                                                       afterDelay:0];
