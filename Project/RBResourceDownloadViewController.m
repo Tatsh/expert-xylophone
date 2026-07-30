@@ -630,7 +630,10 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 // crops, and the values that are recoverable, and centres the frames from the container sizes.
 
 // dl_info atlas crop rectangles (phone (standard) layout).
-static const CGRect kPastelClipRect = {{0, 0}, {86, 91}};
+// The pastel meter's crop from the dl_info atlas, per idiom. The wide rect is the doubled one, from
+// the clipImageWithRect: at 0x1d130; the narrow one is half its size, matching kMeterSpriteScale.
+static const CGRect kPastelClipRectNarrow = {{0, 0}, {86, 91}};
+static const CGRect kPastelClipRectWide = {{0, 0}, {173, 182}};
 static const CGRect kPopClipRect = {{87, 0}, {128, 84}};
 static const CGRect kTrackClipRect = {{0, 92}, {155, 7}};
 static const CGRect kFillClipRect = {{0, 100}, {155, 7}};
@@ -652,13 +655,19 @@ static const CGFloat kHelpScrollBackgroundHeight = 320;
 // the branch at 0x1ce64 and the narrow ones from 0x1cf40; each inset fits its canvas exactly.
 static const CGRect kHelpScrollViewFrameNarrow = {{10, 10}, {300, 300}};
 static const CGRect kHelpScrollViewFrameWide = {{8, 20}, {528, 630}};
-static const CGRect kHelpGradientFrame = {{3, 2}, {314, 40}};
+// The gradient bar across the top of the help panel, per idiom. Both had been the narrow one, so on
+// a pad a 314-wide bar stopped two thirds of the way across a 544-wide panel. The wide values come
+// from the same branch as the scroll view: x and y from d12 and sp+0x50, the width from the 540 at
+// 0x2ee990, and the height from the 80 at 0x2ec6c8.
+static const CGRect kHelpGradientFrameNarrow = {{3, 2}, {314, 40}};
+static const CGRect kHelpGradientFrameWide = {{2, 0}, {540, 80}};
 static const CGFloat kHelpBarTop = 5;
 // The page control, from the ldp d0,d2,[sp,#0x20] at 0x1e044: x comes from sp+0x20 and the width
-// from sp+0x28, which the narrow branch fills with 60 and 200. Those two had been transcribed the
-// other way round, giving a 60-wide control for six pages. The wide branch stores a register whose
-// origin this reading did not establish, so the narrow frame still stands in on a pad.
-static const CGRect kHelpPageControlFrame = {{60, 298}, {200, 24}};
+// from sp+0x28. The narrow branch fills those with 60 and 200, which had been transcribed the other
+// way round and gave a 60-wide control for six pages. The wide branch pairs d12 with the 540 at
+// 0x2ee990 and takes its y from the 642 at 0x2ee988.
+static const CGRect kHelpPageControlFrameNarrow = {{60, 298}, {200, 24}};
+static const CGRect kHelpPageControlFrameWide = {{2, 642}, {540, 24}};
 // Page-control cosmetics.
 static const CGFloat kPageControlScale = 0.8;
 static const CGFloat kPageIndicatorTintWhite = 0.667;
@@ -705,7 +714,8 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     // the pop artwork, the track, and the clipped fill. Each cropped sprite is drawn at half size.
     UIImage *info = [UIImage imageWithName:kInfoImageName useCache:NO];
 
-    UIImage *pastel = [info clipImageWithRect:kPastelClipRect];
+    UIImage *pastel =
+        [info clipImageWithRect:!IsPad() ? kPastelClipRectNarrow : kPastelClipRectWide];
     self.pastelImageView = [[UIImageView alloc] initWithImage:pastel];
     self.pastelImageView.frame = CGRectMake(kPastelImageOriginX,
                                             kPastelImageOriginY,
@@ -769,17 +779,21 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
 
     UIImageView *gradient =
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kGradientImageName useCache:NO]];
-    gradient.frame = kHelpGradientFrame;
+    const CGRect gradientFrame = !IsPad() ? kHelpGradientFrameNarrow : kHelpGradientFrameWide;
+    gradient.frame = gradientFrame;
     UIImage *helpBarImage = [UIImage imageWithName:kHelpBarImageName useCache:NO];
     UIImageView *helpBar = [[UIImageView alloc] initWithImage:helpBarImage];
-    helpBar.frame = CGRectMake((kHelpGradientFrame.size.width - helpBarImage.size.width) * 0.5,
+    // Centred across the gradient, so a gradient narrower than the bar drove this negative and put
+    // the bar off the panel's left edge entirely.
+    helpBar.frame = CGRectMake((gradientFrame.size.width - helpBarImage.size.width) * 0.5,
                                kHelpBarTop,
                                helpBarImage.size.width,
                                helpBarImage.size.height);
     [gradient addSubview:helpBar];
     [self.helpView addSubview:gradient];
 
-    self.pageControl = [[UIPageControl alloc] initWithFrame:kHelpPageControlFrame];
+    self.pageControl = [[UIPageControl alloc]
+        initWithFrame:!IsPad() ? kHelpPageControlFrameNarrow : kHelpPageControlFrameWide];
     self.pageControl.numberOfPages = self->m_PageNum;
     self.pageControl.currentPage = 0;
     self.pageControl.transform = CGAffineTransformMakeScale(kPageControlScale, kPageControlScale);
