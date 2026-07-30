@@ -289,8 +289,14 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
           // The Colette theme launches the customise tutorial the first time the panel closes.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               [RBTutorialManager isTutorialCustomize]) {
+              // The root view is this setting view, not the parent. The binary reloads the
+              // captured weak self at 0xeb574 and passes it in x3 at 0xeb590; the parent is loaded
+              // separately only to reach its tutorialView. It has to be this way round:
+              // -startTutorialWithType:withAnimation: sends the root view
+              // -getCustomizeButtonView, which RBSettingView implements and RBMenuView does not,
+              // so passing the parent threw an unrecognized selector the moment the panel opened.
               [weakSelf.parentView.tutorialView startTutorialWithType:kTutorialTypeCustomize
-                                                         withRootView:weakSelf.parentView];
+                                                         withRootView:weakSelf];
           }
           self->m_Animating = NO;
         }];
