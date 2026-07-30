@@ -31,25 +31,29 @@ static const int kNoCampaign = -1;
 
 // Layout metrics recovered from the binary's anonymous coordinate data (image-base offsets in
 // comments). These describe the pad card geometry.
-static const double kCardWidth = 649.0;           // @ghidraAddress 0x2eec30
-static const double kCardHeight = 285.0;          // @ghidraAddress 0x2eec38
+static const double kCardWidth = 650.0;           // @ghidraAddress 0x2eec30
+static const double kCardHeight = 284.0;          // @ghidraAddress 0x2eec38
 static const double kDetailScrollTop = 285.0;     // The detail scroll view sits below the card.
 static const double kDetailScrollHeight = 366.0;  // @ghidraAddress 0x2eecb0
-static const double kDescriptionWidth = 629.0;    // @ghidraAddress 0x2ee978
-static const double kDescriptionHeight = 315.0;   // @ghidraAddress 0x2ee928
-static const double kCopyrightOriginY = 315.0;    // @ghidraAddress 0x2ee928
+static const double kDescriptionWidth = 630.0;    // @ghidraAddress 0x2ee978
+static const double kDescriptionHeight = 316.0;   // @ghidraAddress 0x2ee928
+static const double kCopyrightOriginY = 316.0;    // @ghidraAddress 0x2ee928
 static const double kArtworkSideNarrow = 64.0;    // @ghidraAddress 0x2eecd8
 static const double kArtworkSideWide = 110.0;     // @ghidraAddress 0x2eece0
 static const double kArtworkFadeDuration = 0.2;   // @ghidraAddress 0x2eece8
 static const double kArtworkShadowOpacity = 0.6;  // @ghidraAddress 0x2ec6b8
-static const double kDetailBorderWhite = 0.56147; // @ghidraAddress 0x2ec730
+static const double kDetailBorderWhite = 0.5607843399047852; // @ghidraAddress 0x2ec730
 static const double kLoadingShadowAlpha = 0.4;    // @ghidraAddress 0x2ec720
 static const double kLevelColorRed = 0.3333333333333333;       // @ghidraAddress 0x2eec78
-static const double kLevelColorGreen = 0.035283654928207397;   // @ghidraAddress 0x2eec80
-static const double kLevelColorBlue = 0.47059297561645508;     // @ghidraAddress 0x2eec88
-static const double kBackgroundDimWhite = 0.86274510622024536; // @ghidraAddress 0x2eecd0
-static const double kTermBarWhite = 0.90000003576278687;       // @ghidraAddress 0x2eecc0
-static const double kLoadingTextWhite = 0.19999998807907104;   // @ghidraAddress 0x2eecb8
+static const double kLevelColorGreen = 0.03529411926865578;   // @ghidraAddress 0x2eec80
+static const double kLevelColorBlue = 0.47058823529411764;     // @ghidraAddress 0x2eec88
+static const double kBackgroundDimWhite = 0.8629999756813049; // @ghidraAddress 0x2eecd0
+// These two are single-precision in the binary, and their addresses were never recovered: neither
+// value exists as a double anywhere in __const, while both exist as floats at several addresses, so
+// the annotations they used to carry (0x2eecc0 and 0x2eecb8) named the doubles belonging to other
+// constants entirely. Left unannotated rather than pointing at an address that was not verified.
+static const double kTermBarWhite = 0.90000003576278687;
+static const double kLoadingTextWhite = 0.19999998807907104;
 
 // The playback state stored in the sampleStatus ivar.
 typedef enum {
@@ -511,7 +515,7 @@ typedef enum {
 - (void)pushLink:(id)pushLink {
 }
 
-/** @ghidraAddress 0x259e0 */
+/** @ghidraAddress 0x2585c */
 - (void)showTerm {
     if ([self.delegate respondsToSelector:@selector(showTerms)]) {
         [self.delegate performSelector:@selector(showTerms)];
@@ -561,12 +565,12 @@ typedef enum {
     didDismissWithButtonIndex:(NSInteger)didDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0x25dec */
+/** @ghidraAddress 0x25de8 */
 - (void)alertView:(UIAlertView *)alertView
     willDismissWithButtonIndex:(NSInteger)willDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0x25df0 */
+/** @ghidraAddress 0x25dec */
 - (void)alertViewCancel:(UIAlertView *)alertViewCancel {
     if ([self.delegate respondsToSelector:@selector(detailViewClose)]) {
         [self.delegate performSelector:@selector(detailViewClose)];

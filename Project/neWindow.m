@@ -24,15 +24,15 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
 }
 
-/** @ghidraAddress 0x3d0b8 */
+/** @ghidraAddress 0x3d0b4 */
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
 }
 
-/** @ghidraAddress 0x3d0bc */
+/** @ghidraAddress 0x3d0b8 */
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
 }
 
-/** @ghidraAddress 0x3d0c0 */
+/** @ghidraAddress 0x3d0bc */
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
 }
 

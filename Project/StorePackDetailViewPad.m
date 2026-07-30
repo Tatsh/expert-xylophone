@@ -664,12 +664,12 @@ static const CGFloat kCenterScale = 0.5;
     didDismissWithButtonIndex:(NSInteger)didDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0xfac84 */
+/** @ghidraAddress 0xfac80 */
 - (void)alertView:(UIAlertView *)alertView
     willDismissWithButtonIndex:(NSInteger)willDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0xfac88 */
+/** @ghidraAddress 0xfac84 */
 - (void)alertViewCancel:(UIAlertView *)alertViewCancel {
     if ([self.delegate respondsToSelector:@selector(detailViewClose)]) {
         [self.delegate performSelector:@selector(detailViewClose)];

@@ -50,7 +50,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
 }
 
-// @ghidraAddress 0x2137d4
+// @ghidraAddress 0x2137d0
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

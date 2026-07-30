@@ -69,7 +69,7 @@ constexpr CGFloat kButtonRowHeightWide = 40.0;
 constexpr CGFloat kButtonRowHeightNarrow = 30.0;
 // The fixed width of each button in that row. @ghidraAddress 0x2ec6f8
 constexpr CGFloat kButtonWidth = 100.0;
-constexpr CGFloat kPastelViewHeightWide = 96.0;    // @ghidraAddress 0x2ec6f0
+constexpr CGFloat kPastelViewHeightWide = 96.0;    // @ghidraAddress 0x2ec6d8
 constexpr CGFloat kPastelViewHeightNarrow = 140.0; // @ghidraAddress 0x2ec6c0
 constexpr CGFloat kMascotXOffsetWide = -23.0;
 constexpr CGFloat kMascotXOffsetNarrow = -46.0; // @ghidraAddress 0x310648

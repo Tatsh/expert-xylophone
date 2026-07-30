@@ -25,7 +25,7 @@ static NSString *const kGameCenterLocalPlayerClassName = @"GKLocalPlayer";
 #pragma mark Singleton
 
 + (instancetype)sharedInstance {
-    // @ghidraAddress 0x1003df590 (g_pRBGameKitManagerShared, once token
+    // @ghidraAddress 0x202be4 (g_pRBGameKitManagerShared, once token
     // g_nRBGameKitManagerSharedOnceToken at 0x1003df598)
     static RBGameKitManager *instance = nil;
     static dispatch_once_t onceToken;

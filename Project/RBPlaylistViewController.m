@@ -74,7 +74,7 @@ static NSString *const kHeaderArtistSegmentTitle = @"ARTIST"; // @ghidraAddress 
 
 // On the pad, when the view is taller than this the frame is clamped back to it in
 // -viewWillAppear:.
-static const CGFloat kPadFullHeightThreshold = 528.0; // @ghidraAddress 0x2fee00
+static const CGFloat kPadFullHeightThreshold = 524.0; // @ghidraAddress 0x2fee00
 
 // The row accessory / icon image asset names.
 static NSString *const kIconAllImageName = @"01_music_select/sel_playlist_icon_all";

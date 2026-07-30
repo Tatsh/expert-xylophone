@@ -452,7 +452,7 @@ static NSString *const kAnalysisDefaultsDauDateKey = @"ApplilinkAnalysis.dauMeas
 
 + (void)postAnalysisDataWithCallback:(void (^)(NSError *error))callback {
     [self postInitalizeWithCallback:^(NSError *initError) {
-      /** @ghidraAddress 0x20f870 */
+      /** @ghidraAddress 0x20f7d8 */
       [self postDAUWithCallback:^(NSError *dauError) {
         /** @ghidraAddress 0x20f920 */
         // Forward the initialisation error when it occurred, otherwise the DAU error.

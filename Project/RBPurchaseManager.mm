@@ -73,7 +73,7 @@ constexpr NSUInteger kBase64OutputGroup = 4;
 #pragma mark - Singleton
 
 + (instancetype)sharedManager {
-    // @ghidraAddress 0x3dc308 (g_pRBPurchaseManagerSharedManager)
+    // @ghidraAddress 0x6d260 (g_pRBPurchaseManagerSharedManager)
     static RBPurchaseManager *sSharedManager = nil;
     if (!sSharedManager) {
         sSharedManager = [[RBPurchaseManager alloc] init];

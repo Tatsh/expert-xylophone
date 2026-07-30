@@ -502,7 +502,7 @@ constexpr int kDefaultPlayColor = 0;
 // The display-link callback that drives one loop iteration. Named mainLoop in the binary; it runs
 // the task and draw passes and is targeted by the CADisplayLink created above.
 - (void)mainLoop {
-    /** @ghidraAddress 0x8b3a8 */
+    /** @ghidraAddress 0x8b074 */
     [self Task];
     [self Draw];
 }

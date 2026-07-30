@@ -558,17 +558,17 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 }
 
 - (void)addMusicID:(int)musicID {
-    /** @ghidraAddress 0x1bad00 */
+    /** @ghidraAddress 0x1bacb4 */
     [self.musicItems addObject:[NSNumber numberWithInt:musicID]];
 }
 
 - (void)addThemaID:(int)themaID {
-    /** @ghidraAddress 0x1bad80 */
+    /** @ghidraAddress 0x1bad58 */
     [self.themaItems addObject:[NSNumber numberWithInt:themaID]];
 }
 
 - (void)addItem:(int)type ID:(int)ID {
-    /** @ghidraAddress 0x1bae00 */
+    /** @ghidraAddress 0x1badfc */
     switch (type) {
     case RBExperienceItemTypeBGM:
         [self addBGMType:ID];

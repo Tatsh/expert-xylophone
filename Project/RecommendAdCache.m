@@ -138,7 +138,7 @@ static NSString *const kSettingUserInfoKey = @"Setting";
 
 + (void)getAllAdDataWithCallBack:(void (^)(NSError *_Nullable error))callback {
     [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *_Nullable error) {
-      /** @ghidraAddress 0x241cec */
+      /** @ghidraAddress 0x241c28 */
       if (error != nil) {
           if (callback) {
               callback(error);

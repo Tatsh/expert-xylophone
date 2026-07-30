@@ -384,7 +384,7 @@ static dispatch_queue_t g_recommendCoreQueue = nil;
 
 - (void)appliListWithCallBack:(void (^)(id _Nullable list, NSError *_Nullable error))callback {
     [self startSessionWithCallback:^(NSError *_Nullable error) {
-      /** @ghidraAddress 0x237c48 */
+      /** @ghidraAddress 0x237bb0 */
       if (error != nil) {
           if (callback) {
               callback(nil, error);

@@ -365,7 +365,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 - (void)nextShowEnd {
 }
 
-// An empty stub in the binary; no image-view size is applied. @ghidraAddress 0x1001008c8
+// An empty stub in the binary; no image-view size is applied. @ghidraAddress 0x102280
 - (void)setImageViewSize:(CGSize)imageViewSize {
 }
 
@@ -488,11 +488,11 @@ static const NSUInteger kDownloaderCapacity = 32;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 }
 
-/** @ghidraAddress 0x100103c4c */
+/** @ghidraAddress 0x103c48 */
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
 }
 
-/** @ghidraAddress 0x100103c50 */
+/** @ghidraAddress 0x103c4c */
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     [self startAnimation];
 }

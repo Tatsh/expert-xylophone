@@ -279,7 +279,7 @@ static dispatch_queue_t gRewardCoreQueue;
 // @ghidraAddress 0x208624.
 - (void)startWithBlock:(void (^)(NSError *error))block {
     [self startWithCallback:^(NSError *error) {
-      /** @ghidraAddress 0x2086bc (RetrySessionStartBlockInvoke) */
+      /** @ghidraAddress 0x208624 (RetrySessionStartBlockInvoke) */
       if (error) {
           block(error);
           return;
@@ -438,7 +438,7 @@ static dispatch_queue_t gRewardCoreQueue;
 - (void)getInstalledAppWithCallback:(void (^)(NSArray *appIdList, NSError *error))callback {
     [RewardWebAPI appliIdListWithType:kRewardListTypeAllAppIds
                              callback:^(NSDictionary *result, NSError *error) {
-                               /** @ghidraAddress 0x2097c0 (HandleAppIdListBlockInvoke) */
+                               /** @ghidraAddress 0x209724 (HandleAppIdListBlockInvoke) */
                                if (error) {
                                    callback(nil, error);
                                    return;

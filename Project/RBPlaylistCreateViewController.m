@@ -14,7 +14,7 @@ static const CGFloat kTitleFontSize = 18.0;
 
 // On the pad, when the view is taller than this the frame is clamped back to it in
 // -viewWillAppear:.
-static const CGFloat kPadFullHeightThreshold = 528.0; // @ghidraAddress 0x2fee00
+static const CGFloat kPadFullHeightThreshold = 524.0; // @ghidraAddress 0x2fee00
 
 // The text-field layout: it is inset ten points from the view's left and top, spans the view width
 // less twice that inset, and is g_dLayoutMetricThirtyTwo points tall.

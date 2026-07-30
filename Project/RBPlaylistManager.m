@@ -47,7 +47,7 @@ static const NSUInteger kInvalidMusicID = 0;
 #pragma mark - Singleton
 
 + (instancetype)sharedInstance {
-    /** @ghidraAddress 0x71060 */
+    /** @ghidraAddress 0x71054 */
     static RBPlaylistManager *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
