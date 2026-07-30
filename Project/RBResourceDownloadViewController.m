@@ -966,17 +966,22 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
     CGRect trackFrame = self.trackImageView.frame;
     float fraction = progress.floatValue;
     CGFloat trackWidth = trackFrame.size.width;
+    // The height is the track's own. Each arm zeroes only d0 and d1, the origin, and computes d2,
+    // the width; d3 is never written, so it still holds the height left there by the second
+    // -[trackImageView frame] send. That second send looks redundant and is not: it is what
+    // reloads the height. A zero there leaves the fill with no height and nothing is drawn.
+    CGFloat trackHeight = trackFrame.size.height;
     switch (self.progressMode) {
     case kProgressModeDownload:
         self.progressImageView.frame =
-            CGRectMake(0, 0, trackWidth * fraction * kDownloadProgressScale, 0);
+            CGRectMake(0, 0, trackWidth * fraction * kDownloadProgressScale, trackHeight);
         break;
     case kProgressModeUnzip:
         self.progressImageView.frame =
-            CGRectMake(0, 0, trackWidth * (fraction + 1.0f) * kUnzipProgressScale, 0);
+            CGRectMake(0, 0, trackWidth * (fraction + 1.0f) * kUnzipProgressScale, trackHeight);
         break;
     case kProgressModeVerify:
-        self.progressImageView.frame = CGRectMake(0, 0, trackWidth * fraction, 0);
+        self.progressImageView.frame = CGRectMake(0, 0, trackWidth * fraction, trackHeight);
         break;
     default:
         break;
