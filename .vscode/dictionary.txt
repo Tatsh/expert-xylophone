@@ -73,6 +73,7 @@ cfuuid
 chache
 chek
 chksco
+cinc
 classess
 classicthemelayer
 classlist
@@ -213,6 +214,7 @@ konaminet
 korsk
 kuropastelkun
 layouted
+ldrb
 leetal
 lelist
 leveltables
@@ -341,6 +343,7 @@ rturl
 schemafile
 scorefor
 screenview
+sdiv
 seiya
 serialcode
 sheetlayer
@@ -377,6 +380,7 @@ tabletennis
 tatsh
 teardown
 tentei
+texel
 thankyou
 thema
 themas
@@ -399,6 +403,7 @@ unarchiver
 undecryptable
 undraft
 undrafted
+ungated
 unichar
 unlockmusic
 unnormalised
