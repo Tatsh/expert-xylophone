@@ -67,3 +67,21 @@ therefore shows the screen again on every launch, and there is no way past it.
 All three themed title scenes gate the screen on `-needUpdateTerms`, so the patch reports no
 outstanding terms and the screen is skipped everywhere, first install included. The screen and its
 whole agree flow are left intact for an unpatched build.
+
+### The music grid's per-item layout attributes
+
+**File:** `Project/RBMusicGridLayout.m` — `-layoutAttributesForItemAtIndexPath:` (0x16de84)
+
+The binary builds a fresh attributes object and never assigns it a frame, so it answers
+`CGRectZero` for every item. It does forward the caller's index path: `x2` is left untouched across
+the tail call at 0x16de9c, so the incoming argument reaches
+`+layoutAttributesForCellWithIndexPath:` unchanged. Placement is left entirely to
+`-layoutAttributesForElementsInRect:`, which `-prepareLayout` fills in properly.
+
+That was sufficient on the iOS this was built for, which asked the layout for the elements in a
+rect. Current UIKit also asks per item, and takes the `CGRectZero` answer at face value, so every
+cell is laid out with no size and the song grid renders empty.
+
+The patch answers with the attributes `-prepareLayout` already prepared for that index, which is
+exactly what `-layoutAttributesForElementsInRect:` hands back for the same item, so the two routes
+agree. An unpatched build returns the frameless object and keeps the original's behaviour.

@@ -149,14 +149,19 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     /** @ghidraAddress 0x16de84 */
-    // The binary returns a bare attributes object here, with no frame, and relies on
-    // -layoutAttributesForElementsInRect: to place everything. That held on the iOS this was built
-    // for, which asked for elements in a rect; current UIKit also asks per item, and a CGRectZero
-    // answer leaves the cell invisible. Return the prepared attributes for the item instead, which
-    // is what -layoutAttributesForElementsInRect: would have handed back for the same index.
+    // The binary builds a fresh attributes object and never gives it a frame, so it answers
+    // CGRectZero for every item. It does pass the caller's index path through: x2 is left untouched
+    // across the tail call at 0x16de9c, so the incoming argument reaches
+    // +layoutAttributesForCellWithIndexPath: unchanged. It then relies on
+    // -layoutAttributesForElementsInRect: to place everything, which held on the iOS this was built
+    // for. Current UIKit also asks per item, and a CGRectZero answer leaves the cell invisible.
+#ifdef ENABLE_PATCHES
+    // Answer with the prepared attributes, which is what -layoutAttributesForElementsInRect: hands
+    // back for the same index.
     if (indexPath.section == kGridSection && indexPath.item < (NSInteger)self.layouts.count) {
         return self.layouts[indexPath.item];
     }
+#endif
     return [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
 }
 
