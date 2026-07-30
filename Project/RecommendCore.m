@@ -75,6 +75,15 @@ static NSString *const kRecommendCoreQueryCategoryId = @"category_id=";
 static NSString *const kRecommendCoreQueryAdType = @"ad_type=";
 static NSString *const kRecommendCoreQueryStoreId = @"store_id=";
 
+// The binary searches each query component for the bare key and then skips past the key with the
+// trailing "=" above, so the two spellings are kept apart.
+static NSString *const kRecommendCoreQueryKeyDefaultScheme = @"default_scheme";
+static NSString *const kRecommendCoreQueryKeyAdIdFrom = @"ad_id_from";
+static NSString *const kRecommendCoreQueryKeyCountryCode = @"country_code";
+static NSString *const kRecommendCoreQueryKeyCategoryId = @"category_id";
+static NSString *const kRecommendCoreQueryKeyAdType = @"ad_type";
+static NSString *const kRecommendCoreQueryKeyStoreId = @"store_id";
+
 // The external advert index endpoint appended to the SSL base URL.
 static NSString *const kRecommendCoreAdExternalIndexPath = @"/ad/external/index.php";
 
@@ -99,6 +108,9 @@ static NSString *const kRecommendCoreKeyBannerDisplayStatus = @"bannerDisplaySta
 static NSString *const kRecommendCoreKeyAdIdFrom = @"AdIdFrom";
 static NSString *const kRecommendCoreKeyAdType = @"AdType";
 static NSString *const kRecommendCoreKeyRewardNone = @"REWARD_NONE";
+
+// The install flag reported when the advert record carries none.
+static NSString *const kRecommendCoreInstallFlgNone = @"0";
 static NSString *const kRecommendCoreDisplayNumberDefault = @"1";
 
 // The request-parameter keys for the external advert index request.
@@ -113,11 +125,11 @@ static NSString *const kRecommendCoreParamValueOne = @"1";
 static NSString *const kRecommendCoreFormatInteger = @"%d";
 static NSString *const kRecommendCoreFormatSchemeOnly = @"%@://";
 static NSString *const kRecommendCoreFormatQuery = @"?%@";
-static NSString *const kRecommendCoreFormatHtmlName = @"ad_type%d.html";
+static NSString *const kRecommendCoreFormatHtmlName = @"%d_%@.html";
 static NSString *const kRecommendCoreFormatBannerDisplayStatus =
     @"banner_display_status_list ad_model:%d";
 static NSString *const kRecommendCoreFormatAllAdDataMissing =
-    @"allAdDataForDisplay fall in line with list by no appliId.";
+    @"allAdDataForDisplay fall in line with list by no appliId %@";
 
 // The user-info key these diagnostic messages are filed under.
 static NSString *const kErrorUserInfoKey = @"Error";
@@ -657,7 +669,8 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
             localizedApplilinkErrorWithCode:RecommendCoreErrorCodeNoBannerData];
     } else {
         self.adAreaDelegate = delegate;
-        if ((adModel - RecommendCoreAdModelOwnAdBase >= RecommendCoreAdModelDirectRangeLength) &&
+        if ((unsigned int)(adModel - RecommendCoreAdModelOwnAdBase) >=
+                RecommendCoreAdModelDirectRangeLength &&
             adModel != RecommendCoreAdModelInterstitial) {
             BOOL bringToFront = parentView == nil;
             UIView *hostView = parentView;
@@ -697,7 +710,7 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
         }
         NSString *contentPath = [[RecommendAdCache getContentsPath]
             stringByAppendingPathComponent:[NSString stringWithFormat:kRecommendCoreFormatHtmlName,
-                                                                      adModel]];
+                                                                      adModel, adLocation]];
         BOOL isDirectory = NO;
         if (![[NSFileManager defaultManager] fileExistsAtPath:contentPath
                                                   isDirectory:&isDirectory]) {
@@ -856,11 +869,11 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
         NSString *categoryId = nil;
         NSString *adType = nil;
         NSString *defaultScheme = nil;
-        BOOL keepParsing = YES;
+        BOOL openedExternalApp = NO;
         if (query != nil) {
             NSArray *components = [query componentsSeparatedByString:kRecommendCoreQuerySeparator];
             for (NSString *component in components) {
-                if ([component rangeOfString:kRecommendCoreQueryDefaultScheme].location !=
+                if ([component rangeOfString:kRecommendCoreQueryKeyDefaultScheme].location !=
                     NSNotFound) {
                     NSString *value =
                         [component substringFromIndex:kRecommendCoreQueryDefaultScheme.length];
@@ -870,33 +883,31 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
                                                                  defaultScheme]];
                     if (appUrl != nil && [[UIApplication sharedApplication] canOpenURL:appUrl]) {
                         [[UIApplication sharedApplication] openURL:appUrl];
-                        keepParsing = NO;
-                    } else {
-                        keepParsing = NO;
+                        openedExternalApp = YES;
                     }
                     break;
-                } else if ([component rangeOfString:kRecommendCoreQueryAdIdFrom].location !=
+                } else if ([component rangeOfString:kRecommendCoreQueryKeyAdIdFrom].location !=
                            NSNotFound) {
                     adIdTo = [NSStringURLEncoding
                         URLDecodedString:[component substringFromIndex:kRecommendCoreQueryAdIdFrom
                                                                            .length]];
-                } else if ([component rangeOfString:kRecommendCoreQueryCountryCode].location !=
+                } else if ([component rangeOfString:kRecommendCoreQueryKeyCountryCode].location !=
                            NSNotFound) {
                     countryCode = [NSStringURLEncoding
                         URLDecodedString:[component
                                              substringFromIndex:kRecommendCoreQueryCountryCode
                                                                     .length]];
-                } else if ([component rangeOfString:kRecommendCoreQueryCategoryId].location !=
+                } else if ([component rangeOfString:kRecommendCoreQueryKeyCategoryId].location !=
                            NSNotFound) {
                     categoryId = [NSStringURLEncoding
                         URLDecodedString:[component substringFromIndex:kRecommendCoreQueryCategoryId
                                                                            .length]];
-                } else if ([component rangeOfString:kRecommendCoreQueryAdType].location !=
+                } else if ([component rangeOfString:kRecommendCoreQueryKeyAdType].location !=
                            NSNotFound) {
                     adType = [NSStringURLEncoding
                         URLDecodedString:[component
                                              substringFromIndex:kRecommendCoreQueryAdType.length]];
-                } else if ([component rangeOfString:kRecommendCoreQueryStoreId].location !=
+                } else if ([component rangeOfString:kRecommendCoreQueryKeyStoreId].location !=
                            NSNotFound) {
                     storeId = [NSStringURLEncoding
                         URLDecodedString:[component
@@ -904,18 +915,19 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
                 }
             }
         }
-        if (keepParsing) {
-            if (adIdTo != nil && countryCode != nil && categoryId != nil) {
-                RecommendAdId *adId = [[RecommendAdId alloc] initWithCountryCode:countryCode
-                                                                      categoryId:categoryId];
-                [adId setWithAdIdFrom:adIdTo
-                          countryCode:countryCode
-                           categoryId:categoryId
-                               adType:adType
-                                error:nil];
-            }
-        } else {
+        // Only an advert scheme that actually launched stops the redirect here; one that could not
+        // be opened falls through and the rest of the routine still runs.
+        if (openedExternalApp) {
             return 0;
+        }
+        if (adIdTo != nil && countryCode != nil && categoryId != nil) {
+            RecommendAdId *adId = [[RecommendAdId alloc] initWithCountryCode:countryCode
+                                                                  categoryId:categoryId];
+            [adId setWithAdIdFrom:adIdTo
+                      countryCode:countryCode
+                       categoryId:categoryId
+                           adType:adType
+                            error:nil];
         }
         NSString *extAppPrefix = kRecommendCoreApplilinkExtAppUrl;
         NSString *tail = path;
@@ -955,10 +967,11 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
             [[UIApplication sharedApplication] openURL:destUrl];
             return 0;
         }
+        // A destination that is not the close host falls into the same tail as the guard failures
+        // above and reports 1, not 0.
         if ([destination isEqualToString:kRecommendCoreCloseHost]) {
             return 0;
         }
-        return 0;
     }
     return 1;
 }
@@ -1029,9 +1042,9 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
                                  AdModel:(int)adModel
                               adLocation:(NSString *)adLocation
                             impressionId:(NSString *)impressionId {
-    // The binary collects an ad_id array too but discards it (its slot is reused for a format
-    // string), so it is not built here. The four lists actually posted are appli_id, the creative
-    // URL file names, incentive types, and install flags.
+    // The binary builds a fifth array of ad_id values and never passes it to the post, so it is not
+    // built here. The four lists actually posted are appli_id, the creative URL file names,
+    // incentive types, and install flags.
     NSMutableArray *appliIdList = [NSMutableArray array];
     NSMutableArray *creativeIdList = [NSMutableArray array];
     NSMutableArray *incentiveTypeList = [NSMutableArray array];
@@ -1110,7 +1123,7 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
       [self setUniqueAdWithAdLocation:adLocation impressionId:impressionId];
       if (appliId != nil && creativeId != nil) {
           NSDictionary *record = [RecommendAdData getAdDataWithAppliId:appliId];
-          NSString *installFlg = @"";
+          NSString *installFlg = kRecommendCoreInstallFlgNone;
           if (record != nil) {
               installFlg = [RecommendAdData getInstallFlgWithAdData:record];
           }
@@ -1119,18 +1132,21 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
           [incentiveTypeList addObject:kRecommendCoreKeyRewardNone];
           [installFlgList addObject:installFlg];
       }
-      [AnalysisNetworkCore
-          postAnalysisListRegistWithAdType:[NSString
-                                               stringWithFormat:kRecommendCoreFormatInteger, 0]
-                                   adModel:[NSString
-                                               stringWithFormat:kRecommendCoreFormatInteger, 0]
-                                adLocation:adLocation
-                              impressionId:impressionId
-                               appliIdList:appliIdList
-                            creativeIdList:creativeIdList
-                         incentiveTypeList:incentiveTypeList
-                            installFlgList:installFlgList
-                                  callback:nil];
+      NSString *adType = [NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                    RecommendCoreAdTypeBanner];
+      NSString *adModel = [NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                     RecommendCoreAdModelOwnAdBase];
+      [AnalysisNetworkCore postAnalysisListRegistWithAdType:adType
+                                                   adModel:adModel
+                                                adLocation:adLocation
+                                              impressionId:impressionId
+                                               appliIdList:appliIdList
+                                            creativeIdList:creativeIdList
+                                         incentiveTypeList:incentiveTypeList
+                                            installFlgList:installFlgList
+                                                  callback:^(NSError *_Nullable registerError){
+                                                    // The binary passes a global no-op block here.
+                                                  }];
     }];
 }
 
@@ -1187,7 +1203,8 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
     if (record == nil) {
         NSDictionary *userInfo = [NSDictionary
             dictionaryWithObjectsAndKeys:[NSString
-                                             stringWithFormat:kRecommendCoreFormatAllAdDataMissing],
+                                             stringWithFormat:kRecommendCoreFormatAllAdDataMissing,
+                                                              appliId],
                                          kErrorUserInfoKey,
                                          nil];
         NSError *noDataError =
@@ -1204,8 +1221,10 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
     NSString *installFlg = [RecommendAdData getInstallFlgWithAdData:record];
     NSString *defaultScheme = record[kRecommendCoreKeyDefaultScheme];
     [AnalysisNetworkCore
-        postAnalysisClickRegistWithAdType:[NSString stringWithFormat:kRecommendCoreFormatInteger, 0]
-                                  adModel:[NSString stringWithFormat:kRecommendCoreFormatInteger, 0]
+        postAnalysisClickRegistWithAdType:[NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                                    RecommendCoreAdTypeBanner]
+                                  adModel:[NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                                     RecommendCoreAdModelOwnAdBase]
                                adLocation:adLocation
                              impressionId:impressionId
                                 appliIdTo:appliId
@@ -1234,20 +1253,17 @@ static void RecommendCorePostAnalysisClickRegist(RecommendCore *core, NSError *e
                                        setRequestWithAdModel:RecommendCoreAdModelOwnAdBase
                                                   adLocation:adLocation
                                                  requestCode:requestCode];
-                                   [core
-                                       linkActionWithDefaultScheme:defaultScheme
-                                                            adIdTo:adId
-                                                            adType:
-                                                                [NSString
-                                                                    stringWithFormat:
-                                                                        kRecommendCoreFormatInteger,
-                                                                        0]
-                                                           adModel:
-                                                               [NSString
-                                                                   stringWithFormat:
-                                                                       kRecommendCoreFormatInteger,
-                                                                       0]
-                                                          delegate:delegate];
+                                   NSString *adType =
+                                       [NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                                  RecommendCoreAdTypeBanner];
+                                   NSString *adModel =
+                                       [NSString stringWithFormat:kRecommendCoreFormatInteger,
+                                                                  RecommendCoreAdModelOwnAdBase];
+                                   [core linkActionWithDefaultScheme:defaultScheme
+                                                              adIdTo:adId
+                                                              adType:adType
+                                                             adModel:adModel
+                                                            delegate:delegate];
                                  }];
 }
 

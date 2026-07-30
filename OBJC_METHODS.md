@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3784 verified
-(59.7%).
+Total: 6343 — 6201 reconstructed, 3792 verified
+(59.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -6153,25 +6153,25 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `clearAllAdData` |  | ✅ | ✅ | `0x2387b8` |
 | `RecommendCore` | `-` | `reloadAllAdData` |  | ✅ | ✅ | `0x2387d0` |
 | `RecommendCore` | `-` | `openAdScreenWithParentView:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ✅ | `0x238848` |
-| `RecommendCore` | `-` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x239480` |
-| `RecommendCore` | `-` | `openFullViewControllerWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x239ed8` |
+| `RecommendCore` | `-` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ✅ | `0x239480` |
+| `RecommendCore` | `-` | `openFullViewControllerWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ✅ | `0x239ed8` |
 | `RecommendCore` | `-` | `closeAdScreen` |  | ✅ | ✅ | `0x23a40c` |
 | `RecommendCore` | `-` | `rotateWithInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x23a5ac` |
 | `RecommendCore` | `-` | `setNavigationBarHidden:` | prop | ✅ | ✅ | `0x23a634` |
 | `RecommendCore` | `-` | `redirectViewContollerWithRequest:` |  | ✅ | ✅ | `0x23a644` |
 | `RecommendCore` | `-` | `redirectWithRequest:` |  | ✅ | ✅ | `0x23a660` |
-| `RecommendCore` | `-` | `redirectWithRequest:appParam:` |  | ✅ | ❌ | `0x23a674` |
+| `RecommendCore` | `-` | `redirectWithRequest:appParam:` |  | ✅ | ✅ | `0x23a674` |
 | `RecommendCore` | `-` | `getTemporaryCacheWithAdModel:` |  | ✅ | ✅ | `0x23b420` |
 | `RecommendCore` | `-` | `canUseBannerCache` |  | ✅ | ✅ | `0x23b758` |
 | `RecommendCore` | `-` | `clearAdStatus` |  | ✅ | ✅ | `0x23b82c` |
 | `RecommendCore` | `-` | `clearSession` |  | ✅ | ✅ | `0x23b8c0` |
 | `RecommendCore` | `+` | `clearData` |  | ❌ | ❌ | `0x23ba24` |
-| `RecommendCore` | `-` | `postAnalysisListRegistWithAdType:AdModel:adLocation:impressionId:` |  | ✅ | ❌ | `0x23bb5c` |
-| `RecommendCore` | `-` | `showOwnAdWithAdLocation:toAppliId:creativeId:` |  | ✅ | ❌ | `0x23c11c` |
-| `RecommendCore` | `-` | `touchOwnAdWithAdLocation:toAppliId:creativeId:requestCode:delegate:` |  | ✅ | ❌ | `0x23c5fc` |
+| `RecommendCore` | `-` | `postAnalysisListRegistWithAdType:AdModel:adLocation:impressionId:` |  | ✅ | ✅ | `0x23bb5c` |
+| `RecommendCore` | `-` | `showOwnAdWithAdLocation:toAppliId:creativeId:` |  | ✅ | ✅ | `0x23c11c` |
+| `RecommendCore` | `-` | `touchOwnAdWithAdLocation:toAppliId:creativeId:requestCode:delegate:` |  | ✅ | ✅ | `0x23c5fc` |
 | `RecommendCore` | `-` | `linkActionWithDefaultScheme:adIdTo:adType:adModel:delegate:` |  | ✅ | ❌ | `0x23d0dc` |
-| `RecommendCore` | `-` | `setUniqueAdWithAdLocation:impressionId:` |  | ✅ | ❌ | `0x23d330` |
-| `RecommendCore` | `-` | `getUniqueAdWithAdLocation:` |  | ✅ | ❌ | `0x23d4cc` |
+| `RecommendCore` | `-` | `setUniqueAdWithAdLocation:impressionId:` |  | ✅ | ✅ | `0x23d330` |
+| `RecommendCore` | `-` | `getUniqueAdWithAdLocation:` |  | ✅ | ✅ | `0x23d4cc` |
 | `RecommendCore` | `-` | `failLoadWithError:` |  | ✅ | ✅ | `0x23d5c0` |
 | `RecommendCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ✅ | `0x23d740` |
 | `RecommendCore` | `-` | `redirectStartLoad:` |  | ✅ | ✅ | `0x23d744` |

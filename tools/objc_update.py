@@ -278,6 +278,28 @@ VERIFIED = {
     0x22e9c4: 'ApplilinkUdid: read against the disassembly',
     0x22ea4c: 'ApplilinkUdid: -UUIDString is a direct send, not performSelector:',
     0x22ec0c: 'ApplilinkUdid: read against the disassembly',
+    # RecommendCore, the nine it had not reached, plus the block bodies behind them. The
+    # tenth, -linkActionWithDefaultScheme: at 0x23d0dc, is read and NOT ticked: it passes
+    # objects where the callee formats them with %d, and correcting that crosses a file
+    # this pass did not own, so the mismatch stands recorded rather than half-fixed.
+    0x239480: 'RecommendCore -openAdAreaWithParentView:rect:...: b.cc at 0x239548 is '
+              'unsigned, and the variadic pushes two arguments into a %d_%@.html '
+              'format, not one',
+    0x239ed8: 'RecommendCore -openFullViewControllerWithAdModel:...: the no-banner arm '
+              'already passed its adModel',
+    0x23a674: 'RecommendCore -redirectWithRequest:appParam:: the nil-url and '
+              'canOpenURL-false arms both fall through and run the rest, and the not- '
+              'close case returns 1',
+    0x23c11c: 'RecommendCore -showOwnAdWithAdLocation:toAppliId:creativeId:: the guards '
+              'and the session capture set',
+    0x23bb5c: 'RecommendCore '
+              '-postAnalysisListRegistWithAdType:AdModel:adLocation:impressionId:: five '
+              'arrays built, four posted; the ad_id array is filled and never passed',
+    0x23c5fc: 'RecommendCore -touchOwnAdWithAdLocation:...: three guards and the shared '
+              'failure tail',
+    0x23d330: 'RecommendCore -setUniqueAdWithAdLocation:impressionId:: remove on a nil '
+              'impression, else set',
+    0x23d4cc: 'RecommendCore -getUniqueAdWithAdLocation:: nil-guarded unarchive then objectForKey:',
     0x2202ec: 'ApplilinkStore -init: the queue is the private serial one from +allocWithZone:',
     0x2204c0: 'ApplilinkStore +allocWithZone:: creates the queue, then re-tests the singleton',
     0xa9108: 'RBMenuView -createMusicList: the csel at 0xa939c picks the artist comparator on 1',
