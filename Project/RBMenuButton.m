@@ -41,8 +41,12 @@ static const UIViewAutoresizing kMenuButtonEffectTextAutoresizingMask =
 
 // The cap-inset inset applied when stretching the background and flash images: the resizable region
 // is a single centre pixel, so the caps are half the image size less one pixel.
-// The fmov at 0x9dcb0 encodes -4.0 (0x4010000000000000); 1.0 would have been 0x3ff0000000000000.
-static const CGFloat kMenuButtonCapInsetMargin = 4.0; /** @ghidraAddress 0x9dcb0 */
+// The fmov at 0x9dcb0 is an instruction immediate, not a pool slot, so it carries no
+// @ghidraAddress: the audit tool would read the instruction bytes as a float. Its word is
+// 0x1e7e100a, whose imm8 field (bits 20:13) is 0xf0, and VFPExpandImm(0xf0) is -1.0. Ghidra
+// renders this one as -0x4010000000000000, which would be -4.0 and is wrong; it prints the
+// positive immediates in this function correctly.
+static const CGFloat kMenuButtonCapInsetMargin = 1.0;
 
 // The number of image-name slots per button type in the setup table. Only the first four are used;
 // the fifth is a shared fallback image name.
