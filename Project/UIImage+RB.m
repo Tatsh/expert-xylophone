@@ -216,6 +216,9 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     if (components.count < 2) {
         return nil;
     }
+    // The binary re-reads the count after the insert and replaces at count - 1, which is the file
+    // name rather than the language component inserted above, so this last lookup asks for a
+    // directory and always fails. Faithful: 0x1a1898 counts again and 0x1a189c subtracts one.
     [components replaceObjectAtIndex:components.count - 1 withObject:GetFallbackLprojName()];
     return [UIImage imageWithContentsOfFile:[NSString pathWithComponents:components]];
 }

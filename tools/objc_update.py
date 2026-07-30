@@ -43,6 +43,12 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    # UIImage(RB)'s themed lookup. The fallback-language arm looked like a reconstruction bug and
+    # is not: 0x1a1898 re-reads the count after the insert and 0x1a189c subtracts one, so the
+    # binary itself replaces the file name rather than the language component, and that last
+    # lookup can never resolve. The count < 2 guard is the b.cc at 0x1a187c.
+    0x1A1644: 'UIImage(RB) +imageWithName:imageDirectory:themaDirectory:retina: '
+              'faithful, including the fallback arm that replaces the wrong component',
     # ApplilinkCore's flag block at 0x3df630, each accessor distinguished only by its
     # displacement; every byte's readers and writers were checked by cross-reference.
     0x214c00: 'ApplilinkCore +setNavigationBarCommonAppearance:: stores the argument verbatim',

@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 3967 verified
-(62.5%).
+Total: 6343 — 6203 reconstructed, 3968 verified
+(62.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4442,7 +4442,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicMenuPopupView` | `-` | `animating` | prop | ✅ | ✅ | `0x1a042c` |
 | `RBMusicMenuPopupView` | `-` | `setAnimating:` | prop | ✅ | ✅ | `0x1a043c` |
 | `(RB)` | `+` | `clearImageCache` |  | ✅ | ❌ | `0x1a1630` |
-| `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:retina:` |  | ✅ | ❌ | `0x1a1644` |
+| `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:retina:` |  | ✅ | ✅ | `0x1a1644` |
 | `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:` |  | ✅ | ❌ | `0x1a1a0c` |
 | `(RB)` | `+` | `imageNamedWithoutCache:` |  | ✅ | ✅ | `0x1a1b08` |
 | `(RB)` | `+` | `imageWithName:` |  | ✅ | ❌ | `0x1a2830` |
