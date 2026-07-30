@@ -5,7 +5,8 @@ gated behind a preprocessor flag. A build with the flag undefined stays as close
 possible; the patched code sits under `#ifdef ENABLE_PATCHES` and the original under `#else`.
 
 - **`ENABLE_PATCHES`** — corrections that matter on modern iOS or on 64-bit, where the original's
-  behaviour depended on something the armv7 build got for free.
+  behaviour depended on something the armv7 build got for free, and corrections to behaviour the
+  original simply got wrong and shipped.
 
 Enable it with `-DENABLE_PATCHES=ON` (CMake) or `make -C theos ENABLE_PATCHES=1` (Theos). The CI
 build workflow enables it.
@@ -38,3 +39,19 @@ the two that do have them, the patched build shows the placeholders literally in
 absent arguments. The unpatched path keeps the original call and the `-Wformat-security` warning it
 raises, which is left in place deliberately: a faithful build should keep reporting that the
 original code is unsound.
+
+### The editable Terms of Service text
+
+**File:** `Project/RBTermAgreeView.mm` — `-setupView` (0x1c3e7c)
+
+The terms are presented in a `UITextView`, which is editable unless told otherwise, and the binary
+never tells it otherwise. `-setupView` sends that view only `-initWithFrame:`,
+`-setTextContainerInset:` and `-setDelegate:`; the class implements no
+`-textViewShouldBeginEditing:`; and neither the `setEditable:` selector reference at `0x3bede8` nor
+the `setSelectable:` one at `0x3bf7b8` is read from this function, their callers all being other
+classes. So the shipped app really does let the player type into the terms, and raises the keyboard
+over a screen meant only to be read and scrolled.
+
+The patch sets `editable` to `NO`. The delegate is left in place either way, because the scroll
+callback is what enables the Agree button once the reader reaches the bottom. Nothing else about the
+screen changes, and an unpatched build keeps the original's behaviour.
