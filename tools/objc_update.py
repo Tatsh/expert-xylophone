@@ -588,6 +588,15 @@ VERIFIED = {
               'dismiss, the block clears the ivar',
     0x1ef324: 'RBStorePageViewController -goToTop:: scroll position 1 is Top',
     0x1ef76c: 'RBStorePageViewController -switchToSpecialStore: one send to the parent',
+    # AppDelegate, two more. -launchAppStore is declared as an instance method in the
+    # source and the metadata has it as a class method at 0x53268; reported, not fixed,
+    # since correcting it also touches a caller outside this class.
+    0x504dc: 'AppDelegate -alertView:clickedButtonAtIndex:: the tag is read three '
+              'times, and 10 is the network-error tag against 3 for the new version, '
+              'not transposed',
+    0x4f7e0: 'AppDelegate -showTitle: the explosion size is a pool load of 0.9f taken '
+              'at single width, its neighbour being 96.0f; the other two effect sizes '
+              'are fmov immediates',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

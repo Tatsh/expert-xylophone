@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3936 verified
+Total: 6343 — 6201 reconstructed, 3938 verified
 (62.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1041,11 +1041,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `+` | `setOuterURL:` |  | ✅ | ✅ | `0x4f444` |
 | `AppDelegate` | `-` | `isEnableEarlyBonus` |  | ✅ | ✅ | `0x4f4d0` |
 | `AppDelegate` | `-` | `isEnableHotBonus` |  | ✅ | ✅ | `0x4f658` |
-| `AppDelegate` | `-` | `showTitle` |  | ✅ | ❌ | `0x4f7e0` |
+| `AppDelegate` | `-` | `showTitle` |  | ✅ | ✅ | `0x4f7e0` |
 | `AppDelegate` | `-` | `showTerms` |  | ✅ | ✅ | `0x4faf4` |
 | `AppDelegate` | `-` | `startupRequest` |  | ✅ | ✅ | `0x4fb4c` |
 | `AppDelegate` | `-` | `showDownload` |  | ✅ | ✅ | `0x50398` |
-| `AppDelegate` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x504dc` |
+| `AppDelegate` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x504dc` |
 | `AppDelegate` | `+` | `ApplilinkInitialize` |  | ✅ | ✅ | `0x50698` |
 | `AppDelegate` | `+` | `setRecommendUnreadCount` |  | ✅ | ✅ | `0x50920` |
 | `AppDelegate` | `+` | `appDelegate` |  | ✅ | ✅ | `0x50af0` |
