@@ -116,6 +116,7 @@ deviceenvironment
 dgles
 dhave
 dialog
+dialog's
 dictionaris
 difa
 difb
@@ -369,8 +370,8 @@ scorefor
 screenview
 scvtf
 sdiv
-selref
 seiya
+selref
 serialcode
 sheetlayer
 shellcheck
@@ -390,6 +391,7 @@ stdlib
 stor
 storefront
 strage
+strb
 strcmp
 strm
 strobing

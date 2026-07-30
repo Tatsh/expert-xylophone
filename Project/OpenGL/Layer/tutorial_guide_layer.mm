@@ -4,6 +4,7 @@
 #include "curve.h"
 #include "deviceenvironment.h"
 #include "gamesystem.h"
+#include "neDebugLog.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -242,6 +243,14 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
 
 /** @ghidraAddress 0x10b734 */
 void TutorialGuideLayer::Stop() {
+    // RBPDBG: the tutorial cannot be completed, so record every engine-side phase transition
+    // alongside the Objective-C step log. The phase is what gates the menu's input.
+    if (NE_DBG_FIRST(40)) {
+        neDebugLog("tutorialGuide Stop active=%d fade=%d phase=%d",
+                   m_bActive ? 1 : 0,
+                   m_nFadeState,
+                   GameSystem::GetGameSystem()->GetTutorialPhase());
+    }
     m_bActive = false;
 }
 
@@ -252,6 +261,12 @@ void TutorialGuideLayer::StartFadeIn() {
 
 /** @ghidraAddress 0x10b70c */
 void TutorialGuideLayer::Start() {
+    if (NE_DBG_FIRST(40)) {
+        neDebugLog("tutorialGuide Start active=%d fade=%d phase=%d",
+                   m_bActive ? 1 : 0,
+                   m_nFadeState,
+                   GameSystem::GetGameSystem()->GetTutorialPhase());
+    }
     m_bActive = true;
     m_flClock = 0.0f;
     GameSystem::GetGameSystem()->SetTutorialPhase(kTutorialPhaseGuideActive);
@@ -259,6 +274,12 @@ void TutorialGuideLayer::Start() {
 
 /** @ghidraAddress 0x10b748 */
 void TutorialGuideLayer::Reset() {
+    if (NE_DBG_FIRST(40)) {
+        neDebugLog("tutorialGuide Reset active=%d fade=%d phase=%d",
+                   m_bActive ? 1 : 0,
+                   m_nFadeState,
+                   GameSystem::GetGameSystem()->GetTutorialPhase());
+    }
     m_nFadeState = kFadeStateHidden;
     GameSystem::GetGameSystem()->SetTutorialPhase(0);
     m_flStateTimer = 0.0f;

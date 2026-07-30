@@ -632,6 +632,28 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
         break;
     }
 
+    // RBPDBG: the tutorial cannot be completed and lays some steps out wrongly. Each step's line
+    // gives the step number, the class the per-step getter was sent to, whether it returned a
+    // target, the spotlight that target produced, and whether the step laid out at all. A step
+    // whose target is nil, or whose clip is empty or off-screen, is a step with nothing to tap;
+    // a step reached by no case at all shows laidOut=0 with the default arm having run.
+    if (NE_DBG_FIRST(60)) {
+        neDebugLog("tutorialStep step=%ld root=%s target=%s clip=(%.0f,%.0f %.0fx%.0f) "
+                   "forTouch=%d laidOut=%d touchAnim=%d cursorAnim=%d anim=%d",
+                   (long)type,
+                   clipRoot ? [clipRoot class].description.UTF8String : "(nil)",
+                   self.clipTargetView ? self.clipTargetView.class.description.UTF8String : "(nil)",
+                   self.clipRect.origin.x,
+                   self.clipRect.origin.y,
+                   self.clipRect.size.width,
+                   self.clipRect.size.height,
+                   self.clipTargetForTouch ? 1 : 0,
+                   laidOut ? 1 : 0,
+                   touchAnim ? 1 : 0,
+                   cursorAnim ? 1 : 0,
+                   animation ? 1 : 0);
+    }
+
     if (laidOut) {
         [self contentViewSettingWithTouchAnim:touchAnim
                                    cursorAnim:cursorAnim
