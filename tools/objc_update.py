@@ -1084,6 +1084,33 @@ VERIFIED = {
               'banners with margins 300/100 and the campaign half-height anchor at 0x16601c',
     0x166184: 'RBStoreExtendPageViewController -stopDownloadArtworks: empty-guarded, detach then '
               'cancel each, then clear',
+    0x1663a4: 'RBStoreExtendPageViewController -viewWillAppear:: the phone deselect arm, the error '
+              'label resize, and both IsPad() calls at 0x166568 and 0x1665d8',
+    # Defect fixed: the first-fetch arm hides the pack table (w2 = 1 at 0x1669fc); the
+    # reconstruction revealed it.
+    0x166858: 'RBStoreExtendPageViewController -viewDidAppear:: empty list and no fetch in flight '
+              'is the only arm that starts a fetch',
+    0x166ad0: 'RBStoreExtendPageViewController -viewWillDisappear:: pad teardown, in-flight reset, '
+              'downloader drop, then cancelFetching',
+    0x166d48: 'RBStoreExtendPageViewController -willAnimateRotationToInterfaceOrientation:duration:'
+              ': bare super call',
+    0x166d80: 'RBStoreExtendPageViewController -didReceiveMemoryWarning: clears the cache before '
+              'super',
+    0x166e04: 'RBStoreExtendPageViewController -dealloc: detach and cancel the info downloader',
+    0x166f14: 'RBStoreExtendPageViewController -showLoadingView: the scrolled rect takes width and '
+              'height from two separate frame reads (0x167008, 0x167018)',
+    0x16726c: 'RBStoreExtendPageViewController -popoverControllerDidDismissPopover:: back button '
+              'then restore button re-enabled',
+    0x167340: 'RBStoreExtendPageViewController -storeDetailViewOpenItunesWithURL:: nil-guarded '
+              'forward to the root view controller',
+    # Defect fixed: the fallback arm at 0x1675c8 passes the argument straight to openURL:, so the
+    # parameter is an NSURL and not a string, matching RBStorePageViewController's twin.
+    0x167404: 'RBStoreExtendPageViewController -openItunesWithURL:: affiliate parameters decide '
+              'between the in-app product page and Safari',
+    0x16777c: 'RBStoreExtendPageViewController -closeItunesWithURL: forwards the retained '
+              'controller',
+    0x1677dc: 'RBStoreExtendPageViewController -productViewControllerDidFinish:: the completion at '
+              '0x167890 clears the property, self captured strongly',
     # MusicData. The yomi tables are static arrays of ten CFString constants at 0x3ceb18 (rows) and
     # 0x3ceb68 (labels), with the no-row initial @"#" in the slot at 0x3cebb8; the reconstruction
     # had built them as NSArrays in an invented +initialize and used @"" for that initial.

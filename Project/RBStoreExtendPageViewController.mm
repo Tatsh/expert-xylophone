@@ -1780,7 +1780,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     if (self.extendNoteListCtrl.extendNoteProductIDList.count == 0 &&
         !self.extendNoteListCtrl.isFetching) {
         [self.view viewWithTag:kErrorMessageLabelTag].hidden = YES;
-        [self.view viewWithTag:kPackTableViewTag].hidden = NO;
+        [self.view viewWithTag:kPackTableViewTag].hidden = YES;
         [self.extendNoteListCtrl startFetching];
         return;
     }
@@ -1899,16 +1899,18 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 }
 
-- (void)openItunesWithURL:(NSString *)url {
+- (void)openItunesWithURL:(NSURL *)url {
     if (url == nil) {
         return;
     }
 
     // When the URL carries affiliate parameters, present the in-app StoreKit product page seeded
-    // with them; otherwise fall back to opening the URL in Safari.
-    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
+    // with them; otherwise fall back to opening the URL in Safari. The binary passes the URL object
+    // straight to affiliateParametersFromURL:; the committed StoreUtil header types that parameter
+    // as an NSString, so the absolute string is passed here.
+    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url.absoluteString];
     if (affiliateParameters == nil) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [[UIApplication sharedApplication] openURL:url];
         return;
     }
 

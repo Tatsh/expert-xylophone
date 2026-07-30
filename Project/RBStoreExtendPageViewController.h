@@ -311,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param url The iTunes URL to open.
  * @ghidraAddress 0x167404
  */
-- (void)openItunesWithURL:(nullable NSString *)url;
+- (void)openItunesWithURL:(nullable NSURL *)url;
 
 /**
  * @brief Dismisses the in-app iTunes product page.
