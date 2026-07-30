@@ -48,7 +48,7 @@ static const NSUInteger kPastelShowStageCount = 4;
     currentShowList[0] = NO;
 }
 
-- (BOOL)tryShow:(unsigned int)tryShow {
++ (BOOL)tryShow:(unsigned int)tryShow {
     /** @ghidraAddress 0x20b0c */
     // The binary reaches the show-list through the shared singleton rather than through self; for
     // this instance method the two are the same object, so self's ivar is used directly.

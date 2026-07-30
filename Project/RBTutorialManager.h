@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
  * @return The persisted status recorded for @p status.
  * @ghidraAddress 0x35cfc
  */
-- (unsigned int)getStatus:(unsigned int)status;
++ (unsigned int)getStatus:(unsigned int)status;
 
 #pragma mark Music-select tutorial
 

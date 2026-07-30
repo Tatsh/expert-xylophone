@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return @c nil.
  * @ghidraAddress 0x5a5d0
  */
-- (nullable NSMutableData *)getExtendZipData:(NSString *)entryName
++ (nullable NSMutableData *)getExtendZipData:(NSString *)entryName
                                         Path:(NSString *)zipPath
                                   DecodeType:(int)decodeType;
 /**

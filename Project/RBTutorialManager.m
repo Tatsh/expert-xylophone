@@ -60,7 +60,7 @@ enum { kTutorialStatusReportOnly = 0x12 };
     return [[self getInstance] currentStatus];
 }
 
-- (unsigned int)getStatus:(unsigned int)status {
++ (unsigned int)getStatus:(unsigned int)status {
     /** @ghidraAddress 0x35cfc */
     return [[RBUserSettingData sharedInstance] getTutorialStatus:status];
 }

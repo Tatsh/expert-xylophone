@@ -58,7 +58,7 @@ static NSString *const kExtendKeyComment = @"Comment";
     /** @ghidraAddress 0x5a22c */
 }
 
-- (NSMutableData *)getExtendZipData:(NSString *)entryName
++ (NSMutableData *)getExtendZipData:(NSString *)entryName
                                Path:(NSString *)zipPath
                          DecodeType:(int)decodeType {
     /** @ghidraAddress 0x5a5d0 */
