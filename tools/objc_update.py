@@ -918,6 +918,35 @@ VERIFIED = {
               '0x15d5b0, margin +-50.0 from 0x2ec6e0/0x2ec738, label drop 25.0 at 0x15d958',
     0x15db50: 'RBStoreExtendPageViewController -forceOpenExtendNoteDetailView: three arms, the '
               'idiom byte at 0x15dc5c picks the pad overlay teardown',
+    0x15deec: 'RBStoreExtendPageViewController -extendNoteListDownloadError:errorMessage:: the '
+              'cbz at 0x15df80 puts the inline alert on the visible-table arm',
+    0x15e208: 'RBStoreExtendPageViewController -extendNoteListDownloadNothing:: same polarity, '
+              'then the pending PID is cleared unconditionally',
+    0x15e340: 'RBStoreExtendPageViewController -cellViewSelected:: guarded by allowsSelection, '
+              'the cell view supplies its own index',
+    # The jump table at 0x15e6e4 maps 0..3 to the pack alert, purchase, and the two download arms
+    # in that order, and 4 or above falls through to the default.
+    0x15e4e0: 'RBStoreExtendPageViewController -selectButton:: four button states, alert tag 0x21',
+    # Both blocks retain self at 0x15e850 and 0x15e878 rather than taking a weak reference, so
+    # the weak capture was wrong; the open duration is the double 0.3 from 0x3010a0.
+    0x15e6f4: 'RBStoreExtendPageViewController -openExtendNoteDetailViewWithPID:: strong self '
+              'capture, options 0x30000',
+    0x15eb74: 'RBStoreExtendPageViewController -pushSampleButton:: both arms of the refusal flag',
+    # The close duration at 0x2ec718 is (double)0.3f, the same slot the label shadow alpha reads,
+    # not the double 0.3 the open animation uses.
+    0x15ed78: 'RBStoreExtendPageViewController -handleTapCoverView:: strong self capture, the '
+              'completion re-enables the restore button only when it exists',
+    0x15f160: 'RBStoreExtendPageViewController -startDownloadExtendNote:: the URL is read and '
+              'nil-tested twice (0x15f1b8 and 0x15f1d8), then both idiom arms of each state',
+    # The threshold table at 0x30bef0 is {5000, 5000, 20000}, not the round figures it looks like.
+    0x15f9a0: 'RBStoreExtendPageViewController -checkAttainLimitPurchase:: type 0 raises the '
+              'selection alert (tag 0x20), any other type the over-limit message',
+    0x15fbec: 'RBStoreExtendPageViewController -startPurchase:: both bail-outs share the error '
+              'alert at 0x15fdf8, layout 1 for the progress dialog',
+    0x15fec0: 'RBStoreExtendPageViewController -detailViewClose: pad taps the cover view, phone '
+              'pops animated',
+    0x15ff4c: 'RBStoreExtendPageViewController -storeDialogCancel:: both idiom arms, then both '
+              'managers save',
 }
 
 

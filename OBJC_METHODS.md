@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4011 verified
-(63.2%).
+Total: 6343 — 6203 reconstructed, 4023 verified
+(63.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3673,19 +3673,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `sendUserAge` |  | ✅ | ✅ | `0x15c9a4` |
 | `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadSuccess:` |  | ✅ | ✅ | `0x15d260` |
 | `RBStoreExtendPageViewController` | `-` | `forceOpenExtendNoteDetailView` |  | ✅ | ✅ | `0x15db50` |
-| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadError:errorMessage:` |  | ✅ | ❌ | `0x15deec` |
-| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadNothing:` |  | ✅ | ❌ | `0x15e208` |
-| `RBStoreExtendPageViewController` | `-` | `cellViewSelected:` |  | ✅ | ❌ | `0x15e340` |
-| `RBStoreExtendPageViewController` | `-` | `selectButton:` |  | ✅ | ❌ | `0x15e4e0` |
-| `RBStoreExtendPageViewController` | `-` | `openExtendNoteDetailViewWithPID:` |  | ✅ | ❌ | `0x15e6f4` |
+| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadError:errorMessage:` |  | ✅ | ✅ | `0x15deec` |
+| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadNothing:` |  | ✅ | ✅ | `0x15e208` |
+| `RBStoreExtendPageViewController` | `-` | `cellViewSelected:` |  | ✅ | ✅ | `0x15e340` |
+| `RBStoreExtendPageViewController` | `-` | `selectButton:` |  | ✅ | ✅ | `0x15e4e0` |
+| `RBStoreExtendPageViewController` | `-` | `openExtendNoteDetailViewWithPID:` |  | ✅ | ✅ | `0x15e6f4` |
 | `RBStoreExtendPageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ✅ | `0x15eb70` |
-| `RBStoreExtendPageViewController` | `-` | `pushSampleButton:` |  | ✅ | ❌ | `0x15eb74` |
-| `RBStoreExtendPageViewController` | `-` | `handleTapCoverView:` |  | ✅ | ❌ | `0x15ed78` |
-| `RBStoreExtendPageViewController` | `-` | `startDownloadExtendNote:` |  | ✅ | ❌ | `0x15f160` |
-| `RBStoreExtendPageViewController` | `-` | `checkAttainLimitPurchase:` |  | ✅ | ❌ | `0x15f9a0` |
-| `RBStoreExtendPageViewController` | `-` | `startPurchase:` |  | ✅ | ❌ | `0x15fbec` |
-| `RBStoreExtendPageViewController` | `-` | `detailViewClose` |  | ✅ | ❌ | `0x15fec0` |
-| `RBStoreExtendPageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x15ff4c` |
+| `RBStoreExtendPageViewController` | `-` | `pushSampleButton:` |  | ✅ | ✅ | `0x15eb74` |
+| `RBStoreExtendPageViewController` | `-` | `handleTapCoverView:` |  | ✅ | ✅ | `0x15ed78` |
+| `RBStoreExtendPageViewController` | `-` | `startDownloadExtendNote:` |  | ✅ | ✅ | `0x15f160` |
+| `RBStoreExtendPageViewController` | `-` | `checkAttainLimitPurchase:` |  | ✅ | ✅ | `0x15f9a0` |
+| `RBStoreExtendPageViewController` | `-` | `startPurchase:` |  | ✅ | ✅ | `0x15fbec` |
+| `RBStoreExtendPageViewController` | `-` | `detailViewClose` |  | ✅ | ✅ | `0x15fec0` |
+| `RBStoreExtendPageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ✅ | `0x15ff4c` |
 | `RBStoreExtendPageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1601d0` |
 | `RBStoreExtendPageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1601d4` |
 | `RBStoreExtendPageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ❌ | `0x1601d8` |

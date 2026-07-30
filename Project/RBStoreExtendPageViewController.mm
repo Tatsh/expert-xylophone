@@ -82,8 +82,9 @@ static const int kNoPendingPackID = -1;
 static const NSUInteger kArtworkDownloaderCapacity = 0x20;
 
 // Purchase-limit thresholds in yen, indexed by RBUserSettingData.purchaseLimitType. A value of -1
-// (index out of range) means "no limit".
-static const int kPurchaseLimitYen[] = {5000, 10000, 30000};
+// (index out of range) means "no limit", so the third selectable type is unlimited. The first two
+// entries really are both 5000 in the shipped table at 0x30bef0.
+static const int kPurchaseLimitYen[] = {5000, 5000, 20000};
 static const int kPurchaseLimitNone = -1;
 
 // The number of purchase-limit-type thresholds.
@@ -155,7 +156,9 @@ static const CGFloat kTableBackgroundWhite = 47.0 / 255.0; // Pack table backgro
 static const CGFloat kTableBorderWhite = 143.0 / 255.0;    // Pack table border.
 static const CGFloat kLabelTextWhite = 158.0 / 255.0;      // Label text colour.
 static const CGFloat kCoverDimAlpha = 0.5;                 // Pad cover-view dim alpha.
-static const CGFloat kLabelShadowAlpha = 0.3;              // Label drop-shadow alpha.
+// The pool slot at 0x2ec718 that both the label shadow and the close animation read holds
+// (double)0.3f, not the double 0.3, so both are spelled as float literals.
+static const CGFloat kLabelShadowAlpha = 0.3f;            // Label drop-shadow alpha.
 
 // The "show more" backing views are laid out with a fixed margin from the edges of the table, and
 // their vertical origin trails the current content by a device-dependent gap.
@@ -166,8 +169,8 @@ static const CGFloat kShowMoreButtonCenterYOffset = 25.0; // Extra drop for the 
 
 // UIView animation options and durations for the pad detail-overlay transitions.
 static const UIViewAnimationOptions kDetailOpenAnimationOptions = 0x30000; // Curve ease-in-out.
-static const NSTimeInterval kDetailOverlayOpenDuration = 0.3;
-static const NSTimeInterval kDetailOverlayCloseDuration = 0.3;
+static const NSTimeInterval kDetailOverlayOpenDuration = 0.3;   // @ghidraAddress 0x3010a0
+static const NSTimeInterval kDetailOverlayCloseDuration = 0.3f; // @ghidraAddress 0x2ec718
 
 // Row heights (points). A genuine pack row is tall; the trailing "show more"/spinner row is short.
 static const CGFloat kPhonePackRowHeight = 140.0;
@@ -825,21 +828,22 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [self.extendNoteDetailViewPad setAlpha:0.0];
     [self.coverViewPad setHidden:NO];
     [self.extendNoteDetailViewPad setHidden:NO];
-    __weak RBStoreExtendPageViewController *weakSelf = self;
+    // Both blocks capture self strongly; the binary retains it into the block rather than
+    // taking a weak reference.
     [UIView animateWithDuration:kDetailOverlayOpenDuration
         delay:0
         options:kDetailOpenAnimationOptions
         animations:^{
           /** @ghidraAddress 0x15e924 */
-          [weakSelf.coverViewPad setAlpha:1.0];
-          [weakSelf.extendNoteDetailViewPad setAlpha:1.0];
+          [self.coverViewPad setAlpha:1.0];
+          [self.extendNoteDetailViewPad setAlpha:1.0];
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0x15e9dc */
           StoreExtendNoteInfo *info =
-              [weakSelf.extendNoteListCtrl getExtendNoteInfoWithProductID:productID];
-          [weakSelf.extendNoteDetailViewPad setInfo:info];
-          [weakSelf.extendNoteDetailViewPad showNoteInfo];
+              [self.extendNoteListCtrl getExtendNoteInfoWithProductID:productID];
+          [self.extendNoteDetailViewPad setInfo:info];
+          [self.extendNoteDetailViewPad showNoteInfo];
           [[AppDelegate appDelegate] setExtendNotePIDForOpenStore:0];
           [[UIApplication sharedApplication] endIgnoringInteractionEvents];
         }];
@@ -868,21 +872,21 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     [self.extendNoteDetailViewPad cancelLoading];
     [self.extendNoteDetailViewPad stopSample];
-    __weak RBStoreExtendPageViewController *weakSelf = self;
+    // Both blocks capture self strongly, as in -openExtendNoteDetailViewWithPID:.
     [UIView animateWithDuration:kDetailOverlayCloseDuration
         animations:^{
           /** @ghidraAddress 0x15ef10 */
-          [weakSelf.coverViewPad setAlpha:0.0];
-          [weakSelf.extendNoteDetailViewPad setAlpha:0.0];
+          [self.coverViewPad setAlpha:0.0];
+          [self.extendNoteDetailViewPad setAlpha:0.0];
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0x15efc8 */
-          [weakSelf.coverViewPad setHidden:YES];
-          [weakSelf.extendNoteDetailViewPad setHidden:YES];
-          [weakSelf.extendNoteDetailViewPad removeNoteInfo];
+          [self.coverViewPad setHidden:YES];
+          [self.extendNoteDetailViewPad setHidden:YES];
+          [self.extendNoteDetailViewPad removeNoteInfo];
           [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-          if (weakSelf.restoreButton != nil) {
-              [weakSelf.restoreButton setEnabled:YES];
+          if (self.restoreButton != nil) {
+              [self.restoreButton setEnabled:YES];
           }
         }];
 }
@@ -903,6 +907,9 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.purchasingExtendNoteInfo = info;
         [downloader downloadDetail:YES];
         return;
+    }
+    if (info.extendURL == nil) {
+        return; // Yes, the binary re-reads and re-tests the URL it has just proved non-nil.
     }
 
     // Build the list of files that still need downloading.
