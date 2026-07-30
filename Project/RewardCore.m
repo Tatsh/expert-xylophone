@@ -218,9 +218,14 @@ static dispatch_queue_t gRewardCoreQueue;
                                               return;
                                           }
                                           if ([ApplilinkUdid isUdidSDKPasteBoard]) {
-                                              [RewardWebAPI postApplicationInstallWithPriority:
-                                                                kRewardInstallPriorityPasteBoard
-                                                                                      callback:nil];
+                                              // The shipped build passes an empty block here, not
+                                              // nil.
+                                              [RewardWebAPI
+                                                  postApplicationInstallWithPriority:
+                                                      kRewardInstallPriorityPasteBoard
+                                                  callback:^(NSError *pasteBoardError){
+                                                      /** @ghidraAddress 0x208094 */
+                                                  }];
                                           }
                                           [RewardCore sharedInstance].initializeFlg = 1;
                                           callback(nil);
@@ -240,7 +245,10 @@ static dispatch_queue_t gRewardCoreQueue;
         block([ApplilinkNetworkError localizedApplilinkErrorWithCode:kRewardErrorTrackingDisabled]);
         return;
     }
-    if (gRewardAuthExpiry != nil && ![ApplilinkConsts isNeedRewardLogin] &&
+    // The login-needed query runs before the expiry test rather than being short-circuited by it,
+    // so it is read into a local to preserve that ordering.
+    BOOL needRewardLogin = [ApplilinkConsts isNeedRewardLogin];
+    if (gRewardAuthExpiry != nil && !needRewardLogin &&
         gRewardAuthExpiry.timeIntervalSinceNow >= 0.0) {
         block(nil);
         return;
@@ -252,7 +260,8 @@ static dispatch_queue_t gRewardCoreQueue;
           block(nil);
           return;
       }
-      if (![ApplilinkConsts userId]) {
+      NSString *userId = [ApplilinkConsts userId];
+      if (!userId) {
           if (block) {
               block([ApplilinkNetworkError
                   localizedApplilinkErrorWithCode:kRewardErrorNotAuthenticated]);
@@ -262,7 +271,8 @@ static dispatch_queue_t gRewardCoreQueue;
       [ApplilinkCore appAuthSessionRegenerateWithBlock:^(NSError *regenError) {
         /** @ghidraAddress 0x208404 (StartRewardLoginBlockInvoke) */
         (void)regenError; // The regenerate error is not consumed here; login reports its own.
-        [RewardWebAPI startLoginWithUserId:[ApplilinkConsts userId]
+        // The user identifier is captured by the enclosing block rather than fetched again.
+        [RewardWebAPI startLoginWithUserId:userId
                               withPriority:kRewardLoginPriorityInteractive
                                   callback:^(NSError *loginError) {
                                     /** @ghidraAddress 0x208490
@@ -444,7 +454,7 @@ static dispatch_queue_t gRewardCoreQueue;
 - (void)getInstalledAppWithCallback:(void (^)(NSArray *appIdList, NSError *error))callback {
     [RewardWebAPI appliIdListWithType:kRewardListTypeAllAppIds
                              callback:^(NSDictionary *result, NSError *error) {
-                               /** @ghidraAddress 0x209724 (HandleAppIdListBlockInvoke) */
+                               /** @ghidraAddress 0x2097c0 (HandleAppIdListBlockInvoke) */
                                if (error) {
                                    callback(nil, error);
                                    return;
