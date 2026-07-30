@@ -5,6 +5,7 @@
 #import "RBUserSettingData.h"
 #import "RBViewController.h"
 #import "ScoreData.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
@@ -50,6 +51,34 @@ static const NSInteger kNoActiveField = -1;
 /// 79.0, so the slot has to be read exactly.
 /// @ghidraAddress 0x2eec40
 static const CGFloat kAccessoryToolbarHeight = 44.0;
+
+/// The legacy dialog's field container starts this far down, scaled by the display rate. The
+/// neighbouring pool slots are 0.83 and -110.0.
+/// @ghidraAddress 0x301820
+static const CGFloat kContainerTop = 85.0;
+
+/// The container's initial width on the pad. It is replaced by @c kContainerGrownWidth as soon as
+/// the first field is added, so it only shows when no difficulty qualifies.
+/// @ghidraAddress 0x301028
+static const CGFloat kContainerWidthPad = 150.0;
+
+/// The container's initial width on the phone.
+/// @ghidraAddress 0x2ef168
+static const CGFloat kContainerWidthPhone = 120.0;
+
+/// The width the container takes once it holds at least one field, scaled by the display rate.
+/// Its lower neighbour is 63.0, so this slot is easy to misread.
+/// @ghidraAddress 0x301808
+static const CGFloat kContainerGrownWidth = 290.0;
+
+/// Each score field's width, scaled by the display rate.
+/// @ghidraAddress 0x308cd8
+static const CGFloat kScoreFieldWidth = 260.0;
+
+/// Each score field's height, scaled by the display rate. It is also the amount the container
+/// grows per field. Its lower neighbour is 33.0.
+/// @ghidraAddress 0x2eeec0
+static const CGFloat kScoreFieldHeight = 38.0;
 
 /// The shared updater instance, allocated lazily by @c +updateCheckStart:.
 /// @ghidraAddress 0x3de498
@@ -138,7 +167,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
 #pragma mark Dialog
 
 - (void)createAlertSetScore {
-    NSString *title = [NSString stringWithFormat:@"スコアの確認"];
+    NSString *title = [NSString stringWithFormat:@"Erosion Mark スコア修正"];
     if (NSClassFromString(@"UIAlertController") == nil) {
         self.alertSetScoreView =
             [[RBErosionMarkUpdaterScoreView alloc] initWithFrame:self.viewController.view.bounds
@@ -146,26 +175,32 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
         self.alertSetScoreView.titleLabel.text = title;
 
         UIView *container = [[UIView alloc]
-            initWithFrame:CGRectMake(5.0, self.displayRate * 100.0, IsPad() ? 300.0 : 280.0, 0.0)];
+            initWithFrame:CGRectMake(5.0,
+                                     self.displayRate * kContainerTop,
+                                     IsPad() ? kContainerWidthPad : kContainerWidthPhone,
+                                     0.0)];
         NSInteger bases[] = {self.baseBasicScore, self.baseMediumScore, self.baseHardScore};
         UIPickerView *pickers[] = {
             self.basicPickerView, self.mediumPickerView, self.hardPickerView};
+        // Each label is prefixed with an ideographic space; the constants are at 0x36d160,
+        // 0x36d180, and 0x36d1a0.
+        NSString *labels[] = {@"　BASIC", @"　MEDIUM", @"　HARD"};
         for (int difficulty = kDifficultyBasic; difficulty <= kDifficultyHard; ++difficulty) {
             if (bases[difficulty] != g_lowerScoreBounds[difficulty].integerValue) {
                 continue;
             }
-            UITextField *field =
-                [[UITextField alloc] initWithFrame:CGRectMake(self.displayRate * 15.0,
-                                                              container.frame.size.height + 5.0,
-                                                              self.displayRate * 250.0,
-                                                              self.displayRate * 30.0)];
+            UITextField *field = [[UITextField alloc]
+                initWithFrame:CGRectMake(self.displayRate * 15.0,
+                                         container.height + 5.0,
+                                         self.displayRate * kScoreFieldWidth,
+                                         self.displayRate * kScoreFieldHeight)];
             field.borderStyle = UITextBorderStyleLine;
             field.layer.borderColor =
                 [UIColor colorWithWhite:g_dTranslucentAlpha alpha:1.0].CGColor;
             UILabel *label = [[UILabel alloc]
                 initWithFrame:CGRectMake(10.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
             label.font = [UIFont systemFontOfSize:14.0];
-            label.text = @"";
+            label.text = labels[difficulty];
             field.leftView = label;
             field.leftViewMode = UITextFieldViewModeAlways;
             field.text = [NSString stringWithFormat:@"%04zd", bases[difficulty]];
@@ -180,13 +215,16 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
             } else {
                 self.hardField = field;
             }
-            container.frame = CGRectMake(container.frame.origin.x,
-                                         container.frame.origin.y,
-                                         self.displayRate * 260.0,
-                                         container.frame.size.height + self.displayRate * 30.0);
+            // The origin and height come back through the UIView(RB) accessors rather than
+            // through -frame, which is what the binary sends at 0x145958 onwards.
+            container.frame = CGRectMake(container.x,
+                                         container.y,
+                                         self.displayRate * kContainerGrownWidth,
+                                         container.height +
+                                             self.displayRate * kScoreFieldHeight);
             [container addSubview:field];
         }
-        if (container.frame.size.height > 0.0) {
+        if (container.height > 0.0) {
             [self.alertSetScoreView.dialogView addSubview:container];
         }
         return;
@@ -195,7 +233,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     __weak RBErosionMarkUpdater *weakSelf = self;
     self.alertSetScoreController = [RBErosionMarkUpdaterAlertController
         alertControllerWithTitle:title
-                         message:@"確認したいスコアを入力してください"
+                         message:@"スコアを入力して下さい"
                   preferredStyle:UIAlertControllerStyleAlert];
     if (self.baseBasicScore == g_lowerScoreBounds[kDifficultyBasic].integerValue) {
         [self.alertSetScoreController
@@ -218,7 +256,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     if (self.baseMediumScore == g_lowerScoreBounds[kDifficultyMedium].integerValue) {
         [self.alertSetScoreController
             addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-              /** @ghidraAddress 0x146524 */
+              /** @ghidraAddress 0x1466e4 */
               UILabel *label = [[UILabel alloc]
                   initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
               label.font = [UIFont systemFontOfSize:14.0];
@@ -236,7 +274,7 @@ static NSArray<NSNumber *> *g_upperScoreBounds = nil;
     if (self.baseHardScore == g_lowerScoreBounds[kDifficultyHard].integerValue) {
         [self.alertSetScoreController
             addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-              /** @ghidraAddress 0x146658 */
+              /** @ghidraAddress 0x1469d0 */
               UILabel *label = [[UILabel alloc]
                   initWithFrame:CGRectMake(0.0, 0.0, g_dCustomizeLayoutMetric100, 20.0)];
               label.font = [UIFont systemFontOfSize:14.0];
