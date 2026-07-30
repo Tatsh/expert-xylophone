@@ -459,13 +459,10 @@ static BOOL g_bApplilinkWebAPISessionStatus;
                      failedBlock:(ApplilinkWebAPIFailedBlock)failedBlock {
     NSString *appliURL =
         [[NSUserDefaults standardUserDefaults] objectForKey:kApplilinkWebAPIRewardAppliURLKey];
-    // RBPDBG: the first argument is the request's URL, despite the parameter being named response;
-    // it used to be handed an NSURLRequest, which has no -isEqualToString: and aborted the process,
-    // so log its class alongside the comparison. appliURL is expected to be nil: the only two
-    // references to its defaults key in the binary are clearSession, which removes it, and this
-    // routine, which reads it, so nothing ever writes it and this comparison always fails.
-    neDebugLog("contentsServer url=%s(%s) appliURL=%s bytes=%lu",
-               response ? object_getClassName(response) : "nil",
+    // RBPDBG: the first argument is the request's URL, despite the parameter being named response.
+    // The class name was logged here while diagnosing an NSURLRequest being passed where a string
+    // was expected, which aborted the process; that is settled, so only the value is logged now.
+    neDebugLog("contentsServer url=%s appliURL=%s bytes=%lu",
                response.length ? response.UTF8String : "(nil)",
                appliURL.length ? appliURL.UTF8String : "(nil)",
                (unsigned long)data.length);
