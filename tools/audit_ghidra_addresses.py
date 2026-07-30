@@ -391,6 +391,30 @@ def audit_methods(root: Path, binary: Binary) -> tuple[int, list[MethodFinding],
             if not selector:
                 continue
             annotated = None
+            # The rules put the tag on the declaration, which for a definition means the comment
+            # block directly above the signature. Looking only below the opening brace missed
+            # every annotation written that way, and there are more of those than of the other
+            # kind, so a clean run was reporting on a minority of them. Only comment lines are
+            # walked, so this cannot reach up into the previous method's body.
+            for probe in range(index - 1, max(index - 5, -1), -1):
+                above = lines[probe].strip()
+                if not above.startswith(('/**', '*', '//')) and not above.endswith('*/'):
+                    break
+                found = _ADDRESS.search(lines[probe])
+                if found:
+                    annotated = int(found.group(1), 16)
+                    break
+            if annotated is not None:
+                checked += 1
+                expected = metadata.get((class_name, selector))
+                if expected is None:
+                    expected = categories.get(selector)
+                if expected is None:
+                    unknown += 1
+                elif expected != annotated:
+                    mismatches.append(
+                        MethodFinding(path, index + 1, class_name, selector, annotated, expected))
+                continue
             for probe in range(last, min(last + 4, len(lines))):
                 found = _ADDRESS.search(lines[probe])
                 if found:
