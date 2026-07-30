@@ -137,15 +137,15 @@ static const CGFloat kMoreCellFontSizePad = 18.0;
 static const CGFloat kBarButtonTitleFontSize = 14.0;
 
 // Section heights (phone layout).
-static const CGFloat kPromotionSectionHeight = 102.0;
-static const CGFloat kSampleSectionHeight = 32.0;
+static const CGFloat kPromotionSectionHeight = 102.0; // @ghidraAddress 0x1003012a8
+static const CGFloat kSampleSectionHeight = 32.0;     // @ghidraAddress 0x1002ee9b0
 
 // Pack-list row heights: index one (a real pack row) is taller than index zero (the trailing "more"
-// row).
-static const CGFloat kPackRowHeightPhone = 140.0;
-static const CGFloat kMoreRowHeightPhone = 60.0;
-static const CGFloat kPackRowHeightPad = 80.0;
-static const CGFloat kMoreRowHeightPad = 60.0;
+// row). The pad pairs are at 0x10030bed0 and the phone pairs at 0x10030bee0.
+static const CGFloat kPackRowHeightPhone = 80.0; // @ghidraAddress 0x10030bee8
+static const CGFloat kMoreRowHeightPhone = 60.0; // @ghidraAddress 0x10030bee0
+static const CGFloat kPackRowHeightPad = 140.0;  // @ghidraAddress 0x10030bed8
+static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x10030bed0
 
 // Alternating pack-row background tints (white component).
 static const CGFloat kPackRowTintEvenWhite = 0.8;
@@ -961,12 +961,12 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1e9628 */
 - (NSInteger)numPackRows {
-    NSInteger packCount = self.currentGenre.packCount;
-    if (!IsPad()) {
-        return packCount;
+    NSUInteger packCount = self.currentGenre.packCount;
+    if (!m_IsPad) {
+        return (NSInteger)packCount;
     }
     // The pad packs two packs per row, so it needs half as many rows (rounded up).
-    return (packCount + 1) >> 1;
+    return (NSInteger)((packCount + 1) >> 1);
 }
 
 /** @ghidraAddress 0x1e96b4 */
@@ -1134,7 +1134,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb708 */
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (!IsPad()) {
+    if (!m_IsPad) {
         return kStoreSectionCountPhone;
     }
     return kStoreSectionCountPad;
@@ -1142,8 +1142,10 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb728 */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (!IsPad()) {
-        if (section < kStoreSectionPackList) {
+    if (!m_IsPad) {
+        // The b.cc at 0x1eb7a8 is unsigned, so a negative section falls through to the pack-list
+        // arm rather than being treated as one of the two single-row sections.
+        if ((NSUInteger)section < kStoreSectionPackList) {
             return 1;
         }
     }
@@ -1152,7 +1154,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 /** @ghidraAddress 0x1eb838 */
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (!IsPad()) {
+    if (!m_IsPad) {
         if (indexPath.section == kStoreSectionPromotion) {
             return kPromotionSectionHeight;
         }

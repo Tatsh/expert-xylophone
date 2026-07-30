@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6200 reconstructed, 3597 verified
-(56.7%).
+Total: 6343 — 6200 reconstructed, 3603 verified
+(56.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2091,7 +2091,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuNewsTickerView` | `-` | `setBaseDuration:` | prop | ✅ | ✅ | `0xa1060` |
 | `RBMenuView` | `-` | `willRotate` |  | ✅ | ❌ | `0xa113c` |
 | `RBMenuView` | `-` | `didRotate` |  | ✅ | ❌ | `0xa13d8` |
-| `RBMenuView` | `-` | `setCurrentPageIndex:` | prop | ✅ | ❌ | `0xa1e08` |
+| `RBMenuView` | `-` | `setCurrentPageIndex:` | prop | ✅ | ✅ | `0xa1e08` |
 | `RBMenuView` | `-` | `setMaxPage:` | prop | ✅ | ✅ | `0xa1f24` |
 | `RBMenuView` | `-` | `setShowView:` | prop | ✅ | ✅ | `0xa200c` |
 | `RBMenuView` | `-` | `initWithFrame:viewController:` |  | ✅ | ❌ | `0xa20a8` |
@@ -2179,7 +2179,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `SelectPlaylistAddButton` |  | ✅ | ❌ | `0xb8754` |
 | `RBMenuView` | `-` | `SelectPlaylistDelButton` |  | ✅ | ❌ | `0xb882c` |
 | `RBMenuView` | `-` | `SelectPlaylistFinButton` |  | ✅ | ❌ | `0xb8aa4` |
-| `RBMenuView` | `-` | `setCurrentMenuMode:` |  | ✅ | ❌ | `0xb8b14` |
+| `RBMenuView` | `-` | `setCurrentMenuMode:` |  | ✅ | ✅ | `0xb8b14` |
 | `RBMenuView` | `-` | `showPageSlider:` |  | ✅ | ❌ | `0xb8b90` |
 | `RBMenuView` | `-` | `changePage:` |  | ✅ | ❌ | `0xb8e94` |
 | `RBMenuView` | `-` | `touchMascot` |  | ✅ | ❌ | `0xb93c4` |
@@ -5171,11 +5171,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1e925c` |
 | `RBStorePageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1e931c` |
 | `RBStorePageViewController` | `-` | `restoreDownloadCancel` |  | ✅ | ❌ | `0x1e942c` |
-| `RBStorePageViewController` | `-` | `numPackRows` |  | ✅ | ❌ | `0x1e9628` |
+| `RBStorePageViewController` | `-` | `numPackRows` |  | ✅ | ✅ | `0x1e9628` |
 | `RBStorePageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1e96b4` |
-| `RBStorePageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1eb708` |
-| `RBStorePageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1eb728` |
-| `RBStorePageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1eb838` |
+| `RBStorePageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1eb708` |
+| `RBStorePageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1eb728` |
+| `RBStorePageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1eb838` |
 | `RBStorePageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1eb954` |
 | `RBStorePageViewController` | `-` | `tableView:willSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1ebc90` |
 | `RBStorePageViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1ebcfc` |

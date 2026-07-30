@@ -43,6 +43,19 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    0xa1e08: 'RBMenuView -setCurrentPageIndex:: the guard sends currentPageIndex rather than '
+             'reading the ivar, and the label pair at 0xa1eac is (index + 1, maxPage)',
+    0xa1f24: 'RBMenuView -setMaxPage:: the csel takes 1 when the argument is zero',
+    0xb8b14: 'RBMenuView -setCurrentMenuMode:: b.cs at 0xb8b2c is unsigned, so a negative mode '
+             'takes the second arm',
+    0x1e9628: 'RBStorePageViewController -numPackRows: lsr, so the halving is unsigned',
+    0x1eb708: 'RBStorePageViewController -numberOfSectionsInTableView:: 3 on the phone, 1 on the '
+              'pad, from a csel on the m_IsPad ivar',
+    0x1eb728: 'RBStorePageViewController -tableView:numberOfRowsInSection:: b.cc at 0x1eb7a8 is '
+              'unsigned, and the continued flag is added zero-extended',
+    0x1eb838: 'RBStorePageViewController -tableView:heightForRowAtIndexPath:: the pad pair at '
+              '0x30bed0 is 60/140 and the phone pair at 0x30bee0 is 60/80, which is the swap this '
+              'fixes; the row test is a signed cset lt',
     0x200778: 'RBNumberLabel -initWithFrame:: the clear background and a zero number from movi',
     0xf2468: 'StoreDownloadManager -initWithTasks:delegate:: nil tasks return nil before super',
     0xf3678: 'StoreDownloadManager -dealloc: cancels an in-flight downloader and clears it',

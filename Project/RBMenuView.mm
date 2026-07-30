@@ -758,19 +758,20 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Page index and label
 
 - (void)setCurrentPageIndex:(NSInteger)currentPageIndex {
-    if (_currentPageIndex == currentPageIndex) {
+    if (self.currentPageIndex == currentPageIndex) {
         return;
     }
     _currentPageIndex = currentPageIndex;
+    // The label is one-based, so the stored zero-based index is shown incremented.
     self.pageLabel.text =
-        [NSString stringWithFormat:@"%zd/%zd", self.currentPageIndex, self.maxPage];
+        [NSString stringWithFormat:@"%zd / %zd", self.currentPageIndex + 1, self.maxPage];
 }
 
 - (void)setMaxPage:(NSInteger)maxPage {
     // The page count is clamped to at least one page.
     _maxPage = (maxPage != 0) ? maxPage : 1;
     self.pageLabel.text =
-        [NSString stringWithFormat:@"%zd/%zd", self.currentPageIndex, self.maxPage];
+        [NSString stringWithFormat:@"%zd / %zd", self.currentPageIndex + 1, self.maxPage];
 }
 
 - (void)setShowView:(UIView *)showView {
@@ -1371,7 +1372,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (int)getRandamInt:(int)getRandamInt max:(int)max {
     // Seed the C random generator exactly once, then map rand() into [getRandamInt, max].
     if (!g_bRandamIntSeeded) {
-        srand(static_cast<unsigned int>(time(NULL)));
+        srand(static_cast<unsigned int>(time(nullptr)));
         g_bRandamIntSeeded = YES;
     }
     int r = rand();
@@ -2838,7 +2839,10 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (BOOL)setCurrentMenuMode:(int)currentMenuMode {
-    if (currentMenuMode < kMenuModePlaylistFinished) {
+    // The bound test is unsigned in the binary, so a negative mode takes the second arm and is
+    // rejected rather than treated as an add or delete request.
+    if (static_cast<unsigned int>(currentMenuMode) <
+        static_cast<unsigned int>(kMenuModePlaylistFinished)) {
         // Entering add or delete requires the previous mode to be the resting mode.
         if (self.playListEditMode != kMenuModePlaylistFinished) {
             return NO;
