@@ -903,6 +903,21 @@ VERIFIED = {
     # literal zero (movi v1 at 0x15bf18).
     0x15a534: 'RBStoreExtendPageViewController -viewDidLoad: both idiom arms, every pool constant '
               'decoded',
+    0x15c660: 'RBStoreExtendPageViewController -showError:: hides 0x2710 and 0x2711, then sets '
+              'and reveals 0x2712',
+    0x15c810: 'RBStoreExtendPageViewController -pushBarBtnRestore:: tag 0x1f at 0x15c84c',
+    0x15c880: 'RBStoreExtendPageViewController -showTerms: mask 0x3f from 0x310450, then '
+              '-showAnimation',
+    # The four dictionary keys were read out of the CFString structs the stack slots point at,
+    # and the block invokes are 0x15ce0c (bare ret), 0x15ce10 and 0x15d0e0.
+    0x15c9a4: 'RBStoreExtendPageViewController -sendUserAge: target/app_ver/user_id/type, count 4 '
+              'at 0x15cae4, alert tag 0x22 in both failure blocks',
+    # Two defects fixed: the right-hand banner and the 0x186a0 label both take the width from
+    # UIView(RB) -width (frame width, sel at 0x3bf998), not from bounds.
+    0x15d260: 'RBStoreExtendPageViewController -extendNoteListDownloadSuccess:: gap 300/100 at '
+              '0x15d5b0, margin +-50.0 from 0x2ec6e0/0x2ec738, label drop 25.0 at 0x15d958',
+    0x15db50: 'RBStoreExtendPageViewController -forceOpenExtendNoteDetailView: three arms, the '
+              'idiom byte at 0x15dc5c picks the pad overlay teardown',
 }
 
 

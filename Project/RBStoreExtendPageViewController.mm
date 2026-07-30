@@ -39,6 +39,7 @@
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
+#import "UIView+RB.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 
@@ -127,7 +128,7 @@ static const CGFloat kPadHeaderBaseY = 171.0;           // Baseline below which 
 static const CGFloat kPadPackLabelOriginX = 27.0;       // Pack-label frame origin.x.
 static const CGFloat kPadPackLabelBoundsWidth = 720.0;  // Pack-label bounds width after sizeToFit.
 static const CGFloat kSliderRowHeightWide = 40.0;       // Reused engine row-height constant.
-static const CGFloat kShowMoreButtonBottomInset = 12.0; // Show-more button offset from bottom.
+static const CGFloat kShowMoreButtonBottomInset = 15.0; // Show-more button offset from bottom.
 static const CGFloat kShowMoreIndicatorSize = 24.0;     // Activity-indicator square side.
 static const CGFloat kPadTableTopSpacing = 16.0;        // Padding above and below the pack table.
 static const CGFloat kPadTableWidth = 728.0;            // Pack table frame width.
@@ -345,13 +346,14 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         self.showMoreButton = showMore;
 
         UIActivityIndicatorView *moreIndicator = [[UIActivityIndicatorView alloc]
-            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [moreIndicator
             setBounds:CGRectMake(0.0, 0.0, kShowMoreIndicatorSize, kShowMoreIndicatorSize)];
-        // Sit the spinner to the right of the show-more button's text.
-        [moreIndicator setCenter:CGPointMake(self.showMoreButton.bounds.size.width +
-                                                 kShowMoreIndicatorSize * 0.5,
-                                             moreIndicator.bounds.size.height * 0.5)];
+        // Sit the spinner one full spinner width to the right of the button's centre, vertically
+        // centred on the button.
+        [moreIndicator setCenter:CGPointMake(self.showMoreButton.bounds.size.width * 0.5 +
+                                                 moreIndicator.bounds.size.width,
+                                             self.showMoreButton.bounds.size.height * 0.5)];
         [moreIndicator setAutoresizingMask:kMaskFlexibleTopBottomWidth];
         [moreIndicator startAnimating];
         [moreIndicator setHidden:YES];
@@ -361,7 +363,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         if ([self.view viewWithTag:kPackTableViewTag] == nil) {
             // Reserve room at the bottom for the show-more button plus its padding.
             CGFloat spinnerAndPadding =
-                moreIndicator.bounds.size.height + kPadTableTopSpacing + kPadTableTopSpacing;
+                self.showMoreButton.bounds.size.height + kPadTableTopSpacing + kPadTableTopSpacing;
             CGFloat tableHeight = (viewBounds.size.height + kPadTableHeightInset) -
                                   static_cast<CGFloat>(static_cast<float>(spinnerAndPadding));
             CGRect packTableFrame = CGRectMake(0.0, 0.0, kPadTableWidth, tableHeight);
@@ -444,10 +446,11 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         // campaign-specific artwork actually exists.
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703] &&
             [packTableView viewWithTag:kCampaignImageViewTag] == nil) {
+            // The campaign name is the leading path component, not the trailing one.
             NSString *campaignImageName =
                 [[NSString alloc] initWithFormat:@"%@/%@",
-                                                 @"09_store/store_fun",
-                                                 [[RBCampaignData sharedInstance] campaignName]];
+                                                 [[RBCampaignData sharedInstance] campaignName],
+                                                 @"09_store/store_fun"];
             if ([UIImage imageWithName:campaignImageName] != nil) {
                 UIImageView *campaignImage =
                     [[UIImageView alloc] initWithImage:[UIImage imageWithName:campaignImageName]];
@@ -494,8 +497,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc]
         initWithFrame:CGRectMake(0.0, 0.0, kShowMoreIndicatorSize, kShowMoreIndicatorSize)];
     [spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
-    [spinner setCenter:CGPointMake(spinnerHost.bounds.size.width * 0.5,
-                                   spinnerHost.bounds.size.height * 0.5)];
+    // The centre's y is a literal zero in the binary, not half the host's height.
+    [spinner setCenter:CGPointMake(spinnerHost.bounds.size.width * 0.5, 0.0)];
     [spinner setAutoresizingMask:kMaskFlexibleTopWidthHeight];
     [spinner startAnimating];
     [spinnerHost addSubview:spinner];
@@ -654,6 +657,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [packTable setAllowsSelection:YES];
     [packTable reloadData];
 
+    (void)self.restoreButton; // Yes, the binary reads and discards the button here.
+
     // Reinstate the restore button as the sole right-hand navigation-bar item. The binary uses a
     // nil-terminated array, so a nil button yields an empty array rather than throwing.
     self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.restoreButton, nil];
@@ -691,7 +696,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         } else {
             originY2 = static_cast<CGFloat>(contentGap2) + packTable.bounds.size.height;
         }
-        CGFloat originX2 = packTable.bounds.size.width - frame2.size.width - kShowMoreSideMargin;
+        CGFloat originX2 = packTable.width - frame2.size.width - kShowMoreSideMargin;
         [showMoreBg2
             setFrame:CGRectMake(originX2, originY2, frame2.size.width, frame2.size.height)];
         [showMoreBg2 setHidden:NO];
@@ -714,7 +719,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         UIView *showMoreBg0 = [packTable viewWithTag:kBannerLabelTag];
         [showMoreBg0 setHidden:NO];
         [showMoreBg0
-            setCenter:CGPointMake(packTable.bounds.size.width * 0.5,
+            setCenter:CGPointMake(packTable.width * 0.5,
                                   packTable.contentSize.height + kShowMoreButtonCenterYOffset)];
     } else {
         // No more packs: hide the "show more" button and its first backing view.

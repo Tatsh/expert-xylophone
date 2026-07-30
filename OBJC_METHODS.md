@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4005 verified
-(63.1%).
+Total: 6343 — 6203 reconstructed, 4011 verified
+(63.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3667,12 +3667,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x15a0b8` |
 | `RBStoreExtendPageViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x15a3a4` |
 | `RBStoreExtendPageViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x15a534` |
-| `RBStoreExtendPageViewController` | `-` | `showError:` |  | ✅ | ❌ | `0x15c660` |
-| `RBStoreExtendPageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ❌ | `0x15c810` |
-| `RBStoreExtendPageViewController` | `-` | `showTerms` |  | ✅ | ❌ | `0x15c880` |
-| `RBStoreExtendPageViewController` | `-` | `sendUserAge` |  | ✅ | ❌ | `0x15c9a4` |
-| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadSuccess:` |  | ✅ | ❌ | `0x15d260` |
-| `RBStoreExtendPageViewController` | `-` | `forceOpenExtendNoteDetailView` |  | ✅ | ❌ | `0x15db50` |
+| `RBStoreExtendPageViewController` | `-` | `showError:` |  | ✅ | ✅ | `0x15c660` |
+| `RBStoreExtendPageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ✅ | `0x15c810` |
+| `RBStoreExtendPageViewController` | `-` | `showTerms` |  | ✅ | ✅ | `0x15c880` |
+| `RBStoreExtendPageViewController` | `-` | `sendUserAge` |  | ✅ | ✅ | `0x15c9a4` |
+| `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadSuccess:` |  | ✅ | ✅ | `0x15d260` |
+| `RBStoreExtendPageViewController` | `-` | `forceOpenExtendNoteDetailView` |  | ✅ | ✅ | `0x15db50` |
 | `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadError:errorMessage:` |  | ✅ | ❌ | `0x15deec` |
 | `RBStoreExtendPageViewController` | `-` | `extendNoteListDownloadNothing:` |  | ✅ | ❌ | `0x15e208` |
 | `RBStoreExtendPageViewController` | `-` | `cellViewSelected:` |  | ✅ | ❌ | `0x15e340` |
