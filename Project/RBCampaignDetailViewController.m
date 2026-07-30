@@ -57,18 +57,20 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleSize =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 // The placeholder jacket shown when the detail page has no bound item.
-static NSString *const kPlaceholderJacketName = @"09_store_store_jacket_80";
+static NSString *const kPlaceholderJacketName = @"09_store/store_jacket_80";
 // The header panel background, its stretchable end-cap size, the play glyph, and the pack
 // background artwork names.
-static NSString *const kItemPanelBackgroundName = @"09_store_store_pack_bg_2";
-static NSString *const kPlayGlyphName = @"09_store_store_play";
+static NSString *const kItemPanelBackgroundName = @"09_store/store_pack_bg_2";
+static NSString *const kPlayGlyphName = @"09_store/store_play";
 static const NSInteger kItemPanelCapInset = 4;
 
 // The level and identifier label format strings.
-static NSString *const kLevelsFormat = @"LEVEL %d %d %d";
+static NSString *const kLevelsFormat = @"LEVEL:  %d / %d / %d";
 static NSString *const kIDFormat = @"%d";
+// The navigation title set before the bound item's campaign name replaces it.
+static NSString *const kDefaultNavigationTitle = @"Gift";
 // The item-name placeholder shown for a locked terms item, and the link-button title.
-static NSString *const kLockedNamePlaceholder = @"？？？";
+static NSString *const kLockedNamePlaceholder = @"？？？？？？";
 static NSString *const kLinkButtonTitle = @"詳しくはこちら";
 
 // The sample-playback BGM fade-in time, and the resumed (no-fade) restart time.
@@ -79,54 +81,66 @@ static const float kSampleBGMNoFade = 0.0f;
 // step arithmetic is single precision (the scvtf/fsub pair at 0xaa84 works in s registers).
 static const float kItemNameMaxFontSize = 18.0f;
 static const int kItemNameFontStepCount = 9;
+// The header panel that holds the artwork, the labels, and the two action buttons.
+static const CGFloat kItemPanelHeight = 140.0; // @ghidraAddress 0x2ec6c0
 // The artwork thumbnail is a fixed 80-point square inset 8 points into the header panel.
 static const CGFloat kArtworkOrigin = 8.0;
-static const CGFloat kArtworkSize = 80.0;
+static const CGFloat kArtworkSize = 80.0; // @ghidraAddress 0x2ec6c8
 // The artwork drop shadow and border metrics.
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowRadius = 2.0;
-static const float kArtworkShadowOpacity = 0.4f;
-// The header text block left inset (past the artwork) and the label column width.
-static const CGFloat kTextColumnLeft = 96.0;
+static const float kArtworkShadowOpacity = 0.6f; // @ghidraAddress 0x2ec6b8
+// The header text block left inset (past the artwork), the width inset that clears the artwork
+// and the right margin, and the wider inset the levels row uses to clear the action buttons too.
+static const CGFloat kTextColumnLeft = 96.0;      // @ghidraAddress 0x2ec6d8
+static const CGFloat kTextColumnInset = -104.0;   // @ghidraAddress 0x2ec6d0
+static const CGFloat kLevelsColumnInset = -230.0; // @ghidraAddress 0x2ec6e8
 static const CGFloat kItemNameTop = 8.0;
 // The item-name label's fixed frame height, which is also the height the fitting loop accepts.
+// The binary reuses this pool slot for the artist row's top and the copyright block's height.
 static const CGFloat kItemNameMaxHeight = 50.0; // @ghidraAddress 0x2ec6e0
+static const CGFloat kLevelsLabelTop = 70.0;    // @ghidraAddress 0x2ec6f0
 static const CGFloat kSecondaryLabelRowHeight = 20.0;
-// The two insets that together make the header text column. The binary adds both to the view
-// width, once for the fitting measurement and once for the label frame, and never spells the
-// combined 104 anywhere, so there is no separate constant for it.
+// The two insets that together make the header text column in the fitting pass. The binary adds
+// both to the view width, once for the fitting measurement and once for the label frame.
 static const CGFloat kTextBlockBottomInset = -80.0; // @ghidraAddress 0x2ec740
 static const CGFloat kNameLabelBottomInset = -24.0;
-// The action button metrics: 100 points wide, 25 points tall, 4-point corners.
-static const CGFloat kActionButtonWidth = 100.0;
+// The action button metrics: 104 points wide, 25 points tall, 4-point corners. Both buttons are
+// right-aligned, the download button 8 points in from the edge and the link button 16.
+static const CGFloat kActionButtonWidth = 104.0; // @ghidraAddress 0x2ec700
 static const CGFloat kActionButtonHeight = 25.0;
 static const CGFloat kActionButtonCorner = 4.0;
 static const CGFloat kActionButtonFontSize = 10.0;
-static const CGFloat kLinkButtonLeft = -208.0;
-static const CGFloat kDownloadButtonLeft = 104.0;
+static const CGFloat kDownloadButtonRightInset = -8.0;
+static const CGFloat kLinkButtonRightInset = -16.0;
+static const CGFloat kLinkButtonInset = -208.0; // @ghidraAddress 0x2ec710
+// The link button's own fill colour: the shared translucent value on red and blue, and its own
+// green component.
+static const CGFloat kLinkButtonGreen = 0.3; // @ghidraAddress 0x2ec718
 // The item-name, artist, and levels label font sizes.
 static const CGFloat kItemNameFontSize = 18.0;
 static const CGFloat kSecondaryLabelFontSize = 12.0;
-// The sample overlay dimming alpha and the artwork corner radius reused as a border shadow.
-static const CGFloat kSampleOverlayAlpha = 0.4;
+// The sample overlay dimming alpha and white value, and the hidden and shown alphas.
+static const CGFloat kSampleOverlayAlpha = 0.4; // @ghidraAddress 0x2ec720
 static const CGFloat kSampleOverlayWhite = 0.0;
+static const CGFloat kTransparentAlpha = 0.0;
 static const CGFloat kOpaqueAlpha = 1.0;
-// The detail panel background white value and its shadow border white value.
-static const CGFloat kDetailPanelWhite = 143.0f / 255.0f;
+// The scale that places the sample overlay's subviews on its centre.
+static const CGFloat kCenterScale = 0.5;
+// The detail panel's shadow border white value, and the divider's colour and height.
+static const CGFloat kDetailBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
 static const CGFloat kDividerWhite = 0.5;
+static const CGFloat kDividerHeight = 1.0;
 // The banner corner radius and the detail-panel vertical growth increments.
 static const CGFloat kBannerCornerRadius = 8.0;
 static const CGFloat kDetailBlockGrowth = -140.0; // @ghidraAddress 0x2ec728
 static const CGFloat kDescriptionInset = 10.0;
 static const CGFloat kDescriptionWidthInset = -20.0;
-static const CGFloat kCopyrightGrowth = -50.0;
+static const CGFloat kCopyrightGrowth = -50.0; // @ghidraAddress 0x2ec738
 static const CGFloat kElementSpacing = 5.0;
 static const CGFloat kDividerLift = -3.0;
 
-// A shared layout metric of 80 points reused across the store detail layout.
-// @ghidraAddress 0x2ec6c8
-static const CGFloat kLayoutMetricEighty = 80.0;
 // The disabled action-button grey white value shared with the store web view. @ghidraAddress
 // 0x2ec708
 static const CGFloat kDisabledButtonWhite = 0.6f;
@@ -157,6 +171,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     if (!self) {
         return nil;
     }
+    self.navigationItem.title = kDefaultNavigationTitle;
     self.itemInfo = itemInfo;
     if (self.itemInfo.campaignName != nil) {
         self.navigationItem.title = self.itemInfo.campaignName;
@@ -183,7 +198,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 /** @ghidraAddress 0x7f4c */
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.closingFlag = NO;
+    _closingFlag = NO;
 
     if ([self.artworkView loadedImage]) {
         [self updateLayout];
@@ -201,14 +216,13 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     [self.view addSubview:self.mainView];
 
     UIImage *panelImage = [UIImage imageWithName:kItemPanelBackgroundName];
-    CGFloat itemPanelHeight = kActionButtonWidth + kActionButtonWidth;
     UIView *item = [[UIView alloc]
-        initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, itemPanelHeight)];
+        initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, kItemPanelHeight)];
     self.itemView = item;
     self.itemView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
     UIImageView *panel = [[UIImageView alloc]
-        initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, itemPanelHeight)];
+        initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, kItemPanelHeight)];
     panel.image = [panelImage stretchableImageWithLeftCapWidth:kItemPanelCapInset
                                                   topCapHeight:kItemPanelCapInset];
     panel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -227,42 +241,47 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.artworkView.layer.shouldRasterize = YES;
     [self.itemView addSubview:self.artworkView];
 
-    UILabel *name = [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
-                                                              kItemNameTop,
-                                                              self.view.bounds.size.width,
-                                                              kItemNameMaxHeight)];
+    UILabel *name = [[UILabel alloc]
+        initWithFrame:CGRectMake(kTextColumnLeft,
+                                 kItemNameTop,
+                                 self.view.bounds.size.width + kTextColumnInset,
+                                 kItemNameMaxHeight)];
     self.labelItemName = name;
     self.labelItemName.numberOfLines = 2;
     self.labelItemName.lineBreakMode = NSLineBreakByWordWrapping;
     self.labelItemName.font = [UIFont boldSystemFontOfSize:kItemNameFontSize];
     self.labelItemName.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.itemView addSubview:self.labelItemName];
 
-    UILabel *artist = [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
-                                                                kLayoutMetricEighty,
-                                                                self.view.bounds.size.width,
-                                                                kSecondaryLabelRowHeight)];
+    // The artist row's top comes from the pool slot the item-name height also uses.
+    UILabel *artist = [[UILabel alloc]
+        initWithFrame:CGRectMake(kTextColumnLeft,
+                                 kItemNameMaxHeight,
+                                 self.view.bounds.size.width + kTextColumnInset,
+                                 kSecondaryLabelRowHeight)];
     self.labelArtistName = artist;
     self.labelArtistName.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
     self.labelArtistName.adjustsFontSizeToFitWidth = YES;
     self.labelArtistName.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.itemView addSubview:self.labelArtistName];
 
-    UILabel *levels = [[UILabel alloc] initWithFrame:CGRectMake(kTextColumnLeft,
-                                                                kActionButtonWidth,
-                                                                self.view.bounds.size.width,
-                                                                kSecondaryLabelRowHeight)];
+    UILabel *levels = [[UILabel alloc]
+        initWithFrame:CGRectMake(kTextColumnLeft,
+                                 kLevelsLabelTop,
+                                 self.view.bounds.size.width + kLevelsColumnInset,
+                                 kSecondaryLabelRowHeight)];
     self.labelLevels = levels;
     self.labelLevels.font = [UIFont boldSystemFontOfSize:kSecondaryLabelFontSize];
     self.labelLevels.adjustsFontSizeToFitWidth = YES;
     self.labelLevels.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.itemView addSubview:self.labelLevels];
 
     StoreButtonView *download = [[StoreButtonView alloc]
-        initWithFrame:CGRectMake(self.view.bounds.size.width - kDownloadButtonLeft,
+        initWithFrame:CGRectMake(self.view.bounds.size.width + kDownloadButtonRightInset +
+                                     kTextColumnInset,
                                  g_dCustomizeLayoutMetric100,
                                  kActionButtonWidth,
                                  kActionButtonHeight)];
@@ -283,16 +302,17 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     [self.itemView addSubview:self.downloadBtn];
 
     StoreButtonView *link = [[StoreButtonView alloc]
-        initWithFrame:CGRectMake(self.view.bounds.size.width - kLinkButtonLeft,
+        initWithFrame:CGRectMake(self.view.bounds.size.width + kLinkButtonRightInset +
+                                     kLinkButtonInset,
                                  g_dCustomizeLayoutMetric100,
                                  kActionButtonWidth,
                                  kActionButtonHeight)];
     self.linkBtn = link;
     self.linkBtn.disabledColor = [UIColor colorWithWhite:kDisabledButtonWhite alpha:kOpaqueAlpha];
-    self.linkBtn.backgroundColor = [UIColor colorWithRed:g_dTranslucentAlpha
-                                                   green:g_dTranslucentAlpha
-                                                    blue:g_dTranslucentAlpha
-                                                   alpha:kOpaqueAlpha];
+    [self.linkBtn setButtonColor:[UIColor colorWithRed:g_dTranslucentAlpha
+                                                 green:kLinkButtonGreen
+                                                  blue:g_dTranslucentAlpha
+                                                 alpha:kOpaqueAlpha]];
     [self.linkBtn setCornerRadius:kActionButtonCorner];
     self.linkBtn.exclusiveTouch = YES;
     self.linkBtn.titleLabel.font = [UIFont boldSystemFontOfSize:kActionButtonFontSize];
@@ -304,30 +324,32 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     [self.itemView addSubview:self.linkBtn];
     [self.mainView addSubview:self.itemView];
 
-    UIView *sample = [[UIView alloc] initWithFrame:self.artworkView.frame];
+    UIView *sample = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                              0,
+                                                              self.artworkView.frame.size.width,
+                                                              self.artworkView.frame.size.height)];
     self.sampleView = sample;
     self.sampleView.opaque = YES;
-    self.sampleView.alpha = kSampleOverlayWhite;
+    self.sampleView.alpha = kTransparentAlpha;
     self.sampleView.backgroundColor = [UIColor colorWithWhite:kSampleOverlayWhite
                                                         alpha:kSampleOverlayAlpha];
 
+    // The overlay's centre is halved once in single precision (the fcvt pair at 0x95e8) and then
+    // reused for the indicator's frame and for both subviews' centres.
+    float sampleCenterX = self.sampleView.frame.size.width * kCenterScale;
+    float sampleCenterY = self.sampleView.frame.size.height * kCenterScale;
     UIActivityIndicatorView *sampleIndicator = [[UIActivityIndicatorView alloc]
-        initWithFrame:CGRectMake(0,
-                                 0,
-                                 self.sampleView.bounds.size.width,
-                                 self.sampleView.bounds.size.height)];
+        initWithFrame:CGRectMake(0, 0, sampleCenterX, sampleCenterY)];
     self.indicatorSample = sampleIndicator;
-    self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+    self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
     self.indicatorSample.hidesWhenStopped = YES;
-    self.indicatorSample.center = CGPointMake(self.sampleView.bounds.size.width * (CGFloat)0.5f,
-                                              self.sampleView.bounds.size.height * (CGFloat)0.5f);
+    self.indicatorSample.center = CGPointMake(sampleCenterX, sampleCenterY);
     [self.sampleView addSubview:self.indicatorSample];
 
     UIImageView *playing =
         [[UIImageView alloc] initWithImage:[UIImage imageWithName:kPlayGlyphName]];
     self.playingView = playing;
-    self.playingView.center = CGPointMake(self.sampleView.bounds.size.width * (CGFloat)0.5f,
-                                          self.sampleView.bounds.size.height * (CGFloat)0.5f);
+    self.playingView.center = CGPointMake(sampleCenterX, sampleCenterY);
     self.playingView.hidden = YES;
     [self.sampleView addSubview:self.playingView];
     [self.artworkView addSubview:self.sampleView];
@@ -336,19 +358,19 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapArtworkView)];
     [self.artworkView addGestureRecognizer:tap];
 
-    UIView *detail = [[UIView alloc]
-        initWithFrame:CGRectMake(0,
-                                 kActionButtonWidth + kActionButtonWidth,
-                                 self.view.bounds.size.width,
-                                 self.view.bounds.size.height + kDetailBlockGrowth)];
+    CGFloat detailHeight = self.view.bounds.size.height + kDetailBlockGrowth;
+    UIView *detail = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                              kItemPanelHeight,
+                                                              self.view.bounds.size.width,
+                                                              detailHeight)];
     self.detailView = detail;
     self.detailView.opaque = YES;
-    self.detailView.backgroundColor = [UIColor colorWithRed:kDetailPanelWhite
-                                                      green:kDetailPanelWhite
-                                                       blue:kDetailPanelWhite
+    self.detailView.backgroundColor = [UIColor colorWithRed:g_dTranslucentAlpha
+                                                      green:g_dTranslucentAlpha
+                                                       blue:g_dTranslucentAlpha
                                                       alpha:kOpaqueAlpha];
     self.detailView.layer.borderColor =
-        [UIColor colorWithWhite:kDetailPanelWhite alpha:kOpaqueAlpha].CGColor;
+        [UIColor colorWithWhite:kDetailBorderWhite alpha:kOpaqueAlpha].CGColor;
     self.detailView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
     StoreImageView *banner = [[StoreImageView alloc] initWithFrame:CGRectZero];
@@ -358,23 +380,27 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.bannerView.clipsToBounds = YES;
     [self.detailView addSubview:self.bannerView];
 
+    // The banner is still zero-sized here, so the description sits one inset below its height.
+    CGFloat descriptionWidth = self.view.bounds.size.width + kDescriptionWidthInset;
+    CGFloat descriptionHeight = detailHeight + kCopyrightGrowth;
     UITextView *description = [[UITextView alloc]
         initWithFrame:CGRectMake(kDescriptionInset,
-                                 CGRectGetMaxY(self.bannerView.frame),
-                                 self.view.bounds.size.width + kDescriptionWidthInset,
-                                 self.view.bounds.size.height + kCopyrightGrowth)];
+                                 self.bannerView.frame.size.height + kDescriptionInset,
+                                 descriptionWidth,
+                                 descriptionHeight)];
     self.descriptionTextView = description;
     self.bannerView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     self.descriptionTextView.backgroundColor = UIColor.clearColor;
     self.descriptionTextView.editable = NO;
     self.descriptionTextView.scrollEnabled = NO;
     self.descriptionTextView.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
     self.descriptionTextView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.detailView addSubview:self.descriptionTextView];
 
-    UIView *line = [[UIView alloc] initWithFrame:self.view.bounds];
+    UIView *line = [[UIView alloc]
+        initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, kDividerHeight)];
     self.lineView = line;
     self.lineView.backgroundColor = [UIColor colorWithRed:kDividerWhite
                                                     green:kDividerWhite
@@ -383,17 +409,18 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.lineView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.detailView addSubview:self.lineView];
 
-    UITextView *copyright = [[UITextView alloc]
-        initWithFrame:CGRectMake(kDescriptionInset,
-                                 CGRectGetMaxY(self.descriptionTextView.frame),
-                                 self.view.bounds.size.width + kDescriptionWidthInset,
-                                 kSecondaryLabelRowHeight)];
+    // The copyright block takes the strip the description gave up, so the two together fill the
+    // detail panel exactly. Its height comes from the same pool slot as the item-name height.
+    UITextView *copyright = [[UITextView alloc] initWithFrame:CGRectMake(kDescriptionInset,
+                                                                         descriptionHeight,
+                                                                         descriptionWidth,
+                                                                         kItemNameMaxHeight)];
     self.copyrightView = copyright;
     self.copyrightView.backgroundColor = UIColor.clearColor;
     self.copyrightView.editable = NO;
     self.copyrightView.font = [UIFont systemFontOfSize:kSecondaryLabelFontSize];
     self.copyrightView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
     [self.detailView addSubview:self.copyrightView];
     [self.mainView addSubview:self.detailView];
 
@@ -410,9 +437,9 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 
 /** @ghidraAddress 0xa780 */
 - (void)viewWillDisappear:(BOOL)animated {
-    self.closingFlag = YES;
-    if (self.packinfoDownloadAlertView != nil) {
-        [self.packinfoDownloadAlertView dismissWithClickedButtonIndex:0 animated:NO];
+    _closingFlag = YES;
+    if (_packinfoDownloadAlertView != nil) {
+        [_packinfoDownloadAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }
     [super viewWillDisappear:animated];
 
@@ -471,7 +498,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.itemInfo = info;
     bUnlock = info.bUnlock;
     hideType = info.hideType;
-    self.campaignID = info.campaignID;
+    _campaignID = info.campaignID;
     buttonType = info.buttonType;
 
     [self.artworkView setImageURL:info.artworkURL];
@@ -489,7 +516,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     self.downloadBtn.tag = self.workingIndex;
 
     if (info.linkURL == nil) {
-        self.linkBtn.alpha = kSampleOverlayWhite;
+        self.linkBtn.alpha = kTransparentAlpha;
         self.linkBtn.hidden = YES;
     } else {
         self.linkBtn.alpha = kOpaqueAlpha;
@@ -656,7 +683,7 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
 
 /** @ghidraAddress 0x6fdc */
 - (void)sampleViewStop {
-    self.sampleView.alpha = kSampleOverlayWhite;
+    self.sampleView.alpha = kTransparentAlpha;
     [self.indicatorSample stopAnimating];
     self.playingView.hidden = YES;
     sampleStatus = kSampleStatusIdle;
