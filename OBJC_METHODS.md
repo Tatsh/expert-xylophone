@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3833 verified
-(60.4%).
+Total: 6343 — 6201 reconstructed, 3844 verified
+(60.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5125,17 +5125,17 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `setPackinfoDownloadAlertView:` | prop | ✅ | ✅ | `0x1dce2c` |
 | `RBStoreDetailViewController` | `-` | `closingFlag` | prop | ✅ | ✅ | `0x1dce64` |
 | `RBStoreDetailViewController` | `-` | `setClosingFlag:` | prop | ✅ | ✅ | `0x1dce74` |
-| `RBStorePageViewController` | `-` | `initWithParent:` |  | ✅ | ❌ | `0x1dcf88` |
-| `RBStorePageViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1dd25c` |
+| `RBStorePageViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1dcf88` |
+| `RBStorePageViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1dd25c` |
 | `RBStorePageViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x1dd5b0` |
-| `RBStorePageViewController` | `-` | `showError:` |  | ✅ | ❌ | `0x1e0a90` |
+| `RBStorePageViewController` | `-` | `showError:` |  | ✅ | ✅ | `0x1e0a90` |
 | `RBStorePageViewController` | `-` | `sendUserAge` |  | ✅ | ❌ | `0x1e0c40` |
-| `RBStorePageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ❌ | `0x1e14fc` |
+| `RBStorePageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ✅ | `0x1e14fc` |
 | `RBStorePageViewController` | `-` | `packListDownloadSuccess:` |  | ✅ | ❌ | `0x1e156c` |
 | `RBStorePageViewController` | `-` | `forceOpenPackDetailView` |  | ✅ | ❌ | `0x1e26d0` |
 | `RBStorePageViewController` | `-` | `packListDownloadError:errorMessage:` |  | ✅ | ❌ | `0x1e2a6c` |
-| `RBStorePageViewController` | `-` | `packListDownloadNothing:` |  | ✅ | ❌ | `0x1e2f24` |
-| `RBStorePageViewController` | `-` | `packViewSelected:` |  | ✅ | ❌ | `0x1e3018` |
+| `RBStorePageViewController` | `-` | `packListDownloadNothing:` |  | ✅ | ✅ | `0x1e2f24` |
+| `RBStorePageViewController` | `-` | `packViewSelected:` |  | ✅ | ✅ | `0x1e3018` |
 | `RBStorePageViewController` | `-` | `openPackDetailViewWithPackId:` |  | ✅ | ❌ | `0x1e31ac` |
 | `RBStorePageViewController` | `-` | `openDetailAnimStop:finished:context:` |  | ✅ | ❌ | `0x1e3848` |
 | `RBStorePageViewController` | `-` | `storePromotionViewTaped:PackID:` |  | ✅ | ❌ | `0x1e3a48` |
@@ -5145,7 +5145,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `startDownloadPackMusics:` |  | ✅ | ❌ | `0x1e4858` |
 | `RBStorePageViewController` | `-` | `checkAttainLimitPurchase:` |  | ✅ | ❌ | `0x1e50ac` |
 | `RBStorePageViewController` | `-` | `detailViewStartPurchase:` |  | ✅ | ❌ | `0x1e52f8` |
-| `RBStorePageViewController` | `-` | `detailViewClose` |  | ✅ | ❌ | `0x1e55cc` |
+| `RBStorePageViewController` | `-` | `detailViewClose` |  | ✅ | ✅ | `0x1e55cc` |
 | `RBStorePageViewController` | `-` | `storeDialogCancel:` |  | ✅ | ❌ | `0x1e5658` |
 | `RBStorePageViewController` | `-` | `connectionDidFinishLoading:` |  | ✅ | ✅ | `0x1e5888` |
 | `RBStorePageViewController` | `-` | `connection:didFailWithError:` |  | ✅ | ✅ | `0x1e588c` |
@@ -5161,9 +5161,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1e8110` |
 | `RBStorePageViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1e8604` |
 | `RBStorePageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x1e8608` |
-| `RBStorePageViewController` | `-` | `restoreSucceeded` |  | ✅ | ❌ | `0x1e8748` |
+| `RBStorePageViewController` | `-` | `restoreSucceeded` |  | ✅ | ✅ | `0x1e8748` |
 | `RBStorePageViewController` | `-` | `restoreFailed:` |  | ✅ | ❌ | `0x1e8a80` |
-| `RBStorePageViewController` | `-` | `restoreNothing` |  | ✅ | ❌ | `0x1e8c00` |
+| `RBStorePageViewController` | `-` | `restoreNothing` |  | ✅ | ✅ | `0x1e8c00` |
 | `RBStorePageViewController` | `-` | `storePackInfoDownloaderFinished:` |  | ✅ | ❌ | `0x1e8c9c` |
 | `RBStorePageViewController` | `-` | `storePackInfoDownloaderError:` |  | ✅ | ❌ | `0x1e8dbc` |
 | `RBStorePageViewController` | `-` | `downloadManagerStartTask:` |  | ✅ | ❌ | `0x1e8e64` |
@@ -5184,7 +5184,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ec2e8` |
 | `RBStorePageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ec5ec` |
 | `RBStorePageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1ec5f0` |
-| `RBStorePageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x1ecb34` |
+| `RBStorePageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x1ecb34` |
 | `RBStorePageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1ecd54` |
 | `RBStorePageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ed380` |
 | `RBStorePageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ed6e4` |
@@ -5198,7 +5198,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `hideGenreSelect:` |  | ✅ | ❌ | `0x1ee610` |
 | `RBStorePageViewController` | `-` | `showLoadingView` |  | ✅ | ❌ | `0x1ee7a4` |
 | `RBStorePageViewController` | `-` | `setPlaySampleName:` |  | ✅ | ❌ | `0x1eeb58` |
-| `RBStorePageViewController` | `-` | `stopPromotion` |  | ✅ | ❌ | `0x1eec14` |
+| `RBStorePageViewController` | `-` | `stopPromotion` |  | ✅ | ✅ | `0x1eec14` |
 | `RBStorePageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ❌ | `0x1eeca8` |
 | `RBStorePageViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ❌ | `0x1eedb0` |
 | `RBStorePageViewController` | `-` | `openItunesWithURL:` |  | ✅ | ❌ | `0x1eee74` |

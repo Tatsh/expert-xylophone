@@ -361,6 +361,27 @@ VERIFIED = {
               'inferred; b.hi is unsigned and case 1 is the default block',
     0x1fbdac: 'RBCampaignViewController -handleTapCoverView:: the method only; its two '
               'block bodies are not read',
+    # RBStorePageViewController. -viewDidLoad at 0x1dd5b0 is NOT ticked: eleven defects were
+    # proved and fixed in it, but several blocks are unread and it is recommended for a
+    # rewrite from the disassembly rather than further patching.
+    0x1dcf88: 'RBStorePageViewController -initWithParent:: the title comes from a '
+              'runtime-initialised global, not an empty string; its sole writer '
+              'localises "Music Packs"',
+    0x1dd25c: 'RBStorePageViewController -loadView: three arms, and the fallback colour '
+              'components read exactly',
+    0x1e0a90: 'RBStorePageViewController -showError:: two hides and the tagged message label',
+    0x1e14fc: 'RBStorePageViewController -pushBarBtnRestore:: the restore alert, tagged 31',
+    0x1e2f24: 'RBStorePageViewController -packListDownloadNothing:: the error arm loads '
+              'the server-error string, not the push-up-to-show-more one',
+    0x1e3018: 'RBStorePageViewController -packViewSelected:: guarded on '
+              'allowsSelection, then the pack id',
+    0x1e55cc: 'RBStorePageViewController -detailViewClose: pad taps the cover, phone pops',
+    0x1e8748: 'RBStorePageViewController -restoreSucceeded: three guarded clears and '
+              'the unlock refresh',
+    0x1e8c00: 'RBStorePageViewController -restoreNothing: hide the dialog, restart the promotion',
+    0x1eec14: 'RBStorePageViewController -stopPromotion: nil-guarded cancel',
+    0x1ecb34: 'RBStorePageViewController -stopDownloadArtworks: clear each delegate, '
+              'cancel, then remove all',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

@@ -116,13 +116,13 @@ static NSString *const kStoreRestoreImageName = @"09_store/store_restore";
 static NSString *const kStoreCategoryKey = @"Category";
 static NSString *const kStoreTopKey = @"TOP ";
 
-// The empty store-tab title and the pad pack-table title are one-off literals. The remaining
-// display strings are the shared store-layer NSString globals declared in
-// RBStoreExtendPageViewController.h (g_pLocalizedShowMore @0x3cfd70, g_pLocalizedLoadingMixed
-// @0x3cfca8, g_pLocalizedPushUpToShowMore @0x3cfd18, and the modal-dialog messages), reused here
-// rather than redeclared.
-static NSString *const kStoreEmptyTitle = @"";         // @ghidraAddress 0x3cfd90
-static NSString *const kStorePackTableTitle = @"PACK"; // @ghidraAddress 0x3cfce8
+// The empty string used as the `value:` fallback of the bundle lookups below, and as the cleared
+// text of the sample label. The store-tab title and the pack-table title are not literals at all:
+// they are the shared localised globals g_pLocalizedMusicPacks (@0x3cfd90) and g_pLocalizedPacks
+// (@0x3cfce8), alongside g_pLocalizedShowMore (@0x3cfd70), g_pLocalizedLoadingMixed (@0x3cfca8),
+// g_pLocalizedPushUpToShowMore (@0x3cfd18), and the modal-dialog messages, all declared in
+// engineglobals.h.
+static NSString *const kStoreEmptyString = @"";
 
 // Font point sizes for the various labels and buttons.
 static const CGFloat kPackTableLabelFontSize = 18.0;
@@ -139,6 +139,10 @@ static const CGFloat kBarButtonTitleFontSize = 14.0;
 // Section heights (phone layout).
 static const CGFloat kPromotionSectionHeight = 102.0; // @ghidraAddress 0x1003012a8
 static const CGFloat kSampleSectionHeight = 32.0;     // @ghidraAddress 0x1002ee9b0
+
+// The phone promotion view's centre. The y sits one slot past 46.0 in the same pool run.
+static const CGFloat kPromotionCenterXPhone = 150.0; // @ghidraAddress 0x100301028
+static const CGFloat kPromotionCenterYPhone = 61.0;  // @ghidraAddress 0x100301038
 
 // Pack-list row heights: index one (a real pack row) is taller than index zero (the trailing "more"
 // row). The pad pairs are at 0x10030bed0 and the phone pairs at 0x10030bee0.
@@ -186,6 +190,10 @@ static const CGFloat kPadTableScrollInset = 4.0;
 static const CGFloat kPadTitleLabelWidth = 720.0;
 static const CGFloat kPadTitleVerticalOffset = 20.0;
 static const CGFloat kPadContentTop = 330.0;
+// The pad promotion banner is taller than the phone one and has its own pool slot.
+static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x1002eea38
+// How far above the view's bottom edge the "show more" button sits.
+static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
 static const CGFloat kPadDetailCenterYOffset = -44.0;
 static const CGFloat kPadTableHeightOffset = -236.0;
@@ -198,16 +206,22 @@ static const CGFloat kPadSampleLabelWidth = 228.0;
 static const CGFloat kSampleButtonInsetRight = 11.0;
 static const CGFloat kSampleButtonInsetBottom = 13.0;
 
-// Colour white components used for the various translucent fills.
-static const CGFloat kTableBackgroundWhite = 0.186;
-static const CGFloat kPadTableBorderWhite = 0.56;
-static const CGFloat kLabelTextWhite = 0.62;
+// Colour white components used for the various translucent fills. Each is a byte over 255 rounded
+// through a float, so the pool value is not the tidy decimal it looks like.
+static const CGFloat kTableBackgroundWhite = 0.18431372940540314; // @ghidraAddress 0x1002eef38
+static const CGFloat kPadTableBorderWhite = 0.5607843399047852;   // @ghidraAddress 0x1002ec730
+static const CGFloat kLabelTextWhite = 0.6196078658103943;        // @ghidraAddress 0x1002eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
 
-// The default store-page background colour (shared with loadView).
-static const CGFloat kDefaultBackgroundRed = 0.882;
-static const CGFloat kDefaultBackgroundGreen = 0.891;
-static const CGFloat kDefaultBackgroundBlue = 0.899;
+// The loading label's text shadow. This is its own pool slot, not the animation duration it
+// happens to equal.
+static const CGFloat kLoadingShadowAlpha = 0.30000001192092896; // @ghidraAddress 0x1002ec718
+
+// The default store-page background colour (shared with loadView). The pool holds 226, 227, and
+// 228 over 255, each rounded through a float on the way in.
+static const CGFloat kDefaultBackgroundRed = 0.886274516582489;    // @ghidraAddress 0x30be90
+static const CGFloat kDefaultBackgroundGreen = 0.8901960849761963; // @ghidraAddress 0x30be98
+static const CGFloat kDefaultBackgroundBlue = 0.8941176533699036;  // @ghidraAddress 0x30bea0
 
 // The half-scale used to centre a view in its host's bounds.
 static const CGFloat kCenterScale = 0.5;
@@ -279,8 +293,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     self = [super init];
     if (self) {
         self.parent = parent;
-        self.navigationItem.title = kStoreEmptyTitle;
-        self.tabBarItem.title = kStoreEmptyTitle;
+        self.navigationItem.title = g_pLocalizedMusicPacks;
+        self.tabBarItem.title = g_pLocalizedMusicPacks;
         self.tabBarItem.image = [UIImage imageWithName:kStoreIconImageName];
 
         self.packListCtrl = [[RBStorePackList alloc] init];
@@ -332,10 +346,10 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if (self.promotionView == nil) {
         StorePromotionView *promotion = [[StorePromotionView alloc]
             initWithFrame:CGRectMake(0.0, 10.0, 300.0, kPromotionSectionHeight)];
-        promotion.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                     UIViewAutoresizingFlexibleTopMargin |
+        promotion.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
+                                     UIViewAutoresizingFlexibleRightMargin |
                                      UIViewAutoresizingFlexibleBottomMargin;
-        promotion.center = CGPointMake(150.0, 46.0);
+        promotion.center = CGPointMake(kPromotionCenterXPhone, kPromotionCenterYPhone);
         promotion.tag = kTagPromotionView;
         promotion.delegate = self;
         promotion.exclusiveTouch = YES;
@@ -354,14 +368,12 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                         forControlEvents:UIControlEventTouchUpInside];
         self.samplePlayButton.exclusiveTouch = YES;
         self.samplePlayButton.userInteractionEnabled = YES;
-        self.samplePlayButton.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                                 UIViewAutoresizingFlexibleTopMargin |
-                                                 UIViewAutoresizingFlexibleBottomMargin;
+        self.samplePlayButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 
         self.sampleMusicLabel = [[UILabel alloc] init];
         self.sampleMusicLabel.font = [UIFont systemFontOfSize:kSampleMusicLabelFontSizePhone];
         self.sampleMusicLabel.adjustsFontSizeToFitWidth = YES;
-        self.sampleMusicLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+        self.sampleMusicLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.sampleMusicLabel.textAlignment = NSTextAlignmentCenter;
     }
 
@@ -389,27 +401,31 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     self.packTableLabel.shadowColor = UIColor.lightGrayColor;
     self.packTableLabel.shadowOffset = CGSizeMake(1.0, 1.0);
     self.packTableLabel.font = [UIFont systemFontOfSize:kPackTableLabelFontSize];
-    self.packTableLabel.text = kStorePackTableTitle;
+    self.packTableLabel.text = g_pLocalizedPacks;
     [self.packTableLabel sizeToFit];
     self.packTableLabel.bounds =
         CGRectMake(0.0, 0.0, kPadTitleLabelWidth, self.packTableLabel.bounds.size.height);
     self.packTableLabel.center =
         CGPointMake(bounds.size.width * kCenterScale,
                     self.packTableLabel.bounds.size.height * kCenterScale + kPadTitleTagBias);
-    self.packTableLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                           UIViewAutoresizingFlexibleTopMargin |
+    self.packTableLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
+                                           UIViewAutoresizingFlexibleRightMargin |
                                            UIViewAutoresizingFlexibleBottomMargin;
     [self.view addSubview:self.packTableLabel];
 
     if (self.promotionView == nil) {
+        // The width is the view frame's width, left in the register by the -frame send just above;
+        // the centre's x is the bounds origin, which is zero, and its y is re-read from the
+        // promotion view's own bounds rather than from the height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
-            initWithFrame:CGRectMake(0.0, 10.0, contentTop, kPromotionSectionHeight)];
+            initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width,
+                                     kPadPromotionHeight)];
         self.promotionView = promotion;
         self.promotionView.center =
-            CGPointMake(bounds.size.width * kCenterScale,
-                        kPromotionSectionHeight * kCenterScale + kPadTitleTagBias);
-        self.promotionView.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                              UIViewAutoresizingFlexibleTopMargin |
+            CGPointMake(bounds.origin.x,
+                        self.promotionView.bounds.size.height * kCenterScale + kPadTitleTagBias);
+        self.promotionView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
+                                              UIViewAutoresizingFlexibleRightMargin |
                                               UIViewAutoresizingFlexibleBottomMargin;
         self.promotionView.delegate = self;
     }
@@ -463,11 +479,13 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
     [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     [showMore sizeToFit];
-    showMore.center =
-        CGPointMake(bounds.size.width * kCenterScale,
-                    bounds.size.height - self.playImage.size.height * kCenterScale - 15.0);
+    // The height subtracted is the button's own, re-read by the -bounds send the binary makes
+    // here; the centre's x is the bounds origin, which is zero.
+    showMore.center = CGPointMake(bounds.origin.x, bounds.size.height -
+                                                       showMore.bounds.size.height * kCenterScale -
+                                                       kShowMoreBottomInset);
     showMore.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
-                                UIViewAutoresizingFlexibleWidth |
+                                UIViewAutoresizingFlexibleRightMargin |
                                 UIViewAutoresizingFlexibleTopMargin;
     showMore.hidden = YES;
     [showMore addTarget:self
@@ -500,9 +518,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         table.tag = kTagPackTable;
         table.center = CGPointMake(bounds.size.width * kCenterScale,
                                    tableHeight * kCenterScale + kPadTableCenterOffset);
-        table.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-                                 UIViewAutoresizingFlexibleHeight |
-                                 UIViewAutoresizingFlexibleTopMargin;
+        table.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
+                                 UIViewAutoresizingFlexibleRightMargin |
+                                 UIViewAutoresizingFlexibleHeight;
         table.opaque = YES;
         table.backgroundColor = [UIColor colorWithWhite:kTableBackgroundWhite alpha:1.0];
         table.layer.cornerRadius = kPadTableCornerRadius;
@@ -590,7 +608,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
                                                   alpha:1.0];
         loading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
         loading.textColor = [UIColor colorWithWhite:kLabelTextWhite alpha:1.0];
-        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:kDetailAnimDuration];
+        loading.shadowColor = [UIColor colorWithWhite:1.0 alpha:kLoadingShadowAlpha];
         loading.shadowOffset = CGSizeMake(0.0, 1.0);
         loading.textAlignment = NSTextAlignmentCenter;
         loading.center = CGPointMake(bounds.size.width * kCenterScale,
@@ -799,7 +817,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     }
     if (self.genreButton == nil) {
         NSString *title = [[NSBundle mainBundle] localizedStringForKey:kStoreCategoryKey
-                                                                 value:kStoreEmptyTitle
+                                                                 value:kStoreEmptyString
                                                                  table:nil];
         self.genreButton = [[UIBarButtonItem alloc] initWithTitle:title
                                                             style:UIBarButtonItemStylePlain
@@ -809,12 +827,12 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
             @{NSFontAttributeName : [UIFont systemFontOfSize:kBarButtonTitleFontSize]};
         [self.genreButton setTitleTextAttributes:attrs forState:UIControlStateNormal];
         if (!IsPad()) {
-            self.navigationItem.title = kStoreEmptyTitle;
+            self.navigationItem.title = kStoreEmptyString;
         }
     }
     if (self.topButton == nil) {
         NSString *title = [[NSBundle mainBundle] localizedStringForKey:kStoreTopKey
-                                                                 value:kStoreEmptyTitle
+                                                                 value:kStoreEmptyString
                                                                  table:nil];
         self.topButton = [[UIBarButtonItem alloc] initWithTitle:title
                                                           style:UIBarButtonItemStylePlain
@@ -944,7 +962,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         table.allowsSelection = YES;
         [table reloadData];
     } else {
-        [self showError:g_pLocalizedPushUpToShowMore];
+        [self showError:g_pLocalizedServerNoData];
     }
 }
 
@@ -1517,7 +1535,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     if ([RBUserSettingData sharedInstance].refuseStoreSampleBGM) {
         [RBUserSettingData sharedInstance].refuseStoreSampleBGM = NO;
         [self.samplePlayButton setImage:self.stopImage forState:UIControlStateNormal];
-        self.sampleMusicLabel.text = kStoreEmptyTitle;
+        self.sampleMusicLabel.text = kStoreEmptyString;
         [self.promotionView stopSamplePlay];
     } else {
         [RBUserSettingData sharedInstance].refuseStoreSampleBGM = YES;
@@ -1529,7 +1547,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 /** @ghidraAddress 0x1eeb58 */
 - (void)setPlaySampleName:(NSString *)name {
     if (name == nil) {
-        self.sampleMusicLabel.text = kStoreEmptyTitle;
+        self.sampleMusicLabel.text = kStoreEmptyString;
     } else {
         self.sampleMusicLabel.text = name;
     }
@@ -1563,7 +1581,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
         }
         if (genreIndex == 0) {
             self.genreButton.title = [[NSBundle mainBundle] localizedStringForKey:kStoreCategoryKey
-                                                                            value:kStoreEmptyTitle
+                                                                            value:kStoreEmptyString
                                                                             table:nil];
         } else {
             self.genreButton.title = genre.genreName;
