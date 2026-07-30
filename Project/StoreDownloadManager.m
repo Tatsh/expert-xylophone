@@ -9,9 +9,9 @@
 
 @interface StoreDownloadManager () {
     // The binary reaches both of these as ivars rather than through accessors. m_IsStarted has no
-    // accessor at all, and currentIndex has only the getter the header declares, so making either
-    // a writable property would add a selector the shipped class does not carry. The flag keeps
-    // the binary's name, which has no leading underscore.
+    // accessor at all, and currentIndex has only the getter the header declares, so giving either
+    // a property with a setter would add a selector the shipped class does not carry. The flag
+    // keeps the binary's name, which has no leading underscore.
     BOOL m_IsStarted;
     unsigned int _currentIndex;
 }
