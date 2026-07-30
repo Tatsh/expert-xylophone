@@ -1053,6 +1053,37 @@ VERIFIED = {
               'idiom arms, then the saves',
     0x16304c: 'RBStoreExtendPageViewController -downloadManagerProceed:: the ivar supplies the '
               'progress, the argument is ignored',
+    0x16315c: 'RBStoreExtendPageViewController -numPackRows: the pad rounds up with an unsigned '
+              'shift at 0x1631c0',
+    # Defects fixed: the footer spinner is a 24x24 White indicator (0x163848, w2=1 at 0x16386c),
+    # not a zero-framed Gray one.
+    0x163240: 'RBStoreExtendPageViewController -tableView:cellForRowAtIndexPath:: both idiom arms, '
+              'the pad right tile index is the bfi at 0x16452c, footer font 18/15 by fcsel',
+    0x164f54: 'RBStoreExtendPageViewController -tableView:numberOfRowsInSection:: the two idiom '
+              'arms really are identical',
+    # Defect fixed: the height tables at 0x30bed0 (pad) and 0x30bee0 (phone) had been read the
+    # wrong way round, so the pack row was 80 on the pad and 140 on the phone.
+    0x16504c: 'RBStoreExtendPageViewController -tableView:heightForRowAtIndexPath:: two two-entry '
+              'tables indexed by the pack-row cset at 0x1650a8',
+    # Defect fixed: the phone row tints are 0.8 (0x2eea40) and 193/255 (0x30bec0).
+    0x16511c: 'RBStoreExtendPageViewController -tableView:willDisplayCell:forRowAtIndexPath:: both '
+              'idiom arms, footer rows take g_dRBWebViewGrayViewWhite',
+    0x165428: 'RBStoreExtendPageViewController -tableView:willSelectRowAtIndexPath:: returns the '
+              'argument',
+    0x165440: 'RBStoreExtendPageViewController -tableView:didSelectRowAtIndexPath:: the footer row '
+              'and every pad row are inert',
+    0x165598: 'RBStoreExtendPageViewController -showDetailViewForPhone:: delegate, info, pending '
+              'PID cleared, pushed animated',
+    0x165708: 'RBStoreExtendPageViewController -selectShowMore: the in-flight flag guards it, the '
+              'button recentres around its own sizeToFit',
+    0x165938: 'RBStoreExtendPageViewController -imageDownloader:didLoad:: the pad maps the product '
+              'row back with the signed halving at 0x1659f8 and picks the tile by parity',
+    # Defect fixed: the snapped Y is (contentOffset.y + bounds.height) - anchoredHeight, per the
+    # fadd/fsub pair at 0x165ec4, not baseY + contentOffset.y.
+    0x165c40: 'RBStoreExtendPageViewController -scrollViewDidScroll:: auto-load guard, then both '
+              'banners with margins 300/100 and the campaign half-height anchor at 0x16601c',
+    0x166184: 'RBStoreExtendPageViewController -stopDownloadArtworks: empty-guarded, detach then '
+              'cancel each, then clear',
     # MusicData. The yomi tables are static arrays of ten CFString constants at 0x3ceb18 (rows) and
     # 0x3ceb68 (labels), with the no-row initial @"#" in the slot at 0x3cebb8; the reconstruction
     # had built them as NSArrays in an invented +initialize and used @"" for that initial.

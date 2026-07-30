@@ -169,11 +169,13 @@ static const UIViewAnimationOptions kDetailOpenAnimationOptions = 0x30000; // Cu
 static const NSTimeInterval kDetailOverlayOpenDuration = 0.3;   // @ghidraAddress 0x3010a0
 static const NSTimeInterval kDetailOverlayCloseDuration = 0.3f; // @ghidraAddress 0x2ec718
 
-// Row heights (points). A genuine pack row is tall; the trailing "show more"/spinner row is short.
-static const CGFloat kPhonePackRowHeight = 140.0;
-static const CGFloat kPhoneMoreRowHeight = 60.0;
-static const CGFloat kPadPackRowHeight = 80.0;
-static const CGFloat kPadMoreRowHeight = 60.0;
+// Row heights (points), read from the two-entry tables the height callback indexes: the pad's at
+// 0x30bed0 and the phone's at 0x30bee0, each holding the "more" row first and the pack row second.
+// A genuine pack row is tall; the trailing "show more"/spinner row is short.
+static const CGFloat kPhonePackRowHeight = 80.0;  // @ghidraAddress 0x30bee8
+static const CGFloat kPhoneMoreRowHeight = 60.0;  // @ghidraAddress 0x30bee0
+static const CGFloat kPadPackRowHeight = 140.0;   // @ghidraAddress 0x30bed8
+static const CGFloat kPadMoreRowHeight = 60.0;    // @ghidraAddress 0x30bed0
 
 // The pad packs two products per table row (a left and a right cell view).
 static const NSInteger kPadProductsPerRow = 2;
@@ -188,11 +190,11 @@ static const CGFloat kMoreCellFontSizePad = 18.0;
 // Alternating-row background tints. A pad pack row is drawn at a flat mid-white; a phone pack row
 // alternates its background colour by parity between two near-white greys.
 static const CGFloat kPadEvenRowWhite = 0.5;
-static const CGFloat kPhoneEvenRowWhite = 0.7563;
-static const CGFloat kPhoneOddRowWhite = 0.756909012794495;
+static const CGFloat kPhoneEvenRowWhite = 0.8;                // @ghidraAddress 0x2eea40
+static const CGFloat kPhoneOddRowWhite = 193.0 / 255.0;       // @ghidraAddress 0x30bec0
 
-// The "more"/loading footer label white component (text and shadow).
-static const CGFloat kMoreCellTextWhite = 0.4;
+// The "more"/loading footer label white component (text and shadow). @ghidraAddress 0x2ec720
+static const CGFloat kMoreCellTextWhite = 0.4f;
 
 // The floating-banner bottom margin kept clear beneath the pinned banner while scrolling. The
 // campaign banner additionally pins against half its own height rather than its full height.
@@ -214,10 +216,6 @@ static const UITableViewRowAnimation kReloadRowAnimation = UITableViewRowAnimati
 static const NSInteger kPurchasedTableSectionPad = 0;
 static const NSInteger kPurchasedTableSectionPhone = 1;
 
-// UIActivityIndicatorViewStyleGray.
-static const NSInteger kActivityIndicatorStyleGray = 1;
-// NSTextAlignmentCenter.
-static const NSInteger kTextAlignmentCenter = 1;
 // UITableViewCellStyleDefault.
 static const NSInteger kTableViewCellStyleDefault = 0;
 
@@ -1970,8 +1968,9 @@ static inline UIImage *StoreExtendPageArtworkForInfo(RBStoreExtendPageViewContro
     return nil;
 }
 
-// Pad variant: keyed by product ID via numberWithInteger: on lookup and numberWithInt: on insert
-// (faithful to the binary's mismatched key encodings), with no unUseRetina override.
+// Pad variant, with no unUseRetina override. The left tile's lookup boxes the product ID with
+// numberWithInteger: (0x1642e4) while every other boxing here is numberWithInt:, including the
+// right tile's lookup at 0x1646a8; the two produce equal keys, so one helper covers both.
 static inline UIImage *StoreExtendPageArtworkForPadInfo(RBStoreExtendPageViewController *self,
                                                         StoreExtendNoteInfo *info,
                                                         int pid,
@@ -2004,7 +2003,7 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
                                       reuseIdentifier:reuseIdentifier];
         CGFloat fontSize = isPad ? kMoreCellFontSizePad : kMoreCellFontSizePhone;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:fontSize];
-        cell.textLabel.textAlignment = static_cast<NSTextAlignment>(kTextAlignmentCenter);
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }
 
     if (!isLoadingMore) {
@@ -2013,10 +2012,9 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellTextWhite alpha:1.0];
         cell.textLabel.text = g_pLocalizedShowMore;
     } else {
-        UIActivityIndicatorView *spinner =
-            [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
-        [spinner setActivityIndicatorViewStyle:static_cast<UIActivityIndicatorViewStyle>(
-                                                   kActivityIndicatorStyleGray)];
+        UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc]
+            initWithFrame:CGRectMake(0.0, 0.0, kShowMoreIndicatorSize, kShowMoreIndicatorSize)];
+        [spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
         cell.accessoryView = spinner;
         [spinner startAnimating];
         cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhite alpha:1.0];
@@ -2026,9 +2024,9 @@ static inline UITableViewCell *StoreExtendPageMoreCell(UITableView *tableView,
     return cell;
 }
 
-// Compute the pinned Y for a floating banner. The banner tracks the bottom of the visible content:
-// it sits at min(contentSize.height, bounds.height) but, once the user scrolls far enough that the
-// banner would fall short of contentOffset.y + bounds.height, it snaps to
+// Compute the pinned Y for a floating banner. The banner sits at margin + the scroll view's own
+// content or bounds height (whichever the list's own overflow selects) but, once the user scrolls
+// far enough that the banner would fall short of contentOffset.y + bounds.height, it snaps to
 // (contentOffset.y + bounds.height) - bannerHeight * anchorFraction. The full-height floating
 // banner uses anchorFraction 1.0; the campaign banner uses 0.5. margin is the platform slack (100
 // phone / 300 pad).
@@ -2050,7 +2048,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 
     CGFloat baseY = margin + visibleExtent;
     if (anchoredHeight + baseY < scrollOffsetY + scrollBoundsH) {
-        return (baseY + scrollOffsetY) - anchoredHeight;
+        return (scrollOffsetY + scrollBoundsH) - anchoredHeight;
     }
     return baseY;
 }

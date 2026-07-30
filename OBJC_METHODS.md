@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4168 verified
-(65.7%).
+Total: 6343 — 6203 reconstructed, 4180 verified
+(65.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3709,20 +3709,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ✅ | `0x162b7c` |
 | `RBStoreExtendPageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x162dbc` |
 | `RBStoreExtendPageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x16304c` |
-| `RBStoreExtendPageViewController` | `-` | `numPackRows` |  | ✅ | ❌ | `0x16315c` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x163240` |
+| `RBStoreExtendPageViewController` | `-` | `numPackRows` |  | ✅ | ✅ | `0x16315c` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ✅ | `0x163240` |
 | `RBStoreExtendPageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x164f4c` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x164f54` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x16504c` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x16511c` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:willSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x165428` |
-| `RBStoreExtendPageViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x165440` |
-| `RBStoreExtendPageViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x165598` |
-| `RBStoreExtendPageViewController` | `-` | `selectShowMore` |  | ✅ | ❌ | `0x165708` |
-| `RBStoreExtendPageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x165938` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x164f54` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x16504c` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x16511c` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:willSelectRowAtIndexPath:` |  | ✅ | ✅ | `0x165428` |
+| `RBStoreExtendPageViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ✅ | `0x165440` |
+| `RBStoreExtendPageViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ✅ | `0x165598` |
+| `RBStoreExtendPageViewController` | `-` | `selectShowMore` |  | ✅ | ✅ | `0x165708` |
+| `RBStoreExtendPageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ✅ | `0x165938` |
 | `RBStoreExtendPageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x165c3c` |
-| `RBStoreExtendPageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x165c40` |
-| `RBStoreExtendPageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x166184` |
+| `RBStoreExtendPageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ✅ | `0x165c40` |
+| `RBStoreExtendPageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x166184` |
 | `RBStoreExtendPageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1663a4` |
 | `RBStoreExtendPageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x166858` |
 | `RBStoreExtendPageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x166ad0` |
