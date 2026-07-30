@@ -629,15 +629,15 @@ static BOOL g_bRandamIntSeeded = NO;
                    self.rankButton.frame.origin.y,
                    self.rankButton.frame.size.width,
                    self.rankButton.frame.size.height);
-        // A container whose frame leaves its parent is not hit-tested there, so print the parent's
-        // bounds and whether the buttons are enabled and inside it.
-        neDebugLog("  store=(%.0f,%.0f %.0fx%.0f) settingEnabled=%d storeEnabled=%d",
+        // A container whose frame leaves its parent is not hit-tested there, so these frames decide
+        // whether a tap can land at all. RBMenuButton's enabled is write-only, as in the binary,
+        // so it cannot be printed here.
+        neDebugLog("  store=(%.0f,%.0f %.0fx%.0f) subviews=%lu",
                    self.storeButton.frame.origin.x,
                    self.storeButton.frame.origin.y,
                    self.storeButton.frame.size.width,
                    self.storeButton.frame.size.height,
-                   self.settingButton.enabled ? 1 : 0,
-                   self.storeButton.enabled ? 1 : 0);
+                   (unsigned long)self.subviews.count);
     }
 
     self.playListButton.frame = CGRectMake(static_cast<double>(playlistX),
