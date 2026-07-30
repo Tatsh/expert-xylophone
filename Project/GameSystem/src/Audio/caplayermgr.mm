@@ -234,18 +234,18 @@ void caPlayerMgr::StopAudioGraph() {
 }
 
 /** @ghidraAddress 0x4bb6c */
-void caPlayerMgr::ResumeVoiceByHandle(unsigned int handle) {
-    m_pMixer->StartVoice(DecodeVoiceHandle(handle));
+bool caPlayerMgr::ResumeVoiceByHandle(unsigned int handle) {
+    return m_pMixer->StartVoice(DecodeVoiceHandle(handle)) != 0;
 }
 
 /** @ghidraAddress 0x4bb9c */
-void caPlayerMgr::PauseVoiceByHandle(unsigned int handle) {
-    m_pMixer->PauseVoice(DecodeVoiceHandle(handle));
+bool caPlayerMgr::PauseVoiceByHandle(unsigned int handle) {
+    return m_pMixer->PauseVoice(DecodeVoiceHandle(handle)) != 0;
 }
 
 /** @ghidraAddress 0x4bb84 */
-void caPlayerMgr::StopVoiceByHandle(unsigned int handle) {
-    m_pMixer->StopVoice(DecodeVoiceHandle(handle));
+bool caPlayerMgr::StopVoiceByHandle(unsigned int handle) {
+    return m_pMixer->StopVoice(DecodeVoiceHandle(handle)) != 0;
 }
 
 /** @ghidraAddress 0x4bcac */

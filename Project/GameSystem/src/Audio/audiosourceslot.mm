@@ -142,8 +142,8 @@ unsigned int AudioSourceSlot::AcquireBusForSourceKey(NSString *callName, int vol
 }
 
 /** @ghidraAddress 0x4aa34 */
-void AudioSourceSlot::PlayByHandle(unsigned int handle) {
-    m_pMixer->PlayBusByHandle(DecodePlayHandle(handle));
+bool AudioSourceSlot::PlayByHandle(unsigned int handle) {
+    return m_pMixer->PlayBusByHandle(DecodePlayHandle(handle));
 }
 
 /** @ghidraAddress 0x4aa4c */
@@ -152,8 +152,8 @@ bool AudioSourceSlot::StopByHandle(unsigned int handle) {
 }
 
 /** @ghidraAddress 0x4aa64 */
-void AudioSourceSlot::PauseByHandle(unsigned int handle) {
-    m_pMixer->PauseBusByHandle(DecodePlayHandle(handle));
+bool AudioSourceSlot::PauseByHandle(unsigned int handle) {
+    return m_pMixer->PauseBusByHandle(DecodePlayHandle(handle));
 }
 
 /** @ghidraAddress 0x4aa7c */
