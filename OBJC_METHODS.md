@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3099 verified
-(48.9%).
+Total: 6343 — 6198 reconstructed, 3136 verified
+(49.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -307,7 +307,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResoureDownloadBGEffectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x19b84` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupView` |  | ✅ | ❌ | `0x19c40` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0x19c90` |
-| `RBResourceDownloadViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x19dd4` |
+| `RBResourceDownloadViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x19dd4` |
 | `RBResourceDownloadViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x19ddc` |
 | `RBResourceDownloadViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x19e00` |
 | `RBResourceDownloadViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ❌ | `0x19e10` |
@@ -1147,7 +1147,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageSortViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x556e0` |
 | `RBStoreManageSortViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x55ca4` |
 | `RBStoreManageSortViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x55d80` |
-| `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x56064` |
+| `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x56064` |
 | `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x5606c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x56088` |
 | `RBStoreManageSortViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x5608c` |
@@ -1416,7 +1416,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `+` | `getPathWithDocument:` |  | ✅ | ❌ | `0x6726c` |
 | `MusicDataFromDoc` | `+` | `dataWithPath:PlyName:` |  | ✅ | ❌ | `0x6734c` |
 | `MusicDataFromDoc` | `-` | `dealloc` |  | ❌ | ✅ | `0x67498` |
-| `MusicDataFromDoc` | `-` | `MusicID` |  | ✅ | ❌ | `0x674cc` |
+| `MusicDataFromDoc` | `-` | `MusicID` |  | ✅ | ✅ | `0x674cc` |
 | `MusicDataFromDoc` | `-` | `difficultyBasic` |  | ✅ | ✅ | `0x674d4` |
 | `MusicDataFromDoc` | `-` | `difficultyMedium` |  | ✅ | ✅ | `0x674dc` |
 | `MusicDataFromDoc` | `-` | `difficultyHard` |  | ✅ | ✅ | `0x674e4` |
@@ -2148,7 +2148,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `handleLongPressGesture:` |  | ✅ | ❌ | `0xb21e4` |
 | `RBMenuView` | `-` | `configureCell:` |  | ✅ | ❌ | `0xb2280` |
 | `RBMenuView` | `-` | `scrollViewDidEndScroll:` |  | ✅ | ❌ | `0xb2fec` |
-| `RBMenuView` | `-` | `numberOfSectionsInCollectionView:` |  | ✅ | ❌ | `0xb35f4` |
+| `RBMenuView` | `-` | `numberOfSectionsInCollectionView:` |  | ✅ | ✅ | `0xb35f4` |
 | `RBMenuView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ❌ | `0xb35fc` |
 | `RBMenuView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ❌ | `0xb3664` |
 | `RBMenuView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0xb3cdc` |
@@ -2672,7 +2672,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingTableView` | `-` | `loadRanking` |  | ✅ | ❌ | `0xdc174` |
 | `RBRankingTableView` | `-` | `clear` |  | ✅ | ❌ | `0xdc508` |
 | `RBRankingTableView` | `-` | `pushLoadNext:` |  | ✅ | ❌ | `0xdc514` |
-| `RBRankingTableView` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0xdc590` |
+| `RBRankingTableView` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0xdc590` |
 | `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0xdc598` |
 | `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5b4` |
 | `RBRankingTableView` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5c0` |
@@ -3397,8 +3397,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x11484c` |
 | `RBTermView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x114850` |
 | `RBTermView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x114854` |
-| `RBTermView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x114864` |
-| `RBTermView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x11486c` |
+| `RBTermView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x114864` |
+| `RBTermView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x11486c` |
 | `RBTermView` | `-` | `dealloc` |  | ❌ | ✅ | `0x114874` |
 | `RBTermView` | `-` | `settingView` | prop | ✅ | ✅ | `0x1148a8` |
 | `RBTermView` | `-` | `setSettingView:` | prop | ✅ | ❌ | `0x1148c8` |
@@ -3711,7 +3711,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x16304c` |
 | `RBStoreExtendPageViewController` | `-` | `numPackRows` |  | ✅ | ❌ | `0x16315c` |
 | `RBStoreExtendPageViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x163240` |
-| `RBStoreExtendPageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x164f4c` |
+| `RBStoreExtendPageViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x164f4c` |
 | `RBStoreExtendPageViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x164f54` |
 | `RBStoreExtendPageViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x16504c` |
 | `RBStoreExtendPageViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x16511c` |
@@ -3726,7 +3726,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1663a4` |
 | `RBStoreExtendPageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x166858` |
 | `RBStoreExtendPageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x166ad0` |
-| `RBStoreExtendPageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x166d40` |
+| `RBStoreExtendPageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x166d40` |
 | `RBStoreExtendPageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x166d48` |
 | `RBStoreExtendPageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x166d7c` |
 | `RBStoreExtendPageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x166d80` |
@@ -4239,8 +4239,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x194130` |
 | `RBNotificationPageView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x194134` |
 | `RBNotificationPageView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x194138` |
-| `RBNotificationPageView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x194148` |
-| `RBNotificationPageView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x194150` |
+| `RBNotificationPageView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x194148` |
+| `RBNotificationPageView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x194150` |
 | `RBNotificationPageView` | `-` | `dealloc` |  | ❌ | ✅ | `0x194158` |
 | `RBNotificationPageView` | `-` | `settingView` | prop | ✅ | ✅ | `0x19418c` |
 | `RBNotificationPageView` | `-` | `setSettingView:` | prop | ✅ | ❌ | `0x1941ac` |
@@ -4835,8 +4835,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c9470` |
 | `RBTermAgreeView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1c9474` |
 | `RBTermAgreeView` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1c9478` |
-| `RBTermAgreeView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x1c9488` |
-| `RBTermAgreeView` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x1c9490` |
+| `RBTermAgreeView` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x1c9488` |
+| `RBTermAgreeView` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x1c9490` |
 | `RBTermAgreeView` | `-` | `dealloc` |  | ❌ | ✅ | `0x1c9498` |
 | `RBTermAgreeView` | `-` | `parentViewController` | prop | ✅ | ✅ | `0x1c94cc` |
 | `RBTermAgreeView` | `-` | `setParentViewController:` | prop | ✅ | ❌ | `0x1c94ec` |
@@ -4877,7 +4877,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `progressImageView` | prop | ✅ | ✅ | `0x1c9784` |
 | `RBTermAgreeView` | `-` | `setProgressImageView:` | prop | ✅ | ✅ | `0x1c9794` |
 | `RBNavigationController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x1c9804` |
-| `RBNavigationController` | `-` | `prefersStatusBarHidden` |  | ✅ | ❌ | `0x1c988c` |
+| `RBNavigationController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x1c988c` |
 | `RBNavigationController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x1c9894` |
 | `RBNavigationController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x1c98f4` |
 | `(RB)` | `+` | `isFileExist:` |  | ✅ | ❌ | `0x1c9954` |
@@ -4895,7 +4895,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1ca638` |
 | `RBStoreGenreViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1cab0c` |
 | `RBStoreGenreViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1cabe8` |
-| `RBStoreGenreViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1caf08` |
+| `RBStoreGenreViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1caf08` |
 | `RBStoreGenreViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1caf10` |
 | `RBStoreGenreViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf78` |
 | `RBStoreGenreViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf7c` |
@@ -4974,7 +4974,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageViewController` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1d42ec` |
 | `RBStoreManageViewController` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1d4494` |
 | `RBStoreManageViewController` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x1d454c` |
-| `RBStoreManageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1d465c` |
+| `RBStoreManageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1d465c` |
 | `RBStoreManageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1d4664` |
 | `RBStoreManageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1d47f8` |
 | `RBStoreManageViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1d48c0` |
@@ -5075,7 +5075,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1d9b88` |
 | `RBStoreDetailViewController` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1d9dd4` |
 | `RBStoreDetailViewController` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1d9f4c` |
-| `RBStoreDetailViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1d9f50` |
+| `RBStoreDetailViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1d9f50` |
 | `RBStoreDetailViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1d9f58` |
 | `RBStoreDetailViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1d9ffc` |
 | `RBStoreDetailViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1daeec` |
@@ -5188,7 +5188,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1ecd54` |
 | `RBStorePageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ed380` |
 | `RBStorePageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ed6e4` |
-| `RBStorePageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1ed9f0` |
+| `RBStorePageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1ed9f0` |
 | `RBStorePageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ed9f8` |
 | `RBStorePageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x1edae4` |
 | `RBStorePageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1edae8` |
@@ -5495,7 +5495,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fa878` |
 | `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1faf5c` |
 | `RBCampaignViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0x1faf90` |
-| `RBCampaignViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x1fb0dc` |
+| `RBCampaignViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1fb0dc` |
 | `RBCampaignViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fb0e4` |
 | `RBCampaignViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1fb118` |
 | `RBCampaignViewController` | `-` | `sampleStart` |  | ✅ | ❌ | `0x1fb228` |
@@ -5532,7 +5532,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ff91c` |
 | `RBCampaignViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x1ff9d4` |
 | `RBCampaignViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ❌ | `0x1ffa44` |
-| `RBCampaignViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x1ffc30` |
+| `RBCampaignViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1ffc30` |
 | `RBCampaignViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ffc38` |
 | `RBCampaignViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ffc6c` |
 | `RBCampaignViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ffdfc` |
@@ -5595,22 +5595,22 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBAnimationFactory` | `+` | `createAnimHereWithDuration:Y:repeatCount:` |  | ✅ | ❌ | `0x201be0` |
 | `RBAnimationFactory` | `+` | `createBoundAnimWithX:Y:delay:duration:` |  | ✅ | ❌ | `0x201fa8` |
 | `RBAnimationFactory` | `+` | `animationDelete:` |  | ✅ | ❌ | `0x202580` |
-| `RBBaseViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ❌ | `0x202740` |
+| `RBBaseViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202740` |
 | `RBBaseViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202748` |
 | `RBBaseViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202778` |
-| `RBBaseViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ❌ | `0x2027d4` |
+| `RBBaseViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x2027d4` |
 | `RBBaseViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x2027dc` |
 | `RBBaseTableViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x20282c` |
-| `RBBaseTableViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ❌ | `0x2028f8` |
+| `RBBaseTableViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x2028f8` |
 | `RBBaseTableViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202900` |
 | `RBBaseTableViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202930` |
-| `RBBaseTableViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ❌ | `0x20298c` |
+| `RBBaseTableViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x20298c` |
 | `RBBaseTableViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x202994` |
 | `RBBaseTabBarController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x2029e4` |
-| `RBBaseTabBarController` | `-` | `prefersStatusBarHidden` |  | ✅ | ❌ | `0x202af8` |
+| `RBBaseTabBarController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202af8` |
 | `RBBaseTabBarController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202b00` |
 | `RBBaseTabBarController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202b30` |
-| `RBBaseTabBarController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ❌ | `0x202b8c` |
+| `RBBaseTabBarController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x202b8c` |
 | `RBBaseTabBarController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x202b94` |
 | `RBGameKitManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x202be4` |
 | `RBGameKitManager` | `-` | `isGameCenterAPIAvailable` |  | ✅ | ❌ | `0x202c98` |
@@ -5771,9 +5771,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkViewController` | `-` | `showSKStore:appParam:delegate:` |  | ✅ | ❌ | `0x213810` |
 | `ApplilinkViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ❌ | `0x213f3c` |
 | `ApplilinkViewController` | `-` | `productViewControllerDidFinish` |  | ✅ | ❌ | `0x214160` |
-| `ApplilinkViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x214384` |
-| `ApplilinkViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x21438c` |
-| `ApplilinkViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x214394` |
+| `ApplilinkViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x214384` |
+| `ApplilinkViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x21438c` |
+| `ApplilinkViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x214394` |
 | `ApplilinkViewController` | `-` | `sdkDelegate` | prop | ✅ | ✅ | `0x21439c` |
 | `ApplilinkViewController` | `-` | `setSdkDelegate:` | prop | ✅ | ❌ | `0x2143bc` |
 | `ApplilinkViewController` | `-` | `applilinkParams` | prop | ✅ | ❌ | `0x2143d0` |
@@ -5883,7 +5883,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x21d1a8` |
 | `RewardWebViewController` | `-` | `viewDealloc` |  | ✅ | ❌ | `0x21d1bc` |
 | `RewardWebViewController` | `-` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x21d2cc` |
-| `RewardWebViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ❌ | `0x21d2dc` |
+| `RewardWebViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x21d2dc` |
 | `RewardWebViewController` | `-` | `loadRequestWithURL:parameters:` |  | ✅ | ❌ | `0x21d2e4` |
 | `RewardWebViewController` | `-` | `btnCloseClicked:` |  | ✅ | ❌ | `0x21d570` |
 | `RewardWebViewController` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x21d580` |
@@ -5901,8 +5901,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x21deac` |
 | `RewardWebViewController` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x21df70` |
 | `RewardWebViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x21e028` |
-| `RewardWebViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x21e0d0` |
-| `RewardWebViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x21e0d8` |
+| `RewardWebViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x21e0d0` |
+| `RewardWebViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x21e0d8` |
 | `RewardWebViewController` | `-` | `rotateWebViewWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21e0e0` |
 | `RewardWebViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21efec` |
 | `RewardWebViewController` | `-` | `hasParentViewController:` |  | ✅ | ❌ | `0x21f068` |
@@ -6262,9 +6262,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RotateStoreProductViewController` | `-` | `initWithNibName:bundle:` |  | ✅ | ❌ | `0x2416d4` |
 | `RotateStoreProductViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x24174c` |
 | `RotateStoreProductViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x241788` |
-| `RotateStoreProductViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x2417c4` |
-| `RotateStoreProductViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x2417cc` |
-| `RotateStoreProductViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x2417d4` |
+| `RotateStoreProductViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x2417c4` |
+| `RotateStoreProductViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x2417cc` |
+| `RotateStoreProductViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x2417d4` |
 | `RecommendAdCache` | `+` | `getAllAdStatus` |  | ✅ | ❌ | `0x2417dc` |
 | `RecommendAdCache` | `+` | `getAllAdDataWithCallBack:` |  | ✅ | ❌ | `0x241c28` |
 | `RecommendAdCache` | `+` | `clearAllAdData` |  | ✅ | ❌ | `0x242380` |
@@ -6326,8 +6326,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendFullScreenController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x246934` |
 | `RecommendFullScreenController` | `-` | `openAdViewWithAdModel:adLocation:verticalAlign:applilinkParams:delegate:closeDelegate:` |  | ✅ | ❌ | `0x246970` |
 | `RecommendFullScreenController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x246efc` |
-| `RecommendFullScreenController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x246fa4` |
-| `RecommendFullScreenController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x246fac` |
+| `RecommendFullScreenController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x246fa4` |
+| `RecommendFullScreenController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x246fac` |
 | `RecommendFullScreenController` | `-` | `setViewSize` |  | ✅ | ❌ | `0x246fb4` |
 | `RecommendFullScreenController` | `-` | `rotateWebViewWithDuration:` |  | ✅ | ❌ | `0x247674` |
 | `RecommendFullScreenController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x247a90` |

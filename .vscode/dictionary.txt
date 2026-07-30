@@ -188,6 +188,8 @@ igles
 immediates
 immhi
 immlo
+immr
+imms
 incomp
 indirectsymoff
 infomation

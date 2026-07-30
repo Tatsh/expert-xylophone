@@ -51,6 +51,25 @@ _INERT = re.compile(r'^\s*(?:/\*|\*|//|\(void\)\s*\w+\s*;|\}?\s*$)')
 # `return` spellings that mean zero, and the ones that mean one.
 _ZERO = {'0', 'NO', 'nil', 'NULL', 'nullptr', 'false', '0.0', '0x0'}
 _ONE = {'1', 'YES', 'true', '0x1'}
+# Framework constants a constant-returning method commonly names. Resolving them is what lets the
+# comparison be made against the value rather than against the spelling.
+_FRAMEWORK = {
+    'UIInterfaceOrientationUnknown': 0,
+    'UIInterfaceOrientationPortrait': 1,
+    'UIInterfaceOrientationPortraitUpsideDown': 2,
+    'UIInterfaceOrientationLandscapeLeft': 3,
+    'UIInterfaceOrientationLandscapeRight': 4,
+    'UIInterfaceOrientationMaskPortrait': 1 << 1,
+    'UIInterfaceOrientationMaskPortraitUpsideDown': 1 << 2,
+    'UIInterfaceOrientationMaskLandscapeLeft': 1 << 3,
+    'UIInterfaceOrientationMaskLandscapeRight': 1 << 4,
+    'UIInterfaceOrientationMaskLandscape': (1 << 3) | (1 << 4),
+    'UIInterfaceOrientationMaskAll': (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4),
+    'UIInterfaceOrientationMaskAllButUpsideDown': (1 << 1) | (1 << 3) | (1 << 4),
+    'UIStatusBarStyleDefault': 0,
+    'UIStatusBarStyleLightContent': 1,
+    'NSNotFound': 0x7FFFFFFFFFFFFFFF,
+}
 
 
 def _is_super_only(metadata: Metadata, stubs: dict[int, str], address: int) -> bool:
@@ -71,6 +90,38 @@ def _is_super_only(metadata: Metadata, stubs: dict[int, str], address: int) -> b
         if word == _RET:
             return calls == ['_objc_msgSendSuper2']
     return False
+
+
+def _bitmask_immediate(n: int, immr: int, imms: int, width: int) -> int | None:
+    """
+    Decode an arm64 logical immediate, the encoding ``orr wD,wzr,#imm`` uses.
+
+    A constant return is often assembled as an ORR against the zero register rather than a MOVZ, so
+    reading only MOVZ misses it. The encoding is a rotated run of ones, described by the
+    N, immr and imms fields.
+    """
+    length = (n << 6) | (~imms & 0x3F)
+    size = 1 << (length.bit_length() - 1) if length else 0
+    if size == 0 or size > width:
+        return None
+    ones = (imms & (size - 1)) + 1
+    if ones == size:
+        return None
+    pattern = (1 << ones) - 1
+    rotation = immr & (size - 1)
+    pattern = ((pattern >> rotation) | (pattern << (size - rotation))) & ((1 << size) - 1)
+    value = 0
+    for shift in range(0, width, size):
+        value |= pattern << shift
+    return value & ((1 << width) - 1)
+
+
+def _orr_immediate(word: int) -> int | None:
+    """Decode ``orr wD,wzr,#imm`` or its 64-bit form into the value it returns."""
+    if (word & 0x7F800000) != 0x32000000 or ((word >> 5) & 0x1F) != 31 or (word & 0x1F) != 0:
+        return None
+    width = 64 if (word >> 31) & 1 else 32
+    return _bitmask_immediate((word >> 22) & 1, (word >> 16) & 0x3F, (word >> 10) & 0x3F, width)
 
 
 def _mov_immediate(word: int) -> int | None:
@@ -138,24 +189,43 @@ def _returned_constant(body: list[str]) -> str | None:
     return found.group(1) if found else None
 
 
-def file_constants(path: str) -> dict[str, int]:
-    """
-    Collect the file-scope integer constants a source file defines.
-
-    The rules require a named constant rather than a bare number, so a method that returns one
-    returns a name, and the name has to be resolved before the value can be compared.
-    """
-    out: dict[str, int] = {}
-    pattern = re.compile(r'^\s*(?:static\s+)?const(?:expr)?\s+[\w\s*]*?(\bk\w+)\s*=\s*([^;]+);')
-    for line in Path(path).read_text(errors='replace').splitlines():
-        found = pattern.match(line)
-        if not found:
+def _evaluate(expression: str, known: dict[str, int]) -> int | None:
+    """Evaluate a constant expression made of names, integers, and bitwise ors."""
+    total = 0
+    for part in expression.split('|'):
+        part = part.strip()
+        if part in known:
+            total |= known[part]
             continue
         try:
-            out[found.group(1)] = int(found.group(2).strip().rstrip('fuUlL'), 0)
+            total |= int(part.rstrip('fuUlL'), 0)
         except ValueError:
-            continue
-    return out
+            return None
+    return total
+
+
+def file_constants(path: str) -> dict[str, int]:
+    """
+    Collect the integer constants a source file defines, including enumerated ones.
+
+    The rules require a named constant rather than a bare number, so a method that returns one
+    returns a name, and the name has to be resolved before the value can be compared. Definitions
+    are matched across newlines, since a mask built from several named bits is usually wrapped.
+    """
+    text = Path(path).read_text(errors='replace')
+    known: dict[str, int] = dict(_FRAMEWORK)
+    patterns = (
+        # static const T kName = <expression>;
+        re.compile(r'(?:static\s+)?const(?:expr)?\s+[\w\s*]*?\b(k\w+)\s*=\s*([^;]+);'),
+        # enum { kName = <expression>, ... }
+        re.compile(r'\b(k\w+)\s*=\s*([^,;}]+)'),
+    )
+    for pattern in patterns:
+        for found in pattern.finditer(text):
+            value = _evaluate(' '.join(found.group(2).split()), known)
+            if value is not None:
+                known.setdefault(found.group(1), value)
+    return known
 
 
 def _matches(value: int, spelled: str, constants: dict[str, int]) -> bool:
@@ -165,12 +235,11 @@ def _matches(value: int, spelled: str, constants: dict[str, int]) -> bool:
         return True
     if value == 1 and spelled in _ONE:
         return True
-    if spelled in constants:
-        return constants[spelled] == value
-    try:
-        return int(spelled, 0) == value
-    except ValueError:
-        return False
+    known = constants
+    if spelled in known:
+        return known[spelled] == value
+    evaluated = _evaluate(spelled, known)
+    return evaluated is not None and evaluated == value
 
 
 def main(argv=None) -> int:
@@ -195,7 +264,11 @@ def main(argv=None) -> int:
             continue
         words = [struct.unpack_from('<I', metadata._data, offset + i * 4)[0] for i in range(2)]
         empty = words[0] == _RET
-        constant = _mov_immediate(words[0]) if words[1] == _RET else None
+        constant = None
+        if words[1] == _RET:
+            constant = _mov_immediate(words[0])
+            if constant is None:
+                constant = _orr_immediate(words[0])
         super_only = (method.selector == 'dealloc'
                       and _is_super_only(metadata, stubs, method.address))
         if not empty and constant is None and not super_only:

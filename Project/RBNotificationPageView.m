@@ -207,7 +207,9 @@ static NSString *const kDisableTouchCalloutScript =
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
+    // The binary returns 6 (orr w0,wzr,#0x6 at 0x194148), which is the two portrait bits, and it
+    // agrees with -shouldAutorotateToInterfaceOrientation: above. Landscape is 24.
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
 }
 
 - (BOOL)shouldAutorotate {
