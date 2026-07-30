@@ -49,6 +49,10 @@ VERIFIED = {
     # lookup can never resolve. The count < 2 guard is the b.cc at 0x1a187c.
     0x1A1644: 'UIImage(RB) +imageWithName:imageDirectory:themaDirectory:retina: '
               'faithful, including the fallback arm that replaces the wrong component',
+    # The retina arm is entered only when the flag is set (cbz w0 at 0x1a1a5c skips it) and falls
+    # through to the non-retina call when it returns nil (cbnz x24 at 0x1a1a88 returns early).
+    0x1A1A0C: 'UIImage(RB) +imageWithName:imageDirectory:themaDirectory: two-arm retina fallback, '
+              'w5 carries the retina flag as 1 then 0',
     # ApplilinkCore's flag block at 0x3df630, each accessor distinguished only by its
     # displacement; every byte's readers and writers were checked by cross-reference.
     0x214c00: 'ApplilinkCore +setNavigationBarCommonAppearance:: stores the argument verbatim',
