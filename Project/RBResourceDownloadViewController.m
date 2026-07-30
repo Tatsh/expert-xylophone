@@ -872,42 +872,46 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
 }
 
 - (void)updateLayout {
-    // Re-centre the help container and the pastel progress container within the current bounds. The
-    // wide variant always uses the side-by-side (landscape) rule; the standard variant stacks the
-    // containers in portrait and places them side by side in landscape. The recovered arithmetic is
-    // soft-float mangled, so the reconstruction centres both containers from their fixed sizes and
-    // a 20-point gutter.
+    // Three arms, not two. The cbz at 0x1ea84 splits on the idiom, and the fcmp d8,d9 with b.le at
+    // 0x1edac splits every other device on the bounds' aspect, taking side by side when the height
+    // is the lesser. A pad stacks the help panel above the pastel container and centres both
+    // horizontally. Any other device stacks them the same way in portrait but aligns the pastel
+    // container's right edge with the help panel's, and in landscape sets them side by side with the
+    // pastel container's bottom edge on the help panel's. Each computed origin round-trips through
+    // fcvt in the binary, so the originals were single precision.
     CGRect bounds = self.view.bounds;
-    // Hypothesis under test, not a recovered predicate: the side-by-side arrangement needs
-    // kWideHelpCanvasWidth + kLayoutGap + the pastel width, which is 1010 points and so only fits a
-    // landscape iPad, yet this controller is locked to portrait on iPad. Selecting it purely on the
-    // idiom therefore cannot fit, while the stacked arrangement does. The competing explanation is
-    // that the bounds themselves are wrong, which the logging below is meant to settle.
-    BOOL sideBySide = bounds.size.height <= bounds.size.width;
-
     CGSize helpSize = self.helpView.frame.size;
     CGSize pastelSize = self.pastelView.frame.size;
-    if (sideBySide) {
-        CGFloat helpX =
-            (CGFloat)(((bounds.size.width - helpSize.width) - pastelSize.width - kLayoutGap) *
-                      0.5f);
-        self.helpView.frame = CGRectMake(helpX,
-                                         (CGFloat)((bounds.size.height - helpSize.height) * 0.5f),
+    BOOL isPad = IsPad();
+    BOOL sideBySide = !isPad && (bounds.size.height <= bounds.size.width);
+    if (isPad) {
+        float helpY =
+            (float)((bounds.size.height - helpSize.height - pastelSize.height - kLayoutGap) * 0.5);
+        self.helpView.frame = CGRectMake((bounds.size.width * 0.5) - (helpSize.width * 0.5),
+                                         helpY,
                                          helpSize.width,
                                          helpSize.height);
-        self.pastelView.frame =
-            CGRectMake(helpX + helpSize.width + kLayoutGap,
-                       (CGFloat)((bounds.size.height - pastelSize.height) * 0.5f),
-                       pastelSize.width,
-                       pastelSize.height);
-    } else {
-        CGFloat helpY =
-            (CGFloat)(((bounds.size.height - helpSize.height) - pastelSize.height - kLayoutGap) *
-                      0.5f);
-        self.helpView.frame = CGRectMake(
-            (bounds.size.width - helpSize.width) * 0.5f, helpY, helpSize.width, helpSize.height);
-        self.pastelView.frame = CGRectMake((bounds.size.width - pastelSize.width) * 0.5f,
+        self.pastelView.frame = CGRectMake((bounds.size.width * 0.5) - (pastelSize.width * 0.5),
                                            helpY + helpSize.height + kLayoutGap,
+                                           pastelSize.width,
+                                           pastelSize.height);
+    } else if (!sideBySide) {
+        CGFloat helpX = (bounds.size.width * 0.5) - (helpSize.width * 0.5);
+        float helpY =
+            (float)((bounds.size.height - helpSize.height - pastelSize.height - kLayoutGap) * 0.5);
+        self.helpView.frame = CGRectMake(helpX, helpY, helpSize.width, helpSize.height);
+        // The binary re-reads the help frame it has just set, which yields these same values.
+        self.pastelView.frame = CGRectMake((float)((helpX + helpSize.width) - pastelSize.width),
+                                           helpY + helpSize.height + kLayoutGap,
+                                           pastelSize.width,
+                                           pastelSize.height);
+    } else {
+        float helpX =
+            (float)((bounds.size.width - helpSize.width - pastelSize.width - kLayoutGap) * 0.5);
+        float helpY = (float)((bounds.size.height - helpSize.height) * 0.5);
+        self.helpView.frame = CGRectMake(helpX, helpY, helpSize.width, helpSize.height);
+        self.pastelView.frame = CGRectMake(helpX + helpSize.width + kLayoutGap,
+                                           (float)((helpY + helpSize.height) - pastelSize.height),
                                            pastelSize.width,
                                            pastelSize.height);
     }
