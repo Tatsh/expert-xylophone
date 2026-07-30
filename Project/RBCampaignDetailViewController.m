@@ -75,8 +75,9 @@ static NSString *const kLinkButtonTitle = @"詳しくはこちら";
 static const float kSampleBGMFadeTime = 0.5f;
 static const float kSampleBGMNoFade = 0.0f;
 
-// The item-name font search range: 18 points down through 10 points, one point per step.
-static const CGFloat kItemNameMaxFontSize = 18.0;
+// The item-name font search range: 18 points down through 10 points, one point per step. The
+// step arithmetic is single precision (the scvtf/fsub pair at 0xaa84 works in s registers).
+static const float kItemNameMaxFontSize = 18.0f;
 static const int kItemNameFontStepCount = 9;
 // The artwork thumbnail is a fixed 80-point square inset 8 points into the header panel.
 static const CGFloat kArtworkOrigin = 8.0;
@@ -89,11 +90,13 @@ static const float kArtworkShadowOpacity = 0.4f;
 // The header text block left inset (past the artwork) and the label column width.
 static const CGFloat kTextColumnLeft = 96.0;
 static const CGFloat kItemNameTop = 8.0;
-static const CGFloat kItemNameRightInset = 104.0;
-static const CGFloat kItemNameMaxHeight = 50.0;
+// The item-name label's fixed frame height, which is also the height the fitting loop accepts.
+static const CGFloat kItemNameMaxHeight = 50.0; // @ghidraAddress 0x2ec6e0
 static const CGFloat kSecondaryLabelRowHeight = 20.0;
-// The name-label bottom padding used to grow the header text block.
-static const CGFloat kTextBlockBottomInset = -80.0;
+// The two insets that together make the header text column. The binary adds both to the view
+// width, once for the fitting measurement and once for the label frame, and never spells the
+// combined 104 anywhere, so there is no separate constant for it.
+static const CGFloat kTextBlockBottomInset = -80.0; // @ghidraAddress 0x2ec740
 static const CGFloat kNameLabelBottomInset = -24.0;
 // The action button metrics: 100 points wide, 25 points tall, 4-point corners.
 static const CGFloat kActionButtonWidth = 100.0;
@@ -114,7 +117,7 @@ static const CGFloat kDetailPanelWhite = 143.0f / 255.0f;
 static const CGFloat kDividerWhite = 0.5;
 // The banner corner radius and the detail-panel vertical growth increments.
 static const CGFloat kBannerCornerRadius = 8.0;
-static const CGFloat kDetailBlockGrowth = -140.0;
+static const CGFloat kDetailBlockGrowth = -140.0; // @ghidraAddress 0x2ec728
 static const CGFloat kDescriptionInset = 10.0;
 static const CGFloat kDescriptionWidthInset = -20.0;
 static const CGFloat kCopyrightGrowth = -50.0;
@@ -558,58 +561,71 @@ static const CGFloat kDisabledButtonWhite = 0.6f;
     }
 
     NSString *nameText = self.labelItemName.text;
-    // Shrink the item-name font from 18 points until the two-line name fits the text column.
-    CGFloat columnWidth = self.view.bounds.size.width - kItemNameRightInset;
+    // Shrink the item-name font from 18 points until the name fits the text column. The
+    // measurement is unconstrained vertically; it is the test below that bounds the height.
+    CGFloat columnWidth =
+        self.view.bounds.size.width + kNameLabelBottomInset + kTextBlockBottomInset;
     UIFont *nameFont = nil;
     for (int step = 0; step < kItemNameFontStepCount; ++step) {
-        nameFont = [UIFont boldSystemFontOfSize:(CGFloat)(kItemNameMaxFontSize - (float)step)];
+        nameFont = [UIFont boldSystemFontOfSize:(kItemNameMaxFontSize - (float)step)];
         CGSize measured = [nameText sizeWithFont:nameFont
-                               constrainedToSize:CGSizeMake(columnWidth, kItemNameMaxHeight)
+                               constrainedToSize:CGSizeMake(columnWidth, MAXFLOAT)
                                    lineBreakMode:NSLineBreakByWordWrapping];
-        if (measured.height <= kItemNameMaxHeight) {
+        if (measured.width <= columnWidth && measured.height <= kItemNameMaxHeight) {
             break;
         }
     }
     self.labelItemName.font = nameFont;
 
-    CGFloat contentWidth =
-        self.view.bounds.size.width + kNameLabelBottomInset + kTextBlockBottomInset;
-    self.labelItemName.frame = CGRectMake(self.labelItemName.frame.origin.x,
-                                          self.labelItemName.frame.origin.y,
-                                          contentWidth,
-                                          self.labelItemName.frame.size.height);
+    // The label is given the column width and a fixed height before it shrinks to fit.
+    self.labelItemName.frame =
+        CGRectMake(self.labelItemName.frame.origin.x,
+                   self.labelItemName.frame.origin.y,
+                   self.view.bounds.size.width + kNameLabelBottomInset + kTextBlockBottomInset,
+                   kItemNameMaxHeight);
     [self.labelItemName sizeToFit];
 
     CGRect bannerFrame = self.bannerView.frame;
+    CGFloat descriptionLeft = self.descriptionTextView.frame.origin.x;
+    CGFloat copyrightLeft = self.copyrightView.frame.origin.x;
+    CGFloat copyrightWidth = self.copyrightView.frame.size.width;
     [self.descriptionTextView sizeToFit];
     [self.copyrightView sizeToFit];
 
-    CGFloat descriptionTop = CGRectGetHeight(bannerFrame) + kElementSpacing;
-    CGFloat descriptionWidth = self.view.bounds.size.width + kDescriptionWidthInset;
-    self.descriptionTextView.frame = CGRectMake(self.descriptionTextView.frame.origin.x,
-                                                descriptionTop,
-                                                descriptionWidth,
-                                                self.descriptionTextView.frame.size.height);
-
     CGFloat descriptionHeight = CGRectGetHeight(self.descriptionTextView.frame);
+    CGFloat descriptionTop = CGRectGetMaxY(bannerFrame) + kElementSpacing;
+    CGFloat descriptionWidth = self.view.bounds.size.width + kDescriptionWidthInset;
+    self.descriptionTextView.frame =
+        CGRectMake(descriptionLeft, descriptionTop, descriptionWidth, descriptionHeight);
+
     CGFloat copyrightHeight = CGRectGetHeight(self.copyrightView.frame);
     CGFloat copyrightTop = descriptionTop + descriptionHeight + kElementSpacing;
-    self.copyrightView.frame = CGRectMake(
-        self.copyrightView.frame.origin.x, copyrightTop, descriptionWidth, copyrightHeight);
-
-    CGFloat detailHeight = copyrightTop + copyrightHeight;
+    // The detail panel never shrinks below the minimum block height. When the copyright would end
+    // above that line, it is pushed down to sit on it instead, and the panel keeps the minimum.
+    CGFloat detailHeight;
+    if (copyrightTop + copyrightHeight >= self.view.bounds.size.height + kDetailBlockGrowth) {
+        detailHeight = copyrightTop + copyrightHeight;
+    } else {
+        copyrightTop = (self.view.bounds.size.height + kDetailBlockGrowth) - copyrightHeight;
+        detailHeight = self.view.bounds.size.height + kDetailBlockGrowth;
+    }
+    // The copyright keeps its own width here; only the description takes the inset column width.
+    self.copyrightView.frame =
+        CGRectMake(copyrightLeft, copyrightTop, copyrightWidth, copyrightHeight);
     self.detailView.frame = CGRectMake(self.detailView.frame.origin.x,
                                        self.detailView.frame.origin.y,
                                        self.view.bounds.size.width,
                                        detailHeight);
 
-    self.lineView.frame = CGRectMake(self.lineView.frame.origin.x,
+    // The divider is pinned to the left edge and keeps its own width, unlike the blocks above it.
+    self.lineView.frame = CGRectMake(0.0,
                                      copyrightTop + kDividerLift,
-                                     self.view.bounds.size.width,
+                                     self.lineView.frame.size.width,
                                      self.lineView.frame.size.height);
 
-    CGFloat itemHeight = CGRectGetHeight(self.itemView.frame);
-    self.mainView.contentSize = CGSizeMake(self.view.bounds.size.width, itemHeight + detailHeight);
+    self.mainView.contentSize = CGSizeMake(self.mainView.frame.size.width,
+                                           self.itemView.frame.size.height +
+                                               self.detailView.frame.size.height);
 }
 
 #pragma mark - Sample playback
