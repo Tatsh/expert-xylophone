@@ -29,8 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame;
 
 /**
- * @brief Build the ticker's subviews: the background image frame, the clipping text base view, the
- * scrolling news label, and the repeating anchor-point animation.
+ * @brief Build the ticker's subviews: the background image frame, the leading @c NEWS icon label,
+ * the clipping text base view, the scrolling news label, and the anchor-point animation applied to
+ * the ticker's own layer.
  *
  * The label colours and background are chosen by the active theme, and the fonts are sized by the
  * iPad idiom.

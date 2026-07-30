@@ -164,6 +164,7 @@ fobjc
 fori
 foxundermoon
 fram
+frintm
 fsub
 ftrivial
 fullcombo

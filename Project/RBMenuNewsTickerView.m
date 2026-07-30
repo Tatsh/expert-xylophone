@@ -19,15 +19,19 @@
 // The news-ticker banner background image, whose height sets the ticker's overall bounds.
 static NSString *const kNewsTickerBackgroundImageName = @"01_music_select/sel_news";
 
-// The point size of the news text, chosen by the active iPad idiom. The wide variant uses a
-// smaller glyph to fit the wider spacing.
-static const CGFloat kNewsTickerFontSizeDefault = 18.0;
-static const CGFloat kNewsTickerFontSizeWide = 12.0;
+// The leading icon label's text. The binary builds it through a "%@" format rather than using the
+// literal directly.
+static NSString *const kNewsTickerIconFormat = @"%@";
+static NSString *const kNewsTickerIconText = @"NEWS";
+
+// The point size of the news text, chosen by the active iPad idiom. The pad uses the larger glyph.
+static const CGFloat kNewsTickerFontSizePad = 18.0;
+static const CGFloat kNewsTickerFontSizePhone = 12.0;
 
 // The horizontal inset of the clipping text base view within the ticker, chosen by the iPad idiom.
 // It is also the width consumed by the leading news icon.
-static const CGFloat kNewsTickerTextInsetDefault = 100.0;
-static const CGFloat kNewsTickerTextInsetWide = 50.0;
+static const CGFloat kNewsTickerTextInsetPad = 100.0;
+static const CGFloat kNewsTickerTextInsetPhone = 50.0;
 
 // The theme index whose news text and background use the light (white-on-black) colour scheme. The
 // two darker themes draw black text on a near-white translucent background.
@@ -37,24 +41,33 @@ enum {
     kNewsTickerThemeDarkTwo = 2,
 };
 
-// The near-white translucent background colour component used by the two darker themes (0xdb/0xff).
-static const CGFloat kNewsTickerDarkThemeBackgroundComponent = 0.8571428571428571;
+// The near-white background colour component used by the two darker themes. It is 0xda/0xff
+// rounded to single precision and widened again, which is how the constant sits in the pool.
+static const CGFloat kNewsTickerDarkThemeBackgroundComponent =
+    0.8549019694328308; /** @ghidraAddress 0x300fa8 */
 static const CGFloat kNewsTickerDarkThemeBackgroundAlpha = 1.0;
 
 // The marquee scroll speed, expressed as the divisor that converts the text's overflow width in
 // points into extra scroll seconds.
-static const CGFloat kNewsTickerScrollPointsPerSecond = 75.0;
+static const CGFloat kNewsTickerScrollPointsPerSecond = 75.0; /** @ghidraAddress 0x300fb0 */
 
 // The fixed number of seconds added to every overflowing marquee scroll on top of the
 // overflow-width term and the base duration.
 static const CGFloat kNewsTickerScrollConstantSeconds = 3.0;
 
-// The fixed y-coordinate of the scrolling text layer's position within the base view.
-static const CGFloat kNewsTickerTextLayerPositionY = 40.0;
+// The two y-coordinates the scrolling text layer's position alternates between. The label's anchor
+// point is its top-left corner, so the parked value drops the text clear of the clipping base view
+// and the visible value seats it against the base view's top edge. Every marquee begins and ends
+// parked, which is why a finished animation leaves the ticker blank until it is restarted.
+static const CGFloat kNewsTickerTextLayerParkedY = 40.0; /** @ghidraAddress 0x2ee950 */
+static const CGFloat kNewsTickerTextLayerVisibleY = 0.0;
 
-// The anchor-point x-coordinate the text layer animates to at startup, sliding the layer's origin
-// to its horizontal centre so the text scrolls symmetrically.
-static const CGFloat kNewsTickerTextAnchorCenterX = 0.5;
+// The anchor-point x-coordinate the ticker's own layer animates to at startup.
+static const CGFloat kNewsTickerAnchorCenterX = 0.5;
+
+// The anchor-point y-coordinate the ticker's own layer animates to, and the text label's anchor
+// point, both of which the binary pins to the top edge.
+static const CGFloat kNewsTickerAnchorTopY = 0.0;
 
 // The relative time, within a scroll cycle, at which the text sits fully centred.
 static const CGFloat kNewsTickerScrollMidpointFraction = 0.5;
@@ -101,8 +114,8 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
 
     BOOL isPad = IsPad();
     NSInteger theme = [RBUserSettingData sharedInstance].thema;
-    CGFloat fontSize = isPad ? kNewsTickerFontSizeWide : kNewsTickerFontSizeDefault;
-    CGFloat textInset = isPad ? kNewsTickerTextInsetWide : kNewsTickerTextInsetDefault;
+    CGFloat fontSize = isPad ? kNewsTickerFontSizePad : kNewsTickerFontSizePhone;
+    CGFloat textInset = isPad ? kNewsTickerTextInsetPad : kNewsTickerTextInsetPhone;
 
     UIImage *background = [UIImage imageWithName:kNewsTickerBackgroundImageName];
     self.frame = CGRectMake(
@@ -114,7 +127,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     iconLabel.font = [UIFont systemFontOfSize:fontSize];
     iconLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     iconLabel.textAlignment = NSTextAlignmentCenter;
-    iconLabel.text = [NSString stringWithFormat:@""];
+    iconLabel.text = [NSString stringWithFormat:kNewsTickerIconFormat, kNewsTickerIconText];
     iconLabel.textColor = UIColor.blackColor;
     iconLabel.backgroundColor = UIColor.clearColor;
     [self addSubview:iconLabel];
@@ -154,41 +167,48 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
     [baseView addSubview:newsLabel];
     self.textView = newsLabel;
 
-    newsLabel.layer.anchorPoint = CGPointMake(0.0, newsLabel.layer.anchorPoint.y);
+    // The text label anchors on its top-left corner, so its layer position is its origin rather
+    // than its centre.
+    newsLabel.layer.anchorPoint = CGPointZero;
 
+    // The anchor-point animation runs on the ticker's own layer, not the text label's.
+    CGPoint anchorPoint = self.layer.anchorPoint;
     CABasicAnimation *anchorAnimation = [CABasicAnimation animationWithKeyPath:@"anchorPoint"];
     anchorAnimation.duration = 0.0;
     anchorAnimation.repeatCount = 0.0;
-    anchorAnimation.fromValue =
-        [NSValue valueWithCGPoint:CGPointMake(0.0, newsLabel.layer.anchorPoint.y)];
-    anchorAnimation.toValue = [NSValue
-        valueWithCGPoint:CGPointMake(kNewsTickerTextAnchorCenterX, newsLabel.layer.anchorPoint.y)];
+    anchorAnimation.fromValue = [NSValue valueWithCGPoint:anchorPoint];
+    anchorAnimation.toValue =
+        [NSValue valueWithCGPoint:CGPointMake(kNewsTickerAnchorCenterX, kNewsTickerAnchorTopY)];
     anchorAnimation.timingFunction =
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-    newsLabel.layer.anchorPoint =
-        CGPointMake(kNewsTickerTextAnchorCenterX, newsLabel.layer.anchorPoint.y);
-    [newsLabel.layer addAnimation:anchorAnimation forKey:kNewsTickerAnchorAnimationKey];
+    self.layer.anchorPoint = CGPointMake(kNewsTickerAnchorCenterX, kNewsTickerAnchorTopY);
+    [self.layer addAnimation:anchorAnimation forKey:kNewsTickerAnchorAnimationKey];
 }
 
 - (float)setText:(NSString *)text LINK:(NSURL *)LINK {
     self.textView.text = text;
     CGSize textSize = [text sizeWithFont:self.font];
-    self.textView.frame = self.textBaseView.frame;
+    // The label is sized to the text, not to the base view: only the width comes from the measured
+    // text, while the height is the one the base view's frame left behind.
+    self.textView.frame =
+        CGRectMake(0.0, 0.0, textSize.width, self.textBaseView.frame.size.height);
     CGFloat overflow = textSize.width - self.textBaseView.bounds.size.width;
 
     float duration = 0.0;
     if (overflow <= 0.0) {
-        // The text fits: run a zero-duration marquee that simply parks the layer at the fixed
-        // centre position.
+        // The text fits: no horizontal travel, so the marquee only lifts the text from its parked
+        // y into view and drops it back at the end.
         CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
         animation.duration = self.baseDuration;
         animation.repeatCount = 0.0;
         animation.values = @[
-            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerPositionY)],
-            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerPositionY)],
-            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerPositionY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerParkedY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerParkedY)],
         ];
         animation.keyTimes = @[
+            @(0.0),
             @(kNewsTickerScrollMidpointFraction / self.baseDuration),
             @(-kNewsTickerScrollMidpointFraction / self.baseDuration + 1.0),
             @(1.0),
@@ -197,8 +217,9 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
+            [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
         ];
-        self.textView.layer.position = CGPointMake(0.0, kNewsTickerTextLayerPositionY);
+        self.textView.layer.position = CGPointMake(0.0, kNewsTickerTextLayerParkedY);
         [self.textView.layer addAnimation:animation forKey:kNewsTickerPositionAnimationKey];
     } else {
         // The text overflows: scroll it left by the overflow distance over a duration proportional
@@ -213,12 +234,15 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
         animation.duration = totalDuration;
         animation.repeatCount = 0.0;
         animation.values = @[
-            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerPositionY)],
-            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerPositionY)],
-            [NSValue valueWithCGPoint:CGPointMake(scrolledX, kNewsTickerTextLayerPositionY)],
-            [NSValue valueWithCGPoint:CGPointMake(scrolledX, kNewsTickerTextLayerPositionY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerParkedY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(0.0, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(scrolledX, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(scrolledX, kNewsTickerTextLayerVisibleY)],
+            [NSValue valueWithCGPoint:CGPointMake(scrolledX, kNewsTickerTextLayerParkedY)],
         ];
         animation.keyTimes = @[
+            @(0.0),
             @(kNewsTickerScrollMidpointFraction / totalDuration),
             @((self.baseDuration * kNewsTickerScrollMidpointFraction +
                kNewsTickerScrollMidpointFraction) /
@@ -237,7 +261,7 @@ static const NSUInteger kNewsTickerLinkQueryComponentCount = 2;
             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
             [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
         ];
-        self.textView.layer.position = CGPointMake(scrolledX, kNewsTickerTextLayerPositionY);
+        self.textView.layer.position = CGPointMake(scrolledX, kNewsTickerTextLayerParkedY);
         [self.textView.layer addAnimation:animation forKey:kNewsTickerPositionAnimationKey];
     }
 

@@ -289,17 +289,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The message content view's width, derived from the iPad idiom.
+ *
+ * Single precision, not @c CGFloat: the accessors pass the value in @c s0 and every arithmetic use
+ * is a single-precision @c fmul widened afterwards with @c fcvt.
  * @ghidraAddress 0x1412f4 (getter)
  * @ghidraAddress 0x141304 (setter)
  */
-@property(nonatomic, assign) CGFloat contentViewWidth;
+@property(nonatomic, assign) float contentViewWidth;
 
 /**
  * @brief The message content view's height, derived from the iPad idiom.
+ *
+ * Single precision, not @c CGFloat, for the same reason as @c contentViewWidth.
  * @ghidraAddress 0x141314 (getter)
  * @ghidraAddress 0x141324 (setter)
  */
-@property(nonatomic, assign) CGFloat contentViewHeight;
+@property(nonatomic, assign) float contentViewHeight;
 
 @end
 

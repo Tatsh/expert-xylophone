@@ -11,6 +11,8 @@
 
 #import "RBMenuTutorialView.h"
 
+#include <cmath>
+
 #import "RBAnimationFactory.h"
 #import "RBCustomView.h"
 #import "RBExperienceData.h"
@@ -48,11 +50,12 @@ static NSString *const kCursorAnimationKey = @"here";
 static NSString *const kContentPositionKeyPath = @"position";
 
 // The message content-view dimensions, chosen by the iPad idiom. The default (narrow) variant
-// uses a smaller bubble than the wide variant.
-constexpr CGFloat kContentWidthNarrow = 300.0;
-constexpr CGFloat kContentHeightNarrow = 100.0;
-constexpr CGFloat kContentWidthWide = 640.0;
-constexpr CGFloat kContentHeightWide = 300.0;
+// uses a smaller bubble than the wide variant. These are single precision, matching the
+// contentViewWidth/contentViewHeight properties they are assigned to.
+constexpr float kContentWidthNarrow = 300.0f;
+constexpr float kContentHeightNarrow = 100.0f;
+constexpr float kContentWidthWide = 640.0f;
+constexpr float kContentHeightWide = 300.0f;
 
 // The experience points granted once, the first time the customize-item tutorial step is reached.
 constexpr float kCustomizeTutorialRewardPoints = 1000.0f;
@@ -125,12 +128,35 @@ constexpr CGFloat kRotationDimAlpha = 0.5;
 constexpr CGFloat kSpotlightPixelSnap = 0.5;
 constexpr CGFloat kSpotlightPixelGrow = 1.0;
 
+// The gap left between the spotlight and the message content view when the content view has to be
+// slid clear of it.
+constexpr CGFloat kContentViewSpotlightGap = 10.0;
+
 // The message-window layer is inset within the content view by a idiom-dependent margin.
 constexpr CGFloat kMessageWindowInsetXWide = 20.0;
 constexpr CGFloat kMessageWindowInsetXNarrow = 26.0;
 constexpr CGFloat kMessageWindowInsetYWide = 16.0;
 constexpr CGFloat kMessageWindowInsetYNarrow = 8.0;
 constexpr CGFloat kMessageWindowBaseInsetY = 20.0;
+
+// On the narrow idiom the message window is pushed back left of the content view's centre by this
+// fraction of its own width.
+constexpr CGFloat kMessageWindowNarrowOffsetScale = -0.85; // @ghidraAddress 0x308cb8
+
+// The pastel bubble hangs below the message window's top edge by this multiple of its own height,
+// chosen by the iPad idiom. The wide value is an fmov immediate rather than a pool load.
+constexpr CGFloat kPastelDropScaleWide = 1.5;
+constexpr CGFloat kPastelDropScaleNarrow = 0.8; // @ghidraAddress 0x2eea40
+
+// On the narrow idiom the pastel bubble is also nudged left by a third of its own width.
+constexpr CGFloat kPastelNarrowInsetDivisor = 3.0;
+
+// The message layer is sized from the decide-step message artwork rectangle, read straight out of
+// the clip table rather than through -getClipRect:. The wide idiom takes the full-size entry; the
+// narrow idiom takes its own entry at half scale.
+constexpr unsigned int kTutorialClipRectMessageWide = 9;
+constexpr unsigned int kTutorialClipRectMessageNarrow = 10;
+constexpr CGFloat kNarrowClipRectScale = 0.5;
 
 // The bouncing cursor's stay-in-place bob runs for half a second and never repeats.
 constexpr CGFloat kCursorBobDuration = 0.5;
@@ -191,8 +217,8 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
     // The message content view is centred in the overlay at its idiom-derived size.
     self.contentView =
-        [[UIView alloc] initWithFrame:CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5,
-                                                 self.height * 0.5 - self.contentViewHeight * 0.5,
+        [[UIView alloc] initWithFrame:CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5f,
+                                                 self.height * 0.5 - self.contentViewHeight * 0.5f,
                                                  self.contentViewWidth,
                                                  self.contentViewHeight)];
     [self addSubview:self.contentView];
@@ -205,13 +231,15 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
             [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeMessageWide]];
     windowLayer.contents = (__bridge id)windowClip.CGImage;
     if (narrow) {
-        windowLayer.frame = CGRectMake(self.contentViewWidth * 0.5 + windowClip.size.width,
-                                       self.contentViewHeight * 0.5,
-                                       windowClip.size.width,
-                                       windowClip.size.height);
+        windowLayer.frame =
+            CGRectMake(self.contentViewWidth * 0.5f +
+                           windowClip.size.width * kMessageWindowNarrowOffsetScale,
+                       self.contentViewHeight * 0.5f,
+                       windowClip.size.width,
+                       windowClip.size.height);
     } else {
-        windowLayer.frame = CGRectMake(self.contentViewWidth * 0.5 - windowClip.size.width,
-                                       self.contentViewHeight * 0.25 + 3.0,
+        windowLayer.frame = CGRectMake(self.contentViewWidth * 0.5f - windowClip.size.width,
+                                       self.contentViewHeight * 0.25f + 3.0f,
                                        windowClip.size.width,
                                        windowClip.size.height);
     }
@@ -225,11 +253,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     [pastel setupView:self.messageImage];
     if (narrow) {
         CGRect windowFrame = self.messageWindowLayer.frame;
-        pastel.position = CGPointMake(windowFrame.origin.x - pastel.frame.size.width / 3.0,
-                                      1.0 + windowFrame.size.height * 0.5);
+        pastel.position =
+            CGPointMake(windowFrame.origin.x - pastel.frame.size.width / kPastelNarrowInsetDivisor,
+                        windowFrame.origin.y + pastel.frame.size.height * kPastelDropScaleNarrow);
     } else {
         CGRect windowFrame = self.messageWindowLayer.frame;
-        pastel.position = CGPointMake(windowFrame.origin.x, 1.0 + windowFrame.size.height * 1.5);
+        pastel.position =
+            CGPointMake(windowFrame.origin.x,
+                        windowFrame.origin.y + pastel.frame.size.height * kPastelDropScaleWide);
     }
     pastel.anchorPoint = CGPointMake(0.5, 1.0);
     pastel.opacity = 0.0;
@@ -241,15 +272,17 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     messageLayer.anchorPoint = CGPointMake(0.5, 0.5);
     CGRect windowFrame = self.messageWindowLayer.frame;
     if (narrow) {
+        CGSize messageSize = g_pTutorialClipRect[kTutorialClipRectMessageNarrow].size;
         messageLayer.frame = CGRectMake(windowFrame.origin.x + kMessageWindowInsetXNarrow,
                                         windowFrame.origin.y + kMessageWindowInsetYNarrow,
-                                        windowFrame.size.width * 0.5,
-                                        windowFrame.size.height * 0.5);
+                                        messageSize.width * kNarrowClipRectScale,
+                                        messageSize.height * kNarrowClipRectScale);
     } else {
+        CGSize messageSize = g_pTutorialClipRect[kTutorialClipRectMessageWide].size;
         messageLayer.frame = CGRectMake(windowFrame.origin.x + kMessageWindowInsetXWide,
                                         windowFrame.origin.y + kMessageWindowInsetYWide,
-                                        windowFrame.size.width,
-                                        windowFrame.size.height);
+                                        messageSize.width,
+                                        messageSize.height);
     }
     messageLayer.contents = (__bridge id)self.messageImage.CGImage;
     messageLayer.opacity = 0.0;
@@ -268,8 +301,10 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
         [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeTouch]];
     UIImage *touchFrameClip =
         [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeTouchFrame]];
+    // Both dimensions come from the first frame; the second frame's clip only supplies an
+    // animation image.
     self.touchView = [[UIImageView alloc]
-        initWithFrame:CGRectMake(0.0, 0.0, touchClip.size.width, touchFrameClip.size.height)];
+        initWithFrame:CGRectMake(0.0, 0.0, touchClip.size.width, touchClip.size.height)];
     self.touchView.animationImages = @[ touchClip, touchFrameClip ];
     self.touchView.animationDuration = 1.0;
     self.touchView.animationRepeatCount = 0;
@@ -320,7 +355,8 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 // Build a flat grey quadrant layer and add it to the base view's layer.
 - (CALayer *)addGrayLayerToBase {
     CALayer *layer = [CALayer layer];
-    layer.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0].CGColor;
+    // The original spelled this out as colorWithRed:0 green:0 blue:0 alpha:1.
+    layer.backgroundColor = UIColor.blackColor.CGColor;
     [self.baseView.layer addSublayer:layer];
     return layer;
 }
@@ -626,7 +662,9 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     if (targetView == nil) {
         // No spotlight: dim the whole overlay opaque and hide the grey cut-out layers.
         [CATransaction begin];
-        [CATransaction setAnimationDuration:(withAnimation ? kOverlayFadeDuration : 0.0)];
+        // The binary never reads withAnimation: it passes a literal zero duration here, and the
+        // spotlight branch below sets no duration at all.
+        [CATransaction setAnimationDuration:0.0];
         [CATransaction
             setAnimationTimingFunction:[CAMediaTimingFunction
                                            functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
@@ -648,13 +686,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     // origin a half-pixel out so the spotlight aligns to the pixel grid.
     CGRect targetRect = [targetView.superview convertRect:targetView.frame toView:self];
     CGRect clip = targetRect;
-    // Snap only when the origin is not already on an integral pixel boundary.
-    if (static_cast<double>(static_cast<float>(static_cast<int>(targetRect.origin.x))) !=
+    // Snap only when the origin is not already on an integral pixel boundary. The test narrows to
+    // single precision and floors (fcvt/frintm), rather than truncating towards zero.
+    if (static_cast<double>(std::floor(static_cast<float>(targetRect.origin.x))) !=
         targetRect.origin.x) {
         clip.origin.x = targetRect.origin.x - kSpotlightPixelSnap;
         clip.size.width = targetRect.size.width + kSpotlightPixelGrow;
     }
-    if (static_cast<double>(static_cast<float>(static_cast<int>(targetRect.origin.y))) !=
+    if (static_cast<double>(std::floor(static_cast<float>(targetRect.origin.y))) !=
         targetRect.origin.y) {
         clip.origin.y = targetRect.origin.y - kSpotlightPixelSnap;
         clip.size.height = targetRect.size.height + kSpotlightPixelGrow;
@@ -691,8 +730,10 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
         CGRectMake(spot.origin.x, spot.origin.y + spot.size.height, self.width, self.height);
     self.grayBR.frame =
         CGRectMake(spot.origin.x - self.width, spot.origin.y, self.width, self.height);
-    self.grayCTL.frame =
-        CGRectMake(spot.origin.x, spot.origin.y, spot.size.width, self.grayCTL.frame.size.height);
+    self.grayCTL.frame = CGRectMake(spot.origin.x,
+                                    spot.origin.y,
+                                    self.grayCTL.frame.size.width,
+                                    self.grayCTL.frame.size.height);
     self.grayCTR.frame = CGRectMake(spot.origin.x + spot.size.width - self.grayCTR.frame.size.width,
                                     spot.origin.y,
                                     self.grayCTR.frame.size.width,
@@ -719,28 +760,32 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     /** @ghidraAddress 0x13cfe8 */
     CGRect content = self.contentView.frame;
     CGRect spot = self.clipRect;
-    CGPoint origin = content.origin;
+
+    // Unless the content view actually has to move, the reveal is handed CGRectZero rather than the
+    // content view's own frame; -startAnimation:/-resetAnimation: test for exactly that to decide
+    // whether to run the move group.
+    CGRect placed = CGRectZero;
 
     // When the content view would overlap the spotlight (and the step does not force it to stay),
-    // slide it clear to the side with the most room, clamped to the overlay bounds.
+    // slide it clear to whichever side of the screen midline leaves the most room, clamped to the
+    // overlay bounds.
     if (spot.origin.y <= content.origin.y + content.size.height && !stay &&
         content.origin.y <= spot.origin.y + spot.size.height) {
-        CGFloat spotCenterY = spot.origin.y + spot.size.height;
-        if (content.size.width * 0.5 <= (spot.origin.y + spotCenterY) * 0.5) {
-            origin.y = (spot.origin.y - content.size.height) - 10.0;
-            if (origin.y < 0.0) {
-                origin.y = 0.0;
+        CGFloat spotBottom = spot.origin.y + spot.size.height;
+        placed = content;
+        if (self.height * 0.5 <= (spot.origin.y + spotBottom) * 0.5) {
+            placed.origin.y = (spot.origin.y - content.size.height) - kContentViewSpotlightGap;
+            if (placed.origin.y < 0.0) {
+                placed.origin.y = 0.0;
             }
         } else {
-            origin.y = spotCenterY + 10.0;
-            if (self.height < origin.y + content.size.height) {
-                origin.y = self.height - content.size.height;
+            placed.origin.y = spotBottom + kContentViewSpotlightGap;
+            if (self.height < placed.origin.y + content.size.height) {
+                placed.origin.y = self.height - content.size.height;
             }
         }
     }
 
-    CGRect placed = content;
-    placed.origin = origin;
     if (useAnimation) {
         [self startAnimation:placed];
     } else {
@@ -1274,11 +1319,11 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     /** @ghidraAddress 0x13cdd4 */
     self.fullCoverView.alpha = 0.0;
     self.baseView.alpha = kRotationDimAlpha;
-    self.contentView.frame = CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5,
-                                        self.height * 0.5 - self.contentViewHeight * 0.5,
+    self.contentView.frame = CGRectMake(self.width * 0.5 - self.contentViewWidth * 0.5f,
+                                        self.height * 0.5 - self.contentViewHeight * 0.5f,
                                         self.contentViewWidth,
                                         self.contentViewHeight);
-    self.contentView.alpha = kRotationDimAlpha;
+    self.contentView.alpha = 0.0;
     self.animating = NO;
     [self startTutorialWithType:self.tutorialStatus withAnimation:NO];
 }
