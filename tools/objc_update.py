@@ -295,22 +295,47 @@ def _selector_of(signature: str) -> str:
     return ''.join(f'{part}:' for part in re.findall(r'(\w+)\s*:', text))
 
 
+def mechanically_verified() -> dict[int, str]:
+    """
+    Read the accessor addresses ``objc_verify_accessors.py`` proved against the instructions.
+
+    Returns
+    -------
+    dict[int, str]
+        Each verified address and the ivar it was shown to move.
+    """
+    path = Path('tools/objc_verified.txt')
+    if not path.is_file():
+        return {}
+    out: dict[int, str] = {}
+    for line in path.read_text().splitlines():
+        if line.startswith('#') or not line.strip():
+            continue
+        address, _, why = line.partition(' ')
+        out[int(address, 16)] = why
+    return out
+
+
 def render(methods: list[Method], keyed, loose) -> str:
     """Build the checklist document."""
     listed = [m for m in methods if m.selector not in _COMPILER_GENERATED]
     skipped = len(methods) - len(listed)
+    mechanical = mechanically_verified()
     rows = []
     done = verified = 0
     for m in sorted(listed, key=lambda m: m.address):
         is_reconstructed = ((m.class_name, m.kind, m.selector) in keyed
                     or (m.kind, m.selector) in loose)
-        is_verified = (m.address - IMAGE_BASE) in VERIFIED
+        relative = m.address - IMAGE_BASE
+        is_verified = relative in VERIFIED or relative in mechanical
         done += is_reconstructed
         verified += is_verified
         rows.append(f'| `{m.class_name}` | `{m.kind}` | `{m.selector}` | '
                     f'{"prop" if m.accessor else ""} | {DONE if is_reconstructed else NOT} | '
                     f'{DONE if is_verified else NOT} | `{m.address - IMAGE_BASE:#x}` |')
     accessors = sum(1 for m in listed if m.accessor)
+    mechanical_count = sum(1 for m in listed
+                           if m.accessor and (m.address - IMAGE_BASE) in mechanical)
     header = f'''# Objective-C methods to verify
 
 Every Objective-C method the binary defines, from its own runtime metadata. Nothing Apple ships
@@ -329,8 +354,10 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: {len(listed)} — {done} reconstructed, {verified} verified against the disassembly
-({100.0 * verified / len(listed):.1f}% verified). {accessors} are property accessors.
+Total: {len(listed)} — {done} reconstructed, {verified} verified
+({100.0 * verified / len(listed):.1f}%).
+{accessors} are property accessors, of which {mechanical_count} were verified mechanically by
+`tools/objc_verify_accessors.py`; `tools/objc_verified.txt` records what each was shown to move.
 
 Regenerate with `tools/objc_update.py <binary>`, where the binary is the one **inside the .ipa**;
 the unpacked copy under `rb458orig` is a different build and matches nothing.
