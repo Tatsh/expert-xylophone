@@ -13,11 +13,16 @@ static NSString *const kFrequencyKey = @"ApplilinkRecommend.frequency";
 static NSString *const kAdDisplayCountDailyKey = @"adDisplayCountDaily";
 static NSString *const kAdDisplayCountTotalKey = @"adDisplayCountTotal";
 
-// Sub-keys of the archived allAdData blob.
-static NSString *const kBannerDisplayStatusListKey = @"banner_display_status_list";
-static NSString *const kAdModelSettingListKey = @"ad_model_setting_list";
-static NSString *const kAdListKey = @"list";
-static NSString *const kInterstitialSpecListKey = @"interstitial_spec_list";
+// Sub-keys of the archived allAdData blob. The archive keys its entries by the fully qualified
+// name, so each one repeats the defaults key it was stored under rather than being a bare
+// sub-key; the literals are the __cfstring entries at 0x372300, 0x372320, 0x3722e0, and 0x372340.
+static NSString *const kBannerDisplayStatusListKey =
+    @"ApplilinkRecommend.allAdData.banner_display_status_list";
+static NSString *const kAdModelSettingListKey =
+    @"ApplilinkRecommend.allAdData.ad_model_setting_list";
+static NSString *const kAdListKey = @"ApplilinkRecommend.allAdData.list";
+static NSString *const kInterstitialSpecListKey =
+    @"ApplilinkRecommend.allAdData.interstitial_spec_list";
 
 // Advert-record and display-specification field keys.
 static NSString *const kAdIdKey = @"ad_id";
@@ -41,7 +46,7 @@ static NSString *const kAdIdToKey = @"ad_id_to";
 static NSString *const kMaxDisplayCountDailyKey = @"max_display_count_daily";
 static NSString *const kMaxDisplayCountTotalKey = @"max_display_count_total";
 static NSString *const kInstalledAdDisplayFlgKey = @"installed_ad_display_flg";
-static NSString *const kExternalAdDispMngEndDateKey = @"external_ad_disp_mng_end_date";
+static NSString *const kExternalAdDispMngEndDateKey = @"external_ad_disp_mng.end_date";
 static NSString *const kAdDisplayDateKey = @"adDisplayDate";
 static NSString *const kFrequencyNKey = @"frequency_n";
 static NSString *const kFrequencyMKey = @"frequency_m";
@@ -61,7 +66,7 @@ static NSString *const kSchemeSeparator = @"://";
 static NSString *const kJapanLocaleIdentifier = @"JP";
 static NSString *const kJapanTimeZoneAbbreviation = @"JST";
 static NSString *const kDateTimeFormat = @"yyyy-MM-dd HH:mm:ss";
-static NSString *const kDateFormat = @"yyyy-MM-dd";
+static NSString *const kDateFormat = @"yyyy/MM/dd";
 
 // The user-info key each lottery-suppression message is filed under.
 static NSString *const kErrorUserInfoKey = @"Error";

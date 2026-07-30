@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4426 verified
-(69.8%).
+Total: 6343 — 6203 reconstructed, 4437 verified
+(70.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -6011,28 +6011,28 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebAPI` | `+` | `bannerInfoWithBlock:` |  | ✅ | ❌ | `0x2264ac` |
 | `RewardWebAPI` | `+` | `setSignatureWithParameters:` |  | ✅ | ❌ | `0x226834` |
 | `RewardWebAPI` | `+` | `setTemporaryCacheWithKey:value:expiration:` |  | ✅ | ❌ | `0x226cdc` |
-| `RecommendAdData` | `+` | `getBannerDisplayStatusList` |  | ✅ | ❌ | `0x226e90` |
-| `RecommendAdData` | `+` | `getAdModelSettingList` |  | ✅ | ❌ | `0x226fbc` |
-| `RecommendAdData` | `+` | `getAdList` |  | ✅ | ❌ | `0x2270e8` |
-| `RecommendAdData` | `+` | `getInterstitialSpecList` |  | ✅ | ❌ | `0x2271c4` |
-| `RecommendAdData` | `+` | `getAdStatusByAdModel:` |  | ✅ | ❌ | `0x2272a0` |
-| `RecommendAdData` | `+` | `getAdDataByAdId:` |  | ✅ | ❌ | `0x227460` |
+| `RecommendAdData` | `+` | `getBannerDisplayStatusList` |  | ✅ | ✅ | `0x226e90` |
+| `RecommendAdData` | `+` | `getAdModelSettingList` |  | ✅ | ✅ | `0x226fbc` |
+| `RecommendAdData` | `+` | `getAdList` |  | ✅ | ✅ | `0x2270e8` |
+| `RecommendAdData` | `+` | `getInterstitialSpecList` |  | ✅ | ✅ | `0x2271c4` |
+| `RecommendAdData` | `+` | `getAdStatusByAdModel:` |  | ✅ | ✅ | `0x2272a0` |
+| `RecommendAdData` | `+` | `getAdDataByAdId:` |  | ✅ | ✅ | `0x227460` |
 | `RecommendAdData` | `+` | `getAdDataWithAppliId:` |  | ✅ | ❌ | `0x227570` |
-| `RecommendAdData` | `+` | `getAdListByAdType:` |  | ✅ | ❌ | `0x2277dc` |
+| `RecommendAdData` | `+` | `getAdListByAdType:` |  | ✅ | ✅ | `0x2277dc` |
 | `RecommendAdData` | `+` | `getAppBannerList` |  | ✅ | ❌ | `0x2278a0` |
 | `RecommendAdData` | `+` | `getAppIconList` |  | ✅ | ❌ | `0x227c50` |
 | `RecommendAdData` | `+` | `getAppInterstitialList` |  | ✅ | ❌ | `0x227fec` |
-| `RecommendAdData` | `+` | `getLotteryBannerData` |  | ✅ | ❌ | `0x2283c8` |
+| `RecommendAdData` | `+` | `getLotteryBannerData` |  | ✅ | ✅ | `0x2283c8` |
 | `RecommendAdData` | `+` | `getLotteryIconData` |  | ✅ | ❌ | `0x2284c4` |
 | `RecommendAdData` | `+` | `getLotteryInterstitialData` |  | ✅ | ❌ | `0x228624` |
 | `RecommendAdData` | `+` | `getLotteryInterstitialDataWithList:` |  | ✅ | ❌ | `0x228770` |
-| `RecommendAdData` | `+` | `getInterstitialSpecPriorityList` |  | ✅ | ❌ | `0x228a18` |
+| `RecommendAdData` | `+` | `getInterstitialSpecPriorityList` |  | ✅ | ✅ | `0x228a18` |
 | `RecommendAdData` | `+` | `getInterstitialSpecCountForAdDisplaySpecList:` |  | ✅ | ❌ | `0x228b28` |
 | `RecommendAdData` | `+` | `getInterstitialSpecInstallForAdDisplaySpecList:` |  | ✅ | ❌ | `0x229078` |
 | `RecommendAdData` | `+` | `getAdInterstitialUrlListTermForAdDisplaySpecList:` |  | ✅ | ❌ | `0x2297c4` |
 | `RecommendAdData` | `+` | `getAdInterstitialUrlListTermForList:` |  | ✅ | ❌ | `0x229ae8` |
-| `RecommendAdData` | `+` | `getAdDisplayCountDailyDictionary` |  | ✅ | ❌ | `0x229ce4` |
-| `RecommendAdData` | `+` | `getAdDisplayCountTotalDictionary` |  | ✅ | ❌ | `0x229ee0` |
+| `RecommendAdData` | `+` | `getAdDisplayCountDailyDictionary` |  | ✅ | ✅ | `0x229ce4` |
+| `RecommendAdData` | `+` | `getAdDisplayCountTotalDictionary` |  | ✅ | ✅ | `0x229ee0` |
 | `RecommendAdData` | `+` | `getAdTypeWithAdModel:adLocation:` |  | ✅ | ❌ | `0x229f90` |
 | `RecommendAdData` | `+` | `getAdListTermForList:` |  | ✅ | ❌ | `0x22a288` |
 | `RecommendAdData` | `+` | `getAdBannerListForList:` |  | ✅ | ❌ | `0x22a610` |

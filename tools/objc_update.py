@@ -942,6 +942,26 @@ VERIFIED = {
     0x8a3e8: 'RBViewController -didSelectMenuSortViewController:',
     0x8a530: 'RBViewController -willRotateToInterfaceOrientation:duration:',
     0x8a584: 'RBViewController -didRotateFromInterfaceOrientation:',
+    # RecommendAdData's archived-payload readers. Every __cfstring the class references was decoded
+    # from its struct (flags/ptr/length) rather than from a decompiler label, which is what exposed
+    # the four sub-key literals: the archive keys its entries by the fully qualified name, so the
+    # inner objectForKey: takes 'ApplilinkRecommend.allAdData.list' and friends at 0x3722e0,
+    # 0x372300, 0x372320, and 0x372340, not the bare sub-key we had. The daily-count reader's
+    # formatter is 'yyyy/MM/dd' at 0x3724e0, with slashes, distinct from the 'yyyy-MM-dd HH:mm:ss'
+    # at 0x372440 used by the term readers.
+    0x226e90: 'RecommendAdData +getBannerDisplayStatusList: debug arm, then the qualified sub-key',
+    0x226fbc: 'RecommendAdData +getAdModelSettingList: same shape, key at 0x372320',
+    0x2270e8: 'RecommendAdData +getAdList: no debug arm, key at 0x3722e0',
+    0x2271c4: 'RecommendAdData +getInterstitialSpecList: no debug arm, key at 0x372340',
+    0x2272a0: 'RecommendAdData +getAdStatusByAdModel:: the fast-enumeration protocol has no back '
+              'edge at 0x22742c, so it reads only the first record, as list[0] does',
+    0x227460: 'RecommendAdData +getAdDataByAdId:: narrowed on ad_id, first record or nil',
+    0x2277dc: 'RecommendAdData +getAdListByAdType:: narrowed on ad_type, returned unfiltered',
+    0x2283c8: 'RecommendAdData +getLotteryBannerData: ad type 2, two count guards, arc4random at '
+              '0x228448 modulo the count',
+    0x228a18: 'RecommendAdData +getInterstitialSpecPriorityList: priority.intValue, ascending NO',
+    0x229ce4: 'RecommendAdData +getAdDisplayCountDailyDictionary: yyyy/MM/dd day comparison',
+    0x229ee0: 'RecommendAdData +getAdDisplayCountTotalDictionary: bare top-level defaults key',
     # AppDelegate's URL accessors. The four-instruction getters have no msgSend at all, which is
     # what proved they read the ivar rather than the copy property.
     0x4eb78: 'AppDelegate -getBaseWebInfoURL', 0x4eb88: 'AppDelegate -setWebInfoURL:',
