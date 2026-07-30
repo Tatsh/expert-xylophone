@@ -164,10 +164,11 @@ static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
 static const CGFloat kPadMoreRowGrayWhite = 0.6000000238418579; // @ghidraAddress 0x1002ec708
 
-// The "load more" row text: 0.8 white idle, 0.4 white (matching the shadow) while loading.
-static const CGFloat kMoreCellTextWhiteIdle = 0.8;
-static const CGFloat kMoreCellTextWhiteLoading = 0.4;
-static const CGFloat kMoreCellShadowWhite = 0.4;
+// The "load more" row text: 0.8 white idle, 0.4 white while loading. The loading text and the
+// idle shadow read the same pool slot, and both values are float-rounded.
+static const CGFloat kMoreCellTextWhiteIdle = 0.800000011920929;    // @ghidraAddress 0x1002ec6a0
+static const CGFloat kMoreCellTextWhiteLoading = 0.4000000059604645; // @ghidraAddress 0x1002ec720
+static const CGFloat kMoreCellShadowWhite = 0.4000000059604645;      // @ghidraAddress 0x1002ec720
 
 // The sample-label cell layout metrics: the label is inset from both edges and the play button sits
 // at the trailing edge, both 32 points tall.
@@ -1086,7 +1087,8 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
                                                         indexPath:leftIndexPath
                                                  forcingNonRetina:NO];
 
-        if ((NSInteger)((indexPath.row << 1) | 1) < (NSInteger)packIDList.count) {
+        // The bound is tested unsigned; the operands are already NSUInteger, so no cast.
+        if (((indexPath.row << 1) | 1) < packIDList.count) {
             cell.rightPackView.hidden = NO;
             int rightPackID = packIDList[(indexPath.row << 1) | 1].intValue;
             StorePackInfo *rightInfo = [self.packListCtrl getPackInfo:rightPackID];
@@ -1144,9 +1146,11 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
         cell.textLabel.shadowColor = [UIColor colorWithWhite:kMoreCellShadowWhite alpha:1.0];
         cell.textLabel.text = g_pLocalizedShowMore;
     } else {
-        UIActivityIndicatorView *indicator =
-            [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
-        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+        // The frame is a square of the shared spinner size, not CGRectZero: d2 is 24.0 and
+        // `mov v3.16B,v2.16B` copies it into the height.
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
+            initWithFrame:CGRectMake(0.0, 0.0, kSpinnerSize, kSpinnerSize)];
+        indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
         cell.accessoryView = indicator;
         [indicator startAnimating];
         cell.textLabel.textColor = [UIColor colorWithWhite:kMoreCellTextWhiteLoading alpha:1.0];
@@ -1646,7 +1650,11 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
     if (tableView != nil) {
         tableView.hidden = YES;
         tableView.allowsSelection = NO;
-        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableView.frame.size.width, 0.0)
+        // As in -switchToGenre:, both dimensions come from -frame: the binary sends it twice and
+        // keeps the width from the first call and the height from the second.
+        CGRect tableFrame = tableView.frame;
+        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width,
+                                                  tableFrame.size.height)
                               animated:NO];
     }
     if (loadingLabel != nil) {

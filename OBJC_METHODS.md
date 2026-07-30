@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3928 verified
-(61.9%).
+Total: 6343 — 6201 reconstructed, 3936 verified
+(62.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5196,19 +5196,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `switchToGenre:` |  | ✅ | ✅ | `0x1ede24` |
 | `RBStorePageViewController` | `-` | `presentGenreSelect:` |  | ✅ | ✅ | `0x1ee3ac` |
 | `RBStorePageViewController` | `-` | `hideGenreSelect:` |  | ✅ | ✅ | `0x1ee610` |
-| `RBStorePageViewController` | `-` | `showLoadingView` |  | ✅ | ❌ | `0x1ee7a4` |
-| `RBStorePageViewController` | `-` | `setPlaySampleName:` |  | ✅ | ❌ | `0x1eeb58` |
+| `RBStorePageViewController` | `-` | `showLoadingView` |  | ✅ | ✅ | `0x1ee7a4` |
+| `RBStorePageViewController` | `-` | `setPlaySampleName:` |  | ✅ | ✅ | `0x1eeb58` |
 | `RBStorePageViewController` | `-` | `stopPromotion` |  | ✅ | ✅ | `0x1eec14` |
-| `RBStorePageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ❌ | `0x1eeca8` |
-| `RBStorePageViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ❌ | `0x1eedb0` |
+| `RBStorePageViewController` | `-` | `popoverControllerDidDismissPopover:` |  | ✅ | ✅ | `0x1eeca8` |
+| `RBStorePageViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ✅ | `0x1eedb0` |
 | `RBStorePageViewController` | `-` | `openItunesWithURL:` |  | ✅ | ❌ | `0x1eee74` |
-| `RBStorePageViewController` | `-` | `closeItunesWithURL` |  | ✅ | ❌ | `0x1ef1ec` |
-| `RBStorePageViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ❌ | `0x1ef24c` |
-| `RBStorePageViewController` | `-` | `goToTop:` |  | ✅ | ❌ | `0x1ef324` |
+| `RBStorePageViewController` | `-` | `closeItunesWithURL` |  | ✅ | ✅ | `0x1ef1ec` |
+| `RBStorePageViewController` | `-` | `productViewControllerDidFinish:` |  | ✅ | ✅ | `0x1ef24c` |
+| `RBStorePageViewController` | `-` | `goToTop:` |  | ✅ | ✅ | `0x1ef324` |
 | `RBStorePageViewController` | `-` | `addRestoreExtendNoteInfo:` |  | ✅ | ✅ | `0x1ef40c` |
 | `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderFinished:` |  | ✅ | ❌ | `0x1ef574` |
 | `RBStorePageViewController` | `-` | `storeExtendNoteInfoDownloaderError:` |  | ✅ | ❌ | `0x1ef694` |
-| `RBStorePageViewController` | `-` | `switchToSpecialStore` |  | ✅ | ❌ | `0x1ef76c` |
+| `RBStorePageViewController` | `-` | `switchToSpecialStore` |  | ✅ | ✅ | `0x1ef76c` |
 | `RBStorePageViewController` | `-` | `updateExtendNoteInfo:Save:` |  | ✅ | ❌ | `0x1ef7c0` |
 | `RBStorePageViewController` | `-` | `showTerms` |  | ✅ | ❌ | `0x1ef8a0` |
 | `RBStorePageViewController` | `-` | `parent` | prop | ✅ | ✅ | `0x1ef9c4` |

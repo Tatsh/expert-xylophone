@@ -572,6 +572,22 @@ VERIFIED = {
               'then the popover visibility test',
     0x1ee610: 'RBStorePageViewController -hideGenreSelect:: the three re-enables run '
               'unconditionally',
+    # RBStorePageViewController, eight more. -tableView:cellForRowAtIndexPath: at 0x1e96b4
+    # had its unsigned bound corrected but is NOT ticked: 1735 instructions, partially read.
+    0x1ee7a4: 'RBStorePageViewController -showLoadingView: the scroll rect keeps the '
+              'height left in d3 by a second frame send, the third tag lookup is on the '
+              'table view, not self',
+    0x1eeb58: 'RBStorePageViewController -setPlaySampleName:: nil gives the empty '
+              'string; the branch sense is inverted from the source but identical',
+    0x1eeca8: 'RBStorePageViewController -popoverControllerDidDismissPopover:: three '
+              're-enables and nothing else',
+    0x1eedb0: 'RBStorePageViewController -storeDetailViewOpenItunesWithURL:: forwards '
+              'to the application view controller',
+    0x1ef1ec: 'RBStorePageViewController -closeItunesWithURL: one send to its own finish handler',
+    0x1ef24c: 'RBStorePageViewController -productViewControllerDidFinish:: guarded '
+              'dismiss, the block clears the ivar',
+    0x1ef324: 'RBStorePageViewController -goToTop:: scroll position 1 is Top',
+    0x1ef76c: 'RBStorePageViewController -switchToSpecialStore: one send to the parent',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',
