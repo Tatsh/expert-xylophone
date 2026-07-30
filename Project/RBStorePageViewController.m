@@ -246,18 +246,15 @@ static NSString *const kCurrencyCodeJPY = @"JPY";
 // The KONAMI mobile help page opened from the purchase-limit sheet.
 static NSString *const kKonamiHelpURLString = @"http://www.konami.jp/";
 
-// The store's error-message format and the download-progress message format. The
-// purchase-unavailable message reuses the shared purchase-failed global.
-static NSString *const kStoreDownloadingFormat = @"%@"; // @ghidraAddress 0x3cfbd8
-static NSString *const kStoreErrorFormat = @"%@";       // @ghidraAddress 0x3cfd08
+// The download-progress format (@0x3cfbd8) and the purchase-cancelled message (@0x3cfd08) are
+// shared localised globals from engineglobals.h, not local literals; both are used below.
 
 // The modal-dialog message shown while a pack's tunes download. The binary uses a short local
 // literal here rather than one of the shared store-message globals.
 static NSString *const kStoreDownloadDialogMessage = @"";
 
-// The cover-tap dismissal fade, shared with the audio-manager resume fade (a distinct 0.3 s global
-// from the open/close animation duration). @ghidraAddress 0x2ec718
-// (g_dAudioManagerResumeFadeInTime)
+// The cover-tap dismissal fade. The slot it loads from carries no symbol, so this is a source
+// literal rather than the engine global the name once claimed.
 static const NSTimeInterval kCoverFadeDuration = 0.3;
 
 @interface RBStorePageViewController () {
@@ -1797,7 +1794,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     self.purchasingPackInfo = nil;
     [self.parent hideModalDialog];
     NSString *message =
-        [[NSString alloc] initWithFormat:kStoreErrorFormat, error.localizedDescription];
+        // The format carries no specifier, so the binary discards the argument it passes.
+        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
+                                         error.localizedDescription];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 
@@ -2130,7 +2129,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
 - (void)restoreFailed:(NSError *)error {
     [self.parent hideModalDialog];
     NSString *message =
-        [[NSString alloc] initWithFormat:kStoreErrorFormat, error.localizedDescription];
+        // The format carries no specifier, so the binary discards the argument it passes.
+        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
+                                         error.localizedDescription];
     [UIAlertView showWithErrorMessage:message delegate:nil];
     [self.promotionView startAnimation];
 }
@@ -2204,7 +2205,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.3;
     (void)
         task.addObject; // The binary reads -addObject once for effect, then again for the argument.
     self.parent.modalDialog.labelMessage.text =
-        [NSString stringWithFormat:kStoreDownloadingFormat, task.addObject];
+        [NSString stringWithFormat:g_pDownloadingMessageFormat, task.addObject];
 }
 
 /** @ghidraAddress 0x1e9058 */
