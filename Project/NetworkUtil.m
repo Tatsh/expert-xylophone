@@ -33,7 +33,7 @@ static NSString *const kSearchMasterParamFormat = @"target=%@&%@";
 
 // The unlock-catalogue-list and music-unlock query format strings.
 static NSString *const kUnlockListParamFormat = @"target=%@&thema=%@";
-static NSString *const kUnlockMusicParamFormat = @"target=%@&music=%d&key=%d";
+static NSString *const kUnlockMusicParamFormat = @"target=%@&music=%d&key=%d&%@";
 
 // The CGI endpoint paths, relative to the CGI base path, of the remaining authenticated endpoints.
 static NSString *const kPlayedV2APIPath = @"log/play/";
@@ -80,7 +80,7 @@ static NSString *const kMusicInfoParamFormat = @"target=%@&music=%d&%@";
 static NSString *const kManageSortListParamFormat = @"target=%@";
 
 // The suffix appended to the device UUID key before hashing it into the request fingerprint.
-static NSString *const kIdentifierKeySuffix = @"_STORE";
+static NSString *const kIdentifierKeySuffix = @"STORE";
 
 // The number of random characters a generated nonce holds per iteration and its formatting.
 static NSString *const kNonceCharFormat = @"%c";
@@ -166,8 +166,11 @@ static NSString *const kNonceCharFormat = @"%c";
 
 /** @ghidraAddress 0x33058 */
 + (NSURL *)unlockMusicURL:(int)musicID randKey:(int)randKey {
-    NSString *param =
-        [NSString stringWithFormat:kUnlockMusicParamFormat, GetRegionCode(), musicID, randKey];
+    NSString *param = [NSString stringWithFormat:kUnlockMusicParamFormat,
+                                                 GetRegionCode(),
+                                                 musicID,
+                                                 randKey,
+                                                 [NetworkUtil userInfo]];
     return [NetworkUtil createSecureAPI:kUnlockMusicAPIPath withParam:param];
 }
 
@@ -180,7 +183,7 @@ static NSString *const kNonceCharFormat = @"%c";
 }
 
 /** @ghidraAddress 0x32610 */
-+ (NSString *)createNonce:(int)length {
++ (NSString *)createNonce:(NSUInteger)length {
     if (length == 0) {
         return @"";
     }
@@ -189,7 +192,7 @@ static NSString *const kNonceCharFormat = @"%c";
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     static const unsigned int kNonceAlphabetSize = 62;
     NSMutableString *nonce = [[NSMutableString alloc] initWithCapacity:length];
-    for (int i = 0; i < length; ++i) {
+    for (NSUInteger i = 0; i < length; ++i) {
         [nonce appendFormat:kNonceCharFormat, kNonceAlphabet[arc4random() % kNonceAlphabetSize]];
     }
     return [[NSString alloc] initWithString:nonce];

@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The music-unlock endpoint for a given music id, echoing @p randKey to guard against a
- * stale response.
+ * stale response and carrying the device user-info parameters.
  * @param musicID The music identifier to unlock.
  * @param randKey The random key echoed back by the response.
  * @ghidraAddress 0x33058
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The generated nonce string.
  * @ghidraAddress 0x32610
  */
-+ (nullable NSString *)createNonce:(int)length;
++ (nullable NSString *)createNonce:(NSUInteger)length;
 
 /**
  * @brief The startup / web-info endpoint (@c .../akx/main/cgi/startup/), carrying the region code.

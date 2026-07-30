@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 3971 verified
-(62.6%).
+Total: 6343 — 6203 reconstructed, 4005 verified
+(63.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -535,37 +535,37 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuMascot` | `-` | `nextMessageIndex` | prop | ✅ | ✅ | `0x2f538` |
 | `RBMenuMascot` | `-` | `setNextMessageIndex:` | prop | ✅ | ✅ | `0x2f548` |
 | `neTextureForiOS` | `+` | `LoadTexture:Scale:` |  | ✅ | ❌ | `0x32320` |
-| `NetworkUtil` | `+` | `createNonce:` |  | ✅ | ❌ | `0x32610` |
-| `NetworkUtil` | `+` | `deviceName` |  | ✅ | ❌ | `0x32740` |
-| `NetworkUtil` | `+` | `identifierParams` |  | ✅ | ❌ | `0x327b0` |
-| `NetworkUtil` | `+` | `userInfo` |  | ✅ | ❌ | `0x3287c` |
-| `NetworkUtil` | `+` | `createSecureURL:` |  | ✅ | ❌ | `0x329d0` |
-| `NetworkUtil` | `+` | `createSecureAPI:withParam:` |  | ✅ | ❌ | `0x32a6c` |
-| `NetworkUtil` | `+` | `startupURL` |  | ✅ | ❌ | `0x32ba0` |
-| `NetworkUtil` | `+` | `resourceURL` |  | ✅ | ❌ | `0x32c70` |
-| `NetworkUtil` | `+` | `tokenSetURL` |  | ✅ | ❌ | `0x32c90` |
-| `NetworkUtil` | `+` | `lineMessageURL` |  | ✅ | ❌ | `0x32cb0` |
-| `NetworkUtil` | `+` | `playedV2URL` |  | ✅ | ❌ | `0x32dac` |
-| `NetworkUtil` | `+` | `tutorialStatusURL` |  | ✅ | ❌ | `0x32dcc` |
-| `NetworkUtil` | `+` | `searchMasterURL` |  | ✅ | ❌ | `0x32dec` |
-| `NetworkUtil` | `+` | `searchURL` |  | ✅ | ❌ | `0x32ee8` |
-| `NetworkUtil` | `+` | `unlockListURL` |  | ✅ | ❌ | `0x32f08` |
-| `NetworkUtil` | `+` | `unlockMusicURL:randKey:` |  | ✅ | ❌ | `0x33058` |
-| `NetworkUtil` | `+` | `unlockedURL` |  | ✅ | ❌ | `0x33168` |
-| `NetworkUtil` | `+` | `packListURL:limit:genre:` |  | ✅ | ❌ | `0x33188` |
-| `NetworkUtil` | `+` | `packInfoURL:UserOpen:` |  | ✅ | ❌ | `0x332a8` |
-| `NetworkUtil` | `+` | `musicInfoURL:` |  | ✅ | ❌ | `0x33408` |
-| `NetworkUtil` | `+` | `receiptV3URL` |  | ✅ | ❌ | `0x33514` |
-| `NetworkUtil` | `+` | `campaignListURL` |  | ✅ | ❌ | `0x33534` |
-| `NetworkUtil` | `+` | `campaignSerialCheckURL` |  | ✅ | ❌ | `0x33554` |
-| `NetworkUtil` | `+` | `campaignItemInfoURL` |  | ✅ | ❌ | `0x33574` |
-| `NetworkUtil` | `+` | `manageSortListURL` |  | ✅ | ❌ | `0x33594` |
-| `NetworkUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ❌ | `0x3365c` |
-| `NetworkUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ❌ | `0x3376c` |
-| `NetworkUtil` | `+` | `termList` |  | ✅ | ❌ | `0x338cc` |
-| `NetworkUtil` | `+` | `termFetch` |  | ✅ | ❌ | `0x338ec` |
-| `NetworkUtil` | `+` | `termAgree` |  | ✅ | ❌ | `0x3390c` |
-| `NetworkUtil` | `+` | `userAgeURL` |  | ✅ | ❌ | `0x3392c` |
+| `NetworkUtil` | `+` | `createNonce:` |  | ✅ | ✅ | `0x32610` |
+| `NetworkUtil` | `+` | `deviceName` |  | ✅ | ✅ | `0x32740` |
+| `NetworkUtil` | `+` | `identifierParams` |  | ✅ | ✅ | `0x327b0` |
+| `NetworkUtil` | `+` | `userInfo` |  | ✅ | ✅ | `0x3287c` |
+| `NetworkUtil` | `+` | `createSecureURL:` |  | ✅ | ✅ | `0x329d0` |
+| `NetworkUtil` | `+` | `createSecureAPI:withParam:` |  | ✅ | ✅ | `0x32a6c` |
+| `NetworkUtil` | `+` | `startupURL` |  | ✅ | ✅ | `0x32ba0` |
+| `NetworkUtil` | `+` | `resourceURL` |  | ✅ | ✅ | `0x32c70` |
+| `NetworkUtil` | `+` | `tokenSetURL` |  | ✅ | ✅ | `0x32c90` |
+| `NetworkUtil` | `+` | `lineMessageURL` |  | ✅ | ✅ | `0x32cb0` |
+| `NetworkUtil` | `+` | `playedV2URL` |  | ✅ | ✅ | `0x32dac` |
+| `NetworkUtil` | `+` | `tutorialStatusURL` |  | ✅ | ✅ | `0x32dcc` |
+| `NetworkUtil` | `+` | `searchMasterURL` |  | ✅ | ✅ | `0x32dec` |
+| `NetworkUtil` | `+` | `searchURL` |  | ✅ | ✅ | `0x32ee8` |
+| `NetworkUtil` | `+` | `unlockListURL` |  | ✅ | ✅ | `0x32f08` |
+| `NetworkUtil` | `+` | `unlockMusicURL:randKey:` |  | ✅ | ✅ | `0x33058` |
+| `NetworkUtil` | `+` | `unlockedURL` |  | ✅ | ✅ | `0x33168` |
+| `NetworkUtil` | `+` | `packListURL:limit:genre:` |  | ✅ | ✅ | `0x33188` |
+| `NetworkUtil` | `+` | `packInfoURL:UserOpen:` |  | ✅ | ✅ | `0x332a8` |
+| `NetworkUtil` | `+` | `musicInfoURL:` |  | ✅ | ✅ | `0x33408` |
+| `NetworkUtil` | `+` | `receiptV3URL` |  | ✅ | ✅ | `0x33514` |
+| `NetworkUtil` | `+` | `campaignListURL` |  | ✅ | ✅ | `0x33534` |
+| `NetworkUtil` | `+` | `campaignSerialCheckURL` |  | ✅ | ✅ | `0x33554` |
+| `NetworkUtil` | `+` | `campaignItemInfoURL` |  | ✅ | ✅ | `0x33574` |
+| `NetworkUtil` | `+` | `manageSortListURL` |  | ✅ | ✅ | `0x33594` |
+| `NetworkUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ✅ | `0x3365c` |
+| `NetworkUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ✅ | `0x3376c` |
+| `NetworkUtil` | `+` | `termList` |  | ✅ | ✅ | `0x338cc` |
+| `NetworkUtil` | `+` | `termFetch` |  | ✅ | ✅ | `0x338ec` |
+| `NetworkUtil` | `+` | `termAgree` |  | ✅ | ✅ | `0x3390c` |
+| `NetworkUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x3392c` |
 | `StorePackListGenre` | `-` | `initWithName:genreID:` |  | ✅ | ❌ | `0x33f00` |
 | `StorePackListGenre` | `-` | `packCount` |  | ✅ | ❌ | `0x3403c` |
 | `StorePackListGenre` | `-` | `packInfoForIndex:` |  | ✅ | ❌ | `0x3409c` |
@@ -3664,9 +3664,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectCollectionView` | `-` | `setItems:` | prop | ✅ | ✅ | `0x159ff8` |
 | `RBCustomSelectCollectionView` | `-` | `customizeType` | prop | ✅ | ✅ | `0x15a030` |
 | `RBCustomSelectCollectionView` | `-` | `setCustomizeType:` | prop | ✅ | ✅ | `0x15a040` |
-| `RBStoreExtendPageViewController` | `-` | `initWithParent:` |  | ✅ | ❌ | `0x15a0b8` |
-| `RBStoreExtendPageViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x15a3a4` |
-| `RBStoreExtendPageViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x15a534` |
+| `RBStoreExtendPageViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x15a0b8` |
+| `RBStoreExtendPageViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x15a3a4` |
+| `RBStoreExtendPageViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x15a534` |
 | `RBStoreExtendPageViewController` | `-` | `showError:` |  | ✅ | ❌ | `0x15c660` |
 | `RBStoreExtendPageViewController` | `-` | `pushBarBtnRestore:` |  | ✅ | ❌ | `0x15c810` |
 | `RBStoreExtendPageViewController` | `-` | `showTerms` |  | ✅ | ❌ | `0x15c880` |

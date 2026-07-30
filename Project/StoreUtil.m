@@ -97,7 +97,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 
 /** @ghidraAddress 0x8665c */
 + (NSString *)createNonce:(unsigned long long)length {
-    return [NetworkUtil createNonce:(int)length];
+    return [NetworkUtil createNonce:length];
 }
 
 /** @ghidraAddress 0x85e54 */

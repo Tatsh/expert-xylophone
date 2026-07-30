@@ -840,6 +840,69 @@ VERIFIED = {
     0xb42e8: 'RBMenuView -scrollViewWillBeginDragging:: sends setSearchBarNonActive',
     0xb4304: 'RBMenuView -scrollViewDidEndDecelerating:: forwards to scrollViewDidEndScroll:',
     0xb4384: 'RBMenuView -scrollViewDidEndScrollingAnimation:: forwards the same way',
+    # NetworkUtil's endpoint builders. Every format string and endpoint path was decoded from its
+    # __cfstring entry rather than read off a label, and every stringWithFormat: argument list was
+    # taken from the stp/str writes to [sp, #..] ahead of the bl.
+    # The length is 64-bit throughout (cbz x20 at 0x32634, cmp x24,x20 with b.cc at 0x326bc), which
+    # matches the Q16 in the method's type encoding. The alphabet at 0x32f666 is 62 characters and
+    # the modulus is the divide-by-62 magic at 0x32670-0x3269c.
+    0x32610: 'NetworkUtil +createNonce: 62-character alphabet, NSUInteger length',
+    0x32740: 'NetworkUtil +deviceName: getInstance then getHardwareName',
+    # The cache is the global at 0x3dc278, guarded by a bare cbnz at 0x327c8 with no dispatch_once.
+    # The suffix is the __cfstring at 0x363ce0, whose five bytes at 0x32f6a8 spell STORE.
+    0x327b0: 'NetworkUtil +identifierParams: cached MD5 of the UUID key plus the STORE suffix',
+    # Format 0x363d00. The five slots at 0x32910-0x32918 are identifierParams, 0x1a160c, deviceName,
+    # 0x1a1600, 0x1a1618, in that order.
+    0x3287c: 'NetworkUtil +userInfo: five-slot uuid/version/device/os/locale query',
+    # x2 is the scheme and x3 the host at 0x32a28-0x32a2c, so 0x363d20 and 0x363900 are not swapped.
+    0x329d0: 'NetworkUtil +createSecureURL: https://akx.s.konaminet.jp with the given path',
+    # The cbz x20 at 0x32ab4 picks the arm; both arms lead the argument list with the CGI base path
+    # at 0x363920, so the api and param slots follow it rather than precede it.
+    0x32a6c: 'NetworkUtil +createSecureAPI:withParam: two arms, base path first in both',
+    0x32ba0: 'NetworkUtil +startupURL: startup/ with target=%@',
+    0x32c70: 'NetworkUtil +resourceURL: v3/ssl_resource/, nil param',
+    0x32c90: 'NetworkUtil +tokenSetURL: push/token/, nil param',
+    0x32cb0: 'NetworkUtil +lineMessageURL: new2/ with target=%@&%@',
+    0x32dac: 'NetworkUtil +playedV2URL: log/play/, nil param',
+    0x32dcc: 'NetworkUtil +tutorialStatusURL: tutorial/, nil param',
+    0x32dec: 'NetworkUtil +searchMasterURL: search_master/ with target=%@&%@',
+    0x32ee8: 'NetworkUtil +searchURL: gamecenter/, nil param',
+    # The theme reaches the format as an NSNumber, boxed by the numberWithInt: at 0x32f78.
+    0x32f08: 'NetworkUtil +unlockListURL: unlock/ with target=%@&thema=%@',
+    # Four slots, not three: 0x330b8 and 0x330bc write region, music, key, and userInfo, and the
+    # format at 0x363de0 ends in &%@.
+    0x33058: 'NetworkUtil +unlockMusicURL:randKey:: unlockmusic/, four-slot query with userInfo',
+    0x33168: 'NetworkUtil +unlockedURL: unlocked/, nil param',
+    0x33188: 'NetworkUtil +packListURL:limit:genre:: five-slot query, userInfo last',
+    # cbz w3 at 0x332cc; the closed arm at 0x33358 writes only region and pack.
+    0x332a8: 'NetworkUtil +packInfoURL:UserOpen:: both arms, userInfo only when open',
+    0x33408: 'NetworkUtil +musicInfoURL:: v3/musicinfo/ with target=%@&music=%d&%@',
+    0x33514: 'NetworkUtil +receiptV3URL: v3/verify_receipt/, nil param',
+    0x33534: 'NetworkUtil +campaignListURL: campaign/list/, nil param',
+    # The verify and fetch paths sit adjacent in the pool and are not transposed: 0x3356c loads
+    # 0x363b60 (campaign/verify/) and 0x3358c loads 0x363b40 (campaign/fetch/).
+    0x33554: 'NetworkUtil +campaignSerialCheckURL: campaign/verify/, nil param',
+    0x33574: 'NetworkUtil +campaignItemInfoURL: campaign/fetch/, nil param',
+    0x33594: 'NetworkUtil +manageSortListURL: manage_sort/ with target=%@',
+    0x3365c: 'NetworkUtil +extendNoteListURL:limit:: four-slot query, userInfo last',
+    # cbz w3 at 0x33790, mirroring packInfoURL:UserOpen:.
+    0x3376c: 'NetworkUtil +extendNoteInfoURL:UserOpen:: both arms, userInfo only when open',
+    0x338cc: 'NetworkUtil +termList: v3/terms/list/, nil param',
+    0x338ec: 'NetworkUtil +termFetch: v3/terms/fetch/, nil param',
+    0x3390c: 'NetworkUtil +termAgree: v3/terms/log/, nil param',
+    0x3392c: 'NetworkUtil +userAgeURL: v3/age/, nil param',
+    # RBStoreExtendPageViewController, read against the disassembly one routine at a time.
+    0x15a0b8: 'RBStoreExtendPageViewController -initWithParent:: IsPad() at 0x15a2e4 stores the '
+              'idiom byte, moveToPackID starts at -1 (0x15a300)',
+    0x15a3a4: 'RBStoreExtendPageViewController -loadView: the background is 226/227/228 from the '
+              'pool at 0x30be90..0x30bea0, mask 0x12',
+    # Six defects fixed. The pad table reserves the show-more BUTTON's height (v11 at 0x15ac84),
+    # the spinner centre is (buttonW*0.5 + spinnerW, buttonH*0.5) at 0x15abb8, its style is Gray
+    # (w2=2 at 0x15ab34), the button inset is the fmov #-15.0 at 0x15aa64, the campaign image name
+    # puts campaignName first (stp x24,x8 at 0x15ba08), and the loading spinner's centre y is a
+    # literal zero (movi v1 at 0x15bf18).
+    0x15a534: 'RBStoreExtendPageViewController -viewDidLoad: both idiom arms, every pool constant '
+              'decoded',
 }
 
 
