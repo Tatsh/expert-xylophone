@@ -82,6 +82,48 @@ VERIFIED = {
     # The artwork pair passes its scale and luminance as fmov immediates, 2.0/1.0 and 1.0/1.0.
     0x67704: 'MusicDataFromDoc -artwork2xData: artworkDataWithScale:2.0 Luminance:1.0',
     0x67718: 'MusicDataFromDoc -artworkData: artworkDataWithScale:1.0 Luminance:1.0',
+    # AudioManager, read end to end against the disassembly. +sharedManager guards with
+    # @synchronized on the class, not dispatch_once, and -init's field writes were checked against
+    # the ivar list, which is what exposed the layout defect fixed alongside this.
+    0x3d0c4: 'AudioManager +sharedManager', 0x3d154: 'AudioManager -init',
+    0x3d3ec: 'AudioManager -systemStart', 0x3d4b4: 'AudioManager -systemStartBlock',
+    0x3d4c4: 'AudioManager -systemTerminate', 0x3d50c: 'AudioManager -onStartPlayer:',
+    0x3d560: 'AudioManager -initBgm:', 0x3d638: 'AudioManager -loadBgmData:isLoop:',
+    0x3d764: 'AudioManager -loadBgmDataWithBytes:length:isLoop:',
+    0x3d7ec: 'AudioManager -loadBgmDataWithBytesNoCopy:length:isLoop:',
+    0x3d874: 'AudioManager -loadBgmDataWithBytesNoCopy:length:freeWhenDone:isLoop:',
+    0x3d8fc: 'AudioManager -loadVoiceData:isLoop:',
+    # RBMusicView's selection handlers. Every selector was resolved from the name bytes and every
+    # implementation confirmed to exist, so none of these registers a dead action.
+    0xd2ddc: 'RBMusicView -SetRankView:', 0xd37a8: 'RBMusicView -SetSettingButtonSelected:',
+    0xd397c: 'RBMusicView -SetGhostView:', 0xd3b50: 'RBMusicView -updateDecideButton',
+    0xd3fac: 'RBMusicView -SelectDoublePlayButton', 0xd4028: 'RBMusicView -SelectDecideButton',
+    0xd44d0: 'RBMusicView -SelectHistory', 0xd4620: 'RBMusicView -SelectWhitePastelButton',
+    0xd4694: 'RBMusicView -SelectBlackPastelButton', 0xd4f54: 'RBMusicView -SelectItunes',
+    # RBViewController's run loop, lifecycle and projection, verified independently by two agents.
+    0x8af3c: 'RBViewController -Task', 0x8af88: 'RBViewController -Draw',
+    0x8b074: 'RBViewController -mainLoop', 0x8b0a8: 'RBViewController -StartLoop',
+    0x8b0c4: 'RBViewController -StopLoop', 0x8b0dc: 'RBViewController -ResumeLoop',
+    0x8b0f8: 'RBViewController -RestartLoop',
+    0x8b110: 'RBViewController -CreateDisplayLinkTimer',
+    0x8a800: 'RBViewController -UpdateProjection', 0x8a7e4: 'RBViewController -LayoutedGLView:',
+    0x8af30: 'RBViewController -openGLView', 0x88fc0: 'RBViewController -init',
+    0x893c4: 'RBViewController -showPresentViewController',
+    0x89c24: 'RBViewController -removeView',
+    0x8a3e8: 'RBViewController -didSelectMenuSortViewController:',
+    0x8a530: 'RBViewController -willRotateToInterfaceOrientation:duration:',
+    0x8a584: 'RBViewController -didRotateFromInterfaceOrientation:',
+    # AppDelegate's URL accessors. The four-instruction getters have no msgSend at all, which is
+    # what proved they read the ivar rather than the copy property.
+    0x4eb78: 'AppDelegate -getBaseWebInfoURL', 0x4eb88: 'AppDelegate -setWebInfoURL:',
+    0x4ec18: 'AppDelegate -getWebInfoURL', 0x4ec28: 'AppDelegate -setPreWebInfoURL:',
+    0x4eca4: 'AppDelegate -getPreWebInfoURL', 0x4ecb4: 'AppDelegate -setBaseTermURL:',
+    0x4ecec: 'AppDelegate -getBaseTermURL',
+    0x4ee40: 'AppDelegate -getTermLastUpdateTimeString',
+    0x4ef50: 'AppDelegate -setLatestTermsVersion:',
+    0x4efa4: 'AppDelegate -getInfoLastUpdateTimeString',
+    0x4efec: 'AppDelegate -getPackIDForOpenStore',
+    0x4f034: 'AppDelegate -getCampaignIDForOpenStore',
 }
 
 

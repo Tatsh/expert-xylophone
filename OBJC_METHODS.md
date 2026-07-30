@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6198 reconstructed, 3252 verified
-(51.3%).
+Total: 6343 — 6198 reconstructed, 3301 verified
+(52.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -766,18 +766,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `neWindow` | `-` | `touchesMoved:withEvent:` |  | ✅ | ✅ | `0x3d0b8` |
 | `neWindow` | `-` | `touchesEnded:withEvent:` |  | ✅ | ✅ | `0x3d0bc` |
 | `neWindow` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ✅ | `0x3d0c0` |
-| `AudioManager` | `+` | `sharedManager` |  | ✅ | ❌ | `0x3d0c4` |
-| `AudioManager` | `-` | `init` |  | ✅ | ❌ | `0x3d154` |
-| `AudioManager` | `-` | `systemStart` |  | ✅ | ❌ | `0x3d3ec` |
+| `AudioManager` | `+` | `sharedManager` |  | ✅ | ✅ | `0x3d0c4` |
+| `AudioManager` | `-` | `init` |  | ✅ | ✅ | `0x3d154` |
+| `AudioManager` | `-` | `systemStart` |  | ✅ | ✅ | `0x3d3ec` |
 | `AudioManager` | `-` | `systemStartBlock` |  | ✅ | ✅ | `0x3d4b4` |
-| `AudioManager` | `-` | `systemTerminate` |  | ✅ | ❌ | `0x3d4c4` |
-| `AudioManager` | `-` | `onStartPlayer:` |  | ✅ | ❌ | `0x3d50c` |
-| `AudioManager` | `-` | `initBgm:` |  | ✅ | ❌ | `0x3d560` |
-| `AudioManager` | `-` | `loadBgmData:isLoop:` |  | ✅ | ❌ | `0x3d638` |
-| `AudioManager` | `-` | `loadBgmDataWithBytes:length:isLoop:` |  | ✅ | ❌ | `0x3d764` |
-| `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:isLoop:` |  | ✅ | ❌ | `0x3d7ec` |
-| `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:freeWhenDone:isLoop:` |  | ✅ | ❌ | `0x3d874` |
-| `AudioManager` | `-` | `loadVoiceData:isLoop:` |  | ✅ | ❌ | `0x3d8fc` |
+| `AudioManager` | `-` | `systemTerminate` |  | ✅ | ✅ | `0x3d4c4` |
+| `AudioManager` | `-` | `onStartPlayer:` |  | ✅ | ✅ | `0x3d50c` |
+| `AudioManager` | `-` | `initBgm:` |  | ✅ | ✅ | `0x3d560` |
+| `AudioManager` | `-` | `loadBgmData:isLoop:` |  | ✅ | ✅ | `0x3d638` |
+| `AudioManager` | `-` | `loadBgmDataWithBytes:length:isLoop:` |  | ✅ | ✅ | `0x3d764` |
+| `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:isLoop:` |  | ✅ | ✅ | `0x3d7ec` |
+| `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:freeWhenDone:isLoop:` |  | ✅ | ✅ | `0x3d874` |
+| `AudioManager` | `-` | `loadVoiceData:isLoop:` |  | ✅ | ✅ | `0x3d8fc` |
 | `AudioManager` | `-` | `getGroupID:resourceId:` |  | ✅ | ❌ | `0x3dac4` |
 | `AudioManager` | `-` | `loadSe:isLoop:callName:group:` |  | ✅ | ❌ | `0x3dc48` |
 | `AudioManager` | `-` | `releaseSe:resourceId:` |  | ✅ | ❌ | `0x3e1a4` |
@@ -1014,24 +1014,24 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `+` | `initialize` |  | ✅ | ✅ | `0x4d778` |
 | `AppDelegate` | `-` | `startApplication` |  | ✅ | ❌ | `0x4d77c` |
 | `AppDelegate` | `-` | `requestResourceInfo` |  | ✅ | ❌ | `0x4da2c` |
-| `AppDelegate` | `-` | `getBaseWebInfoURL` |  | ✅ | ❌ | `0x4eb78` |
-| `AppDelegate` | `-` | `setWebInfoURL:` |  | ✅ | ❌ | `0x4eb88` |
-| `AppDelegate` | `-` | `getWebInfoURL` |  | ✅ | ❌ | `0x4ec18` |
-| `AppDelegate` | `-` | `setPreWebInfoURL:` |  | ✅ | ❌ | `0x4ec28` |
-| `AppDelegate` | `-` | `getPreWebInfoURL` |  | ✅ | ❌ | `0x4eca4` |
-| `AppDelegate` | `-` | `setBaseTermURL:` |  | ✅ | ❌ | `0x4ecb4` |
-| `AppDelegate` | `-` | `getBaseTermURL` |  | ✅ | ❌ | `0x4ecec` |
+| `AppDelegate` | `-` | `getBaseWebInfoURL` |  | ✅ | ✅ | `0x4eb78` |
+| `AppDelegate` | `-` | `setWebInfoURL:` |  | ✅ | ✅ | `0x4eb88` |
+| `AppDelegate` | `-` | `getWebInfoURL` |  | ✅ | ✅ | `0x4ec18` |
+| `AppDelegate` | `-` | `setPreWebInfoURL:` |  | ✅ | ✅ | `0x4ec28` |
+| `AppDelegate` | `-` | `getPreWebInfoURL` |  | ✅ | ✅ | `0x4eca4` |
+| `AppDelegate` | `-` | `setBaseTermURL:` |  | ✅ | ✅ | `0x4ecb4` |
+| `AppDelegate` | `-` | `getBaseTermURL` |  | ✅ | ✅ | `0x4ecec` |
 | `AppDelegate` | `-` | `getTermURLWithID:` |  | ✅ | ❌ | `0x4ecfc` |
 | `AppDelegate` | `-` | `setTermLastUpdateTimeString:` | prop | ❌ | ✅ | `0x4ee08` |
-| `AppDelegate` | `-` | `getTermLastUpdateTimeString` |  | ✅ | ❌ | `0x4ee40` |
+| `AppDelegate` | `-` | `getTermLastUpdateTimeString` |  | ✅ | ✅ | `0x4ee40` |
 | `AppDelegate` | `-` | `needUpdateTerms` |  | ✅ | ❌ | `0x4ee50` |
-| `AppDelegate` | `-` | `setLatestTermsVersion:` |  | ✅ | ❌ | `0x4ef50` |
+| `AppDelegate` | `-` | `setLatestTermsVersion:` |  | ✅ | ✅ | `0x4ef50` |
 | `AppDelegate` | `-` | `setInfoLastUpdateTimeString:` | prop | ✅ | ✅ | `0x4ef6c` |
-| `AppDelegate` | `-` | `getInfoLastUpdateTimeString` |  | ✅ | ❌ | `0x4efa4` |
+| `AppDelegate` | `-` | `getInfoLastUpdateTimeString` |  | ✅ | ✅ | `0x4efa4` |
 | `AppDelegate` | `-` | `setPackIDForOpenStore:` | prop | ✅ | ✅ | `0x4efb4` |
-| `AppDelegate` | `-` | `getPackIDForOpenStore` |  | ✅ | ❌ | `0x4efec` |
+| `AppDelegate` | `-` | `getPackIDForOpenStore` |  | ✅ | ✅ | `0x4efec` |
 | `AppDelegate` | `-` | `setCampaignIDForOpenStore:` | prop | ✅ | ✅ | `0x4effc` |
-| `AppDelegate` | `-` | `getCampaignIDForOpenStore` |  | ✅ | ❌ | `0x4f034` |
+| `AppDelegate` | `-` | `getCampaignIDForOpenStore` |  | ✅ | ✅ | `0x4f034` |
 | `AppDelegate` | `-` | `setExtendNotePIDForOpenStore:` | prop | ✅ | ✅ | `0x4f044` |
 | `AppDelegate` | `-` | `getExtendNotePIDForOpenStore` |  | ✅ | ❌ | `0x4f07c` |
 | `AppDelegate` | `+` | `getPushNotificationData` |  | ✅ | ❌ | `0x4f08c` |
@@ -1814,32 +1814,32 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `color` | prop | ✅ | ✅ | `0x88e98` |
 | `TwitterImageCreater` | `-` | `setColor:` | prop | ✅ | ✅ | `0x88ea8` |
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ❌ | ❌ | `0x88fb8` |
-| `RBViewController` | `-` | `init` |  | ✅ | ❌ | `0x88fc0` |
+| `RBViewController` | `-` | `init` |  | ✅ | ✅ | `0x88fc0` |
 | `RBViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x89050` |
-| `RBViewController` | `-` | `showPresentViewController` |  | ✅ | ❌ | `0x893c4` |
+| `RBViewController` | `-` | `showPresentViewController` |  | ✅ | ✅ | `0x893c4` |
 | `RBViewController` | `-` | `showPresentViewController:` |  | ✅ | ❌ | `0x8945c` |
 | `RBViewController` | `-` | `playListAddMusicSet:` |  | ✅ | ❌ | `0x89798` |
 | `RBViewController` | `-` | `playListButtonPush:` |  | ✅ | ❌ | `0x8997c` |
-| `RBViewController` | `-` | `removeView` |  | ✅ | ❌ | `0x89c24` |
+| `RBViewController` | `-` | `removeView` |  | ✅ | ✅ | `0x89c24` |
 | `RBViewController` | `-` | `createView` |  | ✅ | ❌ | `0x89c90` |
 | `RBViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x8a134` |
 | `RBViewController` | `-` | `didSelectPlaylistViewController:` |  | ✅ | ❌ | `0x8a294` |
-| `RBViewController` | `-` | `didSelectMenuSortViewController:` |  | ✅ | ❌ | `0x8a3e8` |
+| `RBViewController` | `-` | `didSelectMenuSortViewController:` |  | ✅ | ✅ | `0x8a3e8` |
 | `RBViewController` | `-` | `navigationController:willShowViewController:animated:` |  | ✅ | ❌ | `0x8a444` |
-| `RBViewController` | `-` | `willRotateToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x8a530` |
-| `RBViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ❌ | `0x8a584` |
+| `RBViewController` | `-` | `willRotateToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x8a530` |
+| `RBViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x8a584` |
 | `RBViewController` | `-` | `viewWillTransitionToSize:withTransitionCoordinator:` |  | ✅ | ❌ | `0x8a5d8` |
-| `RBViewController` | `-` | `LayoutedGLView:` |  | ✅ | ❌ | `0x8a7e4` |
-| `RBViewController` | `-` | `UpdateProjection` |  | ✅ | ❌ | `0x8a800` |
+| `RBViewController` | `-` | `LayoutedGLView:` |  | ✅ | ✅ | `0x8a7e4` |
+| `RBViewController` | `-` | `UpdateProjection` |  | ✅ | ✅ | `0x8a800` |
 | `RBViewController` | `-` | `openGLView` |  | ✅ | ✅ | `0x8af30` |
-| `RBViewController` | `-` | `Task` |  | ✅ | ❌ | `0x8af3c` |
-| `RBViewController` | `-` | `Draw` |  | ✅ | ❌ | `0x8af88` |
-| `RBViewController` | `-` | `mainLoop` |  | ✅ | ❌ | `0x8b074` |
-| `RBViewController` | `-` | `StartLoop` |  | ✅ | ❌ | `0x8b0a8` |
-| `RBViewController` | `-` | `StopLoop` |  | ✅ | ❌ | `0x8b0c4` |
-| `RBViewController` | `-` | `ResumeLoop` |  | ✅ | ❌ | `0x8b0dc` |
-| `RBViewController` | `-` | `RestartLoop` |  | ✅ | ❌ | `0x8b0f8` |
-| `RBViewController` | `-` | `CreateDisplayLinkTimer` |  | ✅ | ❌ | `0x8b110` |
+| `RBViewController` | `-` | `Task` |  | ✅ | ✅ | `0x8af3c` |
+| `RBViewController` | `-` | `Draw` |  | ✅ | ✅ | `0x8af88` |
+| `RBViewController` | `-` | `mainLoop` |  | ✅ | ✅ | `0x8b074` |
+| `RBViewController` | `-` | `StartLoop` |  | ✅ | ✅ | `0x8b0a8` |
+| `RBViewController` | `-` | `StopLoop` |  | ✅ | ✅ | `0x8b0c4` |
+| `RBViewController` | `-` | `ResumeLoop` |  | ✅ | ✅ | `0x8b0dc` |
+| `RBViewController` | `-` | `RestartLoop` |  | ✅ | ✅ | `0x8b0f8` |
+| `RBViewController` | `-` | `CreateDisplayLinkTimer` |  | ✅ | ✅ | `0x8b110` |
 | `RBViewController` | `-` | `SetLoopTimeMilliSec:` |  | ✅ | ❌ | `0x8b288` |
 | `RBViewController` | `-` | `CreateTimer` |  | ✅ | ❌ | `0x8b2a0` |
 | `RBViewController` | `-` | `RemoveTimer` |  | ✅ | ❌ | `0x8b314` |
@@ -2495,20 +2495,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `SetupView` |  | ✅ | ❌ | `0xcc078` |
 | `RBMusicView` | `-` | `switchWithDifficulty:` |  | ✅ | ❌ | `0xd0f3c` |
 | `RBMusicView` | `-` | `SetUpLineView` |  | ✅ | ❌ | `0xd2764` |
-| `RBMusicView` | `-` | `SetRankView:` |  | ✅ | ❌ | `0xd2ddc` |
+| `RBMusicView` | `-` | `SetRankView:` |  | ✅ | ✅ | `0xd2ddc` |
 | `RBMusicView` | `-` | `ShowSelectDifficulty` |  | ✅ | ❌ | `0xd2fd8` |
 | `RBMusicView` | `-` | `ShowSettingView:` |  | ✅ | ❌ | `0xd33a8` |
-| `RBMusicView` | `-` | `SetSettingButtonSelected:` |  | ✅ | ❌ | `0xd37a8` |
-| `RBMusicView` | `-` | `SetGhostView:` |  | ✅ | ❌ | `0xd397c` |
-| `RBMusicView` | `-` | `updateDecideButton` |  | ✅ | ❌ | `0xd3b50` |
-| `RBMusicView` | `-` | `SelectDoublePlayButton` |  | ✅ | ❌ | `0xd3fac` |
-| `RBMusicView` | `-` | `SelectDecideButton` |  | ✅ | ❌ | `0xd4028` |
-| `RBMusicView` | `-` | `SelectHistory` |  | ✅ | ❌ | `0xd44d0` |
-| `RBMusicView` | `-` | `SelectWhitePastelButton` |  | ✅ | ❌ | `0xd4620` |
-| `RBMusicView` | `-` | `SelectBlackPastelButton` |  | ✅ | ❌ | `0xd4694` |
+| `RBMusicView` | `-` | `SetSettingButtonSelected:` |  | ✅ | ✅ | `0xd37a8` |
+| `RBMusicView` | `-` | `SetGhostView:` |  | ✅ | ✅ | `0xd397c` |
+| `RBMusicView` | `-` | `updateDecideButton` |  | ✅ | ✅ | `0xd3b50` |
+| `RBMusicView` | `-` | `SelectDoublePlayButton` |  | ✅ | ✅ | `0xd3fac` |
+| `RBMusicView` | `-` | `SelectDecideButton` |  | ✅ | ✅ | `0xd4028` |
+| `RBMusicView` | `-` | `SelectHistory` |  | ✅ | ✅ | `0xd44d0` |
+| `RBMusicView` | `-` | `SelectWhitePastelButton` |  | ✅ | ✅ | `0xd4620` |
+| `RBMusicView` | `-` | `SelectBlackPastelButton` |  | ✅ | ✅ | `0xd4694` |
 | `RBMusicView` | `-` | `playGame` |  | ✅ | ❌ | `0xd4708` |
 | `RBMusicView` | `-` | `playTutorialGame` |  | ✅ | ❌ | `0xd4c5c` |
-| `RBMusicView` | `-` | `SelectItunes` |  | ✅ | ❌ | `0xd4f54` |
+| `RBMusicView` | `-` | `SelectItunes` |  | ✅ | ✅ | `0xd4f54` |
 | `RBMusicView` | `-` | `showAnimation:` |  | ✅ | ❌ | `0xd50a0` |
 | `RBMusicView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xd5680` |
 | `RBMusicView` | `-` | `ReplayMusic` |  | ✅ | ❌ | `0xd5ca4` |
