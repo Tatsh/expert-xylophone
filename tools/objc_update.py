@@ -591,6 +591,13 @@ VERIFIED = {
     # AppDelegate, two more. -launchAppStore is declared as an instance method in the
     # source and the metadata has it as a class method at 0x53268; reported, not fixed,
     # since correcting it also touches a caller outside this class.
+    0x4d77c: 'AppDelegate -startApplication: the two version strings are not transposed, the '
+             'three tier values are immediates matching the enumeration, the delay constant is '
+             'read at four bytes with 0.9f as its neighbour, and scvtf is signed; the two '
+             'identical alert arms are separate in the binary as in the source',
+    0x52cbc: 'AppDelegate -applicationDidBecomeActive:: the scene register survives the storage '
+             'block, so the deep-link guard really is on the scene, and the alert takes self '
+             'rather than a weak reference, none being created here',
     0x504dc: 'AppDelegate -alertView:clickedButtonAtIndex:: the tag is read three '
               'times, and 10 is the network-error tag against 3 for the new version, '
               'not transposed',

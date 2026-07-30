@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3938 verified
+Total: 6343 — 6201 reconstructed, 3940 verified
 (62.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1012,7 +1012,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteView` | `-` | `linkURL` | prop | ❌ | ✅ | `0x4d250` |
 | `StoreExtendNoteView` | `-` | `setLinkURL:` | prop | ❌ | ✅ | `0x4d260` |
 | `AppDelegate` | `+` | `initialize` |  | ✅ | ✅ | `0x4d778` |
-| `AppDelegate` | `-` | `startApplication` |  | ✅ | ❌ | `0x4d77c` |
+| `AppDelegate` | `-` | `startApplication` |  | ✅ | ✅ | `0x4d77c` |
 | `AppDelegate` | `-` | `requestResourceInfo` |  | ✅ | ❌ | `0x4da2c` |
 | `AppDelegate` | `-` | `getBaseWebInfoURL` |  | ✅ | ✅ | `0x4eb78` |
 | `AppDelegate` | `-` | `setWebInfoURL:` |  | ✅ | ✅ | `0x4eb88` |
@@ -1058,7 +1058,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `resetGame` |  | ✅ | ✅ | `0x51828` |
 | `AppDelegate` | `-` | `application:openURL:sourceApplication:annotation:` |  | ✅ | ✅ | `0x51bc8` |
 | `AppDelegate` | `-` | `application:didFinishLaunchingWithOptions:` |  | ✅ | ❌ | `0x51c88` |
-| `AppDelegate` | `-` | `applicationDidBecomeActive:` |  | ✅ | ❌ | `0x52cbc` |
+| `AppDelegate` | `-` | `applicationDidBecomeActive:` |  | ✅ | ✅ | `0x52cbc` |
 | `AppDelegate` | `-` | `applicationWillResignActive:` |  | ✅ | ✅ | `0x52f8c` |
 | `AppDelegate` | `-` | `applicationWillEnterForeground:` |  | ✅ | ✅ | `0x5307c` |
 | `AppDelegate` | `-` | `applicationDidEnterBackground:` |  | ✅ | ✅ | `0x530b4` |
