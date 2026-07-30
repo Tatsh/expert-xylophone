@@ -10,6 +10,9 @@ akhuta
 allseasons
 analyzer
 analyzer's
+cbz
+subdata
+tbz
 Ångström
 anim
 apiurl

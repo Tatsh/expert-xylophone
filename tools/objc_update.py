@@ -970,6 +970,24 @@ VERIFIED = {
     0x8a3e8: 'RBViewController -didSelectMenuSortViewController:',
     0x8a530: 'RBViewController -willRotateToInterfaceOrientation:duration:',
     0x8a584: 'RBViewController -didRotateFromInterfaceOrientation:',
+    # RBPurchaseManager's lifecycle, persistence, and purchase entry points. The saved list is
+    # salted: four bytes of arc4random are prepended at 0x6d788 and skipped on load by the
+    # subdataWithRange: at 0x6dab0, whose location is 4 and whose length is the sub at 0x6da94.
+    # Both halves reach the file through the accessor at 0x1a1624, which Ghidra labels
+    # GetApplicationSupportPath; that label is wrong. The global it reads is filled at 0x1a08a8
+    # from NSSearchPathForDirectoriesInDomains with directory 9, NSDocumentDirectory, so our
+    # GetDocumentsDirectoryPath is the correct name for it.
+    0x6d2b8: 'RBPurchaseManager -init: four lists at capacity 0, productIds plain init, both '
+             'flags cleared before restoredTransactions',
+    0x6d4e4: 'RBPurchaseManager -dealloc: delegate nil, then cancel on the downloader',
+    0x6d674: 'RBPurchaseManager -saveProductList: salt, property list, Blowfish, write',
+    0x6d8e8: 'RBPurchaseManager -loadProductList: decipher, skip the salt, capacity 32 fallback',
+    0x6dcc8: 'RBPurchaseManager -beginPurchase:: four-way guard, quantity 1',
+    0x6de88: 'RBPurchaseManager -beginRestore: both flags set, three lists emptied',
+    0x6e110: 'RBPurchaseManager -addProductID:Save:: contains test first, save is conditional',
+    0x6e21c: 'RBPurchaseManager -addProductFromPurchaseCheckedProducts: adds with Save NO, then '
+             'one save at the end',
+    0x6e370: 'RBPurchaseManager -addPurchaseCheckTransaction:: nil and isPurchased guards',
     # RBPurchaseManager's three Base64 routines, worked instruction by instruction. The alphabet is
     # the 64 bytes at 0x337e6e, and the decoder's linear search bounds itself at 0x41, one past the
     # alphabet, so it can also match the NUL terminator at 0x337eae; the source's

@@ -567,6 +567,9 @@ constexpr NSUInteger kBase64OutputGroup = 4;
             unsigned char values[kBase64OutputGroup];
             for (int slot = 0; slot < static_cast<int>(kBase64OutputGroup); ++slot) {
                 unsigned char value = 0xff;
+                // sizeof, not the 64 the alphabet holds: the search bounds itself at 0x41 and so
+                // reaches the NUL terminator too, mapping a NUL input byte to 64 rather than to
+                // the 0xff not-found value below. It reads as an off-by-one and is not one.
                 for (int index = 0; index < static_cast<int>(sizeof(kBase64Alphabet)); ++index) {
                     if (kBase64Alphabet[index] == chars[slot]) {
                         value = static_cast<unsigned char>(index);
