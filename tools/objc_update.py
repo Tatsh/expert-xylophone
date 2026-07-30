@@ -43,6 +43,75 @@ _COMPILER_GENERATED = ('.cxx_construct', '.cxx_destruct')
 # A routine belongs here only once its body has actually been compared, not merely because it was
 # read or because a constant in it was checked.
 VERIFIED = {
+    # ApplilinkCore's flag block at 0x3df630, each accessor distinguished only by its
+    # displacement; every byte's readers and writers were checked by cross-reference.
+    0x214c00: 'ApplilinkCore +setNavigationBarCommonAppearance:: stores the argument verbatim',
+    0x214c10: 'ApplilinkCore +isNavigationBarCommonAppearance: byte load, no cset',
+    0x214c20: 'ApplilinkCore +setPriorityDeviceLanguages:: stores the argument verbatim',
+    0x214c30: 'ApplilinkCore +isPriorityDeviceLanguages: byte load at +0x4',
+    0x214c40: 'ApplilinkCore +setIndicatorColor:: objc_storeStrong inlined',
+    0x214c6c: 'ApplilinkCore +getIndicatorColor: the nil arm substitutes whiteColor, so it never '
+              'returns nil, which is why the declaration is no longer nullable',
+    0x214cb4: 'ApplilinkCore +unusedInStore: stores 1, despite the name',
+    0x214cc8: 'ApplilinkCore +isUsedInStore: byte load at +0x5, no inversion',
+    0x214cd8: 'ApplilinkCore +buildUnderXcode6: stores 1 at +0x6',
+    0x214cec: 'ApplilinkCore +isBuildXcode6: mvn then and #1, the inverse of the stored byte',
+    0x214fb4: 'ApplilinkCore +isInitializingFlg: the byte at +0, written by the initialize family',
+    0x214fc4: 'ApplilinkCore +isInitializeStatusFlg: the byte at +0x1',
+    0x214fd4: 'ApplilinkCore +appliId: objectForKey: with the ApplilinkNetwork.appliId key',
+    0x215040: 'ApplilinkCore +currentUdid: cbz at 0x215084 sends the false case away, so the '
+              'advertising UDID is the arm taken when tracking is available, not unavailable',
+    # RBPopoverBackgroundView. The four extents predicates were cross-checked against each other,
+    # and the field order comes from the ivar type encoding rather than from the offsets alone.
+    0xd7c14: 'RBPopoverBackgroundView +contentViewInsets: 8.0 copied to all four registers',
+    0xd7c28: 'RBPopoverBackgroundView +arrowHeight: 19.0 as an fmov immediate',
+    0xd7c30: 'RBPopoverBackgroundView +arrowBase: 37.0, a pool load from 0x3014d8',
+    0xd7c3c: 'RBPopoverBackgroundView -halfArrowBase: arrowBase times 0.5',
+    0xd7c68: 'RBPopoverBackgroundView -initWithFrame:: only d0 and d1 come from the zero '
+             'constant; d2 and d3 carry the incoming size, saved before super clobbers them',
+    0xd8720: 'RBPopoverBackgroundView -arrowCenter: mid-X on the up or down arm, mid-Y otherwise',
+    0xd878c: 'RBPopoverBackgroundView -wantsUpOrDownArrow: short-circuits on wantsUpArrow',
+    0xd87d8: 'RBPopoverBackgroundView -wantsUpArrow: tests 1 where its sibling tests 2',
+    0xd87fc: 'RBPopoverBackgroundView -isArrowBetweenLeftAndRightEdgesOfPopover: right first',
+    0xd8844: 'RBPopoverBackgroundView -isArrowAtLeftEdgeOfPopover: fsub against left at +0',
+    0xd8878: 'RBPopoverBackgroundView -isArrowAtRightEdgeOfPopover: fadd against right at +0x8',
+    0xd88b0: 'RBPopoverBackgroundView -isArrowBetweenTopAndBottomEdgesOfPopover: top first',
+    0xd88f8: 'RBPopoverBackgroundView -isArrowAtTopEdgeOfPopover: fsub against top at +0x10',
+    0xd8930: 'RBPopoverBackgroundView -isArrowAtBottomEdgeOfPopover: fadd against bottom at +0x18',
+    # MusicData. Each comparator's selector reference was resolved on its own rather than
+    # extrapolated from the first, and all five are distinct.
+    0x60044: 'MusicData -dealloc: clears artworkCache, then the ARC-emitted super call',
+    0x65c5c: 'MusicData -compareMusicID:: MusicID, signed cset gt with a csel on lt',
+    0x660f8: 'MusicData -compareDifficultyBasic:: difficultyBasic',
+    0x6617c: 'MusicData -compareDifficultyMedium:: difficultyMedium',
+    0x66200: 'MusicData -compareDifficultyHard:: difficultyHard',
+    0x66284: 'MusicData -compareDifficultySpecial:: difficultySpecial',
+    0x66308: 'MusicData -isArtworkCache: one send, then cset ne',
+    0x667b4: 'MusicData -setArtworkCache:: objc_setProperty_atomic on _artworkCache',
+    0x667c0: 'MusicData -artworkCacheBasic: objc_getProperty with atomic set',
+    0x667d0: 'MusicData -setArtworkCacheBasic:: _artworkCacheBasic at 152',
+    0x667dc: 'MusicData -artworkCacheMedium: objc_getProperty with atomic set',
+    0x667ec: 'MusicData -setArtworkCacheMedium:: _artworkCacheMedium at 160',
+    0x667f8: 'MusicData -artworkCacheHard: objc_getProperty with atomic set',
+    0x66808: 'MusicData -setArtworkCacheHard:: _artworkCacheHard at 168, distinct from Medium',
+    # AudioManager's sound-effect family. The three singular methods return the engine call's
+    # result and the three -All methods discard it, which is a real asymmetry in the binary.
+    0x3e868: 'AudioManager -releaseBgm: stop, then a tail call clearing the player',
+    0x3edd0: 'AudioManager -playSeSetGroup:resourceId:groupId:: -1 only when both tests fail',
+    0x3ee78: 'AudioManager -stopSe:: both arms fall into and w0,w0,w8 with no mov w0,#1, so the '
+             'engine result is returned rather than YES',
+    0x3eefc: 'AudioManager -onPauseSe:: the same shape',
+    0x3ef80: 'AudioManager -offPauseSe:: the same shape',
+    0x3f004: 'AudioManager -isPlayingSe:: the playing constant is 2, from an immediate',
+    0x3f090: 'AudioManager -onPauseSeAll: four slots, no free-slot test, returns 1 unconditionally',
+    0x3f110: 'AudioManager -offPauseSeAll: the same shape',
+    0x3f190: 'AudioManager -stopSeAll: the same shape',
+    0x3f210: 'AudioManager -stopAll: three sends, all results discarded',
+    0x3f544: 'AudioManager -stopOldInstance: the shift copies handle and group but not busId',
+    0x3f5e4: 'AudioManager -addInstance:group:: stores at most once, at the first free slot',
+    0x3f624: 'AudioManager -setSeVolume:groupId:: b.hi at 0x3f640 is unsigned, so a negative '
+             'volume is rejected too',
+    0x3f6a8: 'AudioManager -deleteFadeTimer: invalidate, then a tail call clearing the timer',
     0xa1e08: 'RBMenuView -setCurrentPageIndex:: the guard sends currentPageIndex rather than '
              'reading the ivar, and the label pair at 0xa1eac is (index + 1, maxPage)',
     0xa1f24: 'RBMenuView -setMaxPage:: the csel takes 1 when the argument is zero',

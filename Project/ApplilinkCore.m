@@ -276,6 +276,7 @@ static NSString *sPasteBoardUdidCache;      // 0x3df668
 #pragma mark - Build and store flags
 
 + (void)unusedInStore {
+    // Yes, the binary's unusedInStore sets the used-in-store flag.
     sUsedInStore = YES;
 }
 

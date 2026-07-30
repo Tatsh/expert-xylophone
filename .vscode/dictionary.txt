@@ -149,6 +149,7 @@ extmusiclist
 extraout
 extreloff
 fabsf
+fadd
 falied
 fastcall
 fcmp
@@ -163,6 +164,7 @@ fobjc
 fori
 foxundermoon
 fram
+fsub
 ftrivial
 fullcombo
 fullwidth
@@ -331,7 +333,6 @@ rbpdbg
 rbplus
 rbscorehash
 rdparty
-readwrite
 receiptdata
 recomputation
 rect

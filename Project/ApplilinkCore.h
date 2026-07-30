@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The configured indicator colour, or the white colour when unset.
  * @ghidraAddress 0x214c6c
  */
-+ (nullable UIColor *)getIndicatorColor;
++ (UIColor *)getIndicatorColor;
 
 #pragma mark - Build and store flags
 
@@ -166,7 +166,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - UDID accessors
 
 /**
- * @brief The current UDID, preferring the advertising UDID when tracking is unavailable.
+ * @brief The current UDID, preferring the advertising UDID when advertising tracking is
+ * available.
  * @return The current UDID, or @c nil.
  * @ghidraAddress 0x215040
  */

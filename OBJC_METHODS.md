@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6200 reconstructed, 3603 verified
-(56.8%).
+Total: 6343 — 6200 reconstructed, 3650 verified
+(57.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -782,27 +782,27 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `-` | `loadSe:isLoop:callName:group:` |  | ✅ | ❌ | `0x3dc48` |
 | `AudioManager` | `-` | `releaseSe:resourceId:` |  | ✅ | ❌ | `0x3e1a4` |
 | `AudioManager` | `-` | `releaseSeAll` |  | ✅ | ❌ | `0x3e580` |
-| `AudioManager` | `-` | `releaseBgm` |  | ✅ | ❌ | `0x3e868` |
+| `AudioManager` | `-` | `releaseBgm` |  | ✅ | ✅ | `0x3e868` |
 | `AudioManager` | `-` | `releaseVoice` |  | ✅ | ✅ | `0x3e8d4` |
 | `AudioManager` | `-` | `prepare:resourceId:volume:` |  | ✅ | ❌ | `0x3e8e4` |
 | `AudioManager` | `-` | `prepareSetGroup:resourceId:groupId:` |  | ✅ | ❌ | `0x3eab0` |
 | `AudioManager` | `-` | `playSe:resourceId:` |  | ✅ | ❌ | `0x3ec00` |
 | `AudioManager` | `-` | `playSe:resourceId:Volume:` |  | ✅ | ❌ | `0x3ece8` |
-| `AudioManager` | `-` | `playSeSetGroup:resourceId:groupId:` |  | ✅ | ❌ | `0x3edd0` |
-| `AudioManager` | `-` | `stopSe:` |  | ✅ | ❌ | `0x3ee78` |
-| `AudioManager` | `-` | `onPauseSe:` |  | ✅ | ❌ | `0x3eefc` |
-| `AudioManager` | `-` | `offPauseSe:` |  | ✅ | ❌ | `0x3ef80` |
-| `AudioManager` | `-` | `isPlayingSe:` |  | ✅ | ❌ | `0x3f004` |
-| `AudioManager` | `-` | `onPauseSeAll` |  | ✅ | ❌ | `0x3f090` |
-| `AudioManager` | `-` | `offPauseSeAll` |  | ✅ | ❌ | `0x3f110` |
-| `AudioManager` | `-` | `stopSeAll` |  | ✅ | ❌ | `0x3f190` |
-| `AudioManager` | `-` | `stopAll` |  | ✅ | ❌ | `0x3f210` |
+| `AudioManager` | `-` | `playSeSetGroup:resourceId:groupId:` |  | ✅ | ✅ | `0x3edd0` |
+| `AudioManager` | `-` | `stopSe:` |  | ✅ | ✅ | `0x3ee78` |
+| `AudioManager` | `-` | `onPauseSe:` |  | ✅ | ✅ | `0x3eefc` |
+| `AudioManager` | `-` | `offPauseSe:` |  | ✅ | ✅ | `0x3ef80` |
+| `AudioManager` | `-` | `isPlayingSe:` |  | ✅ | ✅ | `0x3f004` |
+| `AudioManager` | `-` | `onPauseSeAll` |  | ✅ | ✅ | `0x3f090` |
+| `AudioManager` | `-` | `offPauseSeAll` |  | ✅ | ✅ | `0x3f110` |
+| `AudioManager` | `-` | `stopSeAll` |  | ✅ | ✅ | `0x3f190` |
+| `AudioManager` | `-` | `stopAll` |  | ✅ | ✅ | `0x3f210` |
 | `AudioManager` | `-` | `orderInstanceList` |  | ✅ | ❌ | `0x3f260` |
 | `AudioManager` | `-` | `orderInstanceList:` |  | ✅ | ❌ | `0x3f3c0` |
-| `AudioManager` | `-` | `stopOldInstance` |  | ✅ | ❌ | `0x3f544` |
-| `AudioManager` | `-` | `addInstance:group:` |  | ✅ | ❌ | `0x3f5e4` |
-| `AudioManager` | `-` | `setSeVolume:groupId:` |  | ✅ | ❌ | `0x3f624` |
-| `AudioManager` | `-` | `deleteFadeTimer` |  | ✅ | ❌ | `0x3f6a8` |
+| `AudioManager` | `-` | `stopOldInstance` |  | ✅ | ✅ | `0x3f544` |
+| `AudioManager` | `-` | `addInstance:group:` |  | ✅ | ✅ | `0x3f5e4` |
+| `AudioManager` | `-` | `setSeVolume:groupId:` |  | ✅ | ✅ | `0x3f624` |
+| `AudioManager` | `-` | `deleteFadeTimer` |  | ✅ | ✅ | `0x3f6a8` |
 | `AudioManager` | `-` | `createBgmFadeInTimer:` |  | ✅ | ❌ | `0x3f714` |
 | `AudioManager` | `-` | `createBgmFadeOutTimer:` |  | ✅ | ❌ | `0x3f854` |
 | `AudioManager` | `-` | `playBgm:` |  | ✅ | ❌ | `0x3f994` |
@@ -1225,7 +1225,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `+` | `decodeBF:Key:KeyLength:` |  | ✅ | ❌ | `0x5eb78` |
 | `MusicData` | `+` | `getZipData:Path:DecodeType:` |  | ✅ | ❌ | `0x5ecd4` |
 | `MusicData` | `+` | `dataWithPath:ID:` |  | ✅ | ❌ | `0x5ee64` |
-| `MusicData` | `-` | `dealloc` |  | ✅ | ❌ | `0x60044` |
+| `MusicData` | `-` | `dealloc` |  | ✅ | ✅ | `0x60044` |
 | `MusicData` | `-` | `getZipData:` |  | ✅ | ❌ | `0x600cc` |
 | `MusicData` | `-` | `getOptionalZipData:` |  | ✅ | ❌ | `0x60190` |
 | `MusicData` | `-` | `getOptionalZipData:withDefaultName:` |  | ✅ | ❌ | `0x601b8` |
@@ -1350,16 +1350,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `createCache` |  | ✅ | ❌ | `0x65964` |
 | `MusicData` | `-` | `releaseChache` |  | ✅ | ✅ | `0x65b3c` |
 | `MusicData` | `-` | `compare:` |  | ✅ | ❌ | `0x65b4c` |
-| `MusicData` | `-` | `compareMusicID:` |  | ✅ | ❌ | `0x65c5c` |
+| `MusicData` | `-` | `compareMusicID:` |  | ✅ | ✅ | `0x65c5c` |
 | `MusicData` | `-` | `compareMusicNameCustom:` |  | ✅ | ❌ | `0x65ce0` |
 | `MusicData` | `-` | `compareArtistNameCustom:` |  | ✅ | ❌ | `0x65df4` |
 | `MusicData` | `-` | `compareMusicNameHira:` |  | ✅ | ❌ | `0x65eec` |
 | `MusicData` | `-` | `compareArtistNameHira:` |  | ✅ | ❌ | `0x66000` |
-| `MusicData` | `-` | `compareDifficultyBasic:` |  | ✅ | ❌ | `0x660f8` |
-| `MusicData` | `-` | `compareDifficultyMedium:` |  | ✅ | ❌ | `0x6617c` |
-| `MusicData` | `-` | `compareDifficultyHard:` |  | ✅ | ❌ | `0x66200` |
-| `MusicData` | `-` | `compareDifficultySpecial:` |  | ✅ | ❌ | `0x66284` |
-| `MusicData` | `-` | `isArtworkCache` | prop | ✅ | ❌ | `0x66308` |
+| `MusicData` | `-` | `compareDifficultyBasic:` |  | ✅ | ✅ | `0x660f8` |
+| `MusicData` | `-` | `compareDifficultyMedium:` |  | ✅ | ✅ | `0x6617c` |
+| `MusicData` | `-` | `compareDifficultyHard:` |  | ✅ | ✅ | `0x66200` |
+| `MusicData` | `-` | `compareDifficultySpecial:` |  | ✅ | ✅ | `0x66284` |
+| `MusicData` | `-` | `isArtworkCache` | prop | ✅ | ✅ | `0x66308` |
 | `MusicData` | `-` | `MusicID` | prop | ✅ | ✅ | `0x66344` |
 | `MusicData` | `-` | `setMusicID:` | prop | ✅ | ✅ | `0x66354` |
 | `MusicData` | `-` | `difficultyBasic` | prop | ✅ | ✅ | `0x66364` |
@@ -2610,11 +2610,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `setBlackPastelButton:` | prop | ✅ | ✅ | `0xd78c4` |
 | `RBMusicView` | `-` | `ghostImageView` | prop | ✅ | ✅ | `0xd78d4` |
 | `RBMusicView` | `-` | `setGhostImageView:` | prop | ✅ | ✅ | `0xd78e4` |
-| `RBPopoverBackgroundView` | `+` | `contentViewInsets` |  | ✅ | ❌ | `0xd7c14` |
+| `RBPopoverBackgroundView` | `+` | `contentViewInsets` |  | ✅ | ✅ | `0xd7c14` |
 | `RBPopoverBackgroundView` | `+` | `arrowHeight` |  | ✅ | ✅ | `0xd7c28` |
 | `RBPopoverBackgroundView` | `+` | `arrowBase` |  | ✅ | ✅ | `0xd7c30` |
-| `RBPopoverBackgroundView` | `-` | `halfArrowBase` |  | ✅ | ❌ | `0xd7c3c` |
-| `RBPopoverBackgroundView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xd7c68` |
+| `RBPopoverBackgroundView` | `-` | `halfArrowBase` |  | ✅ | ✅ | `0xd7c3c` |
+| `RBPopoverBackgroundView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0xd7c68` |
 | `RBPopoverBackgroundView` | `-` | `setArrowOffset:` | prop | ✅ | ✅ | `0xd7d20` |
 | `RBPopoverBackgroundView` | `-` | `addShadowPathAnimationIfNecessary:` |  | ✅ | ❌ | `0xd7df8` |
 | `RBPopoverBackgroundView` | `-` | `setArrowDirection:` | prop | ✅ | ❌ | `0xd8030` |
@@ -2623,15 +2623,15 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `shadowPath` |  | ✅ | ❌ | `0xd839c` |
 | `RBPopoverBackgroundView` | `-` | `upOrDownArrowImage` |  | ✅ | ❌ | `0xd849c` |
 | `RBPopoverBackgroundView` | `-` | `sideArrowImage` |  | ✅ | ❌ | `0xd85e4` |
-| `RBPopoverBackgroundView` | `-` | `arrowCenter` |  | ✅ | ❌ | `0xd8720` |
-| `RBPopoverBackgroundView` | `-` | `wantsUpOrDownArrow` |  | ✅ | ❌ | `0xd878c` |
-| `RBPopoverBackgroundView` | `-` | `wantsUpArrow` |  | ✅ | ❌ | `0xd87d8` |
-| `RBPopoverBackgroundView` | `-` | `isArrowBetweenLeftAndRightEdgesOfPopover` |  | ✅ | ❌ | `0xd87fc` |
-| `RBPopoverBackgroundView` | `-` | `isArrowAtLeftEdgeOfPopover` |  | ✅ | ❌ | `0xd8844` |
-| `RBPopoverBackgroundView` | `-` | `isArrowAtRightEdgeOfPopover` |  | ✅ | ❌ | `0xd8878` |
-| `RBPopoverBackgroundView` | `-` | `isArrowBetweenTopAndBottomEdgesOfPopover` |  | ✅ | ❌ | `0xd88b0` |
-| `RBPopoverBackgroundView` | `-` | `isArrowAtTopEdgeOfPopover` |  | ✅ | ❌ | `0xd88f8` |
-| `RBPopoverBackgroundView` | `-` | `isArrowAtBottomEdgeOfPopover` |  | ✅ | ❌ | `0xd8930` |
+| `RBPopoverBackgroundView` | `-` | `arrowCenter` |  | ✅ | ✅ | `0xd8720` |
+| `RBPopoverBackgroundView` | `-` | `wantsUpOrDownArrow` |  | ✅ | ✅ | `0xd878c` |
+| `RBPopoverBackgroundView` | `-` | `wantsUpArrow` |  | ✅ | ✅ | `0xd87d8` |
+| `RBPopoverBackgroundView` | `-` | `isArrowBetweenLeftAndRightEdgesOfPopover` |  | ✅ | ✅ | `0xd87fc` |
+| `RBPopoverBackgroundView` | `-` | `isArrowAtLeftEdgeOfPopover` |  | ✅ | ✅ | `0xd8844` |
+| `RBPopoverBackgroundView` | `-` | `isArrowAtRightEdgeOfPopover` |  | ✅ | ✅ | `0xd8878` |
+| `RBPopoverBackgroundView` | `-` | `isArrowBetweenTopAndBottomEdgesOfPopover` |  | ✅ | ✅ | `0xd88b0` |
+| `RBPopoverBackgroundView` | `-` | `isArrowAtTopEdgeOfPopover` |  | ✅ | ✅ | `0xd88f8` |
+| `RBPopoverBackgroundView` | `-` | `isArrowAtBottomEdgeOfPopover` |  | ✅ | ✅ | `0xd8930` |
 | `RBPopoverBackgroundView` | `-` | `adjustCentersIfNecessary` |  | ✅ | ❌ | `0xd8968` |
 | `RBPopoverBackgroundView` | `-` | `stretchableImageNamed:insets:mirrored:` |  | ✅ | ❌ | `0xd8ac4` |
 | `RBPopoverBackgroundView` | `-` | `twoPartStretchableImageNamed:insets:` |  | ✅ | ❌ | `0xd8bd8` |
@@ -5782,21 +5782,21 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkViewController` | `-` | `setIndicator:` | prop | ✅ | ✅ | `0x21440c` |
 | `ApplilinkCore` | `+` | `initializeWithAppliId:env:resume:callback:` |  | ✅ | ❌ | `0x214494` |
 | `ApplilinkCore` | `+` | `resume` |  | ✅ | ❌ | `0x214b00` |
-| `ApplilinkCore` | `+` | `setNavigationBarCommonAppearance:` |  | ✅ | ❌ | `0x214c00` |
-| `ApplilinkCore` | `+` | `isNavigationBarCommonAppearance` |  | ✅ | ❌ | `0x214c10` |
-| `ApplilinkCore` | `+` | `setPriorityDeviceLanguages:` |  | ✅ | ❌ | `0x214c20` |
-| `ApplilinkCore` | `+` | `isPriorityDeviceLanguages` |  | ✅ | ❌ | `0x214c30` |
-| `ApplilinkCore` | `+` | `setIndicatorColor:` |  | ✅ | ❌ | `0x214c40` |
-| `ApplilinkCore` | `+` | `getIndicatorColor` |  | ✅ | ❌ | `0x214c6c` |
-| `ApplilinkCore` | `+` | `unusedInStore` |  | ✅ | ❌ | `0x214cb4` |
-| `ApplilinkCore` | `+` | `isUsedInStore` |  | ✅ | ❌ | `0x214cc8` |
-| `ApplilinkCore` | `+` | `buildUnderXcode6` |  | ✅ | ❌ | `0x214cd8` |
-| `ApplilinkCore` | `+` | `isBuildXcode6` |  | ✅ | ❌ | `0x214cec` |
+| `ApplilinkCore` | `+` | `setNavigationBarCommonAppearance:` |  | ✅ | ✅ | `0x214c00` |
+| `ApplilinkCore` | `+` | `isNavigationBarCommonAppearance` |  | ✅ | ✅ | `0x214c10` |
+| `ApplilinkCore` | `+` | `setPriorityDeviceLanguages:` |  | ✅ | ✅ | `0x214c20` |
+| `ApplilinkCore` | `+` | `isPriorityDeviceLanguages` |  | ✅ | ✅ | `0x214c30` |
+| `ApplilinkCore` | `+` | `setIndicatorColor:` |  | ✅ | ✅ | `0x214c40` |
+| `ApplilinkCore` | `+` | `getIndicatorColor` |  | ✅ | ✅ | `0x214c6c` |
+| `ApplilinkCore` | `+` | `unusedInStore` |  | ✅ | ✅ | `0x214cb4` |
+| `ApplilinkCore` | `+` | `isUsedInStore` |  | ✅ | ✅ | `0x214cc8` |
+| `ApplilinkCore` | `+` | `buildUnderXcode6` |  | ✅ | ✅ | `0x214cd8` |
+| `ApplilinkCore` | `+` | `isBuildXcode6` |  | ✅ | ✅ | `0x214cec` |
 | `ApplilinkCore` | `+` | `mainWindow` |  | ✅ | ❌ | `0x214d04` |
-| `ApplilinkCore` | `+` | `isInitializingFlg` |  | ✅ | ❌ | `0x214fb4` |
-| `ApplilinkCore` | `+` | `isInitializeStatusFlg` |  | ✅ | ❌ | `0x214fc4` |
-| `ApplilinkCore` | `+` | `appliId` |  | ✅ | ❌ | `0x214fd4` |
-| `ApplilinkCore` | `+` | `currentUdid` |  | ✅ | ❌ | `0x215040` |
+| `ApplilinkCore` | `+` | `isInitializingFlg` |  | ✅ | ✅ | `0x214fb4` |
+| `ApplilinkCore` | `+` | `isInitializeStatusFlg` |  | ✅ | ✅ | `0x214fc4` |
+| `ApplilinkCore` | `+` | `appliId` |  | ✅ | ✅ | `0x214fd4` |
+| `ApplilinkCore` | `+` | `currentUdid` |  | ✅ | ✅ | `0x215040` |
 | `ApplilinkCore` | `+` | `udid_cache` |  | ✅ | ❌ | `0x2150bc` |
 | `ApplilinkCore` | `+` | `ad_udid_cache` |  | ✅ | ❌ | `0x2150cc` |
 | `ApplilinkCore` | `+` | `old_udid_cache` |  | ✅ | ❌ | `0x2150dc` |

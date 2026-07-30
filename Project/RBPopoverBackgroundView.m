@@ -156,8 +156,13 @@ typedef struct {
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.popoverBackground = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [self addSubview:self.popoverBackground];
+        // Only the origin comes from the zero constant: the load at 0xd7cc8 fills d0 and d1 alone,
+        // while d2 and d3 carry the incoming frame's size, saved at 0xd7c78 before the call to
+        // super clobbers them. The ivar is stored and read directly here; the accessors exist but
+        // the binary never sends them.
+        _popoverBackground = [[UIImageView alloc]
+            initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
+        [self addSubview:_popoverBackground];
     }
     return self;
 }
