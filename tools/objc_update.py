@@ -1895,6 +1895,45 @@ VERIFIED = {
              'count was not negative (tbnz on the sign bit at 0xe505c)',
     0xe50b4: 'RBSearchMapView -subIndicator decrements first and stops the spinner on a single '
              'signed compare of the result (subs/b.gt at 0xe50cc)',
+    # UIView(RB). -frame returns the rect in d0-d3 as (x, y, width, height), and each geometry
+    # getter keeps exactly one of those registers: d0 at 0x1a35ac and 0x1a3668, d1 at 0x1a35b8 and
+    # 0x1a3674, d2 at 0x1a36a8, d3 at 0x1a36c8. The two edge getters send -frame twice and add:
+    # fadd d0,d8,d2 at 0x1a360c is x + width, fadd d0,d8,d3 at 0x1a3654 is y + height.
+    0x1A35AC: 'UIView(RB) -left is frame.origin.x, a tail call keeping d0',
+    0x1A35B8: 'UIView(RB) -top is frame.origin.y, keeping d1',
+    0x1A35D8: 'UIView(RB) -right adds frame.size.width to frame.origin.x',
+    0x1A3620: 'UIView(RB) -bottom adds frame.size.height to frame.origin.y',
+    0x1A3668: 'UIView(RB) -x is frame.origin.x, a tail call keeping d0',
+    0x1A3674: 'UIView(RB) -y is frame.origin.y, keeping d1',
+    0x1A3694: 'UIView(RB) -width is frame.size.width, keeping d2',
+    0x1A36B4: 'UIView(RB) -height is frame.size.height, keeping d3',
+    # The flash shims are all tail calls that only rearrange registers. The literals are fmov
+    # immediates (0x3f800000 is 1.0, 0x40800000 is 4.0) except the two pool loads, 0.333333343 at
+    # 0x2fefb8 and 0.2 at 0x2ec6b4.
+    0x1A36D4: 'UIView(RB) -SetFlashEffectDuration:Start:End: forwards with Rotate:NO (w3 = 0)',
+    0x1A36F4: 'UIView(RB) -RemoveFlashEffect forwards to +removeFlashEffectView:',
+    0x1A3710: 'UIView(RB) -SetFlashEffectFast forwards 0.333333343/1.0/0.2',
+    0x1A3730: 'UIView(RB) -SetFlashEffectFastWithRotate forwards 4.0/1.0/0.2 with Rotate:YES',
+    0x1A3760: 'UIView(RB) -SetFlashEffectSlow is only -RemoveFlashEffect, no animation at all',
+    # One defect fixed. The multi-pulse loop sets both endpoints twice each pass: an fcsel pair at
+    # 0x1a38e4 and 0x1a3920 picks start/end by the low bit of the step, and the arm the cbnz at
+    # 0x1a3954 selects then sends -setFromValue:/-setToValue: again with the same two values. The
+    # reconstruction had only the arm's pair. Control points are immediates but for 0.8 at
+    # 0x2f856c, whose annotation sat on the 0.5 constant and now sits on its own.
+    0x1A376C: 'UIView(RB) +setFlashEffectView:Duration:Start:End:Rotate: twelve pulses (cmp #0xc '
+              'at 0x1a3ac8) over duration/12.0, mirrored control points on odd steps, plus a '
+              '6.28318548 (0x310448) transform.rotation.z turn, grouped and repeated FLT_MAX times',
+    0x1A3ECC: 'UIView(RB) +removeFlashEffectView: removes the FLUSH_ANIM key from view.layer',
+    0x1A3F34: 'UIView(RB) -SetAlphaAnimationDuration:End: reads layer.opacity for the from value, '
+              'assigns the end value to the layer first, then installs ALPHA_ANIM',
+    0x1A40D8: 'UIView(RB) -RemoveAlphaAnimation removes the ALPHA_ANIM key',
+    # The eight curve segments are one CGPathAddCurveToPoint each, the overshoot reaching the
+    # control points as -40.0 from the pool at 0x2f8574 then the immediates -10.0 (0xc1200000),
+    # -5.0 (0xc0a00000) and -2.0 (0xc0000000), the last four settling on baseY itself. The offsets
+    # were CGFloat and are float: the binary adds in single precision (fadd s0) before the fcvt.
+    0x1A4134: 'UIView(RB) -SetJumpEffectBaseX:BaseY: builds the PopAnim position path, duration '
+              '3.0, control points 0.25/0.1 (0x2fd000)/0.5/0.5, released before -addAnimation:',
+    0x1A4414: 'UIView(RB) -RemoveJumpEffect removes the PopAnim key',
 }
 
 

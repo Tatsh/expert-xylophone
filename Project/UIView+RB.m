@@ -51,16 +51,18 @@ static const float kFlashFullOpacity = 1.0f;
 static const float kFlashRotationTwoPi = 6.28318548f;
 
 // The cubic timing-function control points of a flash pulse, and their mirror used on the odd
-// multi-pulse steps.
-// @ghidraAddress 0x2f856c (g_flFlashTimingControlPointX2)
+// multi-pulse steps. Only the last reaches the code from the constant pool; the other three are
+// immediates.
 static const float kFlashTimingControlPoint1X = 0.5f;
 static const float kFlashTimingControlPoint1Y = 0.0f;
 static const float kFlashTimingControlPoint2X = 0.75f;
+// @ghidraAddress 0x2f856c (g_flFlashTimingControlPointY2)
 static const float kFlashTimingControlPoint2Y = 0.8f;
 
-// The pop/bounce keyframe overshoot Y offsets above the anchor, then the settle back to it.
+// The pop/bounce keyframe overshoot Y offsets above the anchor, then the settle back to it. Only
+// the first reaches the code from the constant pool; the rest are immediates.
 // @ghidraAddress 0x2f8574 (g_flJumpEffectOvershootOffsetY)
-static const CGFloat kPopBounceOffsets[] = {-40.0, -10.0, -5.0, -2.0, 0.0, 0.0, 0.0, 0.0};
+static const float kPopBounceOffsets[] = {-40.0f, -10.0f, -5.0f, -2.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 // The pop/bounce animation duration, in seconds, and its cubic timing-function control points.
 static const CFTimeInterval kPopBounceDuration = 3.0;
@@ -104,6 +106,10 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
         pulse.beginTime = stepDuration * step;
         pulse.duration = stepDuration;
         pulse.autoreverses = NO;
+        // The binary sets both endpoints here and then again in the arm below, with the same
+        // values each time.
+        pulse.fromValue = @((step & 1) == 0 ? start : end);
+        pulse.toValue = @((step & 1) == 0 ? end : start);
         if ((step & 1) == 0) {
             pulse.fromValue = @(start);
             pulse.toValue = @(end);
@@ -200,7 +206,7 @@ static const float kPopBounceTimingControlPoint2Y = 0.5f;
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, baseX, baseY);
     for (size_t i = 0; i < ARRAY_SIZE(kPopBounceOffsets); ++i) {
-        CGFloat controlY = baseY + kPopBounceOffsets[i];
+        float controlY = baseY + kPopBounceOffsets[i];
         CGPathAddCurveToPoint(path, NULL, baseX, controlY, baseX, controlY, baseX, baseY);
     }
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:kPositionKeyPath];

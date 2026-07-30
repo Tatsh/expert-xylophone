@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4476 verified
-(70.6%).
+Total: 6343 — 6203 reconstructed, 4495 verified
+(70.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4451,25 +4451,25 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `-` | `clipImageWithRect:` |  | ✅ | ✅ | `0x1a2fa4` |
 | `(RB)` | `-` | `colorMatrixFilterWithColor:` |  | ✅ | ❌ | `0x1a31a0` |
 | `(RB)` | `-` | `colorMatrixFilterWithRed:green:blue:alpha:` |  | ✅ | ❌ | `0x1a3268` |
-| `(RB)` | `-` | `left` |  | ✅ | ❌ | `0x1a35ac` |
-| `(RB)` | `-` | `top` |  | ✅ | ❌ | `0x1a35b8` |
-| `(RB)` | `-` | `right` |  | ✅ | ❌ | `0x1a35d8` |
-| `(RB)` | `-` | `bottom` |  | ✅ | ❌ | `0x1a3620` |
-| `(RB)` | `-` | `x` |  | ✅ | ❌ | `0x1a3668` |
-| `(RB)` | `-` | `y` |  | ✅ | ❌ | `0x1a3674` |
-| `(RB)` | `-` | `width` |  | ✅ | ❌ | `0x1a3694` |
-| `(RB)` | `-` | `height` |  | ✅ | ❌ | `0x1a36b4` |
-| `(RB)` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ❌ | `0x1a36d4` |
-| `(RB)` | `-` | `RemoveFlashEffect` |  | ✅ | ❌ | `0x1a36f4` |
-| `(RB)` | `-` | `SetFlashEffectFast` |  | ✅ | ❌ | `0x1a3710` |
-| `(RB)` | `-` | `SetFlashEffectFastWithRotate` |  | ✅ | ❌ | `0x1a3730` |
-| `(RB)` | `-` | `SetFlashEffectSlow` |  | ✅ | ❌ | `0x1a3760` |
-| `(RB)` | `+` | `setFlashEffectView:Duration:Start:End:Rotate:` |  | ✅ | ❌ | `0x1a376c` |
-| `(RB)` | `+` | `removeFlashEffectView:` |  | ✅ | ❌ | `0x1a3ecc` |
-| `(RB)` | `-` | `SetAlphaAnimationDuration:End:` |  | ✅ | ❌ | `0x1a3f34` |
-| `(RB)` | `-` | `RemoveAlphaAnimation` |  | ✅ | ❌ | `0x1a40d8` |
-| `(RB)` | `-` | `SetJumpEffectBaseX:BaseY:` |  | ✅ | ❌ | `0x1a4134` |
-| `(RB)` | `-` | `RemoveJumpEffect` |  | ✅ | ❌ | `0x1a4414` |
+| `(RB)` | `-` | `left` |  | ✅ | ✅ | `0x1a35ac` |
+| `(RB)` | `-` | `top` |  | ✅ | ✅ | `0x1a35b8` |
+| `(RB)` | `-` | `right` |  | ✅ | ✅ | `0x1a35d8` |
+| `(RB)` | `-` | `bottom` |  | ✅ | ✅ | `0x1a3620` |
+| `(RB)` | `-` | `x` |  | ✅ | ✅ | `0x1a3668` |
+| `(RB)` | `-` | `y` |  | ✅ | ✅ | `0x1a3674` |
+| `(RB)` | `-` | `width` |  | ✅ | ✅ | `0x1a3694` |
+| `(RB)` | `-` | `height` |  | ✅ | ✅ | `0x1a36b4` |
+| `(RB)` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0x1a36d4` |
+| `(RB)` | `-` | `RemoveFlashEffect` |  | ✅ | ✅ | `0x1a36f4` |
+| `(RB)` | `-` | `SetFlashEffectFast` |  | ✅ | ✅ | `0x1a3710` |
+| `(RB)` | `-` | `SetFlashEffectFastWithRotate` |  | ✅ | ✅ | `0x1a3730` |
+| `(RB)` | `-` | `SetFlashEffectSlow` |  | ✅ | ✅ | `0x1a3760` |
+| `(RB)` | `+` | `setFlashEffectView:Duration:Start:End:Rotate:` |  | ✅ | ✅ | `0x1a376c` |
+| `(RB)` | `+` | `removeFlashEffectView:` |  | ✅ | ✅ | `0x1a3ecc` |
+| `(RB)` | `-` | `SetAlphaAnimationDuration:End:` |  | ✅ | ✅ | `0x1a3f34` |
+| `(RB)` | `-` | `RemoveAlphaAnimation` |  | ✅ | ✅ | `0x1a40d8` |
+| `(RB)` | `-` | `SetJumpEffectBaseX:BaseY:` |  | ✅ | ✅ | `0x1a4134` |
+| `(RB)` | `-` | `RemoveJumpEffect` |  | ✅ | ✅ | `0x1a4414` |
 | `(RB)` | `-` | `dictionary` |  | ✅ | ❌ | `0x1a4470` |
 | `(RB)` | `-` | `mutableArray` |  | ✅ | ❌ | `0x1a45f8` |
 | `RBMusicOtherView` | `-` | `initWithFrame:MusicSelectedBase:` |  | ✅ | ❌ | `0x1a477c` |
