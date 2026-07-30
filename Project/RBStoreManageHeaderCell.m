@@ -28,7 +28,7 @@ static const CGFloat kColorAlpha = 1.0;
 
 // The alternating section-background white values, indexed by section parity.
 static const CGFloat kBackgroundWhiteEven = 1.0;
-static const CGFloat kBackgroundWhiteOdd = 0.9700000286102295;
+static const CGFloat kBackgroundWhiteOdd = 0.97f;
 
 // The label text colour components.
 static const CGFloat kLabelColorRed = 0.0117647061124444;

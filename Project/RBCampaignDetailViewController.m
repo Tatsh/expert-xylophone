@@ -126,7 +126,7 @@ static const CGFloat kDividerLift = -3.0;
 static const CGFloat kLayoutMetricEighty = 80.0;
 // The disabled action-button grey white value shared with the store web view. @ghidraAddress
 // 0x2ec708
-static const CGFloat kDisabledButtonWhite = 0.6000000238418579;
+static const CGFloat kDisabledButtonWhite = 0.6f;
 
 @interface RBCampaignDetailViewController () {
     // The sample state machine (idle, downloading, or playing).

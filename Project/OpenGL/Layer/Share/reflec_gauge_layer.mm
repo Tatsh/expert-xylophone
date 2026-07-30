@@ -464,7 +464,7 @@ namespace {
 
 // The per-half rates at which the animated display value climbs toward and falls away from the
 // gauge value each frame (@ghidraAddress 0x30fc50 = 0.0012 rising, 0x30fc54 = 0.006 falling).
-constexpr float kDisplayRiseRate = 0.0012000000569969416f;
+constexpr float kDisplayRiseRate = 0.0012f;
 constexpr float kDisplayFallRate = 0.0060000005178153515f;
 
 // The fractional-fill threshold above which a partially-filled cell counts as an extra whole cell

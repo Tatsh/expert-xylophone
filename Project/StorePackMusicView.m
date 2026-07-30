@@ -80,7 +80,7 @@ static const CGFloat kLevelsColorBlue = 0.47058823529411764;  // @ghidraAddress 
 // Jacket layer shadow and border parameters.
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
-static const CGFloat kArtworkShadowOpacity = 0.6000000238418579; // @ghidraAddress 0x2ec6b8
+static const CGFloat kArtworkShadowOpacity = 0.6f; // @ghidraAddress 0x2ec6b8
 static const CGFloat kArtworkShadowRadius = 2.0;
 
 // Tune-cell background stretchable-image cap size.

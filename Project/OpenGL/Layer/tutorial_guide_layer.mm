@@ -97,8 +97,8 @@ constexpr UvRect kUvRects[] = {
 // The nine keyframe timings (start X, end X, step index) the guide sweep uses (@ghidraAddress
 // 0x10b4bc onwards, in the constructor's immediate stores).
 constexpr TutorialGuideLayer::Keyframe kKeyframes[] = {
-    {1683.3333740234375f, 6666.66650390625f, 0},
-    {7016.66650390625f, 12016.6669921875f, 1},
+    {1683.3334f, 6666.6665f, 0},
+    {7016.6665f, 12016.667f, 1},
     {12350.0f, 17350.0f, 2},
     {35666.66796875f, 37666.66796875f, 3},
     {38000.0f, 40000.0f, 4},

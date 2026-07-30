@@ -9,7 +9,7 @@ PlayTimer *g_pPlayTimer = nullptr; // @ghidraAddress 0x3de020
 
 // The per-frame time step, one 60th of a second in milliseconds, that scales a delay-frame count
 // into the play-timing offset. @ghidraAddress 0x2ef178
-const float g_flDelayFrameToSeconds = 16.66659927368164f;
+const float g_flDelayFrameToSeconds = 16.6666f;
 
 namespace {
 
@@ -24,8 +24,8 @@ constexpr double kDriftCorrectionFactor = 0.1;
 // drift correction. The iOS-8.0-to-8.1 tier adds nothing; iOS 8.1 or later adds the larger offset;
 // a pre- 8.0 device adds the smaller one (@ghidraAddress 0x308b44 = 49.9998, 0x308b48 = 33.3332).
 constexpr float kLatencyOffset80To81 = 0.0f;
-constexpr float kLatencyOffset81OrLater = 49.99980163574219f;
-constexpr float kLatencyOffsetPre80 = 33.33319854736328f;
+constexpr float kLatencyOffset81OrLater = 49.9998f;
+constexpr float kLatencyOffsetPre80 = 33.3332f;
 
 } // namespace
 

@@ -47,7 +47,7 @@ static const double kLoadingShadowAlpha = 0.4;    // @ghidraAddress 0x2ec720
 static const double kLevelColorRed = 0.3333333333333333;       // @ghidraAddress 0x2eec78
 static const double kLevelColorGreen = 0.03529411926865578;   // @ghidraAddress 0x2eec80
 static const double kLevelColorBlue = 0.47058823529411764;     // @ghidraAddress 0x2eec88
-static const double kBackgroundDimWhite = 0.8629999756813049; // @ghidraAddress 0x2eecd0
+static const double kBackgroundDimWhite = 0.863f; // @ghidraAddress 0x2eecd0
 // These two are single-precision in the binary, and their addresses were never recovered: neither
 // value exists as a double anywhere in __const, while both exist as floats at several addresses, so
 // the annotations they used to carry (0x2eecc0 and 0x2eecb8) named the doubles belonging to other

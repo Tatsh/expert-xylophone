@@ -124,7 +124,7 @@ static const CGFloat kSquareArtworkVariantYInset = 2.0;
 static const CGFloat kArtworkFadeInDuration = 0.2;
 
 // Colours used for the item panel and buttons.
-static const CGFloat kItemPanelBackgroundWhite = 0.8629999756813049;
+static const CGFloat kItemPanelBackgroundWhite = 0.863f;
 static const CGFloat kFullAlpha = 1.0;
 
 @interface StoreCampaignDetailViewPad ()

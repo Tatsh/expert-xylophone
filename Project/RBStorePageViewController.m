@@ -162,13 +162,13 @@ static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x10030bed0
 static const CGFloat kPackRowTintEvenWhite = 0.8;
 static const CGFloat kPackRowTintOddWhite = 0.7568627450980392;
 static const CGFloat kPadPackRowTintWhite = 0.5;
-static const CGFloat kPadMoreRowGrayWhite = 0.6000000238418579; // @ghidraAddress 0x1002ec708
+static const CGFloat kPadMoreRowGrayWhite = 0.6f; // @ghidraAddress 0x1002ec708
 
 // The "load more" row text: 0.8 white idle, 0.4 white while loading. The loading text and the
 // idle shadow read the same pool slot, and both values are float-rounded.
-static const CGFloat kMoreCellTextWhiteIdle = 0.800000011920929;    // @ghidraAddress 0x1002ec6a0
-static const CGFloat kMoreCellTextWhiteLoading = 0.4000000059604645; // @ghidraAddress 0x1002ec720
-static const CGFloat kMoreCellShadowWhite = 0.4000000059604645;      // @ghidraAddress 0x1002ec720
+static const CGFloat kMoreCellTextWhiteIdle = 0.8f;    // @ghidraAddress 0x1002ec6a0
+static const CGFloat kMoreCellTextWhiteLoading = 0.4f; // @ghidraAddress 0x1002ec720
+static const CGFloat kMoreCellShadowWhite = 0.4f;      // @ghidraAddress 0x1002ec720
 
 // The sample-label cell layout metrics: the label is inset from both edges and the play button sits
 // at the trailing edge, both 32 points tall.
@@ -223,7 +223,7 @@ static const CGFloat kCoverPadAlpha = 0.5;
 
 // The loading label's text shadow. This is its own pool slot, not the animation duration it
 // happens to equal.
-static const CGFloat kLoadingShadowAlpha = 0.30000001192092896; // @ghidraAddress 0x1002ec718
+static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x1002ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
@@ -264,7 +264,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 // The cover-tap dismissal fade. It is a different pool slot from kDetailAnimDuration and holds
 // the float-rounded 0.3, not the exact double; the slot carries no symbol, so this is a source
 // literal rather than the engine global the name once claimed.
-static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidraAddress 0x1002ec718
+static const NSTimeInterval kCoverFadeDuration = 0.3f; // @ghidraAddress 0x1002ec718
 
 @interface RBStorePageViewController () {
     // Whether the wide (pad) iPad idiom is active; cached from IsPad().
@@ -1119,7 +1119,11 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
 - (UIImage *)artworkImageForPackInfo:(StorePackInfo *)packInfo
                            indexPath:(NSIndexPath *)indexPath
                     forcingNonRetina:(BOOL)forcingNonRetina {
-    ImageDownloader *downloader = self.artworkDownloaders[@(packInfo.packID)];
+    // The binary uses -objectForKey:/-setObject:forKey: throughout, never the subscripting
+    // variants. One of its three de-inlined copies of this lookup boxes the key with
+    // -numberWithInteger: (at 0x1ea800) while the other two use -numberWithInt:; a single helper
+    // cannot reproduce that split, so the majority form is used here.
+    ImageDownloader *downloader = [self.artworkDownloaders objectForKey:@(packInfo.packID)];
     if (downloader != nil) {
         return [downloader getImage];
     }
@@ -1134,7 +1138,7 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
     if (forcingNonRetina) {
         newDownloader.unUseRetina = YES;
     }
-    self.artworkDownloaders[@(packInfo.packID)] = newDownloader;
+    [self.artworkDownloaders setObject:newDownloader forKey:@(packInfo.packID)];
     [newDownloader startDownload];
     return nil;
 }
@@ -1270,7 +1274,9 @@ static const NSTimeInterval kCoverFadeDuration = 0.30000001192092896; // @ghidra
         CGFloat offsetY = scrollView.contentOffset.y;
         CGFloat boundsHeight = scrollView.bounds.size.height;
         CGFloat contentHeight = scrollView.contentSize.height;
-        if (offsetY < contentHeight + boundsHeight) {
+        // fadd d0,d8,d9 then fcmp d0,d1 with b.le skipping: the fetch fires once the visible
+        // bottom passes the content bottom, not on every scroll event.
+        if (offsetY + boundsHeight > contentHeight) {
             [self selectShowMore];
         }
     }

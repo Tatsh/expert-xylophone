@@ -120,13 +120,13 @@ static const CGFloat kTitleShadowOffsetY = -1.0;
 // White / alpha colour components.
 static const CGFloat kCommentTextWhite = 0.19607843458652496;
 static const CGFloat kDisabledTitleWhite = 0.6196078658103943;
-static const CGFloat kLoadedBackgroundWhite = 0.8629999756813049;
-static const CGFloat kTermStripBackgroundWhite = 0.8629999756813049;
-static const CGFloat kLoadingShadowAlpha = 0.4000000059604645;
+static const CGFloat kLoadedBackgroundWhite = 0.863f;
+static const CGFloat kTermStripBackgroundWhite = 0.863f;
+static const CGFloat kLoadingShadowAlpha = 0.4f;
 static const CGFloat kTermLinkGreenBlue = 0.47843137254901963;
 
 // The purchase-button title-shadow alpha, shared for the normal and disabled states.
-static const CGFloat kButtonTitleShadowAlpha = 0.6000000238418579;
+static const CGFloat kButtonTitleShadowAlpha = 0.6f;
 
 // The centre-scaling divisor used to place the spinner and loading label at the panel centre.
 static const CGFloat kCenterScale = 0.5;

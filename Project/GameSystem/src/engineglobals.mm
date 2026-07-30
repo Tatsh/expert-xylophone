@@ -40,10 +40,10 @@ UIColor *g_pPaletteSteelBlueColor2;
 UIColor *g_pPaletteGoldColor;
 UIColor *g_pPaletteSteelBlueColor3;
 const double g_PaletteColorGreenGrassRed = 0.24705882370471954;
-const double g_PaletteColorGreenGrassGreen = 0.65490198135375977;
+const double g_PaletteColorGreenGrassGreen = 0.654902f;
 const double g_PaletteColorMagentaRed = 0.99607843160629272;
 const double g_PaletteColorMagentaGreen = 0.12941177189350128;
-const double g_PaletteColorMagentaBlue = 0.97254902124404907;
+const double g_PaletteColorMagentaBlue = 0.972549f;
 const double g_PaletteColorDarkGreenRed = 0.0078431377187371254;
 const double g_PaletteColorDarkGreenGreen = 0.43529412150382996;
 const double g_PaletteColorLeafGreenRed = 0.10196078568696976;
@@ -57,12 +57,12 @@ const double g_PaletteColorGoldBlue = 0.19215686619281769;
 
 // The shared layout metrics and timings the UI code reads. Each value is transcribed from the
 // binary's read-only data at the address in its comment.
-const double g_dTranslucentAlpha = 0.800000011920929;
-const double g_dMascotMoveAnimDuration = 0.10000000149011612;
-const double g_dMascotMessageAnimDuration = 0.20000000298023224;
-const float g_flFlashMinOpacity = 0.20000000298023224f;
+const double g_dTranslucentAlpha = 0.8f;
+const double g_dMascotMoveAnimDuration = 0.1f;
+const double g_dMascotMessageAnimDuration = 0.2f;
+const float g_flFlashMinOpacity = 0.2f;
 const double g_dCustomizeLayoutMetric100 = 100.0;
-const double g_dAudioManagerResumeFadeInTime = 0.30000001192092896;
+const double g_dAudioManagerResumeFadeInTime = 0.3f;
 const double g_dMascotMessageMaxWidthPad = 300.0;
 const double g_dMascotMessageMaxWidthPhone = 200.0;
 const double g_dSliderRowHeightWide = 40.0;
@@ -74,9 +74,9 @@ const double g_dStoreDetailCopyrightLabelWidth = 310.0;
 const double g_dPopupBaseOriginYWide = 160.0;
 const double g_dTermButtonRowHeight = 50.0;
 const double g_dNameImageMaxWidth = 280.0;
-const double g_dRBWebViewGrayViewWhite = 0.6000000238418579;
+const double g_dRBWebViewGrayViewWhite = 0.6f;
 const double g_dRBNavBarTintWhite = 0.054901960784313725;
-const float g_flDefaultExplosionEffectSize = 0.8999999761581421f;
+const float g_flDefaultExplosionEffectSize = 0.9f;
 
 // The two shared autoresizing masks: every margin and dimension flexible, and the indicator mask
 // that flexes only the four margins.

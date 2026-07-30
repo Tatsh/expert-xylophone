@@ -46,7 +46,7 @@ static const CGFloat kClassicCurrentPageIndicatorWhite = 1.0;
 
 // Page-indicator tint whites for every non-Classic theme, where the other pages are a light grey
 // and the current page is mid-grey.
-static const CGFloat kThemedPageIndicatorWhite = 0.6669999957084656;
+static const CGFloat kThemedPageIndicatorWhite = 0.667f;
 static const CGFloat kThemedCurrentPageIndicatorWhite = 0.5;
 
 // Scroll view and page control geometry for the Classic theme with the iPad (wide) layout.

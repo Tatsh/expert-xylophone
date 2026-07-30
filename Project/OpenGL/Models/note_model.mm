@@ -2133,7 +2133,7 @@ constexpr float kJudgeWindowNearHigh = 102.0f; // 0x308b70
 constexpr float kJudgeWindowNearLow = -102.0f; // 0x308b74
 constexpr float kMissWindowLow = -153.0f;      // 0x308b78
 // The narrow just-window high bound compared before the early/late/far split (0x308b68).
-constexpr float kJudgeWindowJustHighNarrow = -83.33333587646484f;
+constexpr float kJudgeWindowJustHighNarrow = -83.333336f;
 // The note grades ResolveNoteHit records.
 enum NoteGrade {
     kGradeJust = 0,      // A just (perfect) hit.
