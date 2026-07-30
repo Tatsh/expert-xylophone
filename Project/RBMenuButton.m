@@ -140,6 +140,16 @@ enum {
     // inner button's, since setting bounds rather than frame leaves the origin at minus half the
     // size and a container outside its parent is never hit-tested.
     if (NE_DBG_FIRST(6)) {
+        // The buttons still draw as flat grey with no transparent border, which is what a nil
+        // background image looks like, so record whether the art actually resolved and at what
+        // size the caps were computed from.
+        neDebugLog("menuButton type=%ld bg=%s bgSize=%.0fx%.0f icon=%s name=%s",
+                   (long)type,
+                   background ? "ok" : "NIL",
+                   background.size.width,
+                   background.size.height,
+                   icon ? "ok" : "NIL",
+                   backgroundName.UTF8String);
         neDebugLog("menuButton type=%ld self=(%.0f,%.0f %.0fx%.0f) button=(%.0f,%.0f %.0fx%.0f)",
                    (long)type,
                    self.frame.origin.x,
