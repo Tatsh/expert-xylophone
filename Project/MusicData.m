@@ -116,12 +116,9 @@ static const int kBlowfishKeyLength = 16;
 // The brown tint applied to the brown name-strip artwork. Each pooled constant is a single
 // precision quotient widened to double, so the divisions are spelled in float to reproduce the
 // stored bits exactly rather than the nearer double a double division would give.
-// @ghidraAddress 0x2fcf38 (g_dBrownTintRed)
-// @ghidraAddress 0x2fcf40 (g_dBrownTintGreen)
-// @ghidraAddress 0x2fcf48 (g_dBrownTintBlue)
-static const CGFloat kBrownTintRed = 78.0f / 255.0f;
-static const CGFloat kBrownTintGreen = 69.0f / 255.0f;
-static const CGFloat kBrownTintBlue = 58.0f / 255.0f;
+static const CGFloat kBrownTintRed = 78.0f / 255.0f;    // @ghidraAddress 0x2fcf38
+static const CGFloat kBrownTintGreen = 69.0f / 255.0f;  // @ghidraAddress 0x2fcf40
+static const CGFloat kBrownTintBlue = 58.0f / 255.0f;   // @ghidraAddress 0x2fcf48
 
 // The opaque alpha component used for every tint colour.
 static const CGFloat kTintAlpha = 1.0;
