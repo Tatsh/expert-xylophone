@@ -1415,9 +1415,11 @@ static BOOL g_bRandamIntSeeded = NO;
         searchResult = [musics mutableCopy];
     }
 
+    // The csel at 0xa939c picks the artist comparator when the setting is 1 and the music one
+    // otherwise, so the sort is by artist on 1 rather than by a plain-versus-custom music name.
     SEL sortSelector = ([RBUserSettingData sharedInstance].menuItemSort == 1) ?
-                           @selector(compareMusicNameCustom:) :
-                           @selector(compareMusicName:);
+                           @selector(compareArtistNameCustom:) :
+                           @selector(compareMusicNameCustom:);
 
     NSInteger playlistID = [RBUserSettingData sharedInstance].playlistID;
     if (playlistID == kPlaylistIDNone) {
