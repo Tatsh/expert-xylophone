@@ -140,7 +140,7 @@ does not resolve, which is the same unresolved asset question as the menu button
 **File:** `Project/RBMenuButton.m` — `-setupView:` (0x9dab4)
 
 The binary computes both horizontal caps as `art width / 2 - 1`, so they always sum to the art's
-width less two and leave a 2-point stretchable seam. For this artwork the caps *are* the pill's
+width less two and leave a 2-point stretchable seam. For this artwork the caps _are_ the pill's
 rounded ends, and the arrangement only renders correctly while the destination is at least as wide
 as the art.
 
