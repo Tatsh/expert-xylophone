@@ -1141,6 +1141,17 @@ VERIFIED = {
     # arm. The button titles are the globals at 0x3cfb80 and 0x3cfce0, g_pLocalizedCancel and
     # g_pLocalizedOK at their declared addresses, and the styles are Cancel then Default.
     0x147134: 'RBErosionMarkUpdater -createAlertConfirm: empty message, literal title on one arm',
+    # The class-name argument every arm switches on is the ASCII constant at 0x36d0a0, and the cbz
+    # that follows means the fall-through is the UIAlertController arm and the branch target is the
+    # legacy one. The block at 0x14780c loads the weak self and sends pickerOpen (selref 0x3c4458).
+    0x1474E4: 'RBErosionMarkUpdater -showAlertSetScore: empty message, then present or animate in',
+    0x147868: 'RBErosionMarkUpdater -reshowAlertSetScore:: the same two arms carrying the message',
+    0x147AF4: 'RBErosionMarkUpdater -showAlertCancel: legacy arm closes the picker and hides first',
+    # One defect fixed: the three labels are padded to a common six-column width before the colon,
+    # so the constants at 0x36d220, 0x36d240 and 0x36d260 are each 22 characters and ours had
+    # dropped the padding from BASIC and HARD. Each appendFormat: really does take two arguments,
+    # the base then the edit score, paired by the stp at 0x147d74, 0x147e00 and 0x147e8c.
+    0x147C5C: 'RBErosionMarkUpdater -showAlertConfirm: validate, three padded lines, then two arms',
     0x143B8C: 'RBErosionMarkUpdater -pickerOpen: first non-nil field becomes first responder',
     0x143CC8: 'RBErosionMarkUpdater -pickerClose: resigns all three unconditionally',
     0x144418: 'RBErosionMarkUpdater -updatePerform: update, remove, then clear the global',
@@ -1596,6 +1607,21 @@ VERIFIED = {
     0x7e04: 'RBCampaignDetailViewController -didReceiveMemoryWarning chains to super only',
     0x7e38: 'RBCampaignDetailViewController -viewDidUnload chains to super then stops the artwork '
             'downloads',
+    0x64f8: 'RBCampaignDetailViewController -setDownloadFlag:: a set flag forces buttonType 1, '
+            'and the button is enabled on the inverse (cset eq at 0x6661c)',
+    0x6684: 'RBCampaignDetailViewController -hasItem:itemID:: NO unless the type is 0, the tune '
+            'is known to the manager, and its purchased path exists',
+    0x6978: 'RBCampaignDetailViewController -sampleStart loads with push and loop, then plays '
+            'with the 0.5f fade (fmov s0 at 0x6a4c), then shows the playing state',
+    0x6ad4: 'RBCampaignDetailViewController -sampleStop: the -1 guard is the cmn at 0x6af8, the '
+            'stop fade is the float32 0.2 at 0x2ec6b4, and the status is cleared either way',
+    0x7aac: 'RBCampaignDetailViewController -didPresentAlertView: walks keyWindow to the '
+            "presented controller's view and makes it exclusive-touch",
+    0x7bec: 'RBCampaignDetailViewController -stopDownloadArtworks returns early on an empty map, '
+            'else cancels and unhooks each downloader before emptying it',
+    0xb370: 'RBCampaignDetailViewController -viewDidDisappear: chains to super only',
+    0xb3a4: 'RBCampaignDetailViewController -willAnimateRotationToInterfaceOrientation:duration: '
+            'chains to super then re-runs -updateLayout',
 }
 
 

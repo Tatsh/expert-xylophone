@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4367 verified
-(68.8%).
+Total: 6343 — 6203 reconstructed, 4379 verified
+(69.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -55,12 +55,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `initWithItemInfo:` |  | ✅ | ❌ | `0x58fc` |
 | `RBCampaignDetailViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x5b00` |
 | `RBCampaignDetailViewController` | `-` | `setInfo:` |  | ✅ | ❌ | `0x5b34` |
-| `RBCampaignDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x64f8` |
-| `RBCampaignDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x6684` |
+| `RBCampaignDetailViewController` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x64f8` |
+| `RBCampaignDetailViewController` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x6684` |
 | `RBCampaignDetailViewController` | `-` | `showItemInfo` |  | ✅ | ✅ | `0x6798` |
 | `RBCampaignDetailViewController` | `-` | `loadInfo` |  | ✅ | ✅ | `0x6924` |
-| `RBCampaignDetailViewController` | `-` | `sampleStart` |  | ✅ | ❌ | `0x6978` |
-| `RBCampaignDetailViewController` | `-` | `sampleStop` |  | ✅ | ❌ | `0x6ad4` |
+| `RBCampaignDetailViewController` | `-` | `sampleStart` |  | ✅ | ✅ | `0x6978` |
+| `RBCampaignDetailViewController` | `-` | `sampleStop` |  | ✅ | ✅ | `0x6ad4` |
 | `RBCampaignDetailViewController` | `-` | `pushExternalLink:` |  | ✅ | ❌ | `0x6c08` |
 | `RBCampaignDetailViewController` | `-` | `pushButton:` |  | ✅ | ❌ | `0x6dac` |
 | `RBCampaignDetailViewController` | `-` | `sampleViewStop` |  | ✅ | ✅ | `0x6fdc` |
@@ -77,8 +77,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x78c0` |
 | `RBCampaignDetailViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x79b0` |
 | `RBCampaignDetailViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x79b4` |
-| `RBCampaignDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x7aac` |
-| `RBCampaignDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ❌ | `0x7bec` |
+| `RBCampaignDetailViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x7aac` |
+| `RBCampaignDetailViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x7bec` |
 | `RBCampaignDetailViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x7df4` |
 | `RBCampaignDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x7e04` |
 | `RBCampaignDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x7e38` |
@@ -87,8 +87,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0xa70c` |
 | `RBCampaignDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0xa780` |
 | `RBCampaignDetailViewController` | `-` | `updateLayout` |  | ✅ | ✅ | `0xa970` |
-| `RBCampaignDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0xb370` |
-| `RBCampaignDetailViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0xb3a4` |
+| `RBCampaignDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0xb370` |
+| `RBCampaignDetailViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0xb3a4` |
 | `RBCampaignDetailViewController` | `-` | `itemInfo` | prop | ✅ | ✅ | `0xb3f4` |
 | `RBCampaignDetailViewController` | `-` | `setItemInfo:` | prop | ✅ | ✅ | `0xb404` |
 | `RBCampaignDetailViewController` | `-` | `delegate` | prop | ✅ | ✅ | `0xb43c` |
@@ -3558,10 +3558,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `createAlertSetScore` |  | ✅ | ❌ | `0x144ffc` |
 | `RBErosionMarkUpdater` | `-` | `createAlertCancel` |  | ✅ | ✅ | `0x146d3c` |
 | `RBErosionMarkUpdater` | `-` | `createAlertConfirm` |  | ✅ | ✅ | `0x147134` |
-| `RBErosionMarkUpdater` | `-` | `showAlertSetScore` |  | ✅ | ❌ | `0x1474e4` |
-| `RBErosionMarkUpdater` | `-` | `reshowAlertSetScore:` |  | ✅ | ❌ | `0x147868` |
-| `RBErosionMarkUpdater` | `-` | `showAlertCancel` |  | ✅ | ❌ | `0x147af4` |
-| `RBErosionMarkUpdater` | `-` | `showAlertConfirm` |  | ✅ | ❌ | `0x147c5c` |
+| `RBErosionMarkUpdater` | `-` | `showAlertSetScore` |  | ✅ | ✅ | `0x1474e4` |
+| `RBErosionMarkUpdater` | `-` | `reshowAlertSetScore:` |  | ✅ | ✅ | `0x147868` |
+| `RBErosionMarkUpdater` | `-` | `showAlertCancel` |  | ✅ | ✅ | `0x147af4` |
+| `RBErosionMarkUpdater` | `-` | `showAlertConfirm` |  | ✅ | ✅ | `0x147c5c` |
 | `RBErosionMarkUpdater` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1480ac` |
 | `RBErosionMarkUpdater` | `-` | `textFieldDidBeginEditing:` |  | ✅ | ✅ | `0x1481a4` |
 | `RBErosionMarkUpdater` | `-` | `textFieldDidEndEditing:` |  | ✅ | ✅ | `0x148204` |
