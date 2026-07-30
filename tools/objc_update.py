@@ -2026,6 +2026,30 @@ VERIFIED = {
               'copies it with +dictionaryWithDictionary:',
     0x1A45F8: 'NSData(RB) -mutableArray takes the NSArray branch instead and copies into a fresh '
               'NSMutableArray',
+    # The rest of UIImage(RB). The lookup order was read from the branches: the cache, the theme
+    # directory, "00_Share" (0x36e300), "%@/%@" (0x363880) against the primary then the fallback
+    # lproj, and finally +imageNamedWithoutCache:. Both format calls were taken from the stack
+    # writes and each has two specifiers and two arguments. The store back into the cache is
+    # gated by eor w8,w20,#1 at 0x1a2b14, so useCache:NO really does skip it.
+    0x1A2858: 'UIImage(RB) +imageWithName:useCache: five fallbacks in order, cache written last',
+    # Two defects fixed. The gradient components are (0.0, 1.0, 1.0, 1.0) at 0x310428, two
+    # grey/alpha pairs, not the (0.0, 0.0, 1.0, 1.0) the reconstruction had; and the drawing
+    # options are w2 = 2 at 0x1a2e34, kCGGradientDrawsAfterEndLocation alone, not that ORed with
+    # kCGGradientDrawsBeforeStartLocation. The flip is fmov d1 word 0x1e7e1001, imm8 0xf0, so
+    # -1.0 and not the -4.0 the printed form suggests. Faithful and left alone: the scaled arm
+    # re-sends -scale three times and -size twice rather than reusing one value.
+    0x1A2C0C: 'UIImage(RB) -reflectedImageWithHeight: draws flipped into a premultiplied-last '
+              'context, masks it with a one-pixel-wide greyscale gradient, and picks the '
+              'scale-carrying +imageWithCGImage: only when -scale exists and is not 1.0',
+    0x1A31A0: 'UIImage(RB) -colorMatrixFilterWithColor: falls back to -getWhite:alpha: and copies '
+              'the white into all three channels (stp x8,x8 at 0x1a3208)',
+    # One defect fixed. The four channel vectors are not set with -setValue:forKey: at all: the
+    # stack writes from 0x1a3390 show one eleven-argument +filterWithName:keysAndValues: carrying
+    # kCIInputImageKey and the four keys at 0x36e340, 0x36e360, 0x36e380 and 0x36e3a0, with the
+    # stp x25,xzr at 0x1a3390 supplying the nil terminator.
+    0x1A3268: 'UIImage(RB) -colorMatrixFilterWithRed:green:blue:alpha: builds the whole CIFilter '
+              'in one variadic call, then sends -outputImage twice, once for the render and once '
+              'for the extent',
 }
 
 

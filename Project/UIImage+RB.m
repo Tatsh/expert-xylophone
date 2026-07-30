@@ -59,6 +59,13 @@ static const size_t kBitsPerComponent = 8;
 // The number of stops in the reflection alpha-gradient mask.
 static const size_t kReflectionGradientStopCount = 2;
 
+// The Core Image colour-matrix filter and the per-channel vector keys it is built with.
+static NSString *const kColorMatrixFilterName = @"CIColorMatrix";
+static NSString *const kColorMatrixRedVectorKey = @"inputRVector";
+static NSString *const kColorMatrixGreenVectorKey = @"inputGVector";
+static NSString *const kColorMatrixBlueVectorKey = @"inputBVector";
+static NSString *const kColorMatrixAlphaVectorKey = @"inputAVector";
+
 // The lazily created, owned themed-image cache keyed by asset name.
 // @ghidraAddress 0x3df3d8 (g_pThemedImageCache)
 static NSCache *g_pThemedImageCache = nil;
@@ -311,15 +318,16 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     CGContextRef gradientContext = CGBitmapContextCreate(
         NULL, 1, (size_t)reflectionHeight, kBitsPerComponent, 0, graySpace, kCGImageAlphaNone);
     if (gradientContext != NULL) {
-        CGFloat components[] = {0.0, 0.0, 1.0, 1.0};
+        // Two gray/alpha pairs: opaque black at the start, opaque white at the end.
+        // @ghidraAddress 0x310428
+        CGFloat components[] = {0.0, 1.0, 1.0, 1.0};
         CGGradientRef gradient = CGGradientCreateWithColorComponents(
             graySpace, components, NULL, kReflectionGradientStopCount);
-        CGContextDrawLinearGradient(
-            gradientContext,
-            gradient,
-            CGPointZero,
-            CGPointMake(0, reflectionHeight),
-            (kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation));
+        CGContextDrawLinearGradient(gradientContext,
+                                    gradient,
+                                    CGPointZero,
+                                    CGPointMake(0, reflectionHeight),
+                                    kCGGradientDrawsAfterEndLocation);
         CGGradientRelease(gradient);
         gradientMask = CGBitmapContextCreateImage(gradientContext);
         CGContextRelease(gradientContext);
@@ -364,12 +372,18 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
                                 alpha:(CGFloat)alpha {
     /** @ghidraAddress 0x1a3268 */
     CIImage *sourceImage = [[CIImage alloc] initWithImage:self];
-    CIFilter *filter = [CIFilter filterWithName:@"CIColorMatrix"
-                                  keysAndValues:kCIInputImageKey, sourceImage, nil];
-    [filter setValue:[CIVector vectorWithX:red Y:0 Z:0 W:0] forKey:@"inputRVector"];
-    [filter setValue:[CIVector vectorWithX:0 Y:green Z:0 W:0] forKey:@"inputGVector"];
-    [filter setValue:[CIVector vectorWithX:0 Y:0 Z:blue W:0] forKey:@"inputBVector"];
-    [filter setValue:[CIVector vectorWithX:0 Y:0 Z:0 W:alpha] forKey:@"inputAVector"];
+    CIFilter *filter = [CIFilter filterWithName:kColorMatrixFilterName
+                                  keysAndValues:kCIInputImageKey,
+                                                sourceImage,
+                                                kColorMatrixRedVectorKey,
+                                                [CIVector vectorWithX:red Y:0 Z:0 W:0],
+                                                kColorMatrixGreenVectorKey,
+                                                [CIVector vectorWithX:0 Y:green Z:0 W:0],
+                                                kColorMatrixBlueVectorKey,
+                                                [CIVector vectorWithX:0 Y:0 Z:blue W:0],
+                                                kColorMatrixAlphaVectorKey,
+                                                [CIVector vectorWithX:0 Y:0 Z:0 W:alpha],
+                                                nil];
 
     CIContext *context = [CIContext contextWithOptions:nil];
     CIImage *outputImage = filter.outputImage;

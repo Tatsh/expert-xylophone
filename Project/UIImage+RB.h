@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)clipImageWithRect:(CGRect)rect;
 
 /**
- * @brief Build a bottom reflection of the receiver, faded by a top-to-bottom alpha gradient.
+ * @brief Build a bottom reflection of the receiver, faded by a black-to-white greyscale mask.
  * @param height The reflection height, in points; multiplied by the receiver's scale on Retina.
  * @return The reflected, gradient-masked image, or @c nil when @p height is zero or the receiver is
  * unavailable.

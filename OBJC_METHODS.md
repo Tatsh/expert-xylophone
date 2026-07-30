@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4527 verified
+Total: 6343 — 6203 reconstructed, 4531 verified
 (71.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4446,11 +4446,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:` |  | ✅ | ✅ | `0x1a1a0c` |
 | `(RB)` | `+` | `imageNamedWithoutCache:` |  | ✅ | ✅ | `0x1a1b08` |
 | `(RB)` | `+` | `imageWithName:` |  | ✅ | ✅ | `0x1a2830` |
-| `(RB)` | `+` | `imageWithName:useCache:` |  | ✅ | ❌ | `0x1a2858` |
-| `(RB)` | `-` | `reflectedImageWithHeight:` |  | ✅ | ❌ | `0x1a2c0c` |
+| `(RB)` | `+` | `imageWithName:useCache:` |  | ✅ | ✅ | `0x1a2858` |
+| `(RB)` | `-` | `reflectedImageWithHeight:` |  | ✅ | ✅ | `0x1a2c0c` |
 | `(RB)` | `-` | `clipImageWithRect:` |  | ✅ | ✅ | `0x1a2fa4` |
-| `(RB)` | `-` | `colorMatrixFilterWithColor:` |  | ✅ | ❌ | `0x1a31a0` |
-| `(RB)` | `-` | `colorMatrixFilterWithRed:green:blue:alpha:` |  | ✅ | ❌ | `0x1a3268` |
+| `(RB)` | `-` | `colorMatrixFilterWithColor:` |  | ✅ | ✅ | `0x1a31a0` |
+| `(RB)` | `-` | `colorMatrixFilterWithRed:green:blue:alpha:` |  | ✅ | ✅ | `0x1a3268` |
 | `(RB)` | `-` | `left` |  | ✅ | ✅ | `0x1a35ac` |
 | `(RB)` | `-` | `top` |  | ✅ | ✅ | `0x1a35b8` |
 | `(RB)` | `-` | `right` |  | ✅ | ✅ | `0x1a35d8` |
