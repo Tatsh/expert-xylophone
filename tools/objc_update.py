@@ -53,6 +53,11 @@ VERIFIED = {
     # through to the non-retina call when it returns nil (cbnz x24 at 0x1a1a88 returns early).
     0x1A1A0C: 'UIImage(RB) +imageWithName:imageDirectory:themaDirectory: two-arm retina fallback, '
               'w5 carries the retina flag as 1 then 0',
+    # Reads g_pThemedImageCache straight from 0x3df3d8 and tail-calls removeAllObjects at 0x1a1640.
+    # There is no bl to the lazy accessor, so this arm does not create the cache to empty it.
+    0x1A1630: 'UIImage(RB) +clearImageCache: bare global load, no lazy init',
+    # w3 = 1 at 0x1a2840 is useCache:YES, then a tail call.
+    0x1A2830: 'UIImage(RB) +imageWithName: forwards with useCache:YES',
     # ApplilinkCore's flag block at 0x3df630, each accessor distinguished only by its
     # displacement; every byte's readers and writers were checked by cross-reference.
     0x214c00: 'ApplilinkCore +setNavigationBarCommonAppearance:: stores the argument verbatim',
