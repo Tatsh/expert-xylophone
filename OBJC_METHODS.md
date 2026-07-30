@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6203 reconstructed, 4023 verified
-(63.4%).
+Total: 6343 — 6203 reconstructed, 4060 verified
+(64.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -778,16 +778,16 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:isLoop:` |  | ✅ | ✅ | `0x3d7ec` |
 | `AudioManager` | `-` | `loadBgmDataWithBytesNoCopy:length:freeWhenDone:isLoop:` |  | ✅ | ✅ | `0x3d874` |
 | `AudioManager` | `-` | `loadVoiceData:isLoop:` |  | ✅ | ✅ | `0x3d8fc` |
-| `AudioManager` | `-` | `getGroupID:resourceId:` |  | ✅ | ❌ | `0x3dac4` |
-| `AudioManager` | `-` | `loadSe:isLoop:callName:group:` |  | ✅ | ❌ | `0x3dc48` |
-| `AudioManager` | `-` | `releaseSe:resourceId:` |  | ✅ | ❌ | `0x3e1a4` |
-| `AudioManager` | `-` | `releaseSeAll` |  | ✅ | ❌ | `0x3e580` |
+| `AudioManager` | `-` | `getGroupID:resourceId:` |  | ✅ | ✅ | `0x3dac4` |
+| `AudioManager` | `-` | `loadSe:isLoop:callName:group:` |  | ✅ | ✅ | `0x3dc48` |
+| `AudioManager` | `-` | `releaseSe:resourceId:` |  | ✅ | ✅ | `0x3e1a4` |
+| `AudioManager` | `-` | `releaseSeAll` |  | ✅ | ✅ | `0x3e580` |
 | `AudioManager` | `-` | `releaseBgm` |  | ✅ | ✅ | `0x3e868` |
 | `AudioManager` | `-` | `releaseVoice` |  | ✅ | ✅ | `0x3e8d4` |
-| `AudioManager` | `-` | `prepare:resourceId:volume:` |  | ✅ | ❌ | `0x3e8e4` |
-| `AudioManager` | `-` | `prepareSetGroup:resourceId:groupId:` |  | ✅ | ❌ | `0x3eab0` |
-| `AudioManager` | `-` | `playSe:resourceId:` |  | ✅ | ❌ | `0x3ec00` |
-| `AudioManager` | `-` | `playSe:resourceId:Volume:` |  | ✅ | ❌ | `0x3ece8` |
+| `AudioManager` | `-` | `prepare:resourceId:volume:` |  | ✅ | ✅ | `0x3e8e4` |
+| `AudioManager` | `-` | `prepareSetGroup:resourceId:groupId:` |  | ✅ | ✅ | `0x3eab0` |
+| `AudioManager` | `-` | `playSe:resourceId:` |  | ✅ | ✅ | `0x3ec00` |
+| `AudioManager` | `-` | `playSe:resourceId:Volume:` |  | ✅ | ✅ | `0x3ece8` |
 | `AudioManager` | `-` | `playSeSetGroup:resourceId:groupId:` |  | ✅ | ✅ | `0x3edd0` |
 | `AudioManager` | `-` | `stopSe:` |  | ✅ | ✅ | `0x3ee78` |
 | `AudioManager` | `-` | `onPauseSe:` |  | ✅ | ✅ | `0x3eefc` |
@@ -797,39 +797,39 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `-` | `offPauseSeAll` |  | ✅ | ✅ | `0x3f110` |
 | `AudioManager` | `-` | `stopSeAll` |  | ✅ | ✅ | `0x3f190` |
 | `AudioManager` | `-` | `stopAll` |  | ✅ | ✅ | `0x3f210` |
-| `AudioManager` | `-` | `orderInstanceList` |  | ✅ | ❌ | `0x3f260` |
-| `AudioManager` | `-` | `orderInstanceList:` |  | ✅ | ❌ | `0x3f3c0` |
+| `AudioManager` | `-` | `orderInstanceList` |  | ✅ | ✅ | `0x3f260` |
+| `AudioManager` | `-` | `orderInstanceList:` |  | ✅ | ✅ | `0x3f3c0` |
 | `AudioManager` | `-` | `stopOldInstance` |  | ✅ | ✅ | `0x3f544` |
 | `AudioManager` | `-` | `addInstance:group:` |  | ✅ | ✅ | `0x3f5e4` |
 | `AudioManager` | `-` | `setSeVolume:groupId:` |  | ✅ | ✅ | `0x3f624` |
 | `AudioManager` | `-` | `deleteFadeTimer` |  | ✅ | ✅ | `0x3f6a8` |
-| `AudioManager` | `-` | `createBgmFadeInTimer:` |  | ✅ | ❌ | `0x3f714` |
-| `AudioManager` | `-` | `createBgmFadeOutTimer:` |  | ✅ | ❌ | `0x3f854` |
-| `AudioManager` | `-` | `playBgm:` |  | ✅ | ❌ | `0x3f994` |
-| `AudioManager` | `-` | `stopBgm:` |  | ✅ | ❌ | `0x3fc1c` |
-| `AudioManager` | `-` | `onPauseBgm:` |  | ✅ | ❌ | `0x3fd48` |
-| `AudioManager` | `-` | `bgmCurrentTime` |  | ✅ | ❌ | `0x3fe30` |
-| `AudioManager` | `-` | `bgmDeviceCurrentTime` |  | ✅ | ❌ | `0x3fed0` |
-| `AudioManager` | `-` | `setBgmCurrentTime:` |  | ✅ | ❌ | `0x3ff70` |
-| `AudioManager` | `-` | `isPlayingBgm` |  | ✅ | ❌ | `0x40018` |
-| `AudioManager` | `-` | `onFadeInTimer:` |  | ✅ | ❌ | `0x400c4` |
-| `AudioManager` | `-` | `onFadeOutTimer:` |  | ✅ | ❌ | `0x40268` |
-| `AudioManager` | `-` | `pushBgm` |  | ✅ | ❌ | `0x4048c` |
-| `AudioManager` | `-` | `popBgm` |  | ✅ | ❌ | `0x405a4` |
-| `AudioManager` | `-` | `seekBgmToTop` |  | ✅ | ❌ | `0x40660` |
-| `AudioManager` | `-` | `playVoice` |  | ✅ | ❌ | `0x406b8` |
-| `AudioManager` | `-` | `stopVoice` |  | ✅ | ❌ | `0x407bc` |
-| `AudioManager` | `-` | `onPauseVoice` |  | ✅ | ❌ | `0x40860` |
-| `AudioManager` | `-` | `isPlayingVoice` |  | ✅ | ❌ | `0x40948` |
-| `AudioManager` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ❌ | `0x409f4` |
-| `AudioManager` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ❌ | `0x40aa8` |
-| `AudioManager` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x40b2c` |
-| `AudioManager` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x40bac` |
-| `AudioManager` | `-` | `suspendPlayer:` |  | ✅ | ❌ | `0x40c2c` |
-| `AudioManager` | `-` | `resumePlayer:` |  | ✅ | ❌ | `0x40ce4` |
-| `AudioManager` | `-` | `systemSuspend` |  | ✅ | ❌ | `0x40d6c` |
-| `AudioManager` | `-` | `systemResume` |  | ✅ | ❌ | `0x40e00` |
-| `AudioManager` | `-` | `dealloc` |  | ✅ | ❌ | `0x40e90` |
+| `AudioManager` | `-` | `createBgmFadeInTimer:` |  | ✅ | ✅ | `0x3f714` |
+| `AudioManager` | `-` | `createBgmFadeOutTimer:` |  | ✅ | ✅ | `0x3f854` |
+| `AudioManager` | `-` | `playBgm:` |  | ✅ | ✅ | `0x3f994` |
+| `AudioManager` | `-` | `stopBgm:` |  | ✅ | ✅ | `0x3fc1c` |
+| `AudioManager` | `-` | `onPauseBgm:` |  | ✅ | ✅ | `0x3fd48` |
+| `AudioManager` | `-` | `bgmCurrentTime` |  | ✅ | ✅ | `0x3fe30` |
+| `AudioManager` | `-` | `bgmDeviceCurrentTime` |  | ✅ | ✅ | `0x3fed0` |
+| `AudioManager` | `-` | `setBgmCurrentTime:` |  | ✅ | ✅ | `0x3ff70` |
+| `AudioManager` | `-` | `isPlayingBgm` |  | ✅ | ✅ | `0x40018` |
+| `AudioManager` | `-` | `onFadeInTimer:` |  | ✅ | ✅ | `0x400c4` |
+| `AudioManager` | `-` | `onFadeOutTimer:` |  | ✅ | ✅ | `0x40268` |
+| `AudioManager` | `-` | `pushBgm` |  | ✅ | ✅ | `0x4048c` |
+| `AudioManager` | `-` | `popBgm` |  | ✅ | ✅ | `0x405a4` |
+| `AudioManager` | `-` | `seekBgmToTop` |  | ✅ | ✅ | `0x40660` |
+| `AudioManager` | `-` | `playVoice` |  | ✅ | ✅ | `0x406b8` |
+| `AudioManager` | `-` | `stopVoice` |  | ✅ | ✅ | `0x407bc` |
+| `AudioManager` | `-` | `onPauseVoice` |  | ✅ | ✅ | `0x40860` |
+| `AudioManager` | `-` | `isPlayingVoice` |  | ✅ | ✅ | `0x40948` |
+| `AudioManager` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x409f4` |
+| `AudioManager` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ✅ | `0x40aa8` |
+| `AudioManager` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ✅ | `0x40b2c` |
+| `AudioManager` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ✅ | `0x40bac` |
+| `AudioManager` | `-` | `suspendPlayer:` |  | ✅ | ✅ | `0x40c2c` |
+| `AudioManager` | `-` | `resumePlayer:` |  | ✅ | ✅ | `0x40ce4` |
+| `AudioManager` | `-` | `systemSuspend` |  | ✅ | ✅ | `0x40d6c` |
+| `AudioManager` | `-` | `systemResume` |  | ✅ | ✅ | `0x40e00` |
+| `AudioManager` | `-` | `dealloc` |  | ✅ | ✅ | `0x40e90` |
 | `AudioManager` | `-` | `isStart` | prop | ✅ | ✅ | `0x4101c` |
 | `AudioManager` | `-` | `seNameList` | prop | ✅ | ✅ | `0x4102c` |
 | `AudioManager` | `-` | `setSeNameList:` | prop | ✅ | ✅ | `0x4103c` |

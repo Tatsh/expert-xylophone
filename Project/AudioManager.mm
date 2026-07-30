@@ -99,13 +99,14 @@ struct SeManageId {
 } // namespace
 
 // The step interval of the background-music fade timers, in seconds; a fade shorter than this plays
-// or stops immediately.
+// or stops immediately. The pool holds a float widened to double, so the literal keeps its suffix.
 // @ghidraAddress 0x2eef30 (g_dAudioManagerFadeStepInterval)
-constexpr double kFadeStepInterval = 0.05;
+constexpr double kFadeStepInterval = 0.05f;
 
 // The background-music fade-in duration applied when resuming after an interruption, in seconds.
+// Widened from a float in the same way.
 // @ghidraAddress 0x2ec718 (g_dAudioManagerResumeFadeInTime)
-constexpr double kResumeFadeInTime = 0.3;
+constexpr double kResumeFadeInTime = 0.3f;
 
 @interface AudioManager () {
     // Engine-side subsystems and the instance-tracking tables, in the order and at the offsets the
@@ -189,6 +190,15 @@ constexpr double kResumeFadeInTime = 0.3;
         delete sePlayer;
         sePlayer = nullptr;
     }
+    // The binary clears every object property by hand before the superclass call, even though it
+    // also emits a .cxx_destruct that would release them.
+    self.seNameList = nil;
+    self.seRidList = nil;
+    self.bgmPlayer = nil;
+    self.voicePlayer = nil;
+    self.fadeTimer = nil;
+    self.stackBgm = nil;
+    self.seType = nil;
 }
 
 #pragma mark - System lifecycle
@@ -640,6 +650,7 @@ constexpr double kResumeFadeInTime = 0.3;
                 static_cast<int>(static_cast<unsigned int>(resourceId) & kResourceIndexMask),
                 volume);
         }
+        // The call site at 0x3e97c also loads the volume into w2, but 0x4a954 never reads it.
         return seAVPlayer->AcquireBusForSourceIndex(static_cast<unsigned int>(resourceId) &
                                                     kResourceIndexMask);
     }
@@ -1007,6 +1018,7 @@ constexpr double kResumeFadeInTime = 0.3;
         [self.fadeTimer invalidate];
         self.fadeTimer = nil;
     }
+    // Yes, the clamp above is then overwritten: 0x401dc is reached from both arms.
     self.bgmPlayer.volume = volume;
 }
 
@@ -1066,7 +1078,8 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (void)suspendPlayer:(int)playerIndex {
     /** @ghidraAddress 0x40c2c */
-    if (playerIndex > kPlayerIndexVoice) {
+    // The guard at 0x40c3c is b.hi, which is unsigned, so a negative index is rejected as well.
+    if (playerIndex < 0 || playerIndex > kPlayerIndexVoice) {
         return;
     }
     isInterruption[playerIndex] = YES;
@@ -1079,7 +1092,8 @@ constexpr double kResumeFadeInTime = 0.3;
 
 - (void)resumePlayer:(int)playerIndex {
     /** @ghidraAddress 0x40ce4 */
-    if (playerIndex >= kGroupCount || !isInterruption[playerIndex]) {
+    // The guard at 0x40ce8 is b.hi, matching -suspendPlayer:.
+    if (playerIndex < 0 || playerIndex > kPlayerIndexVoice || !isInterruption[playerIndex]) {
         return;
     }
     isInterruption[playerIndex] = NO;

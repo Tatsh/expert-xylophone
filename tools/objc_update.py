@@ -891,6 +891,68 @@ VERIFIED = {
     0x338ec: 'NetworkUtil +termFetch: v3/terms/fetch/, nil param',
     0x3390c: 'NetworkUtil +termAgree: v3/terms/log/, nil param',
     0x3392c: 'NetworkUtil +userAgeURL: v3/age/, nil param',
+    # AudioManager's sound-effect, background-music and interruption routines. The ivar list settles
+    # the offset variables these bodies index: 0x3c8430 sePlayer, 0x3c8434 seAVPlayer, 0x3c843c
+    # seList (stride 0xc), 0x3c8438 _isStart, 0x3c8440 isInterruption, 0x3c8444 isPlaying, 0x3c8448
+    # isSuspend, 0x3c844c isOnPauseVoice, 0x3c8450 isOnPause, 0x3c8454 seVolume, 0x3c8458 seManageId
+    # (stride 0x30 per group), 0x3c845c unitVolume.
+    0x3DAC4: 'AudioManager -getGroupID:resourceId:: cbz on the call name picks the key',
+    # Four arms off the cbz x19 at 0x3dc8c and the cbz w23 at 0x3dc90. The tag is applied by the orr
+    # at 0x3df10 (0x60000000, bus) and 0x3e024 (0x10000000, voice), each on the pre-boxed index.
+    0x3DC48: 'AudioManager -loadSe:isLoop:callName:group:: four arms, both index tags',
+    0x3E1A4: 'AudioManager -releaseSe:resourceId:: four arms, count re-read every iteration',
+    # The rid loop calls intValue twice, once for the group and again for the mask (0x3e754,
+    # 0x3e7ac).
+    0x3E580: 'AudioManager -releaseSeAll: name loop then rid loop, seType cleared last',
+    # The dispatch block is emitted twice, before and after stopOldInstance; both copies agree.
+    0x3E8E4: 'AudioManager -prepare:resourceId:volume:: retry once after dropping the oldest',
+    0x3EAB0: 'AudioManager -prepareSetGroup:resourceId:groupId:: bus from slot, volume from group',
+    0x3EC00: 'AudioManager -playSe:resourceId:: volume from seVolume[group]',
+    0x3ECE8: 'AudioManager -playSe:resourceId:Volume:: same with an explicit volume',
+    # Sweep then compact, both over seList; the trailing re-read at 0x3f388 returns early.
+    0x3F260: 'AudioManager -orderInstanceList: sweep finished slots then compact',
+    # The same shape over seManageId, but it swaps the bus ids rather than the groups (0x3f4c4 to
+    # 0x3f4d0) and then scans for the first free slot.
+    0x3F3C0: 'AudioManager -orderInstanceList:: per-group sweep, compact, then first free slot',
+    # fmov d0 of 1.0 at 0x3f738 and -1.0 at 0x3f878, divided by the time and scaled by the pool
+    # double at 0x2eef30, which is 0x3fa99999a0000000, a float 0.05f widened.
+    0x3F714: 'AudioManager -createBgmFadeInTimer:: unitVolume = 0.05f / time',
+    0x3F854: 'AudioManager -createBgmFadeOutTimer:: the same with a negated numerator',
+    # fcmp against the same 0x2eef30 double at 0x3fa20, b.le taking the immediate arm.
+    0x3F994: 'AudioManager -playBgm:: interruption guard, then faded or immediate start',
+    0x3FC1C: 'AudioManager -stopBgm:: deleteFadeTimer before the fade test',
+    0x3FD48: 'AudioManager -onPauseBgm:: isOnPause set before deleteFadeTimer',
+    0x3FE30: 'AudioManager -bgmCurrentTime: zero when there is no player',
+    0x3FED0: 'AudioManager -bgmDeviceCurrentTime: same shape',
+    0x3FF70: 'AudioManager -setBgmCurrentTime:: no-op when there is no player',
+    0x40018: 'AudioManager -isPlayingBgm: forwards to the player',
+    # The clamp at 0x40190 is overwritten by the unconditional setVolume: at 0x40200.
+    0x400C4: 'AudioManager -onFadeInTimer:: identity check, then a clamp the tail undoes',
+    # b.pl at 0x40308 keeps fading; the silent arm reads isOnPause at 0x40384 to pick stop or pause.
+    0x40268: 'AudioManager -onFadeOutTimer:: stop or pause chosen by isOnPause',
+    0x4048C: 'AudioManager -pushBgm: pause, drop the old stack entry, then move the player across',
+    0x405A4: 'AudioManager -popBgm: release, restore, re-delegate, clear the stack',
+    0x40660: 'AudioManager -seekBgmToTop: setCurrentTime: zero, no nil check',
+    0x406B8: 'AudioManager -playVoice: resumes from voicePlayTime only when paused',
+    0x407BC: 'AudioManager -stopVoice: clears isPlaying[1]',
+    0x40860: 'AudioManager -onPauseVoice: saves the position, then stops rather than pauses',
+    0x40948: 'AudioManager -isPlayingVoice: forwards to the player',
+    # Two independent compares, so one player can match each.
+    0x409F4: 'AudioManager -audioPlayerDidFinishPlaying:successfully:: clears whichever matched',
+    # cinc at 0x40af8 turns the compare straight into the array index.
+    0x40AA8: 'AudioManager -audioPlayerBeginInterruption:: index is the bgm compare',
+    0x40B2C: 'AudioManager -audioPlayerEndInterruption:: cset feeds resumePlayer:',
+    0x40BAC: 'AudioManager -audioPlayerEndInterruption:withOptions:: same, options ignored',
+    # b.hi at 0x40c3c, so the bound is unsigned and a negative index is rejected too.
+    0x40C2C: 'AudioManager -suspendPlayer:: unsigned bound, flag set before the switch',
+    # Guarded on isInterruption, then isPlaying, then the per-player pause flag; the bgm arm loads
+    # the 0x2ec718 double, 0x3fd3333340000000, a float 0.3f widened.
+    0x40CE4: 'AudioManager -resumePlayer:: three guards, bgm resumes with a 0.3f fade',
+    0x40D6C: 'AudioManager -systemSuspend: guarded on _isStart and not isSuspend',
+    0x40E00: 'AudioManager -systemResume: the mirror of it',
+    # 0x40f04 onwards nils seNameList, seRidList, bgmPlayer, voicePlayer, fadeTimer, stackBgm and
+    # seType by hand before the superclass call.
+    0x40E90: 'AudioManager -dealloc: engine teardown then seven explicit property clears',
     # RBStoreExtendPageViewController, read against the disassembly one routine at a time.
     0x15a0b8: 'RBStoreExtendPageViewController -initWithParent:: IsPad() at 0x15a2e4 stores the '
               'idiom byte, moveToPackID starts at -1 (0x15a300)',
