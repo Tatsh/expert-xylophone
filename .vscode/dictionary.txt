@@ -276,6 +276,7 @@ mypy
 nbobhfs
 nekomata
 nextrel
+nilled
 nindirectsyms
 nolist
 nonatomic
@@ -342,6 +343,7 @@ rbpdbg
 rbplus
 rbscorehash
 rdparty
+readback
 receiptdata
 recentres
 recomputation
