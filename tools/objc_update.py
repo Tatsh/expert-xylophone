@@ -376,7 +376,8 @@ def mechanically_verified() -> dict[int, str]:
         Each verified address and what it was shown to do.
     """
     out: dict[int, str] = {}
-    for name in ('tools/objc_verified.txt', 'tools/objc_verified_trivial.txt'):
+    for name in ('tools/objc_verified.txt', 'tools/objc_verified_trivial.txt',
+                 'tools/objc_verified_float_constants.txt'):
         path = Path(name)
         if not path.is_file():
             continue

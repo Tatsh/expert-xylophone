@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6199 reconstructed, 3308 verified
+Total: 6343 — 6199 reconstructed, 3313 verified
 (52.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1150,7 +1150,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x56064` |
 | `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x5606c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x56088` |
-| `RBStoreManageSortViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x5608c` |
+| `RBStoreManageSortViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x5608c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x56098` |
 | `RBStoreManageSortViewController` | `-` | `manageViewCtrl` | prop | ✅ | ✅ | `0x56330` |
 | `RBStoreManageSortViewController` | `-` | `setManageViewCtrl:` | prop | ✅ | ✅ | `0x56340` |
@@ -2611,8 +2611,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `ghostImageView` | prop | ✅ | ✅ | `0xd78d4` |
 | `RBMusicView` | `-` | `setGhostImageView:` | prop | ✅ | ✅ | `0xd78e4` |
 | `RBPopoverBackgroundView` | `+` | `contentViewInsets` |  | ✅ | ❌ | `0xd7c14` |
-| `RBPopoverBackgroundView` | `+` | `arrowHeight` |  | ✅ | ❌ | `0xd7c28` |
-| `RBPopoverBackgroundView` | `+` | `arrowBase` |  | ✅ | ❌ | `0xd7c30` |
+| `RBPopoverBackgroundView` | `+` | `arrowHeight` |  | ✅ | ✅ | `0xd7c28` |
+| `RBPopoverBackgroundView` | `+` | `arrowBase` |  | ✅ | ✅ | `0xd7c30` |
 | `RBPopoverBackgroundView` | `-` | `halfArrowBase` |  | ✅ | ❌ | `0xd7c3c` |
 | `RBPopoverBackgroundView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xd7c68` |
 | `RBPopoverBackgroundView` | `-` | `setArrowOffset:` | prop | ✅ | ✅ | `0xd7d20` |
@@ -2674,7 +2674,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingTableView` | `-` | `pushLoadNext:` |  | ✅ | ❌ | `0xdc514` |
 | `RBRankingTableView` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0xdc590` |
 | `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0xdc598` |
-| `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5b4` |
+| `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0xdc5b4` |
 | `RBRankingTableView` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5c0` |
 | `RBRankingTableView` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0xdcf90` |
 | `RBRankingTableView` | `-` | `playerScope` | prop | ✅ | ✅ | `0xdd020` |
@@ -4898,7 +4898,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1caf08` |
 | `RBStoreGenreViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1caf10` |
 | `RBStoreGenreViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf78` |
-| `RBStoreGenreViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf7c` |
+| `RBStoreGenreViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf7c` |
 | `RBStoreGenreViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf88` |
 | `RBStoreGenreViewController` | `-` | `packListCtrl` | prop | ✅ | ✅ | `0x1cb198` |
 | `RBStoreGenreViewController` | `-` | `setPackListCtrl:` | prop | ✅ | ✅ | `0x1cb1a8` |
