@@ -74,9 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)paddingDirName;
 
 /**
- * @brief The cached documents directory path.
- *
- * Despite the name, the shipped build resolves this against @c NSCachesDirectory.
+ * @brief The cached documents directory path (@c NSDocumentDirectory).
  * @return The cached path.
  * @ghidraAddress 0x1ca130
  */
@@ -90,9 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)applicationSupportDirectoryPath;
 
 /**
- * @brief The cached caches directory path.
- *
- * Despite the name, the shipped build resolves this against @c NSLibraryDirectory.
+ * @brief The cached caches directory path (@c NSCachesDirectory).
  * @return The cached path.
  * @ghidraAddress 0x1ca360
  */

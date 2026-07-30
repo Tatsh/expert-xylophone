@@ -1967,8 +1967,9 @@ VERIFIED = {
               'error into a local',
     0x1C9B70: 'NSFileManager(RB) +isFreeSystemSize compares against 0x3200000 (50 MiB) with cset '
               'hi, so it is a strict greater-than',
-    0x1C9BA0: 'NSFileManager(RB) +freeFileSystemSize measures the documents path from 0x1a1624, '
-              'then valueForKey: the imported NSFileSystemFreeSize and -longLongValue',
+    0x1C9BA0: 'NSFileManager(RB) +freeFileSystemSize measures the path the getter at 0x1a1624 '
+              'returns, which is the global at 0x3df3b0, then valueForKey: the imported '
+              'NSFileSystemFreeSize and -longLongValue',
     # The walk is an explicit -objectEnumerator/-nextObject pair (0x1c9db0 and 0x1c9e38), not fast
     # enumeration, and the error local lives outside the loop in x23. The attributes dictionary is
     # variadic: the stack writes from 0x1c9ec8 give the exact list, and only the modification-date

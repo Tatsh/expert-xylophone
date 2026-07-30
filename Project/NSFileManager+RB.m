@@ -5,7 +5,9 @@
 //  Reconstructed from Ghidra project rb458, program rb458 (category NSFileManager(RB)). Verified
 //  against the arm64 disassembly (the createDirectorysAtPath: attributes dictionary is variadic and
 //  partly dropped by the decompiler, and every path getter dispatches to the NSFileManager class
-//  object even though the metadata files the methods in the instance-method list).
+//  object even though the metadata files the methods in the instance-method list). Each cached path
+//  getter assigns its global twice, first the searched path and then an owned copy of it, so the
+//  global is written rather than a local.
 //
 
 #import "NSFileManager+RB.h"
@@ -22,9 +24,19 @@ static NSString *const kPaddingDirectoryName = @"padding";
 // unavailable.
 static NSString *const kTemporaryFilesDirectoryName = @"Temporary Files";
 
-// Attribute keys applied to each directory level created by @c createDirectorysAtPath:.
+// Attribute values applied to each directory level created by @c createDirectorysAtPath:.
 static NSString *const kDirectoryOwnerName = @"owner";
 static NSString *const kDirectoryGroupName = @"group";
+
+// The attribute keys the same method uses. All but the modification date reach the code as their
+// own constant strings rather than as the Foundation symbols of the same spelling.
+static NSString *const kFileOwnerAccountNameKey = @"NSFileOwnerAccountName";
+static NSString *const kFileGroupOwnerAccountNameKey = @"NSFileGroupOwnerAccountName";
+static NSString *const kFilePosixPermissionsKey = @"NSFilePosixPermissions";
+static NSString *const kFileExtensionHiddenKey = @"NSFileExtensionHidden";
+
+// The directory the same method starts its walk from.
+static NSString *const kRootDirectoryPath = @"/";
 
 // Lazily initialised, owned copies of the resolved standard directory paths.
 // @ghidraAddress 0x3df510 (g_pDocumentDirectoryPathCache)
@@ -60,38 +72,44 @@ static NSString *g_pResourcePathCache = nil;
 
 + (BOOL)createDirectory:(NSString *)path {
     /** @ghidraAddress 0x1c9ac0 */
+    NSError *error = nil;
     return [[NSFileManager defaultManager] createDirectoryAtPath:path
                                      withIntermediateDirectories:YES
                                                       attributes:nil
-                                                           error:nil];
+                                                           error:&error];
 }
 
 + (BOOL)createDirectorysAtPath:(NSString *)path {
     /** @ghidraAddress 0x1c9cec */
     NSArray *components = [NSArray arrayWithArray:path.pathComponents];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    [fileManager changeCurrentDirectoryPath:@"/"];
-    for (NSString *component in components) {
+    [fileManager changeCurrentDirectoryPath:kRootDirectoryPath];
+    NSError *error = nil;
+    NSEnumerator *enumerator = [components objectEnumerator];
+    NSString *component = nil;
+    while ((component = [enumerator nextObject])) {
         if ([fileManager fileExistsAtPath:component]) {
             [fileManager changeCurrentDirectoryPath:component];
             continue;
         }
+        // The fourth object is nil, so the list terminates there and the permissions and
+        // extension-hidden entries never reach the dictionary.
         NSDictionary *attributes =
             [NSDictionary dictionaryWithObjectsAndKeys:[NSDate date],
                                                        NSFileModificationDate,
                                                        kDirectoryOwnerName,
-                                                       NSFileOwnerAccountName,
+                                                       kFileOwnerAccountNameKey,
                                                        kDirectoryGroupName,
-                                                       NSFileGroupOwnerAccountName,
+                                                       kFileGroupOwnerAccountNameKey,
                                                        nil,
-                                                       NSFilePosixPermissions,
+                                                       kFilePosixPermissionsKey,
                                                        [NSNumber numberWithBool:YES],
-                                                       NSFileExtensionHidden,
+                                                       kFileExtensionHiddenKey,
                                                        nil];
         if (![fileManager createDirectoryAtPath:component
                     withIntermediateDirectories:YES
                                      attributes:attributes
-                                          error:nil]) {
+                                          error:&error]) {
             return NO;
         }
         [fileManager changeCurrentDirectoryPath:component];
@@ -111,8 +129,9 @@ static NSString *g_pResourcePathCache = nil;
     // The binary measures the cached Documents path, which iOS always creates, not the
     // application-support path this category can also vend, which it does not.
     NSString *path = GetDocumentsDirectoryPath();
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:path
-                                                                                       error:nil];
+    NSError *error = nil;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSDictionary *attributes = [fileManager attributesOfFileSystemForPath:path error:&error];
     return [[attributes valueForKey:NSFileSystemFreeSize] longLongValue];
 }
 
@@ -127,10 +146,11 @@ static NSString *g_pResourcePathCache = nil;
     /** @ghidraAddress 0x1ca130 */
     @synchronized([NSFileManager class]) {
         if (g_pDocumentDirectoryPathCache == nil) {
-            NSString *path =
-                NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)
+            g_pDocumentDirectoryPathCache =
+                NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)
                     .lastObject;
-            g_pDocumentDirectoryPathCache = [[NSString alloc] initWithString:path];
+            g_pDocumentDirectoryPathCache =
+                [[NSString alloc] initWithString:g_pDocumentDirectoryPathCache];
         }
         return g_pDocumentDirectoryPathCache;
     }
@@ -140,10 +160,12 @@ static NSString *g_pResourcePathCache = nil;
     /** @ghidraAddress 0x1ca248 */
     @synchronized([NSFileManager class]) {
         if (g_pApplicationSupportDirectoryPathCache == nil) {
-            NSString *path = NSSearchPathForDirectoriesInDomains(
-                                 NSApplicationSupportDirectory, NSUserDomainMask, YES)
-                                 .lastObject;
-            g_pApplicationSupportDirectoryPathCache = [[NSString alloc] initWithString:path];
+            g_pApplicationSupportDirectoryPathCache = NSSearchPathForDirectoriesInDomains(
+                                                          NSApplicationSupportDirectory,
+                                                          NSUserDomainMask, YES)
+                                                          .lastObject;
+            g_pApplicationSupportDirectoryPathCache =
+                [[NSString alloc] initWithString:g_pApplicationSupportDirectoryPathCache];
         }
         return g_pApplicationSupportDirectoryPathCache;
     }
@@ -153,10 +175,11 @@ static NSString *g_pResourcePathCache = nil;
     /** @ghidraAddress 0x1ca360 */
     @synchronized([NSFileManager class]) {
         if (g_pCachesDirectoryPathCache == nil) {
-            NSString *path =
-                NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)
+            g_pCachesDirectoryPathCache =
+                NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)
                     .lastObject;
-            g_pCachesDirectoryPathCache = [[NSString alloc] initWithString:path];
+            g_pCachesDirectoryPathCache =
+                [[NSString alloc] initWithString:g_pCachesDirectoryPathCache];
         }
         return g_pCachesDirectoryPathCache;
     }
@@ -165,12 +188,13 @@ static NSString *g_pResourcePathCache = nil;
 + (NSString *)temporaryDirectoryPath {
     /** @ghidraAddress 0x1ca478 */
     if (g_pTemporaryDirectoryPathCache == nil) {
-        NSString *path = NSTemporaryDirectory();
-        if (path == nil) {
-            path = [[NSFileManager cachesDirectoryPath]
+        g_pTemporaryDirectoryPathCache = NSTemporaryDirectory();
+        if (g_pTemporaryDirectoryPathCache == nil) {
+            g_pTemporaryDirectoryPathCache = [[NSFileManager cachesDirectoryPath]
                 stringByAppendingPathComponent:kTemporaryFilesDirectoryName];
         }
-        g_pTemporaryDirectoryPathCache = [[NSString alloc] initWithString:path];
+        g_pTemporaryDirectoryPathCache =
+            [[NSString alloc] initWithString:g_pTemporaryDirectoryPathCache];
     }
     return g_pTemporaryDirectoryPathCache;
 }
