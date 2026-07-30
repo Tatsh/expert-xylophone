@@ -109,6 +109,10 @@ enum { kServerDataUserIdIndex = 0, kServerDataTokenIndex = 1 };
 // itself, used by @c +setNoBackupAttribute:.
 static NSString *const kMinSystemVersionForNoBackup = @"5.0.1";
 
+// The minimum iOS version the keychain accessibility attribute is set on, used by
+// @c +setServerData:andB:. It is a different version from the do-not-back-up one above.
+static NSString *const kMinSystemVersionForKeychainAccessible = @"4.0";
+
 // The keychain account name the music-list key is stored under, and the empty string the binary
 // files as that item's label and description.
 static NSString *const kApplicationUniqueIDAccount = @"ApplicationUniqueID";
@@ -138,6 +142,10 @@ static constexpr float kCorporateButtonFadeAlpha = 1.0f;
 static NSString *const kTermURLFormat = @"%@/?target=%@&type=%@";
 static NSString *const kBonusListKeyFormat = @"%d";
 static NSString *const kSaveDataPassphrase = @"Copyright 2014 KDE.";
+
+// The interruption-type key, spelled as a literal rather than referencing AVFoundation's
+// AVAudioSessionInterruptionTypeKey symbol, which is what the binary does.
+static NSString *const kAudioSessionInterruptionTypeKey = @"AVAudioSessionInterruptionTypeKey";
 
 // The device OS versions whose timing behaviour differs, compared numerically at startup.
 static NSString *const kOsVersion80 = @"8.0";
@@ -191,13 +199,20 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
 
     // First pass: fetch the generic-password item's attributes for this app's server-ID account.
-    NSDictionary *attributeQuery = @{
-        (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-        (__bridge id)kSecAttrAccount : kServerIdKeychainAccount,
-        (__bridge id)kSecAttrService : bundleIdentifier,
-        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
-        (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
-    };
+    // Built with the nil-terminated variadic constructor, not a dictionary literal, which would
+    // send +dictionaryWithObjects:forKeys:count: instead.
+    NSDictionary *attributeQuery =
+        [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
+                                                   (__bridge id)kSecClass,
+                                                   kServerIdKeychainAccount,
+                                                   (__bridge id)kSecAttrAccount,
+                                                   bundleIdentifier,
+                                                   (__bridge id)kSecAttrService,
+                                                   (__bridge id)kSecMatchLimitOne,
+                                                   (__bridge id)kSecMatchLimit,
+                                                   (__bridge id)kCFBooleanTrue,
+                                                   (__bridge id)kSecReturnAttributes,
+                                                   nil];
     CFTypeRef attributesResult = nullptr;
     if (SecItemCopyMatching((__bridge CFDictionaryRef)attributeQuery, &attributesResult) !=
         errSecSuccess) {
@@ -207,8 +222,9 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
     // Second pass: re-query with those attributes to retrieve the stored password bytes.
     NSMutableDictionary *dataQuery = [NSMutableDictionary dictionaryWithDictionary:attributes];
-    dataQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
-    dataQuery[(__bridge id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+    // -setObject:forKey:, not the subscript form, which would send -setObject:forKeyedSubscript:.
+    [dataQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+    [dataQuery setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
     CFTypeRef dataResult = nullptr;
     if (SecItemCopyMatching((__bridge CFDictionaryRef)dataQuery, &dataResult) != errSecSuccess) {
         return nil;
@@ -524,11 +540,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 #pragma mark - Audio session
 
 - (void)audioSessionInterrupted:(NSNotification *)notification {
-    NSUInteger type =
-        [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
-    if (type == AVAudioSessionInterruptionTypeBegan) {
+    // The boxed value is unwrapped once per comparison, not held in a local.
+    NSNumber *type = [notification.userInfo objectForKey:kAudioSessionInterruptionTypeKey];
+    if (type.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
         [AudioManager.sharedManager systemSuspend];
-    } else if (type == AVAudioSessionInterruptionTypeEnded) {
+    } else if (type.unsignedIntegerValue == AVAudioSessionInterruptionTypeEnded) {
         [AudioManager.sharedManager systemResume];
     }
 }
@@ -551,7 +567,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 - (void)startRegisterForRemoteNotification {
     // Registration is gated on a valid server-data pair; a missing or "null" placeholder aborts it.
     NSArray *serverData = [AppDelegate getServerData];
-    if (serverData.count != kServerDataFieldCount) {
+    // The nil test is its own branch, so -count is never sent to nil.
+    if (serverData == nil || serverData.count != kServerDataFieldCount) {
         return;
     }
     NSString *first = serverData[kServerDataUserIdIndex];
@@ -563,17 +580,19 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         return;
     }
 
-    UIApplication *application = UIApplication.sharedApplication;
+    // Each arm fetches the shared application itself; in the newer arm that happens after the
+    // settings object is built, not before the branch.
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
-        [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge |
-                                                        UIRemoteNotificationTypeSound |
-                                                        UIRemoteNotificationTypeAlert];
+        [UIApplication.sharedApplication
+            registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge |
+                                               UIRemoteNotificationTypeSound |
+                                               UIRemoteNotificationTypeAlert];
     } else {
         UIUserNotificationSettings *settings = [UIUserNotificationSettings
             settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound |
                              UIUserNotificationTypeAlert
                   categories:nil];
-        [application registerUserNotificationSettings:settings];
+        [UIApplication.sharedApplication registerUserNotificationSettings:settings];
     }
 }
 
@@ -714,37 +733,46 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                                                           kEmptyKeychainAttribute,
                                                           (__bridge id)kSecAttrDescription,
                                                           nil];
-    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
+    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForKeychainAccessible
                                               options:NSNumericSearch] != NSOrderedAscending) {
-        item[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
+        // -setObject:forKey:, not the subscript form, which sends -setObject:forKeyedSubscript:.
+        [item setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock
+                 forKey:(__bridge id)kSecAttrAccessible];
     }
-    NSString *joined = [NSString stringWithFormat:@"%@%@%@", p1, kServerDataSeparator, p2];
-    item[(__bridge id)kSecValueData] = [joined dataUsingEncoding:NSUTF8StringEncoding];
+    // The "@@@" separator is embedded in the format string, so only the two values are passed.
+    NSString *joined = [NSString stringWithFormat:@"%@@@@%@", p1, p2];
+    [item setObject:[joined dataUsingEncoding:NSUTF8StringEncoding]
+             forKey:(__bridge id)kSecValueData];
     SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
     return YES;
 }
 
 /** @ghidraAddress 0x50cb8 */
 + (NSString *)musicListKey {
-    NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
-
-    // Try to read the stored generic-password key for this app. The binary builds this with
-    // -dictionaryWithObjectsAndKeys:, whose five pairs were read from the stack setup at 0x50d2c
-    // rather than from the decompile, which shows only the first of them.
-    NSDictionary *attributeQuery = @{
-        (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-        (__bridge id)kSecAttrAccount : kApplicationUniqueIDAccount,
-        (__bridge id)kSecAttrService : bundleIdentifier,
-        (__bridge id)kSecMatchLimit : (__bridge id)kSecMatchLimitOne,
-        (__bridge id)kSecReturnAttributes : (__bridge id)kCFBooleanTrue,
-    };
+    // Try to read the stored generic-password key for this app. The five pairs were read from the
+    // stack setup at 0x50d90-0x50da8, not from a decompile, which shows only the first of them.
+    // The bundle identifier is fetched again for the second dictionary further down, as here.
+    NSDictionary *attributeQuery =
+        [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
+                                                   (__bridge id)kSecClass,
+                                                   kApplicationUniqueIDAccount,
+                                                   (__bridge id)kSecAttrAccount,
+                                                   NSBundle.mainBundle.bundleIdentifier,
+                                                   (__bridge id)kSecAttrService,
+                                                   (__bridge id)kSecMatchLimitOne,
+                                                   (__bridge id)kSecMatchLimit,
+                                                   (__bridge id)kCFBooleanTrue,
+                                                   (__bridge id)kSecReturnAttributes,
+                                                   nil];
     CFTypeRef attributesResult = nullptr;
     if (SecItemCopyMatching((__bridge CFDictionaryRef)attributeQuery, &attributesResult) ==
         errSecSuccess) {
         NSMutableDictionary *dataQuery = [NSMutableDictionary
             dictionaryWithDictionary:(__bridge NSDictionary *)attributesResult];
-        dataQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
-        dataQuery[(__bridge id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+        // -setObject:forKey:, not the subscript form.
+        [dataQuery setObject:(__bridge id)kSecClassGenericPassword
+                      forKey:(__bridge id)kSecClass];
+        [dataQuery setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
         CFTypeRef dataResult = nullptr;
         NSString *stored = nil;
         if (SecItemCopyMatching((__bridge CFDictionaryRef)dataQuery, &dataResult) ==
@@ -766,24 +794,26 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     CFRelease(uuidString);
     CFRelease(uuid);
 
-    // The five pairs here were likewise read from the stack setup at 0x50f84, not the decompile.
+    // The five pairs here were likewise read from the stack setup at 0x50f9c-0x50fc4.
     NSMutableDictionary *item =
         [NSMutableDictionary dictionaryWithObjectsAndKeys:(__bridge id)kSecClassGenericPassword,
                                                           (__bridge id)kSecClass,
                                                           kApplicationUniqueIDAccount,
                                                           (__bridge id)kSecAttrAccount,
-                                                          bundleIdentifier,
+                                                          NSBundle.mainBundle.bundleIdentifier,
                                                           (__bridge id)kSecAttrService,
                                                           kEmptyKeychainAttribute,
                                                           (__bridge id)kSecAttrLabel,
                                                           kEmptyKeychainAttribute,
                                                           (__bridge id)kSecAttrDescription,
                                                           nil];
-    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForNoBackup
+    if ([UIDevice.currentDevice.systemVersion compare:kMinSystemVersionForKeychainAccessible
                                               options:NSNumericSearch] != NSOrderedAscending) {
-        item[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
+        [item setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock
+                 forKey:(__bridge id)kSecAttrAccessible];
     }
-    item[(__bridge id)kSecValueData] = [key dataUsingEncoding:NSUTF8StringEncoding];
+    [item setObject:[key dataUsingEncoding:NSUTF8StringEncoding]
+             forKey:(__bridge id)kSecValueData];
     SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
     return key;
 }

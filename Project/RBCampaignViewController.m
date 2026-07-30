@@ -509,13 +509,17 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
         CGSize size = [cell getItemSize:self.isPad];
         cell.artworkView.frame = CGRectMake(0, 0, size.width, size.height);
         cell.artworkView.image = banner.getImage;
-        // The artwork fades in; the completion block sets the view's alpha back to one.
+        // The animation block fades the artwork in. The binary uses the three-argument form and
+        // passes an empty completion block, so that form is kept rather than the shorter one.
         __weak UIImageView *weakArtwork = cell.artworkView;
         [UIView animateWithDuration:kBannerFadeDuration
-                         animations:^{
-                           /** @ghidraAddress 0x1fa878 (block invoke) */
-                           weakArtwork.alpha = kOpaqueAlpha;
-                         }];
+            animations:^{
+              /** @ghidraAddress 0x1faef8 (animation block) */
+              weakArtwork.alpha = kOpaqueAlpha;
+            }
+            completion:^(BOOL finished){
+                /** @ghidraAddress 0x1faf58 (completion block; the binary's body is empty) */
+            }];
     }
     return cell;
 }

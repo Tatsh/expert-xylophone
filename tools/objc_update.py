@@ -531,6 +531,47 @@ VERIFIED = {
               'identifier is cleared before the push',
     0x1ec078: 'RBStorePageViewController -selectShowMore: the loading flag latches, '
               'then centre, size, centre',
+    # RBCampaignViewController.
+    0x1fa878: 'RBCampaignViewController -tableView:cellForRowAtIndexPath:: the block '
+              'tag named the method, not the block; the call takes a completion, and '
+              'that completion is empty',
+    # AppDelegate. The keychain trio had ten defects between them; every argument list
+    # was read from the stack writes rather than counted.
+    0x511cc: 'AppDelegate +getServerData: five pairs read from the stack; the '
+              'dictionary is the variadic, and the inserts are setObject:forKey:, not '
+              'subscripts',
+    0x514c8: 'AppDelegate +setServerData:andB:: the version gate is 4.0, not 5.0.1, '
+              'and the format embeds the separator so it takes two arguments, not three',
+    0x50cb8: 'AppDelegate +musicListKey: both dictionaries variadic, the same 4.0 '
+              'gate, and the bundle identifier is fetched twice',
+    0x51bc8: 'AppDelegate -application:openURL:sourceApplication:annotation:: the host '
+              'is used only for the nil test; the last two arguments are untouched',
+    0x54550: 'AppDelegate -audioSessionInterrupted:: the key is a literal, not the '
+              'framework symbol, and the value is unboxed once per comparison',
+    0x533c8: 'AppDelegate -startRegisterForRemoteNotification: the nil test returns '
+              'before count is sent, and the application is fetched inside each arm',
+    # RBStorePageViewController, ten more, all clean.
+    0x1e6f30: 'RBStorePageViewController -askDownloadAllMusics: five enumerations in '
+              'order; b.lt is signed',
+    0x1e7788: 'RBStorePageViewController -restoreDownloadAllMusics: tasks built only '
+              'for absent files',
+    0x1ec2e8: 'RBStorePageViewController -imageDownloader:didLoad:: the pad halves the '
+              'row and picks a side by its low bit',
+    0x1ed380: 'RBStorePageViewController -viewDidAppear:: super first, then the empty- '
+              'and-idle split',
+    0x1ed6e4: 'RBStorePageViewController -viewWillDisappear:: super first, then four '
+              'guarded blocks',
+    0x1ed9f8: 'RBStorePageViewController '
+              '-willAnimateRotationToInterfaceOrientation:duration:: the width feeds '
+              'the rotate',
+    0x1edae8: 'RBStorePageViewController -didReceiveMemoryWarning: the downloaders are '
+              'cleared before super',
+    0x1edb6c: 'RBStorePageViewController -dealloc: two guarded blocks; the super call '
+              'is correctly absent under ARC',
+    0x1ee3ac: 'RBStorePageViewController -presentGenreSelect:: a real IsPad() call, '
+              'then the popover visibility test',
+    0x1ee610: 'RBStorePageViewController -hideGenreSelect:: the three re-enables run '
+              'unconditionally',
     0x1f9220: 'RBCampaignViewController -loadView: three of seven autoresizing masks, every '
               'centre truncating through the signed fcvtzs pair, a transposed -44.0 that belongs '
               'to the pad detail view, and a fixed 40 by 40 indicator host',

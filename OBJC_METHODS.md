@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6201 reconstructed, 3911 verified
-(61.7%).
+Total: 6343 — 6201 reconstructed, 3928 verified
+(61.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1051,12 +1051,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `+` | `appDelegate` |  | ✅ | ✅ | `0x50af0` |
 | `AppDelegate` | `+` | `setNoBackupAttribute:` |  | ✅ | ✅ | `0x50b60` |
 | `AppDelegate` | `+` | `totalScoreLeaderboardCategory` |  | ✅ | ✅ | `0x50c8c` |
-| `AppDelegate` | `+` | `musicListKey` |  | ✅ | ❌ | `0x50cb8` |
-| `AppDelegate` | `+` | `getServerData` |  | ✅ | ❌ | `0x511cc` |
-| `AppDelegate` | `+` | `setServerData:andB:` |  | ✅ | ❌ | `0x514c8` |
+| `AppDelegate` | `+` | `musicListKey` |  | ✅ | ✅ | `0x50cb8` |
+| `AppDelegate` | `+` | `getServerData` |  | ✅ | ✅ | `0x511cc` |
+| `AppDelegate` | `+` | `setServerData:andB:` |  | ✅ | ✅ | `0x514c8` |
 | `AppDelegate` | `+` | `saveDataKey` |  | ✅ | ✅ | `0x517fc` |
 | `AppDelegate` | `-` | `resetGame` |  | ✅ | ✅ | `0x51828` |
-| `AppDelegate` | `-` | `application:openURL:sourceApplication:annotation:` |  | ✅ | ❌ | `0x51bc8` |
+| `AppDelegate` | `-` | `application:openURL:sourceApplication:annotation:` |  | ✅ | ✅ | `0x51bc8` |
 | `AppDelegate` | `-` | `application:didFinishLaunchingWithOptions:` |  | ✅ | ❌ | `0x51c88` |
 | `AppDelegate` | `-` | `applicationDidBecomeActive:` |  | ✅ | ❌ | `0x52cbc` |
 | `AppDelegate` | `-` | `applicationWillResignActive:` |  | ✅ | ✅ | `0x52f8c` |
@@ -1070,7 +1070,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `application:didChangeStatusBarOrientation:` |  | ✅ | ✅ | `0x533bc` |
 | `AppDelegate` | `-` | `application:willChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c0` |
 | `AppDelegate` | `-` | `application:didChangeStatusBarFrame:` |  | ✅ | ✅ | `0x533c4` |
-| `AppDelegate` | `-` | `startRegisterForRemoteNotification` |  | ✅ | ❌ | `0x533c8` |
+| `AppDelegate` | `-` | `startRegisterForRemoteNotification` |  | ✅ | ✅ | `0x533c8` |
 | `AppDelegate` | `-` | `application:didRegisterUserNotificationSettings:` |  | ✅ | ✅ | `0x53628` |
 | `AppDelegate` | `-` | `application:didRegisterForRemoteNotificationsWithDeviceToken:` |  | ✅ | ❌ | `0x53678` |
 | `AppDelegate` | `-` | `application:didFailToRegisterForRemoteNotificationsWithError:` |  | ✅ | ✅ | `0x53cd4` |
@@ -1078,7 +1078,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `application:didReceiveLocalNotification:` |  | ✅ | ❌ | `0x54210` |
 | `AppDelegate` | `-` | `applicationProtectedDataWillBecomeUnavailable:` |  | ✅ | ✅ | `0x54548` |
 | `AppDelegate` | `-` | `applicationProtectedDataDidBecomeAvailable:` |  | ✅ | ✅ | `0x5454c` |
-| `AppDelegate` | `-` | `audioSessionInterrupted:` |  | ✅ | ❌ | `0x54550` |
+| `AppDelegate` | `-` | `audioSessionInterrupted:` |  | ✅ | ✅ | `0x54550` |
 | `AppDelegate` | `-` | `window` | prop | ✅ | ✅ | `0x54684` |
 | `AppDelegate` | `-` | `setWindow:` | prop | ✅ | ✅ | `0x54694` |
 | `AppDelegate` | `-` | `viewController` | prop | ✅ | ✅ | `0x546cc` |
@@ -5156,8 +5156,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `purchaseFailed:error:` |  | ✅ | ✅ | `0x1e6564` |
 | `RBStorePageViewController` | `-` | `addRestorePackInfo:` |  | ✅ | ✅ | `0x1e66f8` |
 | `RBStorePageViewController` | `-` | `nextRestorePackInfo` |  | ✅ | ✅ | `0x1e6860` |
-| `RBStorePageViewController` | `-` | `askDownloadAllMusics` |  | ✅ | ❌ | `0x1e6f30` |
-| `RBStorePageViewController` | `-` | `restoreDownloadAllMusics` |  | ✅ | ❌ | `0x1e7788` |
+| `RBStorePageViewController` | `-` | `askDownloadAllMusics` |  | ✅ | ✅ | `0x1e6f30` |
+| `RBStorePageViewController` | `-` | `restoreDownloadAllMusics` |  | ✅ | ✅ | `0x1e7788` |
 | `RBStorePageViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1e8110` |
 | `RBStorePageViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x1e8604` |
 | `RBStorePageViewController` | `-` | `didPresentAlertView:` |  | ✅ | ✅ | `0x1e8608` |
@@ -5181,21 +5181,21 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ✅ | `0x1ebcfc` |
 | `RBStorePageViewController` | `-` | `showDetailViewForPhone:` |  | ✅ | ✅ | `0x1ebe6c` |
 | `RBStorePageViewController` | `-` | `selectShowMore` |  | ✅ | ✅ | `0x1ec078` |
-| `RBStorePageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x1ec2e8` |
+| `RBStorePageViewController` | `-` | `imageDownloader:didLoad:` |  | ✅ | ✅ | `0x1ec2e8` |
 | `RBStorePageViewController` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x1ec5ec` |
 | `RBStorePageViewController` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1ec5f0` |
 | `RBStorePageViewController` | `-` | `stopDownloadArtworks` |  | ✅ | ✅ | `0x1ecb34` |
 | `RBStorePageViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1ecd54` |
-| `RBStorePageViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1ed380` |
-| `RBStorePageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1ed6e4` |
+| `RBStorePageViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1ed380` |
+| `RBStorePageViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x1ed6e4` |
 | `RBStorePageViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x1ed9f0` |
-| `RBStorePageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x1ed9f8` |
+| `RBStorePageViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x1ed9f8` |
 | `RBStorePageViewController` | `-` | `didRotateFromInterfaceOrientation:` |  | ✅ | ✅ | `0x1edae4` |
-| `RBStorePageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x1edae8` |
-| `RBStorePageViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1edb6c` |
+| `RBStorePageViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1edae8` |
+| `RBStorePageViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x1edb6c` |
 | `RBStorePageViewController` | `-` | `switchToGenre:` |  | ✅ | ✅ | `0x1ede24` |
-| `RBStorePageViewController` | `-` | `presentGenreSelect:` |  | ✅ | ❌ | `0x1ee3ac` |
-| `RBStorePageViewController` | `-` | `hideGenreSelect:` |  | ✅ | ❌ | `0x1ee610` |
+| `RBStorePageViewController` | `-` | `presentGenreSelect:` |  | ✅ | ✅ | `0x1ee3ac` |
+| `RBStorePageViewController` | `-` | `hideGenreSelect:` |  | ✅ | ✅ | `0x1ee610` |
 | `RBStorePageViewController` | `-` | `showLoadingView` |  | ✅ | ❌ | `0x1ee7a4` |
 | `RBStorePageViewController` | `-` | `setPlaySampleName:` |  | ✅ | ❌ | `0x1eeb58` |
 | `RBStorePageViewController` | `-` | `stopPromotion` |  | ✅ | ✅ | `0x1eec14` |
@@ -5492,7 +5492,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignViewController` | `-` | `initWithParent:` |  | ✅ | ✅ | `0x1f8e2c` |
 | `RBCampaignViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x1f9220` |
 | `RBCampaignViewController` | `-` | `downloadCampaignList` |  | ✅ | ✅ | `0x1fa700` |
-| `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1fa878` |
+| `RBCampaignViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ✅ | `0x1fa878` |
 | `RBCampaignViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1faf5c` |
 | `RBCampaignViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1faf90` |
 | `RBCampaignViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1fb0dc` |
