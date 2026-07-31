@@ -429,3 +429,24 @@ Only **143 of 6140** constants carry a same-line `@ghidraAddress` — about 2%. 
 therefore cannot reach the class of defect that breaks a screen, and a clean run of
 `tools/audit_ghidra_addresses.py` is necessary but nowhere near sufficient. Every screen-level
 defect found so far came from reading a specific routine's disassembly.
+
+## A truncated variadic in the store product-id mapping
+
+`+[StoreUtil productIDForPackID:]` (`0x859f8`) and `+[StoreUtil pidToProductID:]` (`0x874a0`) both
+built their result from a bare `@"%05d"`, so a pack id of 12 became `"00012"` rather than
+`"rbplus.pack00012"`. Ten call sites feed those strings straight into StoreKit product lookups and
+`-[RBPurchaseManager isPurchased:]`, so every pack and extend-note purchase check was querying an
+identifier no product has.
+
+The binary's format is `@"%@%05d"`, with the prefix passed as the first variadic argument. That
+argument lives in the `stp x8,x2,[sp, #-0x10]!` immediately before the `bl`, which is precisely
+what a decompile of a variadic `objc_msgSend` does not show: Ghidra renders only the fixed
+arguments, so the reconstruction was written against a silently truncated call and still compiled.
+
+The tell was visible without the disassembly. `kPackProductIDPrefix` and `kNoteProductIDPrefix`
+were both defined and neither was ever referenced. A dead string constant sitting next to a format
+call is a dropped variadic argument until proven otherwise, and it is worth grepping for that shape
+directly rather than waiting to reach these routines in address order.
+
+Also worth recording because the names actively mislead: `pidToProductID:` vends _extend-note_
+identifiers (`rbplus.note`), not the pack ones its generic name suggests.

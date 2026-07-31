@@ -31,7 +31,7 @@ static NSString *const kReceiptCheckSecretV2 = @"d0dc0448e6c701c9bcfb5358945f4ed
 // product-id mappings.
 static NSString *const kPackProductIDPrefix = @"rbplus.pack";
 static NSString *const kNoteProductIDPrefix = @"rbplus.note";
-static NSString *const kProductIDNumberFormat = @"%05d";
+static NSString *const kProductIDFormat = @"%@%05d";
 
 // The receipt-verification and campaign request JSON payload formats.
 static NSString *const kReceiptCheckV2JSONFormat =
@@ -147,7 +147,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 /** @ghidraAddress 0x874a0 */
 + (NSString *)pidToProductID:(int)pid {
     if (pid > 0) {
-        return [NSString stringWithFormat:kProductIDNumberFormat, pid];
+        return [NSString stringWithFormat:kProductIDFormat, kNoteProductIDPrefix, pid];
     }
     return nil;
 }
@@ -279,7 +279,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 /** @ghidraAddress 0x859f8 */
 + (NSString *)productIDForPackID:(int)packID {
     if (packID > 0) {
-        return [NSString stringWithFormat:kProductIDNumberFormat, packID];
+        return [NSString stringWithFormat:kProductIDFormat, kPackProductIDPrefix, packID];
     }
     return nil;
 }

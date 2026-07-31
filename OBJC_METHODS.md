@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4670 verified
-(73.6%).
+Total: 6343 — 6306 reconstructed, 4676 verified
+(73.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1480,7 +1480,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreMusicInfo` | `-` | `extIDList` | prop | ✅ | ✅ | `0x68738` |
 | `StoreMusicInfo` | `-` | `setExtIDList:` | prop | ✅ | ✅ | `0x68748` |
 | `StorePackInfo` | `-` | `initWithProduct:` |  | ✅ | ❌ | `0x68824` |
-| `StorePackInfo` | `-` | `initWithPackID:` |  | ✅ | ❌ | `0x68924` |
+| `StorePackInfo` | `-` | `initWithPackID:` |  | ✅ | ✅ | `0x68924` |
 | `StorePackInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x68984` |
 | `StorePackInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x68a54` |
 | `StorePackInfo` | `-` | `priceString` |  | ✅ | ❌ | `0x68e30` |
@@ -1683,7 +1683,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `getHeader` |  | ✅ | ❌ | `0x735f0` |
 | `Downloader` | `-` | `systemErrorMessage` |  | ✅ | ❌ | `0x73658` |
 | `Downloader` | `-` | `showErrorMessage` |  | ✅ | ❌ | `0x736c0` |
-| `Downloader` | `-` | `hashChecked` |  | ✅ | ❌ | `0x73728` |
+| `Downloader` | `-` | `hashChecked` |  | ✅ | ✅ | `0x73728` |
 | `Downloader` | `-` | `dealloc` |  | ✅ | ❌ | `0x73788` |
 | `Downloader` | `-` | `addData` | prop | ✅ | ✅ | `0x738a0` |
 | `Downloader` | `-` | `setAddData:` | prop | ✅ | ✅ | `0x738b0` |
@@ -1740,7 +1740,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `campaignItemInfoURL` |  | ✅ | ✅ | `0x859bc` |
 | `StoreUtil` | `+` | `manageSortListURL` |  | ✅ | ✅ | `0x859d0` |
 | `StoreUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x859e4` |
-| `StoreUtil` | `+` | `productIDForPackID:` |  | ✅ | ❌ | `0x859f8` |
+| `StoreUtil` | `+` | `productIDForPackID:` |  | ✅ | ✅ | `0x859f8` |
 | `StoreUtil` | `+` | `packIDForProductID:` |  | ✅ | ❌ | `0x85a4c` |
 | `StoreUtil` | `+` | `priceString:` |  | ✅ | ✅ | `0x85b4c` |
 | `StoreUtil` | `+` | `priceString:useCatalogPrice:` |  | ✅ | ❌ | `0x85b7c` |
@@ -1756,7 +1756,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `affiliateParametersFromURL:` |  | ✅ | ❌ | `0x86b9c` |
 | `StoreUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ✅ | `0x87478` |
 | `StoreUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ✅ | `0x8748c` |
-| `StoreUtil` | `+` | `pidToProductID:` |  | ✅ | ❌ | `0x874a0` |
+| `StoreUtil` | `+` | `pidToProductID:` |  | ✅ | ✅ | `0x874a0` |
 | `StoreUtil` | `+` | `productIDToPid:` |  | ✅ | ❌ | `0x874f4` |
 | `TwitterImageCreaterScoreElement` | `-` | `dealloc` |  | ❌ | ✅ | `0x875f4` |
 | `TwitterImageCreaterScoreElement` | `-` | `score` | prop | ✅ | ✅ | `0x87628` |
@@ -2011,7 +2011,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHowToView` | `-` | `setScrollView:` | prop | ✅ | ✅ | `0x9b048` |
 | `RBHowToView` | `-` | `pageControl` | prop | ✅ | ✅ | `0x9b080` |
 | `RBHowToView` | `-` | `setPageControl:` | prop | ✅ | ✅ | `0x9b090` |
-| `RBCampaignData` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x9c404` |
+| `RBCampaignData` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x9c404` |
 | `RBCampaignData` | `-` | `parseDictionary:` |  | ✅ | ❌ | `0x9c45c` |
 | `RBCampaignData` | `-` | `setColor:key:` |  | ✅ | ❌ | `0x9c8e4` |
 | `RBCampaignData` | `-` | `startDownloadWithPath:key:` |  | ✅ | ❌ | `0x9cbc8` |
@@ -2049,7 +2049,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuButton` | `-` | `setupView:` |  | ✅ | ✅ | `0x9dab4` |
 | `RBMenuButton` | `-` | `setFlashEffect` |  | ✅ | ❌ | `0x9e2b0` |
 | `RBMenuButton` | `-` | `removeFlashEffect` |  | ✅ | ❌ | `0x9e3cc` |
-| `RBMenuButton` | `-` | `setEnabled:` |  | ✅ | ❌ | `0x9e4e8` |
+| `RBMenuButton` | `-` | `setEnabled:` |  | ✅ | ✅ | `0x9e4e8` |
 | `RBMenuButton` | `-` | `button` | prop | ✅ | ✅ | `0x9e544` |
 | `RBMenuButton` | `-` | `setButton:` | prop | ✅ | ✅ | `0x9e554` |
 | `RBMenuButton` | `-` | `effectImageView` | prop | ✅ | ✅ | `0x9e58c` |

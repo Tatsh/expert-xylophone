@@ -291,6 +291,14 @@ VERIFIED = {
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
     0x6a990: 'RBMusicManager +getInstance: the fifth accessor sharing the plain nil-check shape',
     0x67238: 'MusicDataFromDoc -init: chains to the MusicData initialiser and adds nothing',
+    0x73728: 'Downloader -hashChecked: forwards to the conn RBHttpUtil, not to an ivar of its own',
+    0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
+    0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
+    0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x859f8: 'StoreUtil +productIDForPackID:: FIXED, the format is "%@%05d" over the rbplus.pack '
+             'prefix and the id; the reconstruction had dropped the stack-passed prefix argument',
+    0x874a0: 'StoreUtil +pidToProductID:: FIXED the same way, over the rbplus.note prefix; despite '
+             'the generic name this one vends extend-note product ids, not pack ones',
     0x716f4: 'RBPlaylistManager -numberOfPlaylists: the count of arrayPlaylist',
     0x73458: 'Downloader -currentSize: forwards to the connection\'s own currentSize',
     0x69e50: 'RBBGMManager +getInstance: the same plain nil check as its three siblings',
