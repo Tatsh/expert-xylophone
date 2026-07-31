@@ -6,6 +6,8 @@
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
 
+#include "neDebugLog.h"
+
 namespace {
 
 // Engine texture formats. Format 0 is the compressed sentinel, which the uploader rejects; 1..3
@@ -547,6 +549,14 @@ void neGLESRenderer::BindArrayBuffer(unsigned int dwBuffer) {
 /** @ghidraAddress 0x21a14 */
 void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
     if (m_nElementBufferBound == static_cast<int>(dwBuffer)) {
+        // A skip here is only safe if GL really still has this buffer bound; see DeleteBuffer.
+        if (NE_DBG_FIRST(20)) {
+            GLint nActual = 0;
+            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nActual);
+            if (nActual != static_cast<GLint>(dwBuffer)) {
+                neDebugLog("bindIndexBuffer STALE cache=%u actual=%d", dwBuffer, nActual);
+            }
+        }
         return;
     }
     m_nElementBufferBound = static_cast<int>(dwBuffer);
@@ -595,6 +605,17 @@ void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
     for (int nUnit = 0; nUnit < kMaxTextureUnits; ++nUnit) {
         if (m_anTexCoordBufferBinding[nUnit] == nBuffer) {
             m_anTexCoordBufferBinding[nUnit] = 0;
+        }
+    }
+    // The element-buffer cache at 0x12c is deliberately not cleared here: the binary's DeleteBuffer
+    // clears 0x40, 0x54, 0x64, 0x78 and the 0xe0 array and leaves 0x12c alone, so the omission is
+    // faithful. It is still a hazard -- deleting the bound element buffer makes GL revert that
+    // binding to zero while the cache keeps the dead name, and GL recycles freed names -- so record
+    // when it actually happens. If a later BindIndexBuffer skips a rebind for that same name, the
+    // draw reads its indices from client address zero, which is the fault seen on the play screen.
+    if (NE_DBG_FIRST(20)) {
+        if (m_nElementBufferBound == nBuffer) {
+            neDebugLog("deleteBuffer HAZARD deleting bound element buffer %u", dwBuffer);
         }
     }
     glDeleteBuffers(1, &dwBuffer);

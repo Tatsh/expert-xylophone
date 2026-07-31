@@ -566,6 +566,26 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
 
         // Build the sprite's transform: translate the anchor to the position, applying rotation and
         // scale about the anchor when present, then compose it with the shared matrix.
+        // A translucent dark quadrant appears once the tutorial starts on the play field. The
+        // tutorial guide's dim is a 1x1 quad with a centred anchor stretched by scale, so whether
+        // the anchor is scaled with it decides where the quad lands. Log every scaled sprite's
+        // terms; the resulting rectangle can then be checked against the screen directly.
+        if (m_pSpriteScaleXArray[nSprite] != 1.0f || m_pSpriteScaleYArray[nSprite] != 1.0f) {
+            if (NE_DBG_FIRST(24)) {
+                neDebugLog("scaledSprite pos=(%.2f,%.2f) anchor=(%.2f,%.2f) size=(%.2f,%.2f) "
+                           "scale=(%.2f,%.2f) rot=%.3f alpha=%u",
+                           static_cast<double>(m_pSpritePositionArray[nSprite].x),
+                           static_cast<double>(m_pSpritePositionArray[nSprite].y),
+                           static_cast<double>(m_pSpriteAnchorArray[nSprite].x),
+                           static_cast<double>(m_pSpriteAnchorArray[nSprite].y),
+                           static_cast<double>(size.x),
+                           static_cast<double>(size.y),
+                           static_cast<double>(m_pSpriteScaleXArray[nSprite]),
+                           static_cast<double>(m_pSpriteScaleYArray[nSprite]),
+                           static_cast<double>(m_pSpriteRotationArray[nSprite]),
+                           nAlpha);
+            }
+        }
         float spriteMatrix[16];
         BuildSpriteMatrix(nSprite, spriteMatrix);
         if (bMatrixPalette) {
