@@ -916,6 +916,15 @@ VERIFIED = {
               'annotation read 0x2137d0, which is the neighbouring viewDidDisappear:, and the '
               'address audit could not see it because that check was dead',
     0x2136e0: 'ApplilinkViewController -viewDidLoad: a bare super chain',
+    0x213758: 'ApplilinkViewController -viewDidAppear:: a bare super chain forwarding its flag',
+    0x211f04: 'ApplilinkNetworkError +localizedApplilinkErrorWithCode:: a tail branch to the '
+              'userInfo: form with x3 zeroed, so the nil is the binary\'s. The receiver is loaded '
+              'from the classref rather than passed through as self, so the binary names the class '
+              'outright where the reconstruction says self; identical here as nothing subclasses it',
+    0x2130f4: 'RecommendNetwork +closeAdScreen: a cbz on canUseApplilinkSdk guards the whole body, '
+              'then RecommendCore sharedInstance and closeAdScreen',
+    0x215c9c: 'ApplilinkCore +closeAppStore: ApplilinkStore sharedInstance then closeSKStore, with '
+              'no guard, unlike its RecommendNetwork neighbour',
     0x207250: 'ApplilinkURLConnection -connection:didReceiveResponse:: stores the response, the '
               'fourth argument, into _responseData, which the metadata types NSURLResponse despite '
               'the name, then sends setLength:0 to _receivedData',

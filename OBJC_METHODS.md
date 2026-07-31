@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5011 verified
-(79.0%).
+Total: 6343 — 6306 reconstructed, 5015 verified
+(79.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5011 verified, 3507 come from those passes and the remaining
-1504 were read by hand. The split matters when reading the percentage: a
+Of the 5015 verified, 3507 come from those passes and the remaining
+1508 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5747,7 +5747,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AnalysisNetworkCore` | `+` | `clearInitalize` |  | ✅ | ❌ | `0x20f9f0` |
 | `AnalysisNetworkCore` | `+` | `clearDAU` |  | ✅ | ❌ | `0x20fa84` |
 | `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:userInfo:` |  | ✅ | ❌ | `0x20fb18` |
-| `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:` |  | ✅ | ❌ | `0x211f04` |
+| `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:` |  | ✅ | ✅ | `0x211f04` |
 | `RecommendNetwork` | `+` | `getAppListStatusWithCallback:` |  | ✅ | ❌ | `0x211f20` |
 | `RecommendNetwork` | `+` | `getAdStatusWithAdModel:callback:` |  | ✅ | ❌ | `0x211f3c` |
 | `RecommendNetwork` | `+` | `getUnreadCountWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x2120ac` |
@@ -5762,14 +5762,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendNetwork` | `+` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x212c6c` |
 | `RecommendNetwork` | `+` | `openInterstitialWithAdLocation:delegate:` |  | ✅ | ❌ | `0x212eb4` |
 | `RecommendNetwork` | `+` | `openInterstitialWithAdLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x212f0c` |
-| `RecommendNetwork` | `+` | `closeAdScreen` |  | ✅ | ❌ | `0x2130f4` |
+| `RecommendNetwork` | `+` | `closeAdScreen` |  | ✅ | ✅ | `0x2130f4` |
 | `RecommendNetwork` | `+` | `closeAdAreaWithParentView:` |  | ✅ | ❌ | `0x21316c` |
 | `RecommendNetwork` | `+` | `setAdAreaVisibleWithParentView:flag:` |  | ✅ | ❌ | `0x2133bc` |
 | `RecommendNetwork` | `-` | `dealloc` |  | ❌ | ✅ | `0x2135dc` |
 | `AnalysisNetwork` | `+` | `postAnalysisDataWithResultId:callback:` |  | ✅ | ❌ | `0x213618` |
 | `ApplilinkViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x2136e0` |
 | `ApplilinkViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x21371c` |
-| `ApplilinkViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x213758` |
+| `ApplilinkViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x213758` |
 | `ApplilinkViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x213794` |
 | `ApplilinkViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2137d0` |
 | `ApplilinkViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x2137d4` |
@@ -5818,7 +5818,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkCore` | `+` | `signatureKey` |  | ✅ | ✅ | `0x215b2c` |
 | `ApplilinkCore` | `+` | `versionDev` |  | ✅ | ✅ | `0x215b58` |
 | `ApplilinkCore` | `+` | `showAppStoreId:appParam:delegate:` |  | ✅ | ❌ | `0x215ba4` |
-| `ApplilinkCore` | `+` | `closeAppStore` |  | ✅ | ❌ | `0x215c9c` |
+| `ApplilinkCore` | `+` | `closeAppStore` |  | ✅ | ✅ | `0x215c9c` |
 | `ApplilinkCore` | `+` | `updatePasteBoard` |  | ✅ | ❌ | `0x215cec` |
 | `ApplilinkCore` | `+` | `appAuthSessionRegenerateWithBlock:` |  | ✅ | ❌ | `0x215d7c` |
 | `ApplilinkCore` | `+` | `toDelegateDidStart:delegate:` |  | ✅ | ✅ | `0x2161ec` |
