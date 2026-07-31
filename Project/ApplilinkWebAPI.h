@@ -45,7 +45,7 @@ typedef void (^ApplilinkWebAPIFailedBlock)(id _Nullable request, NSError *_Nulla
 
 /**
  * @brief The parameters common to every Applilink request.
- * @return An empty dictionary; the shipped build adds no common parameters.
+ * @return A dictionary carrying @c cr=0 and @c format=json.
  * @ghidraAddress 0x221184
  */
 - (nullable NSDictionary *)commonParameters;

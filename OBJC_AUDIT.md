@@ -1065,3 +1065,30 @@ defect:
 
 The number is worth keeping in view as it changes. A new entry in the first group is ordinary, but a
 new one in neither group means an annotation naming a method that does not exist.
+
+## A truncated variadic returned an empty dictionary, and the header called it deliberate
+
+`-[ApplilinkWebAPI commonParameters]` at `0x221184` was reconstructed as `return @{};`, and its
+header documented that as intentional: "An empty dictionary; the shipped build adds no common
+parameters." Both were wrong, and the second is worse than the first, because a confident comment
+stops the next reader looking.
+
+The binary builds it with a nil-terminated `dictionaryWithObjectsAndKeys:`. `x2` carries the first
+object and the stack carries the rest: `stp x10,x9,[sp]` and `stp x8,xzr,[sp,#0x10]`, so four
+objects and an explicit `nil`. That is two pairs, and the constructor takes object before key, so
+the CFStrings decode to `cr` = `0` and `format` = `json`.
+
+Every request built through `-requestWithURL:method:parameters:timeout:cachePolicy:` merges this in,
+so the shipped reconstruction was dropping `format=json` from every Applilink web call.
+
+To find out whether more of these were hiding, all 30 call sites of `dictionaryWithObjectsAndKeys:`
+were enumerated from the selector's cross-references — with an explicit `limit`, since the bridge
+silently caps at 100 without one — and each site's stack-slot count read from the disassembly. The
+count is exact, because the nil terminator occupies a slot: `n` slots means `n / 2` pairs. Two
+checks confirm the method: `commonParameters` reports four slots, matching the two pairs recovered
+by hand, and `+[AppDelegate getServerData]` reports ten, matching the five keychain pairs already
+reconstructed there.
+
+The remaining sites now have a mechanical expected pair count each, which is what a comparison
+against the reconstructions needs. That comparison is the open work; the enumeration and the counts
+are done and are in this session's transcript.

@@ -21,6 +21,13 @@ static NSString *const kApplilinkWebAPIQueryPairFormat = @"%@=%@";
 static NSString *const kApplilinkWebAPIQueryArrayPairFormat = @"%@[]=%@";
 static NSString *const kApplilinkWebAPIQueryPairSeparator = @"&";
 
+// The parameters every Applilink request carries. Both pairs are built inline by the
+// dictionaryWithObjectsAndKeys: at 0x221184, whose stack holds four objects and an explicit nil.
+static NSString *const kApplilinkWebAPICarrierKey = @"cr";
+static NSString *const kApplilinkWebAPICarrierValue = @"0";
+static NSString *const kApplilinkWebAPIFormatKey = @"format";
+static NSString *const kApplilinkWebAPIFormatValue = @"json";
+
 // Endpoint whose presence in a request URL marks it as the session-regeneration request; that
 // request is short-circuited rather than blocked on the session gate.
 static NSString *const kApplilinkWebAPISessionRegeneratePath = @"/app/auth/sessionRegenerate.php";
@@ -120,7 +127,10 @@ static BOOL g_bApplilinkWebAPISessionStatus;
 #pragma mark Request building
 
 - (NSDictionary *)commonParameters {
-    return @{};
+    return @{
+        kApplilinkWebAPICarrierKey: kApplilinkWebAPICarrierValue,
+        kApplilinkWebAPIFormatKey: kApplilinkWebAPIFormatValue,
+    };
 }
 
 - (NSMutableURLRequest *)requestWithURL:(NSString *)URL

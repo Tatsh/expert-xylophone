@@ -934,6 +934,13 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x221128: 'ApplilinkWebAPI -init: super init behind a cbz, then retryCount zeroed and the '
+              'global byte at +0x698 set to 1',
+    0x221184: 'ApplilinkWebAPI -commonParameters: a variadic dictionaryWithObjectsAndKeys: read '
+              'from the stack. x2 carries the first object and stp x10,x9,[sp] with '
+              'stp x8,xzr,[sp,#0x10] supplies three more and the nil, so four objects and two '
+              'pairs. The CFStrings decode to object "0" key "cr" and object "json" key '
+              '"format". The reconstruction returned an empty dictionary, dropping both; fixed',
     0x220f1c: 'ApplilinkDebug +versionDev: a variadic stringWithFormat: read from the stack rather '
               'than the decompile. The format at 0x3711a0 is "%@.%@" and the stp x9,x8,[sp] '
               'supplies exactly two arguments, the CFStrings at 0x36fc00 and 0x371120, decoded as '
