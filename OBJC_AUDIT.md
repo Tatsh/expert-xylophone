@@ -1204,3 +1204,32 @@ cannot tell them apart — but the first version could not either, and reported 
 correct `retain` declarations as defects. That is forty-five findings of which eighteen were noise,
 and the noise was concentrated in one shape, which is exactly how a real finding gets dismissed
 along with it.
+
+## The reverse question: methods the reconstruction has that the binary does not
+
+`OBJC_METHODS.md` answers which of the binary's methods have a reconstruction. Nothing answered the
+reverse until now, and an invented method is as real a defect as a missing one — it just fails
+silently instead of visibly. `tools/scan_methods.py` asks it: of 3224 definitions under `Project/`,
+79 are not in the metadata.
+
+Separating them matters more than counting them, and one question does it: does the selector name
+appear in `__objc_methname` at all? A name the binary has never heard of is one the reconstruction
+coined; a name it uses elsewhere is a real framework or delegate selector that this particular class
+does not implement.
+
+**Seventy-three are coined**, which is expected. The rules ask for a large routine to be split into
+named parts, so those names are ours by construction.
+
+**Six name a selector the binary uses elsewhere**, and each is accounted for:
+
+- `RBMenuView -hitTest:withEvent:` is a deliberate probe, marked `RBPDBG: not in the binary`,
+  bounded by `NE_DBG_FIRST(40)` and deferring to `super`, so touch routing is unchanged. It is one
+  of 33 such probes across eight files, left in place because the crash they were added for is
+  still open.
+- `StoreExtendNoteDetailViewPad -dealloc` carries the `.cxx_destruct` address, as recorded above.
+- The remaining four — `NetworkUtil`'s two URL builders, `RBNotificationPageView`
+  `-didPresentAlertView:`, and `TwitterImageCreaterScoreElement -reset` — are worth reading on their
+  own, since each names a selector the shipped build knows but does not put on that class.
+
+The scan exits zero deliberately. Both groups have legitimate members, so this is a report to read
+rather than a gate to pass, and treating it as a gate would only teach the next reader to silence it.
