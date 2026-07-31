@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4829 verified
-(76.1%).
+Total: 6343 — 6306 reconstructed, 4833 verified
+(76.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -626,7 +626,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ✅ | `0x35d6c` |
 | `RBTutorialManager` | `+` | `updateStatus:` |  | ✅ | ❌ | `0x35dd4` |
 | `RBTutorialManager` | `+` | `setUnlockedItemInfo:itemId:` |  | ✅ | ❌ | `0x36098` |
-| `RBTutorialManager` | `+` | `getUnlockedItemInfo` |  | ✅ | ❌ | `0x36308` |
+| `RBTutorialManager` | `+` | `getUnlockedItemInfo` |  | ✅ | ✅ | `0x36308` |
 | `RBTutorialManager` | `+` | `resetUnlockedItemInfo` |  | ✅ | ✅ | `0x363a8` |
 | `RBTutorialManager` | `-` | `currentStatus` | prop | ✅ | ✅ | `0x3643c` |
 | `RBTutorialManager` | `-` | `setCurrentStatus:` | prop | ✅ | ✅ | `0x3644c` |
@@ -701,7 +701,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `failureBlock` | prop | ✅ | ✅ | `0x39b04` |
 | `RBHttpUtil` | `-` | `setFailureBlock:` | prop | ✅ | ✅ | `0x39b14` |
 | `RBNotificationData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x39c38` |
-| `RBNotificationData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x39d1c` |
+| `RBNotificationData` | `-` | `encodeWithCoder:` |  | ✅ | ✅ | `0x39d1c` |
 | `RBNotificationData` | `-` | `notificationDict` | prop | ✅ | ✅ | `0x39db4` |
 | `RBNotificationData` | `-` | `setNotificationDict:` | prop | ✅ | ✅ | `0x39dc4` |
 | `neGLView` | `+` | `GetInstance` |  | ✅ | ✅ | `0x39e10` |
@@ -728,7 +728,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBEffectSizeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x3bde0` |
 | `RBEffectSizeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3becc` |
 | `RBEffectSizeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3bf70` |
-| `RBEffectSizeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3c014` |
+| `RBEffectSizeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3c014` |
 | `RBEffectSizeSlider` | `-` | `value` | prop | ✅ | ✅ | `0x3c0b0` |
 | `RBEffectSizeSlider` | `-` | `baseView` | prop | ✅ | ✅ | `0x3c0c0` |
 | `RBEffectSizeSlider` | `-` | `setBaseView:` | prop | ✅ | ✅ | `0x3c0d0` |
@@ -860,7 +860,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `pause` |  | ✅ | ❌ | `0x41a08` |
 | `AVBus` | `-` | `offPause` |  | ✅ | ❌ | `0x41afc` |
 | `AVBus` | `-` | `setVolume:` |  | ✅ | ❌ | `0x41bc0` |
-| `AVBus` | `-` | `volume` |  | ✅ | ❌ | `0x41c64` |
+| `AVBus` | `-` | `volume` |  | ✅ | ✅ | `0x41c64` |
 | `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
 | `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x41d14` |
 | `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ✅ | `0x41d28` |

@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x41c64: 'AVBus -volume: returns the fmov immediate 1.0 when no player is bound, decoded from '
+             'the instruction word and matching kUnboundVoiceVolume, else the player\'s volume',
+    0x36308: 'RBTutorialManager +getUnlockedItemInfo: getInstance, then a copy of unlockItemInfo',
+    0x39d1c: 'RBNotificationData -encodeWithCoder:: archives notificationDict under the CFString '
+             'at 0x3640c0, which decodes to "notificationList" and matches the declared key',
+    0x3c014: 'RBEffectSizeSlider -endTrackingWithTouch:withEvent:: takes the touch point in the '
+             'touch\'s own view, not the slider, and feeds it to sliderChangeWithTouchPoint:',
     0xdda2c: 'RBRankingView -initWithFrame:: the mov w2 of 5 is RBMusicMenuPopupViewTypeRanking',
     0xe650c: 'RBSearchView -initWithFrame:: the mov w2 of 4 is RBMusicMenuPopupViewTypeSearch; it '
              'reaches the setter through dot syntax where its sibling uses the message form, '
