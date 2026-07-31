@@ -18,6 +18,9 @@
 //  the program image base.
 //
 
+// Included for the RBPDBG flag, which guards the diagnostic-only query below.
+#include "neDebugLog.h"
+
 /**
  * @brief The engine render-kind that selects a GL framebuffer attachment point.
  *
@@ -174,6 +177,16 @@ public:
      * @ghidraAddress 0x21a14
      */
     void BindIndexBuffer(unsigned int dwBuffer);
+#if RBPDBG
+    /**
+     * @brief The element-array buffer GL actually has bound, for diagnostics only.
+     *
+     * Not part of the reconstruction: the renderer caches its bindings, so a diagnostic that needs
+     * the real one must ask GL. It lives here because this is where the GL headers are visible.
+     * @return The bound element-array buffer name, or zero when none is bound.
+     */
+    int QueryBoundElementBuffer() const;
+#endif
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
      * @ghidraAddress 0x21510

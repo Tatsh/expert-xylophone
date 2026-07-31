@@ -562,6 +562,14 @@ void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dwBuffer);
 }
 
+#if RBPDBG
+int neGLESRenderer::QueryBoundElementBuffer() const {
+    GLint nBound = 0;
+    glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
+    return static_cast<int>(nBound);
+}
+#endif
+
 /** @ghidraAddress 0x21ab4 */
 void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
     // Cache the binding for the active texture unit; skip the GL call when it is unchanged.

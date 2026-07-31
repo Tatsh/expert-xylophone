@@ -630,17 +630,16 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
             // The bounded traces above were exhausted long before the fault, so check the
             // precondition itself: a null index pointer is only safe with a real element buffer
             // bound. glGetIntegerv is a query with no effect on error state.
-            NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
-                   if (nBound == 0 && NE_DBG_FIRST(4)) {
-                       neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
-                                  "count=%d owner=%s",
-                                  m_dwIndexVbo,
-                                  m_dwArrayVbo,
-                                  m_pVertexScratch,
-                                  nQueued,
-                                  m_nSpriteCount,
-                                  neDebugOwnerName());
-                   });
+            NE_DBG(if (pRenderer->QueryBoundElementBuffer() == 0 && NE_DBG_FIRST(4)) {
+                neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
+                           "count=%d owner=%s",
+                           m_dwIndexVbo,
+                           m_dwArrayVbo,
+                           m_pVertexScratch,
+                           nQueued,
+                           m_nSpriteCount,
+                           neDebugOwnerName());
+            });
             pRenderer->DrawIndexedPrimitives(
                 kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
             nQueued = 0;
@@ -651,17 +650,16 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         // The bounded traces above were exhausted long before the fault, so check the
         // precondition itself: a null index pointer is only safe with a real element buffer
         // bound. glGetIntegerv is a query with no effect on error state.
-        NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
-               if (nBound == 0 && NE_DBG_FIRST(4)) {
-                   neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
-                              "count=%d owner=%s",
-                              m_dwIndexVbo,
-                              m_dwArrayVbo,
-                              m_pVertexScratch,
-                              nQueued,
-                              m_nSpriteCount,
-                              neDebugOwnerName());
-               });
+        NE_DBG(if (pRenderer->QueryBoundElementBuffer() == 0 && NE_DBG_FIRST(4)) {
+            neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
+                       "count=%d owner=%s",
+                       m_dwIndexVbo,
+                       m_dwArrayVbo,
+                       m_pVertexScratch,
+                       nQueued,
+                       m_nSpriteCount,
+                       neDebugOwnerName());
+        });
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
 }
@@ -764,14 +762,13 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     pRenderer->SetMatrixMode(kMatrixModeModelView, GetWorldMatrix());
     pRenderer->BindIndexBuffer(m_dwIndexVbo);
     // Same precondition as the matrix path: a null index pointer needs a real element buffer.
-    NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
-           if (nBound == 0 && NE_DBG_FIRST(4)) {
-               neDebugLog("axisAligned draw UNBOUND indexVbo=%u arrayVbo=%u queued=%d owner=%s",
-                          m_dwIndexVbo,
-                          m_dwArrayVbo,
-                          nQueued,
-                          neDebugOwnerName());
-           });
+    NE_DBG(if (pRenderer->QueryBoundElementBuffer() == 0 && NE_DBG_FIRST(4)) {
+        neDebugLog("axisAligned draw UNBOUND indexVbo=%u arrayVbo=%u queued=%d owner=%s",
+                   m_dwIndexVbo,
+                   m_dwArrayVbo,
+                   nQueued,
+                   neDebugOwnerName());
+    });
     pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
 }
 
