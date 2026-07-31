@@ -1159,6 +1159,11 @@ VERIFIED = {
              'closed and zeroed before unzOpen replaces it, a second cbz returns NO on failure, '
              'and unzGetGlobalInfo is checked with cbz w0 against UNZ_OK, which is zero, closing '
              'and zeroing again on the error arm. All four arms accounted for',
+    0x20c37c: 'ApplilinkUtilities +userAgentParametersJoinDictionary:: one forward into '
+              'joinDictionary:withDictionary:, with the caller\'s dictionary in x2 and '
+              'userAgentParameters in x3. The order is the whole content of the method: whichever '
+              'side joinDictionary: lets win on a duplicate key, transposing the two would flip it '
+              'silently for every request that carries a key the user agent also sets',
     0x20cefc: 'ApplilinkUtilities +localeString: preferredLanguages then objectAtIndex:0, with a '
               'cbz falling back to the CFString at 0x36dfc0, decoded as "ja". The nil check is the '
               'binary\'s own and is worth keeping even though objectAtIndex: on an empty array '

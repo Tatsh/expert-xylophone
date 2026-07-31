@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5134 verified
-(80.9%).
+Total: 6343 — 6306 reconstructed, 5135 verified
+(81.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5134 verified, 3507 come from those passes and the remaining
-1627 were read by hand. The split matters when reading the percentage: a
+Of the 5135 verified, 3507 come from those passes and the remaining
+1628 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5722,7 +5722,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `NSStringURLEncoding` | `+` | `URLEncodedString:` |  | ✅ | ✅ | `0x20c1f4` |
 | `NSStringURLEncoding` | `+` | `URLDecodedString:` |  | ✅ | ✅ | `0x20c24c` |
 | `ApplilinkUtilities` | `+` | `joinDictionary:withDictionary:` |  | ✅ | ❌ | `0x20c2a8` |
-| `ApplilinkUtilities` | `+` | `userAgentParametersJoinDictionary:` |  | ✅ | ❌ | `0x20c37c` |
+| `ApplilinkUtilities` | `+` | `userAgentParametersJoinDictionary:` |  | ✅ | ✅ | `0x20c37c` |
 | `ApplilinkUtilities` | `+` | `userAgentParameters` |  | ✅ | ❌ | `0x20c410` |
 | `ApplilinkUtilities` | `+` | `deviceName` |  | ✅ | ❌ | `0x20c86c` |
 | `ApplilinkUtilities` | `+` | `appendParametersToURL:parameters:` |  | ✅ | ❌ | `0x20ca98` |
