@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4955 verified
+Total: 6343 — 6306 reconstructed, 4956 verified
 (78.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4803,7 +4803,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteCellPhone` | `-` | `setPurchasedLabel:` | prop | ✅ | ✅ | `0x1c21a8` |
 | `StoreExtendNoteCellPhone` | `-` | `iconNewLayer` | prop | ✅ | ✅ | `0x1c21e0` |
 | `StoreExtendNoteCellPhone` | `-` | `setIconNewLayer:` | prop | ✅ | ✅ | `0x1c21f0` |
-| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:` |  | ✅ | ❌ | `0x1c22cc` |
+| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:` |  | ✅ | ✅ | `0x1c22cc` |
 | `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:` |  | ✅ | ❌ | `0x1c232c` |
 | `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:delegate:` |  | ✅ | ❌ | `0x1c23c0` |
 | `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:delegate:` |  | ✅ | ❌ | `0x1c2444` |
