@@ -362,7 +362,9 @@ void C_DRAW_POLYGON_3D::Render() {
         return;
     }
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
-    SetCurrentCamera(pRenderer, g_pCurrentProjection);
+    // The 3D mesh is drawn through the active view camera (the global at 0x3cff10, read by the ldr
+    // at 0x2899c), not the orthographic projection at 0x3cff08.
+    SetCurrentCamera(pRenderer, g_pActiveViewCamera);
 
     // Build the model matrix (translate, then optional Z rotation and uniform scale) into the local
     // matrix and compose it under the parent world matrix.

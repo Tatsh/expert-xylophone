@@ -572,9 +572,13 @@ void C_SPRITE_INSTANCING_2D::RenderWorldSpace() {
         return;
     }
 
-    // Bind the current projection camera and copy its world matrix into this node's, then reset the
-    // render state and select the blend mode.
-    SetCurrentCamera(pRenderer, g_pCurrentProjection);
+    // Bind the active view camera and copy the parent's world matrix into this node's, then reset
+    // the render state and select the blend mode. The camera is the perspective one installed by
+    // -[RBViewController UpdateProjection] through SetActiveViewCamera, read from the global at
+    // 0x3cff10 by the ldr at 0x30e4c -- not the orthographic projection at 0x3cff08. Binding the
+    // ortho here draws world-space geometry in raw world units against a top-left origin, which
+    // put the play-field frame at half scale with its left half off screen.
+    SetCurrentCamera(pRenderer, g_pActiveViewCamera);
     std::memcpy(GetWorldMatrix(), GetParent()->GetWorldMatrix(), sizeof(float) * 16);
     ResetRenderState(pRenderer);
     pRenderer->SetBlendFunc(kBlendOne, m_nBlendMode == 0 ? kBlendOneMinusSrcAlpha : kBlendOne);
