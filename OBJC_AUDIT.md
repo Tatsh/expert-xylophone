@@ -752,3 +752,33 @@ Every parameter encoding sits in the same string and is equally checkable, and a
 width is the more dangerous of the two: a widened return is usually harmless, whereas a `double`
 parameter where the callee expects a `float` mismatches the calling convention outright. Extending
 the sweep across parameters is the obvious next piece of work on that tool.
+
+### The parameter sweep, attempted and discarded
+
+Extending the width check across parameters was the obvious next step, so it was prototyped. It
+reported 16 mismatches and **none of them can be trusted**, for a reason worth recording because it
+is not the same mistake as the byte-scan failure above.
+
+Selectors are global in Objective-C, and two classes may implement the same one with different
+signatures. `all_types()` returns a **selector-keyed** dictionary, so when two classes define
+`-UpdateScore:` the later one silently replaces the earlier. Both exist here:
+`-[RBMusicARView UpdateScore:]` at `0xc1690` encodes `v20@0:8f16` and `-[RBMusicScoreView
+UpdateScore:]` at `0xca138` encodes `v20@0:8i16`. The scan compared the surviving `i` against
+`RBMusicARView`'s `(float)` declaration and reported a defect.
+
+`RBMusicARView`'s declaration is correct, which the disassembly confirms independently: its body
+opens with `fmul s0,s0,s1`, so the argument arrives in a floating-point register, not `w2`.
+"Fixing" it to `int` would have broken a correct method — and the same collision invalidates the
+other fifteen reports until each is re-derived.
+
+Two lessons. **Key method metadata by implementation address, not by selector**; the existing
+`scan_return_widths.py` shares this flaw and its clean result is therefore weaker than it looked,
+since a collision can mask a real mismatch as easily as invent one. And **a bulk scan that has not
+been checked against one independently-known case is not evidence**, however coherent its output —
+that is now twice in one session, 197 wrong answers from a byte scan and 16 from a keying error,
+both plausible-looking.
+
+The class remains real and worth doing: parameter widths are more consequential than return widths,
+because a `double` passed where a `float` is expected mismatches the calling convention outright.
+It needs keying by `imp` and cross-referencing against `OBJC_METHODS.md` to attribute each encoding
+to its class.
