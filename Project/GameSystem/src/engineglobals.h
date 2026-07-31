@@ -79,12 +79,7 @@ extern NSDictionary *g_pVoiceToVoicelessTable;
  */
 void InitializeGlobalLookupTables(void);
 /**
- * @brief The device screen height, in points, used to centre the variant (wide-font) layout.
- * @ghidraAddress 0x3c8834
- */
-extern int g_nVariantScreenHeight;
-/**
- * @brief The play-field full-height layout Y coordinate: the variant screen height minus one full
+ * @brief The play-field full-height layout Y coordinate: the live field height minus one full
  * 1024-unit field (0x400). It is the vertical base for full-screen background sprites (halved to
  * give their centre). Computed by the play-field layout pass (@c ComputePlayfieldLayoutY, 0x554bc).
  * @ghidraAddress 0x3d0008

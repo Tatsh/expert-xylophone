@@ -131,9 +131,10 @@ constexpr double kCorporateFadeDuration = 0.3f;
 // The delay before the corporate-button fade begins, in seconds; an fmov immediate at 0x8e630.
 constexpr double kCorporateFadeDelay = 0.5;
 
-// The point height of the variant (wide-font) layout screen used to centre the preview camera.
-// @ghidraAddress 0x3c8834 (g_nVariantScreenHeight)
-constexpr int kVariantScreenHeightPoints = 1024;
+// The unshaped play field's height, in points. The preview camera centres on however far the live
+// field height has been shaped away from this reference, so the two must be read together. It is
+// the `sub w9,w8,#0x400` immediate at 0x8bdd0 and 0x8c07c, not a global.
+constexpr int kReferencePlayfieldHeight = 1024;
 
 // The playlist popover content size, in points. The two values come from separate pool runs, and
 // each has a plausible neighbour: 0x2fedc8 holds 312.0 and 0x2ee920 holds 90.0.
@@ -698,7 +699,7 @@ constexpr int kDefaultPlayColor = 0;
             gameSystem->SetCameraPitchHeight(0.0f);
             // The csel at 0x8c088 is the divide-by-two correction, so this rounds toward zero
             // rather than toward minus infinity.
-            int delta = g_nVariantScreenHeight - kVariantScreenHeightPoints;
+            int delta = g_nPlayfieldFieldHeight - kReferencePlayfieldHeight;
             gameSystem->SetCameraTargetX(0.0f);
             gameSystem->SetCameraTargetY(static_cast<float>(delta / 2));
         }
@@ -838,7 +839,7 @@ constexpr int kDefaultPlayColor = 0;
       blockGameSystem->SetCameraPitchHeight(0.0f);
       blockGameSystem->SetCameraTargetX(0.0f);
       if (isPad) {
-          int delta = g_nVariantScreenHeight - kVariantScreenHeightPoints;
+          int delta = g_nPlayfieldFieldHeight - kReferencePlayfieldHeight;
           blockGameSystem->SetCameraTargetY(static_cast<float>(delta / 2));
       } else {
           blockGameSystem->SetCameraTargetY(-kStandardCameraTargetY);

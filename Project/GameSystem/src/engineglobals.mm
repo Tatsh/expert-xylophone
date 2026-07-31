@@ -93,9 +93,6 @@ const float g_afLimelightPackageTitleColorTable[] = {
     1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
 };
 
-// The device screen height in points, seeded by the play-field layout pass.
-int g_nVariantScreenHeight;
-
 // The two obfuscated Blowfish chart keys, transcribed verbatim from 0x2fcf50 and 0x2fcf6a. They are
 // stored back to back and are not NUL-terminated, so each carries its length in the table below.
 static const char kChartDecodeKeyType0[] = {

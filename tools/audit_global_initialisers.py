@@ -38,6 +38,19 @@ _GLOBAL = re.compile(
 # Sections with no file-backed contents: a global there really is zero at load.
 _ZERO_FILL = ('__bss', '__common')
 
+# A global's storage can only live in one of these. An `@ghidraAddress` on a global that resolves
+# anywhere else names something that is not a global at all, so the annotation -- and usually the
+# global with it -- is invented. `g_nVariantScreenHeight` was exactly that: its 0x3c8834 landed in
+# `__objc_ivar`, it was declared without an initialiser, nothing ever wrote it, and the preview
+# camera read it as zero and sat 512 points off. The real load was `g_nPlayfieldFieldHeight`.
+_GLOBAL_SECTIONS = ('__data', '__bss', '__common', '__const')
+
+# An `@ghidraAddress` naming a global, in either the Doxygen or trailing-comment form.
+_ANNOTATED_GLOBAL = re.compile(
+    r'@ghidraAddress\s+(0x[0-9a-f]+)[^\n]*\n(?:[^\n]*\n){0,3}?'
+    r'\s*(?:extern\s+|static\s+)?(?:int|float|unsigned int|double)\s+(g_\w+)\s*[=;]',
+    re.M)
+
 
 def value_at(binary, address, is_float):
     """The binary's initial value for a global, or None when the address is unmapped."""
@@ -49,6 +62,32 @@ def value_at(binary, address, is_float):
             fmt = '<f' if is_float else '<i'
             return struct.unpack_from(fmt, binary._data, offset)[0]
     return None
+
+
+def section_of(binary, address):
+    """The section an address falls in, or None when it is unmapped."""
+    for section in binary._sections:
+        if section.address <= address < section.address + section.size:
+            return section.name
+    return None
+
+
+def scan_misattributed(root, binary):
+    """Report every global whose annotated address is not in a section a global can live in."""
+    findings = []
+    for path in sorted(root.rglob('*')):
+        if path.suffix not in ('.mm', '.cpp', '.m', '.c', '.h'):
+            continue
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError):
+            continue
+        for address, name in _ANNOTATED_GLOBAL.findall(text):
+            section = section_of(binary, IMAGE_BASE + int(address, 16))
+            if section is not None and section not in _GLOBAL_SECTIONS:
+                findings.append(f'{path.relative_to(root.parent)}: {name} is annotated {address}, '
+                                f'which is in {section} -- not a global')
+    return findings
 
 
 def scan(root, binary_path):
@@ -86,7 +125,12 @@ def main(argv=None):
     print(f'annotated scalar globals: {checked} checked, {len(findings)} mismatched')
     for finding in sorted(findings):
         print(f'  {finding}')
-    return min(len(findings), 125)
+
+    misattributed = scan_misattributed(arguments.root, Binary(arguments.binary))
+    print(f'annotated global addresses: {len(misattributed)} outside any global section')
+    for finding in sorted(misattributed):
+        print(f'  {finding}')
+    return min(len(findings) + len(misattributed), 125)
 
 
 if __name__ == '__main__':
