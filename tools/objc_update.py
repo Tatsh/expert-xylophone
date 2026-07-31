@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x13d878: 'RBMenuTutorialView -stopCursorAnimation:: hides the passed view\'s cursorView, but '
+              'only when one is held',
+    0x13dbc4: 'RBMenuTutorialView -stopTouchAnimation:: hides its own touchView and stops it '
+              'animating, with no nil guard, unlike the cursor form beside it. Both asymmetries '
+              'are real and each was read rather than assumed from its sibling',
+    0x1147bc: 'RBTermView -alertView:clickedButtonAtIndex:: on isFirstRequest it clears animating, '
+              'nils the alert view\'s own delegate rather than its own, then hides',
     0x109b10: 'StoreCampaignItemInfo +getButtonName:: a six-arm jump table at 0x109ba0 with a nil '
               'default above 5. Every arm was decoded and its CFString read as UTF-16 with the '
               'record length in characters: download, downloaded, unlock-condition, update, '

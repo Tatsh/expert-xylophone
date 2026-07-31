@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4881 verified
+Total: 6343 — 6306 reconstructed, 4884 verified
 (77.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3392,7 +3392,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x1142b8` |
 | `RBTermView` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x11436c` |
 | `RBTermView` | `-` | `setTermsTitle:` |  | ✅ | ❌ | `0x114420` |
-| `RBTermView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1147bc` |
+| `RBTermView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1147bc` |
 | `RBTermView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x114848` |
 | `RBTermView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x11484c` |
 | `RBTermView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x114850` |
@@ -3445,9 +3445,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuTutorialView` | `-` | `didRotate` |  | ✅ | ✅ | `0x13cdd4` |
 | `RBMenuTutorialView` | `-` | `contentViewSettingWithTouchAnim:cursorAnim:stay:useAnimation:` |  | ✅ | ✅ | `0x13cfe8` |
 | `RBMenuTutorialView` | `-` | `startCursorAnimation:` |  | ✅ | ✅ | `0x13d510` |
-| `RBMenuTutorialView` | `-` | `stopCursorAnimation:` |  | ✅ | ❌ | `0x13d878` |
+| `RBMenuTutorialView` | `-` | `stopCursorAnimation:` |  | ✅ | ✅ | `0x13d878` |
 | `RBMenuTutorialView` | `-` | `startTouchAnimation:` |  | ✅ | ❌ | `0x13d920` |
-| `RBMenuTutorialView` | `-` | `stopTouchAnimation:` |  | ✅ | ❌ | `0x13dbc4` |
+| `RBMenuTutorialView` | `-` | `stopTouchAnimation:` |  | ✅ | ✅ | `0x13dbc4` |
 | `RBMenuTutorialView` | `-` | `animationDelete:` |  | ✅ | ❌ | `0x13dc6c` |
 | `RBMenuTutorialView` | `-` | `startAnimation:` |  | ✅ | ❌ | `0x13de2c` |
 | `RBMenuTutorialView` | `-` | `resetAnimation:` |  | ✅ | ❌ | `0x13f7f0` |
