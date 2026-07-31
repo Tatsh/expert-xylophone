@@ -1,0 +1,52 @@
+# Dump the original rb458's play-field geometry. Source this while the process is STOPPED and
+# sitting on the play screen:
+#
+#   (lldb) process interrupt
+#   (lldb) command source /path/to/rb458-geom.lldb
+#
+# Every line is a plain memory read. Nothing here calls a function in the target, because a
+# jailbroken attach often cannot install the expression checkers ("couldn't install checkers"),
+# which kills any expr that calls into the process. GetGameSystem and IsPad are therefore read
+# through the globals they return rather than being called:
+#   GetGameSystem (0x12edb4) returns the pointer at 0x3de010 (adrp/ldr x0,[x19,#0x10]).
+#   IsPad (0x1a1200) is a single ldrb of the byte at 0x3df3d0.
+
+expr -- uint64_t $base = (uint64_t)&_mh_execute_header
+expr -- void *$gs = *(void **)($base + 0x3de010)
+
+# isPad (0 = phone geometry and halved clip rects, 1 = pad)
+expr -- (int)*(unsigned char *)($base + 0x3df3d0)
+
+# viewport width, then height (what UpdateProjection stored)
+expr -- *(float *)((char *)$gs + 0x2c)
+expr -- *(float *)((char *)$gs + 0x30)
+
+# sheetFarX, sheetFarY (the frame border is built from these)
+expr -- *(float *)((char *)$gs + 0x7c)
+expr -- *(float *)((char *)$gs + 0x80)
+
+# sheetPosX, sheetPosY
+expr -- *(float *)((char *)$gs + 0x58)
+expr -- *(float *)((char *)$gs + 0x5c)
+
+# playfieldScale, then sheetWidth (the field-of-view in degrees)
+expr -- *(float *)((char *)$gs + 0x134)
+expr -- *(float *)((char *)$gs + 0xa0)
+
+# g_nPlayfieldFullHeightY, g_nPlayfieldCentreSplit, g_nPlayfieldFieldHeight
+# AltFrameLayer offsets every sprite's Y by FullHeightY/2, so these place the whole field.
+expr -- *(int *)($base + 0x3d0008)
+expr -- *(int *)($base + 0x3ce934)
+expr -- *(int *)($base + 0x3ce930)
+
+# g_pTutorialClipRect entry 9 (the wide message strip): x, y, w, h
+expr -- ((double *)($base + 0x3de058))[36]
+expr -- ((double *)($base + 0x3de058))[37]
+expr -- ((double *)($base + 0x3de058))[38]
+expr -- ((double *)($base + 0x3de058))[39]
+
+# entry 28 (the wide message window, the quote box): x, y, w, h
+expr -- ((double *)($base + 0x3de058))[112]
+expr -- ((double *)($base + 0x3de058))[113]
+expr -- ((double *)($base + 0x3de058))[114]
+expr -- ((double *)($base + 0x3de058))[115]
