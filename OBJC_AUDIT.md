@@ -688,3 +688,10 @@ single member using a signed compare would have made a blanket change wrong.
 The tell generalises: an array index guarded only from above is worth re-reading, and the condition
 codes say which comparison the binary meant. `b.lt`/`b.ge` are signed, `b.ls`/`b.hi` are not, and
 the decompiler renders both as `<`.
+
+Swept the rest of the tree for the same shape — a signed parameter guarded only from above and then
+used as a subscript — and the class is otherwise clean. The two other sites it surfaces,
+`-[AudioManager suspendPlayer:]` and `+[MusicData GetYomiString:]`, both already reject a negative
+index explicitly and both already carry a comment saying the binary's check is unsigned. So this
+was a known class with one family missed rather than an unrecognised one, which is the more
+reassuring of the two possibilities.
