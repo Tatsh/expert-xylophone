@@ -64,7 +64,9 @@ def _write_patterns():
     return (
         # `m_x =` and friends. The negative lookahead skips the declaration's own `= {}`, which
         # would otherwise make every zero-initialised member look written where it is declared.
-        re.compile(r'\b(m_\w+)\s*(?:\[[^\]]*\]|\.\w+|->\w+)*\s*'
+        # The subscript allows one level of nesting: `m_a[kTable[i]] += x` is a write, and a
+        # pattern stopping at the first `]` would miss it and report the member as unwritten.
+        re.compile(r'\b(m_\w+)\s*(?:\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]|\.\w+|->\w+)*\s*'
                    r'(?:[-+*/|&^]?=(?!=)(?!\s*\{\s*\}\s*;)|<<=|>>=)'),
         re.compile(r'(?:\+\+|--)\s*(m_\w+)'),
         re.compile(r'\b(m_\w+)\s*(?:\+\+|--)'),
