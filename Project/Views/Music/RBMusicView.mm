@@ -1287,34 +1287,22 @@ enum { kDetMbgPlainIndex = 3 };
                                                   forDifficulty:switchWithDifficulty];
 }
 
-// The themed music-name image for the given difficulty, keyed on the current theme. The binary
-// inlines the twelve theme-by-difficulty accessor calls; they are factored here for legibility.
+// The themed music-name image, keyed on the current theme alone. The difficulty argument is kept
+// because the binary's three jump-table arms each carry their own copy of this selection, but all
+// three call the same base accessor: switchWithDifficulty: sends musicNameImageBlack, ...Brown and
+// ...White three times each and never the per-difficulty variants. That distinction matters rather
+// than being cosmetic — the per-difficulty accessors read archive members (title_b_b and friends)
+// that no .rb file carries, so selecting them returns nil and hands -setColor:withColor: a zero
+// size, which throws on a modern iOS.
 - (UIImage *)musicNameImageOfMusic:(MusicData *)music forDifficulty:(int)difficulty {
+    (void)difficulty; // Yes, the binary ignores it here; every arm picks by theme only.
     switch (self->_thema) {
     case kThemeBlack:
-        if (difficulty == kDifficultyMedium) {
-            return music.musicNameImageBlackMedium;
-        }
-        if (difficulty == kDifficultyHard) {
-            return music.musicNameImageBlackHard;
-        }
-        return music.musicNameImageBlackBasic;
+        return music.musicNameImageBlack;
     case kThemeBrown:
-        if (difficulty == kDifficultyMedium) {
-            return music.musicNameImageBrownMedium;
-        }
-        if (difficulty == kDifficultyHard) {
-            return music.musicNameImageBrownHard;
-        }
-        return music.musicNameImageBrownBasic;
+        return music.musicNameImageBrown;
     default: // kThemeWhite
-        if (difficulty == kDifficultyMedium) {
-            return music.musicNameImageWhiteMedium;
-        }
-        if (difficulty == kDifficultyHard) {
-            return music.musicNameImageWhiteHard;
-        }
-        return music.musicNameImageWhiteBasic;
+        return music.musicNameImageWhite;
     }
 }
 
