@@ -804,9 +804,14 @@ keying fix was supposed to produce, and three genuine defects appear:
   constants were checked and correct, and the return width was simply not something that pass
   looked at. A mechanical check and a careful read cover different ground.
 
-Twelve reports remain, all signedness rather than size: `int` against `I`, `NSInteger` against `Q`,
-`BOOL` against `C`, in `BFCodec`, `RBMenuTutorialView`, `RBStoreManageHeaderCell`,
-`RBViewController`, `StoreExtendNoteCellPhone`, `StoreUtil`, `StringConvert`, and
-`RBMusicExtendNoteView`. They are lower risk than a width change, since the register is the same
-size either way, but each is still a declaration that disagrees with the binary and each needs its
-own read before being changed.
+`StoreUtil`'s three URL builders — `+musicInfoURL:`, `+packListURL:limit:genre:`, and
+`+packInfoURL:UserOpen:` — took `int` where the encodings are `I`, and are fixed. That one had a
+second witness needing no disassembly at all: each forwards straight to a `NetworkUtil` method that
+already declares the same parameter `unsigned int`, and the sibling `+extendNoteInfoURL:UserOpen:`
+was already unsigned. The wrappers disagreed with both the binary and their own callees.
+
+Nine reports remain, all signedness rather than size: `int` against `I`, `NSInteger` against `Q`,
+`BOOL` against `C`, in `BFCodec`, `RBMenuTutorialView` (three), `RBStoreManageHeaderCell`,
+`RBViewController`, `StoreExtendNoteCellPhone`, `StringConvert`, and `RBMusicExtendNoteView`. They
+are lower risk than a width change, since the register is the same size either way, but each is
+still a declaration that disagrees with the binary and each needs its own read before changing.

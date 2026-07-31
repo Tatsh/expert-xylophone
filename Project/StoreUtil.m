@@ -153,17 +153,19 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 }
 
 /** @ghidraAddress 0x8596c */
-+ (NSURL *)musicInfoURL:(int)musicId {
++ (NSURL *)musicInfoURL:(unsigned int)musicId {
     return [NetworkUtil musicInfoURL:musicId];
 }
 
 /** @ghidraAddress 0x85944 */
-+ (NSURL *)packListURL:(int)offset limit:(int)limit genre:(unsigned int)genre {
++ (NSURL *)packListURL:(unsigned int)offset
+                        limit:(unsigned int)limit
+                        genre:(unsigned int)genre {
     return [NetworkUtil packListURL:offset limit:limit genre:genre];
 }
 
 /** @ghidraAddress 0x85964 */
-+ (NSURL *)packInfoURL:(int)packID UserOpen:(BOOL)userOpen {
++ (NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen {
     return [NetworkUtil packInfoURL:packID UserOpen:userOpen];
 }
 

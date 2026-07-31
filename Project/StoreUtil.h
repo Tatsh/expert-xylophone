@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The tune-info endpoint URL.
  * @ghidraAddress 0x8596c
  */
-+ (nullable NSURL *)musicInfoURL:(int)musicId;
++ (nullable NSURL *)musicInfoURL:(unsigned int)musicId;
 
 /**
  * @brief Build the paged pack-list catalogue download URL for a genre.
@@ -105,7 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The pack-list catalogue endpoint URL.
  * @ghidraAddress 0x85944
  */
-+ (nullable NSURL *)packListURL:(int)offset limit:(int)limit genre:(unsigned int)genre;
++ (nullable NSURL *)packListURL:(unsigned int)offset
+                          limit:(unsigned int)limit
+                          genre:(unsigned int)genre;
 
 /**
  * @brief Build the pack-detail info download URL for a pack.
@@ -116,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The pack-detail info endpoint URL.
  * @ghidraAddress 0x85964
  */
-+ (nullable NSURL *)packInfoURL:(int)packID UserOpen:(BOOL)userOpen;
++ (nullable NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen;
 
 /**
  * @brief Build the extend-note-detail info download URL for an extend note.

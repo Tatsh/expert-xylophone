@@ -59,6 +59,7 @@ bzero
 cacamixer
 caeagl
 calcel
+callees
 caplayermgr
 casource
 catlist
