@@ -1083,12 +1083,24 @@ so the shipped reconstruction was dropping `format=json` from every Applilink we
 
 To find out whether more of these were hiding, all 30 call sites of `dictionaryWithObjectsAndKeys:`
 were enumerated from the selector's cross-references — with an explicit `limit`, since the bridge
-silently caps at 100 without one — and each site's stack-slot count read from the disassembly. The
-count is exact, because the nil terminator occupies a slot: `n` slots means `n / 2` pairs. Two
-checks confirm the method: `commonParameters` reports four slots, matching the two pairs recovered
-by hand, and `+[AppDelegate getServerData]` reports ten, matching the five keychain pairs already
-reconstructed there.
+silently caps at 100 without one — and each site's stack-slot count read from the disassembly.
 
-The remaining sites now have a mechanical expected pair count each, which is what a comparison
-against the reconstructions needs. That comparison is the open work; the enumeration and the counts
-are done and are in this session's transcript.
+The first attempt at that count was wrong, in the same direction as the defect it was hunting.
+Counting every `str`/`stp` to `[sp, …]` in a window before the call also picks up local spills, so
+`+[AppDelegate musicListKey]` came back as eleven slots against its five correct pairs. The
+arguments are the **contiguous run from `sp+0`**, and anything past the first gap is a spill: the
+stores at `[sp,#0x60]` and `[sp,#0x68]` there are locals, and the argument block runs `sp+0x00`
+through `sp+0x48` with `xzr` in the last slot.
+
+Counted that way the result carries its own check, because the block must end in the `nil` and so
+must have an even slot count. Twenty-six of the thirty satisfy both, and `n` slots then means
+`n / 2` pairs. Three independent confirmations: `commonParameters` gives four slots against the two
+pairs recovered by hand, `+[AppDelegate getServerData]` ten against its five keychain pairs, and
+`musicListKey` ten against its five.
+
+Four sites do not fit the pattern and need reading on their own rather than counting: one arm of
+`lotteryInterstitialWithAdLocation:` at `0x22b118` has four slots but no `nil` in the last one;
+`downloaderFinished:` and `NSFileManagerRB_createDirectorysAtPath` show no argument stores in the
+window at all; and the `SSZipArchive` site dispatches through a different stub, so the scan never
+finds its call. Comparing the twenty-six counted sites to their reconstructions, and reading those
+four, is the open work.
