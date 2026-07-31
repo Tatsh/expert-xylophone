@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xeb0e4: 'RBSettingView -OpenView: a genuine three-arm theme branch. Themes 2 and 1 share the '
+             'orr w1 of 0xc, theme 0 takes the orr of 3, and any other theme plays nothing at all '
+             'because the cbnz skips the call entirely; showAnimation then runs unconditionally. '
+             'The reconstruction\'s else-if captures that silent third case',
+    0xef940: 'StoreDetailMusicCell -sampleStop: stops the indicator and hides sampleView with the '
+             'mov w2 of 1',
+    0xefbc4: 'StoreDetailMusicCell -tapSp:: builds the move-to-extend-detail alert with self as '
+             'delegate and shows it, the same shape as StorePackMusicView -tapSp',
     0xf3e90: 'StoreImageView -loadedImage: whether imageView.image is non-nil',
     0xf5898: 'StorePackCell -setBgImage:: drives bgView.image',
     0xfe9e0: 'StorePackView -setBgImage:: same selector as StorePackCell\'s but a different ivar, '
