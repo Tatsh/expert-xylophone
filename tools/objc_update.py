@@ -1012,6 +1012,13 @@ VERIFIED = {
     0x20f5c4: 'AnalysisNetworkCore +getInitalizeFlg: standardUserDefaults then objectForKey: '
               'against "ApplilinkAnalysis.initialize", with cmp #0 / cset ne, so it is another '
               'key-presence test rather than a stored boolean',
+    0xd5f38: 'RBMusicView -firstInfoAnimationCheck: four arms and all four accounted for. The tbnz '
+             'after IsPad takes the pad straight to the m_FirstInfo store, so the whole animation '
+             'is phone-only; a set musicSelectedFirstInfo does the same; the thema compare against '
+             '2, matching kThemeBrown, gates the isTutorialMusicselect call so the && short-'
+             'circuits exactly as written; and only the fall-through sets the flag, saves, and '
+             'runs the animation. m_FirstInfo encodes B and is written with strb wzr on every '
+             'early arm',
     0xd60d4: 'RBMusicView -selectPage:: takes currentPage from the sender and multiplies it by the '
              'settingScroll bounds width, which arrives in v2, the third CGRect field, not the '
              'frame and not the height. The offset y is a movi of zero and animated is w2 = 1',
