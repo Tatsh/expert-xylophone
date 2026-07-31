@@ -170,7 +170,15 @@ void neGLESRenderer::GenBuffer(unsigned int *pOutBuffer) {
     // matrix-index binding caches are not cleared on delete, so a reissued name makes them claim
     // the array is already configured and suppress the pointer call, leaving the array enabled
     // against a dead buffer. Pair this with the delete line to see whether that happens.
-    NE_DBG(if (NE_DBG_FIRST(400)) { neDebugLog("glBuffer gen %u", *pOutBuffer); });
+    NE_DBG(
+        if (*pOutBuffer < static_cast<unsigned int>(kBufferNameLimit)) {
+            ++m_aBufferGeneration[*pOutBuffer];
+        };
+        if (NE_DBG_FIRST(400)) {
+            neDebugLog("glBuffer gen %u generation=%d",
+                       *pOutBuffer,
+                       GenerationOf(static_cast<int>(*pOutBuffer)));
+        });
 }
 
 /** @ghidraAddress 0x21bd0 */
@@ -520,7 +528,8 @@ void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffse
     // been freed and reissued, which the gen/del log shows GL does. Record every skip with the
     // name, so a skip on a recycled name is observed rather than argued.
     NE_DBG(if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding == m_nArrayBufferBound &&
-               NE_DBG_FIRST(30)) {
+               m_nWeightPointerGeneration != GenerationOf(m_nArrayBufferBound) &&
+               NE_DBG_FIRST(10)) {
         neDebugLog("weightPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
                    m_nArrayBufferBound,
                    m_nWeightPointerGeneration,
@@ -545,7 +554,8 @@ void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffse
 void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset) {
     // Same reasoning as ClearWeightPointer above.
     NE_DBG(if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding == m_nArrayBufferBound &&
-               NE_DBG_FIRST(30)) {
+               m_nMatrixIndexPointerGeneration != GenerationOf(m_nArrayBufferBound) &&
+               NE_DBG_FIRST(10)) {
         neDebugLog("matrixIndexPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
                    m_nArrayBufferBound,
                    m_nMatrixIndexPointerGeneration,
