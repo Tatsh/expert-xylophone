@@ -199,19 +199,22 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
 }
 
 /** @ghidraAddress 0x86b9c */
-+ (NSDictionary *)affiliateParametersFromURL:(NSString *)url {
++ (NSDictionary *)affiliateParametersFromURL:(NSURL *)url {
     if (url == nil) {
         return nil;
     }
+    // Only a link on the iTunes host is parsed; any other host yields no parameters at all.
+    if (![url.host isEqualToString:kITunesHost]) {
+        return nil;
+    }
 
-    NSURL *parsed = [NSURL URLWithString:url];
     NSInteger itemID = 0;
     NSString *affiliateToken = nil;
     NSString *campaignToken = nil;
 
     // An affiliate link on the iTunes host carries the item id, affiliate token, and campaign token
     // as query parameters; parse them out of the query.
-    NSArray *pairs = [parsed.query componentsSeparatedByString:@"&"];
+    NSArray *pairs = [url.query componentsSeparatedByString:@"&"];
     for (NSString *pair in pairs) {
         if (pair.length == 0) {
             continue;
@@ -238,7 +241,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
                                                       options:NSRegularExpressionCaseInsensitive
                                                         error:&error];
         if (error == nil) {
-            NSString *absolute = parsed.absoluteString;
+            NSString *absolute = url.absoluteString;
             NSArray<NSTextCheckingResult *> *matches =
                 [expression matchesInString:absolute
                                     options:0

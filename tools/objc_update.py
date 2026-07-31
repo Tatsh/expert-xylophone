@@ -295,6 +295,9 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x86b9c: 'StoreUtil +affiliateParametersFromURL:: FIXED, the parameter is an NSURL sent -host '
+             'and -query directly (no URLWithString: anywhere in the routine), and a host that is '
+             'not itunes.apple.com returns nil rather than falling through to the query parse',
     0x859f8: 'StoreUtil +productIDForPackID:: FIXED, the format is "%@%05d" over the rbplus.pack '
              'prefix and the id; the reconstruction had dropped the stack-passed prefix argument',
     0x874a0: 'StoreUtil +pidToProductID:: FIXED the same way, over the rbplus.note prefix; despite '

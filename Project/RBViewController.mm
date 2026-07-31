@@ -387,8 +387,8 @@ constexpr int kDefaultPlayColor = 0;
         float sheetFarY = gameSystem->GetSheetFarY();
         double tanHalfFov = tan(fovY * 0.5f);
         float slope = (1.0f - sheetRatio) * static_cast<float>(tanHalfFov);
-        float shift = ((2.0f - pitchRatio) - sheetRatio) *
-                      (sheetFarX / (aspect * (sheetFarY + sheetFarY)));
+        float shift =
+            ((2.0f - pitchRatio) - sheetRatio) * (sheetFarX / (aspect * (sheetFarY + sheetFarY)));
         float a = slope * slope + 1.0f;
         float b = shift * (slope + slope);
         float discriminant = sqrtf(b * b + (shift * shift - 1.0f) * a * -4.0f);
@@ -692,15 +692,14 @@ constexpr int kDefaultPlayColor = 0;
     [[RBBGMManager getInstance] PauseMusic:kPreviewBgmPauseTime];
     [self.musicMenuView stopBGEffect];
     [self StartLoop];
-    dispatch_after(
-        dispatch_time(0, kPreviewSceneDelayNanoseconds), dispatch_get_main_queue(), ^{
-          /** @ghidraAddress 0x8c884 */
-          // A global block: it captures nothing and never touches the view controller.
-          rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
-          if (scene) {
-              scene->EnterModeAlt();
-          }
-        });
+    dispatch_after(dispatch_time(0, kPreviewSceneDelayNanoseconds), dispatch_get_main_queue(), ^{
+      /** @ghidraAddress 0x8c884 */
+      // A global block: it captures nothing and never touches the view controller.
+      rb::GameScene *scene = GameSystem::GetGameSystem()->GetCurrentScene();
+      if (scene) {
+          scene->EnterModeAlt();
+      }
+    });
 }
 
 - (void)showPreview {
@@ -1033,8 +1032,7 @@ constexpr int kDefaultPlayColor = 0;
     if (!url) {
         return;
     }
-    // The binary passes the NSURL itself to the NSString-typed parameter (see StoreUtil).
-    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:static_cast<id>(url)];
+    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
     if (!affiliateParameters) {
         [[UIApplication sharedApplication] openURL:url];
         return;
@@ -1130,10 +1128,10 @@ constexpr int kDefaultPlayColor = 0;
     self.tweetText = text;
     NSURL *url = [NSURL URLWithString:@"http://twitter.com"];
     // w3 is 4 at 0x8dd4c, which is ReloadIgnoringLocalAndRemoteCacheData, not the protocol default.
-    self.twitterRequestTest = [[NSURLRequest alloc]
-             initWithURL:url
-             cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-        timeoutInterval:kTwitterProbeTimeout];
+    self.twitterRequestTest =
+        [[NSURLRequest alloc] initWithURL:url
+                              cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                          timeoutInterval:kTwitterProbeTimeout];
     self.twitterConnectionTest = [[NSURLConnection alloc] initWithRequest:self.twitterRequestTest
                                                                  delegate:self];
     return YES;

@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4676 verified
+Total: 6343 — 6306 reconstructed, 4677 verified
 (73.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1753,7 +1753,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `createCampaignListJSON:limit:` |  | ✅ | ❌ | `0x8678c` |
 | `StoreUtil` | `+` | `createCampaignSerialCheckJSON:code:` |  | ✅ | ❌ | `0x868e4` |
 | `StoreUtil` | `+` | `createCampaignItemInfoJSON:` |  | ✅ | ❌ | `0x86a54` |
-| `StoreUtil` | `+` | `affiliateParametersFromURL:` |  | ✅ | ❌ | `0x86b9c` |
+| `StoreUtil` | `+` | `affiliateParametersFromURL:` |  | ✅ | ✅ | `0x86b9c` |
 | `StoreUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ✅ | `0x87478` |
 | `StoreUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ✅ | `0x8748c` |
 | `StoreUtil` | `+` | `pidToProductID:` |  | ✅ | ✅ | `0x874a0` |

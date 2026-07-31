@@ -450,3 +450,26 @@ directly rather than waiting to reach these routines in address order.
 
 Also worth recording because the names actively mislead: `pidToProductID:` vends _extend-note_
 identifiers (`rbplus.note`), not the pack ones its generic name suggests.
+
+## The same file's affiliate parser, found by the same tell
+
+Chasing the one remaining unreferenced string constant in the tree, `kITunesHost`, led straight to
+`+[StoreUtil affiliateParametersFromURL:]` (`0x86b9c`) and two more defects.
+
+The parameter is an `NSURL *`. The routine sends it `-host` and `-query` directly and contains no
+`URLWithString:` call at all, yet the reconstruction typed the parameter `NSString *` and opened
+with a parse step the binary never performs. Worse, the mismatch had already been _noticed_: two
+call sites passed `url.absoluteString` under a comment explaining that the header types the
+parameter as a string, and a third passed the `NSURL` through a `static_cast<id>`. That third one
+reached `+[NSURL URLWithString:]` with an `NSURL` argument.
+
+The dead constant marked the second defect. `-host` is compared against `itunes.apple.com`, and a
+mismatch branches to the epilogue with the result register zeroed, so a non-iTunes link returns nil
+instead of having its query scraped for affiliate parameters. The reconstruction had no host test.
+
+Two lessons generalise past this file. A comment at a call site explaining why an argument is
+being converted is evidence that the callee's signature is wrong, not a note worth keeping — the
+same shape as the `(id)`-cast method-kind inversions recorded above. And a `cbz` on a `__DATA` slot
+immediately before it is read, as guards all three `SKStoreProductParameter*` loads here, is a
+weak-imported framework symbol rather than application logic; it should not be reconstructed as a
+branch.

@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param url The iTunes URL to parse.
  * @return The affiliate parameters, or @c nil when the URL carries none.
  */
-+ (nullable NSDictionary *)affiliateParametersFromURL:(nullable NSString *)url;
++ (nullable NSDictionary *)affiliateParametersFromURL:(nullable NSURL *)url;
 
 /**
  * @brief Map an App Store product identifier to its numeric pack identifier.

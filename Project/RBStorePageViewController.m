@@ -2384,9 +2384,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     if (url == nil) {
         return;
     }
-    NSDictionary *parameters = [StoreUtil affiliateParametersFromURL:url.absoluteString];
-    // The binary passes the URL object straight to affiliateParametersFromURL:; the committed
-    // StoreUtil header types that parameter as an NSString, so the absolute string is passed here.
+    NSDictionary *parameters = [StoreUtil affiliateParametersFromURL:url];
     if (parameters == nil) {
         [[UIApplication sharedApplication] openURL:url];
     } else {

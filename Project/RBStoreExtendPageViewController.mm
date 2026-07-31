@@ -1905,10 +1905,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     }
 
     // When the URL carries affiliate parameters, present the in-app StoreKit product page seeded
-    // with them; otherwise fall back to opening the URL in Safari. The binary passes the URL object
-    // straight to affiliateParametersFromURL:; the committed StoreUtil header types that parameter
-    // as an NSString, so the absolute string is passed here.
-    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url.absoluteString];
+    // with them; otherwise fall back to opening the URL in Safari.
+    NSDictionary *affiliateParameters = [StoreUtil affiliateParametersFromURL:url];
     if (affiliateParameters == nil) {
         [[UIApplication sharedApplication] openURL:url];
         return;
