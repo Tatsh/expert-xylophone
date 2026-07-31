@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5147 verified
-(81.1%).
+Total: 6343 — 6306 reconstructed, 5167 verified
+(81.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5147 verified, 3507 come from those passes and the remaining
-1640 were read by hand. The split matters when reading the percentage: a
+Of the 5167 verified, 3507 come from those passes and the remaining
+1660 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -963,7 +963,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `showTermView` |  | ✅ | ❌ | `0x49ac4` |
 | `RBTermDetailPhoneViewController` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x49f7c` |
 | `RBTermDetailPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ✅ | `0x4a07c` |
-| `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x4a130` |
+| `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ✅ | `0x4a130` |
 | `RBTermDetailPhoneViewController` | `-` | `forceClose` |  | ✅ | ✅ | `0x4a200` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x4a2c8` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4a340` |
@@ -1068,7 +1068,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `applicationWillEnterForeground:` |  | ✅ | ✅ | `0x5307c` |
 | `AppDelegate` | `-` | `applicationDidEnterBackground:` |  | ✅ | ✅ | `0x530b4` |
 | `AppDelegate` | `-` | `applicationWillTerminate:` |  | ✅ | ✅ | `0x531a4` |
-| `AppDelegate` | `+` | `launchAppStore` |  | ✅ | ❌ | `0x53268` |
+| `AppDelegate` | `+` | `launchAppStore` |  | ✅ | ✅ | `0x53268` |
 | `AppDelegate` | `-` | `applicationDidReceiveMemoryWarning:` |  | ✅ | ✅ | `0x53350` |
 | `AppDelegate` | `-` | `applicationSignificantTimeChange:` |  | ✅ | ✅ | `0x533b4` |
 | `AppDelegate` | `-` | `application:willChangeStatusBarOrientation:duration:` |  | ✅ | ✅ | `0x533b8` |
@@ -1150,7 +1150,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `apnsUploader` | prop | ✅ | ✅ | `0x54c3c` |
 | `AppDelegate` | `-` | `setApnsUploader:` | prop | ✅ | ✅ | `0x54c4c` |
 | `RBStoreManageSortViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x556e0` |
-| `RBStoreManageSortViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x55ca4` |
+| `RBStoreManageSortViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x55ca4` |
 | `RBStoreManageSortViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x55d80` |
 | `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x56064` |
 | `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x5606c` |
@@ -1168,7 +1168,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignTableViewCell` | `-` | `initWithDeviceType:reuseIdentifier:tag:` |  | ✅ | ❌ | `0x56440` |
 | `StoreCampaignTableViewCell` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x56c64` |
 | `StoreCampaignTableViewCell` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x56e6c` |
-| `StoreCampaignTableViewCell` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x56e90` |
+| `StoreCampaignTableViewCell` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x56e90` |
 | `StoreCampaignTableViewCell` | `+` | `cellHeight:` |  | ✅ | ✅ | `0x56fa4` |
 | `StoreCampaignTableViewCell` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x56fc0` |
 | `StoreCampaignTableViewCell` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x56fd4` |
@@ -1180,8 +1180,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignTableViewCell` | `-` | `setIndicator:` | prop | ✅ | ✅ | `0x5726c` |
 | `MusicDataExtend` | `-` | `setExtendSheetWithPath:ID:` |  | ✅ | ✅ | `0x5a22c` |
 | `MusicDataExtend` | `+` | `dataWithPath:dictionary:` |  | ✅ | ❌ | `0x5a230` |
-| `MusicDataExtend` | `-` | `sheetSpecial` | prop | ✅ | ❌ | `0x5a428` |
-| `MusicDataExtend` | `-` | `sheetSpecialLight` | prop | ✅ | ❌ | `0x5a4fc` |
+| `MusicDataExtend` | `-` | `sheetSpecial` | prop | ✅ | ✅ | `0x5a428` |
+| `MusicDataExtend` | `-` | `sheetSpecialLight` | prop | ✅ | ✅ | `0x5a4fc` |
 | `MusicDataExtend` | `+` | `getExtendZipData:Path:DecodeType:` |  | ✅ | ✅ | `0x5a5d0` |
 | `MusicDataExtend` | `-` | `dealloc` |  | ❌ | ✅ | `0x5a5d8` |
 | `MusicDataExtend` | `-` | `getZipData:` |  | ✅ | ✅ | `0x5a60c` |
@@ -1206,21 +1206,21 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `History` | `+` | `getScoreData:inManagedObjectContext:` |  | ✅ | ❌ | `0x5abd8` |
 | `History` | `+` | `getScoreDataWithStartDate:andEndDate:andLimit:inManagedObjectContext:` |  | ✅ | ❌ | `0x5afec` |
 | `History` | `+` | `deleteObject:` |  | ✅ | ❌ | `0x5b434` |
-| `History` | `+` | `count:` |  | ✅ | ❌ | `0x5b69c` |
+| `History` | `+` | `count:` |  | ✅ | ✅ | `0x5b69c` |
 | `History` | `+` | `recordWithTuneID:Difficulty:inManagedObjectContext:` |  | ✅ | ❌ | `0x5b7ac` |
 | `History` | `+` | `reset:` |  | ✅ | ❌ | `0x5b900` |
 | `History` | `+` | `hashScoreforTune:Difficulty:Score:Just:Great:Good:Miss:JR:Combo:Date:Count:Hash:` |  | ✅ | ✅ | `0x5bb88` |
 | `History` | `+` | `hashScore:` |  | ✅ | ❌ | `0x5bc38` |
-| `History` | `+` | `checkScore:` |  | ✅ | ❌ | `0x5c01c` |
+| `History` | `+` | `checkScore:` |  | ✅ | ✅ | `0x5c01c` |
 | `History` | `+` | `getAR:` |  | ✅ | ❌ | `0x5c0fc` |
 | `History` | `+` | `getFullCombo:` |  | ✅ | ❌ | `0x5c290` |
 | `ScoreData` | `+` | `getScoreData:inManagedObjectContext:` |  | ✅ | ❌ | `0x5c444` |
 | `ScoreData` | `+` | `getScoreDatas:inManagedObjectContext:` |  | ✅ | ❌ | `0x5c854` |
-| `ScoreData` | `+` | `recordWithTuneID:inManagedObjectContext:` |  | ✅ | ❌ | `0x5cd7c` |
+| `ScoreData` | `+` | `recordWithTuneID:inManagedObjectContext:` |  | ✅ | ✅ | `0x5cd7c` |
 | `ScoreData` | `+` | `reset:` |  | ✅ | ❌ | `0x5ce78` |
 | `ScoreData` | `+` | `hashScoreforTune:Basic:Medium:Hard:Hash:` |  | ✅ | ✅ | `0x5d300` |
 | `ScoreData` | `+` | `hashScore:` |  | ✅ | ✅ | `0x5d3bc` |
-| `ScoreData` | `+` | `checkScore:` |  | ✅ | ❌ | `0x5d698` |
+| `ScoreData` | `+` | `checkScore:` |  | ✅ | ✅ | `0x5d698` |
 | `ScoreData` | `+` | `totalScore` |  | ✅ | ❌ | `0x5d778` |
 | `ScoreData` | `-` | `getFrameBonusType` |  | ✅ | ✅ | `0x5df3c` |
 | `ScoreData` | `-` | `checkOverScore` |  | ✅ | ❌ | `0x5e150` |
@@ -1418,7 +1418,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `decodeType` | prop | ✅ | ✅ | `0x6685c` |
 | `MusicData` | `-` | `setDecodeType:` | prop | ✅ | ✅ | `0x6686c` |
 | `MusicDataFromDoc` | `-` | `init` |  | ✅ | ✅ | `0x67238` |
-| `MusicDataFromDoc` | `+` | `getPathWithDocument:` |  | ✅ | ❌ | `0x6726c` |
+| `MusicDataFromDoc` | `+` | `getPathWithDocument:` |  | ✅ | ✅ | `0x6726c` |
 | `MusicDataFromDoc` | `+` | `dataWithPath:PlyName:` |  | ✅ | ❌ | `0x6734c` |
 | `MusicDataFromDoc` | `-` | `dealloc` |  | ❌ | ✅ | `0x67498` |
 | `MusicDataFromDoc` | `-` | `MusicID` |  | ✅ | ✅ | `0x674cc` |
@@ -1460,7 +1460,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `-` | `plyName` | prop | ✅ | ✅ | `0x67e28` |
 | `MusicDataFromDoc` | `-` | `setPlyName:` | prop | ✅ | ✅ | `0x67e38` |
 | `StoreMusicInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x67e84` |
-| `StoreMusicInfo` | `-` | `fileExist` |  | ✅ | ❌ | `0x683f0` |
+| `StoreMusicInfo` | `-` | `fileExist` |  | ✅ | ✅ | `0x683f0` |
 | `StoreMusicInfo` | `-` | `dealloc` |  | ❌ | ✅ | `0x684d4` |
 | `StoreMusicInfo` | `-` | `musicID` | prop | ✅ | ✅ | `0x68508` |
 | `StoreMusicInfo` | `-` | `setMusicID:` | prop | ✅ | ✅ | `0x68518` |
@@ -1484,14 +1484,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreMusicInfo` | `-` | `setLvHard:` | prop | ✅ | ✅ | `0x68728` |
 | `StoreMusicInfo` | `-` | `extIDList` | prop | ✅ | ✅ | `0x68738` |
 | `StoreMusicInfo` | `-` | `setExtIDList:` | prop | ✅ | ✅ | `0x68748` |
-| `StorePackInfo` | `-` | `initWithProduct:` |  | ✅ | ❌ | `0x68824` |
+| `StorePackInfo` | `-` | `initWithProduct:` |  | ✅ | ✅ | `0x68824` |
 | `StorePackInfo` | `-` | `initWithPackID:` |  | ✅ | ✅ | `0x68924` |
-| `StorePackInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x68984` |
+| `StorePackInfo` | `-` | `initWithDictionary:` |  | ✅ | ✅ | `0x68984` |
 | `StorePackInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x68a54` |
 | `StorePackInfo` | `-` | `priceString` |  | ✅ | ✅ | `0x68e30` |
 | `StorePackInfo` | `-` | `setMusicInfo:` |  | ✅ | ❌ | `0x68e94` |
 | `StorePackInfo` | `-` | `downloadDetailInfo` |  | ✅ | ✅ | `0x69114` |
-| `StorePackInfo` | `-` | `allDownloaded` |  | ✅ | ❌ | `0x69150` |
+| `StorePackInfo` | `-` | `allDownloaded` |  | ✅ | ✅ | `0x69150` |
 | `StorePackInfo` | `-` | `packID` | prop | ✅ | ✅ | `0x69278` |
 | `StorePackInfo` | `-` | `setPackID:` | prop | ✅ | ✅ | `0x69288` |
 | `StorePackInfo` | `-` | `isNew` | prop | ✅ | ✅ | `0x69298` |
@@ -1520,11 +1520,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfo` | `-` | `setErrorMessage:` | prop | ✅ | ✅ | `0x69570` |
 | `StorePackInfoDownloader` | `-` | `initWithStorePackInfo:` |  | ✅ | ✅ | `0x69688` |
 | `StorePackInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x69700` |
-| `StorePackInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x6977c` |
+| `StorePackInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ✅ | `0x6977c` |
 | `StorePackInfoDownloader` | `-` | `cancel` |  | ✅ | ✅ | `0x69880` |
 | `StorePackInfoDownloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x69914` |
-| `StorePackInfoDownloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x69acc` |
-| `StorePackInfoDownloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x69bc0` |
+| `StorePackInfoDownloader` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x69acc` |
+| `StorePackInfoDownloader` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x69bc0` |
 | `StorePackInfoDownloader` | `-` | `getPackInfo` |  | ✅ | ✅ | `0x69cc8` |
 | `StorePackInfoDownloader` | `-` | `getErrorMessage` |  | ✅ | ✅ | `0x69cd4` |
 | `StorePackInfoDownloader` | `-` | `delegate` | prop | ✅ | ✅ | `0x69ce0` |
@@ -1553,7 +1553,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
 | `RBMusicManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x6a990` |
 | `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ✅ | `0x6a9e8` |
-| `RBMusicManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x6aa1c` |
+| `RBMusicManager` | `+` | `getPathFromBundle:` |  | ✅ | ✅ | `0x6aa1c` |
 | `RBMusicManager` | `+` | `getPathFromPurchesed:` |  | ✅ | ✅ | `0x6aad8` |
 | `RBMusicManager` | `+` | `getPathFromPurchesedOldDirectory:` |  | ✅ | ✅ | `0x6ab88` |
 | `RBMusicManager` | `-` | `deleteMusic:` |  | ✅ | ❌ | `0x6ac38` |
@@ -1573,7 +1573,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `getMusicIDs` |  | ✅ | ❌ | `0x6c9e4` |
 | `RBMusicManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x6cc80` |
 | `RBMusicManager` | `-` | `setClientMusicPageNum:` | prop | ✅ | ✅ | `0x6cc90` |
-| `RBMusicManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x6cd2c` |
+| `RBMusicManager` | `-` | `setClientMusic:` |  | ✅ | ✅ | `0x6cd2c` |
 | `RBMusicManager` | `-` | `getClientCompareMusics` |  | ✅ | ❌ | `0x6cdf8` |
 | `RBMusicManager` | `-` | `clientMusicPageNum` | prop | ✅ | ✅ | `0x6d0a8` |
 | `RBMusicManager` | `-` | `clientMusics` | prop | ✅ | ✅ | `0x6d0b8` |

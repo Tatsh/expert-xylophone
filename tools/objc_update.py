@@ -1076,6 +1076,54 @@ VERIFIED = {
              'StoreExtendNoteDetailViewPad method at 0x25c50',
     0x42248: 'StoreTableCellBase -prepareForReuse: super chain then reset sent to leftView and '
              'rightView, with the selector loaded once into x20 and reused for both',
+    0x4a130: 'RBTermDetailPhoneViewController -pushBarBtnBack:: the same viewType cbnz as '
+             '-forceClose at 0x4a200, but both flags are YES here where forceClose passes NO for '
+             'animated. Same shape, different arguments',
+    0x53268: 'AppDelegate +launchAppStore: setIsUpdate:YES before the URL is opened, then openURL: '
+             'with the itunes.apple.com CFString matching kAppStoreURLString. The ordering matters: '
+             'the flag is set while the app is still foregrounded',
+    0x55ca4: 'RBStoreManageSortViewController -viewWillAppear:: objc_msgSendSuper2 for the super '
+             'call, confirmed against the stub, then localizedStringForKey:value:table: with the '
+             'sort heading and nil table',
+    0x56e90: 'StoreCampaignTableViewCell -hasItem:itemID:: cbnz on itemType and cbz on the music '
+             'data both converge on one return-NO arm, so only type 0 with a known tune reaches '
+             'the file-existence test',
+    0x5a428: 'MusicDataExtend -sheetSpecial: builds a MusicData from dataPath and ExtMusicID, and '
+             'the selector it then sends is sheetBasic, not sheetSpecial. The wrapper forwards to '
+             'the inner object\'s basic sheet, which the source documents',
+    0x5a4fc: 'MusicDataExtend -sheetSpecialLight: the same wrapper forwarding to sheetBasicLight',
+    0x5b69c: 'History +count:: countForFetchRequest:error: then cmp against 0x7fffffffffffffff with '
+             'csel, so NSNotFound maps to zero rather than propagating as a huge count',
+    0x5c01c: 'History +checkScore:: cbz nil guard, then hashScore: compared with isEqualToData: '
+             'against the stored chksco',
+    0x5cd7c: 'ScoreData +recordWithTuneID:inManagedObjectContext:: insertNewObjectForEntityForName: '
+             'then the tune id boxed and stored, then +reset: on the new record',
+    0x5d698: 'ScoreData +checkScore:: the same shape as the History one at 0x5c01c',
+    0x6726c: 'MusicDataFromDoc +getPathWithDocument:: NSSearchPathForDirectoriesInDomains with 9, 1 '
+             'and 1, which are NSDocumentDirectory, NSUserDomainMask and YES, then a "%@/%@" join',
+    0x683f0: 'StoreMusicInfo -fileExist: tries getPathFromPurchesed: first and only falls back to '
+             'getPathFromPurchesedOldDirectory: when the tbz shows the first test failed, so the '
+             'current location wins and the legacy one is the fallback',
+    0x68824: 'StorePackInfo -initWithProduct:: objc_msgSendSuper2 for init, confirmed against the '
+             'stub, then two cbz guards on the product and on self before the two stores',
+    0x68984: 'StorePackInfo -initWithDictionary:: the same two-guard shape, taking the pack id from '
+             'the "ID" key as an intValue',
+    0x69150: 'StorePackInfo -allDownloaded: a fast-enumeration loop sending fileExist to each entry, '
+             'returning NO on the first cbz failure and YES only after the loop drains. The '
+             'enumeration-mutation check is ARC boilerplate, not a source construct',
+    0x6977c: 'StorePackInfoDownloader -downloadDetail:: clears the downloader first, builds the URL '
+             'from the pack id and the userOpen flag, then allocates with save:nil and starts',
+    0x69acc: 'StorePackInfoDownloader -downloaderProceed:: a pointer identity test against the held '
+             'downloader, then respondsToSelector: before the delegate send',
+    0x69bc0: 'StorePackInfoDownloader -downloaderError:: the same identity test but with the branch '
+             'polarity inverted, b.eq falling through where the sibling uses b.ne to return early. '
+             'Both express the same guard. The trailing setDownloader:nil is a tail branch',
+    0x6aa1c: 'RBMusicManager +getPathFromBundle:: getMusicDataFilename: then pathForResource: with '
+             'an empty ofType:, the same empty-string pool slot other call sites use',
+    0x6cd2c: 'RBMusicManager -setClientMusic:: addObjectsFromArray: then sub w2,w0,#1 into '
+             'setClientMusicPageNum:, and the getter is re-invoked afterwards for the return value '
+             'rather than the decremented register being reused. This is the setter whose mutual '
+             'recursion with -releaseClientMusic was broken earlier today',
     0x4a200: 'RBTermDetailPhoneViewController -forceClose: cbnz on viewType skips the navigation '
              'bar hide for any non-zero type, and zero is kTermViewTypeAgreement, so only the '
              'agreement variant hides the bar. The two flags differ, YES for hidden and NO for '
