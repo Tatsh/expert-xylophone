@@ -164,6 +164,7 @@ fcmp
 fcsel
 fcvt
 fcvtzs
+fcvtzu
 fdiv
 finditer
 floatloopcounter

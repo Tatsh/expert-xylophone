@@ -934,6 +934,16 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0xd4c5c: 'RBMusicView -playTutorialGame: sets gameType, playerColor and difficulty to 0 and '
+             'rivalAlpha to the 0x3f800000 fmov, then writes 10 to +0xfc and zero to +0x100 on the '
+             'game system, matching kTutorialComboCount and kPastelBonusNone. The music id is '
+             'built by mov/movk as 0x3b9ac9fe, matching kTutorialMusicID, and the load is guarded '
+             'by isFileExist:. The seed is rand() scaled by the pool float at 0x3014d0, which is '
+             '1/RAND_MAX, and then converted with fcvtzu w3,s0,#0x20. That is a fixed-point '
+             'convert scaling by 2^32 during the conversion rather than a float multiply, so the '
+             'reconstruction\'s separate kRandSeedScale differs from it in rounding at the '
+             'margins, and in overflow when rand() returns RAND_MAX exactly. Left as written, '
+             'since the readable form costs one value in two billion',
     0xc8240: 'RBMusicDifficultyView -CreateButton:Position:Number:: v9 and v8 take d0 and d1 '
              'straight from the Position argument and go to setCenter: unchanged, so this method '
              'does no per-index arithmetic and the caller supplies each button\'s placement. The '
