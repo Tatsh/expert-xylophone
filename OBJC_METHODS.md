@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4732 verified
-(74.6%).
+Total: 6343 — 6306 reconstructed, 4741 verified
+(74.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -610,8 +610,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundPlayer` | `-` | `stop` |  | ✅ | ✅ | `0x355fc` |
 | `SoundPlayer` | `-` | `isStop` |  | ✅ | ✅ | `0x35610` |
 | `SoundPlayer` | `-` | `loadData:Frames:` |  | ✅ | ❌ | `0x35620` |
-| `RBTutorialManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x356b8` |
-| `RBTutorialManager` | `+` | `isTutorial` |  | ✅ | ❌ | `0x35724` |
+| `RBTutorialManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x356b8` |
+| `RBTutorialManager` | `+` | `isTutorial` |  | ✅ | ✅ | `0x35724` |
 | `RBTutorialManager` | `+` | `needStartTutorialMusicselect` |  | ✅ | ❌ | `0x3578c` |
 | `RBTutorialManager` | `+` | `startTutorialMusicselect` |  | ✅ | ✅ | `0x35820` |
 | `RBTutorialManager` | `+` | `isTutorialMusicselect` |  | ✅ | ❌ | `0x35838` |
@@ -623,7 +623,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `needStartTutorialStore` |  | ✅ | ❌ | `0x35c50` |
 | `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ✅ | `0x35ce4` |
 | `RBTutorialManager` | `+` | `getStatus:` |  | ✅ | ❌ | `0x35cfc` |
-| `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ❌ | `0x35d6c` |
+| `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ✅ | `0x35d6c` |
 | `RBTutorialManager` | `+` | `updateStatus:` |  | ✅ | ❌ | `0x35dd4` |
 | `RBTutorialManager` | `+` | `setUnlockedItemInfo:itemId:` |  | ✅ | ❌ | `0x36098` |
 | `RBTutorialManager` | `+` | `getUnlockedItemInfo` |  | ✅ | ❌ | `0x36308` |
@@ -1677,12 +1677,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x731a8` |
 | `Downloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x73300` |
 | `Downloader` | `-` | `currentSize` |  | ✅ | ✅ | `0x73458` |
-| `Downloader` | `-` | `currentProgress` |  | ✅ | ❌ | `0x734b8` |
-| `Downloader` | `-` | `getData` |  | ✅ | ❌ | `0x73520` |
-| `Downloader` | `-` | `getDataInJSON` |  | ✅ | ❌ | `0x73588` |
-| `Downloader` | `-` | `getHeader` |  | ✅ | ❌ | `0x735f0` |
-| `Downloader` | `-` | `systemErrorMessage` |  | ✅ | ❌ | `0x73658` |
-| `Downloader` | `-` | `showErrorMessage` |  | ✅ | ❌ | `0x736c0` |
+| `Downloader` | `-` | `currentProgress` |  | ✅ | ✅ | `0x734b8` |
+| `Downloader` | `-` | `getData` |  | ✅ | ✅ | `0x73520` |
+| `Downloader` | `-` | `getDataInJSON` |  | ✅ | ✅ | `0x73588` |
+| `Downloader` | `-` | `getHeader` |  | ✅ | ✅ | `0x735f0` |
+| `Downloader` | `-` | `systemErrorMessage` |  | ✅ | ✅ | `0x73658` |
+| `Downloader` | `-` | `showErrorMessage` |  | ✅ | ✅ | `0x736c0` |
 | `Downloader` | `-` | `hashChecked` |  | ✅ | ✅ | `0x73728` |
 | `Downloader` | `-` | `dealloc` |  | ✅ | ❌ | `0x73788` |
 | `Downloader` | `-` | `addData` | prop | ✅ | ✅ | `0x738a0` |

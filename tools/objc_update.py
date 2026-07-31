@@ -295,6 +295,18 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x356b8: 'RBTutorialManager +getInstance: a plain nil check with no once token, and it seeds '
+             'currentStatus with the mov w2 of 0xffffffff, which is RBTutorialStatusNone',
+    0x35724: 'RBTutorialManager +isTutorial: getInstance then the instance isTutorial',
+    0x35d6c: 'RBTutorialManager +getCurrentStatus: getInstance then the currentStatus getter',
+    0x734b8: 'Downloader -currentProgress: forwards to conn; the float comes back in v0 and is '
+             'parked in v8 across the release, so the float return type is right',
+    0x73520: 'Downloader -getData: forwards to conn, same selector',
+    0x73588: 'Downloader -getDataInJSON: forwards to conn, selector slot 0x478 read individually',
+    0x735f0: 'Downloader -getHeader: forwards to conn, selector slot 0x2f0',
+    0x73658: 'Downloader -systemErrorMessage: forwards to conn, selector slot 0x3d0',
+    0x736c0: 'Downloader -showErrorMessage: forwards to conn, selector slot 0x3d8. Each of the six '
+             'had its own selector reference resolved rather than the family assumed from one',
     0x87848: 'TwitterImageCreater -reset: three guarded release-and-nil blocks in order, m_Data '
              'through operator delete[], m_Context through CGContextRelease, m_ColorSpace through '
              'CGColorSpaceRelease, each nil-checked before the call and cleared after',
