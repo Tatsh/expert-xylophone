@@ -934,6 +934,14 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x20d38c: 'ApplilinkUtilities +geFileNameFromPath:: rangeOfString: with options 4, which is '
+              'NSBackwardsSearch, against the one-character pool string "/", compared to '
+              '0x7fffffffffffffff for NSNotFound. The substring takes the range location itself '
+              'rather than location+1, so the leading separator is kept, and the source already '
+              'comments on that. Read independently and confirmed against a subagent report',
+    0x20f5c4: 'AnalysisNetworkCore +getInitalizeFlg: standardUserDefaults then objectForKey: '
+              'against "ApplilinkAnalysis.initialize", with cmp #0 / cset ne, so it is another '
+              'key-presence test rather than a stored boolean',
     0xd4c5c: 'RBMusicView -playTutorialGame: sets gameType, playerColor and difficulty to 0 and '
              'rivalAlpha to the 0x3f800000 fmov, then writes 10 to +0xfc and zero to +0x100 on the '
              'game system, matching kTutorialComboCount and kPastelBonusNone. The music id is '

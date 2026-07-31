@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5044 verified
-(79.5%).
+Total: 6343 — 6306 reconstructed, 5046 verified
+(79.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5044 verified, 3507 come from those passes and the remaining
-1537 were read by hand. The split matters when reading the percentage: a
+Of the 5046 verified, 3507 come from those passes and the remaining
+1539 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5731,7 +5731,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkUtilities` | `+` | `hasParentViewController:` |  | ✅ | ❌ | `0x20d02c` |
 | `ApplilinkUtilities` | `+` | `getImpressionId` |  | ✅ | ❌ | `0x20d160` |
 | `ApplilinkUtilities` | `+` | `narrowedListWithList:object:forKey:` |  | ✅ | ❌ | `0x20d240` |
-| `ApplilinkUtilities` | `+` | `geFileNameFromPath:` |  | ✅ | ❌ | `0x20d38c` |
+| `ApplilinkUtilities` | `+` | `geFileNameFromPath:` |  | ✅ | ✅ | `0x20d38c` |
 | `ApplilinkUtilities` | `+` | `debugLog` |  | ✅ | ✅ | `0x20d418` |
 | `ApplilinkBundle` | `+` | `rewardBundle` |  | ✅ | ❌ | `0x20d41c` |
 | `AnalysisNetworkCore` | `+` | `postInitalizeWithCallback:` |  | ✅ | ❌ | `0x20d650` |
@@ -5741,7 +5741,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AnalysisNetworkCore` | `+` | `postAnalysisDataWithActionType:resultId:uesrId:finishedBlock:failedBlock:callback:` |  | ✅ | ❌ | `0x20e510` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisListRegistWithAdType:adModel:adLocation:impressionId:appliIdList:creativeIdList:incentiveTypeList:installFlgList:callback:` |  | ✅ | ❌ | `0x20e8f8` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisClickRegistWithAdType:adModel:adLocation:impressionId:appliIdTo:creativeId:displayNumber:incentiveType:installFlg:callback:` |  | ✅ | ❌ | `0x20ef1c` |
-| `AnalysisNetworkCore` | `+` | `getInitalizeFlg` |  | ✅ | ❌ | `0x20f5c4` |
+| `AnalysisNetworkCore` | `+` | `getInitalizeFlg` |  | ✅ | ✅ | `0x20f5c4` |
 | `AnalysisNetworkCore` | `+` | `getSendDauFlg` |  | ✅ | ❌ | `0x20f640` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisDataWithCallback:` |  | ✅ | ❌ | `0x20f7d8` |
 | `AnalysisNetworkCore` | `+` | `clearInitalize` |  | ✅ | ❌ | `0x20f9f0` |

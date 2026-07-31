@@ -23,11 +23,13 @@
 
 #pragma mark NSURLConnectionDataDelegate
 
+// @ghidraAddress 0x207250
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     self.responseData = response;
     [self.receivedData setLength:0];
 }
 
+// @ghidraAddress 0x2072a8
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     [self.receivedData appendData:data];
 }
