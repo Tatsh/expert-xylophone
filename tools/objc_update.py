@@ -986,6 +986,12 @@ VERIFIED = {
              'that returned nil without setting an error would still be returned as nil and one '
              'that returned data alongside an error would be discarded. The reconstruction tests '
              'the same thing',
+    0x18530: 'HistoryData +convertLocalDate:: a cbz returns nil, then systemTimeZone and '
+             'secondsFromGMTForDate:, and the offset reaches dateByAddingTimeInterval: through '
+             'scvtf, a signed conversion. That is the detail that matters: offsets west of GMT are '
+             'negative, and a ucvtf would turn each into an interval of billions of seconds. The '
+             'reconstruction\'s NSInteger carries the signedness, and the second cbz on the result '
+             'is the binary\'s own rather than added',
     0x15e18: 'GraphCircleView -CreateView: setStartPos: takes a CGPoint, so d0 and d1 are its x '
              'and y. Both immediates were decoded from the instruction words rather than the '
              'printed form: 0x1e749000 has imm8 0xa4 and is -10.0, and 0x1e67d000 has imm8 0x3e '

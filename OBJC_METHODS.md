@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5138 verified
+Total: 6343 — 6306 reconstructed, 5139 verified
 (81.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5138 verified, 3507 come from those passes and the remaining
-1631 were read by hand. The split matters when reading the percentage: a
+Of the 5139 verified, 3507 come from those passes and the remaining
+1632 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -273,7 +273,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SePlayer` | `-` | `sePlay` |  | ✅ | ✅ | `0x17a54` |
 | `SePlayer` | `-` | `terminate` |  | ✅ | ❌ | `0x17a64` |
 | `HistoryData` | `-` | `initWithData:` |  | ✅ | ❌ | `0x17fcc` |
-| `HistoryData` | `+` | `convertLocalDate:` |  | ✅ | ❌ | `0x18530` |
+| `HistoryData` | `+` | `convertLocalDate:` |  | ✅ | ✅ | `0x18530` |
 | `HistoryData` | `-` | `chksco` | prop | ✅ | ✅ | `0x18610` |
 | `HistoryData` | `-` | `setChksco:` | prop | ✅ | ✅ | `0x18620` |
 | `HistoryData` | `-` | `score` | prop | ✅ | ✅ | `0x18658` |
