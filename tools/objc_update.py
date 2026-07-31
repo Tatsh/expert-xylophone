@@ -972,6 +972,14 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x3943c: 'RBHttpUtil -getDataInJSON: a cbz on downloadedData returns nil, then '
+             'JSONObjectWithData:options:error: with w3 = 1, NSJSONReadingAllowFragments. The '
+             'error slot is zeroed and its address passed, and the value is retained and released '
+             'afterwards but never tested, so the parse result is returned whatever the error '
+             'says. That is the opposite of +dictionaryToJsonData: at 0x36aa8, which discards its '
+             'result when the error is set. Two JSON methods in one class, one checking and one '
+             'not, and the reconstruction reproduces each. downloadedData is sent twice, once for '
+             'the guard and once as the argument',
     0x36aa8: 'RBHttpUtil +dictionaryToJsonData:: a cbz returns nil for a nil dictionary, then '
              'dataWithJSONObject:options:0:error: with the error slot zeroed first and its address '
              'passed in x4. The second cbz tests that slot, not the returned data, so a serialiser '
