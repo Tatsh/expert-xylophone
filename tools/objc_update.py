@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x69880: 'StorePackInfoDownloader -cancel: cancels the downloader and clears it, both guarded '
+             'on one being held',
+    0x69fac: 'RBBGMManager -PlayMusic:: NO when m_IsMusic is clear, else AudioManager playBgm:',
+    0x6a324: 'RBBGMManager -LoadMusicSelect: RelaseMusic, keeping the binary\'s own misspelling, '
+             'then LoadMusicType: with RBUserSettingData bgmType and a mov w3 of 1 for Loop:YES',
+    0x87dd4: 'TwitterImageCreater -drawImageFileName:Position:: truncates the CGPoint to two ints '
+             'and passes m_Scale, the f-encoded ivar, through to drawImage:X:Y:Scale:',
     0x153c0: 'BFCodec -cipherInit:: nil-guards the NSData, then forwards its bytes and length to '
              'the two-argument form',
     0x363a8: 'RBTutorialManager +resetUnlockedItemInfo: getInstance, then unlockItemInfo '

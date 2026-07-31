@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4816 verified
-(75.9%).
+Total: 6343 — 6306 reconstructed, 4820 verified
+(76.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1516,7 +1516,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfoDownloader` | `-` | `initWithStorePackInfo:` |  | ✅ | ✅ | `0x69688` |
 | `StorePackInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x69700` |
 | `StorePackInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x6977c` |
-| `StorePackInfoDownloader` | `-` | `cancel` |  | ✅ | ❌ | `0x69880` |
+| `StorePackInfoDownloader` | `-` | `cancel` |  | ✅ | ✅ | `0x69880` |
 | `StorePackInfoDownloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x69914` |
 | `StorePackInfoDownloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x69acc` |
 | `StorePackInfoDownloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x69bc0` |
@@ -1533,12 +1533,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x69e50` |
 | `RBBGMManager` | `-` | `init` |  | ✅ | ✅ | `0x69ea8` |
 | `RBBGMManager` | `-` | `RelaseMusic` |  | ✅ | ❌ | `0x69ef8` |
-| `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ❌ | `0x69fac` |
+| `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ✅ | `0x69fac` |
 | `RBBGMManager` | `-` | `PauseMusic:` |  | ✅ | ✅ | `0x6a03c` |
 | `RBBGMManager` | `-` | `StopMusic:` |  | ✅ | ✅ | `0x6a0c8` |
 | `RBBGMManager` | `-` | `SeekToTop` |  | ✅ | ✅ | `0x6a154` |
 | `RBBGMManager` | `-` | `LoadMusicType:Loop:` |  | ✅ | ❌ | `0x6a1cc` |
-| `RBBGMManager` | `-` | `LoadMusicSelect` |  | ✅ | ❌ | `0x6a324` |
+| `RBBGMManager` | `-` | `LoadMusicSelect` |  | ✅ | ✅ | `0x6a324` |
 | `RBBGMManager` | `-` | `LoadMusicTitleWithLoop:` |  | ✅ | ❌ | `0x6a3b4` |
 | `RBBGMManager` | `-` | `LoadMusicResultWithLoop:` |  | ✅ | ❌ | `0x6a560` |
 | `RBBGMManager` | `-` | `LoadMusic:Loop:` |  | ✅ | ❌ | `0x6a70c` |
@@ -1793,7 +1793,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ❌ | `0x87ba0` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ❌ | `0x87c78` |
 | `TwitterImageCreater` | `-` | `drawImageFileName:X:Y:` |  | ✅ | ❌ | `0x87d40` |
-| `TwitterImageCreater` | `-` | `drawImageFileName:Position:` |  | ✅ | ❌ | `0x87dd4` |
+| `TwitterImageCreater` | `-` | `drawImageFileName:Position:` |  | ✅ | ✅ | `0x87dd4` |
 | `TwitterImageCreater` | `-` | `drawText:Position:Font:Color:` |  | ✅ | ❌ | `0x87e68` |
 | `TwitterImageCreater` | `-` | `drawNumber:Position:Keta:Dot:` |  | ✅ | ❌ | `0x87fa4` |
 | `TwitterImageCreater` | `-` | `getDigitNum:` |  | ✅ | ✅ | `0x881fc` |
