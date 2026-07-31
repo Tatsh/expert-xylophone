@@ -3807,6 +3807,16 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x72560: 'RBPlaylistManager -addMusic:toPlaylistAtIndex:: the zero identifier and the unsigned '
+             'bound reject first, then a cbnz creates the "LIST" through arrayWithCapacity:8 only '
+             'when it is missing, and the tune is added only when containsObject: says it is not '
+             'already there',
+    0x72748: 'RBPlaylistManager -removeMusic:fromPlaylistAtIndex:: the asymmetric return the '
+             'reconstruction claims is real. The zero identifier and the bound both branch to '
+             '0x7286c, which is mov w20,#0, and a missing list or an indexOfObject: of '
+             'orr x9,xzr,#0x7fffffffffffffff reaches another mov w20,#0. A nil playlist alone goes '
+             'to 0x728a8, which is mov w20,#1, so the one case that cannot have contained the '
+             'tune is the one that reports success',
     0x71054: 'RBPlaylistManager +sharedInstance: adr x8,0x1000710c4 names the dispatch_once block, '
              'which is the address the source annotates it with, and dispatch_once is the call at '
              '0x710bc',
