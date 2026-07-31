@@ -1114,3 +1114,18 @@ correct the framing above, so "thirty call sites" is itself wrong.
 So the cross-references are thirty _reads of the selector reference_, not thirty invocations, and a
 scan that assumes a `bl` follows each one will mis-handle both hoisted loads and back-to-back
 variadics. Comparing the counted sites to their reconstructions is the remaining work.
+
+### Sweep progress, and a constructor-form inconsistency
+
+Six of the counted sites have been compared against their reconstructions and all six agree on pair
+count: `+[AppDelegate getServerData]`, `+setServerData:andB:` and `+musicListKey` at five pairs each,
+`-[ApplilinkUdid bundleSeedID]` at four, the lottery site at one, and `commonParameters` at two,
+which is the defect already fixed above.
+
+One inconsistency surfaced while checking them, and it is a matter of house style rather than
+correctness. `bundleSeedID` builds its keychain query as a `@{…}` literal, while the three
+`AppDelegate` routines spell out `dictionaryWithObjectsAndKeys:` and carry a comment explaining why:
+a literal compiles to `+dictionaryWithObjects:forKeys:count:`, so the send in the disassembly is not
+the one in the source. The resulting dictionary is identical either way, so neither is wrong, but
+the tree currently answers the same question two ways. The `AppDelegate` form is the more faithful
+one and the comment there is worth keeping whichever way this is settled.
