@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xbe3d4: 'RBNewsHUDView -initWithFrame:: super, nil check, then the lowercase setupView',
+    0xc9370: 'RBMusicFirstInfoView -initWithFrame:: the same shape but the capitalised SetupView; '
+             'the two selectors differ only in case and both reconstructions match their own',
+    0xb4320: 'RBMenuView -scrollViewDidEndDragging:willDecelerate:: the tbnz on bit 0 of x3 means '
+             'the forward to scrollViewDidEndScroll: happens only when decelerate is NO',
     0xd6b8c: 'RBMusicView -getDifficultyButton:: forwards the index to difficultyView',
     0xdc514: 'RBRankingTableView -pushLoadNext:: disables buttonLoadNext, then load: with the mov '
              'w2 of 0x14, matching kLoadNextIncrement of 20',
