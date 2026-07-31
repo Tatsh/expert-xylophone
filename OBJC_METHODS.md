@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5273 verified
-(83.1%).
+Total: 6343 — 6343 reconstructed, 5277 verified
+(83.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5273 verified, 3507 come from those passes and the remaining
-1766 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5277 verified, 3507 come from those passes and the remaining
+1770 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -1574,11 +1574,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `init` |  | ✅ | ✅ | `0x6ae38` |
 | `RBMusicManager` | `-` | `dealloc` |  | ➖ | ➖ | `0x6aeac` |
 | `RBMusicManager` | `-` | `createPreInMusics` |  | ✅ | ❌ | `0x6aee0` |
-| `RBMusicManager` | `-` | `loadPurchasedMusics` |  | ✅ | ❌ | `0x6b020` |
-| `RBMusicManager` | `-` | `savePurchasedMusics` |  | ✅ | ❌ | `0x6b39c` |
-| `RBMusicManager` | `-` | `getPurchasedMusicDictionary:` |  | ✅ | ❌ | `0x6b610` |
+| `RBMusicManager` | `-` | `loadPurchasedMusics` |  | ✅ | ✅ | `0x6b020` |
+| `RBMusicManager` | `-` | `savePurchasedMusics` |  | ✅ | ✅ | `0x6b39c` |
+| `RBMusicManager` | `-` | `getPurchasedMusicDictionary:` |  | ✅ | ✅ | `0x6b610` |
 | `RBMusicManager` | `-` | `getPurchasedMusicDictionaris` |  | ✅ | ✅ | `0x6b7c4` |
-| `RBMusicManager` | `-` | `addPurchasedMusic:` |  | ✅ | ❌ | `0x6b7d0` |
+| `RBMusicManager` | `-` | `addPurchasedMusic:` |  | ✅ | ✅ | `0x6b7d0` |
 | `RBMusicManager` | `-` | `createMusicDataArray` |  | ✅ | ❌ | `0x6c18c` |
 | `RBMusicManager` | `-` | `setMusicDataArrayDirty` |  | ✅ | ✅ | `0x6c6a8` |
 | `RBMusicManager` | `-` | `getMusicDataArray` |  | ✅ | ✅ | `0x6c6b8` |

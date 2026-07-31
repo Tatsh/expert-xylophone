@@ -3807,6 +3807,20 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x6B020: 'RBMusicManager -loadPurchasedMusics: the "mulist" file under the documents '
+             'directory, guarded by isFileExist: and again by a cbz on the read, is deciphered by '
+             'a BFCodec keyed from the MD5 of the music-list key. The salt strip is '
+             'sub x3,x0,#4 on the deciphered length, the same four-byte prefix ReplayData uses',
+    0x6B39C: 'RBMusicManager -savePurchasedMusics: cbz on the count returns without writing an '
+             'empty list. The plist is built by CFPropertyListCreateXMLData, prefixed with four '
+             'bytes of arc4random into an initWithCapacity:0x80 buffer, enciphered with the same '
+             'key, and written atomically',
+    0x6B610: 'RBMusicManager -getPurchasedMusicDictionary:: a walk returning on the first '
+             'cmp w28,w20 that compares equal, and nil past the loop',
+    0x6B7D0: 'RBMusicManager -addPurchasedMusic:: the search runs to exhaustion and cmp x24,x23 '
+             'with b.cs, an unsigned bound, decides whether it fell off the end. Only then is a '
+             'new entry built through dictionaryWithCapacity:0x5, matching '
+             'kPurchaseDictionaryCapacity',
     0x6C754: 'RBMusicManager -getMusicData:: a walk of musicDataArray returning on the first '
              'cmp w0,w20 that compares equal, and nil past the loop',
     0x6C8B4: 'RBMusicManager -releaseChacheMusicData: the same walk sending one selector per '
