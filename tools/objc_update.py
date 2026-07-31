@@ -1001,6 +1001,10 @@ VERIFIED = {
              '-dealloc at 0x159c8 pairs it with operator.delete. The reconstruction uses malloc '
              'and free, which is self-consistent and unavoidable in a .m; noted at the call rather '
              'than renamed to .mm for one allocation',
+    0x675ec: 'MusicDataFromDoc -loadSheet: instruction-identical to -music at 0x6752c except that '
+             'the property read is plyName rather than musicName. The two sit either side of '
+             '-musicPre, which is a two-instruction mov x0,#0 and ret, so the three together are '
+             'easy to conflate when skimming and were read separately',
     0x6752c: 'MusicDataFromDoc -music: getPathWithDocument: on musicName, then '
              'dataWithContentsOfFile: on the result, returned autoreleased. No nil check on '
              'either, so a missing file yields nil from Foundation rather than from this method',

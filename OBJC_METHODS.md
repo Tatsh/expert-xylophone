@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5116 verified
+Total: 6343 — 6306 reconstructed, 5117 verified
 (80.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5116 verified, 3507 come from those passes and the remaining
-1609 were read by hand. The split matters when reading the percentage: a
+Of the 5117 verified, 3507 come from those passes and the remaining
+1610 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -1435,7 +1435,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `-` | `artistNameRoman` |  | ✅ | ✅ | `0x67524` |
 | `MusicDataFromDoc` | `-` | `music` |  | ✅ | ✅ | `0x6752c` |
 | `MusicDataFromDoc` | `-` | `musicPre` |  | ✅ | ✅ | `0x675e4` |
-| `MusicDataFromDoc` | `-` | `loadSheet` |  | ✅ | ❌ | `0x675ec` |
+| `MusicDataFromDoc` | `-` | `loadSheet` |  | ✅ | ✅ | `0x675ec` |
 | `MusicDataFromDoc` | `-` | `sheetBasic` |  | ✅ | ✅ | `0x676a4` |
 | `MusicDataFromDoc` | `-` | `sheetBasicLight` |  | ✅ | ✅ | `0x676b0` |
 | `MusicDataFromDoc` | `-` | `sheetMedium` |  | ✅ | ✅ | `0x676bc` |
