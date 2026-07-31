@@ -1020,6 +1020,14 @@ VERIFIED = {
              'closed and zeroed before unzOpen replaces it, a second cbz returns NO on failure, '
              'and unzGetGlobalInfo is checked with cbz w0 against UNZ_OK, which is zero, closing '
              'and zeroing again on the error arm. All four arms accounted for',
+    0x20cefc: 'ApplilinkUtilities +localeString: preferredLanguages then objectAtIndex:0, with a '
+              'cbz falling back to the CFString at 0x36dfc0, decoded as "ja". The nil check is the '
+              'binary\'s own and is worth keeping even though objectAtIndex: on an empty array '
+              'would raise rather than return nil',
+    0x20cf90: 'ApplilinkUtilities +countryCodeString: currentLocale then objectForKey: with the '
+              'country-code key, falling back to the CFString at 0x36dec0, decoded as "JP". The '
+              'case differs from its neighbour on purpose, lowercase language and uppercase '
+              'country, and both match their constants',
     0x20d38c: 'ApplilinkUtilities +geFileNameFromPath:: rangeOfString: with options 4, which is '
               'NSBackwardsSearch, against the one-character pool string "/", compared to '
               '0x7fffffffffffffff for NSNotFound. The substring takes the range location itself '
