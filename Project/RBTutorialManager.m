@@ -81,6 +81,8 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)isTutorialMusicselect {
     /** @ghidraAddress 0x35838 */
+    // The binary fetches the instance and reads currentStatus twice, discarding the first result
+    // and comparing only the second. Read once here, which differs only if the getter has effects.
     return [[self getInstance] currentStatus] < RBTutorialStatusPlayRangeStart;
 }
 

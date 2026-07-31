@@ -972,6 +972,11 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x35838: 'RBTutorialManager +isTutorialMusicselect: cmp w0,#0xa with cset cc, an unsigned '
+             'lower test, so the result is currentStatus < 10 and that matches '
+             'RBTutorialStatusPlayRangeStart. The binary fetches the instance and reads '
+             'currentStatus twice, discarding the first result entirely and comparing only the '
+             'second; the reconstruction reads once and now says so in a comment',
     0x2205c0: 'ApplilinkStore +sharedInstance: the inlined dispatch_once fast path, cmn x8,#1 on '
               'the token at +0x670+0x18 with the slow path branched around, so the guard is '
               'dispatch_once and not a nil check or @synchronized. The instance sits at +0x670 and '
