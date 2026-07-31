@@ -413,14 +413,25 @@ def audit_methods(root: Path, binary: Binary) -> tuple[int, list[MethodFinding],
                     break
             if annotated is not None:
                 checked += 1
-                expected = metadata.get((class_name, selector))
+                # Both maps are keyed by kind as well as selector, and both hold absolute
+                # addresses. This branch looked them up with a pair and a bare string and then
+                # compared without rebasing, so neither lookup could ever hit: every method
+                # annotated above its signature was counted as absent from the metadata and never
+                # checked. The block below, for methods annotated inside the body, had it right.
+                expected = metadata.get((class_name, start.group(1), selector))
                 if expected is None:
-                    expected = categories.get(selector)
+                    expected = categories.get((start.group(1), selector))
                 if expected is None:
                     unknown += 1
-                elif expected != annotated:
+                elif expected - IMAGE_BASE != annotated:
                     mismatches.append(
-                        MethodFinding(path, index + 1, class_name, selector, annotated, expected))
+                        MethodFinding(path,
+                                      index + 1,
+                                      class_name,
+                                      start.group(1),
+                                      selector,
+                                      annotated,
+                                      expected))
                 continue
             for probe in range(last, min(last + 4, len(lines))):
                 found = _ADDRESS.search(lines[probe])

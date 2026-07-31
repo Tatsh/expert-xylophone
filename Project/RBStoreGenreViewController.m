@@ -96,7 +96,7 @@ static const CGFloat kGenrePreferredContentMaxHeight = 600.0;
     forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
-/** @ghidraAddress 0x1caf78 */
+/** @ghidraAddress 0x1caf7c */
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kGenreRowHeight;
 }

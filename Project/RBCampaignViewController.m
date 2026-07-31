@@ -789,15 +789,15 @@ RBCampaignHandleItemURLDownloaderFinished(RBCampaignViewController *controller,
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 }
 
-/** @ghidraAddress 0x1fc74c */
+/** @ghidraAddress 0x1fc750 */
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
 }
 
-/** @ghidraAddress 0x1fc750 */
+/** @ghidraAddress 0x1fc754 */
 - (void)alertViewCancel:(UIAlertView *)alertView {
 }
 
-/** @ghidraAddress 0x1fc754 */
+/** @ghidraAddress 0x1fc758 */
 - (void)didPresentAlertView:(UIAlertView *)alertView {
     [UIAlertView setExclusiveTouchForView:[[[[[UIApplication sharedApplication] keyWindow]
                                               rootViewController] presentedViewController] view]];

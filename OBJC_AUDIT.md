@@ -1003,3 +1003,41 @@ shared the guard's regex and so undercounted the evidence. The generator was rig
 mechanical passes and 1467 were read by hand — because the percentage alone invites the wrong
 reading. A mechanical pass proves one narrow property of a simple body. Every defect recorded in
 this file came from a hand read.
+
+## The address audit's primary check never ran, hiding 31 wrong annotations
+
+`tools/audit_ghidra_addresses.py` checks each `@ghidraAddress` against the runtime metadata, and it
+handles two annotation styles: a tag in the comment block above the signature, and a tag inside the
+method body. The second was correct. The first was not, in three ways at once.
+
+`Binary.method_map()` is keyed by class, kind, and selector and holds absolute addresses, and
+`Binary.category_map()` is keyed by kind and selector. That branch looked the first up with a
+`(class, selector)` pair, the second with a bare selector string, and then compared the result to a
+relative address without rebasing. No lookup could ever hit. Every method annotated above its
+signature — **1010 of 1808** — was silently counted as "absent from the metadata" and never
+checked. The mismatch branch had never once executed, which is why it also passed the wrong number
+of fields to its own `MethodFinding` and would have raised `TypeError` if it ever had.
+
+So `0 mismatched` meant "the 798 annotated inside a body agree", not "every annotation agrees". The
+headline was true and the reading of it was wrong, which is the same failure as the duplicate-key
+guard above: a check whose blind spot is invisible from its own output.
+
+With the branch fixed to match the working one, 31 annotations disagreed. They fall into three
+groups, and none is random:
+
+- **Off-by-one-slot chains.** In runs of adjacent trivial methods, each tag carried its
+  neighbour's address: `RBCampaignViewController`'s alert-delegate trio, `RecommendAdAreaView`'s
+  five notices, `neWindow`'s three touch handlers, and the `alertView:willDismissWithButtonIndex:`
+  and `alertViewCancel:` pairs in both pad detail views. Every one is four bytes low, which is one
+  `ret`-sized method.
+- **A swapped pair.** `RBStoreExtendNoteList` `-downloaderProceed:` and `-downloaderError:` hold
+  each other's addresses exactly.
+- **Data addresses instead of code.** Four `+sharedInstance` tags — `RBBonusData`,
+  `RBCampaignData`, `RBUnlockData`, `RBUserSettingData` — pointed at the static instance pointer in
+  `__data` rather than at the method. `0x3df580` is where the singleton is stored; `0x1f3df8` is the
+  routine that vends it.
+
+All 31 are corrected and the audit now reports `0 mismatched` with the check genuinely running, and
+"absent from the metadata" down from 1010 to 45. The lesson is worth stating plainly, because it has
+now cost twice: when a verification tool reports a clean run, confirm it can see a planted defect
+before believing the number.

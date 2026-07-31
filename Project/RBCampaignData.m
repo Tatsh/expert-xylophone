@@ -52,7 +52,7 @@ static const BOOL kStoreImageUnUseRetina = NO;
 
 #pragma mark - Singleton
 
-// @ghidraAddress 0x3dc6c8 (g_pRBCampaignDataSharedInstance)
+// @ghidraAddress 0x9c404 (g_pRBCampaignDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x9c404 */
     static RBCampaignData *instance = nil;

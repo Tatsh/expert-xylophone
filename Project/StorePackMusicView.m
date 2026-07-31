@@ -296,7 +296,7 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 - (void)alertViewCancel:(UIAlertView *)alertViewCancel {
 }
 
-/** @ghidraAddress 0xfd35c */
+/** @ghidraAddress 0xfd360 */
 - (void)didPresentAlertView:(UIAlertView *)didPresentAlertView {
     [UIAlertView
         setExclusiveTouchForView:[UIApplication sharedApplication]

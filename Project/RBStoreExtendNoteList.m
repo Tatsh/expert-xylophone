@@ -246,7 +246,7 @@ static NSString *g_pStoreCountry = nil;
 
 #pragma mark - DownloaderDelegate
 
-/** @ghidraAddress 0xc0768 */
+/** @ghidraAddress 0xc07f0 */
 - (void)downloaderProceed:(Downloader *)downloader {
     // Intentionally empty: catalogue progress is not surfaced.
 }
@@ -339,7 +339,7 @@ static NSString *g_pStoreCountry = nil;
     self.extendNotelistDownloader = nil;
 }
 
-/** @ghidraAddress 0xc07f0 */
+/** @ghidraAddress 0xc0768 */
 - (void)downloaderError:(Downloader *)downloader {
     [self.delegate extendNoteListDownloadError:self errorMessage:g_pLocalizedServerConnectFailed];
     self.extendNotelistDownloader = nil;

@@ -530,7 +530,7 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 - (void)openedNotice {
 }
 
-/** @ghidraAddress 0x241364 */
+/** @ghidraAddress 0x241368 */
 - (void)closeNotice {
     [self appListDidDisappear];
     [self removeFromSuperview];
@@ -540,11 +540,11 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 - (void)openErrorNotice {
 }
 
-/** @ghidraAddress 0x2413a4 */
+/** @ghidraAddress 0x2413a8 */
 - (void)appStoreOpenedNotice {
 }
 
-/** @ghidraAddress 0x2413a8 */
+/** @ghidraAddress 0x2413ac */
 - (void)appStoreCloseNotice {
     if (_adModel == RecommendAdAreaViewAdModelFixedInterstitial) {
         [self closeNotice];
@@ -555,11 +555,11 @@ static NSString *const kRecommendAdAreaViewQueryAppliIdTo = @"appli_id_to=";
 - (void)appStoreClosedNotice {
 }
 
-/** @ghidraAddress 0x2413d4 */
+/** @ghidraAddress 0x2413d8 */
 - (void)appStoreFailLoadNoticeWithError:(NSError *)error {
 }
 
-/** @ghidraAddress 0x2413d8 */
+/** @ghidraAddress 0x2413dc */
 - (void)appStoreTransitionNotice {
 }
 

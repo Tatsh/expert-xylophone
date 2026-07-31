@@ -234,7 +234,7 @@ static NSString *_lastProductCountryCode = nil;
 - (void)downloaderProceed:(Downloader *)downloader {
 }
 
-/** @ghidraAddress 0x1f2a84 */
+/** @ghidraAddress 0x1f1ca0 */
 - (void)downloaderFinished:(Downloader *)downloader {
     NSDictionary *json = [downloader getDataInJSON];
     NSString *requiredVersion = json[kStoreJSONKeyVersion];

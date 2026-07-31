@@ -912,7 +912,17 @@ VERIFIED = {
               '1, so updateIndicator: is sent YES on both arms and the webView argument is unread',
     0x21dc30: 'RewardWebViewController -redirectWithRequest:: forwards to RewardCore sharedInstance '
               'and returns its int result unchanged',
-    0x2137d4: 'ApplilinkViewController -didReceiveMemoryWarning: a bare super chain',
+    0x2137d4: 'ApplilinkViewController -didReceiveMemoryWarning: a bare super chain. Its '
+              'annotation read 0x2137d0, which is the neighbouring viewDidDisappear:, and the '
+              'address audit could not see it because that check was dead',
+    0x2136e0: 'ApplilinkViewController -viewDidLoad: a bare super chain',
+    0x207250: 'ApplilinkURLConnection -connection:didReceiveResponse:: stores the response, the '
+              'fourth argument, into _responseData, which the metadata types NSURLResponse despite '
+              'the name, then sends setLength:0 to _receivedData',
+    0x2072a8: 'ApplilinkURLConnection -connection:didReceiveData:: a tail branch to appendData: on '
+              '_receivedData, with the connection argument unread',
+    0x20be1c: 'RewardCore -clearAdStatus: clears and releases the two slots at +0x5d0+0x30 and '
+              '+0x5d0+0x38, which are the banner info and expiry globals',
     0x21691c: 'RecommendAdWebView -init: super init, cbz on the result, then setInitParam, which '
               'is a no-argument helper rather than a property setter',
     0x216980: 'RecommendAdWebView -initWithFrame:: the same shape through initWithFrame:',

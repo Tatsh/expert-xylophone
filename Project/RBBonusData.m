@@ -69,7 +69,7 @@ static const float kDefaultHotMusicBonus = 10.0f;
 
 #pragma mark - Singleton and persistence
 
-// @ghidraAddress 0x3df580 (g_pRBBonusDataSharedInstance)
+// @ghidraAddress 0x1f3df8 (g_pRBBonusDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x1f3df8 */
     static RBBonusData *instance = nil;

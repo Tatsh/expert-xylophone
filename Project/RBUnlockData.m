@@ -52,7 +52,7 @@ static NSArray *RBUnlockDataParsePackages(NSDictionary *dictionary) {
 
 #pragma mark - Singleton and persistence
 
-// @ghidraAddress 0x3df348 (g_pRBUnlockDataSharedInstance)
+// @ghidraAddress 0x19ab70 (g_pRBUnlockDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x19ab70 */
     static RBUnlockData *instance = nil;

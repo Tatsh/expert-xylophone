@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5007 verified
-(78.9%).
+Total: 6343 — 6306 reconstructed, 5011 verified
+(79.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5007 verified, 3507 come from those passes and the remaining
-1500 were read by hand. The split matters when reading the percentage: a
+Of the 5011 verified, 3507 come from those passes and the remaining
+1504 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5661,8 +5661,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkConsts` | `+` | `checkUseSDKWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x206f7c` |
 | `ApplilinkURLConnection` | `-` | `init` |  | ✅ | ✅ | `0x207150` |
 | `ApplilinkURLConnection` | `-` | `loadRequestWithRequest:delegate:` |  | ✅ | ❌ | `0x20718c` |
-| `ApplilinkURLConnection` | `-` | `connection:didReceiveResponse:` |  | ✅ | ❌ | `0x207250` |
-| `ApplilinkURLConnection` | `-` | `connection:didReceiveData:` |  | ✅ | ❌ | `0x2072a8` |
+| `ApplilinkURLConnection` | `-` | `connection:didReceiveResponse:` |  | ✅ | ✅ | `0x207250` |
+| `ApplilinkURLConnection` | `-` | `connection:didReceiveData:` |  | ✅ | ✅ | `0x2072a8` |
 | `ApplilinkURLConnection` | `-` | `connection:didFailWithError:` |  | ✅ | ❌ | `0x2072c8` |
 | `ApplilinkURLConnection` | `-` | `connectionDidFinishLoading:` |  | ✅ | ❌ | `0x207394` |
 | `ApplilinkURLConnection` | `-` | `connection:willSendRequest:redirectResponse:` |  | ✅ | ❌ | `0x20749c` |
@@ -5707,7 +5707,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ✅ | `0x20bccc` |
 | `RewardCore` | `-` | `openCancelWithError:` |  | ✅ | ✅ | `0x20bd3c` |
 | `RewardCore` | `-` | `canUseBannerCache` |  | ✅ | ❌ | `0x20bd40` |
-| `RewardCore` | `-` | `clearAdStatus` |  | ✅ | ❌ | `0x20be1c` |
+| `RewardCore` | `-` | `clearAdStatus` |  | ✅ | ✅ | `0x20be1c` |
 | `RewardCore` | `-` | `clearSession` |  | ✅ | ❌ | `0x20be50` |
 | `RewardCore` | `-` | `dealloc` |  | ❌ | ✅ | `0x20c090` |
 | `RewardCore` | `-` | `setInitializeFlg:` | prop | ✅ | ✅ | `0x20c0cc` |
@@ -5767,7 +5767,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendNetwork` | `+` | `setAdAreaVisibleWithParentView:flag:` |  | ✅ | ❌ | `0x2133bc` |
 | `RecommendNetwork` | `-` | `dealloc` |  | ❌ | ✅ | `0x2135dc` |
 | `AnalysisNetwork` | `+` | `postAnalysisDataWithResultId:callback:` |  | ✅ | ❌ | `0x213618` |
-| `ApplilinkViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x2136e0` |
+| `ApplilinkViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x2136e0` |
 | `ApplilinkViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x21371c` |
 | `ApplilinkViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x213758` |
 | `ApplilinkViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x213794` |

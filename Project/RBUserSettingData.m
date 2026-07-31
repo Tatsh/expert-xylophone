@@ -228,7 +228,7 @@ RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, NSString *ke
 
 #pragma mark - Singleton and persistence
 
-// @ghidraAddress 0x3df588 (g_pRBUserSettingDataSharedInstance)
+// @ghidraAddress 0x1f7cb4 (g_pRBUserSettingDataSharedInstance)
 + (instancetype)sharedInstance {
     /** @ghidraAddress 0x1f7cb4 */
     static RBUserSettingData *instance = nil;

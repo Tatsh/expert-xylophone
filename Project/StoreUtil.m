@@ -164,7 +164,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     return [NetworkUtil packListURL:offset limit:limit genre:genre];
 }
 
-/** @ghidraAddress 0x85964 */
+/** @ghidraAddress 0x85958 */
 + (NSURL *)packInfoURL:(unsigned int)packID UserOpen:(BOOL)userOpen {
     return [NetworkUtil packInfoURL:packID UserOpen:userOpen];
 }
@@ -190,7 +190,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     return -1;
 }
 
-/** @ghidraAddress 0x187484 */
+/** @ghidraAddress 0x87478 */
 + (NSURL *)extendNoteListURL:(unsigned int)offset limit:(unsigned int)limit {
     return [NetworkUtil extendNoteListURL:offset limit:limit];
 }
@@ -270,7 +270,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     };
 }
 
-/** @ghidraAddress 0x1e66f8 (caller reference) */
+/** @ghidraAddress 0x85a4c (caller reference) */
 + (int)packIDForProductID:(NSString *)productID {
     // A pack product identifier is the pack prefix followed by a positive integer.
     if (productID.length > kPackProductIDPrefix.length &&

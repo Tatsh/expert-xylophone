@@ -515,7 +515,7 @@ typedef enum {
 - (void)pushLink:(id)pushLink {
 }
 
-/** @ghidraAddress 0x2585c */
+/** @ghidraAddress 0x259e0 */
 - (void)showTerm {
     if ([self.delegate respondsToSelector:@selector(showTerms)]) {
         [self.delegate performSelector:@selector(showTerms)];
@@ -565,12 +565,12 @@ typedef enum {
     didDismissWithButtonIndex:(NSInteger)didDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0x25de8 */
+/** @ghidraAddress 0x25dec */
 - (void)alertView:(UIAlertView *)alertView
     willDismissWithButtonIndex:(NSInteger)willDismissWithButtonIndex {
 }
 
-/** @ghidraAddress 0x25dec */
+/** @ghidraAddress 0x25df0 */
 - (void)alertViewCancel:(UIAlertView *)alertViewCancel {
     if ([self.delegate respondsToSelector:@selector(detailViewClose)]) {
         [self.delegate performSelector:@selector(detailViewClose)];
