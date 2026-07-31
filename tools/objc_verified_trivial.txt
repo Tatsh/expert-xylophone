@@ -57,6 +57,7 @@
 0x56064 RBStoreManageSortViewController numberOfSectionsInTableView:: returns 1
 0x56088 RBStoreManageSortViewController tableView:willDisplayCell:forRowAtIndexPath:: empty
 0x5a22c MusicDataExtend setExtendSheetWithPath:ID:: empty
+0x5a5d0 MusicDataExtend getExtendZipData:Path:DecodeType:: returns 0
 0x5a5d8 MusicDataExtend dealloc: ARC writes it; correctly omitted
 0x5a60c MusicDataExtend getZipData:: returns 0
 0x5a614 MusicDataExtend createCache: empty
@@ -167,7 +168,6 @@
 0x9f178 RBMenuNewsTickerView getSequenceID: sends sequenceID to self
 0x9f184 RBMenuNewsTickerView getWebID: sends webID to self
 0xaafe4 RBMenuView isShow: sends showed to self
-0xab9d4 RBMenuView SelectSettingButton: sends toggleSettingView to self
 0xae3a4 RBMenuView didFinishedSendAgree: sends StoreOpen to self
 0xaf8bc RBMenuView SetServerDateYear:Month:Day:Hour:Minute:Second:: empty
 0xb35f4 RBMenuView numberOfSectionsInCollectionView:: returns 1
@@ -339,6 +339,9 @@
 0x21fdcc RewardNetwork getNavigationTitle: sends localizedMessage: to ApplilinkMessage
 0x21fdec RewardNetwork dealloc: ARC writes it; correctly omitted
 0x220254 ApplilinkIndicator dealloc: super call only
+0x220e4c DestinationCore failLoadWithError:: empty
+0x220e50 DestinationCore finishLoadWithResponse:: empty
+0x220e54 DestinationCore redirectStartLoad:: returns 0
 0x220e5c ApplilinkDebug countryCode: sends countryCode to ApplilinkConsts
 0x220e74 ApplilinkDebug categoryId: sends categoryId to ApplilinkConsts
 0x220e8c ApplilinkDebug udid: sends udid_cache to ApplilinkCore

@@ -9,6 +9,8 @@
 
 #import "RBPastelManager.h"
 
+#include <string.h>
+
 // The number of stages tracked by the show-list. The pastel tutorial advances through these stages
 // in order, and -tryShow: gates each stage on all earlier stages having been shown.
 static const NSUInteger kPastelShowStageCount = 4;
@@ -45,7 +47,9 @@ static const NSUInteger kPastelShowStageCount = 4;
 
 - (void)allReset {
     /** @ghidraAddress 0x20afc */
-    currentShowList[0] = NO;
+    // The binary clears the whole four-byte flag array with one 32-bit store of wzr, not just the
+    // leading stage.
+    memset(currentShowList, 0, sizeof(currentShowList));
 }
 
 /** @ghidraAddress 0x20b0c */

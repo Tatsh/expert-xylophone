@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4535 verified
-(71.5%).
+Total: 6343 — 6306 reconstructed, 4549 verified
+(71.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -154,8 +154,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreButtonView` | `-` | `setButtonColor:` | prop | ✅ | ❌ | `0xc194` |
 | `StoreButtonView` | `-` | `disabledColor` | prop | ✅ | ❌ | `0xc208` |
 | `StoreButtonView` | `-` | `setDisabledColor:` | prop | ✅ | ❌ | `0xc264` |
-| `StoreButtonView` | `-` | `cornerRadius` | prop | ✅ | ❌ | `0xc2d8` |
-| `StoreButtonView` | `-` | `setCornerRadius:` | prop | ✅ | ❌ | `0xc2e8` |
+| `StoreButtonView` | `-` | `cornerRadius` | prop | ✅ | ✅ | `0xc2d8` |
+| `StoreButtonView` | `-` | `setCornerRadius:` | prop | ✅ | ✅ | `0xc2e8` |
 | `StoreButtonView` | `-` | `highlightColor:factor:` |  | ✅ | ❌ | `0xc300` |
 | `StoreButtonView` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0xc348` |
 | `StoreButtonView` | `-` | `setSelected:` |  | ✅ | ❌ | `0xc3d4` |
@@ -265,7 +265,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `GraphCircleView` | `-` | `lineSize` | prop | ✅ | ✅ | `0x17454` |
 | `GraphCircleView` | `-` | `setLineSize:` | prop | ✅ | ✅ | `0x17464` |
 | `SePlayer` | `-` | `initWithPath:` |  | ✅ | ❌ | `0x176f4` |
-| `SePlayer` | `-` | `sePlay` |  | ✅ | ❌ | `0x17a54` |
+| `SePlayer` | `-` | `sePlay` |  | ✅ | ✅ | `0x17a54` |
 | `SePlayer` | `-` | `terminate` |  | ✅ | ❌ | `0x17a64` |
 | `HistoryData` | `-` | `initWithData:` |  | ✅ | ❌ | `0x17fcc` |
 | `HistoryData` | `+` | `convertLocalDate:` |  | ✅ | ❌ | `0x18530` |
@@ -390,7 +390,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `setFileInfoDic:` | prop | ✅ | ✅ | `0x208a4` |
 | `RBPastelManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x20a30` |
 | `RBPastelManager` | `-` | `init` |  | ✅ | ❌ | `0x20a88` |
-| `RBPastelManager` | `-` | `allReset` |  | ✅ | ❌ | `0x20afc` |
+| `RBPastelManager` | `-` | `allReset` |  | ✅ | ✅ | `0x20afc` |
 | `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
@@ -419,8 +419,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `setInfo:` |  | ✅ | ❌ | `0x2600c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x26424` |
 | `StoreExtendNoteDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x26428` |
-| `StoreExtendNoteDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ❌ | `0x2653c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ❌ | `0x26548` |
+| `StoreExtendNoteDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x2653c` |
+| `StoreExtendNoteDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x26548` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x2655c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalling` |  | ✅ | ❌ | `0x26824` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalled` |  | ✅ | ❌ | `0x268d4` |
@@ -581,7 +581,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundData` | `-` | `dealloc` |  | ✅ | ❌ | `0x34398` |
 | `SoundData` | `-` | `prepare:Stream:` |  | ✅ | ❌ | `0x34454` |
 | `SoundData` | `-` | `getData:Frames:Loop:Buffer:Out:` |  | ✅ | ❌ | `0x34908` |
-| `SoundData` | `-` | `format` |  | ✅ | ❌ | `0x34b30` |
+| `SoundData` | `-` | `format` |  | ✅ | ✅ | `0x34b30` |
 | `SoundData` | `-` | `fileName` | prop | ✅ | ✅ | `0x34b40` |
 | `SoundData` | `-` | `channels` | prop | ✅ | ✅ | `0x34b50` |
 | `SoundData` | `-` | `totalFrames` | prop | ✅ | ✅ | `0x34b60` |
@@ -599,9 +599,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `startSystem` |  | ✅ | ❌ | `0x35380` |
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
 | `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ❌ | `0x35498` |
-| `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ❌ | `0x354fc` |
+| `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ✅ | `0x354fc` |
 | `SoundPlayer` | `-` | `setCurrentFrame:` |  | ✅ | ❌ | `0x3550c` |
-| `SoundPlayer` | `-` | `currentFrame` |  | ✅ | ❌ | `0x3557c` |
+| `SoundPlayer` | `-` | `currentFrame` |  | ✅ | ✅ | `0x3557c` |
 | `SoundPlayer` | `-` | `setLoop:` |  | ✅ | ❌ | `0x3558c` |
 | `SoundPlayer` | `-` | `isLoop` |  | ✅ | ❌ | `0x355ac` |
 | `SoundPlayer` | `-` | `play` |  | ✅ | ❌ | `0x355bc` |
@@ -1177,7 +1177,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataExtend` | `+` | `dataWithPath:dictionary:` |  | ✅ | ❌ | `0x5a230` |
 | `MusicDataExtend` | `-` | `sheetSpecial` | prop | ✅ | ❌ | `0x5a428` |
 | `MusicDataExtend` | `-` | `sheetSpecialLight` | prop | ✅ | ❌ | `0x5a4fc` |
-| `MusicDataExtend` | `+` | `getExtendZipData:Path:DecodeType:` |  | ✅ | ❌ | `0x5a5d0` |
+| `MusicDataExtend` | `+` | `getExtendZipData:Path:DecodeType:` |  | ✅ | ✅ | `0x5a5d0` |
 | `MusicDataExtend` | `-` | `dealloc` |  | ❌ | ✅ | `0x5a5d8` |
 | `MusicDataExtend` | `-` | `getZipData:` |  | ✅ | ✅ | `0x5a60c` |
 | `MusicDataExtend` | `-` | `createCache` |  | ✅ | ✅ | `0x5a614` |
@@ -2109,7 +2109,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `selectRandom:` |  | ✅ | ❌ | `0xab3c8` |
 | `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ❌ | `0xab7ac` |
 | `RBMenuView` | `-` | `RemoveStoreViewController` |  | ✅ | ❌ | `0xab854` |
-| `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ✅ | `0xab9d4` |
+| `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ❌ | `0xab9d4` |
 | `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ❌ | `0xab9e0` |
 | `RBMenuView` | `-` | `toggleSettingView` |  | ✅ | ❌ | `0xaba74` |
 | `RBMenuView` | `-` | `showHowToView` |  | ✅ | ❌ | `0xabf94` |
@@ -2146,7 +2146,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `matchTitle:` |  | ✅ | ❌ | `0xb1e4c` |
 | `RBMenuView` | `-` | `searchBar:textDidChange:` |  | ✅ | ❌ | `0xb217c` |
 | `RBMenuView` | `-` | `handleLongPressGesture:` |  | ✅ | ❌ | `0xb21e4` |
-| `RBMenuView` | `-` | `configureCell:` |  | ✅ | ❌ | `0xb2280` |
+| `RBMenuView` | `-` | `configureCell:` |  | ✅ | ✅ | `0xb2280` |
 | `RBMenuView` | `-` | `scrollViewDidEndScroll:` |  | ✅ | ❌ | `0xb2fec` |
 | `RBMenuView` | `-` | `numberOfSectionsInCollectionView:` |  | ✅ | ✅ | `0xb35f4` |
 | `RBMenuView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0xb35fc` |
@@ -3651,7 +3651,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x159128` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x1591b4` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ❌ | `0x159240` |
-| `RBCustomSelectCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ❌ | `0x1592a8` |
+| `RBCustomSelectCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ✅ | `0x1592a8` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0x159960` |
 | `RBCustomSelectCollectionView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x159de8` |
 | `RBCustomSelectCollectionView` | `-` | `backgroundView` | prop | ✅ | ✅ | `0x159f10` |
@@ -5962,9 +5962,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkStore` | `-` | `applilinkParams` | prop | ✅ | ✅ | `0x220bb8` |
 | `ApplilinkStore` | `-` | `setApplilinkParams:` | prop | ✅ | ✅ | `0x220bc8` |
 | `DestinationCore` | `-` | `destinationRegistWithCountryCode:url:delegate:` |  | ✅ | ❌ | `0x220c20` |
-| `DestinationCore` | `-` | `failLoadWithError:` |  | ✅ | ❌ | `0x220e4c` |
-| `DestinationCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ❌ | `0x220e50` |
-| `DestinationCore` | `-` | `redirectStartLoad:` |  | ✅ | ❌ | `0x220e54` |
+| `DestinationCore` | `-` | `failLoadWithError:` |  | ✅ | ✅ | `0x220e4c` |
+| `DestinationCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ✅ | `0x220e50` |
+| `DestinationCore` | `-` | `redirectStartLoad:` |  | ✅ | ✅ | `0x220e54` |
 | `ApplilinkDebug` | `+` | `countryCode` |  | ✅ | ✅ | `0x220e5c` |
 | `ApplilinkDebug` | `+` | `categoryId` |  | ✅ | ✅ | `0x220e74` |
 | `ApplilinkDebug` | `+` | `udid` |  | ✅ | ✅ | `0x220e8c` |

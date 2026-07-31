@@ -203,11 +203,44 @@ VERIFIED = {
     0x3f624: 'AudioManager -setSeVolume:groupId:: b.hi at 0x3f640 is unsigned, so a negative '
              'volume is rejected too',
     0x3f6a8: 'AudioManager -deleteFadeTimer: invalidate, then a tail call clearing the timer',
+    # A batch of short bodies read end to end, every instruction accounted for. The ivar each one
+    # reaches was resolved through its _OBJC_IVAR_$_ offset variable into the class's ivar list, so
+    # the name and width are the binary's own, not inferred from the reconstruction.
+    0xc2d8: 'StoreButtonView -cornerRadius: one ldr d0 of _cornerRadius, whose ivar type is d',
+    0xc2e8: 'StoreButtonView -setCornerRadius:: str d0 into _cornerRadius, then a tail call to '
+            'setNeedsDisplay',
+    0x17a54: 'SePlayer -sePlay: loads the soundSource ivar (type I) and tail-calls alSourcePlay',
+    0x20afc: 'RBPastelManager -allReset: str wzr is a 32-bit store covering the whole four-byte '
+             'currentShowList, so every stage is cleared, not just the leading one',
+    0x2653c: 'StoreExtendNoteDetailViewPad -getArtworkMargin:: the fmov immediates 0x4028.. and '
+             '0x4024.. are 12.0 and 10.0, and the BOOL argument is never read',
+    0x26548: 'StoreExtendNoteDetailViewPad -getItemSize:: the pool loads at 0x2eec30 and 0x2eec38 '
+             'are 650.0 and 284.0, and the BOOL argument is never read',
+    0x34b30: 'SoundData -format: add, not ldr, so it returns the address of m_Format',
+    0x354fc: 'SoundPlayer -getSoundData: loads m_SoundData and tail-calls the autorelease helper',
+    0x3557c: 'SoundPlayer -currentFrame: loads m_CurrentFrame, whose ivar type q is the long long '
+             'the declaration uses',
     0xa1e08: 'RBMenuView -setCurrentPageIndex:: the guard sends currentPageIndex rather than '
              'reading the ivar, and the label pair at 0xa1eac is (index + 1, maxPage)',
     0xa1f24: 'RBMenuView -setMaxPage:: the csel takes 1 when the argument is zero',
     0xb8b14: 'RBMenuView -setCurrentMenuMode:: b.cs at 0xb8b2c is unsigned, so a negative mode '
              'takes the second arm',
+    # The call-set difference the mechanical pass reports is false on both sides: the selectors it
+    # sees only in the binary are our dot access and @() boxing, and the ones it sees only in the
+    # source are inside the three blocks, which the binary compiles as separate functions
+    # (0xb28d0, 0xb2a04, 0xb2e00) and so does not send from this body.
+    0xb2280: 'RBMenuView -configureCell:: cbz at 0xb22cc takes mode 0 to the addButton arm and the '
+             'cmp #1 at 0xb22d0 takes mode 1 to removeButton (selectors 0x3c26c8 and 0x3c26d0); '
+             'the eor #1 at 0xb237c/0xb243c is the ! on containsObject:; the tbnz at 0xb24ac '
+             'returns while decelerating; the cbz at 0xb2674 picks updateScoreData:spData: over '
+             'updateScoreData: (0x3c26d8 against 0x3c26e0)',
+    # Same false call-set difference as 0xb2280: dot access and @() on one side, the two dispatch
+    # blocks (0x1596dc, 0x1597d8) on the other.
+    0x1592a8: 'RBCustomSelectCollectionView -collectionView:cellForItemAtIndexPath:: the jump '
+              'table at 0x1596c4 maps customizeType 0..5 onto the bgm, shot, explosion, frame, '
+              'background and note settings in that order, b.hi at 0x1593fc sends anything above '
+              'to the w24 = 0 default at 0x15964c, and the cset eq at 0x159568 is the '
+              'selectedType == itemID that drives setIsSelected:',
     0x1e9628: 'RBStorePageViewController -numPackRows: lsr, so the halving is unsigned',
     0x1eb708: 'RBStorePageViewController -numberOfSectionsInTableView:: 3 on the phone, 1 on the '
               'pad, from a csel on the m_IsPad ivar',
