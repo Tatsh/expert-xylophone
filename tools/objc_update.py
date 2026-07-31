@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x4169c: 'AVBus -setSource:: stores the record, then dispatches on its first field, URL when '
+             'set and data otherwise, passing the +0x10 BOOL as isLoop, and returns mCurrentID '
+             'through ldrh. Its method_t types read S24@0:8^{AVSource=@@B}16, so the return is '
+             'retyped from unsigned int to unsigned short; -currentID at 0x41f38 encodes S16@0:8 '
+             'and is retyped with it',
+    0xb8aa4: 'RBMenuView -SelectPlaylistFinButton: RBPlaylistManager synchronize, then the tail '
+             'call to playlistEditFinish',
     0x4171c: 'AVBus -removeSource: nils mSource, bumps the S-encoded mCurrentID with ldrh/strh, '
              'and returns whether a player was attached, nilling it when so',
     0x41d28: 'AVBus -audioPlayerBeginInterruption:: from status 2 only, the csel keeps 2 while the '

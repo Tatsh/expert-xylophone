@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4789 verified
+Total: 6343 — 6306 reconstructed, 4791 verified
 (75.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -852,7 +852,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `init` |  | ✅ | ✅ | `0x41308` |
 | `AVBus` | `-` | `initWithContentsOfURL:isLoop:` |  | ✅ | ❌ | `0x4135c` |
 | `AVBus` | `-` | `initWithContentsOfData:isLoop:` |  | ✅ | ❌ | `0x414fc` |
-| `AVBus` | `-` | `setSource:` |  | ✅ | ❌ | `0x4169c` |
+| `AVBus` | `-` | `setSource:` |  | ✅ | ✅ | `0x4169c` |
 | `AVBus` | `-` | `removeSource` |  | ✅ | ✅ | `0x4171c` |
 | `AVBus` | `-` | `prepare` |  | ✅ | ❌ | `0x41798` |
 | `AVBus` | `-` | `play` |  | ✅ | ❌ | `0x41898` |
@@ -2178,7 +2178,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `playlistAddDelButtonUpdate` |  | ✅ | ❌ | `0xb8618` |
 | `RBMenuView` | `-` | `SelectPlaylistAddButton` |  | ✅ | ❌ | `0xb8754` |
 | `RBMenuView` | `-` | `SelectPlaylistDelButton` |  | ✅ | ❌ | `0xb882c` |
-| `RBMenuView` | `-` | `SelectPlaylistFinButton` |  | ✅ | ❌ | `0xb8aa4` |
+| `RBMenuView` | `-` | `SelectPlaylistFinButton` |  | ✅ | ✅ | `0xb8aa4` |
 | `RBMenuView` | `-` | `setCurrentMenuMode:` |  | ✅ | ✅ | `0xb8b14` |
 | `RBMenuView` | `-` | `showPageSlider:` |  | ✅ | ❌ | `0xb8b90` |
 | `RBMenuView` | `-` | `changePage:` |  | ✅ | ❌ | `0xb8e94` |

@@ -100,7 +100,7 @@ static const float kUnboundVoiceVolume = 1.0f;
 }
 
 /** @ghidraAddress 0x4169c */
-- (unsigned int)setSource:(AudioSourceSlot::SourceRecord *)source {
+- (unsigned short)setSource:(AudioSourceSlot::SourceRecord *)source {
     mSource = source;
     // A record carries the sound either as a URL or as a data buffer; the URL wins when both are
     // set, matching the binary's null test on the first field.
@@ -209,7 +209,7 @@ static const float kUnboundVoiceVolume = 1.0f;
 }
 
 /** @ghidraAddress 0x41f38 */
-- (unsigned int)currentID {
+- (unsigned short)currentID {
     return mCurrentID;
 }
 

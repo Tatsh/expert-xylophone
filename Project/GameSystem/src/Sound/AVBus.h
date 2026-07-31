@@ -45,7 +45,7 @@ typedef NS_ENUM(int, AVBusStatus) {
  * @return The voice's current id, packed into the low half of a play handle by the mixer.
  * @ghidraAddress 0x4169c
  */
-- (unsigned int)setSource:(AudioSourceSlot::SourceRecord *)source;
+- (unsigned short)setSource:(AudioSourceSlot::SourceRecord *)source;
 /**
  * @brief Unbinds the voice's current source and invalidates its outstanding play handles.
  * @return @c YES when a player was released.
@@ -101,7 +101,7 @@ typedef NS_ENUM(int, AVBusStatus) {
  * @brief The voice's current id, matched against a play handle's low half to resolve the voice.
  * @ghidraAddress 0x41f38
  */
-- (unsigned int)currentID;
+- (unsigned short)currentID;
 /**
  * @brief The voice's playback state.
  * @ghidraAddress 0x41d04
