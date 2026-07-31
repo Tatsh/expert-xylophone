@@ -295,6 +295,13 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x154b38: 'DAProgressOverlayView -initWithFrame:: super, nil check, setUp',
+    0x18e3cc: 'RBPushNotificationView -initWithFrame:: a bare super chain with no nil check and '
+              'no setup call, exactly as reconstructed',
+    0x18f74c: 'RBPushNotificationView -dealloc: setDelegate:nil then stopTimer before the super '
+              'chain. Finding this is what disproved the audit note claiming only one dealloc in '
+              'the binary does more than chain; the real count is 39 of 88',
+    0x16ff9c: 'RBTermPhoneViewController -viewDidAppear:: super, then loadList',
     0x159240: 'RBCustomSelectCollectionView -collectionView:numberOfItemsInSection:: items.count, '
               'with the section argument never read',
     0x18dc24: 'RBUnlockCollectionView -collectionView:numberOfItemsInSection:: the same shape, '

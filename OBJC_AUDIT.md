@@ -397,9 +397,21 @@ null. Fixed by making it the `OnFrame(int) override`, matching every other scene
 
 `OBJC_METHODS.md` reports **6306 of 6343** methods reconstructed. The 37 that remain are all
 `-dealloc`, and their omission is deliberate and verified: each was disassembled and checked for
-any call other than `[super dealloc]`, which ARC emits itself. Exactly one `-dealloc` in the binary
-does more than chain — `-[RBStorePackList dealloc]` at `0x1f32a8`, which cancels the in-flight
-pack-list download and the products request — and it is reconstructed.
+any call other than `[super dealloc]`, which ARC emits itself.
+
+This paragraph previously claimed that **exactly one** `-dealloc` in the binary does more than
+chain. That is wrong by a wide margin. Disassembling all 88 `-dealloc` entries and counting
+`objc_msgSend` calls beyond the `objc_msgSendSuper2` chain gives **39** that do real work, from
+`-[AVBus dealloc]`'s single send up to `-[RBSearchMapView dealloc]`'s twenty-three. The claim was
+found while verifying `-[RBPushNotificationView initWithFrame:]` and noticing its neighbouring
+`dealloc` at `0x18f74c` sends `setDelegate:nil` and `stopTimer` before chaining.
+
+The conclusion the wrong number was supporting still holds, and it was re-checked rather than
+assumed: cross-referencing those 39 against the reconstruction column, **all 39 are reconstructed**
+and none is among the 37 omitted. So the omitted set really is pure super chains and the
+reconstruction total is sound. The error was in the description, not in the coverage — but a stated
+count that is off by a factor of thirty-nine is worth correcting, because the next reader would
+reasonably use it to decide that `-dealloc` is a class not worth examining.
 
 Getting there was mostly **not** writing new bodies. The checklist had reported 137 missing, and
 they broke down as:

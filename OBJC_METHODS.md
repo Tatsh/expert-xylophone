@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4748 verified
+Total: 6343 — 6306 reconstructed, 4752 verified
 (74.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3615,7 +3615,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `editHardScore` | prop | ✅ | ✅ | `0x148970` |
 | `RBErosionMarkUpdater` | `-` | `setEditHardScore:` | prop | ✅ | ✅ | `0x148980` |
 | `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x154ae0` |
-| `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x154b38` |
+| `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x154b38` |
 | `DAProgressOverlayView` | `-` | `setUp` |  | ✅ | ❌ | `0x154b90` |
 | `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ✅ | ❌ | `0x154cb4` |
 | `DAProgressOverlayView` | `-` | `displayOperationWillTriggerAnimation` |  | ✅ | ❌ | `0x154d48` |
@@ -3901,7 +3901,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermPhoneViewController` | `-` | `dealloc` |  | ❌ | ✅ | `0x16f6e4` |
 | `RBTermPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x16f718` |
 | `RBTermPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x16fe00` |
-| `RBTermPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x16ff9c` |
+| `RBTermPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x16ff9c` |
 | `RBTermPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x16ffec` |
 | `RBTermPhoneViewController` | `-` | `loadList` |  | ✅ | ❌ | `0x170020` |
 | `RBTermPhoneViewController` | `-` | `showTermsList` |  | ✅ | ❌ | `0x170878` |
@@ -4161,7 +4161,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockCollectionView` | `-` | `setExperiencePackageData:` | prop | ✅ | ✅ | `0x18e2ac` |
 | `RBUnlockCollectionView` | `-` | `items` | prop | ✅ | ✅ | `0x18e2e4` |
 | `RBUnlockCollectionView` | `-` | `setItems:` | prop | ✅ | ✅ | `0x18e2f4` |
-| `RBPushNotificationView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x18e3cc` |
+| `RBPushNotificationView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x18e3cc` |
 | `RBPushNotificationView` | `-` | `setupViewWithDelegate:` |  | ✅ | ❌ | `0x18e400` |
 | `RBPushNotificationView` | `-` | `showNotification` |  | ✅ | ✅ | `0x18eac4` |
 | `RBPushNotificationView` | `-` | `setNextNotification` |  | ✅ | ❌ | `0x18eaf8` |
@@ -4170,7 +4170,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPushNotificationView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x18efe4` |
 | `RBPushNotificationView` | `-` | `onTapped:` |  | ✅ | ❌ | `0x18f348` |
 | `RBPushNotificationView` | `-` | `stopTimer` |  | ✅ | ❌ | `0x18f6b4` |
-| `RBPushNotificationView` | `-` | `dealloc` |  | ✅ | ❌ | `0x18f74c` |
+| `RBPushNotificationView` | `-` | `dealloc` |  | ✅ | ✅ | `0x18f74c` |
 | `RBPushNotificationView` | `-` | `delegate` | prop | ✅ | ✅ | `0x18f7e0` |
 | `RBPushNotificationView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x18f800` |
 | `RBPushNotificationView` | `-` | `messageLabel` | prop | ✅ | ✅ | `0x18f814` |
