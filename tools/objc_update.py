@@ -1078,6 +1078,13 @@ VERIFIED = {
              'sends count on every iteration rather than hoisting either, which the '
              'reconstruction preserves by leaving the count in the loop condition. The b.cs is an '
              'unsigned compare, matching the NSUInteger index',
+    0x215a90: 'ApplilinkCore +clearInitialize: both cores get clearInitialize, the selector loaded '
+              'once and reused, and then the byte at +0x630+1 is zeroed. Three effects, not two',
+    0x215cec: 'ApplilinkCore +updatePasteBoard: opens with cmp w8,#1 on the byte at +0x630+9 and '
+              'b.ne past the whole body, so it is an equality test against 1 rather than a '
+              'non-zero test. The reconstruction spells it as a negated truth test, which agrees '
+              'for a BOOL holding 0 or 1 and would diverge for any other value the byte could '
+              'hold. Then currentUdid behind a nil check before the write and the flag clear',
     0x215654: 'ApplilinkCore +checkUdid: calls udid and ad_udid, then orr x8,x20,x0 with cset ne, '
               'so the result is true when either is non-nil. Both are always evaluated, since the '
               'or is bitwise over the two pointers rather than a branch. The reconstruction binds '
