@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x6a8f0: 'RBBGMManager -popMusic: returns the entry value of m_IsPushMusic, and when it was '
+             'set clears it with strb wzr, sets m_IsMusic with a mov w9 of 1, and pops the BGM',
+    0xab9e0: 'RBMenuView -hideSettingView: sends hideAnimation only when settingView is held',
+    0x87d40: 'TwitterImageCreater -drawImageFileName:X:Y:: passes the two ints straight through '
+             'with m_Scale, the f-encoded ivar, unlike the Position: form which truncates first',
     0x69880: 'StorePackInfoDownloader -cancel: cancels the downloader and clears it, both guarded '
              'on one being held',
     0x69fac: 'RBBGMManager -PlayMusic:: NO when m_IsMusic is clear, else AudioManager playBgm:',

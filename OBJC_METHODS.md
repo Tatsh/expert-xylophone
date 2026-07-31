@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4820 verified
+Total: 6343 — 6306 reconstructed, 4823 verified
 (76.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1544,7 +1544,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `LoadMusic:Loop:` |  | ✅ | ❌ | `0x6a70c` |
 | `RBBGMManager` | `-` | `LoadMusicWithPush:Loop:` |  | ✅ | ❌ | `0x6a7b4` |
 | `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ❌ | `0x6a854` |
-| `RBBGMManager` | `-` | `popMusic` |  | ✅ | ❌ | `0x6a8f0` |
+| `RBBGMManager` | `-` | `popMusic` |  | ✅ | ✅ | `0x6a8f0` |
 | `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
 | `RBMusicManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x6a990` |
 | `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ✅ | `0x6a9e8` |
@@ -1792,7 +1792,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `createContext::` |  | ✅ | ❌ | `0x87ae4` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ❌ | `0x87ba0` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ❌ | `0x87c78` |
-| `TwitterImageCreater` | `-` | `drawImageFileName:X:Y:` |  | ✅ | ❌ | `0x87d40` |
+| `TwitterImageCreater` | `-` | `drawImageFileName:X:Y:` |  | ✅ | ✅ | `0x87d40` |
 | `TwitterImageCreater` | `-` | `drawImageFileName:Position:` |  | ✅ | ✅ | `0x87dd4` |
 | `TwitterImageCreater` | `-` | `drawText:Position:Font:Color:` |  | ✅ | ❌ | `0x87e68` |
 | `TwitterImageCreater` | `-` | `drawNumber:Position:Keta:Dot:` |  | ✅ | ❌ | `0x87fa4` |
@@ -2110,7 +2110,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ❌ | `0xab7ac` |
 | `RBMenuView` | `-` | `RemoveStoreViewController` |  | ✅ | ❌ | `0xab854` |
 | `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ✅ | `0xab9d4` |
-| `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ❌ | `0xab9e0` |
+| `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ✅ | `0xab9e0` |
 | `RBMenuView` | `-` | `toggleSettingView` |  | ✅ | ❌ | `0xaba74` |
 | `RBMenuView` | `-` | `showHowToView` |  | ✅ | ❌ | `0xabf94` |
 | `RBMenuView` | `-` | `showCustomizeView` |  | ✅ | ❌ | `0xac0bc` |
