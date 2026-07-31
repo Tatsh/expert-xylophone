@@ -722,6 +722,13 @@ at 0, selector at 8, struct pointer at 16, total 24 — and its `imp` matched th
 for the method. The bulk scan verified neither coherence nor address.
 
 Doing this properly means walking `__objc_classlist` to each `class_ro_t` and reading its
-`baseMethods` list, which is what `tools/objc_update.py` already does to build the checklist. The
-sweep is worth redoing on that footing, because the class it targets is real: an encoding is
-authoritative and a declared width is not. It is not worth redoing on a byte scan.
+`baseMethods` list, which is what `tools/objc_update.py` already does to build the checklist.
+
+**Redone on that footing, and the class is clean.** `tools/scan_return_widths.py` reuses that
+parsing, so every `method_t` comes from a real method list. It reads 3962 selectors with a types
+string and reports **no** mismatch anywhere in the tree. Run against the commit before the `AVBus`
+fix it names `-setSource:` and `-currentID` as `unsigned int` against an `S` encoding, so the zero
+is a measured result rather than an untested checker reporting success.
+
+The contrast between the two runs is the whole lesson: same question, same binary, same afternoon,
+197 confident wrong answers from a plausible shortcut and 0 correct ones from the real walk.
