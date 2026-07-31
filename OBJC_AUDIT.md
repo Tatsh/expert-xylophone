@@ -7,7 +7,7 @@ same way the engine was.
 from the binary's runtime metadata — every method, whether it is reconstructed, and whether
 it is verified. That file is the counterpart to [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md) and is
 where to look for what remains. As of the last regeneration it stands at 6343 methods, 6306
-reconstructed and **4677 verified**. The 1666 that remain are non-accessor bodies that have to be
+reconstructed and **4785 verified**. The 1558 that remain are non-accessor bodies that have to be
 read one at a time, and they are large: only 69 are under 128 bytes, while 601 exceed 512.
 
 This file is the findings record behind those verifications: what each routine turned out to be, so
@@ -667,3 +667,24 @@ gate deliberate deviations behind `ENABLE_PATCHES` with an entry in [PATCHES.md]
 these live in vendored third-party code where carrying a maintained upstream is the ordinary
 practice. Reverting them would restore a real bug (an unreported close failure) for fidelity's sake.
 Recorded here so the choice is made deliberately instead of by whoever next reads the file.
+
+## A signed bounds check where the binary tests unsigned
+
+`TwitterImageCreater`'s nine `…Side:` setters each guard their write with a bounds test on the
+column index. The reconstruction wrote `if (side < kScoreColumnCount)` with `side` declared `int`,
+which is a **signed** comparison. The binary's is `cmp w3,#0x1` followed by `b.ls` (or `b.hi` to
+skip, at `0x87a70`), and both are **unsigned**.
+
+The difference only shows on a negative index, which is exactly why it survived review: for every
+sensible input the two agree. On `side = -1` the reconstruction passes the test and evaluates
+`m_Score[-1]`, reading an object pointer from before the array, while the binary rejects it because
+`(unsigned)-1` is far above 1. All nine now cast to `unsigned int`, matching the single unsigned
+compare the binary performs.
+
+Each of the nine was checked individually at `0x87930`, `0x87958`, `0x87980`, `0x879a8`, `0x879d0`,
+`0x879f8`, `0x87a20`, `0x87a48`, and `0x87a70` rather than the family inferred from one, because a
+single member using a signed compare would have made a blanket change wrong.
+
+The tell generalises: an array index guarded only from above is worth re-reading, and the condition
+codes say which comparison the binary meant. `b.lt`/`b.ge` are signed, `b.ls`/`b.hi` are not, and
+the decompiler renders both as `<`.

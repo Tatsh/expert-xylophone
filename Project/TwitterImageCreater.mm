@@ -294,63 +294,63 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
 
 - (void)setScore:(int)score Side:(int)side {
     /** @ghidraAddress 0x87930 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setScore:score];
     }
 }
 
 - (void)setAR:(float)aR Side:(int)side {
     /** @ghidraAddress 0x87958 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setAr:aR];
     }
 }
 
 - (void)setJustNum:(int)justNum Side:(int)side {
     /** @ghidraAddress 0x87980 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setJustNum:justNum];
     }
 }
 
 - (void)setGreatNum:(int)greatNum Side:(int)side {
     /** @ghidraAddress 0x879a8 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setGreatNum:greatNum];
     }
 }
 
 - (void)setGoodNum:(int)goodNum Side:(int)side {
     /** @ghidraAddress 0x879d0 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setGoodNum:goodNum];
     }
 }
 
 - (void)setMissNum:(int)missNum Side:(int)side {
     /** @ghidraAddress 0x879f8 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setMissNum:missNum];
     }
 }
 
 - (void)setJustReflecNum:(int)justReflecNum Side:(int)side {
     /** @ghidraAddress 0x87a20 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setJustReflecNum:justReflecNum];
     }
 }
 
 - (void)setMaxComboNum:(int)maxComboNum Side:(int)side {
     /** @ghidraAddress 0x87a48 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setMaxComboNum:maxComboNum];
     }
 }
 
 - (void)setName:(NSString *)name Side:(int)side {
     /** @ghidraAddress 0x87a70 */
-    if (side < kScoreColumnCount) {
+    if (static_cast<unsigned int>(side) < kScoreColumnCount) {
         [m_Score[side] setName:name];
     }
 }

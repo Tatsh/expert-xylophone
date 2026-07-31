@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4785 verified
-(75.4%).
+Total: 6343 — 6306 reconstructed, 4789 verified
+(75.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -853,7 +853,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `initWithContentsOfURL:isLoop:` |  | ✅ | ❌ | `0x4135c` |
 | `AVBus` | `-` | `initWithContentsOfData:isLoop:` |  | ✅ | ❌ | `0x414fc` |
 | `AVBus` | `-` | `setSource:` |  | ✅ | ❌ | `0x4169c` |
-| `AVBus` | `-` | `removeSource` |  | ✅ | ❌ | `0x4171c` |
+| `AVBus` | `-` | `removeSource` |  | ✅ | ✅ | `0x4171c` |
 | `AVBus` | `-` | `prepare` |  | ✅ | ❌ | `0x41798` |
 | `AVBus` | `-` | `play` |  | ✅ | ❌ | `0x41898` |
 | `AVBus` | `-` | `stop` |  | ✅ | ❌ | `0x41964` |
@@ -863,7 +863,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `volume` |  | ✅ | ❌ | `0x41c64` |
 | `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
 | `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x41d14` |
-| `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ❌ | `0x41d28` |
+| `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ✅ | `0x41d28` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ✅ | `0x41da8` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ✅ | `0x41e20` |
 | `AVBus` | `-` | `dealloc` |  | ✅ | ✅ | `0x41e98` |
@@ -1788,7 +1788,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setMissNum:Side:` |  | ✅ | ✅ | `0x879f8` |
 | `TwitterImageCreater` | `-` | `setJustReflecNum:Side:` |  | ✅ | ✅ | `0x87a20` |
 | `TwitterImageCreater` | `-` | `setMaxComboNum:Side:` |  | ✅ | ✅ | `0x87a48` |
-| `TwitterImageCreater` | `-` | `setName:Side:` |  | ✅ | ❌ | `0x87a70` |
+| `TwitterImageCreater` | `-` | `setName:Side:` |  | ✅ | ✅ | `0x87a70` |
 | `TwitterImageCreater` | `-` | `createContext::` |  | ✅ | ❌ | `0x87ae4` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ❌ | `0x87ba0` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ❌ | `0x87c78` |
@@ -2464,7 +2464,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicDifficultyView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0xc8e8c` |
 | `RBMusicDifficultyView` | `-` | `SelectDifficultyButton:` |  | ✅ | ❌ | `0xc8e90` |
 | `RBMusicDifficultyView` | `-` | `setEnableButton:` |  | ✅ | ❌ | `0xc9000` |
-| `RBMusicDifficultyView` | `-` | `getDifficultyButton:` |  | ✅ | ❌ | `0xc911c` |
+| `RBMusicDifficultyView` | `-` | `getDifficultyButton:` |  | ✅ | ✅ | `0xc911c` |
 | `RBMusicDifficultyView` | `-` | `difficulty` | prop | ✅ | ✅ | `0xc918c` |
 | `RBMusicDifficultyView` | `-` | `setDifficulty:` | prop | ✅ | ✅ | `0xc919c` |
 | `RBMusicDifficultyView` | `-` | `musicSelectedBase` | prop | ✅ | ✅ | `0xc91ac` |

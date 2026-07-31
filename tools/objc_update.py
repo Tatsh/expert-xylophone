@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x4171c: 'AVBus -removeSource: nils mSource, bumps the S-encoded mCurrentID with ldrh/strh, '
+             'and returns whether a player was attached, nilling it when so',
+    0x41d28: 'AVBus -audioPlayerBeginInterruption:: from status 2 only, the csel keeps 2 while the '
+             'player is still playing and drops to 4 otherwise',
+    0xc911c: 'RBMusicDifficultyView -getDifficultyButton:: difficultyButtons objectAtIndex:',
+    0x87a70: 'TwitterImageCreater -setName:Side:: FIXED with the other eight Side: setters. The '
+             'guard is cmp #1 with b.ls or b.hi, an unsigned compare, where the reconstruction '
+             'tested a signed int and so admitted a negative index',
     0x69688: 'StorePackInfoDownloader -initWithStorePackInfo:: super init, nil check, packInfo',
     0x6ae38: 'RBMusicManager -init: super init, nil check, then createPreInMusics',
     0x4a2c8: 'RBTermDetailPhoneViewController -alertView:clickedButtonAtIndex:: on isFirstRequest '
