@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4765 verified
-(75.1%).
+Total: 6343 — 6306 reconstructed, 4768 verified
+(75.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1514,7 +1514,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfo` | `-` | `ErrorMessage` | prop | ✅ | ✅ | `0x69560` |
 | `StorePackInfo` | `-` | `setErrorMessage:` | prop | ✅ | ✅ | `0x69570` |
 | `StorePackInfoDownloader` | `-` | `initWithStorePackInfo:` |  | ✅ | ❌ | `0x69688` |
-| `StorePackInfoDownloader` | `-` | `dealloc` |  | ✅ | ❌ | `0x69700` |
+| `StorePackInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x69700` |
 | `StorePackInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x6977c` |
 | `StorePackInfoDownloader` | `-` | `cancel` |  | ✅ | ❌ | `0x69880` |
 | `StorePackInfoDownloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x69914` |
@@ -2095,7 +2095,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `setMaxPage:` | prop | ✅ | ✅ | `0xa1f24` |
 | `RBMenuView` | `-` | `setShowView:` | prop | ✅ | ✅ | `0xa200c` |
 | `RBMenuView` | `-` | `initWithFrame:viewController:` |  | ✅ | ❌ | `0xa20a8` |
-| `RBMenuView` | `-` | `dealloc` |  | ✅ | ❌ | `0xa220c` |
+| `RBMenuView` | `-` | `dealloc` |  | ✅ | ✅ | `0xa220c` |
 | `RBMenuView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0xa22ec` |
 | `RBMenuView` | `-` | `CreateView` |  | ✅ | ❌ | `0xa47f8` |
 | `RBMenuView` | `-` | `reloadMusicData` |  | ✅ | ❌ | `0xa8e28` |
@@ -4018,7 +4018,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteInfo` | `-` | `product` | prop | ✅ | ✅ | `0x179ae8` |
 | `StoreExtendNoteInfo` | `-` | `setProduct:` | prop | ✅ | ✅ | `0x179af8` |
 | `StoreExtendNoteInfoDownloader` | `-` | `initWithStoreExtendNoteInfo:` |  | ✅ | ❌ | `0x179bc0` |
-| `StoreExtendNoteInfoDownloader` | `-` | `dealloc` |  | ✅ | ❌ | `0x179c64` |
+| `StoreExtendNoteInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x179c64` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x179d10` |
 | `StoreExtendNoteInfoDownloader` | `-` | `cancel` |  | ✅ | ❌ | `0x179e44` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x179eec` |

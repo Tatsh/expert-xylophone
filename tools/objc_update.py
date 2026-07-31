@@ -48,7 +48,8 @@ VERIFIED = {
     # form suggests), the unsigned range trick at 0x32494 that selects RGBA for alphaInfo 1..4,
     # and the zero-initialised RGBA allocation against the uninitialised RGB one. The types string
     # ends f24, so the scale really is float rather than the double the header first declared.
-    0x32320: 'neTextureForiOS +LoadTexture:Scale: faithful; scale is float per the f24 encoding',
+    # 0x32320 was keyed twice. The other entry, further down, carries the full decode evidence
+    # including the f24 scale, so this shorter duplicate is removed rather than merged.
     # UIImage(RB)'s themed lookup. The fallback-language arm looked like a reconstruction bug and
     # is not: 0x1a1898 re-reads the count after the insert and 0x1a189c subtracts one, so the
     # binary itself replaces the file name rather than the language component, and that last
@@ -295,6 +296,12 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x69700: 'StorePackInfoDownloader -dealloc: delegate, packInfo, downloader, all through '
+             'their setters and in that order',
+    0x179c64: 'StoreExtendNoteInfoDownloader -dealloc: the sibling shape, with setExtendNoteInfo: '
+              'in the middle slot',
+    0xa220c: 'RBMenuView -dealloc: reads newsDownloader twice, once to nil-test and once to send '
+             'cancel, exactly as reconstructed',
     0x218f0c: 'RecommendAdWebView -dealloc: nils _applilinkDelegate directly, then the delegate '
               'through its setter',
     0x2413e0: 'RecommendAdAreaView -dealloc: six ivars in the binary order, _applilinkDelegate, '
@@ -2857,8 +2864,34 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
     return header + '\n'.join(rows) + '\n'
 
 
+def check_verified_keys_unique() -> list[str]:
+    """Report any address keyed more than once in the VERIFIED literal.
+
+    A duplicate key in a dict literal is silent: Python keeps the last and discards the earlier
+    value, so one method's recorded evidence disappears with no error and no change in the count.
+    That happened twice before this check existed. The dict itself cannot show it, so the source
+    is re-read and the keys counted.
+    """
+    source = Path(__file__).read_text()
+    body = re.search(r'^VERIFIED\s*=\s*\{(.*?)^\}', source, re.S | re.M)
+    if not body:
+        return []
+    seen, duplicates = set(), []
+    for match in re.finditer(r'^\s*(0x[0-9a-fA-F]+)\s*:', body.group(1), re.M):
+        address = int(match.group(1), 16)
+        if address in seen:
+            duplicates.append(f'{address:#x} is keyed more than once in VERIFIED')
+        seen.add(address)
+    return duplicates
+
+
 def main(argv=None) -> int:
     """Regenerate the checklist."""
+    duplicates = check_verified_keys_unique()
+    if duplicates:
+        for problem in duplicates:
+            print(f'error: {problem}', file=sys.stderr)
+        return 1
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('binary', type=Path, help='the shipped Mach-O from inside the .ipa')
     parser.add_argument('root', type=Path, nargs='?', default=Path('Project'),
