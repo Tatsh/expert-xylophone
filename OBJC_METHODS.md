@@ -20,9 +20,13 @@ nothing was read. The mark is deliberately not ✅: a `-dealloc` that also did n
 the original, unregistering an observer or invalidating a timer, would still need a body under ARC,
 so a row here is a claim about ARC's guarantee and not a claim that the original body was inspected.
 
-A category cannot be attributed to the class it extends: that class is reached through a reference
-the linker binds at load time, so the file never names it, and a category's own name is the
-category's. Those rows carry the category name in parentheses and are matched on the selector alone.
+A category row reads `Class (Category)`. The binary cannot supply the class: the category's class
+field is a load-time binding that reads zero on disk, and of the eleven categories here only one
+carries a bind record naming its symbol. The class therefore comes from the reconstruction, from the
+`@implementation Class (Category)` each was written under, resolved by whichever source category
+owns most of that record's annotated implementations. The category name stays the binary's, which is
+authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
+these rows are matched exactly, like every other row, rather than on the selector alone.
 
 Total: 6343 — 6343 reconstructed, 5244 verified
 (82.7%).
@@ -202,37 +206,37 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectPartView` | `-` | `setIsAnimationEnableLoop:` | prop | ✅ | ✅ | `0xdb90` |
 | `RBMenuBGEffectPartView` | `-` | `m_screenSize` | prop | ✅ | ✅ | `0xdba0` |
 | `RBMenuBGEffectPartView` | `-` | `setM_screenSize:` | prop | ✅ | ✅ | `0xdbc0` |
-| `(RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ✅ | `0xdc98` |
-| `(RB)` | `+` | `strageAlertView` |  | ✅ | ✅ | `0xdd38` |
-| `(RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ✅ | `0xdd94` |
-| `(RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ✅ | `0xde64` |
-| `(RB)` | `+` | `showGameCenterError` |  | ✅ | ✅ | `0xdf34` |
-| `(RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ✅ | `0xdfc0` |
-| `(RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ✅ | `0xe090` |
-| `(RB)` | `+` | `showTakeoverMessage` |  | ✅ | ✅ | `0xe158` |
-| `(RB)` | `+` | `showInfomation` |  | ✅ | ✅ | `0xe1e4` |
-| `(RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ✅ | `0xe270` |
-| `(RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe358` |
-| `(RB)` | `+` | `showConnectRetryWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe42c` |
-| `(RB)` | `+` | `showConnectRetryOrCancel:` |  | ✅ | ✅ | `0xe514` |
-| `(RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ✅ | `0xe5e4` |
-| `(RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ✅ | `0xe6e8` |
-| `(RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ✅ | `0xe93c` |
-| `(RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ✅ | `0xea50` |
-| `(RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ✅ | `0xebc0` |
-| `(RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ✅ | `0xed10` |
-| `(RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ✅ | `0xee34` |
-| `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ✅ | `0xef18` |
-| `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ✅ | `0xeffc` |
-| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ✅ | `0xf150` |
-| `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ✅ | `0xf2e0` |
-| `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ✅ | `0xf3e4` |
-| `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ✅ | `0xf588` |
-| `(RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ✅ | `0xf764` |
-| `(RB)` | `+` | `showPurchasePack:delegate:` |  | ✅ | ✅ | `0xf8cc` |
-| `(RB)` | `+` | `showMovePackDetailToExtendDetail:` |  | ✅ | ✅ | `0xf9e0` |
-| `(RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ✅ | `0xfa84` |
-| `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
+| `UIAlertView (RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ✅ | `0xdc98` |
+| `UIAlertView (RB)` | `+` | `strageAlertView` |  | ✅ | ✅ | `0xdd38` |
+| `UIAlertView (RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ✅ | `0xdd94` |
+| `UIAlertView (RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ✅ | `0xde64` |
+| `UIAlertView (RB)` | `+` | `showGameCenterError` |  | ✅ | ✅ | `0xdf34` |
+| `UIAlertView (RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ✅ | `0xdfc0` |
+| `UIAlertView (RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ✅ | `0xe090` |
+| `UIAlertView (RB)` | `+` | `showTakeoverMessage` |  | ✅ | ✅ | `0xe158` |
+| `UIAlertView (RB)` | `+` | `showInfomation` |  | ✅ | ✅ | `0xe1e4` |
+| `UIAlertView (RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ✅ | `0xe270` |
+| `UIAlertView (RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe358` |
+| `UIAlertView (RB)` | `+` | `showConnectRetryWithErrorMessage:delegate:` |  | ✅ | ✅ | `0xe42c` |
+| `UIAlertView (RB)` | `+` | `showConnectRetryOrCancel:` |  | ✅ | ✅ | `0xe514` |
+| `UIAlertView (RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ✅ | `0xe5e4` |
+| `UIAlertView (RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ✅ | `0xe6e8` |
+| `UIAlertView (RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ✅ | `0xe93c` |
+| `UIAlertView (RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ✅ | `0xea50` |
+| `UIAlertView (RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ✅ | `0xebc0` |
+| `UIAlertView (RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ✅ | `0xed10` |
+| `UIAlertView (RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ✅ | `0xee34` |
+| `UIAlertView (RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ✅ | `0xef18` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ✅ | `0xeffc` |
+| `UIAlertView (RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ✅ | `0xf150` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ✅ | `0xf2e0` |
+| `UIAlertView (RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ✅ | `0xf3e4` |
+| `UIAlertView (RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ✅ | `0xf588` |
+| `UIAlertView (RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ✅ | `0xf764` |
+| `UIAlertView (RB)` | `+` | `showPurchasePack:delegate:` |  | ✅ | ✅ | `0xf8cc` |
+| `UIAlertView (RB)` | `+` | `showMovePackDetailToExtendDetail:` |  | ✅ | ✅ | `0xf9e0` |
+| `UIAlertView (RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ✅ | `0xfa84` |
+| `UIAlertView (RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
 | `StoreExtendNoteCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xfdb8` |
 | `UnZipArchive` | `-` | `init` |  | ✅ | ✅ | `0x14d40` |
 | `UnZipArchive` | `-` | `dealloc` |  | ✅ | ✅ | `0x14d84` |
@@ -409,7 +413,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ✅ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
-| `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x20f48` |
+| `SFSafariViewController (RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x20f48` |
 | `StoreExtendNoteDetailViewPad` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x22068` |
 | `StoreExtendNoteDetailViewPad` | `-` | `removeNoteInfo` |  | ✅ | ❌ | `0x24b78` |
 | `StoreExtendNoteDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x24f68` |
@@ -653,7 +657,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `-` | `setTutorialView:` | prop | ✅ | ✅ | `0x364bc` |
 | `RBTutorialManager` | `-` | `unlockItemInfo` | prop | ✅ | ✅ | `0x364d0` |
 | `RBTutorialManager` | `-` | `setUnlockItemInfo:` | prop | ✅ | ✅ | `0x364e0` |
-| `(RB)` | `-` | `canBecomeFirstResponder` |  | ✅ | ✅ | `0x366f0` |
+| `UITextView (RB)` | `-` | `canBecomeFirstResponder` |  | ✅ | ✅ | `0x366f0` |
 | `RBHttpUtil` | `+` | `dictionaryToQueryData:` |  | ✅ | ❌ | `0x36754` |
 | `RBHttpUtil` | `+` | `dictionaryToJsonData:` |  | ✅ | ✅ | `0x36aa8` |
 | `RBHttpUtil` | `-` | `init` |  | ✅ | ✅ | `0x36b5c` |
@@ -1828,7 +1832,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setNoteNum:` | prop | ✅ | ✅ | `0x88e88` |
 | `TwitterImageCreater` | `-` | `color` | prop | ✅ | ✅ | `0x88e98` |
 | `TwitterImageCreater` | `-` | `setColor:` | prop | ✅ | ✅ | `0x88ea8` |
-| `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x88fb8` |
+| `SKStoreProductViewController (RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x88fb8` |
 | `RBViewController` | `-` | `init` |  | ✅ | ✅ | `0x88fc0` |
 | `RBViewController` | `-` | `loadView` |  | ✅ | ✅ | `0x89050` |
 | `RBViewController` | `-` | `showPresentViewController` |  | ✅ | ✅ | `0x893c4` |
@@ -3445,7 +3449,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermView` | `-` | `setIndicatorView:` | prop | ✅ | ✅ | `0x114ae4` |
 | `RBTermView` | `-` | `viewType` | prop | ✅ | ✅ | `0x114af4` |
 | `RBTermView` | `-` | `setViewType:` | prop | ✅ | ✅ | `0x114b04` |
-| `(FromData)` | `+` | `arrayFromPropertyListData:` |  | ✅ | ❌ | `0x12f410` |
+| `NSArray (FromData)` | `+` | `arrayFromPropertyListData:` |  | ✅ | ❌ | `0x12f410` |
 | `RBMenuTutorialView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x137b0c` |
 | `RBMenuTutorialView` | `-` | `setupView` |  | ✅ | ✅ | `0x137bfc` |
 | `RBMenuTutorialView` | `-` | `showAnimationWithTutorialType:withRootView:` |  | ✅ | ✅ | `0x139af8` |
@@ -3829,30 +3833,30 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectView` | `-` | `setGaugeCollectionView:` | prop | ✅ | ✅ | `0x169ad8` |
 | `RBCustomSelectView` | `-` | `timingCollectionView` | prop | ✅ | ✅ | `0x169b10` |
 | `RBCustomSelectView` | `-` | `setTimingCollectionView:` | prop | ✅ | ✅ | `0x169b20` |
-| `(RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ❌ | `0x169c24` |
-| `(RB)` | `+` | `strageAlertView:` |  | ✅ | ❌ | `0x169f2c` |
-| `(RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ❌ | `0x16a084` |
-| `(RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ❌ | `0x16a394` |
-| `(RB)` | `+` | `showGameCenterError` |  | ✅ | ❌ | `0x16a6a4` |
-| `(RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ❌ | `0x16a7f4` |
-| `(RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ❌ | `0x16aa0c` |
-| `(RB)` | `+` | `showTakeoverMessage` |  | ✅ | ❌ | `0x16ac24` |
-| `(RB)` | `+` | `showInfomation` |  | ✅ | ❌ | `0x16ad74` |
-| `(RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ❌ | `0x16aec4` |
-| `(RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ❌ | `0x16b1e8` |
-| `(RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ❌ | `0x16b414` |
-| `(RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ❌ | `0x16b66c` |
-| `(RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ❌ | `0x16bc54` |
-| `(RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ❌ | `0x16be64` |
-| `(RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ❌ | `0x16bfec` |
-| `(RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ❌ | `0x16c2f0` |
-| `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ❌ | `0x16c440` |
-| `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ❌ | `0x16c750` |
-| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ❌ | `0x16c964` |
-| `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ❌ | `0x16cbc0` |
-| `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ❌ | `0x16cf04` |
-| `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ❌ | `0x16d114` |
-| `(RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ❌ | `0x16d458` |
+| `UIAlertView (RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ❌ | `0x169c24` |
+| `UIAlertView (RB)` | `+` | `strageAlertView:` |  | ✅ | ❌ | `0x169f2c` |
+| `UIAlertView (RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ❌ | `0x16a084` |
+| `UIAlertView (RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ❌ | `0x16a394` |
+| `UIAlertView (RB)` | `+` | `showGameCenterError` |  | ✅ | ❌ | `0x16a6a4` |
+| `UIAlertView (RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ❌ | `0x16a7f4` |
+| `UIAlertView (RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ❌ | `0x16aa0c` |
+| `UIAlertView (RB)` | `+` | `showTakeoverMessage` |  | ✅ | ❌ | `0x16ac24` |
+| `UIAlertView (RB)` | `+` | `showInfomation` |  | ✅ | ❌ | `0x16ad74` |
+| `UIAlertView (RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ❌ | `0x16aec4` |
+| `UIAlertView (RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ❌ | `0x16b1e8` |
+| `UIAlertView (RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ❌ | `0x16b414` |
+| `UIAlertView (RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ❌ | `0x16b66c` |
+| `UIAlertView (RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ❌ | `0x16bc54` |
+| `UIAlertView (RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ❌ | `0x16be64` |
+| `UIAlertView (RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ❌ | `0x16bfec` |
+| `UIAlertView (RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ❌ | `0x16c2f0` |
+| `UIAlertView (RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ❌ | `0x16c440` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ❌ | `0x16c750` |
+| `UIAlertView (RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ❌ | `0x16c964` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ❌ | `0x16cbc0` |
+| `UIAlertView (RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ❌ | `0x16cf04` |
+| `UIAlertView (RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ❌ | `0x16d114` |
+| `UIAlertView (RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ❌ | `0x16d458` |
 | `RBMusicGridLayout` | `-` | `init` |  | ✅ | ✅ | `0x16d5c0` |
 | `RBMusicGridLayout` | `-` | `prepareLayout` |  | ✅ | ✅ | `0x16d7d8` |
 | `RBMusicGridLayout` | `-` | `collectionViewContentSize` |  | ✅ | ✅ | `0x16de78` |
@@ -4456,37 +4460,37 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicMenuPopupView` | `-` | `setTitleImageView:` | prop | ✅ | ✅ | `0x1a03f4` |
 | `RBMusicMenuPopupView` | `-` | `animating` | prop | ✅ | ✅ | `0x1a042c` |
 | `RBMusicMenuPopupView` | `-` | `setAnimating:` | prop | ✅ | ✅ | `0x1a043c` |
-| `(RB)` | `+` | `clearImageCache` |  | ✅ | ✅ | `0x1a1630` |
-| `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:retina:` |  | ✅ | ✅ | `0x1a1644` |
-| `(RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:` |  | ✅ | ✅ | `0x1a1a0c` |
-| `(RB)` | `+` | `imageNamedWithoutCache:` |  | ✅ | ✅ | `0x1a1b08` |
-| `(RB)` | `+` | `imageWithName:` |  | ✅ | ✅ | `0x1a2830` |
-| `(RB)` | `+` | `imageWithName:useCache:` |  | ✅ | ✅ | `0x1a2858` |
-| `(RB)` | `-` | `reflectedImageWithHeight:` |  | ✅ | ✅ | `0x1a2c0c` |
-| `(RB)` | `-` | `clipImageWithRect:` |  | ✅ | ✅ | `0x1a2fa4` |
-| `(RB)` | `-` | `colorMatrixFilterWithColor:` |  | ✅ | ✅ | `0x1a31a0` |
-| `(RB)` | `-` | `colorMatrixFilterWithRed:green:blue:alpha:` |  | ✅ | ✅ | `0x1a3268` |
-| `(RB)` | `-` | `left` |  | ✅ | ✅ | `0x1a35ac` |
-| `(RB)` | `-` | `top` |  | ✅ | ✅ | `0x1a35b8` |
-| `(RB)` | `-` | `right` |  | ✅ | ✅ | `0x1a35d8` |
-| `(RB)` | `-` | `bottom` |  | ✅ | ✅ | `0x1a3620` |
-| `(RB)` | `-` | `x` |  | ✅ | ✅ | `0x1a3668` |
-| `(RB)` | `-` | `y` |  | ✅ | ✅ | `0x1a3674` |
-| `(RB)` | `-` | `width` |  | ✅ | ✅ | `0x1a3694` |
-| `(RB)` | `-` | `height` |  | ✅ | ✅ | `0x1a36b4` |
-| `(RB)` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0x1a36d4` |
-| `(RB)` | `-` | `RemoveFlashEffect` |  | ✅ | ✅ | `0x1a36f4` |
-| `(RB)` | `-` | `SetFlashEffectFast` |  | ✅ | ✅ | `0x1a3710` |
-| `(RB)` | `-` | `SetFlashEffectFastWithRotate` |  | ✅ | ✅ | `0x1a3730` |
-| `(RB)` | `-` | `SetFlashEffectSlow` |  | ✅ | ✅ | `0x1a3760` |
-| `(RB)` | `+` | `setFlashEffectView:Duration:Start:End:Rotate:` |  | ✅ | ✅ | `0x1a376c` |
-| `(RB)` | `+` | `removeFlashEffectView:` |  | ✅ | ✅ | `0x1a3ecc` |
-| `(RB)` | `-` | `SetAlphaAnimationDuration:End:` |  | ✅ | ✅ | `0x1a3f34` |
-| `(RB)` | `-` | `RemoveAlphaAnimation` |  | ✅ | ✅ | `0x1a40d8` |
-| `(RB)` | `-` | `SetJumpEffectBaseX:BaseY:` |  | ✅ | ✅ | `0x1a4134` |
-| `(RB)` | `-` | `RemoveJumpEffect` |  | ✅ | ✅ | `0x1a4414` |
-| `(RB)` | `-` | `dictionary` |  | ✅ | ✅ | `0x1a4470` |
-| `(RB)` | `-` | `mutableArray` |  | ✅ | ✅ | `0x1a45f8` |
+| `UIImage (RB)` | `+` | `clearImageCache` |  | ✅ | ✅ | `0x1a1630` |
+| `UIImage (RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:retina:` |  | ✅ | ✅ | `0x1a1644` |
+| `UIImage (RB)` | `+` | `imageWithName:imageDirectory:themaDirectory:` |  | ✅ | ✅ | `0x1a1a0c` |
+| `UIImage (RB)` | `+` | `imageNamedWithoutCache:` |  | ✅ | ✅ | `0x1a1b08` |
+| `UIImage (RB)` | `+` | `imageWithName:` |  | ✅ | ✅ | `0x1a2830` |
+| `UIImage (RB)` | `+` | `imageWithName:useCache:` |  | ✅ | ✅ | `0x1a2858` |
+| `UIImage (RB)` | `-` | `reflectedImageWithHeight:` |  | ✅ | ✅ | `0x1a2c0c` |
+| `UIImage (RB)` | `-` | `clipImageWithRect:` |  | ✅ | ✅ | `0x1a2fa4` |
+| `UIImage (RB)` | `-` | `colorMatrixFilterWithColor:` |  | ✅ | ✅ | `0x1a31a0` |
+| `UIImage (RB)` | `-` | `colorMatrixFilterWithRed:green:blue:alpha:` |  | ✅ | ✅ | `0x1a3268` |
+| `UIView (RB)` | `-` | `left` |  | ✅ | ✅ | `0x1a35ac` |
+| `UIView (RB)` | `-` | `top` |  | ✅ | ✅ | `0x1a35b8` |
+| `UIView (RB)` | `-` | `right` |  | ✅ | ✅ | `0x1a35d8` |
+| `UIView (RB)` | `-` | `bottom` |  | ✅ | ✅ | `0x1a3620` |
+| `UIView (RB)` | `-` | `x` |  | ✅ | ✅ | `0x1a3668` |
+| `UIView (RB)` | `-` | `y` |  | ✅ | ✅ | `0x1a3674` |
+| `UIView (RB)` | `-` | `width` |  | ✅ | ✅ | `0x1a3694` |
+| `UIView (RB)` | `-` | `height` |  | ✅ | ✅ | `0x1a36b4` |
+| `UIView (RB)` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0x1a36d4` |
+| `UIView (RB)` | `-` | `RemoveFlashEffect` |  | ✅ | ✅ | `0x1a36f4` |
+| `UIView (RB)` | `-` | `SetFlashEffectFast` |  | ✅ | ✅ | `0x1a3710` |
+| `UIView (RB)` | `-` | `SetFlashEffectFastWithRotate` |  | ✅ | ✅ | `0x1a3730` |
+| `UIView (RB)` | `-` | `SetFlashEffectSlow` |  | ✅ | ✅ | `0x1a3760` |
+| `UIView (RB)` | `+` | `setFlashEffectView:Duration:Start:End:Rotate:` |  | ✅ | ✅ | `0x1a376c` |
+| `UIView (RB)` | `+` | `removeFlashEffectView:` |  | ✅ | ✅ | `0x1a3ecc` |
+| `UIView (RB)` | `-` | `SetAlphaAnimationDuration:End:` |  | ✅ | ✅ | `0x1a3f34` |
+| `UIView (RB)` | `-` | `RemoveAlphaAnimation` |  | ✅ | ✅ | `0x1a40d8` |
+| `UIView (RB)` | `-` | `SetJumpEffectBaseX:BaseY:` |  | ✅ | ✅ | `0x1a4134` |
+| `UIView (RB)` | `-` | `RemoveJumpEffect` |  | ✅ | ✅ | `0x1a4414` |
+| `NSData (RB)` | `-` | `dictionary` |  | ✅ | ✅ | `0x1a4470` |
+| `NSData (RB)` | `-` | `mutableArray` |  | ✅ | ✅ | `0x1a45f8` |
 | `RBMusicOtherView` | `-` | `initWithFrame:MusicSelectedBase:` |  | ✅ | ❌ | `0x1a477c` |
 | `RBMusicOtherView` | `-` | `dealloc` |  | ➖ | ➖ | `0x1a4a04` |
 | `RBMusicOtherView` | `-` | `SetupView` |  | ✅ | ❌ | `0x1a4a38` |
@@ -4663,13 +4667,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialPastelLayer` | `-` | `setLeftLayer:` | prop | ✅ | ✅ | `0x1b814c` |
 | `RBTutorialPastelLayer` | `-` | `displayRate` | prop | ✅ | ✅ | `0x1b8160` |
 | `RBTutorialPastelLayer` | `-` | `setDisplayRate:` | prop | ✅ | ✅ | `0x1b8170` |
-| `(RB)` | `-` | `encodeURIComponent` |  | ✅ | ✅ | `0x1b82a4` |
-| `(RB)` | `-` | `sizeWithFont:` |  | ✅ | ✅ | `0x1b82d0` |
-| `(RB)` | `-` | `sizeWithFont:constrainedToSize:` |  | ✅ | ✅ | `0x1b83c4` |
-| `(RB)` | `-` | `sizeWithFont:constrainedToSize:lineBreakMode:` |  | ✅ | ✅ | `0x1b83e4` |
-| `(RB)` | `-` | `drawInRect:withFont:` |  | ✅ | ✅ | `0x1b8578` |
-| `(RB)` | `-` | `drawInRect:withFont:lineBreakMode:alignment:` |  | ✅ | ✅ | `0x1b8684` |
-| `(RB)` | `-` | `drawAtPoint:withFont:` |  | ✅ | ✅ | `0x1b881c` |
+| `NSString (RB)` | `-` | `encodeURIComponent` |  | ✅ | ✅ | `0x1b82a4` |
+| `NSString (RB)` | `-` | `sizeWithFont:` |  | ✅ | ✅ | `0x1b82d0` |
+| `NSString (RB)` | `-` | `sizeWithFont:constrainedToSize:` |  | ✅ | ✅ | `0x1b83c4` |
+| `NSString (RB)` | `-` | `sizeWithFont:constrainedToSize:lineBreakMode:` |  | ✅ | ✅ | `0x1b83e4` |
+| `NSString (RB)` | `-` | `drawInRect:withFont:` |  | ✅ | ✅ | `0x1b8578` |
+| `NSString (RB)` | `-` | `drawInRect:withFont:lineBreakMode:alignment:` |  | ✅ | ✅ | `0x1b8684` |
+| `NSString (RB)` | `-` | `drawAtPoint:withFont:` |  | ✅ | ✅ | `0x1b881c` |
 | `RBExperienceData` | `-` | `init` |  | ✅ | ✅ | `0x1b8910` |
 | `RBExperienceData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x1b8bf0` |
 | `RBExperienceData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x1b9788` |
@@ -4895,18 +4899,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNavigationController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x1c988c` |
 | `RBNavigationController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x1c9894` |
 | `RBNavigationController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x1c98f4` |
-| `(RB)` | `+` | `isFileExist:` |  | ✅ | ✅ | `0x1c9954` |
-| `(RB)` | `+` | `isDirectoryExist:` |  | ✅ | ✅ | `0x1c9a0c` |
-| `(RB)` | `+` | `createDirectory:` |  | ✅ | ✅ | `0x1c9ac0` |
-| `(RB)` | `+` | `isFreeSystemSize` |  | ✅ | ✅ | `0x1c9b70` |
-| `(RB)` | `+` | `freeFileSystemSize` |  | ✅ | ✅ | `0x1c9ba0` |
-| `(RB)` | `+` | `createDirectorysAtPath:` |  | ✅ | ✅ | `0x1c9cec` |
-| `(RB)` | `+` | `paddingDirName` |  | ✅ | ✅ | `0x1ca0c8` |
-| `(RB)` | `+` | `documentDirectoryPath` |  | ✅ | ✅ | `0x1ca130` |
-| `(RB)` | `+` | `applicationSupportDirectoryPath` |  | ✅ | ✅ | `0x1ca248` |
-| `(RB)` | `+` | `cachesDirectoryPath` |  | ✅ | ✅ | `0x1ca360` |
-| `(RB)` | `+` | `temporaryDirectoryPath` |  | ✅ | ✅ | `0x1ca478` |
-| `(RB)` | `+` | `resourcePath` |  | ✅ | ✅ | `0x1ca560` |
+| `NSFileManager (RB)` | `+` | `isFileExist:` |  | ✅ | ✅ | `0x1c9954` |
+| `NSFileManager (RB)` | `+` | `isDirectoryExist:` |  | ✅ | ✅ | `0x1c9a0c` |
+| `NSFileManager (RB)` | `+` | `createDirectory:` |  | ✅ | ✅ | `0x1c9ac0` |
+| `NSFileManager (RB)` | `+` | `isFreeSystemSize` |  | ✅ | ✅ | `0x1c9b70` |
+| `NSFileManager (RB)` | `+` | `freeFileSystemSize` |  | ✅ | ✅ | `0x1c9ba0` |
+| `NSFileManager (RB)` | `+` | `createDirectorysAtPath:` |  | ✅ | ✅ | `0x1c9cec` |
+| `NSFileManager (RB)` | `+` | `paddingDirName` |  | ✅ | ✅ | `0x1ca0c8` |
+| `NSFileManager (RB)` | `+` | `documentDirectoryPath` |  | ✅ | ✅ | `0x1ca130` |
+| `NSFileManager (RB)` | `+` | `applicationSupportDirectoryPath` |  | ✅ | ✅ | `0x1ca248` |
+| `NSFileManager (RB)` | `+` | `cachesDirectoryPath` |  | ✅ | ✅ | `0x1ca360` |
+| `NSFileManager (RB)` | `+` | `temporaryDirectoryPath` |  | ✅ | ✅ | `0x1ca478` |
+| `NSFileManager (RB)` | `+` | `resourcePath` |  | ✅ | ✅ | `0x1ca560` |
 | `RBStoreGenreViewController` | `-` | `loadView` |  | ✅ | ❌ | `0x1ca638` |
 | `RBStoreGenreViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1cab0c` |
 | `RBStoreGenreViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1cabe8` |

@@ -27,6 +27,7 @@ import glob
 import re
 import struct
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
@@ -3945,9 +3946,10 @@ class Method(NamedTuple):
 class Metadata:
     """The shipped Mach-O's Objective-C metadata."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, owners: dict[int, str] | None = None) -> None:
         self._data = path.read_bytes()
         self._sections = list(self._read_sections())
+        self._owners = owners or {}
 
     def _read_sections(self):
         n_commands, = struct.unpack_from('<I', self._data, 16)
@@ -4072,14 +4074,63 @@ class Metadata:
         if offset is None:
             return []
         name, _, instance_methods, class_methods = struct.unpack_from('<QQQQ', self._data, offset)
-        # The class a category extends is reached through a reference the linker binds at load time,
-        # so it cannot be named from the file. The category's own name is recorded instead.
-        label = f'({self.string_at(name)})'
-        out: list[Method] = []
-        for method_list, kind in ((instance_methods, '-'), (class_methods, '+')):
-            for selector, implementation in self._method_list(method_list):
-                out.append(Method(label, kind, selector, implementation, False))
-        return out
+        entries = [(kind, selector, implementation)
+                   for method_list, kind in ((instance_methods, '-'), (class_methods, '+'))
+                   for selector, implementation in self._method_list(method_list)]
+        # The class a category extends is a load-time binding, so the file itself does not name it:
+        # the field reads zero and only one of the eleven carries a bind record. The reconstruction
+        # does name it, in the `@implementation Class (Category)` it was written under, so the class
+        # is taken from whichever source category owns most of these implementations. The category
+        # name stays the binary's, which is authoritative and occasionally disagrees with ours.
+        votes = Counter(self._owners[implementation] for _, _, implementation in entries
+                        if implementation in self._owners)
+        category = self.string_at(name)
+        label = f'{votes.most_common(1)[0][0]} ({category})' if votes else f'({category})'
+        return [Method(label, kind, selector, implementation, False)
+                for kind, selector, implementation in entries]
+
+
+_CATEGORY_BLOCK = re.compile(r'^@(?:implementation|interface)\s+(\w+)\s*\((\w+)\)')
+
+
+def category_owners(root: Path) -> dict[int, str]:
+    """
+    Map each address annotated inside a category to the class that category extends.
+
+    The binary cannot answer this: a category's class field is a load-time binding that reads zero
+    on disk. The reconstruction can, because every category was written under an
+    ``@implementation Class (Category)``, so an address annotated inside one names its class. A
+    header's documentation comment precedes the block it describes, so annotations seen before the
+    first block are attributed to whichever block opens next.
+    """
+    owners: dict[int, str] = {}
+    for path in sorted(root.rglob('*')):
+        if path.suffix not in ('.h', '.m', '.mm'):
+            continue
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError):
+            continue
+        current: str | None = None
+        pending: list[int] = []
+        for line in text.split('\n'):
+            block = _CATEGORY_BLOCK.match(line)
+            if block is not None:
+                current = block.group(1)
+                for address in pending:
+                    owners.setdefault(address, current)
+                pending = []
+                continue
+            if line.startswith('@end'):
+                current = None
+                continue
+            for found in re.findall(r'@ghidraAddress\s+(0x[0-9a-fA-F]+)', line):
+                address = int(found, 16) + IMAGE_BASE
+                if current is not None:
+                    owners.setdefault(address, current)
+                else:
+                    pending.append(address)
+    return owners
 
 
 def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str, str]]]:
@@ -4240,13 +4291,14 @@ def render(methods: list[Method], keyed, loose) -> str:
     rows = []
     done = verified = from_machine = arc = arc_rows = 0
     for m in sorted(listed, key=lambda m: m.address):
-        # The selector-alone fallback exists only for category rows, whose class the binary never
-        # names. Letting it answer for a real class credits that class with any same-named selector
-        # a category happens to define, which is how -[StoreExtendNoteView reset] read as
-        # reconstructed while no such override existed.
-        is_reconstructed = ((m.class_name, m.kind, m.selector) in keyed
-                            or (m.class_name.startswith('(')
-                                and (m.kind, m.selector) in loose))
+        # Category rows carry "Class (Category)", so the class is matched on its own. That is an
+        # exact lookup rather than the selector-alone fallback these rows used to need, which
+        # credited a class with any same-named selector a category happened to define and is how
+        # -[StoreExtendNoteView reset] once read as reconstructed with no such override present.
+        # The fallback survives only for a category whose class could not be attributed.
+        owner = m.class_name.split(' (')[0]
+        is_reconstructed = ((owner, m.kind, m.selector) in keyed
+                            or (owner.startswith('(') and (m.kind, m.selector) in loose))
         relative = m.address - IMAGE_BASE
         by_machine = relative in mechanical
         is_verified = relative in VERIFIED or by_machine
@@ -4293,9 +4345,13 @@ nothing was read. The mark is deliberately not {DONE}: a `-dealloc` that also di
 the original, unregistering an observer or invalidating a timer, would still need a body under ARC,
 so a row here is a claim about ARC's guarantee and not a claim that the original body was inspected.
 
-A category cannot be attributed to the class it extends: that class is reached through a reference
-the linker binds at load time, so the file never names it, and a category's own name is the
-category's. Those rows carry the category name in parentheses and are matched on the selector alone.
+A category row reads `Class (Category)`. The binary cannot supply the class: the category's class
+field is a load-time binding that reads zero on disk, and of the eleven categories here only one
+carries a bind record naming its symbol. The class therefore comes from the reconstruction, from the
+`@implementation Class (Category)` each was written under, resolved by whichever source category
+owns most of that record's annotated implementations. The category name stays the binary's, which is
+authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
+these rows are matched exactly, like every other row, rather than on the selector alone.
 
 Total: {len(listed)} — {done} reconstructed, {verified} verified
 ({100.0 * verified / len(listed):.1f}%).
@@ -4363,7 +4419,7 @@ def main(argv=None) -> int:
     if not args.binary.is_file():
         print(f'error: no such binary: {args.binary}', file=sys.stderr)
         return 1
-    metadata = Metadata(args.binary)
+    metadata = Metadata(args.binary, category_owners(args.root))
     methods = metadata.methods()
     if not methods:
         print('error: no Objective-C metadata found; is this the right binary?', file=sys.stderr)

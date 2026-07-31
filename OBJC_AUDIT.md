@@ -1460,3 +1460,40 @@ checkable all the same, and cheaply: the `adr xN,<address>` that stores the invo
 block literal names the block, so each one can be read straight out of the enclosing routine. The
 neighbouring `+getAllAdStatus` chain, `0x2418dc` into `0x241970` into `0x2419e0`, checks out exactly
 that way and is correct.
+
+## Block annotations are unchecked, and one attempt to check them that did not work
+
+Fixing the two wrong block addresses in `+getAllAdDataWithCallBack:` raised the obvious question of
+how many others are wrong. `audit_ghidra_addresses.py` cannot say: it matches annotations on
+declarations against runtime metadata, and a block has no metadata. Every `@ghidraAddress` written
+inside a method body is therefore unverified, and there are hundreds of them.
+
+The idea was to build the set of addresses a block annotation is allowed to name and report anything
+outside it. A stack block's invoke slot is filled by an `adr`, so decoding every `adr` in `__text`
+gives a candidate set. That much works, and it discriminates correctly on the case that prompted it:
+all six real block addresses around `+getAllAdStatus` and `+getAllAdDataWithCallBack:` are `adr`
+targets, and both wrong ones are not.
+
+It does not generalise, and the failures are worth recording because each is a way the tree's
+conventions are richer than the model:
+
+- A block capturing nothing compiles to a **global** block, a static structure whose invoke slot is
+  a stored pointer rather than an instruction. Worse, those are annotated by the address of the
+  literal itself, which is in data, not by any code address at all — `RBMenuView.mm`'s "global no-op
+  proceed block" is one.
+- `adr` reaches one megabyte, so a block whose invoke sits further away is named by an `adrp` and
+  `add` pair.
+- Even after decoding both forms and every stored pointer landing in `__text`, thirty-three
+  annotations were still reported, and the first one checked, `0x507c8`, is a genuine block invoke
+  that Ghidra names `HandleApplilinkInitCompletion` and types as taking a `Block_layout *`.
+
+So the candidate set was still incomplete and the scan would have made thirty-three false
+accusations. It was deleted rather than committed. A checker that is confidently wrong is worse than
+no checker, because its clean runs get believed and its noisy ones get silenced — and this is the
+third filter in one session that measured something adjacent to the question instead of the question.
+
+What would work is the reverse direction: rather than guessing where invoke pointers come from, ask
+the disassembler what function contains each annotated address and whether that function's first
+parameter is a block layout. That is a per-address query against the Ghidra bridge rather than a
+static sweep, so it is slower, but it answers the actual question and it is what settled `0x507c8`
+here in one call.
