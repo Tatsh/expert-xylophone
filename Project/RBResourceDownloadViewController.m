@@ -592,7 +592,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
             [AppDelegate appDelegate].isSkipUpdate = YES;
             [self download];
         } else {
-            [[AppDelegate appDelegate] launchAppStore];
+            [AppDelegate launchAppStore];
         }
     } else {
         [self download];

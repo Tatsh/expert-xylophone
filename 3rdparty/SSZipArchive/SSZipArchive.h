@@ -128,9 +128,10 @@ typedef NS_ENUM(NSInteger, SSZipArchiveErrorCode) {
 - (BOOL)writeData:(NSData *)data filename:(nullable NSString *)filename withPassword:(nullable NSString *)password;
 - (BOOL)writeData:(NSData *)data filename:(nullable NSString *)filename compressionLevel:(int)compressionLevel password:(nullable NSString *)password AES:(BOOL)aes;
 
-/// The four instance selectors the binary's own (SSZipArchive 1.x) copy defines, which this
-/// vendored 2.x upstream renamed. See the matching section in SSZipArchive.m.
-- (void)zipInfo:(zip_fileinfo *)zipInfo setDate:(NSDate *)date;
+/// Three of the four instance selectors the binary's own (SSZipArchive 1.x) copy defines, which
+/// this vendored 2.x upstream renamed. The fourth, @c -zipInfo:setDate:, takes a minizip
+/// @c zip_fileinfo and so stays private to SSZipArchive.m, which is where that type is visible.
+/// See the matching section there.
 - (BOOL)writeFile:(NSString *)path;
 - (BOOL)writeFileAtPath:(NSString *)path withFileName:(nullable NSString *)fileName;
 - (BOOL)writeData:(NSData *)data filename:(nullable NSString *)filename;
