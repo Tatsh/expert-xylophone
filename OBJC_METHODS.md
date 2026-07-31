@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5114 verified
-(80.6%).
+Total: 6343 — 6306 reconstructed, 5116 verified
+(80.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5114 verified, 3507 come from those passes and the remaining
-1607 were read by hand. The split matters when reading the percentage: a
+Of the 5116 verified, 3507 come from those passes and the remaining
+1609 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -895,7 +895,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `pushLink:` |  | ✅ | ❌ | `0x45bc8` |
 | `StoreCampaignDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x45d08` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x45d24` |
-| `StoreCampaignDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x45ec4` |
+| `StoreCampaignDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x45ec4` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x45f7c` |
 | `StoreCampaignDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x45f80` |
 | `StoreCampaignDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4605c` |
@@ -1433,7 +1433,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `-` | `artistName` |  | ✅ | ✅ | `0x67514` |
 | `MusicDataFromDoc` | `-` | `artistNameHira` |  | ✅ | ✅ | `0x6751c` |
 | `MusicDataFromDoc` | `-` | `artistNameRoman` |  | ✅ | ✅ | `0x67524` |
-| `MusicDataFromDoc` | `-` | `music` |  | ✅ | ❌ | `0x6752c` |
+| `MusicDataFromDoc` | `-` | `music` |  | ✅ | ✅ | `0x6752c` |
 | `MusicDataFromDoc` | `-` | `musicPre` |  | ✅ | ✅ | `0x675e4` |
 | `MusicDataFromDoc` | `-` | `loadSheet` |  | ✅ | ❌ | `0x675ec` |
 | `MusicDataFromDoc` | `-` | `sheetBasic` |  | ✅ | ✅ | `0x676a4` |

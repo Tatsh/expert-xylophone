@@ -1001,6 +1001,14 @@ VERIFIED = {
              '-dealloc at 0x159c8 pairs it with operator.delete. The reconstruction uses malloc '
              'and free, which is self-consistent and unavoidable in a .m; noted at the call rather '
              'than renamed to .mm for one allocation',
+    0x6752c: 'MusicDataFromDoc -music: getPathWithDocument: on musicName, then '
+             'dataWithContentsOfFile: on the result, returned autoreleased. No nil check on '
+             'either, so a missing file yields nil from Foundation rather than from this method',
+    0x45ec4: 'StoreCampaignDetailViewPad -downloaderError:: cmp x21,x19 with b.ne, a pointer '
+             'identity test against sampleDownloader rather than an isEqual: send, so a different '
+             'downloader reporting an error is ignored entirely. Then sampleStop, the downloader '
+             'cleared, and the network alert with a nil delegate. Same shape as the '
+             'StoreExtendNoteDetailViewPad method at 0x25c50',
     0x42248: 'StoreTableCellBase -prepareForReuse: super chain then reset sent to leftView and '
              'rightView, with the selector loaded once into x20 and reused for both',
     0x4a200: 'RBTermDetailPhoneViewController -forceClose: cbnz on viewType skips the navigation '
