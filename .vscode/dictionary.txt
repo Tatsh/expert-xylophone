@@ -133,6 +133,7 @@ difd
 dios
 directorys
 disasm
+ditto
 djsilverberg
 djtaka
 djyoshitaka
@@ -141,6 +142,7 @@ doxyfile
 dplatform
 drbpdbg
 dresources
+dsym
 dysymtab
 eagl
 eeac
@@ -393,6 +395,7 @@ ringanimation
 ripgreprc
 rodata
 roundf
+rsrc
 rtti
 rturl
 schemafile
@@ -402,6 +405,7 @@ scvtf
 sdiv
 seiya
 selref
+sequester
 serialcode
 serialiser
 sheetlayer

@@ -68,11 +68,27 @@ jobs:
           cp -R "$APP" Payload/
           /usr/bin/zip -qry Rbplus-adhoc.ipa Payload
           echo "Packaged: Rbplus-adhoc.ipa"
+      - name: 'Package the .dSYM'
+        run: |
+          # dwarf-with-dsym leaves the linked binary holding only a debug map that points at .o
+          # files from the build machine, so the .ipa alone cannot be debugged: the DWARF itself
+          # lives in the .dSYM. Ship it or the Debug build buys nothing on device.
+          DSYM="$(find build -type d -name 'REFLEC BEAT plus.app.dSYM' -print -quit)"
+          test -n "$DSYM" || { echo 'no .dSYM found; the build is not emitting debug info'; exit 1; }
+          rm -f Rbplus-adhoc.dSYM.zip
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent "$DSYM" Rbplus-adhoc.dSYM.zip
+          echo "Packaged: Rbplus-adhoc.dSYM.zip"
       - name: 'Upload .ipa'
         uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
         with:
           name: 'Rbplus-adhoc-ipa'
           path: 'Rbplus-adhoc.ipa'
+          if-no-files-found: 'error'
+      - name: 'Upload .dSYM'
+        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
+        with:
+          name: 'Rbplus-adhoc-dsym'
+          path: 'Rbplus-adhoc.dSYM.zip'
           if-no-files-found: 'error'
 name: 'build'
 'on':
