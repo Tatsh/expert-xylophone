@@ -1160,3 +1160,20 @@ strings to a newline-separated scratch file and read them back, which split ever
 real findings were unaffected, since neither string contains a newline and both were confirmed by
 scanning `__cfstring` for the exact text, but the count in between was wrong and the difference was
 mine, not the tree's.
+
+### Selectors, checked the same way
+
+`@selector(...)` deserves the same treatment as a literal, and for a worse reason. Every selector
+the shipped build names is a string in `__objc_methname`, and one that is not there can never match:
+`respondsToSelector:` answers NO for ever and the guarded call quietly does nothing. That has no
+symptom at build time and none at run time either, beyond a feature that never fires.
+
+`tools/scan_literals.py` now checks both. Of 245 distinct selectors named across the tree, **every
+one under `Project/` is present in the binary** — no invented selectors anywhere in the
+reconstruction.
+
+The only absences are four sites in the vendored `3rdparty/SSZipArchive`, naming two selectors the
+shipped build's older copy does not define. The near-miss output shows these are upstream API
+changes rather than typos: the binary has `zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:`
+`fileInfo:` where the newer sources call the `Should` variant. That is the same vendored-version
+divergence recorded above, now measured rather than assumed.

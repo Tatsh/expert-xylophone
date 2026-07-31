@@ -18,6 +18,12 @@ Adjacent literals are joined before the lookup, since the compiler concatenates
 ASCII-only literals are skipped deliberately. They are the large majority, they are readable
 enough that an error in one is visible, and many are format strings, keys, or asset names that are
 assembled rather than stored whole.
+
+The same argument applies to ``@selector(...)``, so it is checked here too. Every selector the
+shipped build names is a string in ``__objc_methname``, and a selector that is not there can never
+match: ``respondsToSelector:`` answers NO for ever and the guarded call silently does nothing. That
+failure has no symptom at build time and none at run time either, beyond a feature quietly not
+working.
 """
 
 import argparse
@@ -76,6 +82,40 @@ def cfstrings(binary: Binary) -> set[str]:
     return out
 
 
+def selector_names(binary: Binary) -> set[str]:
+    """
+    Read every selector name the binary defines or references.
+
+    Returns
+    -------
+    set[str]
+        The contents of ``__objc_methname``, which is a run of null-terminated strings.
+    """
+    section = binary.section('__objc_methname')
+    if section is None:
+        return set()
+    raw = binary._data[section.offset:section.offset + section.size]
+    return {part.decode('utf-8', 'replace') for part in raw.split(b'\0') if part}
+
+
+def scan_selectors(root: Path, names: set[str]) -> list[tuple[str, int, str]]:
+    """Report every @selector() in the tree that the binary's selector table does not contain."""
+    pattern = re.compile(r'@selector\(\s*([A-Za-z_][A-Za-z0-9_:]*)\s*\)')
+    findings = []
+    for path in sorted(root.rglob('*')):
+        if path.suffix not in ('.m', '.mm'):
+            continue
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError):
+            continue
+        for number, line in enumerate(text.split('\n'), start=1):
+            for match in pattern.finditer(line):
+                if match.group(1) not in names:
+                    findings.append((str(path), number, match.group(1)))
+    return findings
+
+
 def scan(root: Path, pool: set[str]) -> list[tuple[str, int, str]]:
     """Report every joined non-ASCII literal that the binary does not contain."""
     findings = []
@@ -103,7 +143,8 @@ def main(argv=None) -> int:
     parser.add_argument('--root', type=Path, default=Path('Project'))
     arguments = parser.parse_args(argv)
 
-    pool = cfstrings(Binary(arguments.binary))
+    binary = Binary(arguments.binary)
+    pool = cfstrings(binary)
     findings = scan(arguments.root, pool)
     print(f'literals: {len(pool)} records in the binary, {len(findings)} source literals absent')
     for path, line, literal in findings:
@@ -111,7 +152,16 @@ def main(argv=None) -> int:
         closest = difflib.get_close_matches(literal, list(pool), n=1, cutoff=_SIMILARITY_FLOOR)
         if closest:
             print(f'    closest record: {closest[0]!r}')
-    return min(len(findings), 125)
+
+    names = selector_names(binary)
+    selectors = scan_selectors(arguments.root, names)
+    print(f'selectors: {len(names)} names in the binary, {len(selectors)} source selectors absent')
+    for path, line, selector in selectors:
+        print(f'  {path}:{line} @selector({selector})')
+        closest = difflib.get_close_matches(selector, list(names), n=1, cutoff=_SIMILARITY_FLOOR)
+        if closest:
+            print(f'    closest name: {closest[0]}')
+    return min(len(findings) + len(selectors), 125)
 
 
 if __name__ == '__main__':
