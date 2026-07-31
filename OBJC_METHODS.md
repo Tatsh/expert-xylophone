@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4741 verified
-(74.7%).
+Total: 6343 — 6306 reconstructed, 4744 verified
+(74.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1906,7 +1906,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistCreateViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x90428` |
 | `RBPlaylistCreateViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x904ac` |
 | `RBPlaylistCreateViewController` | `-` | `doneButtonPush:` |  | ✅ | ❌ | `0x90530` |
-| `RBPlaylistCreateViewController` | `-` | `backButtonPush:` |  | ✅ | ❌ | `0x9070c` |
+| `RBPlaylistCreateViewController` | `-` | `backButtonPush:` |  | ✅ | ✅ | `0x9070c` |
 | `RBPlaylistCreateViewController` | `-` | `fieldChanged:` |  | ✅ | ❌ | `0x90778` |
 | `RBPlaylistCreateViewController` | `-` | `textFieldShouldReturn:` |  | ✅ | ❌ | `0x90890` |
 | `RBPlaylistCreateViewController` | `-` | `textField:shouldChangeCharactersInRange:replacementString:` |  | ✅ | ❌ | `0x9094c` |
@@ -1925,7 +1925,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x92398` |
 | `RBPlaylistViewController` | `-` | `valueChanged:` |  | ✅ | ❌ | `0x927ec` |
 | `RBPlaylistViewController` | `-` | `reloadData` |  | ✅ | ❌ | `0x92944` |
-| `RBPlaylistViewController` | `-` | `returnButtonPush:` |  | ✅ | ❌ | `0x93a7c` |
+| `RBPlaylistViewController` | `-` | `returnButtonPush:` |  | ✅ | ✅ | `0x93a7c` |
 | `RBPlaylistViewController` | `-` | `closeButtonPush:` |  | ✅ | ❌ | `0x93ae8` |
 | `RBPlaylistViewController` | `-` | `addButtonPush:` |  | ✅ | ❌ | `0x93bd8` |
 | `RBPlaylistViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x93d00` |
@@ -2144,7 +2144,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `getSearchArray:` |  | ✅ | ❌ | `0xb1b5c` |
 | `RBMenuView` | `-` | `exeSearchPickUp` |  | ✅ | ❌ | `0xb1d14` |
 | `RBMenuView` | `-` | `matchTitle:` |  | ✅ | ❌ | `0xb1e4c` |
-| `RBMenuView` | `-` | `searchBar:textDidChange:` |  | ✅ | ❌ | `0xb217c` |
+| `RBMenuView` | `-` | `searchBar:textDidChange:` |  | ✅ | ✅ | `0xb217c` |
 | `RBMenuView` | `-` | `handleLongPressGesture:` |  | ✅ | ❌ | `0xb21e4` |
 | `RBMenuView` | `-` | `configureCell:` |  | ✅ | ✅ | `0xb2280` |
 | `RBMenuView` | `-` | `scrollViewDidEndScroll:` |  | ✅ | ❌ | `0xb2fec` |

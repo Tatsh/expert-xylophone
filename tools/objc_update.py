@@ -295,6 +295,11 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x9070c: 'RBPlaylistCreateViewController -backButtonPush:: pops the navigation controller '
+             'animated, the mov w2 of 1',
+    0x93a7c: 'RBPlaylistViewController -returnButtonPush:: the same pop, read on its own',
+    0xb217c: 'RBMenuView -searchBar:textDidChange:: passes x3, the search text, to '
+             'searchStringChanged: rather than x2, the bar, and only then runs exeSearchPickUp',
     0x356b8: 'RBTutorialManager +getInstance: a plain nil check with no once token, and it seeds '
              'currentStatus with the mov w2 of 0xffffffff, which is RBTutorialStatusNone',
     0x35724: 'RBTutorialManager +isTutorial: getInstance then the instance isTutorial',
