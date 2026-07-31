@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5020 verified
-(79.1%).
+Total: 6343 — 6306 reconstructed, 5023 verified
+(79.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5020 verified, 3507 come from those passes and the remaining
-1513 were read by hand. The split matters when reading the percentage: a
+Of the 5023 verified, 3507 come from those passes and the remaining
+1516 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5754,13 +5754,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendNetwork` | `+` | `getAdDisplayStatusWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x21228c` |
 | `RecommendNetwork` | `+` | `showOwnAdWithAdLocation:toAppliId:creativeId:` |  | ✅ | ❌ | `0x212540` |
 | `RecommendNetwork` | `+` | `touchOwnAdWithAdLocation:toAppliId:creativeId:requestCode:delegate:` |  | ✅ | ❌ | `0x212604` |
-| `RecommendNetwork` | `+` | `openAppListWithAdLocation:delegate:` |  | ✅ | ❌ | `0x21271c` |
+| `RecommendNetwork` | `+` | `openAppListWithAdLocation:delegate:` |  | ✅ | ✅ | `0x21271c` |
 | `RecommendNetwork` | `+` | `openAppListWithAdLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x212774` |
-| `RecommendNetwork` | `+` | `openAdScreenWithAdModel:adLocation:delegate:` |  | ✅ | ❌ | `0x212960` |
+| `RecommendNetwork` | `+` | `openAdScreenWithAdModel:adLocation:delegate:` |  | ✅ | ✅ | `0x212960` |
 | `RecommendNetwork` | `+` | `openAdScreenWithAdModel:adLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x2129c0` |
 | `RecommendNetwork` | `+` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:delegate:` |  | ✅ | ❌ | `0x212bb0` |
 | `RecommendNetwork` | `+` | `openAdAreaWithParentView:rect:adModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x212c6c` |
-| `RecommendNetwork` | `+` | `openInterstitialWithAdLocation:delegate:` |  | ✅ | ❌ | `0x212eb4` |
+| `RecommendNetwork` | `+` | `openInterstitialWithAdLocation:delegate:` |  | ✅ | ✅ | `0x212eb4` |
 | `RecommendNetwork` | `+` | `openInterstitialWithAdLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x212f0c` |
 | `RecommendNetwork` | `+` | `closeAdScreen` |  | ✅ | ✅ | `0x2130f4` |
 | `RecommendNetwork` | `+` | `closeAdAreaWithParentView:` |  | ✅ | ❌ | `0x21316c` |

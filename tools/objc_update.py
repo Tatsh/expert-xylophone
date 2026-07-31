@@ -926,6 +926,15 @@ VERIFIED = {
               'guards setDelegate:nil on it',
     0x21fd74: 'RewardNetwork +setNavigationBarHidden:: forwards the flag to RewardCore '
               'sharedInstance, with no guard',
+    0x21271c: 'RecommendNetwork +openAppListWithAdLocation:delegate:: forwards to the '
+              'requestCode: form with x3 zeroed, so the nil request code is the binary\'s. The '
+              'adLocation is retained across the call and released after, which is the ARC bridge '
+              'rather than anything the reconstruction needs to spell',
+    0x212eb4: 'RecommendNetwork +openInterstitialWithAdLocation:delegate:: the same shape against '
+              'openInterstitialWithAdLocation:requestCode:delegate:',
+    0x212960: 'RecommendNetwork +openAdScreenWithAdModel:adLocation:delegate:: the same shape '
+              'again, with x4 zeroed for the request code and the model and delegate shuffled up '
+              'a register each to make room',
     0x211f20: 'RecommendNetwork +getAppListStatusWithCallback:: a tail branch to '
               'getAdStatusWithAdModel:callback: with w2 set to 1, matching '
               'RecommendAdModelAppList, and the receiver left as self rather than reloaded',
