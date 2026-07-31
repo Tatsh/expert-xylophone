@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4928 verified
-(77.7%).
+Total: 6343 — 6306 reconstructed, 4932 verified
+(77.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4234,7 +4234,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x193f38` |
 | `RBNotificationPageView` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x194000` |
 | `RBNotificationPageView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ✅ | `0x194064` |
-| `RBNotificationPageView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1940dc` |
+| `RBNotificationPageView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1940dc` |
 | `RBNotificationPageView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x19412c` |
 | `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x194130` |
 | `RBNotificationPageView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x194134` |
@@ -4260,7 +4260,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `pushRewardButton:` |  | ✅ | ❌ | `0x1973c0` |
 | `RBUnlockView` | `-` | `didSelectView:selectedCell:` |  | ✅ | ❌ | `0x19744c` |
 | `RBUnlockView` | `-` | `yesButtonTap:` |  | ✅ | ❌ | `0x197964` |
-| `RBUnlockView` | `-` | `noButtonTap:` |  | ✅ | ❌ | `0x1988c4` |
+| `RBUnlockView` | `-` | `noButtonTap:` |  | ✅ | ✅ | `0x1988c4` |
 | `RBUnlockView` | `-` | `getMusicInfoWithMusicID:` |  | ✅ | ❌ | `0x198934` |
 | `RBUnlockView` | `-` | `downloadWithMusicInfo:` |  | ✅ | ❌ | `0x198e54` |
 | `RBUnlockView` | `-` | `dealloc` |  | ❌ | ✅ | `0x1991a4` |
@@ -4270,7 +4270,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `downloadManagerStartTask:` |  | ✅ | ✅ | `0x1996e8` |
 | `RBUnlockView` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1996ec` |
 | `RBUnlockView` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1998e0` |
-| `RBUnlockView` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x19991c` |
+| `RBUnlockView` | `-` | `downloadManagerProceed:` |  | ✅ | ✅ | `0x19991c` |
 | `RBUnlockView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1999bc` |
 | `RBUnlockView` | `-` | `parentCustomView` | prop | ✅ | ✅ | `0x1999d8` |
 | `RBUnlockView` | `-` | `setParentCustomView:` | prop | ✅ | ✅ | `0x1999f8` |
@@ -4333,7 +4333,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockPackageData` | `-` | `data` | prop | ✅ | ✅ | `0x19a9dc` |
 | `RBUnlockPackageData` | `-` | `setData:` | prop | ✅ | ✅ | `0x19a9ec` |
 | `RBUnlockData` | `-` | `description` |  | ✅ | ❌ | `0x19aa64` |
-| `RBUnlockData` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x19ab70` |
+| `RBUnlockData` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x19ab70` |
 | `RBUnlockData` | `-` | `save` |  | ✅ | ✅ | `0x19abd4` |
 | `RBUnlockData` | `-` | `parseDictionary:` |  | ✅ | ❌ | `0x19abd8` |
 | `RBUnlockData` | `-` | `getPackage` |  | ✅ | ❌ | `0x19b28c` |

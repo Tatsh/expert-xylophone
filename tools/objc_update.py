@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x19ab70: 'RBUnlockData +sharedInstance: the plain nil check again, no once token or lock',
+    0x1988c4: 'RBUnlockView -noButtonTap:: themed effect 4, kSoundEffectPopupCancel, then hides '
+              'the popup view rather than itself',
+    0x19991c: 'RBUnlockView -downloadManagerProceed:: pipes the manager\'s overallProgress into '
+              'progressOverlayView',
+    0x1940dc: 'RBNotificationPageView -alertView:clickedButtonAtIndex:: clears animating and '
+              'hides, but unlike the term views does not nil the alert view\'s delegate',
     0x1903b0: 'RBUnlockCollectionCell -setEnabled:: stores the flag, then an fcsel picks 0.0 when '
               'enabled and the 0.6 pool load otherwise for the disable overlay, and mirrors the '
               'flag onto userInteractionEnabled',
