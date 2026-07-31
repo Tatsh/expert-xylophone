@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4636 verified
-(73.1%).
+Total: 6343 — 6306 reconstructed, 4640 verified
+(73.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2015,7 +2015,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignData` | `-` | `parseDictionary:` |  | ✅ | ❌ | `0x9c45c` |
 | `RBCampaignData` | `-` | `setColor:key:` |  | ✅ | ❌ | `0x9c8e4` |
 | `RBCampaignData` | `-` | `startDownloadWithPath:key:` |  | ✅ | ❌ | `0x9cbc8` |
-| `RBCampaignData` | `-` | `presetHinabitaMode` |  | ✅ | ❌ | `0x9d37c` |
+| `RBCampaignData` | `-` | `presetHinabitaMode` |  | ✅ | ✅ | `0x9d37c` |
 | `RBCampaignData` | `-` | `setHinabitaMode:` |  | ✅ | ✅ | `0x9d3bc` |
 | `RBCampaignData` | `-` | `isCampaignMode` | prop | ✅ | ✅ | `0x9d3c8` |
 | `RBCampaignData` | `-` | `setIsCampaignMode:` | prop | ✅ | ✅ | `0x9d3dc` |
@@ -2958,7 +2958,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCorporateViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0xf0dc0` |
 | `RBCorporateViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0xf0ecc` |
 | `RBCorporateViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0xf0f30` |
-| `RBCorporateViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xf0ff0` |
+| `RBCorporateViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0xf0ff0` |
 | `RBCorporateViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0xf1030` |
 | `RBCorporateViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0xf1040` |
 | `RBCorporateViewController` | `-` | `indicator` | prop | ✅ | ✅ | `0xf1050` |
@@ -3518,7 +3518,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterScoreView` | `-` | `setupView` |  | ✅ | ❌ | `0x141910` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `showAnimation:` |  | ✅ | ❌ | `0x1424cc` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `hideAnimation:` |  | ✅ | ❌ | `0x1426c0` |
-| `RBErosionMarkUpdaterScoreView` | `-` | `remove` |  | ✅ | ❌ | `0x1428b4` |
+| `RBErosionMarkUpdaterScoreView` | `-` | `remove` |  | ✅ | ✅ | `0x1428b4` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `dealloc` |  | ✅ | ✅ | `0x1428ec` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `displayRate` | prop | ✅ | ✅ | `0x142920` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `setDisplayRate:` | prop | ✅ | ✅ | `0x142930` |
@@ -3536,7 +3536,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterScoreView` | `-` | `setRightButton:` | prop | ✅ | ✅ | `0x1429f0` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `init` |  | ✅ | ❌ | `0x142a00` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `initWithOrientationMask:` |  | ✅ | ❌ | `0x142a98` |
-| `RBErosionMarkUpdaterAlertController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x142b1c` |
+| `RBErosionMarkUpdaterAlertController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x142b1c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `orientationMask` | prop | ✅ | ✅ | `0x142b2c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `setOrientationMask:` | prop | ✅ | ✅ | `0x142b3c` |
 | `RBErosionMarkUpdater` | `+` | `updateCheckStart:` |  | ✅ | ✅ | `0x142b4c` |

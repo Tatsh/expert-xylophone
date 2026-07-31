@@ -279,6 +279,14 @@ VERIFIED = {
     0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
     0xe8894: 'RBMenuBGEffectView -removeFromSuperview: the same lone super chain',
     0x3d080: 'neWindow -initWithFrame:: chains to super and returns it, adding nothing',
+    0x9d37c: 'RBCampaignData -presetHinabitaMode: names the campaign 201703hnbt and then clears '
+             'the matching flag rather than setting it',
+    0xf0ff0: 'RBCorporateViewController -alertView:clickedButtonAtIndex:: the cbz on isFirstRequest '
+             'skips the pop entirely, and the button index is never read',
+    0x1428b4: 'RBErosionMarkUpdaterScoreView -remove: clears the delegate before removing itself, '
+              'in that order',
+    0x142b1c: 'RBErosionMarkUpdaterAlertController -supportedInterfaceOrientations: returns the '
+              'Q-typed _orientationMask ivar unmodified',
     0x3532c: 'SoundManager -unsetCallBack:: zeroes a sixteen-byte struct on the stack and hands it '
              'to AudioUnitSetProperty as property 0x17, scope 1 and size 16, which are the render '
              'callback, the input scope, and the struct size',
