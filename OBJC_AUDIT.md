@@ -413,6 +413,12 @@ reconstruction total is sound. The error was in the description, not in the cove
 count that is off by a factor of thirty-nine is worth correcting, because the next reader would
 reasonably use it to decide that `-dealloc` is a class not worth examining.
 
+Treat 39 as a floor rather than the exact figure. The count matches `objc_msgSend` calls, so a
+`-dealloc` whose only extra work is a **direct ivar write** does not appear in it.
+`-[RewardWebViewController dealloc]` is both: it sends `clearDelegate` and also clears
+`_viewCloseFlg` with a `strb wzr` at `0x21f224`, which the reconstruction has and the counter did
+not see.
+
 Getting there was mostly **not** writing new bodies. The checklist had reported 137 missing, and
 they broke down as:
 

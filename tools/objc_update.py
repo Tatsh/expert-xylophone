@@ -295,6 +295,16 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x41e98: 'AVBus -dealloc: nils player, then the ARC-emitted super chain',
+    0x878ac: 'TwitterImageCreater -dealloc: sends its own reset and nothing else',
+    0xfe958: 'StorePackView -dealloc: detaches the delegate only',
+    0x177a38: 'StoreTableCellViewBase -dealloc: the same delegate detach',
+    0x14d84: 'UnZipArchive -dealloc: closeFile before the chain',
+    0x3970c: 'RBHttpUtil -dealloc: cancel before the chain',
+    0x4ca54: 'StoreExtendNoteView -dealloc: delegate detach',
+    0xcc08: 'StoreButtonView -dealloc: nils buttonColor then disabledColor, in that order',
+    0x21f1f8: 'RewardWebViewController -dealloc: clearDelegate and then a direct strb wzr clearing '
+              '_viewCloseFlg at 0x21f224, which a msgSend-only scan does not see',
     0x154b38: 'DAProgressOverlayView -initWithFrame:: super, nil check, setUp',
     0x18e3cc: 'RBPushNotificationView -initWithFrame:: a bare super chain with no nil check and '
               'no setup call, exactly as reconstructed',

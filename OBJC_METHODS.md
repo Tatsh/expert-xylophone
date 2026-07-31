@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4752 verified
-(74.9%).
+Total: 6343 — 6306 reconstructed, 4761 verified
+(75.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -160,7 +160,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreButtonView` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0xc348` |
 | `StoreButtonView` | `-` | `setSelected:` |  | ✅ | ❌ | `0xc3d4` |
 | `StoreButtonView` | `-` | `drawRect:` |  | ✅ | ❌ | `0xc460` |
-| `StoreButtonView` | `-` | `dealloc` |  | ✅ | ❌ | `0xcc08` |
+| `StoreButtonView` | `-` | `dealloc` |  | ✅ | ✅ | `0xcc08` |
 | `RBMenuBGEffectPartView` | `-` | `init` |  | ✅ | ❌ | `0xcce0` |
 | `RBMenuBGEffectPartView` | `-` | `setupView` |  | ✅ | ❌ | `0xcd98` |
 | `RBMenuBGEffectPartView` | `-` | `startAnimation` |  | ✅ | ❌ | `0xd2a8` |
@@ -220,7 +220,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
 | `StoreExtendNoteCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xfdb8` |
 | `UnZipArchive` | `-` | `init` |  | ✅ | ✅ | `0x14d40` |
-| `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
+| `UnZipArchive` | `-` | `dealloc` |  | ✅ | ✅ | `0x14d84` |
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
 | `UnZipArchive` | `-` | `closeFile` |  | ✅ | ✅ | `0x14ec8` |
 | `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ✅ | `0x14efc` |
@@ -665,7 +665,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `getHeader` |  | ✅ | ✅ | `0x39520` |
 | `RBHttpUtil` | `-` | `hashChecked` |  | ✅ | ✅ | `0x3952c` |
 | `RBHttpUtil` | `-` | `reset` |  | ✅ | ❌ | `0x39538` |
-| `RBHttpUtil` | `-` | `dealloc` |  | ✅ | ❌ | `0x3970c` |
+| `RBHttpUtil` | `-` | `dealloc` |  | ✅ | ✅ | `0x3970c` |
 | `RBHttpUtil` | `-` | `requestTimeoutInterval` | prop | ✅ | ✅ | `0x39790` |
 | `RBHttpUtil` | `-` | `setRequestTimeoutInterval:` | prop | ✅ | ✅ | `0x397a0` |
 | `RBHttpUtil` | `-` | `resourceTimeoutInterval` | prop | ✅ | ✅ | `0x397b0` |
@@ -866,7 +866,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ❌ | `0x41d28` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x41da8` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x41e20` |
-| `AVBus` | `-` | `dealloc` |  | ✅ | ❌ | `0x41e98` |
+| `AVBus` | `-` | `dealloc` |  | ✅ | ✅ | `0x41e98` |
 | `AVBus` | `-` | `isSameSource:` |  | ✅ | ✅ | `0x41f20` |
 | `AVBus` | `-` | `currentID` |  | ✅ | ✅ | `0x41f38` |
 | `AVBus` | `-` | `player` | prop | ✅ | ✅ | `0x41f48` |
@@ -989,7 +989,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `viewType` | prop | ✅ | ✅ | `0x4a54c` |
 | `RBTermDetailPhoneViewController` | `-` | `setViewType:` | prop | ✅ | ✅ | `0x4a55c` |
 | `StoreExtendNoteView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x4bcc4` |
-| `StoreExtendNoteView` | `-` | `dealloc` |  | ✅ | ❌ | `0x4ca54` |
+| `StoreExtendNoteView` | `-` | `dealloc` |  | ✅ | ✅ | `0x4ca54` |
 | `StoreExtendNoteView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x4cadc` |
 | `StoreExtendNoteView` | `-` | `isPurchased` |  | ✅ | ✅ | `0x4cb68` |
 | `StoreExtendNoteView` | `-` | `setIsPurchased:` |  | ✅ | ✅ | `0x4cbc8` |
@@ -1779,7 +1779,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreaterScoreElement` | `-` | `setName:` | prop | ✅ | ✅ | `0x87738` |
 | `TwitterImageCreater` | `-` | `init` |  | ✅ | ❌ | `0x87784` |
 | `TwitterImageCreater` | `-` | `reset` |  | ✅ | ✅ | `0x87848` |
-| `TwitterImageCreater` | `-` | `dealloc` |  | ✅ | ❌ | `0x878ac` |
+| `TwitterImageCreater` | `-` | `dealloc` |  | ✅ | ✅ | `0x878ac` |
 | `TwitterImageCreater` | `-` | `setScore:Side:` |  | ✅ | ✅ | `0x87930` |
 | `TwitterImageCreater` | `-` | `setAR:Side:` |  | ✅ | ✅ | `0x87958` |
 | `TwitterImageCreater` | `-` | `setJustNum:Side:` |  | ✅ | ✅ | `0x87980` |
@@ -3132,7 +3132,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackMusicView` | `-` | `pid` | prop | ✅ | ✅ | `0xfd75c` |
 | `StorePackMusicView` | `-` | `setPid:` | prop | ✅ | ✅ | `0xfd76c` |
 | `StorePackView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xfd858` |
-| `StorePackView` | `-` | `dealloc` |  | ✅ | ❌ | `0xfe958` |
+| `StorePackView` | `-` | `dealloc` |  | ✅ | ✅ | `0xfe958` |
 | `StorePackView` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xfe9e0` |
 | `StorePackView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0xfea6c` |
 | `StorePackView` | `-` | `handleTap:` |  | ✅ | ❌ | `0xfeaf8` |
@@ -3968,7 +3968,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeInfoController` | `-` | `action:query:` |  | ✅ | ❌ | `0x176604` |
 | `RBUrlSchemeInfoController` | `-` | `webRbAction:` |  | ✅ | ❌ | `0x17671c` |
 | `StoreTableCellViewBase` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1777bc` |
-| `StoreTableCellViewBase` | `-` | `dealloc` |  | ✅ | ❌ | `0x177a38` |
+| `StoreTableCellViewBase` | `-` | `dealloc` |  | ✅ | ✅ | `0x177a38` |
 | `StoreTableCellViewBase` | `-` | `setBgImage:` |  | ✅ | ❌ | `0x177ac0` |
 | `StoreTableCellViewBase` | `-` | `setIsNew:` |  | ✅ | ❌ | `0x177b4c` |
 | `StoreTableCellViewBase` | `-` | `handleTap:` |  | ✅ | ❌ | `0x177c40` |
@@ -5907,7 +5907,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21efec` |
 | `RewardWebViewController` | `-` | `hasParentViewController:` |  | ✅ | ❌ | `0x21f068` |
 | `RewardWebViewController` | `-` | `clearDelegate` |  | ✅ | ❌ | `0x21f19c` |
-| `RewardWebViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x21f1f8` |
+| `RewardWebViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x21f1f8` |
 | `RewardWebViewController` | `-` | `sdkDelegate` | prop | ✅ | ✅ | `0x21f25c` |
 | `RewardWebViewController` | `-` | `setSdkDelegate:` | prop | ✅ | ✅ | `0x21f27c` |
 | `RewardWebViewController` | `-` | `parentView` | prop | ✅ | ✅ | `0x21f290` |
