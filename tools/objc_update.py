@@ -1141,6 +1141,14 @@ VERIFIED = {
               'stp x8,xzr,[sp,#0x10] supplies three more and the nil, so four objects and two '
               'pairs. The CFStrings decode to object "0" key "cr" and object "json" key '
               '"format". The reconstruction returned an empty dictionary, dropping both; fixed',
+    0x220f68: 'ApplilinkDebug +clearSession: clears both cores, not one. RewardCore and '
+              'RecommendCore each get sharedInstance and clearSession, with the selector loaded '
+              'once into x21 and reused for the second send',
+    0x220ff4: 'ApplilinkDebug +clearAdStatus: the same two-core shape against clearAdStatus',
+    0x2424e0: 'RecommendAdCache +clearAllAdDataInfoExpire: removes the CFString at 0x372c40, '
+              'decoded as "ApplilinkRecommend.allAdData.Expire". Together with +clearAllAdData at '
+              '0x242380, which removes only the payload key, this confirms the split is '
+              'deliberate: two keys, two methods, and neither touches the other',
     0x220f1c: 'ApplilinkDebug +versionDev: a variadic stringWithFormat: read from the stack rather '
               'than the decompile. The format at 0x3711a0 is "%@.%@" and the stp x9,x8,[sp] '
               'supplies exactly two arguments, the CFStrings at 0x36fc00 and 0x371120, decoded as '
