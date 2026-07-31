@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x17f6dc: 'RBTimingSlider -endTrackingWithTouch:withEvent:: completes the third slider trio, '
+              'void where the other two return YES',
+    0x18ddc4: 'RBUnlockCollectionView -collectionView:didHighlightItemAtIndexPath:: looks the cell '
+              'up on the passed collection view and sets highlighted',
+    0x18de50: 'RBUnlockCollectionView -collectionView:didUnhighlightItemAtIndexPath:: the mirror, '
+              'with a mov w2 of 0',
+    0x18f6b4: 'RBPushNotificationView -stopTimer: guards only the invalidate; the clear runs '
+              'unconditionally, which the reconstruction has and a single if would not',
     0x178ff0: 'StoreExtendNoteInfo -extFileExist: asks NSFileManager about the purchased path for '
               'its own pid, so it reports the extend-note file rather than the pack file',
     0x17dc08: 'RBServerAPIManager -downloaderFinished:: identical to its downloaderError:, '

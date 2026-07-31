@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4917 verified
-(77.5%).
+Total: 6343 — 6306 reconstructed, 4921 verified
+(77.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4049,7 +4049,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTimingSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x17f4b4` |
 | `RBTimingSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x17f594` |
 | `RBTimingSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x17f638` |
-| `RBTimingSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x17f6dc` |
+| `RBTimingSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x17f6dc` |
 | `RBTimingSlider` | `-` | `value` | prop | ✅ | ✅ | `0x17f778` |
 | `RBTimingSlider` | `-` | `baseView` | prop | ✅ | ✅ | `0x17f788` |
 | `RBTimingSlider` | `-` | `setBaseView:` | prop | ✅ | ✅ | `0x17f798` |
@@ -4143,8 +4143,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockCollectionView` | `-` | `configureCell:` |  | ✅ | ❌ | `0x18d380` |
 | `RBUnlockCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0x18dc24` |
 | `RBUnlockCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ❌ | `0x18dc8c` |
-| `RBUnlockCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x18ddc4` |
-| `RBUnlockCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x18de50` |
+| `RBUnlockCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ✅ | `0x18ddc4` |
+| `RBUnlockCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ✅ | `0x18de50` |
 | `RBUnlockCollectionView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0x18dedc` |
 | `RBUnlockCollectionView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x18e020` |
 | `RBUnlockCollectionView` | `-` | `delegate` | prop | ✅ | ✅ | `0x18e148` |
@@ -4169,7 +4169,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPushNotificationView` | `-` | `hideAnimationStart` |  | ✅ | ✅ | `0x18efa0` |
 | `RBPushNotificationView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x18efe4` |
 | `RBPushNotificationView` | `-` | `onTapped:` |  | ✅ | ❌ | `0x18f348` |
-| `RBPushNotificationView` | `-` | `stopTimer` |  | ✅ | ❌ | `0x18f6b4` |
+| `RBPushNotificationView` | `-` | `stopTimer` |  | ✅ | ✅ | `0x18f6b4` |
 | `RBPushNotificationView` | `-` | `dealloc` |  | ✅ | ✅ | `0x18f74c` |
 | `RBPushNotificationView` | `-` | `delegate` | prop | ✅ | ✅ | `0x18f7e0` |
 | `RBPushNotificationView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x18f800` |
