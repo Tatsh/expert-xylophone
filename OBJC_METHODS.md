@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4803 verified
-(75.7%).
+Total: 6343 — 6306 reconstructed, 4806 verified
+(75.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1904,7 +1904,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistCreateViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x8f250` |
 | `RBPlaylistCreateViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x90164` |
 | `RBPlaylistCreateViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x90428` |
-| `RBPlaylistCreateViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x904ac` |
+| `RBPlaylistCreateViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x904ac` |
 | `RBPlaylistCreateViewController` | `-` | `doneButtonPush:` |  | ✅ | ❌ | `0x90530` |
 | `RBPlaylistCreateViewController` | `-` | `backButtonPush:` |  | ✅ | ✅ | `0x9070c` |
 | `RBPlaylistCreateViewController` | `-` | `fieldChanged:` |  | ✅ | ❌ | `0x90778` |
@@ -1962,7 +1962,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistViewController` | `-` | `setTitleLabel:` | prop | ✅ | ✅ | `0x958a8` |
 | `RBPlaylistViewController` | `-` | `segmentedControl` | prop | ✅ | ✅ | `0x958e0` |
 | `RBPlaylistViewController` | `-` | `setSegmentedControl:` | prop | ✅ | ✅ | `0x958f0` |
-| `RBCreditsView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x96328` |
+| `RBCreditsView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x96328` |
 | `RBCreditsView` | `-` | `setupView` |  | ✅ | ❌ | `0x963b4` |
 | `RBCreditsView` | `-` | `settingView` | prop | ✅ | ✅ | `0x96620` |
 | `RBCreditsView` | `-` | `setSettingView:` | prop | ✅ | ✅ | `0x96640` |
@@ -2348,7 +2348,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteList` | `-` | `init` |  | ✅ | ❌ | `0xbf064` |
 | `RBStoreExtendNoteList` | `-` | `startFetching` |  | ✅ | ❌ | `0xbf1a0` |
 | `RBStoreExtendNoteList` | `-` | `cancelFetching` |  | ✅ | ❌ | `0xbf338` |
-| `RBStoreExtendNoteList` | `-` | `isFetching` |  | ✅ | ❌ | `0xbf488` |
+| `RBStoreExtendNoteList` | `-` | `isFetching` |  | ✅ | ✅ | `0xbf488` |
 | `RBStoreExtendNoteList` | `-` | `extendMusicInfos` |  | ✅ | ✅ | `0xbf50c` |
 | `RBStoreExtendNoteList` | `-` | `extendNoteProductIDList` |  | ✅ | ✅ | `0xbf518` |
 | `RBStoreExtendNoteList` | `-` | `getExtendNoteInfoWithProductID:` |  | ✅ | ❌ | `0xbf524` |

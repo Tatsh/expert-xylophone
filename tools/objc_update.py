@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x904ac: 'RBPlaylistCreateViewController -viewWillDisappear:: super, then textField '
+             'resignFirstResponder, the mirror of its viewDidAppear:',
+    0xbf488: 'RBStoreExtendNoteList -isFetching: short-circuits, returning YES on a live '
+             'extendNotelistDownloader without ever reading productsRequest',
+    0x96328: 'RBCreditsView -initWithFrame:: super, nil check, then setMusicMenuPopupViewType: '
+             'with the orr w2 of 3 matching kMusicMenuPopupViewTypeCredits, then setupView',
     0x4cadc: 'StoreExtendNoteView -setArtwork:: drives artworkImageView.image, no ivar of its own',
     0x90428: 'RBPlaylistCreateViewController -viewDidAppear:: super, then textField '
              'becomeFirstResponder so the keyboard is up on entry',
