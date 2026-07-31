@@ -295,6 +295,21 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x1942f8: 'RBUnlockView -setParentView:: forwards to the differently-named setParentCustomView:',
+    0x1998e0: 'RBUnlockView -downloadManagerFailed:: ignores the manager, nils dlMusicName, then '
+              'reloadData',
+    0x18efa0: 'RBPushNotificationView -hideAnimationStart: stopTimer, then hideAnimation bounced '
+              'through performSelectorOnMainThread: with waitUntilDone YES',
+    0x1dc8e0: 'RBStoreDetailViewController -viewDidDisappear:: a pure super chain',
+    0x201628: 'RBAnimationFactory +createPositionXAnim...: tail-calls the key-path builder with '
+              'the "position.x" CFString at 0x36cfc0',
+    0x201644: 'RBAnimationFactory +createPositionYAnim...: loads the SAME 0x36cfc0 "position.x" '
+              'string, not the "position.y" at 0x36cfe0 that exists two slots along. A bug in the '
+              'shipped binary; the reconstruction reproduces it and the file header says so',
+    0x1cb2e8: 'RBCoreDataManager +scoreDataFileName: a csel on IsPad, ScoreData.sqlite on the pad '
+              'and ScoreDataPhone.sqlite otherwise',
+    0x1f05fc: 'RBStorePackList +storeCountry: nil-checks the cached country global before copying '
+              'it with stringWithString:, and returns nil when unset',
     0x1ad484: 'RBTutorialPastel -getPosition:: calls IsPad and discards the result, then indexes '
               'the 0x3df460 table at a 16-byte stride for the CGPoint pair in d0/d1',
     0x1b35cc: 'RBTutorialPastelLayer -getPosition:: instruction-identical to the RBTutorialPastel '

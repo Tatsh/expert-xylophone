@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4694 verified
-(74.0%).
+Total: 6343 — 6306 reconstructed, 4702 verified
+(74.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4166,7 +4166,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPushNotificationView` | `-` | `showNotification` |  | ✅ | ✅ | `0x18eac4` |
 | `RBPushNotificationView` | `-` | `setNextNotification` |  | ✅ | ❌ | `0x18eaf8` |
 | `RBPushNotificationView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x18ec60` |
-| `RBPushNotificationView` | `-` | `hideAnimationStart` |  | ✅ | ❌ | `0x18efa0` |
+| `RBPushNotificationView` | `-` | `hideAnimationStart` |  | ✅ | ✅ | `0x18efa0` |
 | `RBPushNotificationView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x18efe4` |
 | `RBPushNotificationView` | `-` | `onTapped:` |  | ✅ | ❌ | `0x18f348` |
 | `RBPushNotificationView` | `-` | `stopTimer` |  | ✅ | ❌ | `0x18f6b4` |
@@ -4251,7 +4251,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `requestURL` | prop | ✅ | ✅ | `0x194200` |
 | `RBNotificationPageView` | `-` | `setRequestURL:` | prop | ✅ | ✅ | `0x194210` |
 | `RBUnlockView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x194284` |
-| `RBUnlockView` | `-` | `setParentView:` |  | ✅ | ❌ | `0x1942f8` |
+| `RBUnlockView` | `-` | `setParentView:` |  | ✅ | ✅ | `0x1942f8` |
 | `RBUnlockView` | `-` | `setupView` |  | ✅ | ❌ | `0x194314` |
 | `RBUnlockView` | `-` | `reloadData` |  | ✅ | ✅ | `0x194ba0` |
 | `RBUnlockView` | `-` | `request` |  | ✅ | ❌ | `0x1955e0` |
@@ -4269,7 +4269,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x199550` |
 | `RBUnlockView` | `-` | `downloadManagerStartTask:` |  | ✅ | ✅ | `0x1996e8` |
 | `RBUnlockView` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1996ec` |
-| `RBUnlockView` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1998e0` |
+| `RBUnlockView` | `-` | `downloadManagerFailed:` |  | ✅ | ✅ | `0x1998e0` |
 | `RBUnlockView` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x19991c` |
 | `RBUnlockView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1999bc` |
 | `RBUnlockView` | `-` | `parentCustomView` | prop | ✅ | ✅ | `0x1999d8` |
@@ -4907,7 +4907,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `tableView` | prop | ✅ | ✅ | `0x1cb1d8` |
 | `RBStoreGenreViewController` | `-` | `setTableView:` | prop | ✅ | ✅ | `0x1cb1e8` |
 | `RBCoreDataManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x1cb234` |
-| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ✅ | ❌ | `0x1cb2e8` |
+| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ✅ | ✅ | `0x1cb2e8` |
 | `RBCoreDataManager` | `-` | `managedObjectContext` | prop | ✅ | ❌ | `0x1cb314` |
 | `RBCoreDataManager` | `-` | `managedObjectModel` | prop | ✅ | ❌ | `0x1cb3c8` |
 | `RBCoreDataManager` | `-` | `persistentStoreCoordinator` | prop | ✅ | ❌ | `0x1cb4e8` |
@@ -5096,7 +5096,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1dc5b4` |
 | `RBStoreDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1dc610` |
 | `RBStoreDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1dc6b4` |
-| `RBStoreDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x1dc8e0` |
+| `RBStoreDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1dc8e0` |
 | `RBStoreDetailViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ❌ | `0x1dc914` |
 | `RBStoreDetailViewController` | `-` | `switchToSpecialStore:` |  | ✅ | ❌ | `0x1dc9d8` |
 | `RBStoreDetailViewController` | `-` | `packInfo` | prop | ✅ | ✅ | `0x1dcb18` |
@@ -5279,7 +5279,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePageViewController` | `-` | `setItunesViewCtrl:` | prop | ✅ | ✅ | `0x1f02c0` |
 | `RBStorePageViewController` | `-` | `userAgeSender` | prop | ✅ | ✅ | `0x1f02f8` |
 | `RBStorePageViewController` | `-` | `setUserAgeSender:` | prop | ✅ | ✅ | `0x1f0308` |
-| `RBStorePackList` | `+` | `storeCountry` |  | ✅ | ❌ | `0x1f05fc` |
+| `RBStorePackList` | `+` | `storeCountry` |  | ✅ | ✅ | `0x1f05fc` |
 | `RBStorePackList` | `-` | `init` |  | ✅ | ❌ | `0x1f063c` |
 | `RBStorePackList` | `-` | `cancelFetching` |  | ✅ | ❌ | `0x1f07fc` |
 | `RBStorePackList` | `-` | `isFetching` |  | ✅ | ❌ | `0x1f094c` |
@@ -5588,8 +5588,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNumberLabel` | `-` | `imageType` | prop | ✅ | ✅ | `0x200f60` |
 | `RBAnimationFactory` | `+` | `createAnimWithKeyPath:fromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x200f70` |
 | `RBAnimationFactory` | `+` | `createFadeAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x2012e0` |
-| `RBAnimationFactory` | `+` | `createPositionXAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x201628` |
-| `RBAnimationFactory` | `+` | `createPositionYAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x201644` |
+| `RBAnimationFactory` | `+` | `createPositionXAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ✅ | `0x201628` |
+| `RBAnimationFactory` | `+` | `createPositionYAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ✅ | `0x201644` |
 | `RBAnimationFactory` | `+` | `createPositionAnimWithFromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x201660` |
 | `RBAnimationFactory` | `+` | `createScaleAnimWithFromValue:toValue:X:Y:delay:duration:` |  | ✅ | ❌ | `0x20182c` |
 | `RBAnimationFactory` | `+` | `createAnimHereWithDuration:Y:repeatCount:` |  | ✅ | ❌ | `0x201be0` |
