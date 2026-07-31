@@ -879,6 +879,30 @@ VERIFIED = {
               'copy. Three distinct global slots at +0x10, +0x18 and +0x20 off the same base',
     0x207150: 'ApplilinkURLConnection -init: a bare objc_msgSendSuper2 init whose result is '
               'returned, with no ivar setup, so the assign-and-return reconstruction is right',
+    0x20c1f4: 'NSStringURLEncoding +URLEncodedString:: CFURLCreateStringByAddingPercentEscapes '
+              'with a null charactersToLeaveUnescaped and the CFString at 0x363f60, decoded from '
+              'its record as the 19 characters !*\'();:@&=+$,/?%#[] and matching '
+              'kURLEscapedCharacters. The encoding is built by mov w4,#0x8000000 / movk w4,#0x100, '
+              'so 0x08000100, which is kCFStringEncodingUTF8. The cbz then retain / CFRelease / '
+              'autorelease tail is CFBridgingRelease, and a null result returns nil',
+    0x20c24c: 'NSStringURLEncoding +URLDecodedString:: '
+              'CFURLCreateStringByReplacingPercentEscapesUsingEncoding with the CFString at '
+              '0x361a20, whose record gives a length of 0, so the CFSTR("") in the reconstruction '
+              'is right rather than a stand-in. Same UTF-8 encoding and same bridging tail',
+    0x217c90: 'RecommendAdWebView -closeAdArea: cbz on isLoading guards the stopLoading send, and '
+              'appliListClosed follows on both arms as a tail branch',
+    0x2184b4: 'RecommendAdWebView -appliListClosed: unloadRecommendView, then a cbz on _adLocation '
+              'guarding the store of zero and the release, then appListDidDisappear. The nil check '
+              'before nilling is the binary\'s own, not an invention',
+    0x218508: 'RecommendAdWebView -webViewDidStartLoad:: cbnz on _webViewStatus skips only the '
+              'store of 1, so appListDidStart is sent on both arms. The webView argument is never '
+              'read. The 0 and 1 confirm RecommendAdWebViewStatusIdle and Started',
+    0x21c514: 'RecommendDebug +getDebugMode: objectForKey: against the CFString at 0x371e80, '
+              '"applilink.debug.mode", matching kDebugModeDefaultsKey, returned autoreleased',
+    0x21691c: 'RecommendAdWebView -init: super init, cbz on the result, then setInitParam, which '
+              'is a no-argument helper rather than a property setter',
+    0x216980: 'RecommendAdWebView -initWithFrame:: the same shape through initWithFrame:',
+    0x2169e4: 'RecommendAdWebView -initWithCoder:: the same shape through initWithCoder:',
     0x20accc: 'RewardCore -rotateAdScreenWithInterfaceOrientation:duration:: a cbz on '
               '_rewardViewController and then a tail branch to '
               'willAnimateRotationToInterfaceOrientation:duration:, so both arguments pass '

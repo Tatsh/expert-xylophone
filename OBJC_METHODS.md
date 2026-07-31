@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4991 verified
-(78.7%).
+Total: 6343 — 6306 reconstructed, 5000 verified
+(78.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 4991 verified, 3507 come from those passes and the remaining
-1484 were read by hand. The split matters when reading the percentage: a
+Of the 5000 verified, 3507 come from those passes and the remaining
+1493 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5719,8 +5719,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `setApplilinkDelegate:` | prop | ✅ | ✅ | `0x20c164` |
 | `RewardCore` | `-` | `applilinkParams` | prop | ✅ | ✅ | `0x20c178` |
 | `RewardCore` | `-` | `setApplilinkParams:` | prop | ✅ | ✅ | `0x20c188` |
-| `NSStringURLEncoding` | `+` | `URLEncodedString:` |  | ✅ | ❌ | `0x20c1f4` |
-| `NSStringURLEncoding` | `+` | `URLDecodedString:` |  | ✅ | ❌ | `0x20c24c` |
+| `NSStringURLEncoding` | `+` | `URLEncodedString:` |  | ✅ | ✅ | `0x20c1f4` |
+| `NSStringURLEncoding` | `+` | `URLDecodedString:` |  | ✅ | ✅ | `0x20c24c` |
 | `ApplilinkUtilities` | `+` | `joinDictionary:withDictionary:` |  | ✅ | ❌ | `0x20c2a8` |
 | `ApplilinkUtilities` | `+` | `userAgentParametersJoinDictionary:` |  | ✅ | ❌ | `0x20c37c` |
 | `ApplilinkUtilities` | `+` | `userAgentParameters` |  | ✅ | ❌ | `0x20c410` |
@@ -5828,22 +5828,22 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkCore` | `+` | `toDelegateFailLoadWithError:appParam:delegate:` |  | ✅ | ✅ | `0x2165d8` |
 | `ApplilinkCore` | `+` | `toDelegateFailWithError:appParam:delegate:` |  | ✅ | ✅ | `0x21670c` |
 | `ApplilinkCore` | `+` | `toDelegateFailLinkWithError:appParam:delegate:` |  | ✅ | ✅ | `0x216814` |
-| `RecommendAdWebView` | `-` | `init` |  | ✅ | ❌ | `0x21691c` |
-| `RecommendAdWebView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x216980` |
-| `RecommendAdWebView` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x2169e4` |
+| `RecommendAdWebView` | `-` | `init` |  | ✅ | ✅ | `0x21691c` |
+| `RecommendAdWebView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x216980` |
+| `RecommendAdWebView` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x2169e4` |
 | `RecommendAdWebView` | `-` | `setInitParam` |  | ✅ | ❌ | `0x216a48` |
 | `RecommendAdWebView` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0x216b24` |
 | `RecommendAdWebView` | `-` | `loadRequestWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x216c00` |
 | `RecommendAdWebView` | `-` | `loadRequest` |  | ✅ | ❌ | `0x216d88` |
 | `RecommendAdWebView` | `-` | `loadRequestWithURL:parameters:` |  | ✅ | ❌ | `0x217b7c` |
-| `RecommendAdWebView` | `-` | `closeAdArea` |  | ✅ | ❌ | `0x217c90` |
+| `RecommendAdWebView` | `-` | `closeAdArea` |  | ✅ | ✅ | `0x217c90` |
 | `RecommendAdWebView` | `-` | `setScrollEnabled:` |  | ✅ | ❌ | `0x217ce4` |
 | `RecommendAdWebView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x217fec` |
 | `RecommendAdWebView` | `-` | `setScrollBarEnabled:` |  | ✅ | ❌ | `0x2182c4` |
 | `RecommendAdWebView` | `-` | `unloadRecommendView` |  | ✅ | ✅ | `0x2184a0` |
 | `RecommendAdWebView` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2184b0` |
-| `RecommendAdWebView` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x2184b4` |
-| `RecommendAdWebView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x218508` |
+| `RecommendAdWebView` | `-` | `appliListClosed` |  | ✅ | ✅ | `0x2184b4` |
+| `RecommendAdWebView` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x218508` |
 | `RecommendAdWebView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x218530` |
 | `RecommendAdWebView` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x2186a4` |
 | `RecommendAdWebView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x218894` |
@@ -5878,7 +5878,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendDebug` | `+` | `bannerList` |  | ✅ | ❌ | `0x219600` |
 | `RecommendDebug` | `+` | `iconList` |  | ✅ | ❌ | `0x21acd0` |
 | `RecommendDebug` | `+` | `debugMode:` |  | ✅ | ❌ | `0x21c43c` |
-| `RecommendDebug` | `+` | `getDebugMode` |  | ✅ | ❌ | `0x21c514` |
+| `RecommendDebug` | `+` | `getDebugMode` |  | ✅ | ✅ | `0x21c514` |
 | `RecommendDebug` | `+` | `getFrequencyStatus` |  | ✅ | ❌ | `0x21c580` |
 | `RecommendDebug` | `+` | `getDisplaySpec` |  | ✅ | ❌ | `0x21c704` |
 | `RewardWebViewController` | `-` | `init` |  | ✅ | ❌ | `0x21c910` |
