@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4702 verified
-(74.1%).
+Total: 6343 — 6306 reconstructed, 4709 verified
+(74.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2853,7 +2853,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingView` | `-` | `dealloc` |  | ❌ | ✅ | `0xe9e50` |
 | `RBSettingView` | `-` | `setupView:` |  | ✅ | ❌ | `0xe9e84` |
 | `RBSettingView` | `-` | `OpenView` |  | ✅ | ❌ | `0xeb0e4` |
-| `RBSettingView` | `-` | `CloseView` |  | ✅ | ❌ | `0xeb144` |
+| `RBSettingView` | `-` | `CloseView` |  | ✅ | ✅ | `0xeb144` |
 | `RBSettingView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xeb194` |
 | `RBSettingView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xeb674` |
 | `RBSettingView` | `-` | `hideAnimationEnd` |  | ✅ | ❌ | `0xeb910` |
@@ -3791,7 +3791,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeManager` | `-` | `parseURL:` |  | ✅ | ❌ | `0x1681cc` |
 | `RBUrlSchemeManager` | `-` | `dictionaryFromQueryString:` |  | ✅ | ❌ | `0x168504` |
 | `RBCustomSelectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1687dc` |
-| `RBCustomSelectView` | `-` | `getCollectionViewStartY:` |  | ✅ | ❌ | `0x168850` |
+| `RBCustomSelectView` | `-` | `getCollectionViewStartY:` |  | ✅ | ✅ | `0x168850` |
 | `RBCustomSelectView` | `-` | `getCollectionViewMargin` |  | ✅ | ✅ | `0x16889c` |
 | `RBCustomSelectView` | `-` | `setupView` |  | ✅ | ❌ | `0x1688c0` |
 | `RBCustomSelectView` | `-` | `reloadData` |  | ✅ | ❌ | `0x1696d4` |
@@ -5596,19 +5596,19 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBAnimationFactory` | `+` | `createBoundAnimWithX:Y:delay:duration:` |  | ✅ | ❌ | `0x201fa8` |
 | `RBAnimationFactory` | `+` | `animationDelete:` |  | ✅ | ❌ | `0x202580` |
 | `RBBaseViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202740` |
-| `RBBaseViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202748` |
+| `RBBaseViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202748` |
 | `RBBaseViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202778` |
 | `RBBaseViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x2027d4` |
-| `RBBaseViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x2027dc` |
+| `RBBaseViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x2027dc` |
 | `RBBaseTableViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x20282c` |
 | `RBBaseTableViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x2028f8` |
-| `RBBaseTableViewController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202900` |
+| `RBBaseTableViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202900` |
 | `RBBaseTableViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202930` |
 | `RBBaseTableViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x20298c` |
-| `RBBaseTableViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x202994` |
+| `RBBaseTableViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x202994` |
 | `RBBaseTabBarController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x2029e4` |
 | `RBBaseTabBarController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202af8` |
-| `RBBaseTabBarController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x202b00` |
+| `RBBaseTabBarController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202b00` |
 | `RBBaseTabBarController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202b30` |
 | `RBBaseTabBarController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x202b8c` |
 | `RBBaseTabBarController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x202b94` |

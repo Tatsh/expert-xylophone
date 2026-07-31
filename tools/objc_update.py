@@ -295,6 +295,23 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0xeb144: 'RBSettingView -CloseView: returns early while m_Animating, else plays themed effect '
+             '4 (kSoundEffectCancel, the mov w1) and tail-calls hideAnimation',
+    0x168850: 'RBCustomSelectView -getCollectionViewStartY:: the cset inverts the sense, so theme '
+              '0 takes index 1 of the 0x30bf00 pair (70, 40) and gets 40 on the pad; narrow is an '
+              'fcsel between the 21 fmov immediate and the 34 at pool 0x2fd00c. All four decoded '
+              'from the binary and all four match',
+    0x202748: 'RBBaseViewController -shouldAutorotate: YES off the pad; on the pad it is the '
+              'negation of GetGameSystem()->GetBgmPlaying(), the byte at +0xac',
+    0x2027dc: 'RBBaseViewController -shouldAutorotateToInterfaceOrientation:: the sub #1 / cmp #1 '
+              '/ b.hi is exactly the Portrait and PortraitUpsideDown pair; any other orientation '
+              'is NO before the bgm flag is even read',
+    0x202900: 'RBBaseTableViewController -shouldAutorotate: read separately, instruction-identical '
+              'to the RBBaseViewController one',
+    0x202994: 'RBBaseTableViewController -shouldAutorotateToInterfaceOrientation:: likewise, read '
+              'separately rather than inferred from its sibling',
+    0x202b00: 'RBBaseTabBarController -shouldAutorotate: the third of the identical trio, also '
+              'read on its own',
     0x1942f8: 'RBUnlockView -setParentView:: forwards to the differently-named setParentCustomView:',
     0x1998e0: 'RBUnlockView -downloadManagerFailed:: ignores the manager, nils dlMusicName, then '
               'reloadData',
