@@ -1071,6 +1071,11 @@ VERIFIED = {
              'Both compares are unsigned and both bounds match their constants. Unlike '
              '+isTutorialMusicselect at 0x35838, which reads currentStatus twice and throws the '
              'first result away, both reads here are used',
+    0x41898: 'AVBus -play: the guard is orr w8,mStatus,#2 then cmp #3, which is true only when the '
+             'status is 1 or 3, Prepared or Paused. A compact set-membership test rather than a '
+             'comparison, and the reconstruction spells it out as the two named states with a '
+             'comment giving the original idiom. Then the player nil check, Playing stored before '
+             'the send, and Stopped only if it fails, the same ordering as -offPause',
     0x41afc: 'AVBus -offPause: cmp w21,#3 gates the whole body on Paused, then Playing is stored '
              'before the play send and Stopped only if it returns false, tested with tbnz on bit '
              '0. The three literals are 3, 2 and 4, matching Paused, Playing and Stopped. Storing '
