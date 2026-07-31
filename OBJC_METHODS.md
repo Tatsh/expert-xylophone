@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4603 verified
+Total: 6343 — 6306 reconstructed, 4604 verified
 (72.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4479,7 +4479,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicOtherView` | `-` | `tapJr:` |  | ✅ | ❌ | `0x1a652c` |
 | `RBMusicOtherView` | `-` | `tapGhost:` |  | ✅ | ❌ | `0x1a6758` |
 | `RBMusicOtherView` | `-` | `tapPastel:` |  | ✅ | ❌ | `0x1a6a5c` |
-| `RBMusicOtherView` | `-` | `updateSwitchWithType:` |  | ✅ | ❌ | `0x1a6d00` |
+| `RBMusicOtherView` | `-` | `updateSwitchWithType:` |  | ✅ | ✅ | `0x1a6d00` |
 | `RBMusicOtherView` | `-` | `musicSelectedBase` | prop | ✅ | ✅ | `0x1a7438` |
 | `RBMusicOtherView` | `-` | `setMusicSelectedBase:` | prop | ✅ | ✅ | `0x1a7458` |
 | `RBMusicOtherView` | `-` | `isFcMode` | prop | ✅ | ✅ | `0x1a746c` |

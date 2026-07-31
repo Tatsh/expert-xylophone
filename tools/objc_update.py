@@ -269,6 +269,13 @@ VERIFIED = {
              'from v0 into v1 rather than materialised twice',
     0x67c34: 'MusicDataFromDoc -artistNameImageBlack2xData: scale 2.0, luminance 0.0',
     0x67c48: 'MusicDataFromDoc -artistNameImageBlackData: scale 1.0, luminance 0.0',
+    # Verified here after two subagent rewrites of it were reverted for inventing a weak-reference
+    # pattern: the method calls no weak-reference helper and no assert function at all.
+    0x1a6d00: 'RBMusicOtherView -updateSwitchWithType:: the jump table at 0x1a7330 maps the four '
+              'switch types onto vsPastel, ghostStyle, fullJustReflec and userFullCombo in that '
+              'order; the ghost arm branches on ghostStyle == 1 directly rather than materialising '
+              'a boolean (cmp at 0x1a6f4c); the shared tail at 0x1a7150 picks the on or off knob '
+              'animation, both at the 0.2 of g_dMascotMessageAnimDuration',
     0x56e6c: 'StoreCampaignTableViewCell -setDownloadFlag:: stores the flag, then sets buttonType '
              'to 1 only when it is set, leaving it alone otherwise',
     0x94c3c: 'RBPlaylistViewController -tableView:canEditRowAtIndexPath:: cset eq against section '
