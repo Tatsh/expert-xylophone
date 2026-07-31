@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4549 verified
-(71.7%).
+Total: 6343 — 6306 reconstructed, 4573 verified
+(72.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -223,7 +223,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
 | `UnZipArchive` | `-` | `closeFile` |  | ✅ | ❌ | `0x14ec8` |
-| `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ❌ | `0x14efc` |
+| `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ✅ | `0x14efc` |
 | `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
 | `UnZipArchive` | `-` | `setFirst` |  | ✅ | ❌ | `0x1503c` |
 | `UnZipArchive` | `-` | `setNext` |  | ✅ | ❌ | `0x15070` |
@@ -238,7 +238,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `GraphCircleView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x15d40` |
 | `GraphCircleView` | `-` | `CreateView` |  | ✅ | ❌ | `0x15e18` |
 | `GraphCircleView` | `-` | `setOption:dotSize:lineColor:lineSize:` |  | ✅ | ❌ | `0x15edc` |
-| `GraphCircleView` | `-` | `setData:maxValue:` |  | ✅ | ❌ | `0x1605c` |
+| `GraphCircleView` | `-` | `setData:maxValue:` |  | ✅ | ✅ | `0x1605c` |
 | `GraphCircleView` | `-` | `setData:maxValue:isMovableMinLine:` |  | ✅ | ❌ | `0x1607c` |
 | `GraphCircleView` | `-` | `drawRect:` |  | ✅ | ❌ | `0x16990` |
 | `GraphCircleView` | `-` | `reset` |  | ✅ | ❌ | `0x17084` |
@@ -406,7 +406,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `showNoteInfo` |  | ✅ | ❌ | `0x2563c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushLink:` |  | ✅ | ✅ | `0x2585c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x25860` |
-| `StoreExtendNoteDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x259c4` |
+| `StoreExtendNoteDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x259c4` |
 | `StoreExtendNoteDetailViewPad` | `-` | `showTerm` |  | ✅ | ❌ | `0x259e0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x25ab0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x25c50` |
@@ -595,20 +595,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `stop:` |  | ✅ | ❌ | `0x35198` |
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
 | `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ❌ | `0x3532c` |
-| `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ❌ | `0x3536c` |
+| `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ✅ | `0x3536c` |
 | `SoundManager` | `-` | `startSystem` |  | ✅ | ❌ | `0x35380` |
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
 | `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ❌ | `0x35498` |
 | `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ✅ | `0x354fc` |
 | `SoundPlayer` | `-` | `setCurrentFrame:` |  | ✅ | ❌ | `0x3550c` |
 | `SoundPlayer` | `-` | `currentFrame` |  | ✅ | ✅ | `0x3557c` |
-| `SoundPlayer` | `-` | `setLoop:` |  | ✅ | ❌ | `0x3558c` |
-| `SoundPlayer` | `-` | `isLoop` |  | ✅ | ❌ | `0x355ac` |
-| `SoundPlayer` | `-` | `play` |  | ✅ | ❌ | `0x355bc` |
-| `SoundPlayer` | `-` | `isPlaying` |  | ✅ | ❌ | `0x355dc` |
-| `SoundPlayer` | `-` | `endPlay` |  | ✅ | ❌ | `0x355ec` |
-| `SoundPlayer` | `-` | `stop` |  | ✅ | ❌ | `0x355fc` |
-| `SoundPlayer` | `-` | `isStop` |  | ✅ | ❌ | `0x35610` |
+| `SoundPlayer` | `-` | `setLoop:` |  | ✅ | ✅ | `0x3558c` |
+| `SoundPlayer` | `-` | `isLoop` |  | ✅ | ✅ | `0x355ac` |
+| `SoundPlayer` | `-` | `play` |  | ✅ | ✅ | `0x355bc` |
+| `SoundPlayer` | `-` | `isPlaying` |  | ✅ | ✅ | `0x355dc` |
+| `SoundPlayer` | `-` | `endPlay` |  | ✅ | ✅ | `0x355ec` |
+| `SoundPlayer` | `-` | `stop` |  | ✅ | ✅ | `0x355fc` |
+| `SoundPlayer` | `-` | `isStop` |  | ✅ | ✅ | `0x35610` |
 | `SoundPlayer` | `-` | `loadData:Frames:` |  | ✅ | ❌ | `0x35620` |
 | `RBTutorialManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x356b8` |
 | `RBTutorialManager` | `+` | `isTutorial` |  | ✅ | ❌ | `0x35724` |
@@ -704,13 +704,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x39d1c` |
 | `RBNotificationData` | `-` | `notificationDict` | prop | ✅ | ✅ | `0x39db4` |
 | `RBNotificationData` | `-` | `setNotificationDict:` | prop | ✅ | ✅ | `0x39dc4` |
-| `neGLView` | `+` | `GetInstance` |  | ✅ | ❌ | `0x39e10` |
-| `neGLView` | `+` | `layerClass` |  | ✅ | ❌ | `0x39e1c` |
+| `neGLView` | `+` | `GetInstance` |  | ✅ | ✅ | `0x39e10` |
+| `neGLView` | `+` | `layerClass` |  | ✅ | ✅ | `0x39e1c` |
 | `neGLView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x39e30` |
 | `neGLView` | `-` | `dealloc` |  | ✅ | ❌ | `0x3a188` |
 | `neGLView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x3a2e4` |
-| `neGLView` | `-` | `GetFrontBufferWidth` |  | ✅ | ❌ | `0x3a448` |
-| `neGLView` | `-` | `GetFrontBufferHeight` |  | ✅ | ❌ | `0x3a458` |
+| `neGLView` | `-` | `GetFrontBufferWidth` |  | ✅ | ✅ | `0x3a448` |
+| `neGLView` | `-` | `GetFrontBufferHeight` |  | ✅ | ✅ | `0x3a458` |
 | `neGLView` | `-` | `BeginRender` |  | ✅ | ❌ | `0x3a468` |
 | `neGLView` | `-` | `SetDefaultFrameBuffer` |  | ✅ | ✅ | `0x3a4d8` |
 | `neGLView` | `-` | `SetDefaultColorBuffer` |  | ✅ | ✅ | `0x3a4dc` |
@@ -861,14 +861,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `offPause` |  | ✅ | ❌ | `0x41afc` |
 | `AVBus` | `-` | `setVolume:` |  | ✅ | ❌ | `0x41bc0` |
 | `AVBus` | `-` | `volume` |  | ✅ | ❌ | `0x41c64` |
-| `AVBus` | `-` | `status` |  | ✅ | ❌ | `0x41d04` |
-| `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ❌ | `0x41d14` |
+| `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
+| `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x41d14` |
 | `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ❌ | `0x41d28` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x41da8` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x41e20` |
 | `AVBus` | `-` | `dealloc` |  | ✅ | ❌ | `0x41e98` |
 | `AVBus` | `-` | `isSameSource:` |  | ✅ | ❌ | `0x41f20` |
-| `AVBus` | `-` | `currentID` |  | ✅ | ❌ | `0x41f38` |
+| `AVBus` | `-` | `currentID` |  | ✅ | ✅ | `0x41f38` |
 | `AVBus` | `-` | `player` | prop | ✅ | ✅ | `0x41f48` |
 | `AVBus` | `-` | `setPlayer:` | prop | ✅ | ✅ | `0x41f58` |
 | `StoreTableCellBase` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0x41fa4` |
@@ -888,7 +888,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ❌ | `0x4593c` |
 | `StoreCampaignDetailViewPad` | `-` | `showItemInfo` |  | ✅ | ❌ | `0x45a38` |
 | `StoreCampaignDetailViewPad` | `-` | `pushLink:` |  | ✅ | ❌ | `0x45bc8` |
-| `StoreCampaignDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ❌ | `0x45d08` |
+| `StoreCampaignDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x45d08` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x45d24` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x45ec4` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x45f7c` |
@@ -900,8 +900,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x46280` |
 | `StoreCampaignDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x46f48` |
 | `StoreCampaignDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x470d4` |
-| `StoreCampaignDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ❌ | `0x471e8` |
-| `StoreCampaignDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ❌ | `0x471f4` |
+| `StoreCampaignDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x471e8` |
+| `StoreCampaignDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x471f4` |
 | `StoreCampaignDetailViewPad` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x47208` |
 | `StoreCampaignDetailViewPad` | `-` | `itemInfo` | prop | ✅ | ✅ | `0x474d0` |
 | `StoreCampaignDetailViewPad` | `-` | `setItemInfo:` | prop | ✅ | ✅ | `0x474e0` |
@@ -1148,7 +1148,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageSortViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x55ca4` |
 | `RBStoreManageSortViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x55d80` |
 | `RBStoreManageSortViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x56064` |
-| `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x5606c` |
+| `RBStoreManageSortViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x5606c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x56088` |
 | `RBStoreManageSortViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x5608c` |
 | `RBStoreManageSortViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x56098` |
@@ -1164,8 +1164,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignTableViewCell` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x56c64` |
 | `StoreCampaignTableViewCell` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x56e6c` |
 | `StoreCampaignTableViewCell` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x56e90` |
-| `StoreCampaignTableViewCell` | `+` | `cellHeight:` |  | ✅ | ❌ | `0x56fa4` |
-| `StoreCampaignTableViewCell` | `-` | `getArtworkMargin:` |  | ✅ | ❌ | `0x56fc0` |
+| `StoreCampaignTableViewCell` | `+` | `cellHeight:` |  | ✅ | ✅ | `0x56fa4` |
+| `StoreCampaignTableViewCell` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x56fc0` |
 | `StoreCampaignTableViewCell` | `-` | `getItemSize:` |  | ✅ | ❌ | `0x56fd4` |
 | `StoreCampaignTableViewCell` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x57004` |
 | `StoreCampaignTableViewCell` | `-` | `artworkView` | prop | ✅ | ✅ | `0x57204` |

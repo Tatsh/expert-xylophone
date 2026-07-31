@@ -220,6 +220,44 @@ VERIFIED = {
     0x354fc: 'SoundPlayer -getSoundData: loads m_SoundData and tail-calls the autorelease helper',
     0x3557c: 'SoundPlayer -currentFrame: loads m_CurrentFrame, whose ivar type q is the long long '
              'the declaration uses',
+    # SoundPlayer's transport flags are three separate B ivars, m_IsPlaying (+0x364), m_IsLoop
+    # (+0x370) and m_IsStop (+0x374); each method below moves exactly the ones named.
+    0x3558c: 'SoundPlayer -setLoop:: the cbnz on m_IsPlaying returns without storing, so the loop '
+             'flag is ignored while playing',
+    0x355ac: 'SoundPlayer -isLoop: one ldrb of m_IsLoop',
+    0x355bc: 'SoundPlayer -play: sets m_IsPlaying to 1 and clears m_IsStop, both in this order',
+    0x355dc: 'SoundPlayer -isPlaying: one ldrb of m_IsPlaying',
+    0x355ec: 'SoundPlayer -endPlay: clears m_IsPlaying only, leaving m_IsStop alone',
+    0x355fc: 'SoundPlayer -stop: sets m_IsStop only, leaving m_IsPlaying alone',
+    0x35610: 'SoundPlayer -isStop: one ldrb of m_IsStop',
+    0x39e10: 'neGLView +GetInstance: a bare load of the g_pGLView global at 0x3dc290, with no lazy '
+             'construction',
+    0x39e1c: 'neGLView +layerClass: returns the CAEAGLLayer class object',
+    0x3a448: 'neGLView -GetFrontBufferWidth: loads m_FrontBufferWidth, ivar type i',
+    0x3a458: 'neGLView -GetFrontBufferHeight: loads m_FrontBufferHeight, ivar type i',
+    0x41d04: 'AVBus -status: loads mStatus, ivar type i',
+    0x41d14: 'AVBus -audioPlayerDidFinishPlaying:successfully:: stores the literal 4 into mStatus, '
+             'which is AVBusStatusStopped, and reads neither argument',
+    0x41f38: 'AVBus -currentID: ldrh, matching the S (unsigned short) ivar mCurrentID',
+    0x14efc: 'UnZipArchive -getEntryNum: the cbz on m_ZipFile returns 0 when no archive is open, '
+             'otherwise the first field of m_ZipFileGlobalInfo, which is number_entry',
+    0x1605c: 'GraphCircleView -setData:maxValue:: forwards to the three-argument form with '
+             'isMovableMinLine set to 0',
+    0x259c4: 'StoreExtendNoteDetailViewPad -finishBgm:: a lone tail call to stopSample, the '
+             'notification argument unread',
+    0x45d08: 'StoreCampaignDetailViewPad -finishBgm:: the same shape, tail-calling sampleStop',
+    0x3536c: 'SoundManager -getSoundPlayer:: indexes the m_SoundPlayer array ivar, whose type '
+             '[8@"SoundPlayer"] gives the eight-element bound, then autoreleases',
+    0x471e8: 'StoreCampaignDetailViewPad -getArtworkMargin:: fmov immediates 12.0 and 10.0, the '
+             'BOOL unread',
+    0x471f4: 'StoreCampaignDetailViewPad -getItemSize:: pool loads 0x2eec30 and 0x2eec38, 650.0 '
+             'and 284.0, the BOOL unread',
+    0x5606c: 'RBStoreManageSortViewController -tableView:numberOfRowsInSection:: tail-calls the '
+             'sortRuleCount getter, ignoring the section',
+    0x56fa4: 'StoreCampaignTableViewCell +cellHeight:: fcsel ne takes 180.0 (0x2ee970) on the pad '
+             'and 100.0 (0x2ec6f8) otherwise',
+    0x56fc0: 'StoreCampaignTableViewCell -getArtworkMargin:: fcsel ne picks 12.0 over 10.0 for the '
+             'width only, so the height stays the 10.0 left in d1 on both arms',
     0xa1e08: 'RBMenuView -setCurrentPageIndex:: the guard sends currentPageIndex rather than '
              'reading the ivar, and the label pair at 0xa1eac is (index + 1, maxPage)',
     0xa1f24: 'RBMenuView -setMaxPage:: the csel takes 1 when the argument is zero',

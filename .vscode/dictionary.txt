@@ -32,6 +32,7 @@ autocorrection
 autorelease
 autoreleased
 autoreleasepool
+autoreleases
 autoreleasing
 autoresizes
 autoresizing
@@ -233,6 +234,7 @@ korsk
 kuropastelkun
 layouted
 ldrb
+ldrh
 ldrsb
 ldrsw
 leetal
