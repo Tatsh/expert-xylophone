@@ -34,6 +34,8 @@ PATH = 'OBJC_METHODS.md'
 IMAGE_BASE = 0x100000000
 DONE = '✅'
 NOT = '❌'
+# A -dealloc with no reconstruction: complete because ARC generates it, not outstanding.
+ARC = '➖'
 _LC_SEGMENT_64 = 0x19
 _ZERO_FILL = ('__bss', '__common')
 # Methods the compiler emits for a class with ARC-managed or C++-typed ivars. They have no
@@ -4187,7 +4189,7 @@ def render(methods: list[Method], keyed, loose) -> str:
     skipped = len(methods) - len(listed)
     mechanical = mechanically_verified()
     rows = []
-    done = verified = from_machine = 0
+    done = verified = from_machine = arc = arc_rows = 0
     for m in sorted(listed, key=lambda m: m.address):
         # The selector-alone fallback exists only for category rows, whose class the binary never
         # names. Letting it answer for a real class credits that class with any same-named selector
@@ -4199,12 +4201,24 @@ def render(methods: list[Method], keyed, loose) -> str:
         relative = m.address - IMAGE_BASE
         by_machine = relative in mechanical
         is_verified = relative in VERIFIED or by_machine
-        done += is_reconstructed
-        verified += is_verified
+        # A -dealloc the source does not define is complete rather than missing. ARC forbids
+        # writing the ivar teardown by hand, so the reconstruction cannot have a body for one and
+        # its absence is the correct result, not a gap. These carry their own mark so the count
+        # stays visible and never passes for a hand read.
+        is_arc = m.selector == 'dealloc' and not is_reconstructed
+        arc_rows += is_arc
+        # Most of these were already counted by the trivial pass, which read their bodies as empty.
+        # Only the rest are newly complete, and only those may join the split below.
+        arc += is_arc and not is_verified
+        done += is_reconstructed or is_arc
+        verified += is_verified or is_arc
         from_machine += by_machine
+        mark = ARC if is_arc else (DONE if is_reconstructed else NOT)
         rows.append(f'| `{m.class_name}` | `{m.kind}` | `{m.selector}` | '
-                    f'{"prop" if m.accessor else ""} | {DONE if is_reconstructed else NOT} | '
-                    f'{DONE if is_verified else NOT} | `{m.address - IMAGE_BASE:#x}` |')
+                    f'{"prop" if m.accessor else ""} | {mark} | '
+                    f'{ARC if is_arc else (DONE if is_verified else NOT)} | '
+                    f'`{m.address - IMAGE_BASE:#x}` |')
+    arc_note = 'all of them' if not arc else f'all but {arc} of them'
     accessors = sum(1 for m in listed if m.accessor)
     mechanical_count = sum(1 for m in listed
                            if m.accessor and (m.address - IMAGE_BASE) in mechanical)
@@ -4222,6 +4236,14 @@ whether that reconstruction has been read against the disassembly, per the five-
 [.claude/rules/reconstruction.md](.claude/rules/reconstruction.md). **The two are independent, and
 the gap between them is the point of this file.** `prop` marks a method a property list synthesises.
 
+{ARC} marks a `-dealloc` the source does not define, and means complete rather than outstanding.
+This tree is ARC-only, and ARC forbids writing the ivar teardown by hand, so for these the absence
+of a body is the correct reconstruction and no reading can be done against it. {arc_rows} rows carry that
+mark. They are counted as done on both axes but kept out of the hand-read figure below, since
+nothing was read. The mark is deliberately not {DONE}: a `-dealloc` that also did non-ivar work in
+the original, unregistering an observer or invalidating a timer, would still need a body under ARC,
+so a row here is a claim about ARC's guarantee and not a claim that the original body was inspected.
+
 A category cannot be attributed to the class it extends: that class is reached through a reference
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
@@ -4234,7 +4256,9 @@ moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py`
 constant-returning body agrees with its reconstruction.
 
 Of the {verified} verified, {from_machine} come from those passes and the remaining
-{verified - from_machine} were read by hand. The split matters when reading the percentage: a
+{verified - from_machine - arc} were read by hand. The ARC `-dealloc` rows do not appear as a third
+bucket because the trivial pass had already read {arc_note} as empty bodies, so they sit
+inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
