@@ -507,24 +507,31 @@ void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
 }
 
 /** @ghidraAddress 0x218ec */
-void neGLESRenderer::ClearWeightPointer(int nStride, int nSize) {
+void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffset) {
     if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding != m_nArrayBufferBound) {
         m_nWeightBufferBinding = m_nArrayBufferBound;
         m_pWeightPointer = nullptr;
         m_nWeightStride = kResetStrideSentinel;
         m_nWeightSize = 0;
-        glWeightPointerOES(nSize, GL_FLOAT, nStride, nullptr);
+        glWeightPointerOES(nSize,
+                           GL_FLOAT,
+                           nStride,
+                           reinterpret_cast<const void *>(static_cast<long>(nWeightOffset)));
     }
 }
 
 /** @ghidraAddress 0x219d8 */
-void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize) {
+void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset) {
     if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding != m_nArrayBufferBound) {
         m_nMatrixIndexBufferBinding = m_nArrayBufferBound;
         m_pMatrixIndexPointer = nullptr;
         m_nMatrixIndexStride = kResetStrideSentinel;
         m_nMatrixIndexSize = 0;
-        glMatrixIndexPointerOES(nSize, GL_UNSIGNED_BYTE, nStride, nullptr);
+        glMatrixIndexPointerOES(
+            nSize,
+            GL_UNSIGNED_BYTE,
+            nStride,
+            reinterpret_cast<const void *>(static_cast<long>(nMatrixIndexOffset)));
     }
 }
 

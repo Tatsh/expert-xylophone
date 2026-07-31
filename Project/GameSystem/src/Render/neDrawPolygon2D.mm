@@ -477,9 +477,11 @@ void C_DRAW_POLYGON_2D::Render() {
             LoadBoneMatrices(pRenderer);
             pRenderer->SetGlEnableState(kEnableMatrixPalette, 1);
             pRenderer->SetGlClientState(kClientWeight, 1);
-            pRenderer->ClearWeightPointer(m_nVertexStride, m_nBoneComponentCount);
+            pRenderer->ClearWeightPointer(
+                m_nVertexStride, m_nBoneComponentCount, m_nMatrixWeightOffset);
             pRenderer->SetGlClientState(kClientMatrixIndex, 1);
-            pRenderer->ClearMatrixIndexPointer(m_nVertexStride, m_nBoneComponentCount);
+            pRenderer->ClearMatrixIndexPointer(
+                m_nVertexStride, m_nBoneComponentCount, m_nMatrixIndexOffset);
         }
     }
 

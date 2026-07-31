@@ -343,15 +343,21 @@ public:
     /**
      * @brief Re-issue the skinning weight array against the bound array buffer, resetting its
      * cached pointer state when the bound buffer changed.
+     * @param nStride The interleaved byte stride between vertices.
+     * @param nSize The number of weight components per vertex.
+     * @param nWeightOffset The weight's byte offset within a vertex, used as the buffer offset.
      * @ghidraAddress 0x218ec
      */
-    void ClearWeightPointer(int nStride, int nSize);
+    void ClearWeightPointer(int nStride, int nSize, int nWeightOffset);
     /**
      * @brief Re-issue the skinning matrix-index array against the bound array buffer, resetting its
      *        cached pointer state when the bound buffer changed.
+     * @param nStride The interleaved byte stride between vertices.
+     * @param nSize The number of matrix-index components per vertex.
+     * @param nMatrixIndexOffset The index's byte offset within a vertex, used as the buffer offset.
      * @ghidraAddress 0x219d8
      */
-    void ClearMatrixIndexPointer(int nStride, int nSize);
+    void ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset);
 
 private:
     // The maximum number of texture units the per-unit texture-coordinate caches hold.

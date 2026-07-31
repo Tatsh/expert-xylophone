@@ -1,6 +1,7 @@
 #include "neSpriteInstancing.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstring>
 
 #include "matrixmath.h"
@@ -153,6 +154,15 @@ struct InitialSpriteVertex {
     float flConstantW;
     unsigned char nSpriteIndex;
 };
+
+// The weight and matrix-index arrays are sourced from the template VBO by byte offset, so both the
+// stride and the two offsets are the template vertex's own layout.
+constexpr int kTemplateVertexStride = static_cast<int>(sizeof(InitialSpriteVertex));
+constexpr int kTemplateWeightOffset = static_cast<int>(offsetof(InitialSpriteVertex, flConstantW));
+constexpr int kTemplateMatrixIndexOffset =
+    static_cast<int>(offsetof(InitialSpriteVertex, nSpriteIndex));
+// One weight and one matrix index per vertex: each sprite rides a single palette matrix.
+constexpr int kTemplateComponentCount = 1;
 
 /**
  * @ghidraAddress 0x2f668
@@ -488,9 +498,11 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     BindPassTexture(pRenderer);
     pRenderer->BindArrayBuffer(m_dwArrayVbo);
     pRenderer->SetGlClientState(kClientWeight, 1);
-    pRenderer->ClearWeightPointer(8, 1);
+    pRenderer->ClearWeightPointer(
+        kTemplateVertexStride, kTemplateComponentCount, kTemplateWeightOffset);
     pRenderer->SetGlClientState(kClientMatrixIndex, 1);
-    pRenderer->ClearMatrixIndexPointer(8, 1);
+    pRenderer->ClearMatrixIndexPointer(
+        kTemplateVertexStride, kTemplateComponentCount, kTemplateMatrixIndexOffset);
 
     int nQueued = 0;
     for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
