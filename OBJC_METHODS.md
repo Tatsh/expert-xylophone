@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4893 verified
-(77.1%).
+Total: 6343 — 6306 reconstructed, 4897 verified
+(77.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3534,7 +3534,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterScoreView` | `-` | `setLeftButton:` | prop | ✅ | ✅ | `0x1429d0` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `rightButton` | prop | ✅ | ✅ | `0x1429e0` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `setRightButton:` | prop | ✅ | ✅ | `0x1429f0` |
-| `RBErosionMarkUpdaterAlertController` | `-` | `init` |  | ✅ | ❌ | `0x142a00` |
+| `RBErosionMarkUpdaterAlertController` | `-` | `init` |  | ✅ | ✅ | `0x142a00` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `initWithOrientationMask:` |  | ✅ | ✅ | `0x142a98` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x142b1c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `orientationMask` | prop | ✅ | ✅ | `0x142b2c` |
@@ -3649,7 +3649,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectCollectionView` | `-` | `reloadData` |  | ✅ | ❌ | `0x157bec` |
 | `RBCustomSelectCollectionView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0x15901c` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ✅ | `0x159128` |
-| `RBCustomSelectCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x1591b4` |
+| `RBCustomSelectCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ✅ | `0x1591b4` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0x159240` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ✅ | `0x1592a8` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0x159960` |
@@ -3875,9 +3875,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicGridLayout` | `-` | `setLayouts:` | prop | ✅ | ✅ | `0x16e2a8` |
 | `RBCustomSelectCollectionCell` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x16e320` |
 | `RBCustomSelectCollectionCell` | `-` | `setIsSelected:` | prop | ✅ | ❌ | `0x16e680` |
-| `RBCustomSelectCollectionCell` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0x16e77c` |
+| `RBCustomSelectCollectionCell` | `-` | `setHighlighted:` |  | ✅ | ✅ | `0x16e77c` |
 | `RBCustomSelectCollectionCell` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x16e810` |
-| `RBCustomSelectCollectionCell` | `-` | `prepareForReuse` |  | ✅ | ❌ | `0x16ea10` |
+| `RBCustomSelectCollectionCell` | `-` | `prepareForReuse` |  | ✅ | ✅ | `0x16ea10` |
 | `RBCustomSelectCollectionCell` | `-` | `itemButton` | prop | ✅ | ✅ | `0x16eab0` |
 | `RBCustomSelectCollectionCell` | `-` | `setItemButton:` | prop | ✅ | ✅ | `0x16eac0` |
 | `RBCustomSelectCollectionCell` | `-` | `isSelected` | prop | ✅ | ✅ | `0x16eaf8` |

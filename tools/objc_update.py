@@ -297,6 +297,15 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x142a00: 'RBErosionMarkUpdaterAlertController -init: an IsPad branch on the orientation mask. '
+              'The pad takes the orr w2 of 6, Portrait with PortraitUpsideDown, and every other '
+              'idiom takes 0x1e, which is MaskAll',
+    0x1591b4: 'RBCustomSelectCollectionView -collectionView:didUnhighlightItemAtIndexPath:: the '
+              'mirror of the highlight form with a mov w2 of 0',
+    0x16e77c: 'RBCustomSelectCollectionCell -setHighlighted:: chains to super then mirrors the '
+              'flag onto itemButton',
+    0x16ea10: 'RBCustomSelectCollectionCell -prepareForReuse: super, clears the button image for '
+              'the normal state, then clears the selected flag',
     0x159128: 'RBCustomSelectCollectionView -collectionView:didHighlightItemAtIndexPath:: looks '
               'the cell up on the passed collection view and sets highlighted with the mov w2 of 1',
     0x1555d8: 'RBCustomSelectCollectionView -initWithFrame:customizeType:: super with the rect, '
