@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4773 verified
-(75.2%).
+Total: 6343 — 6306 reconstructed, 4777 verified
+(75.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -389,7 +389,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `fileInfoDic` | prop | ✅ | ✅ | `0x20894` |
 | `RBResourceDownloadViewController` | `-` | `setFileInfoDic:` | prop | ✅ | ✅ | `0x208a4` |
 | `RBPastelManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x20a30` |
-| `RBPastelManager` | `-` | `init` |  | ✅ | ❌ | `0x20a88` |
+| `RBPastelManager` | `-` | `init` |  | ✅ | ✅ | `0x20a88` |
 | `RBPastelManager` | `-` | `allReset` |  | ✅ | ✅ | `0x20afc` |
 | `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
@@ -641,7 +641,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `-` | `canBecomeFirstResponder` |  | ✅ | ✅ | `0x366f0` |
 | `RBHttpUtil` | `+` | `dictionaryToQueryData:` |  | ✅ | ❌ | `0x36754` |
 | `RBHttpUtil` | `+` | `dictionaryToJsonData:` |  | ✅ | ❌ | `0x36aa8` |
-| `RBHttpUtil` | `-` | `init` |  | ✅ | ❌ | `0x36b5c` |
+| `RBHttpUtil` | `-` | `init` |  | ✅ | ✅ | `0x36b5c` |
 | `RBHttpUtil` | `-` | `initWithGetURL:` |  | ✅ | ❌ | `0x36bd0` |
 | `RBHttpUtil` | `-` | `initWithPostURL:post:contentType:` |  | ✅ | ❌ | `0x36e0c` |
 | `RBHttpUtil` | `-` | `initWithPostURL:post:contentType:timeoutInterval:` |  | ✅ | ❌ | `0x36ea4` |
@@ -711,10 +711,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `neGLView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x3a2e4` |
 | `neGLView` | `-` | `GetFrontBufferWidth` |  | ✅ | ✅ | `0x3a448` |
 | `neGLView` | `-` | `GetFrontBufferHeight` |  | ✅ | ✅ | `0x3a458` |
-| `neGLView` | `-` | `BeginRender` |  | ✅ | ❌ | `0x3a468` |
+| `neGLView` | `-` | `BeginRender` |  | ✅ | ✅ | `0x3a468` |
 | `neGLView` | `-` | `SetDefaultFrameBuffer` |  | ✅ | ✅ | `0x3a4d8` |
 | `neGLView` | `-` | `SetDefaultColorBuffer` |  | ✅ | ✅ | `0x3a4dc` |
-| `neGLView` | `-` | `Present` |  | ✅ | ❌ | `0x3a4e0` |
+| `neGLView` | `-` | `Present` |  | ✅ | ✅ | `0x3a4e0` |
 | `neGLView` | `-` | `touchesBegan:withEvent:` |  | ✅ | ❌ | `0x3a550` |
 | `neGLView` | `-` | `touchesMoved:withEvent:` |  | ✅ | ❌ | `0x3a704` |
 | `neGLView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ❌ | `0x3a8b0` |

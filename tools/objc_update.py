@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x3a468: 'neGLView -BeginRender: returns EAGLContext setCurrentContext: over its own '
+             'glContext, with the class object in x0 and the context in x2',
+    0x3a4e0: 'neGLView -Present: sends presentRenderbuffer: to glContext with m_RenderBufferID, '
+             'the I-encoded ivar loaded into w2, and returns the result',
+    0x20a88: 'RBPastelManager -init: super init, nil check, then allReset',
+    0x36b5c: 'RBHttpUtil -init: the same shape with reset in place of allReset',
     0xc194: 'StoreButtonView -setButtonColor:: stores the retained colour into _buttonColor and '
             'then sends setNeedsDisplay, so it is a custom setter rather than a synthesised one',
     0xc264: 'StoreButtonView -setDisabledColor:: the same shape over _disabledColor',
