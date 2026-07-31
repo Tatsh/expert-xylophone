@@ -372,7 +372,9 @@ constexpr NSUInteger kDefaultThemaItemCount = 3;
 
 - (NSMutableData *)encodePoint:(float)point {
     /** @ghidraAddress 0x1bc554 */
-    NSArray *boxed = [NSArray arrayWithObject:[NSNumber numberWithFloat:point]];
+    // The binary calls the variadic arrayWithObjects: with a single object and the nil terminator,
+    // not the singular arrayWithObject:; the str xzr,[sp] at 0x1bc59c is that terminator.
+    NSArray *boxed = [NSArray arrayWithObjects:[NSNumber numberWithFloat:point], nil];
     NSData *plist = (__bridge_transfer NSData *)CFPropertyListCreateXMLData(
         kCFAllocatorDefault, (__bridge CFPropertyListRef)boxed);
     NSMutableData *buffer = [[NSMutableData alloc] initWithCapacity:kCipherBufferCapacity];

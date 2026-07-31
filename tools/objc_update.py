@@ -3807,6 +3807,22 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x1BC554: 'RBExperienceData -encodePoint:: read as a mismatch and fixed. The selector at '
+              '0x1bc598 is arrayWithObjects:, the variadic, with str xzr,[sp] supplying the nil '
+              'terminator for its single object, where the reconstruction used the singular '
+              'arrayWithObject:. The array is identical either way, so only the disassembly says '
+              'which call the binary makes. The rest matches: CFPropertyListCreateXMLData, an '
+              'initWithCapacity:0x80 buffer behind four bytes of arc4random, and a BFCodec keyed '
+              'from the MD5 of the save-data key',
+    0x1BC770: 'RBExperienceData -decodePoint:: cbz on the argument takes the logging path and '
+              'returns the current point, then sub x3,x0,#4 with subdataWithRange: at location 4 '
+              'strips the salt, and a cbz on arrayFromPropertyListData: returns the current point '
+              'again rather than reading index zero of nothing',
+    0x1BC9F4: 'RBExperienceData -encodeAppliIds:: the same envelope as 0x1bc554 around '
+              'archivedDataWithRootObject: instead of a plist, with the buffer allocated before '
+              'the archive is built, as the source has it',
+    0x1BCBD8: 'RBExperienceData -decodeAppliIds:: the inverse, with the same cbz guard and the '
+              'same sub x3,x0,#4 and location-4 strip',
     0x169F2C: 'UIAlertView(RB) +strageAlertView:: the UIAlertController half of the pair, with '
               'mov w4,#1 for the alert style and mov w3,#1 for the cancel action style, presented '
               'through the app delegate view controller. Both claims its comment makes are '
