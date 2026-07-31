@@ -662,14 +662,17 @@ Neither is marked verified, because verified means read and matching. The `NSAss
 part of the difference: assertions compile out of a release build, so their absence from the binary
 is expected.
 
-A third instance turned up later, milder than the other two. `+unzipFileAtPath:toDestination:delegate:`
-(`0x1c23c0`) forwards in the binary to the six-argument
-`+unzipFileAtPath:toDestination:overwrite:password:error:delegate:`, passing overwrite YES and nil
-for the password and error. The tree's version skips that hop and calls the nine-argument form
-directly with the same values plus `preserveAttributes:YES` and nil handlers — which is what the
-six-argument form does anyway, so the net behaviour is identical and only the call chain differs.
-Recorded with the other two rather than touched. Its sibling
-`+unzipFileAtPath:toDestination:` matches the binary exactly and is verified.
+Two more instances turned up later, both milder than the first pair and both the same shape. The
+binary's `+unzipFileAtPath:toDestination:delegate:` (`0x1c23c0`) and
+`+unzipFileAtPath:toDestination:overwrite:password:error:` (`0x1c232c`) each forward to the
+six-argument `+unzipFileAtPath:toDestination:overwrite:password:error:delegate:`, supplying nil for
+whichever arguments they do not take. The tree's versions skip that hop and call the nine-argument
+form directly, with the same values plus `preserveAttributes:YES` and nil handlers — which is what
+the six-argument form supplies anyway. The net behaviour is identical and only the call chain
+differs, so both are recorded here rather than touched.
+
+The one convenience form that matches the binary exactly is `+unzipFileAtPath:toDestination:`,
+which forwards to the delegate variant with a nil delegate; it is verified.
 
 This needs a decision rather than a fix. Everywhere else the rule is to match the shipped binary and
 gate deliberate deviations behind `ENABLE_PATCHES` with an entry in [PATCHES.md](PATCHES.md), but
