@@ -2,7 +2,10 @@ concurrency:
   cancel-in-progress: true
   group: build-${{ github.ref }}
 env:
-  BUILD_CONFIG: 'Release'
+  # Debug so the artefact carries DWARF and can be debugged on device. This is the compile gate,
+  # not a shipping build, and the reconstruction is verified against the binary by reading rather
+  # than by running an optimised build.
+  BUILD_CONFIG: 'Debug'
   IOS_CMAKE_REF: '21598aa550701d20654c032328f7e8710a14099b'
 jobs:
   xcode:
@@ -32,6 +35,7 @@ jobs:
           CMAKE_ARGS=(
             -B build
             -G Xcode
+            -DCMAKE_BUILD_TYPE="$BUILD_CONFIG"
             -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/.ios-cmake/ios.toolchain.cmake"
             -DDEPLOYMENT_TARGET="$DEPLOYMENT_TARGET"
             -DENABLE_BITCODE=NO
