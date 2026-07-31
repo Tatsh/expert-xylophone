@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4916 verified
+Total: 6343 — 6306 reconstructed, 4917 verified
 (77.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4092,7 +4092,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExtendNoteManager` | `-` | `getExtendNoteIDsWithMusicID:` |  | ✅ | ❌ | `0x183cf0` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteDataWithMusicID:` |  | ✅ | ❌ | `0x183f14` |
 | `RBExtendNoteManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x1840c0` |
-| `RBExtendNoteManager` | `-` | `setClientMusicPageNum:` |  | ✅ | ❌ | `0x1840d0` |
+| `RBExtendNoteManager` | `-` | `setClientMusicPageNum:` |  | ✅ | ✅ | `0x1840d0` |
 | `RBExtendNoteManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x18416c` |
 | `RBExtendNoteManager` | `-` | `getClientCompareExtendNotes` |  | ✅ | ❌ | `0x184238` |
 | `RBExtendNoteManager` | `-` | `clientExtendNotePageNum` | prop | ✅ | ✅ | `0x1844e8` |

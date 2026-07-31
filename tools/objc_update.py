@@ -455,8 +455,15 @@ VERIFIED = {
              'to setClientMusicPageNum:, so it is exactly that send and nothing else',
     0x6cc90: 'RBMusicManager -setClientMusicPageNum:: sends releaseClientMusic then its own '
              'selector to self, so the pair recurse until the stack is exhausted. The '
-             'reconstruction stores the ivar instead, which is a deliberate deviation now '
-             'documented in place; the allocation is twenty entries per page',
+             'reconstruction now stores directly AND drops the release send; the earlier fix '
+             'removed only the self-send and left the mutual cycle intact. Twenty entries per page',
+    0x1840c0: 'RBExtendNoteManager -releaseClientMusic: the same sixteen-byte '
+              '[self setClientMusicPageNum:0] as its music-manager twin',
+    0x1840d0: 'RBExtendNoteManager -setClientMusicPageNum:: the same mutual recursion, but its '
+              'third send stores through setClientExtendNotePageNum:, a differently-named '
+              'property, which is what makes the music-manager version look like a copy-paste '
+              'slip. The reconstruction had reproduced the cycle faithfully and now carries the '
+              'same fix',
     0x6a854: 'RBBGMManager -pushMusic: returns the entry value of m_IsMusic and, when set, pushes '
              'the BGM then flips m_IsPushMusic on and m_IsMusic off',
     0x6c6b8: 'RBMusicManager -getMusicDataArray: rebuilds when the array is nil or the dirty flag '

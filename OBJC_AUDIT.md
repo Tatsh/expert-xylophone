@@ -862,15 +862,33 @@ exhausted. Every step of that was resolved from the binary rather than inferred:
 come from the class's own method list, the selector was read from its reference slot at `0x3c1158`
 rather than from a decompiler label, and the receiver in both sends is the saved entry `x0`.
 
-The reconstruction breaks the cycle, and correctly. `-releaseClientMusic` is written as
-`self.clientMusicPageNum = 0`, which is exactly what the binary does. `-setClientMusicPageNum:`
-assigns `_clientMusicPageNum` directly instead of re-sending its own selector, which is the only
-way to keep the surrounding behaviour — release, store, allocate — without the recursion.
+The reconstruction has to break the cycle, and the first attempt at doing so **did not**. It
+stopped `-setClientMusicPageNum:` re-sending its own selector but left its opening
+`[self releaseClientMusic]` in place — and since `-releaseClientMusic` is written as
+`self.clientMusicPageNum = 0`, that call re-enters the setter, which calls release again. The
+self-send was gone and the mutual cycle was not, while the commit message claimed the cycle was
+broken. That error was caught only by reading the twin below.
 
-That makes it a deliberate deviation rather than a faithful reconstruction, and it was undocumented.
-A comment now records it in place. It is deliberately **not** gated behind `ENABLE_PATCHES`: the
-faithful alternative is an immediate stack overflow, so there is no build in which reproducing it
-is useful.
+Both are now fixed by dropping the release send from the setter as well as storing directly. The
+release would have done nothing but allocate an empty array for the next line to replace, so
+nothing observable is lost. This is a deliberate deviation, documented in place, and deliberately
+**not** gated behind `ENABLE_PATCHES`: the faithful alternative is an immediate stack overflow, so
+there is no build in which reproducing it is useful.
+
+### The same defect in `RBExtendNoteManager`, unfixed until now
+
+`-[RBExtendNoteManager releaseClientMusic]` at `0x1840c0` is the same sixteen-byte
+`[self setClientMusicPageNum:0]`, and `-[RBExtendNoteManager setClientMusicPageNum:]` at `0x1840d0`
+opens by sending `releaseClientMusic` in turn. The pair recurse identically. Its third send differs
+— it stores through `setClientExtendNotePageNum:`, a differently-named property, where the music
+manager sends its own selector — which is what makes the music-manager version look like a
+copy-paste slip between the two classes rather than an isolated mistake.
+
+Here the reconstruction reproduced the cycle **faithfully and therefore fatally**: calling either
+method in the rebuilt code would overflow the stack. It now carries the same fix and the same note.
+Worth recording as a pattern: a defect found in one class is worth grepping for in its siblings
+before the finding is filed, because a reconstruction that fixed one instance is not evidence that
+it fixed the others.
 
 Recorded at length because of how it presented. It first looked like a defect in the checklist's
 address mapping — a method appearing to send its own selector reads as misattribution, and that

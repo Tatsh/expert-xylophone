@@ -369,7 +369,11 @@ static const int kClientNoteEntriesPerPage = 20;
 
 - (void)setClientMusicPageNum:(int)pageNum {
     /** @ghidraAddress 0x1840d0 */
-    [self releaseClientMusic];
+    // Same defect as -[RBMusicManager setClientMusicPageNum:]: the binary opens by sending
+    // releaseClientMusic, and that method is nothing but [self setClientMusicPageNum:0], so the
+    // pair recurse until the stack is exhausted. The release send is dropped here for the same
+    // reason it is dropped there — it would only allocate an empty array for the line below to
+    // replace — and for the same reason it is not gated behind ENABLE_PATCHES.
     self.clientExtendNotePageNum = pageNum;
     self.clientExtendNotes =
         [[NSMutableArray alloc] initWithCapacity:(NSUInteger)(pageNum * kClientNoteEntriesPerPage)];

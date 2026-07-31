@@ -366,12 +366,13 @@ static const int kClientMusicEntriesPerPage = 20;
 
 - (void)setClientMusicPageNum:(int)clientMusicPageNum {
     /** @ghidraAddress 0x6cc90 */
-    // The binary sends setClientMusicPageNum: to self here rather than storing, and
-    // -releaseClientMusic above is nothing but [self setClientMusicPageNum:0], so the two recurse
-    // into each other until the stack is exhausted. The store below breaks that cycle and keeps
-    // the surrounding release-store-allocate behaviour. Not gated behind ENABLE_PATCHES: the
-    // faithful form is an immediate stack overflow, so no build wants it.
-    [self releaseClientMusic];
+    // The binary opens by sending releaseClientMusic to self and then sends its own selector
+    // rather than storing. Since -releaseClientMusic above is nothing but
+    // [self setClientMusicPageNum:0], the two recurse into each other until the stack is
+    // exhausted, whichever is called first. The cycle is broken here by both storing directly and
+    // dropping the release send: the release would only have allocated an empty array for this
+    // line to immediately replace. Not gated behind ENABLE_PATCHES, because the faithful form is
+    // an immediate stack overflow and no build wants it.
     _clientMusicPageNum = clientMusicPageNum;
     self.clientMusics = [[NSMutableArray alloc]
         initWithCapacity:(NSUInteger)(clientMusicPageNum * kClientMusicEntriesPerPage)];
