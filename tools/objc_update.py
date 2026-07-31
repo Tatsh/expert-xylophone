@@ -3807,6 +3807,21 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x243938: 'RecommendAdCache +createHtmlWithAdModel:adLocation:verticalAlign:: the switch is '
+              'cmp w22 against 5, 3 and 2 in that order, matching the interstitial, icon and '
+              'banner constants, and the interstitial arm returns the lottery error straight out '
+              'on cbnz before it ever fetches a list. A cbz on the count takes the zero-match '
+              'error. Both error paths were read as variadics: the zero-match builds one pair and '
+              'the unknown-type two, each ending in the xzr nil, and both take code 0x40b. The '
+              'file is written with encoding 4 and atomically 1, and only the interstitial arm '
+              'runs the trailing cmp w22,#5 that charges a display count against the first entry',
+    0x243D94: 'RecommendAdCache +convertHtmlWithAdType:verticalAlign:bannerList:: the template is '
+              '"ad_type%d.html" read with encoding 4, then six placeholder substitutions in source '
+              'order. All six decode byte for byte, including the binary own misspelling in '
+              '"[[VARTICAL_ALIGN]]" and the surprising "[[APPLILINK_ENV]]", which is filled with '
+              'baseUrlSsl rather than an environment name. A cbz on isValidJSONObject: chooses '
+              'between the pretty-printed JSON, options 1, and a plain description, and the '
+              'country-code substitution is guarded by a cbz on the value',
     0x2417DC: 'RecommendAdCache +getAllAdStatus: cbz on getAllAdDataInfoExpire falls through to '
               'the work when nothing is stored, and cmn x22,#1 with b.ne returns when the compare '
               'is not NSOrderedAscending, so a live expiry stops the refresh. Then createFolder '
