@@ -3807,6 +3807,17 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x71190: 'RBPlaylistManager -initWithFile:: objc_msgSendSuper2 for [super init] with a cbz on '
+             'the result, arrayWithCapacity:0x10 for the playlist list, stringWithString: for the '
+             'path, then initWithContentsOfFile:. Each loaded entry passes an NSDictionary '
+             'isKindOfClass: and three cbz presence tests before being rebuilt through '
+             'initWithCapacity:2, which is the loaded-key count, with its tune list copied by '
+             'arrayWithArray:',
+    0x71EAC: 'RBPlaylistManager -addPlaylistWithName:: cbz on the name length returns NO, the '
+             'identifier is the MD5 hexadecimal of a "%@(%@)" seed joining the name to a '
+             '"yyyy/MM/dd HH:mm:ss z" timestamp, and the record is built by '
+             'dictionaryWithObjects:forKeys:count: with a count of three, matching '
+             'kNewPlaylistKeyCount, then copied mutable before addObject:',
     0x72560: 'RBPlaylistManager -addMusic:toPlaylistAtIndex:: the zero identifier and the unsigned '
              'bound reject first, then a cbnz creates the "LIST" through arrayWithCapacity:8 only '
              'when it is missing, and the tune is added only when containsObject: says it is not '
