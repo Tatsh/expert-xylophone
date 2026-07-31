@@ -553,6 +553,45 @@ VERIFIED = {
              'then showInfomation unconditionally, keeping the binary\'s misspelling',
     0xaf2a8: 'RBMenuView -startNewsFromTimer: invalidates and clears newsBannerTimer when set, '
              'then startNews unconditionally',
+    0xb52a0: 'RBMenuView -preStartTutorial: cmp w0,#2 on thema returns through 0xb531c, then the '
+             'tbz pair at 0xb530c and 0xb5340 short-circuits needStartTutorialMusicselect || '
+             'needStartTutorialCustomize. The existing tutorialView is removed and cleared, then '
+             'cbz at 0xb5728 picks the arm: musicselect builds the overlay and clears playlistID '
+             'when non-zero; customize checks getTutorialStatus:0x22 and builds only on zero. '
+             'zPosition is the 0x4059000000000000 pool double, 100.0',
+    0xb5678: 'RBMenuView -startTutorial: the same thema and short-circuit guards as '
+             'preStartTutorial, then cbz at 0xb5728 splits. The musicselect arm requires '
+             'getTutorialMusicCell non-nil (cbz x20 at 0xb5748), calls preStartTutorial only when '
+             'tutorialView is nil, and animates with type 0 and a nil root view; the customize arm '
+             'gates on getTutorialStatus:0x22 being zero and animates with type 0x18',
+    0xb58c4: 'RBMenuView -getTutorialMusicCell: nil-checks indexPathsForVisibleItems, then fast '
+             'enumerates them, taking each cellForItemAtIndexPath: and comparing '
+             'musicData.musicName against the __cfstring at 0x36c4e0. That string is UTF-16 '
+             '(flags 0x7d0, four units at 0x34cbf0) and decodes to the tutorial song title, which '
+             'the reconstruction carries verbatim',
+    0xacaac: 'RBMenuView -startBGEffect: thema == 2 gate, then bgEffectView and mascot each '
+             'nil-checked. The mascot call is startAnimation: taking self.storeUpdateTime, fetched '
+             'at 0xacba0, not the no-argument selector its stop counterpart uses',
+    0xacc20: 'RBMenuView -stopBGEffect: the same thema == 2 gate and two nil checks, both calling '
+             'the no-argument stopAnimation',
+    0xb5dfc: 'RBMenuView -closeCustomize: respondsToSelector: on hideAnimation against showView, '
+             'and the send only on cbz w23 failing at 0xb5e54',
+    0xac274: 'RBMenuView -showThema: allocates RBThemaView on self.bounds, sets musicMenuView and '
+             'an autoresizing mask of 0x3f (all six flags), adds it, animates it in, and only then '
+             'stores it in showView -- the setShowView: at 0xac314 follows the showAnimation',
+    0xaf7e8: 'RBMenuView -stopNews: newsView stopNews, newsBannerTimer invalidate, the timer '
+             'cleared, then newsDownloader cancel. No nil checks anywhere; the sends rely on nil '
+             'being harmless, and the reconstruction does the same',
+    0xb16dc: 'RBMenuView -tapSearchMusicCancel: clears searchBar.text and backUpString to the '
+             'empty literal, re-enters searchBar:textDidChange: with that same empty string rather '
+             'than the bar text, then hideSearchBar',
+    0xb93c4: 'RBMenuView -touchMascot: eor w2,w0,#1 at 0xb9408 toggles musicCellHidden -- the '
+             'annotation printing setMusicCellHidden:0x1 is the argument field lying again. The '
+             'subview walk compares -class against +[RBMusicCell class] by pointer and sends hide '
+             'or show per the new flag',
+    0xb95c8: 'RBMenuView -debugAlphaLog: fast enumerates collectionView.subviews and per subview '
+             'sends -class and +[RBMusicCell class], discarding both. The loop has no other body, '
+             'so the reconstruction keeps the two discarded sends',
     0x3bf70: 'RBEffectSizeSlider -continueTrackingWithTouch:withEvent:: the third of the tracking '
              'trio, identical to the begin form and likewise returning YES',
     0x6a70c: 'RBBGMManager -LoadMusic:Loop:: sets m_IsMusic with a mov w9 of 1 before handing the '
