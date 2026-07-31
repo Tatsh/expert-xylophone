@@ -95,6 +95,11 @@ DamageEffectLayer *DamageEffectLayer::shared() {
     return g_pDamageEffectLayer;
 }
 
+// The sprite-batch capacity the constructor seeds, which the batch creation hands to the
+// instancer. The binary reaches it by adding 0x80 to the freshly zeroed field rather than by a
+// plain store, so it reads as an increment; the value is 128.
+constexpr int kSpriteBatchCapacity = 128;
+
 /** @ghidraAddress 0x173f10 */
 DamageEffectLayer::DamageEffectLayer() {
     // The base constructor and the member initialisers clear the header and pooled records; the
@@ -103,6 +108,9 @@ DamageEffectLayer::DamageEffectLayer() {
         flValue = kInitialLaneValue;
     }
     m_flEffectSize = kInitialEffectSize;
+    // Without this the batch is created with capacity zero and the first damage effect trips the
+    // sprite-index assertion. The binary adds 0x80 to the freshly zeroed field at 0x173f6c.
+    m_nCapacity = kSpriteBatchCapacity;
 }
 
 /** @ghidraAddress 0x173fcc */

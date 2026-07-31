@@ -79,11 +79,18 @@ ChainConnectorLayer *ChainConnectorLayer::shared() {
     return g_pChainConnectorLayer;
 }
 
+// The sprite-batch capacity the constructor seeds. As in the sibling effect layers the binary
+// reaches it by adding to the freshly zeroed field rather than by a plain store; the value is 256.
+constexpr int kSpriteBatchCapacity = 256;
+
 /** @ghidraAddress 0x1857e4 */
 ChainConnectorLayer::ChainConnectorLayer() {
     // The base constructor and member initialisers clear the sprite header and pooled records; the
     // shared connector draw count resets to zero.
     g_nChainConnectorDrawCount = 0;
+    // Without this the batch is created with capacity zero and the first connector trips the
+    // sprite-index assertion. The binary adds 0x100 to the freshly zeroed field at 0x185834.
+    m_nCapacity = kSpriteBatchCapacity;
 }
 
 /** @ghidraAddress 0x185894 */
