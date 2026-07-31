@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4791 verified
-(75.5%).
+Total: 6343 — 6306 reconstructed, 4794 verified
+(75.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2522,7 +2522,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0xd66e0` |
 | `RBMusicView` | `-` | `getDecideButton` |  | ✅ | ✅ | `0xd6b1c` |
 | `RBMusicView` | `-` | `getDoubleButton` |  | ✅ | ✅ | `0xd6b28` |
-| `RBMusicView` | `-` | `getDifficultyButton:` |  | ✅ | ❌ | `0xd6b8c` |
+| `RBMusicView` | `-` | `getDifficultyButton:` |  | ✅ | ✅ | `0xd6b8c` |
 | `RBMusicView` | `-` | `tapGesture:` |  | ✅ | ❌ | `0xd6bfc` |
 | `RBMusicView` | `-` | `gestureRecognizer:shouldReceiveTouch:` |  | ✅ | ❌ | `0xd6cec` |
 | `RBMusicView` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0xd6e38` |
@@ -2671,7 +2671,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingTableView` | `-` | `load:` |  | ✅ | ❌ | `0xdb628` |
 | `RBRankingTableView` | `-` | `loadRanking` |  | ✅ | ❌ | `0xdc174` |
 | `RBRankingTableView` | `-` | `clear` |  | ✅ | ✅ | `0xdc508` |
-| `RBRankingTableView` | `-` | `pushLoadNext:` |  | ✅ | ❌ | `0xdc514` |
+| `RBRankingTableView` | `-` | `pushLoadNext:` |  | ✅ | ✅ | `0xdc514` |
 | `RBRankingTableView` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0xdc590` |
 | `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0xdc598` |
 | `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0xdc5b4` |
@@ -2864,7 +2864,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingView` | `-` | `SelectCustomizeButton` |  | ✅ | ❌ | `0xebbc0` |
 | `RBSettingView` | `-` | `selectThema:` |  | ✅ | ❌ | `0xebcec` |
 | `RBSettingView` | `-` | `SelectHowToPlayButton` |  | ✅ | ❌ | `0xebdf0` |
-| `RBSettingView` | `-` | `SelectInfoButton` |  | ✅ | ❌ | `0xebf1c` |
+| `RBSettingView` | `-` | `SelectInfoButton` |  | ✅ | ✅ | `0xebf1c` |
 | `RBSettingView` | `-` | `SelectTermButton` |  | ✅ | ❌ | `0xebf94` |
 | `RBSettingView` | `-` | `SelectApplilinkButton` |  | ✅ | ❌ | `0xec00c` |
 | `RBSettingView` | `-` | `SelectExitButton` |  | ✅ | ✅ | `0xec0c0` |

@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xd6b8c: 'RBMusicView -getDifficultyButton:: forwards the index to difficultyView',
+    0xdc514: 'RBRankingTableView -pushLoadNext:: disables buttonLoadNext, then load: with the mov '
+             'w2 of 0x14, matching kLoadNextIncrement of 20',
+    0xebf1c: 'RBSettingView -SelectInfoButton: themed effect 1, parentView '
+             'showNotificationPageView, then its own hideAnimation',
     0x4169c: 'AVBus -setSource:: stores the record, then dispatches on its first field, URL when '
              'set and data otherwise, passing the +0x10 BOOL as isLoop, and returns mCurrentID '
              'through ldrh. Its method_t types read S24@0:8^{AVSource=@@B}16, so the return is '
