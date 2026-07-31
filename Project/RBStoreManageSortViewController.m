@@ -7,7 +7,7 @@
 static NSString *const kSortTitleDownloadAscending = @"ダウンロード：昇順";
 static NSString *const kSortTitleDownloadDescending = @"ダウンロード：降順";
 static NSString *const kSortTitleSongName = @"楽曲名順";
-static NSString *const kSortTitleArtistName = @"アーティスト名";
+static NSString *const kSortTitleArtistName = @"アーティスト名順";
 
 // The localisation key for the navigation title (the "sort" heading).
 static NSString *const kSortTitleLocalizationKey = @"並べ替え";

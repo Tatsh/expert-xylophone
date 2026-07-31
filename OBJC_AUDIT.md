@@ -1129,3 +1129,34 @@ a literal compiles to `+dictionaryWithObjects:forKeys:count:`, so the send in th
 the one in the source. The resulting dictionary is identical either way, so neither is wrong, but
 the tree currently answers the same question two ways. The `AppDelegate` form is the more faithful
 one and the comment there is worth keeping whichever way this is settled.
+
+## A tree-wide literal sweep, and two more truncated strings
+
+After the one-codepoint katakana defect in `+convertDJ:`, the same class of error was worth hunting
+across the whole tree rather than one file. `tools/scan_literals.py` decodes every record in the
+binary's `__cfstring` section — 2223 of them — and checks that each non-ASCII source literal appears
+among them. Adjacent literals are joined first, because the compiler concatenates `@"a" @"b"` into
+one record and a fragment alone would never match.
+
+The check found two more defects, both truncations rather than substitutions:
+
+- `RBStoreManageSortViewController`'s `kSortTitleArtistName` was `アーティスト名` where the binary
+  has `アーティスト名順`. Its three siblings all end in 順, and the binary's record sits directly
+  after `楽曲名順` in the same table, so the missing character is not a variant spelling.
+- `RBTermView`'s `kTermsDefaultTitle` was `規約等および` where the binary has
+  `規約等および各種注意事項`. The short form ends on a conjunction and is not a phrase.
+
+Neither short form exists anywhere in `__cfstring`, which is what settles them: a truncated literal
+is not a near-miss of the real one, it is simply absent.
+
+Two remaining reports are explained rather than defects. `RecommendDebug` composes
+`[@"テスト" stringByAppendingString:suffix]` at runtime, while the binary stores all six of
+`テストA` through `テストF` whole. The values agree; only the construction differs, like the
+dictionary-literal and `SSZipArchive` call-chain cases recorded above.
+
+One caveat about the method, learned the hard way. The first version of this sweep wrote the decoded
+strings to a newline-separated scratch file and read them back, which split every record containing
+`\n` into fragments and reported seven false positives. The tool keeps the set in memory. The two
+real findings were unaffected, since neither string contains a newline and both were confirmed by
+scanning `__cfstring` for the exact text, but the count in between was wrong and the difference was
+mine, not the tree's.

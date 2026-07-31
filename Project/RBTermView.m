@@ -46,7 +46,7 @@ static NSString *const kGradationImageName = @"23_terms/tos_grad";
 static NSString *const kTermButtonImageName = @"23_terms/tos_btn";
 
 // The default terms title shown before a term is selected.
-static NSString *const kTermsDefaultTitle = @"規約等および";
+static NSString *const kTermsDefaultTitle = @"規約等および各種注意事項";
 
 // The term-button title format: the term's numeric tag rendered as a decimal string.
 static NSString *const kTermTagFormat = @"%zd";

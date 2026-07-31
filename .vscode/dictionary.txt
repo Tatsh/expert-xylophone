@@ -73,6 +73,7 @@ cdevice
 centered
 cfstr
 cfstring
+cfstrings
 cfurl
 cfuuid
 chache
@@ -102,6 +103,7 @@ csel
 cset
 cstring
 ctask
+cutoff
 dakuten
 dashcam
 datablock
