@@ -3807,6 +3807,15 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x6AC38: 'RBMusicManager -deleteMusic:: the current and legacy paths are each guarded by '
+             'isFileExist: before removeItemAtPath:, and the cbz w24 at 0x6ad98 is the '
+             'else-if: when the legacy file is absent and nothing was removed from the current '
+             'path either, it returns NO without marking the array dirty',
+    0x6C18C: 'RBMusicManager -createMusicDataArray: arrayWithCapacity:0, then the preinstalled '
+             'identifiers through getPathFromBundle: and the purchased ones through '
+             'getPathFromPurchesed:. The legacy-directory fallback is guarded rather than '
+             'unconditional, by the tbnz w0,#0 at 0x6c47c, and both loops skip an entry on a cbz '
+             'over the MusicData the path produced',
     0x6AEE0: 'RBMusicManager -createPreInMusics: initWithCapacity:3 and cmp x25,#3 bound a loop '
              'over a four-byte table at 0x2fcfe0, read through ldr w2,[x27,x25,LSL #2]. The three '
              'entries decode as 100000107, 100000109 and 100000419, matching the reconstruction '
