@@ -166,6 +166,11 @@ void neGLESRenderer::GenTexture(unsigned int *pOutHandle) {
 /** @ghidraAddress 0x2147c */
 void neGLESRenderer::GenBuffer(unsigned int *pOutBuffer) {
     glGenBuffers(1, pOutBuffer);
+    // A name GL hands back here after being freed is the whole question: the weight and
+    // matrix-index binding caches are not cleared on delete, so a reissued name makes them claim
+    // the array is already configured and suppress the pointer call, leaving the array enabled
+    // against a dead buffer. Pair this with the delete line to see whether that happens.
+    NE_DBG(if (NE_DBG_FIRST(400)) { neDebugLog("glBuffer gen %u", *pOutBuffer); });
 }
 
 /** @ghidraAddress 0x21bd0 */
@@ -626,11 +631,14 @@ void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
     // binding to zero while the cache keeps the dead name, and GL recycles freed names -- so record
     // when it actually happens. If a later BindIndexBuffer skips a rebind for that same name, the
     // draw reads its indices from client address zero, which is the fault seen on the play screen.
-    if (NE_DBG_FIRST(20)) {
-        if (m_nElementBufferBound == nBuffer) {
-            neDebugLog("deleteBuffer HAZARD deleting bound element buffer %u", dwBuffer);
-        }
-    }
+    NE_DBG(if (NE_DBG_FIRST(400)) {
+        neDebugLog("glBuffer del %u element=%d array=%d weightBinding=%d matrixIndexBinding=%d",
+                   dwBuffer,
+                   m_nElementBufferBound,
+                   m_nArrayBufferBound,
+                   m_nWeightBufferBinding,
+                   m_nMatrixIndexBufferBinding);
+    });
     glDeleteBuffers(1, &dwBuffer);
 }
 
