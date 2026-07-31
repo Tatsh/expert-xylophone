@@ -300,6 +300,7 @@ musicinfo
 musicselect
 mypy
 nbobhfs
+ndebug
 nekomata
 nextrel
 nilled
