@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5102 verified
-(80.4%).
+Total: 6343 — 6306 reconstructed, 5103 verified
+(80.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5102 verified, 3507 come from those passes and the remaining
-1595 were read by hand. The split matters when reading the percentage: a
+Of the 5103 verified, 3507 come from those passes and the remaining
+1596 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -962,7 +962,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `loadDetail` |  | ✅ | ❌ | `0x492e8` |
 | `RBTermDetailPhoneViewController` | `-` | `showTermView` |  | ✅ | ❌ | `0x49ac4` |
 | `RBTermDetailPhoneViewController` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x49f7c` |
-| `RBTermDetailPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x4a07c` |
+| `RBTermDetailPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ✅ | `0x4a07c` |
 | `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x4a130` |
 | `RBTermDetailPhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x4a200` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x4a2c8` |

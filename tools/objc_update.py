@@ -972,6 +972,10 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x4a07c: 'RBTermDetailPhoneViewController -endLoadAnimation: the cbz on isUseGrayView guards '
+             'only the setHidden:YES; stopAnimating on the indicator is reached on both arms. '
+             'Folding the second call inside the guard would leave the spinner turning whenever '
+             'the gray overlay is not in use',
     0x69ef8: 'RBBGMManager -RelaseMusic: two independent cbz guards rather than an if/else, so '
              'releaseBgm is sent twice when both m_IsMusic and m_IsPushMusic are set, once on its '
              'own and once after popBgm. Both flags are then cleared unconditionally, outside '
