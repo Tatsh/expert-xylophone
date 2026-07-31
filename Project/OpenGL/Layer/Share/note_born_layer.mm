@@ -41,6 +41,11 @@ constexpr int kTexParamValue = 1;
 constexpr float kBurstAnchor = 31.0f;
 constexpr float kBurstSize = 62.0f;
 
+// The sprite-batch capacity the constructor seeds, which LoadSprites hands to
+// CreateWorldSpriteBatch. The binary reaches it by adding 0x100 to the freshly zeroed field at
+// 0x18545c rather than by a plain store, so it reads as an increment; the value is 256.
+constexpr int kSpriteBatchCapacity = 256;
+
 // The maximum value of an opaque colour channel.
 constexpr unsigned int kColorMax = 255;
 
@@ -82,6 +87,9 @@ NoteBornLayer::NoteBornLayer() {
     // default scale pair seeds to one.
     m_aScale[0] = kInitialScale;
     m_aScale[1] = kInitialScale;
+    // Without this the batch is created with capacity zero, and the first burst trips the
+    // sprite-index assertion in SetSpritePosition.
+    m_nCapacity = kSpriteBatchCapacity;
 }
 
 /** @ghidraAddress 0x185564 */
