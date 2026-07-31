@@ -3807,6 +3807,21 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x10546C: 'ReplayData +isExistReplayData:difficulty:: sub w8,w3,#3 with cmp w3,#2 and csel on '
+              'gt folds the advanced difficulties down by three, a signed test written as greater '
+              'than two where the source says at least three, which is the same thing for an int. '
+              'The replay directory is created and NO returned on the tbz when it is absent, and '
+              'the "%@/%09d_%d.rbp" path takes exactly three stack slots for its three specifiers, '
+              'in the source order',
+    0x105FC0: 'ReplayData +convertLocalDate:: cbz returns nil, then secondsFromGMTForDate: is '
+              'widened with scvtf, so the offset is signed, and added through '
+              'dateByAddingTimeInterval:',
+    0x1060A0: 'ReplayData +encode:: initWithCapacity:0x80 matches the 128 constant, arc4random '
+              'supplies a salt appended with length 4, then the payload, then a BFCodec keyed by '
+              'the MD5 of "REFLECBEATplus" enciphers the buffer in place',
+    0x106204: 'ReplayData +decode:: the inverse, and the salt strip is explicit in the '
+              'instructions: sub x3,x0,#4 on the deciphered length with subdataWithRange: at '
+              'location 4',
     0x5C444: 'ScoreData +getScoreData:inManagedObjectContext:: the "ScoreData" entity with the '
              '"tuneID == %d" predicate, then cbz on the result count takes the create path through '
              'recordWithTuneID: and save:. Otherwise lastObject, a tbnz on checkScore: that resets '
