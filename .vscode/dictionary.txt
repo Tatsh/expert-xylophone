@@ -395,6 +395,7 @@ snapcraft
 sota
 soundeffectmanager
 sourcei
+srand
 ssize
 statusline
 stdbool

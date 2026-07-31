@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4777 verified
-(75.3%).
+Total: 6343 — 6306 reconstructed, 4781 verified
+(75.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -864,8 +864,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
 | `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x41d14` |
 | `AVBus` | `-` | `audioPlayerBeginInterruption:` |  | ✅ | ❌ | `0x41d28` |
-| `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x41da8` |
-| `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x41e20` |
+| `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ✅ | `0x41da8` |
+| `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ✅ | `0x41e20` |
 | `AVBus` | `-` | `dealloc` |  | ✅ | ✅ | `0x41e98` |
 | `AVBus` | `-` | `isSameSource:` |  | ✅ | ✅ | `0x41f20` |
 | `AVBus` | `-` | `currentID` |  | ✅ | ✅ | `0x41f38` |
@@ -1536,7 +1536,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ❌ | `0x69fac` |
 | `RBBGMManager` | `-` | `PauseMusic:` |  | ✅ | ❌ | `0x6a03c` |
 | `RBBGMManager` | `-` | `StopMusic:` |  | ✅ | ❌ | `0x6a0c8` |
-| `RBBGMManager` | `-` | `SeekToTop` |  | ✅ | ❌ | `0x6a154` |
+| `RBBGMManager` | `-` | `SeekToTop` |  | ✅ | ✅ | `0x6a154` |
 | `RBBGMManager` | `-` | `LoadMusicType:Loop:` |  | ✅ | ❌ | `0x6a1cc` |
 | `RBBGMManager` | `-` | `LoadMusicSelect` |  | ✅ | ❌ | `0x6a324` |
 | `RBBGMManager` | `-` | `LoadMusicTitleWithLoop:` |  | ✅ | ❌ | `0x6a3b4` |
@@ -2105,7 +2105,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `hideAnimation:` |  | ✅ | ❌ | `0xaaac8` |
 | `RBMenuView` | `-` | `isShow` |  | ✅ | ✅ | `0xaafe4` |
 | `RBMenuView` | `-` | `selectMusic:animated:` |  | ✅ | ❌ | `0xaaff0` |
-| `RBMenuView` | `-` | `getRandamInt:max:` |  | ✅ | ❌ | `0xab350` |
+| `RBMenuView` | `-` | `getRandamInt:max:` |  | ✅ | ✅ | `0xab350` |
 | `RBMenuView` | `-` | `selectRandom:` |  | ✅ | ❌ | `0xab3c8` |
 | `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ❌ | `0xab7ac` |
 | `RBMenuView` | `-` | `RemoveStoreViewController` |  | ✅ | ❌ | `0xab854` |

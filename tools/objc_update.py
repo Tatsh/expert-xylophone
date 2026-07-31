@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x41da8: 'AVBus -audioPlayerEndInterruption:: replays only from status 2 and drops to 4 when '
+             'play fails; the cmp #2 and mov w8,#4 match AVBusStatusPlaying and AVBusStatusStopped',
+    0x41e20: 'AVBus -audioPlayerEndInterruption:withOptions:: instruction-identical to the '
+             'one-argument form, options never read, and read separately rather than assumed',
+    0x6a154: 'RBBGMManager -SeekToTop: guarded on m_IsMusic, then AudioManager seekBgmToTop',
+    0xab350: 'RBMenuView -getRandamInt:max:: seeds srand(time(NULL)) once behind a file-scope '
+             'flag, then maps rand() over ((max-min)+1) with the pool double at 0x301070, which '
+             'reads bit-for-bit as 1/2**31 and matches the declared 1.0/2147483648.0',
     0x3a468: 'neGLView -BeginRender: returns EAGLContext setCurrentContext: over its own '
              'glContext, with the class object in x0 and the context in x2',
     0x3a4e0: 'neGLView -Present: sends presentRenderbuffer: to glContext with m_RenderBufferID, '
