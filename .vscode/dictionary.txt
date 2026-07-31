@@ -431,6 +431,8 @@ superlayer
 superview
 superview's
 supportedi
+sxth
+sxtw
 symtab
 sysctlbyname
 tabletennis

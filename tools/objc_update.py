@@ -1005,6 +1005,15 @@ VERIFIED = {
              'the property read is plyName rather than musicName. The two sit either side of '
              '-musicPre, which is a two-instruction mov x0,#0 and ret, so the three together are '
              'easy to conflate when skimming and were read separately',
+    0x5bb88: 'History +hashScoreforTune: the twelve-argument form. fmov x14,d0 reinterprets the '
+             'date\'s bits rather than converting the double, which is what the reconstruction\'s '
+             'memcpy into a uint64 expresses. Slots 0, 2, 3 and 4 are plain and confirmed: tune, '
+             'just + score, great, good. Slot 1 was traced term by term, add w16,w3,w14,SXTH for '
+             'difficulty plus the low halfword of the date, then a countBits word pre-masked with '
+             '0xffff0000 and shifted ASR #0x10 for the top halfword of the count. Slots 5, 6 and 7 '
+             'follow the same three-term shape with different shift amounts, and the mask-then-'
+             'arithmetic-shift idiom for each halfword lane was confirmed present rather than '
+             'traced individually',
     0x5d300: 'ScoreData +hashScoreforTune:Basic:Medium:Hard:Hash:: an IsPad branch with different '
              'arithmetic on each arm, feeding an eight-word buffer at sp+8 that the md5 helper '
              'reads as 0x20 bytes. Slots 0, 2, 5 and 7 are common; 1, 3, 4 and 6 differ by idiom, '
