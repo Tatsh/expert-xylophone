@@ -303,6 +303,15 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1dc5b4: 'RBStoreDetailViewController -viewWillAppear:: super, selfCheckButtonText, then a '
+              'strb wzr clearing _closingFlag directly rather than through its setter',
+    0x1dc610: 'RBStoreDetailViewController -viewDidAppear:: super, then loadInfo only while the '
+              'pack table is hidden, so a visible table is left alone',
+    0x1f094c: 'RBStorePackList -isFetching: the twin of the extend-note one, short-circuiting on '
+              'packlistDownloader before productsRequest is read',
+    0x1d6824: 'RBStoreTabController -openDialogAnimStop:finished:context:: clears '
+              'm_IsUIViewAnimation and re-enables the dialog\'s abort button, reading none of its '
+              'three callback arguments',
     0x1c9804: 'RBNavigationController -viewDidLoad: super, then clears the navigation bar\'s '
               'translucency with the mov w2 of 0',
     0x1c9894: 'RBNavigationController -shouldAutorotate: delegates to visibleViewController, so '

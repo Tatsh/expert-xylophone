@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4960 verified
-(78.2%).
+Total: 6343 — 6306 reconstructed, 4964 verified
+(78.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5029,7 +5029,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreTabController` | `-` | `init` |  | ✅ | ❌ | `0x1d537c` |
 | `RBStoreTabController` | `-` | `loadView` |  | ✅ | ❌ | `0x1d6018` |
 | `RBStoreTabController` | `-` | `showModalDialog:` |  | ✅ | ❌ | `0x1d655c` |
-| `RBStoreTabController` | `-` | `openDialogAnimStop:finished:context:` |  | ✅ | ❌ | `0x1d6824` |
+| `RBStoreTabController` | `-` | `openDialogAnimStop:finished:context:` |  | ✅ | ✅ | `0x1d6824` |
 | `RBStoreTabController` | `-` | `hideModalDialog` |  | ✅ | ❌ | `0x1d68c4` |
 | `RBStoreTabController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x1d6c20` |
 | `RBStoreTabController` | `-` | `forceOpen` |  | ✅ | ❌ | `0x1d6f6c` |
@@ -5093,8 +5093,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreDetailViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x1dc3fc` |
 | `RBStoreDetailViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x1dc430` |
 | `RBStoreDetailViewController` | `-` | `dealloc` |  | ✅ | ❌ | `0x1dc480` |
-| `RBStoreDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1dc5b4` |
-| `RBStoreDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x1dc610` |
+| `RBStoreDetailViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x1dc5b4` |
+| `RBStoreDetailViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x1dc610` |
 | `RBStoreDetailViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x1dc6b4` |
 | `RBStoreDetailViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x1dc8e0` |
 | `RBStoreDetailViewController` | `-` | `storeDetailViewOpenItunesWithURL:` |  | ✅ | ❌ | `0x1dc914` |
@@ -5282,7 +5282,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePackList` | `+` | `storeCountry` |  | ✅ | ✅ | `0x1f05fc` |
 | `RBStorePackList` | `-` | `init` |  | ✅ | ❌ | `0x1f063c` |
 | `RBStorePackList` | `-` | `cancelFetching` |  | ✅ | ❌ | `0x1f07fc` |
-| `RBStorePackList` | `-` | `isFetching` |  | ✅ | ❌ | `0x1f094c` |
+| `RBStorePackList` | `-` | `isFetching` |  | ✅ | ✅ | `0x1f094c` |
 | `RBStorePackList` | `-` | `packInfos` |  | ✅ | ✅ | `0x1f09d0` |
 | `RBStorePackList` | `-` | `numGenres` |  | ✅ | ❌ | `0x1f09dc` |
 | `RBStorePackList` | `-` | `genreNames` |  | ✅ | ❌ | `0x1f0a3c` |
