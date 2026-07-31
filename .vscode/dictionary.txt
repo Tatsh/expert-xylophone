@@ -396,6 +396,7 @@ sdiv
 seiya
 selref
 serialcode
+serialiser
 sheetlayer
 shellcheck
 shellformat

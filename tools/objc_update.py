@@ -972,6 +972,12 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x36aa8: 'RBHttpUtil +dictionaryToJsonData:: a cbz returns nil for a nil dictionary, then '
+             'dataWithJSONObject:options:0:error: with the error slot zeroed first and its address '
+             'passed in x4. The second cbz tests that slot, not the returned data, so a serialiser '
+             'that returned nil without setting an error would still be returned as nil and one '
+             'that returned data alongside an error would be discarded. The reconstruction tests '
+             'the same thing',
     0x1529c: 'BFCodec -init: super init behind a cbz, then _iv zeroed with a single str xzr, which '
              'matches its [8C] encoding and the 8-byte memset. The context is allocated with '
              'operator.new at 0x24ab08 for 0x2090 bytes and cleared by the routine at 0x15a80, and '
