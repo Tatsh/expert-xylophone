@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4943 verified
-(77.9%).
+Total: 6343 — 6306 reconstructed, 4947 verified
+(78.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4672,9 +4672,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ✅ | `0x1baa24` |
 | `RBExperienceData` | `-` | `addExprosionType:` |  | ✅ | ✅ | `0x1baac8` |
 | `RBExperienceData` | `-` | `addFrameType:` |  | ✅ | ✅ | `0x1bab6c` |
-| `RBExperienceData` | `-` | `addBackgroundType:` |  | ✅ | ❌ | `0x1bac10` |
-| `RBExperienceData` | `-` | `addMusicID:` |  | ✅ | ❌ | `0x1bacb4` |
-| `RBExperienceData` | `-` | `addThemaID:` |  | ✅ | ❌ | `0x1bad58` |
+| `RBExperienceData` | `-` | `addBackgroundType:` |  | ✅ | ✅ | `0x1bac10` |
+| `RBExperienceData` | `-` | `addMusicID:` |  | ✅ | ✅ | `0x1bacb4` |
+| `RBExperienceData` | `-` | `addThemaID:` |  | ✅ | ✅ | `0x1bad58` |
 | `RBExperienceData` | `-` | `addItem:ID:` |  | ✅ | ❌ | `0x1badfc` |
 | `RBExperienceData` | `-` | `addRewardAppliId:andAppliId:` |  | ✅ | ❌ | `0x1baebc` |
 | `RBExperienceData` | `-` | `getRewardAppliId:` |  | ✅ | ❌ | `0x1bb0a0` |
@@ -4774,7 +4774,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuPageSlider` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x1c01ac` |
 | `RBMenuPageSliderView` | `-` | `initWithFrame:delegate:` |  | ✅ | ❌ | `0x1c01bc` |
 | `RBMenuPageSliderView` | `-` | `showView:pageMax:currentPage:` |  | ✅ | ❌ | `0x1c03b4` |
-| `RBMenuPageSliderView` | `-` | `willRotate` |  | ✅ | ❌ | `0x1c0578` |
+| `RBMenuPageSliderView` | `-` | `willRotate` |  | ✅ | ✅ | `0x1c0578` |
 | `RBMenuPageSliderView` | `-` | `didRotate` |  | ✅ | ❌ | `0x1c05e8` |
 | `RBMenuPageSliderView` | `-` | `reset:currentPage:` |  | ✅ | ❌ | `0x1c0750` |
 | `RBMenuPageSliderView` | `-` | `setIndexLabel:` |  | ✅ | ❌ | `0x1c07bc` |

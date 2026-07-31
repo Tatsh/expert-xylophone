@@ -303,6 +303,13 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1bac10: 'RBExperienceData -addBackgroundType:: appends to backgroundItems',
+    0x1bacb4: 'RBExperienceData -addMusicID:: appends to musicItems',
+    0x1bad58: 'RBExperienceData -addThemaID:: appends to themaItems; the seven add methods all '
+              'share a body and differ only in the collection, so each was matched to its own '
+              'ivar selector rather than the family taken from one',
+    0x1c0578: 'RBMenuPageSliderView -willRotate: hides the slider with a movi of zero and then '
+              'sets animating, so the flag is raised after the alpha rather than before',
     0x1baac8: 'RBExperienceData -addExprosionType:: appends to explosionItems; the selector keeps '
               'the binary\'s misspelling while the ivar it targets is spelled correctly, and both '
               'come from the metadata',
