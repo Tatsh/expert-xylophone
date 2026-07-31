@@ -286,6 +286,12 @@ VERIFIED = {
              'it, {height - 0.4375, left, 9.0, right}',
     0x14d40: 'UnZipArchive -init: chains to super and clears m_ZipFile only when that returned '
              'non-nil',
+    0x18cf4: 'SystemHardware -getHardwareName: the same resolve-once guard as getHardwareType, '
+             'then a tail call to the hardwareName property rather than a stored copy',
+    0x49264: 'RBTermDetailPhoneViewController -viewDidAppear:: chains to super with the flag, then '
+             'loads the detail',
+    0x69ea8: 'RBBGMManager -init: clears m_IsMusic and m_IsPushMusic, in that order, and only when '
+             'super returned non-nil',
     0x18cb0: 'SystemHardware -getHardwareType: 15 is the unresolved sentinel; the cmp at 0x18ccc '
              'resolves once and re-reads the ivar rather than using the call result',
     0x881fc: 'TwitterImageCreater -getDigitNum:: the loop test is (previous + 9) against 18 with '

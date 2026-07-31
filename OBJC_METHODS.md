@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4645 verified
-(73.2%).
+Total: 6343 — 6306 reconstructed, 4648 verified
+(73.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -300,7 +300,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SystemHardware` | `+` | `getInstance` |  | ✅ | ❌ | `0x18b14` |
 | `SystemHardware` | `-` | `initHardware` |  | ✅ | ❌ | `0x18b6c` |
 | `SystemHardware` | `-` | `getHardwareType` |  | ✅ | ✅ | `0x18cb0` |
-| `SystemHardware` | `-` | `getHardwareName` |  | ✅ | ❌ | `0x18cf4` |
+| `SystemHardware` | `-` | `getHardwareName` |  | ✅ | ✅ | `0x18cf4` |
 | `SystemHardware` | `-` | `hardwareName` | prop | ✅ | ✅ | `0x18d40` |
 | `SystemHardware` | `-` | `setHardwareName:` | prop | ✅ | ✅ | `0x18d50` |
 | `RBResourceDownloadBGEffectPartView` | `-` | `init` |  | ✅ | ❌ | `0x19aa0` |
@@ -952,7 +952,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `dealloc` |  | ❌ | ✅ | `0x4889c` |
 | `RBTermDetailPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x488d0` |
 | `RBTermDetailPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x490c8` |
-| `RBTermDetailPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x49264` |
+| `RBTermDetailPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x49264` |
 | `RBTermDetailPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x492b4` |
 | `RBTermDetailPhoneViewController` | `-` | `loadDetail` |  | ✅ | ❌ | `0x492e8` |
 | `RBTermDetailPhoneViewController` | `-` | `showTermView` |  | ✅ | ❌ | `0x49ac4` |
@@ -1531,7 +1531,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfoDownloader` | `-` | `errorMessage` | prop | ✅ | ✅ | `0x69da4` |
 | `StorePackInfoDownloader` | `-` | `setErrorMessage:` | prop | ✅ | ✅ | `0x69db4` |
 | `RBBGMManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x69e50` |
-| `RBBGMManager` | `-` | `init` |  | ✅ | ❌ | `0x69ea8` |
+| `RBBGMManager` | `-` | `init` |  | ✅ | ✅ | `0x69ea8` |
 | `RBBGMManager` | `-` | `RelaseMusic` |  | ✅ | ❌ | `0x69ef8` |
 | `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ❌ | `0x69fac` |
 | `RBBGMManager` | `-` | `PauseMusic:` |  | ✅ | ❌ | `0x6a03c` |
