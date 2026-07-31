@@ -270,7 +270,7 @@ static NSString *const kITunesItemIDPattern = @"id([0-9]+)";
     };
 }
 
-/** @ghidraAddress 0x85a4c (caller reference) */
+/** @ghidraAddress 0x85a4c */
 + (int)packIDForProductID:(NSString *)productID {
     // A pack product identifier is the pack prefix followed by a positive integer.
     if (productID.length > kPackProductIDPrefix.length &&

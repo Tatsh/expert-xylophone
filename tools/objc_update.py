@@ -3669,6 +3669,70 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    # A second delegated batch of twenty, all matching. Three claims were re-read here rather than
+    # taken on trust, chosen because each is falsifiable from the instructions alone: the presence
+    # and absence of the scale multiply across the two drawImage overloads, and the stack layout of
+    # the three-argument variadic. All three agreed.
+    0x71B84: 'RBPlaylistManager -nameOfPlaylistAtIndex:: cmp against the count with b.ls, the '
+             'unsigned inverse of index >= count, returns nil, otherwise objectAtIndex: then '
+             'objectForKey: "NAME"',
+    0x71C9C: 'RBPlaylistManager -identifierOfPlaylistAtIndex:: the same shape as 0x71b84 ending in '
+             'objectForKey: "PLID"',
+    0x71DB4: 'RBPlaylistManager -setNameOfPlaylist:atIndex:: cbz on the name length returns NO, '
+             'and a second cbz on the fetched playlist skips the setObject:forKey: "NAME", so both '
+             'guards in the source are present',
+    0x721C0: 'RBPlaylistManager -removePlaylistAtIndex:: the same unsigned b.ls bound as the two '
+             'readers, then removeObjectAtIndex: and YES',
+    0x72E24: 'Downloader -startDownloadingWithDelegate:: setDelegate: then -startDownloading: on '
+             'the connection. The retain and immediate release around the result are the ordinary '
+             'ARC codegen for a discarded object return, not an unmodelled use',
+    0x72ED0: 'Downloader -startDownloadingWithProceed:success:failure:: the three block setters in '
+             'order, then startDownloadingWithDelegate: with a nil delegate',
+    0x73788: 'Downloader -dealloc: setDelegate:nil, cancel and nil the connection, then nil all '
+             'three blocks. The trailing objc_msgSendSuper2 is the ARC-inserted [super dealloc], '
+             'which is why the source does not spell it',
+    0x83DC8: 'ImageDownloader -startDownload: three conditions short-circuit in order, a tbz on '
+             'respondsToSelector:@selector(scale), a b.eq on fcmp against the fmov immediate '
+             '0x3ff0000000000000 which is exactly 1.0, and a tbnz on unUseRetina. All three '
+             'failure paths tail-call startDownloadNonRetina and the success path '
+             'startDownloadRetina',
+    0x83EB0: 'ImageDownloader -startDownloadWithProceed:success:failure:: the three block setters '
+             'then a tail call to startDownload, the same shape as 0x72ed0',
+    0x84900: 'ImageDownloader -cancelDownload: delegate and downloadedImage nilled, then both '
+             'tasks cancelled and nilled, six statements in the source order',
+    0x85A4C: 'StoreUtil +packIDForProductID:: b.ls on the length against the prefix length is the '
+             'unsigned negation of the strict greater-than, then hasPrefix: with tbz, and '
+             'csel w20,w21,-1,gt on the parsed intValue, which is the signed less-than-one test. '
+             'The prefix decodes as "rbplus.pack". Its annotation carried a stale '
+             '"(caller reference)" note, now removed, since the address is this method own entry '
+             'and the address audit already checks it as such',
+    0x86484: 'StoreUtil +createReceiptCheckDigest:: substringWithRange: at location 2 length 27 of '
+             '"2012 Konami Digital Entertainment", joined with the payload by "%@%@", then a '
+             'direct C call rather than a dispatch stub, which is the SHA-256 helper',
+    0x8657C: 'StoreUtil +createReceiptCheckDigestV2:withNonce:: read here rather than taken on '
+             'trust. The variadic slots are str x8,[sp] for the secret and stp x20,x19,[sp,#8] for '
+             'the nonce and payload, so the order is secret, nonce, payload under a "%@%@%@" '
+             'format, and the secret at 0x36bd60 decodes byte for byte as '
+             'kReceiptCheckSecretV2',
+    0x874F4: 'StoreUtil +productIDToPid:: the same routine as 0x85a4c against the "rbplus.note" '
+             'prefix',
+    0x87784: 'TwitterImageCreater -init: a genuine objc_msgSendSuper2 [super init] with cbz on the '
+             'result, then a signed two-iteration loop storing each alloc/init straight into the '
+             'm_Score slot. The ivar type encoding is a two-element array of that class, which is '
+             'what makes the direct str correct rather than a missing retain',
+    0x87AE4: 'TwitterImageCreater -createContext::: reset, the width and height stores, then '
+             'operator new[] on the product with a csel overflow clamp, CGColorSpaceCreateDeviceRGB, '
+             'and CGBitmapContextCreate with mov w3,#8 for the component bits and mov w6,#1 for '
+             'premultiplied-last alpha',
+    0x87BA0: 'TwitterImageCreater -drawImage:X:Y:Scale:: read here. fcvt d0,s8 widens the float '
+             'scale, then fmul d3,d0,d10 and fmul d2,d0,d9 give the scaled height and width, and '
+             'fsub d1,d1,d3 subtracts the scaled height from m_Height minus y. Four fields, each '
+             'traced to the instruction that produces it',
+    0x87C78: 'TwitterImageCreater -drawImage:X:Y:: read here as the control for 0x87ba0. The '
+             'routine contains no fmul at all and its fsub d1,d1,d9 uses the raw height, so the '
+             'overload is genuinely scale-free rather than a scale of one folded in',
+    # 0x8f158 and 0x90778 were in this batch too, and both were already recorded from an earlier
+    # one. The duplicate-key guard caught them, which is the only reason the overlap is visible.
     0x228B28: 'RecommendAdData +getInterstitialSpecCountForAdDisplaySpecList:: every odd thing the '
               'reconstruction claims is there. cbz on the total-count dictionary jumps to 0x228fa4, '
               'which retains the input list into the return register, so a missing record really '

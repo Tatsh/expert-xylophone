@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5217 verified
-(82.2%).
+Total: 6343 — 6306 reconstructed, 5235 verified
+(82.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5217 verified, 3507 come from those passes and the remaining
-1710 were read by hand. The split matters when reading the percentage: a
+Of the 5235 verified, 3507 come from those passes and the remaining
+1728 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -1655,11 +1655,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistManager` | `-` | `playlistAtIndex:` |  | ✅ | ❌ | `0x71754` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylist:` |  | ✅ | ✅ | `0x7193c` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylistWithIdentifier:` |  | ✅ | ❌ | `0x719d4` |
-| `RBPlaylistManager` | `-` | `nameOfPlaylistAtIndex:` |  | ✅ | ❌ | `0x71b84` |
-| `RBPlaylistManager` | `-` | `identifierOfPlaylistAtIndex:` |  | ✅ | ❌ | `0x71c9c` |
-| `RBPlaylistManager` | `-` | `setNameOfPlaylist:atIndex:` |  | ✅ | ❌ | `0x71db4` |
+| `RBPlaylistManager` | `-` | `nameOfPlaylistAtIndex:` |  | ✅ | ✅ | `0x71b84` |
+| `RBPlaylistManager` | `-` | `identifierOfPlaylistAtIndex:` |  | ✅ | ✅ | `0x71c9c` |
+| `RBPlaylistManager` | `-` | `setNameOfPlaylist:atIndex:` |  | ✅ | ✅ | `0x71db4` |
 | `RBPlaylistManager` | `-` | `addPlaylistWithName:` |  | ✅ | ❌ | `0x71eac` |
-| `RBPlaylistManager` | `-` | `removePlaylistAtIndex:` |  | ✅ | ❌ | `0x721c0` |
+| `RBPlaylistManager` | `-` | `removePlaylistAtIndex:` |  | ✅ | ✅ | `0x721c0` |
 | `RBPlaylistManager` | `-` | `numberOfMusicInPlaylistAtIndex:` |  | ✅ | ❌ | `0x72288` |
 | `RBPlaylistManager` | `-` | `containsMusic:inPlaylistAtIndex:` |  | ✅ | ❌ | `0x723c8` |
 | `RBPlaylistManager` | `-` | `addMusic:toPlaylistAtIndex:` |  | ✅ | ❌ | `0x72560` |
@@ -1675,8 +1675,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `initWithURL:save:` |  | ✅ | ❌ | `0x72a38` |
 | `Downloader` | `-` | `initWithURL:post:contentType:` |  | ✅ | ❌ | `0x72b94` |
 | `Downloader` | `-` | `initWithURL:post:contentType:timeout:` |  | ✅ | ❌ | `0x72cd4` |
-| `Downloader` | `-` | `startDownloadingWithDelegate:` |  | ✅ | ❌ | `0x72e24` |
-| `Downloader` | `-` | `startDownloadingWithProceed:success:failure:` |  | ✅ | ❌ | `0x72ed0` |
+| `Downloader` | `-` | `startDownloadingWithDelegate:` |  | ✅ | ✅ | `0x72e24` |
+| `Downloader` | `-` | `startDownloadingWithProceed:success:failure:` |  | ✅ | ✅ | `0x72ed0` |
 | `Downloader` | `-` | `cancel` |  | ✅ | ✅ | `0x72fa8` |
 | `Downloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x73050` |
 | `Downloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x731a8` |
@@ -1689,7 +1689,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `systemErrorMessage` |  | ✅ | ✅ | `0x73658` |
 | `Downloader` | `-` | `showErrorMessage` |  | ✅ | ✅ | `0x736c0` |
 | `Downloader` | `-` | `hashChecked` |  | ✅ | ✅ | `0x73728` |
-| `Downloader` | `-` | `dealloc` |  | ✅ | ❌ | `0x73788` |
+| `Downloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x73788` |
 | `Downloader` | `-` | `addData` | prop | ✅ | ✅ | `0x738a0` |
 | `Downloader` | `-` | `setAddData:` | prop | ✅ | ✅ | `0x738b0` |
 | `Downloader` | `-` | `conn` | prop | ✅ | ✅ | `0x738e8` |
@@ -1703,11 +1703,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `failureBlock` | prop | ✅ | ✅ | `0x7399c` |
 | `Downloader` | `-` | `setFailureBlock:` | prop | ✅ | ✅ | `0x739ac` |
 | `ImageDownloader` | `-` | `initWithGetURL:unUseRetina:` |  | ✅ | ✅ | `0x83d30` |
-| `ImageDownloader` | `-` | `startDownload` |  | ✅ | ❌ | `0x83dc8` |
-| `ImageDownloader` | `-` | `startDownloadWithProceed:success:failure:` |  | ✅ | ❌ | `0x83eb0` |
+| `ImageDownloader` | `-` | `startDownload` |  | ✅ | ✅ | `0x83dc8` |
+| `ImageDownloader` | `-` | `startDownloadWithProceed:success:failure:` |  | ✅ | ✅ | `0x83eb0` |
 | `ImageDownloader` | `-` | `startDownloadRetina` |  | ✅ | ❌ | `0x83f6c` |
 | `ImageDownloader` | `-` | `startDownloadNonRetina` |  | ✅ | ❌ | `0x84490` |
-| `ImageDownloader` | `-` | `cancelDownload` |  | ✅ | ❌ | `0x84900` |
+| `ImageDownloader` | `-` | `cancelDownload` |  | ✅ | ✅ | `0x84900` |
 | `ImageDownloader` | `-` | `setImage:` |  | ✅ | ❌ | `0x849cc` |
 | `ImageDownloader` | `-` | `getImage` |  | ✅ | ✅ | `0x84b3c` |
 | `ImageDownloader` | `-` | `proceed` |  | ✅ | ❌ | `0x84b48` |
@@ -1746,14 +1746,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `manageSortListURL` |  | ✅ | ✅ | `0x859d0` |
 | `StoreUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x859e4` |
 | `StoreUtil` | `+` | `productIDForPackID:` |  | ✅ | ✅ | `0x859f8` |
-| `StoreUtil` | `+` | `packIDForProductID:` |  | ✅ | ❌ | `0x85a4c` |
+| `StoreUtil` | `+` | `packIDForProductID:` |  | ✅ | ✅ | `0x85a4c` |
 | `StoreUtil` | `+` | `priceString:` |  | ✅ | ✅ | `0x85b4c` |
 | `StoreUtil` | `+` | `priceString:useCatalogPrice:` |  | ✅ | ❌ | `0x85b7c` |
 | `StoreUtil` | `+` | `isValidURL:` |  | ✅ | ❌ | `0x85cc0` |
 | `StoreUtil` | `+` | `createReceiptCheckJSON:` |  | ✅ | ❌ | `0x85e54` |
 | `StoreUtil` | `+` | `createReceiptCheckJSONForV2:productIds:nonce:` |  | ✅ | ❌ | `0x85fd4` |
-| `StoreUtil` | `+` | `createReceiptCheckDigest:` |  | ✅ | ❌ | `0x86484` |
-| `StoreUtil` | `+` | `createReceiptCheckDigestV2:withNonce:` |  | ✅ | ❌ | `0x8657c` |
+| `StoreUtil` | `+` | `createReceiptCheckDigest:` |  | ✅ | ✅ | `0x86484` |
+| `StoreUtil` | `+` | `createReceiptCheckDigestV2:withNonce:` |  | ✅ | ✅ | `0x8657c` |
 | `StoreUtil` | `+` | `createNonce:` |  | ✅ | ❌ | `0x8665c` |
 | `StoreUtil` | `+` | `createCampaignListJSON:limit:` |  | ✅ | ❌ | `0x8678c` |
 | `StoreUtil` | `+` | `createCampaignSerialCheckJSON:code:` |  | ✅ | ❌ | `0x868e4` |
@@ -1762,7 +1762,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `extendNoteListURL:limit:` |  | ✅ | ✅ | `0x87478` |
 | `StoreUtil` | `+` | `extendNoteInfoURL:UserOpen:` |  | ✅ | ✅ | `0x8748c` |
 | `StoreUtil` | `+` | `pidToProductID:` |  | ✅ | ✅ | `0x874a0` |
-| `StoreUtil` | `+` | `productIDToPid:` |  | ✅ | ❌ | `0x874f4` |
+| `StoreUtil` | `+` | `productIDToPid:` |  | ✅ | ✅ | `0x874f4` |
 | `TwitterImageCreaterScoreElement` | `-` | `dealloc` |  | ❌ | ✅ | `0x875f4` |
 | `TwitterImageCreaterScoreElement` | `-` | `score` | prop | ✅ | ✅ | `0x87628` |
 | `TwitterImageCreaterScoreElement` | `-` | `setScore:` | prop | ✅ | ✅ | `0x87638` |
@@ -1782,7 +1782,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreaterScoreElement` | `-` | `setMaxComboNum:` | prop | ✅ | ✅ | `0x87718` |
 | `TwitterImageCreaterScoreElement` | `-` | `name` | prop | ✅ | ✅ | `0x87728` |
 | `TwitterImageCreaterScoreElement` | `-` | `setName:` | prop | ✅ | ✅ | `0x87738` |
-| `TwitterImageCreater` | `-` | `init` |  | ✅ | ❌ | `0x87784` |
+| `TwitterImageCreater` | `-` | `init` |  | ✅ | ✅ | `0x87784` |
 | `TwitterImageCreater` | `-` | `reset` |  | ✅ | ✅ | `0x87848` |
 | `TwitterImageCreater` | `-` | `dealloc` |  | ✅ | ✅ | `0x878ac` |
 | `TwitterImageCreater` | `-` | `setScore:Side:` |  | ✅ | ✅ | `0x87930` |
@@ -1794,9 +1794,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setJustReflecNum:Side:` |  | ✅ | ✅ | `0x87a20` |
 | `TwitterImageCreater` | `-` | `setMaxComboNum:Side:` |  | ✅ | ✅ | `0x87a48` |
 | `TwitterImageCreater` | `-` | `setName:Side:` |  | ✅ | ✅ | `0x87a70` |
-| `TwitterImageCreater` | `-` | `createContext::` |  | ✅ | ❌ | `0x87ae4` |
-| `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ❌ | `0x87ba0` |
-| `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ❌ | `0x87c78` |
+| `TwitterImageCreater` | `-` | `createContext::` |  | ✅ | ✅ | `0x87ae4` |
+| `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ✅ | `0x87ba0` |
+| `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ✅ | `0x87c78` |
 | `TwitterImageCreater` | `-` | `drawImageFileName:X:Y:` |  | ✅ | ✅ | `0x87d40` |
 | `TwitterImageCreater` | `-` | `drawImageFileName:Position:` |  | ✅ | ✅ | `0x87dd4` |
 | `TwitterImageCreater` | `-` | `drawText:Position:Font:Color:` |  | ✅ | ❌ | `0x87e68` |

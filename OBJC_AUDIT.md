@@ -1398,3 +1398,32 @@ unguarded, and all 65 invented guards are gone. The lesson is about the shape of
 rather than the result: it was conservative in the direction that leaves defects in place, and it
 was conservative because it measured something adjacent to the question instead of the question. A
 count of branches is not a test of what a branch does.
+
+## A delegated batch, three spot checks, and two addresses that were already done
+
+A second delegated batch of twenty came back all matching. Three claims were re-read here before any
+of it was recorded, chosen because each is falsifiable from the instructions alone rather than by
+agreeing with a summary.
+
+The first two are a matched pair. `TwitterImageCreater` has two `drawImage:` overloads, one taking a
+scale and one not, and the interesting question is whether the second is genuinely scale-free or
+merely has a scale of one folded in. It is genuinely scale-free: `0x87ba0` contains `fcvt d0,s8` to
+widen the float scale and two `fmul` instructions producing the scaled width and height, while
+`0x87c78` contains **no `fmul` at all** and subtracts the raw height. Checking the pair against each
+other is what makes the answer solid; either one alone would have been a plausible reading.
+
+The third was the three-argument variadic at `0x8657c`, read from the stack writes as the rules
+require: `str x8,[sp]` then `stp x20,x19,[sp,#8]`, so the order is secret, nonce, payload, and the
+secret at `0x36bd60` decodes byte for byte as the declared constant.
+
+The batch also carried a real documentation defect. `+packIDForProductID:` was annotated
+`@ghidraAddress 0x85a4c (caller reference)`, but that address is the method's own entry point — the
+address audit checks it as such and passes. The parenthetical is now gone.
+
+The part worth recording, though, is what happened on recording. Two of the twenty, `0x8f158` and
+`0x90778`, were **already verified in an earlier batch**, and the only reason that is visible is the
+duplicate-key guard in `objc_update.py`, which refused the write. Without it both would have been
+silently overwritten and the totals would have counted eighteen new methods as twenty. So ten per
+cent of that batch was redundant work, and the checklist would not have shown it. This is an
+argument for the guard, and also for tracking what has been handed out: the guard catches the
+double-record, but nothing catches the wasted reading before it.
