@@ -276,6 +276,12 @@ VERIFIED = {
               'order; the ghost arm branches on ghostStyle == 1 directly rather than materialising '
               'a boolean (cmp at 0x1a6f4c); the shared tail at 0x1a7150 picks the on or off knob '
               'animation, both at the 0.2 of g_dMascotMessageAnimDuration',
+    0x194ba0: 'RBUnlockView -reloadData: s10 is the row height and s11 the row gap (the fcsel pair '
+              'at 0x194c10 and 0x194c1c); d9, the height each row is built with, is taken from s10 '
+              'at 0x195008 before the fadd at 0x19502c folds the gap in, and the loop advances by '
+              'that summed value at 0x1950e0, so rows draw at the height but step by height plus '
+              'gap. The banner height is imageHeight / (imageWidth / width) from the fdiv pair at '
+              '0x1954d8, v9 being the height lane of the size call at 0x1954a8',
     0x56e6c: 'StoreCampaignTableViewCell -setDownloadFlag:: stores the flag, then sets buttonType '
              'to 1 only when it is set, leaving it alone otherwise',
     0x94c3c: 'RBPlaylistViewController -tableView:canEditRowAtIndexPath:: cset eq against section '

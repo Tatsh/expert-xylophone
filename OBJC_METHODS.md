@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4604 verified
+Total: 6343 — 6306 reconstructed, 4605 verified
 (72.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4253,7 +4253,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x194284` |
 | `RBUnlockView` | `-` | `setParentView:` |  | ✅ | ❌ | `0x1942f8` |
 | `RBUnlockView` | `-` | `setupView` |  | ✅ | ❌ | `0x194314` |
-| `RBUnlockView` | `-` | `reloadData` |  | ✅ | ❌ | `0x194ba0` |
+| `RBUnlockView` | `-` | `reloadData` |  | ✅ | ✅ | `0x194ba0` |
 | `RBUnlockView` | `-` | `request` |  | ✅ | ❌ | `0x1955e0` |
 | `RBUnlockView` | `-` | `requestRewardCheck` |  | ✅ | ❌ | `0x196544` |
 | `RBUnlockView` | `-` | `getUnlockItemView` |  | ✅ | ✅ | `0x1973b4` |

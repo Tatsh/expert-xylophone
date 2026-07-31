@@ -163,6 +163,7 @@ fcmp
 fcsel
 fcvt
 fcvtzs
+fdiv
 floatloopcounter
 fmla
 fmov

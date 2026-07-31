@@ -182,9 +182,11 @@ static const CGFloat kBannerHeightPad = 300.0;
 // The empty-state overlay is inset 50 points from the table's left edge, and the right overlay is
 // pulled a further 50 points in from the table's right edge; it drops below the taller of the
 // table's content or bounds by this much (three times as far on the pad).
+// The drop is an integer in the binary: it is selected between two integer immediates and widened
+// with scvtf, where a floating-point constant would have been a pool load.
 static const CGFloat kEmptyStateSideInset = 50.0;
-static const CGFloat kEmptyStateDropPhone = 100.0;
-static const CGFloat kEmptyStateDropPad = 300.0;
+static const int kEmptyStateDropPhone = 100;
+static const int kEmptyStateDropPad = 300;
 
 // The "show more" button is re-centred half-way across the table, 25 points below its content top.
 static const CGFloat kShowMoreCenterDrop = 25.0;
@@ -849,15 +851,15 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         barSubview.exclusiveTouch = YES;
     }
 
-    CGFloat tableContentBottom = (table.contentSize.height > table.bounds.size.height) ?
-                                     table.contentSize.height :
-                                     table.bounds.size.height;
-
+    // Each banner drops below the taller of the table's content or bounds. The binary re-sends
+    // -contentSize and -bounds for each banner rather than sharing one value between them.
     UIView *leftEmpty = [table viewWithTag:kTagFunBanner];
-    CGFloat drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
+    int drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
     CGRect leftFrame = leftEmpty.frame;
     leftEmpty.frame = CGRectMake(kEmptyStateSideInset,
-                                 drop + tableContentBottom,
+                                 drop + (table.contentSize.height > table.bounds.size.height ?
+                                             table.contentSize.height :
+                                             table.bounds.size.height),
                                  leftFrame.size.width,
                                  leftFrame.size.height);
     leftEmpty.hidden = NO;
@@ -866,9 +868,15 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     if (rightEmpty != nil) {
         drop = m_IsPad ? kEmptyStateDropPad : kEmptyStateDropPhone;
         CGRect rightFrame = rightEmpty.frame;
-        CGFloat rightX = table.bounds.size.width - rightFrame.size.width - kEmptyStateSideInset;
-        rightEmpty.frame = CGRectMake(
-            rightX, drop + tableContentBottom, rightFrame.size.width, rightFrame.size.height);
+        // The right edge comes from the table's frame width through the UIView+RB -width getter,
+        // not from its bounds.
+        CGFloat rightX = table.width - rightFrame.size.width - kEmptyStateSideInset;
+        rightEmpty.frame = CGRectMake(rightX,
+                                      drop + (table.contentSize.height > table.bounds.size.height ?
+                                                  table.contentSize.height :
+                                                  table.bounds.size.height),
+                                      rightFrame.size.width,
+                                      rightFrame.size.height);
         rightEmpty.hidden = NO;
     }
 

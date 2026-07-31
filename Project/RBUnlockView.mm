@@ -97,7 +97,7 @@ constexpr CGFloat kRewardButtonMargin = 20.0;
 constexpr CGFloat kPackageRowHeightNarrow = 124.0;
 constexpr CGFloat kPackageRowHeightWide = 144.0;
 
-// The gap left above the first package row, by device idiom.
+// The gap left above the first package row, and between one row and the next, by device idiom.
 constexpr CGFloat kPackageRowGapNarrow = 4.0;
 constexpr CGFloat kPackageRowGapWide = 10.0;
 
@@ -280,34 +280,43 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
             ImageDownloader *bannerDownloader =
                 [[ImageDownloader alloc] initWithGetURL:self.rewardBannerUrl unUseRetina:NO];
             [bannerDownloader
-                startDownloadWithProceed:nil
-                                 success:^(ImageDownloader *downloader) {
-                                   /** @ghidraAddress 0x195390 */
-                                   [self.rewardButton setImage:[downloader getImage]
-                                                      forState:UIControlStateNormal];
-                                   if (!IsPad()) {
-                                       CGFloat width = viewWidth - kRewardButtonMargin;
-                                       CGSize imageSize = [downloader getImage].size;
-                                       self.rewardButton.frame =
-                                           CGRectMake(kRewardButtonInset,
-                                                      kRewardButtonInset,
-                                                      width,
-                                                      width / (imageSize.width / width));
-                                   } else {
-                                       self.rewardButton.frame =
-                                           CGRectMake(kRewardButtonInset,
-                                                      kRewardButtonInset,
-                                                      viewWidth - kRewardButtonMargin,
-                                                      rowHeight - kRewardButtonMargin);
-                                   }
-                                 }
-                                 failure:nil];
+                startDownloadWithProceed:^(ImageDownloader *downloader) {
+                  /** @ghidraAddress 0x1952e0 */
+                  // Global no-op proceed block.
+                }
+                success:^(ImageDownloader *downloader) {
+                  /** @ghidraAddress 0x1952e4 */
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    /** @ghidraAddress 0x195390 */
+                    [self.rewardButton setImage:[downloader getImage]
+                                       forState:UIControlStateNormal];
+                    if (!IsPad()) {
+                        CGFloat width = viewWidth - kRewardButtonMargin;
+                        CGSize imageSize = [downloader getImage].size;
+                        self.rewardButton.frame =
+                            CGRectMake(kRewardButtonInset,
+                                       kRewardButtonInset,
+                                       width,
+                                       imageSize.height / (imageSize.width / width));
+                    } else {
+                        self.rewardButton.frame = CGRectMake(kRewardButtonInset,
+                                                             kRewardButtonInset,
+                                                             viewWidth - kRewardButtonMargin,
+                                                             rowHeight - kRewardButtonMargin);
+                    }
+                  });
+                }
+                failure:^(ImageDownloader *downloader){
+                    /** @ghidraAddress 0x1955dc */
+                    // Global no-op failure block.
+                }];
         }
         contentTop =
             (!isPad) ? (rowGap + rowHeight * kRewardBannerRowFactor) : (rowHeight + rowGap);
     }
 
-    // One collection view per package, stacked down the scroll view at the fixed row height.
+    // One collection view per package, stacked down the scroll view. Each row is drawn at the fixed
+    // row height but advances by that height plus the row gap.
     CGFloat rowTop = contentTop;
     for (RBUnlockPackageData *packageData in [[RBUnlockData sharedInstance] getPackage]) {
         RBUnlockCollectionView *collectionView = [[RBUnlockCollectionView alloc]
@@ -316,7 +325,7 @@ constexpr double kNanosecondsPerSecond = 1000000000.0;
         collectionView.tag = 0;
         collectionView.delegate = self;
         [self.scrollView addSubview:collectionView];
-        rowTop += rowHeight;
+        rowTop += rowHeight + rowGap;
     }
 
     // Size the scroll content to fit every row plus a idiom-dependent bottom pad.
