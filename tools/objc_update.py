@@ -3806,6 +3806,16 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x242C94: 'RecommendAdCache +getBannerDataWithList:max:: dispatch_get_global_queue then '
+              'dispatch_async, and inside the block at 0x242d3c a cmp w0,#1 keeps only the '
+              'downloaded result, add w27,w27,#1 counts it, and cmp w27,w8 with b.ge leaves the '
+              'loop once the maximum is reached',
+    0x243628: 'RecommendAdCache +saveTemplateData:path:file:: componentsSeparatedByString:"/" then '
+              'per component a tbnz on isEqualToString: skips the file name itself, and the '
+              'directory accumulates through stringByAppendingPathComponent:. The oddity the '
+              'source flags is real: fileExistsAtPath: is passed the whole relative path argument, '
+              'not the accumulated directory, so the test almost never succeeds and the create '
+              'runs each time. The write is atomically:1',
     0x2423D8: 'RecommendAdCache +getAllAdDataInfoExpire: dataForKey: then cbz x19 returns nil for '
               'a missing blob, and after unarchiveObjectWithData: a cbz w0 on isKindOfClass:'
               '[NSDate class] returns nil for anything else',
