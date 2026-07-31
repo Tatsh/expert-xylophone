@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5070 verified
-(79.9%).
+Total: 6343 — 6306 reconstructed, 5072 verified
+(80.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5070 verified, 3507 come from those passes and the remaining
-1563 were read by hand. The split matters when reading the percentage: a
+Of the 5072 verified, 3507 come from those passes and the remaining
+1565 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6000,7 +6000,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkWebAPI` | `+` | `requestSynchronousWithURL:method:parameters:cachePolicy:error:` |  | ✅ | ❌ | `0x223604` |
 | `ApplilinkWebAPI` | `+` | `responseFromContentsServer:request:data:finishedBlock:failedBlock:` |  | ✅ | ❌ | `0x223704` |
 | `ApplilinkWebAPI` | `+` | `retryCancel` |  | ✅ | ❌ | `0x223818` |
-| `ApplilinkWebAPI` | `+` | `setSessionConnectionWait:` |  | ✅ | ❌ | `0x223828` |
+| `ApplilinkWebAPI` | `+` | `setSessionConnectionWait:` |  | ✅ | ✅ | `0x223828` |
 | `ApplilinkWebAPI` | `+` | `calcelSessionConnection` |  | ✅ | ❌ | `0x2238a4` |
 | `ApplilinkWebAPI` | `+` | `setSessionStatus:` |  | ✅ | ❌ | `0x2238b4` |
 | `ApplilinkWebAPI` | `-` | `canUseNetworkRetry` |  | ✅ | ❌ | `0x2238c4` |
@@ -6264,7 +6264,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `setImpressionId:` | prop | ✅ | ✅ | `0x24161c` |
 | `RecommendAdAreaView` | `-` | `requestCode` | prop | ✅ | ✅ | `0x241654` |
 | `RecommendAdAreaView` | `-` | `setRequestCode:` | prop | ✅ | ✅ | `0x241664` |
-| `RotateStoreProductViewController` | `-` | `initWithNibName:bundle:` |  | ✅ | ❌ | `0x2416d4` |
+| `RotateStoreProductViewController` | `-` | `initWithNibName:bundle:` |  | ✅ | ✅ | `0x2416d4` |
 | `RotateStoreProductViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x24174c` |
 | `RotateStoreProductViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x241788` |
 | `RotateStoreProductViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x2417c4` |

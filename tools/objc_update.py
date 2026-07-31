@@ -1087,6 +1087,15 @@ VERIFIED = {
               'RecommendAdModelInterstitial in RecommendNetwork.h, and the file-local enumeration '
               'renames 1, 4 and 5 by scroll behaviour rather than by advert model, so the two sets '
               'overlap numerically while disagreeing on names',
+    0x223828: 'ApplilinkWebAPI +setSessionConnectionWait:: cancelPreviousPerformRequestsWithTarget: '
+              'first, then the flag stored to the global at +0x698+1, then a cbz that schedules '
+              'the timeout only when the flag is set. The delay is a 10.0 fmov, matching the '
+              'file-local constant. The scheduled selector is calcelSessionConnection, which is '
+              'the binary\'s own misspelling and is kept rather than corrected, as the naming rule '
+              'requires',
+    0x2416d4: 'RotateStoreProductViewController -initWithNibName:bundle:: a bare super chain that '
+              'forwards both arguments and returns the result, with the nib name retained across '
+              'the call and released after',
     0x221128: 'ApplilinkWebAPI -init: super init behind a cbz, then retryCount zeroed and the '
               'global byte at +0x698 set to 1',
     0x221184: 'ApplilinkWebAPI -commonParameters: a variadic dictionaryWithObjectsAndKeys: read '
