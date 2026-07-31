@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4862 verified
+Total: 6343 — 6306 reconstructed, 4864 verified
 (76.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2408,7 +2408,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicColorView` | `-` | `selectAlphaButton:` |  | ✅ | ❌ | `0xc5230` |
 | `RBMusicColorView` | `-` | `selectColorButton:` |  | ✅ | ❌ | `0xc5c5c` |
 | `RBMusicColorView` | `-` | `setRivalAlpha:` | prop | ✅ | ✅ | `0xc5f10` |
-| `RBMusicColorView` | `-` | `SelectButton:` |  | ✅ | ❌ | `0xc62c8` |
+| `RBMusicColorView` | `-` | `SelectButton:` |  | ✅ | ✅ | `0xc62c8` |
 | `RBMusicColorView` | `-` | `musicSelectedBase` | prop | ✅ | ✅ | `0xc6368` |
 | `RBMusicColorView` | `-` | `setMusicSelectedBase:` | prop | ✅ | ✅ | `0xc6388` |
 | `RBMusicColorView` | `-` | `color` | prop | ✅ | ✅ | `0xc639c` |
@@ -2636,7 +2636,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `stretchableImageNamed:insets:mirrored:` |  | ✅ | ❌ | `0xd8ac4` |
 | `RBPopoverBackgroundView` | `-` | `twoPartStretchableImageNamed:insets:` |  | ✅ | ❌ | `0xd8bd8` |
 | `RBPopoverBackgroundView` | `-` | `firstHalfStretchAmountForImage:` |  | ✅ | ❌ | `0xd8d74` |
-| `RBPopoverBackgroundView` | `-` | `contextSizeForFirstHalfImage:` |  | ✅ | ❌ | `0xd8e38` |
+| `RBPopoverBackgroundView` | `-` | `contextSizeForFirstHalfImage:` |  | ✅ | ✅ | `0xd8e38` |
 | `RBPopoverBackgroundView` | `-` | `secondHalfInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8ed8` |
 | `RBPopoverBackgroundView` | `-` | `horizontalInsetsForStretchedImage:insets:` |  | ✅ | ✅ | `0xd8f98` |
 | `RBPopoverBackgroundView` | `-` | `verticalInsetsForStretchedImage:insets:` |  | ✅ | ✅ | `0xd8fdc` |

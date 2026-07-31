@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xc62c8: 'RBMusicColorView -SelectButton:: acts only when the tag differs from the current '
+             'colour, then ShowSelect and themed effect 1, matching kSoundEffectSelect',
+    0xd8e38: 'RBPopoverBackgroundView -contextSizeForFirstHalfImage:: a CGSize through the '
+             'soft-float shuffle, so the pairing was checked rather than assumed. v9 takes v0 as '
+             'the width and v10 takes v1 as the height, and the two fcsel give {stretch, height} '
+             'when an up or down arrow is wanted and {width, stretch} otherwise. No transposition',
     0xd5ca4: 'RBMusicView -ReplayMusic: the same retry shape as the RBMenuView method of that name '
              'but a different delay. Its pool slot 0x2eedc0 holds 0.20000000298023224, which is '
              '0.2f widened, so this one uses g_dMascotMessageAnimDuration where the other uses '
