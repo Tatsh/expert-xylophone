@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xfd100: 'StorePackMusicView -setBG:: clamps the index to [0, 1] with signed tests, indexes '
+             'the name table at 0x35b388, stretches with caps of 4 on both axes, and assigns to '
+             'bg.image. The signed clamp is why the parameter is an int rather than a BOOL',
+    0xfce3c: 'StorePackMusicView -sampleStop: stops indicatorSample, then sets the idle artwork on '
+             'buttonSample for state 0, UIControlStateNormal',
+    0x2ab60: 'StringConvert +stringTransform:withTransform:reverse:: copies into an NSMutableString '
+             'and calls CFStringTransform over the whole string, the x1 range being NULL. Its '
+             'reverse flag encodes C, CoreFoundation\'s Boolean, not the signed-char BOOL',
     0x2a88c: 'StringConvert +convertKorsk:: returns the input unchanged when nil or empty, else '
              'one stringByReplacingOccurrencesOfString:withString: over the pair at 0x362d40',
     0x36e0c: 'RBHttpUtil -initWithPostURL:post:contentType:: forwards with a single-precision '

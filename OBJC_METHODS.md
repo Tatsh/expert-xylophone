@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4835 verified
-(76.2%).
+Total: 6343 — 6306 reconstructed, 4838 verified
+(76.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -476,7 +476,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StringConvert` | `+` | `convertFromMacronToVowel:` |  | ✅ | ❌ | `0x2a92c` |
 | `StringConvert` | `+` | `convertFromLowerToUpper:` |  | ✅ | ❌ | `0x2a9e8` |
 | `StringConvert` | `+` | `convertFromVoiceToVoiceless:` |  | ✅ | ❌ | `0x2aaa4` |
-| `StringConvert` | `+` | `stringTransform:withTransform:reverse:` |  | ✅ | ❌ | `0x2ab60` |
+| `StringConvert` | `+` | `stringTransform:withTransform:reverse:` |  | ✅ | ✅ | `0x2ab60` |
 | `RBMenuMascot` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x2b578` |
 | `RBMenuMascot` | `-` | `setup:` |  | ✅ | ❌ | `0x2b774` |
 | `RBMenuMascot` | `-` | `startAnimation:` |  | ✅ | ❌ | `0x2c850` |
@@ -3101,10 +3101,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackDetailViewPad` | `-` | `setArtistSiteButton:` | prop | ✅ | ✅ | `0xfb388` |
 | `StorePackMusicView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xfb4ec` |
 | `StorePackMusicView` | `-` | `setInfo:` |  | ✅ | ❌ | `0xfc814` |
-| `StorePackMusicView` | `-` | `sampleStop` |  | ✅ | ❌ | `0xfce3c` |
+| `StorePackMusicView` | `-` | `sampleStop` |  | ✅ | ✅ | `0xfce3c` |
 | `StorePackMusicView` | `-` | `sampleDownloading` |  | ✅ | ❌ | `0xfcf28` |
 | `StorePackMusicView` | `-` | `samplePlaying` |  | ✅ | ❌ | `0xfd014` |
-| `StorePackMusicView` | `-` | `setBG:` |  | ✅ | ❌ | `0xfd100` |
+| `StorePackMusicView` | `-` | `setBG:` |  | ✅ | ✅ | `0xfd100` |
 | `StorePackMusicView` | `-` | `tapSp` |  | ✅ | ✅ | `0xfd208` |
 | `StorePackMusicView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xfd26c` |
 | `StorePackMusicView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xfd35c` |
