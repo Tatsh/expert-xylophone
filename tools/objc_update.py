@@ -1334,6 +1334,11 @@ VERIFIED = {
               '_receivedData, with the connection argument unread',
     0x20be1c: 'RewardCore -clearAdStatus: clears and releases the two slots at +0x5d0+0x30 and '
               '+0x5d0+0x38, which are the banner info and expiry globals',
+    0x244860: 'RecommendAdCache +setAdDisplayCountWithAdId:: forwards to the daily setter and then '
+              'the total one, in that order. Its counterpart +clearAdDisplayCount at 0x24504c '
+              'removes total before daily, so the two run opposite ways round. Neither order '
+              'matters to the result, which is exactly why a reconstruction would be tempted to '
+              'make them agree; both are as the binary has them',
     0x246028: 'RecommendWebView -hiddenIndicator: a cbz on _indicator guards only stopAnimating; '
               'the cancelPreviousPerformRequestsWithTarget: that follows is a tail branch outside '
               'the guard, so a nil indicator still cancels pending performs',
