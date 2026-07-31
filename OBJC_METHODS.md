@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4939 verified
+Total: 6343 — 6306 reconstructed, 4943 verified
 (77.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4250,7 +4250,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x1941f0` |
 | `RBNotificationPageView` | `-` | `requestURL` | prop | ✅ | ✅ | `0x194200` |
 | `RBNotificationPageView` | `-` | `setRequestURL:` | prop | ✅ | ✅ | `0x194210` |
-| `RBUnlockView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x194284` |
+| `RBUnlockView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x194284` |
 | `RBUnlockView` | `-` | `setParentView:` |  | ✅ | ✅ | `0x1942f8` |
 | `RBUnlockView` | `-` | `setupView` |  | ✅ | ❌ | `0x194314` |
 | `RBUnlockView` | `-` | `reloadData` |  | ✅ | ✅ | `0x194ba0` |
@@ -4420,7 +4420,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCharacterBase` | `-` | `setLimitAccX:` | prop | ✅ | ✅ | `0x19ebcc` |
 | `RBCharacterBase` | `-` | `limitAccY` | prop | ✅ | ✅ | `0x19ebdc` |
 | `RBCharacterBase` | `-` | `setLimitAccY:` | prop | ✅ | ✅ | `0x19ebec` |
-| `RBMusicMenuPopupView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x19ebfc` |
+| `RBMusicMenuPopupView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x19ebfc` |
 | `RBMusicMenuPopupView` | `-` | `setupView` |  | ✅ | ❌ | `0x19ec8c` |
 | `RBMusicMenuPopupView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x19ff1c` |
 | `RBMusicMenuPopupView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1a0090` |
@@ -4670,8 +4670,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `unlockWithType:ID:` |  | ✅ | ✅ | `0x1ba8c0` |
 | `RBExperienceData` | `-` | `addBGMType:` |  | ✅ | ✅ | `0x1ba980` |
 | `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ✅ | `0x1baa24` |
-| `RBExperienceData` | `-` | `addExprosionType:` |  | ✅ | ❌ | `0x1baac8` |
-| `RBExperienceData` | `-` | `addFrameType:` |  | ✅ | ❌ | `0x1bab6c` |
+| `RBExperienceData` | `-` | `addExprosionType:` |  | ✅ | ✅ | `0x1baac8` |
+| `RBExperienceData` | `-` | `addFrameType:` |  | ✅ | ✅ | `0x1bab6c` |
 | `RBExperienceData` | `-` | `addBackgroundType:` |  | ✅ | ❌ | `0x1bac10` |
 | `RBExperienceData` | `-` | `addMusicID:` |  | ✅ | ❌ | `0x1bacb4` |
 | `RBExperienceData` | `-` | `addThemaID:` |  | ✅ | ❌ | `0x1bad58` |

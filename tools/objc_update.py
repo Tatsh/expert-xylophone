@@ -303,6 +303,13 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1baac8: 'RBExperienceData -addExprosionType:: appends to explosionItems; the selector keeps '
+              'the binary\'s misspelling while the ivar it targets is spelled correctly, and both '
+              'come from the metadata',
+    0x1bab6c: 'RBExperienceData -addFrameType:: the same over frameItems',
+    0x194284: 'RBUnlockView -initWithFrame:: super, nil check, setupView, and no popup type set',
+    0x19ebfc: 'RBMusicMenuPopupView -initWithFrame:: the base class sets type 0, HowTo, and '
+              'exclusiveTouch YES, but calls no setupView; each subclass supplies its own',
     0x1ba980: 'RBExperienceData -addBGMType:: boxes the int and appends it to bgmItems',
     0x1baa24: 'RBExperienceData -addShotType:: the same over shotItems',
     0x19e5b0: 'RBCharacterBase -init: super init, nil check, then setDefault',
