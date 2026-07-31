@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4921 verified
+Total: 6343 — 6306 reconstructed, 4925 verified
 (77.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4219,8 +4219,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPagePhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x192b28` |
 | `RBNotificationPagePhoneViewController` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x192bdc` |
 | `RBNotificationPagePhoneViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x193058` |
-| `RBNotificationPagePhoneViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x193120` |
-| `RBNotificationPagePhoneViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x193184` |
+| `RBNotificationPagePhoneViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x193120` |
+| `RBNotificationPagePhoneViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ✅ | `0x193184` |
 | `RBNotificationPagePhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1931fc` |
 | `RBNotificationPagePhoneViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0x19323c` |
 | `RBNotificationPagePhoneViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x19324c` |
@@ -4232,8 +4232,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x193a68` |
 | `RBNotificationPageView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x193abc` |
 | `RBNotificationPageView` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x193f38` |
-| `RBNotificationPageView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x194000` |
-| `RBNotificationPageView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x194064` |
+| `RBNotificationPageView` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x194000` |
+| `RBNotificationPageView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ✅ | `0x194064` |
 | `RBNotificationPageView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1940dc` |
 | `RBNotificationPageView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x19412c` |
 | `RBNotificationPageView` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x194130` |

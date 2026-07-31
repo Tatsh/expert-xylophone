@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x193120: 'RBNotificationPagePhoneViewController -webViewDidStartLoad:: empties the shared '
+              'URL cache',
+    0x193184: 'RBNotificationPagePhoneViewController -webViewDidFinishLoad:: clears isFirstRequest '
+              'then injects the script at 0x36c920, which decodes to the webkitTouchCallout none '
+              'assignment and matches the declared constant',
+    0x194000: 'RBNotificationPageView -webViewDidStartLoad:: the same cache purge, read separately',
+    0x194064: 'RBNotificationPageView -webViewDidFinishLoad:: the same clear and the same injected '
+              'script, from the same CFString the phone controller uses',
     0x17f6dc: 'RBTimingSlider -endTrackingWithTouch:withEvent:: completes the third slider trio, '
               'void where the other two return YES',
     0x18ddc4: 'RBUnlockCollectionView -collectionView:didHighlightItemAtIndexPath:: looks the cell '
