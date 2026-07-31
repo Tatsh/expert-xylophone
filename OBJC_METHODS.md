@@ -16,12 +16,17 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4970 verified
+Total: 6343 — 6306 reconstructed, 4974 verified
 (78.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
-constant-returning body agrees with its reconstruction. Everything else was read by hand.
+constant-returning body agrees with its reconstruction.
+
+Of the 4974 verified, 3507 come from those passes and the remaining
+1467 were read by hand. The split matters when reading the percentage: a
+mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
+that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
 Regenerate with `tools/objc_update.py <binary>`, where the binary is the one **inside the .ipa**;
 the unpacked copy under `rb458orig` is a different build and matches nothing.
@@ -5615,10 +5620,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBGameKitManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x202be4` |
 | `RBGameKitManager` | `-` | `isGameCenterAPIAvailable` |  | ✅ | ❌ | `0x202c98` |
 | `RBGameKitManager` | `-` | `loginGameCenter` |  | ✅ | ❌ | `0x202d64` |
-| `RecommendWebViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x202f54` |
-| `RecommendWebViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x202f90` |
-| `RecommendWebViewController` | `-` | `viewDidUnload` |  | ✅ | ❌ | `0x202fcc` |
-| `RecommendWebViewController` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x203048` |
+| `RecommendWebViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x202f54` |
+| `RecommendWebViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x202f90` |
+| `RecommendWebViewController` | `-` | `viewDidUnload` |  | ✅ | ✅ | `0x202fcc` |
+| `RecommendWebViewController` | `-` | `redirectWithRequest:` |  | ✅ | ✅ | `0x203048` |
 | `RecommendWebViewController` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0x20310c` |
 | `RecommendWebViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x203110` |
 | `RecommendAdId` | `-` | `initWithCountryCode:categoryId:` |  | ✅ | ❌ | `0x20314c` |

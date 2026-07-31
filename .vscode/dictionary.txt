@@ -10,7 +10,6 @@ akhuta
 allseasons
 analyzer
 analyzer's
-Ångström
 anim
 apiurl
 appl
@@ -166,6 +165,7 @@ fcsel
 fcvt
 fcvtzs
 fdiv
+finditer
 floatloopcounter
 fmla
 fmov
@@ -510,3 +510,4 @@ youwin
 yukky
 ziparchive
 zizmor
+Ångström

@@ -22,6 +22,7 @@ Usage: ``tools/objc_update.py <binary>``, where the binary is the one **inside t
 unpacked copy under ``rb458orig`` is a different build and matches nothing.
 """
 import argparse
+import ast
 import glob
 import re
 import struct
@@ -829,6 +830,20 @@ VERIFIED = {
               'pad arms as the portrait pair',
     0x202b94: 'RBBaseTabBarController -shouldAutorotateToInterfaceOrientation:: the same sub #1 / '
               'cmp #1 / b.hi portrait-pair test as its two siblings, read on its own',
+    0x202f54: 'RecommendWebViewController -viewDidLoad: a bare objc_msgSendSuper2 chain, nothing '
+              'else in the body',
+    0x202f90: 'RecommendWebViewController -didReceiveMemoryWarning: likewise a bare super chain',
+    0x202fcc: 'RecommendWebViewController -viewDidUnload: the view getter, removeFromSuperview on '
+              'the result, then the super chain, in that order',
+    0x203048: 'RecommendWebViewController -redirectWithRequest:: RecommendCore sharedInstance then '
+              'redirectViewContollerWithRequest:, and the cmp w21,#2 confirms '
+              'kRecommendRedirectReloadRequest is 2. The w-register compare matches the int '
+              'return. Only that one outcome reloads the web view; the value is returned either way',
+    0x20310c: 'RecommendWebViewController -removeFromSuperview: a single ret, so the override is '
+              'genuinely empty rather than merely reconstructed that way. Read by hand, and it '
+              'agrees with the objc_verify_trivial.py entry that already covered it',
+    0x203110: 'RecommendWebViewController -dealloc: a bare super chain, which ARC emits, so the '
+              'empty reconstructed body is right. Also a hand check against the trivial pass',
     0x1942f8: 'RBUnlockView -setParentView:: forwards to the differently-named setParentCustomView:',
     0x1998e0: 'RBUnlockView -downloadManagerFailed:: ignores the manager, nils dlMusicName, then '
               'reloadData',
@@ -3230,7 +3245,7 @@ def render(methods: list[Method], keyed, loose) -> str:
     skipped = len(methods) - len(listed)
     mechanical = mechanically_verified()
     rows = []
-    done = verified = 0
+    done = verified = from_machine = 0
     for m in sorted(listed, key=lambda m: m.address):
         # The selector-alone fallback exists only for category rows, whose class the binary never
         # names. Letting it answer for a real class credits that class with any same-named selector
@@ -3240,9 +3255,11 @@ def render(methods: list[Method], keyed, loose) -> str:
                             or (m.class_name.startswith('(')
                                 and (m.kind, m.selector) in loose))
         relative = m.address - IMAGE_BASE
-        is_verified = relative in VERIFIED or relative in mechanical
+        by_machine = relative in mechanical
+        is_verified = relative in VERIFIED or by_machine
         done += is_reconstructed
         verified += is_verified
+        from_machine += by_machine
         rows.append(f'| `{m.class_name}` | `{m.kind}` | `{m.selector}` | '
                     f'{"prop" if m.accessor else ""} | {DONE if is_reconstructed else NOT} | '
                     f'{DONE if is_verified else NOT} | `{m.address - IMAGE_BASE:#x}` |')
@@ -3272,7 +3289,12 @@ Total: {len(listed)} — {done} reconstructed, {verified} verified
 {accessors} are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
-constant-returning body agrees with its reconstruction. Everything else was read by hand.
+constant-returning body agrees with its reconstruction.
+
+Of the {verified} verified, {from_machine} come from those passes and the remaining
+{verified - from_machine} were read by hand. The split matters when reading the percentage: a
+mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
+that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
 Regenerate with `tools/objc_update.py <binary>`, where the binary is the one **inside the .ipa**;
 the unpacked copy under `rb458orig` is a different build and matches nothing.
@@ -3290,14 +3312,21 @@ def check_verified_keys_unique() -> list[str]:
     value, so one method's recorded evidence disappears with no error and no change in the count.
     That happened twice before this check existed. The dict itself cannot show it, so the source
     is re-read and the keys counted.
+
+    The source is parsed rather than pattern-matched. An earlier version of this check scanned for
+    keys at the start of a line, which silently skipped the seventeen that share a line with the
+    end of the previous entry -- so the check could not see a duplicate among exactly the entries
+    whose formatting made one most likely.
     """
-    source = Path(__file__).read_text()
-    body = re.search(r'^VERIFIED\s*=\s*\{(.*?)^\}', source, re.S | re.M)
-    if not body:
+    module = ast.parse(Path(__file__).read_text())
+    literal = next((node.value for node in module.body
+                    if isinstance(node, ast.Assign)
+                    and getattr(node.targets[0], 'id', None) == 'VERIFIED'), None)
+    if literal is None:
         return []
     seen, duplicates = set(), []
-    for match in re.finditer(r'^\s*(0x[0-9a-fA-F]+)\s*:', body.group(1), re.M):
-        address = int(match.group(1), 16)
+    for key in literal.keys:
+        address = ast.literal_eval(key)
         if address in seen:
             duplicates.append(f'{address:#x} is keyed more than once in VERIFIED')
         seen.add(address)

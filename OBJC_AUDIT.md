@@ -975,3 +975,31 @@ and the class's own legacy predicate would have refused the rotation it advertis
 The lesson is the one the recursion pair taught earlier. A method that exists in three near-copies
 must be read in all three; the copies disagreeing is the signal, and reading only the one that
 turned up in the candidate list would have found nothing.
+
+## The duplicate-key guard was blind to seventeen entries, including by construction
+
+The guard added earlier to `tools/objc_update.py` re-reads its own source and counts the keys of
+the `VERIFIED` literal, because a duplicate key in a dict literal is silent: Python keeps the last
+value and discards the earlier one, so a method's recorded evidence disappears with no error and no
+change in the count.
+
+It found the keys with `re.finditer(r'^\s*(0x[0-9a-fA-F]+)\s*:', ...)`, which only matches a key at
+the start of a line. Seventeen entries share a line with the end of the previous entry's value, so
+the guard could not see them at all — and those seventeen are exactly the ones whose irregular
+formatting makes an accidental duplicate most likely in the first place. A check cannot be relied
+on where its blind spot and its risk coincide.
+
+It now parses the module with `ast` and walks the literal's keys, which sees every entry regardless
+of layout. Demonstrated rather than assumed: injecting a second `0x3d154` into a copy makes the new
+guard exit 1 and name the address, while the old pattern reports nothing on that same file, because
+it sees only the injected line-start copy and never the original.
+
+This surfaced from an arithmetic disagreement rather than from reading the code. A count of
+verified rows came to sixteen more than the evidence entries could account for, which looked at
+first like the generator marking rows verified on its own. It was the opposite: the measuring script
+shared the guard's regex and so undercounted the evidence. The generator was right the whole time.
+
+`OBJC_METHODS.md` now states the split outright — of the 4974 verified, 3507 come from the two
+mechanical passes and 1467 were read by hand — because the percentage alone invites the wrong
+reading. A mechanical pass proves one narrow property of a simple body. Every defect recorded in
+this file came from a hand read.

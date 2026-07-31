@@ -34,24 +34,24 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 #pragma mark - Lifecycle
 
-// @ 0x100202f54
 - (void)viewDidLoad {
+    /** @ghidraAddress 0x202f54 */
     [super viewDidLoad];
 }
 
-// @ 0x100202f90
 - (void)didReceiveMemoryWarning {
+    /** @ghidraAddress 0x202f90 */
     [super didReceiveMemoryWarning];
 }
 
-// @ 0x100202fcc
 - (void)viewDidUnload {
+    /** @ghidraAddress 0x202fcc */
     [self.view removeFromSuperview];
     [super viewDidUnload];
 }
 
-// @ 0x100203110
 - (void)dealloc {
+    /** @ghidraAddress 0x203110 */
     // The binary's -[super dealloc] is elided: ARC synthesises the superclass teardown.
 }
 
@@ -59,8 +59,8 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 // Routes the advert redirect through RecommendCore. When the core rewrites the request in place,
 // the web view is reloaded with the rewritten request.
-// @ 0x100203048
 - (int)redirectWithRequest:(NSURLRequest *)request {
+    /** @ghidraAddress 0x203048 */
     int outcome = [[RecommendCore sharedInstance] redirectViewContollerWithRequest:request];
     if (outcome == kRecommendRedirectReloadRequest) {
         [self.webView loadRequest:request];
@@ -72,8 +72,8 @@ static const int kRecommendRedirectReloadRequest = 2;
 
 // An empty override: RecommendWebViewController deliberately suppresses the inherited
 // -removeFromSuperview so a teardown invoked on the controller does not detach its own view.
-// @ 0x10020310c
 - (void)removeFromSuperview {
+    /** @ghidraAddress 0x20310c */
 }
 
 @end
