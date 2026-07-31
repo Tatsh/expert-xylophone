@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4887 verified
-(77.0%).
+Total: 6343 — 6306 reconstructed, 4890 verified
+(77.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3617,12 +3617,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x154ae0` |
 | `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x154b38` |
 | `DAProgressOverlayView` | `-` | `setUp` |  | ✅ | ❌ | `0x154b90` |
-| `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ✅ | ❌ | `0x154cb4` |
-| `DAProgressOverlayView` | `-` | `displayOperationWillTriggerAnimation` |  | ✅ | ❌ | `0x154d48` |
+| `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ✅ | ✅ | `0x154cb4` |
+| `DAProgressOverlayView` | `-` | `displayOperationWillTriggerAnimation` |  | ✅ | ✅ | `0x154d48` |
 | `DAProgressOverlayView` | `-` | `drawRect:` |  | ✅ | ❌ | `0x154ddc` |
 | `DAProgressOverlayView` | `-` | `setInnerRadiusRatio:` | prop | ✅ | ✅ | `0x1550e8` |
 | `DAProgressOverlayView` | `-` | `setOuterRadiusRatio:` | prop | ✅ | ✅ | `0x15510c` |
-| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ✅ | ❌ | `0x155130` |
+| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ✅ | ✅ | `0x155130` |
 | `DAProgressOverlayView` | `-` | `innerRadius` |  | ✅ | ❌ | `0x1551d4` |
 | `DAProgressOverlayView` | `-` | `outerRadius` |  | ✅ | ❌ | `0x1552b8` |
 | `DAProgressOverlayView` | `-` | `update` |  | ✅ | ❌ | `0x15539c` |

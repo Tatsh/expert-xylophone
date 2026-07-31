@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x154cb4: 'DAProgressOverlayView -displayOperationDidFinishAnimation: setState: with the mov '
+              'w2 of 2, which is OperationFinished, zeroes the progress, and schedules the update '
+              'timer with the mov w5 of 1 for repeats YES',
+    0x154d48: 'DAProgressOverlayView -displayOperationWillTriggerAnimation: the same shape with a '
+              'mov w2 of 0, Waiting, so the two differ only in the state they enter',
+    0x155130: 'DAProgressOverlayView -setProgress:: acts only on a change, clamps into [0, 1], '
+              'takes state 1 while strictly between the bounds, and at exactly 1 fires the finish '
+              'animation only when triggersDownloadDidFinishAnimationAutomatically is set',
     0x107104: 'RBThemaView -initWithFrame:: the mov w2 of 2 is RBMusicMenuPopupViewTypeTheme, then '
               'setupView, then exclusiveTouch YES, which the sibling popups do not set',
     0x10cfa4: 'RBRewardListView -initWithFrame:: super, nil check, setupView, and no type set',
