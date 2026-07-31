@@ -231,14 +231,16 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
     // Batches are created and destroyed in a repeating cycle here where the original creates them
     // once, and that churn is what makes the stale element binding fire. Name the caller and give
     // its de-slid offset, so the responsible layer is identified either way.
-    neDebugLog("batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d caller=%s@%#lx",
-               nCapacity,
-               m_dwIndexVbo,
-               m_dwArrayVbo,
-               m_pVertexScratch,
-               pRenderer->HasMatrixPalette() ? 1 : 0,
-               neDebugCallerName(__builtin_return_address(0)),
-               neDebugCallerOffset(__builtin_return_address(0)));
+    neDebugLog(
+        "batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d caller=%s@%#lx owner=%s",
+        nCapacity,
+        m_dwIndexVbo,
+        m_dwArrayVbo,
+        m_pVertexScratch,
+        pRenderer->HasMatrixPalette() ? 1 : 0,
+        neDebugCallerName(__builtin_return_address(0)),
+        neDebugCallerOffset(__builtin_return_address(0)),
+        neDebugOwnerName());
     delete[] pVertexTemplate;
 
     const int *pTexParams = kScreenTexParams;
@@ -280,14 +282,16 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     // element-binding cache is not cleared on delete, faithfully to the binary, so the fault can
     // only arise if this build tears a batch down where the original does not.
     if (NE_DBG_FIRST(24)) {
-        neDebugLog("batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p caller=%s@%#lx",
-                   m_dwIndexVbo,
-                   m_dwArrayVbo,
-                   m_dwCapacity,
-                   m_nSpriteCount,
-                   static_cast<const void *>(m_pTexture),
-                   neDebugCallerName(__builtin_return_address(0)),
-                   neDebugCallerOffset(__builtin_return_address(0)));
+        neDebugLog(
+            "batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p caller=%s@%#lx owner=%s",
+            m_dwIndexVbo,
+            m_dwArrayVbo,
+            m_dwCapacity,
+            m_nSpriteCount,
+            static_cast<const void *>(m_pTexture),
+            neDebugCallerName(__builtin_return_address(0)),
+            neDebugCallerOffset(__builtin_return_address(0)),
+            neDebugOwnerName());
     }
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
