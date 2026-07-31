@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6320 reconstructed, 5311 verified
+Total: 6343 — 6320 reconstructed, 5312 verified
 (83.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5311 verified, 3507 come from those passes and the remaining
-1804 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5312 verified, 3507 come from those passes and the remaining
+1805 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -2525,7 +2525,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `SelectHistory` |  | ✅ | ✅ | `0xd44d0` |
 | `RBMusicView` | `-` | `SelectWhitePastelButton` |  | ✅ | ✅ | `0xd4620` |
 | `RBMusicView` | `-` | `SelectBlackPastelButton` |  | ✅ | ✅ | `0xd4694` |
-| `RBMusicView` | `-` | `playGame` |  | ✅ | ❌ | `0xd4708` |
+| `RBMusicView` | `-` | `playGame` |  | ✅ | ✅ | `0xd4708` |
 | `RBMusicView` | `-` | `playTutorialGame` |  | ✅ | ✅ | `0xd4c5c` |
 | `RBMusicView` | `-` | `SelectItunes` |  | ✅ | ✅ | `0xd4f54` |
 | `RBMusicView` | `-` | `showAnimation:` |  | ✅ | ❌ | `0xd50a0` |

@@ -3807,6 +3807,14 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0xD4708: 'RBMusicView -playGame: the routine the reported crash follows, and it matches. The '
+             'settings are written in the source order, the play colour is randomised only when '
+             'cmp w21,#2 says it is above one, and the sheet layer takes three arms: gameType 1 '
+             'gives zero, otherwise IsPad at 0x1a1200 chooses the speed view value, otherwise zero '
+             'again. cmp w8,#1 with b.lt is the theme gate, kThemeBlack being one. The tail is '
+             'rand scaled by the 0x4f800000 immediate, which is 4294967296.0 and matches '
+             'kRandSeedScale, handed to playGameWithMusicData:RandSeed:. Since this hands off '
+             'cleanly, the crash after it is downstream in the engine rather than in this setup',
     0x1BADFC: 'RBExperienceData -addItem:ID:: a jump table at 0x1bae90 bounded by cmp w2,#0xa, '
               'whose eleven entries were decoded rather than read off the listing order, which is '
               'the order the handlers happen to be laid out in and not the case order. They map '
