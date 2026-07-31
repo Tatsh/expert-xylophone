@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x6cc80: 'RBMusicManager -releaseClientMusic: sixteen bytes, a mov w2 of 0 and a tail branch '
+             'to setClientMusicPageNum:, so it is exactly that send and nothing else',
+    0x6cc90: 'RBMusicManager -setClientMusicPageNum:: sends releaseClientMusic then its own '
+             'selector to self, so the pair recurse until the stack is exhausted. The '
+             'reconstruction stores the ivar instead, which is a deliberate deviation now '
+             'documented in place; the allocation is twenty entries per page',
     0x6a854: 'RBBGMManager -pushMusic: returns the entry value of m_IsMusic and, when set, pushes '
              'the BGM then flips m_IsPushMusic on and m_IsMusic off',
     0x6c6b8: 'RBMusicManager -getMusicDataArray: rebuilds when the array is nil or the dirty flag '

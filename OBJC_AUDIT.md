@@ -847,23 +847,33 @@ source, needing no disassembly at all:
 `-[RBMusicExtendNoteView initWithFrame:ExtendNoteID:MusicSelectedBase:]` were the plain cases,
 `NSInteger` against `Q` and `unsigned int` against `i`.
 
-## An unresolved anomaly in `-[RBMusicManager setClientMusicPageNum:]`
+## Mutual infinite recursion in the shipped `RBMusicManager` page-count setter
 
-`0x6cc90` is listed as `-[RBMusicManager setClientMusicPageNum:]` and flagged a property accessor.
-Its body sends `releaseClientMusic` to `self`, then sends **`setClientMusicPageNum:` to `self`**,
-then allocates the client-music array. The selector was resolved from the reference slot at
-`0x3c1158` rather than taken from a decompiler label, and it really is that selector; the receiver
-is `x20`, which holds the original `x0`.
+`-[RBMusicManager releaseClientMusic]` at `0x6cc80` is sixteen bytes long and does exactly one
+thing: `mov w2,#0` and a tail branch to `objc_msgSend` with `setClientMusicPageNum:`. It is
+`[self setClientMusicPageNum:0]` and nothing else.
 
-A method cannot send its own selector to its own receiver without recursing forever, so one of the
-premises is wrong and it is not clear which. Either the checklist's address for the selector is
-wrong and `0x6cc90` implements something else, or the property flag and the address are being taken
-from different sources and disagree. `RBExtendNoteManager` also defines `setClientMusicPageNum:`,
-at `0x1840d0`, so a selector collision is in play as well.
+`-[RBMusicManager setClientMusicPageNum:]` at `0x6cc90` opens by sending `releaseClientMusic` to
+`self`, and then sends **`setClientMusicPageNum:` to `self`** with its own argument, before
+allocating the client-music array at twenty entries per page.
 
-Left **unverified** and recorded rather than guessed at. The reconstruction's body reads
-plausibly — release, assign the ivar, allocate the array at twenty entries per page — but the
-middle send is not an ivar assignment, and until the attribution is settled there is no honest way
-to call the method checked. Worth resolving early in a later pass, because if the checklist can
-misattribute an address here it can do so elsewhere, and every `@ghidraAddress` in the tree rests
-on that mapping.
+So the two call each other unconditionally. Invoking either one recurses until the stack is
+exhausted. Every step of that was resolved from the binary rather than inferred: both addresses
+come from the class's own method list, the selector was read from its reference slot at `0x3c1158`
+rather than from a decompiler label, and the receiver in both sends is the saved entry `x0`.
+
+The reconstruction breaks the cycle, and correctly. `-releaseClientMusic` is written as
+`self.clientMusicPageNum = 0`, which is exactly what the binary does. `-setClientMusicPageNum:`
+assigns `_clientMusicPageNum` directly instead of re-sending its own selector, which is the only
+way to keep the surrounding behaviour — release, store, allocate — without the recursion.
+
+That makes it a deliberate deviation rather than a faithful reconstruction, and it was undocumented.
+A comment now records it in place. It is deliberately **not** gated behind `ENABLE_PATCHES`: the
+faithful alternative is an immediate stack overflow, so there is no build in which reproducing it
+is useful.
+
+Recorded at length because of how it presented. It first looked like a defect in the checklist's
+address mapping — a method appearing to send its own selector reads as misattribution, and that
+mapping underpins every `@ghidraAddress` in the tree. The mapping turned out to be right and the
+original app turned out to be broken. Confirming the attribution before doubting it was what
+separated the two.

@@ -366,6 +366,11 @@ static const int kClientMusicEntriesPerPage = 20;
 
 - (void)setClientMusicPageNum:(int)clientMusicPageNum {
     /** @ghidraAddress 0x6cc90 */
+    // The binary sends setClientMusicPageNum: to self here rather than storing, and
+    // -releaseClientMusic above is nothing but [self setClientMusicPageNum:0], so the two recurse
+    // into each other until the stack is exhausted. The store below breaks that cycle and keeps
+    // the surrounding release-store-allocate behaviour. Not gated behind ENABLE_PATCHES: the
+    // faithful form is an immediate stack overflow, so no build wants it.
     [self releaseClientMusic];
     _clientMusicPageNum = clientMusicPageNum;
     self.clientMusics = [[NSMutableArray alloc]

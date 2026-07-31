@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4841 verified
+Total: 6343 — 6306 reconstructed, 4842 verified
 (76.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1567,7 +1567,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `releaseChacheMusicData` |  | ✅ | ❌ | `0x6c8b4` |
 | `RBMusicManager` | `-` | `getMusicIDs` |  | ✅ | ❌ | `0x6c9e4` |
 | `RBMusicManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x6cc80` |
-| `RBMusicManager` | `-` | `setClientMusicPageNum:` | prop | ✅ | ❌ | `0x6cc90` |
+| `RBMusicManager` | `-` | `setClientMusicPageNum:` | prop | ✅ | ✅ | `0x6cc90` |
 | `RBMusicManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x6cd2c` |
 | `RBMusicManager` | `-` | `getClientCompareMusics` |  | ✅ | ❌ | `0x6cdf8` |
 | `RBMusicManager` | `-` | `clientMusicPageNum` | prop | ✅ | ✅ | `0x6d0a8` |
