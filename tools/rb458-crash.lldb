@@ -1,0 +1,79 @@
+# Read the whole GL client-array state at the play-screen crash, in one go.
+#
+#   $ lldb -p <pid>          (or let it run under lldb until it faults)
+#   ... let the app crash: EXC_BAD_ACCESS at 0x0 in glDrawElements_IMM_Exec ...
+#   (lldb) command source /path/to/rb458-crash.lldb
+#
+# Why this shape:
+#
+#   * Nothing here calls into the target. A jailbroken attach usually cannot install the expression
+#     checkers, so anything that JITs code ("expr", and "p" on a call) fails outright. Every line
+#     below is `frame variable`, which reads memory through debug info without running any code.
+#   * No persistent ($) variables. LLDB keeps those for the whole session and refuses to redefine
+#     one, so a second sourcing of any script would fail with "redefinition of persistent variable".
+#   * No hardcoded struct offsets. The +0xNN comments in neGLES.h are the *original* binary's 32-bit
+#     offsets; this 64-bit build lays the object out differently, so reading by offset would be
+#     quietly wrong. Going through the type is the only correct way here.
+#
+# The fault is a null client array submitted through gleRunVertexSubmitImmediate. The instrumented
+# build has already exonerated the element buffer and the vertex array, so the remaining candidates
+# are the colour, texture-coordinate, weight, and matrix-index arrays -- all of which this dumps.
+#
+# If every line answers "no variable named ..." the build carries symbols but no debug info, and
+# `frame variable` has nothing to read. That is a useful answer rather than a failure: say so, and
+# the same state can be reached by symbol lookup plus offsets computed from this build's own layout
+# instead of the type. Do not fall back to the +0xNN comments in neGLES.h for that -- they describe
+# the original 32-bit object.
+#
+# The members below are private. That does not matter here: frame variable reads memory through the
+# type, and access control is a compile-time rule with nothing to enforce at runtime.
+
+# Select the frame of our own code rather than the driver frame the fault happened in. Walking the
+# thread by name avoids the caller having to read the backtrace and pick a number by hand.
+script
+import lldb
+thread = lldb.debugger.GetSelectedTarget().GetProcess().GetSelectedThread()
+picked = None
+for frame in thread:
+    name = frame.GetFunctionName() or ''
+    if 'EmitMatrixSprites' in name or 'RenderAxisAligned' in name:
+        picked = frame.GetFrameID()
+        break
+if picked is None:
+    print('!! no EmitMatrixSprites/RenderAxisAligned frame on this thread; run `bt` and look')
+else:
+    print('== selecting frame %d ==' % picked)
+    lldb.debugger.HandleCommand('frame select %d' % picked)
+quit
+
+# The batch itself: sprite counts, buffers, and the scratch the client arrays point into.
+frame variable *this
+
+# The renderer's cached client-array state. m_aClientStateFlags says which arrays are enabled; a
+# pointer that is null while its array is enabled and no buffer is bound is the fault.
+frame variable *pRenderer
+
+# The same fields individually, in case the aggregate dump is truncated or a member is optimised
+# out. An enabled array whose pointer is null is the one to chase.
+frame variable pRenderer->m_aClientStateFlags
+frame variable pRenderer->m_nArrayBufferBound
+frame variable pRenderer->m_nElementBufferBound
+frame variable pRenderer->m_pVertexPointer
+frame variable pRenderer->m_pColorPointer
+frame variable pRenderer->m_apTexCoordPointer
+frame variable pRenderer->m_pWeightPointer
+frame variable pRenderer->m_pMatrixIndexPointer
+
+# The per-array buffer bindings. Each Clear*Pointer only re-issues its GL call when the array buffer
+# differs from the one recorded here, so a binding that disagrees with m_nArrayBufferBound means
+# that array's pointer was never re-established for the currently bound buffer.
+frame variable pRenderer->m_nVertexBufferBinding
+frame variable pRenderer->m_nColorBufferBinding
+frame variable pRenderer->m_nWeightBufferBinding
+frame variable pRenderer->m_nMatrixIndexBufferBinding
+
+# The batch's own buffers, for comparison against what the renderer thinks is bound.
+frame variable this->m_dwIndexVbo
+frame variable this->m_dwArrayVbo
+frame variable this->m_pVertexScratch
+frame variable this->m_nSpriteCount
