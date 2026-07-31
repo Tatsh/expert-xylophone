@@ -3807,6 +3807,17 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x1BADFC: 'RBExperienceData -addItem:ID:: a jump table at 0x1bae90 bounded by cmp w2,#0xa, '
+              'whose eleven entries were decoded rather than read off the listing order, which is '
+              'the order the handlers happen to be laid out in and not the case order. They map '
+              '0 to addBGMType:, 1 to addShotType:, 2 to addExprosionType:, 3 to addFrameType:, '
+              '4 to addBackgroundType:, 7 to addMusicID: and 10 to addThemaID:, with 5, 6, 8 and 9 '
+              'falling to the default. That confirms the non-contiguous enumeration values '
+              'independently of the header',
+    0x1BAEBC: 'RBExperienceData -addRewardAppliId:andAppliId:: two cbz guards return NO, then a '
+              'cbz on objectForKey: takes the create path, which builds the array with '
+              'initWithObjects:, stores it and saves, and still returns NO. Only the path that '
+              'appends to an existing array after indexOfObject: reports YES',
     0x1BB0A0: 'RBExperienceData -getRewardAppliId:: alloc and init, a cbz on the argument, then '
               'installedAppliIds is asked objectForKey: twice, once to test and once to take, '
               'exactly as the source has it',
