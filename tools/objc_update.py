@@ -3806,6 +3806,19 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x2448C8: 'RecommendAdCache +setAdDisplayCountDailyWithAdId:: the stored blob is unarchived '
+              'only to be discarded when the day has rolled over. secondsFromGMT is converted with '
+              'scvtf, so it is signed, and shifts NSDate by the local offset. The stored and '
+              'current dates are both rendered through "yyyy/MM/dd" and compared with '
+              'isEqualToString:, and the tbnz keeps the counts only when the days agree. The '
+              'count is then bumped by add w2,w0,#1 under a "count_%@" key, and the stamp is '
+              'rewritten with "yyyy-MM-dd HH:mm:ss" under a timeZoneForSecondsFromGMT:0 formatter. '
+              'The time zone and the shifted date are both fetched a second time for that stamp '
+              'rather than reused',
+    0x244DF8: 'RecommendAdCache +setAdDisplayCountTotalWithAdId:: the same shape as 0x2448c8 with '
+              'no day check at all, so the total accumulates: cbz on the blob picks a fresh '
+              'dictionary, the "count_%@" entry defaults through numberWithInt:0, and add w2,w0,#1 '
+              'is the increment',
     0x243314: 'RecommendAdCache +getTemplateFiles: a walk of templateList reading three keys per '
               'entry, decoded from the pool as "file_name", "path" and "url" in the source order, '
               'then getTemplateFile: with a cbz skipping saveTemplateData:path:file: when it '

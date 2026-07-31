@@ -24,15 +24,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5240 verified
+Total: 6343 — 6343 reconstructed, 5242 verified
 (82.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5240 verified, 3507 come from those passes and the remaining
-1733 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5242 verified, 3507 come from those passes and the remaining
+1735 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -6303,8 +6303,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdCache` | `+` | `convertHtmlWithAdType:verticalAlign:bannerList:` |  | ✅ | ❌ | `0x243d94` |
 | `RecommendAdCache` | `+` | `setTargetUrl:adType:adModel:adLocation:` |  | ✅ | ❌ | `0x2441fc` |
 | `RecommendAdCache` | `+` | `setAdDisplayCountWithAdId:` |  | ✅ | ✅ | `0x244860` |
-| `RecommendAdCache` | `+` | `setAdDisplayCountDailyWithAdId:` |  | ✅ | ❌ | `0x2448c8` |
-| `RecommendAdCache` | `+` | `setAdDisplayCountTotalWithAdId:` |  | ✅ | ❌ | `0x244df8` |
+| `RecommendAdCache` | `+` | `setAdDisplayCountDailyWithAdId:` |  | ✅ | ✅ | `0x2448c8` |
+| `RecommendAdCache` | `+` | `setAdDisplayCountTotalWithAdId:` |  | ✅ | ✅ | `0x244df8` |
 | `RecommendAdCache` | `+` | `clearAdDisplayCount` |  | ✅ | ✅ | `0x24504c` |
 | `RecommendAdCache` | `+` | `setHtmlAdDataWithAdModel:adLocation:bannerList:` |  | ✅ | ✅ | `0x2450bc` |
 | `RecommendAdCache` | `+` | `getHtmlAdDataWithAdModel:adLocation:` |  | ✅ | ✅ | `0x24528c` |
