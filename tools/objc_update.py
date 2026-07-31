@@ -972,6 +972,12 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x1529c: 'BFCodec -init: super init behind a cbz, then _iv zeroed with a single str xzr, which '
+             'matches its [8C] encoding and the 8-byte memset. The context is allocated with '
+             'operator.new at 0x24ab08 for 0x2090 bytes and cleared by the routine at 0x15a80, and '
+             '-dealloc at 0x159c8 pairs it with operator.delete. The reconstruction uses malloc '
+             'and free, which is self-consistent and unavoidable in a .m; noted at the call rather '
+             'than renamed to .mm for one allocation',
     0x4a07c: 'RBTermDetailPhoneViewController -endLoadAnimation: the cbz on isUseGrayView guards '
              'only the setHidden:YES; stopAnimating on the indicator is reached on both arms. '
              'Folding the second call inside the guard would leave the spinner turning whenever '

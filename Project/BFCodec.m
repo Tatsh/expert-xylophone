@@ -194,6 +194,9 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, NSUInteger len
 - (instancetype)init {
     if ((self = [super init])) {
         memset(_iv, 0, sizeof(_iv));
+        // The binary allocates with operator new and frees with operator delete in -dealloc. This
+        // is a .m, where neither is available, so the self-consistent malloc and free pair stands
+        // in; on this platform operator new forwards to malloc, so the effect is the same.
         _blf = (BlowfishContext *)malloc(sizeof(BlowfishContext));
         blowfishCtxClear(_blf);
     }
