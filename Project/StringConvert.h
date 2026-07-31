@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)stringTransform:(NSString *)string
                 withTransform:(NSString *)transform
-                      reverse:(BOOL)reverse;
+                      reverse:(Boolean)reverse;
 
 @end
 

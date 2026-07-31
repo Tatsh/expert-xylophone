@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1c1c34
  */
 - (void)loadExtendNoteInfo:(nullable StoreExtendNoteInfo *)loadExtendNoteInfo
-                     index:(NSInteger)index;
+                     index:(NSUInteger)index;
 
 /**
  * @brief Sets the cell background image on @c bgImageView.

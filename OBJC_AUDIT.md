@@ -828,8 +828,21 @@ of `x2` to the key schedule. The parameter, the file-static `SetBlowfishKey` it 
 `(int)` cast at the `NSData` overload are all corrected; the cast had been narrowing an
 `NSUInteger` length back down.
 
-Five reports remain, all signedness rather than size: `NSInteger` against `Q`, `int` against `I`,
-`BOOL` against `C`, `unsigned int` against `i`, in `RBStoreManageHeaderCell`, `RBViewController`,
-`StoreExtendNoteCellPhone`, `StringConvert`, and `RBMusicExtendNoteView`. They are lower risk than
-a width change, since the register is the same size either way, but each is still a declaration
-that disagrees with the binary and each needs its own read before changing.
+The last five were signedness rather than size, and all are now corrected, leaving the sweep at
+**zero mismatches across 3097 matched declarations**. Three carried their own corroboration in the
+source, needing no disassembly at all:
+
+- `-[RBViewController playGameWithMusicData:RandSeed:]` took `int` where the encoding is `I`, and
+  its only caller already computes `unsigned int seed`. The declaration disagreed with its own
+  caller.
+- `-[StoreExtendNoteCellPhone loadExtendNoteInfo:index:]` took `NSInteger` where the encoding is
+  `Q`, while the sibling `-[StoreExtendNoteView loadExtendNoteInfo:index:]` already declared the
+  same parameter `NSUInteger`.
+- `+[StringConvert stringTransform:withTransform:reverse:]` took `BOOL` where the encoding is `C`.
+  Those differ: on this target `BOOL` is a _signed_ char and encodes `c`. The parameter is passed
+  straight to `CFStringTransform`, whose last argument is CoreFoundation's `Boolean`, which is an
+  _unsigned_ char — so the original declared it `Boolean`, and it now does too.
+
+`-[RBStoreManageHeaderCell initWithReuseIdentifier:frame:section:withTarget:]` and
+`-[RBMusicExtendNoteView initWithFrame:ExtendNoteID:MusicSelectedBase:]` were the plain cases,
+`NSInteger` against `Q` and `unsigned int` against `i`.

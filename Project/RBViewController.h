@@ -217,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param randSeed The random seed to seed the game with.
  * @ghidraAddress 0x8b5b8
  */
-- (void)playGameWithMusicData:(nullable MusicData *)musicData RandSeed:(int)randSeed;
+- (void)playGameWithMusicData:(nullable MusicData *)musicData RandSeed:(unsigned int)randSeed;
 
 /**
  * @brief Notifies that the game client has reached its end (no-op placeholder).

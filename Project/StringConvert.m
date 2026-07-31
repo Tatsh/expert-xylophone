@@ -123,7 +123,7 @@ static const NSInteger kNoPreviousIndex = -1;
 
 + (NSString *)stringTransform:(NSString *)string
                 withTransform:(NSString *)transform
-                      reverse:(BOOL)reverse {
+                      reverse:(Boolean)reverse {
     NSMutableString *copy = [[NSMutableString alloc] initWithString:string];
     CFStringTransform(
         (__bridge CFMutableStringRef)copy, NULL, (__bridge CFStringRef)transform, reverse);

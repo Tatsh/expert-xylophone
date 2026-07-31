@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x3c318
  */
 - (nullable instancetype)initWithFrame:(CGRect)frame
-                          ExtendNoteID:(unsigned int)ExtendNoteID
+                          ExtendNoteID:(int)ExtendNoteID
                      MusicSelectedBase:(nullable RBMusicView *)MusicSelectedBase;
 
 /**

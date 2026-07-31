@@ -739,7 +739,7 @@ constexpr int kDefaultPlayColor = 0;
     }
 }
 
-- (void)playGameWithMusicData:(MusicData *)musicData RandSeed:(int)randSeed {
+- (void)playGameWithMusicData:(MusicData *)musicData RandSeed:(unsigned int)randSeed {
     /** @ghidraAddress 0x8b5b8 */
     GameSystem *gameSystem = GameSystem::GetGameSystem();
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];

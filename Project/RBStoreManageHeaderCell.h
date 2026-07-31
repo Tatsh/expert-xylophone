@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable instancetype)initWithReuseIdentifier:(nullable NSString *)reuseIdentifier
                                            frame:(CGRect)frame
-                                         section:(NSInteger)section
+                                         section:(NSUInteger)section
                                       withTarget:(nullable id)target;
 
 @end

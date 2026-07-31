@@ -52,7 +52,7 @@ static NSString *const kTitleSizingGlyph = @"　";
 /** @ghidraAddress 0x1cd7c8 */
 - (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier
                                   frame:(CGRect)frame
-                                section:(NSInteger)section
+                                section:(NSUInteger)section
                              withTarget:(id)target {
     self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self == nil) {

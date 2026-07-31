@@ -188,7 +188,7 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
 }
 
 /** @ghidraAddress 0x1c1c34 */
-- (void)loadExtendNoteInfo:(StoreExtendNoteInfo *)loadExtendNoteInfo index:(NSInteger)index {
+- (void)loadExtendNoteInfo:(StoreExtendNoteInfo *)loadExtendNoteInfo index:(NSUInteger)index {
     self.nameLabel.text = loadExtendNoteInfo.name;
     self.artistLabel.text = loadExtendNoteInfo.artist;
     self.levelLabel.text =

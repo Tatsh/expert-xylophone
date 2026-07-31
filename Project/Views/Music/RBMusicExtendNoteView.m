@@ -73,7 +73,7 @@ static const CGFloat kClassicGlyphOffsetYPhone = 10.0;
 @implementation RBMusicExtendNoteView
 
 - (instancetype)initWithFrame:(CGRect)frame
-                 ExtendNoteID:(unsigned int)ExtendNoteID
+                 ExtendNoteID:(int)ExtendNoteID
             MusicSelectedBase:(RBMusicView *)MusicSelectedBase {
     self = [super initWithFrame:frame];
     if (self) {
