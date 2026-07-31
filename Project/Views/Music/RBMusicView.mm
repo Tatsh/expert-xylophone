@@ -31,6 +31,7 @@
 #import "engineglobals.h"
 #import "engineruntime.h"
 #import "gamesystem.h"
+#include "neDebugLog.h"
 #import "soundeffectmanager.h"
 
 // @ghidraAddress 0x2eedc0 (the shared g_dMascotMessageAnimDuration engine constant, 0.2)
@@ -1531,6 +1532,14 @@ enum { kDetMbgPlainIndex = 3 };
     GameSystem::GetGameSystem()->SetComboCount([self.cpuView level]);
 
     GameSystem *gameSystem = GameSystem::GetGameSystem();
+    // The play field builds with g_nPlayfieldCentreSplit still zero, and this is the only path
+    // that sets it: ConfigureSheetLayerForScreen is the sole caller of ComputePlayfieldLayoutY,
+    // which holds the only three stores to those globals in the whole binary.
+    neDebugLog("playGame enter gameType=%d isPad=%d speed=%d splitBefore=%d",
+               self->m_GameType,
+               IsPad() ? 1 : 0,
+               [self.speedView speed],
+               g_nPlayfieldCentreSplit);
     if (self->m_GameType == kGameTypeDouble) {
         gameSystem->ConfigureSheetLayerForScreen(0);
     } else if (IsPad()) {
@@ -1538,6 +1547,11 @@ enum { kDetMbgPlainIndex = 3 };
     } else {
         gameSystem->ConfigureSheetLayerForScreen(0);
     }
+    neDebugLog("playGame configured scale=%.3f fieldHeight=%d split=%d fullHeightY=%d",
+               static_cast<double>(gameSystem->GetPlayfieldScale()),
+               g_nPlayfieldFieldHeight,
+               g_nPlayfieldCentreSplit,
+               g_nPlayfieldFullHeightY);
 
     if (self->_thema < kThemeBlack || self->m_GameType != kGameTypeSingle) {
         GameSystem::GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
