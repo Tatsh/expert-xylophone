@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4632 verified
-(73.0%).
+Total: 6343 — 6306 reconstructed, 4636 verified
+(73.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -594,7 +594,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `play:Loop:` |  | ✅ | ❌ | `0x35074` |
 | `SoundManager` | `-` | `stop:` |  | ✅ | ❌ | `0x35198` |
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
-| `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ❌ | `0x3532c` |
+| `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ✅ | `0x3532c` |
 | `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ✅ | `0x3536c` |
 | `SoundManager` | `-` | `startSystem` |  | ✅ | ❌ | `0x35380` |
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
@@ -2344,7 +2344,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNewsHUDView` | `-` | `showImage:InfomationID:` |  | ✅ | ❌ | `0xbe8b4` |
 | `RBNewsHUDView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xbe99c` |
 | `RBNewsHUDView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xbeff8` |
-| `RBStoreExtendNoteList` | `+` | `storeCountry` |  | ✅ | ❌ | `0xbf024` |
+| `RBStoreExtendNoteList` | `+` | `storeCountry` |  | ✅ | ✅ | `0xbf024` |
 | `RBStoreExtendNoteList` | `-` | `init` |  | ✅ | ❌ | `0xbf064` |
 | `RBStoreExtendNoteList` | `-` | `startFetching` |  | ✅ | ❌ | `0xbf1a0` |
 | `RBStoreExtendNoteList` | `-` | `cancelFetching` |  | ✅ | ❌ | `0xbf338` |
@@ -2617,7 +2617,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0xd7c68` |
 | `RBPopoverBackgroundView` | `-` | `setArrowOffset:` | prop | ✅ | ✅ | `0xd7d20` |
 | `RBPopoverBackgroundView` | `-` | `addShadowPathAnimationIfNecessary:` |  | ✅ | ❌ | `0xd7df8` |
-| `RBPopoverBackgroundView` | `-` | `setArrowDirection:` | prop | ✅ | ❌ | `0xd8030` |
+| `RBPopoverBackgroundView` | `-` | `setArrowDirection:` | prop | ✅ | ✅ | `0xd8030` |
 | `RBPopoverBackgroundView` | `-` | `addDropShadowIfNecessary` |  | ✅ | ❌ | `0xd8070` |
 | `RBPopoverBackgroundView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0xd8188` |
 | `RBPopoverBackgroundView` | `-` | `shadowPath` |  | ✅ | ❌ | `0xd839c` |
@@ -3453,7 +3453,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuTutorialView` | `-` | `resetAnimation:` |  | ✅ | ❌ | `0x13f7f0` |
 | `RBMenuTutorialView` | `-` | `getTextureType` |  | ✅ | ❌ | `0x14040c` |
 | `RBMenuTutorialView` | `-` | `getClipRect:` |  | ✅ | ❌ | `0x140544` |
-| `RBMenuTutorialView` | `-` | `animationDidStop:finished:` |  | ✅ | ❌ | `0x1405a8` |
+| `RBMenuTutorialView` | `-` | `animationDidStop:finished:` |  | ✅ | ✅ | `0x1405a8` |
 | `RBMenuTutorialView` | `+` | `createAnimWithKeyPath:fromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x1405c8` |
 | `RBMenuTutorialView` | `-` | `dealloc` |  | ✅ | ✅ | `0x140cd0` |
 | `RBMenuTutorialView` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0x140d04` |

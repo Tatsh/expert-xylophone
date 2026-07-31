@@ -279,6 +279,15 @@ VERIFIED = {
     0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
     0xe8894: 'RBMenuBGEffectView -removeFromSuperview: the same lone super chain',
     0x3d080: 'neWindow -initWithFrame:: chains to super and returns it, adding nothing',
+    0x3532c: 'SoundManager -unsetCallBack:: zeroes a sixteen-byte struct on the stack and hands it '
+             'to AudioUnitSetProperty as property 0x17, scope 1 and size 16, which are the render '
+             'callback, the input scope, and the struct size',
+    0xbf024: 'RBStoreExtendNoteList +storeCountry: the cbz returns nil when the global is unset, '
+             'otherwise a copy through stringWithString:',
+    0xd8030: 'RBPopoverBackgroundView -setArrowDirection:: stores into the Q-typed _arrowDirection, '
+             'then adds the drop shadow and asks for layout, in that order',
+    0x1405a8: 'RBMenuTutorialView -animationDidStop:finished:: clears animating and reads neither '
+              'argument',
     0x9da80: 'RBMenuButton -layoutSubviews: a lone super chain',
     0x69114: 'StorePackInfo -downloadDetailInfo: cset eq on the musicInfos pointer, so it reports '
              'whether the tune list is still absent rather than present',
