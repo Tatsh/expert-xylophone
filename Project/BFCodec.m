@@ -140,7 +140,9 @@ static inline void blowfishCtxClear(BlowfishContext *ctx) {
 // from the init table, XORs the cycled key into the P-array, then derives every subkey by
 // repeatedly enciphering a running block. In the binary this is the standalone SetBlowfishKey.
 // @ghidraAddress 0x15ad0
-static void SetBlowfishKey(BlowfishContext *ctx, const char *key, int length) {
+// The length is 64-bit: -cipherInit:keyLength: encodes it Q and forwards the full
+// x2 register here.
+static void SetBlowfishKey(BlowfishContext *ctx, const char *key, NSUInteger length) {
     size_t index = 0;
     for (int i = 0; i < kBlowfishPArrayCount; ++i) {
         ctx->P[i] = blowfishPackBE32(&kBlowfishInitBytes[index]);
@@ -211,11 +213,11 @@ static void SetBlowfishKey(BlowfishContext *ctx, const char *key, int length) {
     if (key == nil) {
         return;
     }
-    [self cipherInit:(const char *)key.bytes keyLength:(int)key.length];
+    [self cipherInit:(const char *)key.bytes keyLength:key.length];
 }
 
 // @ghidraAddress 0x1534c
-- (void)cipherInit:(const char *)key keyLength:(int)length {
+- (void)cipherInit:(const char *)key keyLength:(NSUInteger)length {
     blowfishCtxClear(_blf);
     memcpy(_iv, kBlowfishInitialIV, kBlowfishIVLength);
     SetBlowfishKey(_blf, key, length);

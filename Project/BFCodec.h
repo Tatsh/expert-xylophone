@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param length The length of @p key in bytes; the key is cycled modulo this length.
  * @ghidraAddress 0x1534c
  */
-- (void)cipherInit:(const char *)key keyLength:(int)length;
+- (void)cipherInit:(const char *)key keyLength:(NSUInteger)length;
 
 /**
  * @brief Encipher a mutable buffer in place with Blowfish-CBC.

@@ -821,8 +821,15 @@ accessor with no explicit declaration in the implementation, so there is nothing
 compare against — the mismatch was only visible by following the parameters to what they are stored
 into. The sweep finds declarations that disagree; it cannot find a declaration that is not written.
 
-Six reports remain, all signedness rather than size: `int` against `I` or `Q`, `NSInteger` against
-`Q`, `BOOL` against `C`, `unsigned int` against `i`, in `BFCodec`, `RBStoreManageHeaderCell`,
-`RBViewController`, `StoreExtendNoteCellPhone`, `StringConvert`, and `RBMusicExtendNoteView`. They
-are lower risk than a width change, since the register is the same size either way, but each is
-still a declaration that disagrees with the binary and each needs its own read before changing.
+`-[BFCodec cipherInit:keyLength:]` took an `int` length where the encoding is `Q`, which is a
+genuine 32-against-64-bit size difference rather than a signedness one. The binary confirms it
+directly: the prologue does `mov x19,x3`, saving the whole 64-bit register, and forwards the whole
+of `x2` to the key schedule. The parameter, the file-static `SetBlowfishKey` it feeds, and the
+`(int)` cast at the `NSData` overload are all corrected; the cast had been narrowing an
+`NSUInteger` length back down.
+
+Five reports remain, all signedness rather than size: `NSInteger` against `Q`, `int` against `I`,
+`BOOL` against `C`, `unsigned int` against `i`, in `RBStoreManageHeaderCell`, `RBViewController`,
+`StoreExtendNoteCellPhone`, `StringConvert`, and `RBMusicExtendNoteView`. They are lower risk than
+a width change, since the register is the same size either way, but each is still a declaration
+that disagrees with the binary and each needs its own read before changing.
