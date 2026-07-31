@@ -19,9 +19,7 @@ CGRect g_pTutorialClipRect[34] = {};
  * @brief Seeds the tutorial artwork atlas clip-rectangle table with each texture type's source
  * rectangle (origin and size, in atlas pixels).
  *
- * A load-time constructor (registered in the module init-function list). Row 15's origin X is left
- * at its zero initialisation, matching the binary (the seeder writes only that row's Y, width, and
- * height).
+ * A load-time constructor (registered in the module init-function list).
  * @ghidraAddress 0x1414e0
  */
 __attribute__((constructor)) void SetupDialogLayoutCoordTable() {
@@ -31,7 +29,7 @@ __attribute__((constructor)) void SetupDialogLayoutCoordTable() {
         {{2, 298}, {357, 80}},   {{2, 380}, {357, 80}},    {{2, 462}, {357, 80}},
         {{2, 544}, {357, 80}},   {{2, 626}, {357, 80}},    {{2, 708}, {357, 52}},
         {{2, 762}, {357, 52}},   {{2, 816}, {357, 24}},    {{2, 842}, {357, 24}},
-        {{0, 868}, {357, 52}},   {{2, 922}, {357, 24}},    {{361, 2}, {357, 80}},
+        {{2, 868}, {357, 52}},   {{2, 922}, {357, 24}},    {{361, 2}, {357, 80}},
         {{361, 84}, {357, 52}},  {{361, 138}, {357, 52}},  {{361, 192}, {357, 80}},
         {{361, 274}, {136, 96}}, {{499, 274}, {48, 56}},   {{498, 332}, {24, 22}},
         {{525, 332}, {24, 22}},  {{551, 274}, {68, 72}},   {{621, 274}, {72, 136}},

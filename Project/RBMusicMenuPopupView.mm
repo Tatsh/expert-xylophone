@@ -33,9 +33,10 @@ constexpr UIViewAutoresizing kAutoresizingCentered =
     UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
     UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 
-// Base-panel geometry for the iPad (wide) layout. The narrow variant uses a square panel centred on
+// Base-panel geometry for the iPad (wide) layout, read from the pool at 0x301040 (x), 0x2eea38
+// (y), 0x2ee960 (width), and 0x3013f8 (height). The narrow variant uses a square panel centred on
 // the popup instead.
-constexpr CGRect kWideBaseFrame = {{112.0, 160.0}, {552.0, 680.0}};
+constexpr CGRect kWideBaseFrame = {{112.0, 160.0}, {544.0, 680.0}};
 constexpr CGFloat kNarrowBaseSize = 320.0;
 
 // Vertical reference heights used to place the title bar and content view relative to the base
@@ -47,8 +48,8 @@ constexpr CGFloat kTitleTopOffsetWide = 174.0;
 // Common inset and corner metrics for the content view and its chrome.
 constexpr CGFloat kContentInset = 2.0;
 constexpr CGFloat kContentEdgeShrink = 1.0;
-constexpr CGFloat kCornerRadiusThemed = 5.0;
-constexpr CGFloat kCornerRadiusDefault = 10.0;
+constexpr CGFloat kCornerRadiusSmall = 5.0;
+constexpr CGFloat kCornerRadiusLarge = 10.0;
 constexpr CGFloat kNarrowTitleTopThemed = 5.0;
 constexpr CGFloat kNarrowBackgroundTopOffset = 10.0;
 
@@ -184,28 +185,31 @@ static NSString *const kGradationImageName = @"01_music_select/set_grad";
     [self.baseView addSubview:background];
     self.backgroundImageView = background;
 
-    // The rounded, clipped content view is where subclasses lay their own content.
+    // The rounded, clipped content view is where subclasses lay their own content. Only the wide
+    // themed (Limelight and Colette) layouts use the large corner radius; both Classic arms and
+    // the narrow themed arm use the small one.
     CGRect contentFrame = CGRectZero;
-    CGFloat cornerRadius = wide ? kCornerRadiusDefault : kCornerRadiusThemed;
+    CGFloat cornerRadius = kCornerRadiusSmall;
     if (thema == RBUserSettingDataThemeClassic) {
         if (wide) {
             contentFrame = CGRectMake(kContentInset,
                                       kWideContentTopReference - self.baseView.frame.origin.y,
                                       baseWidth - kContentEdgeShrink,
                                       baseHeight - kContentEdgeShrink);
-            cornerRadius = kCornerRadiusDefault;
         } else {
             contentFrame = CGRectMake(kContentInset,
                                       titleY + kContentInset,
                                       baseWidth - kContentEdgeShrink,
                                       baseHeight - kContentEdgeShrink - titleY);
-            cornerRadius = kCornerRadiusDefault;
         }
     } else if (thema == RBUserSettingDataThemeColette || thema == RBUserSettingDataThemeLimelight) {
         contentFrame = CGRectMake(kContentInset,
                                   kContentInset,
                                   baseWidth - kContentEdgeShrink,
                                   baseHeight - kContentEdgeShrink);
+        if (wide) {
+            cornerRadius = kCornerRadiusLarge;
+        }
     }
 
     self.contentView = [[UIView alloc] initWithFrame:contentFrame];

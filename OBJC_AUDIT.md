@@ -27,18 +27,27 @@ counted.
 
 ## Fixed
 
-| Routine                                                    | Address    | Defect                                                                                                                       |
-| ---------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `-[ApplilinkStore init]`                                   | `0x2202ec` | Synced onto the main queue, deadlocking on first use from it; the queue is a private serial one created in `+allocWithZone:` |
-| `-[RBMenuView createMusicList]`                            | `0xa9108`  | Passed `sortUsingSelector:` a selector nothing implements; **both** ternary arms were wrong                                  |
-| `+[UIImage imageNamedWithoutCache:]`                       | `0x1a1b08` | Both lookup passes used one tag, so `~ipad` was never tried and `dl_info` never loaded                                       |
-| `-[RBResourceDownloadViewController updateLayout]`         | `0x1ea20`  | Two arms and a guessed predicate where the binary has three, and aligns rather than centres                                  |
-| `TitleColetteScene::RenderSprites`                         | `0x5872c`  | Three part-id runs emitted from the literal upwards, where the literal is the run's last id                                  |
-| `-[RBMusicGridLayout layoutAttributesForItemAtIndexPath:]` | `0x16de84` | Deliberate deviation was ungated; now behind `ENABLE_PATCHES` and in [PATCHES.md](PATCHES.md)                                |
-| `-[RBMusicManager createPreInMusics]`                      | —          | The three preinstalled song ids were each 512 low                                                                            |
-| `deviceenvironment.mm` globals                             | `0x1a05f8` | The documents and application-support paths were swapped                                                                     |
-| `-[RBCampaignDetailViewController viewWillAppear:]`        | `0x7f4c`   | Almost every frame in the page was misread; see below                                                                        |
-| `-[RBCampaignDetailViewController setInfo:]`               | `0x5b34`   | Three of the four string literals were invented rather than decoded                                                          |
+| Routine                                                      | Address    | Defect                                                                                                                       |
+| ------------------------------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `-[ApplilinkStore init]`                                     | `0x2202ec` | Synced onto the main queue, deadlocking on first use from it; the queue is a private serial one created in `+allocWithZone:` |
+| `-[RBMenuView createMusicList]`                              | `0xa9108`  | Passed `sortUsingSelector:` a selector nothing implements; **both** ternary arms were wrong                                  |
+| `+[UIImage imageNamedWithoutCache:]`                         | `0x1a1b08` | Both lookup passes used one tag, so `~ipad` was never tried and `dl_info` never loaded                                       |
+| `-[RBResourceDownloadViewController updateLayout]`           | `0x1ea20`  | Two arms and a guessed predicate where the binary has three, and aligns rather than centres                                  |
+| `TitleColetteScene::RenderSprites`                           | `0x5872c`  | Three part-id runs emitted from the literal upwards, where the literal is the run's last id                                  |
+| `-[RBMusicGridLayout layoutAttributesForItemAtIndexPath:]`   | `0x16de84` | Deliberate deviation was ungated; now behind `ENABLE_PATCHES` and in [PATCHES.md](PATCHES.md)                                |
+| `-[RBMusicManager createPreInMusics]`                        | —          | The three preinstalled song ids were each 512 low                                                                            |
+| `deviceenvironment.mm` globals                               | `0x1a05f8` | The documents and application-support paths were swapped                                                                     |
+| `-[RBCampaignDetailViewController viewWillAppear:]`          | `0x7f4c`   | Almost every frame in the page was misread; see below                                                                        |
+| `-[RBCampaignDetailViewController setInfo:]`                 | `0x5b34`   | Three of the four string literals were invented rather than decoded                                                          |
+| `-[RBMenuView showCustomizeView]`                            | `0xac0bc`  | Launched tutorial type `0` instead of `0x1d`, stranding the spotlight on the previous step                                   |
+| `-[RBMenuView startTutorial]`                                | `0xb5678`  | The music-select (`0`) and customize (`0x18`) tutorial types were swapped                                                    |
+| `-[RBMenuView selectMusic:animated:]`                        | `0xaaff0`  | Launched tutorial type `0x18` where the binary passes `0x4`                                                                  |
+| `-[RBMenuView toggleSettingView]`                            | `0xaba74`  | Marked tutorial-status key `0x22` seen; the binary checks `0x22` but marks `0x18`                                            |
+| `-[RBMenuView show*View]` (nine popups)                      | `0xabf94`… | Every popup got mask `0x12`; the binary sets `0x3f` on all of them                                                           |
+| `-[RBMenuTutorialView startAnimation:]` / `-resetAnimation:` | `0x13de2c` | Message-layer Y anchored to an invented constant `20`, not the window layer's own origin Y                                   |
+| `SetupDialogLayoutCoordTable`                                | `0x1414e0` | Row 15's origin X is written as `2.0` by the seeder; it had been left at `0`                                                 |
+| `-[RBMusicMenuPopupView setupView]`                          | `0x19ec8c` | Wide base width is `544` (pool `0x2ee960`), not `552`; both Classic arms use corner radius `5`, not `10`                     |
+| `-[RBCustomSelectCollectionView setupView]`                  | `0x155670` | Note/gauge button geometry, collection frame, cap insets, page control, slider events; see below                             |
 
 ### Part-id runs in `RenderSprites`
 
@@ -292,6 +301,64 @@ One finding is outside this class and is left open: `kArtworkShadowOpacity` in
 `Project/RBStoreExtendNoteDetailViewController.m` is annotated `0x2ec6b8` and declared `0.15`, but
 that slot holds the float32 `0.6`. It is one of the four constants the annotation audit already
 reports as mismatched.
+
+## The customize walkthrough and the CUSTOMIZE window
+
+The walkthrough is a chain of hand-off calls across five classes, each call site hard-coding the
+next
+step number. The interior links were right (`RBSettingView` `0x1b`, `RBCustomView` `0x1e`/`0x21`,
+`RBUnlockView` `0x20`, `-hideAnimation:` `0xa`); the two entry points in `RBMenuView` were wrong.
+`-startTutorial` had the music-select and customize types swapped, and `-showCustomizeView`
+launched type `0` instead of `0x1d` — so opening the CUSTOMIZE window replayed the music-select
+intro over a stale spotlight target instead of spotlighting the UNLOCK toggle. The status keys are
+two, not one: `0x22` is the customize-done flag that gets checked, `0x18` is the entry step that
+gets marked seen (`-toggleSettingView` at `0xabe98`, `-showCustomizeView` at `0xac1fc`).
+
+The tutorial balloon text sat outside its window because both `-startAnimation:` and
+`-resetAnimation:` compute the message layer's Y from the window layer's own `frame.origin.y`
+(`d15` at `0x13e308`, `d8` at `0x13fc34`) — the reconstruction had an invented flat `20.0` there.
+On the wide idiom the window's Y is `cvh*0.25+3 = 78`, so the text drew 58 points high.
+
+In `-[RBCustomSelectCollectionView setupView]` (`0x155670`) the misreads were structural:
+
+- The framed background's cap insets are `(capInset, 0, imageHeight - capInset, 0)` — the bottom
+  inset had been modelled as `25 - capInset`, negative on the wide layout.
+- The note-size buttons centre on and take the size of the `cus_sel_2` overlay artwork; they had
+  been centred against the ~500-point frame image and sized to the item image.
+- The gauge buttons take the `cus_gs_bt_eff` overlay's size, and are inset `66` (wide, `0x30be60`)
+  or `33` (narrow, `0x2eeeb8`) from the ends of a button area `frameImage.width - 2` wide; the
+  narrow inset had been read as `3`, and the second button's X had collapsed to the area centre.
+  The wide Y pair `{45, 59}` is a theme-indexed table at `0x30be80`.
+- The paged collection is `frameImage.width - 2` wide, centred, with a per-category height table
+  (built on the stack at `0x1558c8`): default `80/72`, shot `150/200`, note `90/72`, gauge and
+  timing `51`. It had been full-width at a single height.
+- The page control is `{0, collectionView.bottom, selfWidth, 20}`, not zero-sized; on Classic the
+  binary never writes the dot-tint register, so the dots keep the `0.5` left over from the frame
+  maths.
+- All three sliders register `sliderChanged:` for `TouchUpInside|TouchUpOutside` (`0x40`/`0x80`),
+  not `ValueChanged`.
+
+## Verified correct in the same pass — do not re-audit
+
+- `SetupDialogLayoutCoordTable` (`0x1414e0`): all 34 rows decoded from the immediates; only row
+  15's X was wrong. The balloon artwork rects (rows 28/29) are `{361,412,398,134}` and
+  `{361,548,430,124}` as written.
+- `-[RBMenuTutorialView setupView]` (`0x137bfc`): window/pastel/message geometry, including the
+  `-0.85` pool load at `0x308cb8`, the `0.8` at `0x2eea40`, insets 20/26/16/8, and clip rows 9/10.
+- `-[RBMenuTutorialView startTutorialWithType:withAnimation:]` (`0x13ab34`): the full jump table at
+  `0x13b870` matches case-for-case, including `0x1c`/`0x1f` having no layout arm.
+- `-[RBMenuTutorialView getTextureType]` (`0x14040c`): jump table at `0x1404b8` matches, including
+  `pad?9:10` for the decide step and default `0x22`.
+- `-[RBMenuTutorialView initWithFrame:]`: content view 640x300 wide, 300x100 narrow.
+- `-[RBCustomView setupView]` (`0x96724`): the `0.21875` set-button shave is a real `fmov`
+  immediate (7/32); the `20.0` unlock inset, `0.5` hairlines, `0.625/1.5/2.0` wide and `1.0/4.0`
+  narrow effect nudges all match. `-showAnimation` (`0x987b0`) launches no tutorial step.
+- `-[RBUnlockView setupView]`/`-reloadData`: every constant matches (34/70, 112/44/114/20,
+  169/93/240/36, 169/90/240/40, margins 10/4, rows 144/124, pads 70/45, banner factor 0.8).
+- `-[RBCustomSelectView setupView]` and its two metric helpers: start Y `{70, 40}` wide (table at
+  `0x30bf00`) and `34/21` narrow, margins `20/12`, and all per-category stack heights.
+- `-[RBCustomSelectCollectionCell layoutSubviews]` (`0x16e810`): the `(int)` truncation of the
+  centred X and the `selectedImageView.center = backgroundView.center` assignment.
 
 ## Scale
 

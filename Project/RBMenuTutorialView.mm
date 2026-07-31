@@ -138,7 +138,6 @@ constexpr CGFloat kMessageWindowInsetXWide = 20.0;
 constexpr CGFloat kMessageWindowInsetXNarrow = 26.0;
 constexpr CGFloat kMessageWindowInsetYWide = 16.0;
 constexpr CGFloat kMessageWindowInsetYNarrow = 8.0;
-constexpr CGFloat kMessageWindowBaseInsetY = 20.0;
 
 // On the narrow idiom the message window is pushed back left of the content view's centre by this
 // fraction of its own width.
@@ -232,12 +231,11 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
             [self.messageImage clipImageWithRect:[self getClipRect:kTutorialTexTypeMessageWide]];
     windowLayer.contents = (__bridge id)windowClip.CGImage;
     if (narrow) {
-        windowLayer.frame =
-            CGRectMake(self.contentViewWidth * 0.5f +
-                           windowClip.size.width * kMessageWindowNarrowOffsetScale,
-                       self.contentViewHeight * 0.5f,
-                       windowClip.size.width,
-                       windowClip.size.height);
+        windowLayer.frame = CGRectMake(self.contentViewWidth * 0.5f +
+                                           windowClip.size.width * kMessageWindowNarrowOffsetScale,
+                                       self.contentViewHeight * 0.5f,
+                                       windowClip.size.width,
+                                       windowClip.size.height);
     } else {
         windowLayer.frame = CGRectMake(self.contentViewWidth * 0.5f - windowClip.size.width,
                                        self.contentViewHeight * 0.25f + 3.0f,
@@ -902,14 +900,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     CGSize atlasSize = self.messageImage.size;
     CGRect windowFrame = self.messageWindowLayer.frame;
     BOOL narrow = !IsPad();
-    CGRect fullClip = [self getClipRect:kTutorialStepDecideButton];
+    CGRect fullClip = [self getClipRect:kTutorialClipRectMessageWide];
 
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.messageLayer.opacity = 0.0;
     self.messageLayer.frame = CGRectMake(
         windowFrame.origin.x + (narrow ? kMessageWindowInsetXNarrow : kMessageWindowInsetXWide),
-        (fullClip.size.height - messageClip.size.height) * 0.5 + kMessageWindowBaseInsetY +
+        (fullClip.size.height - messageClip.size.height) * 0.5 + windowFrame.origin.y +
             (narrow ? kMessageWindowInsetYNarrow : kMessageWindowInsetYWide),
         messageClip.size.width,
         messageClip.size.height);
@@ -1119,14 +1117,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     CGSize atlasSize = self.messageImage.size;
     CGRect windowFrame = self.messageWindowLayer.frame;
     BOOL narrow = !IsPad();
-    CGRect fullClip = [self getClipRect:kTutorialStepDecideButton];
+    CGRect fullClip = [self getClipRect:kTutorialClipRectMessageWide];
 
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.messageLayer.opacity = 1.0;
     self.messageLayer.frame = CGRectMake(
         windowFrame.origin.x + (narrow ? kMessageWindowInsetXNarrow : kMessageWindowInsetXWide),
-        (fullClip.size.height - messageClip.size.height) * 0.5 + kMessageWindowBaseInsetY +
+        (fullClip.size.height - messageClip.size.height) * 0.5 + windowFrame.origin.y +
             (narrow ? kMessageWindowInsetYNarrow : kMessageWindowInsetYWide),
         messageClip.size.width,
         messageClip.size.height);

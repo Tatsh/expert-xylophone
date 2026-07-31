@@ -95,53 +95,63 @@ static NSString *const kGaugeStyleOverlayImageName = @"04_customize/cus_gs_bt_ef
 // The note-item button image name format (the item id fills the placeholder).
 static NSString *const kNoteItemImageNameFormat = @"04_customize/cus_iobj_%@";
 
-// The framed background image resizes with a symmetric vertical cap inset: the top and bottom
-// insets leave a fixed centre stretch region. The wide-font layout uses a larger inset than the
-// narrow one.
-constexpr CGFloat kBackgroundCapInsetWide = 36.0;
+// The framed background image stretches vertically below its top cap: the top inset is the
+// idiom-dependent cap and the bottom inset is the rest of the image
+// (UIEdgeInsetsMake(capInset, 0, imageHeight - capInset, 0)). The cap also serves as the top edge
+// of the content laid out inside the frame. The wide value is read from the pool at 0x301158.
+constexpr CGFloat kBackgroundCapInsetWide = 36.0; // @ghidraAddress 0x301158
 constexpr CGFloat kBackgroundCapInsetNarrow = 25.0;
-// The background image height passed to the cap-inset call.
-constexpr CGFloat kBackgroundCapInsetTotal = 25.0;
 // The background view centres horizontally within the grid.
 constexpr CGFloat kCenterFactor = 0.5;
 
-// The note-size and gauge-style button metrics differ between the wide (non-default) and narrow
-// (default) font layouts.
-constexpr CGFloat kNoteButtonWidthWide = 200.0;
-constexpr CGFloat kNoteButtonWidthNarrow = 62.0;
-constexpr CGFloat kNoteButtonHeightWide = 80.0;
-constexpr CGFloat kNoteButtonHeightNarrow = 62.0;
+// The paged collection's height, indexed by RBCustomizeItemType, by device idiom. The shot
+// category is taller to make room for the volume slider; the note category is slightly taller
+// than the default; the gauge and timing rows are short fixed heights. Mirrors the stack table
+// -setupView builds at 0x1558c8 from the pool floats at 0x30be70/0x2f855c/0x301f78/0x2eedc8/
+// 0x30be74.
+constexpr float kCollectionHeightsWide[] = {
+    80.0f, 150.0f, 80.0f, 80.0f, 80.0f, 90.0f, 51.0f, 0.0f, 51.0f};
+constexpr float kCollectionHeightsNarrow[] = {
+    72.0f, 200.0f, 72.0f, 72.0f, 72.0f, 72.0f, 51.0f, 0.0f, 51.0f};
 
 // The RBMusicGridLayout item edge length for the paged categories.
-constexpr CGFloat kGridItemSizeWide = 68.0;
-constexpr CGFloat kGridItemSizeNarrow = 62.0;
-// The RBMusicGridLayout page inset: a idiom-dependent left and right inset and fixed top and
-// bottom insets.
+constexpr CGFloat kGridItemSizeWide = 68.0;   // @ghidraAddress 0x2eea00
+constexpr CGFloat kGridItemSizeNarrow = 62.0; // @ghidraAddress 0x2eea20
+// The RBMusicGridLayout page inset: a idiom-dependent top and bottom inset and fixed left and
+// right insets.
 constexpr CGFloat kGridPageInsetSideWide = 5.0;
 constexpr CGFloat kGridPageInsetSideNarrow = 3.0;
-constexpr CGFloat kGridPageInsetVertical = 8.0;
+constexpr CGFloat kGridPageInsetHorizontal = 8.0;
 
-// The gauge-style buttons sit lower on the wide layout than the narrow one.
-constexpr CGFloat kGaugeButtonInsetNarrow = 3.0;
-constexpr CGFloat kGaugeButtonExtraNarrow = -33.0;
-constexpr CGFloat kGaugeButtonInsetWideDefault = 66.0;
-constexpr CGFloat kGaugeButtonExtraWide = -66.0;
-// The gauge buttons' top offset, chosen by theme on the wide layout.
-constexpr CGFloat kGaugeButtonTopWideOther = 45.0;
-constexpr CGFloat kGaugeButtonTopWideColette = 59.0;
+// The gauge-style buttons are inset from the button area's two ends by a idiom-dependent amount:
+// the left button sits the inset right of the area's left edge, the right button the inset left of
+// the area's right edge.
+constexpr CGFloat kGaugeButtonEndInsetWide = 66.0;   // @ghidraAddress 0x30be60
+constexpr CGFloat kGaugeButtonEndInsetNarrow = 33.0; // @ghidraAddress 0x2eeeb8
+// The gauge buttons' top offset: on the wide layout a theme-indexed pair (default, Colette) read
+// from the table at 0x30be80; a fixed offset on the narrow layout.
+constexpr CGFloat kGaugeButtonTopWideOther = 45.0;   // @ghidraAddress 0x30be80
+constexpr CGFloat kGaugeButtonTopWideColette = 59.0; // @ghidraAddress 0x30be88
 constexpr CGFloat kGaugeButtonTopNarrow = 22.0;
+// The gauge-button area and the paged collection are both centred against the framed background's
+// width less this shave.
+constexpr CGFloat kFrameContentWidthShave = 2.0;
 
-// The timing slider sits a idiom-dependent margin below the page control row.
+// The timing slider sits a idiom-dependent margin below the vertical centre.
 constexpr CGFloat kTimingSliderMarginWide = 8.0;
 constexpr CGFloat kTimingSliderMarginNarrow = 4.0;
 
-// The page control's transform scale and the current-page indicator tint (a per-theme white level;
-// the Classic theme is fully opaque white).
-constexpr CGFloat kPageControlScale = 0.8;
-constexpr CGFloat kPageIndicatorTintClassic = 1.0;
-constexpr CGFloat kPageIndicatorTintLimelight = 0.5;
-constexpr CGFloat kPageIndicatorTintColette = 0.5;
-constexpr CGFloat kPageIndicatorTintWhiteThemed = 0.667;
+// The page control row's fixed height.
+constexpr CGFloat kPageControlHeight = 20.0;
+
+// The page control's transform scale and the per-theme indicator tints (white levels). On the
+// Classic theme the binary never writes the page-indicator tint register, so the dots inherit the
+// 0.5 left over from the frame maths; keep that value to match.
+constexpr CGFloat kPageControlScale = 0.8; // @ghidraAddress 0x2eea40
+constexpr CGFloat kCurrentPageTintClassic = 1.0;
+constexpr CGFloat kPageIndicatorTintClassic = 0.5;
+constexpr CGFloat kCurrentPageTintThemed = 0.5;
+constexpr CGFloat kPageIndicatorTintThemed = 0.667; // @ghidraAddress 0x2eea48
 
 // The page control hides when the content spans fewer than this many pages.
 constexpr long kPageControlMinPageCount = 2;
@@ -175,12 +185,12 @@ constexpr long kPageControlMinPageCount = 2;
 - (void)setupView {
     BOOL wideFont = IsPad();
 
-    // The framed background stretches with a symmetric vertical cap inset and centres horizontally.
-    UIImage *frameImage = [UIImage imageWithName:kFrameBackgroundImageNames[self.customizeType]];
+    // The framed background stretches below its idiom-dependent top cap and centres horizontally.
+    UIImage *originalImage = [UIImage imageWithName:kFrameBackgroundImageNames[self.customizeType]];
     CGFloat capInset = wideFont ? kBackgroundCapInsetWide : kBackgroundCapInsetNarrow;
-    frameImage = [frameImage
+    UIImage *frameImage = [originalImage
         resizableImageWithCapInsets:UIEdgeInsetsMake(
-                                        capInset, 0.0, kBackgroundCapInsetTotal - capInset, 0.0)];
+                                        capInset, 0.0, originalImage.size.height - capInset, 0.0)];
     self.backgroundView = [[UIImageView alloc] initWithImage:frameImage];
     self.backgroundView.frame =
         CGRectMake((self.frame.size.width - frameImage.size.width) * kCenterFactor,
@@ -189,42 +199,34 @@ constexpr long kPageControlMinPageCount = 2;
                    frameImage.size.height);
     [self addSubview:self.backgroundView];
 
-    CGFloat noteButtonWidth = wideFont ? kNoteButtonWidthWide : kNoteButtonWidthNarrow;
-    CGFloat noteButtonHeight = wideFont ? kNoteButtonHeightWide : kNoteButtonHeightNarrow;
-
     // The controls sit below the framed background's top cap inset.
     if (self.customizeType == RBCustomizeItemTypeNote) {
-        [self setupNoteButtonsWideFont:wideFont
-                       frameImageWidth:frameImage.size.width
-                                  topY:capInset
-                          buttonHeight:noteButtonHeight];
+        [self setupNoteButtonsWideFont:wideFont topY:capInset];
     } else if (self.customizeType == RBCustomizeItemTypeGauge) {
         [self setupGaugeButtonsWideFont:wideFont
-                        frameImageWidth:frameImage.size.width
-                            buttonWidth:noteButtonWidth - 2.0
-                           buttonHeight:noteButtonHeight];
+                        buttonAreaWidth:frameImage.size.width - kFrameContentWidthShave];
     } else if (self.customizeType == RBCustomizeItemTypeTiming) {
         [self setupTimingSlider];
     } else {
-        [self setupCollectionViewWideFont:wideFont topY:capInset buttonHeight:noteButtonHeight];
+        [self setupCollectionViewWideFont:wideFont
+                                     topY:capInset
+                                    width:frameImage.size.width - kFrameContentWidthShave];
     }
 }
 
-// Lays out the note category's three fixed size buttons, each embedding a hidden highlight overlay,
-// centred horizontally within the framed background.
-- (void)setupNoteButtonsWideFont:(BOOL)wideFont
-                 frameImageWidth:(CGFloat)frameImageWidth
-                            topY:(CGFloat)topY
-                    buttonHeight:(CGFloat)buttonHeight {
+// Lays out the note category's three fixed size buttons, each embedding a hidden highlight
+// overlay. Every button is the size of the overlay artwork, and the row straddles the horizontal
+// centre of the view against that overlay width.
+- (void)setupNoteButtonsWideFont:(BOOL)wideFont topY:(CGFloat)topY {
     [self reloadData];
 
     UIImage *overlayImage = [UIImage imageWithName:kSelectionOverlayImageName];
-    CGFloat noteButtonWidth = overlayImage.size.width;
-    CGFloat center = (self.frame.size.width - frameImageWidth) * kCenterFactor;
+    CGFloat overlayWidth = overlayImage.size.width;
+    CGFloat center = (self.frame.size.width - overlayWidth) * kCenterFactor;
 
     // The three buttons straddle the horizontal centre; the wide layout spreads them one and a half
-    // button widths apart, the narrow layout one width apart.
-    CGFloat spread = wideFont ? noteButtonWidth * 1.5 : noteButtonWidth;
+    // overlay widths apart, the narrow layout one width apart.
+    CGFloat spread = wideFont ? overlayWidth * 1.5 : overlayWidth;
     CGFloat buttonX[] = {center - spread, center, center + spread};
 
     int selectedNoteType = [RBUserSettingData sharedInstance].noteType;
@@ -239,7 +241,7 @@ constexpr long kPageControlMinPageCount = 2;
                       action:@selector(noteSizeTap:)
             forControlEvents:UIControlEventTouchUpInside];
         [button setImage:buttonImage forState:UIControlStateNormal];
-        button.frame = CGRectMake(buttonX[i], topY, buttonImage.size.width, buttonHeight);
+        button.frame = CGRectMake(buttonX[i], topY, overlayWidth, overlayImage.size.height);
         [self addSubview:button];
 
         UIImageView *overlay = [[UIImageView alloc] initWithImage:overlayImage];
@@ -256,24 +258,23 @@ constexpr long kPageControlMinPageCount = 2;
     }
 }
 
-// Lays out the gauge category's two fixed style buttons, each embedding a hidden highlight overlay.
-- (void)setupGaugeButtonsWideFont:(BOOL)wideFont
-                  frameImageWidth:(CGFloat)frameImageWidth
-                      buttonWidth:(CGFloat)buttonWidth
-                     buttonHeight:(CGFloat)buttonHeight {
+// Lays out the gauge category's two fixed style buttons, each embedding a hidden highlight
+// overlay. Each button is the size of the overlay artwork; the pair is inset from the two ends of
+// the button area, which is the framed background's width less the shave, centred in the view.
+- (void)setupGaugeButtonsWideFont:(BOOL)wideFont buttonAreaWidth:(CGFloat)buttonAreaWidth {
     UIImage *overlayImage = [UIImage imageWithName:kGaugeStyleOverlayImageName];
-    CGFloat center = (self.frame.size.width - buttonWidth) * kCenterFactor;
+    CGFloat areaLeft = (self.frame.size.width - buttonAreaWidth) * kCenterFactor;
+    CGFloat endInset = wideFont ? kGaugeButtonEndInsetWide : kGaugeButtonEndInsetNarrow;
 
-    CGFloat buttonX[kGaugeStyleButtonCount];
+    CGFloat buttonX[] = {
+        areaLeft + endInset,
+        (areaLeft + buttonAreaWidth) - overlayImage.size.width - endInset,
+    };
     CGFloat buttonY;
     if (wideFont) {
         int thema = [RBUserSettingData sharedInstance].thema;
-        buttonX[0] = center + kGaugeButtonInsetWideDefault;
-        buttonX[1] = kGaugeButtonExtraWide + center + kGaugeButtonInsetWideDefault;
         buttonY = (thema == kThemaColette) ? kGaugeButtonTopWideColette : kGaugeButtonTopWideOther;
     } else {
-        buttonX[0] = center + kGaugeButtonInsetNarrow;
-        buttonX[1] = kGaugeButtonExtraNarrow + center + kGaugeButtonInsetNarrow;
         buttonY = kGaugeButtonTopNarrow;
     }
 
@@ -287,7 +288,8 @@ constexpr long kPageControlMinPageCount = 2;
                       action:@selector(gaugeStyleTap:)
             forControlEvents:UIControlEventTouchUpInside];
         [button setImage:buttonImage forState:UIControlStateNormal];
-        button.frame = CGRectMake(buttonX[i], buttonY, buttonWidth, buttonHeight);
+        button.frame =
+            CGRectMake(buttonX[i], buttonY, overlayImage.size.width, overlayImage.size.height);
         [self addSubview:button];
 
         UIImageView *overlay = [[UIImageView alloc] initWithImage:overlayImage];
@@ -306,9 +308,7 @@ constexpr long kPageControlMinPageCount = 2;
 
 // Builds the paged RBCollectionView of item cells, the page control below it, and (for the shot and
 // explosion categories) the slider that edits the associated setting.
-- (void)setupCollectionViewWideFont:(BOOL)wideFont
-                               topY:(CGFloat)topY
-                       buttonHeight:(CGFloat)buttonHeight {
+- (void)setupCollectionViewWideFont:(BOOL)wideFont topY:(CGFloat)topY width:(CGFloat)width {
     CGFloat itemSize = wideFont ? kGridItemSizeWide : kGridItemSizeNarrow;
     RBMusicGridLayout *layout = [RBMusicGridLayout new];
     layout.itemSize = CGSizeMake(itemSize, itemSize);
@@ -317,11 +317,17 @@ constexpr long kPageControlMinPageCount = 2;
     layout.minimumInteritemSpacing = 0.0;
     CGFloat pageInsetSide = wideFont ? kGridPageInsetSideWide : kGridPageInsetSideNarrow;
     layout.pageInset = UIEdgeInsetsMake(
-        pageInsetSide, kGridPageInsetVertical, pageInsetSide, kGridPageInsetVertical);
+        pageInsetSide, kGridPageInsetHorizontal, pageInsetSide, kGridPageInsetHorizontal);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
 
+    // The collection is the width of the framed background less the shave, centred in the view, at
+    // the per-category height.
+    const float *heights = wideFont ? kCollectionHeightsWide : kCollectionHeightsNarrow;
     self.collectionView = [[RBCollectionView alloc]
-               initWithFrame:CGRectMake(0.0, topY, self.frame.size.width, buttonHeight)
+               initWithFrame:CGRectMake((self.frame.size.width - width) * kCenterFactor,
+                                        topY,
+                                        width,
+                                        heights[self.customizeType])
         collectionViewLayout:layout];
     self.collectionView.backgroundColor = UIColor.clearColor;
     [self.collectionView registerClass:[RBCustomSelectCollectionCell class]
@@ -334,26 +340,26 @@ constexpr long kPageControlMinPageCount = 2;
     self.collectionView.dataSource = self;
     [self addSubview:self.collectionView];
 
-    // The current-page indicator tint depends on the theme.
+    // The page indicator tints depend on the theme. The Classic arm only sets the current-page
+    // tint; its dot tint keeps the 0.5 left in the register by the frame maths (see the constants).
     int thema = [RBUserSettingData sharedInstance].thema;
     CGFloat currentPageTint;
     CGFloat pageIndicatorTint;
     if (thema == kThemaClassic) {
-        currentPageTint = kPageIndicatorTintClassic;
+        currentPageTint = kCurrentPageTintClassic;
         pageIndicatorTint = kPageIndicatorTintClassic;
-    } else if (thema == kThemaLimelight) {
-        currentPageTint = kPageIndicatorTintLimelight;
-        pageIndicatorTint = kPageIndicatorTintWhiteThemed;
-    } else if (thema == kThemaColette) {
-        currentPageTint = kPageIndicatorTintColette;
-        pageIndicatorTint = kPageIndicatorTintWhiteThemed;
+    } else if (thema == kThemaLimelight || thema == kThemaColette) {
+        currentPageTint = kCurrentPageTintThemed;
+        pageIndicatorTint = kPageIndicatorTintThemed;
     } else {
         currentPageTint = 0.0;
         pageIndicatorTint = 0.0;
     }
 
-    self.pageControl =
-        [[UIPageControl alloc] initWithFrame:CGRectMake(0.0, self.collectionView.bottom, 0.0, 0.0)];
+    self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0.0,
+                                                                       self.collectionView.bottom,
+                                                                       self.frame.size.width,
+                                                                       kPageControlHeight)];
     self.pageControl.numberOfPages = 1;
     self.pageControl.currentPage = 0;
     self.pageControl.transform = CGAffineTransformMakeScale(kPageControlScale, kPageControlScale);
@@ -379,7 +385,7 @@ constexpr long kPageControlMinPageCount = 2;
             forControlEvents:UIControlEventTouchUpInside];
         [slider addTarget:self
                       action:@selector(sliderChanged:)
-            forControlEvents:UIControlEventValueChanged];
+            forControlEvents:UIControlEventTouchUpOutside];
         slider.tag = kSliderTagShotVolume;
     }
 
@@ -398,7 +404,7 @@ constexpr long kPageControlMinPageCount = 2;
             forControlEvents:UIControlEventTouchUpInside];
         [slider addTarget:self
                       action:@selector(sliderChanged:)
-            forControlEvents:UIControlEventValueChanged];
+            forControlEvents:UIControlEventTouchUpOutside];
         slider.tag = kSliderTagEffectSize;
     }
 
@@ -422,7 +428,7 @@ constexpr long kPageControlMinPageCount = 2;
         forControlEvents:UIControlEventTouchUpInside];
     [slider addTarget:self
                   action:@selector(sliderChanged:)
-        forControlEvents:UIControlEventValueChanged];
+        forControlEvents:UIControlEventTouchUpOutside];
     slider.tag = kSliderTagTiming;
 }
 

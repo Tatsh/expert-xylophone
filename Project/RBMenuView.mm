@@ -75,14 +75,23 @@ enum {
     kMenuModePlaylistFinished = 2, // Not editing; the resting mode.
 };
 
-// Tutorial-status query indices passed to getTutorialStatus:.
-static const int kTutorialStatusMusicSelect = 0x17;
-static const int kTutorialStatusSetting = 0x22;
-static const int kTutorialStatusCustomize = 0x22;
+// The popup sub-screens (how-to, customize, theme, and the rest) flex in every direction.
+constexpr UIViewAutoresizing kAutoresizingFull =
+    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+    UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
-// Tutorial step identifiers.
-static const NSUInteger kTutorialTypeMusicSelect = 0x18;
-static const NSUInteger kTutorialTypeCustomize = 0;
+// Tutorial-status indices passed to getTutorialStatus:/updateTutorialStatus:. The customize
+// walkthrough checks the completion flag (0x22) but records its entry step (0x18) as seen.
+static const int kTutorialStatusMusicSelect = 0x17;
+static const int kTutorialStatusCustomize = 0x22;
+static const int kTutorialStatusCustomizeStarted = 0x18;
+
+// Tutorial step identifiers passed to the tutorial view's start/show methods.
+static const NSUInteger kTutorialTypeMusicSelect = 0;
+static const NSUInteger kTutorialTypeMusicFullScreen = 4;
+static const NSUInteger kTutorialTypeCustomize = 0x18;
+static const NSUInteger kTutorialTypeUnlock = 0x1d;
 static const NSUInteger kTutorialTypeMenuHide = 10;
 
 // Menu-item sort modes stored in RBUserSettingData.menuItemSort.
@@ -700,12 +709,11 @@ static BOOL g_bRandamIntSeeded = NO;
     // The binary passes the view's own bounds width and a recovered height here, not the grid's
     // current frame. Re-reading the frame left the height at the full bounds CreateView built it
     // with, so the grid covered the menu button row and swallowed every tap on it.
-    self.collectionView.frame =
-        CGRectMake(collectionOriginX,
-                   collectionOriginY,
-                   collectionWidth > 0.0 ? collectionWidth : self.collectionView.frame.size.width,
-                   collectionHeight > 0.0 ? collectionHeight
-                                          : self.collectionView.frame.size.height);
+    self.collectionView.frame = CGRectMake(
+        collectionOriginX,
+        collectionOriginY,
+        collectionWidth > 0.0 ? collectionWidth : self.collectionView.frame.size.width,
+        collectionHeight > 0.0 ? collectionHeight : self.collectionView.frame.size.height);
 
     // Information badges sit beside their owning buttons.
     self.playlistInfoView.frame = CGRectMake(static_cast<double>((playlistX + sideButtonSize)),
@@ -1430,7 +1438,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self addSubview:self.coverView];
 
     if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusMusicSelect] == 0) {
-        [self.tutorialView startTutorialWithType:kTutorialTypeMusicSelect
+        [self.tutorialView startTutorialWithType:kTutorialTypeMusicFullScreen
                                     withRootView:self.selectedView];
     }
     [self.selectedView showAnimation:animated];
@@ -1680,8 +1688,8 @@ static BOOL g_bRandamIntSeeded = NO;
         [self addSubview:self.settingView];
         [self addSubview:self.settingButton];
         [self addSubview:self.coverView];
-        if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusSetting] == 0) {
-            [[RBUserSettingData sharedInstance] updateTutorialStatus:kTutorialStatusSetting
+        if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusCustomize] == 0) {
+            [[RBUserSettingData sharedInstance] updateTutorialStatus:kTutorialStatusCustomizeStarted
                                                                value:1];
         }
         [self.settingButton removeFlashEffect];
@@ -1701,7 +1709,7 @@ static BOOL g_bRandamIntSeeded = NO;
     RBHowToView *view = [[RBHowToView alloc] initWithFrame:self.bounds];
     view.settingView = self.settingView;
     view.musicMenuView = self;
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
     self.showView = view;
@@ -1710,12 +1718,13 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)showCustomizeView {
     RBCustomView *view = [[RBCustomView alloc] initWithFrame:self.bounds];
     view.musicMenuView = self;
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
-    if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusSetting] == 0) {
-        [self.tutorialView startTutorialWithType:kTutorialTypeCustomize withRootView:view];
-        [[RBUserSettingData sharedInstance] updateTutorialStatus:kTutorialStatusSetting value:1];
+    if ([[RBUserSettingData sharedInstance] getTutorialStatus:kTutorialStatusCustomize] == 0) {
+        [self.tutorialView startTutorialWithType:kTutorialTypeUnlock withRootView:view];
+        [[RBUserSettingData sharedInstance] updateTutorialStatus:kTutorialStatusCustomizeStarted
+                                                           value:1];
     }
     self.showView = view;
 }
@@ -1723,7 +1732,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)showThema {
     RBThemaView *view = [[RBThemaView alloc] initWithFrame:self.bounds];
     view.musicMenuView = self;
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
     self.showView = view;
@@ -1739,7 +1748,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // Pad build: overlay the search view in place.
         RBSearchView *view = [[RBSearchView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
-        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        view.autoresizingMask = kAutoresizingFull;
         [self addSubview:view];
         [view showAnimation];
         self.showView = view;
@@ -1750,7 +1759,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)showCreditView {
     RBCreditsView *view = [[RBCreditsView alloc] initWithFrame:self.bounds];
     view.musicMenuView = self;
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
     self.showView = view;
@@ -1766,7 +1775,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // Pad build: overlay the notification page in place.
         RBNotificationPageView *view = [[RBNotificationPageView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
-        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        view.autoresizingMask = kAutoresizingFull;
         [self addSubview:view];
         [view showAnimation];
         self.showView = view;
@@ -1776,7 +1785,7 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)showApplilinkView {
     RBApplilinkView *view = [[RBApplilinkView alloc] initWithFrame:self.bounds];
     view.musicMenuView = self;
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
     self.showView = view;
@@ -1792,7 +1801,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // Pad build: overlay the terms view in place.
         RBTermView *view = [[RBTermView alloc] initWithFrame:self.bounds];
         view.musicMenuView = self;
-        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        view.autoresizingMask = kAutoresizingFull;
         [self addSubview:view];
         [view showAnimation];
         self.showView = view;
@@ -1837,7 +1846,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self hideSettingView];
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectDecide);
     RBRankingView *view = [[RBRankingView alloc] initWithFrame:self.bounds];
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view.autoresizingMask = kAutoresizingFull;
     [self addSubview:view];
     [view showAnimation];
     self.showView = view;
