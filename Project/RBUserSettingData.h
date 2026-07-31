@@ -253,31 +253,31 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1f8a90 (getter)
  * @ghidraAddress 0x1f8aa0 (setter)
  */
-@property(nonatomic, strong) NSString *lastUpdateTimeString;
+@property(copy, nonatomic) NSString *lastUpdateTimeString;
 /**
  * @brief The timestamp string when the news was last read.
  * @ghidraAddress 0x1f8aac (getter)
  * @ghidraAddress 0x1f8abc (setter)
  */
-@property(nonatomic, strong) NSString *infoLastReadTimeString;
+@property(copy, nonatomic) NSString *infoLastReadTimeString;
 /**
  * @brief The version string of the accepted terms.
  * @ghidraAddress 0x1f8ac8 (getter)
  * @ghidraAddress 0x1f8ad8 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *termVersion;
+@property(copy, nonatomic, nullable) NSString *termVersion;
 /**
  * @brief The timestamp string of the last terms update.
  * @ghidraAddress 0x1f8ae4 (getter)
  * @ghidraAddress 0x1f8af4 (setter)
  */
-@property(nonatomic, strong) NSString *termLastUpdateTimeString;
+@property(copy, nonatomic) NSString *termLastUpdateTimeString;
 /**
  * @brief The timestamp string when the terms were last read.
  * @ghidraAddress 0x1f8b00 (getter)
  * @ghidraAddress 0x1f8b10 (setter)
  */
-@property(nonatomic, strong) NSString *termLastReadTimeString;
+@property(copy, nonatomic) NSString *termLastReadTimeString;
 /**
  * @brief Whether the takeover-point prompt is pending.
  * @ghidraAddress 0x1f8b1c (getter)
@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1f8b3c (getter)
  * @ghidraAddress 0x1f8b4c (setter)
  */
-@property(nonatomic, strong) NSString *resourceDownloadVersion;
+@property(copy, nonatomic) NSString *resourceDownloadVersion;
 /**
  * @brief Whether the resource download is paused.
  * @ghidraAddress 0x1f8b58 (getter)

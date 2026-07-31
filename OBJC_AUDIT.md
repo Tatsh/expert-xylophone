@@ -1177,3 +1177,30 @@ shipped build's older copy does not define. The near-miss output shows these are
 changes rather than typos: the binary has `zipArchiveDidUnzipFileAtIndex:totalFiles:archivePath:`
 `fileInfo:` where the newer sources call the `Should` variant. That is the same vendored-version
 divergence recorded above, now measured rather than assumed.
+
+## Property attributes, checked against the metadata
+
+The binary stores each property's attribute string verbatim — `T@"NSString",C,N,V_name` and the
+like — so ownership and atomicity are recorded facts rather than inferences.
+`tools/scan_properties.py` reads them from each `class_ro_t`'s property list and compares.
+
+Twenty-seven declarations disagreed. They matter in different ways:
+
+- **Twelve ownership defects.** Eleven properties declared `strong` where the binary says `copy`,
+  and one the reverse. The difference is not stylistic: `copy` snapshots a mutable argument, while
+  `strong` retains the caller's object and follows its later mutations. Most are the date and
+  version strings on `RBUserSettingData`, where a caller mutating the string it passed in would
+  have silently changed the stored setting.
+- **Thirteen atomicity defects**, all in the same direction: the source said `nonatomic` where the
+  metadata has no `N` flag and the property is therefore atomic. Atomic is the default nobody
+  writes, so it is the one most easily lost.
+- **Two missing `nonatomic`**, the mirror of the above.
+
+The scan now reports zero across 1961 properties in 173 classes.
+
+One correction to the tool was needed first, and it would have made the whole run worthless.
+`retain` is the older spelling of `strong` and compiles to the same attribute, so the metadata
+cannot tell them apart — but the first version could not either, and reported eighteen perfectly
+correct `retain` declarations as defects. That is forty-five findings of which eighteen were noise,
+and the noise was concentrated in one shape, which is exactly how a real finding gets dismissed
+along with it.

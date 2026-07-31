@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x20ba0 (getter)
  * @ghidraAddress 0x20bb0 (setter)
  */
-@property(nonatomic, assign) unsigned int type;
+@property(assign) unsigned int type;
 
 @end
 

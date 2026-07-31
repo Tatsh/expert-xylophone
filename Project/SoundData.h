@@ -24,19 +24,19 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The name the asset was created with, used to locate the backing file.
  * @ghidraAddress 0x34b40
  */
-@property(nonatomic, readonly) NSString *fileName;
+@property(readonly) NSString *fileName;
 
 /**
  * @brief The number of channels in the decoded PCM stream.
  * @ghidraAddress 0x34b50
  */
-@property(nonatomic, readonly) unsigned int channels;
+@property(readonly) unsigned int channels;
 
 /**
  * @brief The total number of frames in the asset.
  * @ghidraAddress 0x34b60
  */
-@property(nonatomic, readonly) long long totalFrames;
+@property(readonly) long long totalFrames;
 
 /**
  * @brief The client PCM stream format the asset was decoded into.

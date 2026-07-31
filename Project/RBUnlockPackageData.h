@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x19a9c0 (getter)
  * @ghidraAddress 0x19a9d0 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *title;
+@property(copy, nonatomic, nullable) NSString *title;
 /**
  * @brief The package's item entries, ordered by descending point value.
  * @ghidraAddress 0x19a9dc (getter)

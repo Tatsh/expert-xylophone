@@ -63,7 +63,7 @@ static const UIInterfaceOrientationMask kRecommendSupportedOrientations =
 // The large loading spinner shown while the advert area loads.
 @property(nonatomic, strong, nullable) UIActivityIndicatorView *indicator;
 // The advert request parameters the interstitial was opened with.
-@property(nonatomic, strong, nullable) ApplilinkParameters *applilinkParams;
+@property(copy, nonatomic, nullable) ApplilinkParameters *applilinkParams;
 // The advert delegate notified of the advert lifecycle and failures.
 @property(nonatomic, weak, nullable) id applilinkDelegate;
 // The full-view delegate (the presenting RecommendCore) asked to release this controller on close.

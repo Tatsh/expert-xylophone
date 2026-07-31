@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The notification's target URL, taken from the popped notification's @c url entry.
  */
-@property(copy, nonatomic, nullable) NSString *urlString;
+@property(strong, nonatomic, nullable) NSString *urlString;
 
 /**
  * @brief The one-shot timer that fires @c hideAnimationStart after the auto-hide delay.

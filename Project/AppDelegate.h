@@ -79,13 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x5487c (getter)
  * @ghidraAddress 0x5488c (setter)
  */
-@property(nonatomic, assign) int unreadRecommendCount;
+@property(assign) int unreadRecommendCount;
 /**
  * @brief Whether the Applilink (KONAMI ID) network layer has finished initialising.
  * @ghidraAddress 0x5489c (getter)
  * @ghidraAddress 0x548b0 (setter)
  */
-@property(nonatomic, assign) BOOL applilinkInitialized;
+@property(assign) BOOL applilinkInitialized;
 /**
  * @brief The early-bird bonus campaign table, keyed by music id.
  * @ghidraAddress 0x548c0 (getter)

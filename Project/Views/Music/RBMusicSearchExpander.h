@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief The synonym dictionary, mapping a search term to its set of extra match words.
  * @ghidraAddress 0x1751b4, 0x1751c4
  */
-@property(strong, nullable) NSMutableDictionary *expandDict;
+@property(strong, nonatomic, nullable) NSMutableDictionary *expandDict;
 
 @end
 

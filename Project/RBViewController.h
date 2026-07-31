@@ -430,17 +430,17 @@ NS_ASSUME_NONNULL_BEGIN
 /** @brief The pending tweet text.
  * @ghidraAddress 0x8eb70
  */
-@property(nonatomic, strong, nullable) NSString *tweetText;
+@property(strong, nullable) NSString *tweetText;
 
 /** @brief The pending tweet image.
  * @ghidraAddress 0x8eb8c
  */
-@property(nonatomic, strong, nullable) UIImage *tweetImage;
+@property(strong, nullable) UIImage *tweetImage;
 
 /** @brief The Twitter image creator that renders the score card.
  * @ghidraAddress 0x8eba8
  */
-@property(nonatomic, strong, nullable) TwitterImageCreater *twitterImageCreater;
+@property(strong, nullable) TwitterImageCreater *twitterImageCreater;
 
 /** @brief The serial queue that runs the Twitter image creator.
  * @ghidraAddress 0x8ec9c

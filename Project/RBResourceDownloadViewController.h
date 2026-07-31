@@ -41,13 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x20380 (getter)
  * @ghidraAddress 0x20390 (setter)
  */
-@property(nonatomic, strong, nullable) NSString *downloadPath;
+@property(copy, nonatomic, nullable) NSString *downloadPath;
 /**
  * @brief The resource version reported by the server, persisted once the download succeeds.
  * @ghidraAddress 0x2039c (getter)
  * @ghidraAddress 0x203ac (setter)
  */
-@property(nonatomic, strong, nullable) NSString *version;
+@property(copy, nonatomic, nullable) NSString *version;
 /**
  * @brief Whether to force a re-check even when the installed version already matches.
  * @ghidraAddress 0x203b8 (getter)
@@ -155,26 +155,26 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x20830 (getter)
  * @ghidraAddress 0x20840 (setter)
  */
-@property(nonatomic, assign) int allFileCount;
+@property(assign) int allFileCount;
 /**
  * @brief The number of files extracted so far.
  * @ghidraAddress 0x20850 (getter)
  * @ghidraAddress 0x20860 (setter)
  */
-@property(nonatomic, assign) int currentFileCount;
+@property(assign) int currentFileCount;
 /**
  * @brief Whether the "pop" completion animation should run on the next appearance.
  * @ghidraAddress 0x20870 (getter)
  * @ghidraAddress 0x20884 (setter)
  */
-@property(nonatomic, assign) BOOL nextAnimation;
+@property(assign) BOOL nextAnimation;
 /**
  * @brief The download job descriptor (download path, file name, document path, target path, and
  * archive password) built for the current archive.
  * @ghidraAddress 0x20894 (getter)
  * @ghidraAddress 0x208a4 (setter)
  */
-@property(nonatomic, strong, nullable) NSDictionary *fileInfoDic;
+@property(strong, nullable) NSDictionary *fileInfoDic;
 
 /**
  * @brief Verify the extracted asset list: unzip the manifest, then confirm every listed file exists

@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The advert request parameters of the in-flight store request.
  */
-@property(copy, atomic, nullable) ApplilinkParameters *applilinkParams;
+@property(copy, nonatomic, nullable) ApplilinkParameters *applilinkParams;
 
 /**
  * @brief The loading overlay shown over the product page while it loads.
