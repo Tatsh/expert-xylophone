@@ -341,10 +341,9 @@ extern const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[];
  * @brief The part UV-rectangle tables, selected by a part's render type and the orientation.
  *
  * The default table serves the background and any non-typed part; the lettered-part (type 1) and
- * logo (type 3) parts each have a phone and an iPad table.
- * @ghidraAddress 0x2f7908
+ * logo (type 3) parts each have a phone and an iPad table. The default table is declared at global
+ * scope below, outside @c rb, because the Limelight layers index it from there.
  */
-extern const SpriteUvEntry g_aTitlePartUvDefault[];
 /** @ghidraAddress 0x2f7ef8 */
 extern const SpriteUvEntry g_aTitlePartUvLetterPhone[];
 /** @ghidraAddress 0x2f7b68 */
@@ -363,6 +362,15 @@ extern const SpriteUvEntry g_aTitlePartUvLogoPad[];
 extern const S_VECTOR2 g_aTitleCampaignPartAnchor[];
 
 } // namespace rb
+
+/**
+ * @brief The default part UV-rectangle table, serving the background and any non-typed part.
+ *
+ * At global scope rather than in @c rb: the Limelight effect, theme, and full-combo layers index
+ * it from outside that namespace, and the shared @c g_aScoreGaugeUvTable is scoped the same way.
+ * @ghidraAddress 0x2f7908
+ */
+extern const SpriteUvEntry g_aTitlePartUvDefault[];
 
 // code: language=C++
 // kate: hl C++;

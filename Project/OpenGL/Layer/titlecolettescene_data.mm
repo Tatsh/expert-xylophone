@@ -121,6 +121,11 @@ const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[] = {
     {3, 44.0f, 145.0f, 88.0f, 145.0f, 4},    {3, 48.0f, 145.0f, 96.0f, 145.0f, 5},
 };
 
+} // namespace rb
+
+// This one table is defined at global scope rather than in @c rb, because three Limelight layers
+// outside that namespace (the effect, theme, and full-combo layers) declare and index it there.
+// The remaining tables in this file are reached only from @c rb and stay inside it.
 /** @ghidraAddress 0x2f7908 */
 extern const SpriteUvEntry g_aTitlePartUvDefault[];
 const SpriteUvEntry g_aTitlePartUvDefault[] = {
@@ -163,6 +168,8 @@ const SpriteUvEntry g_aTitlePartUvDefault[] = {
     {0.271484375f, 0.22265625f, 0.2578125f, 0.546875f},
     {0.53125f, 0.22265625f, 0.2578125f, 0.546875f},
 };
+
+namespace rb {
 
 /** @ghidraAddress 0x2f7ef8 */
 const SpriteUvEntry g_aTitlePartUvLetterPhone[] = {
