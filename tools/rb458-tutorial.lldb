@@ -1,0 +1,102 @@
+# Read the original's play-field geometry during its OWN first-run tutorial, so the comparison is
+# against a process in the same state as ours rather than one worn in by prior play.
+#
+#   (lldb) process interrupt        # while the tutorial play screen is up
+#   (lldb) command source /path/to/rb458-tutorial.lldb
+#
+# Self-contained reads only: no persistent ($) variables, no calls into the target, no breakpoints,
+# so this can be sourced in a session that has already run the other scripts.
+#
+# The sprite arrays are what actually gets drawn, and unlike the playfield globals they do not
+# depend on how much of the game has been played. AltFrameLayer's three batches hold them at
+# m_pSpritePositionArray +0xd8, m_pSpriteSizeArray +0xe0 and m_pSpriteAnchorArray +0xe8, each an
+# array of two floats per sprite. g_pAltFrameLayer is the pointer at 0x3deda8, m_apSprites[i] at
+# +0x20 + i*8, and the sprite count at +0x124.
+#
+# Our build reports, for the same moment:
+#   batch 0  pos=(-384.0, 1.0)    size=(73.0, 511.0)
+#   batch 1  pos=( 346.0, 512.0)  size=(18.0, 92.0)
+#   batch 2  pos=(-346.0, 512.0)  size=(256.0, 32.0)
+#   with halfH=0 fullHeightY=0 split=0
+
+
+# isPad
+expr -- (int)*(unsigned char *)((uint64_t)&_mh_execute_header + 0x3df3d0)
+
+# g_nPlayfieldFullHeightY
+expr -- *(int *)((uint64_t)&_mh_execute_header + 0x3d0008)
+
+# g_nPlayfieldCentreSplit
+expr -- *(int *)((uint64_t)&_mh_execute_header + 0x3ce934)
+
+# g_nPlayfieldFieldHeight
+expr -- *(int *)((uint64_t)&_mh_execute_header + 0x3ce930)
+
+# playfieldScale
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x134)
+
+# g_pAltFrameLayer (0 = play scene not built yet)
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3deda8)
+
+# batch 0: sprite count
+expr -- *(int *)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0x124)
+
+# batch 0: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xd8))[0]
+
+# batch 0: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xd8))[1]
+
+# batch 0: sprite[0] size x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xe0))[0]
+
+# batch 0: sprite[0] size y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xe0))[1]
+
+# batch 0: sprite[0] anchor x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xe8))[0]
+
+# batch 0: sprite[0] anchor y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xe8))[1]
+
+# batch 1: sprite count
+expr -- *(int *)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0x124)
+
+# batch 1: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xd8))[0]
+
+# batch 1: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xd8))[1]
+
+# batch 1: sprite[0] size x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xe0))[0]
+
+# batch 1: sprite[0] size y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xe0))[1]
+
+# batch 1: sprite[0] anchor x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xe8))[0]
+
+# batch 1: sprite[0] anchor y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xe8))[1]
+
+# batch 2: sprite count
+expr -- *(int *)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0x124)
+
+# batch 2: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xd8))[0]
+
+# batch 2: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xd8))[1]
+
+# batch 2: sprite[0] size x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xe0))[0]
+
+# batch 2: sprite[0] size y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xe0))[1]
+
+# batch 2: sprite[0] anchor x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xe8))[0]
+
+# batch 2: sprite[0] anchor y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xe8))[1]
