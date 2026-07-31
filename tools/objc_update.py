@@ -934,6 +934,15 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x5668: 'RBUrlSchemeStoreController -packRbAction:: objectForKey:"id" behind a cbz, then '
+            'intValue with cmp w0,#1 and b.lt, which is a signed compare, so a negative '
+            'identifier is rejected as well as zero. Both arms of the short-circuit match the '
+            'reconstruction, since the cbz jumps past the intValue send exactly as || does. On '
+            'success it stores through setPackIDForOpenStore: and returns YES',
+    0x14e08: 'UnZipArchive -openFile:: cbz on the path returns NO, then an existing m_ZipFile is '
+             'closed and zeroed before unzOpen replaces it, a second cbz returns NO on failure, '
+             'and unzGetGlobalInfo is checked with cbz w0 against UNZ_OK, which is zero, closing '
+             'and zeroing again on the error arm. All four arms accounted for',
     0x20d38c: 'ApplilinkUtilities +geFileNameFromPath:: rangeOfString: with options 4, which is '
               'NSBackwardsSearch, against the one-character pool string "/", compared to '
               '0x7fffffffffffffff for NSNotFound. The substring takes the range location itself '
