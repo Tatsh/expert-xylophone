@@ -1555,3 +1555,29 @@ bodies are visible as work rather than hidden as done.
 Worth noting what this did not need: the check is not a heuristic and has no threshold. It fires
 only on selectors the metadata itself defines twice, of which there are exactly twenty-three in the
 tree, all in this one category. Everything else keeps the existing match.
+
+### Why the twenty-three cannot simply be written
+
+Writing them was attempted and reverted before commit. The obstacle is not the bodies, which are
+formulaic and fully recoverable — `alertControllerWithTitle:message:preferredStyle:` with the alert
+style, one or two `UIAlertAction`s, then a present through the app delegate's view controller, with
+every string resolvable from `CacheLocalizedUIStrings` at `0x10090`, which fills seventy-seven
+globals from `localizedStringForKey:` calls whose keys are literals. Four were reconstructed
+completely from that map before the problem surfaced.
+
+The obstacle is that **Objective-C cannot express what the binary contains** in one translation
+unit. Two class methods with the same selector cannot share an `@implementation`, and these differ
+further: the old `+showGameCenterError` returns `UIAlertView *` and the new one returns `void`, so
+they cannot both be declared in any `@interface` either. The binary manages it because the two are
+separate category records, which the linker keeps and the runtime resolves to whichever it registers
+last.
+
+Reproducing that faithfully needs a second source file with its own `@implementation UIAlertView
+(RB)`, plus its own header or none, plus `CMakeLists.txt` and `theos/Makefile` registration. The
+file naming rule in this tree keys off the binary's embedded `__FILE__`, and there is none for this
+category — the thirty-one path strings in `__cstring` include nothing alert-related — so the name
+would be invented rather than recovered.
+
+That is a design decision with no evidence-based answer, so it is left open rather than guessed.
+What is settled: the twenty-three are missing, they are missing for a structural reason rather than
+an oversight, and the material to write them is fully in hand once the file question is answered.
