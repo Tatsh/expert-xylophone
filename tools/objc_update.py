@@ -1334,6 +1334,14 @@ VERIFIED = {
               '_receivedData, with the connection argument unread',
     0x20be1c: 'RewardCore -clearAdStatus: clears and releases the two slots at +0x5d0+0x30 and '
               '+0x5d0+0x38, which are the banner info and expiry globals',
+    0x2453c8: 'RecommendWebView -init: super init, cbz, setInitParam, the same shape as the '
+              'RecommendAdWebView trio at 0x21691c',
+    0x24542c: 'RecommendWebView -initWithFrame:: the same through initWithFrame:',
+    0x245490: 'RecommendWebView -initWithCoder:: the same through initWithCoder:',
+    0x245598: 'RecommendWebView -removeFromSuperview: closeAdArea first, then the super chain. '
+              'This is the third distinct body for that selector in the tree: RecommendAdAreaView '
+              'at 0x23ed30 is a bare super chain and RecommendWebViewController at 0x20310c is a '
+              'lone ret, so the selector carries no default meaning here and each had to be read',
     0x21691c: 'RecommendAdWebView -init: super init, cbz on the result, then setInitParam, which '
               'is a no-argument helper rather than a property setter',
     0x216980: 'RecommendAdWebView -initWithFrame:: the same shape through initWithFrame:',
