@@ -844,6 +844,57 @@ VERIFIED = {
               'agrees with the objc_verify_trivial.py entry that already covered it',
     0x203110: 'RecommendWebViewController -dealloc: a bare super chain, which ARC emits, so the '
               'empty reconstructed body is right. Also a hand check against the trivial pass',
+    0x1c35b8: 'SSZipArchive -open: zipOpen(_path.UTF8String, 0) into _zip, then cmp #0 / cset ne. '
+              'The 0 is APPEND_STATUS_CREATE, matching the vendored copy, but the vendored copy '
+              'passes fileSystemRepresentation and asserts _zip is null first. Both ivar offsets '
+              'resolve through the runtime metadata rather than being read off a literal',
+    0x1c3b58: 'SSZipArchive -close: zipClose(_zip, nullptr) and then mov w0,#1 unconditionally, so '
+              'the binary ignores the return and never clears _zip. The vendored copy returns '
+              'error == ZIP_OK and nils the ivar. Recorded rather than changed: 3rdparty/ ships a '
+              'later upstream release, so this is a version difference and not a reconstruction '
+              'defect',
+    0x2053e8: 'ApplilinkConsts +envServer: standardUserDefaults then objectForKey: with the '
+              'CFString at 0x36fce0, decoded as "ApplilinkNetwork.env" and matching '
+              'kDefaultsKeyEnv',
+    0x205580: 'ApplilinkConsts +appliId: the same shape against 0x36fcc0, '
+              '"ApplilinkNetwork.appliId", matching kDefaultsKeyAppliId',
+    0x205680: 'ApplilinkConsts +version: no defaults read at all, just the CFString at 0x36fc00, '
+              'decoded as "2.2.2" and matching kApplilinkSdkVersion',
+    0x205b7c: 'ApplilinkConsts +isNeedRewardLogin: objectForKey:"ApplilinkReward.reLoginFlg" then '
+              'cmp x0,#0 / cset ne, so this is a key-presence test rather than a stored boolean. '
+              'Writing @NO under that key would still read as YES, and the reconstruction is '
+              'faithful in spelling it != nil',
+    0x205bf0: 'ApplilinkConsts +isNeedRecommendLogin: the same presence test against '
+              '"ApplilinkRecommend.reLoginFlg"',
+    0x205d8c: 'ApplilinkConsts +setAppliCountryCode:: stores stringWithString: into the slot at '
+              '+0x5a0+0x10 and then sets the byte at +0x5a0 to 1, which is the latch the next '
+              'entry reads',
+    0x205de4: 'ApplilinkConsts +setCountryCode:: opens with tbz on bit 0 of that same latch byte '
+              'and returns immediately when it is set, so once setAppliCountryCode: has run this '
+              'is a permanent no-op. Both write the same +0x5a0+0x10 slot',
+    0x205e54: 'ApplilinkConsts +setCategoryId:: objc_retain on the argument straight into '
+              '+0x5a0+0x18, with no stringWithString: copy, unlike its neighbours. The plain ARC '
+              'assignment in the reconstruction is the right spelling and the asymmetry is real',
+    0x205e90: 'ApplilinkConsts +setAdId:: stringWithString: into +0x5a0+0x20, so this one does '
+              'copy. Three distinct global slots at +0x10, +0x18 and +0x20 off the same base',
+    0x207150: 'ApplilinkURLConnection -init: a bare objc_msgSendSuper2 init whose result is '
+              'returned, with no ivar setup, so the assign-and-return reconstruction is right',
+    0x20accc: 'RewardCore -rotateAdScreenWithInterfaceOrientation:duration:: a cbz on '
+              '_rewardViewController and then a tail branch to '
+              'willAnimateRotationToInterfaceOrientation:duration:, so both arguments pass '
+              'through untouched in x2 and x3. No idiom or theme branch here, unlike the base '
+              'controllers',
+    0x20ba68: 'RewardCore -appListFailLoadWithError:delegate:: forwards to the ApplilinkCore class '
+              'method toDelegateFailLoadWithError:appParam:delegate:, threading the error through '
+              'and reading _applilinkParams directly off self rather than through its getter',
+    0x20bacc: 'RewardCore -appListFailLinkWithError:delegate:: the same shape against '
+              'toDelegateFailLinkWithError:appParam:delegate:',
+    0x20bc5c: 'RewardCore -failOpenNoticeWithError:: loads _applilinkDelegate through '
+              '_objc_loadWeakRetained at 0x24a9c4, confirmed by name from the program, which '
+              'agrees with the weak property the header already declares. Then forwards to '
+              'appListFailLoadWithError:delegate:',
+    0x20bccc: 'RewardCore -failLinkNoticeWithError:: the same weak load and forward, to '
+              'appListFailLinkWithError:delegate:',
     0x1942f8: 'RBUnlockView -setParentView:: forwards to the differently-named setParentCustomView:',
     0x1998e0: 'RBUnlockView -downloadManagerFailed:: ignores the manager, nils dlMusicName, then '
               'reloadData',

@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4974 verified
-(78.4%).
+Total: 6343 — 6306 reconstructed, 4991 verified
+(78.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 4974 verified, 3507 come from those passes and the remaining
-1467 were read by hand. The split matters when reading the percentage: a
+Of the 4991 verified, 3507 come from those passes and the remaining
+1484 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -4815,12 +4815,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SSZipArchive` | `+` | `createZipFileAtPath:withFilesAtPaths:` |  | ✅ | ❌ | `0x1c31b4` |
 | `SSZipArchive` | `+` | `createZipFileAtPath:withContentsOfDirectory:` |  | ✅ | ❌ | `0x1c3358` |
 | `SSZipArchive` | `-` | `initWithPath:` |  | ✅ | ✅ | `0x1c352c` |
-| `SSZipArchive` | `-` | `open` |  | ✅ | ❌ | `0x1c35b8` |
+| `SSZipArchive` | `-` | `open` |  | ✅ | ✅ | `0x1c35b8` |
 | `SSZipArchive` | `-` | `zipInfo:setDate:` |  | ✅ | ❌ | `0x1c3608` |
 | `SSZipArchive` | `-` | `writeFile:` |  | ✅ | ❌ | `0x1c3710` |
 | `SSZipArchive` | `-` | `writeFileAtPath:withFileName:` |  | ✅ | ❌ | `0x1c3720` |
 | `SSZipArchive` | `-` | `writeData:filename:` |  | ✅ | ❌ | `0x1c39e4` |
-| `SSZipArchive` | `-` | `close` |  | ✅ | ❌ | `0x1c3b58` |
+| `SSZipArchive` | `-` | `close` |  | ✅ | ✅ | `0x1c3b58` |
 | `SSZipArchive` | `+` | `_dateWithMSDOSFormat:` |  | ✅ | ❌ | `0x1c3b80` |
 | `RBTermAgreeView` | `-` | `initWithFrame:termType:` |  | ✅ | ❌ | `0x1c3d58` |
 | `RBTermAgreeView` | `-` | `setupView` |  | ✅ | ❌ | `0x1c3e7c` |
@@ -5635,23 +5635,23 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdId` | `-` | `setPasteboardWithUdid:countryCode:categoryId:adIdFrom:adType:error:` |  | ✅ | ❌ | `0x20498c` |
 | `RecommendAdId` | `-` | `deletePasteboardWithUdid:countryCode:categoryId:error:` |  | ✅ | ❌ | `0x204ed8` |
 | `RecommendAdId` | `-` | `dealloc` |  | ❌ | ✅ | `0x205398` |
-| `ApplilinkConsts` | `+` | `envServer` |  | ✅ | ❌ | `0x2053e8` |
+| `ApplilinkConsts` | `+` | `envServer` |  | ✅ | ✅ | `0x2053e8` |
 | `ApplilinkConsts` | `+` | `baseUrlSsl` |  | ✅ | ❌ | `0x205454` |
-| `ApplilinkConsts` | `+` | `appliId` |  | ✅ | ❌ | `0x205580` |
+| `ApplilinkConsts` | `+` | `appliId` |  | ✅ | ✅ | `0x205580` |
 | `ApplilinkConsts` | `+` | `canUseApplilinkSdk` |  | ✅ | ❌ | `0x2055ec` |
-| `ApplilinkConsts` | `+` | `version` |  | ✅ | ❌ | `0x205680` |
+| `ApplilinkConsts` | `+` | `version` |  | ✅ | ✅ | `0x205680` |
 | `ApplilinkConsts` | `+` | `setUserId:` |  | ✅ | ❌ | `0x2056ac` |
 | `ApplilinkConsts` | `+` | `userId` |  | ✅ | ❌ | `0x205a18` |
-| `ApplilinkConsts` | `+` | `isNeedRewardLogin` |  | ✅ | ❌ | `0x205b7c` |
-| `ApplilinkConsts` | `+` | `isNeedRecommendLogin` |  | ✅ | ❌ | `0x205bf0` |
+| `ApplilinkConsts` | `+` | `isNeedRewardLogin` |  | ✅ | ✅ | `0x205b7c` |
+| `ApplilinkConsts` | `+` | `isNeedRecommendLogin` |  | ✅ | ✅ | `0x205bf0` |
 | `ApplilinkConsts` | `+` | `loggedInReward` |  | ✅ | ❌ | `0x205c64` |
 | `ApplilinkConsts` | `+` | `loggedInRecommend` |  | ✅ | ❌ | `0x205cf8` |
-| `ApplilinkConsts` | `+` | `setAppliCountryCode:` |  | ✅ | ❌ | `0x205d8c` |
-| `ApplilinkConsts` | `+` | `setCountryCode:` |  | ✅ | ❌ | `0x205de4` |
+| `ApplilinkConsts` | `+` | `setAppliCountryCode:` |  | ✅ | ✅ | `0x205d8c` |
+| `ApplilinkConsts` | `+` | `setCountryCode:` |  | ✅ | ✅ | `0x205de4` |
 | `ApplilinkConsts` | `+` | `countryCode` |  | ✅ | ❌ | `0x205e44` |
-| `ApplilinkConsts` | `+` | `setCategoryId:` |  | ✅ | ❌ | `0x205e54` |
+| `ApplilinkConsts` | `+` | `setCategoryId:` |  | ✅ | ✅ | `0x205e54` |
 | `ApplilinkConsts` | `+` | `categoryId` |  | ✅ | ❌ | `0x205e80` |
-| `ApplilinkConsts` | `+` | `setAdId:` |  | ✅ | ❌ | `0x205e90` |
+| `ApplilinkConsts` | `+` | `setAdId:` |  | ✅ | ✅ | `0x205e90` |
 | `ApplilinkConsts` | `+` | `adId` |  | ✅ | ❌ | `0x205ed4` |
 | `ApplilinkConsts` | `+` | `setAppInstallList:` |  | ✅ | ❌ | `0x205ee4` |
 | `ApplilinkConsts` | `+` | `appInstallList` |  | ✅ | ❌ | `0x20649c` |
@@ -5659,7 +5659,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkConsts` | `+` | `templateList` |  | ✅ | ❌ | `0x206d14` |
 | `ApplilinkConsts` | `+` | `clearData` |  | ✅ | ❌ | `0x206e9c` |
 | `ApplilinkConsts` | `+` | `checkUseSDKWithAdModel:adLocation:verticalAlign:requestCode:delegate:` |  | ✅ | ❌ | `0x206f7c` |
-| `ApplilinkURLConnection` | `-` | `init` |  | ✅ | ❌ | `0x207150` |
+| `ApplilinkURLConnection` | `-` | `init` |  | ✅ | ✅ | `0x207150` |
 | `ApplilinkURLConnection` | `-` | `loadRequestWithRequest:delegate:` |  | ✅ | ❌ | `0x20718c` |
 | `ApplilinkURLConnection` | `-` | `connection:didReceiveResponse:` |  | ✅ | ❌ | `0x207250` |
 | `ApplilinkURLConnection` | `-` | `connection:didReceiveData:` |  | ✅ | ❌ | `0x2072a8` |
@@ -5690,7 +5690,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `getAppListStatusWithBlock:` |  | ✅ | ❌ | `0x209a90` |
 | `RewardCore` | `-` | `openAdScreenWithParentView:adLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x20a0dc` |
 | `RewardCore` | `-` | `closeAdScreen` |  | ✅ | ❌ | `0x20ac1c` |
-| `RewardCore` | `-` | `rotateAdScreenWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x20accc` |
+| `RewardCore` | `-` | `rotateAdScreenWithInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x20accc` |
 | `RewardCore` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x20acf0` |
 | `RewardCore` | `-` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x20b62c` |
 | `RewardCore` | `-` | `setTemporaryCacheWithKey:value:expiration:` |  | ✅ | ❌ | `0x20b63c` |
@@ -5698,13 +5698,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardCore` | `-` | `appListDidStart:` |  | ✅ | ✅ | `0x20b9e4` |
 | `RewardCore` | `-` | `appListDidAppear:` |  | ✅ | ✅ | `0x20ba10` |
 | `RewardCore` | `-` | `appListDidDisappear:` |  | ✅ | ✅ | `0x20ba3c` |
-| `RewardCore` | `-` | `appListFailLoadWithError:delegate:` |  | ✅ | ❌ | `0x20ba68` |
-| `RewardCore` | `-` | `appListFailLinkWithError:delegate:` |  | ✅ | ❌ | `0x20bacc` |
+| `RewardCore` | `-` | `appListFailLoadWithError:delegate:` |  | ✅ | ✅ | `0x20ba68` |
+| `RewardCore` | `-` | `appListFailLinkWithError:delegate:` |  | ✅ | ✅ | `0x20bacc` |
 | `RewardCore` | `-` | `startedNotice` |  | ✅ | ✅ | `0x20bb30` |
 | `RewardCore` | `-` | `openedNotice` |  | ✅ | ✅ | `0x20bb7c` |
 | `RewardCore` | `-` | `closeNotice` |  | ✅ | ✅ | `0x20bbc8` |
-| `RewardCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x20bc5c` |
-| `RewardCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x20bccc` |
+| `RewardCore` | `-` | `failOpenNoticeWithError:` |  | ✅ | ✅ | `0x20bc5c` |
+| `RewardCore` | `-` | `failLinkNoticeWithError:` |  | ✅ | ✅ | `0x20bccc` |
 | `RewardCore` | `-` | `openCancelWithError:` |  | ✅ | ✅ | `0x20bd3c` |
 | `RewardCore` | `-` | `canUseBannerCache` |  | ✅ | ❌ | `0x20bd40` |
 | `RewardCore` | `-` | `clearAdStatus` |  | ✅ | ❌ | `0x20be1c` |
