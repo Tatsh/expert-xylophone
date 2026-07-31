@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4947 verified
-(78.0%).
+Total: 6343 — 6306 reconstructed, 4951 verified
+(78.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4732,7 +4732,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `setInstalledAppliIds:` | prop | ✅ | ✅ | `0x1bd438` |
 | `RBExperienceData` | `-` | `installedAppliIdsData` | prop | ✅ | ✅ | `0x1bd470` |
 | `RBExperienceData` | `-` | `setInstalledAppliIdsData:` | prop | ✅ | ✅ | `0x1bd480` |
-| `RBApplilinkView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1bd624` |
+| `RBApplilinkView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x1bd624` |
 | `RBApplilinkView` | `-` | `setupView` |  | ✅ | ❌ | `0x1bd6c8` |
 | `RBApplilinkView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1bdd50` |
 | `RBApplilinkView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x1bde84` |
@@ -4755,7 +4755,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuPageSlider` | `-` | `setValue:` | prop | ✅ | ❌ | `0x1bf79c` |
 | `RBMenuPageSlider` | `-` | `sliderChangeWithTouchPoint:isEnd:` |  | ✅ | ❌ | `0x1bfb24` |
 | `RBMenuPageSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x1bfe68` |
-| `RBMenuPageSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x1bff4c` |
+| `RBMenuPageSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x1bff4c` |
 | `RBMenuPageSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x1bfff4` |
 | `RBMenuPageSlider` | `-` | `value` | prop | ✅ | ✅ | `0x1c00cc` |
 | `RBMenuPageSlider` | `-` | `slideGaugeView` | prop | ✅ | ✅ | `0x1c00dc` |
@@ -4776,9 +4776,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuPageSliderView` | `-` | `showView:pageMax:currentPage:` |  | ✅ | ❌ | `0x1c03b4` |
 | `RBMenuPageSliderView` | `-` | `willRotate` |  | ✅ | ✅ | `0x1c0578` |
 | `RBMenuPageSliderView` | `-` | `didRotate` |  | ✅ | ❌ | `0x1c05e8` |
-| `RBMenuPageSliderView` | `-` | `reset:currentPage:` |  | ✅ | ❌ | `0x1c0750` |
+| `RBMenuPageSliderView` | `-` | `reset:currentPage:` |  | ✅ | ✅ | `0x1c0750` |
 | `RBMenuPageSliderView` | `-` | `setIndexLabel:` |  | ✅ | ❌ | `0x1c07bc` |
-| `RBMenuPageSliderView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1c09b0` |
+| `RBMenuPageSliderView` | `-` | `hideAnimation` |  | ✅ | ✅ | `0x1c09b0` |
 | `RBMenuPageSliderView` | `-` | `slider` | prop | ✅ | ✅ | `0x1c0a38` |
 | `RBMenuPageSliderView` | `-` | `setSlider:` | prop | ✅ | ✅ | `0x1c0a48` |
 | `RBMenuPageSliderView` | `-` | `animating` | prop | ✅ | ✅ | `0x1c0a58` |

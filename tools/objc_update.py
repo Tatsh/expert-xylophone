@@ -303,6 +303,15 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1c0750: 'RBMenuPageSliderView -reset:currentPage:: forwards both arguments to the slider',
+    0x1c09b0: 'RBMenuPageSliderView -hideAnimation: detaches the slider\'s delegate before '
+              'chaining to super, so a hide in flight cannot call back',
+    0x1bd624: 'RBApplilinkView -initWithFrame:: the mov w2 of 8 is the Applilink popup type, then '
+              'setupView, then hideAnimating cleared',
+    0x1bff4c: 'RBMenuPageSlider -continueTrackingWithTouch:withEvent:: takes the point in the '
+              'touch\'s own view and calls sliderChangeWithTouchPoint:isEnd: with the mov w2 of 0. '
+              'This class uses the two-argument selector where the other three sliders use the '
+              'one-argument form, so its trio is not the same family',
     0x1bac10: 'RBExperienceData -addBackgroundType:: appends to backgroundItems',
     0x1bacb4: 'RBExperienceData -addMusicID:: appends to musicItems',
     0x1bad58: 'RBExperienceData -addThemaID:: appends to themaItems; the seven add methods all '
