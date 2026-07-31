@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5041 verified
+Total: 6343 — 6306 reconstructed, 5043 verified
 (79.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5041 verified, 3507 come from those passes and the remaining
-1534 were read by hand. The split matters when reading the percentage: a
+Of the 5043 verified, 3507 come from those passes and the remaining
+1536 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -2464,11 +2464,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicCPUView` | `-` | `setSliderType:` | prop | ✅ | ✅ | `0xc79f0` |
 | `RBMusicDifficultyView` | `-` | `initWithFrame:MusicSelectedBase:` |  | ✅ | ❌ | `0xc7a64` |
 | `RBMusicDifficultyView` | `-` | `SetupView` |  | ✅ | ❌ | `0xc7c68` |
-| `RBMusicDifficultyView` | `-` | `CreateButton:Position:Number:` |  | ✅ | ❌ | `0xc8240` |
+| `RBMusicDifficultyView` | `-` | `CreateButton:Position:Number:` |  | ✅ | ✅ | `0xc8240` |
 | `RBMusicDifficultyView` | `-` | `ShowSelectDifficulty` |  | ✅ | ❌ | `0xc8b7c` |
 | `RBMusicDifficultyView` | `-` | `SetFlashEffectDuration:Start:End:` |  | ✅ | ✅ | `0xc8e8c` |
 | `RBMusicDifficultyView` | `-` | `SelectDifficultyButton:` |  | ✅ | ❌ | `0xc8e90` |
-| `RBMusicDifficultyView` | `-` | `setEnableButton:` |  | ✅ | ❌ | `0xc9000` |
+| `RBMusicDifficultyView` | `-` | `setEnableButton:` |  | ✅ | ✅ | `0xc9000` |
 | `RBMusicDifficultyView` | `-` | `getDifficultyButton:` |  | ✅ | ✅ | `0xc911c` |
 | `RBMusicDifficultyView` | `-` | `difficulty` | prop | ✅ | ✅ | `0xc918c` |
 | `RBMusicDifficultyView` | `-` | `setDifficulty:` | prop | ✅ | ✅ | `0xc919c` |

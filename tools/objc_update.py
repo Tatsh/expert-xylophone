@@ -934,6 +934,16 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0xc8240: 'RBMusicDifficultyView -CreateButton:Position:Number:: v9 and v8 take d0 and d1 '
+             'straight from the Position argument and go to setCenter: unchanged, so this method '
+             'does no per-index arithmetic and the caller supplies each button\'s placement. The '
+             'bounds are the icon image\'s size at origin zero, the first argument becomes the '
+             'tag, and the three setImage: states are Normal, Selected and Highlighted in that '
+             'order, which the reconstruction matches call for call',
+    0xc9000: 'RBMusicDifficultyView -setEnableButton:: the loop re-fetches difficultyButtons and '
+             'sends count on every iteration rather than hoisting either, which the '
+             'reconstruction preserves by leaving the count in the loop condition. The b.cs is an '
+             'unsigned compare, matching the NSUInteger index',
     0x215654: 'ApplilinkCore +checkUdid: calls udid and ad_udid, then orr x8,x20,x0 with cset ne, '
               'so the result is true when either is non-nil. Both are always evaluated, since the '
               'or is bitwise over the two pointers rather than a branch. The reconstruction binds '
