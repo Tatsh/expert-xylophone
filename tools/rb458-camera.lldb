@@ -1,0 +1,58 @@
+# The camera terms that place the whole play scene, plus the batch positions to confirm the
+# sprite coordinates now agree. Source while stopped on the tutorial play screen.
+#
+#   (lldb) process interrupt
+#   (lldb) command source /path/to/rb458-camera.lldb
+#
+# Self-contained reads only: no persistent ($) variables, no calls, no breakpoints.
+#
+# The frame and its side panels now draw, so the sprite coordinates are right; what is left is a
+# whole-scene shift of roughly 512 points. The camera target is what places the scene as a whole:
+# GameSystem holds it at +0x74 and +0x78, with the sheet height at +0xa4 and the camera pitch
+# height at +0xa8. -[RBViewController startPreview] and UpdateProjection are what set them.
+
+
+# cameraTargetX
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x74)
+
+# cameraTargetY
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x78)
+
+# sheetHeight
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0xa4)
+
+# cameraPitchHeight
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0xa8)
+
+# sheetPosY
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x5c)
+
+# sheetFarY
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x80)
+
+# playfieldScale
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3de010) + 0x134)
+
+# g_nPlayfieldCentreSplit
+expr -- *(int *)((uint64_t)&_mh_execute_header + 0x3ce934)
+
+# g_nPlayfieldFullHeightY
+expr -- *(int *)((uint64_t)&_mh_execute_header + 0x3d0008)
+
+# batch 0: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xd8))[0]
+
+# batch 0: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x20) + 0xd8))[1]
+
+# batch 1: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xd8))[0]
+
+# batch 1: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x28) + 0xd8))[1]
+
+# batch 2: sprite[0] pos x
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xd8))[0]
+
+# batch 2: sprite[0] pos y
+expr -- (*(float **)((char *)*(void **)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3deda8) + 0x30) + 0xd8))[1]
