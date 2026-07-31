@@ -865,41 +865,34 @@ enum { kDetMbgPlainIndex = 3 };
 
     CGFloat pageWidth = self.settingScroll.bounds.size.width;
     CGRect scrollBounds = self.settingScroll.bounds;
-    self.colorView = [[RBMusicColorView alloc] initWithFrame:CGRectMake(kColorPage * pageWidth,
-                                                                        scrollBounds.origin.y,
-                                                                        pageWidth,
-                                                                        scrollBounds.size.height)
-                                           MusicSelectedBase:self];
+    self.colorView = [[RBMusicColorView alloc]
+            initWithFrame:CGRectMake(
+                              kColorPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+        MusicSelectedBase:self];
     [self.settingScroll addSubview:self.colorView];
-    self.difficultyView =
-        [[RBMusicDifficultyView alloc] initWithFrame:CGRectMake(kDifficultyPage * pageWidth,
-                                                                scrollBounds.origin.y,
-                                                                pageWidth,
-                                                                scrollBounds.size.height)
-                                   MusicSelectedBase:self];
+    self.difficultyView = [[RBMusicDifficultyView alloc]
+            initWithFrame:CGRectMake(
+                              kDifficultyPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+        MusicSelectedBase:self];
     [self.settingScroll addSubview:self.difficultyView];
-    self.speedView = [[RBMusicSpeedView alloc] initWithFrame:CGRectMake(kSpeedPage * pageWidth,
-                                                                        scrollBounds.origin.y,
-                                                                        pageWidth,
-                                                                        scrollBounds.size.height)
-                                           MusicSelectedBase:self];
+    self.speedView = [[RBMusicSpeedView alloc]
+            initWithFrame:CGRectMake(
+                              kSpeedPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+        MusicSelectedBase:self];
     [self.settingScroll addSubview:self.speedView];
 
     // The CPU and other sub-view pages split by iPad idiom (IsPad at 0xceaa8): 3 and 4 on the wide
     // layout, 2 and 3 on the narrow one.
     CGFloat cpuPage = isPad ? kCpuPageWide : kCpuPageNarrow;
     CGFloat otherPage = isPad ? kOtherPageWide : kOtherPageNarrow;
-    self.cpuView = [[RBMusicCPUView alloc] initWithFrame:CGRectMake(cpuPage * pageWidth,
-                                                                    scrollBounds.origin.y,
-                                                                    pageWidth,
-                                                                    scrollBounds.size.height)
-                                       MusicSelectedBase:self];
+    self.cpuView = [[RBMusicCPUView alloc]
+            initWithFrame:CGRectMake(cpuPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+        MusicSelectedBase:self];
     [self.settingScroll addSubview:self.cpuView];
-    self.otherView = [[RBMusicOtherView alloc] initWithFrame:CGRectMake(otherPage * pageWidth,
-                                                                        scrollBounds.origin.y,
-                                                                        pageWidth,
-                                                                        scrollBounds.size.height)
-                                           MusicSelectedBase:self];
+    self.otherView = [[RBMusicOtherView alloc]
+            initWithFrame:CGRectMake(
+                              otherPage * pageWidth, 0.0, pageWidth, scrollBounds.size.height)
+        MusicSelectedBase:self];
     [self.settingScroll addSubview:self.otherView];
 
     UIImage *ghostImage = [UIImage imageWithName:@"02_music_detail/det_gst"];
@@ -1330,30 +1323,30 @@ enum { kDetMbgPlainIndex = 3 };
     BOOL changed = self->m_SelectedSetting != ShowSettingView;
     if (changed) {
         self->m_SelectedSetting = ShowSettingView;
-        __weak RBMusicView *weakSelf = self;
         int selected = ShowSettingView;
+        // The block captures self strongly: the binary retains it at 0xd3410 and balances that
+        // with a release at 0xd3438 once animateWithDuration:animations: has returned.
         [UIView animateWithDuration:g_dMascotMessageAnimDuration
                          animations:^{
                            /** @ghidraAddress 0xd3464 */
-                           RBMusicView *strongSelf = weakSelf;
                            for (int i = 0; i < kSettingPageCount; ++i) {
-                               UIView *button = strongSelf.settingButtons[i];
+                               UIView *button = self.settingButtons[i];
                                button.alpha = i == selected ? kSettingButtonAlphaSelected :
                                                               kSettingButtonAlphaDimmed;
                            }
                            if (selected == kSettingPageColor) {
-                               strongSelf.difficultyView.alpha = 0.0;
-                               strongSelf.colorView.alpha = kSettingButtonAlphaSelected;
-                               strongSelf.cpuView.alpha = 0.0;
+                               self.difficultyView.alpha = 0.0;
+                               self.colorView.alpha = kSettingButtonAlphaSelected;
+                               self.cpuView.alpha = 0.0;
                            } else if (selected == kSettingPageDifficulty) {
-                               strongSelf.difficultyView.alpha = kSettingButtonAlphaSelected;
-                               strongSelf.colorView.alpha = 0.0;
-                               strongSelf.cpuView.alpha = 0.0;
+                               self.difficultyView.alpha = kSettingButtonAlphaSelected;
+                               self.colorView.alpha = 0.0;
+                               self.cpuView.alpha = 0.0;
                            } else {
                                // The binary asserts on any other index; only the CPU page remains.
-                               strongSelf.difficultyView.alpha = 0.0;
-                               strongSelf.colorView.alpha = 0.0;
-                               strongSelf.cpuView.alpha = kSettingButtonAlphaSelected;
+                               self.difficultyView.alpha = 0.0;
+                               self.colorView.alpha = 0.0;
+                               self.cpuView.alpha = kSettingButtonAlphaSelected;
                            }
                          }];
     }
