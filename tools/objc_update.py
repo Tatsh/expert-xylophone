@@ -4310,6 +4310,30 @@ class Metadata:
 _CATEGORY_BLOCK = re.compile(r'^@(?:implementation|interface)\s+(\w+)\s*\((\w+)\)')
 
 
+def annotated_addresses(root: Path) -> set[int]:
+    """
+    Every address the source ties itself to with an ``@ghidraAddress``.
+
+    Needed because a class may define one selector at two addresses. ``UIAlertView (RB)`` does it
+    twenty-three times, shipping a ``UIAlertView`` body and a ``UIAlertController`` body for each
+    alert under the same category name. Matching on class and selector alone credits both rows to
+    the single body the reconstruction has, so the checklist claims a reconstruction that does not
+    exist. Where a selector is defined more than once, the annotation is the only evidence of which
+    address a given body belongs to.
+    """
+    found: set[int] = set()
+    for path in sorted(root.rglob('*')):
+        if path.suffix not in ('.h', '.m', '.mm'):
+            continue
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError):
+            continue
+        for address in re.findall(r'@ghidraAddress\s+(0x[0-9a-fA-F]+)', text):
+            found.add(int(address, 16) + IMAGE_BASE)
+    return found
+
+
 def category_owners(root: Path) -> dict[int, str]:
     """
     Map each address annotated inside a category to the class that category extends.
@@ -4500,9 +4524,13 @@ def mechanically_verified() -> dict[int, str]:
     return out
 
 
-def render(methods: list[Method], keyed, loose) -> str:
+def render(methods: list[Method], keyed, loose, annotated: set[int] | None = None) -> str:
     """Build the checklist document."""
+    annotated = annotated or set()
     listed = [m for m in methods if m.selector not in _COMPILER_GENERATED]
+    # A selector a class defines twice cannot be credited to one body twice.
+    repeated = {key for key, count in Counter(
+        (m.class_name, m.kind, m.selector) for m in listed).items() if count > 1}
     skipped = len(methods) - len(listed)
     mechanical = mechanically_verified()
     rows = []
@@ -4514,8 +4542,12 @@ def render(methods: list[Method], keyed, loose) -> str:
         # -[StoreExtendNoteView reset] once read as reconstructed with no such override present.
         # The fallback survives only for a category whose class could not be attributed.
         owner = m.class_name.split(' (')[0]
-        is_reconstructed = ((owner, m.kind, m.selector) in keyed
-                            or (owner.startswith('(') and (m.kind, m.selector) in loose))
+        if (m.class_name, m.kind, m.selector) in repeated:
+            # Only the address a body actually annotates counts as that body's row.
+            is_reconstructed = m.address in annotated
+        else:
+            is_reconstructed = ((owner, m.kind, m.selector) in keyed
+                                or (owner.startswith('(') and (m.kind, m.selector) in loose))
         relative = m.address - IMAGE_BASE
         by_machine = relative in mechanical
         is_verified = relative in VERIFIED or by_machine
@@ -4642,7 +4674,7 @@ def main(argv=None) -> int:
         print('error: no Objective-C metadata found; is this the right binary?', file=sys.stderr)
         return 1
     keyed, loose = reconstructed(args.root)
-    Path(PATH).write_text(render(methods, keyed, loose))
+    Path(PATH).write_text(render(methods, keyed, loose, annotated_addresses(args.root)))
     print(f'wrote {PATH}: {len(methods)} method(s) from the metadata')
     # A VERIFIED entry naming an address the metadata does not define is a claim about a routine
     # that does not exist, which is worse than no claim, so say so rather than silently dropping it.

@@ -1529,3 +1529,29 @@ It was caught one method later, by reading `+getScoreDatas:` and seeing the disa
 lowercase form. Both constants now exist and each fetch uses its own. The lesson is narrow and
 worth having: a literal shared between two call sites is an assumption about the original source,
 not an observation, and a single decoded string only ever proves what one call site holds.
+
+## Twenty-three alerts the checklist counted twice
+
+`UIAlertView (RB)` is not one category. The binary carries two records under that name, and between
+them they define twenty-three selectors **twice** — `showGameCenterError`, `showNetworkErrorWithDelegate:`,
+`showTakeoverMessage` and twenty more, each at an address around `0xdf34` and again around `0x16a6a4`.
+
+The two are different implementations of the same alert. The lower address builds a `UIAlertView`
+with `initWithTitle:message:delegate:cancelButtonTitle:otherButtonTitles:`; the higher one builds a
+`UIAlertController`, adds a `UIAlertAction`, and presents it through the app delegate's view
+controller. That is the iOS 8 migration shipped alongside the code it replaced, both compiled in.
+
+The reconstruction has one body per selector. The checklist credited both rows, because it matched
+on class, kind and selector, and nothing in that triple distinguishes two implementations of one
+selector. Twenty-three rows therefore claimed a reconstruction that does not exist, and the
+reconstructed total read 6343 of 6343 — complete — when twenty-three bodies were missing.
+
+The fix is to require evidence where the triple is ambiguous. Where a class defines a selector more
+than once, a row now counts as reconstructed only if the source annotates _that_ address. The
+`@ghidraAddress` is the only thing that says which of two implementations a body belongs to, and it
+is already there. The total is now 6320 of 6343, and the twenty-three unwritten `UIAlertController`
+bodies are visible as work rather than hidden as done.
+
+Worth noting what this did not need: the check is not a heuristic and has no threshold. It fires
+only on selectors the metadata itself defines twice, of which there are exactly twenty-three in the
+tree, all in this one category. Everything else keeps the existing match.

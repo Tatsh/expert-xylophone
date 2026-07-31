@@ -28,7 +28,7 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5298 verified
+Total: 6343 — 6320 reconstructed, 5298 verified
 (83.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3833,30 +3833,30 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectView` | `-` | `setGaugeCollectionView:` | prop | ✅ | ✅ | `0x169ad8` |
 | `RBCustomSelectView` | `-` | `timingCollectionView` | prop | ✅ | ✅ | `0x169b10` |
 | `RBCustomSelectView` | `-` | `setTimingCollectionView:` | prop | ✅ | ✅ | `0x169b20` |
-| `UIAlertView (RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ❌ | `0x169c24` |
+| `UIAlertView (RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ❌ | ❌ | `0x169c24` |
 | `UIAlertView (RB)` | `+` | `strageAlertView:` |  | ✅ | ❌ | `0x169f2c` |
-| `UIAlertView (RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ❌ | `0x16a084` |
-| `UIAlertView (RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ❌ | `0x16a394` |
-| `UIAlertView (RB)` | `+` | `showGameCenterError` |  | ✅ | ❌ | `0x16a6a4` |
-| `UIAlertView (RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ✅ | ❌ | `0x16a7f4` |
-| `UIAlertView (RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ✅ | ❌ | `0x16aa0c` |
-| `UIAlertView (RB)` | `+` | `showTakeoverMessage` |  | ✅ | ❌ | `0x16ac24` |
-| `UIAlertView (RB)` | `+` | `showInfomation` |  | ✅ | ❌ | `0x16ad74` |
-| `UIAlertView (RB)` | `+` | `showMapWithTitle:delegate:` |  | ✅ | ❌ | `0x16aec4` |
-| `UIAlertView (RB)` | `+` | `showWithErrorMessage:delegate:` |  | ✅ | ❌ | `0x16b1e8` |
-| `UIAlertView (RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ✅ | ❌ | `0x16b414` |
-| `UIAlertView (RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ✅ | ❌ | `0x16b66c` |
-| `UIAlertView (RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ✅ | ❌ | `0x16bc54` |
-| `UIAlertView (RB)` | `+` | `showUnlockTermsDescription2:` |  | ✅ | ❌ | `0x16be64` |
-| `UIAlertView (RB)` | `+` | `showAlertUpdateForUnlock:` |  | ✅ | ❌ | `0x16bfec` |
-| `UIAlertView (RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ❌ | `0x16c2f0` |
-| `UIAlertView (RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ❌ | `0x16c440` |
-| `UIAlertView (RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ❌ | `0x16c750` |
-| `UIAlertView (RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ❌ | `0x16c964` |
-| `UIAlertView (RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ❌ | `0x16cbc0` |
-| `UIAlertView (RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ❌ | `0x16cf04` |
-| `UIAlertView (RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ❌ | `0x16d114` |
-| `UIAlertView (RB)` | `+` | `setExclusiveTouchForView:` |  | ✅ | ❌ | `0x16d458` |
+| `UIAlertView (RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ❌ | ❌ | `0x16a084` |
+| `UIAlertView (RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ❌ | ❌ | `0x16a394` |
+| `UIAlertView (RB)` | `+` | `showGameCenterError` |  | ❌ | ❌ | `0x16a6a4` |
+| `UIAlertView (RB)` | `+` | `showNetworkErrorWithDelegate:` |  | ❌ | ❌ | `0x16a7f4` |
+| `UIAlertView (RB)` | `+` | `showDownloadErrorWithDelegate:` |  | ❌ | ❌ | `0x16aa0c` |
+| `UIAlertView (RB)` | `+` | `showTakeoverMessage` |  | ❌ | ❌ | `0x16ac24` |
+| `UIAlertView (RB)` | `+` | `showInfomation` |  | ❌ | ❌ | `0x16ad74` |
+| `UIAlertView (RB)` | `+` | `showMapWithTitle:delegate:` |  | ❌ | ❌ | `0x16aec4` |
+| `UIAlertView (RB)` | `+` | `showWithErrorMessage:delegate:` |  | ❌ | ❌ | `0x16b1e8` |
+| `UIAlertView (RB)` | `+` | `showUnlockedMusicInfoWithDelegate:musicName:` |  | ❌ | ❌ | `0x16b414` |
+| `UIAlertView (RB)` | `+` | `showSelectPurchaseLimitTypeWithDelegate:` |  | ❌ | ❌ | `0x16b66c` |
+| `UIAlertView (RB)` | `+` | `showPurchaseOverMessageWithDelegate:` |  | ❌ | ❌ | `0x16bc54` |
+| `UIAlertView (RB)` | `+` | `showUnlockTermsDescription2:` |  | ❌ | ❌ | `0x16be64` |
+| `UIAlertView (RB)` | `+` | `showAlertUpdateForUnlock:` |  | ❌ | ❌ | `0x16bfec` |
+| `UIAlertView (RB)` | `+` | `showAlertShortageOfPoint` |  | ❌ | ❌ | `0x16c2f0` |
+| `UIAlertView (RB)` | `+` | `showDownloadWithDelegate:` |  | ❌ | ❌ | `0x16c440` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ❌ | ❌ | `0x16c750` |
+| `UIAlertView (RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ❌ | `0x16c964` |
+| `UIAlertView (RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ❌ | ❌ | `0x16cbc0` |
+| `UIAlertView (RB)` | `+` | `showColetteThemaUnlockMessage` |  | ❌ | ❌ | `0x16cf04` |
+| `UIAlertView (RB)` | `+` | `showSerialcodeDialog:` |  | ❌ | ❌ | `0x16d114` |
+| `UIAlertView (RB)` | `+` | `setExclusiveTouchForView:` |  | ❌ | ❌ | `0x16d458` |
 | `RBMusicGridLayout` | `-` | `init` |  | ✅ | ✅ | `0x16d5c0` |
 | `RBMusicGridLayout` | `-` | `prepareLayout` |  | ✅ | ✅ | `0x16d7d8` |
 | `RBMusicGridLayout` | `-` | `collectionViewContentSize` |  | ✅ | ✅ | `0x16de78` |
