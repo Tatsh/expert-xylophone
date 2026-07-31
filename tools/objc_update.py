@@ -1000,6 +1000,16 @@ VERIFIED = {
              'Caches and current in the private Documents directory, and the only thing '
              'distinguishing them in the disassembly is which helper address is called. Swapping '
              'them would leave every purchased track looked up in the directory it is not in',
+    0x353d4: 'SoundManager -stopSystem: two sequential cbz guards on m_InitGraph and '
+             'm_IsPlayGraph, both B-encoded, before AUGraphStop and the flag clear. The && in the '
+             'reconstruction is the same thing, and the clear sits inside both guards rather than '
+             'after them',
+    0x3936c: 'RBHttpUtil -currentProgress: cmp x0,#1 with b.lt, a signed test, so a download size '
+             'below 1 returns the movi zero. The division converts the two operands differently, '
+             'ucvtf for the data length and scvtf for the size, which is what their NSUInteger and '
+             'NSInteger types imply and is carried implicitly by the casts. Then fcmp against a '
+             '1.0 fmov clamps the result. downloadSize is sent twice, once for the guard and once '
+             'as the divisor, which the reconstruction also does',
     0x3597c: 'RBTutorialManager +isTutorialPlay: a range test, b.cc on cmp #0xa returning NO below '
              '10 and cset cc on cmp #0x17 for the upper bound, so the answer is 10 <= status < 23. '
              'Both compares are unsigned and both bounds match their constants. Unlike '
