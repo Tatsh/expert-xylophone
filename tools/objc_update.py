@@ -940,6 +940,14 @@ VERIFIED = {
               'RecommendWebViewController override of the same selector, which is empty',
     0x241368: 'RecommendAdAreaView -closeNotice: appListDidDisappear then removeFromSuperview as a '
               'tail branch',
+    0x23f52c: 'RecommendAdAreaView -webViewDidStartLoad:: the cbnz on _webViewStatus skips only '
+              'the store of 1, and then it returns. No appListDidStart send, unlike the '
+              'RecommendAdWebView and RewardWebViewController methods of the same name, which both '
+              'send it on every arm. The 0 and 1 match StatusIdle and StatusStarted',
+    0x23f9d4: 'RecommendAdAreaView -webView:shouldStartLoadWithRequest:navigationType:: '
+              'redirectWithRequest: takes the request from x3, then cmp w0,#1 returns YES on a '
+              'match and otherwise returns NO after storing 2 into _webViewStatus. The 1 and 2 '
+              'match RedirectLoad and StatusFinished, and the navigationType argument is unread',
     0x2413ac: 'RecommendAdAreaView -appStoreCloseNotice: a cmp w8,#5 on the _adModel ivar, which '
               'the metadata types i, guarding the closeNotice send. The 5 matches the file-local '
               'RecommendAdAreaViewAdModelFixedInterstitial. Note that the same value is '

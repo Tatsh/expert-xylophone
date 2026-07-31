@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5033 verified
-(79.3%).
+Total: 6343 — 6306 reconstructed, 5035 verified
+(79.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5033 verified, 3507 come from those passes and the remaining
-1526 were read by hand. The split matters when reading the percentage: a
+Of the 5035 verified, 3507 come from those passes and the remaining
+1528 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6230,10 +6230,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `setScrollEnabled:` |  | ✅ | ❌ | `0x23ed7c` |
 | `RecommendAdAreaView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x23f078` |
 | `RecommendAdAreaView` | `-` | `setScrollBarEnabled:` |  | ✅ | ❌ | `0x23f350` |
-| `RecommendAdAreaView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x23f52c` |
+| `RecommendAdAreaView` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x23f52c` |
 | `RecommendAdAreaView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x23f548` |
 | `RecommendAdAreaView` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x23f808` |
-| `RecommendAdAreaView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x23f9d4` |
+| `RecommendAdAreaView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ✅ | `0x23f9d4` |
 | `RecommendAdAreaView` | `-` | `appListDidAppear` |  | ✅ | ❌ | `0x23fa28` |
 | `RecommendAdAreaView` | `-` | `appListDidDisappear` |  | ✅ | ❌ | `0x23fb70` |
 | `RecommendAdAreaView` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x23fcd4` |
