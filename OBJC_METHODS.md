@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5075 verified
-(80.0%).
+Total: 6343 — 6306 reconstructed, 5080 verified
+(80.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5075 verified, 3507 come from those passes and the remaining
-1568 were read by hand. The split matters when reading the percentage: a
+Of the 5080 verified, 3507 come from those passes and the remaining
+1573 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5638,14 +5638,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkConsts` | `+` | `envServer` |  | ✅ | ✅ | `0x2053e8` |
 | `ApplilinkConsts` | `+` | `baseUrlSsl` |  | ✅ | ❌ | `0x205454` |
 | `ApplilinkConsts` | `+` | `appliId` |  | ✅ | ✅ | `0x205580` |
-| `ApplilinkConsts` | `+` | `canUseApplilinkSdk` |  | ✅ | ❌ | `0x2055ec` |
+| `ApplilinkConsts` | `+` | `canUseApplilinkSdk` |  | ✅ | ✅ | `0x2055ec` |
 | `ApplilinkConsts` | `+` | `version` |  | ✅ | ✅ | `0x205680` |
 | `ApplilinkConsts` | `+` | `setUserId:` |  | ✅ | ❌ | `0x2056ac` |
 | `ApplilinkConsts` | `+` | `userId` |  | ✅ | ❌ | `0x205a18` |
 | `ApplilinkConsts` | `+` | `isNeedRewardLogin` |  | ✅ | ✅ | `0x205b7c` |
 | `ApplilinkConsts` | `+` | `isNeedRecommendLogin` |  | ✅ | ✅ | `0x205bf0` |
-| `ApplilinkConsts` | `+` | `loggedInReward` |  | ✅ | ❌ | `0x205c64` |
-| `ApplilinkConsts` | `+` | `loggedInRecommend` |  | ✅ | ❌ | `0x205cf8` |
+| `ApplilinkConsts` | `+` | `loggedInReward` |  | ✅ | ✅ | `0x205c64` |
+| `ApplilinkConsts` | `+` | `loggedInRecommend` |  | ✅ | ✅ | `0x205cf8` |
 | `ApplilinkConsts` | `+` | `setAppliCountryCode:` |  | ✅ | ✅ | `0x205d8c` |
 | `ApplilinkConsts` | `+` | `setCountryCode:` |  | ✅ | ✅ | `0x205de4` |
 | `ApplilinkConsts` | `+` | `countryCode` |  | ✅ | ❌ | `0x205e44` |
@@ -5744,7 +5744,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AnalysisNetworkCore` | `+` | `getInitalizeFlg` |  | ✅ | ✅ | `0x20f5c4` |
 | `AnalysisNetworkCore` | `+` | `getSendDauFlg` |  | ✅ | ❌ | `0x20f640` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisDataWithCallback:` |  | ✅ | ❌ | `0x20f7d8` |
-| `AnalysisNetworkCore` | `+` | `clearInitalize` |  | ✅ | ❌ | `0x20f9f0` |
+| `AnalysisNetworkCore` | `+` | `clearInitalize` |  | ✅ | ✅ | `0x20f9f0` |
 | `AnalysisNetworkCore` | `+` | `clearDAU` |  | ✅ | ❌ | `0x20fa84` |
 | `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:userInfo:` |  | ✅ | ❌ | `0x20fb18` |
 | `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:` |  | ✅ | ✅ | `0x211f04` |
@@ -5909,7 +5909,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x21e0d0` |
 | `RewardWebViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x21e0d8` |
 | `RewardWebViewController` | `-` | `rotateWebViewWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21e0e0` |
-| `RewardWebViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21efec` |
+| `RewardWebViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ✅ | `0x21efec` |
 | `RewardWebViewController` | `-` | `hasParentViewController:` |  | ✅ | ❌ | `0x21f068` |
 | `RewardWebViewController` | `-` | `clearDelegate` |  | ✅ | ✅ | `0x21f19c` |
 | `RewardWebViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x21f1f8` |

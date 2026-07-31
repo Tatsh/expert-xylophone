@@ -856,6 +856,22 @@ VERIFIED = {
               'error == ZIP_OK and nils the ivar. Recorded rather than changed: 3rdparty/ ships a '
               'later upstream release, so this is a version difference and not a reconstruction '
               'defect',
+    0x2055ec: 'ApplilinkConsts +canUseApplilinkSdk: systemVersion.floatValue into v8, the pool '
+              'float at 0x31082c into s0, decoded as 6.1, then fcmp s8,s0 with cset ge. The '
+              'operand order is what settles the direction: the version is the first operand, so '
+              'the test is version >= 6.1 and not its inverse',
+    0x205c64: 'ApplilinkConsts +loggedInReward: removes "ApplilinkReward.reLoginFlg" and '
+              'synchronises. It clears the very key +isNeedRewardLogin tests for presence, so the '
+              'pair is coherent: the key existing means a re-login is owed',
+    0x205cf8: 'ApplilinkConsts +loggedInRecommend: the same against '
+              '"ApplilinkRecommend.reLoginFlg"',
+    0x20f9f0: 'AnalysisNetworkCore +clearInitalize: removes "ApplilinkAnalysis.initialize" and '
+              'synchronises, the counterpart to the +getInitalizeFlg presence test verified '
+              'earlier. The method name keeps the binary\'s misspelling',
+    0x21efec: 'RewardWebViewController -willAnimateRotationToInterfaceOrientation:duration:: reads '
+              'the orientation from UIApplication sharedApplication statusBarOrientation and '
+              'passes that on, discarding its own orientation argument entirely. Only the '
+              'duration, saved in v8 across the calls, comes from the parameters',
     0x2053e8: 'ApplilinkConsts +envServer: standardUserDefaults then objectForKey: with the '
               'CFString at 0x36fce0, decoded as "ApplilinkNetwork.env" and matching '
               'kDefaultsKeyEnv',
