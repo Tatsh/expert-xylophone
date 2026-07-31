@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param rootView The clip-root view whose child controls the steps point at.
  * @ghidraAddress 0x139af8
  */
-- (void)showAnimationWithTutorialType:(NSUInteger)tutorialType
+- (void)showAnimationWithTutorialType:(unsigned int)tutorialType
                          withRootView:(nullable UIView *)rootView;
 
 /**
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param rootView The view whose child control the step points at.
  * @ghidraAddress 0x13b8fc
  */
-- (void)startTutorialWithType:(NSUInteger)tutorialType withRootView:(nullable UIView *)rootView;
+- (void)startTutorialWithType:(unsigned int)tutorialType withRootView:(nullable UIView *)rootView;
 
 /**
  * @brief Run the tutorial step of the given type: pick the control it points at, lay out the
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param animation Whether to animate the layout in.
  * @ghidraAddress 0x13ab34
  */
-- (void)startTutorialWithType:(NSUInteger)tutorialType withAnimation:(BOOL)animation;
+- (void)startTutorialWithType:(unsigned int)tutorialType withAnimation:(BOOL)animation;
 
 #pragma mark Properties
 
@@ -285,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x1412d4 (getter)
  * @ghidraAddress 0x1412e4 (setter)
  */
-@property(nonatomic, assign) NSUInteger tutorialStatus;
+@property(nonatomic, assign) unsigned int tutorialStatus;
 
 /**
  * @brief The message content view's width, derived from the iPad idiom.

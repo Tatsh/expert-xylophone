@@ -387,7 +387,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
 #pragma mark - Presentation
 
-- (void)showAnimationWithTutorialType:(NSUInteger)tutorialType withRootView:(UIView *)rootView {
+- (void)showAnimationWithTutorialType:(unsigned int)tutorialType withRootView:(UIView *)rootView {
     /** @ghidraAddress 0x139af8 */
     if (self.animating) {
         return;
@@ -481,13 +481,13 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
 #pragma mark - Tutorial steps
 
-- (void)startTutorialWithType:(NSUInteger)tutorialType withRootView:(UIView *)rootView {
+- (void)startTutorialWithType:(unsigned int)tutorialType withRootView:(UIView *)rootView {
     /** @ghidraAddress 0x13b8fc */
     self.clipRootView = rootView;
     [self startTutorialWithType:tutorialType withAnimation:YES];
 }
 
-- (void)startTutorialWithType:(NSUInteger)tutorialType withAnimation:(BOOL)animation {
+- (void)startTutorialWithType:(unsigned int)tutorialType withAnimation:(BOOL)animation {
     /** @ghidraAddress 0x13ab34 */
     [self stopCursorAnimation:self];
     [self stopTouchAnimation:self];

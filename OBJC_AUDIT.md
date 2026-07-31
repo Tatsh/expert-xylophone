@@ -810,8 +810,19 @@ second witness needing no disassembly at all: each forwards straight to a `Netwo
 already declares the same parameter `unsigned int`, and the sibling `+extendNoteInfoURL:UserOpen:`
 was already unsigned. The wrappers disagreed with both the binary and their own callees.
 
-Nine reports remain, all signedness rather than size: `int` against `I`, `NSInteger` against `Q`,
-`BOOL` against `C`, in `BFCodec`, `RBMenuTutorialView` (three), `RBStoreManageHeaderCell`,
+`RBMenuTutorialView`'s three tutorial-type parameters took `NSUInteger` where the encodings are
+`I`. The decisive evidence was the property they feed: `-tutorialStatus` encodes `I16@0:8` and
+`-setTutorialStatus:` encodes `v20@0:8I16`, so the step identifier is a 32-bit unsigned int
+throughout and the property was `NSUInteger` too. Property and all three parameters are now
+`unsigned int`.
+
+Worth noting the property itself never appeared in the sweep's output. It is a synthesised
+accessor with no explicit declaration in the implementation, so there is nothing for the tool to
+compare against — the mismatch was only visible by following the parameters to what they are stored
+into. The sweep finds declarations that disagree; it cannot find a declaration that is not written.
+
+Six reports remain, all signedness rather than size: `int` against `I` or `Q`, `NSInteger` against
+`Q`, `BOOL` against `C`, `unsigned int` against `i`, in `BFCodec`, `RBStoreManageHeaderCell`,
 `RBViewController`, `StoreExtendNoteCellPhone`, `StringConvert`, and `RBMusicExtendNoteView`. They
 are lower risk than a width change, since the register is the same size either way, but each is
 still a declaration that disagrees with the binary and each needs its own read before changing.
