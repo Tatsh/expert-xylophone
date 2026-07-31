@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4573 verified
-(72.1%).
+Total: 6343 — 6306 reconstructed, 4580 verified
+(72.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -867,7 +867,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x41da8` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x41e20` |
 | `AVBus` | `-` | `dealloc` |  | ✅ | ❌ | `0x41e98` |
-| `AVBus` | `-` | `isSameSource:` |  | ✅ | ❌ | `0x41f20` |
+| `AVBus` | `-` | `isSameSource:` |  | ✅ | ✅ | `0x41f20` |
 | `AVBus` | `-` | `currentID` |  | ✅ | ✅ | `0x41f38` |
 | `AVBus` | `-` | `player` | prop | ✅ | ✅ | `0x41f48` |
 | `AVBus` | `-` | `setPlayer:` | prop | ✅ | ✅ | `0x41f58` |
@@ -1442,12 +1442,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicDataFromDoc` | `-` | `artwork2xData` |  | ✅ | ✅ | `0x67704` |
 | `MusicDataFromDoc` | `-` | `artworkData` |  | ✅ | ✅ | `0x67718` |
 | `MusicDataFromDoc` | `-` | `artworkDataWithScale:Luminance:` |  | ✅ | ❌ | `0x6772c` |
-| `MusicDataFromDoc` | `-` | `musicNameImageWhite2xData` |  | ✅ | ❌ | `0x67944` |
-| `MusicDataFromDoc` | `-` | `musicNameImageWhiteData` |  | ✅ | ❌ | `0x67958` |
+| `MusicDataFromDoc` | `-` | `musicNameImageWhite2xData` |  | ✅ | ✅ | `0x67944` |
+| `MusicDataFromDoc` | `-` | `musicNameImageWhiteData` |  | ✅ | ✅ | `0x67958` |
 | `MusicDataFromDoc` | `-` | `musicNameImageBlack2xData` |  | ✅ | ❌ | `0x6796c` |
 | `MusicDataFromDoc` | `-` | `musicNameImageBlackData` |  | ✅ | ❌ | `0x67980` |
 | `MusicDataFromDoc` | `-` | `musicNameImageDataWithScale:Luminance:` |  | ✅ | ❌ | `0x67994` |
-| `MusicDataFromDoc` | `-` | `artistNameImageWhite2xData` |  | ✅ | ❌ | `0x67c0c` |
+| `MusicDataFromDoc` | `-` | `artistNameImageWhite2xData` |  | ✅ | ✅ | `0x67c0c` |
 | `MusicDataFromDoc` | `-` | `artistNameImageWhiteData` |  | ✅ | ❌ | `0x67c20` |
 | `MusicDataFromDoc` | `-` | `artistNameImageBlack2xData` |  | ✅ | ❌ | `0x67c34` |
 | `MusicDataFromDoc` | `-` | `artistNameImageBlackData` |  | ✅ | ❌ | `0x67c48` |
@@ -1545,7 +1545,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `LoadMusicWithPush:Loop:` |  | ✅ | ❌ | `0x6a7b4` |
 | `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ❌ | `0x6a854` |
 | `RBBGMManager` | `-` | `popMusic` |  | ✅ | ❌ | `0x6a8f0` |
-| `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ❌ | `0x6a980` |
+| `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
 | `RBMusicManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x6a990` |
 | `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ❌ | `0x6a9e8` |
 | `RBMusicManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x6aa1c` |
@@ -1780,8 +1780,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `init` |  | ✅ | ❌ | `0x87784` |
 | `TwitterImageCreater` | `-` | `reset` |  | ✅ | ❌ | `0x87848` |
 | `TwitterImageCreater` | `-` | `dealloc` |  | ✅ | ❌ | `0x878ac` |
-| `TwitterImageCreater` | `-` | `setScore:Side:` |  | ✅ | ❌ | `0x87930` |
-| `TwitterImageCreater` | `-` | `setAR:Side:` |  | ✅ | ❌ | `0x87958` |
+| `TwitterImageCreater` | `-` | `setScore:Side:` |  | ✅ | ✅ | `0x87930` |
+| `TwitterImageCreater` | `-` | `setAR:Side:` |  | ✅ | ✅ | `0x87958` |
 | `TwitterImageCreater` | `-` | `setJustNum:Side:` |  | ✅ | ❌ | `0x87980` |
 | `TwitterImageCreater` | `-` | `setGreatNum:Side:` |  | ✅ | ❌ | `0x879a8` |
 | `TwitterImageCreater` | `-` | `setGoodNum:Side:` |  | ✅ | ❌ | `0x879d0` |

@@ -51,9 +51,9 @@ static NSString *const kThemeAssetNames[] = {
 
 @implementation RBBGMManager {
     // Whether a background track is currently loaded in the audio manager.
-    BOOL fIsMusic;
+    BOOL m_IsMusic;
     // Whether a track has been pushed aside onto the audio manager's stack, awaiting a pop.
-    BOOL fIsPushMusic;
+    BOOL m_IsPushMusic;
 }
 
 #pragma mark - Singleton
@@ -73,8 +73,8 @@ static NSString *const kThemeAssetNames[] = {
     /** @ghidraAddress 0x69ea8 */
     self = [super init];
     if (self) {
-        fIsMusic = NO;
-        fIsPushMusic = NO;
+        m_IsMusic = NO;
+        m_IsPushMusic = NO;
     }
     return self;
 }
@@ -117,39 +117,39 @@ static NSString *const kThemeAssetNames[] = {
 
 - (void)LoadMusic:(NSData *)data Loop:(BOOL)loop {
     /** @ghidraAddress 0x6a70c */
-    fIsMusic = YES;
+    m_IsMusic = YES;
     [[AudioManager sharedManager] loadBgmData:data isLoop:loop];
 }
 
 - (BOOL)LoadMusicWithPush:(NSData *)data Loop:(BOOL)loop {
     /** @ghidraAddress 0x6a7b4 */
-    if (fIsPushMusic) {
+    if (m_IsPushMusic) {
         [self popMusic];
     }
     [self pushMusic];
     [self LoadMusic:data Loop:loop];
-    return fIsPushMusic;
+    return m_IsPushMusic;
 }
 
 - (void)RelaseMusic {
     /** @ghidraAddress 0x69ef8 */
     AudioManager *audio = [AudioManager sharedManager];
-    if (fIsMusic) {
+    if (m_IsMusic) {
         [audio releaseBgm];
     }
-    if (fIsPushMusic) {
+    if (m_IsPushMusic) {
         [audio popBgm];
         [audio releaseBgm];
     }
-    fIsMusic = NO;
-    fIsPushMusic = NO;
+    m_IsMusic = NO;
+    m_IsPushMusic = NO;
 }
 
 #pragma mark - Playback
 
 - (BOOL)PlayMusic:(float)time {
     /** @ghidraAddress 0x69fac */
-    if (!fIsMusic) {
+    if (!m_IsMusic) {
         return NO;
     }
     return [[AudioManager sharedManager] playBgm:time];
@@ -157,21 +157,21 @@ static NSString *const kThemeAssetNames[] = {
 
 - (void)PauseMusic:(float)time {
     /** @ghidraAddress 0x6a03c */
-    if (fIsMusic) {
+    if (m_IsMusic) {
         [[AudioManager sharedManager] onPauseBgm:time];
     }
 }
 
 - (void)StopMusic:(float)time {
     /** @ghidraAddress 0x6a0c8 */
-    if (fIsMusic) {
+    if (m_IsMusic) {
         [[AudioManager sharedManager] stopBgm:time];
     }
 }
 
 - (void)SeekToTop {
     /** @ghidraAddress 0x6a154 */
-    if (fIsMusic) {
+    if (m_IsMusic) {
         [[AudioManager sharedManager] seekBgmToTop];
     }
 }
@@ -180,21 +180,21 @@ static NSString *const kThemeAssetNames[] = {
 
 - (BOOL)pushMusic {
     /** @ghidraAddress 0x6a854 */
-    BOOL wasLoaded = fIsMusic;
+    BOOL wasLoaded = m_IsMusic;
     if (wasLoaded) {
         [[AudioManager sharedManager] pushBgm];
-        fIsPushMusic = YES;
-        fIsMusic = NO;
+        m_IsPushMusic = YES;
+        m_IsMusic = NO;
     }
     return wasLoaded;
 }
 
 - (BOOL)popMusic {
     /** @ghidraAddress 0x6a8f0 */
-    BOOL wasPushed = fIsPushMusic;
+    BOOL wasPushed = m_IsPushMusic;
     if (wasPushed) {
-        fIsPushMusic = NO;
-        fIsMusic = YES;
+        m_IsPushMusic = NO;
+        m_IsMusic = YES;
         [[AudioManager sharedManager] popBgm];
     }
     return wasPushed;
@@ -202,7 +202,7 @@ static NSString *const kThemeAssetNames[] = {
 
 - (BOOL)isPushMusic {
     /** @ghidraAddress 0x6a980 */
-    return fIsPushMusic;
+    return m_IsPushMusic;
 }
 
 @end

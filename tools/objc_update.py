@@ -239,6 +239,22 @@ VERIFIED = {
     0x41d14: 'AVBus -audioPlayerDidFinishPlaying:successfully:: stores the literal 4 into mStatus, '
              'which is AVBusStatusStopped, and reads neither argument',
     0x41f38: 'AVBus -currentID: ldrh, matching the S (unsigned short) ivar mCurrentID',
+    0x41f20: 'AVBus -isSameSource:: cmp of the mSource pointer against the argument and a cset eq, '
+             'so the comparison is by identity',
+    0x6a980: 'RBBGMManager -isPushMusic: one ldrb of m_IsPushMusic, whose name the ivar list gives '
+             'as m_IsPushMusic (the reconstruction had spelled it fIsPushMusic, as it had '
+             'm_IsMusic)',
+    # MusicDataFromDoc's eight image-data getters each forward with a fixed scale and luminance
+    # pair; the fmov immediates 0x40000000 and 0x3f800000 are 2.0 and 1.0, and the 1x forms copy
+    # v0 into v1 rather than materialising 1.0 twice.
+    0x67944: 'MusicDataFromDoc -musicNameImageWhite2xData: forwards with scale 2.0, luminance 1.0',
+    0x67958: 'MusicDataFromDoc -musicNameImageWhiteData: forwards with scale 1.0, luminance 1.0',
+    0x67c0c: 'MusicDataFromDoc -artistNameImageWhite2xData: the artist counterpart, scale 2.0',
+    0x87930: 'TwitterImageCreater -setScore:Side:: b.ls on the side takes the store only for 0 and '
+             '1, matching the two-element m_Score ivar, and the score stays in x2 for the '
+             'setScore: tail call',
+    0x87958: 'TwitterImageCreater -setAR:Side:: the same guard, one register earlier because the '
+             'rate travels in s0, tail-calling setAr:',
     0x14efc: 'UnZipArchive -getEntryNum: the cbz on m_ZipFile returns 0 when no archive is open, '
              'otherwise the first field of m_ZipFileGlobalInfo, which is number_entry',
     0x1605c: 'GraphCircleView -setData:maxValue:: forwards to the three-argument form with '
