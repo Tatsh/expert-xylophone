@@ -297,6 +297,10 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x71654: 'RBPlaylistManager -synchronize: writeToFile:atomically: with the mov w3 of 1, so '
+             'the playlist array is written atomically',
+    0x6a7b4: 'RBBGMManager -LoadMusicWithPush:Loop:: pops only when m_IsPushMusic is already set, '
+             'then pushes, loads, and returns the flag as it stands afterwards',
     0x6cc80: 'RBMusicManager -releaseClientMusic: sixteen bytes, a mov w2 of 0 and a tail branch '
              'to setClientMusicPageNum:, so it is exactly that send and nothing else',
     0x6cc90: 'RBMusicManager -setClientMusicPageNum:: sends releaseClientMusic then its own '
