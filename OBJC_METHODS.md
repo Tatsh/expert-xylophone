@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4664 verified
-(73.5%).
+Total: 6343 — 6306 reconstructed, 4668 verified
+(73.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -305,7 +305,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SystemHardware` | `-` | `setHardwareName:` | prop | ✅ | ✅ | `0x18d50` |
 | `RBResourceDownloadBGEffectPartView` | `-` | `init` |  | ✅ | ❌ | `0x19aa0` |
 | `RBResoureDownloadBGEffectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x19b84` |
-| `RBResoureDownloadBGEffectView` | `-` | `setupView` |  | ✅ | ❌ | `0x19c40` |
+| `RBResoureDownloadBGEffectView` | `-` | `setupView` |  | ✅ | ✅ | `0x19c40` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0x19c90` |
 | `RBResourceDownloadViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x19dd4` |
 | `RBResourceDownloadViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x19ddc` |
@@ -1530,7 +1530,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfoDownloader` | `-` | `setDownloader:` | prop | ✅ | ✅ | `0x69d6c` |
 | `StorePackInfoDownloader` | `-` | `errorMessage` | prop | ✅ | ✅ | `0x69da4` |
 | `StorePackInfoDownloader` | `-` | `setErrorMessage:` | prop | ✅ | ✅ | `0x69db4` |
-| `RBBGMManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x69e50` |
+| `RBBGMManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x69e50` |
 | `RBBGMManager` | `-` | `init` |  | ✅ | ✅ | `0x69ea8` |
 | `RBBGMManager` | `-` | `RelaseMusic` |  | ✅ | ❌ | `0x69ef8` |
 | `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ❌ | `0x69fac` |
@@ -1646,7 +1646,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x71054` |
 | `RBPlaylistManager` | `-` | `initWithFile:` |  | ✅ | ❌ | `0x71190` |
 | `RBPlaylistManager` | `-` | `synchronize` |  | ✅ | ❌ | `0x71654` |
-| `RBPlaylistManager` | `-` | `numberOfPlaylists` |  | ✅ | ❌ | `0x716f4` |
+| `RBPlaylistManager` | `-` | `numberOfPlaylists` |  | ✅ | ✅ | `0x716f4` |
 | `RBPlaylistManager` | `-` | `playlistAtIndex:` |  | ✅ | ❌ | `0x71754` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylist:` |  | ✅ | ❌ | `0x7193c` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylistWithIdentifier:` |  | ✅ | ❌ | `0x719d4` |
@@ -1676,7 +1676,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x73050` |
 | `Downloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x731a8` |
 | `Downloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x73300` |
-| `Downloader` | `-` | `currentSize` |  | ✅ | ❌ | `0x73458` |
+| `Downloader` | `-` | `currentSize` |  | ✅ | ✅ | `0x73458` |
 | `Downloader` | `-` | `currentProgress` |  | ✅ | ❌ | `0x734b8` |
 | `Downloader` | `-` | `getData` |  | ✅ | ❌ | `0x73520` |
 | `Downloader` | `-` | `getDataInJSON` |  | ✅ | ❌ | `0x73588` |

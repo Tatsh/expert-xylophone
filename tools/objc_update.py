@@ -289,6 +289,11 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x716f4: 'RBPlaylistManager -numberOfPlaylists: the count of arrayPlaylist',
+    0x73458: 'Downloader -currentSize: forwards to the connection\'s own currentSize',
+    0x69e50: 'RBBGMManager +getInstance: the same plain nil check as its three siblings',
+    0x19c40: 'RBResoureDownloadBGEffectView -setupView: the super send is setupRainbow, not the '
+             'superclass setupView, and it precedes the local setupParticle',
     0x41308: 'AVBus -init: seeds mStatus with -1, which is AVBusStatusNone, and zeroes the '
              'S-typed mCurrentID with a strh',
     0x35380: 'SoundManager -startSystem: starts the graph only when it is initialised and not '
