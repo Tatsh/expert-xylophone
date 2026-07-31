@@ -3669,6 +3669,19 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x229F90: 'RecommendAdData +getAdTypeWithAdModel:adLocation:: a walk of getAdModelSettingList '
+              'with four rejections in order, an NSString isKindOfClass: and isEqualToString: on '
+              'the location, then an isKindOfClass: and cmp w0,w8 on the model, and finally a '
+              'tbnz on an isKindOfClass: that returns the type intValue. Both fall-through paths '
+              'load mov w22,#1, which is the app-banner type',
+    0x22A288: 'RecommendAdData +getAdListTermForList:: the formatter is built with '
+              '"yyyy-MM-dd HH:mm:ss", a locale of "JP" and the "JST" abbreviation, all three '
+              'matching their constants. Per record an NSDictionary isKindOfClass: guards the '
+              'body, and cmn x0,#1 after compare: keeps the record on the not-ascending path, so '
+              'an end date equal to now is kept',
+    0x22A610: 'RecommendAdData +getAdBannerListForList:: an NSDictionary isKindOfClass: guard, an '
+              'NSString isKindOfClass: on the banner URL, and a cbz on its length before '
+              'addObject:, so an empty string is dropped rather than collected',
     0x2278A0: 'RecommendAdData +getAppBannerList: count on getLotteryBannerData with cbz returns '
               'nil, and a second count supplies dictionaryWithCapacity:. The allKeys copy loop, '
               'the cbz on getBannerWithUrl: returning nil, geFileNameFromPath:, the cache-path '
