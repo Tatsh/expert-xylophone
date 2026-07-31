@@ -268,10 +268,7 @@ static const UIViewAutoresizing kSetupOuterAutoresizingMask =
 static const UIViewAutoresizing kSetupFirstInfoAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-// The BPM origin literal written by setBpmOrigin: (0x4061e00000000000, both lanes).
-static const CGFloat kBpmOrigin = 143.0;
-
-// The two setting-scroll page counts written back to back (five then four).
+// The setting-scroll page counts: the iPad idiom carries a fifth page, every other idiom four.
 enum {
     kSettingPagesNormal = 5,
     kSettingPagesAlt = 4,
@@ -361,8 +358,10 @@ struct DetailGeometry {
     CGFloat fullComboX, fullComboY;
     CGFloat arX, arY;
     CGFloat itunesX, itunesY;
+    CGFloat bpmX, bpmY;
     CGFloat scrollX, scrollY, scrollW, scrollH;
     CGFloat pageX, pageY, pageW, pageH;
+    CGFloat titleX, titleY, titleW, titleH;
     CGFloat ghostX, ghostY;
 };
 } // namespace
@@ -389,79 +388,78 @@ static const CGFloat kFirstInfoCenterY = 40.0;
 
 // The iPad idiom Brown-theme leg (@0xccafc). Uses the setFrame: name path.
 static const DetailGeometry kGeometryWideBrown = {
-    53.0,  56.0,  180.0,        // jacket
-    266.0, 40.0,  84.0,         // name-frame (variant path)
+    53.0,  56.0,  180.0,        // jacket @0xcd2b8
+    266.0, 40.0,  84.0,         // name-frame (variant path) @0xcd468, @0xcd64c
     0.0,   0.0,   0.0,          // name-centre (unused on the variant path)
-    268.0, 170.0, 220.0, 33.0,  // score
-    430.0, 188.0,               // rank
-    412.0, 169.0,               // full combo
-    268.0, 240.0,               // ar
-    388.0, 108.0,               // itunes
-    31.0,  488.0, 322.0, 183.0, // scroll
-    152.0, 470.0, 240.0, 20.0,  // page
-    214.0, 235.0,               // ghost
+    268.0, 170.0, 220.0, 33.0,  // score @0xcde0c
+    430.0, 188.0,               // rank @0xcdf00
+    412.0, 169.0,               // full combo @0xce03c
+    268.0, 240.0,               // ar @0xce0ec
+    388.0, 108.0,               // itunes @0xcdd48
+    266.0, 128.0,               // bpm origin @0xccf40
+    31.0,  322.0, 488.0, 183.0, // scroll @0xce31c
+    152.0, 470.0, 240.0, 20.0,  // page @0xce5c8
+    38.0,  306.0, 122.0, 16.0,  // setting title @0xce274
+    387.0, 235.0,               // ghost @0xcf104
 };
 
-// The iPad idiom non-Brown leg (@0xccd44). jacketX, nameFrameY, and jacketSize are picked from a
-// two-entry theme table (non-white then white); the white values are recorded here and the
-// non-white overrides are applied in-line.
+// The iPad idiom non-Brown leg (@0xccd44). jacketX, jacketY, and the setting-title y are picked
+// from two-entry theme tables (non-white then white); the white values are recorded here and the
+// non-white overrides are applied in-line. Every other value is shared by both themes.
 static const DetailGeometry kGeometryWideOther = {
-    53.0,  56.0,  298.0, // jacket (white values; non-white: x 52, size 302)
-    263.0, 67.0,  69.0,  // name-frame (white nameFrameY; non-white: 66)
-    0.0,   0.0,   0.0,   // name-centre (unused)
-    111.0, 102.0, 220.0, 33.0, 252.0, 101.0, 244.0, 97.0,  244.0, 89.0,  263.0,
-    55.0,  44.0,  456.0, 0.0,  183.0, 152.0, 246.0, 240.0, 263.0, 214.0, 104.0,
+    53.0,  67.0,  180.0,        // jacket @0xcd2b8 (white; non-white: x 52, y 66)
+    263.0, 69.0,  94.0,         // name-frame (variant path) @0xcd468, @0xcd64c
+    0.0,   0.0,   0.0,          // name-centre (unused on the variant path)
+    263.0, 205.0, 220.0, 33.0,  // score @0xcde0c
+    428.0, 206.0,               // rank @0xcdf00
+    421.0, 197.0,               // full combo @0xce03c
+    429.0, 244.0,               // ar @0xce0ec
+    263.0, 140.0,               // itunes @0xcdd48
+    293.0, 118.0,               // bpm origin @0xccf40
+    44.0,  322.0, 456.0, 183.0, // scroll @0xce31c
+    152.0, 470.0, 240.0, 20.0,  // page @0xce5c8
+    211.0, 298.0, 122.0, 16.0,  // setting title @0xce274 (white; non-white y 302)
+    390.0, 208.0,               // ghost @0xcf104
 };
 static const CGFloat kWideOtherJacketXNonWhite = 52.0;
-static const CGFloat kWideOtherJacketSizeNonWhite = 302.0;
-static const CGFloat kWideOtherNameFrameYNonWhite = 66.0;
+static const CGFloat kWideOtherJacketYNonWhite = 66.0;
+static const CGFloat kWideOtherTitleYNonWhite = 302.0;
 
 // The narrow Brown-theme leg (@0xccc64). Uses the setCenter: name path.
 static const DetailGeometry kGeometryNarrowBrown = {
-    20.0,  55.0, 90.0, // jacket
-    0.0,   0.0,  0.0,  // name-frame (unused on the default path)
-    160.0, 22.0, 41.0, // name-centre
-    131.0, 98.0, 84.0,  28.0,  251.0, 105.0, 242.0, 95.0,  131.0, 135.0, 222.0,
-    56.0,  10.0, 300.0, 176.0, 96.0,  60.0,  257.0, 200.0, 10.0,  214.0, 124.0,
+    20.0,  55.0,  90.0,        // jacket @0xcd2b8
+    0.0,   0.0,   0.0,         // name-frame (unused on the default path)
+    160.0, 22.0,  41.0,        // name-centre @0xcd498, @0xcd6e0
+    131.0, 98.0,  94.0,  28.0, // score @0xcde0c
+    251.0, 105.0,              // rank @0xcdf00
+    242.0, 95.0,               // full combo @0xce03c
+    131.0, 135.0,              // ar @0xce0ec
+    222.0, 56.0,               // itunes @0xcdd48
+    132.0, 71.0,               // bpm origin @0xccf40
+    10.0,  176.0, 300.0, 96.0, // scroll @0xce31c
+    60.0,  257.0, 200.0, 10.0, // page @0xce5c8
+    12.0,  165.0, 84.0,  12.0, // setting title @0xce274
+    220.0, 124.0,              // ghost @0xcf104
 };
 
-// The narrow non-Brown leg (@0xcce50). jacketSize is theme-picked (non-white then white); the
-// scroll and page slots partly fall through to the CGPointZero global (both lanes 0.0).
+// The narrow non-Brown leg (@0xcce50). Only the setting-title y is theme-picked, from a two-entry
+// table (non-white then white); every other value is shared by both themes.
 static const DetailGeometry kGeometryNarrowOther = {
-    20.0,
-    56.0,
-    147.0, // jacket (white size; non-white: 150)
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    24.0,
-    45.0, // name-centre (nameCenterX is the 0.0 CGPointZero lane)
-    111.0,
-    102.0,
-    74.0,
-    28.0,
-    252.0,
-    101.0,
-    244.0,
-    97.0,
-    244.0,
-    89.0,
-    143.0,
-    55.0,
-    10.0,
-    0.0,
-    0.0,
-    0.0, // scrollX 10; scrollY/W/H fall through to 0.0
-         // (CGPointZero)
-    246.0,
-    0.0,
-    0.0,
-    0.0, // pageX 246; pageY/W/H fall through to 0.0
-    214.0,
-    104.0,
+    20.0,  56.0,  74.0,        // jacket @0xcd2b8
+    0.0,   0.0,   0.0,         // name-frame (unused on the default path)
+    160.0, 24.0,  45.0,        // name-centre @0xcd498, @0xcd6e0
+    111.0, 102.0, 94.0,  28.0, // score @0xcde0c
+    252.0, 101.0,              // rank @0xcdf00
+    244.0, 97.0,               // full combo @0xce03c
+    244.0, 89.0,               // ar @0xce0ec
+    222.0, 55.0,               // itunes @0xcdd48
+    143.0, 75.0,               // bpm origin @0xccf40
+    10.0,  160.0, 300.0, 96.0, // scroll @0xce31c
+    60.0,  246.0, 200.0, 10.0, // page @0xce5c8
+    118.0, 147.0, 84.0,  12.0, // setting title @0xce274 (white; non-white y 150)
+    214.0, 104.0,              // ghost @0xcf104
 };
-static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
+static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
 
 @interface RBMusicView () {
     // Private ivars, named exactly as in the binary's ivar list (some carry a leading m_, some a
@@ -706,8 +704,8 @@ enum { kDetMbgPlainIndex = 3 };
             geometry = kGeometryWideOther;
             if (!themaIsWhite) {
                 geometry.jacketX = kWideOtherJacketXNonWhite;
-                geometry.jacketSize = kWideOtherJacketSizeNonWhite;
-                geometry.nameFrameY = kWideOtherNameFrameYNonWhite;
+                geometry.jacketY = kWideOtherJacketYNonWhite;
+                geometry.titleY = kWideOtherTitleYNonWhite;
             }
         }
     } else {
@@ -716,12 +714,12 @@ enum { kDetMbgPlainIndex = 3 };
         } else {
             geometry = kGeometryNarrowOther;
             if (!themaIsWhite) {
-                geometry.jacketSize = kNarrowOtherJacketSizeNonWhite;
+                geometry.titleY = kNarrowOtherTitleYNonWhite;
             }
         }
     }
 
-    self.bpmOrigin = CGPointMake(kBpmOrigin, kBpmOrigin);
+    self.bpmOrigin = CGPointMake(geometry.bpmX, geometry.bpmY);
 
     // The name artwork variant follows the theme (the binary switches on _thema at 0xccf48).
     UIImage *musicNameSrc = nil;
@@ -827,6 +825,10 @@ enum { kDetMbgPlainIndex = 3 };
     for (NSUInteger i = 0; i < kSettingPagesNormal; ++i) {
         UIImageView *titleView =
             [[UIImageView alloc] initWithImage:[UIImage imageWithName:kSettingTitleTable[i]]];
+        // Every page's title shares one frame, the strip directly above the settings scroll; only
+        // the selected page's title is unhidden.
+        titleView.frame =
+            CGRectMake(geometry.titleX, geometry.titleY, geometry.titleW, geometry.titleH);
         titleView.hidden = i != static_cast<NSUInteger>(m_SelectedSetting);
         [self.baseView addSubview:titleView];
         self.settingTitleImages[i] = titleView;
@@ -835,13 +837,11 @@ enum { kDetMbgPlainIndex = 3 };
     self.settingScroll = [[UIScrollView alloc]
         initWithFrame:CGRectMake(
                           geometry.scrollX, geometry.scrollY, geometry.scrollW, geometry.scrollH)];
-    // The binary writes the content size twice (five then four pages).
-    self.settingScroll.contentSize =
-        CGSizeMake(self.settingScroll.bounds.size.width * kScrollPagesNormal,
-                   self.settingScroll.bounds.size.height);
-    self.settingScroll.contentSize =
-        CGSizeMake(self.settingScroll.bounds.size.width * kScrollPagesAlt,
-                   self.settingScroll.bounds.size.height);
+    // The page count is an idiom branch (the binary calls IsPad() at 0xce340 and branches at
+    // 0xce34c), not two successive writes: the iPad idiom carries a fifth settings page.
+    self.settingScroll.contentSize = CGSizeMake(self.settingScroll.bounds.size.width *
+                                                    (isPad ? kScrollPagesNormal : kScrollPagesAlt),
+                                                self.settingScroll.bounds.size.height);
     self.settingScroll.contentOffset = CGPointMake(
         self.settingScroll.bounds.size.width * static_cast<CGFloat>(m_SelectedSetting), 0.0);
     self.settingScroll.pagingEnabled = YES;
@@ -851,8 +851,8 @@ enum { kDetMbgPlainIndex = 3 };
 
     self.settingPage = [[UIPageControl alloc]
         initWithFrame:CGRectMake(geometry.pageX, geometry.pageY, geometry.pageW, geometry.pageH)];
-    self.settingPage.numberOfPages = kSettingPagesNormal;
-    self.settingPage.numberOfPages = kSettingPagesAlt;
+    // The same idiom branch as the content size (IsPad() at 0xce5ec, branch at 0xce5f8).
+    self.settingPage.numberOfPages = isPad ? kSettingPagesNormal : kSettingPagesAlt;
     self.settingPage.currentPage = m_SelectedSetting;
     self.settingPage.transform = CGAffineTransformMakeScale(kPageScale, kPageScale);
     self.settingPage.pageIndicatorTintColor = [UIColor colorWithWhite:kPageTintWhite alpha:1.0];
@@ -1024,8 +1024,8 @@ enum { kDetMbgPlainIndex = 3 };
 
     self.historyView =
         [[RBMusicHistoryView alloc] initWithFrame:CGRectMake(geometry.scrollX + kHistoryOffsetX,
-                                                             geometry.scrollW + kHistoryOffsetY,
-                                                             geometry.scrollY,
+                                                             geometry.scrollY + kHistoryOffsetY,
+                                                             geometry.scrollW,
                                                              geometry.scrollH)];
     self.historyView.hidden = YES;
     [self.baseView addSubview:self.historyView];
