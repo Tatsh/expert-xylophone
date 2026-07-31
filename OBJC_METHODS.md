@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4855 verified
-(76.5%).
+Total: 6343 — 6306 reconstructed, 4858 verified
+(76.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1697,7 +1697,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `setProceedBlock:` | prop | ✅ | ✅ | `0x73990` |
 | `Downloader` | `-` | `failureBlock` | prop | ✅ | ✅ | `0x7399c` |
 | `Downloader` | `-` | `setFailureBlock:` | prop | ✅ | ✅ | `0x739ac` |
-| `ImageDownloader` | `-` | `initWithGetURL:unUseRetina:` |  | ✅ | ❌ | `0x83d30` |
+| `ImageDownloader` | `-` | `initWithGetURL:unUseRetina:` |  | ✅ | ✅ | `0x83d30` |
 | `ImageDownloader` | `-` | `startDownload` |  | ✅ | ❌ | `0x83dc8` |
 | `ImageDownloader` | `-` | `startDownloadWithProceed:success:failure:` |  | ✅ | ❌ | `0x83eb0` |
 | `ImageDownloader` | `-` | `startDownloadRetina` |  | ✅ | ❌ | `0x83f6c` |
@@ -2101,7 +2101,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `reloadMusicData` |  | ✅ | ❌ | `0xa8e28` |
 | `RBMenuView` | `-` | `createMusicList` |  | ✅ | ✅ | `0xa9108` |
 | `RBMenuView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xaa24c` |
-| `RBMenuView` | `-` | `ReplayMusic` |  | ✅ | ❌ | `0xaaa20` |
+| `RBMenuView` | `-` | `ReplayMusic` |  | ✅ | ✅ | `0xaaa20` |
 | `RBMenuView` | `-` | `hideAnimation:` |  | ✅ | ❌ | `0xaaac8` |
 | `RBMenuView` | `-` | `isShow` |  | ✅ | ✅ | `0xaafe4` |
 | `RBMenuView` | `-` | `selectMusic:animated:` |  | ✅ | ❌ | `0xaaff0` |
@@ -2145,7 +2145,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `exeSearchPickUp` |  | ✅ | ❌ | `0xb1d14` |
 | `RBMenuView` | `-` | `matchTitle:` |  | ✅ | ❌ | `0xb1e4c` |
 | `RBMenuView` | `-` | `searchBar:textDidChange:` |  | ✅ | ✅ | `0xb217c` |
-| `RBMenuView` | `-` | `handleLongPressGesture:` |  | ✅ | ❌ | `0xb21e4` |
+| `RBMenuView` | `-` | `handleLongPressGesture:` |  | ✅ | ✅ | `0xb21e4` |
 | `RBMenuView` | `-` | `configureCell:` |  | ✅ | ✅ | `0xb2280` |
 | `RBMenuView` | `-` | `scrollViewDidEndScroll:` |  | ✅ | ❌ | `0xb2fec` |
 | `RBMenuView` | `-` | `numberOfSectionsInCollectionView:` |  | ✅ | ✅ | `0xb35f4` |

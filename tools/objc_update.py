@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xaaa20: 'RBMenuView -ReplayMusic: retries on the next turn when PlayMusic: with the 1.5f '
+             'fmov returns false. The delay pool slot at 0x2ec6a8 holds 0.10000000149011612, which '
+             'is 0.1f widened rather than the true double 0.1, so the f suffix on '
+             'g_dMascotMoveAnimDuration is load-bearing and must not be tidied away',
+    0xb21e4: 'RBMenuView -handleLongPressGesture:: requires neither tutorial to be running and the '
+             'cmp x0 of 1, UIGestureRecognizerStateBegan, before starting playlist editing',
+    0x83d30: 'ImageDownloader -initWithGetURL:unUseRetina:: super init, nil check, then the retina '
+             'flag before the URL, in that order',
     0xb5c0c: 'RBMenuView -setPastelForTutorialStart: two movi of zero, so both the mascot and the '
              'search mascot are hidden',
     0xb5cb0: 'RBMenuView -setPastelForTutorialEnd: a movi of zero then an fmov of 1.0, so the '
