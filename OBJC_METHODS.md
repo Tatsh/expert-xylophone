@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5290 verified
-(83.4%).
+Total: 6343 — 6343 reconstructed, 5295 verified
+(83.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5290 verified, 3507 come from those passes and the remaining
-1783 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5295 verified, 3507 come from those passes and the remaining
+1788 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -4099,7 +4099,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExtendNoteManager` | `-` | `loadPurchasedNotes` |  | ✅ | ✅ | `0x181fcc` |
 | `RBExtendNoteManager` | `-` | `savePurchasedNotes` |  | ✅ | ✅ | `0x182348` |
 | `RBExtendNoteManager` | `-` | `getPurchasedExtendNoteDictionary:` |  | ✅ | ✅ | `0x1825bc` |
-| `RBExtendNoteManager` | `-` | `getPurchasedExtendNoteDictionaryWithMusicID:` |  | ✅ | ❌ | `0x182770` |
+| `RBExtendNoteManager` | `-` | `getPurchasedExtendNoteDictionaryWithMusicID:` |  | ✅ | ✅ | `0x182770` |
 | `RBExtendNoteManager` | `-` | `getPurchasedExtendNoteDictionaries` |  | ✅ | ✅ | `0x182960` |
 | `RBExtendNoteManager` | `-` | `addPurchasedExtendNote:` |  | ✅ | ❌ | `0x18296c` |
 | `RBExtendNoteManager` | `-` | `createExtendNoteDataArray` |  | ✅ | ❌ | `0x1834ec` |
@@ -4108,12 +4108,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExtendNoteManager` | `-` | `getExtendNoteData:` |  | ✅ | ✅ | `0x183894` |
 | `RBExtendNoteManager` | `-` | `releaseCacheMusicData` |  | ✅ | ✅ | `0x1839f4` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteIDs` |  | ✅ | ❌ | `0x183b24` |
-| `RBExtendNoteManager` | `-` | `getExtendNoteIDsWithMusicID:` |  | ✅ | ❌ | `0x183cf0` |
-| `RBExtendNoteManager` | `-` | `getExtendNoteDataWithMusicID:` |  | ✅ | ❌ | `0x183f14` |
+| `RBExtendNoteManager` | `-` | `getExtendNoteIDsWithMusicID:` |  | ✅ | ✅ | `0x183cf0` |
+| `RBExtendNoteManager` | `-` | `getExtendNoteDataWithMusicID:` |  | ✅ | ✅ | `0x183f14` |
 | `RBExtendNoteManager` | `-` | `releaseClientMusic` |  | ✅ | ✅ | `0x1840c0` |
 | `RBExtendNoteManager` | `-` | `setClientMusicPageNum:` |  | ✅ | ✅ | `0x1840d0` |
-| `RBExtendNoteManager` | `-` | `setClientMusic:` |  | ✅ | ❌ | `0x18416c` |
-| `RBExtendNoteManager` | `-` | `getClientCompareExtendNotes` |  | ✅ | ❌ | `0x184238` |
+| `RBExtendNoteManager` | `-` | `setClientMusic:` |  | ✅ | ✅ | `0x18416c` |
+| `RBExtendNoteManager` | `-` | `getClientCompareExtendNotes` |  | ✅ | ✅ | `0x184238` |
 | `RBExtendNoteManager` | `-` | `clientExtendNotePageNum` | prop | ✅ | ✅ | `0x1844e8` |
 | `RBExtendNoteManager` | `-` | `setClientExtendNotePageNum:` | prop | ✅ | ✅ | `0x1844f8` |
 | `RBExtendNoteManager` | `-` | `clientExtendNotes` | prop | ✅ | ✅ | `0x184508` |

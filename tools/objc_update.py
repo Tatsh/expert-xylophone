@@ -3807,6 +3807,21 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x182770: 'RBExtendNoteManager -getPurchasedExtendNoteDictionaryWithMusicID:: alloc and init '
+              'rather than a capacity hint, then every entry whose "ID" matches is collected, with '
+              'no break, so it returns all of them',
+    0x183CF0: 'RBExtendNoteManager -getExtendNoteIDsWithMusicID:: arrayWithCapacity:3 here where '
+              '0x182770 uses alloc/init, matching the two different constructions the source '
+              'spells, and it collects the "ExtID" of each matching entry rather than the entry',
+    0x183F14: 'RBExtendNoteManager -getExtendNoteDataWithMusicID:: alloc and init, then the lazy '
+              'getExtendNoteDataArray walked with cmp w0,w20 collecting every match',
+    0x18416C: 'RBExtendNoteManager -setClientMusic:: addObjectsFromArray: onto the client list, '
+              'then sub w2,w0,#1 on the page number, which the decompiler annotates as a literal '
+              '1 rather than the decrement it is. The property is genuinely read a second time at '
+              '0x1841f0 for the return rather than reusing the value just stored',
+    0x184238: 'RBExtendNoteManager -getClientCompareExtendNotes: arrayWithCapacity:0 and a nested '
+              'walk of the client list against the lazy catalogue, the extend-note counterpart to '
+              'RBMusicManager 0x6cdf8',
     0x181D64: 'RBExtendNoteManager -deleteExtendNote:: the same two-path removal as '
               'RBMusicManager 0x6ac38, with the cbz w24 at 0x181ec4 acting as the else-if before '
               'setExtendNoteDataArrayDirty',
