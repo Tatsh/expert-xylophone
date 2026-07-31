@@ -1624,7 +1624,8 @@ static BOOL g_bRandamIntSeeded = NO;
 - (void)RemoveStoreViewController {
     self.storeViewController = nil;
     if ([[RBBGMManager getInstance] isPushMusic]) {
-        [[RBBGMManager getInstance] StopMusic:0.0];
+        // The fade is 0.2s, loaded from the pool at 0x2ec6b4 by the ldr s0 at 0xab8e8, not zero.
+        [[RBBGMManager getInstance] StopMusic:0.2f];
         [[RBBGMManager getInstance] popMusic];
     }
     // Retry resuming the menu BGM up to 101 times until it succeeds.

@@ -576,6 +576,15 @@ VERIFIED = {
              'the no-argument stopAnimation',
     0xb5dfc: 'RBMenuView -closeCustomize: respondsToSelector: on hideAnimation against showView, '
              'and the send only on cbz w23 failing at 0xb5e54',
+    0xab854: 'RBMenuView -RemoveStoreViewController: clears storeViewController, and on isPushMusic '
+             'stops and pops the pushed track. The stop fade is the pool float at 0x2ec6b4 loaded '
+             'by the ldr s0 at 0xab8e8, 0.2 and not zero -- the reconstruction had passed 0.0 and '
+             'is corrected. The resume retries PlayMusic:1.5 with mov w25,#0x65 and '
+             'cmp w25,#1 / b.ge, so 101 attempts, then startNews and startBGEffect',
+    0xacd54: 'RBMenuView -SelectRankingButton: setSearchBarNonActive, hideSettingView, then the '
+             'themed decide effect (orr w1,wzr,#3 at 0xacd84, which is this file\'s '
+             'kSoundEffectDecide of 3, not the 1 that other views use for the same name), then the '
+             'plain RBRankingView overlay with mask 0x3f and showView stored last',
     0xabf94: 'RBMenuView -showHowToView: the plain overlay shape, with settingView forwarded to the '
              'new RBHowToView before musicMenuView, then mask 0x3f, addSubview, showAnimation, '
              'showView last',
