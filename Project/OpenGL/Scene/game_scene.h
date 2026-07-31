@@ -483,10 +483,15 @@ private:
      * forced to zero, freezing the play clock. It then accumulates the applied delta into the play
      * time and dispatches the current state's handler, and finally renders every play-field layer
      * and advances the shot-sound retrigger timer.
-     * @param nDeltaFrames The elapsed frame count this tick.
+     *
+     * This is the scene's per-frame task callback: the binary's vtable at @c 0x35da40 holds it in
+     * the @c ne::C_TASK @c OnFrame slot, so the engine task loop runs the state machine every
+     * frame from boot (which is what consumes the initial state and builds the play-field layers
+     * before the first play).
+     * @param nElapsedMs The elapsed frame count this tick.
      * @ghidraAddress 0x14b3e8
      */
-    void RunPlayStateMachineDispatch(int nDeltaFrames);
+    void OnFrame(int nElapsedMs) override;
 
     int m_nState = {};                // +0x4c: the current state-machine state (dispatched each
                                       //        frame).

@@ -48,6 +48,7 @@ counted.
 | `SetupDialogLayoutCoordTable`                                | `0x1414e0` | Row 15's origin X is written as `2.0` by the seeder; it had been left at `0`                                                 |
 | `-[RBMusicMenuPopupView setupView]`                          | `0x19ec8c` | Wide base width is `544` (pool `0x2ee960`), not `552`; both Classic arms use corner radius `5`, not `10`                     |
 | `-[RBCustomSelectCollectionView setupView]`                  | `0x155670` | Note/gauge button geometry, collection frame, cap insets, page control, slider events; see below                             |
+| `rb::GameScene::OnFrame`                                     | `0x14b3e8` | Reconstructed as an uncalled plain method (`RunPlayStateMachineDispatch`); it is the `C_TASK` `OnFrame` vtable override      |
 
 ### Part-id runs in `RenderSprites`
 
@@ -344,6 +345,21 @@ In `-[RBCustomSelectCollectionView setupView]` (`0x155670`) the misreads were st
   maths.
 - All three sliders register `sliderChanged:` for `TouchUpInside|TouchUpOutside` (`0x40`/`0x80`),
   not `ValueChanged`.
+
+## The song-start crash
+
+Starting a song crashed at `SetRefCountedMember` on a null sprite (`this + 0x138`,
+`m_pTexture`'s offset) from `GameScene::Init`. The binary has **no null guard there either**
+(`BoundsEffectLayer::SetStyle` at `0x1753e4` and `DamageEffectLayer::SetBoundsDamageStyle` at
+`0x1740cc` both tail-call `SetRefCountedMember` on `this+0x10` unconditionally;
+`NoteGlowLayer::SetTexture` at `0x176a84` does guard). The original survives because the sprites
+are always built before the first play: `GameScene`'s vtable at `0x35da40` (RTTI
+`N2rb9GameSceneE`) holds `0x14b3e8` in the `ne::C_TASK` `OnFrame` slot, the scene is constructed
+and task-registered at title-screen exit (`GetInstance` xrefs), and the state machine's initial
+state runs `InitializePlayFieldLayersForTheme` on the first task tick — during the menu, long
+before a song starts. The reconstruction had `0x14b3e8` as a plain, never-called method named
+`RunPlayStateMachineDispatch`, so the layers were never built and the first `Init` dereferenced
+null. Fixed by making it the `OnFrame(int) override`, matching every other scene.
 
 ## Verified correct in the same pass — do not re-audit
 

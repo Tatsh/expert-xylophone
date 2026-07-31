@@ -491,6 +491,7 @@ wunreachable
 wzaes
 xorshift
 xref
+xrefs
 yarnrc
 yomi
 yomigana

@@ -981,8 +981,7 @@ void GameScene::LoadResultScreenAndMusic() {
 
     // A tutorial play advances the walkthrough to the result step and resets the guide.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
-        [RBTutorialManager
-            updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
+        [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
         TutorialGuideLayer::shared()->Reset();
     }
 }
@@ -1678,11 +1677,11 @@ constexpr int kGhostShotJudge = 5;
 } // namespace
 
 /** @ghidraAddress 0x14b3e8 */
-void GameScene::RunPlayStateMachineDispatch(int nDeltaFrames) {
+void GameScene::OnFrame(int nElapsedMs) {
     NoteEffectMgr::shared()->ClearNotePositionCache();
     CheckAutoPauseByNotePosition();
     // While the pause gauge holds the game paused the applied delta is zero, freezing the play.
-    const int nAppliedDelta = RefreshPauseGaugeAndGetActiveFlag() ? nDeltaFrames : 0;
+    const int nAppliedDelta = RefreshPauseGaugeAndGetActiveFlag() ? nElapsedMs : 0;
     m_nPlayTime += nAppliedDelta;
 
     switch (m_nState) {
