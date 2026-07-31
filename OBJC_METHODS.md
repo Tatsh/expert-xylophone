@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4653 verified
+Total: 6343 — 6306 reconstructed, 4656 verified
 (73.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -567,7 +567,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `NetworkUtil` | `+` | `termAgree` |  | ✅ | ✅ | `0x3390c` |
 | `NetworkUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x3392c` |
 | `StorePackListGenre` | `-` | `initWithName:genreID:` |  | ✅ | ❌ | `0x33f00` |
-| `StorePackListGenre` | `-` | `packCount` |  | ✅ | ❌ | `0x3403c` |
+| `StorePackListGenre` | `-` | `packCount` |  | ✅ | ✅ | `0x3403c` |
 | `StorePackListGenre` | `-` | `packInfoForIndex:` |  | ✅ | ❌ | `0x3409c` |
 | `StorePackListGenre` | `-` | `packIDList` |  | ✅ | ✅ | `0x34170` |
 | `StorePackListGenre` | `-` | `updateList:step:hasNext:` |  | ✅ | ❌ | `0x3417c` |
@@ -592,7 +592,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `loadFile:Stream:` |  | ✅ | ❌ | `0x34eec` |
 | `SoundManager` | `-` | `releaseData:` |  | ✅ | ✅ | `0x35038` |
 | `SoundManager` | `-` | `play:Loop:` |  | ✅ | ❌ | `0x35074` |
-| `SoundManager` | `-` | `stop:` |  | ✅ | ❌ | `0x35198` |
+| `SoundManager` | `-` | `stop:` |  | ✅ | ✅ | `0x35198` |
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
 | `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ✅ | `0x3532c` |
 | `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ✅ | `0x3536c` |
@@ -658,7 +658,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:` |  | ✅ | ✅ | `0x38fbc` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:` |  | ✅ | ❌ | `0x38fc0` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didFinishDownloadingToURL:` |  | ✅ | ❌ | `0x390c0` |
-| `RBHttpUtil` | `-` | `currentSize` |  | ✅ | ❌ | `0x3930c` |
+| `RBHttpUtil` | `-` | `currentSize` |  | ✅ | ✅ | `0x3930c` |
 | `RBHttpUtil` | `-` | `currentProgress` |  | ✅ | ❌ | `0x3936c` |
 | `RBHttpUtil` | `-` | `getData` |  | ✅ | ✅ | `0x39430` |
 | `RBHttpUtil` | `-` | `getDataInJSON` |  | ✅ | ❌ | `0x3943c` |

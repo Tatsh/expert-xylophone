@@ -289,6 +289,10 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x3403c: 'StorePackListGenre -packCount: the count of arrayPackInfo, nothing else',
+    0x3930c: 'RBHttpUtil -currentSize: the length of downloadedData',
+    0x35198: 'SoundManager -stop:: stops the indexed player only when it reports playing, and '
+             'returns 1 either way, from the mov w0 after both arms rejoin',
     0x18b14: 'SystemHardware +getInstance: plain nil check, no once-token or lock',
     0x20a30: 'RBPastelManager +getInstance: the same shape',
     0x34bb0: 'SoundManager +getInstance: the same shape',
