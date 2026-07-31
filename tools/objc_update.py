@@ -1012,6 +1012,13 @@ VERIFIED = {
     0x20f5c4: 'AnalysisNetworkCore +getInitalizeFlg: standardUserDefaults then objectForKey: '
               'against "ApplilinkAnalysis.initialize", with cmp #0 / cset ne, so it is another '
               'key-presence test rather than a stored boolean',
+    0xd60d4: 'RBMusicView -selectPage:: takes currentPage from the sender and multiplies it by the '
+             'settingScroll bounds width, which arrives in v2, the third CGRect field, not the '
+             'frame and not the height. The offset y is a movi of zero and animated is w2 = 1',
+    0xd6bfc: 'RBMusicView -tapGesture:: baseView frame into v8 through v11, locationInView: into '
+             'v4 and v5, then a real call to CGRectContainsPoint at 0x24a514 rather than an '
+             'inlined test. The tbnz on bit 0 skips hideAnimation when the point is inside, so the '
+             'reconstruction\'s negated condition is the right way round',
     0xd4c5c: 'RBMusicView -playTutorialGame: sets gameType, playerColor and difficulty to 0 and '
              'rivalAlpha to the 0x3f800000 fmov, then writes 10 to +0xfc and zero to +0x100 on the '
              'game system, matching kTutorialComboCount and kPastelBonusNone. The music id is '
