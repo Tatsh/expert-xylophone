@@ -24,11 +24,6 @@ static const unsigned int kTutorialSeenValue = 1;
 // The initial capacity of the pending unlocked-item info queue (the {itemInfo, itemId} pair).
 static const NSUInteger kUnlockItemInfoCapacity = 2;
 
-// The music-select "seen" flag identifier stored in the persisted tutorial-status map. It is the
-// same value as RBTutorialStatusMusicSelectSeen but is queried directly against RBUserSettingData
-// rather than compared against the live cursor.
-static const unsigned int kTutorialFlagMusicSelectSeen = 0x17;
-
 // The status code that reports its bare completion to the server rather than starting a tutorial:
 // it carries no local side effect beyond the persisted-status update. Declared as an enumerator so
 // it can serve as a switch case label.
@@ -73,7 +68,7 @@ enum { kTutorialStatusReportOnly = 0x12 };
         return NO;
     }
     RBUserSettingData *settings = [RBUserSettingData sharedInstance];
-    return [settings getTutorialStatus:kTutorialFlagMusicSelectSeen] != kTutorialSeenValue;
+    return [settings getTutorialStatus:RBTutorialStatusMusicSelectSeen] != kTutorialSeenValue;
 }
 
 + (void)startTutorialMusicselect {

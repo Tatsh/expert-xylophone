@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x3578c: 'RBTutorialManager +needStartTutorialMusicselect: NO once totalRecordCount reaches 1, '
+             'else the persisted flag 0x17 compared against 1; 0x17 is RBTutorialStatusMusicSelectSeen',
+    0x358ec: 'RBTutorialManager +needStartTutorialPlay: the same record gate, then currentStatus '
+             'compared against the cmp #9, which is RBTutorialStatusPlayStart',
+    0x35c50: 'RBTutorialManager +needStartTutorialStore: the same gate, then the persisted flag '
+             '0x25, which is 37, matching RBTutorialStatusStoreSeen',
     0x987b0: 'RBCustomView -showAnimation: chains to the superclass showAnimation through '
              'objc_msgSendSuper2, then saves RBUserSettingData; it launches no tutorial step',
     0x1534c: 'BFCodec -cipherInit:keyLength:: clears the context, copies the eight-byte IV from '
