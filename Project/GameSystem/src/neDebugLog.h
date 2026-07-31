@@ -31,8 +31,11 @@
 
 // The C spellings, not <cstdarg>/<cstdio>: this header is included from pure Objective-C (.m)
 // translation units, where the C++ headers do not exist.
+#include <dlfcn.h>
+#include <mach-o/dyld.h>
 #include <os/log.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 
 // printf-style wrapper over os_log (works in .c, .m, .cpp, and .mm translation units alike; os_log
@@ -56,6 +59,22 @@ static inline void neDebugLog(const char *fmt, ...) {
         _c < (limit) ? (++_c, 1) : 0;                                                              \
     })
 
+// Name the function containing a return address, for a trace that must identify its own caller.
+// dladdr resolves in-process from the symbol table, so it needs no debugger and no entitlement.
+static inline const char *neDebugCallerName(void *addr) {
+    Dl_info info;
+    if (dladdr(addr, &info) != 0 && info.dli_sname != NULL) {
+        return info.dli_sname;
+    }
+    return "?";
+}
+
+// The same address as a static offset. The main executable's ASLR slide is subtracted, so the
+// result is directly comparable against the reconstruction's own addresses.
+static inline unsigned long neDebugCallerOffset(void *addr) {
+    return (unsigned long)((intptr_t)addr - _dyld_get_image_vmaddr_slide(0));
+}
+
 // Wrap debug-only statements with real side effects. Internal `;` separates multiple statements;
 // the macro supplies the trailing one.
 #define NE_DBG(...)                                                                                \
@@ -70,6 +89,18 @@ static inline void neDebugLog(const char *fmt, ...) {
 // drops.
 static inline void neDebugLog(const char *fmt, ...) {
     (void)fmt;
+}
+
+// The arguments of a disabled neDebugLog call are still evaluated, so these must exist in the
+// faithful build too.
+static inline const char *neDebugCallerName(void *addr) {
+    (void)addr;
+    return "?";
+}
+
+static inline unsigned long neDebugCallerOffset(void *addr) {
+    (void)addr;
+    return 0;
 }
 
 // A plain 0 rather than `false`, which is a keyword only in C++ and would need <stdbool.h> in the
