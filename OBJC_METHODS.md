@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4908 verified
+Total: 6343 — 6306 reconstructed, 4912 verified
 (77.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3984,7 +3984,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x177e58` |
 | `StoreExtendNoteInfo` | `-` | `initWithExtendDictionary:` |  | ✅ | ❌ | `0x1781f4` |
 | `StoreExtendNoteInfo` | `-` | `initWithProduct:` |  | ✅ | ❌ | `0x17858c` |
-| `StoreExtendNoteInfo` | `-` | `initWithExtendNoteID:` |  | ✅ | ❌ | `0x1786d8` |
+| `StoreExtendNoteInfo` | `-` | `initWithExtendNoteID:` |  | ✅ | ✅ | `0x1786d8` |
 | `StoreExtendNoteInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x17875c` |
 | `StoreExtendNoteInfo` | `-` | `extFileExist` |  | ✅ | ❌ | `0x178ff0` |
 | `StoreExtendNoteInfo` | `-` | `getButtonColor` |  | ✅ | ❌ | `0x179078` |
@@ -4017,10 +4017,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteInfo` | `-` | `linkURL` | prop | ✅ | ✅ | `0x179ad8` |
 | `StoreExtendNoteInfo` | `-` | `product` | prop | ✅ | ✅ | `0x179ae8` |
 | `StoreExtendNoteInfo` | `-` | `setProduct:` | prop | ✅ | ✅ | `0x179af8` |
-| `StoreExtendNoteInfoDownloader` | `-` | `initWithStoreExtendNoteInfo:` |  | ✅ | ❌ | `0x179bc0` |
+| `StoreExtendNoteInfoDownloader` | `-` | `initWithStoreExtendNoteInfo:` |  | ✅ | ✅ | `0x179bc0` |
 | `StoreExtendNoteInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x179c64` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x179d10` |
-| `StoreExtendNoteInfoDownloader` | `-` | `cancel` |  | ✅ | ❌ | `0x179e44` |
+| `StoreExtendNoteInfoDownloader` | `-` | `cancel` |  | ✅ | ✅ | `0x179e44` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x179eec` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x17a0f0` |
 | `StoreExtendNoteInfoDownloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x17a1fc` |
@@ -4041,7 +4041,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBServerAPIManager` | `+` | `tutorialAPI` |  | ✅ | ❌ | `0x17d860` |
 | `RBServerAPIManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x17dc08` |
 | `RBServerAPIManager` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x17dca0` |
-| `RBServerAPIManager` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x17dca4` |
+| `RBServerAPIManager` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x17dca4` |
 | `RBServerAPIManager` | `-` | `httpArray` | prop | ✅ | ✅ | `0x17dd3c` |
 | `RBServerAPIManager` | `-` | `setHttpArray:` | prop | ✅ | ✅ | `0x17dd4c` |
 | `RBTimingSlider` | `-` | `initWithDigit:` |  | ✅ | ❌ | `0x17e3b0` |

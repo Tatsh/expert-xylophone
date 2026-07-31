@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x1786d8: 'StoreExtendNoteInfo -initWithExtendNoteID:: super init, nil check, then the pid '
+              'setter, whose name differs from the parameter\'s',
+    0x179bc0: 'StoreExtendNoteInfoDownloader -initWithStoreExtendNoteInfo:: super init, nil check, '
+              'then extendNoteInfo',
+    0x179e44: 'StoreExtendNoteInfoDownloader -cancel: cancels the downloader and clears it, both '
+              'guarded on one being held',
+    0x17dca4: 'RBServerAPIManager -downloaderError:: cancels the passed downloader and drops it '
+              'from httpArray, so the receiver of cancel is the argument rather than self',
     0x171d30: 'RBTermPhoneViewController -alertView:clickedButtonAtIndex:: on isFirstRequest it '
               'nils the alert view\'s own delegate, not its own, then forceClose',
     0x172ffc: 'RBWebView -uiWebView:resource:willSendRequest:redirectResponse:fromDataSource:: '
