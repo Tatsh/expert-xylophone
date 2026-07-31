@@ -481,7 +481,10 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
                                                const float *pComposeMatrix) {
     auto *pScratch = static_cast<InstancedVertex *>(m_pVertexScratch);
     // Point the fixed vertex/colour/texture arrays into the scratch and enable the arrays the
-    // per-instance-matrix path needs (weight and matrix-index arrays plus the palette).
+    // per-instance-matrix path needs (weight and matrix-index arrays plus the palette). The
+    // explicit unbind first is the binary's (BindArrayBuffer(0) at 0x310cc): the client pointers
+    // below only take effect with no array buffer bound.
+    pRenderer->BindArrayBuffer(0);
     pRenderer->SetGlEnableState(kEnableMatrixPalette, 1);
     pRenderer->SetGlClientState(kClientVertex, 1);
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
