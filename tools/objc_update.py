@@ -277,6 +277,17 @@ VERIFIED = {
               'a boolean (cmp at 0x1a6f4c); the shared tail at 0x1a7150 picks the on or off knob '
               'animation, both at the 0.2 of g_dMascotMessageAnimDuration',
     0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
+    0xe8894: 'RBMenuBGEffectView -removeFromSuperview: the same lone super chain',
+    0x3d080: 'neWindow -initWithFrame:: chains to super and returns it, adding nothing',
+    0x9da80: 'RBMenuButton -layoutSubviews: a lone super chain',
+    0x69114: 'StorePackInfo -downloadDetailInfo: cset eq on the musicInfos pointer, so it reports '
+             'whether the tune list is still absent rather than present',
+    0x35038: 'SoundManager -releaseData:: clears the slot and returns 1 only when it held '
+             'something, 0 otherwise; the ivar type [10@"SoundData"] gives the ten-slot bound',
+    0xdedf4: 'RBRankingView -SelectFriendButton: plays themed slot 1 (mov w1 at 0xdee08) then '
+             'showFriend:YES',
+    0xdee2c: 'RBRankingView -SelectAllButton: the same, with showFriend:NO from the mov w2 at '
+             '0xdee48',
     0x492b4: 'RBTermDetailPhoneViewController -viewDidDisappear:: likewise, forwarding the flag',
     0x14ec8: 'UnZipArchive -closeFile: the cbz makes closing a no-op when no archive is open, and '
              'm_ZipFile is cleared after the close, not before',

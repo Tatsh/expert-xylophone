@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4625 verified
-(72.9%).
+Total: 6343 — 6306 reconstructed, 4632 verified
+(73.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -590,7 +590,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `setupAudioSession` |  | ✅ | ❌ | `0x34cf8` |
 | `SoundManager` | `-` | `prepareAUGraph` |  | ✅ | ❌ | `0x34d68` |
 | `SoundManager` | `-` | `loadFile:Stream:` |  | ✅ | ❌ | `0x34eec` |
-| `SoundManager` | `-` | `releaseData:` |  | ✅ | ❌ | `0x35038` |
+| `SoundManager` | `-` | `releaseData:` |  | ✅ | ✅ | `0x35038` |
 | `SoundManager` | `-` | `play:Loop:` |  | ✅ | ❌ | `0x35074` |
 | `SoundManager` | `-` | `stop:` |  | ✅ | ❌ | `0x35198` |
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
@@ -761,7 +761,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicExtendNoteView` | `-` | `setDifficultyButton:` | prop | ✅ | ✅ | `0x3cfb8` |
 | `RBMusicExtendNoteView` | `-` | `layoutOffset` | prop | ✅ | ✅ | `0x3cff0` |
 | `RBMusicExtendNoteView` | `-` | `setLayoutOffset:` | prop | ✅ | ✅ | `0x3d000` |
-| `neWindow` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x3d080` |
+| `neWindow` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x3d080` |
 | `neWindow` | `-` | `touchesBegan:withEvent:` |  | ✅ | ✅ | `0x3d0b4` |
 | `neWindow` | `-` | `touchesMoved:withEvent:` |  | ✅ | ✅ | `0x3d0b8` |
 | `neWindow` | `-` | `touchesEnded:withEvent:` |  | ✅ | ✅ | `0x3d0bc` |
@@ -1485,7 +1485,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x68a54` |
 | `StorePackInfo` | `-` | `priceString` |  | ✅ | ❌ | `0x68e30` |
 | `StorePackInfo` | `-` | `setMusicInfo:` |  | ✅ | ❌ | `0x68e94` |
-| `StorePackInfo` | `-` | `downloadDetailInfo` |  | ✅ | ❌ | `0x69114` |
+| `StorePackInfo` | `-` | `downloadDetailInfo` |  | ✅ | ✅ | `0x69114` |
 | `StorePackInfo` | `-` | `allDownloaded` |  | ✅ | ❌ | `0x69150` |
 | `StorePackInfo` | `-` | `packID` | prop | ✅ | ✅ | `0x69278` |
 | `StorePackInfo` | `-` | `setPackID:` | prop | ✅ | ✅ | `0x69288` |
@@ -2045,7 +2045,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCollectionView` | `-` | `customDelegate` | prop | ✅ | ✅ | `0x9d9b8` |
 | `RBCollectionView` | `-` | `setCustomDelegate:` | prop | ✅ | ✅ | `0x9d9d8` |
 | `RBMenuButton` | `-` | `initWithType:` |  | ✅ | ✅ | `0x9d9fc` |
-| `RBMenuButton` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x9da80` |
+| `RBMenuButton` | `-` | `layoutSubviews` |  | ✅ | ✅ | `0x9da80` |
 | `RBMenuButton` | `-` | `setupView:` |  | ✅ | ✅ | `0x9dab4` |
 | `RBMenuButton` | `-` | `setFlashEffect` |  | ✅ | ❌ | `0x9e2b0` |
 | `RBMenuButton` | `-` | `removeFlashEffect` |  | ✅ | ❌ | `0x9e3cc` |
@@ -2700,8 +2700,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingView` | `-` | `dealloc` |  | ✅ | ✅ | `0xddab8` |
 | `RBRankingView` | `-` | `setupView` |  | ✅ | ❌ | `0xddaec` |
 | `RBRankingView` | `-` | `showFriend:` |  | ✅ | ❌ | `0xdec60` |
-| `RBRankingView` | `-` | `SelectFriendButton` |  | ✅ | ❌ | `0xdedf4` |
-| `RBRankingView` | `-` | `SelectAllButton` |  | ✅ | ❌ | `0xdee2c` |
+| `RBRankingView` | `-` | `SelectFriendButton` |  | ✅ | ✅ | `0xdedf4` |
+| `RBRankingView` | `-` | `SelectAllButton` |  | ✅ | ✅ | `0xdee2c` |
 | `RBRankingView` | `-` | `titleView` | prop | ✅ | ✅ | `0xdee64` |
 | `RBRankingView` | `-` | `setTitleView:` | prop | ✅ | ✅ | `0xdee74` |
 | `RBRankingView` | `-` | `scrollBaseView` | prop | ✅ | ✅ | `0xdeeac` |
@@ -2825,7 +2825,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectView` | `-` | `createAnimation:type:` |  | ✅ | ❌ | `0xe72bc` |
 | `RBMenuBGEffectView` | `-` | `startAnimation` |  | ✅ | ❌ | `0xe8404` |
 | `RBMenuBGEffectView` | `-` | `stopAnimation` |  | ✅ | ❌ | `0xe8614` |
-| `RBMenuBGEffectView` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0xe8894` |
+| `RBMenuBGEffectView` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0xe8894` |
 | `RBMenuBGEffectView` | `-` | `setupRainbow` |  | ✅ | ❌ | `0xe88c8` |
 | `RBMenuBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0xe8ccc` |
 | `RBMenuBGEffectView` | `-` | `rainbowImageBasePath` | prop | ✅ | ✅ | `0xe8e00` |
