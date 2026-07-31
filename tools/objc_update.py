@@ -972,6 +972,11 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x69ef8: 'RBBGMManager -RelaseMusic: two independent cbz guards rather than an if/else, so '
+             'releaseBgm is sent twice when both m_IsMusic and m_IsPushMusic are set, once on its '
+             'own and once after popBgm. Both flags are then cleared unconditionally, outside '
+             'either guard. Written as else-if the second release would be lost, and written with '
+             'the clears inside the guards a set flag could survive the call',
     0x6aad8: 'RBMusicManager +getPathFromPurchesed:: getMusicDataFilename: appended to '
              'GetPrivateDocumentsPath, the helper at 0x1a1224, resolved by name from the program',
     0x6ab88: 'RBMusicManager +getPathFromPurchesedOldDirectory:: identical except for the base, '
