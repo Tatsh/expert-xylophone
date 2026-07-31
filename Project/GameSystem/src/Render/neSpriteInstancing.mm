@@ -491,7 +491,12 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     // the weight/matrix-index client arrays below are enabled but their OES pointer calls never
     // take effect, so the draw walks an enabled array whose pointer is still NULL and faults at
     // address zero. When the extension is present this is the binary's path exactly.
-    const bool bMatrixPalette = pRenderer->HasMatrixPalette();
+    // The weight and matrix-index pointers are only set when an array buffer is actually bound --
+    // ClearWeightPointer and ClearMatrixIndexPointer both guard on that -- while the client-state
+    // enables below are unconditional. So a zero array buffer leaves both arrays enabled with
+    // their pointers never set, and the draw walks a NULL client array. Requiring the buffer here
+    // keeps the enable and the pointer on the same condition.
+    const bool bMatrixPalette = pRenderer->HasMatrixPalette() && m_dwArrayVbo != 0;
 #else
     constexpr bool bMatrixPalette = true;
 #endif

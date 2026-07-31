@@ -153,6 +153,13 @@ take effect while their arrays are still enabled, so the draw walks an enabled v
 pointer is `NULL` and faults at address zero inside `gleRunVertexSubmitImmediate`. The world-space
 batch has no axis-aligned fast path, so every play-field frame takes this route.
 
+The same fault reaches the draw by a second route that has nothing to do with the extension.
+`ClearWeightPointer` and `ClearMatrixIndexPointer` each guard on an array buffer actually being
+bound, while the client-state enables beside them do not, so a zero `m_dwArrayVbo` leaves both
+arrays enabled with pointers that were never set -- the same NULL walk, the same address zero. The
+condition below therefore requires the buffer as well as the extension, keeping the enable and the
+pointer on one condition.
+
 The patch checks the capability the renderer already recorded. With the extension present nothing
 changes and the binary's path runs exactly as before. Without it, the palette and the two skinning
 arrays stay disabled, the model-view is set to identity, and each sprite's composed transform is
