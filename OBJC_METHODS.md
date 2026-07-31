@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6248 reconstructed, 4535 verified
+Total: 6343 — 6253 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -223,12 +223,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
 | `UnZipArchive` | `-` | `closeFile` |  | ✅ | ❌ | `0x14ec8` |
-| `UnZipArchive` | `-` | `getEntryNum` |  | ❌ | ❌ | `0x14efc` |
+| `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ❌ | `0x14efc` |
 | `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
-| `UnZipArchive` | `-` | `setFirst` |  | ❌ | ❌ | `0x1503c` |
-| `UnZipArchive` | `-` | `setNext` |  | ❌ | ❌ | `0x15070` |
-| `UnZipArchive` | `-` | `getCurrentFileName` |  | ❌ | ❌ | `0x150a4` |
-| `UnZipArchive` | `-` | `getCurrentData` |  | ❌ | ❌ | `0x1519c` |
+| `UnZipArchive` | `-` | `setFirst` |  | ✅ | ❌ | `0x1503c` |
+| `UnZipArchive` | `-` | `setNext` |  | ✅ | ❌ | `0x15070` |
+| `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ❌ | `0x150a4` |
+| `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ❌ | `0x1519c` |
 | `BFCodec` | `-` | `init` |  | ✅ | ❌ | `0x1529c` |
 | `BFCodec` | `-` | `cipherInit:keyLength:` |  | ✅ | ❌ | `0x1534c` |
 | `BFCodec` | `-` | `cipherInit:` |  | ✅ | ❌ | `0x153c0` |

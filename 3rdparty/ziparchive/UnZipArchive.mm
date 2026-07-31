@@ -1,355 +1,153 @@
 //
-//  ZipArchive.mm
+//  UnZipArchive.mm
 //
-//
-//  Created by aish on 08-9-11.
-//  acsolu@gmail.com
-//  Copyright 2008  Inc. All rights reserved.
+//  Reconstructed from Ghidra project rb458, program rb458 (class UnZipArchive). Verified against
+//  the arm64 disassembly of all ten methods the binary defines. The class name, the three ivar
+//  names, and every selector come from the binary's own runtime metadata; it is the application's
+//  own read-only minizip wrapper rather than the Google Code "ziparchive" library, which the
+//  binary does not contain. The file keeps its .mm extension because the build files name it.
 //
 
 #import "UnZipArchive.h"
 
-#import <zconf.h>
-#import <zlib.h>
+#include <cstdlib>
 
-@interface UnZipArchive (Private)
+// The read chunk -getCurrentData pulls each entry through, in bytes.
+constexpr unsigned int kReadChunkSize = 0x1000;
 
-- (void)OutputErrorMessage:(NSString *)msg;
-- (BOOL)OverWrite:(NSString *)file;
-- (NSDate *)Date1980;
-@end
+// The C-string encoding the entry names are decoded with.
+constexpr NSStringEncoding kEntryNameEncoding = NSASCIIStringEncoding;
 
 @implementation UnZipArchive
-@synthesize delegate = _delegate;
 
-// --- Extract-to-NSData API the reconstruction calls
-// -----------------------------------------
-- (BOOL)openFile:(NSString *)path {
-    return [self UnzipOpenFile:path];
-}
+#pragma mark Lifecycle
 
-- (NSData *)getData:(NSString *)entryName {
-    if (_unzFile == NULL) {
-        return nil;
-    }
-    if (unzLocateFile(_unzFile, [entryName UTF8String], NULL) != UNZ_OK) {
-        return nil;
-    }
-    if (unzOpenCurrentFile(_unzFile) != UNZ_OK) {
-        return nil;
-    }
-    unz_file_info fileInfo = {0};
-    if (unzGetCurrentFileInfo(_unzFile, &fileInfo, NULL, 0, NULL, 0, NULL, 0) != UNZ_OK) {
-        unzCloseCurrentFile(_unzFile);
-        return nil;
-    }
-    NSMutableData *data = [NSMutableData dataWithLength:fileInfo.uncompressed_size];
-    unsigned char *out = (unsigned char *)[data mutableBytes];
-    uLong total = 0;
-    while (total < fileInfo.uncompressed_size) {
-        int read = unzReadCurrentFile(
-            _unzFile, out + total, (unsigned)(fileInfo.uncompressed_size - total));
-        if (read < 0) {
-            unzCloseCurrentFile(_unzFile);
-            return nil;
-        }
-        if (read == 0) {
-            break;
-        }
-        total += (uLong)read;
-    }
-    unzCloseCurrentFile(_unzFile);
-    if (total != fileInfo.uncompressed_size) {
-        [data setLength:total];
-    }
-    return data;
-}
-
-- (void)closeFile {
-    [self UnzipCloseFile];
-}
-
-- (id)init {
-    if (self = [super init]) {
-        _zipFile = NULL;
+/** @ghidraAddress 0x14d40 */
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        m_ZipFile = nullptr;
     }
     return self;
 }
 
+/** @ghidraAddress 0x14d84 */
 - (void)dealloc {
-    [self CloseZipFile2]; // ARC: [super dealloc] is synthesized
+    // The binary closes the archive and then chains [super dealloc]; ARC chains automatically.
+    [self closeFile];
 }
 
-- (BOOL)CreateZipFile2:(NSString *)zipFile {
-    _zipFile = zipOpen((const char *)[zipFile UTF8String], 0);
-    if (!_zipFile) {
+#pragma mark Opening and closing
+
+/** @ghidraAddress 0x14e08 */
+- (BOOL)openFile:(NSString *)path {
+    if (path == nil) {
+        return NO;
+    }
+    if (m_ZipFile != nullptr) {
+        unzClose(m_ZipFile);
+        m_ZipFile = nullptr;
+    }
+    m_ZipFile = unzOpen(path.UTF8String);
+    if (m_ZipFile == nullptr) {
+        return NO;
+    }
+    if (unzGetGlobalInfo(m_ZipFile, &m_ZipFileGlobalInfo) != UNZ_OK) {
+        unzClose(m_ZipFile);
+        m_ZipFile = nullptr;
         return NO;
     }
     return YES;
 }
 
-- (BOOL)CreateZipFile2:(NSString *)zipFile Password:(NSString *)password {
-    _password = password;
-    return [self CreateZipFile2:zipFile];
+/** @ghidraAddress 0x14ec8 */
+- (void)closeFile {
+    if (m_ZipFile != nullptr) {
+        unzClose(m_ZipFile);
+        m_ZipFile = nullptr;
+    }
 }
 
-- (BOOL)addFileToZip:(NSString *)file newname:(NSString *)newname;
-{
-    if (!_zipFile) {
-        return NO;
-    }
-    //	tm_zip filetime;
-    time_t current;
-    time(&current);
+#pragma mark Entries
 
-    zip_fileinfo zipInfo = {0};
-    zipInfo.mz_dos_date = (unsigned long)current;
-
-    NSError *error = nil;
-    NSDictionary *attr = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:&error];
-    if (error == nil && attr) {
-        NSDate *fileDate = (NSDate *)[attr objectForKey:NSFileModificationDate];
-        if (fileDate) {
-            zipInfo.mz_dos_date = [fileDate timeIntervalSinceDate:[self Date1980]];
-        }
+/** @ghidraAddress 0x14efc */
+- (unsigned long)getEntryNum {
+    if (m_ZipFile == nullptr) {
+        return 0;
     }
-
-    int ret;
-    NSData *data = nil;
-    if ([_password length] == 0) {
-        ret = zipOpenNewFileInZip5(_zipFile,
-                                   (const char *)[newname UTF8String],
-                                   &zipInfo,
-                                   NULL,
-                                   0,
-                                   NULL,
-                                   0,
-                                   NULL, // comment
-                                   Z_DEFLATED,
-                                   Z_DEFAULT_COMPRESSION,
-                                   0,
-                                   MAX_WBITS,
-                                   DEF_MEM_LEVEL,
-                                   Z_DEFAULT_STRATEGY,
-                                   NULL, // password
-                                   0,
-                                   0,
-                                   0,
-                                   0);
-    } else {
-        data = [NSData dataWithContentsOfFile:file];
-        uLong crcValue = crc32(0L, NULL, 0L);
-        crcValue = crc32(crcValue, (const Bytef *)[data bytes], static_cast<uInt>([data length]));
-        ret = zipOpenNewFileInZip5(_zipFile,
-                                   (const char *)[newname UTF8String],
-                                   &zipInfo,
-                                   NULL,
-                                   0,
-                                   NULL,
-                                   0,
-                                   NULL, // comment
-                                   Z_DEFLATED,
-                                   Z_DEFAULT_COMPRESSION,
-                                   0,
-                                   MAX_WBITS,
-                                   DEF_MEM_LEVEL,
-                                   Z_DEFAULT_STRATEGY,
-                                   [_password cStringUsingEncoding:NSASCIIStringEncoding],
-                                   0,
-                                   0,
-                                   0,
-                                   0);
-    }
-    if (ret != Z_OK) {
-        return NO;
-    }
-    if (data == nil) {
-        data = [NSData dataWithContentsOfFile:file];
-    }
-    unsigned int dataLen = static_cast<unsigned int>([data length]);
-    ret = zipWriteInFileInZip(_zipFile, (const void *)[data bytes], dataLen);
-    if (ret != Z_OK) {
-        return NO;
-    }
-    ret = zipCloseFileInZip(_zipFile);
-    if (ret != Z_OK) {
-        return NO;
-    }
-    return YES;
+    return m_ZipFileGlobalInfo.number_entry;
 }
 
-- (BOOL)CloseZipFile2 {
-    _password = nil;
-    if (_zipFile == NULL) {
+/** @ghidraAddress 0x1503c */
+- (BOOL)setFirst {
+    if (m_ZipFile == nullptr) {
         return NO;
     }
-    BOOL ret = zipClose(_zipFile, NULL) == Z_OK ? YES : NO;
-    _zipFile = NULL;
-    return ret;
+    return unzGoToFirstFile(m_ZipFile) == UNZ_OK;
 }
 
-- (BOOL)UnzipOpenFile:(NSString *)zipFile {
-    _unzFile = unzOpen((const char *)[zipFile UTF8String]);
-    if (_unzFile) {
-        unz_global_info globalInfo = {0};
-        if (unzGetGlobalInfo(_unzFile, &globalInfo) == UNZ_OK) {
-            NSLog(@"%lu entries in the zip file", (unsigned long)globalInfo.number_entry);
-        }
+/** @ghidraAddress 0x15070 */
+- (BOOL)setNext {
+    if (m_ZipFile == nullptr) {
+        return NO;
     }
-    return _unzFile != NULL;
+    return unzGoToNextFile(m_ZipFile) == UNZ_OK;
 }
 
-- (BOOL)UnzipOpenFile:(NSString *)zipFile Password:(NSString *)password {
-    _password = password;
-    return [self UnzipOpenFile:zipFile];
-}
-
-- (BOOL)UnzipFileTo:(NSString *)path overWrite:(BOOL)overwrite {
-    BOOL success = YES;
-    int ret = unzGoToFirstFile(_unzFile);
-    unsigned char buffer[4096] = {0};
-    NSFileManager *fman = [NSFileManager defaultManager];
-    if (ret != UNZ_OK) {
-        [self OutputErrorMessage:@"Failed"];
+/** @ghidraAddress 0x150a4 */
+- (NSString *)getCurrentFileName {
+    if (m_ZipFile == nullptr) {
+        return nil;
     }
+    // The first pass fills in the entry info so the name length is known; the second reads the
+    // name into a buffer sized from it.
+    if (unzGetCurrentFileInfo(m_ZipFile, &m_ZipFileInfo, nullptr, 0, nullptr, 0, nullptr, 0) !=
+        UNZ_OK) {
+        return nil;
+    }
+    const uint16_t nBufferSize = static_cast<uint16_t>(m_ZipFileInfo.size_filename + 1);
+    char *pName = static_cast<char *>(malloc(nBufferSize));
+    if (unzGetCurrentFileInfo(
+            m_ZipFile, &m_ZipFileInfo, pName, nBufferSize, nullptr, 0, nullptr, 0) != UNZ_OK) {
+        free(pName);
+        return nil;
+    }
+    pName[m_ZipFileInfo.size_filename] = '\0';
+    NSString *name = [NSString stringWithCString:pName encoding:kEntryNameEncoding];
+    free(pName);
+    return name;
+}
 
+/** @ghidraAddress 0x1519c */
+- (NSData *)getCurrentData {
+    if (m_ZipFile == nullptr || unzOpenCurrentFile(m_ZipFile) != UNZ_OK) {
+        return nil;
+    }
+    NSMutableData *data = [NSMutableData dataWithCapacity:0];
+    unsigned char aChunk[kReadChunkSize];
+    int nRead = 0;
     do {
-        if ([_password length] == 0) {
-            ret = unzOpenCurrentFile(_unzFile);
-        } else {
-            ret = unzOpenCurrentFilePassword(
-                _unzFile, [_password cStringUsingEncoding:NSASCIIStringEncoding]);
-        }
-        if (ret != UNZ_OK) {
-            [self OutputErrorMessage:@"Error occurs"];
-            success = NO;
-            break;
-        }
-        // reading data and write to file
-        int read;
-        unz_file_info fileInfo = {0};
-        ret = unzGetCurrentFileInfo(_unzFile, &fileInfo, NULL, 0, NULL, 0, NULL, 0);
-        if (ret != UNZ_OK) {
-            [self OutputErrorMessage:@"Error occurs while getting file info"];
-            success = NO;
-            unzCloseCurrentFile(_unzFile);
-            break;
-        }
-        char *filename = (char *)malloc(fileInfo.size_filename + 1);
-        unzGetCurrentFileInfo(
-            _unzFile, &fileInfo, filename, fileInfo.size_filename + 1, NULL, 0, NULL, 0);
-        filename[fileInfo.size_filename] = '\0';
-
-        // check if it contains directory
-        NSString *strPath = [NSString stringWithCString:filename encoding:NSUTF8StringEncoding];
-        BOOL isDirectory = NO;
-        if (filename[fileInfo.size_filename - 1] == '/' ||
-            filename[fileInfo.size_filename - 1] == '\\') {
-            isDirectory = YES;
-        }
-        free(filename);
-        if ([strPath
-                rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/\\"]]
-                .location != NSNotFound) { // contains a path
-            strPath = [strPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
-        }
-        NSString *fullPath = [path stringByAppendingPathComponent:strPath];
-
-        if (isDirectory) {
-            [fman createDirectoryAtPath:fullPath
-                withIntermediateDirectories:YES
-                                 attributes:nil
-                                      error:nil];
-        } else {
-            [fman createDirectoryAtPath:[fullPath stringByDeletingLastPathComponent]
-                withIntermediateDirectories:YES
-                                 attributes:nil
-                                      error:nil];
-        }
-        if ([fman fileExistsAtPath:fullPath] && !isDirectory && !overwrite) {
-            if (![self OverWrite:fullPath]) {
-                unzCloseCurrentFile(_unzFile);
-                ret = unzGoToNextFile(_unzFile);
-                continue;
-            }
-        }
-        FILE *fp = fopen((const char *)[fullPath UTF8String], "wb");
-        while (fp) {
-            read = unzReadCurrentFile(_unzFile, buffer, 4096);
-            if (read > 0) {
-                fwrite(buffer, read, 1, fp);
-            } else if (read < 0) {
-                [self OutputErrorMessage:@"Failed to reading zip file"];
-                break;
-            } else {
-                break;
-            }
-        }
-        if (fp) {
-            fclose(fp);
-            // set the orignal datetime property
-            if (fileInfo.mz_dos_date != 0) {
-                NSDate *orgDate =
-                    [[NSDate alloc] initWithTimeInterval:(NSTimeInterval)fileInfo.mz_dos_date
-                                               sinceDate:[self Date1980]];
-
-                NSDictionary *attr =
-                    [NSDictionary dictionaryWithObject:orgDate
-                                                forKey:NSFileModificationDate]; //[[NSFileManager
-                                                                                //defaultManager]
-                //fileAttributesAtPath:fullPath
-                //traverseLink:YES];
-                if (attr) {
-                    //	[attr  setValue:orgDate forKey:NSFileCreationDate];
-                    if (![[NSFileManager defaultManager] setAttributes:attr
-                                                          ofItemAtPath:fullPath
-                                                                 error:nil]) {
-                        // cann't set attributes
-                        NSLog(@"Failed to set attributes");
-                    }
-                }
-                orgDate = nil; // ARC
-            }
-        }
-        unzCloseCurrentFile(_unzFile);
-        ret = unzGoToNextFile(_unzFile);
-    } while (ret == UNZ_OK && UNZ_OK != UNZ_END_OF_LIST_OF_FILE);
-    return success;
+        nRead = unzReadCurrentFile(m_ZipFile, aChunk, kReadChunkSize);
+        // Yes, the binary appends before testing the read: a final zero-length read appends
+        // nothing, but a negative (error) read is sign-extended into the length.
+        [data appendBytes:aChunk length:static_cast<NSUInteger>(nRead)];
+    } while (nRead > 0);
+    unzCloseCurrentFile(m_ZipFile);
+    return data;
 }
 
-- (BOOL)UnzipCloseFile {
-    _password = nil;
-    if (_unzFile) {
-        return unzClose(_unzFile) == UNZ_OK;
+/** @ghidraAddress 0x14f24 */
+- (NSData *)getData:(NSString *)entryName {
+    if (m_ZipFile == nullptr || ![self setFirst]) {
+        return nil;
     }
-    return YES;
-}
-
-#pragma mark wrapper for delegate
-- (void)OutputErrorMessage:(NSString *)msg {
-    if (_delegate && [_delegate respondsToSelector:@selector(ErrorMessage)]) {
-        [_delegate ErrorMessage:msg];
-    }
-}
-
-- (BOOL)OverWrite:(NSString *)file {
-    if (_delegate && [_delegate respondsToSelector:@selector(OverWriteOperation)]) {
-        return [_delegate OverWriteOperation:file];
-    }
-    return YES;
-}
-
-#pragma mark get NSDate object for 1980-01-01
-- (NSDate *)Date1980 {
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
-    [comps setDay:1];
-    [comps setMonth:1];
-    [comps setYear:1980];
-    NSCalendar *gregorian =
-        [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDate *date = [gregorian dateFromComponents:comps];
-
-    return date; // ARC: comps / gregorian released automatically
+    do {
+        NSString *name = [self getCurrentFileName];
+        if ([name isEqualToString:entryName]) {
+            return [self getCurrentData];
+        }
+    } while ([self setNext]);
+    return nil;
 }
 
 @end
