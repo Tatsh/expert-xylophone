@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4864 verified
+Total: 6343 — 6306 reconstructed, 4868 verified
 (76.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2838,7 +2838,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectView` | `-` | `setEffList:` | prop | ✅ | ✅ | `0xe8ec0` |
 | `RBMenuBGEffectView` | `-` | `animImageList` | prop | ✅ | ✅ | `0xe8ef8` |
 | `RBMenuBGEffectView` | `-` | `setAnimImageList:` | prop | ✅ | ✅ | `0xe8f08` |
-| `RBSettingMenuButton` | `-` | `initWithFilename:` |  | ✅ | ❌ | `0xe8fa8` |
+| `RBSettingMenuButton` | `-` | `initWithFilename:` |  | ✅ | ✅ | `0xe8fa8` |
 | `RBSettingMenuButton` | `-` | `setupView:` |  | ✅ | ❌ | `0xe902c` |
 | `RBSettingMenuButton` | `-` | `setFlashEffect` |  | ✅ | ❌ | `0xe9a04` |
 | `RBSettingMenuButton` | `-` | `removeFlashEffect` |  | ✅ | ❌ | `0xe9b20` |
@@ -2865,10 +2865,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingView` | `-` | `selectThema:` |  | ✅ | ❌ | `0xebcec` |
 | `RBSettingView` | `-` | `SelectHowToPlayButton` |  | ✅ | ❌ | `0xebdf0` |
 | `RBSettingView` | `-` | `SelectInfoButton` |  | ✅ | ✅ | `0xebf1c` |
-| `RBSettingView` | `-` | `SelectTermButton` |  | ✅ | ❌ | `0xebf94` |
+| `RBSettingView` | `-` | `SelectTermButton` |  | ✅ | ✅ | `0xebf94` |
 | `RBSettingView` | `-` | `SelectApplilinkButton` |  | ✅ | ❌ | `0xec00c` |
 | `RBSettingView` | `-` | `SelectExitButton` |  | ✅ | ✅ | `0xec0c0` |
-| `RBSettingView` | `-` | `selectMap:` |  | ✅ | ❌ | `0xec0e0` |
+| `RBSettingView` | `-` | `selectMap:` |  | ✅ | ✅ | `0xec0e0` |
 | `RBSettingView` | `-` | `getCustomizeButtonView` |  | ✅ | ✅ | `0xec164` |
 | `RBSettingView` | `-` | `parentView` | prop | ✅ | ✅ | `0xec170` |
 | `RBSettingView` | `-` | `setParentView:` | prop | ✅ | ✅ | `0xec190` |
@@ -2910,7 +2910,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreDetailMusicCell` | `+` | `cellHeight` |  | ✅ | ✅ | `0xedde8` |
 | `StoreDetailMusicCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xeddf4` |
 | `StoreDetailMusicCell` | `-` | `handleLink:` |  | ✅ | ❌ | `0xef5cc` |
-| `StoreDetailMusicCell` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xef784` |
+| `StoreDetailMusicCell` | `-` | `setBgImage:` |  | ✅ | ✅ | `0xef784` |
 | `StoreDetailMusicCell` | `-` | `setLink:` |  | ✅ | ❌ | `0xef810` |
 | `StoreDetailMusicCell` | `-` | `sampleStop` |  | ✅ | ❌ | `0xef940` |
 | `StoreDetailMusicCell` | `-` | `sampleDownloading` |  | ✅ | ❌ | `0xef9e0` |

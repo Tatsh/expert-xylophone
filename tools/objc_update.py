@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xebf94: 'RBSettingView -SelectTermButton: themed effect 1, parentView showTermView, then its '
+             'own hideAnimation, the same three-step shape as its SelectInfoButton sibling',
+    0xec0e0: 'RBSettingView -selectMap:: the same shape again over showSearchView, ignoring sender',
+    0xef784: 'StoreDetailMusicCell -setBgImage:: drives bgView.image and keeps no ivar of its own',
+    0xe8fa8: 'RBSettingMenuButton -initWithFilename:: super init, nil check, then setupView: with '
+             'the argument passed straight through',
     0xc62c8: 'RBMusicColorView -SelectButton:: acts only when the tag differs from the current '
              'colour, then ShowSelect and themed effect 1, matching kSoundEffectSelect',
     0xd8e38: 'RBPopoverBackgroundView -contextSizeForFirstHalfImage:: a CGSize through the '
