@@ -3807,6 +3807,18 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x105304: 'ReplayData -reset: seventeen setters nilled in the same order the coder pair uses',
+    0x1055B4: 'ReplayData +loadReplayData:difficulty:: the difficulty fold, then five separate nil '
+              'or false exits, on isExistReplayData:, the unzip, the file read, decode: and the '
+              'unarchive. tmp.data is removed first if present, the unzip passes overwrite 1 and a '
+              'nil password, and a decoded record with no version takes the default from the '
+              'global at 0x3dc9f0',
+    0x1059B4: 'ReplayData +saveReplayData:: cmp w23,#3 with b.lt folds an advanced difficulty, and '
+              'the stored value is sub w2,w0,#3 on a second intValue read, not the 3 the '
+              'decompiler annotates on that call. The default version here comes from a different '
+              'global, 0x3dc9f8 rather than the 0x3dc9f0 the loader uses, so the two variables the '
+              'reconstruction declares are real and not a duplicate. Both tmp.data and the target '
+              'archive are removed if present before the write and the zip',
     0x1048BC: 'ReplayData -initWithCoder:: one objc_msgSendSuper2 for [super init], then seventeen '
               'decodeObjectForKey: calls whose key strings read ver, tuneID, diff, seed, cntNote, '
               'score, cntCom, cntJust, cntGreat, cntGood, cntMiss, cntJR, ar, replay, playDate, '
