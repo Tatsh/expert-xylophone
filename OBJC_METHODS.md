@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4722 verified
-(74.4%).
+Total: 6343 — 6306 reconstructed, 4728 verified
+(74.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -598,7 +598,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ✅ | `0x3536c` |
 | `SoundManager` | `-` | `startSystem` |  | ✅ | ✅ | `0x35380` |
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
-| `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ❌ | `0x35498` |
+| `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ✅ | `0x35498` |
 | `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ✅ | `0x354fc` |
 | `SoundPlayer` | `-` | `setCurrentFrame:` |  | ✅ | ❌ | `0x3550c` |
 | `SoundPlayer` | `-` | `currentFrame` |  | ✅ | ✅ | `0x3557c` |
@@ -718,7 +718,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `neGLView` | `-` | `touchesBegan:withEvent:` |  | ✅ | ❌ | `0x3a550` |
 | `neGLView` | `-` | `touchesMoved:withEvent:` |  | ✅ | ❌ | `0x3a704` |
 | `neGLView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ❌ | `0x3a8b0` |
-| `neGLView` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ❌ | `0x3ab14` |
+| `neGLView` | `-` | `touchesCancelled:withEvent:` |  | ✅ | ✅ | `0x3ab14` |
 | `neGLView` | `-` | `delegate` | prop | ✅ | ✅ | `0x3ab78` |
 | `neGLView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x3ab98` |
 | `neGLView` | `-` | `glContext` | prop | ✅ | ✅ | `0x3abac` |
@@ -1483,7 +1483,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfo` | `-` | `initWithPackID:` |  | ✅ | ✅ | `0x68924` |
 | `StorePackInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x68984` |
 | `StorePackInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x68a54` |
-| `StorePackInfo` | `-` | `priceString` |  | ✅ | ❌ | `0x68e30` |
+| `StorePackInfo` | `-` | `priceString` |  | ✅ | ✅ | `0x68e30` |
 | `StorePackInfo` | `-` | `setMusicInfo:` |  | ✅ | ❌ | `0x68e94` |
 | `StorePackInfo` | `-` | `downloadDetailInfo` |  | ✅ | ✅ | `0x69114` |
 | `StorePackInfo` | `-` | `allDownloaded` |  | ✅ | ❌ | `0x69150` |
@@ -2521,7 +2521,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `setEnableButton:` |  | ✅ | ✅ | `0xd6684` |
 | `RBMusicView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0xd66e0` |
 | `RBMusicView` | `-` | `getDecideButton` |  | ✅ | ✅ | `0xd6b1c` |
-| `RBMusicView` | `-` | `getDoubleButton` |  | ✅ | ❌ | `0xd6b28` |
+| `RBMusicView` | `-` | `getDoubleButton` |  | ✅ | ✅ | `0xd6b28` |
 | `RBMusicView` | `-` | `getDifficultyButton:` |  | ✅ | ❌ | `0xd6b8c` |
 | `RBMusicView` | `-` | `tapGesture:` |  | ✅ | ❌ | `0xd6bfc` |
 | `RBMusicView` | `-` | `gestureRecognizer:shouldReceiveTouch:` |  | ✅ | ❌ | `0xd6cec` |
@@ -2956,7 +2956,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCorporateViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0xf0c74` |
 | `RBCorporateViewController` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0xf0d5c` |
 | `RBCorporateViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0xf0dc0` |
-| `RBCorporateViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0xf0ecc` |
+| `RBCorporateViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0xf0ecc` |
 | `RBCorporateViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0xf0f30` |
 | `RBCorporateViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0xf0ff0` |
 | `RBCorporateViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0xf1030` |
@@ -3105,7 +3105,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackMusicView` | `-` | `sampleDownloading` |  | ✅ | ❌ | `0xfcf28` |
 | `StorePackMusicView` | `-` | `samplePlaying` |  | ✅ | ❌ | `0xfd014` |
 | `StorePackMusicView` | `-` | `setBG:` |  | ✅ | ❌ | `0xfd100` |
-| `StorePackMusicView` | `-` | `tapSp` |  | ✅ | ❌ | `0xfd208` |
+| `StorePackMusicView` | `-` | `tapSp` |  | ✅ | ✅ | `0xfd208` |
 | `StorePackMusicView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0xfd26c` |
 | `StorePackMusicView` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0xfd35c` |
 | `StorePackMusicView` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0xfd360` |

@@ -295,6 +295,18 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0xf0ecc: 'RBCorporateViewController -webViewDidStartLoad:: ignores the web view and empties '
+             'the shared URL cache',
+    0xfd208: 'StorePackMusicView -tapSp: builds the move-to-extend-detail alert with self as the '
+             'delegate and shows it',
+    0x35498: 'SoundPlayer -setSoundData:: a guarded setter, it only stores while m_IsPlaying is '
+             'clear, so a write during playback is silently dropped',
+    0x3ab14: 'neGLView -touchesCancelled:withEvent:: forwards both arguments to '
+             'touchesEnded:withEvent:',
+    0x68e30: 'StorePackInfo -priceString: sends priceString: to the classref at 0x3c7290, which '
+             'resolves through its class_ro_t to StoreUtil rather than being assumed',
+    0xd6b28: 'RBMusicView -getDoubleButton: reads doubleButton twice, once to nil-test and once '
+             'to return, exactly as reconstructed',
     0x109850: 'StoreCampaignItemInfo -checkNewUnlock: NO unless bUnlock, then the inverse of '
               'alreadyDownload',
     0x1d754c: 'RBStoreTabController -selectTab:: returns while m_Animation is set, else writes '
