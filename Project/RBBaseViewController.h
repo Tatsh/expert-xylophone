@@ -37,8 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Report the interface orientations this view controller supports.
  * @return @c UIInterfaceOrientationMaskAll when the phone (standard) layout is active; otherwise
- * the orientation is constrained to portrait or landscape-left depending on the current orientation
- * while music is playing.
+ * both portrait orientations, narrowed to whichever one is current while music is playing.
  * @ghidraAddress 0x202778
  */
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations;

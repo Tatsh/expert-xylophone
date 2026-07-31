@@ -946,3 +946,32 @@ The binary is no help in deciding: `@(x)` compiles to exactly the `numberWith…
 disassembly shows, so both spellings are equally faithful and the audit cannot distinguish them.
 This is a style conversion to be done deliberately, per file, alongside a read of each argument's
 type — not folded into a verification pass.
+
+## Two of the three rotation base classes returned the wrong orientation masks
+
+`-supportedInterfaceOrientations` exists three times over, once each on `RBBaseViewController`
+(`0x202778`), `RBBaseTableViewController` (`0x202930`), and `RBBaseTabBarController` (`0x202b30`).
+All three are instruction-identical and all three branch three ways rather than two. The phone gets
+an immediate `0x1e`; the pad with no music playing gets `0x6`; otherwise a `csel x20,x9,x8,eq`
+picks `4` over `2` on `cmp x0,#2` against the current interface orientation.
+
+`0x6` is `Portrait | PortraitUpsideDown` and `4` is `PortraitUpsideDown`. Two of the three
+reconstructions spelled those two arms `Portrait | LandscapeLeft` and `LandscapeLeft`, which are
+`18` and `16`. Both are now corrected.
+
+Three independent things agree that the portrait pair is right, which is what makes this a
+transcription slip rather than a reading to be argued about:
+
+- `RBBaseTabBarController`, the third sibling, already spelled both arms as the portrait pair.
+- `-shouldAutorotateToInterfaceOrientation:` on all three classes tests `sub x8,x19,#1` /
+  `cmp x8,#1` / `b.hi`, which admits exactly orientations 1 and 2 and rejects every landscape
+  one. Its record entry already said so before this was found.
+- No other `UIInterfaceOrientationMask` site in the tree names `LandscapeLeft` on the pad path.
+
+The consequence was user-visible: an iPad holding a rotation lock during playback would have been
+told landscape-left was acceptable, when the binary permits only the two portrait orientations —
+and the class's own legacy predicate would have refused the rotation it advertised.
+
+The lesson is the one the recursion pair taught earlier. A method that exists in three near-copies
+must be read in all three; the copies disagreeing is the signal, and reading only the one that
+turned up in the candidate list would have found nothing.

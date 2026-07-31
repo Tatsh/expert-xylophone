@@ -309,6 +309,13 @@ VERIFIED = {
               'pack table is hidden, so a visible table is left alone',
     0x1f094c: 'RBStorePackList -isFetching: the twin of the extend-note one, short-circuiting on '
               'packlistDownloader before productsRequest is read',
+    0x1f09dc: 'RBStorePackList -numGenres: arrayGenre then count, with the retain/release pair '
+              'around the array, and the count returned unmodified',
+    0x1f29fc: 'RBStorePackList -downloaderError:: passes self, not the downloader argument, as the '
+              'first argument to the delegate\'s packListDownloadError:errorMessage:. x3 is the '
+              'pool load at 0x3cfcc0, which is g_pLocalizedServerConnectFailed at the address '
+              'already annotated on its declaration. The downloader is then cleared with '
+              'setPacklistDownloader:nil',
     0x1d6824: 'RBStoreTabController -openDialogAnimStop:finished:context:: clears '
               'm_IsUIViewAnimation and re-enables the dialog\'s abort button, reading none of its '
               'three callback arguments',
@@ -809,6 +816,19 @@ VERIFIED = {
               'separately rather than inferred from its sibling',
     0x202b00: 'RBBaseTabBarController -shouldAutorotate: the third of the identical trio, also '
               'read on its own',
+    0x202778: 'RBBaseViewController -supportedInterfaceOrientations: three arms, not two. The orr '
+              '#0x1e is MaskAll off the pad, the orr #0x6 is Portrait|PortraitUpsideDown, and the '
+              'csel picks 4 (PortraitUpsideDown) over 2 (Portrait) on cmp x0,#2. The '
+              'reconstruction spelled both of the pad arms with MaskLandscapeLeft, which is 16, '
+              'not the 6 and 4 the binary returns; fixed here',
+    0x202930: 'RBBaseTableViewController -supportedInterfaceOrientations: instruction-identical to '
+              'the RBBaseViewController one and carried the same two wrong mask spellings, fixed '
+              'alongside it',
+    0x202b30: 'RBBaseTabBarController -supportedInterfaceOrientations: the third of the trio, also '
+              'instruction-identical, and the only one whose reconstruction already spelled both '
+              'pad arms as the portrait pair',
+    0x202b94: 'RBBaseTabBarController -shouldAutorotateToInterfaceOrientation:: the same sub #1 / '
+              'cmp #1 / b.hi portrait-pair test as its two siblings, read on its own',
     0x1942f8: 'RBUnlockView -setParentView:: forwards to the differently-named setParentCustomView:',
     0x1998e0: 'RBUnlockView -downloadManagerFailed:: ignores the manager, nils dlMusicName, then '
               'reloadData',

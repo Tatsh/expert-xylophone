@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4964 verified
-(78.3%).
+Total: 6343 — 6306 reconstructed, 4970 verified
+(78.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -5284,7 +5284,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePackList` | `-` | `cancelFetching` |  | ✅ | ❌ | `0x1f07fc` |
 | `RBStorePackList` | `-` | `isFetching` |  | ✅ | ✅ | `0x1f094c` |
 | `RBStorePackList` | `-` | `packInfos` |  | ✅ | ✅ | `0x1f09d0` |
-| `RBStorePackList` | `-` | `numGenres` |  | ✅ | ❌ | `0x1f09dc` |
+| `RBStorePackList` | `-` | `numGenres` |  | ✅ | ✅ | `0x1f09dc` |
 | `RBStorePackList` | `-` | `genreNames` |  | ✅ | ❌ | `0x1f0a3c` |
 | `RBStorePackList` | `-` | `addGenres:` |  | ✅ | ❌ | `0x1f0c04` |
 | `RBStorePackList` | `-` | `packListForGenreIndex:` |  | ✅ | ❌ | `0x1f0fe8` |
@@ -5294,7 +5294,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePackList` | `-` | `addPackInfoFromID:` |  | ✅ | ❌ | `0x1f1514` |
 | `RBStorePackList` | `-` | `updatePackInfo:SKProductsResponse:` |  | ✅ | ❌ | `0x1f15f8` |
 | `RBStorePackList` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1f1ca0` |
-| `RBStorePackList` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1f29fc` |
+| `RBStorePackList` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x1f29fc` |
 | `RBStorePackList` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x1f2a84` |
 | `RBStorePackList` | `-` | `optionalProductsRequest` |  | ✅ | ❌ | `0x1f2a88` |
 | `RBStorePackList` | `-` | `productsRequest:didReceiveResponse:` |  | ✅ | ❌ | `0x1f2db4` |
@@ -5597,21 +5597,21 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBAnimationFactory` | `+` | `animationDelete:` |  | ✅ | ❌ | `0x202580` |
 | `RBBaseViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202740` |
 | `RBBaseViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202748` |
-| `RBBaseViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202778` |
+| `RBBaseViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x202778` |
 | `RBBaseViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x2027d4` |
 | `RBBaseViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x2027dc` |
 | `RBBaseTableViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x20282c` |
 | `RBBaseTableViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x2028f8` |
 | `RBBaseTableViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202900` |
-| `RBBaseTableViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202930` |
+| `RBBaseTableViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x202930` |
 | `RBBaseTableViewController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x20298c` |
 | `RBBaseTableViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x202994` |
 | `RBBaseTabBarController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x2029e4` |
 | `RBBaseTabBarController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x202af8` |
 | `RBBaseTabBarController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x202b00` |
-| `RBBaseTabBarController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x202b30` |
+| `RBBaseTabBarController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x202b30` |
 | `RBBaseTabBarController` | `-` | `preferredInterfaceOrientationForPresentation` |  | ✅ | ✅ | `0x202b8c` |
-| `RBBaseTabBarController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x202b94` |
+| `RBBaseTabBarController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x202b94` |
 | `RBGameKitManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x202be4` |
 | `RBGameKitManager` | `-` | `isGameCenterAPIAvailable` |  | ✅ | ❌ | `0x202c98` |
 | `RBGameKitManager` | `-` | `loginGameCenter` |  | ✅ | ❌ | `0x202d64` |

@@ -36,10 +36,10 @@
         return UIInterfaceOrientationMaskAll;
     }
     if (!GameSystem::GetGameSystem()->GetBgmPlaying()) {
-        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft;
+        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
     }
     if (self.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
-        return UIInterfaceOrientationMaskLandscapeLeft;
+        return UIInterfaceOrientationMaskPortraitUpsideDown;
     }
     return UIInterfaceOrientationMaskPortrait;
 }
