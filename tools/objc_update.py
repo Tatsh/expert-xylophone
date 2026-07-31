@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x107104: 'RBThemaView -initWithFrame:: the mov w2 of 2 is RBMusicMenuPopupViewTypeTheme, then '
+              'setupView, then exclusiveTouch YES, which the sibling popups do not set',
+    0x10cfa4: 'RBRewardListView -initWithFrame:: super, nil check, setupView, and no type set',
+    0x101898: 'StorePromotionView -imageDownloaderDidFail:didLoad:: sends removeObject: to its '
+              'imageDownloader, so that property is a collection here where the same name is a '
+              'single downloader in the sibling store views',
     0x13d878: 'RBMenuTutorialView -stopCursorAnimation:: hides the passed view\'s cursorView, but '
               'only when one is held',
     0x13dbc4: 'RBMenuTutorialView -stopTouchAnimation:: hides its own touchView and stops it '

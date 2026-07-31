@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4884 verified
+Total: 6343 — 6306 reconstructed, 4887 verified
 (77.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3188,7 +3188,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `getPackID` |  | ✅ | ❌ | `0x1008cc` |
 | `StorePromotionView` | `-` | `setImageURLs:` |  | ✅ | ❌ | `0x1009e8` |
 | `StorePromotionView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x101788` |
-| `StorePromotionView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x101898` |
+| `StorePromotionView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0x101898` |
 | `StorePromotionView` | `-` | `getImageCount` |  | ✅ | ✅ | `0x101924` |
 | `StorePromotionView` | `-` | `setNext` |  | ✅ | ❌ | `0x101984` |
 | `StorePromotionView` | `-` | `nextShowEnd` |  | ✅ | ✅ | `0x102280` |
@@ -3297,7 +3297,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ReplayNote` | `-` | `setLongrate:` | prop | ✅ | ✅ | `0x106f7c` |
 | `ReplayNote` | `-` | `slide` | prop | ✅ | ✅ | `0x106fb4` |
 | `ReplayNote` | `-` | `setSlide:` | prop | ✅ | ✅ | `0x106fc4` |
-| `RBThemaView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x107104` |
+| `RBThemaView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x107104` |
 | `RBThemaView` | `-` | `layoutSubviews` |  | ✅ | ✅ | `0x1071a8` |
 | `RBThemaView` | `-` | `setupView` |  | ✅ | ❌ | `0x107234` |
 | `RBThemaView` | `-` | `yesButtonTouch:` |  | ✅ | ❌ | `0x108434` |
@@ -3342,7 +3342,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignItemInfo` | `-` | `linkURL` | prop | ✅ | ✅ | `0x109c88` |
 | `StoreCampaignItemInfo` | `-` | `copyright` | prop | ✅ | ✅ | `0x109c98` |
 | `StoreCampaignItemInfo` | `-` | `unlockDict` | prop | ✅ | ✅ | `0x109ca8` |
-| `RBRewardListView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x10cfa4` |
+| `RBRewardListView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x10cfa4` |
 | `RBRewardListView` | `-` | `setParentView:` |  | ✅ | ✅ | `0x10d018` |
 | `RBRewardListView` | `-` | `setupView` |  | ✅ | ❌ | `0x10d034` |
 | `RBRewardListView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x10d758` |
