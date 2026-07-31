@@ -3807,6 +3807,12 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x169F2C: 'UIAlertView(RB) +strageAlertView:: the UIAlertController half of the pair, with '
+              'mov w4,#1 for the alert style and mov w3,#1 for the cancel action style, presented '
+              'through the app delegate view controller. Both claims its comment makes are '
+              'confirmed: it loads the same three localised globals at 0x3cfb90, 0x3cfb98 and '
+              '0x3cfba0 that the older 0xdd38 factory uses, and it never reads its delegate '
+              'argument at all, so that parameter really is vestigial',
     0x18296C: 'RBExtendNoteManager -addPurchasedExtendNote:: cmp x24,x23 with b.cs decides whether '
               'the search fell off the end, as its music counterpart does, but the found branch '
               'does more than nothing: dictionaryWithDictionary: copies the existing entry and '
