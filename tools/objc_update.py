@@ -926,6 +926,17 @@ VERIFIED = {
     0x21d6e4: 'RewardWebViewController -activeWebView: despite the name it only forwards '
               'touchEventActived to _indicator, behind a cbz on that ivar. It is the target of a '
               'delayed performSelector: that re-enables touch after the spinner shows',
+    0x21d580: 'RewardWebViewController -appliListClosed: cancels pending performs, then a cbz on '
+              '_viewCloseFlg where the non-zero arm returns immediately, so the guard is an '
+              'already-closed early exit. Only after that is the flag set to 1, the web view '
+              'stopped behind an isLoading test, and viewDealloc sent',
+    0x21dcb4: 'RewardWebViewController -appListDidStart: forwards to the delegate\'s startedNotice, '
+              'not to a selector of its own name. Three weak loads of _sdkDelegate around the nil '
+              'check, the respondsToSelector: and the send',
+    0x21dd58: 'RewardWebViewController -appListDidAppear: the same shape forwarding to '
+              'openedNotice. Neither of these two delegate selectors matches the method that '
+              'sends it, so taking the name from the method would have produced a selector the '
+              'binary does not define',
     0x21d71c: 'RewardWebViewController -webViewDidStartLoad:: the same shape as the '
               'RecommendAdWebView one, with the cbnz on _webViewStatus skipping only the store of '
               '1, so updateIndicator: is sent YES on both arms and the webView argument is unread',

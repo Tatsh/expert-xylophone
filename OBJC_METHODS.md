@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5095 verified
-(80.3%).
+Total: 6343 — 6306 reconstructed, 5098 verified
+(80.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5095 verified, 3507 come from those passes and the remaining
-1588 were read by hand. The split matters when reading the percentage: a
+Of the 5098 verified, 3507 come from those passes and the remaining
+1591 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5891,7 +5891,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x21d2dc` |
 | `RewardWebViewController` | `-` | `loadRequestWithURL:parameters:` |  | ✅ | ❌ | `0x21d2e4` |
 | `RewardWebViewController` | `-` | `btnCloseClicked:` |  | ✅ | ✅ | `0x21d570` |
-| `RewardWebViewController` | `-` | `appliListClosed` |  | ✅ | ❌ | `0x21d580` |
+| `RewardWebViewController` | `-` | `appliListClosed` |  | ✅ | ✅ | `0x21d580` |
 | `RewardWebViewController` | `-` | `updateIndicator:` |  | ✅ | ❌ | `0x21d620` |
 | `RewardWebViewController` | `-` | `activeWebView` |  | ✅ | ✅ | `0x21d6e4` |
 | `RewardWebViewController` | `-` | `setWebViewBounces:` | prop | ✅ | ✅ | `0x21d708` |
@@ -5900,8 +5900,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x21d87c` |
 | `RewardWebViewController` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x21da8c` |
 | `RewardWebViewController` | `-` | `redirectWithRequest:` |  | ✅ | ✅ | `0x21dc30` |
-| `RewardWebViewController` | `-` | `appListDidStart` |  | ✅ | ❌ | `0x21dcb4` |
-| `RewardWebViewController` | `-` | `appListDidAppear` |  | ✅ | ❌ | `0x21dd58` |
+| `RewardWebViewController` | `-` | `appListDidStart` |  | ✅ | ✅ | `0x21dcb4` |
+| `RewardWebViewController` | `-` | `appListDidAppear` |  | ✅ | ✅ | `0x21dd58` |
 | `RewardWebViewController` | `-` | `appListDidDisappear` |  | ✅ | ❌ | `0x21ddfc` |
 | `RewardWebViewController` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x21deac` |
 | `RewardWebViewController` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x21df70` |
