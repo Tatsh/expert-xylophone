@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4797 verified
-(75.6%).
+Total: 6343 — 6306 reconstructed, 4801 verified
+(75.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -157,8 +157,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreButtonView` | `-` | `cornerRadius` | prop | ✅ | ✅ | `0xc2d8` |
 | `StoreButtonView` | `-` | `setCornerRadius:` | prop | ✅ | ✅ | `0xc2e8` |
 | `StoreButtonView` | `-` | `highlightColor:factor:` |  | ✅ | ✅ | `0xc300` |
-| `StoreButtonView` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0xc348` |
-| `StoreButtonView` | `-` | `setSelected:` |  | ✅ | ❌ | `0xc3d4` |
+| `StoreButtonView` | `-` | `setHighlighted:` |  | ✅ | ✅ | `0xc348` |
+| `StoreButtonView` | `-` | `setSelected:` |  | ✅ | ✅ | `0xc3d4` |
 | `StoreButtonView` | `-` | `drawRect:` |  | ✅ | ❌ | `0xc460` |
 | `StoreButtonView` | `-` | `dealloc` |  | ✅ | ✅ | `0xcc08` |
 | `RBMenuBGEffectPartView` | `-` | `init` |  | ✅ | ❌ | `0xcce0` |
@@ -1534,8 +1534,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `init` |  | ✅ | ✅ | `0x69ea8` |
 | `RBBGMManager` | `-` | `RelaseMusic` |  | ✅ | ❌ | `0x69ef8` |
 | `RBBGMManager` | `-` | `PlayMusic:` |  | ✅ | ❌ | `0x69fac` |
-| `RBBGMManager` | `-` | `PauseMusic:` |  | ✅ | ❌ | `0x6a03c` |
-| `RBBGMManager` | `-` | `StopMusic:` |  | ✅ | ❌ | `0x6a0c8` |
+| `RBBGMManager` | `-` | `PauseMusic:` |  | ✅ | ✅ | `0x6a03c` |
+| `RBBGMManager` | `-` | `StopMusic:` |  | ✅ | ✅ | `0x6a0c8` |
 | `RBBGMManager` | `-` | `SeekToTop` |  | ✅ | ✅ | `0x6a154` |
 | `RBBGMManager` | `-` | `LoadMusicType:Loop:` |  | ✅ | ❌ | `0x6a1cc` |
 | `RBBGMManager` | `-` | `LoadMusicSelect` |  | ✅ | ❌ | `0x6a324` |

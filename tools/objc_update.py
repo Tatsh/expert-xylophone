@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xc348: 'StoreButtonView -setHighlighted:: reads the old value through super, calls super\'s '
+            'setter, and redisplays only on a change. The binary spells the test as eor then '
+            'cmp #1 where the reconstruction uses !=, which agree for canonical BOOLs',
+    0xc3d4: 'StoreButtonView -setSelected:: the same change-detecting shape over isSelected',
+    0x6a03c: 'RBBGMManager -PauseMusic:: guarded on m_IsMusic, then AudioManager onPauseBgm:',
+    0x6a0c8: 'RBBGMManager -StopMusic:: the same guard, then stopBgm:',
     0xbe3d4: 'RBNewsHUDView -initWithFrame:: super, nil check, then the lowercase setupView',
     0xc9370: 'RBMusicFirstInfoView -initWithFrame:: the same shape but the capitalised SetupView; '
              'the two selectors differ only in case and both reconstructions match their own',
