@@ -695,3 +695,33 @@ used as a subscript — and the class is otherwise clean. The two other sites it
 index explicitly and both already carry a comment saying the binary's check is unsigned. So this
 was a known class with one family missed rather than an unrecognised one, which is the more
 reassuring of the two possibilities.
+
+## A return-width sweep that produced 197 confident wrong answers
+
+Having found that `-[AVBus setSource:]` and `-currentID` return `S` rather than the `unsigned int`
+they were declared with, the obvious next step is to check every method the same way: the runtime
+records each one's exact type encoding, so the correct integer width is data rather than judgement.
+
+The sweep was written, run, and **discarded**. It reported 197 mismatches and every one is false.
+
+It found `method_t` triples by scanning the whole image for any 8-byte-aligned pointer to a
+printable string, then reading the next two words as `types` and `imp`. That matches real method
+lists and also matches any coincidental run of bytes that happens to look like one, which in a
+2.5 MB image is a great many. Two checks kill it outright. `-[neGLView BeginRender]` is at `0x3a468`
+in the runtime metadata and the scan claimed `0x315568`; and four of the reported `imp` values —
+`0x314ab7`, `0x310ee3`, `0x329bde`, `0x31105a` — are not 4-byte aligned, so they cannot be arm64
+code at all.
+
+Acting on it would have retyped roughly two hundred correct return types from garbage. The output
+was uniform, plausible, and sorted by file, which is exactly what a broken scan looks like when its
+failure mode is systematic rather than random.
+
+The `AVBus` change stands, and the difference is instructive. That one searched for a single
+selector, produced a **coherent** encoding — `S24@0:8^{AVSource=@@B}16` parses as return `S`, self
+at 0, selector at 8, struct pointer at 16, total 24 — and its `imp` matched the checklist's address
+for the method. The bulk scan verified neither coherence nor address.
+
+Doing this properly means walking `__objc_classlist` to each `class_ro_t` and reading its
+`baseMethods` list, which is what `tools/objc_update.py` already does to build the checklist. The
+sweep is worth redoing on that footing, because the class it targets is real: an encoding is
+authoritative and a declared width is not. It is not worth redoing on a byte scan.
