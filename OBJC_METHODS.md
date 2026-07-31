@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5048 verified
-(79.6%).
+Total: 6343 — 6306 reconstructed, 5064 verified
+(79.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5048 verified, 3507 come from those passes and the remaining
-1541 were read by hand. The split matters when reading the percentage: a
+Of the 5064 verified, 3507 come from those passes and the remaining
+1557 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -412,14 +412,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `pushLink:` |  | ✅ | ✅ | `0x2585c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x25860` |
 | `StoreExtendNoteDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x259c4` |
-| `StoreExtendNoteDetailViewPad` | `-` | `showTerm` |  | ✅ | ❌ | `0x259e0` |
+| `StoreExtendNoteDetailViewPad` | `-` | `showTerm` |  | ✅ | ✅ | `0x259e0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x25ab0` |
-| `StoreExtendNoteDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x25c50` |
+| `StoreExtendNoteDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x25c50` |
 | `StoreExtendNoteDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x25d08` |
-| `StoreExtendNoteDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x25d0c` |
+| `StoreExtendNoteDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x25d0c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x25de8` |
 | `StoreExtendNoteDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x25dec` |
-| `StoreExtendNoteDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x25df0` |
+| `StoreExtendNoteDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x25df0` |
 | `StoreExtendNoteDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x25ecc` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setInfo:` |  | ✅ | ❌ | `0x2600c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x26424` |
@@ -427,8 +427,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x2653c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x26548` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x2655c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalling` |  | ✅ | ❌ | `0x26824` |
-| `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalled` |  | ✅ | ❌ | `0x268d4` |
+| `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalling` |  | ✅ | ✅ | `0x26824` |
+| `StoreExtendNoteDetailViewPad` | `-` | `setButtonTextInstalled` |  | ✅ | ✅ | `0x268d4` |
 | `StoreExtendNoteDetailViewPad` | `-` | `selfCheckButtonText` |  | ✅ | ❌ | `0x26984` |
 | `StoreExtendNoteDetailViewPad` | `-` | `noteInfo` | prop | ✅ | ✅ | `0x26bc8` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setNoteInfo:` | prop | ✅ | ✅ | `0x26bd8` |
@@ -476,18 +476,18 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0x27184` |
 | `StringConvert` | `+` | `convertYomigana:` |  | ✅ | ❌ | `0x2a190` |
 | `StringConvert` | `+` | `convertFromVToB:` |  | ✅ | ❌ | `0x2a640` |
-| `StringConvert` | `+` | `convertDJ:` |  | ✅ | ❌ | `0x2a7b4` |
+| `StringConvert` | `+` | `convertDJ:` |  | ✅ | ✅ | `0x2a7b4` |
 | `StringConvert` | `+` | `convertKorsk:` |  | ✅ | ✅ | `0x2a88c` |
-| `StringConvert` | `+` | `convertFromMacronToVowel:` |  | ✅ | ❌ | `0x2a92c` |
-| `StringConvert` | `+` | `convertFromLowerToUpper:` |  | ✅ | ❌ | `0x2a9e8` |
-| `StringConvert` | `+` | `convertFromVoiceToVoiceless:` |  | ✅ | ❌ | `0x2aaa4` |
+| `StringConvert` | `+` | `convertFromMacronToVowel:` |  | ✅ | ✅ | `0x2a92c` |
+| `StringConvert` | `+` | `convertFromLowerToUpper:` |  | ✅ | ✅ | `0x2a9e8` |
+| `StringConvert` | `+` | `convertFromVoiceToVoiceless:` |  | ✅ | ✅ | `0x2aaa4` |
 | `StringConvert` | `+` | `stringTransform:withTransform:reverse:` |  | ✅ | ✅ | `0x2ab60` |
 | `RBMenuMascot` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x2b578` |
 | `RBMenuMascot` | `-` | `setup:` |  | ✅ | ❌ | `0x2b774` |
 | `RBMenuMascot` | `-` | `startAnimation:` |  | ✅ | ❌ | `0x2c850` |
-| `RBMenuMascot` | `-` | `stopAnimation` |  | ✅ | ❌ | `0x2d478` |
+| `RBMenuMascot` | `-` | `stopAnimation` |  | ✅ | ✅ | `0x2d478` |
 | `RBMenuMascot` | `-` | `updateMessage` |  | ✅ | ❌ | `0x2d54c` |
-| `RBMenuMascot` | `-` | `generateCGSize:` |  | ✅ | ❌ | `0x2e5d4` |
+| `RBMenuMascot` | `-` | `generateCGSize:` |  | ✅ | ✅ | `0x2e5d4` |
 | `RBMenuMascot` | `-` | `update` |  | ✅ | ❌ | `0x2e6c4` |
 | `RBMenuMascot` | `-` | `onTapped:` |  | ✅ | ❌ | `0x2e8c8` |
 | `RBMenuMascot` | `-` | `getMovePoint` |  | ✅ | ❌ | `0x2ebe4` |
@@ -573,9 +573,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `NetworkUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x3392c` |
 | `StorePackListGenre` | `-` | `initWithName:genreID:` |  | ✅ | ❌ | `0x33f00` |
 | `StorePackListGenre` | `-` | `packCount` |  | ✅ | ✅ | `0x3403c` |
-| `StorePackListGenre` | `-` | `packInfoForIndex:` |  | ✅ | ❌ | `0x3409c` |
+| `StorePackListGenre` | `-` | `packInfoForIndex:` |  | ✅ | ✅ | `0x3409c` |
 | `StorePackListGenre` | `-` | `packIDList` |  | ✅ | ✅ | `0x34170` |
-| `StorePackListGenre` | `-` | `updateList:step:hasNext:` |  | ✅ | ❌ | `0x3417c` |
+| `StorePackListGenre` | `-` | `updateList:step:hasNext:` |  | ✅ | ✅ | `0x3417c` |
 | `StorePackListGenre` | `-` | `genreName` | prop | ✅ | ✅ | `0x34248` |
 | `StorePackListGenre` | `-` | `genreID` | prop | ✅ | ✅ | `0x34258` |
 | `StorePackListGenre` | `-` | `packlistContinued` | prop | ✅ | ✅ | `0x34268` |
@@ -583,7 +583,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackListGenre` | `-` | `arrayPackInfo` | prop | ✅ | ✅ | `0x34288` |
 | `StorePackListGenre` | `-` | `setArrayPackInfo:` | prop | ✅ | ✅ | `0x34298` |
 | `SoundData` | `-` | `initWithContentsFileName:Stream:` |  | ✅ | ✅ | `0x34310` |
-| `SoundData` | `-` | `dealloc` |  | ✅ | ❌ | `0x34398` |
+| `SoundData` | `-` | `dealloc` |  | ✅ | ✅ | `0x34398` |
 | `SoundData` | `-` | `prepare:Stream:` |  | ✅ | ❌ | `0x34454` |
 | `SoundData` | `-` | `getData:Frames:Loop:Buffer:Out:` |  | ✅ | ❌ | `0x34908` |
 | `SoundData` | `-` | `format` |  | ✅ | ✅ | `0x34b30` |
@@ -591,7 +591,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundData` | `-` | `channels` | prop | ✅ | ✅ | `0x34b50` |
 | `SoundData` | `-` | `totalFrames` | prop | ✅ | ✅ | `0x34b60` |
 | `SoundManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x34bb0` |
-| `SoundManager` | `-` | `init` |  | ✅ | ❌ | `0x34c08` |
+| `SoundManager` | `-` | `init` |  | ✅ | ✅ | `0x34c08` |
 | `SoundManager` | `-` | `setupAudioSession` |  | ✅ | ✅ | `0x34cf8` |
 | `SoundManager` | `-` | `prepareAUGraph` |  | ✅ | ❌ | `0x34d68` |
 | `SoundManager` | `-` | `loadFile:Stream:` |  | ✅ | ❌ | `0x34eec` |

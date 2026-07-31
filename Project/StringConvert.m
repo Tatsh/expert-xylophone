@@ -87,9 +87,9 @@ static const NSInteger kNoPreviousIndex = -1;
         return string;
     }
     string = [string stringByReplacingOccurrencesOfString:@"ディージェー"
-                                               withString:@"ディイジエイ"];
+                                               withString:@"デイイジエイ"];
     string = [string stringByReplacingOccurrencesOfString:@"ディージェイ"
-                                               withString:@"ディイジエイ"];
+                                               withString:@"デイイジエイ"];
     return string;
 }
 

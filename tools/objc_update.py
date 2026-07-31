@@ -934,6 +934,54 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x2a7b4: 'StringConvert +convertDJ:: two stringByReplacingOccurrencesOfString: calls whose '
+             'searches differ but whose replacement is the same constant at 0x362d00. Decoded from '
+             'the record here, reading length*2 bytes because the flags mark UTF-16: the '
+             'replacement is U+30C7 U+30A4 U+30A4 U+30B8 U+30A8 U+30A4, all full-size katakana. '
+             'The source had U+30A3, the small form, as the second character. Fixed',
+    0x259e0: 'StoreExtendNoteDetailViewPad -showTerm: respondsToSelector: for showTerms behind a '
+             'cbz, then performSelector: with the same selector',
+    0x25c50: 'StoreExtendNoteDetailViewPad -downloaderError:: cmp x21,x19 with b.ne returns early '
+             'unless the reporting downloader is the one this view holds, a pointer identity test '
+             'rather than an equality send. Then stopSample, the downloader cleared, and the '
+             'network-error alert shown with a nil delegate',
+    0x25d0c: 'StoreExtendNoteDetailViewPad -alertView:clickedButtonAtIndex:: respondsToSelector: '
+             'for detailViewClose then performSelector:, with the button index never read',
+    0x25df0: 'StoreExtendNoteDetailViewPad -alertViewCancel:: the same shape, reusing the same '
+             'detailViewClose selector slot',
+    0x26824: 'StoreExtendNoteDetailViewPad -setButtonTextInstalling: straight-line, no branches. '
+             'setTitle:forState: with state 0, Normal, from the g_pLocalizedInstalling slot, then '
+             'setEnabled:YES',
+    0x268d4: 'StoreExtendNoteDetailViewPad -setButtonTextInstalled: the counterpart, and the two '
+             'differ in more than the string: this one uses state 2, Disabled, a different global '
+             'slot, and setEnabled:NO',
+    0x2a92c: 'StringConvert +convertFromMacronToVowel:: three cbz arms, for nil, zero length, and a '
+             'missing table entry, all converging on returning the input. objectForKey: is sent a '
+             'second time on the success path for the value, which the reconstruction reproduces',
+    0x2a9e8: 'StringConvert +convertFromLowerToUpper:: the same shape against the table pointer at '
+             '+0x260 rather than +0x258',
+    0x2aaa4: 'StringConvert +convertFromVoiceToVoiceless:: the same shape again, table at +0x268. '
+             'The three tables are written only by InitializeGlobalLookupTables, in the order the '
+             'globals are declared',
+    0x2d478: 'RBMenuMascot -stopAnimation: setIsAnimation:NO, then a cbz on mascotView guarding '
+             'stopAnimating, then setAnimationImages:nil unconditionally, so the images are '
+             'cleared even when the view is gone',
+    0x2e5d4: 'RBMenuMascot -generateCGSize:: two fcsel pairs rather than branches, so both idiom '
+             'arms are always evaluated. The width is 300 or 200 from the pool at 0x2ee930 and '
+             '0x2ee938, the font size 14 or 11 from fmov immediates, and the constraint height 40 '
+             'from 0x2ee950',
+    0x3409c: 'StorePackListGenre -packInfoForIndex:: b.ls is an unsigned compare of count against '
+             'index, so the guard is right for NSUInteger and a large index returns nil rather '
+             'than trapping',
+    0x3417c: 'StorePackListGenre -updateList:step:hasNext:: a cbz on the incoming count skips '
+             'addObjectsFromArray:, the flag is stored to a B-encoded ivar, and the fetched count '
+             'is a Q-encoded ivar incremented by the step',
+    0x34398: 'SoundData -dealloc: five arms, all accounted for: the file handle, the buffer, a zero '
+             'channel count, a single channel, and the per-channel loop, the last two both '
+             'unsigned compares',
+    0x34c08: 'SoundManager -init: two loops bounded at 0x50 and 0x40, which are 10 and 8 entries of '
+             '8 bytes, matching the array ivar encodings and the pool and voice constants. The '
+             'init selector is reused from the super call rather than reloaded',
     0x5668: 'RBUrlSchemeStoreController -packRbAction:: objectForKey:"id" behind a cbz, then '
             'intValue with cmp w0,#1 and b.lt, which is a signed compare, so a negative '
             'identifier is rejected as well as zero. Both arms of the short-circuit match the '
