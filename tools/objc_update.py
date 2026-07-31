@@ -3807,6 +3807,19 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x1BB0A0: 'RBExperienceData -getRewardAppliId:: alloc and init, a cbz on the argument, then '
+              'installedAppliIds is asked objectForKey: twice, once to test and once to take, '
+              'exactly as the source has it',
+    0x1BB21C: 'RBExperienceData -addPoint:: cmp w21,#1 adds to point and cmp w21,#2 to pointB '
+              'through fadd s0,s0,s8, and any other theme falls through adding nothing',
+    0x1BB2FC: 'RBExperienceData -getPoint: the same two-way theme test returning point or pointB, '
+              'and zero for anything else',
+    0x1BCE1C: 'RBExperienceData -noUnlocked: seven rejections, of which only six are cmp x0 '
+              'against an immediate: 3, 14, 3, 3, 3 and 3 for the bgm, shot, explosion, frame, '
+              'background and thema lists, all b.ls so the test is strictly greater than. The '
+              'seventh, on musicItems, is a nil check and a count-not-zero rather than a '
+              'threshold, which is why it uses cbz and why counting immediates alone makes the '
+              'routine look one check short',
     0x1B8BF0: 'RBExperienceData -initWithCoder:: reads twelve keys, kPointKey, kVersionKey, '
               'kDataKey, kPointBKey, kDataBKey, the six item lists and kInstalledAppliIdDataKey. '
               'It does not read kThemaItemsKey, which the encoder writes, so theme items are '

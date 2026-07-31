@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6320 reconstructed, 5305 verified
-(83.6%).
+Total: 6343 — 6320 reconstructed, 5309 verified
+(83.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5305 verified, 3507 come from those passes and the remaining
-1798 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5309 verified, 3507 come from those passes and the remaining
+1802 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -4696,9 +4696,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `addThemaID:` |  | ✅ | ✅ | `0x1bad58` |
 | `RBExperienceData` | `-` | `addItem:ID:` |  | ✅ | ❌ | `0x1badfc` |
 | `RBExperienceData` | `-` | `addRewardAppliId:andAppliId:` |  | ✅ | ❌ | `0x1baebc` |
-| `RBExperienceData` | `-` | `getRewardAppliId:` |  | ✅ | ❌ | `0x1bb0a0` |
-| `RBExperienceData` | `-` | `addPoint:` |  | ✅ | ❌ | `0x1bb21c` |
-| `RBExperienceData` | `-` | `getPoint` |  | ✅ | ❌ | `0x1bb2fc` |
+| `RBExperienceData` | `-` | `getRewardAppliId:` |  | ✅ | ✅ | `0x1bb0a0` |
+| `RBExperienceData` | `-` | `addPoint:` |  | ✅ | ✅ | `0x1bb21c` |
+| `RBExperienceData` | `-` | `getPoint` |  | ✅ | ✅ | `0x1bb2fc` |
 | `RBExperienceData` | `-` | `resetPoint:` |  | ✅ | ✅ | `0x1bb3a8` |
 | `RBExperienceData` | `-` | `takeover` |  | ✅ | ❌ | `0x1bb3c4` |
 | `RBExperienceData` | `-` | `takeoverPoint` |  | ✅ | ❌ | `0x1bba38` |
@@ -4707,7 +4707,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `decodePoint:` |  | ✅ | ✅ | `0x1bc770` |
 | `RBExperienceData` | `-` | `encodeAppliIds:` |  | ✅ | ✅ | `0x1bc9f4` |
 | `RBExperienceData` | `-` | `decodeAppliIds:` |  | ✅ | ✅ | `0x1bcbd8` |
-| `RBExperienceData` | `-` | `noUnlocked` |  | ✅ | ❌ | `0x1bce1c` |
+| `RBExperienceData` | `-` | `noUnlocked` |  | ✅ | ✅ | `0x1bce1c` |
 | `RBExperienceData` | `-` | `writeLog:` |  | ✅ | ✅ | `0x1bd0cc` |
 | `RBExperienceData` | `-` | `installedAppliId` | prop | ✅ | ✅ | `0x1bd0d0` |
 | `RBExperienceData` | `-` | `setInstalledAppliId:` | prop | ✅ | ✅ | `0x1bd0e0` |
