@@ -1079,6 +1079,13 @@ VERIFIED = {
     0x4a130: 'RBTermDetailPhoneViewController -pushBarBtnBack:: the same viewType cbnz as '
              '-forceClose at 0x4a200, but both flags are YES here where forceClose passes NO for '
              'animated. Same shape, different arguments',
+    0x8f158: 'RBPlaylistCreateViewController -setTitle:: objc_msgSendSuper2 for the super call, so '
+             'the override forwards to UIViewController before setting its own label text and '
+             'sizing it to fit. Checked against the stub rather than assumed, since a plain send '
+             'here would recurse',
+    0x90778: 'RBPlaylistCreateViewController -fieldChanged:: cmp x0,#0 with cset ne on the text '
+             'length, so the right bar button is enabled exactly when the field is non-empty. The '
+             'sender argument is never read',
     0x53268: 'AppDelegate +launchAppStore: setIsUpdate:YES before the URL is opened, then openURL: '
              'with the itunes.apple.com CFString matching kAppStoreURLString. The ordering matters: '
              'the flag is set while the app is still foregrounded',
