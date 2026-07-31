@@ -549,14 +549,13 @@ void neGLESRenderer::BindArrayBuffer(unsigned int dwBuffer) {
 /** @ghidraAddress 0x21a14 */
 void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
     if (m_nElementBufferBound == static_cast<int>(dwBuffer)) {
-        // A skip here is only safe if GL really still has this buffer bound; see DeleteBuffer.
-        if (NE_DBG_FIRST(20)) {
-            GLint nActual = 0;
-            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nActual);
-            if (nActual != static_cast<GLint>(dwBuffer)) {
-                neDebugLog("bindIndexBuffer STALE cache=%u actual=%d", dwBuffer, nActual);
-            }
-        }
+        // A skip here is only safe if GL really still has this buffer bound; see DeleteBuffer. The
+        // budget is spent inside the mismatch test rather than around it, so the benign skips --
+        // which are nearly all of them -- do not exhaust it before a real one occurs.
+        NE_DBG(GLint nActual = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nActual);
+               if (nActual != static_cast<GLint>(dwBuffer) && NE_DBG_FIRST(10)) {
+                   neDebugLog("bindIndexBuffer STALE cache=%u actual=%d", dwBuffer, nActual);
+               });
         return;
     }
     m_nElementBufferBound = static_cast<int>(dwBuffer);

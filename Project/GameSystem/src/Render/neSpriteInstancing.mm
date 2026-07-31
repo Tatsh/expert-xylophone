@@ -273,6 +273,17 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
     // Only the index buffer is deleted. The binary reads +0x130 here and never +0x134, so
     // m_dwArrayVbo leaks by design rather than by omission; do not add a matching DeleteBuffer.
+    // Which batch is destroyed, and when, is the open question behind the play-screen crash: the
+    // element-binding cache is not cleared on delete, faithfully to the binary, so the fault can
+    // only arise if this build tears a batch down where the original does not.
+    if (NE_DBG_FIRST(24)) {
+        neDebugLog("batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p",
+                   m_dwIndexVbo,
+                   m_dwArrayVbo,
+                   m_dwCapacity,
+                   m_nSpriteCount,
+                   static_cast<const void *>(m_pTexture));
+    }
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
 
