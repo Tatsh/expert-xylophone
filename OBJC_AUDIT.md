@@ -497,3 +497,28 @@ false ones makes it a lead worth following, not a gate.
 
 Both scans were regression-tested against the pre-fix commit rather than assumed to work; a
 checker that has only ever reported success has not been shown to check anything.
+
+## The idiom-branch class, swept
+
+The layout defects fixed earlier all had the same shape: the binary branches on `IsPad()` and the
+reconstruction keeps one arm, so a constant that is right for the phone is applied to the pad too.
+That class is enumerable rather than discoverable one routine at a time, because every call site of
+`IsPad()` at `0x1a1200` is an xref.
+
+There are 99 call sites in 61 distinct methods. Every one is accounted for. Four looked at first
+like a collapsed branch and none survived checking:
+
+- `-[RBTermView showTermView:]`, `-[RBStoreManageSortViewController tableView:didSelectRowAtIndexPath:]`,
+  and `-[RBStoreGenreViewController tableView:didSelectRowAtIndexPath:]` each branch on the result
+  and then run **instruction-identical arms** — the same `sharedInstance`/`thema` pair, the same
+  `hideSortSelect:0`, the same `hideGenreSelect:0`. The idiom has no behavioural effect at those
+  sites, so a reconstruction with no branch is correct rather than collapsed.
+- `-[RBMenuView collectionView:cellForItemAtIndexPath:]` does have a real pad-only arm, setting
+  `cell.artistLabel.text` from `cell.musicData.artistName`, and the reconstruction has it. The hit
+  was my own scanner matching `-collectionView:numberOfItemsInSection:` instead, since both methods
+  share the selector's first part.
+
+Two limits worth stating so this is not read as more than it is. The sweep proves each method that
+consults the idiom _has_ the branch, not that the constants inside each arm are right — those still
+need the frame-fit check. And it covers `IsPad()` only; the `[RBUserSettingData thema]` theme split
+is a separate enumeration that has not been run.
