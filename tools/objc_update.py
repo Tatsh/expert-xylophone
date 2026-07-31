@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x153c0: 'BFCodec -cipherInit:: nil-guards the NSData, then forwards its bytes and length to '
+             'the two-argument form',
+    0x363a8: 'RBTutorialManager +resetUnlockedItemInfo: getInstance, then unlockItemInfo '
+             'removeAllObjects',
+    0x20b0c: 'RBPastelManager +tryShow:: for a non-zero stage it scans every earlier slot and bails '
+             'on the first one already shown, then marks its own and clears the rest. The tail '
+             'clear runs from stage+1 to 4, the cmp #3 with b.gt being the >= 4 early out, and 4 '
+             'matches both kPastelShowStageCount and the ivar\'s own [4B] encoding',
     0x3578c: 'RBTutorialManager +needStartTutorialMusicselect: NO once totalRecordCount reaches 1, '
              'else the persisted flag 0x17 compared against 1; 0x17 is RBTutorialStatusMusicSelectSeen',
     0x358ec: 'RBTutorialManager +needStartTutorialPlay: the same record gate, then currentStatus '

@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4813 verified
+Total: 6343 — 6306 reconstructed, 4816 verified
 (75.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -231,7 +231,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ❌ | `0x1519c` |
 | `BFCodec` | `-` | `init` |  | ✅ | ❌ | `0x1529c` |
 | `BFCodec` | `-` | `cipherInit:keyLength:` |  | ✅ | ✅ | `0x1534c` |
-| `BFCodec` | `-` | `cipherInit:` |  | ✅ | ❌ | `0x153c0` |
+| `BFCodec` | `-` | `cipherInit:` |  | ✅ | ✅ | `0x153c0` |
 | `BFCodec` | `-` | `encipher:` |  | ✅ | ❌ | `0x15450` |
 | `BFCodec` | `-` | `decipher:` |  | ✅ | ❌ | `0x156f4` |
 | `BFCodec` | `-` | `dealloc` |  | ✅ | ❌ | `0x159c8` |
@@ -391,7 +391,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPastelManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x20a30` |
 | `RBPastelManager` | `-` | `init` |  | ✅ | ✅ | `0x20a88` |
 | `RBPastelManager` | `-` | `allReset` |  | ✅ | ✅ | `0x20afc` |
-| `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
+| `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ✅ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x20f48` |
@@ -627,7 +627,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `updateStatus:` |  | ✅ | ❌ | `0x35dd4` |
 | `RBTutorialManager` | `+` | `setUnlockedItemInfo:itemId:` |  | ✅ | ❌ | `0x36098` |
 | `RBTutorialManager` | `+` | `getUnlockedItemInfo` |  | ✅ | ❌ | `0x36308` |
-| `RBTutorialManager` | `+` | `resetUnlockedItemInfo` |  | ✅ | ❌ | `0x363a8` |
+| `RBTutorialManager` | `+` | `resetUnlockedItemInfo` |  | ✅ | ✅ | `0x363a8` |
 | `RBTutorialManager` | `-` | `currentStatus` | prop | ✅ | ✅ | `0x3643c` |
 | `RBTutorialManager` | `-` | `setCurrentStatus:` | prop | ✅ | ✅ | `0x3644c` |
 | `RBTutorialManager` | `-` | `isTutorial` | prop | ✅ | ✅ | `0x3645c` |
