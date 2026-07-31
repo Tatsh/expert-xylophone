@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6284 reconstructed, 4535 verified
+Total: 6343 — 6291 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1063,7 +1063,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `applicationWillEnterForeground:` |  | ✅ | ✅ | `0x5307c` |
 | `AppDelegate` | `-` | `applicationDidEnterBackground:` |  | ✅ | ✅ | `0x530b4` |
 | `AppDelegate` | `-` | `applicationWillTerminate:` |  | ✅ | ✅ | `0x531a4` |
-| `AppDelegate` | `+` | `launchAppStore` |  | ❌ | ❌ | `0x53268` |
+| `AppDelegate` | `+` | `launchAppStore` |  | ✅ | ❌ | `0x53268` |
 | `AppDelegate` | `-` | `applicationDidReceiveMemoryWarning:` |  | ✅ | ✅ | `0x53350` |
 | `AppDelegate` | `-` | `applicationSignificantTimeChange:` |  | ✅ | ✅ | `0x533b4` |
 | `AppDelegate` | `-` | `application:willChangeStatusBarOrientation:duration:` |  | ✅ | ✅ | `0x533b8` |
@@ -4907,7 +4907,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `tableView` | prop | ✅ | ✅ | `0x1cb1d8` |
 | `RBStoreGenreViewController` | `-` | `setTableView:` | prop | ✅ | ✅ | `0x1cb1e8` |
 | `RBCoreDataManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x1cb234` |
-| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ❌ | ❌ | `0x1cb2e8` |
+| `RBCoreDataManager` | `+` | `scoreDataFileName` |  | ✅ | ❌ | `0x1cb2e8` |
 | `RBCoreDataManager` | `-` | `managedObjectContext` | prop | ✅ | ❌ | `0x1cb314` |
 | `RBCoreDataManager` | `-` | `managedObjectModel` | prop | ✅ | ❌ | `0x1cb3c8` |
 | `RBCoreDataManager` | `-` | `persistentStoreCoordinator` | prop | ✅ | ❌ | `0x1cb4e8` |
@@ -5961,10 +5961,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkStore` | `-` | `setSdkDelegate:` | prop | ✅ | ✅ | `0x220ba4` |
 | `ApplilinkStore` | `-` | `applilinkParams` | prop | ✅ | ✅ | `0x220bb8` |
 | `ApplilinkStore` | `-` | `setApplilinkParams:` | prop | ✅ | ✅ | `0x220bc8` |
-| `DestinationCore` | `-` | `destinationRegistWithCountryCode:url:delegate:` |  | ❌ | ❌ | `0x220c20` |
-| `DestinationCore` | `-` | `failLoadWithError:` |  | ❌ | ❌ | `0x220e4c` |
-| `DestinationCore` | `-` | `finishLoadWithResponse:` |  | ❌ | ❌ | `0x220e50` |
-| `DestinationCore` | `-` | `redirectStartLoad:` |  | ❌ | ❌ | `0x220e54` |
+| `DestinationCore` | `-` | `destinationRegistWithCountryCode:url:delegate:` |  | ✅ | ❌ | `0x220c20` |
+| `DestinationCore` | `-` | `failLoadWithError:` |  | ✅ | ❌ | `0x220e4c` |
+| `DestinationCore` | `-` | `finishLoadWithResponse:` |  | ✅ | ❌ | `0x220e50` |
+| `DestinationCore` | `-` | `redirectStartLoad:` |  | ✅ | ❌ | `0x220e54` |
 | `ApplilinkDebug` | `+` | `countryCode` |  | ✅ | ✅ | `0x220e5c` |
 | `ApplilinkDebug` | `+` | `categoryId` |  | ✅ | ✅ | `0x220e74` |
 | `ApplilinkDebug` | `+` | `udid` |  | ✅ | ✅ | `0x220e8c` |
@@ -6165,7 +6165,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendCore` | `-` | `canUseBannerCache` |  | ✅ | ✅ | `0x23b758` |
 | `RecommendCore` | `-` | `clearAdStatus` |  | ✅ | ✅ | `0x23b82c` |
 | `RecommendCore` | `-` | `clearSession` |  | ✅ | ✅ | `0x23b8c0` |
-| `RecommendCore` | `+` | `clearData` |  | ❌ | ❌ | `0x23ba24` |
+| `RecommendCore` | `+` | `clearData` |  | ✅ | ❌ | `0x23ba24` |
 | `RecommendCore` | `-` | `postAnalysisListRegistWithAdType:AdModel:adLocation:impressionId:` |  | ✅ | ✅ | `0x23bb5c` |
 | `RecommendCore` | `-` | `showOwnAdWithAdLocation:toAppliId:creativeId:` |  | ✅ | ✅ | `0x23c11c` |
 | `RecommendCore` | `-` | `touchOwnAdWithAdLocation:toAppliId:creativeId:requestCode:delegate:` |  | ✅ | ✅ | `0x23c5fc` |

@@ -472,7 +472,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Open the App Store page for the game.
  * @ghidraAddress 0x53268
  */
-- (void)launchAppStore;
++ (void)launchAppStore;
 
 /**
  * @brief Begin registering for remote (push) notifications, requesting the alert/badge/sound

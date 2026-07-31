@@ -426,8 +426,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                           stringWithFormat:@"https://%@/akx/main/news/passed_info.jsp?target=JP",
                                            GetApiHostString()]];
     // The terms endpoint is stored as a string, not wrapped in an NSURL like the two above.
-    self.urlBaseTerm = [NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/",
-                                                  GetApiHostString()];
+    self.urlBaseTerm =
+        [NSString stringWithFormat:@"https://%@/akx/main/cgi/v3/terms/", GetApiHostString()];
 
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(audioSessionInterrupted:)
@@ -708,7 +708,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 #pragma mark - Store
 
-- (void)launchAppStore {
+/** @ghidraAddress 0x53268 */
++ (void)launchAppStore {
     // Mark an update as in progress on the shared delegate, then open the store product page.
     AppDelegate.appDelegate.isUpdate = YES;
     [UIApplication.sharedApplication openURL:[NSURL URLWithString:kAppStoreURLString]];
@@ -771,8 +772,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         NSMutableDictionary *dataQuery = [NSMutableDictionary
             dictionaryWithDictionary:(__bridge NSDictionary *)attributesResult];
         // -setObject:forKey:, not the subscript form.
-        [dataQuery setObject:(__bridge id)kSecClassGenericPassword
-                      forKey:(__bridge id)kSecClass];
+        [dataQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
         [dataQuery setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
         CFTypeRef dataResult = nullptr;
         NSString *stored = nil;
@@ -813,8 +813,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         [item setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock
                  forKey:(__bridge id)kSecAttrAccessible];
     }
-    [item setObject:[key dataUsingEncoding:NSUTF8StringEncoding]
-             forKey:(__bridge id)kSecValueData];
+    [item setObject:[key dataUsingEncoding:NSUTF8StringEncoding] forKey:(__bridge id)kSecValueData];
     SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
     return key;
 }
@@ -970,8 +969,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
           // Rebuild the base web-info URL from the served URL's scheme, host, and path.
           NSURL *served = [NSURL URLWithString:url];
-          NSString *base = [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host,
-                                                      served.path];
+          NSString *base =
+              [NSString stringWithFormat:@"%@://%@%@", served.scheme, served.host, served.path];
           weakSelf.urlBaseWebInfo = [NSURL URLWithString:base];
         }
         failure:^(Downloader *downloader){
@@ -1025,8 +1024,8 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         // No id: the resolved terms URL is just the base terms URL.
         self->_urlTerm = self->_urlBaseTerm;
     } else {
-        self->_urlTerm = [NSString stringWithFormat:kTermURLFormat, self->_urlBaseTerm,
-                                                    GetRegionCode(), termID];
+        self->_urlTerm =
+            [NSString stringWithFormat:kTermURLFormat, self->_urlBaseTerm, GetRegionCode(), termID];
     }
     return self->_urlTerm;
 }
@@ -1384,9 +1383,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
                 [self.resourceDownloadViewController download];
             }
         } else {
-            // The binary sends -launchAppStore to the AppDelegate class object rather than to an
-            // instance; this reproduces that exactly.
-            [(id)AppDelegate.class launchAppStore];
+            [AppDelegate launchAppStore];
         }
     } else {
         if (alertView.cancelButtonIndex == buttonIndex) {

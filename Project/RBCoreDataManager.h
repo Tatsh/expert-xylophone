@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return @c ScoreData.sqlite on the tablet variant, otherwise @c ScoreDataPhone.sqlite.
  * @ghidraAddress 0x1cb2e8
  */
-- (NSString *)scoreDataFileName;
++ (NSString *)scoreDataFileName;
 
 @end
 

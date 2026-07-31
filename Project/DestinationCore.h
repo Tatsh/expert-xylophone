@@ -30,14 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
  * Builds a parameter dictionary containing the @c ad system marker, @p countryCode, and @p url,
  * merges the shared user-agent parameters, and posts a @c GET request to
  * @c /destination/regist.php (built from @c ApplilinkConsts baseUrlSsl) with a ten-second timeout.
- * The request runs through an @c ApplilinkURLConnection whose delegate is this class. The
+ * The request runs through an @c ApplilinkURLConnection whose delegate is the receiver. The
  * @p delegate argument is accepted for API symmetry but ignored by the shipped build.
  * @param countryCode The country code registered as the @c country_code parameter.
  * @param url The return URL registered as the @c rturl parameter.
  * @param delegate The caller's delegate; ignored by the shipped build.
  * @ghidraAddress 0x220c20
  */
-+ (void)destinationRegistWithCountryCode:(nullable NSString *)countryCode
+- (void)destinationRegistWithCountryCode:(nullable NSString *)countryCode
                                      url:(nullable NSString *)url
                                 delegate:(nullable id)delegate;
 

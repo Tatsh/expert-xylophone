@@ -109,8 +109,11 @@ static NSString *const kRecommendCoreKeyAdIdFrom = @"AdIdFrom";
 static NSString *const kRecommendCoreKeyAdType = @"AdType";
 static NSString *const kRecommendCoreKeyRewardNone = @"REWARD_NONE";
 
-// The install flag reported when the advert record carries none.
+// The install flag reported when the advert record carries none. +clearData compares the
+// configured server environment against the same literal: the disabled environment is "0", not the
+// empty string.
 static NSString *const kRecommendCoreInstallFlgNone = @"0";
+static NSString *const kRecommendCoreEnvServerDisabled = @"0";
 static NSString *const kRecommendCoreDisplayNumberDefault = @"1";
 
 // The request-parameter keys for the external advert index request.
@@ -1026,9 +1029,10 @@ static void RecommendCoreOpenAdScreenAppliList(RecommendCore *core, id appliList
     }
 }
 
-- (void)clearData {
+/** @ghidraAddress 0x23ba24 */
++ (void)clearData {
     NSString *env = [ApplilinkConsts envServer];
-    if (env != nil && ![env isEqualToString:@""]) {
+    if (env != nil && ![env isEqualToString:kRecommendCoreEnvServerDisabled]) {
         [ApplilinkUdid deleteAllUDID];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRecommendCorePostInstalledKey];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRecommendCoreAppliIdKey];

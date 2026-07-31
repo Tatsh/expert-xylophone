@@ -22,7 +22,8 @@ static NSString *const kDestinationPath = @"/destination/regist.php";
 
 @implementation DestinationCore
 
-+ (void)destinationRegistWithCountryCode:(NSString *)countryCode
+/** @ghidraAddress 0x220c20 */
+- (void)destinationRegistWithCountryCode:(NSString *)countryCode
                                      url:(NSString *)url
                                 delegate:(id)delegate {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:3];
@@ -39,19 +40,22 @@ static NSString *const kDestinationPath = @"/destination/regist.php";
                                                   timeout:kDestinationRequestTimeout
                                               cachePolicy:nil];
     ApplilinkURLConnection *connection = [[ApplilinkURLConnection alloc] init];
-    // The class object itself is the connection delegate; the delegate argument is ignored.
-    [connection loadRequestWithRequest:request delegate:(id)self];
+    // The receiver is the connection delegate; the delegate argument is ignored.
+    [connection loadRequestWithRequest:request delegate:self];
 }
 
 #pragma mark - ApplilinkURLConnectionDelegate
 
-+ (void)failLoadWithError:(NSError *)error {
+/** @ghidraAddress 0x220e4c */
+- (void)failLoadWithError:(NSError *)error {
 }
 
-+ (void)finishLoadWithResponse:(NSString *)response {
+/** @ghidraAddress 0x220e50 */
+- (void)finishLoadWithResponse:(NSString *)response {
 }
 
-+ (BOOL)redirectStartLoad:(NSURLRequest *)request {
+/** @ghidraAddress 0x220e54 */
+- (BOOL)redirectStartLoad:(NSURLRequest *)request {
     return NO;
 }
 

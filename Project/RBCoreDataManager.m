@@ -49,8 +49,8 @@ static NSString *const kManagedObjectModelType = @"mom";
 
 #pragma mark - Store names
 
-- (NSString *)scoreDataFileName {
-    /** @ghidraAddress 0x1cb2e8 */
+/** @ghidraAddress 0x1cb2e8 */
++ (NSString *)scoreDataFileName {
     return IsPad() ? kScoreDataStoreFileName : kScoreDataPhoneStoreFileName;
 }
 
@@ -83,7 +83,7 @@ static NSString *const kManagedObjectModelType = @"mom";
     /** @ghidraAddress 0x1cb4e8 */
     if (_persistentStoreCoordinator == nil) {
         NSString *directory = GetDocumentsDirectoryPath();
-        NSString *storePath = [directory stringByAppendingPathComponent:self.scoreDataFileName];
+        NSString *storePath = [directory stringByAppendingPathComponent:RBCoreDataManager.scoreDataFileName];
         NSURL *storeURL = [NSURL fileURLWithPath:storePath];
         NSDictionary *options = @{
             NSMigratePersistentStoresAutomaticallyOption : [NSNumber numberWithBool:YES],

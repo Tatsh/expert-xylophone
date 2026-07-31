@@ -346,10 +346,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearSession;
 
 /**
- * @brief Clear recommend SDK data, except on the production environment.
+ * @brief Clear recommend SDK data, except when the server environment is disabled ("0").
  * @ghidraAddress 0x23ba24
  */
-- (void)clearData;
++ (void)clearData;
 
 /**
  * @brief Register an impression list for the displayed adverts.
