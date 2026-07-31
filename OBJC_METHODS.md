@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5140 verified
-(81.0%).
+Total: 6343 — 6306 reconstructed, 5146 verified
+(81.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5140 verified, 3507 come from those passes and the remaining
-1633 were read by hand. The split matters when reading the percentage: a
+Of the 5146 verified, 3507 come from those passes and the remaining
+1639 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -232,15 +232,15 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
 | `UnZipArchive` | `-` | `setFirst` |  | ✅ | ✅ | `0x1503c` |
 | `UnZipArchive` | `-` | `setNext` |  | ✅ | ✅ | `0x15070` |
-| `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ❌ | `0x150a4` |
-| `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ❌ | `0x1519c` |
+| `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ✅ | `0x150a4` |
+| `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ✅ | `0x1519c` |
 | `BFCodec` | `-` | `init` |  | ✅ | ✅ | `0x1529c` |
 | `BFCodec` | `-` | `cipherInit:keyLength:` |  | ✅ | ✅ | `0x1534c` |
 | `BFCodec` | `-` | `cipherInit:` |  | ✅ | ✅ | `0x153c0` |
 | `BFCodec` | `-` | `encipher:` |  | ✅ | ❌ | `0x15450` |
 | `BFCodec` | `-` | `decipher:` |  | ✅ | ❌ | `0x156f4` |
 | `BFCodec` | `-` | `dealloc` |  | ✅ | ❌ | `0x159c8` |
-| `GraphCircleView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x15d40` |
+| `GraphCircleView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x15d40` |
 | `GraphCircleView` | `-` | `CreateView` |  | ✅ | ✅ | `0x15e18` |
 | `GraphCircleView` | `-` | `setOption:dotSize:lineColor:lineSize:` |  | ✅ | ❌ | `0x15edc` |
 | `GraphCircleView` | `-` | `setData:maxValue:` |  | ✅ | ✅ | `0x1605c` |
@@ -405,9 +405,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x24f68` |
 | `StoreExtendNoteDetailViewPad` | `-` | `stopSample` |  | ✅ | ❌ | `0x24f6c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushSampleBtn` |  | ✅ | ❌ | `0x250d4` |
-| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ❌ | `0x2534c` |
-| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewDownloading` |  | ✅ | ❌ | `0x25444` |
-| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ❌ | `0x25540` |
+| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ✅ | `0x2534c` |
+| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewDownloading` |  | ✅ | ✅ | `0x25444` |
+| `StoreExtendNoteDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ✅ | `0x25540` |
 | `StoreExtendNoteDetailViewPad` | `-` | `showNoteInfo` |  | ✅ | ❌ | `0x2563c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushLink:` |  | ✅ | ✅ | `0x2585c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `pushCellButton:` |  | ✅ | ❌ | `0x25860` |

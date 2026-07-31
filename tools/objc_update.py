@@ -986,6 +986,26 @@ VERIFIED = {
              'that returned nil without setting an error would still be returned as nil and one '
              'that returned data alongside an error would be discarded. The reconstruction tests '
              'the same thing',
+    0x2534c: 'StoreExtendNoteDetailViewPad -sampleViewStop: stopAnimating on the sample '
+             'indicator, the image set to "09_store/store_sample_1", and sampleStatus zeroed',
+    0x25444: 'StoreExtendNoteDetailViewPad -sampleViewDownloading: startAnimating, sampleStatus 1, '
+             'and the image set to "09_store/store_sample_1" again, the same asset the stopped '
+             'state uses. The reconstruction names the stopped constant rather than inventing a '
+             'downloading one, which is right and reads wrong, so it is worth having recorded',
+    0x25540: 'StoreExtendNoteDetailViewPad -sampleViewPlaying: sampleStatus 2 and a distinct image, '
+             '"09_store/store_sample_2", but the spinner call is stopAnimating rather than '
+             'startAnimating. Playing stops the indicator because the indicator marks the download, '
+             'not the playback; faithful and counter-intuitive',
+    0x150a4: 'UnZipArchive -getCurrentFileName: two passes of unzGetCurrentFileInfo, the first to '
+             'read size_filename and the second to fill a malloc buffer, with the name built by '
+             'stringWithCString:encoding: at w3 = 1, NSASCIIStringEncoding',
+    0x1519c: 'UnZipArchive -getCurrentData: the read loop appends before testing. sxtw x3,w22 '
+             'sign-extends the read count into the length argument ahead of the appendBytes:length: '
+             'send, and only then does cmp w22,#0 with b.gt end the loop, so a negative error '
+             'return is sign-extended into a length rather than stopping the loop first. The '
+             'source already carries a comment saying exactly this',
+    0x15d40: 'GraphCircleView -initWithFrame:: super chain behind a cbz, a fresh NSMutableArray '
+             'into setPointArray:, then CreateView',
     0x18530: 'HistoryData +convertLocalDate:: a cbz returns nil, then systemTimeZone and '
              'secondsFromGMTForDate:, and the offset reaches dateByAddingTimeInterval: through '
              'scvtf, a signed conversion. That is the detail that matters: offsets west of GMT are '
@@ -1010,7 +1030,10 @@ VERIFIED = {
     0x19b84: 'RBResoureDownloadBGEffectView -initWithFrame:: super chain behind a cbz, then two '
              'base-path setters taking the CFStrings at 0x362840 and 0x362860, decoded as "re_" '
              'and "ring_" and matching their constants. Both are prefixes rather than whole names, '
-             'so the frame number is appended by the caller',
+             'so the frame number is appended by the caller. Both setters are also super-sends, '
+             'objc_msgSendSuper2 at 0x19be8 and 0x19c10, which the first reading here missed: the '
+             'strings were checked and the dispatch was not. The source used plain property '
+             'assignment and now spells them [super ...], matching the sibling class',
     0xcce0: 'RBMenuBGEffectPartView -init: super init behind a cbz, then three path setters. The '
             'paths are read from a table at +0x520 in descending order, +0x20 then +0x10 then +0, '
             'so image1 takes bg_tex_05 and image3 takes bg_tex_01. The numbering runs opposite to '

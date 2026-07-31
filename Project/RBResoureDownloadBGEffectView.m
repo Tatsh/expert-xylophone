@@ -22,8 +22,11 @@ static NSString *const kRingImageBasePath = @"ring_";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.rainbowImageBasePath = kRainbowImageBasePath;
-        self.ringImageBasePath = kRingImageBasePath;
+        // Both setters are super-sends in the binary, objc_msgSendSuper2 at 0x19be8 and 0x19c10,
+        // matching the sibling RBResourceDownloadBGEffectPartView. This class overrides neither,
+        // so the dispatch lands in the same place either way; spelled as super for fidelity.
+        [super setRainbowImageBasePath:kRainbowImageBasePath];
+        [super setRingImageBasePath:kRingImageBasePath];
     }
     return self;
 }
