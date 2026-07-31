@@ -1,0 +1,38 @@
+# The projection matrices the play scene draws through. Run this on BOTH the original and the
+# reconstruction, at the tutorial play screen, and diff the two.
+#
+#   (lldb) process interrupt
+#   (lldb) command source /path/to/rb458-proj.lldb
+#
+# The projection matrix sits at +0x10 in ne::Viewport, not after the scalar fields. That was
+# recovered from the data rather than assumed: reading +0x24 gave -0.001953125 for the orthographic
+# viewport, which is -2/1024 and therefore m[5] of a 1024-high ortho, and 1.42814803 for the camera,
+# which is 1/tan(35 degrees) and therefore m[5] of a 70 degree perspective. m[5] is at matrix offset
+# 0x14, so the matrix begins at 0x10. The reconstruction currently declares m_mProjection after the
+# scalars, which is why the earlier read returned nonsense.
+#
+# What to compare: the ortho should read 2/w, -2/h on its diagonal with -1, +1 in the translation
+# row; the perspective should read 1/(tan*aspect), 1/tan, and a -1 in m[11]. A whole-scene shift
+# with matching geometry means one of these two differs, or the wrong one is bound.
+
+
+# g_pCurrentAppliedCamera
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff00)
+
+# g_pCurrentProjection
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff08)
+
+# g_pActiveViewCamera
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff10)
+
+# g_pCurrentModelNode
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff18)
+
+# activeViewCamera: projection matrix (16 floats from +0x10)
+memory read -f f -s 4 -c 16 `(uint64_t)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x10`
+
+# currentProjection: projection matrix (16 floats from +0x10)
+memory read -f f -s 4 -c 16 `(uint64_t)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x10`
+
+# currentModelNode: first 32 floats (view matrix lives in here)
+memory read -f f -s 4 -c 32 `(uint64_t)*(void **)((uint64_t)&_mh_execute_header + 0x3cff18)`
