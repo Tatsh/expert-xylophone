@@ -11,6 +11,7 @@ target_sources(rbplus PRIVATE
     neRender.mm
     neRenderer.mm
     neSpriteInstancing.mm
+    neSpriteInstancing3D.mm
     polygon2d_trail.mm
     curve.h
     matrixmath.h
@@ -19,6 +20,7 @@ target_sources(rbplus PRIVATE
     neRender.h
     neRenderer.h
     neSpriteInstancing.h
+    neSpriteInstancing3D.h
     polygon2d_trail.h
     s_vector2.h
     s_vector3.h

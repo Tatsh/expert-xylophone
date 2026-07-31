@@ -30,18 +30,12 @@ public:
      *
      * Allocates the per-sprite attribute arrays and the per-frame vertex scratch, then builds and
      * uploads the static quad vertex and index buffers (four vertices and six indices per sprite).
-     * The binary emits two near-identical constructors that differ only by draw mode: the
-     * screen-space batch (@c InitSpriteInstancer) installs the axis-aligned render path and
-     * nearest-filter texture parameters, while the world-space batch (@c InitWorldSpriteBatch)
-     * installs the camera-composed render path, sets the batch flag, and uses linear-filter
-     * parameters. They are unified here with the @p bWorldSpace selector.
+     * The world-space batch is a separate class, @c ne::C_SPRITE_INSTANCING_3D, built by its own
+     * constructor at @c 0x3097c.
      * @param nCapacity The maximum number of sprites the batch can draw.
-     * @param bWorldSpace Whether to build the world-space (camera-composed) batch rather than the
-     *        screen-space one.
      * @ghidraAddress 0x2f668
-     * @ghidraAddress 0x3097c
      */
-    explicit C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWorldSpace = false);
+    explicit C_SPRITE_INSTANCING_2D(unsigned int nCapacity);
     ~C_SPRITE_INSTANCING_2D() override;
 
     /**
@@ -54,18 +48,6 @@ public:
      * @ghidraAddress 0x2faa8
      */
     void Render() override;
-
-    /**
-     * @brief Draws the batch as a world-space sprite set composed under the current model node's
-     * camera matrix (the @c CreateWorldSpriteBatch node's render path).
-     *
-     * Like @c Render's slow path, every live sprite carries its own transform matrix through the
-     * palette-matrix slot, but each is composed with the shared world*camera matrix (the current
-     * model node's view matrix times the parent's world matrix) rather than the parent world
-     * matrix alone, and there is no axis-aligned fast path.
-     * @ghidraAddress 0x30dc0
-     */
-    void RenderWorldSpace();
 
     /**
      * @brief The number of sprites the node currently draws.
@@ -267,7 +249,10 @@ public:
      */
     void SetSpriteColor(int nIndex, unsigned int nColor);
 
-private:
+protected:
+    // Force-disables every render capability the sprite pass does not want, then enables blending
+    // and the arrays it does. Shared by the screen-space and world-space batches.
+    static void ResetRenderState(neGLESRenderer *pRenderer);
     // Binds the batch's texture (or disables texturing) and points the texture-unit's coordinate
     // array into the vertex scratch; shared by both draw paths.
     void BindPassTexture(neGLESRenderer *pRenderer);

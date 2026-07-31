@@ -7,6 +7,7 @@
 #include "matrixmath.h"
 #include "neGLES.h"
 #include "neRenderer.h"
+#include "neSpriteInstancing3D.h"
 #include "neTexture.h"
 #import "s_vector2.h"
 
@@ -141,11 +142,10 @@ constexpr int kSpriteIndexCount = 6;
 constexpr unsigned int kVertexScratchStride = 64;
 
 // The default texture-sampler parameters (min filter, mag filter, s wrap, t wrap).
-// The default texture parameters each construction mode seeds: the screen-space batch uses
-// nearest-filter min/mag (0, 0); the world-space batch uses linear-filter min/mag (1, 1). Both wrap
-// with the same mode (7, 7). @ghidraAddress 0x2eecf0 (screen) and 0x2eee00 (world).
+// The default texture parameters the screen-space constructor seeds: nearest-filter min/mag and
+// the shared wrap mode. The world-space class seeds linear-filter min/mag instead.
+// @ghidraAddress 0x2eecf0
 constexpr int kScreenTexParams[] = {0, 0, 7, 7};
-constexpr int kWorldTexParams[] = {1, 1, 7, 7};
 
 // One corner of a sprite's initial quad, as uploaded to the GL array buffer: a constant 1.0 and the
 // index of the sprite the corner belongs to. The trailing bytes are padding the binary leaves
@@ -164,19 +164,13 @@ constexpr int kTemplateMatrixIndexOffset =
 // One weight and one matrix index per vertex: each sprite rides a single palette matrix.
 constexpr int kTemplateComponentCount = 1;
 
-/**
- * @ghidraAddress 0x2f668
- * @ghidraAddress 0x3097c
- */
-C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWorldSpace) {
+/** @ghidraAddress 0x2f668 */
+C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
     // The base C_RENDER constructor and the derived vtable are installed by the compiler; the nine
     // attribute-array pointers and the remaining scalars are zero from their member initialisers.
     // The world-space batch additionally clears the batch flag (the screen-space one leaves it
     // default).
     m_dwCapacity = nCapacity;
-    if (bWorldSpace) {
-        m_bBatchFlag = false;
-    }
 
     // Per-sprite attribute arrays. The five vec2 arrays are value-initialised to zero; the rotation
     // and scale arrays are filled in the build loop below, and the colour array by the caller.
@@ -235,7 +229,7 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity, bool bWor
         0);
     delete[] pVertexTemplate;
 
-    const int *pTexParams = bWorldSpace ? kWorldTexParams : kScreenTexParams;
+    const int *pTexParams = kScreenTexParams;
     m_aTexParams[0] = pTexParams[0];
     m_aTexParams[1] = pTexParams[1];
     m_aTexParams[2] = pTexParams[2];
@@ -280,7 +274,7 @@ C_SPRITE_INSTANCING_2D *CreateSpriteInstancer(unsigned int nCapacity) {
 
 /** @ghidraAddress 0x31834 */
 C_SPRITE_INSTANCING_2D *CreateWorldSpriteBatch(unsigned int nCapacity) {
-    return new C_SPRITE_INSTANCING_2D(nCapacity, /*bWorldSpace=*/true);
+    return new C_SPRITE_INSTANCING_3D(nCapacity);
 }
 
 /** @ghidraAddress 0x317dc */
@@ -409,7 +403,7 @@ void C_SPRITE_INSTANCING_2D::SetSpriteColor(int nIndex, unsigned int nColor) {
 
 // Force-disables every general render capability for the sprite pass, leaving only blending (set up
 // by the caller) enabled. Runs once before the sprite loop.
-static void ResetRenderState(neGLESRenderer *pRenderer) {
+void C_SPRITE_INSTANCING_2D::ResetRenderState(neGLESRenderer *pRenderer) {
     pRenderer->SetGlEnableState(kEnableAlphaTest, 0);
     pRenderer->SetGlEnableState(kEnableBlend, 1);
     for (int nState = kEnableBlend + 1; nState <= kEnableStateResetMax; ++nState) {
@@ -437,18 +431,6 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
 
 /** @ghidraAddress 0x2faa8 */
 void C_SPRITE_INSTANCING_2D::Render() {
-    // The binary has two constructors that install two different vtables: the screen-space one
-    // (0x2f668) points Render at this routine, and the world-space one (0x3097c) points it at
-    // RenderWorldSpace (0x30dc0). The only state difference between them is the byte at +0x154,
-    // which the world-space constructor clears, so that flag selects the path here. Without this
-    // dispatch every CreateWorldSpriteBatch drew through the top-left orthographic projection
-    // while holding centre-relative coordinates, which put the play-field frame at the origin with
-    // its left half off screen.
-    if (!m_bBatchFlag) {
-        RenderWorldSpace();
-        return;
-    }
-
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
@@ -565,43 +547,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         pRenderer->BindIndexBuffer(m_dwIndexVbo);
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
-}
-
-/** @ghidraAddress 0x30dc0 */
-void C_SPRITE_INSTANCING_2D::RenderWorldSpace() {
-    neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
-    const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
-    SetMatrixIdentity(GetLocalMatrix());
-
-    // Count the live (non-transparent) sprites; bail if there are none.
-    int nLiveCount = 0;
-    for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
-        if (GetColorAlpha(nSprite) != 0) {
-            ++nLiveCount;
-        }
-    }
-    if (nLiveCount == 0) {
-        return;
-    }
-
-    // Bind the active view camera and copy the parent's world matrix into this node's, then reset
-    // the render state and select the blend mode. The camera is the perspective one installed by
-    // -[RBViewController UpdateProjection] through SetActiveViewCamera, read from the global at
-    // 0x3cff10 by the ldr at 0x30e4c -- not the orthographic projection at 0x3cff08. Binding the
-    // ortho here draws world-space geometry in raw world units against a top-left origin, which
-    // put the play-field frame at half scale with its left half off screen.
-    SetCurrentCamera(pRenderer, g_pActiveViewCamera);
-    std::memcpy(GetWorldMatrix(), GetParent()->GetWorldMatrix(), sizeof(float) * 16);
-    ResetRenderState(pRenderer);
-    pRenderer->SetBlendFunc(kBlendOne, m_nBlendMode == 0 ? kBlendOneMinusSrcAlpha : kBlendOne);
-
-    // The shared compose matrix is the current model node's camera (view) matrix multiplied by the
-    // parent's world matrix, so every world-space sprite is placed in the camera's frame.
-    float worldCamMatrix[16];
-    std::memcpy(worldCamMatrix, g_pCurrentModelNode->GetViewMatrix(), sizeof(worldCamMatrix));
-    MultiplyMatrixInPlace(worldCamMatrix, GetParent()->GetWorldMatrix());
-
-    EmitMatrixSprites(pRenderer, nMaxPerBatch, worldCamMatrix);
 }
 
 // Builds the per-sprite transform matrix for the slow path: a translation of the anchor to the
