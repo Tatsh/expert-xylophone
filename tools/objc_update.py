@@ -303,6 +303,13 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1c9804: 'RBNavigationController -viewDidLoad: super, then clears the navigation bar\'s '
+              'translucency with the mov w2 of 0',
+    0x1c9894: 'RBNavigationController -shouldAutorotate: delegates to visibleViewController, so '
+              'the answer comes from whatever is on top rather than from the stack',
+    0x1c98f4: 'RBNavigationController -supportedInterfaceOrientations: the same delegation',
+    0x1caf10: 'RBStoreGenreViewController -tableView:numberOfRowsInSection:: numGenres from the '
+              'pack-list controller, with the section argument never read',
     0x1c1b78: 'StoreExtendNoteCellPhone -isPurchased: inverts purchasedLabel.isHidden. That ivar '
               'is named differently again from the labelPurchased and purchasedButton its siblings '
               'use for the same role, which is why each pair is read rather than inferred',

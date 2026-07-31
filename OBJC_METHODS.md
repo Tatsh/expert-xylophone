@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4956 verified
-(78.1%).
+Total: 6343 — 6306 reconstructed, 4960 verified
+(78.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4876,10 +4876,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `setTrackImageView:` | prop | ✅ | ✅ | `0x1c9774` |
 | `RBTermAgreeView` | `-` | `progressImageView` | prop | ✅ | ✅ | `0x1c9784` |
 | `RBTermAgreeView` | `-` | `setProgressImageView:` | prop | ✅ | ✅ | `0x1c9794` |
-| `RBNavigationController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x1c9804` |
+| `RBNavigationController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x1c9804` |
 | `RBNavigationController` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x1c988c` |
-| `RBNavigationController` | `-` | `shouldAutorotate` |  | ✅ | ❌ | `0x1c9894` |
-| `RBNavigationController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ❌ | `0x1c98f4` |
+| `RBNavigationController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x1c9894` |
+| `RBNavigationController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x1c98f4` |
 | `(RB)` | `+` | `isFileExist:` |  | ✅ | ✅ | `0x1c9954` |
 | `(RB)` | `+` | `isDirectoryExist:` |  | ✅ | ✅ | `0x1c9a0c` |
 | `(RB)` | `+` | `createDirectory:` |  | ✅ | ✅ | `0x1c9ac0` |
@@ -4896,7 +4896,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreGenreViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x1cab0c` |
 | `RBStoreGenreViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x1cabe8` |
 | `RBStoreGenreViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x1caf08` |
-| `RBStoreGenreViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x1caf10` |
+| `RBStoreGenreViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0x1caf10` |
 | `RBStoreGenreViewController` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf78` |
 | `RBStoreGenreViewController` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0x1caf7c` |
 | `RBStoreGenreViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x1caf88` |
