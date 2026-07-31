@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5131 verified
+Total: 6343 — 6306 reconstructed, 5134 verified
 (80.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5131 verified, 3507 come from those passes and the remaining
-1624 were read by hand. The split matters when reading the percentage: a
+Of the 5134 verified, 3507 come from those passes and the remaining
+1627 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6326,9 +6326,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendWebView` | `-` | `setApplilinkParams:` | prop | ✅ | ✅ | `0x246750` |
 | `RecommendWebView` | `-` | `webViewBounces` | prop | ✅ | ✅ | `0x24676c` |
 | `RecommendWebView` | `-` | `setWebViewBounces:` | prop | ✅ | ✅ | `0x24677c` |
-| `RecommendFullScreenController` | `-` | `init` |  | ✅ | ❌ | `0x246804` |
+| `RecommendFullScreenController` | `-` | `init` |  | ✅ | ✅ | `0x246804` |
 | `RecommendFullScreenController` | `-` | `loadView` |  | ✅ | ❌ | `0x246840` |
-| `RecommendFullScreenController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x246934` |
+| `RecommendFullScreenController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x246934` |
 | `RecommendFullScreenController` | `-` | `openAdViewWithAdModel:adLocation:verticalAlign:applilinkParams:delegate:closeDelegate:` |  | ✅ | ❌ | `0x246970` |
 | `RecommendFullScreenController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ❌ | `0x246efc` |
 | `RecommendFullScreenController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x246fa4` |
@@ -6340,7 +6340,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendFullScreenController` | `-` | `appListDidAppear` |  | ✅ | ❌ | `0x247bc0` |
 | `RecommendFullScreenController` | `-` | `appListDidDisappear` |  | ✅ | ✅ | `0x247d90` |
 | `RecommendFullScreenController` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x247da0` |
-| `RecommendFullScreenController` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x247e50` |
+| `RecommendFullScreenController` | `-` | `appListFailLinkWithError:` |  | ✅ | ✅ | `0x247e50` |
 | `RecommendFullScreenController` | `-` | `openedNotice` |  | ✅ | ✅ | `0x247ed4` |
 | `RecommendFullScreenController` | `-` | `closeNotice` |  | ✅ | ✅ | `0x247ee4` |
 | `RecommendFullScreenController` | `-` | `failOpenNoticeWithError:` |  | ✅ | ❌ | `0x247ef4` |

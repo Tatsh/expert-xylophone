@@ -1348,6 +1348,12 @@ VERIFIED = {
               'removes total before daily, so the two run opposite ways round. Neither order '
               'matters to the result, which is exactly why a reconstruction would be tempted to '
               'make them agree; both are as the binary has them',
+    0x246804: 'RecommendFullScreenController -init: a bare super init returned directly, with no '
+              'ivar setup, so the one-line body is right',
+    0x246934: 'RecommendFullScreenController -didReceiveMemoryWarning: a bare super chain',
+    0x247e50: 'RecommendFullScreenController -appListFailLinkWithError:: the third class routing '
+              'into toDelegateFailLinkWithError:appParam:delegate:, after RewardCore at 0x20bacc '
+              'and RecommendWebView at 0x24647c, each with its own weak delegate load',
     0x246158: 'RecommendWebView -appListDidStart: forwards to the ApplilinkCore class method '
               'toDelegateDidStart:delegate: with the params ivar and the delegate loaded through '
               '_objc_loadWeakRetained, confirming the weak property',
