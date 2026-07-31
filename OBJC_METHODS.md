@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5072 verified
+Total: 6343 — 6306 reconstructed, 5075 verified
 (80.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5072 verified, 3507 come from those passes and the remaining
-1565 were read by hand. The split matters when reading the percentage: a
+Of the 5075 verified, 3507 come from those passes and the remaining
+1568 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6265,14 +6265,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `requestCode` | prop | ✅ | ✅ | `0x241654` |
 | `RecommendAdAreaView` | `-` | `setRequestCode:` | prop | ✅ | ✅ | `0x241664` |
 | `RotateStoreProductViewController` | `-` | `initWithNibName:bundle:` |  | ✅ | ✅ | `0x2416d4` |
-| `RotateStoreProductViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x24174c` |
-| `RotateStoreProductViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ❌ | `0x241788` |
+| `RotateStoreProductViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x24174c` |
+| `RotateStoreProductViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x241788` |
 | `RotateStoreProductViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x2417c4` |
 | `RotateStoreProductViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x2417cc` |
 | `RotateStoreProductViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x2417d4` |
 | `RecommendAdCache` | `+` | `getAllAdStatus` |  | ✅ | ❌ | `0x2417dc` |
 | `RecommendAdCache` | `+` | `getAllAdDataWithCallBack:` |  | ✅ | ❌ | `0x241c28` |
-| `RecommendAdCache` | `+` | `clearAllAdData` |  | ✅ | ❌ | `0x242380` |
+| `RecommendAdCache` | `+` | `clearAllAdData` |  | ✅ | ✅ | `0x242380` |
 | `RecommendAdCache` | `+` | `getAllAdDataInfoExpire` |  | ✅ | ❌ | `0x2423d8` |
 | `RecommendAdCache` | `+` | `clearAllAdDataInfoExpire` |  | ✅ | ❌ | `0x2424e0` |
 | `RecommendAdCache` | `+` | `createFolder` |  | ✅ | ❌ | `0x242538` |

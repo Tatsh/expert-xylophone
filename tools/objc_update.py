@@ -1093,6 +1093,12 @@ VERIFIED = {
               'file-local constant. The scheduled selector is calcelSessionConnection, which is '
               'the binary\'s own misspelling and is kept rather than corrected, as the naming rule '
               'requires',
+    0x24174c: 'RotateStoreProductViewController -viewDidLoad: a bare super chain',
+    0x241788: 'RotateStoreProductViewController -didReceiveMemoryWarning: a bare super chain',
+    0x242380: 'RecommendAdCache +clearAllAdData: removeObjectForKey: against the CFString at '
+              '0x3722c0, decoded as "ApplilinkRecommend.allAdData" and matching '
+              'kRecommendAdCacheAllAdDataKey. It clears the payload only, not the neighbouring '
+              'expiry key, which has its own clear method',
     0x2416d4: 'RotateStoreProductViewController -initWithNibName:bundle:: a bare super chain that '
               'forwards both arguments and returns the result, with the nib name retained across '
               'the call and released after',
