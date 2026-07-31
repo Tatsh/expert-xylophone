@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5029 verified
+Total: 6343 — 6306 reconstructed, 5033 verified
 (79.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5029 verified, 3507 come from those passes and the remaining
-1522 were read by hand. The split matters when reading the percentage: a
+Of the 5033 verified, 3507 come from those passes and the remaining
+1526 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6115,7 +6115,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Crypto` | `+` | `sha1:` |  | ✅ | ❌ | `0x23496c` |
 | `Crypto` | `+` | `sha256:` |  | ✅ | ❌ | `0x234af8` |
 | `Crypto` | `+` | `cryptorToData:value:key:` |  | ✅ | ❌ | `0x234c84` |
-| `ApplilinkPasteBoard` | `-` | `init` |  | ✅ | ❌ | `0x234e38` |
+| `ApplilinkPasteBoard` | `-` | `init` |  | ✅ | ✅ | `0x234e38` |
 | `ApplilinkPasteBoard` | `-` | `storageData` |  | ✅ | ❌ | `0x234e74` |
 | `ApplilinkPasteBoard` | `-` | `storageDataOld` |  | ✅ | ❌ | `0x235078` |
 | `ApplilinkPasteBoard` | `-` | `storageDataWithServiceName:storageIndex:error:` |  | ✅ | ❌ | `0x235218` |
@@ -6225,7 +6225,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x23e968` |
 | `RecommendAdAreaView` | `-` | `startPath:` |  | ✅ | ❌ | `0x23ea44` |
 | `RecommendAdAreaView` | `-` | `setAdModel:adLocation:adType:requestCode:delegate:` |  | ✅ | ❌ | `0x23eb70` |
-| `RecommendAdAreaView` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0x23ed30` |
+| `RecommendAdAreaView` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0x23ed30` |
 | `RecommendAdAreaView` | `-` | `closeAdArea` |  | ✅ | ✅ | `0x23ed6c` |
 | `RecommendAdAreaView` | `-` | `setScrollEnabled:` |  | ✅ | ❌ | `0x23ed7c` |
 | `RecommendAdAreaView` | `-` | `setScrollBoundsEnabled:` |  | ✅ | ❌ | `0x23f078` |
@@ -6240,10 +6240,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x23fe44` |
 | `RecommendAdAreaView` | `-` | `redirectWithRequest:` |  | ✅ | ❌ | `0x23ffa8` |
 | `RecommendAdAreaView` | `-` | `openedNotice` |  | ✅ | ✅ | `0x241364` |
-| `RecommendAdAreaView` | `-` | `closeNotice` |  | ✅ | ❌ | `0x241368` |
+| `RecommendAdAreaView` | `-` | `closeNotice` |  | ✅ | ✅ | `0x241368` |
 | `RecommendAdAreaView` | `-` | `openErrorNotice` |  | ✅ | ✅ | `0x2413a4` |
 | `RecommendAdAreaView` | `-` | `appStoreOpenedNotice` |  | ✅ | ✅ | `0x2413a8` |
-| `RecommendAdAreaView` | `-` | `appStoreCloseNotice` |  | ✅ | ❌ | `0x2413ac` |
+| `RecommendAdAreaView` | `-` | `appStoreCloseNotice` |  | ✅ | ✅ | `0x2413ac` |
 | `RecommendAdAreaView` | `-` | `appStoreClosedNotice` |  | ✅ | ✅ | `0x2413d4` |
 | `RecommendAdAreaView` | `-` | `appStoreFailLoadNoticeWithError:` |  | ✅ | ✅ | `0x2413d8` |
 | `RecommendAdAreaView` | `-` | `appStoreTransitionNotice` |  | ✅ | ✅ | `0x2413dc` |

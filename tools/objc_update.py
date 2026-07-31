@@ -934,6 +934,18 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x234e38: 'ApplilinkPasteBoard -init: a bare super init whose result is returned with no ivar '
+              'setup, so the one-line reconstruction is right',
+    0x23ed30: 'RecommendAdAreaView -removeFromSuperview: a bare super chain, unlike the '
+              'RecommendWebViewController override of the same selector, which is empty',
+    0x241368: 'RecommendAdAreaView -closeNotice: appListDidDisappear then removeFromSuperview as a '
+              'tail branch',
+    0x2413ac: 'RecommendAdAreaView -appStoreCloseNotice: a cmp w8,#5 on the _adModel ivar, which '
+              'the metadata types i, guarding the closeNotice send. The 5 matches the file-local '
+              'RecommendAdAreaViewAdModelFixedInterstitial. Note that the same value is '
+              'RecommendAdModelInterstitial in RecommendNetwork.h, and the file-local enumeration '
+              'renames 1, 4 and 5 by scroll behaviour rather than by advert model, so the two sets '
+              'overlap numerically while disagreeing on names',
     0x221128: 'ApplilinkWebAPI -init: super init behind a cbz, then retryCount zeroed and the '
               'global byte at +0x698 set to 1',
     0x221184: 'ApplilinkWebAPI -commonParameters: a variadic dictionaryWithObjectsAndKeys: read '
