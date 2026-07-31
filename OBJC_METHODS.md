@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4728 verified
-(74.5%).
+Total: 6343 — 6306 reconstructed, 4730 verified
+(74.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2954,7 +2954,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCorporateViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0xf0aa4` |
 | `RBCorporateViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0xf0b84` |
 | `RBCorporateViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0xf0c74` |
-| `RBCorporateViewController` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0xf0d5c` |
+| `RBCorporateViewController` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ✅ | `0xf0d5c` |
 | `RBCorporateViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0xf0dc0` |
 | `RBCorporateViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0xf0ecc` |
 | `RBCorporateViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0xf0f30` |
@@ -3452,7 +3452,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuTutorialView` | `-` | `startAnimation:` |  | ✅ | ❌ | `0x13de2c` |
 | `RBMenuTutorialView` | `-` | `resetAnimation:` |  | ✅ | ❌ | `0x13f7f0` |
 | `RBMenuTutorialView` | `-` | `getTextureType` |  | ✅ | ❌ | `0x14040c` |
-| `RBMenuTutorialView` | `-` | `getClipRect:` |  | ✅ | ❌ | `0x140544` |
+| `RBMenuTutorialView` | `-` | `getClipRect:` |  | ✅ | ✅ | `0x140544` |
 | `RBMenuTutorialView` | `-` | `animationDidStop:finished:` |  | ✅ | ✅ | `0x1405a8` |
 | `RBMenuTutorialView` | `+` | `createAnimWithKeyPath:fromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x1405c8` |
 | `RBMenuTutorialView` | `-` | `dealloc` |  | ✅ | ✅ | `0x140cd0` |

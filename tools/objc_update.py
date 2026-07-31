@@ -295,6 +295,12 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x140544: 'RBMenuTutorialView -getClipRect:: indexes the runtime-seeded 0x3de058 table at a '
+              '32-byte CGRect stride into d8-d11, then four fcsel on IsPad choose between the raw '
+              'row and the same row times the 0.5 fmov immediate. The four fields stay in x, y, '
+              'width, height order with no transposition; the misleading comment is corrected',
+    0xf0d5c: 'RBCorporateViewController -webView:shouldStartLoadWithRequest:navigationType:: '
+             'starts the indicator and always returns YES',
     0xf0ecc: 'RBCorporateViewController -webViewDidStartLoad:: ignores the web view and empties '
              'the shared URL cache',
     0xfd208: 'StorePackMusicView -tapSp: builds the move-to-extend-detail alert with self as the '

@@ -1222,8 +1222,8 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
 - (CGRect)getClipRect:(unsigned int)texType {
     /** @ghidraAddress 0x140544 */
-    // Look up the artwork rectangle for the texture type in the per-step clip table. On the narrow
-    // iPad idiom every rectangle is halved.
+    // Look up the artwork rectangle for the texture type in the per-step clip table. The table
+    // holds the pad's rectangles; off the pad every one is halved.
     CGRect rect = g_pTutorialClipRect[texType];
     if (!IsPad()) {
         rect.origin.x *= 0.5;
