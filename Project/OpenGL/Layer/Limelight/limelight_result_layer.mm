@@ -819,6 +819,11 @@ void LimelightResultLayer::SetPhoneInstancerTextureAndScale(unsigned int nPhoneI
 // @ghidraAddress 0x3d9100
 PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound] = {};
 
+// Its phone counterpart, likewise zero storage in __common filled at runtime. The header declares
+// both, but only the pad table had a definition.
+// @ghidraAddress 0x307cf0
+PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound] = {};
+
 /** @ghidraAddress 0x123838 */
 PartsDataRecord *LimelightResultLayer::GetPartsData(unsigned int nIndex) {
     assert(static_cast<int>(nIndex) >= 0 && nIndex < kLimelightPartsRecordBound);

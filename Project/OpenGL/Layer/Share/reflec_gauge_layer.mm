@@ -88,19 +88,32 @@ constexpr GaugeLabelSide kLabelSideRecord[ReflecGaugeLayer::kSideCount] = {
     {17.0f, 76.0f, 28.0f, 0x87},
 };
 
-// The gauge label anchor X by label index (@ghidraAddress 0x30fe18).
-constexpr float kLabelAnchorX[] = {173.0f, 106.0f, 39.0f, -28.0f, -95.0f, 54.0f, 1.0f, 10.0f};
-
-} // namespace
+// The gauge label anchor X by label index (@ghidraAddress 0x30fe18). Five entries: the table ends
+// at 0x30fe2c, where the portrait gauge-icon table below begins, and the three values that used to
+// follow here were that table's first descriptor read as floats.
+constexpr float kLabelAnchorX[] = {173.0f, 106.0f, 39.0f, -28.0f, -95.0f};
 
 // The gauge icon descriptor tables, indexed by icon index (landscape and portrait variants). Each
-// is a 20-byte GaugeSpriteDescriptor. Read-only data embedded in the binary.
-extern const ReflecGaugeLayer::GaugeSpriteDescriptor
-    g_aGaugeIconLandscape[]; // @ghidraAddress 0x30fea4
-extern const ReflecGaugeLayer::GaugeSpriteDescriptor
-    g_aGaugeIconPortrait[]; // @ghidraAddress 0x30fe2c
+// is a 20-byte GaugeSpriteDescriptor read out of the binary's read-only data. Six records each:
+// the portrait table's 120 bytes end exactly where the landscape table begins, and the landscape
+// table's seventh record decodes as the neighbouring table's bytes rather than a descriptor.
+const ReflecGaugeLayer::GaugeSpriteDescriptor g_aGaugeIconPortrait[] = {
+    {{54.0f, 1.0f}, {10.0f, 14.0f}, 0x89},
+    {{54.0f, 1.0f}, {10.0f, 14.0f}, 0x8a},
+    {{54.0f, 1.0f}, {10.0f, 14.0f}, 0x8b},
+    {{54.0f, 1.0f}, {10.0f, 14.0f}, 0x8c},
+    {{54.0f, 1.0f}, {10.0f, 14.0f}, 0x8d},
+    {{58.0f, 1.0f}, {17.0f, 14.0f}, 0x8e},
+}; // @ghidraAddress 0x30fe2c
 
-namespace {
+const ReflecGaugeLayer::GaugeSpriteDescriptor g_aGaugeIconLandscape[] = {
+    {{65.0f, 6.0f}, {10.0f, 14.0f}, 0x116},
+    {{65.0f, 6.0f}, {10.0f, 14.0f}, 0x117},
+    {{65.0f, 6.0f}, {10.0f, 14.0f}, 0x118},
+    {{65.0f, 6.0f}, {10.0f, 14.0f}, 0x119},
+    {{65.0f, 6.0f}, {10.0f, 14.0f}, 0x11a},
+    {{69.0f, 6.0f}, {17.0f, 14.0f}, 0x11b},
+}; // @ghidraAddress 0x30fea4
 
 // The gauge value/digit descriptor tables (20-byte GaugeSpriteDescriptor), read-only data embedded
 // in the binary. The landscape table is indexed by player side; the portrait mode-0 table by

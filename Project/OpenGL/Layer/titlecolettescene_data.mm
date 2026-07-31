@@ -122,6 +122,7 @@ const TitlePartLayoutRecord g_aTitleCampaignLayoutAltFrame[] = {
 };
 
 /** @ghidraAddress 0x2f7908 */
+extern const SpriteUvEntry g_aTitlePartUvDefault[];
 const SpriteUvEntry g_aTitlePartUvDefault[] = {
     {0.89453125f, 0.5546875f, 0.044921875f, 0.0859375f},
     {0.84765625f, 0.5546875f, 0.044921875f, 0.0859375f},

@@ -57,6 +57,7 @@ constexpr int kResultUvIndex[NoteTrailLayer::kResultSpriteTypeCount] = {83, 84, 
 // the binary; the entry count is set by the span up to the next table (the highest index any
 // call site uses is 0x5e).
 // @ghidraAddress 0x2ef668
+extern const SpriteUvEntry g_aScoreGaugeUvTable[];
 const SpriteUvEntry g_aScoreGaugeUvTable[] = {
     {0.0f, 0.0f, 0.0f, 0.0f},
     {0.001953125f, 0.31054688f, 0.09765625f, 0.09765625f},
