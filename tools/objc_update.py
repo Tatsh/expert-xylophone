@@ -1001,6 +1001,12 @@ VERIFIED = {
              '-dealloc at 0x159c8 pairs it with operator.delete. The reconstruction uses malloc '
              'and free, which is self-consistent and unavoidable in a .m; noted at the call rather '
              'than renamed to .mm for one allocation',
+    0x42248: 'StoreTableCellBase -prepareForReuse: super chain then reset sent to leftView and '
+             'rightView, with the selector loaded once into x20 and reused for both',
+    0x4a200: 'RBTermDetailPhoneViewController -forceClose: cbnz on viewType skips the navigation '
+             'bar hide for any non-zero type, and zero is kTermViewTypeAgreement, so only the '
+             'agreement variant hides the bar. The two flags differ, YES for hidden and NO for '
+             'animated, and the pop that follows is unguarded and also unanimated',
     0x4a07c: 'RBTermDetailPhoneViewController -endLoadAnimation: the cbz on isUseGrayView guards '
              'only the setHidden:YES; stopAnimating on the indicator is reached on both arms. '
              'Folding the second call inside the guard would leave the spinner turning whenever '
