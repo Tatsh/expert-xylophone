@@ -83,6 +83,8 @@ classess
 classicthemelayer
 classlist
 codegen
+codepoint
+codepoints
 codesign
 color
 colors
@@ -232,6 +234,7 @@ jinglebell
 jinja
 jsonnet
 jsonschema
+katakana
 keta
 keysound
 konaminet

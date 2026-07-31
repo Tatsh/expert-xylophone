@@ -580,7 +580,10 @@ VERIFIED = {
              'and calls CFStringTransform over the whole string, the x1 range being NULL. Its '
              'reverse flag encodes C, CoreFoundation\'s Boolean, not the signed-char BOOL',
     0x2a88c: 'StringConvert +convertKorsk:: returns the input unchanged when nil or empty, else '
-             'one stringByReplacingOccurrencesOfString:withString: over the pair at 0x362d40',
+             'one stringByReplacingOccurrencesOfString:withString: over the pair at 0x362d40. '
+             'Both halves of that pair were later decoded from their records, the macron form and '
+             'its vowel form, and both match. Re-checked because its neighbour convertDJ: carried '
+             'a one-codepoint defect; this one is clean',
     0x36e0c: 'RBHttpUtil -initWithPostURL:post:contentType:: forwards with a single-precision '
              'fmov of 15.0; the four-argument form encodes its timeout f, not d, so the default '
              'constant is retyped from NSTimeInterval to float',
@@ -934,6 +937,10 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x2a640: 'StringConvert +convertFromVToB:: five replacement pairs at 0x362ba0 through 0x362cc0, '
+             'all decoded from their records and all matching. The order matters and is preserved: '
+             'the two-character forms come before the bare one, so a bare-first ordering would '
+             'rewrite the first character of the digraphs and leave the small kana stranded',
     0x2a7b4: 'StringConvert +convertDJ:: two stringByReplacingOccurrencesOfString: calls whose '
              'searches differ but whose replacement is the same constant at 0x362d00. Decoded from '
              'the record here, reading length*2 bytes because the flags mark UTF-16: the '

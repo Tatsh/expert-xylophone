@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5064 verified
-(79.8%).
+Total: 6343 — 6306 reconstructed, 5065 verified
+(79.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5064 verified, 3507 come from those passes and the remaining
-1557 were read by hand. The split matters when reading the percentage: a
+Of the 5065 verified, 3507 come from those passes and the remaining
+1558 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -475,7 +475,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `indicatorSample` | prop | ✅ | ✅ | `0x27174` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0x27184` |
 | `StringConvert` | `+` | `convertYomigana:` |  | ✅ | ❌ | `0x2a190` |
-| `StringConvert` | `+` | `convertFromVToB:` |  | ✅ | ❌ | `0x2a640` |
+| `StringConvert` | `+` | `convertFromVToB:` |  | ✅ | ✅ | `0x2a640` |
 | `StringConvert` | `+` | `convertDJ:` |  | ✅ | ✅ | `0x2a7b4` |
 | `StringConvert` | `+` | `convertKorsk:` |  | ✅ | ✅ | `0x2a88c` |
 | `StringConvert` | `+` | `convertFromMacronToVowel:` |  | ✅ | ✅ | `0x2a92c` |
