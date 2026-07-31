@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x69688: 'StorePackInfoDownloader -initWithStorePackInfo:: super init, nil check, packInfo',
+    0x6ae38: 'RBMusicManager -init: super init, nil check, then createPreInMusics',
+    0x4a2c8: 'RBTermDetailPhoneViewController -alertView:clickedButtonAtIndex:: on isFirstRequest '
+             'it nils the alert view\'s own delegate, not its own, then forceClose',
+    0x34cf8: 'SoundManager -setupAudioSession: the category argument resolves through the import '
+             'to _AVAudioSessionCategoryAmbient, and setActive: takes w2 of 1 with a nil error',
     0x41da8: 'AVBus -audioPlayerEndInterruption:: replays only from status 2 and drops to 4 when '
              'play fails; the cmp #2 and mov w8,#4 match AVBusStatusPlaying and AVBusStatusStopped',
     0x41e20: 'AVBus -audioPlayerEndInterruption:withOptions:: instruction-identical to the '

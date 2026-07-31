@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4781 verified
+Total: 6343 — 6306 reconstructed, 4785 verified
 (75.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -587,7 +587,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundData` | `-` | `totalFrames` | prop | ✅ | ✅ | `0x34b60` |
 | `SoundManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x34bb0` |
 | `SoundManager` | `-` | `init` |  | ✅ | ❌ | `0x34c08` |
-| `SoundManager` | `-` | `setupAudioSession` |  | ✅ | ❌ | `0x34cf8` |
+| `SoundManager` | `-` | `setupAudioSession` |  | ✅ | ✅ | `0x34cf8` |
 | `SoundManager` | `-` | `prepareAUGraph` |  | ✅ | ❌ | `0x34d68` |
 | `SoundManager` | `-` | `loadFile:Stream:` |  | ✅ | ❌ | `0x34eec` |
 | `SoundManager` | `-` | `releaseData:` |  | ✅ | ✅ | `0x35038` |
@@ -960,7 +960,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x4a07c` |
 | `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x4a130` |
 | `RBTermDetailPhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x4a200` |
-| `RBTermDetailPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x4a2c8` |
+| `RBTermDetailPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x4a2c8` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4a340` |
 | `RBTermDetailPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4a344` |
 | `RBTermDetailPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x4a348` |
@@ -1513,7 +1513,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackInfo` | `-` | `setProduct:` | prop | ✅ | ✅ | `0x69528` |
 | `StorePackInfo` | `-` | `ErrorMessage` | prop | ✅ | ✅ | `0x69560` |
 | `StorePackInfo` | `-` | `setErrorMessage:` | prop | ✅ | ✅ | `0x69570` |
-| `StorePackInfoDownloader` | `-` | `initWithStorePackInfo:` |  | ✅ | ❌ | `0x69688` |
+| `StorePackInfoDownloader` | `-` | `initWithStorePackInfo:` |  | ✅ | ✅ | `0x69688` |
 | `StorePackInfoDownloader` | `-` | `dealloc` |  | ✅ | ✅ | `0x69700` |
 | `StorePackInfoDownloader` | `-` | `downloadDetail:` |  | ✅ | ❌ | `0x6977c` |
 | `StorePackInfoDownloader` | `-` | `cancel` |  | ✅ | ❌ | `0x69880` |
@@ -1552,7 +1552,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `+` | `getPathFromPurchesed:` |  | ✅ | ❌ | `0x6aad8` |
 | `RBMusicManager` | `+` | `getPathFromPurchesedOldDirectory:` |  | ✅ | ❌ | `0x6ab88` |
 | `RBMusicManager` | `-` | `deleteMusic:` |  | ✅ | ❌ | `0x6ac38` |
-| `RBMusicManager` | `-` | `init` |  | ✅ | ❌ | `0x6ae38` |
+| `RBMusicManager` | `-` | `init` |  | ✅ | ✅ | `0x6ae38` |
 | `RBMusicManager` | `-` | `dealloc` |  | ❌ | ✅ | `0x6aeac` |
 | `RBMusicManager` | `-` | `createPreInMusics` |  | ✅ | ❌ | `0x6aee0` |
 | `RBMusicManager` | `-` | `loadPurchasedMusics` |  | ✅ | ❌ | `0x6b020` |
