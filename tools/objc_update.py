@@ -286,6 +286,12 @@ VERIFIED = {
              'it, {height - 0.4375, left, 9.0, right}',
     0x14d40: 'UnZipArchive -init: chains to super and clears m_ZipFile only when that returned '
              'non-nil',
+    # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
+    # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
+    # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x18b14: 'SystemHardware +getInstance: plain nil check, no once-token or lock',
+    0x20a30: 'RBPastelManager +getInstance: the same shape',
+    0x34bb0: 'SoundManager +getInstance: the same shape',
     0x18a98: 'SystemHardware -init: seeds m_HardwareType with the 15 sentinel, and only when super '
              'returned non-nil',
     0x93d00: 'RBPlaylistViewController -numberOfSectionsInTableView:: 2 whenever the type is not '

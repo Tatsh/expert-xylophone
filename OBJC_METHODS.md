@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4650 verified
-(73.3%).
+Total: 6343 — 6306 reconstructed, 4653 verified
+(73.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -297,7 +297,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `HistoryData` | `-` | `setTuneID:` | prop | ✅ | ✅ | `0x18958` |
 | `SystemHardware` | `-` | `init` |  | ✅ | ✅ | `0x18a98` |
 | `SystemHardware` | `-` | `dealloc` |  | ❌ | ✅ | `0x18ae0` |
-| `SystemHardware` | `+` | `getInstance` |  | ✅ | ❌ | `0x18b14` |
+| `SystemHardware` | `+` | `getInstance` |  | ✅ | ✅ | `0x18b14` |
 | `SystemHardware` | `-` | `initHardware` |  | ✅ | ❌ | `0x18b6c` |
 | `SystemHardware` | `-` | `getHardwareType` |  | ✅ | ✅ | `0x18cb0` |
 | `SystemHardware` | `-` | `getHardwareName` |  | ✅ | ✅ | `0x18cf4` |
@@ -388,7 +388,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBResourceDownloadViewController` | `-` | `setNextAnimation:` | prop | ✅ | ✅ | `0x20884` |
 | `RBResourceDownloadViewController` | `-` | `fileInfoDic` | prop | ✅ | ✅ | `0x20894` |
 | `RBResourceDownloadViewController` | `-` | `setFileInfoDic:` | prop | ✅ | ✅ | `0x208a4` |
-| `RBPastelManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x20a30` |
+| `RBPastelManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x20a30` |
 | `RBPastelManager` | `-` | `init` |  | ✅ | ❌ | `0x20a88` |
 | `RBPastelManager` | `-` | `allReset` |  | ✅ | ✅ | `0x20afc` |
 | `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
@@ -585,7 +585,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundData` | `-` | `fileName` | prop | ✅ | ✅ | `0x34b40` |
 | `SoundData` | `-` | `channels` | prop | ✅ | ✅ | `0x34b50` |
 | `SoundData` | `-` | `totalFrames` | prop | ✅ | ✅ | `0x34b60` |
-| `SoundManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x34bb0` |
+| `SoundManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x34bb0` |
 | `SoundManager` | `-` | `init` |  | ✅ | ❌ | `0x34c08` |
 | `SoundManager` | `-` | `setupAudioSession` |  | ✅ | ❌ | `0x34cf8` |
 | `SoundManager` | `-` | `prepareAUGraph` |  | ✅ | ❌ | `0x34d68` |

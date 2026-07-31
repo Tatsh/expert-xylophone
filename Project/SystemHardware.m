@@ -51,17 +51,16 @@ static const NSUInteger kHardwareModelCount = ARRAY_SIZE(kHardwareModelTable);
     int m_HardwareType;
 }
 
-// The shared singleton instance.
-static SystemHardware *g_sharedInstance = nil;
-
 #pragma mark Singleton
 
 + (instancetype)getInstance {
     /** @ghidraAddress 0x18b14 */
-    if (!g_sharedInstance) {
-        g_sharedInstance = [[SystemHardware alloc] init];
+    // A plain nil check, as the binary has it: no dispatch_once and no @synchronized.
+    static SystemHardware *instance = nil;
+    if (instance == nil) {
+        instance = [[SystemHardware alloc] init];
     }
-    return g_sharedInstance;
+    return instance;
 }
 
 - (instancetype)init {
