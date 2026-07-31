@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4912 verified
-(77.4%).
+Total: 6343 — 6306 reconstructed, 4916 verified
+(77.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3986,7 +3986,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteInfo` | `-` | `initWithProduct:` |  | ✅ | ❌ | `0x17858c` |
 | `StoreExtendNoteInfo` | `-` | `initWithExtendNoteID:` |  | ✅ | ✅ | `0x1786d8` |
 | `StoreExtendNoteInfo` | `-` | `setDictionary:` |  | ✅ | ❌ | `0x17875c` |
-| `StoreExtendNoteInfo` | `-` | `extFileExist` |  | ✅ | ❌ | `0x178ff0` |
+| `StoreExtendNoteInfo` | `-` | `extFileExist` |  | ✅ | ✅ | `0x178ff0` |
 | `StoreExtendNoteInfo` | `-` | `getButtonColor` |  | ✅ | ❌ | `0x179078` |
 | `StoreExtendNoteInfo` | `-` | `getButtonName` |  | ✅ | ❌ | `0x1791fc` |
 | `StoreExtendNoteInfo` | `-` | `getButtonState` |  | ✅ | ❌ | `0x1793cc` |
@@ -4039,7 +4039,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBServerAPIManager` | `+` | `playedV2APIWithMusicID:dif:note:jr:score:` |  | ✅ | ❌ | `0x17ce50` |
 | `RBServerAPIManager` | `+` | `unlockedAPIWithType:identity:point:` |  | ✅ | ❌ | `0x17d484` |
 | `RBServerAPIManager` | `+` | `tutorialAPI` |  | ✅ | ❌ | `0x17d860` |
-| `RBServerAPIManager` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x17dc08` |
+| `RBServerAPIManager` | `-` | `downloaderFinished:` |  | ✅ | ✅ | `0x17dc08` |
 | `RBServerAPIManager` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x17dca0` |
 | `RBServerAPIManager` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x17dca4` |
 | `RBServerAPIManager` | `-` | `httpArray` | prop | ✅ | ✅ | `0x17dd3c` |
@@ -4047,8 +4047,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTimingSlider` | `-` | `initWithDigit:` |  | ✅ | ❌ | `0x17e3b0` |
 | `RBTimingSlider` | `-` | `setValue:` | prop | ✅ | ❌ | `0x17efa8` |
 | `RBTimingSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x17f4b4` |
-| `RBTimingSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x17f594` |
-| `RBTimingSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x17f638` |
+| `RBTimingSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x17f594` |
+| `RBTimingSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x17f638` |
 | `RBTimingSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x17f6dc` |
 | `RBTimingSlider` | `-` | `value` | prop | ✅ | ✅ | `0x17f778` |
 | `RBTimingSlider` | `-` | `baseView` | prop | ✅ | ✅ | `0x17f788` |

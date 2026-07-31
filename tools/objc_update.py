@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x178ff0: 'StoreExtendNoteInfo -extFileExist: asks NSFileManager about the purchased path for '
+              'its own pid, so it reports the extend-note file rather than the pack file',
+    0x17dc08: 'RBServerAPIManager -downloaderFinished:: identical to its downloaderError:, '
+              'cancelling the passed downloader and dropping it from httpArray',
+    0x17f594: 'RBTimingSlider -beginTrackingWithTouch:withEvent:: the third slider class with the '
+              'same tracking shape, taking the point in the touch\'s own view',
+    0x17f638: 'RBTimingSlider -continueTrackingWithTouch:withEvent:: likewise, returning YES',
     0x1786d8: 'StoreExtendNoteInfo -initWithExtendNoteID:: super init, nil check, then the pid '
               'setter, whose name differs from the parameter\'s',
     0x179bc0: 'StoreExtendNoteInfoDownloader -initWithStoreExtendNoteInfo:: super init, nil check, '
