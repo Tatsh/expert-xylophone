@@ -3601,6 +3601,78 @@ VERIFIED = {
     # -localizedStringForKey:"OK" value:"" table:nil at 0xf1fc.
     0xF150: 'UIAlertView(RB) +showAddLimepointByApplilink:: nil otherButtonTitles (x6 = 0), then '
             '-show, then the alert is returned',
+    # The rest of a delegated batch of twenty whose one reported mismatch, 0x3bde0, was read here
+    # in full and confirmed. Two of the nineteen matches were re-read here rather than taken on
+    # trust, 0x35b3c and 0x41a08, and both agreed; the remaining seventeen are the batch's own
+    # reading.
+    0xD81C: 'RBMenuBGEffectPartView -stopAnimation: setIsAnimation:0 at 0xd838, then the effect '
+            "layer's removeAllAnimations at 0xd87c, -stopAnimating at 0xd8b4 and setImage:nil at "
+            '0xd8dc, in that order',
+    0x14F24: 'UnZipArchive -getData:: nil unless m_ZipFile is non-null (cbz x8) and -setFirst '
+             'succeeds (cbz w0), then a do/while over -setNext (tbnz w0,#0) whose '
+             'isEqualToString: hit (cbnz w0) returns -getCurrentData',
+    0x26428: 'StoreExtendNoteDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for a non-tune '
+             'item, cbz x21 returns NO when -getMusicData: is nil, then fileExistsAtPath: on the '
+             'path from the +[RBMusicManager getPathFromPurchesed:] class call',
+    0x35074: 'SoundManager -play:Loop:: cbz x19 returns the invalid slot for nil data, then scans '
+             'the voices (cmp x20,#8) for one whose -isPlaying is false and issues '
+             'setSoundData:, setCurrentFrame:0, play and setCallBack:DataFormat: in that order',
+    0x35B3C: 'RBTutorialManager +isTutorialCustomize: cmp w20,#2 on -thema, then cmp w0,#0x18 with '
+             'b.cc and cmp w0,#0x22 with cset cc, both unsigned because RBTutorialStatusNone is '
+             '0xffffffff. Read here: -currentStatus is genuinely fetched twice, once per '
+             'comparison, which the reconstruction folds into one read as its siblings do',
+    0x377A8: 'RBHttpUtil -startDownloadingWithProceed:success:failure:: setProceedBlock:, '
+             'setSuccessBlock: and setFailureBlock: at 0x377f8, 0x37808 and 0x37820, then '
+             '-startDownloading:nil at 0x37834',
+    0x38FC0: 'RBHttpUtil -URLSession:downloadTask:didWriteData:totalBytesWritten:'
+             'totalBytesExpectedToWrite:: cbz x21 tests the proceed block, and the taken arm calls '
+             "the block's invoke slot through blr x8 with self. Otherwise cbz x21 tests the "
+             'delegate and sends performSelectorOnMainThread:@selector(downloadProceed:) '
+             'withObject:self waitUntilDone:NO',
+    0x39C38: 'RBNotificationData -initWithCoder:: objc_msgSendSuper2 at 0x39c7c for [super init], '
+             'cbz x20 returns nil when that fails, then decodeObjectForKey: with the string at '
+             '0x3640c0, "notificationList"',
+    0x3BDE0: 'RBEffectSizeSlider -sliderChangeWithTouchPoint:: read here in full because it was '
+             'reported as a mismatch, and it is one. The compiler shares the single bl at 0x3be50 '
+             'between two selectors: the b.pl at 0x3be0c falls through to load barMin (+0xee0) and '
+             'jumps to it, while the b.le at 0x3be40 falls through to load barMax (+0xed8) and '
+             'falls into it. Both arms then scvtf the int result and branch past the snapping to '
+             'setValue:. The reconstruction had collapsed them into one barMax else-arm, losing '
+             'the left-of-bar clamp. The conversion at 0x3be88 is also fcvtas, round to nearest '
+             'with ties away from zero, not the truncating cast the reconstruction used, and the '
+             'cmp/cinc/asr that follows is the ordinary expansion of a signed divide by two. '
+             'barRect is called four times, once per field read. All three now corrected',
+    0x41798: 'AVBus -prepare: cbz x20 returns NO for a nil player, tbnz on -isPlaying returns NO '
+             'when it is already playing, then mStatus takes AVBusStatusPrepared (1). The player '
+             'property is fetched separately for each of the two tests',
+    0x41A08: 'AVBus -pause: cbz x21 returns NO for a nil player and cbz w22 on -isPlaying takes '
+             'the arm setting mStatus to AVBusStatusStopped (4). Read here: the selector at '
+             '+0xba0 on the playing arm really is stop rather than pause, and that arm sets '
+             'AVBusStatusPaused (3), which is what the existing comment already flags',
+    0x42154: 'StoreTableCellBase -dealloc: setDelegate:nil on leftView at 0x42194 and rightView at '
+             "0x421c4, then the ARC-inserted objc_msgSendSuper2 at 0x421ec. ARC forbids writing "
+             'that last send by hand, so its absence from the source is correct',
+    0x45748: 'StoreCampaignDetailViewPad -sampleViewStop: the indicator stops animating, the '
+             'button takes "09_store/store_sample_1" for state 0, and sampleStatus is stored as '
+             'zero with str wzr',
+    0x45840: 'StoreCampaignDetailViewPad -sampleViewDownloading: the indicator starts animating '
+             'and the button takes the same "09_store/store_sample_1" image the stopped state '
+             'uses, with sampleStatus set to 1',
+    0x4593C: 'StoreCampaignDetailViewPad -sampleViewPlaying: the indicator stops animating, since '
+             'it marks the download rather than the playback, the button takes '
+             '"09_store/store_sample_2", and sampleStatus is set to 2',
+    0x45F80: 'StoreCampaignDetailViewPad -alertView:clickedButtonAtIndex:: cbz w23 does nothing '
+             'when the delegate does not respond, otherwise performSelector: with '
+             '"detailViewClose"',
+    0x46064: 'StoreCampaignDetailViewPad -alertViewCancel:: the same respondsToSelector: guard and '
+             '"detailViewClose" performSelector: as 0x45f80, and reconstructed identically',
+    0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
+             'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
+             'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x49F7C: 'RBTermDetailPhoneViewController -startLoadAnimation: tbz w0,#0 skips the '
+             'grayView.hidden = NO when isUseGrayView is clear, then the indicator is unhidden and '
+             'started. The fallthrough arm only re-loads the setHidden: selector for the shared '
+             'tail and has no effect of its own',
 }
 
 

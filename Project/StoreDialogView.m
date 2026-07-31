@@ -51,7 +51,7 @@ static const CGFloat kLabelFontSize = 18.0;
 // ten points below the panel's vertical centre.
 static const CGFloat kProgressLeft = 30.0;       // @ghidraAddress 0x403e000000000000
 static const CGFloat kProgressHeight = 11.0;     // @ghidraAddress 0x4026000000000000
-static const CGFloat kProgressWidthInset = 60.0; // @ghidraAddress 0x300fc8 (-60.0)
+static const CGFloat kProgressWidthInset = -60.0; // @ghidraAddress 0x300fc8
 static const CGFloat kProgressCenterYOffset = 10.0;
 
 // The abort button's stretchable background caps, its fixed width, and its centre as a fraction of
@@ -131,7 +131,7 @@ static const float kProgressReset = 0.0f;
     self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     const CGFloat progressTop = (CGFloat)((int)(height * kHalfScale) + (int)kProgressCenterYOffset);
     self.progressView.frame =
-        CGRectMake(kProgressLeft, progressTop, width - kProgressWidthInset, kProgressHeight);
+        CGRectMake(kProgressLeft, progressTop, width + kProgressWidthInset, kProgressHeight);
     self.progressView.progress = kProgressReset;
     [self addSubview:self.progressView];
 

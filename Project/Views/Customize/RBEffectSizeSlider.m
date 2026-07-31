@@ -12,6 +12,7 @@
 #import "RBEffectSizeSlider.h"
 
 #include <assert.h>
+#include <math.h>
 
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
@@ -258,18 +259,17 @@ enum {
 
 - (void)sliderChangeWithTouchPoint:(CGPoint)point {
     float newValue;
-    CGRect bar = self.barRect;
-    if (point.x >= bar.origin.x && point.x <= bar.origin.x + bar.size.width) {
-        // Snap the touch offset to a whole half-unit: convert to doubled steps, truncate toward
-        // zero, halve back to a step count, then scale by the per-step value.
-        float touchOffset = (float)(point.x - bar.origin.x);
-        int doubledSteps = (int)((touchOffset + touchOffset) / self.step);
-        if (doubledSteps < 0) {
-            ++doubledSteps; // The +1 makes the truncation round toward zero for negative offsets.
-        }
-        newValue = self.stepValue * (float)(doubledSteps >> 1);
-    } else {
+    // The binary reads barRect afresh for each field rather than caching it, so this does too.
+    if (point.x < self.barRect.origin.x) {
+        newValue = (float)self.barMin;
+    } else if (point.x > self.barRect.origin.x + self.barRect.size.width) {
         newValue = (float)self.barMax;
+    } else {
+        // Snap the touch offset to a whole half-unit: convert to doubled steps, round to nearest
+        // with ties away from zero, halve back to a step count, then scale by the per-step value.
+        float touchOffset = (float)(point.x - self.barRect.origin.x);
+        int doubledSteps = (int)roundf((touchOffset + touchOffset) / self.step);
+        newValue = self.stepValue * (float)(doubledSteps / 2);
     }
     [self setValue:newValue];
 }

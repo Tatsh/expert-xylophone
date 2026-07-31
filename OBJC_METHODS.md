@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5169 verified
-(81.5%).
+Total: 6343 — 6306 reconstructed, 5188 verified
+(81.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5169 verified, 3507 come from those passes and the remaining
-1662 were read by hand. The split matters when reading the percentage: a
+Of the 5188 verified, 3507 come from those passes and the remaining
+1681 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -170,7 +170,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectPartView` | `-` | `setupView` |  | ✅ | ❌ | `0xcd98` |
 | `RBMenuBGEffectPartView` | `-` | `startAnimation` |  | ✅ | ❌ | `0xd2a8` |
 | `RBMenuBGEffectPartView` | `-` | `setAnimationLoopFlag:` |  | ✅ | ✅ | `0xd810` |
-| `RBMenuBGEffectPartView` | `-` | `stopAnimation` |  | ✅ | ❌ | `0xd81c` |
+| `RBMenuBGEffectPartView` | `-` | `stopAnimation` |  | ✅ | ✅ | `0xd81c` |
 | `RBMenuBGEffectPartView` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0xd934` |
 | `RBMenuBGEffectPartView` | `-` | `image1Path` | prop | ✅ | ✅ | `0xd968` |
 | `RBMenuBGEffectPartView` | `-` | `setImage1Path:` | prop | ✅ | ✅ | `0xd978` |
@@ -229,7 +229,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ✅ | `0x14e08` |
 | `UnZipArchive` | `-` | `closeFile` |  | ✅ | ✅ | `0x14ec8` |
 | `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ✅ | `0x14efc` |
-| `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
+| `UnZipArchive` | `-` | `getData:` |  | ✅ | ✅ | `0x14f24` |
 | `UnZipArchive` | `-` | `setFirst` |  | ✅ | ✅ | `0x1503c` |
 | `UnZipArchive` | `-` | `setNext` |  | ✅ | ✅ | `0x15070` |
 | `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ✅ | `0x150a4` |
@@ -423,7 +423,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x25ecc` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setInfo:` |  | ✅ | ❌ | `0x2600c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x26424` |
-| `StoreExtendNoteDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x26428` |
+| `StoreExtendNoteDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x26428` |
 | `StoreExtendNoteDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x2653c` |
 | `StoreExtendNoteDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x26548` |
 | `StoreExtendNoteDetailViewPad` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x2655c` |
@@ -596,7 +596,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `prepareAUGraph` |  | ✅ | ❌ | `0x34d68` |
 | `SoundManager` | `-` | `loadFile:Stream:` |  | ✅ | ❌ | `0x34eec` |
 | `SoundManager` | `-` | `releaseData:` |  | ✅ | ✅ | `0x35038` |
-| `SoundManager` | `-` | `play:Loop:` |  | ✅ | ❌ | `0x35074` |
+| `SoundManager` | `-` | `play:Loop:` |  | ✅ | ✅ | `0x35074` |
 | `SoundManager` | `-` | `stop:` |  | ✅ | ✅ | `0x35198` |
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
 | `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ✅ | `0x3532c` |
@@ -624,7 +624,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `isTutorialPlay` |  | ✅ | ✅ | `0x3597c` |
 | `RBTutorialManager` | `+` | `needStartTutorialCustomize` |  | ✅ | ✅ | `0x35a40` |
 | `RBTutorialManager` | `+` | `startTutorialCustomize` |  | ✅ | ✅ | `0x35b24` |
-| `RBTutorialManager` | `+` | `isTutorialCustomize` |  | ✅ | ❌ | `0x35b3c` |
+| `RBTutorialManager` | `+` | `isTutorialCustomize` |  | ✅ | ✅ | `0x35b3c` |
 | `RBTutorialManager` | `+` | `needStartTutorialStore` |  | ✅ | ✅ | `0x35c50` |
 | `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ✅ | `0x35ce4` |
 | `RBTutorialManager` | `+` | `getStatus:` |  | ✅ | ✅ | `0x35cfc` |
@@ -653,7 +653,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `initWithDownloadURL:filePath:` |  | ✅ | ❌ | `0x371b0` |
 | `RBHttpUtil` | `-` | `updateRequest:HTTPMethod:contentType:sendData:filePath:` |  | ✅ | ❌ | `0x3741c` |
 | `RBHttpUtil` | `-` | `startDownloading:` |  | ✅ | ✅ | `0x376ec` |
-| `RBHttpUtil` | `-` | `startDownloadingWithProceed:success:failure:` |  | ✅ | ❌ | `0x377a8` |
+| `RBHttpUtil` | `-` | `startDownloadingWithProceed:success:failure:` |  | ✅ | ✅ | `0x377a8` |
 | `RBHttpUtil` | `-` | `cancel` |  | ✅ | ❌ | `0x37894` |
 | `RBHttpUtil` | `-` | `startDataTask` |  | ✅ | ❌ | `0x379e8` |
 | `RBHttpUtil` | `-` | `startDownloadTask` |  | ✅ | ❌ | `0x37c20` |
@@ -661,7 +661,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `URLSession:dataTask:didReceiveData:` |  | ✅ | ❌ | `0x38744` |
 | `RBHttpUtil` | `-` | `URLSession:task:didCompleteWithError:` |  | ✅ | ❌ | `0x38938` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:` |  | ✅ | ✅ | `0x38fbc` |
-| `RBHttpUtil` | `-` | `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:` |  | ✅ | ❌ | `0x38fc0` |
+| `RBHttpUtil` | `-` | `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:` |  | ✅ | ✅ | `0x38fc0` |
 | `RBHttpUtil` | `-` | `URLSession:downloadTask:didFinishDownloadingToURL:` |  | ✅ | ❌ | `0x390c0` |
 | `RBHttpUtil` | `-` | `currentSize` |  | ✅ | ✅ | `0x3930c` |
 | `RBHttpUtil` | `-` | `currentProgress` |  | ✅ | ✅ | `0x3936c` |
@@ -705,7 +705,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `-` | `setProceedBlock:` | prop | ✅ | ✅ | `0x39af8` |
 | `RBHttpUtil` | `-` | `failureBlock` | prop | ✅ | ✅ | `0x39b04` |
 | `RBHttpUtil` | `-` | `setFailureBlock:` | prop | ✅ | ✅ | `0x39b14` |
-| `RBNotificationData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x39c38` |
+| `RBNotificationData` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x39c38` |
 | `RBNotificationData` | `-` | `encodeWithCoder:` |  | ✅ | ✅ | `0x39d1c` |
 | `RBNotificationData` | `-` | `notificationDict` | prop | ✅ | ✅ | `0x39db4` |
 | `RBNotificationData` | `-` | `setNotificationDict:` | prop | ✅ | ✅ | `0x39dc4` |
@@ -730,7 +730,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `neGLView` | `-` | `setGlContext:` | prop | ✅ | ✅ | `0x3abbc` |
 | `RBEffectSizeSlider` | `-` | `initWithDigit:` |  | ✅ | ❌ | `0x3ac30` |
 | `RBEffectSizeSlider` | `-` | `setValue:` | prop | ✅ | ❌ | `0x3b96c` |
-| `RBEffectSizeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x3bde0` |
+| `RBEffectSizeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ✅ | `0x3bde0` |
 | `RBEffectSizeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3becc` |
 | `RBEffectSizeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3bf70` |
 | `RBEffectSizeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3c014` |
@@ -859,10 +859,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `initWithContentsOfData:isLoop:` |  | ✅ | ❌ | `0x414fc` |
 | `AVBus` | `-` | `setSource:` |  | ✅ | ✅ | `0x4169c` |
 | `AVBus` | `-` | `removeSource` |  | ✅ | ✅ | `0x4171c` |
-| `AVBus` | `-` | `prepare` |  | ✅ | ❌ | `0x41798` |
+| `AVBus` | `-` | `prepare` |  | ✅ | ✅ | `0x41798` |
 | `AVBus` | `-` | `play` |  | ✅ | ✅ | `0x41898` |
 | `AVBus` | `-` | `stop` |  | ✅ | ✅ | `0x41964` |
-| `AVBus` | `-` | `pause` |  | ✅ | ❌ | `0x41a08` |
+| `AVBus` | `-` | `pause` |  | ✅ | ✅ | `0x41a08` |
 | `AVBus` | `-` | `offPause` |  | ✅ | ✅ | `0x41afc` |
 | `AVBus` | `-` | `setVolume:` |  | ✅ | ✅ | `0x41bc0` |
 | `AVBus` | `-` | `volume` |  | ✅ | ✅ | `0x41c64` |
@@ -877,7 +877,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `player` | prop | ✅ | ✅ | `0x41f48` |
 | `AVBus` | `-` | `setPlayer:` | prop | ✅ | ✅ | `0x41f58` |
 | `StoreTableCellBase` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0x41fa4` |
-| `StoreTableCellBase` | `-` | `dealloc` |  | ✅ | ❌ | `0x42154` |
+| `StoreTableCellBase` | `-` | `dealloc` |  | ✅ | ✅ | `0x42154` |
 | `StoreTableCellBase` | `-` | `prepareForReuse` |  | ✅ | ✅ | `0x42248` |
 | `StoreTableCellBase` | `-` | `leftView` | prop | ✅ | ✅ | `0x42308` |
 | `StoreTableCellBase` | `-` | `setLeftView:` | prop | ✅ | ✅ | `0x42318` |
@@ -888,23 +888,23 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignDetailViewPad` | `-` | `cancelLoading` |  | ✅ | ✅ | `0x45364` |
 | `StoreCampaignDetailViewPad` | `-` | `sampleStop` |  | ✅ | ❌ | `0x45368` |
 | `StoreCampaignDetailViewPad` | `-` | `pushSampleBtn` |  | ✅ | ❌ | `0x454d0` |
-| `StoreCampaignDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ❌ | `0x45748` |
-| `StoreCampaignDetailViewPad` | `-` | `sampleViewDownloading` |  | ✅ | ❌ | `0x45840` |
-| `StoreCampaignDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ❌ | `0x4593c` |
+| `StoreCampaignDetailViewPad` | `-` | `sampleViewStop` |  | ✅ | ✅ | `0x45748` |
+| `StoreCampaignDetailViewPad` | `-` | `sampleViewDownloading` |  | ✅ | ✅ | `0x45840` |
+| `StoreCampaignDetailViewPad` | `-` | `sampleViewPlaying` |  | ✅ | ✅ | `0x4593c` |
 | `StoreCampaignDetailViewPad` | `-` | `showItemInfo` |  | ✅ | ❌ | `0x45a38` |
 | `StoreCampaignDetailViewPad` | `-` | `pushLink:` |  | ✅ | ❌ | `0x45bc8` |
 | `StoreCampaignDetailViewPad` | `-` | `finishBgm:` |  | ✅ | ✅ | `0x45d08` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x45d24` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderError:` |  | ✅ | ✅ | `0x45ec4` |
 | `StoreCampaignDetailViewPad` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0x45f7c` |
-| `StoreCampaignDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x45f80` |
+| `StoreCampaignDetailViewPad` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x45f80` |
 | `StoreCampaignDetailViewPad` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x4605c` |
 | `StoreCampaignDetailViewPad` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x46060` |
-| `StoreCampaignDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ❌ | `0x46064` |
+| `StoreCampaignDetailViewPad` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x46064` |
 | `StoreCampaignDetailViewPad` | `-` | `didPresentAlertView:` |  | ✅ | ❌ | `0x46140` |
 | `StoreCampaignDetailViewPad` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x46280` |
 | `StoreCampaignDetailViewPad` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x46f48` |
-| `StoreCampaignDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x470d4` |
+| `StoreCampaignDetailViewPad` | `-` | `hasItem:itemID:` |  | ✅ | ✅ | `0x470d4` |
 | `StoreCampaignDetailViewPad` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x471e8` |
 | `StoreCampaignDetailViewPad` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x471f4` |
 | `StoreCampaignDetailViewPad` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x47208` |
@@ -961,7 +961,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x492b4` |
 | `RBTermDetailPhoneViewController` | `-` | `loadDetail` |  | ✅ | ❌ | `0x492e8` |
 | `RBTermDetailPhoneViewController` | `-` | `showTermView` |  | ✅ | ❌ | `0x49ac4` |
-| `RBTermDetailPhoneViewController` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x49f7c` |
+| `RBTermDetailPhoneViewController` | `-` | `startLoadAnimation` |  | ✅ | ✅ | `0x49f7c` |
 | `RBTermDetailPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ✅ | `0x4a07c` |
 | `RBTermDetailPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ✅ | `0x4a130` |
 | `RBTermDetailPhoneViewController` | `-` | `forceClose` |  | ✅ | ✅ | `0x4a200` |

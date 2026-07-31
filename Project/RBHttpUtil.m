@@ -406,6 +406,10 @@ static NSString *const kHashCheckErrorMessage = @"hash check error ...";
     expectedTotalBytes:(int64_t)expectedTotalBytes {
 }
 
+/**
+ * @brief Report download progress to the proceed block, or failing that to the delegate.
+ * @ghidraAddress 0x38fc0
+ */
 - (void)URLSession:(NSURLSession *)session
                  downloadTask:(NSURLSessionDownloadTask *)downloadTask
                  didWriteData:(int64_t)bytesWritten

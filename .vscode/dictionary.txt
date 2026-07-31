@@ -167,6 +167,7 @@ fastcall
 fcmp
 fcsel
 fcvt
+fcvtas
 fcvtzs
 fcvtzu
 fdiv

@@ -1233,3 +1233,95 @@ named parts, so those names are ours by construction.
 
 The scan exits zero deliberately. Both groups have legitimate members, so this is a report to read
 rather than a gate to pass, and treating it as a gate would only teach the next reader to silence it.
+
+## A shared branch arm, and the clamp that went missing with it
+
+`RBEffectSizeSlider -sliderChangeWithTouchPoint:` at `0x3bde0` clamps a touch that falls outside the
+bar, and the reconstruction clamped it one way only. The compiler had emitted a single
+`bl objc_msgSend` at `0x3be50` serving two selectors: the `b.pl` at `0x3be0c` falls through to load
+`barMin` and jumps to that call, while the `b.le` at `0x3be40` falls through to load `barMax` and
+falls into it. One call instruction, two arms, and the disassembler annotates it with whichever
+selector load sits nearest — `barMax`. The reconstruction had collapsed both arms into a single
+`else` returning `barMax`, so a touch to the left of the bar jumped to the maximum instead of the
+minimum. The header's own prose said the value "is clamped to `barMin` ... `barMax`", which is the
+tell that this was a transcription loss rather than a deliberate simplification.
+
+Two smaller things in the same routine. The conversion at `0x3be88` is `fcvtas`, round to nearest
+with ties away from zero, where the reconstruction used a plain C cast, which truncates; they differ
+for every offset whose fractional part reaches a half step. And the `cmp`/`cinc`/`asr` that follows
+is the ordinary expansion of a signed divide by two, not a hand-written shift with a correction, so
+it is now spelled as the division it came from.
+
+The lesson generalises past this routine: a shared call site is invisible in the decompile and
+almost invisible in the disassembly, because only the register set up on each path distinguishes the
+arms. Where a routine clamps, count the selector loads, not the calls.
+
+## The wrong copy of the same application
+
+Partway through checking a property width, the metadata said one thing and the disassembly said
+another: an ivar encoded `Q` at eight bytes whose getter plainly read four with `ldr w0`. Both
+readings were correct. They were readings of different binaries.
+
+Three extracted copies of the application sit side by side, and only two are the shipped build.
+`audit_ghidra_addresses.py` refuses to report when nearly everything disagrees, and that refusal is
+what caught it — 1786 of 1811 annotated methods "mismatched", which is not a tree full of defects
+but a tree checked against the wrong artefact. A checker that had dutifully printed those 1786 rows
+would have sent a reader off to correct 1786 annotations that were already right.
+
+Verify the artefact before trusting a fact derived from it. The two copies are byte-identical to
+each other and differ from the third, so a hash is enough to tell them apart.
+
+## Property types, the dimension the property scan was not checking
+
+`scan_properties.py` reads each property's attribute string but compares only the ownership and
+atomicity flags. The leading `T` field — the type encoding, and the only record of a scalar's exact
+width and signedness — was parsed and discarded. `scan_property_types.py` now checks it.
+
+It found `RBTutorialStatus`, an `NS_ENUM` backed by `NSUInteger` over a property and ivar the binary
+encodes `I`: eight bytes declared where the shipped class kept four. Nothing else in the tree
+reveals that. The enumeration's constants all fit either width, the code compiles, and the sentinel
+`0xffffffff` is a plausible value in both. Only the metadata distinguishes them, and only the
+comparisons — `cmp w0,#0x18` on a 32-bit register — corroborate it.
+
+The scan covers 460 scalar properties and passes. It was regression-tested the only way a passing
+checker can be trusted, by putting the defect back and confirming it reappears; a check that has
+never failed is indistinguishable from a check that cannot fail, which this tree has already
+learned once from the address audit.
+
+Objects are deliberately out of scope: generics, protocol qualifiers, and typedefs make a wrong
+answer likely enough there to cost more than it returns, so a clean run means the scalars agree and
+says nothing about the rest.
+
+## Four annotated constants that did not hold, and the two ways they failed
+
+The constant half of the address audit had four disagreements, of three distinct kinds.
+
+`kArtworkShadowOpacity` was a wrong value at a right address. The slot at `0x2ec6b8` holds the float
+`0x3f19999a`, which is 0.6; the source said 0.15. Those two numbers share a mantissa — 0.15 is
+`0x3e19999a` and 0.6 is `0x3f19999a`, one step apart in the exponent — so the misreading produces a
+number that is both wrong and entirely plausible. `ldr s0,[x8, #0x6b8]` feeding `setShadowOpacity:`
+at `0x1a9b94` settles it.
+
+`kLineViewWhite` and `kTermsTextWhite` were right values at wrong addresses. Both annotations named
+a page of `0x3be` where the `adrp` says `0x2ee`, and both wrong addresses landed on real selector
+pointers rather than on nothing, so neither looked obviously broken. The values themselves decode
+correctly at `0x2eecc0` and `0x2eecc8`. This is the third time the wrong `adrp` page has produced a
+believable wrong answer in this tree.
+
+`kProgressWidthInset` was neither: the pool holds -60.0 and the code does `fadd`, while the source
+declared +60.0 and subtracted it. Arithmetically identical, and a comment had said so, but it left a
+gate permanently red — which trains a reader to ignore it. It is now the negative constant the
+binary stores, added as the binary adds it, matching the `kDescriptionHeightInset` convention
+already used elsewhere.
+
+## A benign divergence the literal sweep reports, and why it stays
+
+The literal scan reports two absent strings, both in `RecommendDebug`: `テスト` and `テストアプリ`.
+Neither is a defect. The binary holds `テストA` through `テストF` and `テストアプリA` through
+`テストアプリF` spelled out in full, twelve records, where the reconstruction builds the same twelve
+strings by appending a suffix at runtime. The output is identical and the shape is not.
+
+It is left alone rather than guessed at: six full literals are equally consistent with an array the
+original iterated and with six unrolled blocks, and the disassembly of that debug class has not been
+read. The scan's two rows are documented here so the non-zero count is a known quantity rather than
+a mystery for the next reader to re-derive.

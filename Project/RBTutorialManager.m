@@ -98,6 +98,8 @@ enum { kTutorialStatusReportOnly = 0x12 };
 
 + (BOOL)isTutorialPlay {
     /** @ghidraAddress 0x3597c */
+    // As in +isTutorialMusicselect, the binary fetches the instance and reads currentStatus once
+    // per comparison rather than once in total.
     RBTutorialStatus status = [[self getInstance] currentStatus];
     if (status < RBTutorialStatusPlayRangeStart) {
         return NO;
@@ -129,6 +131,8 @@ enum { kTutorialStatusReportOnly = 0x12 };
     if ([[RBUserSettingData sharedInstance] thema] != RBUserSettingDataThemeColette) {
         return NO;
     }
+    // As in +isTutorialMusicselect, the binary fetches the instance and reads currentStatus once
+    // per comparison rather than once in total.
     RBTutorialStatus status = [[self getInstance] currentStatus];
     if (status < RBTutorialStatusCustomizeStart) {
         return NO;

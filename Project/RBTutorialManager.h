@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * also written into the persisted @c RBUserSettingData tutorial-status map, plus the terminal
  * sentinel. @c RBTutorialStatusNone is the initial value assigned when the singleton is created.
  */
-typedef NS_ENUM(NSUInteger, RBTutorialStatus) {
+typedef NS_ENUM(unsigned int, RBTutorialStatus) {
     RBTutorialStatusMusicSelectStart = 0, /*!< First music-select walkthrough step; also the value
                                            *   below which @c +isTutorialMusicselect is true. */
     RBTutorialStatusPlayStart = 9,        /*!< The step at which the in-play walkthrough should
