@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4659 verified
+Total: 6343 — 6306 reconstructed, 4662 verified
 (73.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -991,10 +991,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x4bcc4` |
 | `StoreExtendNoteView` | `-` | `dealloc` |  | ✅ | ❌ | `0x4ca54` |
 | `StoreExtendNoteView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x4cadc` |
-| `StoreExtendNoteView` | `-` | `isPurchased` |  | ✅ | ❌ | `0x4cb68` |
-| `StoreExtendNoteView` | `-` | `setIsPurchased:` |  | ✅ | ❌ | `0x4cbc8` |
+| `StoreExtendNoteView` | `-` | `isPurchased` |  | ✅ | ✅ | `0x4cb68` |
+| `StoreExtendNoteView` | `-` | `setIsPurchased:` |  | ✅ | ✅ | `0x4cbc8` |
 | `StoreExtendNoteView` | `-` | `loadExtendNoteInfo:index:` |  | ✅ | ❌ | `0x4cc28` |
-| `StoreExtendNoteView` | `-` | `reset` |  | ✅ | ❌ | `0x4d004` |
+| `StoreExtendNoteView` | `-` | `reset` |  | ✅ | ✅ | `0x4d004` |
 | `StoreExtendNoteView` | `-` | `artworkImageView` | prop | ✅ | ✅ | `0x4d058` |
 | `StoreExtendNoteView` | `-` | `setArtworkImageView:` | prop | ✅ | ✅ | `0x4d068` |
 | `StoreExtendNoteView` | `-` | `artworkBackImageView` | prop | ✅ | ✅ | `0x4d0a0` |

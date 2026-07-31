@@ -289,6 +289,11 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x4cb68: 'StoreExtendNoteView -isPurchased: the eor #1 at 0x4cb98 inverts the label\'s hidden '
+             'flag, so purchased means the caption is showing',
+    0x4cbc8: 'StoreExtendNoteView -setIsPurchased:: sets the standing caption and never reads its '
+             'argument, so the flag it appears to take has no effect',
+    0x4d004: 'StoreExtendNoteView -reset: clears the artwork, then chains to the empty base reset',
     0xc138: 'StoreButtonView -buttonColor: lazily installs blueColor into the _buttonColor ivar on '
             'first read, releasing whatever was there, and returns the ivar rather than the call',
     0xc208: 'StoreButtonView -disabledColor: the same shape with grayColor',
