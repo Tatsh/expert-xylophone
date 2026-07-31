@@ -42,6 +42,7 @@
 #import "game_scene.h"
 #import "gamesystem.h"
 #import "matrixmath.h"
+#include "neDebugLog.h"
 #import "neRenderer.h"
 #import "ne_c_time.h"
 #import "s_vector2.h"
@@ -337,6 +338,16 @@ constexpr int kDefaultPlayColor = 0;
 
     ne::Viewport *orthoViewport =
         CreateOrthoViewport(scaledSize.x, scaledSize.y, 0, 0, viewW, viewH);
+    // The original's live ortho projection is 2/768, -2/1024, -1, +1 (m0, m5, m10, m14).
+    const float *pOrtho = orthoViewport->GetProjectionMatrix();
+    neDebugLog("projection ortho m0=%.8f m5=%.8f m10=%.6f m14=%.6f size=(%.1f,%.1f) scale=%.2f",
+               static_cast<double>(pOrtho[0]),
+               static_cast<double>(pOrtho[5]),
+               static_cast<double>(pOrtho[10]),
+               static_cast<double>(pOrtho[14]),
+               static_cast<double>(scaledSize.x),
+               static_cast<double>(scaledSize.y),
+               static_cast<double>(scaleFactor));
     SetCurrentProjection(orthoViewport);
     orthoViewport->Release();
 
@@ -358,6 +369,21 @@ constexpr int kDefaultPlayColor = 0;
         if (!IsPad()) {
             distance = (sheetFarX / aspect) * halfCot;
         }
+        // The original's camera, decoded from its live projection and view matrices, is fov 70,
+        // aspect 0.75, distance 731.21 and near/far 658.09/804.33. Log the same terms here so the
+        // two can be compared directly rather than inferred from the picture.
+        neDebugLog("projection portrait fovRad=%.5f aspect=%.4f dist=%.2f near=%.2f far=%.2f "
+                   "sheetFarX=%.1f sheetFarY=%.1f scale=%.3f view=%dx%d",
+                   static_cast<double>(fovY),
+                   static_cast<double>(aspect),
+                   static_cast<double>(distance),
+                   static_cast<double>(distance * kNearPlaneScale),
+                   static_cast<double>(distance * kFarPlaneScale),
+                   static_cast<double>(gameSystem->GetSheetFarX()),
+                   static_cast<double>(gameSystem->GetSheetFarY()),
+                   static_cast<double>(gameSystem->GetPlayfieldScale()),
+                   viewW,
+                   viewH);
         ne::Viewport *viewport =
             CreatePerspectiveViewport(fovY,
                                       aspect,
@@ -371,6 +397,20 @@ constexpr int kDefaultPlayColor = 0;
         S_VECTOR3 target{gameSystem->GetCameraTargetX(), gameSystem->GetCameraTargetY(), 0.0f};
         S_VECTOR3 up{0.0f, -1.0f, 0.0f};
         ne::CameraNode *camera = CreateLookAtCamera(&eye, &target, &up);
+        // The original's live matrices, for a direct comparison: projection m0=1.90419734,
+        // m5=1.42814803, m10=10.0000038, m11=-1, m14=7238.99951; view m14=-731.211792.
+        const float *pProj = viewport->GetProjectionMatrix();
+        const float *pView = camera->GetViewMatrix();
+        neDebugLog("projection matrix m0=%.6f m5=%.6f m10=%.6f m11=%.1f m14=%.4f "
+                   "view m12=%.4f m13=%.4f m14=%.4f",
+                   static_cast<double>(pProj[0]),
+                   static_cast<double>(pProj[5]),
+                   static_cast<double>(pProj[10]),
+                   static_cast<double>(pProj[11]),
+                   static_cast<double>(pProj[14]),
+                   static_cast<double>(pView[12]),
+                   static_cast<double>(pView[13]),
+                   static_cast<double>(pView[14]));
         SetActiveViewCamera(viewport);
         SetCurrentModelNode(camera);
         viewport->Release();
