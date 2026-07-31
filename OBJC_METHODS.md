@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4870 verified
+Total: 6343 — 6306 reconstructed, 4874 verified
 (76.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3010,7 +3010,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreImageView` | `-` | `startDownloadImage` |  | ✅ | ❌ | `0xf3b44` |
 | `StoreImageView` | `-` | `unloadImage:` |  | ✅ | ❌ | `0xf3cec` |
 | `StoreImageView` | `-` | `setImage:` |  | ✅ | ❌ | `0xf3de4` |
-| `StoreImageView` | `-` | `loadedImage` |  | ✅ | ❌ | `0xf3e90` |
+| `StoreImageView` | `-` | `loadedImage` |  | ✅ | ✅ | `0xf3e90` |
 | `StoreImageView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xf3f00` |
 | `StoreImageView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xf4200` |
 | `StoreImageView` | `-` | `dealloc` |  | ✅ | ✅ | `0xf4220` |
@@ -3026,7 +3026,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackCell` | `-` | `isPurchased` | prop | ✅ | ✅ | `0xf5528` |
 | `StorePackCell` | `-` | `setIsPurchased:` | prop | ✅ | ✅ | `0xf5588` |
 | `StorePackCell` | `-` | `loadPackInfo:` |  | ✅ | ❌ | `0xf55e4` |
-| `StorePackCell` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xf5898` |
+| `StorePackCell` | `-` | `setBgImage:` |  | ✅ | ✅ | `0xf5898` |
 | `StorePackCell` | `-` | `setBgColor:` |  | ✅ | ❌ | `0xf5924` |
 | `StorePackCell` | `-` | `artworkView` | prop | ✅ | ✅ | `0xf5a1c` |
 | `StorePackCell` | `-` | `setArtworkView:` | prop | ✅ | ✅ | `0xf5a2c` |
@@ -3133,8 +3133,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackMusicView` | `-` | `setPid:` | prop | ✅ | ✅ | `0xfd76c` |
 | `StorePackView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xfd858` |
 | `StorePackView` | `-` | `dealloc` |  | ✅ | ✅ | `0xfe958` |
-| `StorePackView` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xfe9e0` |
-| `StorePackView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0xfea6c` |
+| `StorePackView` | `-` | `setBgImage:` |  | ✅ | ✅ | `0xfe9e0` |
+| `StorePackView` | `-` | `setArtwork:` |  | ✅ | ✅ | `0xfea6c` |
 | `StorePackView` | `-` | `handleTap:` |  | ✅ | ❌ | `0xfeaf8` |
 | `StorePackView` | `-` | `isPurchased` |  | ✅ | ✅ | `0xfebd8` |
 | `StorePackView` | `-` | `setIsPurchased:` |  | ✅ | ✅ | `0xfec38` |

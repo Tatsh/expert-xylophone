@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xf3e90: 'StoreImageView -loadedImage: whether imageView.image is non-nil',
+    0xf5898: 'StorePackCell -setBgImage:: drives bgView.image',
+    0xfe9e0: 'StorePackView -setBgImage:: same selector as StorePackCell\'s but a different ivar, '
+             'backGroundImageView, which is why the two were read separately',
+    0xfea6c: 'StorePackView -setArtwork:: drives artworkImageView.image',
     0xd9120: 'RBPopoverBackgroundView -imageFromImageContextWithSourceImage:size:: begins a context '
              'with the mov w0 of 0 for opaque NO, draws into a rect at the origin, then gets the '
              'image and ends the context, in that order',
