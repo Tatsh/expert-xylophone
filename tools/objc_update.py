@@ -1056,6 +1056,10 @@ VERIFIED = {
              'm_IsPlayGraph, both B-encoded, before AUGraphStop and the flag clear. The && in the '
              'reconstruction is the same thing, and the clear sits inside both guards rather than '
              'after them',
+    0x376ec: 'RBHttpUtil -startDownloading:: stores the delegate, then a cbz on filePath picks the '
+             'task kind: nil takes startDataTask and a set path takes startDownloadTask. The '
+             'returned task is passed straight back, so the choice is the whole method and '
+             'inverting it would download to memory exactly when a file was wanted',
     0x3936c: 'RBHttpUtil -currentProgress: cmp x0,#1 with b.lt, a signed test, so a download size '
              'below 1 returns the movi zero. The division converts the two operands differently, '
              'ucvtf for the data length and scvtf for the size, which is what their NSUInteger and '
