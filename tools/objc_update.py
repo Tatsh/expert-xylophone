@@ -3669,6 +3669,22 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x228B28: 'RecommendAdData +getInterstitialSpecCountForAdDisplaySpecList:: every odd thing the '
+              'reconstruction claims is there. cbz on the total-count dictionary jumps to 0x228fa4, '
+              'which retains the input list into the return register, so a missing record really '
+              'does return the list unfiltered. Three NSString isKindOfClass: calls appear where '
+              'only two results are used, confirming the discarded one on the ad_id_to value. Both '
+              'keys are built by the same stringWithFormat:"count_%@". Missing counts default '
+              'through numberWithInt:0, and the two cmp/b.ge pairs are signed, so a spec is kept '
+              'only when both counts are strictly under their maxima',
+    0x229078: 'RecommendAdData +getInterstitialSpecInstallForAdDisplaySpecList:: the same '
+              'formatter triple as 0x22a288, then per spec an NSDictionary guard, two NSString '
+              'isKindOfClass: tests feeding intValue, and cbnz on getAdDataByAdId: skipping a '
+              'missing record. The installed flag is compared against "0" through '
+              'getInstallFlgWithAdData:. The year gate is cmp w0,#0xbb7 with b.gt on the '
+              'substringToIndex:4 prefix, which is 2999 and therefore the strict less-than 3000 '
+              'the source spells, and inside it cmn x25,#1 with b.eq drops a spec whose end date '
+              'is already past',
     0x229F90: 'RecommendAdData +getAdTypeWithAdModel:adLocation:: a walk of getAdModelSettingList '
               'with four rejections in order, an NSString isKindOfClass: and isEqualToString: on '
               'the location, then an isKindOfClass: and cmp w0,w8 on the model, and finally a '
