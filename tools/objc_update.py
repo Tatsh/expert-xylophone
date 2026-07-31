@@ -3669,6 +3669,20 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x227570: 'RecommendAdData +getAdDataWithAppliId:: narrowedListWithList:object:forKey: then a '
+              'countByEnumeratingWithState: walk returning the first record whose primary flag '
+              'compares equal. Past the loop, cbz on count returns nil and objectAtIndex: takes '
+              'the first entry otherwise',
+    0x22A884: 'RecommendAdData +shuffled:: arrayWithCapacity: on the source count, then per '
+              'element ubfx zero-extends the 32-bit arc4random result and udiv/msub take it '
+              'modulo add x8,x0,#1, the running count plus one, before insertObject:atIndex:. The '
+              'plus one is what keeps the index legal when it equals the count',
+    0x22B200: 'RecommendAdData +getInstallFlgWithAdData:: cbz x19 returns the off flag for nil '
+              'data, an isKindOfClass: test substitutes it for a non-string, and isEqualToString: '
+              'short-circuits to the on flag. Otherwise cbz x20 and an NSNull isKindOfClass: test '
+              'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
+              'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
+              'the on and off flags',
     0x2423D8: 'RecommendAdCache +getAllAdDataInfoExpire: dataForKey: then cbz x19 returns nil for '
               'a missing blob, and after unarchiveObjectWithData: a cbz w0 on isKindOfClass:'
               '[NSDate class] returns nil for anything else',

@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5203 verified
-(82.0%).
+Total: 6343 — 6306 reconstructed, 5206 verified
+(82.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5203 verified, 3507 come from those passes and the remaining
-1696 were read by hand. The split matters when reading the percentage: a
+Of the 5206 verified, 3507 come from those passes and the remaining
+1699 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6022,7 +6022,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdData` | `+` | `getInterstitialSpecList` |  | ✅ | ✅ | `0x2271c4` |
 | `RecommendAdData` | `+` | `getAdStatusByAdModel:` |  | ✅ | ✅ | `0x2272a0` |
 | `RecommendAdData` | `+` | `getAdDataByAdId:` |  | ✅ | ✅ | `0x227460` |
-| `RecommendAdData` | `+` | `getAdDataWithAppliId:` |  | ✅ | ❌ | `0x227570` |
+| `RecommendAdData` | `+` | `getAdDataWithAppliId:` |  | ✅ | ✅ | `0x227570` |
 | `RecommendAdData` | `+` | `getAdListByAdType:` |  | ✅ | ✅ | `0x2277dc` |
 | `RecommendAdData` | `+` | `getAppBannerList` |  | ✅ | ❌ | `0x2278a0` |
 | `RecommendAdData` | `+` | `getAppIconList` |  | ✅ | ❌ | `0x227c50` |
@@ -6041,9 +6041,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdData` | `+` | `getAdTypeWithAdModel:adLocation:` |  | ✅ | ❌ | `0x229f90` |
 | `RecommendAdData` | `+` | `getAdListTermForList:` |  | ✅ | ❌ | `0x22a288` |
 | `RecommendAdData` | `+` | `getAdBannerListForList:` |  | ✅ | ❌ | `0x22a610` |
-| `RecommendAdData` | `+` | `shuffled:` |  | ✅ | ❌ | `0x22a884` |
+| `RecommendAdData` | `+` | `shuffled:` |  | ✅ | ✅ | `0x22a884` |
 | `RecommendAdData` | `+` | `lotteryInterstitialWithAdLocation:` |  | ✅ | ❌ | `0x22aa30` |
-| `RecommendAdData` | `+` | `getInstallFlgWithAdData:` |  | ✅ | ❌ | `0x22b200` |
+| `RecommendAdData` | `+` | `getInstallFlgWithAdData:` |  | ✅ | ✅ | `0x22b200` |
 | `ShadeView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x22b498` |
 | `ShadeView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ✅ | `0x22b55c` |
 | `ShadeView` | `-` | `delegate` | prop | ✅ | ✅ | `0x22b5d0` |

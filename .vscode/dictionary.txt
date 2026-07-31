@@ -286,6 +286,7 @@ movi
 movk
 movz
 msdos
+msub
 mtype
 mulist
 multisample
@@ -457,9 +458,11 @@ totalscorephone
 totto
 touchmanager
 transactioing
+ubfx
 ucvtf
 udid
 udids
+udiv
 udvare
 uesr
 unarchiver
