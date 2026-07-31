@@ -295,6 +295,29 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x19bc00: 'RBPopupView -tap:: ignores the sender and sends hideAnimation',
+    0x19e1dc: 'RBCustomInfoPopupView -tap:: the same shape, read separately rather than assumed',
+    0x1a027c: 'RBMusicMenuPopupView -tap:: likewise, the third of the identical popup dismissals',
+    0x1999bc: 'RBUnlockView -alertView:clickedButtonAtIndex:: reads neither parameter, sends request',
+    0x19e9e8: 'RBCharacterBase -checkLimitType:: and/cmp/cset, so it tests that every bit of the '
+              'argument is set in useLimit rather than any of them',
+    0x1bb3a8: 'RBExperienceData -resetPoint:: only theme 2 does anything, zeroing pointB; every '
+              'other theme returns immediately',
+    0xe7288: 'RBMenuBGEffectView -setupView: sends its own setupRainbow then tail-calls '
+             'setupParticle, and never chains to the superclass setupView',
+    0x100464: 'StorePromotionView -layoutSubviews: a pure super chain, nothing else',
+    0x18eac4: 'RBPushNotificationView -showNotification: setNextNotification, then tail-call '
+              'showAnimation',
+    0x16889c: 'RBCustomSelectView -getCollectionViewMargin: an fcsel on IsPad, 20 wide and 12 '
+              'narrow, both decoded from the instruction words rather than the printed immediates',
+    0x186004: 'GraphView -setData:maxValue:: forwards to the three-argument form with w3 zero, so '
+              'isMovableMinLine is NO',
+    0x181b14: 'RBExtendNoteManager +getExtendNoteDataFilename:: formats "%09d.rb" over the one id, '
+              'one specifier and one stack-pushed argument',
+    0x16ffec: 'RBTermPhoneViewController -viewDidDisappear:: a pure super chain, nothing else',
+    0x181f64: 'RBExtendNoteManager -init: a pure super chain, no ivar seeding',
+    0x1931fc: 'RBNotificationPagePhoneViewController -alertView:clickedButtonAtIndex:: reads '
+              'neither parameter; on isFirstRequest it sends pushBarBtnBack: nil',
     0x86b9c: 'StoreUtil +affiliateParametersFromURL:: FIXED, the parameter is an NSURL sent -host '
              'and -query directly (no URLWithString: anywhere in the routine), and a host that is '
              'not itunes.apple.com returns nil rather than falling through to the query parse',

@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4677 verified
-(73.7%).
+Total: 6343 — 6306 reconstructed, 4692 verified
+(74.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2821,7 +2821,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchView` | `-` | `currentPositionButton` | prop | ✅ | ✅ | `0xe706c` |
 | `RBSearchView` | `-` | `setCurrentPositionButton:` | prop | ✅ | ✅ | `0xe707c` |
 | `RBMenuBGEffectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xe7104` |
-| `RBMenuBGEffectView` | `-` | `setupView` |  | ✅ | ❌ | `0xe7288` |
+| `RBMenuBGEffectView` | `-` | `setupView` |  | ✅ | ✅ | `0xe7288` |
 | `RBMenuBGEffectView` | `-` | `createAnimation:type:` |  | ✅ | ❌ | `0xe72bc` |
 | `RBMenuBGEffectView` | `-` | `startAnimation` |  | ✅ | ❌ | `0xe8404` |
 | `RBMenuBGEffectView` | `-` | `stopAnimation` |  | ✅ | ❌ | `0xe8614` |
@@ -3182,7 +3182,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xffbbc` |
 | `StorePromotionView` | `-` | `dealloc` |  | ✅ | ❌ | `0xffcf8` |
 | `StorePromotionView` | `-` | `cancel` |  | ✅ | ❌ | `0x100138` |
-| `StorePromotionView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x100464` |
+| `StorePromotionView` | `-` | `layoutSubviews` |  | ✅ | ✅ | `0x100464` |
 | `StorePromotionView` | `-` | `SetupView` |  | ✅ | ❌ | `0x100498` |
 | `StorePromotionView` | `-` | `setImageViewSize:` |  | ✅ | ✅ | `0x1008c8` |
 | `StorePromotionView` | `-` | `getPackID` |  | ✅ | ❌ | `0x1008cc` |
@@ -3792,7 +3792,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeManager` | `-` | `dictionaryFromQueryString:` |  | ✅ | ❌ | `0x168504` |
 | `RBCustomSelectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1687dc` |
 | `RBCustomSelectView` | `-` | `getCollectionViewStartY:` |  | ✅ | ❌ | `0x168850` |
-| `RBCustomSelectView` | `-` | `getCollectionViewMargin` |  | ✅ | ❌ | `0x16889c` |
+| `RBCustomSelectView` | `-` | `getCollectionViewMargin` |  | ✅ | ✅ | `0x16889c` |
 | `RBCustomSelectView` | `-` | `setupView` |  | ✅ | ❌ | `0x1688c0` |
 | `RBCustomSelectView` | `-` | `reloadData` |  | ✅ | ❌ | `0x1696d4` |
 | `RBCustomSelectView` | `-` | `prevButtonTap:` |  | ✅ | ❌ | `0x169828` |
@@ -3902,7 +3902,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x16f718` |
 | `RBTermPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x16fe00` |
 | `RBTermPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x16ff9c` |
-| `RBTermPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x16ffec` |
+| `RBTermPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x16ffec` |
 | `RBTermPhoneViewController` | `-` | `loadList` |  | ✅ | ❌ | `0x170020` |
 | `RBTermPhoneViewController` | `-` | `showTermsList` |  | ✅ | ❌ | `0x170878` |
 | `RBTermPhoneViewController` | `-` | `selectTerm:` |  | ✅ | ❌ | `0x1713dc` |
@@ -4070,12 +4070,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTimingSlider` | `-` | `step` | prop | ✅ | ✅ | `0x17f938` |
 | `RBTimingSlider` | `-` | `setStep:` | prop | ✅ | ✅ | `0x17f948` |
 | `RBExtendNoteManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x181aac` |
-| `RBExtendNoteManager` | `+` | `getExtendNoteDataFilename:` |  | ✅ | ❌ | `0x181b14` |
+| `RBExtendNoteManager` | `+` | `getExtendNoteDataFilename:` |  | ✅ | ✅ | `0x181b14` |
 | `RBExtendNoteManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x181b48` |
 | `RBExtendNoteManager` | `+` | `getPathFromPurchased:` |  | ✅ | ❌ | `0x181c04` |
 | `RBExtendNoteManager` | `+` | `getPathFromPurchasedOldDirectory:` |  | ✅ | ❌ | `0x181cb4` |
 | `RBExtendNoteManager` | `-` | `deleteExtendNote:` |  | ✅ | ❌ | `0x181d64` |
-| `RBExtendNoteManager` | `-` | `init` |  | ✅ | ❌ | `0x181f64` |
+| `RBExtendNoteManager` | `-` | `init` |  | ✅ | ✅ | `0x181f64` |
 | `RBExtendNoteManager` | `-` | `dealloc` |  | ❌ | ✅ | `0x181f98` |
 | `RBExtendNoteManager` | `-` | `loadPurchasedNotes` |  | ✅ | ❌ | `0x181fcc` |
 | `RBExtendNoteManager` | `-` | `savePurchasedNotes` |  | ✅ | ❌ | `0x182348` |
@@ -4110,7 +4110,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `GraphView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x185ce8` |
 | `GraphView` | `-` | `CreateView` |  | ✅ | ❌ | `0x185dc0` |
 | `GraphView` | `-` | `setOption:dotSize:lineColor:lineSize:` |  | ✅ | ❌ | `0x185e84` |
-| `GraphView` | `-` | `setData:maxValue:` |  | ✅ | ❌ | `0x186004` |
+| `GraphView` | `-` | `setData:maxValue:` |  | ✅ | ✅ | `0x186004` |
 | `GraphView` | `-` | `setData:maxValue:isMovableMinLine:` |  | ✅ | ❌ | `0x186024` |
 | `GraphView` | `-` | `drawRect:` |  | ✅ | ❌ | `0x186938` |
 | `GraphView` | `-` | `reset` |  | ✅ | ❌ | `0x18702c` |
@@ -4163,7 +4163,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockCollectionView` | `-` | `setItems:` | prop | ✅ | ✅ | `0x18e2f4` |
 | `RBPushNotificationView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x18e3cc` |
 | `RBPushNotificationView` | `-` | `setupViewWithDelegate:` |  | ✅ | ❌ | `0x18e400` |
-| `RBPushNotificationView` | `-` | `showNotification` |  | ✅ | ❌ | `0x18eac4` |
+| `RBPushNotificationView` | `-` | `showNotification` |  | ✅ | ✅ | `0x18eac4` |
 | `RBPushNotificationView` | `-` | `setNextNotification` |  | ✅ | ❌ | `0x18eaf8` |
 | `RBPushNotificationView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x18ec60` |
 | `RBPushNotificationView` | `-` | `hideAnimationStart` |  | ✅ | ❌ | `0x18efa0` |
@@ -4221,7 +4221,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPagePhoneViewController` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x193058` |
 | `RBNotificationPagePhoneViewController` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x193120` |
 | `RBNotificationPagePhoneViewController` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x193184` |
-| `RBNotificationPagePhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1931fc` |
+| `RBNotificationPagePhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1931fc` |
 | `RBNotificationPagePhoneViewController` | `-` | `isFirstRequest` | prop | ✅ | ✅ | `0x19323c` |
 | `RBNotificationPagePhoneViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x19324c` |
 | `RBNotificationPagePhoneViewController` | `-` | `requestURL` | prop | ✅ | ✅ | `0x19325c` |
@@ -4271,7 +4271,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `downloadManagerCompleted:` |  | ✅ | ❌ | `0x1996ec` |
 | `RBUnlockView` | `-` | `downloadManagerFailed:` |  | ✅ | ❌ | `0x1998e0` |
 | `RBUnlockView` | `-` | `downloadManagerProceed:` |  | ✅ | ❌ | `0x19991c` |
-| `RBUnlockView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1999bc` |
+| `RBUnlockView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x1999bc` |
 | `RBUnlockView` | `-` | `parentCustomView` | prop | ✅ | ✅ | `0x1999d8` |
 | `RBUnlockView` | `-` | `setParentCustomView:` | prop | ✅ | ✅ | `0x1999f8` |
 | `RBUnlockView` | `-` | `pointBackgroundView` | prop | ✅ | ✅ | `0x199a0c` |
@@ -4349,7 +4349,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopupView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x19b840` |
 | `RBPopupView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x19b8fc` |
 | `RBPopupView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x19ba70` |
-| `RBPopupView` | `-` | `tap:` |  | ✅ | ❌ | `0x19bc00` |
+| `RBPopupView` | `-` | `tap:` |  | ✅ | ✅ | `0x19bc00` |
 | `RBPopupView` | `-` | `dealloc` |  | ❌ | ✅ | `0x19bc1c` |
 | `RBPopupView` | `-` | `baseView` | prop | ✅ | ✅ | `0x19bc50` |
 | `RBPopupView` | `-` | `setBaseView:` | prop | ✅ | ✅ | `0x19bc60` |
@@ -4362,7 +4362,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomInfoPopupView` | `-` | `setItemData:` | prop | ✅ | ✅ | `0x19cef0` |
 | `RBCustomInfoPopupView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x19ded8` |
 | `RBCustomInfoPopupView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x19e058` |
-| `RBCustomInfoPopupView` | `-` | `tap:` |  | ✅ | ❌ | `0x19e1dc` |
+| `RBCustomInfoPopupView` | `-` | `tap:` |  | ✅ | ✅ | `0x19e1dc` |
 | `RBCustomInfoPopupView` | `-` | `itemData` | prop | ✅ | ✅ | `0x19e1f8` |
 | `RBCustomInfoPopupView` | `-` | `baseView` | prop | ✅ | ✅ | `0x19e208` |
 | `RBCustomInfoPopupView` | `-` | `setBaseView:` | prop | ✅ | ✅ | `0x19e218` |
@@ -4389,7 +4389,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCharacterBase` | `-` | `init` |  | ✅ | ❌ | `0x19e5b0` |
 | `RBCharacterBase` | `-` | `setDefault` |  | ✅ | ❌ | `0x19e608` |
 | `RBCharacterBase` | `-` | `update` |  | ✅ | ❌ | `0x19e748` |
-| `RBCharacterBase` | `-` | `checkLimitType:` |  | ✅ | ❌ | `0x19e9e8` |
+| `RBCharacterBase` | `-` | `checkLimitType:` |  | ✅ | ✅ | `0x19e9e8` |
 | `RBCharacterBase` | `-` | `posX` | prop | ✅ | ✅ | `0x19ea1c` |
 | `RBCharacterBase` | `-` | `setPosX:` | prop | ✅ | ✅ | `0x19ea2c` |
 | `RBCharacterBase` | `-` | `posY` | prop | ✅ | ✅ | `0x19ea3c` |
@@ -4424,7 +4424,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicMenuPopupView` | `-` | `setupView` |  | ✅ | ❌ | `0x19ec8c` |
 | `RBMusicMenuPopupView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x19ff1c` |
 | `RBMusicMenuPopupView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1a0090` |
-| `RBMusicMenuPopupView` | `-` | `tap:` |  | ✅ | ❌ | `0x1a027c` |
+| `RBMusicMenuPopupView` | `-` | `tap:` |  | ✅ | ✅ | `0x1a027c` |
 | `RBMusicMenuPopupView` | `-` | `musicMenuPopupViewType` | prop | ✅ | ✅ | `0x1a0298` |
 | `RBMusicMenuPopupView` | `-` | `setMusicMenuPopupViewType:` | prop | ✅ | ✅ | `0x1a02a8` |
 | `RBMusicMenuPopupView` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0x1a02b8` |
@@ -4680,7 +4680,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `getRewardAppliId:` |  | ✅ | ❌ | `0x1bb0a0` |
 | `RBExperienceData` | `-` | `addPoint:` |  | ✅ | ❌ | `0x1bb21c` |
 | `RBExperienceData` | `-` | `getPoint` |  | ✅ | ❌ | `0x1bb2fc` |
-| `RBExperienceData` | `-` | `resetPoint:` |  | ✅ | ❌ | `0x1bb3a8` |
+| `RBExperienceData` | `-` | `resetPoint:` |  | ✅ | ✅ | `0x1bb3a8` |
 | `RBExperienceData` | `-` | `takeover` |  | ✅ | ❌ | `0x1bb3c4` |
 | `RBExperienceData` | `-` | `takeoverPoint` |  | ✅ | ❌ | `0x1bba38` |
 | `RBExperienceData` | `-` | `initialized` |  | ✅ | ❌ | `0x1bc104` |
