@@ -626,42 +626,42 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
 
         ++nQueued;
         if (nQueued == nMaxPerBatch) {
-            // The play screen faults in glDrawElements at address zero, which is what an indexed
-            // draw does when it takes its indices from client memory and that pointer is null. Name
-            // every term the draw depends on so the null one is identified rather than inferred.
-            if (NE_DBG_FIRST(40)) {
-                neDebugLog("emit draw indexVbo=%u arrayVbo=%u scratch=%p queued=%d count=%d "
-                           "maxPerBatch=%d palette=%d",
-                           m_dwIndexVbo,
-                           m_dwArrayVbo,
-                           m_pVertexScratch,
-                           nQueued,
-                           m_nSpriteCount,
-                           nMaxPerBatch,
-                           bMatrixPalette ? 1 : 0);
-            }
             pRenderer->BindIndexBuffer(m_dwIndexVbo);
+            // The bounded traces above were exhausted long before the fault, so check the
+            // precondition itself: a null index pointer is only safe with a real element buffer
+            // bound. glGetIntegerv is a query with no effect on error state.
+            NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
+                   if (nBound == 0 && NE_DBG_FIRST(4)) {
+                       neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
+                                  "count=%d owner=%s",
+                                  m_dwIndexVbo,
+                                  m_dwArrayVbo,
+                                  m_pVertexScratch,
+                                  nQueued,
+                                  m_nSpriteCount,
+                                  neDebugOwnerName());
+                   });
             pRenderer->DrawIndexedPrimitives(
                 kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
             nQueued = 0;
         }
     }
     if (nQueued != 0) {
-        // The play screen faults in glDrawElements at address zero, which is what an indexed draw
-        // does when it takes its indices from client memory and that pointer is null. Name every
-        // term the draw depends on so the null one is identified rather than inferred.
-        if (NE_DBG_FIRST(40)) {
-            neDebugLog("emit draw indexVbo=%u arrayVbo=%u scratch=%p queued=%d count=%d "
-                       "maxPerBatch=%d palette=%d",
-                       m_dwIndexVbo,
-                       m_dwArrayVbo,
-                       m_pVertexScratch,
-                       nQueued,
-                       m_nSpriteCount,
-                       nMaxPerBatch,
-                       bMatrixPalette ? 1 : 0);
-        }
         pRenderer->BindIndexBuffer(m_dwIndexVbo);
+        // The bounded traces above were exhausted long before the fault, so check the
+        // precondition itself: a null index pointer is only safe with a real element buffer
+        // bound. glGetIntegerv is a query with no effect on error state.
+        NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
+               if (nBound == 0 && NE_DBG_FIRST(4)) {
+                   neDebugLog("emit draw UNBOUND indexVbo=%u arrayVbo=%u scratch=%p queued=%d "
+                              "count=%d owner=%s",
+                              m_dwIndexVbo,
+                              m_dwArrayVbo,
+                              m_pVertexScratch,
+                              nQueued,
+                              m_nSpriteCount,
+                              neDebugOwnerName());
+               });
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
 }
@@ -763,6 +763,15 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     pRenderer->SetGlClientState(kClientMatrixIndex, 0);
     pRenderer->SetMatrixMode(kMatrixModeModelView, GetWorldMatrix());
     pRenderer->BindIndexBuffer(m_dwIndexVbo);
+    // Same precondition as the matrix path: a null index pointer needs a real element buffer.
+    NE_DBG(GLint nBound = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
+           if (nBound == 0 && NE_DBG_FIRST(4)) {
+               neDebugLog("axisAligned draw UNBOUND indexVbo=%u arrayVbo=%u queued=%d owner=%s",
+                          m_dwIndexVbo,
+                          m_dwArrayVbo,
+                          nQueued,
+                          neDebugOwnerName());
+           });
     pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
 }
 
