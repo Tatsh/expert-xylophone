@@ -1257,6 +1257,15 @@ VERIFIED = {
               'RecommendAdModelInterstitial in RecommendNetwork.h, and the file-local enumeration '
               'renames 1, 4 and 5 by scroll behaviour rather than by advert model, so the two sets '
               'overlap numerically while disagreeing on names',
+    0x2238c4: 'ApplilinkWebAPI -canUseNetworkRetry: systemVersion.floatValue compared with cset ge '
+              'against an fmov immediate, decoded from the instruction word 0x1e231000 with imm8 '
+              '0x18 as 6.0. This is a second, different version gate: ApplilinkConsts '
+              '+canUseApplilinkSdk at 0x2055ec uses 6.1, from a pool load rather than an '
+              'immediate. Two thresholds a tenth apart in the same subsystem, each with its own '
+              'constant, so unifying them would look like tidying and change which devices retry',
+    0x246120: 'RecommendWebView -setScrollEnabled:: stores the flag into _webViewBounces first and '
+              'then forwards it behind a cbz on _webView, reading it back from the ivar rather '
+              'than reusing the argument register',
     0x223828: 'ApplilinkWebAPI +setSessionConnectionWait:: cancelPreviousPerformRequestsWithTarget: '
               'first, then the flag stored to the global at +0x698+1, then a cbz that schedules '
               'the timeout only when the flag is set. The delay is a 10.0 fmov, matching the '
