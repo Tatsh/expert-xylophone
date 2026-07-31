@@ -276,6 +276,28 @@ VERIFIED = {
               'order; the ghost arm branches on ghostStyle == 1 directly rather than materialising '
               'a boolean (cmp at 0x1a6f4c); the shared tail at 0x1a7150 picks the on or off knob '
               'animation, both at the 0.2 of g_dMascotMessageAnimDuration',
+    0xab9d4: 'RBMenuView -SelectSettingButton: the binary is a lone tail call to toggleSettingView; '
+             'our copy carries temporary RBPDBG logging around that same call',
+    0xbeff8: 'RBNewsHUDView -imageDownloaderDidFail:didLoad:: sets m_CanHide, then hides; neither '
+             'argument is read',
+    0xf4200: 'StoreImageView -imageDownloaderDidFail:didLoad:: clears the downloader and nothing '
+             'else, neither argument read',
+    0x103a50: 'StorePromotionView -scrollViewWillBeginDragging:: a lone tail call to stopAnimation',
+    0x103c50: 'StorePromotionView -scrollViewDidEndDecelerating:: the counterpart, startAnimation',
+    0x56fd4: 'StoreCampaignTableViewCell -getItemSize:: two fcsel pairs, 320/640 wide and 80/160 '
+             'tall, the pad arm taking the larger of each',
+    0x729e0: 'Downloader +dictionaryToQueryData:: forwards to RBHttpUtil unchanged',
+    0x72a0c: 'Downloader +dictionaryToJsonData:: likewise',
+    0x85b4c: 'StoreUtil +priceString:: forwards with useCatalogPrice: 0, from the mov w3 before '
+             'the tail call',
+    0xc9bf4: 'RBMusicFirstInfoView -tap:: a lone tail call to hideAnimation, the recogniser unread',
+    0xd61b0: 'RBMusicView -firstInfoScrollEnd: the cbz on m_FirstInfo returns without scheduling; '
+             'otherwise it defers setFirstScrollAnimation by the 0.5 in the fmov, with a nil object',
+    0xedde8: 'StoreDetailMusicCell +cellHeight: one pool load of 80.0',
+    0x1099ac: 'StoreCampaignItemInfo -registSuccess: writes the same 1 into both _bServerUnlock and '
+              'its neighbour, so the two flags are set together',
+    0x10d018: 'RBRewardListView -setParentView:: forwards to setParentCustomView:, which is why the '
+              'two names differ',
     0x194ba0: 'RBUnlockView -reloadData: s10 is the row height and s11 the row gap (the fcsel pair '
               'at 0x194c10 and 0x194c1c); d9, the height each row is built with, is taken from s10 '
               'at 0x195008 before the fadd at 0x19502c folds the gap in, and the loop advances by '

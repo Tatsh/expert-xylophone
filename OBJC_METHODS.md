@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4605 verified
-(72.6%).
+Total: 6343 — 6306 reconstructed, 4619 verified
+(72.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1166,7 +1166,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignTableViewCell` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x56e90` |
 | `StoreCampaignTableViewCell` | `+` | `cellHeight:` |  | ✅ | ✅ | `0x56fa4` |
 | `StoreCampaignTableViewCell` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x56fc0` |
-| `StoreCampaignTableViewCell` | `-` | `getItemSize:` |  | ✅ | ❌ | `0x56fd4` |
+| `StoreCampaignTableViewCell` | `-` | `getItemSize:` |  | ✅ | ✅ | `0x56fd4` |
 | `StoreCampaignTableViewCell` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x57004` |
 | `StoreCampaignTableViewCell` | `-` | `artworkView` | prop | ✅ | ✅ | `0x57204` |
 | `StoreCampaignTableViewCell` | `-` | `setArtworkView:` | prop | ✅ | ✅ | `0x57214` |
@@ -1665,8 +1665,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistManager` | `-` | `setFilePath:` | prop | ✅ | ✅ | `0x72974` |
 | `RBPlaylistManager` | `-` | `lastSelectedMusicID` | prop | ✅ | ✅ | `0x72980` |
 | `RBPlaylistManager` | `-` | `setLastSelectedMusicID:` | prop | ✅ | ✅ | `0x72990` |
-| `Downloader` | `+` | `dictionaryToQueryData:` |  | ✅ | ❌ | `0x729e0` |
-| `Downloader` | `+` | `dictionaryToJsonData:` |  | ✅ | ❌ | `0x72a0c` |
+| `Downloader` | `+` | `dictionaryToQueryData:` |  | ✅ | ✅ | `0x729e0` |
+| `Downloader` | `+` | `dictionaryToJsonData:` |  | ✅ | ✅ | `0x72a0c` |
 | `Downloader` | `-` | `initWithURL:save:` |  | ✅ | ❌ | `0x72a38` |
 | `Downloader` | `-` | `initWithURL:post:contentType:` |  | ✅ | ❌ | `0x72b94` |
 | `Downloader` | `-` | `initWithURL:post:contentType:timeout:` |  | ✅ | ❌ | `0x72cd4` |
@@ -1742,7 +1742,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreUtil` | `+` | `userAgeURL` |  | ✅ | ✅ | `0x859e4` |
 | `StoreUtil` | `+` | `productIDForPackID:` |  | ✅ | ❌ | `0x859f8` |
 | `StoreUtil` | `+` | `packIDForProductID:` |  | ✅ | ❌ | `0x85a4c` |
-| `StoreUtil` | `+` | `priceString:` |  | ✅ | ❌ | `0x85b4c` |
+| `StoreUtil` | `+` | `priceString:` |  | ✅ | ✅ | `0x85b4c` |
 | `StoreUtil` | `+` | `priceString:useCatalogPrice:` |  | ✅ | ❌ | `0x85b7c` |
 | `StoreUtil` | `+` | `isValidURL:` |  | ✅ | ❌ | `0x85cc0` |
 | `StoreUtil` | `+` | `createReceiptCheckJSON:` |  | ✅ | ❌ | `0x85e54` |
@@ -2109,7 +2109,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `selectRandom:` |  | ✅ | ❌ | `0xab3c8` |
 | `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ❌ | `0xab7ac` |
 | `RBMenuView` | `-` | `RemoveStoreViewController` |  | ✅ | ❌ | `0xab854` |
-| `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ❌ | `0xab9d4` |
+| `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ✅ | `0xab9d4` |
 | `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ❌ | `0xab9e0` |
 | `RBMenuView` | `-` | `toggleSettingView` |  | ✅ | ❌ | `0xaba74` |
 | `RBMenuView` | `-` | `showHowToView` |  | ✅ | ❌ | `0xabf94` |
@@ -2343,7 +2343,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNewsHUDView` | `-` | `tapped` |  | ✅ | ✅ | `0xbe8a8` |
 | `RBNewsHUDView` | `-` | `showImage:InfomationID:` |  | ✅ | ❌ | `0xbe8b4` |
 | `RBNewsHUDView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xbe99c` |
-| `RBNewsHUDView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0xbeff8` |
+| `RBNewsHUDView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xbeff8` |
 | `RBStoreExtendNoteList` | `+` | `storeCountry` |  | ✅ | ❌ | `0xbf024` |
 | `RBStoreExtendNoteList` | `-` | `init` |  | ✅ | ❌ | `0xbf064` |
 | `RBStoreExtendNoteList` | `-` | `startFetching` |  | ✅ | ❌ | `0xbf1a0` |
@@ -2479,7 +2479,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicDifficultyView` | `-` | `setLayoutOffset:` | prop | ✅ | ✅ | `0xc92c8` |
 | `RBMusicFirstInfoView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xc9370` |
 | `RBMusicFirstInfoView` | `-` | `SetupView` |  | ✅ | ❌ | `0xc93e4` |
-| `RBMusicFirstInfoView` | `-` | `tap:` |  | ✅ | ❌ | `0xc9bf4` |
+| `RBMusicFirstInfoView` | `-` | `tap:` |  | ✅ | ✅ | `0xc9bf4` |
 | `RBMusicFirstInfoView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xc9c10` |
 | `RBMusicFirstInfoView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xc9d78` |
 | `RBMusicScoreView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xc9ee8` |
@@ -2515,7 +2515,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `firstInfoAnimation` |  | ✅ | ❌ | `0xd5d4c` |
 | `RBMusicView` | `-` | `firstInfoAnimationCheck` |  | ✅ | ❌ | `0xd5f38` |
 | `RBMusicView` | `-` | `selectPage:` |  | ✅ | ❌ | `0xd60d4` |
-| `RBMusicView` | `-` | `firstInfoScrollEnd` |  | ✅ | ❌ | `0xd61b0` |
+| `RBMusicView` | `-` | `firstInfoScrollEnd` |  | ✅ | ✅ | `0xd61b0` |
 | `RBMusicView` | `-` | `setFirstScrollAnimation` |  | ✅ | ❌ | `0xd61e0` |
 | `RBMusicView` | `-` | `setScrollable:` |  | ✅ | ❌ | `0xd65dc` |
 | `RBMusicView` | `-` | `setEnableButton:` |  | ✅ | ❌ | `0xd6684` |
@@ -2907,7 +2907,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreDetailHeaderView` | `-` | `setReflectionArtworkView:` | prop | ✅ | ✅ | `0xedcc4` |
 | `StoreDetailHeaderView` | `-` | `iconNewMarker` | prop | ✅ | ✅ | `0xedcfc` |
 | `StoreDetailHeaderView` | `-` | `setIconNewMarker:` | prop | ✅ | ✅ | `0xedd0c` |
-| `StoreDetailMusicCell` | `+` | `cellHeight` |  | ✅ | ❌ | `0xedde8` |
+| `StoreDetailMusicCell` | `+` | `cellHeight` |  | ✅ | ✅ | `0xedde8` |
 | `StoreDetailMusicCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xeddf4` |
 | `StoreDetailMusicCell` | `-` | `handleLink:` |  | ✅ | ❌ | `0xef5cc` |
 | `StoreDetailMusicCell` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xef784` |
@@ -3012,7 +3012,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreImageView` | `-` | `setImage:` |  | ✅ | ❌ | `0xf3de4` |
 | `StoreImageView` | `-` | `loadedImage` |  | ✅ | ❌ | `0xf3e90` |
 | `StoreImageView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xf3f00` |
-| `StoreImageView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0xf4200` |
+| `StoreImageView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xf4200` |
 | `StoreImageView` | `-` | `dealloc` |  | ✅ | ❌ | `0xf4220` |
 | `StoreImageView` | `-` | `imageURL` | prop | ✅ | ✅ | `0xf4300` |
 | `StoreImageView` | `-` | `setImageURL:` | prop | ✅ | ✅ | `0xf4310` |
@@ -3200,11 +3200,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `bannerTapped:` |  | ✅ | ❌ | `0x1030f0` |
 | `StorePromotionView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1032e4` |
 | `StorePromotionView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1037fc` |
-| `StorePromotionView` | `-` | `scrollViewWillBeginDragging:` |  | ✅ | ❌ | `0x103a50` |
+| `StorePromotionView` | `-` | `scrollViewWillBeginDragging:` |  | ✅ | ✅ | `0x103a50` |
 | `StorePromotionView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x103a6c` |
 | `StorePromotionView` | `-` | `scrollViewDidEndDragging:willDecelerate:` |  | ✅ | ✅ | `0x103c48` |
 | `StorePromotionView` | `-` | `scrollViewWillBeginDecelerating:` |  | ✅ | ✅ | `0x103c4c` |
-| `StorePromotionView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ❌ | `0x103c50` |
+| `StorePromotionView` | `-` | `scrollViewDidEndDecelerating:` |  | ✅ | ✅ | `0x103c50` |
 | `StorePromotionView` | `-` | `scrollViewDidRotate:` |  | ✅ | ❌ | `0x103c6c` |
 | `StorePromotionView` | `-` | `delegate` | prop | ✅ | ✅ | `0x103f58` |
 | `StorePromotionView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x103f78` |
@@ -3323,7 +3323,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignItemInfo` | `-` | `checkExistPackList:packID:` |  | ✅ | ❌ | `0x1096c4` |
 | `StoreCampaignItemInfo` | `-` | `checkNewUnlock` |  | ✅ | ❌ | `0x109850` |
 | `StoreCampaignItemInfo` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x109898` |
-| `StoreCampaignItemInfo` | `-` | `registSuccess` |  | ✅ | ❌ | `0x1099ac` |
+| `StoreCampaignItemInfo` | `-` | `registSuccess` |  | ✅ | ✅ | `0x1099ac` |
 | `StoreCampaignItemInfo` | `+` | `getButtonColor:` |  | ✅ | ❌ | `0x1099cc` |
 | `StoreCampaignItemInfo` | `+` | `getButtonName:` |  | ✅ | ❌ | `0x109b10` |
 | `StoreCampaignItemInfo` | `-` | `campaignID` | prop | ✅ | ✅ | `0x109bb8` |
@@ -3343,7 +3343,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignItemInfo` | `-` | `copyright` | prop | ✅ | ✅ | `0x109c98` |
 | `StoreCampaignItemInfo` | `-` | `unlockDict` | prop | ✅ | ✅ | `0x109ca8` |
 | `RBRewardListView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x10cfa4` |
-| `RBRewardListView` | `-` | `setParentView:` |  | ✅ | ❌ | `0x10d018` |
+| `RBRewardListView` | `-` | `setParentView:` |  | ✅ | ✅ | `0x10d018` |
 | `RBRewardListView` | `-` | `setupView` |  | ✅ | ❌ | `0x10d034` |
 | `RBRewardListView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x10d758` |
 | `RBRewardListView` | `-` | `loadStart` |  | ✅ | ❌ | `0x10d824` |
