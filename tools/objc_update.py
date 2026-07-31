@@ -1000,6 +1000,16 @@ VERIFIED = {
              'Caches and current in the private Documents directory, and the only thing '
              'distinguishing them in the disassembly is which helper address is called. Swapping '
              'them would leave every purchased track looked up in the directory it is not in',
+    0x3597c: 'RBTutorialManager +isTutorialPlay: a range test, b.cc on cmp #0xa returning NO below '
+             '10 and cset cc on cmp #0x17 for the upper bound, so the answer is 10 <= status < 23. '
+             'Both compares are unsigned and both bounds match their constants. Unlike '
+             '+isTutorialMusicselect at 0x35838, which reads currentStatus twice and throws the '
+             'first result away, both reads here are used',
+    0x41afc: 'AVBus -offPause: cmp w21,#3 gates the whole body on Paused, then Playing is stored '
+             'before the play send and Stopped only if it returns false, tested with tbnz on bit '
+             '0. The three literals are 3, 2 and 4, matching Paused, Playing and Stopped. Storing '
+             'the new status before the call rather than after is what makes the failure arm a '
+             'correction rather than the only write',
     0x35838: 'RBTutorialManager +isTutorialMusicselect: cmp w0,#0xa with cset cc, an unsigned '
              'lower test, so the result is currentStatus < 10 and that matches '
              'RBTutorialStatusPlayRangeStart. The binary fetches the instance and reads '

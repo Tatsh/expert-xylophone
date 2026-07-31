@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5105 verified
+Total: 6343 — 6306 reconstructed, 5107 verified
 (80.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5105 verified, 3507 come from those passes and the remaining
-1598 were read by hand. The split matters when reading the percentage: a
+Of the 5107 verified, 3507 come from those passes and the remaining
+1600 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -621,7 +621,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `startTutorialMusicselect` |  | ✅ | ✅ | `0x35820` |
 | `RBTutorialManager` | `+` | `isTutorialMusicselect` |  | ✅ | ✅ | `0x35838` |
 | `RBTutorialManager` | `+` | `needStartTutorialPlay` |  | ✅ | ✅ | `0x358ec` |
-| `RBTutorialManager` | `+` | `isTutorialPlay` |  | ✅ | ❌ | `0x3597c` |
+| `RBTutorialManager` | `+` | `isTutorialPlay` |  | ✅ | ✅ | `0x3597c` |
 | `RBTutorialManager` | `+` | `needStartTutorialCustomize` |  | ✅ | ❌ | `0x35a40` |
 | `RBTutorialManager` | `+` | `startTutorialCustomize` |  | ✅ | ✅ | `0x35b24` |
 | `RBTutorialManager` | `+` | `isTutorialCustomize` |  | ✅ | ❌ | `0x35b3c` |
@@ -863,7 +863,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `play` |  | ✅ | ❌ | `0x41898` |
 | `AVBus` | `-` | `stop` |  | ✅ | ✅ | `0x41964` |
 | `AVBus` | `-` | `pause` |  | ✅ | ❌ | `0x41a08` |
-| `AVBus` | `-` | `offPause` |  | ✅ | ❌ | `0x41afc` |
+| `AVBus` | `-` | `offPause` |  | ✅ | ✅ | `0x41afc` |
 | `AVBus` | `-` | `setVolume:` |  | ✅ | ✅ | `0x41bc0` |
 | `AVBus` | `-` | `volume` |  | ✅ | ✅ | `0x41c64` |
 | `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
