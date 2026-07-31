@@ -1,0 +1,45 @@
+# Read AltFrameLayer's three live sprite batches. Source this while stopped on the play screen:
+#
+#   (lldb) process interrupt
+#   (lldb) command source /path/to/rb458-batches.lldb
+#
+# No breakpoint and no function call. Breaking on CreateWorldSpriteBatch (0x31834) does not work
+# when attaching to a running game, because the batches are built during scene setup and are long
+# since constructed by the time the play screen is up.
+#
+# g_pAltFrameLayer is the pointer at 0x3deda8. Its m_apSprites[i] live at +0x20 + i*8, which the
+# build loop confirms (add x8,x19,x24,LSL #3 then ldr x20,[x8,#0x20] at 0x17a8a8).
+#
+# On each batch: capacity +0x120, sprite count +0x124, vertex scratch +0x128, index VBO +0x130,
+# array VBO +0x134, batch flag +0x154. A zero array VBO is what leaves the weight and matrix-index
+# client arrays enabled with pointers that were never set, which is the address-zero draw crash.
+
+expr -- uint64_t $base = (uint64_t)&_mh_execute_header
+expr -- void *$afl = *(void **)($base + 0x3deda8)
+expr -- void *$b0 = *(void **)((char *)$afl + 0x20)
+expr -- void *$b1 = *(void **)((char *)$afl + 0x28)
+expr -- void *$b2 = *(void **)((char *)$afl + 0x30)
+
+# batch 0: capacity, count, scratch, indexVbo, arrayVbo, batchFlag
+expr -- *(unsigned int *)((char *)$b0 + 0x120)
+expr -- *(int *)((char *)$b0 + 0x124)
+expr -- *(void **)((char *)$b0 + 0x128)
+expr -- *(unsigned int *)((char *)$b0 + 0x130)
+expr -- *(unsigned int *)((char *)$b0 + 0x134)
+expr -- (int)*(unsigned char *)((char *)$b0 + 0x154)
+
+# batch 1
+expr -- *(unsigned int *)((char *)$b1 + 0x120)
+expr -- *(int *)((char *)$b1 + 0x124)
+expr -- *(void **)((char *)$b1 + 0x128)
+expr -- *(unsigned int *)((char *)$b1 + 0x130)
+expr -- *(unsigned int *)((char *)$b1 + 0x134)
+expr -- (int)*(unsigned char *)((char *)$b1 + 0x154)
+
+# batch 2
+expr -- *(unsigned int *)((char *)$b2 + 0x120)
+expr -- *(int *)((char *)$b2 + 0x124)
+expr -- *(void **)((char *)$b2 + 0x128)
+expr -- *(unsigned int *)((char *)$b2 + 0x130)
+expr -- *(unsigned int *)((char *)$b2 + 0x134)
+expr -- (int)*(unsigned char *)((char *)$b2 + 0x154)
