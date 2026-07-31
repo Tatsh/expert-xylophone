@@ -18,8 +18,6 @@
 #import "UIAlertView+RB.h"
 #import "deviceenvironment.h"
 
-// The information variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
-static const NSInteger kMusicMenuPopupViewTypeInformation = 7;
 
 // The web view is inset below the title bar by one title-bar height per satisfied condition: once
 // for any non-Classic theme, and once again for the iPad (wide) layout. The binary materialises the
@@ -55,7 +53,7 @@ static NSString *const kDisableTouchCalloutScript =
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setMusicMenuPopupViewType:kMusicMenuPopupViewTypeInformation];
+        [self setMusicMenuPopupViewType:RBMusicMenuPopupViewTypeInformation];
         [self setupView];
     }
     // The binary sends this unconditionally after the init branch, so a nil self is a no-op send.

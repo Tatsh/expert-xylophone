@@ -297,6 +297,10 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x96664: 'RBCustomView -initWithFrame:: the mov w2 of 1 matches '
+             'RBMusicMenuPopupViewTypeCustomize, then setupView',
+    0x99eb0: 'RBHowToView -initWithFrame:: the mov x2 of 0 is RBMusicMenuPopupViewTypeHowTo, the '
+             'enum\'s own name for the default variant',
     0x904ac: 'RBPlaylistCreateViewController -viewWillDisappear:: super, then textField '
              'resignFirstResponder, the mirror of its viewDidAppear:',
     0xbf488: 'RBStoreExtendNoteList -isFetching: short-circuits, returning YES on a live '

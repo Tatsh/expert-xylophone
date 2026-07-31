@@ -12,8 +12,6 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-// The credits variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
-static const NSInteger kMusicMenuPopupViewTypeCredits = 3;
 
 // The credits-text artwork laid out in the popup content view.
 static NSString *const kCreditsTextImageName = @"07_credits/cre_text";
@@ -27,7 +25,7 @@ static const CGFloat kNonClassicThemeTopOffset = 32.0;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setMusicMenuPopupViewType:kMusicMenuPopupViewTypeCredits];
+        [self setMusicMenuPopupViewType:RBMusicMenuPopupViewTypeCredits];
         [self setupView];
     }
     return self;

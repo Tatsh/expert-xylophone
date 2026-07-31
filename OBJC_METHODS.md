@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4806 verified
+Total: 6343 — 6306 reconstructed, 4808 verified
 (75.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1966,7 +1966,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCreditsView` | `-` | `setupView` |  | ✅ | ❌ | `0x963b4` |
 | `RBCreditsView` | `-` | `settingView` | prop | ✅ | ✅ | `0x96620` |
 | `RBCreditsView` | `-` | `setSettingView:` | prop | ✅ | ✅ | `0x96640` |
-| `RBCustomView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x96664` |
+| `RBCustomView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x96664` |
 | `RBCustomView` | `-` | `dealloc` |  | ❌ | ✅ | `0x966f0` |
 | `RBCustomView` | `-` | `setupView` |  | ✅ | ❌ | `0x96724` |
 | `RBCustomView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x987b0` |
@@ -1998,7 +1998,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomView` | `-` | `setFirstInfo:` | prop | ✅ | ✅ | `0x99d90` |
 | `RBCustomView` | `-` | `rewardListView` | prop | ✅ | ✅ | `0x99da0` |
 | `RBCustomView` | `-` | `setRewardListView:` | prop | ✅ | ✅ | `0x99db0` |
-| `RBHowToView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x99eb0` |
+| `RBHowToView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x99eb0` |
 | `RBHowToView` | `-` | `dealloc` |  | ✅ | ❌ | `0x99f3c` |
 | `RBHowToView` | `-` | `setupView` |  | ✅ | ❌ | `0x9a200` |
 | `RBHowToView` | `-` | `createViewSame:` |  | ✅ | ❌ | `0x9a9d4` |

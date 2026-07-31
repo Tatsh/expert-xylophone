@@ -14,8 +14,6 @@
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
 
-// The default (non-typed) variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
-static const NSInteger kMusicMenuPopupViewTypeDefault = 0;
 
 // The number of how-to-play instruction pages, one image per page.
 static const int kHowToPlayPageCount = 6;
@@ -76,7 +74,7 @@ static const CGRect kThemedNarrowPageControlFrame = {{60.0, 295.0}, {200.0, kPag
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setMusicMenuPopupViewType:kMusicMenuPopupViewTypeDefault];
+        [self setMusicMenuPopupViewType:RBMusicMenuPopupViewTypeHowTo];
         [self setupView];
     }
     return self;

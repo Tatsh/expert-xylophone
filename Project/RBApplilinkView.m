@@ -16,8 +16,6 @@
 #import "RecommendNetwork.h"
 #import "UIAlertView+RB.h"
 
-// The Applilink variant of the music-menu popup passed to -setMusicMenuPopupViewType:.
-static const NSInteger kMusicMenuPopupViewTypeApplilink = 8;
 
 // The web target view's rounded-corner radius and the activity indicator's magnification.
 static const CGFloat kWebTargetCornerRadius = 7.0;
@@ -40,7 +38,7 @@ static NSString *const kApplilinkAdLocation = @"ADL_TOP";
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setMusicMenuPopupViewType:kMusicMenuPopupViewTypeApplilink];
+        [self setMusicMenuPopupViewType:RBMusicMenuPopupViewTypeApplilink];
         [self setupView];
         self.hideAnimating = NO;
     }
