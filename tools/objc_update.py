@@ -286,6 +286,11 @@ VERIFIED = {
              'it, {height - 0.4375, left, 9.0, right}',
     0x14d40: 'UnZipArchive -init: chains to super and clears m_ZipFile only when that returned '
              'non-nil',
+    0x18a98: 'SystemHardware -init: seeds m_HardwareType with the 15 sentinel, and only when super '
+             'returned non-nil',
+    0x93d00: 'RBPlaylistViewController -numberOfSectionsInTableView:: 2 whenever the type is not '
+             'the menu, and for the menu the cinc eq at 0x93d40 gives 2 at the root node and 1 '
+             'below it, which is the three-armed form the reconstruction spells out',
     0x18cf4: 'SystemHardware -getHardwareName: the same resolve-once guard as getHardwareType, '
              'then a tail call to the hardwareName property rather than a stored copy',
     0x49264: 'RBTermDetailPhoneViewController -viewDidAppear:: chains to super with the flag, then '

@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4648 verified
+Total: 6343 — 6306 reconstructed, 4650 verified
 (73.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -295,7 +295,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `HistoryData` | `-` | `setPc:` | prop | ✅ | ✅ | `0x18910` |
 | `HistoryData` | `-` | `tuneID` | prop | ✅ | ✅ | `0x18948` |
 | `HistoryData` | `-` | `setTuneID:` | prop | ✅ | ✅ | `0x18958` |
-| `SystemHardware` | `-` | `init` |  | ✅ | ❌ | `0x18a98` |
+| `SystemHardware` | `-` | `init` |  | ✅ | ✅ | `0x18a98` |
 | `SystemHardware` | `-` | `dealloc` |  | ❌ | ✅ | `0x18ae0` |
 | `SystemHardware` | `+` | `getInstance` |  | ✅ | ❌ | `0x18b14` |
 | `SystemHardware` | `-` | `initHardware` |  | ✅ | ❌ | `0x18b6c` |
@@ -1928,7 +1928,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistViewController` | `-` | `returnButtonPush:` |  | ✅ | ❌ | `0x93a7c` |
 | `RBPlaylistViewController` | `-` | `closeButtonPush:` |  | ✅ | ❌ | `0x93ae8` |
 | `RBPlaylistViewController` | `-` | `addButtonPush:` |  | ✅ | ❌ | `0x93bd8` |
-| `RBPlaylistViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x93d00` |
+| `RBPlaylistViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0x93d00` |
 | `RBPlaylistViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x93d50` |
 | `RBPlaylistViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x93e54` |
 | `RBPlaylistViewController` | `-` | `tableView:canEditRowAtIndexPath:` |  | ✅ | ✅ | `0x94c3c` |
