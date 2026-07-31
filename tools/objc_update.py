@@ -940,6 +940,17 @@ VERIFIED = {
               'so the flag forwards untouched. Read on its own rather than inferred from the '
               'siblings it sits between',
     0x213794: 'ApplilinkViewController -viewWillDisappear:: likewise, read separately',
+    0x218ae0: 'RecommendAdWebView -appListDidStart: loads _applilinkDelegate through '
+              '_objc_loadWeakRetained three separate times, once for the nil check, once for '
+              'respondsToSelector: and once for the send. The reconstruction binds it to a strong '
+              'local once, which differs only if the delegate deallocates mid-method and is the '
+              'safer of the two',
+    0x21e028: 'RewardWebViewController -shouldAutorotateToInterfaceOrientation:: shouldAutorotate '
+              'first, then sub #1 / cmp #3 / b.ls, an unsigned range test admitting orientations 1 '
+              'through 4, then a jump table yielding 2, 4, 8 and 0x10. Those are 1 << orientation, '
+              'which is also what each named mask holds, so the shift is faithful and equivalent '
+              'rather than divergent. The comment claiming the landscape bits do not line up is '
+              'corrected here',
     0x21f19c: 'RewardWebViewController -clearDelegate: objc_storeWeak clears _sdkDelegate, which '
               'the metadata types <SdkViewDelegate> and confirms is weak, then a cbz on _webView '
               'guards setDelegate:nil on it',

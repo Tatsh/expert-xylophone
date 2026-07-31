@@ -212,9 +212,10 @@ enum {
     if (![self shouldAutorotate]) {
         return NO;
     }
-    // The binary tests the raw (1 << orientation) bit against the supported mask rather than the
-    // semantic UIInterfaceOrientationMask* constant, so the landscape bits do not line up with the
-    // named masks; reproduce the shift faithfully.
+    // The binary shifts the raw orientation rather than naming a UIInterfaceOrientationMask
+    // constant, producing 2, 4, 8 and 0x10 from a jump table. Those are the same values the named
+    // masks hold, since each mask is defined as 1 << its orientation, so the shift is reproduced
+    // here for fidelity rather than because it differs.
     NSUInteger bit;
     switch (orientation) {
     case UIInterfaceOrientationPortrait:
