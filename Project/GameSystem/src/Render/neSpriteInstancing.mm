@@ -437,6 +437,18 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
 
 /** @ghidraAddress 0x2faa8 */
 void C_SPRITE_INSTANCING_2D::Render() {
+    // The binary has two constructors that install two different vtables: the screen-space one
+    // (0x2f668) points Render at this routine, and the world-space one (0x3097c) points it at
+    // RenderWorldSpace (0x30dc0). The only state difference between them is the byte at +0x154,
+    // which the world-space constructor clears, so that flag selects the path here. Without this
+    // dispatch every CreateWorldSpriteBatch drew through the top-left orthographic projection
+    // while holding centre-relative coordinates, which put the play-field frame at the origin with
+    // its left half off screen.
+    if (!m_bBatchFlag) {
+        RenderWorldSpace();
+        return;
+    }
+
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());

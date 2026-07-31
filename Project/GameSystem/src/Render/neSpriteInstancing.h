@@ -301,7 +301,11 @@ private:
     C_TEXTURE *m_pTexture = {};             // +0x138
     int m_aTexParams[4] = {};               // +0x140
     int m_nBlendMode = {};                  // +0x150
-    bool m_bBatchFlag = {};                 // +0x154
+    // Selects which of the binary's two vtables this object would have had: true is the
+    // screen-space batch (constructor 0x2f668, which leaves the byte at +0x154 alone) and false is
+    // the world-space batch (constructor 0x3097c, whose only extra store is strb wzr at +0x154).
+    // Render() dispatches on it.
+    bool m_bBatchFlag = true; // +0x154
     // +0x158: an 8-byte member present in the binary's 0x160-byte object but read or written by no
     // C_SPRITE_INSTANCING_2D method (verified by an exhaustive whole-binary cross-reference of
     // +0x158 accesses). The sibling render-node subclasses (RenderPolygon2dMesh /
