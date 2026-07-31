@@ -296,6 +296,7 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
     0x69700: 'StorePackInfoDownloader -dealloc: delegate, packInfo, downloader, all through '
              'their setters and in that order',
     0x179c64: 'StoreExtendNoteInfoDownloader -dealloc: the sibling shape, with setExtendNoteInfo: '

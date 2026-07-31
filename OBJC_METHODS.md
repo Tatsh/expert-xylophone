@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4768 verified
+Total: 6343 — 6306 reconstructed, 4769 verified
 (75.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2490,7 +2490,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicScoreView` | `-` | `setScoreImageViews:` | prop | ✅ | ✅ | `0xca7cc` |
 | `RBMusicView` | `-` | `setMusicData:` | prop | ✅ | ❌ | `0xca818` |
 | `RBMusicView` | `-` | `initWithFrame:MusicData:` |  | ✅ | ❌ | `0xcbbac` |
-| `RBMusicView` | `-` | `dealloc` |  | ✅ | ❌ | `0xcbd84` |
+| `RBMusicView` | `-` | `dealloc` |  | ✅ | ✅ | `0xcbd84` |
 | `RBMusicView` | `-` | `setBpm:Point:` |  | ✅ | ❌ | `0xcbe70` |
 | `RBMusicView` | `-` | `SetupView` |  | ✅ | ❌ | `0xcc078` |
 | `RBMusicView` | `-` | `switchWithDifficulty:` |  | ✅ | ❌ | `0xd0f3c` |
