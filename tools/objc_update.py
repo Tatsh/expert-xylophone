@@ -581,6 +581,12 @@ VERIFIED = {
              'by the ldr s0 at 0xab8e8, 0.2 and not zero -- the reconstruction had passed 0.0 and '
              'is corrected. The resume retries PlayMusic:1.5 with mov w25,#0x65 and '
              'cmp w25,#1 / b.ge, so 101 attempts, then startNews and startBGEffect',
+    0xaf8c0: 'RBMenuView -showInfomation: four tests all funnelling to settingButton setFlashEffect '
+             'at 0xaf974 -- tbz on howtoFirstInfo, tbnz on newCustomItem, tbz on newThema, and a '
+             'signed cmp w24,#0 / b.gt on unreadRecommendCount. Only the full conjunction '
+             '(howtoFirstInfo and neither new flag and a count at or below zero) reaches '
+             'storeButton removeFlashEffect, which is the reconstruction\'s early return with its '
+             '< 1 test. The binary keeps the misspelled selector',
     0xacd54: 'RBMenuView -SelectRankingButton: setSearchBarNonActive, hideSettingView, then the '
              'themed decide effect (orr w1,wzr,#3 at 0xacd84, which is this file\'s '
              'kSoundEffectDecide of 3, not the 1 that other views use for the same name), then the '
