@@ -1041,3 +1041,27 @@ All 31 are corrected and the audit now reports `0 mismatched` with the check gen
 "absent from the metadata" down from 1010 to 45. The lesson is worth stating plainly, because it has
 now cost twice: when a verification tool reports a clean run, confirm it can see a planted defect
 before believing the number.
+
+## The 45 annotations the address audit still cannot match, and why each is fine
+
+Fixing the check above left 45 annotations whose class and selector the metadata does not contain.
+They were checked rather than assumed benign, and they fall into three groups, none of which is a
+defect:
+
+- **De-inlined helpers.** The reconstruction splits large routines into named helpers, and those
+  names are ours, not the binary's. `RBMenuView -buildMenuBarWithThema:isPad:backgroundUsesEffectView:`
+  and `RBCustomSelectCollectionView -buildClassicItemsWithLevelTables:` are examples. Several share
+  one address on purpose, because they are arms of one routine: the three `RBMenuTutorialView`
+  `revealBubble…` helpers all carry `0x13de2c`, and both `snapContentViewOpaque…` helpers carry
+  `0x13f7f0`.
+- **Category selectors the binary defines twice.** `+showGameCenterError` exists at both `0xdf34`
+  and `0x16a6a4`, and `+deleteAlertViewWithDelegate:` at both `0xdc98` and `0x169c24`. A category's
+  own metadata does not name the class it extends, so the audit keys categories on kind and
+  selector alone and deliberately maps an ambiguous selector to nothing rather than pick an arm. The
+  annotations are right; the lookup correctly declines to guess.
+- **`.cxx_destruct` annotated as `dealloc`.** `StoreExtendNoteDetailViewPad -dealloc` carries
+  `0x271bc`, which is the compiler-generated `.cxx_destruct`, and the body says so. The class
+  defines no `dealloc` of its own, so there is nothing for the metadata to match.
+
+The number is worth keeping in view as it changes. A new entry in the first group is ordinary, but a
+new one in neither group means an annotation naming a method that does not exist.
