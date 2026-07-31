@@ -301,6 +301,22 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xcc078: 'RBMusicView -SetupView: the layout block at 0xcca64..0xccf30 branches on IsPad '
+             '(0xcca88) and then on _thema against 2 and 0, so six legs, and spills the chosen one '
+             'into d8..d15 and the stack. Every frame was resolved by simulating the block per leg '
+             'and chasing each call site back to its home. d9 is written once per leg and read '
+             'once, at the setting-title setFrame: (0xce274), so the 0x301430 table is that '
+             'title y and not jacketSize; 0x301420 is the jacket y. The title frame was missing '
+             'entirely. bpmOrigin (0xccf40) is a distinct point per leg. Content size (0xce34c) '
+             'and page count (0xce5f8) are IsPad branches, five pages or four. Fit check: each '
+             'title ends where its scroll begins, 159/160, 314/322 and 322/322',
+    0xd33a8: 'RBMusicView -ShowSettingView:: early-out when m_SelectedSetting already equals the '
+             'argument, returning 0, else store and animate for the 0.2 at 0x2eedc0, returning 1. '
+             'self is retained at 0xd3410 and released at 0xd3438, so the block captures it '
+             'strongly. Block at 0xd3464: three settingButtons via objectAtIndex: faded to the '
+             '1.0/0.5 fmov pair, then cbz/cmp 1/cmp 2 on the page picking one of difficultyView, '
+             'colorView and cpuView, with the 0xd374c assert naming '
+             '__31-[RBMusicView ShowSettingView:]_block_invoke on any other index',
     0x1ad424: 'RBTutorialPastel -getClipList:: indexes the 0x3df3e0 table at a 32-byte CGRect '
               'stride, ldp giving x and y then width and height, scales each by the 0.5 fmov, and '
               'four fcsel on IsPad take the raw row on the pad and the halved one otherwise. '

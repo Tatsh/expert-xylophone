@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6320 reconstructed, 5313 verified
+Total: 6343 — 6320 reconstructed, 5315 verified
 (83.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5313 verified, 3507 come from those passes and the remaining
-1806 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5315 verified, 3507 come from those passes and the remaining
+1808 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -2511,12 +2511,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `initWithFrame:MusicData:` |  | ✅ | ❌ | `0xcbbac` |
 | `RBMusicView` | `-` | `dealloc` |  | ✅ | ✅ | `0xcbd84` |
 | `RBMusicView` | `-` | `setBpm:Point:` |  | ✅ | ❌ | `0xcbe70` |
-| `RBMusicView` | `-` | `SetupView` |  | ✅ | ❌ | `0xcc078` |
+| `RBMusicView` | `-` | `SetupView` |  | ✅ | ✅ | `0xcc078` |
 | `RBMusicView` | `-` | `switchWithDifficulty:` |  | ✅ | ❌ | `0xd0f3c` |
 | `RBMusicView` | `-` | `SetUpLineView` |  | ✅ | ❌ | `0xd2764` |
 | `RBMusicView` | `-` | `SetRankView:` |  | ✅ | ✅ | `0xd2ddc` |
 | `RBMusicView` | `-` | `ShowSelectDifficulty` |  | ✅ | ✅ | `0xd2fd8` |
-| `RBMusicView` | `-` | `ShowSettingView:` |  | ✅ | ❌ | `0xd33a8` |
+| `RBMusicView` | `-` | `ShowSettingView:` |  | ✅ | ✅ | `0xd33a8` |
 | `RBMusicView` | `-` | `SetSettingButtonSelected:` |  | ✅ | ✅ | `0xd37a8` |
 | `RBMusicView` | `-` | `SetGhostView:` |  | ✅ | ✅ | `0xd397c` |
 | `RBMusicView` | `-` | `updateDecideButton` |  | ✅ | ✅ | `0xd3b50` |

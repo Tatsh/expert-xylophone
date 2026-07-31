@@ -345,9 +345,12 @@ static NSString *const kDetDecTable[] = {
 };
 enum { kDetDecFixedIndex = 3 };
 
-// The detail-view geometry per (iPad idiom, theme) leg. Every value was decoded from
-// the .const pools referenced by the big geometry block (@0xcca64..@0xccf30) and traced to its
-// setFrame:/setCenter:/initWithFrame: consumer. The layout structure holds one leg's values.
+// The detail-view geometry per (iPad idiom, theme) leg. The block at @0xcca64..@0xccf30 branches
+// on IsPad and then on _thema, giving six legs, and spills the chosen one into callee-saved d
+// registers and stack slots; every value below was recovered by running that block per leg and
+// chasing each call site's arguments back to the home that fed it. The layout structure holds one
+// leg's values. The address trailing each row is the call site that consumes it, not the pool the
+// number is stored in, so these are deliberately not @ghidraAddress tags.
 namespace {
 struct DetailGeometry {
     CGFloat jacketX, jacketY, jacketSize;
