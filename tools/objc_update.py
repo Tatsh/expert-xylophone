@@ -1005,6 +1005,14 @@ VERIFIED = {
              'the property read is plyName rather than musicName. The two sit either side of '
              '-musicPre, which is a two-instruction mov x0,#0 and ret, so the three together are '
              'easy to conflate when skimming and were read separately',
+    0x5d300: 'ScoreData +hashScoreforTune:Basic:Medium:Hard:Hash:: an IsPad branch with different '
+             'arithmetic on each arm, feeding an eight-word buffer at sp+8 that the md5 helper '
+             'reads as 0x20 bytes. Slots 0, 2, 5 and 7 are common; 1, 3, 4 and 6 differ by idiom, '
+             'and all eight match the reconstruction. The trap is slot 3: both arms reach the same '
+             'stp w21,w22 that writes it, but the pad arm first does mov x22,x20, reassigning the '
+             'basic register to hold hard, so that one instruction stores different values on the '
+             'two paths. A read tracking only the explicit stores would have made slot 3 basic on '
+             'both and produced a score hash wrong on the pad alone',
     0x6752c: 'MusicDataFromDoc -music: getPathWithDocument: on musicName, then '
              'dataWithContentsOfFile: on the result, returned autoreleased. No nil check on '
              'either, so a missing file yields nil from Foundation rather than from this method',
