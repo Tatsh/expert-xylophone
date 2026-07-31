@@ -295,6 +295,16 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x109850: 'StoreCampaignItemInfo -checkNewUnlock: NO unless bUnlock, then the inverse of '
+              'alreadyDownload',
+    0x1d754c: 'RBStoreTabController -selectTab:: returns while m_Animation is set, else writes '
+              'selectedIndex',
+    0xe6454: 'RBSearchMapViewController -didChangeUserTracking:: drives currentLocation.selected',
+    0xe6f94: 'RBSearchView -didChangeUserTracking:: the same, over currentPositionButton',
+    0xe6e74: 'RBSearchView -selectCurrentPosition:: ignores the sender, sends map toggleTrackingMode',
+    0xe47f0: 'RBSearchMapView -imageDownloaderDidFail:didLoad:: nils the downloader, shows the '
+             'server-connect-failed string, then subIndicator, which is the void spinner-refcount '
+             'action paired with addIndicator rather than a getter whose result is dropped',
     0xf5528: 'StorePackCell -isPurchased: an eor with 1 over labelPurchased.isHidden',
     0xf5588: 'StorePackCell -setIsPurchased:: hides labelPurchased on the inverted argument; '
              'unlike StoreExtendNoteView it really does read the argument',

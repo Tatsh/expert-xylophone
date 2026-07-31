@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4716 verified
-(74.3%).
+Total: 6343 — 6306 reconstructed, 4722 verified
+(74.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2755,7 +2755,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xe2760` |
 | `RBSearchMapView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xe3d28` |
 | `RBSearchMapView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xe3e04` |
-| `RBSearchMapView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0xe47f0` |
+| `RBSearchMapView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xe47f0` |
 | `RBSearchMapView` | `-` | `selectHideInfo:` |  | ✅ | ✅ | `0xe4848` |
 | `RBSearchMapView` | `-` | `initialView` |  | ✅ | ✅ | `0xe496c` |
 | `RBSearchMapView` | `-` | `getMaster` |  | ✅ | ❌ | `0xe4a18` |
@@ -2805,15 +2805,15 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0xe6238` |
 | `RBSearchMapViewController` | `-` | `pushCurrent:` |  | ✅ | ❌ | `0xe6300` |
 | `RBSearchMapViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0xe63a0` |
-| `RBSearchMapViewController` | `-` | `didChangeUserTracking:` |  | ✅ | ❌ | `0xe6454` |
+| `RBSearchMapViewController` | `-` | `didChangeUserTracking:` |  | ✅ | ✅ | `0xe6454` |
 | `RBSearchMapViewController` | `-` | `currentLocation` | prop | ✅ | ✅ | `0xe64b0` |
 | `RBSearchMapViewController` | `-` | `setCurrentLocation:` | prop | ✅ | ✅ | `0xe64c0` |
 | `RBSearchView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xe650c` |
 | `RBSearchView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xe6598` |
 | `RBSearchView` | `-` | `setupView` |  | ✅ | ✅ | `0xe661c` |
-| `RBSearchView` | `-` | `selectCurrentPosition:` |  | ✅ | ❌ | `0xe6e74` |
+| `RBSearchView` | `-` | `selectCurrentPosition:` |  | ✅ | ✅ | `0xe6e74` |
 | `RBSearchView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xe6ed0` |
-| `RBSearchView` | `-` | `didChangeUserTracking:` |  | ✅ | ❌ | `0xe6f94` |
+| `RBSearchView` | `-` | `didChangeUserTracking:` |  | ✅ | ✅ | `0xe6f94` |
 | `RBSearchView` | `-` | `settingView` | prop | ✅ | ✅ | `0xe6ff0` |
 | `RBSearchView` | `-` | `setSettingView:` | prop | ✅ | ✅ | `0xe7010` |
 | `RBSearchView` | `-` | `map` | prop | ✅ | ✅ | `0xe7024` |
@@ -3321,7 +3321,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignItemInfo` | `-` | `initWithDictionary:` |  | ✅ | ❌ | `0x108b90` |
 | `StoreCampaignItemInfo` | `-` | `termCheck` |  | ✅ | ❌ | `0x109088` |
 | `StoreCampaignItemInfo` | `-` | `checkExistPackList:packID:` |  | ✅ | ❌ | `0x1096c4` |
-| `StoreCampaignItemInfo` | `-` | `checkNewUnlock` |  | ✅ | ❌ | `0x109850` |
+| `StoreCampaignItemInfo` | `-` | `checkNewUnlock` |  | ✅ | ✅ | `0x109850` |
 | `StoreCampaignItemInfo` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x109898` |
 | `StoreCampaignItemInfo` | `-` | `registSuccess` |  | ✅ | ✅ | `0x1099ac` |
 | `StoreCampaignItemInfo` | `+` | `getButtonColor:` |  | ✅ | ❌ | `0x1099cc` |
@@ -5033,7 +5033,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreTabController` | `-` | `hideModalDialog` |  | ✅ | ❌ | `0x1d68c4` |
 | `RBStoreTabController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x1d6c20` |
 | `RBStoreTabController` | `-` | `forceOpen` |  | ✅ | ❌ | `0x1d6f6c` |
-| `RBStoreTabController` | `-` | `selectTab:` |  | ✅ | ❌ | `0x1d754c` |
+| `RBStoreTabController` | `-` | `selectTab:` |  | ✅ | ✅ | `0x1d754c` |
 | `RBStoreTabController` | `-` | `modalDialog` | prop | ✅ | ✅ | `0x1d7570` |
 | `RBStoreTabController` | `-` | `setModalDialog:` | prop | ✅ | ✅ | `0x1d7580` |
 | `RBStoreTabController` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0x1d75b8` |

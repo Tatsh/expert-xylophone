@@ -624,3 +624,28 @@ and it is worth being plain that all three together cannot substitute for readin
 1666 bodies. Each sweep rules out one shape of defect across the whole surface. None of them can
 tell whether a frame recovered from the pool holds the right numbers, which is what the two
 `StoreUtil` defects and every layout defect in the table above turned out to be.
+
+## Vendored SSZipArchive diverges from the shipped build
+
+Two `SSZipArchive` methods do not match the binary, and both differences run the same way: the
+vendored source in this tree is a _newer, better_ upstream than the one the app shipped with.
+
+`-open` (`0x1c35b8`) sends `-UTF8String` to `_path` and passes the result to `zipOpen` with a mode
+of 0. The tree calls `-fileSystemRepresentation`, which is the correct API for a path and is what
+later upstream releases use. Different selector, same intent.
+
+`-close` (`0x1c3b58`) is the larger gap. The binary calls `zipClose(_zip, NULL)` and then executes
+`mov w0,#0x1`, overwriting the return value, so it reports success unconditionally. It also never
+writes `_zip` back. The tree captures `zipClose`'s result, returns `error == ZIP_OK`, and nils
+`_zip`. So the shipped app cannot detect a failed close and leaves a dangling handle, and this tree
+fixes both.
+
+Neither is marked verified, because verified means read and matching. The `NSAssert` in each is not
+part of the difference: assertions compile out of a release build, so their absence from the binary
+is expected.
+
+This needs a decision rather than a fix. Everywhere else the rule is to match the shipped binary and
+gate deliberate deviations behind `ENABLE_PATCHES` with an entry in [PATCHES.md](PATCHES.md), but
+these live in vendored third-party code where carrying a maintained upstream is the ordinary
+practice. Reverting them would restore a real bug (an unreported close failure) for fidelity's sake.
+Recorded here so the choice is made deliberately instead of by whoever next reads the file.
