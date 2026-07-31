@@ -3669,6 +3669,39 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x2423D8: 'RecommendAdCache +getAllAdDataInfoExpire: dataForKey: then cbz x19 returns nil for '
+              'a missing blob, and after unarchiveObjectWithData: a cbz w0 on isKindOfClass:'
+              '[NSDate class] returns nil for anything else',
+    0x242538: 'RecommendAdCache +createFolder: three fileExistsAtPath:isDirectory: tests each '
+              'followed by createDirectoryAtPath:withIntermediateDirectories:1 attributes:nil '
+              'error:, for the applilink root under NSTemporaryDirectory(), its contents folder, '
+              'and the cache-image folder. The first test is a tbz where the other two are tbnz, '
+              'which is the same condition compiled the other way round: its taken arm zeroes the '
+              'error and branches past the creation',
+    0x242750: 'RecommendAdCache +delateFolder: defaultManager, getContentsPath, then '
+              'fileExistsAtPath:isDirectory: guarding a single removeItemAtPath:error:',
+    0x24280C: 'RecommendAdCache +clearCacheBannerImage: the same create-if-absent preamble as '
+              '0x242538 on the banner cache path, then contentsOfDirectoryAtPath:error: walked '
+              'with countByEnumeratingWithState:objects:count:. Per entry the age from '
+              'timeIntervalSinceDate: is compared with fcmp d8,d9 against the pool double at '
+              '0x310858, which reads 86400.0, and b.le skips the removal, so an entry is deleted '
+              'only when it is strictly older than a day',
+    0x242BBC: 'RecommendAdCache +allClearCacheBannerImage: fileExistsAtPath:isDirectory: guards '
+              'removeItemAtPath:error: on the banner cache path, then createFolder is sent '
+              'unconditionally afterwards',
+    0x242E9C: 'RecommendAdCache +getBannerWithUrl:: geFileNameFromPath:, then tbz on existFile: '
+              'returns 2 for an already-cached file. Otherwise getDataWithUrl:, and cbz x22 on the '
+              'result gives 0, while the non-nil path sends saveData:file: and gives 1',
+    0x242F84: 'RecommendAdCache +getDataWithUrl:: URLWithString: into an alloc/initWithURL: '
+              'request, then sendSynchronousRequest:returningResponse:error:. The result register '
+              'is pre-set to zero and cbnz on the error skips the retain, so a request that '
+              'reports an error returns nil even when it produced data',
+    0x243080: 'RecommendAdCache +saveData:file:: getBannerCachePath joined with '
+              'stringByAppendingPathComponent:, then writeToFile: with mov w3,#1 for atomically',
+    0x24314C: 'RecommendAdCache +existFile:: the same path join, then fileExistsAtPath: on '
+              'defaultManager',
+    0x24352C: 'RecommendAdCache +getTemplateFile:: the same routine as 0x242f84 on a template URL, '
+              'down to the pre-set nil and the cbnz on the error',
     0x232B48: 'RecommendWebAPI +setTemporaryCacheWithAdModel:value:expiration:: cbz x19 on the '
               'expiration picks fmov d0,1.0 over scvtf d0,x19 for initWithTimeIntervalSinceNow:, '
               'matching the ternary. The entry is built by dictionaryWithObjectsAndKeys: rather '

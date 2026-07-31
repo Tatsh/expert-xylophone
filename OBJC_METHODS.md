@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5193 verified
-(81.9%).
+Total: 6343 — 6306 reconstructed, 5203 verified
+(82.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5193 verified, 3507 come from those passes and the remaining
-1686 were read by hand. The split matters when reading the percentage: a
+Of the 5203 verified, 3507 come from those passes and the remaining
+1696 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6273,21 +6273,21 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdCache` | `+` | `getAllAdStatus` |  | ✅ | ❌ | `0x2417dc` |
 | `RecommendAdCache` | `+` | `getAllAdDataWithCallBack:` |  | ✅ | ❌ | `0x241c28` |
 | `RecommendAdCache` | `+` | `clearAllAdData` |  | ✅ | ✅ | `0x242380` |
-| `RecommendAdCache` | `+` | `getAllAdDataInfoExpire` |  | ✅ | ❌ | `0x2423d8` |
+| `RecommendAdCache` | `+` | `getAllAdDataInfoExpire` |  | ✅ | ✅ | `0x2423d8` |
 | `RecommendAdCache` | `+` | `clearAllAdDataInfoExpire` |  | ✅ | ✅ | `0x2424e0` |
-| `RecommendAdCache` | `+` | `createFolder` |  | ✅ | ❌ | `0x242538` |
-| `RecommendAdCache` | `+` | `delateFolder` |  | ✅ | ❌ | `0x242750` |
-| `RecommendAdCache` | `+` | `clearCacheBannerImage` |  | ✅ | ❌ | `0x24280c` |
-| `RecommendAdCache` | `+` | `allClearCacheBannerImage` |  | ✅ | ❌ | `0x242bbc` |
+| `RecommendAdCache` | `+` | `createFolder` |  | ✅ | ✅ | `0x242538` |
+| `RecommendAdCache` | `+` | `delateFolder` |  | ✅ | ✅ | `0x242750` |
+| `RecommendAdCache` | `+` | `clearCacheBannerImage` |  | ✅ | ✅ | `0x24280c` |
+| `RecommendAdCache` | `+` | `allClearCacheBannerImage` |  | ✅ | ✅ | `0x242bbc` |
 | `RecommendAdCache` | `+` | `getBannerDataWithList:max:` |  | ✅ | ❌ | `0x242c94` |
-| `RecommendAdCache` | `+` | `getBannerWithUrl:` |  | ✅ | ❌ | `0x242e9c` |
-| `RecommendAdCache` | `+` | `getDataWithUrl:` |  | ✅ | ❌ | `0x242f84` |
-| `RecommendAdCache` | `+` | `saveData:file:` |  | ✅ | ❌ | `0x243080` |
-| `RecommendAdCache` | `+` | `existFile:` |  | ✅ | ❌ | `0x24314c` |
+| `RecommendAdCache` | `+` | `getBannerWithUrl:` |  | ✅ | ✅ | `0x242e9c` |
+| `RecommendAdCache` | `+` | `getDataWithUrl:` |  | ✅ | ✅ | `0x242f84` |
+| `RecommendAdCache` | `+` | `saveData:file:` |  | ✅ | ✅ | `0x243080` |
+| `RecommendAdCache` | `+` | `existFile:` |  | ✅ | ✅ | `0x24314c` |
 | `RecommendAdCache` | `+` | `getContentsPath` |  | ✅ | ✅ | `0x243224` |
 | `RecommendAdCache` | `+` | `getBannerCachePath` |  | ✅ | ✅ | `0x2432b0` |
 | `RecommendAdCache` | `+` | `getTemplateFiles` |  | ✅ | ❌ | `0x243314` |
-| `RecommendAdCache` | `+` | `getTemplateFile:` |  | ✅ | ❌ | `0x24352c` |
+| `RecommendAdCache` | `+` | `getTemplateFile:` |  | ✅ | ✅ | `0x24352c` |
 | `RecommendAdCache` | `+` | `saveTemplateData:path:file:` |  | ✅ | ❌ | `0x243628` |
 | `RecommendAdCache` | `+` | `createHtmlWithAdModel:adLocation:verticalAlign:` |  | ✅ | ❌ | `0x243938` |
 | `RecommendAdCache` | `+` | `convertHtmlWithAdType:verticalAlign:bannerList:` |  | ✅ | ❌ | `0x243d94` |
