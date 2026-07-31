@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4848 verified
-(76.4%).
+Total: 6343 — 6306 reconstructed, 4851 verified
+(76.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -609,7 +609,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundPlayer` | `-` | `endPlay` |  | ✅ | ✅ | `0x355ec` |
 | `SoundPlayer` | `-` | `stop` |  | ✅ | ✅ | `0x355fc` |
 | `SoundPlayer` | `-` | `isStop` |  | ✅ | ✅ | `0x35610` |
-| `SoundPlayer` | `-` | `loadData:Frames:` |  | ✅ | ❌ | `0x35620` |
+| `SoundPlayer` | `-` | `loadData:Frames:` |  | ✅ | ✅ | `0x35620` |
 | `RBTutorialManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x356b8` |
 | `RBTutorialManager` | `+` | `isTutorial` |  | ✅ | ✅ | `0x35724` |
 | `RBTutorialManager` | `+` | `needStartTutorialMusicselect` |  | ✅ | ✅ | `0x3578c` |
@@ -727,7 +727,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBEffectSizeSlider` | `-` | `setValue:` | prop | ✅ | ❌ | `0x3b96c` |
 | `RBEffectSizeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x3bde0` |
 | `RBEffectSizeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3becc` |
-| `RBEffectSizeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3bf70` |
+| `RBEffectSizeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3bf70` |
 | `RBEffectSizeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3c014` |
 | `RBEffectSizeSlider` | `-` | `value` | prop | ✅ | ✅ | `0x3c0b0` |
 | `RBEffectSizeSlider` | `-` | `baseView` | prop | ✅ | ✅ | `0x3c0c0` |
@@ -1541,7 +1541,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `LoadMusicSelect` |  | ✅ | ✅ | `0x6a324` |
 | `RBBGMManager` | `-` | `LoadMusicTitleWithLoop:` |  | ✅ | ❌ | `0x6a3b4` |
 | `RBBGMManager` | `-` | `LoadMusicResultWithLoop:` |  | ✅ | ❌ | `0x6a560` |
-| `RBBGMManager` | `-` | `LoadMusic:Loop:` |  | ✅ | ❌ | `0x6a70c` |
+| `RBBGMManager` | `-` | `LoadMusic:Loop:` |  | ✅ | ✅ | `0x6a70c` |
 | `RBBGMManager` | `-` | `LoadMusicWithPush:Loop:` |  | ✅ | ✅ | `0x6a7b4` |
 | `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ✅ | `0x6a854` |
 | `RBBGMManager` | `-` | `popMusic` |  | ✅ | ✅ | `0x6a8f0` |

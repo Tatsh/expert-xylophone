@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x3bf70: 'RBEffectSizeSlider -continueTrackingWithTouch:withEvent:: the third of the tracking '
+             'trio, identical to the begin form and likewise returning YES',
+    0x6a70c: 'RBBGMManager -LoadMusic:Loop:: sets m_IsMusic with a mov w9 of 1 before handing the '
+             'data to AudioManager loadBgmData:isLoop:',
+    0x35620: 'SoundPlayer -loadData:Frames:: guarded on m_SoundData, reads the frame cursor and '
+             'm_IsLoop into the getData: call with an out-parameter, stops when it reports '
+             'exhaustion, and stores the returned cursor back. The mov w3,w3 zero-extends the '
+             'frame count, matching its unsigned int spelling',
     0x41964: 'AVBus -stop: NO when no player is bound, else stops it, writes the mov w9 of 4 into '
              'mStatus, which is AVBusStatusStopped, and returns YES',
     0x41bc0: 'AVBus -setVolume:: NO when no player is bound, else forwards and returns YES',
