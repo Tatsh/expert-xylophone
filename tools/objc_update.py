@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x171d30: 'RBTermPhoneViewController -alertView:clickedButtonAtIndex:: on isFirstRequest it '
+              'nils the alert view\'s own delegate, not its own, then forceClose',
+    0x172ffc: 'RBWebView -uiWebView:resource:willSendRequest:redirectResponse:fromDataSource:: '
+              'stamps the device description onto the request under the CFString at 0x363fc0, '
+              'which decodes to "User-Agent", and returns the request',
+    0x34310: 'SoundData -initWithContentsFileName:Stream:: super init, nil check, then '
+             'prepare:Stream: with both arguments forwarded',
     0x16f154: 'RBVolumeSlider -continueTrackingWithTouch:withEvent:: same as its begin form, '
               'returning YES',
     0x16f1f8: 'RBVolumeSlider -endTrackingWithTouch:withEvent:: the same point handling but void, '

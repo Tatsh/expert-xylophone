@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4905 verified
-(77.3%).
+Total: 6343 — 6306 reconstructed, 4908 verified
+(77.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -577,7 +577,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackListGenre` | `-` | `numFetchedPack` | prop | ✅ | ✅ | `0x34278` |
 | `StorePackListGenre` | `-` | `arrayPackInfo` | prop | ✅ | ✅ | `0x34288` |
 | `StorePackListGenre` | `-` | `setArrayPackInfo:` | prop | ✅ | ✅ | `0x34298` |
-| `SoundData` | `-` | `initWithContentsFileName:Stream:` |  | ✅ | ❌ | `0x34310` |
+| `SoundData` | `-` | `initWithContentsFileName:Stream:` |  | ✅ | ✅ | `0x34310` |
 | `SoundData` | `-` | `dealloc` |  | ✅ | ❌ | `0x34398` |
 | `SoundData` | `-` | `prepare:Stream:` |  | ✅ | ❌ | `0x34454` |
 | `SoundData` | `-` | `getData:Frames:Loop:Buffer:Out:` |  | ✅ | ❌ | `0x34908` |
@@ -3910,7 +3910,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermPhoneViewController` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x1719f0` |
 | `RBTermPhoneViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0x171aa4` |
 | `RBTermPhoneViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0x171c68` |
-| `RBTermPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x171d30` |
+| `RBTermPhoneViewController` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ✅ | `0x171d30` |
 | `RBTermPhoneViewController` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x171da8` |
 | `RBTermPhoneViewController` | `-` | `alertView:willDismissWithButtonIndex:` |  | ✅ | ✅ | `0x171dac` |
 | `RBTermPhoneViewController` | `-` | `alertViewCancel:` |  | ✅ | ✅ | `0x171db0` |
@@ -3940,7 +3940,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermPhoneViewController` | `-` | `setViewType:` | prop | ✅ | ✅ | `0x171fc4` |
 | `RBWebView` | `-` | `initWithFrame:superView:` |  | ✅ | ❌ | `0x172af8` |
 | `RBWebView` | `-` | `setUseGrayView:` |  | ✅ | ✅ | `0x172ff0` |
-| `RBWebView` | `-` | `uiWebView:resource:willSendRequest:redirectResponse:fromDataSource:` |  | ✅ | ❌ | `0x172ffc` |
+| `RBWebView` | `-` | `uiWebView:resource:willSendRequest:redirectResponse:fromDataSource:` |  | ✅ | ✅ | `0x172ffc` |
 | `RBWebView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x173098` |
 | `RBWebView` | `-` | `webViewDidStartLoad:` |  | ✅ | ❌ | `0x17388c` |
 | `RBWebView` | `-` | `webViewDidFinishLoad:` |  | ✅ | ❌ | `0x173938` |
