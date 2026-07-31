@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6320 reconstructed, 5326 verified
+Total: 6343 — 6320 reconstructed, 5331 verified
 (84.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5326 verified, 3507 come from those passes and the remaining
-1819 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5331 verified, 3507 come from those passes and the remaining
+1824 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -2131,14 +2131,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ✅ | `0xab9d4` |
 | `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ✅ | `0xab9e0` |
 | `RBMenuView` | `-` | `toggleSettingView` |  | ✅ | ❌ | `0xaba74` |
-| `RBMenuView` | `-` | `showHowToView` |  | ✅ | ❌ | `0xabf94` |
-| `RBMenuView` | `-` | `showCustomizeView` |  | ✅ | ❌ | `0xac0bc` |
+| `RBMenuView` | `-` | `showHowToView` |  | ✅ | ✅ | `0xabf94` |
+| `RBMenuView` | `-` | `showCustomizeView` |  | ✅ | ✅ | `0xac0bc` |
 | `RBMenuView` | `-` | `showThema` |  | ✅ | ✅ | `0xac274` |
 | `RBMenuView` | `-` | `showSearchView` |  | ✅ | ❌ | `0xac348` |
-| `RBMenuView` | `-` | `showCreditView` |  | ✅ | ❌ | `0xac564` |
-| `RBMenuView` | `-` | `showNotificationPageView` |  | ✅ | ❌ | `0xac638` |
+| `RBMenuView` | `-` | `showCreditView` |  | ✅ | ✅ | `0xac564` |
+| `RBMenuView` | `-` | `showNotificationPageView` |  | ✅ | ✅ | `0xac638` |
 | `RBMenuView` | `-` | `showApplilinkView` |  | ✅ | ❌ | `0xac808` |
-| `RBMenuView` | `-` | `showTermView` |  | ✅ | ❌ | `0xac8dc` |
+| `RBMenuView` | `-` | `showTermView` |  | ✅ | ✅ | `0xac8dc` |
 | `RBMenuView` | `-` | `startBGEffect` |  | ✅ | ✅ | `0xacaac` |
 | `RBMenuView` | `-` | `stopBGEffect` |  | ✅ | ✅ | `0xacc20` |
 | `RBMenuView` | `-` | `SelectRankingButton` |  | ✅ | ❌ | `0xacd54` |

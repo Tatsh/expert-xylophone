@@ -576,6 +576,23 @@ VERIFIED = {
              'the no-argument stopAnimation',
     0xb5dfc: 'RBMenuView -closeCustomize: respondsToSelector: on hideAnimation against showView, '
              'and the send only on cbz w23 failing at 0xb5e54',
+    0xabf94: 'RBMenuView -showHowToView: the plain overlay shape, with settingView forwarded to the '
+             'new RBHowToView before musicMenuView, then mask 0x3f, addSubview, showAnimation, '
+             'showView last',
+    0xac0bc: 'RBMenuView -showCustomizeView: the overlay shape, then getTutorialStatus:0x22 with '
+             'cbnz at 0xac1a0 skipping the tutorial when it is already non-zero. The type is the '
+             'mov w2,#0x1d at 0xac1c8 and the status write is orr w2,wzr,#0x18 with mov w3,#1 at '
+             '0xac1fc, both read from the instructions rather than the annotation',
+    0xac564: 'RBMenuView -showCreditView: the plain overlay shape, RBCreditsView, mask 0x3f, '
+             'showView stored after the animation',
+    0xac638: 'RBMenuView -showNotificationPageView: IsPad at 0xac64c with cbz taking the phone arm '
+             'at 0xac6fc, which allocates RBNotificationPagePhoneViewController, stores it in '
+             'webViewController and pushes it animated. The pad arm overlays RBNotificationPageView '
+             'in place. Reading this needed the branch target anchored on its own address: a sed '
+             'range on the bare hex matches the branch instruction that names it, which silently '
+             'returns the other arm',
+    0xac8dc: 'RBMenuView -showTermView: the same idiom split, phone arm at 0xac9ac pushing '
+             'RBTermPhoneViewController through termViewController, pad arm overlaying RBTermView',
     0xac274: 'RBMenuView -showThema: allocates RBThemaView on self.bounds, sets musicMenuView and '
              'an autoresizing mask of 0x3f (all six flags), adds it, animates it in, and only then '
              'stores it in showView -- the setShowView: at 0xac314 follows the showAnimation',
