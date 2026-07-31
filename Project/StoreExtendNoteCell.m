@@ -12,9 +12,9 @@ static const CGFloat kProductViewHeight = 140.0;
               reuseIdentifier:(nullable NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.leftView = [[StoreExtendNoteCellView alloc]
+        self.leftView = [[StoreExtendNoteView alloc]
             initWithFrame:CGRectMake(0.0, 0.0, kProductViewWidth, kProductViewHeight)];
-        self.rightView = [[StoreExtendNoteCellView alloc]
+        self.rightView = [[StoreExtendNoteView alloc]
             initWithFrame:CGRectMake(
                               kProductViewWidth, 0.0, kProductViewWidth, kProductViewHeight)];
         [self.contentView addSubview:self.leftView];

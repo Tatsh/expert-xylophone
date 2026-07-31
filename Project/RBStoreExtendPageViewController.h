@@ -17,8 +17,8 @@
 #import "RBPurchaseManager.h"
 #import "RBStoreExtendNoteList.h"
 #import "StoreDownloadManager.h"
-#import "StoreExtendNoteCellView.h"
 #import "StoreExtendNoteInfoDownloader.h"
+#import "StoreExtendNoteView.h"
 
 @class Downloader;
 @class RBStoreExtendNoteList;

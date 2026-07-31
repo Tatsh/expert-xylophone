@@ -32,10 +32,10 @@
 #import "StoreDownloadTask.h"
 #import "StoreExtendNoteCell.h"
 #import "StoreExtendNoteCellPhone.h"
-#import "StoreExtendNoteCellView.h"
 #import "StoreExtendNoteDetailViewPad.h"
 #import "StoreExtendNoteInfo.h"
 #import "StoreExtendNoteInfoDownloader.h"
+#import "StoreExtendNoteView.h"
 #import "StoreUtil.h"
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
@@ -155,7 +155,7 @@ static const CGFloat kLabelTextWhite = 158.0 / 255.0;      // Label text colour.
 static const CGFloat kCoverDimAlpha = 0.5;                 // Pad cover-view dim alpha.
 // The pool slot at 0x2ec718 that both the label shadow and the close animation read holds
 // (double)0.3f, not the double 0.3, so both are spelled as float literals.
-static const CGFloat kLabelShadowAlpha = 0.3f;            // Label drop-shadow alpha.
+static const CGFloat kLabelShadowAlpha = 0.3f; // Label drop-shadow alpha.
 
 // The "show more" backing views are laid out with a fixed margin from the edges of the table, and
 // their vertical origin trails the current content by a device-dependent gap.
@@ -172,10 +172,10 @@ static const NSTimeInterval kDetailOverlayCloseDuration = 0.3f; // @ghidraAddres
 // Row heights (points), read from the two-entry tables the height callback indexes: the pad's at
 // 0x30bed0 and the phone's at 0x30bee0, each holding the "more" row first and the pack row second.
 // A genuine pack row is tall; the trailing "show more"/spinner row is short.
-static const CGFloat kPhonePackRowHeight = 80.0;  // @ghidraAddress 0x30bee8
-static const CGFloat kPhoneMoreRowHeight = 60.0;  // @ghidraAddress 0x30bee0
-static const CGFloat kPadPackRowHeight = 140.0;   // @ghidraAddress 0x30bed8
-static const CGFloat kPadMoreRowHeight = 60.0;    // @ghidraAddress 0x30bed0
+static const CGFloat kPhonePackRowHeight = 80.0; // @ghidraAddress 0x30bee8
+static const CGFloat kPhoneMoreRowHeight = 60.0; // @ghidraAddress 0x30bee0
+static const CGFloat kPadPackRowHeight = 140.0;  // @ghidraAddress 0x30bed8
+static const CGFloat kPadMoreRowHeight = 60.0;   // @ghidraAddress 0x30bed0
 
 // The pad packs two products per table row (a left and a right cell view).
 static const NSInteger kPadProductsPerRow = 2;
@@ -190,8 +190,8 @@ static const CGFloat kMoreCellFontSizePad = 18.0;
 // Alternating-row background tints. A pad pack row is drawn at a flat mid-white; a phone pack row
 // alternates its background colour by parity between two near-white greys.
 static const CGFloat kPadEvenRowWhite = 0.5;
-static const CGFloat kPhoneEvenRowWhite = 0.8;                // @ghidraAddress 0x2eea40
-static const CGFloat kPhoneOddRowWhite = 193.0 / 255.0;       // @ghidraAddress 0x30bec0
+static const CGFloat kPhoneEvenRowWhite = 0.8;          // @ghidraAddress 0x2eea40
+static const CGFloat kPhoneOddRowWhite = 193.0 / 255.0; // @ghidraAddress 0x30bec0
 
 // The "more"/loading footer label white component (text and shadow). @ghidraAddress 0x2ec720
 static const CGFloat kMoreCellTextWhite = 0.4f;
@@ -777,7 +777,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     UITableView *packTable = static_cast<UITableView *>([self.view viewWithTag:kPackTableViewTag]);
     if (packTable.allowsSelection) {
         NSArray *productIDs = [self.extendNoteListCtrl extendNoteProductIDList];
-        StoreExtendNoteCellView *view = static_cast<StoreExtendNoteCellView *>(cellView);
+        StoreExtendNoteView *view = static_cast<StoreExtendNoteView *>(cellView);
         NSNumber *productID = productIDs[view.index];
         [self openExtendNoteDetailViewWithPID:productID.intValue];
     }
@@ -1161,8 +1161,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
     [self.parent hideModalDialog];
 
     // The format is the localised "The purchase was cancelled.\n\n%@" string, not a bare "%@".
-    NSString *message = [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
-                                                         [error localizedDescription]];
+    NSString *message = [[NSString alloc]
+        initWithFormat:g_pLocalizedPurchaseCancelled, [error localizedDescription]];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 
@@ -1370,8 +1370,8 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 - (void)restoreFailed:(NSError *)error {
     [self.parent hideModalDialog];
     // The same localised cancellation format the purchase failure uses.
-    NSString *message = [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
-                                                         [error localizedDescription]];
+    NSString *message = [[NSString alloc]
+        initWithFormat:g_pLocalizedPurchaseCancelled, [error localizedDescription]];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 
@@ -1523,7 +1523,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         int leftPID = [productIDList[leftIndex] intValue];
         StoreExtendNoteInfo *leftInfo =
             [self.extendNoteListCtrl getExtendNoteInfoWithProductID:leftPID];
-        auto *leftTile = static_cast<StoreExtendNoteCellView *>(cell.leftView);
+        auto *leftTile = static_cast<StoreExtendNoteView *>(cell.leftView);
         [leftTile loadExtendNoteInfo:leftInfo index:leftIndex];
         NSIndexPath *leftPath = [NSIndexPath indexPathForRow:leftIndex inSection:indexPath.section];
         UIImage *leftArtwork = StoreExtendPageArtworkForPadInfo(self, leftInfo, leftPID, leftPath);
@@ -1536,7 +1536,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
             int rightPID = [productIDList[rightIndex] intValue];
             StoreExtendNoteInfo *rightInfo =
                 [self.extendNoteListCtrl getExtendNoteInfoWithProductID:rightPID];
-            auto *rightTile = static_cast<StoreExtendNoteCellView *>(cell.rightView);
+            auto *rightTile = static_cast<StoreExtendNoteView *>(cell.rightView);
             [rightTile loadExtendNoteInfo:rightInfo index:rightIndex];
             NSIndexPath *rightPath = [NSIndexPath indexPathForRow:rightIndex
                                                         inSection:indexPath.section];
@@ -1673,7 +1673,7 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
         if (cell != nil && image != nil) {
             StoreTableCellViewBase *tile =
                 ((indexPath.row & 1) == 0) ? cell.leftView : cell.rightView;
-            [static_cast<StoreExtendNoteCellView *>(tile) setArtwork:image];
+            [static_cast<StoreExtendNoteView *>(tile) setArtwork:image];
         }
     }
 }

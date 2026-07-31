@@ -188,7 +188,7 @@ target_sources(rbplus PRIVATE
     StoreDownloadTask.m
     StoreExtendNoteCell.m
     StoreExtendNoteCellPhone.m
-    StoreExtendNoteCellView.m
+    StoreExtendNoteView.m
     StoreExtendNoteDetailViewPad.m
     StoreExtendNoteInfo.m
     StoreExtendNoteInfoDownloader.m
@@ -408,7 +408,7 @@ target_sources(rbplus PRIVATE
     StoreDownloadTask.h
     StoreExtendNoteCell.h
     StoreExtendNoteCellPhone.h
-    StoreExtendNoteCellView.h
+    StoreExtendNoteView.h
     StoreExtendNoteDetailViewPad.h
     StoreExtendNoteInfo.h
     StoreExtendNoteInfoDownloader.h

@@ -5,9 +5,8 @@
  * @c StoreTableCellViewBase. Its selections are reported through the base
  * @c StoreTableCellViewBaseDelegate protocol.
  *
- * The binary class is @c StoreExtendNoteView; this project names it @c StoreExtendNoteCellView to
- * distinguish it from the phone-layout @c StoreExtendNoteCellPhone. It is messaged by
- * @c StoreExtendNoteCell and @c RBStoreExtendPageViewController.
+ * The phone layout is the separate binary class @c StoreExtendNoteCellPhone. This view is messaged
+ * by @c StoreExtendNoteCell and @c RBStoreExtendPageViewController.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreExtendNoteView, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.
@@ -24,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief A single extend-note product view inside a pad pack-table cell.
  */
-@interface StoreExtendNoteCellView : StoreTableCellViewBase
+@interface StoreExtendNoteView : StoreTableCellViewBase
 
 /**
  * @brief The tune artwork image view.

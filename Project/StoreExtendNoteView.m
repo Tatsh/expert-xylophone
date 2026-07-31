@@ -1,4 +1,4 @@
-#import "StoreExtendNoteCellView.h"
+#import "StoreExtendNoteView.h"
 
 #import "StoreExtendNoteInfo.h"
 #import "StoreUtil.h"
@@ -52,7 +52,7 @@ static const CGFloat kLevelColorBlue = 120.0 / 255.0;
 // The comment label wraps to at most this many lines.
 static const NSInteger kCommentLabelLineCount = 3;
 
-@implementation StoreExtendNoteCellView
+@implementation StoreExtendNoteView
 
 /**
  * Builds one of the two identical artwork image views: a rounded, white-bordered, shadowed square

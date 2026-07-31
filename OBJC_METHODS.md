@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6257 reconstructed, 4535 verified
+Total: 6343 — 6279 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -988,29 +988,29 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `setIndicatorView:` | prop | ✅ | ✅ | `0x4a53c` |
 | `RBTermDetailPhoneViewController` | `-` | `viewType` | prop | ✅ | ✅ | `0x4a54c` |
 | `RBTermDetailPhoneViewController` | `-` | `setViewType:` | prop | ✅ | ✅ | `0x4a55c` |
-| `StoreExtendNoteView` | `-` | `initWithFrame:` |  | ❌ | ❌ | `0x4bcc4` |
-| `StoreExtendNoteView` | `-` | `dealloc` |  | ❌ | ❌ | `0x4ca54` |
-| `StoreExtendNoteView` | `-` | `setArtwork:` |  | ❌ | ❌ | `0x4cadc` |
-| `StoreExtendNoteView` | `-` | `isPurchased` |  | ❌ | ❌ | `0x4cb68` |
-| `StoreExtendNoteView` | `-` | `setIsPurchased:` |  | ❌ | ❌ | `0x4cbc8` |
-| `StoreExtendNoteView` | `-` | `loadExtendNoteInfo:index:` |  | ❌ | ❌ | `0x4cc28` |
+| `StoreExtendNoteView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x4bcc4` |
+| `StoreExtendNoteView` | `-` | `dealloc` |  | ✅ | ❌ | `0x4ca54` |
+| `StoreExtendNoteView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0x4cadc` |
+| `StoreExtendNoteView` | `-` | `isPurchased` |  | ✅ | ❌ | `0x4cb68` |
+| `StoreExtendNoteView` | `-` | `setIsPurchased:` |  | ✅ | ❌ | `0x4cbc8` |
+| `StoreExtendNoteView` | `-` | `loadExtendNoteInfo:index:` |  | ✅ | ❌ | `0x4cc28` |
 | `StoreExtendNoteView` | `-` | `reset` |  | ✅ | ❌ | `0x4d004` |
-| `StoreExtendNoteView` | `-` | `artworkImageView` | prop | ❌ | ✅ | `0x4d058` |
-| `StoreExtendNoteView` | `-` | `setArtworkImageView:` | prop | ❌ | ✅ | `0x4d068` |
-| `StoreExtendNoteView` | `-` | `artworkBackImageView` | prop | ❌ | ✅ | `0x4d0a0` |
-| `StoreExtendNoteView` | `-` | `setArtworkBackImageView:` | prop | ❌ | ✅ | `0x4d0b0` |
-| `StoreExtendNoteView` | `-` | `nameLabel` | prop | ❌ | ✅ | `0x4d0e8` |
-| `StoreExtendNoteView` | `-` | `setNameLabel:` | prop | ❌ | ✅ | `0x4d0f8` |
-| `StoreExtendNoteView` | `-` | `artistLabel` | prop | ❌ | ✅ | `0x4d130` |
-| `StoreExtendNoteView` | `-` | `setArtistLabel:` | prop | ❌ | ✅ | `0x4d140` |
-| `StoreExtendNoteView` | `-` | `commentLabel` | prop | ❌ | ✅ | `0x4d178` |
-| `StoreExtendNoteView` | `-` | `setCommentLabel:` | prop | ❌ | ✅ | `0x4d188` |
-| `StoreExtendNoteView` | `-` | `levelLabel` | prop | ❌ | ✅ | `0x4d1c0` |
-| `StoreExtendNoteView` | `-` | `setLevelLabel:` | prop | ❌ | ✅ | `0x4d1d0` |
-| `StoreExtendNoteView` | `-` | `purchasedLabel` | prop | ❌ | ✅ | `0x4d208` |
-| `StoreExtendNoteView` | `-` | `setPurchasedLabel:` | prop | ❌ | ✅ | `0x4d218` |
-| `StoreExtendNoteView` | `-` | `linkURL` | prop | ❌ | ✅ | `0x4d250` |
-| `StoreExtendNoteView` | `-` | `setLinkURL:` | prop | ❌ | ✅ | `0x4d260` |
+| `StoreExtendNoteView` | `-` | `artworkImageView` | prop | ✅ | ✅ | `0x4d058` |
+| `StoreExtendNoteView` | `-` | `setArtworkImageView:` | prop | ✅ | ✅ | `0x4d068` |
+| `StoreExtendNoteView` | `-` | `artworkBackImageView` | prop | ✅ | ✅ | `0x4d0a0` |
+| `StoreExtendNoteView` | `-` | `setArtworkBackImageView:` | prop | ✅ | ✅ | `0x4d0b0` |
+| `StoreExtendNoteView` | `-` | `nameLabel` | prop | ✅ | ✅ | `0x4d0e8` |
+| `StoreExtendNoteView` | `-` | `setNameLabel:` | prop | ✅ | ✅ | `0x4d0f8` |
+| `StoreExtendNoteView` | `-` | `artistLabel` | prop | ✅ | ✅ | `0x4d130` |
+| `StoreExtendNoteView` | `-` | `setArtistLabel:` | prop | ✅ | ✅ | `0x4d140` |
+| `StoreExtendNoteView` | `-` | `commentLabel` | prop | ✅ | ✅ | `0x4d178` |
+| `StoreExtendNoteView` | `-` | `setCommentLabel:` | prop | ✅ | ✅ | `0x4d188` |
+| `StoreExtendNoteView` | `-` | `levelLabel` | prop | ✅ | ✅ | `0x4d1c0` |
+| `StoreExtendNoteView` | `-` | `setLevelLabel:` | prop | ✅ | ✅ | `0x4d1d0` |
+| `StoreExtendNoteView` | `-` | `purchasedLabel` | prop | ✅ | ✅ | `0x4d208` |
+| `StoreExtendNoteView` | `-` | `setPurchasedLabel:` | prop | ✅ | ✅ | `0x4d218` |
+| `StoreExtendNoteView` | `-` | `linkURL` | prop | ✅ | ✅ | `0x4d250` |
+| `StoreExtendNoteView` | `-` | `setLinkURL:` | prop | ✅ | ✅ | `0x4d260` |
 | `AppDelegate` | `+` | `initialize` |  | ✅ | ✅ | `0x4d778` |
 | `AppDelegate` | `-` | `startApplication` |  | ✅ | ✅ | `0x4d77c` |
 | `AppDelegate` | `-` | `requestResourceInfo` |  | ✅ | ❌ | `0x4da2c` |

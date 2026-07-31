@@ -4,8 +4,8 @@
  * level label, a right-aligned purchased/price label, and a "new" corner badge. The jacket artwork
  * itself is supplied by @c RBStoreExtendPageViewController, which sets @c artworkLayer.contents
  * directly. Used by @c RBStoreExtendPageViewController on the phone layout (the pad layout uses
- * @c StoreExtendNoteCell and @c StoreExtendNoteCellView instead). It is the phone-specific sibling
- * of @c StoreExtendNoteCellView, sharing the same product presentation but built as a
+ * @c StoreExtendNoteCell and @c StoreExtendNoteView instead). It is the phone-specific sibling
+ * of @c StoreExtendNoteView, sharing the same product presentation but built as a
  * @c UITableViewCell rather than an embedded @c UIView.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c StoreExtendNoteCellPhone, image
