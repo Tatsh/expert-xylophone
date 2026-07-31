@@ -297,6 +297,9 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x4cadc: 'StoreExtendNoteView -setArtwork:: drives artworkImageView.image, no ivar of its own',
+    0x90428: 'RBPlaylistCreateViewController -viewDidAppear:: super, then textField '
+             'becomeFirstResponder so the keyboard is up on entry',
     0xc348: 'StoreButtonView -setHighlighted:: reads the old value through super, calls super\'s '
             'setter, and redisplays only on a change. The binary spells the test as eor then '
             'cmp #1 where the reconstruction uses !=, which agree for canonical BOOLs',
