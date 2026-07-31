@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4640 verified
+Total: 6343 — 6306 reconstructed, 4643 verified
 (73.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -219,7 +219,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ✅ | `0xfa84` |
 | `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
 | `StoreExtendNoteCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xfdb8` |
-| `UnZipArchive` | `-` | `init` |  | ✅ | ❌ | `0x14d40` |
+| `UnZipArchive` | `-` | `init` |  | ✅ | ✅ | `0x14d40` |
 | `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
 | `UnZipArchive` | `-` | `closeFile` |  | ✅ | ✅ | `0x14ec8` |
@@ -299,7 +299,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SystemHardware` | `-` | `dealloc` |  | ❌ | ✅ | `0x18ae0` |
 | `SystemHardware` | `+` | `getInstance` |  | ✅ | ❌ | `0x18b14` |
 | `SystemHardware` | `-` | `initHardware` |  | ✅ | ❌ | `0x18b6c` |
-| `SystemHardware` | `-` | `getHardwareType` |  | ✅ | ❌ | `0x18cb0` |
+| `SystemHardware` | `-` | `getHardwareType` |  | ✅ | ✅ | `0x18cb0` |
 | `SystemHardware` | `-` | `getHardwareName` |  | ✅ | ❌ | `0x18cf4` |
 | `SystemHardware` | `-` | `hardwareName` | prop | ✅ | ✅ | `0x18d40` |
 | `SystemHardware` | `-` | `setHardwareName:` | prop | ✅ | ✅ | `0x18d50` |
@@ -1796,7 +1796,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `drawImageFileName:Position:` |  | ✅ | ❌ | `0x87dd4` |
 | `TwitterImageCreater` | `-` | `drawText:Position:Font:Color:` |  | ✅ | ❌ | `0x87e68` |
 | `TwitterImageCreater` | `-` | `drawNumber:Position:Keta:Dot:` |  | ✅ | ❌ | `0x87fa4` |
-| `TwitterImageCreater` | `-` | `getDigitNum:` |  | ✅ | ❌ | `0x881fc` |
+| `TwitterImageCreater` | `-` | `getDigitNum:` |  | ✅ | ✅ | `0x881fc` |
 | `TwitterImageCreater` | `-` | `drawScore:Pos:Dot:` |  | ✅ | ❌ | `0x88244` |
 | `TwitterImageCreater` | `-` | `createImage` |  | ✅ | ✅ | `0x888b0` |
 | `TwitterImageCreater` | `-` | `titleImage` | prop | ✅ | ✅ | `0x88d88` |

@@ -279,6 +279,13 @@ VERIFIED = {
     0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
     0xe8894: 'RBMenuBGEffectView -removeFromSuperview: the same lone super chain',
     0x3d080: 'neWindow -initWithFrame:: chains to super and returns it, adding nothing',
+    0x14d40: 'UnZipArchive -init: chains to super and clears m_ZipFile only when that returned '
+             'non-nil',
+    0x18cb0: 'SystemHardware -getHardwareType: 15 is the unresolved sentinel; the cmp at 0x18ccc '
+             'resolves once and re-reads the ivar rather than using the call result',
+    0x881fc: 'TwitterImageCreater -getDigitNum:: the loop test is (previous + 9) against 18 with '
+             'b.hi, an unsigned compare, so it stops on a single digit of either sign; the tail '
+             'csel returns 1 for a zero argument',
     0x9d37c: 'RBCampaignData -presetHinabitaMode: names the campaign 201703hnbt and then clears '
              'the matching flag rather than setting it',
     0xf0ff0: 'RBCorporateViewController -alertView:clickedButtonAtIndex:: the cbz on isFirstRequest '

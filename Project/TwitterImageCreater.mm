@@ -472,7 +472,9 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
         ++count;
         int previous = remaining;
         remaining = remaining / 10;
-        if (previous <= kMaxSingleDigit) {
+        // The binary tests (previous + 9) against 18 with an unsigned compare, so the loop stops
+        // on any single digit of either sign rather than on every negative value.
+        if (static_cast<unsigned int>(previous + kMaxSingleDigit) <= 2 * kMaxSingleDigit) {
             break;
         }
     } while (true);
