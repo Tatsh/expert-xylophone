@@ -1497,3 +1497,22 @@ the disassembler what function contains each annotated address and whether that 
 parameter is a block layout. That is a per-address query against the Ghidra bridge rather than a
 static sweep, so it is slower, but it answers the actual question and it is what settled `0x507c8`
 here in one call.
+
+## An ASCII literal the literal sweep cannot see
+
+`ScoreData +totalScore` fetches with the predicate `tuneID IN %@`. The reconstruction had it as
+`tuneID in %@`. `NSPredicate` treats its keywords case-insensitively, so nothing behaves
+differently, and it is corrected only because the tree's rule is to carry the binary's literals
+verbatim.
+
+The interesting part is why nothing caught it. `scan_literals.py` decodes all 2223 `__cfstring`
+records and checks every source literal against them, and it passes on this file — because it only
+checks **non-ASCII** literals. That scope was deliberate: it was built to catch truncated Japanese
+strings, where a missing character is invisible in review, and checking every ASCII literal in the
+tree against the pool would have meant handling every runtime-composed string as a false positive.
+
+The consequence is worth stating plainly rather than leaving implied. Every ASCII string in the
+reconstruction is unchecked. A wrong predicate keyword is harmless; a wrong dictionary key, defaults
+key, or format specifier is not, and those are all ASCII. The sweep's clean run means the non-ASCII
+literals agree and says nothing whatever about the rest, which is the same shape of limit already
+recorded for the address audit and the property scan.

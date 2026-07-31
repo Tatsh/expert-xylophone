@@ -3807,6 +3807,19 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x5D778: 'ScoreData +totalScore: batches the music identifiers with sub then cmp x8,#0xf and '
+             'csel, so the batch is the smaller of the remainder and fifteen. Identifiers below '
+             'one are dropped by cmp w0,#1 with b.lt before addIndex:. The fetch uses the '
+             '"ScoreData" entity and the "tuneID IN %@" predicate, whose uppercase IN the source '
+             'had as lowercase and now matches. Each score contributes through '
+             'sub w8,score,#1 then cmp against mov w10,#0x270f with csel on cc, an unsigned '
+             'compare, so the accepted range really is one to 9999 and a non-positive score wraps '
+             'out rather than counting. sxtw widens each score for the 64-bit total',
+    0x5E820: 'ScoreData +totalRecordCount: the "ScoreData" entity with the last-play-date and '
+             'tune-identifier range predicate, includesSubentities set to zero, then '
+             'countForFetchRequest:. The result is compared against '
+             'orr x8,xzr,#0x7fffffffffffffff, which is NSNotFound, and csel on eq returns zero '
+             'for it',
     0x5CE78: 'ScoreData +reset:: seventeen assignments in the source order, three full-combo flags '
              'through numberWithBool:0, then the ranks and the scores all as numberWithInt: '
              '0xffffffff, which is the -1 both kResetClearRank and kResetScore hold. The three '

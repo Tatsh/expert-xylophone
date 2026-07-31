@@ -26,7 +26,7 @@ static NSString *const kScoreDataEntityName = @"ScoreData";
 
 // Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDEquals = @"tuneID == %d";
-static NSString *const kPredicateTuneIDIn = @"tuneID in %@";
+static NSString *const kPredicateTuneIDIn = @"tuneID IN %@";
 static NSString *const kPredicateRecentInRange =
     @"lastPlayDate > %@ AND 100000000 < tuneID AND tuneID < 900000000";
 
