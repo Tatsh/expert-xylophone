@@ -485,7 +485,17 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     // explicit unbind first is the binary's (BindArrayBuffer(0) at 0x310cc): the client pointers
     // below only take effect with no array buffer bound.
     pRenderer->BindArrayBuffer(0);
-    pRenderer->SetGlEnableState(kEnableMatrixPalette, 1);
+#ifdef ENABLE_PATCHES
+    // GL_OES_matrix_palette is not advertised by every driver a modern build runs on. The binary
+    // never checks, because its armv7 targets always had it; where it is missing, the palette and
+    // the weight/matrix-index client arrays below are enabled but their OES pointer calls never
+    // take effect, so the draw walks an enabled array whose pointer is still NULL and faults at
+    // address zero. When the extension is present this is the binary's path exactly.
+    const bool bMatrixPalette = pRenderer->HasMatrixPalette();
+#else
+    constexpr bool bMatrixPalette = true;
+#endif
+    pRenderer->SetGlEnableState(kEnableMatrixPalette, bMatrixPalette ? 1 : 0);
     pRenderer->SetGlClientState(kClientVertex, 1);
     pRenderer->SetVertexPointer(pScratch, 2, kVertexStride);
     pRenderer->SetGlClientState(kClientNormal, 0);
@@ -496,12 +506,22 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
                                kVertexStride);
     BindPassTexture(pRenderer);
     pRenderer->BindArrayBuffer(m_dwArrayVbo);
-    pRenderer->SetGlClientState(kClientWeight, 1);
-    pRenderer->ClearWeightPointer(
-        kTemplateVertexStride, kTemplateComponentCount, kTemplateWeightOffset);
-    pRenderer->SetGlClientState(kClientMatrixIndex, 1);
-    pRenderer->ClearMatrixIndexPointer(
-        kTemplateVertexStride, kTemplateComponentCount, kTemplateMatrixIndexOffset);
+    if (bMatrixPalette) {
+        pRenderer->SetGlClientState(kClientWeight, 1);
+        pRenderer->ClearWeightPointer(
+            kTemplateVertexStride, kTemplateComponentCount, kTemplateWeightOffset);
+        pRenderer->SetGlClientState(kClientMatrixIndex, 1);
+        pRenderer->ClearMatrixIndexPointer(
+            kTemplateVertexStride, kTemplateComponentCount, kTemplateMatrixIndexOffset);
+    } else {
+        // Without the palette the transform is baked into each quad below, so the two skinning
+        // arrays stay disabled and the model-view carries nothing.
+        pRenderer->SetGlClientState(kClientWeight, 0);
+        pRenderer->SetGlClientState(kClientMatrixIndex, 0);
+        float identity[16];
+        SetMatrixIdentity(identity);
+        pRenderer->SetMatrixMode(kMatrixModeModelView, identity);
+    }
 
     int nQueued = 0;
     for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
@@ -534,9 +554,21 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         // scale about the anchor when present, then compose it with the shared matrix.
         float spriteMatrix[16];
         BuildSpriteMatrix(nSprite, spriteMatrix);
-        pRenderer->SetCurrentPaletteMatrix(nQueued);
-        ComposeMatrices(spriteMatrix, const_cast<float *>(pComposeMatrix));
-        pRenderer->SetMatrixMode(kMatrixModePalette, spriteMatrix);
+        if (bMatrixPalette) {
+            pRenderer->SetCurrentPaletteMatrix(nQueued);
+            ComposeMatrices(spriteMatrix, const_cast<float *>(pComposeMatrix));
+            pRenderer->SetMatrixMode(kMatrixModePalette, spriteMatrix);
+        } else {
+            // Apply what the palette matrix would have applied, per corner, on the CPU.
+            ComposeMatrices(spriteMatrix, const_cast<float *>(pComposeMatrix));
+            for (int nCorner = 0; nCorner < kQuadCorners; ++nCorner) {
+                float aCorner[] = {pQuad[nCorner].flX, pQuad[nCorner].flY, 0.0f, 1.0f};
+                float aWorld[4];
+                MultiplyVector4ByMatrix(aWorld, aCorner, spriteMatrix);
+                pQuad[nCorner].flX = aWorld[0];
+                pQuad[nCorner].flY = aWorld[1];
+            }
+        }
 
         ++nQueued;
         if (nQueued == nMaxPerBatch) {

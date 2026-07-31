@@ -136,3 +136,28 @@ Note this is a symptom guard, not a cause fix: the real question is why the musi
 does not resolve. The menu buttons' background was once filed alongside it as the same asset
 question; it was not one. Their grey face came from a wrong superclass in the reconstruction, and
 is fixed rather than patched.
+
+### The sprite batch's matrix palette on a driver without the extension
+
+**File:** `Project/GameSystem/src/Render/neSpriteInstancing.mm` —
+`ne::C_SPRITE_INSTANCING_2D::EmitMatrixSprites`
+
+Every per-sprite transform in the batch's slow path rides `GL_OES_matrix_palette`: the draw enables
+the palette and the weight and matrix-index client arrays, points the latter two into the template
+vertex buffer, and writes one palette matrix per sprite. The binary queries the extension once, at
+`0x21c98`, only to decide whether to read the palette size, and then uses the palette
+unconditionally — reasonable on its armv7 iOS targets, where it was always advertised.
+
+Where it is not advertised, the two `glWeightPointerOES` and `glMatrixIndexPointerOES` calls never
+take effect while their arrays are still enabled, so the draw walks an enabled vertex array whose
+pointer is `NULL` and faults at address zero inside `gleRunVertexSubmitImmediate`. The world-space
+batch has no axis-aligned fast path, so every play-field frame takes this route.
+
+The patch checks the capability the renderer already recorded. With the extension present nothing
+changes and the binary's path runs exactly as before. Without it, the palette and the two skinning
+arrays stay disabled, the model-view is set to identity, and each sprite's composed transform is
+applied to its four quad corners on the CPU instead — the same geometry the palette matrix would
+have produced, at the cost of the per-sprite matrix upload.
+
+The unpatched build keeps the unconditional palette path, and crashes on such a driver, which is
+what the original binary would do.

@@ -236,6 +236,17 @@ public:
     }
 
     /**
+     * @brief Whether the driver advertises @c GL_OES_matrix_palette.
+     *
+     * The binary queries the extension only to decide whether to read the palette size, and every
+     * draw path then uses the palette unconditionally. A build running where the extension is
+     * absent needs to know, so the flag is exposed.
+     */
+    bool HasMatrixPalette() const {
+        return m_bHasMatrixPalette;
+    }
+
+    /**
      * @brief Probes the live GL ES context for its capabilities and sets the initial GL state.
      *
      * Scans @c GL_EXTENSIONS for @c GL_OES_matrix_palette (recording the flag and, when present,
