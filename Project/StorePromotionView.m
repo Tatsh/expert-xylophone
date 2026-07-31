@@ -18,7 +18,7 @@ static NSString *const kPromotionKeyImage = @"image";
 
 // The default-region banner geometry: the paging scroll view is inset so a page is 300 points wide,
 // and the banner tile sits 292 points narrower and 96 points shorter than the view, both halved to
-// centre. @ghidraAddress 0x100301088, 0x100301878, 0x100301880 (g_dCustomizeLayoutMetric* pool).
+// centre. @ghidraAddress 0x301088, 0x100301878, 0x100301880 (g_dCustomizeLayoutMetric* pool).
 static const CGFloat kPageInsetReference = -300.0;
 static const CGFloat kBannerWidthReference = -292.0;
 static const CGFloat kBannerHeightReference = -96.0;
@@ -33,22 +33,22 @@ static const CGFloat kPadBannerOffsetY = 8.0;
 static const CGFloat kBannerBackgroundWhite = 0.5;
 static const CGFloat kBannerCornerRadius = 8.0;
 static const CGFloat kBannerShadowOffsetHeight = 1.0;
-static const CGFloat kBannerShadowOpacity = 0.8; // @ghidraAddress 0x1002f856c
+static const CGFloat kBannerShadowOpacity = 0.8; // @ghidraAddress 0x2f856c
 static const CGFloat kBannerShadowRadius = 1.0;
 
 // The carousel holds two extra wrap-around banner copies so paging can loop seamlessly.
 static const NSInteger kWrapAroundBannerCount = 2;
 
 // The banner strip is this fraction of a page wide tall; the scroll view content height is the page
-// width scaled by it. @ghidraAddress 0x100301890 (g_dCustomizeLayoutMetric pool).
+// width scaled by it. @ghidraAddress 0x301890 (g_dCustomizeLayoutMetric pool).
 static const CGFloat kBannerContentHeightRatio = 0.32876712328767121;
 
 // The page timer fires every two seconds to advance the carousel.
 static const NSTimeInterval kPageAdvanceInterval = 2.0;
 
 // The default-region scroll-view size used when re-laying after a rotation.
-static const CGFloat kRotatedScrollViewWidth = 300.0;  // @ghidraAddress 0x1002ee930
-static const CGFloat kRotatedScrollViewHeight = 102.0; // @ghidraAddress 0x1003012a8
+static const CGFloat kRotatedScrollViewWidth = 300.0;  // @ghidraAddress 0x2ee930
+static const CGFloat kRotatedScrollViewHeight = 102.0; // @ghidraAddress 0x3012a8
 
 // The initial capacity hints for the downloader collections.
 static const NSUInteger kDownloaderCapacity = 32;
@@ -61,7 +61,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - Setup
 
-/** @ghidraAddress 0x1000ffbbc */
+/** @ghidraAddress 0xffbbc */
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -72,7 +72,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     return self;
 }
 
-/** @ghidraAddress 0x100100498 */
+/** @ghidraAddress 0x100498 */
 - (void)SetupView {
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -107,14 +107,14 @@ static const NSUInteger kDownloaderCapacity = 32;
     self.bannerViewArray = nil;
 }
 
-/** @ghidraAddress 0x100100464 */
+/** @ghidraAddress 0x100464 */
 - (void)layoutSubviews {
     [super layoutSubviews];
 }
 
 #pragma mark - Image and data
 
-/** @ghidraAddress 0x1001009e8 */
+/** @ghidraAddress 0x1009e8 */
 - (void)setImageURLs:(NSArray<NSDictionary *> *)imageURLs {
     if (self.promotionDataArray != nil) {
         return;
@@ -194,7 +194,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     }
 }
 
-/** @ghidraAddress 0x100102284 */
+/** @ghidraAddress 0x102284 */
 - (void)setImage:(UIImage *)image Index:(NSInteger)index {
     NSDictionary *promotion = self.promotionDataArray[index];
     NSDictionary *updated = @{
@@ -234,12 +234,12 @@ static const NSUInteger kDownloaderCapacity = 32;
     }
 }
 
-/** @ghidraAddress 0x100101924 */
+/** @ghidraAddress 0x101924 */
 - (NSUInteger)getImageCount {
     return self.promotionDataArray.count;
 }
 
-/** @ghidraAddress 0x1001008cc */
+/** @ghidraAddress 0x1008cc */
 - (int)getPackID {
     NSUInteger imageCount = [self getImageCount];
     if (m_Index >= 0 && (NSUInteger)m_Index < imageCount) {
@@ -253,7 +253,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - Animation
 
-/** @ghidraAddress 0x100102b04 */
+/** @ghidraAddress 0x102b04 */
 - (void)startAnimation {
     [self stopAnimation];
     if (!self.isSamplePlayable) {
@@ -290,7 +290,7 @@ static const NSUInteger kDownloaderCapacity = 32;
                                                  repeats:YES];
 }
 
-/** @ghidraAddress 0x100103048 */
+/** @ghidraAddress 0x103048 */
 - (void)stopAnimation {
     if (self.timer != nil) {
         [self.timer invalidate];
@@ -298,7 +298,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     }
 }
 
-/** @ghidraAddress 0x100101984 */
+/** @ghidraAddress 0x101984 */
 - (void)setNext {
     NSInteger page = (NSInteger)(self.scrollView.contentOffset.x / self.pageWidth);
 
@@ -322,7 +322,7 @@ static const NSUInteger kDownloaderCapacity = 32;
                                   delay:1.0
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^{
-                               /** @ghidraAddress 0x100101f98 */
+                               /** @ghidraAddress 0x101f98 */
                                [[RBBGMManager getInstance] popMusic];
                                [self.scrollView
                                    setContentOffset:CGPointMake(
@@ -361,7 +361,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     }
 }
 
-/** @ghidraAddress 0x100102280 */
+/** @ghidraAddress 0x102280 */
 - (void)nextShowEnd {
 }
 
@@ -371,12 +371,12 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - Sample playback
 
-/** @ghidraAddress 0x100102a14 */
+/** @ghidraAddress 0x102a14 */
 - (void)startSamplePlay {
     [self startAnimation];
 }
 
-/** @ghidraAddress 0x100102a20 */
+/** @ghidraAddress 0x102a20 */
 - (void)stopSamplePlay {
     if ([[RBBGMManager getInstance] isPushMusic]) {
         [[RBBGMManager getInstance] StopMusic:0.0];
@@ -386,7 +386,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - Banner tap
 
-/** @ghidraAddress 0x1001030f0 */
+/** @ghidraAddress 0x1030f0 */
 - (void)bannerTapped:(UITapGestureRecognizer *)recognizer {
     BannerView *banner = (BannerView *)recognizer.view;
     if (banner.packInfo == nil) {
@@ -406,20 +406,20 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - ImageDownloaderDelegate
 
-/** @ghidraAddress 0x100101788 */
+/** @ghidraAddress 0x101788 */
 - (void)imageDownloader:(ImageDownloader *)downloader didLoad:(NSIndexPath *)indexPath {
     [self setImage:[downloader getImage] Index:[indexPath indexAtPosition:0]];
     [self.imageDownloader removeObject:downloader];
 }
 
-/** @ghidraAddress 0x100101898 */
+/** @ghidraAddress 0x101898 */
 - (void)imageDownloaderDidFail:(ImageDownloader *)downloader didLoad:(NSIndexPath *)indexPath {
     [self.imageDownloader removeObject:downloader];
 }
 
 #pragma mark - DownloaderDelegate
 
-/** @ghidraAddress 0x1001032e4 */
+/** @ghidraAddress 0x1032e4 */
 - (void)downloaderFinished:(Downloader *)downloader {
     NSData *data = [downloader getData];
 
@@ -449,7 +449,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     }
 }
 
-/** @ghidraAddress 0x1001037fc */
+/** @ghidraAddress 0x1037fc */
 - (void)downloaderError:(Downloader *)downloader {
     [downloader cancel];
     for (NSString *key in [self.sampleDownloader keyEnumerator]) {
@@ -463,12 +463,12 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - UIScrollViewDelegate
 
-/** @ghidraAddress 0x100103a50 */
+/** @ghidraAddress 0x103a50 */
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self stopAnimation];
 }
 
-/** @ghidraAddress 0x100103a6c */
+/** @ghidraAddress 0x103a6c */
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGFloat offsetX = self.scrollView.contentOffset.x;
     CGFloat span =
@@ -484,7 +484,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     m_Index = (NSInteger)(self.scrollView.contentOffset.x / self.pageWidth);
 }
 
-/** @ghidraAddress 0x100103c48 */
+/** @ghidraAddress 0x103c48 */
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 }
 
@@ -497,7 +497,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     [self startAnimation];
 }
 
-/** @ghidraAddress 0x100103c6c */
+/** @ghidraAddress 0x103c6c */
 - (void)scrollViewDidRotate:(float)width {
     if (IsPad()) {
         return;
@@ -517,7 +517,7 @@ static const NSUInteger kDownloaderCapacity = 32;
 
 #pragma mark - Teardown
 
-/** @ghidraAddress 0x100100138 */
+/** @ghidraAddress 0x100138 */
 - (void)cancel {
     for (ImageDownloader *imageDownloader in self.imageDownloader) {
         imageDownloader.delegate = nil;
@@ -531,7 +531,7 @@ static const NSUInteger kDownloaderCapacity = 32;
     self.scrollView.delegate = nil;
 }
 
-/** @ghidraAddress 0x1000ffcf8 */
+/** @ghidraAddress 0xffcf8 */
 - (void)dealloc {
     // The project is ARC, so the ivar releases and the destructor are synthesised; only the
     // binary's non-generated teardown is reproduced here (no explicit [super dealloc]).

@@ -145,19 +145,19 @@ static const CGFloat kMoreCellFontSizePad = 18.0;
 static const CGFloat kBarButtonTitleFontSize = 14.0;
 
 // Section heights (phone layout).
-static const CGFloat kPromotionSectionHeight = 102.0; // @ghidraAddress 0x1003012a8
-static const CGFloat kSampleSectionHeight = 32.0;     // @ghidraAddress 0x1002ee9b0
+static const CGFloat kPromotionSectionHeight = 102.0; // @ghidraAddress 0x3012a8
+static const CGFloat kSampleSectionHeight = 32.0;     // @ghidraAddress 0x2ee9b0
 
 // The phone promotion view's centre. The y sits one slot past 46.0 in the same pool run.
-static const CGFloat kPromotionCenterXPhone = 150.0; // @ghidraAddress 0x100301028
-static const CGFloat kPromotionCenterYPhone = 61.0;  // @ghidraAddress 0x100301038
+static const CGFloat kPromotionCenterXPhone = 150.0; // @ghidraAddress 0x301028
+static const CGFloat kPromotionCenterYPhone = 61.0;  // @ghidraAddress 0x301038
 
 // Pack-list row heights: index one (a real pack row) is taller than index zero (the trailing "more"
 // row). The pad pairs are at 0x10030bed0 and the phone pairs at 0x10030bee0.
-static const CGFloat kPackRowHeightPhone = 80.0; // @ghidraAddress 0x10030bee8
-static const CGFloat kMoreRowHeightPhone = 60.0; // @ghidraAddress 0x10030bee0
-static const CGFloat kPackRowHeightPad = 140.0;  // @ghidraAddress 0x10030bed8
-static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x10030bed0
+static const CGFloat kPackRowHeightPhone = 80.0; // @ghidraAddress 0x30bee8
+static const CGFloat kMoreRowHeightPhone = 60.0; // @ghidraAddress 0x30bee0
+static const CGFloat kPackRowHeightPad = 140.0;  // @ghidraAddress 0x30bed8
+static const CGFloat kMoreRowHeightPad = 60.0;   // @ghidraAddress 0x30bed0
 
 // Alternating pack-row background tints (white component).
 static const CGFloat kPackRowTintEvenWhite = 0.8;
@@ -166,8 +166,8 @@ static const CGFloat kPadPackRowTintWhite = 0.5;
 
 // The "load more" row text while loading; the idle colour is the shared g_dTranslucentAlpha.
 // This value and the idle shadow read the same pool slot, which carries no engine global.
-static const CGFloat kMoreCellTextWhiteLoading = 0.4f; // @ghidraAddress 0x1002ec720
-static const CGFloat kMoreCellShadowWhite = 0.4f;      // @ghidraAddress 0x1002ec720
+static const CGFloat kMoreCellTextWhiteLoading = 0.4f; // @ghidraAddress 0x2ec720
+static const CGFloat kMoreCellShadowWhite = 0.4f;      // @ghidraAddress 0x2ec720
 
 // The sample-label cell layout metrics: the label is inset from both edges and the play button sits
 // at the trailing edge, both 32 points tall.
@@ -201,7 +201,7 @@ static const CGFloat kPadTitleVerticalOffset = 20.0;
 static const CGFloat kPadContentTop = 330.0;
 // The pad promotion banner's height. 160.0 is a heavily pooled value and this slot is
 // also annotated for g_dPopupBaseOriginYWide, which is an origin rather than a height.
-static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x1002eea38
+static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x2eea38
 // How far above the view's bottom edge the "show more" button sits.
 static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
@@ -218,13 +218,13 @@ static const CGFloat kSampleButtonInsetBottom = 13.0;
 
 // Colour white components used for the various translucent fills. Each is a byte over 255 rounded
 // through a float, so the pool value is not the tidy decimal it looks like.
-static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x1002eef38
-static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x1002ec730
-static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x1002eecb8
+static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x2eef38
+static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x2ec730
+static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x2eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
 // The loading label's text shadow alpha. It shares a slot with the audio-manager resume
 // fade, but a colour alpha and a duration are not the same constant.
-static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x1002ec718
+static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x2ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
@@ -240,7 +240,7 @@ static const CGFloat kDetailAlphaHidden = 0.0;
 static const CGFloat kDetailAlphaVisible = 1.0;
 
 // The pad pack-detail open/close animation fades over three tenths of a second.
-static const NSTimeInterval kDetailAnimDuration = 0.3; // @ghidraAddress 0x1003010a0
+static const NSTimeInterval kDetailAnimDuration = 0.3; // @ghidraAddress 0x3010a0
 
 // The stretchable pack-cell background caps.
 static const int kPackBgStretchCap = 4;
@@ -1747,7 +1747,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     __weak RBStorePageViewController *weakSelf = self;
     [self.userAgeSender
         startDownloadingWithProceed:^(Downloader *downloader) {
-          /** @ghidraAddress 0x10035f6c0 */
+          /** @ghidraAddress 0x35f6c0 */
           // The proceed callback is the shared empty global block; nothing to do.
         }
         success:^(Downloader *downloader) {

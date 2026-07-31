@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Initialise the carousel and build its scroll view and downloader collections.
  * @param frame The initial frame.
  * @return The initialised view.
- * @ghidraAddress 0x1000ffbbc
+ * @ghidraAddress 0xffbbc
  */
 - (instancetype)initWithFrame:(CGRect)frame;
 
@@ -117,21 +117,21 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Set the banner promotion dictionaries and build the banner tiles and downloaders.
  * @param imageURLs The promotion dictionaries to display, or @c nil.
- * @ghidraAddress 0x1001009e8
+ * @ghidraAddress 0x1009e8
  */
 - (void)setImageURLs:(nullable NSArray<NSDictionary *> *)imageURLs;
 
 /**
  * @brief The number of promotion pages.
  * @return The promotion page count.
- * @ghidraAddress 0x100101924
+ * @ghidraAddress 0x101924
  */
 - (NSUInteger)getImageCount;
 
 /**
  * @brief The pack identifier the currently centred banner names.
  * @return The pack identifier, or @c -1 when the current page is out of range or unnamed.
- * @ghidraAddress 0x1001008cc
+ * @ghidraAddress 0x1008cc
  */
 - (int)getPackID;
 
@@ -139,17 +139,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Start the carousel: preview the current banner's sample and schedule the page timer.
- * @ghidraAddress 0x100102b04
+ * @ghidraAddress 0x102b04
  */
 - (void)startAnimation;
 /**
  * @brief Stop the carousel by invalidating the page timer.
- * @ghidraAddress 0x100103048
+ * @ghidraAddress 0x103048
  */
 - (void)stopAnimation;
 /**
  * @brief Advance the carousel to the next page, previewing its sample tune.
- * @ghidraAddress 0x100101984
+ * @ghidraAddress 0x101984
  */
 - (void)setNext;
 
@@ -157,12 +157,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Begin sample playback by (re)starting the carousel.
- * @ghidraAddress 0x100102a14
+ * @ghidraAddress 0x102a14
  */
 - (void)startSamplePlay;
 /**
  * @brief Stop sample playback, stopping and popping any pushed preview BGM.
- * @ghidraAddress 0x100102a20
+ * @ghidraAddress 0x102a20
  */
 - (void)stopSamplePlay;
 
@@ -171,13 +171,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief React to an interface rotation, re-laying the scroll view for the new view width.
  * @param width The new view width.
- * @ghidraAddress 0x100103c6c
+ * @ghidraAddress 0x103c6c
  */
 - (void)scrollViewDidRotate:(float)width;
 
 /**
  * @brief Tear down the carousel: cancel every downloader, stop preview, and detach the scroll view.
- * @ghidraAddress 0x100100138
+ * @ghidraAddress 0x100138
  */
 - (void)cancel;
 
@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
  * An empty stub in the binary: no image-view resize is applied. The hosting
  * @c StorePromotionTableCell sends this from its @c -layoutSubviews.
  * @param imageViewSize The new size, in points.
- * @ghidraAddress 0x1001008c8
+ * @ghidraAddress 0x1008c8
  */
 - (void)setImageViewSize:(CGSize)imageViewSize;
 

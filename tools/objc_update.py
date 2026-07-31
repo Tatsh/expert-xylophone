@@ -295,6 +295,15 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0xf5528: 'StorePackCell -isPurchased: an eor with 1 over labelPurchased.isHidden',
+    0xf5588: 'StorePackCell -setIsPurchased:: hides labelPurchased on the inverted argument; '
+             'unlike StoreExtendNoteView it really does read the argument',
+    0xfebd8: 'StorePackView -isPurchased: the same inversion over purchasedButton.isHidden',
+    0xfec38: 'StorePackView -setIsPurchased:: the matching setter, argument read',
+    0xe9c28: 'RBSettingMenuButton -setEnabled:: passes a hardcoded w2 of 0, so it ignores its '
+             'argument and always disables the inner button; the quirk is already flagged in place',
+    0x101924: 'StorePromotionView -getImageCount: promotionDataArray.count, nothing else',
+    0xd6684: 'RBMusicView -setEnableButton:: forwards the flag to difficultyView',
     0xeb144: 'RBSettingView -CloseView: returns early while m_Animating, else plays themed effect '
              '4 (kSoundEffectCancel, the mov w1) and tail-calls hideAnimation',
     0x168850: 'RBCustomSelectView -getCollectionViewStartY:: the cset inverts the sense, so theme '

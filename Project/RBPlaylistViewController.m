@@ -291,7 +291,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     [self.navigationController
         dismissViewControllerAnimated:YES
                            completion:^{
-                               /** @ghidraAddress 0x10035bd10 */
+                               /** @ghidraAddress 0x35bd10 */
                                // The completion is the shared empty global block; nothing to do.
                            }];
 }

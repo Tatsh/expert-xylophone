@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4709 verified
-(74.2%).
+Total: 6343 — 6306 reconstructed, 4716 verified
+(74.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2518,7 +2518,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `firstInfoScrollEnd` |  | ✅ | ✅ | `0xd61b0` |
 | `RBMusicView` | `-` | `setFirstScrollAnimation` |  | ✅ | ❌ | `0xd61e0` |
 | `RBMusicView` | `-` | `setScrollable:` |  | ✅ | ❌ | `0xd65dc` |
-| `RBMusicView` | `-` | `setEnableButton:` |  | ✅ | ❌ | `0xd6684` |
+| `RBMusicView` | `-` | `setEnableButton:` |  | ✅ | ✅ | `0xd6684` |
 | `RBMusicView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0xd66e0` |
 | `RBMusicView` | `-` | `getDecideButton` |  | ✅ | ✅ | `0xd6b1c` |
 | `RBMusicView` | `-` | `getDoubleButton` |  | ✅ | ❌ | `0xd6b28` |
@@ -2842,7 +2842,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingMenuButton` | `-` | `setupView:` |  | ✅ | ❌ | `0xe902c` |
 | `RBSettingMenuButton` | `-` | `setFlashEffect` |  | ✅ | ❌ | `0xe9a04` |
 | `RBSettingMenuButton` | `-` | `removeFlashEffect` |  | ✅ | ❌ | `0xe9b20` |
-| `RBSettingMenuButton` | `-` | `setEnabled:` |  | ✅ | ❌ | `0xe9c28` |
+| `RBSettingMenuButton` | `-` | `setEnabled:` |  | ✅ | ✅ | `0xe9c28` |
 | `RBSettingMenuButton` | `-` | `button` | prop | ✅ | ✅ | `0xe9c80` |
 | `RBSettingMenuButton` | `-` | `setButton:` | prop | ✅ | ✅ | `0xe9c90` |
 | `RBSettingMenuButton` | `-` | `effectImageView` | prop | ✅ | ✅ | `0xe9cc8` |
@@ -3023,8 +3023,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreImageView` | `-` | `imageView` | prop | ✅ | ✅ | `0xf43d8` |
 | `StoreImageView` | `-` | `setImageView:` | prop | ✅ | ✅ | `0xf43e8` |
 | `StorePackCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xf4488` |
-| `StorePackCell` | `-` | `isPurchased` | prop | ✅ | ❌ | `0xf5528` |
-| `StorePackCell` | `-` | `setIsPurchased:` | prop | ✅ | ❌ | `0xf5588` |
+| `StorePackCell` | `-` | `isPurchased` | prop | ✅ | ✅ | `0xf5528` |
+| `StorePackCell` | `-` | `setIsPurchased:` | prop | ✅ | ✅ | `0xf5588` |
 | `StorePackCell` | `-` | `loadPackInfo:` |  | ✅ | ❌ | `0xf55e4` |
 | `StorePackCell` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xf5898` |
 | `StorePackCell` | `-` | `setBgColor:` |  | ✅ | ❌ | `0xf5924` |
@@ -3136,8 +3136,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePackView` | `-` | `setBgImage:` |  | ✅ | ❌ | `0xfe9e0` |
 | `StorePackView` | `-` | `setArtwork:` |  | ✅ | ❌ | `0xfea6c` |
 | `StorePackView` | `-` | `handleTap:` |  | ✅ | ❌ | `0xfeaf8` |
-| `StorePackView` | `-` | `isPurchased` |  | ✅ | ❌ | `0xfebd8` |
-| `StorePackView` | `-` | `setIsPurchased:` |  | ✅ | ❌ | `0xfec38` |
+| `StorePackView` | `-` | `isPurchased` |  | ✅ | ✅ | `0xfebd8` |
+| `StorePackView` | `-` | `setIsPurchased:` |  | ✅ | ✅ | `0xfec38` |
 | `StorePackView` | `-` | `loadPackInfo:index:` |  | ✅ | ❌ | `0xfec94` |
 | `StorePackView` | `-` | `delegate` | prop | ✅ | ✅ | `0xfefc0` |
 | `StorePackView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0xfefe0` |
@@ -3189,7 +3189,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `setImageURLs:` |  | ✅ | ❌ | `0x1009e8` |
 | `StorePromotionView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0x101788` |
 | `StorePromotionView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ❌ | `0x101898` |
-| `StorePromotionView` | `-` | `getImageCount` |  | ✅ | ❌ | `0x101924` |
+| `StorePromotionView` | `-` | `getImageCount` |  | ✅ | ✅ | `0x101924` |
 | `StorePromotionView` | `-` | `setNext` |  | ✅ | ❌ | `0x101984` |
 | `StorePromotionView` | `-` | `nextShowEnd` |  | ✅ | ✅ | `0x102280` |
 | `StorePromotionView` | `-` | `setImage:Index:` |  | ✅ | ❌ | `0x102284` |
