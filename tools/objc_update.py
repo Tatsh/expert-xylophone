@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x159128: 'RBCustomSelectCollectionView -collectionView:didHighlightItemAtIndexPath:: looks '
+              'the cell up on the passed collection view and sets highlighted with the mov w2 of 1',
+    0x1555d8: 'RBCustomSelectCollectionView -initWithFrame:customizeType:: super with the rect, '
+              'nil check, the type, then setupView, so the type is in place before the layout runs',
+    0x142a98: 'RBErosionMarkUpdaterAlertController -initWithOrientationMask:: super init, nil '
+              'check, then the mask; the plain -init beside it takes the same shape',
     0x154cb4: 'DAProgressOverlayView -displayOperationDidFinishAnimation: setState: with the mov '
               'w2 of 2, which is OperationFinished, zeroes the progress, and schedules the update '
               'timer with the mov w5 of 1 for repeats YES',

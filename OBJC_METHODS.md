@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4890 verified
+Total: 6343 — 6306 reconstructed, 4893 verified
 (77.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3535,7 +3535,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdaterScoreView` | `-` | `rightButton` | prop | ✅ | ✅ | `0x1429e0` |
 | `RBErosionMarkUpdaterScoreView` | `-` | `setRightButton:` | prop | ✅ | ✅ | `0x1429f0` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `init` |  | ✅ | ❌ | `0x142a00` |
-| `RBErosionMarkUpdaterAlertController` | `-` | `initWithOrientationMask:` |  | ✅ | ❌ | `0x142a98` |
+| `RBErosionMarkUpdaterAlertController` | `-` | `initWithOrientationMask:` |  | ✅ | ✅ | `0x142a98` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x142b1c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `orientationMask` | prop | ✅ | ✅ | `0x142b2c` |
 | `RBErosionMarkUpdaterAlertController` | `-` | `setOrientationMask:` | prop | ✅ | ✅ | `0x142b3c` |
@@ -3641,14 +3641,14 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `DAProgressOverlayView` | `-` | `setAnimationProggress:` | prop | ✅ | ✅ | `0x155540` |
 | `DAProgressOverlayView` | `-` | `timer` | prop | ✅ | ✅ | `0x155550` |
 | `DAProgressOverlayView` | `-` | `setTimer:` | prop | ✅ | ✅ | `0x155560` |
-| `RBCustomSelectCollectionView` | `-` | `initWithFrame:customizeType:` |  | ✅ | ❌ | `0x1555d8` |
+| `RBCustomSelectCollectionView` | `-` | `initWithFrame:customizeType:` |  | ✅ | ✅ | `0x1555d8` |
 | `RBCustomSelectCollectionView` | `-` | `setupView` |  | ✅ | ❌ | `0x155670` |
 | `RBCustomSelectCollectionView` | `-` | `gaugeStyleTap:` |  | ✅ | ❌ | `0x15720c` |
 | `RBCustomSelectCollectionView` | `-` | `noteSizeTap:` |  | ✅ | ❌ | `0x1574f8` |
 | `RBCustomSelectCollectionView` | `-` | `sliderChanged:` |  | ✅ | ❌ | `0x1577e4` |
 | `RBCustomSelectCollectionView` | `-` | `reloadData` |  | ✅ | ❌ | `0x157bec` |
 | `RBCustomSelectCollectionView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0x15901c` |
-| `RBCustomSelectCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x159128` |
+| `RBCustomSelectCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ✅ | `0x159128` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x1591b4` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0x159240` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ✅ | `0x1592a8` |
