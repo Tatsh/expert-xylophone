@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4808 verified
+Total: 6343 — 6306 reconstructed, 4810 verified
 (75.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -230,7 +230,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ❌ | `0x150a4` |
 | `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ❌ | `0x1519c` |
 | `BFCodec` | `-` | `init` |  | ✅ | ❌ | `0x1529c` |
-| `BFCodec` | `-` | `cipherInit:keyLength:` |  | ✅ | ❌ | `0x1534c` |
+| `BFCodec` | `-` | `cipherInit:keyLength:` |  | ✅ | ✅ | `0x1534c` |
 | `BFCodec` | `-` | `cipherInit:` |  | ✅ | ❌ | `0x153c0` |
 | `BFCodec` | `-` | `encipher:` |  | ✅ | ❌ | `0x15450` |
 | `BFCodec` | `-` | `decipher:` |  | ✅ | ❌ | `0x156f4` |
@@ -1969,7 +1969,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x96664` |
 | `RBCustomView` | `-` | `dealloc` |  | ❌ | ✅ | `0x966f0` |
 | `RBCustomView` | `-` | `setupView` |  | ✅ | ❌ | `0x96724` |
-| `RBCustomView` | `-` | `showAnimation` |  | ✅ | ❌ | `0x987b0` |
+| `RBCustomView` | `-` | `showAnimation` |  | ✅ | ✅ | `0x987b0` |
 | `RBCustomView` | `-` | `toUnlock:` |  | ✅ | ❌ | `0x98834` |
 | `RBCustomView` | `-` | `toCustomize:` |  | ✅ | ❌ | `0x98ec4` |
 | `RBCustomView` | `-` | `toRewardList:` |  | ✅ | ❌ | `0x99494` |

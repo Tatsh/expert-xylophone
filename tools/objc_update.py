@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x987b0: 'RBCustomView -showAnimation: chains to the superclass showAnimation through '
+             'objc_msgSendSuper2, then saves RBUserSettingData; it launches no tutorial step',
+    0x1534c: 'BFCodec -cipherInit:keyLength:: clears the context, copies the eight-byte IV from '
+             '0x2ec7e0, then tail-calls the key schedule. The IV reads e3 66 31 da 2c 85 a0 64 '
+             'from the binary, matching kBlowfishInitialIV byte for byte',
     0x96664: 'RBCustomView -initWithFrame:: the mov w2 of 1 matches '
              'RBMusicMenuPopupViewTypeCustomize, then setupView',
     0x99eb0: 'RBHowToView -initWithFrame:: the mov x2 of 0 is RBMusicMenuPopupViewTypeHowTo, the '
