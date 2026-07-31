@@ -3807,6 +3807,13 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0xD2FD8: 'RBMusicView -ShowSelectDifficulty: three arms, and the first is a cbz. '
+             'cbz w8,0xd313c sends the single game type to the block that unhides the score, rank '
+             'and full-combo views; cmp w8,#1 with b.ne sends anything that is neither single nor '
+             'double straight to the tail; and the fall-through, the double type, hides all four. '
+             'Both populated arms then rejoin at switchWithDifficulty: and SetGhostView:, which '
+             'run unconditionally. Screening for cmp and b. alone misses the cbz and makes the '
+             'show block look unreachable, which is how it first read here',
     0xD4708: 'RBMusicView -playGame: the routine the reported crash follows, and it matches. The '
              'settings are written in the source order, the play colour is randomised only when '
              'cmp w21,#2 says it is above one, and the sheet layer takes three arms: gameType 1 '
