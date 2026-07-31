@@ -570,3 +570,30 @@ Two limits, so this is not read as more than it is. The sweep proves each method
 idiom either has the branch or provably does not need it; it says nothing about whether the
 constants inside each arm are right, which still needs the frame-fit check. And it covers `IsPad()`
 only — the `[RBUserSettingData thema]` split has 117 read sites and has not been swept.
+
+## The theme-branch class, swept
+
+The companion enumeration to the idiom sweep above, and run the same way: every read of the `thema`
+selector reference at `0x3bfa48` is an xref, **118 of them across 103 methods** (with `limit` passed
+— see the truncation warning above).
+
+Eleven methods read the theme with no theme reference in the owning body, and all eleven are false
+positives of the modes already catalogued:
+
+- **Nine** are the `-[RBUserSettingData reset*:]` family — `resetBgmType:`, `resetShotType:`,
+  `resetExplosionType:`, `resetFrameType:`, `resetBackgroundType:`, `resetNoteType:`,
+  `resetGaugeStyle:`, `resetShotVolume:`, `resetBackgroundBrightness:`. Each mirrors its option into
+  `customizeItems[thema]`, and the reconstruction does exactly that through the file-static helper
+  `RBWriteCustomizeValue`, which the binary inlines into all nine. Checked against `0x1f6ba0`:
+  `setBgmType:`, then `customizeItems`, then `thema`, then `objectAtIndex:`, then
+  `setValue:forKey:kBGMTypeKey`.
+- `-[RBTermAgreeView showTermView]` (`0x1c6c50`) branches at `0x1c6cac` into two arms that both send
+  `thema` and nothing else — identical arms, so no branch is owed.
+- `-[RBCustomSelectCollectionView setupView]` (`0x155670`) reads the theme twice and handles both:
+  `thema == 2` via `cset` at `0x155a38` for the gauge Y pair, and a three-way switch at `0x156394`
+  for the page-indicator tints, whose theme-1 arm loads the `0.5` and `0.667` the file already
+  declares. This was an extraction artefact on my side, not a gap.
+
+Both sweeps are therefore clean, and together they cover the two discriminators behind every
+layout defect fixed in this tree so far. What neither can show is whether the constants _inside_ a
+correctly-branched arm are right; that is the frame-fit check, and it is still the open one.
