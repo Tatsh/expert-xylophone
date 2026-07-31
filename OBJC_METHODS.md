@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6253 reconstructed, 4535 verified
+Total: 6343 — 6257 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4811,10 +4811,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SSZipArchive` | `+` | `createZipFileAtPath:withContentsOfDirectory:` |  | ✅ | ❌ | `0x1c3358` |
 | `SSZipArchive` | `-` | `initWithPath:` |  | ✅ | ❌ | `0x1c352c` |
 | `SSZipArchive` | `-` | `open` |  | ✅ | ❌ | `0x1c35b8` |
-| `SSZipArchive` | `-` | `zipInfo:setDate:` |  | ❌ | ❌ | `0x1c3608` |
-| `SSZipArchive` | `-` | `writeFile:` |  | ❌ | ❌ | `0x1c3710` |
-| `SSZipArchive` | `-` | `writeFileAtPath:withFileName:` |  | ❌ | ❌ | `0x1c3720` |
-| `SSZipArchive` | `-` | `writeData:filename:` |  | ❌ | ❌ | `0x1c39e4` |
+| `SSZipArchive` | `-` | `zipInfo:setDate:` |  | ✅ | ❌ | `0x1c3608` |
+| `SSZipArchive` | `-` | `writeFile:` |  | ✅ | ❌ | `0x1c3710` |
+| `SSZipArchive` | `-` | `writeFileAtPath:withFileName:` |  | ✅ | ❌ | `0x1c3720` |
+| `SSZipArchive` | `-` | `writeData:filename:` |  | ✅ | ❌ | `0x1c39e4` |
 | `SSZipArchive` | `-` | `close` |  | ✅ | ❌ | `0x1c3b58` |
 | `SSZipArchive` | `+` | `_dateWithMSDOSFormat:` |  | ✅ | ❌ | `0x1c3b80` |
 | `RBTermAgreeView` | `-` | `initWithFrame:termType:` |  | ✅ | ❌ | `0x1c3d58` |

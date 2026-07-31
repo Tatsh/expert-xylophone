@@ -958,6 +958,45 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
     return error == ZIP_OK;
 }
 
+#pragma mark - The binary's own (SSZipArchive 1.x) instance API
+
+// The shipped binary embeds SSZipArchive 1.x, whose writing API carries no password or AES
+// argument and whose date helper is an instance method. This vendored copy is the 2.x upstream,
+// where those selectors were renamed and `zip_fileinfo` was re-laid out. The four selectors the
+// binary's runtime metadata defines are reconstructed here over the 2.x API, which is behaviourally
+// the same at a nil password.
+
+/**
+ * Reconstructed from -[SSZipArchive zipInfo:setDate:] at 0x1c3608. The binary fills the six
+ * `tm_zip` fields of 1.x's `zip_fileinfo`, which lead the struct, from the current calendar's
+ * components (unit mask 0xfc: year through second), storing month less one and the year as-is —
+ * 1.x's minizip took the full year there. 2.x leads the struct with the DOS date instead and
+ * derives it from a `struct tm`, so the translation is the class helper.
+ */
+- (void)zipInfo:(zip_fileinfo *)zipInfo setDate:(NSDate *)date
+{
+    [SSZipArchive zipInfo:zipInfo setDate:date];
+}
+
+/** Reconstructed from -[SSZipArchive writeFile:] at 0x1c3710: it tail-calls
+ * -writeFileAtPath:withFileName: with a nil file name. */
+- (BOOL)writeFile:(NSString *)path
+{
+    return [self writeFileAtPath:path withFileName:nil];
+}
+
+/** Reconstructed from -[SSZipArchive writeFileAtPath:withFileName:] at 0x1c3720. */
+- (BOOL)writeFileAtPath:(NSString *)path withFileName:(nullable NSString *)fileName
+{
+    return [self writeFileAtPath:path withFileName:fileName withPassword:nil];
+}
+
+/** Reconstructed from -[SSZipArchive writeData:filename:] at 0x1c39e4. */
+- (BOOL)writeData:(NSData *)data filename:(nullable NSString *)filename
+{
+    return [self writeData:data filename:filename withPassword:nil];
+}
+
 - (BOOL)close
 {
     NSAssert((_zip != NULL), @"[SSZipArchive] Attempting to close an archive which was never opened");
