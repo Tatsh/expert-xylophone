@@ -12,6 +12,7 @@
 #include "engineglobals.h"
 #include "frame_texture_table.h"
 #include "gamesystem.h"
+#include "neDebugLog.h"
 #include "neRender.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
@@ -444,6 +445,20 @@ void AltFrameLayer::BuildSprites() {
         const int nSlot = m_aSpriteCounts[descriptor.nBatch];
         pBatch->SetSpritePositionXY(
             nSlot, pLayout->flX, pLayout->flY + static_cast<float>(nHalfHeight));
+        // The play field draws too low with no frame border; record the terms that place it.
+        if (nSlot == 0) {
+            neDebugLog("altframe batch=%d halfH=%d fullHeightY=%d split=%d isPad=%d "
+                       "pos=(%.1f,%.1f) size=(%.1f,%.1f)",
+                       descriptor.nBatch,
+                       nHalfHeight,
+                       g_nPlayfieldFullHeightY,
+                       g_nPlayfieldCentreSplit,
+                       IsPad() ? 1 : 0,
+                       static_cast<double>(pLayout->flX),
+                       static_cast<double>(pLayout->flY + static_cast<float>(nHalfHeight)),
+                       static_cast<double>(descriptor.flSizeX),
+                       static_cast<double>(descriptor.flSizeY));
+        }
         pBatch->SetSpriteAnchor(nSlot, S_VECTOR2{descriptor.flAnchorX, descriptor.flAnchorY});
         pBatch->SetSpriteSize(nSlot, S_VECTOR2{descriptor.flSizeX, descriptor.flSizeY});
         pBatch->SetSpriteUvOrigin(nSlot, S_VECTOR2{uv.flOriginU, uv.flOriginV});

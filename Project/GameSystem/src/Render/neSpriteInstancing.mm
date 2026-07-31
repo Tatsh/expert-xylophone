@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "matrixmath.h"
+#include "neDebugLog.h"
 #include "neGLES.h"
 #include "neRenderer.h"
 #include "neSpriteInstancing3D.h"
@@ -227,6 +228,14 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
         pVertexTemplate,
         static_cast<unsigned int>(nCapacity * kSpriteVertexCount * sizeof(InitialSpriteVertex)),
         0);
+    // A zero array VBO is what leaves the weight and matrix-index client arrays enabled with NULL
+    // pointers, which is the address-zero draw crash, so record what this batch actually got.
+    neDebugLog("batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d",
+               nCapacity,
+               m_dwIndexVbo,
+               m_dwArrayVbo,
+               m_pVertexScratch,
+               pRenderer->HasMatrixPalette() ? 1 : 0);
     delete[] pVertexTemplate;
 
     const int *pTexParams = kScreenTexParams;

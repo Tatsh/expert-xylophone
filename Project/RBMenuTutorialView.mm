@@ -917,12 +917,41 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
                                                 messageClip.size.height / atlasSize.height);
     [CATransaction commit];
 
+    // The box and the mascot are missing on some steps. Which reveal arm runs is chosen here, and
+    // only two of the three animate the window layer, so record the step, the arm, and the three
+    // layers' geometry and opacity together.
+    const CGRect windowRect = self.messageWindowLayer.frame;
+    const CGRect pastelRect = self.pastelLayer.frame;
+    neDebugLog("tutorial step=%d isPad=%d targetZero=%d window=(%.1f,%.1f,%.1f,%.1f) op=%.2f "
+               "pastel=(%.1f,%.1f,%.1f,%.1f) op=%.2f msg=(%.1f,%.1f,%.1f,%.1f) clip=%u",
+               static_cast<int>(self.tutorialStatus),
+               IsPad() ? 1 : 0,
+               CGRectEqualToRect(targetFrame, CGRectZero) ? 1 : 0,
+               windowRect.origin.x,
+               windowRect.origin.y,
+               windowRect.size.width,
+               windowRect.size.height,
+               static_cast<double>(self.messageWindowLayer.opacity),
+               pastelRect.origin.x,
+               pastelRect.origin.y,
+               pastelRect.size.width,
+               pastelRect.size.height,
+               static_cast<double>(self.pastelLayer.opacity),
+               self.messageLayer.frame.origin.x,
+               self.messageLayer.frame.origin.y,
+               self.messageLayer.frame.size.width,
+               self.messageLayer.frame.size.height,
+               [self getTextureType]);
+
     if (self.tutorialStatus == kTutorialStepMusicSelectA ||
         self.tutorialStatus == kTutorialStepNoTarget) {
+        neDebugLog("tutorial arm=bubbleOnly");
         [self revealBubbleOnly];
     } else if (CGRectEqualToRect(targetFrame, CGRectZero)) {
+        neDebugLog("tutorial arm=bubbleAndMessage (window not animated)");
         [self revealBubbleAndMessage];
     } else {
+        neDebugLog("tutorial arm=bubbleMessageAndMove");
         [self revealBubbleMessageAndMove:targetFrame];
     }
 }
