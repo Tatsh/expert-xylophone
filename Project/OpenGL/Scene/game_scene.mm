@@ -1760,7 +1760,7 @@ void GameScene::OnFrame(int nElapsedMs) {
 
     RenderAllPlayFieldLayers(nAppliedDelta);
     // The retrigger timer takes the raw delta, not the pause-gated one.
-    ShotSoundManager::GetInstance()->UpdateRetriggerTimer(static_cast<float>(nDeltaFrames));
+    ShotSoundManager::GetInstance()->UpdateRetriggerTimer(static_cast<float>(nElapsedMs));
 }
 
 /** @ghidraAddress 0x14ba48 */
