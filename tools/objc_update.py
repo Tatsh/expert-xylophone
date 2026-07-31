@@ -1334,6 +1334,14 @@ VERIFIED = {
               '_receivedData, with the connection argument unread',
     0x20be1c: 'RewardCore -clearAdStatus: clears and releases the two slots at +0x5d0+0x30 and '
               '+0x5d0+0x38, which are the banner info and expiry globals',
+    0x246028: 'RecommendWebView -hiddenIndicator: a cbz on _indicator guards only stopAnimating; '
+              'the cancelPreviousPerformRequestsWithTarget: that follows is a tail branch outside '
+              'the guard, so a nil indicator still cancels pending performs',
+    0x24504c: 'RecommendAdCache +clearAdDisplayCount: two removeObjectForKey: sends, total before '
+              'daily, against "adDisplayCountTotal" at 0x3712e0 and "adDisplayCountDaily" at '
+              '0x371300. standardUserDefaults is fetched once into x19 and reused for both, unlike '
+              '+clearDAU at 0x20fa84 which fetches it separately per send; the reconstruction '
+              'mirrors each of the two shapes rather than normalising them',
     0x2453c8: 'RecommendWebView -init: super init, cbz, setInitParam, the same shape as the '
               'RecommendAdWebView trio at 0x21691c',
     0x24542c: 'RecommendWebView -initWithFrame:: the same through initWithFrame:',
