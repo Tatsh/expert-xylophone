@@ -229,6 +229,7 @@ interp
 inttypes
 iphoneos
 ishot
+ispad
 ithm
 ivar
 ivars
@@ -257,6 +258,7 @@ libcpp
 libera
 libsonnet
 limepoint
+lldb
 longrate
 lpcm
 lproj

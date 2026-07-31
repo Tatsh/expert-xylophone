@@ -1,0 +1,53 @@
+# LLDB helpers for reading ground truth out of the ORIGINAL rb458 while it runs.
+#
+# The reconstruction has three faults whose cause is a runtime value, not a code path, so reading
+# the shipped binary's own values settles them in a way that reading its disassembly cannot.
+#
+#   (lldb) command source /path/to/rb458.lldb
+#
+# Every address below is relative to the Mach-O image base, exactly as the @ghidraAddress tags in
+# this tree record them, and is rebased through $base so ASLR does not matter.
+
+# --- Rebase ------------------------------------------------------------------------------------
+# The linker-generated header symbol is the executable's real load address. If it has been stripped,
+# fall back to `image list -o -f` and set $base to the printed load address by hand.
+expr -- uint64_t $base = (uint64_t)&_mh_execute_header
+
+# --- Convenience -------------------------------------------------------------------------------
+# GetGameSystem() at 0x12edb4 vends the singleton every layout term hangs off.
+command alias rb-gs expr -- void *$gs = ((void *(*)())($base + 0x12edb4))()
+# IsPad() at 0x1a1200 selects the frame layer, the clip-rect halving, and most geometry legs.
+command alias rb-ispad expr -- int $isPad = ((int (*)())($base + 0x1a1200))()
+
+# --- The geometry the play field is built from -------------------------------------------------
+# Run rb-gs first. Viewport is what UpdateProjection stored; the sheet terms are what
+# ConfigureSheetLayerForScreen (0x8ef60) computed; the playfield globals are what
+# ComputePlayfieldLayoutY (0x55488) derived and what AltFrameLayer offsets every sprite by.
+command alias rb-geom expr -- (void)printf("viewport=%.1f x %.1f  sheetFar=(%.1f,%.1f)  sheetPos=(%.1f,%.1f)  scale=%.3f  fovDeg=%.1f\n  fullHeightY=%d  centreSplit=%d  fieldHeight=%d\n", *(float *)((char *)$gs+0x2c), *(float *)((char *)$gs+0x30), *(float *)((char *)$gs+0x7c), *(float *)((char *)$gs+0x80), *(float *)((char *)$gs+0x58), *(float *)((char *)$gs+0x5c), *(float *)((char *)$gs+0x134), *(float *)((char *)$gs+0xa0), *(int *)($base+0x3d0008), *(int *)($base+0x3ce934), *(int *)($base+0x3ce930))
+
+# --- The sprite batch's GL buffer names --------------------------------------------------------
+# CreateWorldSpriteBatch is 0x31834 and CreateSpriteInstancer 0x30804. Break, continue to the
+# return, then rb-batch on the returned object. A zero array VBO is the address-zero draw crash.
+breakpoint set -a $base+0x31834 -N world_batch --auto-continue false
+breakpoint set -a $base+0x30804 -N screen_batch --auto-continue false
+breakpoint disable world_batch
+breakpoint disable screen_batch
+command alias rb-batch expr -- (void)printf("batch=%p cap=%u count=%d scratch=%p indexVbo=%u arrayVbo=%u batchFlag=%d\n", (void *)$x0, *(unsigned int *)((char *)$x0+0x120), *(int *)((char *)$x0+0x124), *(void **)((char *)$x0+0x128), *(unsigned int *)((char *)$x0+0x130), *(unsigned int *)((char *)$x0+0x134), (int)*(unsigned char *)((char *)$x0+0x154))
+
+# --- Which tutorial reveal arm a step takes ----------------------------------------------------
+# startAnimation: is 0x13de2c and branches three ways. Only two arms animate the window layer, so
+# a step with no visible box should say which arm it took.
+breakpoint set -a $base+0x13e8ac -N tut_arm_a --auto-continue true
+breakpoint set -a $base+0x13ec1c -N tut_arm_b --auto-continue true
+breakpoint set -a $base+0x13f2d4 -N tut_arm_c --auto-continue true
+breakpoint command add -o "script print('tutorial arm A: bubble + window + message')" tut_arm_a
+breakpoint command add -o "script print('tutorial arm B: pastel + message only, window NOT animated')" tut_arm_b
+breakpoint command add -o "script print('tutorial arm C: pastel + window + message')" tut_arm_c
+breakpoint disable tut_arm_a
+breakpoint disable tut_arm_b
+breakpoint disable tut_arm_c
+
+# --- Tables seeded at load ---------------------------------------------------------------------
+# g_pTutorialClipRect (0x3de058) is 34 CGRects of four doubles; entry 28 is the wide message
+# window, entry 9 the wide message strip. g_aAltFrameMarker4 is 0x3dbec8.
+command alias rb-clip expr -- (void)printf("clip[9]=(%.1f,%.1f,%.1f,%.1f)  clip[28]=(%.1f,%.1f,%.1f,%.1f)  clip[29]=(%.1f,%.1f,%.1f,%.1f)\n", ((double *)($base+0x3de058))[36], ((double *)($base+0x3de058))[37], ((double *)($base+0x3de058))[38], ((double *)($base+0x3de058))[39], ((double *)($base+0x3de058))[112], ((double *)($base+0x3de058))[113], ((double *)($base+0x3de058))[114], ((double *)($base+0x3de058))[115], ((double *)($base+0x3de058))[116], ((double *)($base+0x3de058))[117], ((double *)($base+0x3de058))[118], ((double *)($base+0x3de058))[119])
