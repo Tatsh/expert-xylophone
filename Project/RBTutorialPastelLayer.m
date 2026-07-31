@@ -131,7 +131,7 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
 }
 
 - (CGPoint)getPosition:(int)index {
-    IsPad();
+    IsPad(); // Yes, the binary calls this and discards the result.
     return kPastelPositions[index];
 }
 

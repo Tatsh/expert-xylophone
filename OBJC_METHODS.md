@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4692 verified
+Total: 6343 — 6306 reconstructed, 4694 verified
 (74.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4613,7 +4613,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteDetailViewController` | `-` | `indicatorSample` | prop | ✅ | ✅ | `0x1ad1e8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0x1ad1f8` |
 | `RBTutorialPastel` | `-` | `getClipList:` |  | ✅ | ❌ | `0x1ad424` |
-| `RBTutorialPastel` | `-` | `getPosition:` |  | ✅ | ❌ | `0x1ad484` |
+| `RBTutorialPastel` | `-` | `getPosition:` |  | ✅ | ✅ | `0x1ad484` |
 | `RBTutorialPastel` | `-` | `init` |  | ✅ | ❌ | `0x1ad4b4` |
 | `RBTutorialPastel` | `-` | `setupView:` |  | ✅ | ❌ | `0x1ad588` |
 | `RBTutorialPastel` | `-` | `startWaveAnimationWithDuration:` |  | ✅ | ❌ | `0x1adfd4` |
@@ -4631,7 +4631,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialPastel` | `-` | `displayRate` | prop | ✅ | ✅ | `0x1b34e4` |
 | `RBTutorialPastel` | `-` | `setDisplayRate:` | prop | ✅ | ✅ | `0x1b34f4` |
 | `RBTutorialPastelLayer` | `-` | `getClipList:` |  | ✅ | ❌ | `0x1b356c` |
-| `RBTutorialPastelLayer` | `-` | `getPosition:` |  | ✅ | ❌ | `0x1b35cc` |
+| `RBTutorialPastelLayer` | `-` | `getPosition:` |  | ✅ | ✅ | `0x1b35cc` |
 | `RBTutorialPastelLayer` | `-` | `init` |  | ✅ | ❌ | `0x1b35fc` |
 | `RBTutorialPastelLayer` | `-` | `setupView:` |  | ✅ | ❌ | `0x1b36fc` |
 | `RBTutorialPastelLayer` | `-` | `startWaveAnimationWithDuration:` |  | ✅ | ❌ | `0x1b3cf4` |

@@ -295,6 +295,10 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x1ad484: 'RBTutorialPastel -getPosition:: calls IsPad and discards the result, then indexes '
+              'the 0x3df460 table at a 16-byte stride for the CGPoint pair in d0/d1',
+    0x1b35cc: 'RBTutorialPastelLayer -getPosition:: instruction-identical to the RBTutorialPastel '
+              'one, reading the same 0x3df460 table; its discarded IsPad is now flagged too',
     0x19bc00: 'RBPopupView -tap:: ignores the sender and sends hideAnimation',
     0x19e1dc: 'RBCustomInfoPopupView -tap:: the same shape, read separately rather than assumed',
     0x1a027c: 'RBMusicMenuPopupView -tap:: likewise, the third of the identical popup dismissals',
