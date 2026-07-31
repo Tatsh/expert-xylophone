@@ -10,6 +10,7 @@ akhuta
 allseasons
 analyzer
 analyzer's
+Ångström
 anim
 apiurl
 appl
@@ -449,6 +450,7 @@ unarchiver
 undecryptable
 undraft
 undrafted
+unfoldable
 ungated
 unichar
 unlockmusic
@@ -505,4 +507,3 @@ youwin
 yukky
 ziparchive
 zizmor
-Ångström

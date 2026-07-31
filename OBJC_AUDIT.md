@@ -597,3 +597,30 @@ positives of the modes already catalogued:
 Both sweeps are therefore clean, and together they cover the two discriminators behind every
 layout defect fixed in this tree so far. What neither can show is whether the constants _inside_ a
 correctly-branched arm are right; that is the frame-fit check, and it is still the open one.
+
+## The frame-fit class, in the part that can be automated
+
+The third sweep. Most of the frame-fit rule needs a runtime parent size and cannot be automated,
+but one part can: where every argument folds to a number, some results are wrong whatever the
+parent turns out to be. `tools/scan_frame_arithmetic.py` reports a negative width or height and a
+negative cap inset, the two shapes that have already occurred here.
+
+The first version of it was worthless and the regression test is what showed that. It folded only
+named constants, so run against the commit before the cap-inset fix it reported nothing — because
+the defect went through `capInset = wideFont ? kBackgroundCapInsetWide : kBackgroundCapInsetNarrow`,
+a ternary-assigned local. That is this codebase's dominant layout idiom, and a defect usually lives
+in **one arm only**, so folding a single arm cannot find it. Folding both arms and reporting any
+reachable negative catches it: `kBackgroundCapInsetTotal` (25) minus the wide inset (36) is −11, the
+recorded defect, and the narrow arm is fine at 0. The tree today is clean.
+
+Coverage is the number to keep in view, because a clean run means little without it. Only **139 of
+686** `CGRectMake` calls fold completely (20%), against **18 of 31** `UIEdgeInsetsMake` (58%). The
+other 80% of frames are built from a runtime `bounds` or an image size and are invisible to any
+source-level check; they need the disassembly read that the per-method audit is for. So this is a
+floor under the class, not the class swept.
+
+That makes three sweeps run and clean — idiom, theme, and the constant-folded part of frame fit —
+and it is worth being plain that all three together cannot substitute for reading the remaining
+1666 bodies. Each sweep rules out one shape of defect across the whole surface. None of them can
+tell whether a frame recovered from the pool holds the right numbers, which is what the two
+`StoreUtil` defects and every layout defect in the table above turned out to be.
