@@ -96,29 +96,30 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleAll = (UIViewAutoresizi
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    AppDelegate *appDelegate = [AppDelegate appDelegate];
-
     // Consume the pending news web-info URL and remember the last-update time as the read time,
-    // then clear both so the page is only shown once per update.
-    if (appDelegate.urlWebInfo != nil) {
-        self.requestURL = appDelegate.urlWebInfo;
+    // then clear both so the page is only shown once per update. The read side goes through the
+    // hand-written -getWebInfoURL / -getInfoLastUpdateTimeString accessors rather than the
+    // synthesised properties, and the clear goes through -setWebInfoURL:, which parses a string.
+    // The application delegate is re-fetched at every use rather than held in a local.
+    if ([[AppDelegate appDelegate] getWebInfoURL] != nil) {
+        self.requestURL = [[AppDelegate appDelegate] getWebInfoURL];
     }
-    if (appDelegate.infoLastUpdateTimeString != nil) {
+    if ([[AppDelegate appDelegate] getInfoLastUpdateTimeString] != nil) {
         [RBUserSettingData sharedInstance].infoLastReadTimeString =
-            appDelegate.infoLastUpdateTimeString;
+            [[AppDelegate appDelegate] getInfoLastUpdateTimeString];
     }
     [[RBUserSettingData sharedInstance] save];
-    appDelegate.urlWebInfo = nil;
-    appDelegate.infoLastUpdateTimeString = nil;
+    [[AppDelegate appDelegate] setWebInfoURL:nil];
+    [AppDelegate appDelegate].infoLastUpdateTimeString = nil;
 
     self.view.backgroundColor = UIColor.whiteColor;
 
-    // The loading spinner, centred on the view bounds.
+    // The loading spinner, centred on the view bounds. The binary reads the bounds once per axis.
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [indicator startAnimating];
-    CGRect bounds = self.view.bounds;
-    indicator.center = CGPointMake(bounds.size.width * kHalf, bounds.size.height * kHalf);
+    indicator.center =
+        CGPointMake(self.view.bounds.size.width * kHalf, self.view.bounds.size.height * kHalf);
     indicator.autoresizingMask = kIndicatorAutoresizingMask;
     [self.view addSubview:indicator];
 }
@@ -159,7 +160,7 @@ static const UIViewAutoresizing kAutoresizingMaskFlexibleAll = (UIViewAutoresizi
     NSURL *url = self.requestURL;
     self.requestURL = nil;
     if (url == nil) {
-        url = [AppDelegate appDelegate].urlPreWebInfo;
+        url = [[AppDelegate appDelegate] getPreWebInfoURL];
     }
     [webView loadRequest:[NSURLRequest requestWithURL:url]];
 }

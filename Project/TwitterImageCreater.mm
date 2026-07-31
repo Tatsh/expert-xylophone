@@ -54,9 +54,6 @@ static const int kDotTileVerticalOffset = 8;
 // The largest single-digit value; digit counting stops once the remaining value is no larger.
 static const int kMaxSingleDigit = 9;
 
-// The difficulty-grade letters used to build the level-badge asset names, indexed by grade.
-static const char kGradeLetters[] = {'b', 'm', 'h', 's'};
-
 // The twitter share-image asset names.
 static NSString *const kAssetBackground = @"12_twitter/tw_bg";
 static NSString *const kAssetScorePlus = @"12_twitter/tw_sc_p";
@@ -72,9 +69,87 @@ static NSString *const kAssetRivalBadge = @"12_twitter/tw_b_rival";
 static NSString *const kAssetRivalBadgeAlt = @"12_twitter/tw_r_rival";
 
 static NSString *const kAssetDigitFormat = @"12_twitter/tw_sc_%d";
-static NSString *const kAssetDifficultyFormat = @"12_twitter/tw_dif_%d";
-static NSString *const kAssetLevelFormat = @"12_twitter/tw_lev_%c_%d";
 static NSString *const kAssetRankFormat = @"12_twitter/tw_ran_%d";
+
+// The difficulty-badge asset names, indexed by grade. The binary keeps them as a static table of
+// literals and indexes it, rather than formatting a name at the point of use.
+// @ghidraAddress 0x35b4e0
+static NSString *const kAssetDifficultyNames[] = {
+    @"12_twitter/tw_dif_1",
+    @"12_twitter/tw_dif_2",
+    @"12_twitter/tw_dif_3",
+    @"12_twitter/tw_dif_4",
+};
+
+// The number of levels one difficulty grade can carry, which is the width of a row of the
+// level-badge table.
+constexpr int kLevelsPerGrade = 15;
+
+// The level-badge asset names, indexed by grade and then by the zero-based level. As with the
+// difficulty badges, the binary indexes a static table rather than formatting a name.
+// @ghidraAddress 0x35b500
+static NSString *const kAssetLevelNames[][kLevelsPerGrade] = {
+    {@"12_twitter/tw_lev_b_1",
+     @"12_twitter/tw_lev_b_2",
+     @"12_twitter/tw_lev_b_3",
+     @"12_twitter/tw_lev_b_4",
+     @"12_twitter/tw_lev_b_5",
+     @"12_twitter/tw_lev_b_6",
+     @"12_twitter/tw_lev_b_7",
+     @"12_twitter/tw_lev_b_8",
+     @"12_twitter/tw_lev_b_9",
+     @"12_twitter/tw_lev_b_10",
+     @"12_twitter/tw_lev_b_11",
+     @"12_twitter/tw_lev_b_12",
+     @"12_twitter/tw_lev_b_13",
+     @"12_twitter/tw_lev_b_14",
+     @"12_twitter/tw_lev_b_15"},
+    {@"12_twitter/tw_lev_m_1",
+     @"12_twitter/tw_lev_m_2",
+     @"12_twitter/tw_lev_m_3",
+     @"12_twitter/tw_lev_m_4",
+     @"12_twitter/tw_lev_m_5",
+     @"12_twitter/tw_lev_m_6",
+     @"12_twitter/tw_lev_m_7",
+     @"12_twitter/tw_lev_m_8",
+     @"12_twitter/tw_lev_m_9",
+     @"12_twitter/tw_lev_m_10",
+     @"12_twitter/tw_lev_m_11",
+     @"12_twitter/tw_lev_m_12",
+     @"12_twitter/tw_lev_m_13",
+     @"12_twitter/tw_lev_m_14",
+     @"12_twitter/tw_lev_m_15"},
+    {@"12_twitter/tw_lev_h_1",
+     @"12_twitter/tw_lev_h_2",
+     @"12_twitter/tw_lev_h_3",
+     @"12_twitter/tw_lev_h_4",
+     @"12_twitter/tw_lev_h_5",
+     @"12_twitter/tw_lev_h_6",
+     @"12_twitter/tw_lev_h_7",
+     @"12_twitter/tw_lev_h_8",
+     @"12_twitter/tw_lev_h_9",
+     @"12_twitter/tw_lev_h_10",
+     @"12_twitter/tw_lev_h_11",
+     @"12_twitter/tw_lev_h_12",
+     @"12_twitter/tw_lev_h_13",
+     @"12_twitter/tw_lev_h_14",
+     @"12_twitter/tw_lev_h_15"},
+    {@"12_twitter/tw_lev_s_1",
+     @"12_twitter/tw_lev_s_2",
+     @"12_twitter/tw_lev_s_3",
+     @"12_twitter/tw_lev_s_4",
+     @"12_twitter/tw_lev_s_5",
+     @"12_twitter/tw_lev_s_6",
+     @"12_twitter/tw_lev_s_7",
+     @"12_twitter/tw_lev_s_8",
+     @"12_twitter/tw_lev_s_9",
+     @"12_twitter/tw_lev_s_10",
+     @"12_twitter/tw_lev_s_11",
+     @"12_twitter/tw_lev_s_12",
+     @"12_twitter/tw_lev_s_13",
+     @"12_twitter/tw_lev_s_14",
+     @"12_twitter/tw_lev_s_15"},
+};
 
 // One score column's layout coordinates. The binary keeps these as a table of raw doubles indexed
 // by the column, at a stride of 0x1b0 bytes per column.
@@ -499,13 +574,12 @@ static const CGPoint g_TwitterFullComboPos = {25.0, 135.0};
                   Y:static_cast<int>(g_TwitterArtistPos.y)];
 
     if ([RBUserSettingData sharedInstance].thema != kThemaAlternateLayout) {
-        [self drawImageFileName:[NSString stringWithFormat:kAssetDifficultyFormat, self.grade + 1]
+        [self drawImageFileName:kAssetDifficultyNames[self.grade]
                               X:static_cast<int>(g_TwitterDifficultyPos.x)
                               Y:static_cast<int>(g_TwitterDifficultyPos.y)];
     }
 
-    NSString *levelName =
-        [NSString stringWithFormat:kAssetLevelFormat, kGradeLetters[self.grade], self.level + 1];
+    NSString *levelName = kAssetLevelNames[self.grade][self.level];
     if ([RBUserSettingData sharedInstance].thema == kThemaAlternateLayout) {
         [self drawImageFileName:levelName
                               X:static_cast<int>(g_TwitterLevelPosAlt.x)

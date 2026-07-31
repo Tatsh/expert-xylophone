@@ -269,6 +269,23 @@ VERIFIED = {
              'from v0 into v1 rather than materialised twice',
     0x67c34: 'MusicDataFromDoc -artistNameImageBlack2xData: scale 2.0, luminance 0.0',
     0x67c48: 'MusicDataFromDoc -artistNameImageBlackData: scale 1.0, luminance 0.0',
+    # Read by a subagent and then re-checked here against the bytes, point by point, because a
+    # sibling batch from the same run had invented a weak-reference pattern the binary does not use.
+    0x1c813c: 'RBTermAgreeView -sendAgree: the boxing is numberWithInteger:, not the numberWithInt: '
+              'a boxed int literal emits, and the proceed argument is the global block at 0x35f500 '
+              'whose invoke is 0x1c853c, not nil',
+    0xe661c: 'RBSearchView -setupView: the current-position button takes 606.0 (0x301630) and, on '
+             'the default theme, 193.0 (0x301638); its highlight image binds to state 4, selected, '
+             'from the mov w3 at 0xe6790, and its mask is 0x21, left plus bottom margin, from the '
+             'mov w2 at 0xe67c8',
+    0x19335c: 'RBNotificationPageView -setupView: reaches the delegate through the hand-written '
+              '-getWebInfoURL and -getInfoLastUpdateTimeString accessors, clears through '
+              '-setWebInfoURL:, and re-sends +appDelegate at every use rather than holding it',
+    0x191ebc: 'RBNotificationPagePhoneViewController -viewDidLoad: the same accessor and re-fetch '
+              'shape as 0x19335c',
+    0x888b0: 'TwitterImageCreater -createImage: the badge names are indexed static tables, the four '
+             'difficulty names at 0x35b4e0 and the level names at 0x35b500 in rows of fifteen, so '
+             'index 15 is the second grade\'s first level, not names formatted at the point of use',
     0x14efc: 'UnZipArchive -getEntryNum: the cbz on m_ZipFile returns 0 when no archive is open, '
              'otherwise the first field of m_ZipFileGlobalInfo, which is number_entry',
     0x1605c: 'GraphCircleView -setData:maxValue:: forwards to the three-argument form with '

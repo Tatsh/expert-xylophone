@@ -528,14 +528,20 @@ constexpr CGFloat kNarrowTextViewBottomInset = 6.0;
     NSDictionary *params = @{
         kParamUserID : [AppDelegate getServerData][0],
         kParamTarget : GetRegionCode(),
-        kParamTermsType : @(self.type),
+        // Spelled out rather than boxed: the binary sends numberWithInteger:, which no boxed
+        // literal of an int-typed expression produces.
+        kParamTermsType : [NSNumber numberWithInteger:self.type],
         kParamTermsVersion : kTermsVersion
     };
     NSData *body = [Downloader dictionaryToJsonData:params];
     self.downloader = [[Downloader alloc] initWithURL:[NetworkUtil termAgree]
                                                  post:body
                                           contentType:kJSONContentType];
-    [weakSelf.downloader startDownloadingWithProceed:nil
+    [weakSelf.downloader
+        startDownloadingWithProceed:^(Downloader *downloader) {
+          /** @ghidraAddress 0x1c853c */
+          // Global no-op proceed block.
+        }
         success:^(id response) {
           /** @ghidraAddress 0x1c8540 */
           id json = [response getDataInJSON];

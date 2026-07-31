@@ -22,7 +22,9 @@
 static const NSInteger kMusicMenuPopupViewTypeInformation = 7;
 
 // The web view is inset below the title bar by one title-bar height per satisfied condition: once
-// for any non-Classic theme, and once again for the iPad (wide) layout.
+// for any non-Classic theme, and once again for the iPad (wide) layout. The binary materialises the
+// pad arm as a two-entry table at 0x302d40 holding 64.0 and 32.0, and the phone arm as a select
+// between the 32.0 at 0x2ee9b0 and zero, which is the same four results.
 static const CGFloat kWebViewTitleBarInset = 32.0;
 
 // The centre is the midpoint of the inset content region.
@@ -66,20 +68,21 @@ static NSString *const kDisableTouchCalloutScript =
 - (void)setupView {
     [super setupView];
 
-    AppDelegate *appDelegate = [AppDelegate appDelegate];
-
     // Consume the pending news web-info URL and remember the last-update time as the read time,
-    // then clear both so the page is only shown once per update.
-    if (appDelegate.urlWebInfo != nil) {
-        self.requestURL = appDelegate.urlWebInfo;
+    // then clear both so the page is only shown once per update. The read side goes through the
+    // hand-written -getWebInfoURL / -getInfoLastUpdateTimeString accessors rather than the
+    // synthesised properties, and the clear goes through -setWebInfoURL:, which parses a string.
+    // The application delegate is re-fetched at every use rather than held in a local.
+    if ([[AppDelegate appDelegate] getWebInfoURL] != nil) {
+        self.requestURL = [[AppDelegate appDelegate] getWebInfoURL];
     }
-    if (appDelegate.infoLastUpdateTimeString != nil) {
+    if ([[AppDelegate appDelegate] getInfoLastUpdateTimeString] != nil) {
         [RBUserSettingData sharedInstance].infoLastReadTimeString =
-            appDelegate.infoLastUpdateTimeString;
+            [[AppDelegate appDelegate] getInfoLastUpdateTimeString];
     }
     [[RBUserSettingData sharedInstance] save];
-    appDelegate.urlWebInfo = nil;
-    appDelegate.infoLastUpdateTimeString = nil;
+    [[AppDelegate appDelegate] setWebInfoURL:nil];
+    [AppDelegate appDelegate].infoLastUpdateTimeString = nil;
 
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     BOOL isPad = IsPad();
@@ -99,7 +102,7 @@ static NSString *const kDisableTouchCalloutScript =
     NSURL *url = self.requestURL;
     self.requestURL = nil;
     if (url == nil) {
-        url = appDelegate.urlPreWebInfo;
+        url = [[AppDelegate appDelegate] getPreWebInfoURL];
     }
     [webView loadRequest:[NSURLRequest requestWithURL:url]];
     [self.contentView addSubview:webView];

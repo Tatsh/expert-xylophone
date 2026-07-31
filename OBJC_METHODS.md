@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4591 verified
-(72.4%).
+Total: 6343 — 6306 reconstructed, 4596 verified
+(72.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1798,7 +1798,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `drawNumber:Position:Keta:Dot:` |  | ✅ | ❌ | `0x87fa4` |
 | `TwitterImageCreater` | `-` | `getDigitNum:` |  | ✅ | ❌ | `0x881fc` |
 | `TwitterImageCreater` | `-` | `drawScore:Pos:Dot:` |  | ✅ | ❌ | `0x88244` |
-| `TwitterImageCreater` | `-` | `createImage` |  | ✅ | ❌ | `0x888b0` |
+| `TwitterImageCreater` | `-` | `createImage` |  | ✅ | ✅ | `0x888b0` |
 | `TwitterImageCreater` | `-` | `titleImage` | prop | ✅ | ✅ | `0x88d88` |
 | `TwitterImageCreater` | `-` | `setTitleImage:` | prop | ✅ | ✅ | `0x88d98` |
 | `TwitterImageCreater` | `-` | `artistImage` | prop | ✅ | ✅ | `0x88dd0` |
@@ -2810,7 +2810,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapViewController` | `-` | `setCurrentLocation:` | prop | ✅ | ✅ | `0xe64c0` |
 | `RBSearchView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xe650c` |
 | `RBSearchView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xe6598` |
-| `RBSearchView` | `-` | `setupView` |  | ✅ | ❌ | `0xe661c` |
+| `RBSearchView` | `-` | `setupView` |  | ✅ | ✅ | `0xe661c` |
 | `RBSearchView` | `-` | `selectCurrentPosition:` |  | ✅ | ❌ | `0xe6e74` |
 | `RBSearchView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xe6ed0` |
 | `RBSearchView` | `-` | `didChangeUserTracking:` |  | ✅ | ❌ | `0xe6f94` |
@@ -4211,7 +4211,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockCollectionCell` | `-` | `setImageDownloader:` | prop | ✅ | ✅ | `0x191b38` |
 | `RBNotificationPagePhoneViewController` | `-` | `init` |  | ✅ | ❌ | `0x191c3c` |
 | `RBNotificationPagePhoneViewController` | `-` | `dealloc` |  | ❌ | ✅ | `0x191e88` |
-| `RBNotificationPagePhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x191ebc` |
+| `RBNotificationPagePhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x191ebc` |
 | `RBNotificationPagePhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x192308` |
 | `RBNotificationPagePhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x192648` |
 | `RBNotificationPagePhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x192928` |
@@ -4227,7 +4227,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPagePhoneViewController` | `-` | `requestURL` | prop | ✅ | ✅ | `0x19325c` |
 | `RBNotificationPagePhoneViewController` | `-` | `setRequestURL:` | prop | ✅ | ✅ | `0x19326c` |
 | `RBNotificationPageView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1932b8` |
-| `RBNotificationPageView` | `-` | `setupView` |  | ✅ | ❌ | `0x19335c` |
+| `RBNotificationPageView` | `-` | `setupView` |  | ✅ | ✅ | `0x19335c` |
 | `RBNotificationPageView` | `-` | `moveStore:` |  | ✅ | ❌ | `0x193918` |
 | `RBNotificationPageView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x193a68` |
 | `RBNotificationPageView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x193abc` |
@@ -4828,7 +4828,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermAgreeView` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x1c77f0` |
 | `RBTermAgreeView` | `-` | `endLoadAnimation` |  | ✅ | ❌ | `0x1c78a4` |
 | `RBTermAgreeView` | `-` | `loadDetail` |  | ✅ | ❌ | `0x1c7958` |
-| `RBTermAgreeView` | `-` | `sendAgree` |  | ✅ | ❌ | `0x1c813c` |
+| `RBTermAgreeView` | `-` | `sendAgree` |  | ✅ | ✅ | `0x1c813c` |
 | `RBTermAgreeView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x1c8c88` |
 | `RBTermAgreeView` | `-` | `alertView:clickedButtonAtIndex:` |  | ✅ | ❌ | `0x1c9320` |
 | `RBTermAgreeView` | `-` | `alertView:didDismissWithButtonIndex:` |  | ✅ | ✅ | `0x1c946c` |
