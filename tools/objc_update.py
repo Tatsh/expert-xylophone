@@ -994,6 +994,12 @@ VERIFIED = {
             'identifier is rejected as well as zero. Both arms of the short-circuit match the '
             'reconstruction, since the cbz jumps past the intValue send exactly as || does. On '
             'success it stores through setPackIDForOpenStore: and returns YES',
+    0x5744: 'RBUrlSchemeStoreController -campaignRbAction:: instruction-identical to '
+            '-packRbAction: apart from the setter, which is setCampaignIDForOpenStore:',
+    0x5820: 'RBUrlSchemeStoreController -seqRbAction:: the same shape again, but the setter is '
+            'setExtendNotePIDForOpenStore:, which does not follow the action name. Reading this '
+            'one from its siblings rather than on its own would have produced a plausible '
+            'setSeq-something and been wrong',
     0x14e08: 'UnZipArchive -openFile:: cbz on the path returns NO, then an existing m_ZipFile is '
              'closed and zeroed before unzOpen replaces it, a second cbz returns NO on failure, '
              'and unzGetGlobalInfo is checked with cbz w0 against UNZ_OK, which is zero, closing '
