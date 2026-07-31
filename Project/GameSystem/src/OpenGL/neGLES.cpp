@@ -763,7 +763,9 @@ void neGLESRenderer::QueryCaps() {
     // When the palette extension is present, default the count then read the real device limit.
     if (m_bHasMatrixPalette) {
         m_nMaxPaletteMatrices = kDefaultMaxPaletteMatrices;
-        glGetIntegerv(GL_MAX_VERTEX_UNITS_OES, &m_nMaxPaletteMatrices);
+        // The binary queries 0x8842, the palette size, not GL_MAX_VERTEX_UNITS_OES (0x86a4), which
+        // is the per-vertex blend-weight count and is a much smaller number on the same device.
+        glGetIntegerv(GL_MAX_PALETTE_MATRICES_OES, &m_nMaxPaletteMatrices);
     }
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &m_nMaxTextureSize);
     SetMatrixMode(kMatrixModeProjection, kDefaultProjection);
