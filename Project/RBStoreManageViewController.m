@@ -574,7 +574,8 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
             [UIFont boldSystemFontOfSize:isPad ? kCellTitleFontSizePad : kCellTitleFontSizePhone];
         self.labelName.textColor = [UIColor colorWithWhite:kTitleLabelWhite alpha:kRowColorAlpha];
         self.labelName.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [cell addSubview:self.labelName];
+        // The binary reads the ivar directly here, unlike the four uses above.
+        [cell addSubview:_labelName];
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
         CGFloat buttonFontSize = isPad ? kCellButtonFontSizePad : kCellButtonFontSizePhone;
