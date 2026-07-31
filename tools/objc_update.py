@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x1ad424: 'RBTutorialPastel -getClipList:: indexes the 0x3df3e0 table at a 32-byte CGRect '
+              'stride, ldp giving x and y then width and height, scales each by the 0.5 fmov, and '
+              'four fcsel on IsPad take the raw row on the pad and the halved one otherwise. '
+              'Field order is preserved with no transposition',
+    0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
+              'one and reading the same table, checked separately',
+    0x1ba980: 'RBExperienceData -addBGMType:: boxes the int and appends it to bgmItems',
+    0x1baa24: 'RBExperienceData -addShotType:: the same over shotItems',
     0x19e5b0: 'RBCharacterBase -init: super init, nil check, then setDefault',
     0x1973c0: 'RBUnlockView -pushRewardButton:: forwards the sender to parentCustomView '
               'toRewardList:, so the reward list is opened by the parent rather than by itself',

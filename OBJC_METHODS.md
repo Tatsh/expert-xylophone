@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4935 verified
-(77.8%).
+Total: 6343 — 6306 reconstructed, 4939 verified
+(77.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4612,7 +4612,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteDetailViewController` | `-` | `setTermLinkView:` | prop | ✅ | ✅ | `0x1ad1b0` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `indicatorSample` | prop | ✅ | ✅ | `0x1ad1e8` |
 | `RBStoreExtendNoteDetailViewController` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0x1ad1f8` |
-| `RBTutorialPastel` | `-` | `getClipList:` |  | ✅ | ❌ | `0x1ad424` |
+| `RBTutorialPastel` | `-` | `getClipList:` |  | ✅ | ✅ | `0x1ad424` |
 | `RBTutorialPastel` | `-` | `getPosition:` |  | ✅ | ✅ | `0x1ad484` |
 | `RBTutorialPastel` | `-` | `init` |  | ✅ | ❌ | `0x1ad4b4` |
 | `RBTutorialPastel` | `-` | `setupView:` |  | ✅ | ❌ | `0x1ad588` |
@@ -4630,7 +4630,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialPastel` | `-` | `setLeftView:` | prop | ✅ | ✅ | `0x1b34ac` |
 | `RBTutorialPastel` | `-` | `displayRate` | prop | ✅ | ✅ | `0x1b34e4` |
 | `RBTutorialPastel` | `-` | `setDisplayRate:` | prop | ✅ | ✅ | `0x1b34f4` |
-| `RBTutorialPastelLayer` | `-` | `getClipList:` |  | ✅ | ❌ | `0x1b356c` |
+| `RBTutorialPastelLayer` | `-` | `getClipList:` |  | ✅ | ✅ | `0x1b356c` |
 | `RBTutorialPastelLayer` | `-` | `getPosition:` |  | ✅ | ✅ | `0x1b35cc` |
 | `RBTutorialPastelLayer` | `-` | `init` |  | ✅ | ❌ | `0x1b35fc` |
 | `RBTutorialPastelLayer` | `-` | `setupView:` |  | ✅ | ❌ | `0x1b36fc` |
@@ -4668,8 +4668,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExperienceData` | `-` | `unlockWithMusicID:` |  | ✅ | ✅ | `0x1ba618` |
 | `RBExperienceData` | `-` | `unlockWithThemaID:` |  | ✅ | ✅ | `0x1ba76c` |
 | `RBExperienceData` | `-` | `unlockWithType:ID:` |  | ✅ | ✅ | `0x1ba8c0` |
-| `RBExperienceData` | `-` | `addBGMType:` |  | ✅ | ❌ | `0x1ba980` |
-| `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ❌ | `0x1baa24` |
+| `RBExperienceData` | `-` | `addBGMType:` |  | ✅ | ✅ | `0x1ba980` |
+| `RBExperienceData` | `-` | `addShotType:` |  | ✅ | ✅ | `0x1baa24` |
 | `RBExperienceData` | `-` | `addExprosionType:` |  | ✅ | ❌ | `0x1baac8` |
 | `RBExperienceData` | `-` | `addFrameType:` |  | ✅ | ❌ | `0x1bab6c` |
 | `RBExperienceData` | `-` | `addBackgroundType:` |  | ✅ | ❌ | `0x1bac10` |

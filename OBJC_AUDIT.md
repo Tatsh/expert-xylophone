@@ -917,3 +917,20 @@ The two real recursions were found by reading, and the second only by reading th
 sibling. Sweeps have found real defects in this tree — the width sweep found sixteen — but each
 working one compares fully-qualified identities against an independently-known reference. A sweep
 that cannot name precisely what it is looking at should be discarded rather than triaged.
+
+## Boxed-literal debt, deliberately not swept
+
+The style rules ask for `@(x)` rather than `[NSNumber numberWith…:x]`. The tree has **99** of the
+older form across roughly a dozen files, concentrated in `ScoreData.m` (25) and `MusicData.m` (6).
+
+They are not being converted mechanically, for a reason worth recording rather than treating as
+laziness. `@(x)` boxes by the **static type of the expression**, whereas the explicit constructors
+name the type outright. Rewriting `numberWithUnsignedInteger:` or `numberWithLongLong:` to `@(x)`
+changes the boxed type whenever the argument's declared type differs from the constructor's, and
+`-[NSNumber isEqual:]` and the Core Data accessors do care. A sweep here would be a 99-site edit
+whose correctness depends on the declared type at every site.
+
+The binary is no help in deciding: `@(x)` compiles to exactly the `numberWith…:` send the
+disassembly shows, so both spellings are equally faithful and the audit cannot distinguish them.
+This is a style conversion to be done deliberately, per file, alongside a read of each argument's
+type — not folded into a verification pass.
