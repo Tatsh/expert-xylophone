@@ -6,8 +6,6 @@
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
 
-#include "neDebugLog.h"
-
 namespace {
 
 // Engine texture formats. Format 0 is the compressed sentinel, which the uploader rejects; 1..3
@@ -166,19 +164,6 @@ void neGLESRenderer::GenTexture(unsigned int *pOutHandle) {
 /** @ghidraAddress 0x2147c */
 void neGLESRenderer::GenBuffer(unsigned int *pOutBuffer) {
     glGenBuffers(1, pOutBuffer);
-    // A name GL hands back here after being freed is the whole question: the weight and
-    // matrix-index binding caches are not cleared on delete, so a reissued name makes them claim
-    // the array is already configured and suppress the pointer call, leaving the array enabled
-    // against a dead buffer. Pair this with the delete line to see whether that happens.
-    NE_DBG(
-        if (*pOutBuffer < static_cast<unsigned int>(kBufferNameLimit)) {
-            ++m_aBufferGeneration[*pOutBuffer];
-        };
-        if (NE_DBG_FIRST(400)) {
-            neDebugLog("glBuffer gen %u generation=%d",
-                       *pOutBuffer,
-                       GenerationOf(static_cast<int>(*pOutBuffer)));
-        });
 }
 
 /** @ghidraAddress 0x21bd0 */
@@ -523,23 +508,8 @@ void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
 
 /** @ghidraAddress 0x218ec */
 void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffset) {
-    // A skip here leaves the weight array enabled against whatever GL last captured for it. That is
-    // correct while the recorded binding still names a live buffer, and fatal once the name has
-    // been freed and reissued, which the gen/del log shows GL does. Record every skip with the
-    // name, so a skip on a recycled name is observed rather than argued.
-    NE_DBG(if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding == m_nArrayBufferBound &&
-               m_nWeightPointerGeneration != GenerationOf(m_nArrayBufferBound) &&
-               NE_DBG_FIRST(10)) {
-        neDebugLog("weightPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
-                   m_nArrayBufferBound,
-                   m_nWeightPointerGeneration,
-                   GenerationOf(m_nArrayBufferBound),
-                   m_nWeightPointerGeneration == GenerationOf(m_nArrayBufferBound) ? "" :
-                                                                                     "  <== STALE");
-    });
     if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding != m_nArrayBufferBound) {
         m_nWeightBufferBinding = m_nArrayBufferBound;
-        NE_DBG(m_nWeightPointerGeneration = GenerationOf(m_nArrayBufferBound));
         m_pWeightPointer = nullptr;
         m_nWeightStride = kResetStrideSentinel;
         m_nWeightSize = kResetStrideSentinel;
@@ -552,21 +522,8 @@ void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffse
 
 /** @ghidraAddress 0x219d8 */
 void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset) {
-    // Same reasoning as ClearWeightPointer above.
-    NE_DBG(if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding == m_nArrayBufferBound &&
-               m_nMatrixIndexPointerGeneration != GenerationOf(m_nArrayBufferBound) &&
-               NE_DBG_FIRST(10)) {
-        neDebugLog("matrixIndexPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
-                   m_nArrayBufferBound,
-                   m_nMatrixIndexPointerGeneration,
-                   GenerationOf(m_nArrayBufferBound),
-                   m_nMatrixIndexPointerGeneration == GenerationOf(m_nArrayBufferBound) ?
-                       "" :
-                       "  <== STALE");
-    });
     if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding != m_nArrayBufferBound) {
         m_nMatrixIndexBufferBinding = m_nArrayBufferBound;
-        NE_DBG(m_nMatrixIndexPointerGeneration = GenerationOf(m_nArrayBufferBound));
         m_pMatrixIndexPointer = nullptr;
         m_nMatrixIndexStride = kResetStrideSentinel;
         m_nMatrixIndexSize = kResetStrideSentinel;
@@ -590,32 +547,11 @@ void neGLESRenderer::BindArrayBuffer(unsigned int dwBuffer) {
 /** @ghidraAddress 0x21a14 */
 void neGLESRenderer::BindIndexBuffer(unsigned int dwBuffer) {
     if (m_nElementBufferBound == static_cast<int>(dwBuffer)) {
-        // A skip here is only safe if GL really still has this buffer bound; see DeleteBuffer. The
-        // budget is spent inside the mismatch test rather than around it, so the benign skips --
-        // which are nearly all of them -- do not exhaust it before a real one occurs.
-        NE_DBG(GLint nActual = 0; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nActual);
-               if (nActual != static_cast<GLint>(dwBuffer) && NE_DBG_FIRST(10)) {
-                   neDebugLog("bindIndexBuffer STALE cache=%u actual=%d", dwBuffer, nActual);
-               });
         return;
     }
     m_nElementBufferBound = static_cast<int>(dwBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dwBuffer);
 }
-
-#if RBPDBG
-int neGLESRenderer::QueryBoundElementBuffer() const {
-    GLint nBound = 0;
-    glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
-    return static_cast<int>(nBound);
-}
-
-int neGLESRenderer::QueryBoundArrayBuffer() const {
-    GLint nBound = 0;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &nBound);
-    return static_cast<int>(nBound);
-}
-#endif
 
 /** @ghidraAddress 0x21ab4 */
 void neGLESRenderer::BindTexture2d(unsigned int dwHandle) {
@@ -661,20 +597,6 @@ void neGLESRenderer::DeleteBuffer(unsigned int dwBuffer) {
             m_anTexCoordBufferBinding[nUnit] = 0;
         }
     }
-    // The element-buffer cache at 0x12c is deliberately not cleared here: the binary's DeleteBuffer
-    // clears 0x40, 0x54, 0x64, 0x78 and the 0xe0 array and leaves 0x12c alone, so the omission is
-    // faithful. It is still a hazard -- deleting the bound element buffer makes GL revert that
-    // binding to zero while the cache keeps the dead name, and GL recycles freed names -- so record
-    // when it actually happens. If a later BindIndexBuffer skips a rebind for that same name, the
-    // draw reads its indices from client address zero, which is the fault seen on the play screen.
-    NE_DBG(if (NE_DBG_FIRST(400)) {
-        neDebugLog("glBuffer del %u element=%d array=%d weightBinding=%d matrixIndexBinding=%d",
-                   dwBuffer,
-                   m_nElementBufferBound,
-                   m_nArrayBufferBound,
-                   m_nWeightBufferBinding,
-                   m_nMatrixIndexBufferBinding);
-    });
     glDeleteBuffers(1, &dwBuffer);
 }
 

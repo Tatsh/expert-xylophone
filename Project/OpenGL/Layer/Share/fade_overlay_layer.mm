@@ -1,7 +1,6 @@
 #include "fade_overlay_layer.h"
 
 #include "gamesystem.h"
-#include "neDebugLog.h"
 #include "neSpriteInstancing.h"
 
 // The process-wide fade overlay layer, created lazily by shared().
@@ -96,25 +95,6 @@ void FadeOverlayLayer::Render(float flDelta) {
     // Draw the black full-screen quad at the current alpha, scaled to the viewport.
     GameSystem *pGameSystem = GameSystem::GetGameSystem();
     const S_VECTOR2 size{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()};
-    // A translucent black quadrant appears at the bottom right of the play screen where a
-    // full-screen dim belongs. The quad's own terms are all correct against the binary -- position
-    // and anchor (0,0), size the viewport, and a top-left-origin ortho -- so record the alpha and
-    // the parent transform the quad is actually composed against.
-    if (NE_DBG_FIRST(8)) {
-        ne::C_RENDER *pNode = m_pInstancer->GetParent();
-        const float *pParent = pNode != nullptr ? pNode->GetWorldMatrix() : nullptr;
-        neDebugLog("fadeOverlay size=(%.1f,%.1f) alpha=%.3f parent=%p "
-                   "parentT=(%.1f,%.1f,%.1f) parentScale=(%.3f,%.3f)",
-                   static_cast<double>(size.x),
-                   static_cast<double>(size.y),
-                   static_cast<double>(m_flCurrentAlpha),
-                   static_cast<const void *>(pParent),
-                   pParent != nullptr ? static_cast<double>(pParent[12]) : 0.0,
-                   pParent != nullptr ? static_cast<double>(pParent[13]) : 0.0,
-                   pParent != nullptr ? static_cast<double>(pParent[14]) : 0.0,
-                   pParent != nullptr ? static_cast<double>(pParent[0]) : 0.0,
-                   pParent != nullptr ? static_cast<double>(pParent[5]) : 0.0);
-    }
     EmitQuad(size, static_cast<unsigned int>(m_flCurrentAlpha * kAlphaToByte));
 
     // Publish the emitted slot count into the instancer's draw count.

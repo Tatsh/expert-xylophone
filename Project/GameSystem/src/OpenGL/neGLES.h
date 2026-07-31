@@ -18,9 +18,6 @@
 //  the program image base.
 //
 
-// Included for the RBPDBG flag, which guards the diagnostic-only query below.
-#include "neDebugLog.h"
-
 /**
  * @brief The engine render-kind that selects a GL framebuffer attachment point.
  *
@@ -177,44 +174,6 @@ public:
      * @ghidraAddress 0x21a14
      */
     void BindIndexBuffer(unsigned int dwBuffer);
-#if RBPDBG
-    /**
-     * @brief The element-array buffer GL actually has bound, for diagnostics only.
-     *
-     * Not part of the reconstruction: the renderer caches its bindings, so a diagnostic that needs
-     * the real one must ask GL. It lives here because this is where the GL headers are visible.
-     * @return The bound element-array buffer name, or zero when none is bound.
-     */
-    int QueryBoundElementBuffer() const;
-    /**
-     * @brief Whether the vertex array would be submitted from client address zero, for diagnostics.
-     *
-     * ClearVertexPointer points the array at offset zero of the bound array buffer and records the
-     * pointer as null. That is correct while a buffer is bound, but if the array buffer is later
-     * unbound without the vertex pointer being re-established, GL reads offset zero as a client
-     * address instead, which is a null client array.
-     * @return @c true when no array buffer is bound and the vertex pointer is null.
-     */
-    bool HasNullVertexArray() const {
-        return m_nArrayBufferBound == 0 && m_pVertexPointer == nullptr;
-    }
-    /**
-     * @brief The array buffer GL actually has bound, for diagnostics only.
-     */
-    int QueryBoundArrayBuffer() const;
-
-    // Diagnostic only. A buffer name is reused after deletion, so the name alone cannot say whether
-    // a cached binding still refers to the object the pointer was captured against. Counting how
-    // many times each name has been handed out, and recording the count at the time each pointer
-    // call was issued, makes a stale skip provable rather than inferred.
-    static constexpr int kBufferNameLimit = 1024;
-    unsigned char m_aBufferGeneration[kBufferNameLimit] = {};
-    unsigned char m_nWeightPointerGeneration = {};
-    unsigned char m_nMatrixIndexPointerGeneration = {};
-    unsigned char GenerationOf(int nBuffer) const {
-        return (nBuffer >= 0 && nBuffer < kBufferNameLimit) ? m_aBufferGeneration[nBuffer] : 0;
-    }
-#endif
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
      * @ghidraAddress 0x21510

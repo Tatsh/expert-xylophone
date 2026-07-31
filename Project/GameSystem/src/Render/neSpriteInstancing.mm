@@ -5,7 +5,6 @@
 #include <cstring>
 
 #include "matrixmath.h"
-#include "neDebugLog.h"
 #include "neGLES.h"
 #include "neRenderer.h"
 #include "neSpriteInstancing3D.h"
@@ -228,19 +227,6 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
         pVertexTemplate,
         static_cast<unsigned int>(nCapacity * kSpriteVertexCount * sizeof(InitialSpriteVertex)),
         0);
-    // Batches are created and destroyed in a repeating cycle here where the original creates them
-    // once, and that churn is what makes the stale element binding fire. Name the caller and give
-    // its de-slid offset, so the responsible layer is identified either way.
-    neDebugLog(
-        "batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d caller=%s@%#lx owner=%s",
-        nCapacity,
-        m_dwIndexVbo,
-        m_dwArrayVbo,
-        m_pVertexScratch,
-        pRenderer->HasMatrixPalette() ? 1 : 0,
-        neDebugCallerName(__builtin_return_address(0)),
-        neDebugCallerOffset(__builtin_return_address(0)),
-        neDebugOwnerName());
     delete[] pVertexTemplate;
 
     const int *pTexParams = kScreenTexParams;
@@ -278,21 +264,6 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
     // Only the index buffer is deleted. The binary reads +0x130 here and never +0x134, so
     // m_dwArrayVbo leaks by design rather than by omission; do not add a matching DeleteBuffer.
-    // Which batch is destroyed, and when, is the open question behind the play-screen crash: the
-    // element-binding cache is not cleared on delete, faithfully to the binary, so the fault can
-    // only arise if this build tears a batch down where the original does not.
-    if (NE_DBG_FIRST(24)) {
-        neDebugLog(
-            "batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p caller=%s@%#lx owner=%s",
-            m_dwIndexVbo,
-            m_dwArrayVbo,
-            m_dwCapacity,
-            m_nSpriteCount,
-            static_cast<const void *>(m_pTexture),
-            neDebugCallerName(__builtin_return_address(0)),
-            neDebugCallerOffset(__builtin_return_address(0)),
-            neDebugOwnerName());
-    }
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
 
@@ -584,28 +555,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
                         GetColorBlue(nSprite),
                         nAlpha);
 
-        // Build the sprite's transform: translate the anchor to the position, applying rotation and
-        // scale about the anchor when present, then compose it with the shared matrix.
-        // A translucent dark quadrant appears once the tutorial starts on the play field. The
-        // tutorial guide's dim is a 1x1 quad with a centred anchor stretched by scale, so whether
-        // the anchor is scaled with it decides where the quad lands. Log every scaled sprite's
-        // terms; the resulting rectangle can then be checked against the screen directly.
-        if (m_pSpriteScaleXArray[nSprite] != 1.0f || m_pSpriteScaleYArray[nSprite] != 1.0f) {
-            if (NE_DBG_FIRST(24)) {
-                neDebugLog("scaledSprite pos=(%.2f,%.2f) anchor=(%.2f,%.2f) size=(%.2f,%.2f) "
-                           "scale=(%.2f,%.2f) rot=%.3f alpha=%u",
-                           static_cast<double>(m_pSpritePositionArray[nSprite].x),
-                           static_cast<double>(m_pSpritePositionArray[nSprite].y),
-                           static_cast<double>(m_pSpriteAnchorArray[nSprite].x),
-                           static_cast<double>(m_pSpriteAnchorArray[nSprite].y),
-                           static_cast<double>(size.x),
-                           static_cast<double>(size.y),
-                           static_cast<double>(m_pSpriteScaleXArray[nSprite]),
-                           static_cast<double>(m_pSpriteScaleYArray[nSprite]),
-                           static_cast<double>(m_pSpriteRotationArray[nSprite]),
-                           nAlpha);
-            }
-        }
         float spriteMatrix[16];
         BuildSpriteMatrix(nSprite, spriteMatrix);
         if (bMatrixPalette) {
@@ -627,24 +576,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         ++nQueued;
         if (nQueued == nMaxPerBatch) {
             pRenderer->BindIndexBuffer(m_dwIndexVbo);
-            // The bounded traces above were exhausted long before the fault, so check the
-            // precondition itself: a null index pointer is only safe with a real element buffer
-            // bound. glGetIntegerv is a query with no effect on error state.
-            NE_DBG(if ((pRenderer->QueryBoundElementBuffer() == 0 ||
-                        pRenderer->HasNullVertexArray()) &&
-                       NE_DBG_FIRST(4)) {
-                neDebugLog("emit draw UNBOUND element=%d array=%d nullVertex=%d indexVbo=%u "
-                           "arrayVbo=%u scratch=%p queued=%d count=%d owner=%s",
-                           pRenderer->QueryBoundElementBuffer(),
-                           pRenderer->QueryBoundArrayBuffer(),
-                           pRenderer->HasNullVertexArray() ? 1 : 0,
-                           m_dwIndexVbo,
-                           m_dwArrayVbo,
-                           m_pVertexScratch,
-                           nQueued,
-                           m_nSpriteCount,
-                           neDebugOwnerName());
-            });
             pRenderer->DrawIndexedPrimitives(
                 kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
             nQueued = 0;
@@ -652,24 +583,6 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
     }
     if (nQueued != 0) {
         pRenderer->BindIndexBuffer(m_dwIndexVbo);
-        // The bounded traces above were exhausted long before the fault, so check the
-        // precondition itself: a null index pointer is only safe with a real element buffer
-        // bound. glGetIntegerv is a query with no effect on error state.
-        NE_DBG(if ((pRenderer->QueryBoundElementBuffer() == 0 || pRenderer->HasNullVertexArray() ||
-                    (bMatrixPalette && pRenderer->QueryBoundArrayBuffer() == 0)) &&
-                   NE_DBG_FIRST(4)) {
-            neDebugLog("emit draw UNBOUND element=%d array=%d nullVertex=%d indexVbo=%u "
-                       "arrayVbo=%u scratch=%p queued=%d count=%d owner=%s",
-                       pRenderer->QueryBoundElementBuffer(),
-                       pRenderer->QueryBoundArrayBuffer(),
-                       pRenderer->HasNullVertexArray() ? 1 : 0,
-                       m_dwIndexVbo,
-                       m_dwArrayVbo,
-                       m_pVertexScratch,
-                       nQueued,
-                       m_nSpriteCount,
-                       neDebugOwnerName());
-        });
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
 }
@@ -771,19 +684,6 @@ void C_SPRITE_INSTANCING_2D::RenderAxisAligned(neGLESRenderer *pRenderer) {
     pRenderer->SetGlClientState(kClientMatrixIndex, 0);
     pRenderer->SetMatrixMode(kMatrixModeModelView, GetWorldMatrix());
     pRenderer->BindIndexBuffer(m_dwIndexVbo);
-    // Same precondition as the matrix path: a null index pointer needs a real element buffer.
-    NE_DBG(if ((pRenderer->QueryBoundElementBuffer() == 0 || pRenderer->HasNullVertexArray()) &&
-               NE_DBG_FIRST(4)) {
-        neDebugLog("axisAligned draw UNBOUND element=%d array=%d nullVertex=%d indexVbo=%u "
-                   "arrayVbo=%u queued=%d owner=%s",
-                   pRenderer->QueryBoundElementBuffer(),
-                   pRenderer->QueryBoundArrayBuffer(),
-                   pRenderer->HasNullVertexArray() ? 1 : 0,
-                   m_dwIndexVbo,
-                   m_dwArrayVbo,
-                   nQueued,
-                   neDebugOwnerName());
-    });
     pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
 }
 

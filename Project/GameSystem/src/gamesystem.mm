@@ -13,7 +13,6 @@
 #import "MusicData.h"
 #include "deviceenvironment.h"
 #include "engineglobals.h"
-#include "neDebugLog.h"
 #include "neTexture.h"
 #include "neTextureForiOS.h"
 
@@ -201,13 +200,6 @@ void GameSystem::SetSheetMargins(float flLeft, float flTop, float flRight, float
 
 /** @ghidraAddress 0x8ef60 */
 void GameSystem::ConfigureSheetLayerForScreen(int nScaleStep) {
-    // The play field builds with the layout globals still zero. This is the only routine that
-    // reaches ComputePlayfieldLayoutY, which holds the only three stores to them in the whole
-    // binary, so tracing every entry here says definitively whether anything configures the sheet.
-    neDebugLog("configureSheet step=%d isPad=%d splitBefore=%d",
-               nScaleStep,
-               IsPad() ? 1 : 0,
-               g_nPlayfieldCentreSplit);
     if (IsPad()) {
         // Tablet: the sheet scale grows one zoom step at a time; the sheet is centred at a fixed x
         // and positioned just above the notch inset, with the wider variant left/right margin.

@@ -31,13 +31,9 @@
 
 // The C spellings, not <cstdarg>/<cstdio>: this header is included from pure Objective-C (.m)
 // translation units, where the C++ headers do not exist.
-#include <dlfcn.h>
-#include <execinfo.h>
 #include <os/log.h>
 #include <stdarg.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 
 // printf-style wrapper over os_log (works in .c, .m, .cpp, and .mm translation units alike; os_log
 // lines are what idevicesyslog captures).
@@ -60,47 +56,6 @@ static inline void neDebugLog(const char *fmt, ...) {
         _c < (limit) ? (++_c, 1) : 0;                                                              \
     })
 
-// Name the nearest frame above the engine, for a trace that must identify which layer drove it.
-// A return address one frame up is not enough: an allocation lands in a base constructor called
-// from a derived one, and a deletion lands in the deleting destructor, so the immediate caller is
-// always another engine routine. Walk out until a frame is not one, and resolve it with dladdr,
-// which reads the in-process symbol table and so needs no debugger and no entitlement.
-static inline const char *neDebugOwnerName(void) {
-    void *frames[8];
-    const int count = backtrace(frames, 8);
-    // Frame 0 is this helper; start above it.
-    for (int at = 1; at < count; ++at) {
-        Dl_info info;
-        if (dladdr(frames[at], &info) == 0 || info.dli_sname == NULL) {
-            continue;
-        }
-        // Itanium-mangled `ne::` members all begin _ZN2ne; anything else is a caller worth naming.
-        if (strncmp(info.dli_sname, "_ZN2ne", 6) != 0) {
-            return info.dli_sname;
-        }
-    }
-    return "?";
-}
-
-// A return address as an offset within its own image. dladdr reports that image's base, so this
-// needs no dyld slide and is directly comparable against the reconstruction's addresses.
-static inline unsigned long neDebugCallerOffset(void *addr) {
-    Dl_info info;
-    if (dladdr(addr, &info) == 0) {
-        return 0;
-    }
-    return (unsigned long)((const char *)addr - (const char *)info.dli_fbase);
-}
-
-// Name the function containing a return address.
-static inline const char *neDebugCallerName(void *addr) {
-    Dl_info info;
-    if (dladdr(addr, &info) != 0 && info.dli_sname != NULL) {
-        return info.dli_sname;
-    }
-    return "?";
-}
-
 // Wrap debug-only statements with real side effects. Internal `;` separates multiple statements;
 // the macro supplies the trailing one.
 #define NE_DBG(...)                                                                                \
@@ -115,22 +70,6 @@ static inline const char *neDebugCallerName(void *addr) {
 // drops.
 static inline void neDebugLog(const char *fmt, ...) {
     (void)fmt;
-}
-
-// The arguments of a disabled neDebugLog call are still evaluated, so these must exist in the
-// faithful build too.
-static inline const char *neDebugCallerName(void *addr) {
-    (void)addr;
-    return "?";
-}
-
-static inline unsigned long neDebugCallerOffset(void *addr) {
-    (void)addr;
-    return 0;
-}
-
-static inline const char *neDebugOwnerName(void) {
-    return "?";
 }
 
 // A plain 0 rather than `false`, which is a keyword only in C++ and would need <stdbool.h> in the
