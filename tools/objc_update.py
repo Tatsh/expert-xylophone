@@ -297,6 +297,14 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x16f154: 'RBVolumeSlider -continueTrackingWithTouch:withEvent:: same as its begin form, '
+              'returning YES',
+    0x16f1f8: 'RBVolumeSlider -endTrackingWithTouch:withEvent:: the same point handling but void, '
+              'so the trio matches RBEffectSizeSlider\'s exactly',
+    0x174754: 'RBMusicSearchExpander -init: super init, nil check, then loadDictionary',
+    0x1747c8: 'RBMusicSearchExpander -getDictionary: hands back a copy through '
+              'dictionaryWithDictionary: rather than the expandDict ivar itself',
+    0x177ac0: 'StoreTableCellViewBase -setBgImage:: drives backGroundImageView.image',
     0x1687dc: 'RBCustomSelectView -initWithFrame:: super, nil check, setupView, no type set',
     0x169828: 'RBCustomSelectView -prevButtonTap:: startPreview on the app delegate\'s view '
               'controller, then themed effect 1, in that order',

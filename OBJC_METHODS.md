@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4900 verified
+Total: 6343 — 6306 reconstructed, 4905 verified
 (77.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3887,8 +3887,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBVolumeSlider` | `-` | `setValue:` | prop | ✅ | ✅ | `0x16eef4` |
 | `RBVolumeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x16eff0` |
 | `RBVolumeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x16f0b0` |
-| `RBVolumeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x16f154` |
-| `RBVolumeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x16f1f8` |
+| `RBVolumeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x16f154` |
+| `RBVolumeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x16f1f8` |
 | `RBVolumeSlider` | `-` | `value` | prop | ✅ | ✅ | `0x16f294` |
 | `RBVolumeSlider` | `-` | `baseView` | prop | ✅ | ✅ | `0x16f2a4` |
 | `RBVolumeSlider` | `-` | `setBaseView:` | prop | ✅ | ✅ | `0x16f2b4` |
@@ -3956,8 +3956,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBWebView` | `-` | `setIndicatorView:` | prop | ✅ | ✅ | `0x173e58` |
 | `RBWebView` | `-` | `urlList` | prop | ✅ | ✅ | `0x173e90` |
 | `RBWebView` | `-` | `setUrlList:` | prop | ✅ | ✅ | `0x173ea0` |
-| `RBMusicSearchExpander` | `-` | `init` |  | ✅ | ❌ | `0x174754` |
-| `RBMusicSearchExpander` | `-` | `getDictionary` |  | ✅ | ❌ | `0x1747c8` |
+| `RBMusicSearchExpander` | `-` | `init` |  | ✅ | ✅ | `0x174754` |
+| `RBMusicSearchExpander` | `-` | `getDictionary` |  | ✅ | ✅ | `0x1747c8` |
 | `RBMusicSearchExpander` | `-` | `addSearchInfo:addWords:` |  | ✅ | ❌ | `0x174840` |
 | `RBMusicSearchExpander` | `-` | `addDictionary:` |  | ✅ | ❌ | `0x174a78` |
 | `RBMusicSearchExpander` | `-` | `loadDictionary` |  | ✅ | ❌ | `0x174c44` |
@@ -3969,7 +3969,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeInfoController` | `-` | `webRbAction:` |  | ✅ | ❌ | `0x17671c` |
 | `StoreTableCellViewBase` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1777bc` |
 | `StoreTableCellViewBase` | `-` | `dealloc` |  | ✅ | ✅ | `0x177a38` |
-| `StoreTableCellViewBase` | `-` | `setBgImage:` |  | ✅ | ❌ | `0x177ac0` |
+| `StoreTableCellViewBase` | `-` | `setBgImage:` |  | ✅ | ✅ | `0x177ac0` |
 | `StoreTableCellViewBase` | `-` | `setIsNew:` |  | ✅ | ❌ | `0x177b4c` |
 | `StoreTableCellViewBase` | `-` | `handleTap:` |  | ✅ | ❌ | `0x177c40` |
 | `StoreTableCellViewBase` | `-` | `reset` |  | ✅ | ✅ | `0x177d20` |
