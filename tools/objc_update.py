@@ -289,6 +289,8 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x6a990: 'RBMusicManager +getInstance: the fifth accessor sharing the plain nil-check shape',
+    0x67238: 'MusicDataFromDoc -init: chains to the MusicData initialiser and adds nothing',
     0x716f4: 'RBPlaylistManager -numberOfPlaylists: the count of arrayPlaylist',
     0x73458: 'Downloader -currentSize: forwards to the connection\'s own currentSize',
     0x69e50: 'RBBGMManager +getInstance: the same plain nil check as its three siblings',

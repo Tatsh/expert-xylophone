@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4668 verified
+Total: 6343 — 6306 reconstructed, 4670 verified
 (73.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1412,7 +1412,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `MusicData` | `-` | `setFilePath:` | prop | ✅ | ✅ | `0x66824` |
 | `MusicData` | `-` | `decodeType` | prop | ✅ | ✅ | `0x6685c` |
 | `MusicData` | `-` | `setDecodeType:` | prop | ✅ | ✅ | `0x6686c` |
-| `MusicDataFromDoc` | `-` | `init` |  | ✅ | ❌ | `0x67238` |
+| `MusicDataFromDoc` | `-` | `init` |  | ✅ | ✅ | `0x67238` |
 | `MusicDataFromDoc` | `+` | `getPathWithDocument:` |  | ✅ | ❌ | `0x6726c` |
 | `MusicDataFromDoc` | `+` | `dataWithPath:PlyName:` |  | ✅ | ❌ | `0x6734c` |
 | `MusicDataFromDoc` | `-` | `dealloc` |  | ❌ | ✅ | `0x67498` |
@@ -1546,7 +1546,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ❌ | `0x6a854` |
 | `RBBGMManager` | `-` | `popMusic` |  | ✅ | ❌ | `0x6a8f0` |
 | `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
-| `RBMusicManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x6a990` |
+| `RBMusicManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x6a990` |
 | `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ✅ | `0x6a9e8` |
 | `RBMusicManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x6aa1c` |
 | `RBMusicManager` | `+` | `getPathFromPurchesed:` |  | ✅ | ❌ | `0x6aad8` |
