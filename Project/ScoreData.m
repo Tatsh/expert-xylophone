@@ -347,19 +347,27 @@ static const int kFrameBonusMaxTier = 2;
 - (BOOL)checkOverScore {
     /** @ghidraAddress 0x5e150 */
     BOOL changed = NO;
-    if (self.arBas.floatValue < kAchievementRateMinimum ||
-        self.arBas.floatValue > kAchievementRateMaximum) {
-        self.arBas = [NSNumber numberWithFloat:0.0f];
+    // Each rate is clamped into range rather than reset: an over-range value becomes the maximum,
+    // not zero, which is the same shape as the score clamps below.
+    if (self.arBas.floatValue < kAchievementRateMinimum) {
+        self.arBas = [NSNumber numberWithFloat:kAchievementRateMinimum];
+        changed = YES;
+    } else if (self.arBas.floatValue > kAchievementRateMaximum) {
+        self.arBas = [NSNumber numberWithFloat:kAchievementRateMaximum];
         changed = YES;
     }
-    if (self.arMed.floatValue < kAchievementRateMinimum ||
-        self.arMed.floatValue > kAchievementRateMaximum) {
-        self.arMed = [NSNumber numberWithFloat:0.0f];
+    if (self.arMed.floatValue < kAchievementRateMinimum) {
+        self.arMed = [NSNumber numberWithFloat:kAchievementRateMinimum];
+        changed = YES;
+    } else if (self.arMed.floatValue > kAchievementRateMaximum) {
+        self.arMed = [NSNumber numberWithFloat:kAchievementRateMaximum];
         changed = YES;
     }
-    if (self.arHar.floatValue < kAchievementRateMinimum ||
-        self.arHar.floatValue > kAchievementRateMaximum) {
-        self.arHar = [NSNumber numberWithFloat:0.0f];
+    if (self.arHar.floatValue < kAchievementRateMinimum) {
+        self.arHar = [NSNumber numberWithFloat:kAchievementRateMinimum];
+        changed = YES;
+    } else if (self.arHar.floatValue > kAchievementRateMaximum) {
+        self.arHar = [NSNumber numberWithFloat:kAchievementRateMaximum];
         changed = YES;
     }
     if (self.scoBas.intValue < kScoreMinimum) {

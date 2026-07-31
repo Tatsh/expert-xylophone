@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5246 verified
+Total: 6343 — 6343 reconstructed, 5247 verified
 (82.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5246 verified, 3507 come from those passes and the remaining
-1739 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5247 verified, 3507 come from those passes and the remaining
+1740 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -1237,7 +1237,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ScoreData` | `+` | `checkScore:` |  | ✅ | ✅ | `0x5d698` |
 | `ScoreData` | `+` | `totalScore` |  | ✅ | ❌ | `0x5d778` |
 | `ScoreData` | `-` | `getFrameBonusType` |  | ✅ | ✅ | `0x5df3c` |
-| `ScoreData` | `-` | `checkOverScore` |  | ✅ | ❌ | `0x5e150` |
+| `ScoreData` | `-` | `checkOverScore` |  | ✅ | ✅ | `0x5e150` |
 | `ScoreData` | `+` | `totalRecordCount` |  | ✅ | ❌ | `0x5e820` |
 | `MusicData` | `+` | `GetYomiIndex:` |  | ✅ | ✅ | `0x5ea48` |
 | `MusicData` | `+` | `GetYomiString:` |  | ✅ | ✅ | `0x5eb44` |

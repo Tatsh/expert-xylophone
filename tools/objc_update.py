@@ -3807,6 +3807,15 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x5E150: 'ScoreData -checkOverScore: read as a mismatch and fixed. Each of the three '
+             'achievement rates is clamped, not reset. The low arm is fcmp against zero with b.pl '
+             'and stores movi v0.16B,#0, then branches past the second test, so the two are an if '
+             'and an else-if rather than one disjunction. The high arm is fcmp against '
+             'fmov s0,0x3f800000 with b.le and stores that same 1.0. The reconstruction reset an '
+             'over-range rate to zero, which would discard a record instead of capping it. Three '
+             'zero stores and six 1.0 immediates, three of them the comparison and three the '
+             'stored value, account for all three fields. The changed flag drives mov w0,#1 '
+             'against mov w0,#0 at the shared epilogue',
     0x243938: 'RecommendAdCache +createHtmlWithAdModel:adLocation:verticalAlign:: the switch is '
               'cmp w22 against 5, 3 and 2 in that order, matching the interstitial, icon and '
               'banner constants, and the interstitial arm returns the lottery error straight out '
