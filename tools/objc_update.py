@@ -1348,6 +1348,12 @@ VERIFIED = {
               'removes total before daily, so the two run opposite ways round. Neither order '
               'matters to the result, which is exactly why a reconstruction would be tempted to '
               'make them agree; both are as the binary has them',
+    0x246158: 'RecommendWebView -appListDidStart: forwards to the ApplilinkCore class method '
+              'toDelegateDidStart:delegate: with the params ivar and the delegate loaded through '
+              '_objc_loadWeakRetained, confirming the weak property',
+    0x24647c: 'RecommendWebView -appListFailLinkWithError:: the same shape into '
+              'toDelegateFailLinkWithError:appParam:delegate:, the three-argument member of the '
+              'same family the RewardCore methods at 0x20ba68 and 0x20bacc forward into',
     0x246028: 'RecommendWebView -hiddenIndicator: a cbz on _indicator guards only stopAnimating; '
               'the cancelPreviousPerformRequestsWithTarget: that follows is a tail branch outside '
               'the guard, so a nil indicator still cancels pending performs',
