@@ -404,6 +404,7 @@ storefront
 strage
 strb
 strcmp
+strh
 strm
 strobing
 subarray

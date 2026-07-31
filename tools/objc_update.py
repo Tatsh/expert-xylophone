@@ -289,6 +289,10 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0x41308: 'AVBus -init: seeds mStatus with -1, which is AVBusStatusNone, and zeroes the '
+             'S-typed mCurrentID with a strh',
+    0x35380: 'SoundManager -startSystem: starts the graph only when it is initialised and not '
+             'already playing, and marks it playing after the start rather than before',
     0x4cb68: 'StoreExtendNoteView -isPurchased: the eor #1 at 0x4cb98 inverts the label\'s hidden '
              'flag, so purchased means the caption is showing',
     0x4cbc8: 'StoreExtendNoteView -setIsPurchased:: sets the standing caption and never reads its '

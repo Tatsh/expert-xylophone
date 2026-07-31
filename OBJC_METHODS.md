@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4662 verified
+Total: 6343 — 6306 reconstructed, 4664 verified
 (73.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -596,7 +596,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `setCallBack:DataFormat:` |  | ✅ | ❌ | `0x351f4` |
 | `SoundManager` | `-` | `unsetCallBack:` |  | ✅ | ✅ | `0x3532c` |
 | `SoundManager` | `-` | `getSoundPlayer:` |  | ✅ | ✅ | `0x3536c` |
-| `SoundManager` | `-` | `startSystem` |  | ✅ | ❌ | `0x35380` |
+| `SoundManager` | `-` | `startSystem` |  | ✅ | ✅ | `0x35380` |
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
 | `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ❌ | `0x35498` |
 | `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ✅ | `0x354fc` |
@@ -849,7 +849,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AudioManager` | `-` | `setStackBgm:` | prop | ✅ | ✅ | `0x411e4` |
 | `AudioManager` | `-` | `seType` | prop | ✅ | ✅ | `0x4121c` |
 | `AudioManager` | `-` | `setSeType:` | prop | ✅ | ✅ | `0x4122c` |
-| `AVBus` | `-` | `init` |  | ✅ | ❌ | `0x41308` |
+| `AVBus` | `-` | `init` |  | ✅ | ✅ | `0x41308` |
 | `AVBus` | `-` | `initWithContentsOfURL:isLoop:` |  | ✅ | ❌ | `0x4135c` |
 | `AVBus` | `-` | `initWithContentsOfData:isLoop:` |  | ✅ | ❌ | `0x414fc` |
 | `AVBus` | `-` | `setSource:` |  | ✅ | ❌ | `0x4169c` |
