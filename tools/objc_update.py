@@ -3807,6 +3807,17 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x6C754: 'RBMusicManager -getMusicData:: a walk of musicDataArray returning on the first '
+             'cmp w0,w20 that compares equal, and nil past the loop',
+    0x6C8B4: 'RBMusicManager -releaseChacheMusicData: the same walk sending one selector per '
+             'element, hoisted into a register so it carries no annotation. Resolved from the slot '
+             'at 0x3c1150 it reads releaseChache, the binary own misspelling that the '
+             'reconstruction keeps',
+    0x6C9E4: 'RBMusicManager -getMusicIDs: arrayWithCapacity:3 matches kMusicIDsCapacity, then the '
+             'preinstalled identifiers are appended directly and the purchased ones through '
+             'objectForKey: with the key at 0x36ab80, which decodes as "ID". Both selectors are '
+             'hoisted out of the second loop, so neither call is annotated and both were resolved '
+             'from their slots',
     0x71190: 'RBPlaylistManager -initWithFile:: objc_msgSendSuper2 for [super init] with a cbz on '
              'the result, arrayWithCapacity:0x10 for the playlist list, stringWithString: for the '
              'path, then initWithContentsOfFile:. Each loaded entry passes an NSDictionary '
