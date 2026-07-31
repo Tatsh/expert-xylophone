@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5035 verified
+Total: 6343 — 6306 reconstructed, 5039 verified
 (79.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5035 verified, 3507 come from those passes and the remaining
-1528 were read by hand. The split matters when reading the percentage: a
+Of the 5039 verified, 3507 come from those passes and the remaining
+1532 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5809,7 +5809,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkCore` | `+` | `pasteBoard_udid` |  | ✅ | ❌ | `0x215260` |
 | `ApplilinkCore` | `+` | `ad_udid` |  | ✅ | ❌ | `0x2153a0` |
 | `ApplilinkCore` | `+` | `old_udid` |  | ✅ | ❌ | `0x21558c` |
-| `ApplilinkCore` | `+` | `checkUdid` |  | ✅ | ❌ | `0x215654` |
+| `ApplilinkCore` | `+` | `checkUdid` |  | ✅ | ✅ | `0x215654` |
 | `ApplilinkCore` | `+` | `clearUDID` |  | ✅ | ❌ | `0x2156c4` |
 | `ApplilinkCore` | `+` | `setAdUdid:` |  | ✅ | ✅ | `0x2157f8` |
 | `ApplilinkCore` | `+` | `clearKeyChainOldUDID` |  | ✅ | ❌ | `0x215864` |
@@ -5937,7 +5937,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardNetwork` | `+` | `openAdScreenWithAdLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x21f524` |
 | `RewardNetwork` | `+` | `openAdScreenWithParentView:adLocation:delegate:` |  | ✅ | ❌ | `0x21f598` |
 | `RewardNetwork` | `+` | `openAdScreenWithParentView:adLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x21f60c` |
-| `RewardNetwork` | `+` | `closeAdScreen` |  | ✅ | ❌ | `0x21f808` |
+| `RewardNetwork` | `+` | `closeAdScreen` |  | ✅ | ✅ | `0x21f808` |
 | `RewardNetwork` | `+` | `allInstallFlgWithCallback:` |  | ✅ | ❌ | `0x21f880` |
 | `RewardNetwork` | `+` | `getAdDisplayStatusWithCallback:` |  | ✅ | ❌ | `0x21f9e0` |
 | `RewardNetwork` | `+` | `getAdStatusWithBlock:` |  | ✅ | ❌ | `0x21fc14` |
@@ -5949,7 +5949,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkIndicator` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x220074` |
 | `ApplilinkIndicator` | `-` | `show` |  | ✅ | ✅ | `0x220124` |
 | `ApplilinkIndicator` | `-` | `close` |  | ✅ | ✅ | `0x22017c` |
-| `ApplilinkIndicator` | `-` | `touchEventActived` |  | ✅ | ❌ | `0x2201e0` |
+| `ApplilinkIndicator` | `-` | `touchEventActived` |  | ✅ | ✅ | `0x2201e0` |
 | `ApplilinkIndicator` | `-` | `dealloc` |  | ✅ | ✅ | `0x220254` |
 | `ApplilinkIndicator` | `-` | `indicator` | prop | ✅ | ✅ | `0x220290` |
 | `ApplilinkIndicator` | `-` | `setIndicator:` | prop | ✅ | ✅ | `0x2202a0` |
@@ -6045,7 +6045,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdData` | `+` | `lotteryInterstitialWithAdLocation:` |  | ✅ | ❌ | `0x22aa30` |
 | `RecommendAdData` | `+` | `getInstallFlgWithAdData:` |  | ✅ | ❌ | `0x22b200` |
 | `ShadeView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x22b498` |
-| `ShadeView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ❌ | `0x22b55c` |
+| `ShadeView` | `-` | `touchesEnded:withEvent:` |  | ✅ | ✅ | `0x22b55c` |
 | `ShadeView` | `-` | `delegate` | prop | ✅ | ✅ | `0x22b5d0` |
 | `ShadeView` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x22b5e0` |
 | `ApplilinkUdid` | `-` | `init` |  | ✅ | ✅ | `0x22b5f0` |

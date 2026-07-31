@@ -934,6 +934,20 @@ VERIFIED = {
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
+    0x215654: 'ApplilinkCore +checkUdid: calls udid and ad_udid, then orr x8,x20,x0 with cset ne, '
+              'so the result is true when either is non-nil. Both are always evaluated, since the '
+              'or is bitwise over the two pointers rather than a branch. The reconstruction binds '
+              'both to locals before the ||, which is what keeps that faithful; a direct '
+              '[self udid] != nil || [self ad_udid] != nil would short-circuit and skip the second '
+              'call',
+    0x21f808: 'RewardNetwork +closeAdScreen: guarded by canUseApplilinkSdk, then RewardCore '
+              'sharedInstance and closeAdScreen, the same shape as the RecommendNetwork one',
+    0x2201e0: 'ApplilinkIndicator -touchEventActived: sets the background to clearColor and then '
+              'tail-branches to setUserInteractionEnabled:NO, so the view stops swallowing touches '
+              'while staying on screen',
+    0x22b55c: 'ShadeView -touchesEnded:withEvent:: a cbz on _delegate and then a respondsToSelector: '
+              'test for closeShadeView before sending it, with the ivar re-read for the send. '
+              'Neither the touches nor the event argument is used',
     0x234e38: 'ApplilinkPasteBoard -init: a bare super init whose result is returned with no ivar '
               'setup, so the one-line reconstruction is right',
     0x23ed30: 'RecommendAdAreaView -removeFromSuperview: a bare super chain, unlike the '
