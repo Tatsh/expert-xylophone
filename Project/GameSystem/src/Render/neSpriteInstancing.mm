@@ -655,7 +655,8 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         // The bounded traces above were exhausted long before the fault, so check the
         // precondition itself: a null index pointer is only safe with a real element buffer
         // bound. glGetIntegerv is a query with no effect on error state.
-        NE_DBG(if ((pRenderer->QueryBoundElementBuffer() == 0 || pRenderer->HasNullVertexArray()) &&
+        NE_DBG(if ((pRenderer->QueryBoundElementBuffer() == 0 || pRenderer->HasNullVertexArray() ||
+                    (bMatrixPalette && pRenderer->QueryBoundArrayBuffer() == 0)) &&
                    NE_DBG_FIRST(4)) {
             neDebugLog("emit draw UNBOUND element=%d array=%d nullVertex=%d indexVbo=%u "
                        "arrayVbo=%u scratch=%p queued=%d count=%d owner=%s",
