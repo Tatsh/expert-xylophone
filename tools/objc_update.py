@@ -972,6 +972,13 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x6aad8: 'RBMusicManager +getPathFromPurchesed:: getMusicDataFilename: appended to '
+             'GetPrivateDocumentsPath, the helper at 0x1a1224, resolved by name from the program',
+    0x6ab88: 'RBMusicManager +getPathFromPurchesedOldDirectory:: identical except for the base, '
+             'which is GetCachesDirectoryPath at 0x1a1218. The two are a migration pair, old in '
+             'Caches and current in the private Documents directory, and the only thing '
+             'distinguishing them in the disassembly is which helper address is called. Swapping '
+             'them would leave every purchased track looked up in the directory it is not in',
     0x35838: 'RBTutorialManager +isTutorialMusicselect: cmp w0,#0xa with cset cc, an unsigned '
              'lower test, so the result is currentStatus < 10 and that matches '
              'RBTutorialStatusPlayRangeStart. The binary fetches the instance and reads '
