@@ -516,16 +516,7 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
 
 #pragma mark Music data
 
-// The detail-panel background, indexed by frame-bonus type. Entry 3 is the plain background the
-// non-Limelight themes always take. @ghidraAddress 0x35af80
-static NSString *const kDetMbgTable[] = {
-    @"02_music_detail/det_mbg_d",
-    @"02_music_detail/det_mbg_g",
-    @"02_music_detail/det_mbg_p",
-    @"02_music_detail/det_mbg",
-};
-
-// The plain background's index in kDetMbgTable.
+// The plain background's index in kDetMbgTable, which the non-white themes always take.
 enum { kDetMbgPlainIndex = 3 };
 
 - (void)setMusicData:(MusicData *)musicData {
