@@ -192,6 +192,7 @@ gamesystem
 ghidra
 ghidra's
 gles
+gluint
 grage
 graphviz
 halfwidth
@@ -348,6 +349,7 @@ pycache
 pyinstaller
 pylock
 pyproject
+qqqii
 qrispy
 qual
 quavre

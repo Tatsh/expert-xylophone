@@ -65,9 +65,6 @@ typedef enum {
 @implementation StoreExtendNoteDetailViewPad {
     // The current sample-playback state. This ivar has no leading underscore in the binary.
     StoreSampleStatus sampleStatus;
-    // Reserved sample-downloading flag declared by the binary; unused in the shipped flow. No
-    // leading underscore in the binary.
-    BOOL isDownloadingSample;
     // Reserved button-type field declared by the binary. No leading underscore in the binary.
     int buttonType;
     // Reserved unlock flag declared by the binary. No leading underscore in the binary.
