@@ -20,6 +20,10 @@
 #import "ApplilinkViewController.h"
 
 // The one and only ApplilinkStore instance and its dispatch_once tokens.
+// File-scope rather than method-local, which the singleton rule would otherwise ask for, because
+// +allocWithZone: and +sharedInstance share the instance and each has its own once token. The
+// binary agrees: all three live at one global base, the instance at +0x670 and the shared token at
+// +0x670+0x18.
 static ApplilinkStore *sSharedInstance = nil;
 static dispatch_once_t sAllocOnceToken = 0;
 static dispatch_once_t sSharedOnceToken = 0;

@@ -950,6 +950,14 @@ VERIFIED = {
     0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
               'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
               'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x2205c0: 'ApplilinkStore +sharedInstance: the inlined dispatch_once fast path, cmn x8,#1 on '
+              'the token at +0x670+0x18 with the slow path branched around, so the guard is '
+              'dispatch_once and not a nil check or @synchronized. The instance sits at +0x670 and '
+              'is shared with +allocWithZone:, which has its own token, so the storage cannot be a '
+              'method-local static and the file-scope spelling is forced rather than chosen',
+    0x20fa84: 'AnalysisNetworkCore +clearDAU: removes "ApplilinkAnalysis.dauMeasurementDate" and '
+              'synchronises, fetching standardUserDefaults separately for each of the two sends '
+              'rather than holding it, which the reconstruction reproduces',
     0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
               '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
               'despite the similarly-named delegate callback that does',
