@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5039 verified
-(79.4%).
+Total: 6343 — 6306 reconstructed, 5041 verified
+(79.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5039 verified, 3507 come from those passes and the remaining
-1532 were read by hand. The split matters when reading the percentage: a
+Of the 5041 verified, 3507 come from those passes and the remaining
+1534 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5934,8 +5934,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `setWebViewStatus:` | prop | ✅ | ✅ | `0x21f458` |
 | `RewardWebViewController` | `-` | `baseFrame` | prop | ✅ | ✅ | `0x21f468` |
 | `RewardWebViewController` | `-` | `setBaseFrame:` | prop | ✅ | ✅ | `0x21f480` |
-| `RewardNetwork` | `+` | `openAdScreenWithAdLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x21f524` |
-| `RewardNetwork` | `+` | `openAdScreenWithParentView:adLocation:delegate:` |  | ✅ | ❌ | `0x21f598` |
+| `RewardNetwork` | `+` | `openAdScreenWithAdLocation:requestCode:delegate:` |  | ✅ | ✅ | `0x21f524` |
+| `RewardNetwork` | `+` | `openAdScreenWithParentView:adLocation:delegate:` |  | ✅ | ✅ | `0x21f598` |
 | `RewardNetwork` | `+` | `openAdScreenWithParentView:adLocation:requestCode:delegate:` |  | ✅ | ❌ | `0x21f60c` |
 | `RewardNetwork` | `+` | `closeAdScreen` |  | ✅ | ✅ | `0x21f808` |
 | `RewardNetwork` | `+` | `allInstallFlgWithCallback:` |  | ✅ | ❌ | `0x21f880` |

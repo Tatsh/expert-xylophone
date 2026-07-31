@@ -942,6 +942,13 @@ VERIFIED = {
               'call',
     0x21f808: 'RewardNetwork +closeAdScreen: guarded by canUseApplilinkSdk, then RewardCore '
               'sharedInstance and closeAdScreen, the same shape as the RecommendNetwork one',
+    0x21f524: 'RewardNetwork +openAdScreenWithAdLocation:requestCode:delegate:: forwards to the '
+              'four-part openAdScreenWithParentView:adLocation:requestCode:delegate: with x2 '
+              'zeroed, so it is the parent view that is dropped',
+    0x21f598: 'RewardNetwork +openAdScreenWithParentView:adLocation:delegate:: forwards to the '
+              'same four-part selector but zeroes x4 instead, so this one drops the request code. '
+              'The two convenience forms nil different parameters and are easy to conflate, so '
+              'each was read on its own',
     0x2201e0: 'ApplilinkIndicator -touchEventActived: sets the background to clearColor and then '
               'tail-branches to setUserInteractionEnabled:NO, so the view stops swallowing touches '
               'while staying on screen',
