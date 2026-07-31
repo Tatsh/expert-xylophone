@@ -160,6 +160,13 @@ static const NSInteger kCommentLabelLineCount = 3;
 
 #pragma mark - Content
 
+/** @ghidraAddress 0x4d004 */
+- (void)reset {
+    // Clears the artwork first, then chains to the base reset, which is empty.
+    [self setArtwork:nil];
+    [super reset];
+}
+
 /** @ghidraAddress 0x4cadc */
 - (void)setArtwork:(UIImage *)artwork {
     self.artworkImageView.image = artwork;

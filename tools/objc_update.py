@@ -2619,8 +2619,13 @@ def render(methods: list[Method], keyed, loose) -> str:
     rows = []
     done = verified = 0
     for m in sorted(listed, key=lambda m: m.address):
+        # The selector-alone fallback exists only for category rows, whose class the binary never
+        # names. Letting it answer for a real class credits that class with any same-named selector
+        # a category happens to define, which is how -[StoreExtendNoteView reset] read as
+        # reconstructed while no such override existed.
         is_reconstructed = ((m.class_name, m.kind, m.selector) in keyed
-                    or (m.kind, m.selector) in loose)
+                            or (m.class_name.startswith('(')
+                                and (m.kind, m.selector) in loose))
         relative = m.address - IMAGE_BASE
         is_verified = relative in VERIFIED or relative in mechanical
         done += is_reconstructed
