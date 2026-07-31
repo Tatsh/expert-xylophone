@@ -846,3 +846,24 @@ source, needing no disassembly at all:
 `-[RBStoreManageHeaderCell initWithReuseIdentifier:frame:section:withTarget:]` and
 `-[RBMusicExtendNoteView initWithFrame:ExtendNoteID:MusicSelectedBase:]` were the plain cases,
 `NSInteger` against `Q` and `unsigned int` against `i`.
+
+## An unresolved anomaly in `-[RBMusicManager setClientMusicPageNum:]`
+
+`0x6cc90` is listed as `-[RBMusicManager setClientMusicPageNum:]` and flagged a property accessor.
+Its body sends `releaseClientMusic` to `self`, then sends **`setClientMusicPageNum:` to `self`**,
+then allocates the client-music array. The selector was resolved from the reference slot at
+`0x3c1158` rather than taken from a decompiler label, and it really is that selector; the receiver
+is `x20`, which holds the original `x0`.
+
+A method cannot send its own selector to its own receiver without recursing forever, so one of the
+premises is wrong and it is not clear which. Either the checklist's address for the selector is
+wrong and `0x6cc90` implements something else, or the property flag and the address are being taken
+from different sources and disagree. `RBExtendNoteManager` also defines `setClientMusicPageNum:`,
+at `0x1840d0`, so a selector collision is in play as well.
+
+Left **unverified** and recorded rather than guessed at. The reconstruction's body reads
+plausibly — release, assign the ivar, allocate the array at twenty entries per page — but the
+middle send is not an ivar assignment, and until the attribution is settled there is no honest way
+to call the method checked. Worth resolving early in a later pass, because if the checklist can
+misattribute an address here it can do so elsewhere, and every `@ghidraAddress` in the tree rests
+on that mapping.

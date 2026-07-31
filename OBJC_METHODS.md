@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4838 verified
+Total: 6343 — 6306 reconstructed, 4841 verified
 (76.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1543,7 +1543,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `LoadMusicResultWithLoop:` |  | ✅ | ❌ | `0x6a560` |
 | `RBBGMManager` | `-` | `LoadMusic:Loop:` |  | ✅ | ❌ | `0x6a70c` |
 | `RBBGMManager` | `-` | `LoadMusicWithPush:Loop:` |  | ✅ | ❌ | `0x6a7b4` |
-| `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ❌ | `0x6a854` |
+| `RBBGMManager` | `-` | `pushMusic` |  | ✅ | ✅ | `0x6a854` |
 | `RBBGMManager` | `-` | `popMusic` |  | ✅ | ✅ | `0x6a8f0` |
 | `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
 | `RBMusicManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x6a990` |
@@ -1562,7 +1562,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicManager` | `-` | `addPurchasedMusic:` |  | ✅ | ❌ | `0x6b7d0` |
 | `RBMusicManager` | `-` | `createMusicDataArray` |  | ✅ | ❌ | `0x6c18c` |
 | `RBMusicManager` | `-` | `setMusicDataArrayDirty` |  | ✅ | ✅ | `0x6c6a8` |
-| `RBMusicManager` | `-` | `getMusicDataArray` |  | ✅ | ❌ | `0x6c6b8` |
+| `RBMusicManager` | `-` | `getMusicDataArray` |  | ✅ | ✅ | `0x6c6b8` |
 | `RBMusicManager` | `-` | `getMusicData:` |  | ✅ | ❌ | `0x6c754` |
 | `RBMusicManager` | `-` | `releaseChacheMusicData` |  | ✅ | ❌ | `0x6c8b4` |
 | `RBMusicManager` | `-` | `getMusicIDs` |  | ✅ | ❌ | `0x6c9e4` |
@@ -1648,7 +1648,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistManager` | `-` | `synchronize` |  | ✅ | ❌ | `0x71654` |
 | `RBPlaylistManager` | `-` | `numberOfPlaylists` |  | ✅ | ✅ | `0x716f4` |
 | `RBPlaylistManager` | `-` | `playlistAtIndex:` |  | ✅ | ❌ | `0x71754` |
-| `RBPlaylistManager` | `-` | `indexOfPlaylist:` |  | ✅ | ❌ | `0x7193c` |
+| `RBPlaylistManager` | `-` | `indexOfPlaylist:` |  | ✅ | ✅ | `0x7193c` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylistWithIdentifier:` |  | ✅ | ❌ | `0x719d4` |
 | `RBPlaylistManager` | `-` | `nameOfPlaylistAtIndex:` |  | ✅ | ❌ | `0x71b84` |
 | `RBPlaylistManager` | `-` | `identifierOfPlaylistAtIndex:` |  | ✅ | ❌ | `0x71c9c` |

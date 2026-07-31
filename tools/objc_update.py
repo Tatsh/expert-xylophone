@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x6a854: 'RBBGMManager -pushMusic: returns the entry value of m_IsMusic and, when set, pushes '
+             'the BGM then flips m_IsPushMusic on and m_IsMusic off',
+    0x6c6b8: 'RBMusicManager -getMusicDataArray: rebuilds when the array is nil or the dirty flag '
+             'is set, then returns it',
+    0x7193c: 'RBPlaylistManager -indexOfPlaylist:: indexOfObjectIdenticalTo: on arrayPlaylist, so '
+             'it matches by pointer identity rather than by isEqual:',
     0xfd100: 'StorePackMusicView -setBG:: clamps the index to [0, 1] with signed tests, indexes '
              'the name table at 0x35b388, stretches with caps of 4 on both axes, and assigns to '
              'bg.image. The signed clamp is why the parameter is an int rather than a BOOL',
