@@ -177,6 +177,7 @@ fram
 frintm
 fsub
 ftrivial
+ftype
 fullcombo
 fullwidth
 gamecenter

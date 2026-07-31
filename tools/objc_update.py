@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x2a88c: 'StringConvert +convertKorsk:: returns the input unchanged when nil or empty, else '
+             'one stringByReplacingOccurrencesOfString:withString: over the pair at 0x362d40',
+    0x36e0c: 'RBHttpUtil -initWithPostURL:post:contentType:: forwards with a single-precision '
+             'fmov of 15.0; the four-argument form encodes its timeout f, not d, so the default '
+             'constant is retyped from NSTimeInterval to float',
     0x41c64: 'AVBus -volume: returns the fmov immediate 1.0 when no player is bound, decoded from '
              'the instruction word and matching kUnboundVoiceVolume, else the player\'s volume',
     0x36308: 'RBTutorialManager +getUnlockedItemInfo: getInstance, then a copy of unlockItemInfo',

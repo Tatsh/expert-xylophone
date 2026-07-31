@@ -732,3 +732,23 @@ is a measured result rather than an untested checker reporting success.
 
 The contrast between the two runs is the whole lesson: same question, same binary, same afternoon,
 197 confident wrong answers from a plausible shortcut and 0 correct ones from the real walk.
+
+## The return-width sweep does not cover parameters
+
+`+[RBHttpUtil initWithPostURL:post:contentType:]` forwards to the four-argument form with a default
+timeout. The binary supplies it with a **single-precision** `fmov` (`ftype` 0, value 15.0), and the
+four-argument initialiser's types string is `@44@0:8@16@24@32f40` — its timeout parameter encodes
+`f`, a float, not `d`.
+
+The parameter itself was already declared `(float)` in both the header and the implementation, so
+the signature was right. The constant feeding it was not: `kDefaultPostTimeoutInterval` was an
+`NSTimeInterval`, which is a double, narrowed implicitly at its only call site. It is now a `float`.
+Its neighbour `kDefaultTimeoutInterval` stays an `NSTimeInterval`, and that is correct — it feeds
+Foundation's `-initWithURL:cachePolicy:timeoutInterval:`, whose parameter genuinely is one.
+
+The point worth recording is the gap this exposes in `tools/scan_return_widths.py`. That tool reads
+each `method_t` types string but compares only the **return** encoding, which is the first field.
+Every parameter encoding sits in the same string and is equally checkable, and a wrong parameter
+width is the more dangerous of the two: a widened return is usually harmless, whereas a `double`
+parameter where the callee expects a `float` mismatches the calling convention outright. Extending
+the sweep across parameters is the obvious next piece of work on that tool.

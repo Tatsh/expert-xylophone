@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4833 verified
+Total: 6343 — 6306 reconstructed, 4835 verified
 (76.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -472,7 +472,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StringConvert` | `+` | `convertYomigana:` |  | ✅ | ❌ | `0x2a190` |
 | `StringConvert` | `+` | `convertFromVToB:` |  | ✅ | ❌ | `0x2a640` |
 | `StringConvert` | `+` | `convertDJ:` |  | ✅ | ❌ | `0x2a7b4` |
-| `StringConvert` | `+` | `convertKorsk:` |  | ✅ | ❌ | `0x2a88c` |
+| `StringConvert` | `+` | `convertKorsk:` |  | ✅ | ✅ | `0x2a88c` |
 | `StringConvert` | `+` | `convertFromMacronToVowel:` |  | ✅ | ❌ | `0x2a92c` |
 | `StringConvert` | `+` | `convertFromLowerToUpper:` |  | ✅ | ❌ | `0x2a9e8` |
 | `StringConvert` | `+` | `convertFromVoiceToVoiceless:` |  | ✅ | ❌ | `0x2aaa4` |
@@ -643,7 +643,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBHttpUtil` | `+` | `dictionaryToJsonData:` |  | ✅ | ❌ | `0x36aa8` |
 | `RBHttpUtil` | `-` | `init` |  | ✅ | ✅ | `0x36b5c` |
 | `RBHttpUtil` | `-` | `initWithGetURL:` |  | ✅ | ❌ | `0x36bd0` |
-| `RBHttpUtil` | `-` | `initWithPostURL:post:contentType:` |  | ✅ | ❌ | `0x36e0c` |
+| `RBHttpUtil` | `-` | `initWithPostURL:post:contentType:` |  | ✅ | ✅ | `0x36e0c` |
 | `RBHttpUtil` | `-` | `initWithPostURL:post:contentType:timeoutInterval:` |  | ✅ | ❌ | `0x36ea4` |
 | `RBHttpUtil` | `-` | `initWithDownloadURL:filePath:` |  | ✅ | ❌ | `0x371b0` |
 | `RBHttpUtil` | `-` | `updateRequest:HTTPMethod:contentType:sendData:filePath:` |  | ✅ | ❌ | `0x3741c` |

@@ -25,8 +25,10 @@ static NSString *const kHTTPMethodPost = @"POST";
 
 // The default request timeout, in seconds, for the GET, download, and rebuilt requests.
 static const NSTimeInterval kDefaultTimeoutInterval = 15.0;
-// The default request timeout, in seconds, for a POST when the caller gives no explicit value.
-static const NSTimeInterval kDefaultPostTimeoutInterval = 15.0;
+// The default request timeout, in seconds, for a POST when the caller gives no explicit value. It
+// is a float rather than an NSTimeInterval: the four-argument initialiser it feeds encodes its
+// timeout parameter as f, and the binary supplies this default with a single-precision fmov.
+static const float kDefaultPostTimeoutInterval = 15.0f;
 // The sentinel stored in the timeout properties when no interval has been set.
 static const long long kUnsetTimeoutInterval = -1;
 
