@@ -373,12 +373,11 @@ static const CGFloat kWhitePastelCenterX = 160.0;
 static const CGFloat kWhitePastelCenterY = 297.0;
 static const CGFloat kBlackPastelCenterX = 160.0;
 static const CGFloat kBlackPastelCenterY = 287.0;
-static const CGFloat kDoubleGap = 0.5;
-static const CGFloat kDoubleBaseX = 70.0;
-static const CGFloat kDoubleOffsetX = -32.0;
-static const CGFloat kDoubleWidthPad = 110.0;
-static const CGFloat kWhitePastel2X = 282.0;
-static const CGFloat kWhitePastel2Y = 546.0;
+// The right-hand slot of the lower button row, shared by the double-play button and the second
+// pastel button, which are alternates for the same position. Both frames take their size straight
+// from their background image. @ghidraAddress 0x3013d8 (x) and 0x3013d0 (y).
+static const CGFloat kDecideRightX = 282.0;
+static const CGFloat kDecideRightY = 546.0;
 static const CGFloat kBlackPastel2X = 282.0;
 static const CGFloat kBlackPastel2Y = 546.0;
 static const CGFloat kRandomX = 318.0;
@@ -858,10 +857,8 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
                                [UIImage imageWithName:@"02_music_detail/det_dec_d"] :
                                [UIImage imageWithName:kDetDecTable[frameBonusType]];
     CGSize doubleSize = doubleImage.size;
-    self.doubleButton.frame = CGRectMake(kDoubleBaseX + kDoubleGap * kDoubleOffsetX,
-                                         kDecideY,
-                                         doubleSize.width + kDoubleWidthPad,
-                                         doubleSize.height);
+    self.doubleButton.frame =
+        CGRectMake(kDecideRightX, kDecideRightY, doubleSize.width, doubleSize.height);
     self.doubleButton.exclusiveTouch = YES;
     [self.doubleButton setBackgroundImage:doubleImage forState:UIControlStateNormal];
     [self.doubleButton addTarget:self
@@ -886,7 +883,7 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
     UIButton *whitePastel2Button = [UIButton buttonWithType:UIButtonTypeCustom];
     CGSize whitePastel2Size = whitePastel2Image.size;
     whitePastel2Button.frame =
-        CGRectMake(kWhitePastel2X, kWhitePastel2Y, whitePastel2Size.width, whitePastel2Size.height);
+        CGRectMake(kDecideRightX, kDecideRightY, whitePastel2Size.width, whitePastel2Size.height);
     whitePastel2Button.exclusiveTouch = YES;
     [whitePastel2Button setBackgroundImage:whitePastel2Image forState:UIControlStateNormal];
     [whitePastel2Button addTarget:self
