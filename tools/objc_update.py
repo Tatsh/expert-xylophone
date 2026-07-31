@@ -279,6 +279,11 @@ VERIFIED = {
     0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
     0xe8894: 'RBMenuBGEffectView -removeFromSuperview: the same lone super chain',
     0x3d080: 'neWindow -initWithFrame:: chains to super and returns it, adding nothing',
+    0xd8f98: 'RBPopoverBackgroundView -horizontalInsetsForStretchedImage:insets:: returns {top, '
+             'width - 0.4375, bottom, 9.0}; the shrink is the fmov immediate whose bit pattern is '
+             '0xbfdc000000000000, not a whole point',
+    0xd8fdc: 'RBPopoverBackgroundView -verticalInsetsForStretchedImage:insets:: the transpose of '
+             'it, {height - 0.4375, left, 9.0, right}',
     0x14d40: 'UnZipArchive -init: chains to super and clears m_ZipFile only when that returned '
              'non-nil',
     0x18cb0: 'SystemHardware -getHardwareType: 15 is the unresolved sentinel; the cmp at 0x18ccc '

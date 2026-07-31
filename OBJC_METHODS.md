@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4643 verified
+Total: 6343 — 6306 reconstructed, 4645 verified
 (73.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2638,8 +2638,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `firstHalfStretchAmountForImage:` |  | ✅ | ❌ | `0xd8d74` |
 | `RBPopoverBackgroundView` | `-` | `contextSizeForFirstHalfImage:` |  | ✅ | ❌ | `0xd8e38` |
 | `RBPopoverBackgroundView` | `-` | `secondHalfInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8ed8` |
-| `RBPopoverBackgroundView` | `-` | `horizontalInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8f98` |
-| `RBPopoverBackgroundView` | `-` | `verticalInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8fdc` |
+| `RBPopoverBackgroundView` | `-` | `horizontalInsetsForStretchedImage:insets:` |  | ✅ | ✅ | `0xd8f98` |
+| `RBPopoverBackgroundView` | `-` | `verticalInsetsForStretchedImage:insets:` |  | ✅ | ✅ | `0xd8fdc` |
 | `RBPopoverBackgroundView` | `-` | `mirroredImage:` |  | ✅ | ❌ | `0xd9020` |
 | `RBPopoverBackgroundView` | `-` | `mirroredInsets:` |  | ✅ | ✅ | `0xd9110` |
 | `RBPopoverBackgroundView` | `-` | `imageFromImageContextWithSourceImage:size:` |  | ✅ | ❌ | `0xd9120` |
