@@ -978,6 +978,11 @@ VERIFIED = {
              'that returned nil without setting an error would still be returned as nil and one '
              'that returned data alongside an error would be discarded. The reconstruction tests '
              'the same thing',
+    0xcce0: 'RBMenuBGEffectPartView -init: super init behind a cbz, then three path setters. The '
+            'paths are read from a table at +0x520 in descending order, +0x20 then +0x10 then +0, '
+            'so image1 takes bg_tex_05 and image3 takes bg_tex_01. The numbering runs opposite to '
+            'the table, which the reconstruction has right; ascending order would have produced a '
+            'plausible 01/03/05 and swapped the outer two layers',
     0x1529c: 'BFCodec -init: super init behind a cbz, then _iv zeroed with a single str xzr, which '
              'matches its [8C] encoding and the 8-byte memset. The context is allocated with '
              'operator.new at 0x24ab08 for 0x2090 bytes and cleared by the routine at 0x15a80, and '
