@@ -1066,6 +1066,12 @@ VERIFIED = {
              'NSInteger types imply and is carried implicitly by the casts. Then fcmp against a '
              '1.0 fmov clamps the result. downloadSize is sent twice, once for the guard and once '
              'as the divisor, which the reconstruction also does',
+    0x35a40: 'RBTutorialManager +needStartTutorialCustomize: three conditions, each an early '
+             'return. cmp x0,#0 with b.gt on totalRecordCount, so any saved score refuses; a tbz '
+             'on noUnlocked; and getTutorialStatus: with w2 = 0x21, which is 33 and matches '
+             'RBTutorialStatusCustomizeSeen, compared with cset ne against 1. The last is a '
+             'not-equal, so any value other than the seen marker starts the tutorial rather than '
+             'only the unset one',
     0x3597c: 'RBTutorialManager +isTutorialPlay: a range test, b.cc on cmp #0xa returning NO below '
              '10 and cset cc on cmp #0x17 for the upper bound, so the answer is 10 <= status < 23. '
              'Both compares are unsigned and both bounds match their constants. Unlike '
