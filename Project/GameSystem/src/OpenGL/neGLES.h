@@ -186,6 +186,22 @@ public:
      * @return The bound element-array buffer name, or zero when none is bound.
      */
     int QueryBoundElementBuffer() const;
+    /**
+     * @brief Whether the vertex array would be submitted from client address zero, for diagnostics.
+     *
+     * ClearVertexPointer points the array at offset zero of the bound array buffer and records the
+     * pointer as null. That is correct while a buffer is bound, but if the array buffer is later
+     * unbound without the vertex pointer being re-established, GL reads offset zero as a client
+     * address instead, which is a null client array.
+     * @return @c true when no array buffer is bound and the vertex pointer is null.
+     */
+    bool HasNullVertexArray() const {
+        return m_nArrayBufferBound == 0 && m_pVertexPointer == nullptr;
+    }
+    /**
+     * @brief The array buffer GL actually has bound, for diagnostics only.
+     */
+    int QueryBoundArrayBuffer() const;
 #endif
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.

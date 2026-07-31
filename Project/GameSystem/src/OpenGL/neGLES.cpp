@@ -568,6 +568,12 @@ int neGLESRenderer::QueryBoundElementBuffer() const {
     glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &nBound);
     return static_cast<int>(nBound);
 }
+
+int neGLESRenderer::QueryBoundArrayBuffer() const {
+    GLint nBound = 0;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &nBound);
+    return static_cast<int>(nBound);
+}
 #endif
 
 /** @ghidraAddress 0x21ab4 */
