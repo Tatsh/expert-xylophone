@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4858 verified
-(76.6%).
+Total: 6343 — 6306 reconstructed, 4862 verified
+(76.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2171,7 +2171,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `getStoreButton` |  | ✅ | ✅ | `0xb5c00` |
 | `RBMenuView` | `-` | `setPastelForTutorialStart` |  | ✅ | ✅ | `0xb5c0c` |
 | `RBMenuView` | `-` | `setPastelForTutorialEnd` |  | ✅ | ✅ | `0xb5cb0` |
-| `RBMenuView` | `-` | `closeTutorial` |  | ✅ | ❌ | `0xb5d54` |
+| `RBMenuView` | `-` | `closeTutorial` |  | ✅ | ✅ | `0xb5d54` |
 | `RBMenuView` | `-` | `closeCustomize` |  | ✅ | ❌ | `0xb5dfc` |
 | `RBMenuView` | `-` | `playlistEditStart` |  | ✅ | ❌ | `0xb5ec4` |
 | `RBMenuView` | `-` | `playlistEditFinish` |  | ✅ | ❌ | `0xb740c` |
@@ -2511,13 +2511,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicView` | `-` | `SelectItunes` |  | ✅ | ✅ | `0xd4f54` |
 | `RBMusicView` | `-` | `showAnimation:` |  | ✅ | ❌ | `0xd50a0` |
 | `RBMusicView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xd5680` |
-| `RBMusicView` | `-` | `ReplayMusic` |  | ✅ | ❌ | `0xd5ca4` |
+| `RBMusicView` | `-` | `ReplayMusic` |  | ✅ | ✅ | `0xd5ca4` |
 | `RBMusicView` | `-` | `firstInfoAnimation` |  | ✅ | ❌ | `0xd5d4c` |
 | `RBMusicView` | `-` | `firstInfoAnimationCheck` |  | ✅ | ❌ | `0xd5f38` |
 | `RBMusicView` | `-` | `selectPage:` |  | ✅ | ❌ | `0xd60d4` |
 | `RBMusicView` | `-` | `firstInfoScrollEnd` |  | ✅ | ✅ | `0xd61b0` |
 | `RBMusicView` | `-` | `setFirstScrollAnimation` |  | ✅ | ❌ | `0xd61e0` |
-| `RBMusicView` | `-` | `setScrollable:` |  | ✅ | ❌ | `0xd65dc` |
+| `RBMusicView` | `-` | `setScrollable:` |  | ✅ | ✅ | `0xd65dc` |
 | `RBMusicView` | `-` | `setEnableButton:` |  | ✅ | ✅ | `0xd6684` |
 | `RBMusicView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0xd66e0` |
 | `RBMusicView` | `-` | `getDecideButton` |  | ✅ | ✅ | `0xd6b1c` |
@@ -2803,7 +2803,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0xe5f40` |
 | `RBSearchMapViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0xe60f0` |
 | `RBSearchMapViewController` | `-` | `pushBarBtnBack:` |  | ✅ | ❌ | `0xe6238` |
-| `RBSearchMapViewController` | `-` | `pushCurrent:` |  | ✅ | ❌ | `0xe6300` |
+| `RBSearchMapViewController` | `-` | `pushCurrent:` |  | ✅ | ✅ | `0xe6300` |
 | `RBSearchMapViewController` | `-` | `forceClose` |  | ✅ | ❌ | `0xe63a0` |
 | `RBSearchMapViewController` | `-` | `didChangeUserTracking:` |  | ✅ | ✅ | `0xe6454` |
 | `RBSearchMapViewController` | `-` | `currentLocation` | prop | ✅ | ✅ | `0xe64b0` |

@@ -297,6 +297,15 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xd5ca4: 'RBMusicView -ReplayMusic: the same retry shape as the RBMenuView method of that name '
+             'but a different delay. Its pool slot 0x2eedc0 holds 0.20000000298023224, which is '
+             '0.2f widened, so this one uses g_dMascotMessageAnimDuration where the other uses '
+             'g_dMascotMoveAnimDuration; the reconstruction picks the right global for each',
+    0xd65dc: 'RBMusicView -setScrollable:: enables the scroll view and hides the page control on '
+             'the inverted flag',
+    0xb5d54: 'RBMenuView -closeTutorial: removes and clears tutorialView when one is held',
+    0xe6300: 'RBSearchMapViewController -pushCurrent:: looks the map up by the mov w2 tag of '
+             '0x23d and toggles tracking only when it is found',
     0xaaa20: 'RBMenuView -ReplayMusic: retries on the next turn when PlayMusic: with the 1.5f '
              'fmov returns false. The delay pool slot at 0x2ec6a8 holds 0.10000000149011612, which '
              'is 0.1f widened rather than the true double 0.1, so the f suffix on '
