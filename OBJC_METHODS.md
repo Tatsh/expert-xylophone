@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5082 verified
-(80.1%).
+Total: 6343 — 6306 reconstructed, 5084 verified
+(80.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5082 verified, 3507 come from those passes and the remaining
-1575 were read by hand. The split matters when reading the percentage: a
+Of the 5084 verified, 3507 come from those passes and the remaining
+1577 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -6130,8 +6130,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkPasteBoard` | `-` | `dealloc` |  | ❌ | ✅ | `0x236710` |
 | `ApplilinkPasteBoard` | `-` | `nonPasteBoardUdidFlag` | prop | ✅ | ✅ | `0x23674c` |
 | `ApplilinkPasteBoard` | `-` | `setNonPasteBoardUdidFlag:` | prop | ✅ | ✅ | `0x23675c` |
-| `ApplilinkParameters` | `-` | `setRequestWithAdModel:adLocation:requestCode:` |  | ✅ | ❌ | `0x23676c` |
-| `ApplilinkParameters` | `-` | `setRequestWithAdModel:adLocation:verticalAlign:requestCode:` |  | ✅ | ❌ | `0x2367f8` |
+| `ApplilinkParameters` | `-` | `setRequestWithAdModel:adLocation:requestCode:` |  | ✅ | ✅ | `0x23676c` |
+| `ApplilinkParameters` | `-` | `setRequestWithAdModel:adLocation:verticalAlign:requestCode:` |  | ✅ | ✅ | `0x2367f8` |
 | `ApplilinkParameters` | `-` | `adModel` | prop | ✅ | ✅ | `0x236884` |
 | `ApplilinkParameters` | `-` | `setAdModel:` | prop | ✅ | ✅ | `0x236894` |
 | `ApplilinkParameters` | `-` | `adLocation` | prop | ✅ | ✅ | `0x2368a4` |

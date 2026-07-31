@@ -1123,6 +1123,14 @@ VERIFIED = {
               '0x3722c0, decoded as "ApplilinkRecommend.allAdData" and matching '
               'kRecommendAdCacheAllAdDataKey. It clears the payload only, not the neighbouring '
               'expiry key, which has its own clear method',
+    0x23676c: 'ApplilinkParameters -setRequestWithAdModel:adLocation:requestCode:: three ivar '
+              'stores, the int direct and the two object ones through retain and release of the '
+              'previous value, which is the ARC strong setter shape',
+    0x2367f8: 'ApplilinkParameters -setRequestWithAdModel:adLocation:verticalAlign:requestCode:: '
+              'the same three ivars and only those three. verticalAlign arrives in x4 and is never '
+              'stored anywhere, so the extra parameter is accepted and dropped. The reconstruction '
+              'says so in a comment rather than quietly adding the field, which is right: an '
+              'invented _verticalAlign would have matched no ivar in the metadata',
     0x2416d4: 'RotateStoreProductViewController -initWithNibName:bundle:: a bare super chain that '
               'forwards both arguments and returns the result, with the nib name retained across '
               'the call and released after',
