@@ -586,6 +586,20 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
 
         ++nQueued;
         if (nQueued == nMaxPerBatch) {
+            // The play screen faults in glDrawElements at address zero, which is what an indexed
+            // draw does when it takes its indices from client memory and that pointer is null. Name
+            // every term the draw depends on so the null one is identified rather than inferred.
+            if (NE_DBG_FIRST(40)) {
+                neDebugLog("emit draw indexVbo=%u arrayVbo=%u scratch=%p queued=%d count=%d "
+                           "maxPerBatch=%d palette=%d",
+                           m_dwIndexVbo,
+                           m_dwArrayVbo,
+                           m_pVertexScratch,
+                           nQueued,
+                           m_nSpriteCount,
+                           nMaxPerBatch,
+                           bMatrixPalette ? 1 : 0);
+            }
             pRenderer->BindIndexBuffer(m_dwIndexVbo);
             pRenderer->DrawIndexedPrimitives(
                 kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
@@ -593,6 +607,20 @@ void C_SPRITE_INSTANCING_2D::EmitMatrixSprites(neGLESRenderer *pRenderer,
         }
     }
     if (nQueued != 0) {
+        // The play screen faults in glDrawElements at address zero, which is what an indexed draw
+        // does when it takes its indices from client memory and that pointer is null. Name every
+        // term the draw depends on so the null one is identified rather than inferred.
+        if (NE_DBG_FIRST(40)) {
+            neDebugLog("emit draw indexVbo=%u arrayVbo=%u scratch=%p queued=%d count=%d "
+                       "maxPerBatch=%d palette=%d",
+                       m_dwIndexVbo,
+                       m_dwArrayVbo,
+                       m_pVertexScratch,
+                       nQueued,
+                       m_nSpriteCount,
+                       nMaxPerBatch,
+                       bMatrixPalette ? 1 : 0);
+        }
         pRenderer->BindIndexBuffer(m_dwIndexVbo);
         pRenderer->DrawIndexedPrimitives(kPrimitiveTriangles, nQueued * kIndicesPerSprite, nullptr);
     }
