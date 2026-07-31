@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5139 verified
+Total: 6343 — 6306 reconstructed, 5140 verified
 (81.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5139 verified, 3507 come from those passes and the remaining
-1632 were read by hand. The split matters when reading the percentage: a
+Of the 5140 verified, 3507 come from those passes and the remaining
+1633 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -308,7 +308,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SystemHardware` | `-` | `getHardwareName` |  | ✅ | ✅ | `0x18cf4` |
 | `SystemHardware` | `-` | `hardwareName` | prop | ✅ | ✅ | `0x18d40` |
 | `SystemHardware` | `-` | `setHardwareName:` | prop | ✅ | ✅ | `0x18d50` |
-| `RBResourceDownloadBGEffectPartView` | `-` | `init` |  | ✅ | ❌ | `0x19aa0` |
+| `RBResourceDownloadBGEffectPartView` | `-` | `init` |  | ✅ | ✅ | `0x19aa0` |
 | `RBResoureDownloadBGEffectView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x19b84` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupView` |  | ✅ | ✅ | `0x19c40` |
 | `RBResoureDownloadBGEffectView` | `-` | `setupParticle` |  | ✅ | ❌ | `0x19c90` |

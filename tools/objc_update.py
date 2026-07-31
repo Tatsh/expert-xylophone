@@ -1000,6 +1000,13 @@ VERIFIED = {
              'point. The y is frame height plus that -10, the alpha is a movi zero, and the '
              'background is a 0.8 pool double used for both white and alpha. All three match '
              'kDefaultStartX, kBottomMargin and kTranslucentAlpha',
+    0x19aa0: 'RBResourceDownloadBGEffectPartView -init: the three path setters are sent through '
+             'objc_msgSendSuper2, not objc_msgSend, so they really are [super setImageNPath:] and '
+             'the source says so with a comment. The strings at 0x3627e0, 0x362800 and 0x362820 '
+             'decode to bg_tex_05, 03 and 01, the same 5/3/1 mapping onto image 1/2/3 as the '
+             'parent RBMenuBGEffectPartView at 0xcce0, but as bare names without the directory '
+             'prefix and read from an ascending table where the parent reads descending. Same '
+             'result, opposite layout, so neither class can be used to infer the other',
     0x19b84: 'RBResoureDownloadBGEffectView -initWithFrame:: super chain behind a cbz, then two '
              'base-path setters taking the CFStrings at 0x362840 and 0x362860, decoded as "re_" '
              'and "ring_" and matching their constants. Both are prefixes rather than whole names, '
