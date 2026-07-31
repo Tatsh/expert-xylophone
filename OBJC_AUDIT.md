@@ -473,3 +473,27 @@ same shape as the `(id)`-cast method-kind inversions recorded above. And a `cbz`
 immediately before it is read, as guards all three `SKStoreProductParameter*` loads here, is a
 weak-imported framework symbol rather than application logic; it should not be reconstructed as a
 branch.
+
+## Sweeping the class instead of the instances
+
+Both StoreUtil defects share a root cause that no amount of reading reconstructed source will
+reliably surface: a variadic `objc_msgSend` decompiles with its stack-passed arguments missing, so
+the reconstruction loses an argument and still compiles. `tools/scan_format_calls.py` now checks
+the whole tree for the shapes that leave a trace in the source.
+
+Two of its checks gate the exit code, and both are clean: no format call disagrees with its
+argument count, and no file-local string constant is defined without being referenced. That is a
+real result for the 6343-method surface rather than for one routine, and the arity check passing
+also independently confirms the `"%@%05d"` correction.
+
+The third check is advisory and worth explaining, because its precision is poor by design. It
+looks for a prefix constant this tree strips but never emits, which is the only shape that exposes
+the product-id defect: `"%05d"` is internally consistent, and the prefixes were referenced — by
+the inverse mappings, which stripped a prefix the forward mappings never added. Run against the
+tree as it stood before the fix it names both. Run against the tree today it names twelve
+`applilink://` scheme and query-key constants that are all correct, because the remote ad and
+reward pages build those URLs and the app only parses them. Two true positives against twelve
+false ones makes it a lead worth following, not a gate.
+
+Both scans were regression-tested against the pre-fix commit rather than assumed to work; a
+checker that has only ever reported success has not been shown to check anything.
