@@ -303,6 +303,13 @@ VERIFIED = {
               'Field order is preserved with no transposition',
     0x1b356c: 'RBTutorialPastelLayer -getClipList:: instruction-identical to the RBTutorialPastel '
               'one and reading the same table, checked separately',
+    0x1c1b78: 'StoreExtendNoteCellPhone -isPurchased: inverts purchasedLabel.isHidden. That ivar '
+              'is named differently again from the labelPurchased and purchasedButton its siblings '
+              'use for the same role, which is why each pair is read rather than inferred',
+    0x1c1bd8: 'StoreExtendNoteCellPhone -setIsPurchased:: the matching setter, argument read',
+    0x1c1fa0: 'StoreExtendNoteCellPhone -setBgImage:: drives bgImageView, a third distinct name '
+              'for the background across these cells',
+    0x1c352c: 'SSZipArchive -initWithPath:: super init, nil check, then a copy of the path',
     0x1c0750: 'RBMenuPageSliderView -reset:currentPage:: forwards both arguments to the slider',
     0x1c09b0: 'RBMenuPageSliderView -hideAnimation: detaches the slider\'s delegate before '
               'chaining to super, so a hide in flight cannot call back',

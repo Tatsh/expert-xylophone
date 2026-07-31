@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4951 verified
+Total: 6343 — 6306 reconstructed, 4955 verified
 (78.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4784,10 +4784,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuPageSliderView` | `-` | `animating` | prop | ✅ | ✅ | `0x1c0a58` |
 | `RBMenuPageSliderView` | `-` | `setAnimating:` | prop | ✅ | ✅ | `0x1c0a68` |
 | `StoreExtendNoteCellPhone` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0x1c0abc` |
-| `StoreExtendNoteCellPhone` | `-` | `isPurchased` | prop | ✅ | ❌ | `0x1c1b78` |
-| `StoreExtendNoteCellPhone` | `-` | `setIsPurchased:` | prop | ✅ | ❌ | `0x1c1bd8` |
+| `StoreExtendNoteCellPhone` | `-` | `isPurchased` | prop | ✅ | ✅ | `0x1c1b78` |
+| `StoreExtendNoteCellPhone` | `-` | `setIsPurchased:` | prop | ✅ | ✅ | `0x1c1bd8` |
 | `StoreExtendNoteCellPhone` | `-` | `loadExtendNoteInfo:index:` |  | ✅ | ❌ | `0x1c1c34` |
-| `StoreExtendNoteCellPhone` | `-` | `setBgImage:` |  | ✅ | ❌ | `0x1c1fa0` |
+| `StoreExtendNoteCellPhone` | `-` | `setBgImage:` |  | ✅ | ✅ | `0x1c1fa0` |
 | `StoreExtendNoteCellPhone` | `-` | `setBgColor:` |  | ✅ | ✅ | `0x1c202c` |
 | `StoreExtendNoteCellPhone` | `-` | `artworkLayer` | prop | ✅ | ✅ | `0x1c2030` |
 | `StoreExtendNoteCellPhone` | `-` | `setArtworkLayer:` | prop | ✅ | ✅ | `0x1c2040` |
@@ -4809,7 +4809,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:delegate:` |  | ✅ | ❌ | `0x1c2444` |
 | `SSZipArchive` | `+` | `createZipFileAtPath:withFilesAtPaths:` |  | ✅ | ❌ | `0x1c31b4` |
 | `SSZipArchive` | `+` | `createZipFileAtPath:withContentsOfDirectory:` |  | ✅ | ❌ | `0x1c3358` |
-| `SSZipArchive` | `-` | `initWithPath:` |  | ✅ | ❌ | `0x1c352c` |
+| `SSZipArchive` | `-` | `initWithPath:` |  | ✅ | ✅ | `0x1c352c` |
 | `SSZipArchive` | `-` | `open` |  | ✅ | ❌ | `0x1c35b8` |
 | `SSZipArchive` | `-` | `zipInfo:setDate:` |  | ✅ | ❌ | `0x1c3608` |
 | `SSZipArchive` | `-` | `writeFile:` |  | ✅ | ❌ | `0x1c3710` |
