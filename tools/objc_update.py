@@ -1145,6 +1145,13 @@ VERIFIED = {
               'RecommendCore each get sharedInstance and clearSession, with the selector loaded '
               'once into x21 and reused for the second send',
     0x220ff4: 'ApplilinkDebug +clearAdStatus: the same two-core shape against clearAdStatus',
+    0x243224: 'RecommendAdCache +getContentsPath: _NSTemporaryDirectory, confirmed by name from '
+              'the program, then two stringByAppendingPathComponent: sends with the CFStrings at '
+              '0x3700a0 and 0x364160, decoded as "applilink" and "contents". The order is the '
+              'nesting, so a swap would build a real path to the wrong directory',
+    0x2432b0: 'RecommendAdCache +getBannerCachePath: getContentsPath then one more component, the '
+              'CFString at 0x372ce0 decoded as "cache_img". It builds on the sibling rather than '
+              'reassembling the prefix, so the two cannot drift apart',
     0x2424e0: 'RecommendAdCache +clearAllAdDataInfoExpire: removes the CFString at 0x372c40, '
               'decoded as "ApplilinkRecommend.allAdData.Expire". Together with +clearAllAdData at '
               '0x242380, which removes only the payload key, this confirms the split is '
