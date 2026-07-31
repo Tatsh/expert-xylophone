@@ -917,6 +917,18 @@ VERIFIED = {
               'address audit could not see it because that check was dead',
     0x2136e0: 'ApplilinkViewController -viewDidLoad: a bare super chain',
     0x213758: 'ApplilinkViewController -viewDidAppear:: a bare super chain forwarding its flag',
+    0x21371c: 'ApplilinkViewController -viewWillAppear:: a bare super chain, with x2 never touched '
+              'so the flag forwards untouched. Read on its own rather than inferred from the '
+              'siblings it sits between',
+    0x213794: 'ApplilinkViewController -viewWillDisappear:: likewise, read separately',
+    0x21f19c: 'RewardWebViewController -clearDelegate: objc_storeWeak clears _sdkDelegate, which '
+              'the metadata types <SdkViewDelegate> and confirms is weak, then a cbz on _webView '
+              'guards setDelegate:nil on it',
+    0x21fd74: 'RewardNetwork +setNavigationBarHidden:: forwards the flag to RewardCore '
+              'sharedInstance, with no guard',
+    0x211f20: 'RecommendNetwork +getAppListStatusWithCallback:: a tail branch to '
+              'getAdStatusWithAdModel:callback: with w2 set to 1, matching '
+              'RecommendAdModelAppList, and the receiver left as self rather than reloaded',
     0x211f04: 'ApplilinkNetworkError +localizedApplilinkErrorWithCode:: a tail branch to the '
               'userInfo: form with x3 zeroed, so the nil is the binary\'s. The receiver is loaded '
               'from the classref rather than passed through as self, so the binary names the class '

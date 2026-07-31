@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5015 verified
+Total: 6343 — 6306 reconstructed, 5020 verified
 (79.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5015 verified, 3507 come from those passes and the remaining
-1508 were read by hand. The split matters when reading the percentage: a
+Of the 5020 verified, 3507 come from those passes and the remaining
+1513 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5748,7 +5748,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AnalysisNetworkCore` | `+` | `clearDAU` |  | ✅ | ❌ | `0x20fa84` |
 | `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:userInfo:` |  | ✅ | ❌ | `0x20fb18` |
 | `ApplilinkNetworkError` | `+` | `localizedApplilinkErrorWithCode:` |  | ✅ | ✅ | `0x211f04` |
-| `RecommendNetwork` | `+` | `getAppListStatusWithCallback:` |  | ✅ | ❌ | `0x211f20` |
+| `RecommendNetwork` | `+` | `getAppListStatusWithCallback:` |  | ✅ | ✅ | `0x211f20` |
 | `RecommendNetwork` | `+` | `getAdStatusWithAdModel:callback:` |  | ✅ | ❌ | `0x211f3c` |
 | `RecommendNetwork` | `+` | `getUnreadCountWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x2120ac` |
 | `RecommendNetwork` | `+` | `getAdDisplayStatusWithAdModel:adLocation:callback:` |  | ✅ | ❌ | `0x21228c` |
@@ -5768,9 +5768,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendNetwork` | `-` | `dealloc` |  | ❌ | ✅ | `0x2135dc` |
 | `AnalysisNetwork` | `+` | `postAnalysisDataWithResultId:callback:` |  | ✅ | ❌ | `0x213618` |
 | `ApplilinkViewController` | `-` | `viewDidLoad` |  | ✅ | ✅ | `0x2136e0` |
-| `ApplilinkViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x21371c` |
+| `ApplilinkViewController` | `-` | `viewWillAppear:` |  | ✅ | ✅ | `0x21371c` |
 | `ApplilinkViewController` | `-` | `viewDidAppear:` |  | ✅ | ✅ | `0x213758` |
-| `ApplilinkViewController` | `-` | `viewWillDisappear:` |  | ✅ | ❌ | `0x213794` |
+| `ApplilinkViewController` | `-` | `viewWillDisappear:` |  | ✅ | ✅ | `0x213794` |
 | `ApplilinkViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x2137d0` |
 | `ApplilinkViewController` | `-` | `didReceiveMemoryWarning` |  | ✅ | ✅ | `0x2137d4` |
 | `ApplilinkViewController` | `-` | `showSKStore:appParam:delegate:` |  | ✅ | ❌ | `0x213810` |
@@ -5911,7 +5911,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardWebViewController` | `-` | `rotateWebViewWithInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21e0e0` |
 | `RewardWebViewController` | `-` | `willAnimateRotationToInterfaceOrientation:duration:` |  | ✅ | ❌ | `0x21efec` |
 | `RewardWebViewController` | `-` | `hasParentViewController:` |  | ✅ | ❌ | `0x21f068` |
-| `RewardWebViewController` | `-` | `clearDelegate` |  | ✅ | ❌ | `0x21f19c` |
+| `RewardWebViewController` | `-` | `clearDelegate` |  | ✅ | ✅ | `0x21f19c` |
 | `RewardWebViewController` | `-` | `dealloc` |  | ✅ | ✅ | `0x21f1f8` |
 | `RewardWebViewController` | `-` | `sdkDelegate` | prop | ✅ | ✅ | `0x21f25c` |
 | `RewardWebViewController` | `-` | `setSdkDelegate:` | prop | ✅ | ✅ | `0x21f27c` |
@@ -5941,7 +5941,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RewardNetwork` | `+` | `allInstallFlgWithCallback:` |  | ✅ | ❌ | `0x21f880` |
 | `RewardNetwork` | `+` | `getAdDisplayStatusWithCallback:` |  | ✅ | ❌ | `0x21f9e0` |
 | `RewardNetwork` | `+` | `getAdStatusWithBlock:` |  | ✅ | ❌ | `0x21fc14` |
-| `RewardNetwork` | `+` | `setNavigationBarHidden:` |  | ✅ | ❌ | `0x21fd74` |
+| `RewardNetwork` | `+` | `setNavigationBarHidden:` |  | ✅ | ✅ | `0x21fd74` |
 | `RewardNetwork` | `+` | `getNavigationTitle` |  | ✅ | ✅ | `0x21fdcc` |
 | `RewardNetwork` | `-` | `dealloc` |  | ❌ | ✅ | `0x21fdec` |
 | `ApplilinkMessage` | `+` | `localizedMessage:` |  | ✅ | ❌ | `0x21fe28` |
