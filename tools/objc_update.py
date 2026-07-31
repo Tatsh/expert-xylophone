@@ -3807,6 +3807,14 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x1B8BF0: 'RBExperienceData -initWithCoder:: reads twelve keys, kPointKey, kVersionKey, '
+              'kDataKey, kPointBKey, kDataBKey, the six item lists and kInstalledAppliIdDataKey. '
+              'It does not read kThemaItemsKey, which the encoder writes, so theme items are '
+              'archived and never restored. The reconstruction already had that asymmetry',
+    0x1B9788: 'RBExperienceData -encodeWithCoder:: writes thirteen keys, the twelve its decoder '
+              'reads plus kThemaItemsKey. Counted against 0x1b8bf0 rather than alone, which is the '
+              'only way the one-key difference is visible; the float keys go through encodeFloat: '
+              'and are easy to miss when scanning for encodeObject:',
     0x1BC554: 'RBExperienceData -encodePoint:: read as a mismatch and fixed. The selector at '
               '0x1bc598 is arrayWithObjects:, the variadic, with str xzr,[sp] supplying the nil '
               'terminator for its single object, where the reconstruction used the singular '
