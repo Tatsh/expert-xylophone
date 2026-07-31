@@ -3807,6 +3807,11 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x5CE78: 'ScoreData +reset:: seventeen assignments in the source order, three full-combo flags '
+             'through numberWithBool:0, then the ranks and the scores all as numberWithInt: '
+             '0xffffffff, which is the -1 both kResetClearRank and kResetScore hold. The three '
+             'rates and the epoch date come from movi v0.16B,#0, and the record is re-stamped with '
+             'setChksco: from hashScore:',
     0x5E150: 'ScoreData -checkOverScore: read as a mismatch and fixed. Each of the three '
              'achievement rates is clamped, not reset. The low arm is fcmp against zero with b.pl '
              'and stores movi v0.16B,#0, then branches past the second test, so the two are an if '
