@@ -297,10 +297,13 @@ enum {
     }
     uint32_t draw = arc4random();
     // The draw is reduced modulo the total priority and mapped to the record whose cumulative
-    // priority window contains it.
+    // priority window contains it. The binary has no zero test here: its udiv/msub pair returns the
+    // draw unchanged when the total is zero, because arm64 division by zero yields zero. The
+    // ternary reproduces that, since the same expression in C would be undefined.
     NSInteger target = totalPriority == 0 ? (draw + 1) : ((draw % totalPriority) + 1);
     NSInteger cumulative = 0;
     for (NSDictionary *record in list) {
+        // Yes, the second loop uses intValue where the first uses integerValue.
         cumulative += [[record valueForKeyPath:kPriorityKey] intValue];
         if (target <= cumulative) {
             return record;

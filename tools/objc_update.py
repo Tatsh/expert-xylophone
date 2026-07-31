@@ -3669,6 +3669,34 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x2278A0: 'RecommendAdData +getAppBannerList: count on getLotteryBannerData with cbz returns '
+              'nil, and a second count supplies dictionaryWithCapacity:. The allKeys copy loop, '
+              'the cbz on getBannerWithUrl: returning nil, geFileNameFromPath:, the cache-path '
+              'join and lastPathComponent all follow in order. The count selector is hoisted into '
+              'a register here, so it does not appear as an annotated ldr x1',
+    0x227C50: 'RecommendAdData +getAppIconList: the same copy loop per entry of '
+              'getLotteryIconData, with geFileNameFromPath: and lastPathComponent filling the '
+              'creative id. There is no early nil return; the cbz is the fast-enumeration guard',
+    0x227FEC: 'RecommendAdData +getAppInterstitialList: cbz on getLotteryInterstitialData itself '
+              'rather than on a count, then count for the capacity, the allKeys copy, the cbz on '
+              'getBannerWithUrl:, the cache-path rewrite, lastPathComponent, and '
+              'getInstallFlgWithAdData: before addObject:',
+    0x2284C4: 'RecommendAdData +getLotteryIconData: getAdListByAdType:3 for the lottery icon '
+              'type, two count/cbz nil returns around getAdListTermForList:, then shuffled:. The '
+              'clamp is cmp x0,#3 with b.hi, so a count above three takes four and anything else '
+              'takes the count, which is the min the source spells. '
+              'indexSetWithIndexesInRange: gets location zero and that length, then '
+              'objectsAtIndexes:',
+    0x228624: 'RecommendAdData +getLotteryInterstitialData: getInterstitialSpecList indexed by '
+              '"ad_display_spec", then three count/cbz nil returns around the count and install '
+              'spec filters before getLotteryInterstitialDataWithList:',
+    0x228770: 'RecommendAdData +getLotteryInterstitialDataWithList:: two passes over the list, '
+              'both reading valueForKeyPath:"priority" but through different selectors, '
+              'integerValue at 0x3c02b0 in the totalling pass and intValue at 0x3be8b8 in the '
+              'matching pass, which is an asymmetry the reconstruction already had. The draw is '
+              'reduced by udiv/msub with no zero test on the total: arm64 division by zero yields '
+              'zero, so the pair returns the draw unchanged, and the ternary reproduces that '
+              'because the same expression in C would be undefined',
     0x227570: 'RecommendAdData +getAdDataWithAppliId:: narrowedListWithList:object:forKey: then a '
               'countByEnumeratingWithState: walk returning the first record whose primary flag '
               'compares equal. Past the loop, cbz on count returns nil and objectAtIndex: takes '
