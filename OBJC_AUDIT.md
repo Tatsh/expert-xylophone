@@ -1098,9 +1098,19 @@ must have an even slot count. Twenty-six of the thirty satisfy both, and `n` slo
 pairs recovered by hand, `+[AppDelegate getServerData]` ten against its five keychain pairs, and
 `musicListKey` ten against its five.
 
-Four sites do not fit the pattern and need reading on their own rather than counting: one arm of
-`lotteryInterstitialWithAdLocation:` at `0x22b118` has four slots but no `nil` in the last one;
-`downloaderFinished:` and `NSFileManagerRB_createDirectorysAtPath` show no argument stores in the
-window at all; and the `SSZipArchive` site dispatches through a different stub, so the scan never
-finds its call. Comparing the twenty-six counted sites to their reconstructions, and reading those
-four, is the open work.
+Four did not fit the pattern. All four have since been read, and none is a defect — but two of them
+correct the framing above, so "thirty call sites" is itself wrong.
+
+- `lotteryInterstitialWithAdLocation:` at `0x22b118` reported four slots and no `nil`, because the
+  window spans **two** variadic calls: a `stringWithFormat:` immediately before it, whose own four
+  slots feed four `%d` specifiers. The dictionary's setup is just `stp x8,xzr,[sp]`, so one pair,
+  and it overwrites the first two of the format call's slots. The reconstruction matches on both
+  counts: four arguments to the format, and `message` under the `Error` key.
+- `downloaderFinished:` and `NSFileManagerRB_createDirectorysAtPath` show no argument stores because
+  **they are not call sites**. Both hoist the selector pointer into a stack local (`str x8,[sp,#0xf8]`
+  and `str x8,[sp,#0x58]`) to reuse inside a loop, and the send happens later from the cached value.
+- The `SSZipArchive` site likewise has no adjacent call.
+
+So the cross-references are thirty _reads of the selector reference_, not thirty invocations, and a
+scan that assumes a `bl` follows each one will mis-handle both hoisted loads and back-to-back
+variadics. Comparing the counted sites to their reconstructions is the remaining work.
