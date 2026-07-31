@@ -393,6 +393,36 @@ null. Fixed by making it the `OnFrame(int) override`, matching every other scene
 - `-[RBMusicView ShowSelectDifficulty]` (`0xd2fd8`) branches on `m_GameType` (slot `0x3c8b80`):
   0 shows the score readout, 1 hides it — as reconstructed.
 
+## Coverage: every method is now reconstructed
+
+`OBJC_METHODS.md` reports **6306 of 6343** methods reconstructed. The 37 that remain are all
+`-dealloc`, and their omission is deliberate and verified: each was disassembled and checked for
+any call other than `[super dealloc]`, which ARC emits itself. Exactly one `-dealloc` in the binary
+does more than chain — `-[RBStorePackList dealloc]` at `0x1f32a8`, which cancels the in-flight
+pack-list download and the products request — and it is reconstructed.
+
+Getting there was mostly **not** writing new bodies. The checklist had reported 137 missing, and
+they broke down as:
+
+- **51 vendored** (`DAProgressOverlayView`, `SSZipArchive`, `UnZipArchive`): `objc_update` only
+  scanned `Project/`, so `3rdparty/` never counted.
+- **22 renamed**: `StoreExtendNoteView` had been reconstructed as `StoreExtendNoteCellView` to
+  avoid a collision with `StoreExtendNoteCellPhone` that does not exist — that phone layout is its
+  own class in the metadata. The checklist matches on the class name, so every method looked
+  missing.
+- **11 formatting artefacts**: clang-format wraps a long `@property` onto a second line, starts a
+  selector on the line after its return type, and splits a twelve-keyword selector across a dozen
+  lines; the parser handled none of those, and it also could not spell a selector with an unnamed
+  part (`createContext::`).
+- **9 method-kind inversions**: a `+` reconstruction never matches a `-` row, because the runtime
+  keeps two separate method lists. Two of these had already been papered over at the call site with
+  an `(id)` cast to silence the warning the wrong kind produced, which is the tell to look for.
+- **~40 ARC deallocs** as above, plus a handful of genuinely missing bodies.
+
+So the headline number was dominated by tooling and naming, and the audit's real value was
+separating those from the four real gaps. The scanner is now fixed for each shape it missed; a
+future run reporting a missing method is more likely to mean one.
+
 ## Scale
 
 Only **143 of 6140** constants carry a same-line `@ghidraAddress` — about 2%. The annotation audit

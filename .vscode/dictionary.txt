@@ -107,6 +107,7 @@ dcmake
 ddeployment
 deadcode
 deadstores
+deallocs
 decodepoint
 demangled
 denable
