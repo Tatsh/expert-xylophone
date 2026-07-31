@@ -515,11 +515,25 @@ void neGLESRenderer::ClearTexCoordPointer(int nStride, int nTexCoordOffset) {
 
 /** @ghidraAddress 0x218ec */
 void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffset) {
+    // A skip here leaves the weight array enabled against whatever GL last captured for it. That is
+    // correct while the recorded binding still names a live buffer, and fatal once the name has
+    // been freed and reissued, which the gen/del log shows GL does. Record every skip with the
+    // name, so a skip on a recycled name is observed rather than argued.
+    NE_DBG(if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding == m_nArrayBufferBound &&
+               NE_DBG_FIRST(30)) {
+        neDebugLog("weightPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
+                   m_nArrayBufferBound,
+                   m_nWeightPointerGeneration,
+                   GenerationOf(m_nArrayBufferBound),
+                   m_nWeightPointerGeneration == GenerationOf(m_nArrayBufferBound) ? "" :
+                                                                                     "  <== STALE");
+    });
     if (m_nArrayBufferBound != 0 && m_nWeightBufferBinding != m_nArrayBufferBound) {
         m_nWeightBufferBinding = m_nArrayBufferBound;
+        NE_DBG(m_nWeightPointerGeneration = GenerationOf(m_nArrayBufferBound));
         m_pWeightPointer = nullptr;
         m_nWeightStride = kResetStrideSentinel;
-        m_nWeightSize = 0;
+        m_nWeightSize = kResetStrideSentinel;
         glWeightPointerOES(nSize,
                            GL_FLOAT,
                            nStride,
@@ -529,11 +543,23 @@ void neGLESRenderer::ClearWeightPointer(int nStride, int nSize, int nWeightOffse
 
 /** @ghidraAddress 0x219d8 */
 void neGLESRenderer::ClearMatrixIndexPointer(int nStride, int nSize, int nMatrixIndexOffset) {
+    // Same reasoning as ClearWeightPointer above.
+    NE_DBG(if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding == m_nArrayBufferBound &&
+               NE_DBG_FIRST(30)) {
+        neDebugLog("matrixIndexPointer SKIP buffer=%d pointerGeneration=%d currentGeneration=%d%s",
+                   m_nArrayBufferBound,
+                   m_nMatrixIndexPointerGeneration,
+                   GenerationOf(m_nArrayBufferBound),
+                   m_nMatrixIndexPointerGeneration == GenerationOf(m_nArrayBufferBound) ?
+                       "" :
+                       "  <== STALE");
+    });
     if (m_nArrayBufferBound != 0 && m_nMatrixIndexBufferBinding != m_nArrayBufferBound) {
         m_nMatrixIndexBufferBinding = m_nArrayBufferBound;
+        NE_DBG(m_nMatrixIndexPointerGeneration = GenerationOf(m_nArrayBufferBound));
         m_pMatrixIndexPointer = nullptr;
         m_nMatrixIndexStride = kResetStrideSentinel;
-        m_nMatrixIndexSize = 0;
+        m_nMatrixIndexSize = kResetStrideSentinel;
         glMatrixIndexPointerOES(
             nSize,
             GL_UNSIGNED_BYTE,

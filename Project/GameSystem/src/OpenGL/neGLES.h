@@ -202,6 +202,18 @@ public:
      * @brief The array buffer GL actually has bound, for diagnostics only.
      */
     int QueryBoundArrayBuffer() const;
+
+    // Diagnostic only. A buffer name is reused after deletion, so the name alone cannot say whether
+    // a cached binding still refers to the object the pointer was captured against. Counting how
+    // many times each name has been handed out, and recording the count at the time each pointer
+    // call was issued, makes a stale skip provable rather than inferred.
+    static constexpr int kBufferNameLimit = 1024;
+    unsigned char m_aBufferGeneration[kBufferNameLimit] = {};
+    unsigned char m_nWeightPointerGeneration = {};
+    unsigned char m_nMatrixIndexPointerGeneration = {};
+    unsigned char GenerationOf(int nBuffer) const {
+        return (nBuffer >= 0 && nBuffer < kBufferNameLimit) ? m_aBufferGeneration[nBuffer] : 0;
+    }
 #endif
     /**
      * @brief Binds @p dwBuffer as the current @c GL_ARRAY_BUFFER.
