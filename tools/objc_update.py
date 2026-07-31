@@ -276,6 +276,14 @@ VERIFIED = {
               'order; the ghost arm branches on ghostStyle == 1 directly rather than materialising '
               'a boolean (cmp at 0x1a6f4c); the shared tail at 0x1a7150 picks the on or off knob '
               'animation, both at the 0.2 of g_dMascotMessageAnimDuration',
+    0xd934: 'RBMenuBGEffectPartView -removeFromSuperview: chains to super and does nothing else',
+    0x492b4: 'RBTermDetailPhoneViewController -viewDidDisappear:: likewise, forwarding the flag',
+    0x14ec8: 'UnZipArchive -closeFile: the cbz makes closing a no-op when no archive is open, and '
+             'm_ZipFile is cleared after the close, not before',
+    0x1503c: 'UnZipArchive -setFirst: returns whether the seek returned 0, and NO without seeking '
+             'when m_ZipFile is null',
+    0x15070: 'UnZipArchive -setNext: the same shape against the next-entry seek',
+    0x6a9e8: 'RBMusicManager +getMusicDataFilename:: formats the id with %09d.rb',
     0xab9d4: 'RBMenuView -SelectSettingButton: the binary is a lone tail call to toggleSettingView; '
              'our copy carries temporary RBPDBG logging around that same call',
     0xbeff8: 'RBNewsHUDView -imageDownloaderDidFail:didLoad:: sets m_CanHide, then hides; neither '

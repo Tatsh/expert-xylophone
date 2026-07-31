@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4619 verified
-(72.8%).
+Total: 6343 — 6306 reconstructed, 4625 verified
+(72.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -166,7 +166,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuBGEffectPartView` | `-` | `startAnimation` |  | ✅ | ❌ | `0xd2a8` |
 | `RBMenuBGEffectPartView` | `-` | `setAnimationLoopFlag:` |  | ✅ | ✅ | `0xd810` |
 | `RBMenuBGEffectPartView` | `-` | `stopAnimation` |  | ✅ | ❌ | `0xd81c` |
-| `RBMenuBGEffectPartView` | `-` | `removeFromSuperview` |  | ✅ | ❌ | `0xd934` |
+| `RBMenuBGEffectPartView` | `-` | `removeFromSuperview` |  | ✅ | ✅ | `0xd934` |
 | `RBMenuBGEffectPartView` | `-` | `image1Path` | prop | ✅ | ✅ | `0xd968` |
 | `RBMenuBGEffectPartView` | `-` | `setImage1Path:` | prop | ✅ | ✅ | `0xd978` |
 | `RBMenuBGEffectPartView` | `-` | `image2Path` | prop | ✅ | ✅ | `0xd9b0` |
@@ -222,11 +222,11 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `UnZipArchive` | `-` | `init` |  | ✅ | ❌ | `0x14d40` |
 | `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
 | `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
-| `UnZipArchive` | `-` | `closeFile` |  | ✅ | ❌ | `0x14ec8` |
+| `UnZipArchive` | `-` | `closeFile` |  | ✅ | ✅ | `0x14ec8` |
 | `UnZipArchive` | `-` | `getEntryNum` |  | ✅ | ✅ | `0x14efc` |
 | `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
-| `UnZipArchive` | `-` | `setFirst` |  | ✅ | ❌ | `0x1503c` |
-| `UnZipArchive` | `-` | `setNext` |  | ✅ | ❌ | `0x15070` |
+| `UnZipArchive` | `-` | `setFirst` |  | ✅ | ✅ | `0x1503c` |
+| `UnZipArchive` | `-` | `setNext` |  | ✅ | ✅ | `0x15070` |
 | `UnZipArchive` | `-` | `getCurrentFileName` |  | ✅ | ❌ | `0x150a4` |
 | `UnZipArchive` | `-` | `getCurrentData` |  | ✅ | ❌ | `0x1519c` |
 | `BFCodec` | `-` | `init` |  | ✅ | ❌ | `0x1529c` |
@@ -953,7 +953,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTermDetailPhoneViewController` | `-` | `viewDidLoad` |  | ✅ | ❌ | `0x488d0` |
 | `RBTermDetailPhoneViewController` | `-` | `viewWillAppear:` |  | ✅ | ❌ | `0x490c8` |
 | `RBTermDetailPhoneViewController` | `-` | `viewDidAppear:` |  | ✅ | ❌ | `0x49264` |
-| `RBTermDetailPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ❌ | `0x492b4` |
+| `RBTermDetailPhoneViewController` | `-` | `viewDidDisappear:` |  | ✅ | ✅ | `0x492b4` |
 | `RBTermDetailPhoneViewController` | `-` | `loadDetail` |  | ✅ | ❌ | `0x492e8` |
 | `RBTermDetailPhoneViewController` | `-` | `showTermView` |  | ✅ | ❌ | `0x49ac4` |
 | `RBTermDetailPhoneViewController` | `-` | `startLoadAnimation` |  | ✅ | ❌ | `0x49f7c` |
@@ -1547,7 +1547,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBBGMManager` | `-` | `popMusic` |  | ✅ | ❌ | `0x6a8f0` |
 | `RBBGMManager` | `-` | `isPushMusic` |  | ✅ | ✅ | `0x6a980` |
 | `RBMusicManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x6a990` |
-| `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ❌ | `0x6a9e8` |
+| `RBMusicManager` | `+` | `getMusicDataFilename:` |  | ✅ | ✅ | `0x6a9e8` |
 | `RBMusicManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x6aa1c` |
 | `RBMusicManager` | `+` | `getPathFromPurchesed:` |  | ✅ | ❌ | `0x6aad8` |
 | `RBMusicManager` | `+` | `getPathFromPurchesedOldDirectory:` |  | ✅ | ❌ | `0x6ab88` |
