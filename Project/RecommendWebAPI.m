@@ -231,14 +231,10 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x22f33c */
           if (error.code == kRecommendWebAPIURLErrorTimedOut) {
-              if (callback) {
-                  callback(NO, userIdPresent, nil);
-              }
+              callback(NO, userIdPresent, nil);
               return;
           }
-          if (callback) {
-              callback(NO, NO, error);
-          }
+          callback(NO, NO, error);
         }];
 }
 
@@ -289,9 +285,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x22f930 */
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }];
 }
 
@@ -386,9 +380,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x2301a4 */
-          if (callback) {
-              callback(nil, nil, error);
-          }
+          callback(nil, nil, error);
         }];
 }
 
@@ -475,9 +467,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x230808 */
           // The binary forwards a single nil here and drops the transport error.
-          if (callback) {
-              callback(nil, nil);
-          }
+          callback(nil, nil);
         }];
 }
 
@@ -524,9 +514,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x230dac */
           // The binary forwards a single nil here and drops the transport error.
-          if (callBack) {
-              callBack(nil, nil);
-          }
+          callBack(nil, nil);
         }];
 }
 
@@ -589,9 +577,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x23144c */
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }];
 }
 
@@ -665,9 +651,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x231ad0 */
-          if (callback) {
-              callback(0, nil);
-          }
+          callback(0, nil);
         }];
 }
 
@@ -719,9 +703,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x231f0c */
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }];
 }
 
@@ -777,9 +759,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x2323f0 */
-          if (callback) {
-              callback(0, nil);
-          }
+          callback(0, nil);
         }];
 }
 
@@ -839,9 +819,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x232ae0 */
           // The binary forwards only the captured status dictionary here and drops
           // the transport error.
-          if (callback) {
-              callback(status, nil);
-          }
+          callback(status, nil);
         }];
 }
 
@@ -947,9 +925,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x233738 */
-          if (callback) {
-              callback(nil, nil);
-          }
+          callback(nil, nil);
         }];
 }
 
@@ -999,9 +975,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x233b84 */
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }];
 }
 
@@ -1048,9 +1022,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x234084 */
           // The binary forwards a single nil here and drops the transport error.
-          if (callback) {
-              callback(nil, nil);
-          }
+          callback(nil, nil);
         }];
 }
 
@@ -1071,30 +1043,22 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x234224 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(error);
-              }
+              callback(error);
               return;
           }
           if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
               [response[kRecommendWebAPIKeyErrorCode] intValue] ==
                   kRecommendWebAPISuccessSentinel) {
               [ApplilinkConsts setTemplateList:response[kRecommendWebAPIKeyList]];
-              if (callback) {
-                  callback(nil);
-              }
+              callback(nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x234408 */
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }];
 }
 

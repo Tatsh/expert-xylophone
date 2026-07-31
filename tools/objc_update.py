@@ -3669,6 +3669,34 @@ VERIFIED = {
     0x470D4: 'StoreCampaignDetailViewPad -hasItem:itemID:: cbnz w2 returns NO for an item type '
              'other than tune (0), cbz x21 returns NO when -getMusicData: is nil, then '
              'fileExistsAtPath:. Structurally the same routine as 0x26428 on another class',
+    0x232B48: 'RecommendWebAPI +setTemporaryCacheWithAdModel:value:expiration:: cbz x19 on the '
+              'expiration picks fmov d0,1.0 over scvtf d0,x19 for initWithTimeIntervalSinceNow:, '
+              'matching the ternary. The entry is built by dictionaryWithObjectsAndKeys: rather '
+              'than a literal, and its four stack slots read obj1=x2 (the value stringValue), '
+              'key1=0x36ba60 "status", obj2=the date, key2=0x370020 "expire", then the xzr nil, so '
+              'the pairing and order match. Both branches then build the key with '
+              'numberWithUnsignedInt: and stringValue, once per branch rather than once in total',
+    0x232F44: 'RecommendWebAPI +getTemporaryCacheWithAdModel:: two cbz guards return nil for a '
+              'missing defaults blob and a failed unarchive, a third for a missing entry, then '
+              'cmn x23,#1 with b.eq tests the compare: result against NSOrderedAscending and takes '
+              'the removal path on equality, so the fall-through returning the status value is the '
+              'not-ascending case. The removal path sets x21 to zero before the shared epilogue, '
+              'so it returns nil',
+    0x234430: 'RecommendWebAPI +clickRegistWithAdIdFrom:adIdTo:adModel:: dictionaryWithCapacity:4, '
+              'then setValue: for "ad_id_from", "ad_id_to", a stringWithFormat:"%d" of the model '
+              'under "ad_model", and the literal "1" under "is_sdk", which is what '
+              'kRecommendWebAPIParamTrue holds. Then userAgentParametersJoinDictionary:, a fresh '
+              'ApplilinkWebAPI, baseUrlSsl appended with "/ad/external/click/regist.php", and the '
+              'request with fmov s0 = 10.0 as the timeout',
+    0x234670: 'RecommendWebAPI +appStartWithAdIdFrom:adIdTo:adType:: the same shape as 0x234430 '
+              'with dictionaryWithCapacity:3, "ad_type" in place of "ad_model", no is_sdk pair, '
+              'and "/ad/external/app/start.php"',
+    0x2340AC: 'RecommendWebAPI +layoutIndexWithCallback:: the request passes nil parameters, nil '
+              'userInfo, tag 0, nil cachePolicy and fmov s0 = 10.0. Read as a mismatch and fixed: '
+              'neither block tests the callback before invoking it. The failed block at 0x234408 '
+              'is a bare trampoline, ldr x0,[x0,#0x20] then ldr x3,[x0,#0x10] then br x3, and the '
+              'finished block at 0x234224 reaches blr x8 on all three paths with no cbz anywhere '
+              'in it. The invented guards are gone',
     0x49F7C: 'RBTermDetailPhoneViewController -startLoadAnimation: tbz w0,#0 skips the '
              'grayView.hidden = NO when isUseGrayView is clear, then the indicator is unhidden and '
              'started. The fallthrough arm only re-loads the setHidden: selector for the shared '

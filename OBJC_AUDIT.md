@@ -1325,3 +1325,52 @@ It is left alone rather than guessed at: six full literals are equally consisten
 original iterated and with six unrolled blocks, and the disassembly of that debug class has not been
 read. The scan's two rows are documented here so the non-zero count is a known quantity rather than
 a mystery for the next reader to re-derive.
+
+## Fifteen blocks that never test the callback, and the guards written around them
+
+`RecommendWebAPI` hands a completion block to every request it makes, and the reconstruction wrapped
+each invocation in `if (callback)`. The binary does not. The failed block of
+`+layoutIndexWithCallback:` at `0x234408` is the clearest case, four instructions long:
+
+```text
+ldr x0,[x0, #0x20]   ; the captured callback
+ldr x3,[x0, #0x10]   ; its invoke pointer
+mov x1,x2            ; the error
+br  x3
+```
+
+It loads the block and dereferences it. A nil callback faults on the second instruction. The
+finished block at `0x234224` is the same story over three paths — success and both error arms all
+reach `blr x8` with no conditional branch anywhere in the block.
+
+Rather than judge these one at a time by eye, all 29 annotated blocks in the file were counted for
+conditional-branch-on-zero instructions. Fifteen contain **none at all** while still invoking the
+callback, which settles them: a block with no `cbz` or `cbnz` cannot be testing anything for nil.
+Eighteen invented guards across those fifteen blocks are now gone. The tree has seen this defect
+before — an invented nil guard on a session-regenerate block was dropped earlier — and it is worth
+naming the reason it recurs. A guard that cannot fire is invisible in review, reads as prudence, and
+costs nothing at runtime, so nothing pushes back on it except the disassembly.
+
+Forty-seven guards remain in this file, all in blocks that do contain a `cbz`. Those are **not**
+touched, because the branch in them may be the `isKindOfClass:` test, a dictionary lookup, or a
+genuine callback check, and the count alone cannot tell which. They need reading one at a time and
+are left open rather than swept.
+
+## Four more of RecommendWebAPI, and a dictionary built the long way
+
+`+setTemporaryCacheWithAdModel:value:expiration:` and `+getTemporaryCacheWithAdModel:` both match.
+The setter's expiry is the one interesting branch: `cbz` on the expiration selects `fmov d0, 1.0`
+over `scvtf d0,x19`, so a zero expiration means one second rather than none.
+
+The cache entry, though, is built with `dictionaryWithObjectsAndKeys:` where the reconstruction
+writes a `@{...}` literal. The four stack slots read object, key, object, key and end in the `xzr`
+nil, and they pair `status` with the value string and `expire` with the date, in that order, so the
+dictionary that results is the same one. The construction is not: a literal raises on a nil value
+where the variadic form silently truncates the list at the first nil. Nothing here can pass nil, so
+this is recorded rather than changed, and it remains part of the open question about which spelling
+this tree should prefer.
+
+`+clickRegistWithAdIdFrom:adIdTo:adModel:` and `+appStartWithAdIdFrom:adIdTo:adType:` are request
+builders rather than the thin wrappers their shorter argument lists suggest; both match, down to the
+`dictionaryWithCapacity:` hints of 4 and 3 and the literal `"1"` that `kRecommendWebAPIParamTrue`
+holds.
