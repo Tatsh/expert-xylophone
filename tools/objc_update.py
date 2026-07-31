@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x1903b0: 'RBUnlockCollectionCell -setEnabled:: stores the flag, then an fcsel picks 0.0 when '
+              'enabled and the 0.6 pool load otherwise for the disable overlay, and mirrors the '
+              'flag onto userInteractionEnabled',
+    0x1837f8: 'RBExtendNoteManager -getExtendNoteDataArray: rebuilds on nil or the dirty flag, the '
+              'extend-note twin of the music manager accessor',
+    0x193a68: 'RBNotificationPageView -hideAnimation: chains to super only while NOT animating, '
+              'which is the inverse of the usual guard and is what the binary tests',
     0x193120: 'RBNotificationPagePhoneViewController -webViewDidStartLoad:: empties the shared '
               'URL cache',
     0x193184: 'RBNotificationPagePhoneViewController -webViewDidFinishLoad:: clears isFirstRequest '

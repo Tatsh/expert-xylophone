@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4925 verified
-(77.6%).
+Total: 6343 — 6306 reconstructed, 4928 verified
+(77.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -4085,7 +4085,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBExtendNoteManager` | `-` | `addPurchasedExtendNote:` |  | ✅ | ❌ | `0x18296c` |
 | `RBExtendNoteManager` | `-` | `createExtendNoteDataArray` |  | ✅ | ❌ | `0x1834ec` |
 | `RBExtendNoteManager` | `-` | `setExtendNoteDataArrayDirty` |  | ✅ | ✅ | `0x1837e8` |
-| `RBExtendNoteManager` | `-` | `getExtendNoteDataArray` |  | ✅ | ❌ | `0x1837f8` |
+| `RBExtendNoteManager` | `-` | `getExtendNoteDataArray` |  | ✅ | ✅ | `0x1837f8` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteData:` |  | ✅ | ❌ | `0x183894` |
 | `RBExtendNoteManager` | `-` | `releaseCacheMusicData` |  | ✅ | ❌ | `0x1839f4` |
 | `RBExtendNoteManager` | `-` | `getExtendNoteIDs` |  | ✅ | ❌ | `0x183b24` |
@@ -4187,7 +4187,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPushNotificationView` | `-` | `setUpMargin:` | prop | ✅ | ✅ | `0x18f98c` |
 | `RBUnlockCollectionCell` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x18fa28` |
 | `RBUnlockCollectionCell` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0x190300` |
-| `RBUnlockCollectionCell` | `-` | `setEnabled:` | prop | ✅ | ❌ | `0x1903b0` |
+| `RBUnlockCollectionCell` | `-` | `setEnabled:` | prop | ✅ | ✅ | `0x1903b0` |
 | `RBUnlockCollectionCell` | `-` | `setItemData:` | prop | ✅ | ✅ | `0x190448` |
 | `RBUnlockCollectionCell` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x191130` |
 | `RBUnlockCollectionCell` | `-` | `prepareForReuse` |  | ✅ | ❌ | `0x1917fc` |
@@ -4229,7 +4229,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPageView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1932b8` |
 | `RBNotificationPageView` | `-` | `setupView` |  | ✅ | ✅ | `0x19335c` |
 | `RBNotificationPageView` | `-` | `moveStore:` |  | ✅ | ❌ | `0x193918` |
-| `RBNotificationPageView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x193a68` |
+| `RBNotificationPageView` | `-` | `hideAnimation` |  | ✅ | ✅ | `0x193a68` |
 | `RBNotificationPageView` | `-` | `webView:shouldStartLoadWithRequest:navigationType:` |  | ✅ | ❌ | `0x193abc` |
 | `RBNotificationPageView` | `-` | `webView:didFailLoadWithError:` |  | ✅ | ❌ | `0x193f38` |
 | `RBNotificationPageView` | `-` | `webViewDidStartLoad:` |  | ✅ | ✅ | `0x194000` |
