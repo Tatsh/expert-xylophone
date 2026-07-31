@@ -978,6 +978,14 @@ VERIFIED = {
              'that returned nil without setting an error would still be returned as nil and one '
              'that returned data alongside an error would be discarded. The reconstruction tests '
              'the same thing',
+    0x15e18: 'GraphCircleView -CreateView: setStartPos: takes a CGPoint, so d0 and d1 are its x '
+             'and y. Both immediates were decoded from the instruction words rather than the '
+             'printed form: 0x1e749000 has imm8 0xa4 and is -10.0, and 0x1e67d000 has imm8 0x3e '
+             'and is 30.0. Read as IEEE bit patterns the first would have been -0.4375, which is '
+             'the documented fmov hazard and would have made the bottom margin a fraction of a '
+             'point. The y is frame height plus that -10, the alpha is a movi zero, and the '
+             'background is a 0.8 pool double used for both white and alpha. All three match '
+             'kDefaultStartX, kBottomMargin and kTranslucentAlpha',
     0x19b84: 'RBResoureDownloadBGEffectView -initWithFrame:: super chain behind a cbz, then two '
              'base-path setters taking the CFStrings at 0x362840 and 0x362860, decoded as "re_" '
              'and "ring_" and matching their constants. Both are prefixes rather than whole names, '
