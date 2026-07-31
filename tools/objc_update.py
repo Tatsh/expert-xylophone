@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x19e5b0: 'RBCharacterBase -init: super init, nil check, then setDefault',
+    0x1973c0: 'RBUnlockView -pushRewardButton:: forwards the sender to parentCustomView '
+              'toRewardList:, so the reward list is opened by the parent rather than by itself',
+    0x1932b8: 'RBNotificationPageView -initWithFrame:: the Information type and setupView sit '
+              'inside the nil check, but setIsFirstRequest: with a mov w2 of 1 is sent after the '
+              'branch rejoins, so it runs even on a nil self as a no-op send. The reconstruction '
+              'places it outside the if and says why',
     0x19ab70: 'RBUnlockData +sharedInstance: the plain nil check again, no once token or lock',
     0x1988c4: 'RBUnlockView -noButtonTap:: themed effect 4, kSoundEffectPopupCancel, then hides '
               'the popup view rather than itself',

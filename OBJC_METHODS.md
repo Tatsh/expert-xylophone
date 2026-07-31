@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4932 verified
+Total: 6343 — 6306 reconstructed, 4935 verified
 (77.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -4226,7 +4226,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBNotificationPagePhoneViewController` | `-` | `setIsFirstRequest:` | prop | ✅ | ✅ | `0x19324c` |
 | `RBNotificationPagePhoneViewController` | `-` | `requestURL` | prop | ✅ | ✅ | `0x19325c` |
 | `RBNotificationPagePhoneViewController` | `-` | `setRequestURL:` | prop | ✅ | ✅ | `0x19326c` |
-| `RBNotificationPageView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1932b8` |
+| `RBNotificationPageView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x1932b8` |
 | `RBNotificationPageView` | `-` | `setupView` |  | ✅ | ✅ | `0x19335c` |
 | `RBNotificationPageView` | `-` | `moveStore:` |  | ✅ | ❌ | `0x193918` |
 | `RBNotificationPageView` | `-` | `hideAnimation` |  | ✅ | ✅ | `0x193a68` |
@@ -4257,7 +4257,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockView` | `-` | `request` |  | ✅ | ❌ | `0x1955e0` |
 | `RBUnlockView` | `-` | `requestRewardCheck` |  | ✅ | ❌ | `0x196544` |
 | `RBUnlockView` | `-` | `getUnlockItemView` |  | ✅ | ✅ | `0x1973b4` |
-| `RBUnlockView` | `-` | `pushRewardButton:` |  | ✅ | ❌ | `0x1973c0` |
+| `RBUnlockView` | `-` | `pushRewardButton:` |  | ✅ | ✅ | `0x1973c0` |
 | `RBUnlockView` | `-` | `didSelectView:selectedCell:` |  | ✅ | ❌ | `0x19744c` |
 | `RBUnlockView` | `-` | `yesButtonTap:` |  | ✅ | ❌ | `0x197964` |
 | `RBUnlockView` | `-` | `noButtonTap:` |  | ✅ | ✅ | `0x1988c4` |
@@ -4386,7 +4386,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomInfoPopupView` | `-` | `setIsPad:` | prop | ✅ | ✅ | `0x19e478` |
 | `RBCustomInfoPopupView` | `-` | `imageDownloader` | prop | ✅ | ✅ | `0x19e488` |
 | `RBCustomInfoPopupView` | `-` | `setImageDownloader:` | prop | ✅ | ✅ | `0x19e498` |
-| `RBCharacterBase` | `-` | `init` |  | ✅ | ❌ | `0x19e5b0` |
+| `RBCharacterBase` | `-` | `init` |  | ✅ | ✅ | `0x19e5b0` |
 | `RBCharacterBase` | `-` | `setDefault` |  | ✅ | ❌ | `0x19e608` |
 | `RBCharacterBase` | `-` | `update` |  | ✅ | ❌ | `0x19e748` |
 | `RBCharacterBase` | `-` | `checkLimitType:` |  | ✅ | ✅ | `0x19e9e8` |
