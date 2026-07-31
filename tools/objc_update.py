@@ -3806,6 +3806,18 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x243314: 'RecommendAdCache +getTemplateFiles: a walk of templateList reading three keys per '
+              'entry, decoded from the pool as "file_name", "path" and "url" in the source order, '
+              'then getTemplateFile: with a cbz skipping saveTemplateData:path:file: when it '
+              'returns nil. The key selectors are hoisted, so the lookups carry no annotation',
+    0x2450BC: 'RecommendAdCache +setHtmlAdDataWithAdModel:adLocation:bannerList:: cbz on the '
+              'stored blob chooses a fresh dictionary over unarchiveObjectWithData:, then '
+              'setObject:forKey: under a stringWithFormat: key, archivedDataWithRootObject: back '
+              'into "adDataList", and synchronize. The format takes exactly two stack slots, '
+              'written by one stp, for its two specifiers',
+    0x24528C: 'RecommendAdCache +getHtmlAdDataWithAdModel:adLocation:: dataForKey: "adDataList" '
+              'with cbz returning nil, then unarchiveObjectWithData: and objectForKey: under the '
+              'same two-slot stringWithFormat: key as 0x2450bc, from the same format address',
     0x242C94: 'RecommendAdCache +getBannerDataWithList:max:: dispatch_get_global_queue then '
               'dispatch_async, and inside the block at 0x242d3c a cmp w0,#1 keeps only the '
               'downloaded result, add w27,w27,#1 counts it, and cmp w27,w8 with b.ge leaves the '
