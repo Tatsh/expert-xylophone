@@ -978,6 +978,10 @@ VERIFIED = {
              'that returned nil without setting an error would still be returned as nil and one '
              'that returned data alongside an error would be discarded. The reconstruction tests '
              'the same thing',
+    0x19b84: 'RBResoureDownloadBGEffectView -initWithFrame:: super chain behind a cbz, then two '
+             'base-path setters taking the CFStrings at 0x362840 and 0x362860, decoded as "re_" '
+             'and "ring_" and matching their constants. Both are prefixes rather than whole names, '
+             'so the frame number is appended by the caller',
     0xcce0: 'RBMenuBGEffectPartView -init: super init behind a cbz, then three path setters. The '
             'paths are read from a table at +0x520 in descending order, +0x20 then +0x10 then +0, '
             'so image1 takes bg_tex_05 and image3 takes bg_tex_01. The numbering runs opposite to '
