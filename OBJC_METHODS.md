@@ -16,15 +16,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 5023 verified
-(79.2%).
+Total: 6343 — 6306 reconstructed, 5027 verified
+(79.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5023 verified, 3507 come from those passes and the remaining
-1516 were read by hand. The split matters when reading the percentage: a
+Of the 5027 verified, 3507 come from those passes and the remaining
+1520 were read by hand. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
 that has ever caught a wrong constant, a transposed rectangle, or a missing branch.
 
@@ -5947,8 +5947,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkMessage` | `+` | `localizedMessage:` |  | ✅ | ❌ | `0x21fe28` |
 | `ApplilinkIndicator` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x21ff40` |
 | `ApplilinkIndicator` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x220074` |
-| `ApplilinkIndicator` | `-` | `show` |  | ✅ | ❌ | `0x220124` |
-| `ApplilinkIndicator` | `-` | `close` |  | ✅ | ❌ | `0x22017c` |
+| `ApplilinkIndicator` | `-` | `show` |  | ✅ | ✅ | `0x220124` |
+| `ApplilinkIndicator` | `-` | `close` |  | ✅ | ✅ | `0x22017c` |
 | `ApplilinkIndicator` | `-` | `touchEventActived` |  | ✅ | ❌ | `0x2201e0` |
 | `ApplilinkIndicator` | `-` | `dealloc` |  | ✅ | ✅ | `0x220254` |
 | `ApplilinkIndicator` | `-` | `indicator` | prop | ✅ | ✅ | `0x220290` |
@@ -5957,7 +5957,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkStore` | `+` | `allocWithZone:` |  | ✅ | ✅ | `0x2204c0` |
 | `ApplilinkStore` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x2205c0` |
 | `ApplilinkStore` | `-` | `showSKStore:appParam:delegate:` |  | ✅ | ❌ | `0x220650` |
-| `ApplilinkStore` | `-` | `closeSKStore` |  | ✅ | ❌ | `0x2207e4` |
+| `ApplilinkStore` | `-` | `closeSKStore` |  | ✅ | ✅ | `0x2207e4` |
 | `ApplilinkStore` | `-` | `appStoreOpenedNoticeWithAppParam:` |  | ✅ | ❌ | `0x220808` |
 | `ApplilinkStore` | `-` | `appStoreCloseNoticeWithAppParam:` |  | ✅ | ❌ | `0x2208c8` |
 | `ApplilinkStore` | `-` | `appStoreClosedNoticeWithAppParam:` |  | ✅ | ❌ | `0x220988` |
@@ -5978,7 +5978,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkDebug` | `+` | `clearUDID` |  | ✅ | ✅ | `0x220ed4` |
 | `ApplilinkDebug` | `+` | `clearKeyChainOldUDID` |  | ✅ | ✅ | `0x220eec` |
 | `ApplilinkDebug` | `+` | `clearAdUDID` |  | ✅ | ✅ | `0x220f04` |
-| `ApplilinkDebug` | `+` | `versionDev` |  | ✅ | ❌ | `0x220f1c` |
+| `ApplilinkDebug` | `+` | `versionDev` |  | ✅ | ✅ | `0x220f1c` |
 | `ApplilinkDebug` | `+` | `clearSession` |  | ✅ | ❌ | `0x220f68` |
 | `ApplilinkDebug` | `+` | `clearAdStatus` |  | ✅ | ❌ | `0x220ff4` |
 | `ApplilinkDebug` | `+` | `clearInitalize` |  | ✅ | ✅ | `0x221080` |

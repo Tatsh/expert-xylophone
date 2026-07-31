@@ -926,6 +926,19 @@ VERIFIED = {
               'guards setDelegate:nil on it',
     0x21fd74: 'RewardNetwork +setNavigationBarHidden:: forwards the flag to RewardCore '
               'sharedInstance, with no guard',
+    0x220124: 'ApplilinkIndicator -show: setHidden:NO, then a cbz on _indicator guarding '
+              'startAnimating',
+    0x22017c: 'ApplilinkIndicator -close: setHidden:YES, then the same cbz guard, but this one '
+              'also stores zero over the ivar and releases it after stopAnimating. The asymmetry '
+              'with -show is the binary\'s: showing keeps the view, closing discards it',
+    0x2207e4: 'ApplilinkStore -closeSKStore: a cbz on the file-scope view controller at '
+              '0x3df690+0x20 guarding productViewControllerDidFinish, which takes no argument '
+              'despite the similarly-named delegate callback that does',
+    0x220f1c: 'ApplilinkDebug +versionDev: a variadic stringWithFormat: read from the stack rather '
+              'than the decompile. The format at 0x3711a0 is "%@.%@" and the stp x9,x8,[sp] '
+              'supplies exactly two arguments, the CFStrings at 0x36fc00 and 0x371120, decoded as '
+              '"2.2.2" and "5". Both match the file-local constants, and the first is the same '
+              'record ApplilinkConsts +version returns',
     0x21271c: 'RecommendNetwork +openAppListWithAdLocation:delegate:: forwards to the '
               'requestCode: form with x3 zeroed, so the nil request code is the binary\'s. The '
               'adLocation is retained across the call and released after, which is the ARC bridge '
