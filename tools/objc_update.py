@@ -255,6 +255,20 @@ VERIFIED = {
              'setScore: tail call',
     0x87958: 'TwitterImageCreater -setAR:Side:: the same guard, one register earlier because the '
              'rate travels in s0, tail-calling setAr:',
+    # The remaining six figure setters share -setScore:Side:'s shape exactly; only the forwarded
+    # selector differs, and each was resolved from its own adrp page (0x3c1000) rather than assumed.
+    0x87980: 'TwitterImageCreater -setJustNum:Side:: forwards setJustNum: (0x3c15f0)',
+    0x879a8: 'TwitterImageCreater -setGreatNum:Side:: forwards setGreatNum: (0x3c15f8)',
+    0x879d0: 'TwitterImageCreater -setGoodNum:Side:: forwards setGoodNum: (0x3c1600)',
+    0x879f8: 'TwitterImageCreater -setMissNum:Side:: forwards setMissNum: (0x3c1608)',
+    0x87a20: 'TwitterImageCreater -setJustReflecNum:Side:: forwards setJustReflecNum: (0x3c1610)',
+    0x87a48: 'TwitterImageCreater -setMaxComboNum:Side:: forwards setMaxComboNum: (0x3c1618)',
+    0x6796c: 'MusicDataFromDoc -musicNameImageBlack2xData: forwards with scale 2.0, luminance 0.0',
+    0x67980: 'MusicDataFromDoc -musicNameImageBlackData: forwards with scale 1.0, luminance 0.0',
+    0x67c20: 'MusicDataFromDoc -artistNameImageWhiteData: scale 1.0, luminance 1.0, the 1.0 copied '
+             'from v0 into v1 rather than materialised twice',
+    0x67c34: 'MusicDataFromDoc -artistNameImageBlack2xData: scale 2.0, luminance 0.0',
+    0x67c48: 'MusicDataFromDoc -artistNameImageBlackData: scale 1.0, luminance 0.0',
     0x14efc: 'UnZipArchive -getEntryNum: the cbz on m_ZipFile returns 0 when no archive is open, '
              'otherwise the first field of m_ZipFileGlobalInfo, which is number_entry',
     0x1605c: 'GraphCircleView -setData:maxValue:: forwards to the three-argument form with '
