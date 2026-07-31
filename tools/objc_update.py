@@ -3806,6 +3806,20 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x2417DC: 'RecommendAdCache +getAllAdStatus: cbz on getAllAdDataInfoExpire falls through to '
+              'the work when nothing is stored, and cmn x22,#1 with b.ne returns when the compare '
+              'is not NSOrderedAscending, so a live expiry stops the refresh. Then createFolder '
+              'and layoutIndexWithCallback:. Its block at 0x2418dc reads its error from x1, one '
+              'argument, so that callback really is single-parameter, unlike 0x241c28 below',
+    0x241C28: 'RecommendAdCache +getAllAdDataWithCallBack:: read as a mismatch and fixed. All '
+              'three invoke sites pass two arguments, mov x1,#0 with mov x2 holding the error at '
+              '0x241cec and 0x241d8c and both zero at 0x241e5c, and the receiving block at '
+              '0x241970 tests x2. The callback is therefore two-parameter and the reconstruction '
+              'declared it with one, which bound the caller error to the always-nil first slot and '
+              'made its nil test always true. None of the three sites checks the callback before '
+              'dereferencing it, so the three guards were invented as well. The block addresses '
+              'were also wrong: the first carried the method own IMP and the last was 0x241e78 '
+              'where the adr says 0x241e5c',
     0x2448C8: 'RecommendAdCache +setAdDisplayCountDailyWithAdId:: the stored blob is unarchived '
               'only to be discarded when the day has rolled over. secondsFromGMT is converted with '
               'scvtf, so it is signed, and shifts NSDate by the local offset. The stored and '

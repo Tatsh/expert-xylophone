@@ -24,15 +24,15 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5242 verified
-(82.6%).
+Total: 6343 — 6343 reconstructed, 5244 verified
+(82.7%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5242 verified, 3507 come from those passes and the remaining
-1735 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5244 verified, 3507 come from those passes and the remaining
+1737 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -6280,8 +6280,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RotateStoreProductViewController` | `-` | `shouldAutorotate` |  | ✅ | ✅ | `0x2417c4` |
 | `RotateStoreProductViewController` | `-` | `supportedInterfaceOrientations` |  | ✅ | ✅ | `0x2417cc` |
 | `RotateStoreProductViewController` | `-` | `shouldAutorotateToInterfaceOrientation:` |  | ✅ | ✅ | `0x2417d4` |
-| `RecommendAdCache` | `+` | `getAllAdStatus` |  | ✅ | ❌ | `0x2417dc` |
-| `RecommendAdCache` | `+` | `getAllAdDataWithCallBack:` |  | ✅ | ❌ | `0x241c28` |
+| `RecommendAdCache` | `+` | `getAllAdStatus` |  | ✅ | ✅ | `0x2417dc` |
+| `RecommendAdCache` | `+` | `getAllAdDataWithCallBack:` |  | ✅ | ✅ | `0x241c28` |
 | `RecommendAdCache` | `+` | `clearAllAdData` |  | ✅ | ✅ | `0x242380` |
 | `RecommendAdCache` | `+` | `getAllAdDataInfoExpire` |  | ✅ | ✅ | `0x2423d8` |
 | `RecommendAdCache` | `+` | `clearAllAdDataInfoExpire` |  | ✅ | ✅ | `0x2424e0` |

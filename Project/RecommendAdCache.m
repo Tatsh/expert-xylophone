@@ -124,8 +124,9 @@ static NSString *const kSettingUserInfoKey = @"Setting";
           [RecommendAdCache getTemplateFiles];
       }
       [RecommendAdCache clearCacheBannerImage];
-      [RecommendAdCache getAllAdDataWithCallBack:^(NSError *_Nullable innerError) {
+      [RecommendAdCache getAllAdDataWithCallBack:^(id _Nullable data, NSError *_Nullable innerError) {
         /** @ghidraAddress 0x241970 */
+        // The block reads its error from the second argument; the first is never used.
         if (innerError == nil) {
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
               /** @ghidraAddress 0x2419e0 */
@@ -136,30 +137,25 @@ static NSString *const kSettingUserInfoKey = @"Setting";
     }];
 }
 
-+ (void)getAllAdDataWithCallBack:(void (^)(NSError *_Nullable error))callback {
++ (void)getAllAdDataWithCallBack:(void (^)(id _Nullable data, NSError *_Nullable error))callback {
     [[RecommendCore sharedInstance] startSessionWithCallback:^(NSError *_Nullable error) {
-      /** @ghidraAddress 0x241c28 */
+      /** @ghidraAddress 0x241cec */
       if (error != nil) {
-          if (callback) {
-              callback(error);
-          }
+          // Every invocation passes a nil first argument; only the error is ever carried.
+          callback(nil, error);
           return;
       }
       [RecommendWebAPI allAdDataWithCallBack:^(id _Nullable data, NSError *_Nullable fetchError) {
         /** @ghidraAddress 0x241d8c */
         if (fetchError != nil) {
-            if (callback) {
-                callback(fetchError);
-            }
+            callback(nil, fetchError);
             return;
         }
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-          /** @ghidraAddress 0x241e78 */
+          /** @ghidraAddress 0x241e5c */
           // PersistAllAdData saves the response data and reports completion to the callback.
           (void)data;
-          if (callback) {
-              callback(nil);
-          }
+          callback(nil, nil);
         });
       }];
     }];

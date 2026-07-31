@@ -31,10 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Fetch every advert-data record through the recommend session, then report completion.
- * @param callback The completion callback invoked with an error.
+ * @param callback The completion callback. Its first argument is always nil on every path the
+ *        binary takes; only the second, the error, ever carries a value. The block is invoked
+ *        without a nil check at all three sites, so it is required rather than optional.
  * @ghidraAddress 0x241c28
  */
-+ (void)getAllAdDataWithCallBack:(nullable void (^)(NSError *_Nullable error))callback;
++ (void)getAllAdDataWithCallBack:(void (^)(id _Nullable data, NSError *_Nullable error))callback;
 
 /**
  * @brief Clear every cached advert-data record.

@@ -1427,3 +1427,36 @@ silently overwritten and the totals would have counted eighteen new methods as t
 cent of that batch was redundant work, and the checklist would not have shown it. This is an
 argument for the guard, and also for tracking what has been handed out: the guard catches the
 double-record, but nothing catches the wasted reading before it.
+
+## A callback declared with one parameter that the binary calls with two
+
+`RecommendAdCache +getAllAdDataWithCallBack:` declared its completion block as
+`void (^)(NSError *)`. The binary invokes it with two arguments at all three sites: `mov x1,#0`
+followed by `mov x2` holding the error at `0x241cec` and `0x241d8c`, and both registers zeroed at
+`0x241e5c`. The receiving block settles it from the other end — the caller's block at `0x241970`
+tests `x2`, not `x1`.
+
+This is not a typing nicety. The reconstruction's own caller declared `^(NSError *innerError)`, which
+binds `innerError` to `x1`, and `x1` is nil on every path the binary takes. Its `if (innerError ==
+nil)` test was therefore always true, so the failure branch could never run. A one-parameter block
+called with two arguments does not crash on arm64 — the extra register is simply ignored — which is
+exactly why this survived: it compiles, it runs, and it silently takes the wrong branch.
+
+The first argument is nil at every site, so what it was meant to carry cannot be recovered from
+these three; the sibling `allAdDataWithCallBack:` has the shape `(data, error)`, and this is
+declared to match. The header now says the first slot is always nil, so nobody reads meaning into it
+later.
+
+Two smaller defects came with it. None of the three sites tests the callback before dereferencing
+it, so its three `if (callback)` guards were invented, the same pattern found across
+`RecommendWebAPI`. And two of the three block annotations were wrong: the first carried `0x241c28`,
+which is the method's own IMP rather than any block, and the last read `0x241e78` where the `adr`
+that builds the block literal says `0x241e5c`.
+
+That last point is worth generalising. `audit_ghidra_addresses.py` validates every annotation on a
+declaration line against the runtime metadata, and it passes on this file — because a block's
+address lives inside a method body, where the tool does not look. The block annotations are
+checkable all the same, and cheaply: the `adr xN,<address>` that stores the invoke pointer into the
+block literal names the block, so each one can be read straight out of the enclosing routine. The
+neighbouring `+getAllAdStatus` chain, `0x2418dc` into `0x241970` into `0x2419e0`, checks out exactly
+that way and is correct.
