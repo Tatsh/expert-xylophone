@@ -1199,6 +1199,13 @@ VERIFIED = {
     0x34c08: 'SoundManager -init: two loops bounded at 0x50 and 0x40, which are 10 and 8 entries of '
              '8 bytes, matching the array ivar encodings and the pool and voice constants. The '
              'init selector is reused from the super call rather than reloaded',
+    0x5550: 'RBUrlSchemeStoreController -action:query:: builds a selector name with '
+            'stringWithFormat:"%@RbAction:", one specifier and one stack argument, resolves it '
+            'through _NSSelectorFromString at 0x24a5ec, and returns NO on the cbz when '
+            'respondsToSelector: fails. On the other arm it takes the IMP from methodForSelector: '
+            'and calls it with blr x8 passing self, the selector and the query, three arguments '
+            'matching the BOOL (*)(id, SEL, id) typedef. A direct IMP call rather than a '
+            'performSelector:, which is what the typedef exists to express',
     0x5668: 'RBUrlSchemeStoreController -packRbAction:: objectForKey:"id" behind a cbz, then '
             'intValue with cmp w0,#1 and b.lt, which is a signed compare, so a negative '
             'identifier is rejected as well as zero. Both arms of the short-circuit match the '
