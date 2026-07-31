@@ -3807,6 +3807,15 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x181D64: 'RBExtendNoteManager -deleteExtendNote:: the same two-path removal as '
+              'RBMusicManager 0x6ac38, with the cbz w24 at 0x181ec4 acting as the else-if before '
+              'setExtendNoteDataArrayDirty',
+    0x181FCC: 'RBExtendNoteManager -loadPurchasedNotes: the "nolist" file rather than "mulist", '
+              'otherwise the same shape: two guards, a BFCodec keyed from the music-list key, and '
+              'the four-byte salt stripped by sub x3,x0,#4 with subdataWithRange: at location 4',
+    0x182348: 'RBExtendNoteManager -savePurchasedNotes: cbz on the count declines to write an '
+              'empty list, then CFPropertyListCreateXMLData into an initWithCapacity:0x80 buffer '
+              'behind four bytes of salt, enciphered with the same key',
     0x181B48: 'RBExtendNoteManager +getPathFromBundle:: the filename, then mainBundle and '
               'pathForResource: with an empty type, which is what the filename already carrying '
               'its extension requires',
