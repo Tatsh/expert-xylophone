@@ -3807,6 +3807,14 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x1048BC: 'ReplayData -initWithCoder:: one objc_msgSendSuper2 for [super init], then seventeen '
+              'decodeObjectForKey: calls whose key strings read ver, tuneID, diff, seed, cntNote, '
+              'score, cntCom, cntJust, cntGreat, cntGood, cntMiss, cntJR, ar, replay, playDate, '
+              'user, chksco, matching the constants in that order',
+    0x104DF4: 'ReplayData -encodeWithCoder:: the same seventeen keys in the same order through '
+              'encodeObject:forKey:. Read against 0x1048bc rather than on its own, since a coder '
+              'pair that disagrees on one key or one position writes archives it cannot read back '
+              'and nothing else would show it',
     0x10546C: 'ReplayData +isExistReplayData:difficulty:: sub w8,w3,#3 with cmp w3,#2 and csel on '
               'gt folds the advanced difficulties down by three, a signed test written as greater '
               'than two where the source says at least three, which is the same thing for an int. '
