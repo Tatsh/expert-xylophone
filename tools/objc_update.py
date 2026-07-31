@@ -297,6 +297,10 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xdda2c: 'RBRankingView -initWithFrame:: the mov w2 of 5 is RBMusicMenuPopupViewTypeRanking',
+    0xe650c: 'RBSearchView -initWithFrame:: the mov w2 of 4 is RBMusicMenuPopupViewTypeSearch; it '
+             'reaches the setter through dot syntax where its sibling uses the message form, '
+             'which compiles to the same send',
     0xb0e18: 'RBMenuView -setSearchBarNonActive: resigns the search bar only when one is held',
     0xc0768: 'RBStoreExtendNoteList -downloaderError:: reports through the delegate with the '
              'server-connect-failed string, then clears extendNotelistDownloader',

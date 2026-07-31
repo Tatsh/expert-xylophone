@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4827 verified
+Total: 6343 — 6306 reconstructed, 4829 verified
 (76.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2696,7 +2696,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `DownloadResourceManager` | `+` | `fileListCheck` |  | ✅ | ❌ | `0xdd2dc` |
 | `DownloadResourceManager` | `+` | `offlineCheck` |  | ✅ | ❌ | `0xdd74c` |
 | `DownloadResourceManager` | `+` | `onlineChek:` |  | ✅ | ❌ | `0xdd850` |
-| `RBRankingView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xdda2c` |
+| `RBRankingView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0xdda2c` |
 | `RBRankingView` | `-` | `dealloc` |  | ✅ | ✅ | `0xddab8` |
 | `RBRankingView` | `-` | `setupView` |  | ✅ | ❌ | `0xddaec` |
 | `RBRankingView` | `-` | `showFriend:` |  | ✅ | ❌ | `0xdec60` |
@@ -2808,7 +2808,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapViewController` | `-` | `didChangeUserTracking:` |  | ✅ | ✅ | `0xe6454` |
 | `RBSearchMapViewController` | `-` | `currentLocation` | prop | ✅ | ✅ | `0xe64b0` |
 | `RBSearchMapViewController` | `-` | `setCurrentLocation:` | prop | ✅ | ✅ | `0xe64c0` |
-| `RBSearchView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xe650c` |
+| `RBSearchView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0xe650c` |
 | `RBSearchView` | `-` | `showAnimation` |  | ✅ | ✅ | `0xe6598` |
 | `RBSearchView` | `-` | `setupView` |  | ✅ | ✅ | `0xe661c` |
 | `RBSearchView` | `-` | `selectCurrentPosition:` |  | ✅ | ✅ | `0xe6e74` |
