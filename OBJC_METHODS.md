@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4877 verified
-(76.9%).
+Total: 6343 — 6306 reconstructed, 4881 verified
+(77.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3196,7 +3196,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `startSamplePlay` |  | ✅ | ✅ | `0x102a14` |
 | `StorePromotionView` | `-` | `stopSamplePlay` |  | ✅ | ❌ | `0x102a20` |
 | `StorePromotionView` | `-` | `startAnimation` |  | ✅ | ❌ | `0x102b04` |
-| `StorePromotionView` | `-` | `stopAnimation` |  | ✅ | ❌ | `0x103048` |
+| `StorePromotionView` | `-` | `stopAnimation` |  | ✅ | ✅ | `0x103048` |
 | `StorePromotionView` | `-` | `bannerTapped:` |  | ✅ | ❌ | `0x1030f0` |
 | `StorePromotionView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x1032e4` |
 | `StorePromotionView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x1037fc` |
@@ -3239,7 +3239,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreTableCell` | `-` | `setRightPackView:` | prop | ✅ | ✅ | `0x104844` |
 | `ReplayData` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x1048bc` |
 | `ReplayData` | `-` | `encodeWithCoder:` |  | ✅ | ❌ | `0x104df4` |
-| `ReplayData` | `-` | `init` |  | ✅ | ❌ | `0x105290` |
+| `ReplayData` | `-` | `init` |  | ✅ | ✅ | `0x105290` |
 | `ReplayData` | `-` | `reset` |  | ✅ | ❌ | `0x105304` |
 | `ReplayData` | `+` | `isExistReplayData:difficulty:` |  | ✅ | ❌ | `0x10546c` |
 | `ReplayData` | `+` | `loadReplayData:difficulty:` |  | ✅ | ❌ | `0x1055b4` |
@@ -3298,7 +3298,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ReplayNote` | `-` | `slide` | prop | ✅ | ✅ | `0x106fb4` |
 | `ReplayNote` | `-` | `setSlide:` | prop | ✅ | ✅ | `0x106fc4` |
 | `RBThemaView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x107104` |
-| `RBThemaView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x1071a8` |
+| `RBThemaView` | `-` | `layoutSubviews` |  | ✅ | ✅ | `0x1071a8` |
 | `RBThemaView` | `-` | `setupView` |  | ✅ | ❌ | `0x107234` |
 | `RBThemaView` | `-` | `yesButtonTouch:` |  | ✅ | ❌ | `0x108434` |
 | `RBThemaView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x108740` |
@@ -3325,7 +3325,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreCampaignItemInfo` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x109898` |
 | `StoreCampaignItemInfo` | `-` | `registSuccess` |  | ✅ | ✅ | `0x1099ac` |
 | `StoreCampaignItemInfo` | `+` | `getButtonColor:` |  | ✅ | ❌ | `0x1099cc` |
-| `StoreCampaignItemInfo` | `+` | `getButtonName:` |  | ✅ | ❌ | `0x109b10` |
+| `StoreCampaignItemInfo` | `+` | `getButtonName:` |  | ✅ | ✅ | `0x109b10` |
 | `StoreCampaignItemInfo` | `-` | `campaignID` | prop | ✅ | ✅ | `0x109bb8` |
 | `StoreCampaignItemInfo` | `-` | `campaignName` | prop | ✅ | ✅ | `0x109bc8` |
 | `StoreCampaignItemInfo` | `-` | `campaignDescription` | prop | ✅ | ✅ | `0x109bd8` |

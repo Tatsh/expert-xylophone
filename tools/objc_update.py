@@ -297,6 +297,15 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x109b10: 'StoreCampaignItemInfo +getButtonName:: a six-arm jump table at 0x109ba0 with a nil '
+              'default above 5. Every arm was decoded and its CFString read as UTF-16 with the '
+              'record length in characters: download, downloaded, unlock-condition, update, '
+              'serial-input, and point-unlocked, in that order, matching the declared constants '
+              'case for case. Arm order is what a jump table transposes, so it was not sampled',
+    0x103048: 'StorePromotionView -stopAnimation: invalidates and clears the timer when one is set',
+    0x105290: 'ReplayData -init: super init, nil check, then reset',
+    0x1071a8: 'RBThemaView -layoutSubviews: super, then feeds its own scrollView back through '
+              'scrollViewDidScroll: to re-run the paging maths after a bounds change',
     0xeb0e4: 'RBSettingView -OpenView: a genuine three-arm theme branch. Themes 2 and 1 share the '
              'orr w1 of 0xc, theme 0 takes the orr of 3, and any other theme plays nothing at all '
              'because the cbnz skips the call entirely; showAnimation then runs unconditionally. '
