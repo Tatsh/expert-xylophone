@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6206 reconstructed, 4535 verified
+Total: 6343 — 6248 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -219,12 +219,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertNotFoundMusics:` |  | ✅ | ✅ | `0xfa84` |
 | `(RB)` | `+` | `showAlertUpdateErosionMark:` |  | ✅ | ✅ | `0xfcb0` |
 | `StoreExtendNoteCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0xfdb8` |
-| `UnZipArchive` | `-` | `init` |  | ❌ | ❌ | `0x14d40` |
-| `UnZipArchive` | `-` | `dealloc` |  | ❌ | ❌ | `0x14d84` |
-| `UnZipArchive` | `-` | `openFile:` |  | ❌ | ❌ | `0x14e08` |
-| `UnZipArchive` | `-` | `closeFile` |  | ❌ | ❌ | `0x14ec8` |
+| `UnZipArchive` | `-` | `init` |  | ✅ | ❌ | `0x14d40` |
+| `UnZipArchive` | `-` | `dealloc` |  | ✅ | ❌ | `0x14d84` |
+| `UnZipArchive` | `-` | `openFile:` |  | ✅ | ❌ | `0x14e08` |
+| `UnZipArchive` | `-` | `closeFile` |  | ✅ | ❌ | `0x14ec8` |
 | `UnZipArchive` | `-` | `getEntryNum` |  | ❌ | ❌ | `0x14efc` |
-| `UnZipArchive` | `-` | `getData:` |  | ❌ | ❌ | `0x14f24` |
+| `UnZipArchive` | `-` | `getData:` |  | ✅ | ❌ | `0x14f24` |
 | `UnZipArchive` | `-` | `setFirst` |  | ❌ | ❌ | `0x1503c` |
 | `UnZipArchive` | `-` | `setNext` |  | ❌ | ❌ | `0x15070` |
 | `UnZipArchive` | `-` | `getCurrentFileName` |  | ❌ | ❌ | `0x150a4` |
@@ -3614,33 +3614,33 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `setBaseHardScore:` | prop | ✅ | ✅ | `0x148960` |
 | `RBErosionMarkUpdater` | `-` | `editHardScore` | prop | ✅ | ✅ | `0x148970` |
 | `RBErosionMarkUpdater` | `-` | `setEditHardScore:` | prop | ✅ | ✅ | `0x148980` |
-| `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ❌ | ❌ | `0x154ae0` |
-| `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ❌ | ❌ | `0x154b38` |
-| `DAProgressOverlayView` | `-` | `setUp` |  | ❌ | ❌ | `0x154b90` |
-| `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ❌ | ❌ | `0x154cb4` |
-| `DAProgressOverlayView` | `-` | `displayOperationWillTriggerAnimation` |  | ❌ | ❌ | `0x154d48` |
-| `DAProgressOverlayView` | `-` | `drawRect:` |  | ❌ | ❌ | `0x154ddc` |
-| `DAProgressOverlayView` | `-` | `setInnerRadiusRatio:` | prop | ❌ | ✅ | `0x1550e8` |
-| `DAProgressOverlayView` | `-` | `setOuterRadiusRatio:` | prop | ❌ | ✅ | `0x15510c` |
-| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ❌ | ❌ | `0x155130` |
-| `DAProgressOverlayView` | `-` | `innerRadius` |  | ❌ | ❌ | `0x1551d4` |
-| `DAProgressOverlayView` | `-` | `outerRadius` |  | ❌ | ❌ | `0x1552b8` |
-| `DAProgressOverlayView` | `-` | `update` |  | ❌ | ❌ | `0x15539c` |
-| `DAProgressOverlayView` | `-` | `overlayColor` | prop | ❌ | ✅ | `0x155458` |
-| `DAProgressOverlayView` | `-` | `setOverlayColor:` | prop | ❌ | ✅ | `0x155468` |
-| `DAProgressOverlayView` | `-` | `innerRadiusRatio` | prop | ❌ | ✅ | `0x1554a0` |
-| `DAProgressOverlayView` | `-` | `outerRadiusRatio` | prop | ❌ | ✅ | `0x1554b0` |
-| `DAProgressOverlayView` | `-` | `progress` | prop | ❌ | ✅ | `0x1554c0` |
-| `DAProgressOverlayView` | `-` | `stateChangeAnimationDuration` | prop | ❌ | ✅ | `0x1554d0` |
-| `DAProgressOverlayView` | `-` | `setStateChangeAnimationDuration:` | prop | ❌ | ✅ | `0x1554e0` |
-| `DAProgressOverlayView` | `-` | `triggersDownloadDidFinishAnimationAutomatically` | prop | ❌ | ✅ | `0x1554f0` |
-| `DAProgressOverlayView` | `-` | `setTriggersDownloadDidFinishAnimationAutomatically:` | prop | ❌ | ✅ | `0x155500` |
-| `DAProgressOverlayView` | `-` | `state` | prop | ❌ | ✅ | `0x155510` |
-| `DAProgressOverlayView` | `-` | `setState:` | prop | ❌ | ✅ | `0x155520` |
-| `DAProgressOverlayView` | `-` | `animationProggress` | prop | ❌ | ✅ | `0x155530` |
-| `DAProgressOverlayView` | `-` | `setAnimationProggress:` | prop | ❌ | ✅ | `0x155540` |
-| `DAProgressOverlayView` | `-` | `timer` | prop | ❌ | ✅ | `0x155550` |
-| `DAProgressOverlayView` | `-` | `setTimer:` | prop | ❌ | ✅ | `0x155560` |
+| `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x154ae0` |
+| `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x154b38` |
+| `DAProgressOverlayView` | `-` | `setUp` |  | ✅ | ❌ | `0x154b90` |
+| `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ✅ | ❌ | `0x154cb4` |
+| `DAProgressOverlayView` | `-` | `displayOperationWillTriggerAnimation` |  | ✅ | ❌ | `0x154d48` |
+| `DAProgressOverlayView` | `-` | `drawRect:` |  | ✅ | ❌ | `0x154ddc` |
+| `DAProgressOverlayView` | `-` | `setInnerRadiusRatio:` | prop | ✅ | ✅ | `0x1550e8` |
+| `DAProgressOverlayView` | `-` | `setOuterRadiusRatio:` | prop | ✅ | ✅ | `0x15510c` |
+| `DAProgressOverlayView` | `-` | `setProgress:` | prop | ✅ | ❌ | `0x155130` |
+| `DAProgressOverlayView` | `-` | `innerRadius` |  | ✅ | ❌ | `0x1551d4` |
+| `DAProgressOverlayView` | `-` | `outerRadius` |  | ✅ | ❌ | `0x1552b8` |
+| `DAProgressOverlayView` | `-` | `update` |  | ✅ | ❌ | `0x15539c` |
+| `DAProgressOverlayView` | `-` | `overlayColor` | prop | ✅ | ✅ | `0x155458` |
+| `DAProgressOverlayView` | `-` | `setOverlayColor:` | prop | ✅ | ✅ | `0x155468` |
+| `DAProgressOverlayView` | `-` | `innerRadiusRatio` | prop | ✅ | ✅ | `0x1554a0` |
+| `DAProgressOverlayView` | `-` | `outerRadiusRatio` | prop | ✅ | ✅ | `0x1554b0` |
+| `DAProgressOverlayView` | `-` | `progress` | prop | ✅ | ✅ | `0x1554c0` |
+| `DAProgressOverlayView` | `-` | `stateChangeAnimationDuration` | prop | ✅ | ✅ | `0x1554d0` |
+| `DAProgressOverlayView` | `-` | `setStateChangeAnimationDuration:` | prop | ✅ | ✅ | `0x1554e0` |
+| `DAProgressOverlayView` | `-` | `triggersDownloadDidFinishAnimationAutomatically` | prop | ✅ | ✅ | `0x1554f0` |
+| `DAProgressOverlayView` | `-` | `setTriggersDownloadDidFinishAnimationAutomatically:` | prop | ✅ | ✅ | `0x155500` |
+| `DAProgressOverlayView` | `-` | `state` | prop | ✅ | ✅ | `0x155510` |
+| `DAProgressOverlayView` | `-` | `setState:` | prop | ✅ | ✅ | `0x155520` |
+| `DAProgressOverlayView` | `-` | `animationProggress` | prop | ✅ | ✅ | `0x155530` |
+| `DAProgressOverlayView` | `-` | `setAnimationProggress:` | prop | ✅ | ✅ | `0x155540` |
+| `DAProgressOverlayView` | `-` | `timer` | prop | ✅ | ✅ | `0x155550` |
+| `DAProgressOverlayView` | `-` | `setTimer:` | prop | ✅ | ✅ | `0x155560` |
 | `RBCustomSelectCollectionView` | `-` | `initWithFrame:customizeType:` |  | ✅ | ❌ | `0x1555d8` |
 | `RBCustomSelectCollectionView` | `-` | `setupView` |  | ✅ | ❌ | `0x155670` |
 | `RBCustomSelectCollectionView` | `-` | `gaugeStyleTap:` |  | ✅ | ❌ | `0x15720c` |
@@ -4803,20 +4803,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreExtendNoteCellPhone` | `-` | `setPurchasedLabel:` | prop | ✅ | ✅ | `0x1c21a8` |
 | `StoreExtendNoteCellPhone` | `-` | `iconNewLayer` | prop | ✅ | ✅ | `0x1c21e0` |
 | `StoreExtendNoteCellPhone` | `-` | `setIconNewLayer:` | prop | ✅ | ✅ | `0x1c21f0` |
-| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:` |  | ❌ | ❌ | `0x1c22cc` |
-| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:` |  | ❌ | ❌ | `0x1c232c` |
-| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:delegate:` |  | ❌ | ❌ | `0x1c23c0` |
-| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:delegate:` |  | ❌ | ❌ | `0x1c2444` |
-| `SSZipArchive` | `+` | `createZipFileAtPath:withFilesAtPaths:` |  | ❌ | ❌ | `0x1c31b4` |
-| `SSZipArchive` | `+` | `createZipFileAtPath:withContentsOfDirectory:` |  | ❌ | ❌ | `0x1c3358` |
-| `SSZipArchive` | `-` | `initWithPath:` |  | ❌ | ❌ | `0x1c352c` |
-| `SSZipArchive` | `-` | `open` |  | ❌ | ❌ | `0x1c35b8` |
+| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:` |  | ✅ | ❌ | `0x1c22cc` |
+| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:` |  | ✅ | ❌ | `0x1c232c` |
+| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:delegate:` |  | ✅ | ❌ | `0x1c23c0` |
+| `SSZipArchive` | `+` | `unzipFileAtPath:toDestination:overwrite:password:error:delegate:` |  | ✅ | ❌ | `0x1c2444` |
+| `SSZipArchive` | `+` | `createZipFileAtPath:withFilesAtPaths:` |  | ✅ | ❌ | `0x1c31b4` |
+| `SSZipArchive` | `+` | `createZipFileAtPath:withContentsOfDirectory:` |  | ✅ | ❌ | `0x1c3358` |
+| `SSZipArchive` | `-` | `initWithPath:` |  | ✅ | ❌ | `0x1c352c` |
+| `SSZipArchive` | `-` | `open` |  | ✅ | ❌ | `0x1c35b8` |
 | `SSZipArchive` | `-` | `zipInfo:setDate:` |  | ❌ | ❌ | `0x1c3608` |
 | `SSZipArchive` | `-` | `writeFile:` |  | ❌ | ❌ | `0x1c3710` |
 | `SSZipArchive` | `-` | `writeFileAtPath:withFileName:` |  | ❌ | ❌ | `0x1c3720` |
 | `SSZipArchive` | `-` | `writeData:filename:` |  | ❌ | ❌ | `0x1c39e4` |
-| `SSZipArchive` | `-` | `close` |  | ❌ | ❌ | `0x1c3b58` |
-| `SSZipArchive` | `+` | `_dateWithMSDOSFormat:` |  | ❌ | ❌ | `0x1c3b80` |
+| `SSZipArchive` | `-` | `close` |  | ✅ | ❌ | `0x1c3b58` |
+| `SSZipArchive` | `+` | `_dateWithMSDOSFormat:` |  | ✅ | ❌ | `0x1c3b80` |
 | `RBTermAgreeView` | `-` | `initWithFrame:termType:` |  | ✅ | ❌ | `0x1c3d58` |
 | `RBTermAgreeView` | `-` | `setupView` |  | ✅ | ❌ | `0x1c3e7c` |
 | `RBTermAgreeView` | `-` | `layoutSubviews` |  | ✅ | ❌ | `0x1c664c` |

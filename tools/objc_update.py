@@ -2247,7 +2247,8 @@ def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str,
     method = re.compile(r'^\s*([-+])\s*\([^)]*\)\s*(.+)$')
     prop = re.compile(r'^\s*@property\s*(?:\(([^)]*)\))?\s*.*?([A-Za-z_]\w*)\s*;')
     files = []
-    for pattern in ('Project/**/*.m', 'Project/**/*.mm', 'Project/**/*.h'):
+    for pattern in ('Project/**/*.m', 'Project/**/*.mm', 'Project/**/*.h', '3rdparty/**/*.m',
+                    '3rdparty/**/*.mm', '3rdparty/**/*.h'):
         files += glob.glob(pattern, recursive=True)
     for name in sorted(set(files)):
         lines = Path(name).read_text(errors='replace').splitlines()
