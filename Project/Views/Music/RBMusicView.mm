@@ -8,6 +8,7 @@
 #import "NSFileManager+RB.h"
 #import "RBBGMManager.h"
 #import "RBCoreDataManager.h"
+#import "RBExtendNoteManager.h"
 #import "RBMenuTutorialView.h"
 #import "RBMenuView.h"
 #import "RBMusicARView.h"
@@ -483,6 +484,7 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
 // De-inlined SetupView helper (the binary draws the BPM strip inline via UIGraphics); not a
 // distinct selector in the binary.
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax;
+- (nullable UIImage *)bpmImageForMin:(int)bpmMin max:(int)bpmMax;
 @end
 
 @implementation RBMusicView
@@ -510,6 +512,114 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
 
 - (void)dealloc {
     [self.settingScroll.layer removeAllAnimations];
+}
+
+#pragma mark Music data
+
+// The detail-panel background, indexed by frame-bonus type. Entry 3 is the plain background the
+// non-Limelight themes always take. @ghidraAddress 0x35af80
+static NSString *const kDetMbgTable[] = {
+    @"02_music_detail/det_mbg_d",
+    @"02_music_detail/det_mbg_g",
+    @"02_music_detail/det_mbg_p",
+    @"02_music_detail/det_mbg",
+};
+
+// The plain background's index in kDetMbgTable.
+enum { kDetMbgPlainIndex = 3 };
+
+- (void)setMusicData:(MusicData *)musicData {
+    /** @ghidraAddress 0xca818 */
+    // The binary implements this setter rather than letting the property synthesise one, because
+    // assigning the music data is what repopulates the card: the jacket, the score readout, the
+    // name and artist strips, the background and the BPM strip are all filled here. SetupView
+    // builds the subviews; this fills them for the tune being shown, so a synthesised setter
+    // leaves every one of them empty.
+    _musicData = musicData;
+    self.jacketImage = musicData.artwork;
+
+    NSManagedObjectContext *moc = [RBCoreDataManager sharedInstance].managedObjectContext;
+    ScoreData *score = [ScoreData getScoreData:self.musicData.MusicID inManagedObjectContext:moc];
+    m_Score[kDifficultyBasic] = [score.scoBas intValue];
+    m_FullCombo[kDifficultyBasic] = [score.fcBas boolValue];
+    m_AR[kDifficultyBasic] = [score.arBas floatValue];
+    m_Rank[kDifficultyBasic] = GetClearRank(m_AR[kDifficultyBasic]);
+    m_PlayCount[kDifficultyBasic] = [score.pcBas intValue];
+
+    m_Score[kDifficultyMedium] = [score.scoMed intValue];
+    m_FullCombo[kDifficultyMedium] = [score.fcMed boolValue];
+    m_AR[kDifficultyMedium] = [score.arMed floatValue];
+    m_Rank[kDifficultyMedium] = GetClearRank(m_AR[kDifficultyMedium]);
+    m_PlayCount[kDifficultyMedium] = [score.pcMed intValue];
+
+    m_Score[kDifficultyHard] = [score.scoHar intValue];
+    m_FullCombo[kDifficultyHard] = [score.fcHar boolValue];
+    m_AR[kDifficultyHard] = [score.arHar floatValue];
+    m_Rank[kDifficultyHard] = GetClearRank(m_AR[kDifficultyHard]);
+    m_PlayCount[kDifficultyHard] = [score.pcHar intValue];
+
+    // The extended chart is a separate tune record, and its basic row supplies the extended slot.
+    NSArray *extendNotes =
+        [[RBExtendNoteManager getInstance] getExtendNoteDataWithMusicID:musicData.MusicID];
+    if (extendNotes != nil && extendNotes.count != 0) {
+        self.extMusicData = extendNotes[0];
+        ScoreData *extendScore = [ScoreData getScoreData:self.extMusicData.ExtMusicID
+                                  inManagedObjectContext:moc];
+        m_Score[kDifficultyExtended] = [extendScore.scoBas intValue];
+        m_FullCombo[kDifficultyExtended] = [extendScore.fcBas boolValue];
+        m_AR[kDifficultyExtended] = [extendScore.arBas floatValue];
+        m_Rank[kDifficultyExtended] = GetClearRank(m_AR[kDifficultyExtended]);
+        m_PlayCount[kDifficultyExtended] = [extendScore.pcBas intValue];
+    }
+
+    int frameBonusType = [score getFrameBonusType];
+
+    // Only the two lowest themes vary the background by frame bonus; the rest take the plain one.
+    NSString *backgroundName = self->_thema <= kThemeBlack ? kDetMbgTable[frameBonusType] :
+                                                             kDetMbgTable[kDetMbgPlainIndex];
+    self.bgImageView.image = [UIImage imageWithName:backgroundName];
+
+    // Theme 0 takes the white strips and themes 1 and 2 the black ones; any other theme leaves
+    // both images untouched, which is what the binary's fall-through does.
+    UIImage *musicNameSrc = nil;
+    UIImage *artistNameSrc = nil;
+    if (self->_thema == kThemeWhite) {
+        musicNameSrc = self.musicData.musicNameImageWhite;
+        artistNameSrc = self.musicData.artistNameImageWhite;
+    } else if (self->_thema == kThemeBlack || self->_thema == kThemeBrown) {
+        musicNameSrc = self.musicData.musicNameImageBlack;
+        artistNameSrc = self.musicData.artistNameImageBlack;
+    }
+
+    self.jacketImageView.image = self.jacketImage;
+
+    // Each strip keeps its origin and takes the new artwork's size.
+    if (musicNameSrc != nil) {
+        self.musicNameImageView.image = musicNameSrc;
+        CGRect nameFrame = self.musicNameImageView.frame;
+        self.musicNameImageView.frame = CGRectMake(nameFrame.origin.x,
+                                                   nameFrame.origin.y,
+                                                   musicNameSrc.size.width,
+                                                   musicNameSrc.size.height);
+    }
+    if (artistNameSrc != nil) {
+        self.artistNameImageView.image = artistNameSrc;
+        CGRect artistFrame = self.artistNameImageView.frame;
+        self.artistNameImageView.frame = CGRectMake(artistFrame.origin.x,
+                                                    artistFrame.origin.y,
+                                                    artistNameSrc.size.width,
+                                                    artistNameSrc.size.height);
+    }
+
+    UIImage *bpmImage = [self bpmImageForMin:self.musicData.bpm_MIN max:self.musicData.bpm_MAX];
+    CGPoint bpmOrigin = self.bpmOrigin;
+    self.bpmImageView.frame =
+        CGRectMake(bpmOrigin.x, bpmOrigin.y, bpmImage.size.width, bpmImage.size.height);
+    self.bpmImageView.image = bpmImage;
+
+    [self SetSettingButtonSelected:1];
+    [self ShowSelectDifficulty];
+    [self ShowSettingView:1];
 }
 
 #pragma mark View construction
@@ -945,6 +1055,17 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
 // Builds the BPM strip image by drawing the digit images (and a range separator when the minimum
 // and maximum BPM differ) side by side into a single image. @ghidraAddress 0xcd744
 - (void)buildBpmImageForMin:(int)bpmMin max:(int)bpmMax {
+    UIImage *bpmImage = [self bpmImageForMin:bpmMin max:bpmMax];
+    self.bpmImageView = [[UIImageView alloc] initWithImage:bpmImage];
+    CGPoint origin = self.bpmOrigin;
+    CGSize size = bpmImage.size;
+    self.bpmImageView.frame = CGRectMake(origin.x, origin.y, size.width, size.height);
+    [self.baseView addSubview:self.bpmImageView];
+}
+
+// The BPM strip itself. SetupView wraps this in a fresh image view; -setMusicData: reuses the one
+// already built, so the drawing is shared rather than written twice.
+- (UIImage *)bpmImageForMin:(int)bpmMin max:(int)bpmMax {
     NSMutableArray<UIImage *> *digitImages = [NSMutableArray array];
     CGFloat totalWidth = 0.0;
     CGFloat height = 0.0;
@@ -994,12 +1115,7 @@ static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
     }
     UIImage *bpmImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
-    self.bpmImageView = [[UIImageView alloc] initWithImage:bpmImage];
-    CGPoint origin = self.bpmOrigin;
-    CGSize size = bpmImage.size;
-    self.bpmImageView.frame = CGRectMake(origin.x, origin.y, size.width, size.height);
-    [self.baseView addSubview:self.bpmImageView];
+    return bpmImage;
 }
 
 - (void)SetUpLineView {
