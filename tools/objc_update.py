@@ -297,6 +297,15 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xb5c0c: 'RBMenuView -setPastelForTutorialStart: two movi of zero, so both the mascot and the '
+             'search mascot are hidden',
+    0xb5cb0: 'RBMenuView -setPastelForTutorialEnd: a movi of zero then an fmov of 1.0, so the '
+             'mascot stays hidden while the search mascot is shown; the asymmetry is real and the '
+             'reconstruction already flags it',
+    0xab7ac: 'RBMenuView -releaseSelectMusic: removes and clears selectedView when one is held, '
+             'then showInfomation unconditionally, keeping the binary\'s misspelling',
+    0xaf2a8: 'RBMenuView -startNewsFromTimer: invalidates and clears newsBannerTimer when set, '
+             'then startNews unconditionally',
     0x3bf70: 'RBEffectSizeSlider -continueTrackingWithTouch:withEvent:: the third of the tracking '
              'trio, identical to the begin form and likewise returning YES',
     0x6a70c: 'RBBGMManager -LoadMusic:Loop:: sets m_IsMusic with a mov w9 of 1 before handing the '

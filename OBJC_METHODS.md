@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4851 verified
+Total: 6343 — 6306 reconstructed, 4855 verified
 (76.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -2107,7 +2107,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `selectMusic:animated:` |  | ✅ | ❌ | `0xaaff0` |
 | `RBMenuView` | `-` | `getRandamInt:max:` |  | ✅ | ✅ | `0xab350` |
 | `RBMenuView` | `-` | `selectRandom:` |  | ✅ | ❌ | `0xab3c8` |
-| `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ❌ | `0xab7ac` |
+| `RBMenuView` | `-` | `releaseSelectMusic` |  | ✅ | ✅ | `0xab7ac` |
 | `RBMenuView` | `-` | `RemoveStoreViewController` |  | ✅ | ❌ | `0xab854` |
 | `RBMenuView` | `-` | `SelectSettingButton` |  | ✅ | ✅ | `0xab9d4` |
 | `RBMenuView` | `-` | `hideSettingView` |  | ✅ | ✅ | `0xab9e0` |
@@ -2130,7 +2130,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xae3b0` |
 | `RBMenuView` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xaee80` |
 | `RBMenuView` | `-` | `startNews` |  | ✅ | ❌ | `0xaf0a0` |
-| `RBMenuView` | `-` | `startNewsFromTimer` |  | ✅ | ❌ | `0xaf2a8` |
+| `RBMenuView` | `-` | `startNewsFromTimer` |  | ✅ | ✅ | `0xaf2a8` |
 | `RBMenuView` | `-` | `showNextNewsText` |  | ✅ | ❌ | `0xaf350` |
 | `RBMenuView` | `-` | `stopNews` |  | ✅ | ❌ | `0xaf7e8` |
 | `RBMenuView` | `-` | `SetServerDateYear:Month:Day:Hour:Minute:Second:` |  | ✅ | ✅ | `0xaf8bc` |
@@ -2169,8 +2169,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `getCollectionView` |  | ✅ | ✅ | `0xb5be8` |
 | `RBMenuView` | `-` | `getSettingButton` |  | ✅ | ✅ | `0xb5bf4` |
 | `RBMenuView` | `-` | `getStoreButton` |  | ✅ | ✅ | `0xb5c00` |
-| `RBMenuView` | `-` | `setPastelForTutorialStart` |  | ✅ | ❌ | `0xb5c0c` |
-| `RBMenuView` | `-` | `setPastelForTutorialEnd` |  | ✅ | ❌ | `0xb5cb0` |
+| `RBMenuView` | `-` | `setPastelForTutorialStart` |  | ✅ | ✅ | `0xb5c0c` |
+| `RBMenuView` | `-` | `setPastelForTutorialEnd` |  | ✅ | ✅ | `0xb5cb0` |
 | `RBMenuView` | `-` | `closeTutorial` |  | ✅ | ❌ | `0xb5d54` |
 | `RBMenuView` | `-` | `closeCustomize` |  | ✅ | ❌ | `0xb5dfc` |
 | `RBMenuView` | `-` | `playlistEditStart` |  | ✅ | ❌ | `0xb5ec4` |
