@@ -28,6 +28,12 @@ namespace ne {
  * @c ne::C_RENDER_3D, which this tree has not split out of its single @c C_RENDER yet. Deriving
  * this node from the screen-space one is therefore a deliberate simplification: it reproduces the
  * layout and the render-slot override exactly, but not the base hierarchy.
+ *
+ * That simplification is safe rather than merely convenient. Both bases name @c ne::C_RENDER as
+ * their own base, and neither has an instantiated vtable anywhere in @c __const, so they are
+ * intermediate classes that contribute no virtual behaviour of their own. Of the nine @c ne::
+ * classes the binary carries type_info for, these two are the only ones this tree does not model,
+ * so this node was the last collapsed class whose vtable difference could change what a draw does.
  */
 class C_SPRITE_INSTANCING_3D : public C_SPRITE_INSTANCING_2D {
 public:
