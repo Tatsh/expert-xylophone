@@ -1374,3 +1374,27 @@ this tree should prefer.
 builders rather than the thin wrappers their shorter argument lists suggest; both match, down to the
 `dictionaryWithCapacity:` hints of 4 and 3 and the literal `"1"` that `kRecommendWebAPIParamTrue`
 holds.
+
+## The other forty-seven, and a filter that was too blunt
+
+The section above left 47 guards in place because their blocks contained a `cbz`, and the count alone
+could not say what the branch tested. That was the right call on the evidence available and the
+wrong filter. Presence of _a_ conditional branch says nothing; what matters is whether one tests the
+register holding the callback.
+
+Re-running the sweep on that question settles the file. For each block, the registers that receive
+the captured block — `ldr xN,[xM, #0x20]` — were collected, then checked for a `cbz`/`cbnz` on any
+of them. **All 29 blocks report none.** The branches that had blocked the first pass turn out to be
+the `isKindOfClass:` test, a `boolValue` result, and in one case the incoming error argument:
+`0x22f17c` tests `w24`, a 32-bit register, which cannot be a pointer check at all.
+
+The same question applied to the seven method bodies that guard a callback on an early-return path
+gives the same answer. Six retain the callback and never test it. The seventh, `0x230dd4`, does
+nil-test three registers, but they hold the `udid` and its neighbours; its callback in `x28` is
+invoked through `ldr x8,[x28, #0x10]` and `blr x8` with nothing between.
+
+So every callback invocation in `RecommendWebAPI`, in all 29 blocks and all seven bodies, is
+unguarded, and all 65 invented guards are gone. The lesson is about the shape of the first filter
+rather than the result: it was conservative in the direction that leaves defects in place, and it
+was conservative because it measured something adjacent to the question instead of the question. A
+count of branches is not a test of what a branch does.

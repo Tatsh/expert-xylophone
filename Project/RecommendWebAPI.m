@@ -189,9 +189,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if ([ApplilinkConsts isNeedRecommendLogin]) {
         // The binary passes a third positional argument here even though callers read only the
         // login state and error.
-        if (callback) {
-            callback(NO, YES, nil);
-        }
+        callback(NO, YES, nil);
         return;
     }
     NSString *userId = [ApplilinkConsts userId];
@@ -211,22 +209,16 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x22f17c */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(NO, NO, error);
-              }
+              callback(NO, NO, error);
               return;
           }
           if (![response[kRecommendWebAPIKeyStatus] boolValue]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(NO, NO, error);
-              }
+              callback(NO, NO, error);
               return;
           }
           BOOL loginStatus = [response[kRecommendWebAPIKeyLoginStatus] boolValue];
-          if (callback) {
-              callback(loginStatus, userIdPresent, nil);
-          }
+          callback(loginStatus, userIdPresent, nil);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x22f33c */
@@ -243,9 +235,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if (![ApplilinkUdid setUdidParameters:parameters]) {
         NSError *error = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorUdidUnavailable];
-        if (callback) {
-            callback(error);
-        }
+        callback(error);
         return;
     }
     NSString *encodedUserId = [NSStringURLEncoding URLEncodedString:[ApplilinkConsts userId]];
@@ -266,22 +256,16 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x22f6b0 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(error);
-              }
+              callback(error);
               return;
           }
           if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
               [response[kRecommendWebAPIKeyErrorCode] intValue] ==
                   kRecommendWebAPISuccessSentinel) {
-              if (callback) {
-                  callback(nil);
-              }
+              callback(nil);
               return;
           }
-          if (callback) {
-              callback([self loginErrorForResponse:response]);
-          }
+          callback([self loginErrorForResponse:response]);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x22f930 */
@@ -302,9 +286,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
             NSString *categoryId = [ApplilinkConsts categoryId];
             NSString *countryCode = [ApplilinkConsts countryCode];
             if (categoryId != nil && countryCode != nil) {
-                if (callback) {
-                    callback(categoryId, countryCode, nil);
-                }
+                callback(categoryId, countryCode, nil);
                 return;
             }
         }
@@ -313,9 +295,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if (![ApplilinkUdid setUdidParameters:parameters]) {
         NSError *error = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorUdidUnavailable];
-        if (callback) {
-            callback(nil, nil, error);
-        }
+        callback(nil, nil, error);
         return;
     }
     [parameters setValue:[ApplilinkConsts appliId] forKey:kRecommendWebAPIParamAppliId];
@@ -334,9 +314,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x22fd54 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(nil, nil, error);
-              }
+              callback(nil, nil, error);
               return;
           }
           id status = response[kRecommendWebAPIKeyStatus];
@@ -368,15 +346,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
               [[NSUserDefaults standardUserDefaults] setObject:expiry
                                                         forKey:kRecommendWebAPIDefaultsAdDetail];
               [[NSUserDefaults standardUserDefaults] synchronize];
-              if (callback) {
-                  callback(categoryId, countryCode, nil);
-              }
+              callback(categoryId, countryCode, nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(nil, nil, error);
-          }
+          callback(nil, nil, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x2301a4 */
@@ -402,9 +376,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x230350 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(nil, error);
-              }
+              callback(nil, error);
               return;
           }
           BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
@@ -415,27 +387,21 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           }
           if (success && errorCode == kRecommendWebAPISuccessSentinel) {
               [ApplilinkConsts setAppInstallList:response[kRecommendWebAPIKeyList]];
-              if (callback) {
-                  callback(nil, nil);
-              }
+              callback(nil, nil);
               return;
           }
           if (errorCode == kRecommendWebAPIErrorCodeGeneric) {
               NSError *error = [ApplilinkNetworkError
                   localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorGeneric
                                          userInfo:response];
-              if (callback) {
-                  callback(nil, error);
-              }
+              callback(nil, error);
               return;
           }
           if (errorCode == kRecommendWebAPIErrorCodeAuthorization) {
               NSError *error = [ApplilinkNetworkError
                   localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorAuthorization
                                          userInfo:response];
-              if (callback) {
-                  callback(nil, error);
-              }
+              callback(nil, error);
               return;
           }
           if ([kind isEqualToString:kRecommendWebAPIKindAuthorization]) {
@@ -445,9 +411,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                     NSError *error = [ApplilinkNetworkError
                         localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorLoginRequired
                                                userInfo:response];
-                    if (callback) {
-                        callback(nil, error);
-                    }
+                    callback(nil, error);
                 }
               }];
               return;
@@ -460,9 +424,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           } else {
               error = [self malformedErrorForResponse:response];
           }
-          if (callback) {
-              callback(nil, error);
-          }
+          callback(nil, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x230808 */
@@ -489,9 +451,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x230a24 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callBack) {
-                  callBack(nil, error);
-              }
+              callBack(nil, error);
               return;
           }
           BOOL success = [response[kRecommendWebAPIKeyStatus] boolValue];
@@ -501,15 +461,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
               kind = nil;
           }
           if (success && errorCode == kRecommendWebAPISuccessSentinel) {
-              if (callBack) {
-                  callBack(response[kRecommendWebAPIKeyList], nil);
-              }
+              callBack(response[kRecommendWebAPIKeyList], nil);
               return;
           }
           NSError *error = [self errorForResponse:response errorCode:errorCode kind:kind];
-          if (callBack) {
-              callBack(nil, error);
-          }
+          callBack(nil, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x230dac */
@@ -538,9 +494,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if (priority != 0 && ![ApplilinkUdid setUdidParameters:parameters]) {
         NSError *error = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorUdidUnavailable];
-        if (callback) {
-            callback(error);
-        }
+        callback(error);
         return;
     }
     NSString *udid = [ApplilinkCore udid];
@@ -562,18 +516,14 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
               [response[kRecommendWebAPIKeyErrorCode] intValue] ==
                   kRecommendWebAPISuccessSentinel) {
-              if (callback) {
-                  callback(nil);
-              }
+              callback(nil);
               return;
           }
           int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
           NSError *error = [self errorForResponse:response
                                         errorCode:errorCode
                                              kind:response[kRecommendWebAPIKeyKind]];
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x23144c */
@@ -587,9 +537,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                           callback:(void (^)(NSInteger status, NSError *_Nullable error))callback {
     id cached = [self getTemporaryCacheWithAdModel:adModel];
     if ([cached intValue] == kRecommendWebAPIBannerAvailable) {
-        if (callback) {
-            callback([cached intValue], nil);
-        }
+        callback([cached intValue], nil);
         return;
     }
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -610,9 +558,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x231734 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(0, error);
-              }
+              callback(0, error);
               return;
           }
           if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
@@ -639,15 +585,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                       [self setTemporaryCacheWithAdModel:adModel value:status expiration:expire];
                   }
               }
-              if (callback) {
-                  callback(status, nil);
-              }
+              callback(status, nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(0, error);
-          }
+          callback(0, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x231ad0 */
@@ -680,9 +622,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x231d60 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(error);
-              }
+              callback(error);
               return;
           }
           BOOL success = NO;
@@ -691,15 +631,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                         kRecommendWebAPISuccessSentinel;
           }
           if (success) {
-              if (callback) {
-                  callback(nil);
-              }
+              callback(nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x231f0c */
@@ -713,9 +649,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if (adLocation == nil || adModel == 0) {
         NSError *error = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorParameter];
-        if (callback) {
-            callback(0, error);
-        }
+        callback(0, error);
         return;
     }
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -737,9 +671,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x2321fc */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(0, error);
-              }
+              callback(0, error);
               return;
           }
           if ([response[kRecommendWebAPIKeyStatus] boolValue] &&
@@ -747,15 +679,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                   kRecommendWebAPISuccessSentinel) {
               id unreadCount = response[kRecommendWebAPIKeyUnreadCount];
               NSInteger status = unreadCount != nil ? [unreadCount intValue] : 0;
-              if (callback) {
-                  callback(status, nil);
-              }
+              callback(status, nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(0, error);
-          }
+          callback(0, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x2323f0 */
@@ -773,9 +701,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
     if (adLocation == nil || adModel == 0) {
         NSError *error = [ApplilinkNetworkError
             localizedApplilinkErrorWithCode:kRecommendWebAPINetworkErrorParameter];
-        if (callback) {
-            callback(status, error);
-        }
+        callback(status, error);
         return;
     }
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -805,15 +731,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
               int banner = bannerStatus != nil ? [bannerStatus intValue] : 0;
               [status setValue:@(unread) forKey:kRecommendWebAPIStatusKeyUnreadCount];
               [status setValue:@(banner) forKey:kRecommendWebAPIStatusKeyBannerDisplayStatus];
-              if (callback) {
-                  callback(status, nil);
-              }
+              callback(status, nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(status, error);
-          }
+          callback(status, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x232ae0 */
@@ -913,15 +835,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
               [response[kRecommendWebAPIKeyStatus] boolValue] &&
               [response[kRecommendWebAPIKeyErrorCode] intValue] ==
                   kRecommendWebAPISuccessSentinel) {
-              if (callback) {
-                  callback(response[kRecommendWebAPIKeyLocation], nil);
-              }
+              callback(response[kRecommendWebAPIKeyLocation], nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(nil, error);
-          }
+          callback(nil, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x233738 */
@@ -952,9 +870,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x2339d8 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(error);
-              }
+              callback(error);
               return;
           }
           BOOL success = NO;
@@ -963,15 +879,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
                         kRecommendWebAPISuccessSentinel;
           }
           if (success) {
-              if (callback) {
-                  callback(nil);
-              }
+              callback(nil);
               return;
           }
           NSError *error = [self malformedErrorForResponse:response];
-          if (callback) {
-              callback(error);
-          }
+          callback(error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x233b84 */
@@ -996,9 +908,7 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
           /** @ghidraAddress 0x233d24 */
           if (![response isKindOfClass:[NSDictionary class]]) {
               NSError *error = [self malformedErrorForResponse:response];
-              if (callback) {
-                  callback(nil, error);
-              }
+              callback(nil, error);
               return;
           }
           int errorCode = [response[kRecommendWebAPIKeyErrorCode] intValue];
@@ -1009,15 +919,11 @@ static const NSInteger kRecommendWebAPIURLErrorTimedOut = -1001;
               kind = nil;
           }
           if (success) {
-              if (callback) {
-                  callback(response, nil);
-              }
+              callback(response, nil);
               return;
           }
           NSError *error = [self errorForResponse:response errorCode:errorCode kind:kind];
-          if (callback) {
-              callback(nil, error);
-          }
+          callback(nil, error);
         }
         failedBlock:^(id _Nullable request, NSError *_Nullable error) {
           /** @ghidraAddress 0x234084 */
