@@ -6,9 +6,9 @@ same way the engine was.
 **Coverage lives in [OBJC_METHODS.md](OBJC_METHODS.md)**, the per-method checklist generated
 from the binary's runtime metadata — every method, whether it is reconstructed, and whether
 it is verified. That file is the counterpart to [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md) and is
-where to look for what remains. As of the last regeneration it stands at 6343 methods, 6198
-reconstructed and **3097 verified**, so about half is done and all of the remaining half is
-non-accessor bodies that have to be read one at a time.
+where to look for what remains. As of the last regeneration it stands at 6343 methods, 6306
+reconstructed and **4677 verified**. The 1666 that remain are non-accessor bodies that have to be
+read one at a time, and they are large: only 69 are under 128 bytes, while 601 exceed 512.
 
 This file is the findings record behind those verifications: what each routine turned out to be, so
 that a negative result is recorded once rather than re-derived, and a claim is never acted on before
@@ -133,7 +133,7 @@ Recording these so a later pass does not spend the effort again.
 ## Verifying every method
 
 [OBJC_METHODS.md](OBJC_METHODS.md) tracks all 6343 methods, and the count verified against the
-disassembly now stands at **3097**, up from 15. Two mechanical passes account for 3082 of those, and
+disassembly now stands at **4677**, up from 15. Two mechanical passes account for 3082 of those, and
 both record per-address evidence so their reasoning can be audited rather than taken on trust:
 
 - `tools/objc_verify_accessors.py` shows a property accessor moves exactly the ivar its property
@@ -505,20 +505,68 @@ reconstruction keeps one arm, so a constant that is right for the phone is appli
 That class is enumerable rather than discoverable one routine at a time, because every call site of
 `IsPad()` at `0x1a1200` is an xref.
 
-There are 99 call sites in 61 distinct methods. Every one is accounted for. Four looked at first
-like a collapsed branch and none survived checking:
+**This section first reported 99 call sites in 61 methods and called the sweep complete. That was
+wrong.** The Ghidra bridge's `get_xrefs_to` caps its result set at 100 rows unless `limit` is
+passed, and both the count and the completeness claim were taken from the truncated response. The
+true figure is **311 call sites in 172 methods**, so the first pass covered under a third of them.
+Any xref query against this bridge needs an explicit `limit`, and a result of exactly 99 or 100
+rows should be read as a truncation until proven otherwise.
 
-- `-[RBTermView showTermView:]`, `-[RBStoreManageSortViewController tableView:didSelectRowAtIndexPath:]`,
-  and `-[RBStoreGenreViewController tableView:didSelectRowAtIndexPath:]` each branch on the result
-  and then run **instruction-identical arms** — the same `sharedInstance`/`thema` pair, the same
-  `hideSortSelect:0`, the same `hideGenreSelect:0`. The idiom has no behavioural effect at those
-  sites, so a reconstruction with no branch is correct rather than collapsed.
-- `-[RBMenuView collectionView:cellForItemAtIndexPath:]` does have a real pad-only arm, setting
-  `cell.artistLabel.text` from `cell.musicData.artistName`, and the reconstruction has it. The hit
-  was my own scanner matching `-collectionView:numberOfItemsInSection:` instead, since both methods
-  share the selector's first part.
+Re-run over all 311, four methods call `IsPad()` with no idiom branch in the owning method's body.
+None is a defect, and the three distinct reasons are each worth knowing, because each is a way this
+sweep reports a false positive:
 
-Two limits worth stating so this is not read as more than it is. The sweep proves each method that
-consults the idiom _has_ the branch, not that the constants inside each arm are right — those still
-need the frame-fit check. And it covers `IsPad()` only; the `[RBUserSettingData thema]` theme split
-is a separate enumeration that has not been run.
+- **Identical arms.** `-[RBTermView showTermView:]`,
+  `-[RBStoreManageSortViewController tableView:didSelectRowAtIndexPath:]`, and
+  `-[RBStoreGenreViewController tableView:didSelectRowAtIndexPath:]` branch on the result and then
+  run instruction-identical arms — the same `sharedInstance`/`thema` pair, the same
+  `hideSortSelect:0`, the same `hideGenreSelect:0`. The idiom has no behavioural effect, so having
+  no branch is correct rather than collapsed.
+- **The branch lives in a de-inlined helper.** `-[RBCustomView toUnlock:]` and `-toCustomize:` hold
+  the idiom test in `-placeEffectOverlayOverButton:`, which the binary inlines into both. Since the
+  reconstruction rules ask for repeated blocks to be extracted, this is the expected shape rather
+  than an exception, and a body-scoped scan cannot see it.
+- **A selector-prefix collision in the scanner.** `-[RBMenuView collectionView:cellForItemAtIndexPath:]`
+  has a real pad-only arm setting `cell.artistLabel.text` from `cell.musicData.artistName`, and the
+  reconstruction has it. The first pass matched `-collectionView:numberOfItemsInSection:` instead;
+  the extractor now parses the full selector from the signature.
+
+Twelve further methods could not have their bodies located. All twelve are synthesised property
+accessors (`-setFailureBlock:`, `-setLineSize:`, and similar) which have no body in the tree by
+design, so those call sites belong to whatever the linker placed after them — attribution noise,
+not coverage gaps.
+
+### `-[RBMusicOtherView SetupView]`, checked in full
+
+The one hit that looked substantial was this one, at `0x1a4a38`: eight `IsPad()` calls, and a
+reconstruction whose visible branch is on `thema` rather than the idiom. It is correct, and
+recording why saves the next pass from re-deriving it.
+
+The top-level split really is the theme — `w19` holds `thema` and `cbz w19,0x1a56b4` at `0x1a4c10`
+selects the column count — so `kToggleColumnCountWide`/`Narrow` being chosen by theme matches the
+binary despite names that read as pad/phone. The idiom dimension is all inside
+`-buildToggleColumnAtIndex:…`, which the binary inlines per column, and which does carry it.
+
+The reconstruction also carries a comment claiming the binary's second `thema` read branches three
+ways but that every arm routes on the idiom alone. That claim is now checked and true: at
+`0x1a5254` the switch is genuinely three-way (`cbz w27` then `cmp #1`/`b.ne`), each arm tests
+`IsPad()`, and all three pad arms converge at `0x1a52f0` while all three non-pad arms converge at
+`0x1a5368`. The theme has no effect on the result.
+
+Its constants match: bar rest left `11.0` on the phone (`fmov` at `0x1a5370`) and `18.0` on the pad
+(`0x1a52f8`), against `kBarRestLeftDefault`/`Variant`; width adjust `-22.0` on the phone
+(`0x1a5368`) against `kBarWidthAdjustDefault`. The pad's adjust arrives from the stack slot
+`[sp, #0x98]` rather than an immediate and is **not** verified here, so `kBarWidthAdjustVariant`
+(`-36.0`) remains open.
+
+One methodological trap is worth recording, because it nearly produced a fabricated defect in the
+other direction. Ghidra prints an `fmov` immediate as a signed hexadecimal that looks like an IEEE
+bit pattern, and decoding `-0x3fca000000000000` that way gives `-0.203125`, which would have made
+the correct `-22.0` look wrong. The immediate is an 8-bit arm64 VFP field, not a bit pattern: decode
+it from the instruction word (`0x1e76d000` → `imm8 = 0xb6` → `-22.0`). The same trap is already
+recorded above for `-1.0` in `-[RBMenuButton setupView:]`. Decode the word, never the printed form.
+
+Two limits, so this is not read as more than it is. The sweep proves each method that consults the
+idiom either has the branch or provably does not need it; it says nothing about whether the
+constants inside each arm are right, which still needs the frame-fit check. And it covers `IsPad()`
+only — the `[RBUserSettingData thema]` split has 117 read sites and has not been swept.
