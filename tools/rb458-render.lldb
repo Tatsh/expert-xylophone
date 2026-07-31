@@ -1,0 +1,90 @@
+# The render-state globals that decide which projection a draw is composed against, read from the
+# original during its tutorial play screen. Source while stopped.
+#
+#   (lldb) process interrupt
+#   (lldb) command source /path/to/rb458-render.lldb
+#
+# Self-contained reads only: no persistent ($) variables, no calls, no breakpoints.
+#
+# The play-field sprite coordinates and the camera terms now match the original exactly, so a
+# remaining whole-scene shift has to come from how the draw is projected rather than from the
+# geometry. neRenderer keeps four globals: the applied camera (0x3cff00), the orthographic
+# projection (0x3cff08), the active view camera (0x3cff10) and the current model node (0x3cff18).
+# World-space batches compose against the model node's view matrix and bind the active view camera;
+# screen-space ones bind the projection.
+#
+# The viewport field offsets below are inferred from ne::Viewport's reconstructed layout, so treat a
+# nonsensical reading as the layout being wrong rather than the value.
+
+
+# g_pCurrentAppliedCamera (0x3cff00)
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff00)
+
+# g_pCurrentProjection    (0x3cff08)
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff08)
+
+# g_pActiveViewCamera     (0x3cff10)
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff10)
+
+# g_pCurrentModelNode     (0x3cff18)
+expr -- *(void **)((uint64_t)&_mh_execute_header + 0x3cff18)
+
+# activeViewCamera.viewW
+expr -- *(int *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x18)
+
+# activeViewCamera.viewH
+expr -- *(int *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x1c)
+
+# activeViewCamera.fovY
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x20)
+
+# activeViewCamera.aspect
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x24)
+
+# activeViewCamera.proj[0]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[0]
+
+# activeViewCamera.proj[5]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[5]
+
+# activeViewCamera.proj[10]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[10]
+
+# activeViewCamera.proj[12]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[12]
+
+# activeViewCamera.proj[13]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[13]
+
+# activeViewCamera.proj[14]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff10) + 0x28))[14]
+
+# currentProjection.viewW
+expr -- *(int *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x18)
+
+# currentProjection.viewH
+expr -- *(int *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x1c)
+
+# currentProjection.fovY
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x20)
+
+# currentProjection.aspect
+expr -- *(float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x24)
+
+# currentProjection.proj[0]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[0]
+
+# currentProjection.proj[5]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[5]
+
+# currentProjection.proj[10]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[10]
+
+# currentProjection.proj[12]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[12]
+
+# currentProjection.proj[13]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[13]
+
+# currentProjection.proj[14]
+expr -- ((float *)((char *)*(void **)((uint64_t)&_mh_execute_header + 0x3cff08) + 0x28))[14]
