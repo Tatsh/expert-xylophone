@@ -899,6 +899,20 @@ VERIFIED = {
               'read. The 0 and 1 confirm RecommendAdWebViewStatusIdle and Started',
     0x21c514: 'RecommendDebug +getDebugMode: objectForKey: against the CFString at 0x371e80, '
               '"applilink.debug.mode", matching kDebugModeDefaultsKey, returned autoreleased',
+    0x21c910: 'RewardWebViewController -init: a bare super init with no ivar setup',
+    0x21d0f0: 'RewardWebViewController -didReceiveMemoryWarning: a bare super chain',
+    0x21d12c: 'RewardWebViewController -viewDidLoad: super, then a respondsToSelector: guard on '
+              'setNeedsStatusBarAppearanceUpdate before sending it. The selector is loaded once '
+              'into x20 and reused for both the test and the send',
+    0x21d6e4: 'RewardWebViewController -activeWebView: despite the name it only forwards '
+              'touchEventActived to _indicator, behind a cbz on that ivar. It is the target of a '
+              'delayed performSelector: that re-enables touch after the spinner shows',
+    0x21d71c: 'RewardWebViewController -webViewDidStartLoad:: the same shape as the '
+              'RecommendAdWebView one, with the cbnz on _webViewStatus skipping only the store of '
+              '1, so updateIndicator: is sent YES on both arms and the webView argument is unread',
+    0x21dc30: 'RewardWebViewController -redirectWithRequest:: forwards to RewardCore sharedInstance '
+              'and returns its int result unchanged',
+    0x2137d4: 'ApplilinkViewController -didReceiveMemoryWarning: a bare super chain',
     0x21691c: 'RecommendAdWebView -init: super init, cbz on the result, then setInitParam, which '
               'is a no-argument helper rather than a property setter',
     0x216980: 'RecommendAdWebView -initWithFrame:: the same shape through initWithFrame:',
