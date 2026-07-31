@@ -895,3 +895,25 @@ address mapping — a method appearing to send its own selector reads as misattr
 mapping underpins every `@ghidraAddress` in the tree. The mapping turned out to be right and the
 original app turned out to be broken. Confirming the attribution before doubting it was what
 separated the two.
+
+### A cycle sweep, attempted and discarded
+
+Since the reconstruction reproduced one fatal recursion faithfully, the obvious follow-up is to
+look for others: a source-level scan for methods of one class that send each other unconditionally.
+It was written, run, and discarded. All eight of its reports are false.
+
+Every one is the convenience-overload idiom — `-updateScoreData:` forwarding to
+`-updateScoreData:spData:`, `-getOptionalZipData:` to `-getOptionalZipData:withDefaultName:`,
+`+imageWithName:` to `+imageWithName:useCache:`. The scan's selector extraction captured only the
+first keyword of a multi-part send, so a forward to a longer selector read as a self-call.
+
+That is the third scan in this session to produce confident wrong answers, and the three share a
+root cause worth naming: each compared the right things but **identified** them imprecisely — a byte
+scan that mistook coincidental bytes for `method_t` triples, a map keyed by selector where selectors
+are not unique, and now a selector parser that truncates. The comparison logic was sound every time;
+the identification was not.
+
+The two real recursions were found by reading, and the second only by reading the first one's
+sibling. Sweeps have found real defects in this tree — the width sweep found sixteen — but each
+working one compares fully-qualified identities against an independently-known reference. A sweep
+that cannot name precisely what it is looking at should be discarded rather than triaged.
