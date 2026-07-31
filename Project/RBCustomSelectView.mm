@@ -86,7 +86,7 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
 
 #pragma mark Layout metrics
 
-- (CGFloat)getCollectionViewStartY:(RBUserSettingDataTheme)thema {
+- (float)getCollectionViewStartY:(RBUserSettingDataTheme)thema {
     BOOL isBgm = (thema == RBUserSettingDataThemeClassic);
     if (IsPad()) {
         return isBgm ? kStartYWideBgm : kStartYWideOther;
@@ -94,7 +94,7 @@ constexpr CGFloat kContentTailMarginFactorOther = 4.0;
     return isBgm ? kStartYNarrowBgm : kStartYNarrowOther;
 }
 
-- (CGFloat)getCollectionViewMargin {
+- (float)getCollectionViewMargin {
     return (IsPad()) ? kMarginWide : kMarginNarrow;
 }
 

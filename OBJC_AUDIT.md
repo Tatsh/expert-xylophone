@@ -786,3 +786,27 @@ The class remains real and worth doing: parameter widths are more consequential 
 because a `double` passed where a `float` is expected mismatches the calling convention outright.
 It needs keying by `imp` and cross-referencing against `OBJC_METHODS.md` to attribute each encoding
 to its class.
+
+### Redone with correct keying, and it finds real defects
+
+With `method_t` keyed by `imp` and attributed through the checklist, the sweep was extended across
+parameters. The `-[RBMusicARView UpdateScore:]` false positive is gone, which is the result the
+keying fix was supposed to produce, and three genuine defects appear:
+
+- `-[StorePackMusicView setBG:]` (`0xfd100`) took a `BOOL` where the encoding is `i`. The binary
+  clamps the argument to `[0, 1]` with **signed** `gt` and `lt` tests, and the lower clamp is
+  unreachable for a `BOOL`, so the parameter is a signed int. The file's own comments already said
+  it "clamps its argument into this range", contradicting its declared type.
+- `-[RBCustomSelectView getCollectionViewMargin]` (`0x16889c`) and `-getCollectionViewStartY:`
+  (`0x168850`) both returned `CGFloat`, a double, where the encodings are `f`. Both bodies use
+  single-precision registers throughout — the `fcsel` pairs are `s0`/`s1`, not `d0`/`d1`. Worth
+  noting that both methods had already been read and verified by hand earlier the same day: the
+  constants were checked and correct, and the return width was simply not something that pass
+  looked at. A mechanical check and a careful read cover different ground.
+
+Twelve reports remain, all signedness rather than size: `int` against `I`, `NSInteger` against `Q`,
+`BOOL` against `C`, in `BFCodec`, `RBMenuTutorialView`, `RBStoreManageHeaderCell`,
+`RBViewController`, `StoreExtendNoteCellPhone`, `StoreUtil`, `StringConvert`, and
+`RBMusicExtendNoteView`. They are lower risk than a width change, since the register is the same
+size either way, but each is still a declaration that disagrees with the binary and each needs its
+own read before being changed.

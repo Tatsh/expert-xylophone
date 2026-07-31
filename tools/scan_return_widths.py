@@ -37,7 +37,44 @@ ALLOWED = {
     'q': {'NSInteger', 'long long'},
     'Q': {'NSUInteger', 'unsigned long long'},
     'B': {'BOOL', 'bool'},
+    'f': {'float'},
+    'd': {'double', 'NSTimeInterval', 'CGFloat'},
 }
+
+
+def fields(encoding):
+    """Split a types string into its encodings, honouring nested braces and brackets.
+
+    The layout is return, then self, then the selector, then one entry per argument, each followed
+    by its byte offset. Nesting matters: a struct argument such as
+    ``^{AudioBufferList=I[1{AudioBuffer=II^v}]}`` contains braces of its own, and a naive split
+    drops the arguments after it.
+    """
+    out, i, size = [], 0, len(encoding)
+    while i < size:
+        if encoding[i].isdigit():
+            i += 1
+            continue
+        start = i
+        while i < size and encoding[i] in '^rnNoORV':
+            i += 1
+        if i < size and encoding[i] in '{[(':
+            depth = 0
+            while i < size:
+                if encoding[i] in '{[(':
+                    depth += 1
+                elif encoding[i] in '}])':
+                    depth -= 1
+                    if depth == 0:
+                        i += 1
+                        break
+                i += 1
+        elif i < size:
+            i += 1
+        out.append(encoding[start:i])
+        while i < size and encoding[i].isdigit():
+            i += 1
+    return out
 
 
 def types_of(meta, method_list):
@@ -125,7 +162,9 @@ def declared_by_address():
                     continue
                 parts = re.findall(r'(\w+)\s*:', re.sub(r'\([^()]*\)', ' ', sig))
                 selector = ''.join(p + ':' for p in parts) if parts else sig.strip().split()[0]
-                by_key[(cls, kind, selector)] = (ret, str(path.relative_to(REPO)))
+                typed = re.findall(r'\w+\s*:\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*\w+', sig)
+                params = tuple(' '.join(x.split()) for x in typed)
+                by_key[(cls, kind, selector)] = (ret, params, str(path.relative_to(REPO)))
 
     for address, key in rows.items():
         if key in by_key:
@@ -141,13 +180,28 @@ print(f'{len(declared)} of them matched to a declaration in the tree')
 problems = []
 for address, (selector, encoding) in types.items():
     code = encoding[0]
-    if code not in ALLOWED or address not in declared:
+    if address not in declared:
         continue
-    ret, path = declared[address]
+    # Parameters first: a wrong parameter width mismatches the calling convention, where a widened
+    # return usually does not.
+    _ret, params, path = declared[address]
+    encoded = fields(encoding)[3:]
+    if len(encoded) == len(params):
+        for got, want in zip(params, encoded):
+            if want not in ALLOWED:
+                continue
+            spelled = got.replace('const', '').replace('*', '').strip()
+            if spelled in ALLOWED[want] or not any(spelled in v for v in ALLOWED.values()):
+                continue
+            problems.append(f'{path}:{address:#x}: {selector} takes {spelled!r} but encodes '
+                            f'{want!r} ({encoding})')
+    if code not in ALLOWED:
+        continue
+    ret, _params, path = declared[address]
     base = ret.replace('const', '').replace('*', '').strip()
     if base in ALLOWED[code] or not any(base in v for v in ALLOWED.values()):
         continue
-    problems.append(f'{path}:{address:#x}: {selector} declared {base!r} but encodes '
+    problems.append(f'{path}:{address:#x}: {selector} returns {base!r} but encodes '
                     f'{code!r} ({encoding})')
 for problem in sorted(set(problems)):
     print(problem)

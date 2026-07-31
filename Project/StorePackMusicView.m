@@ -235,7 +235,9 @@ static UILabel *CreateClearLabelWithFrame(CGFloat x, CGFloat y, CGFloat width, C
 }
 
 /** @ghidraAddress 0xfd100 */
-- (void)setBG:(BOOL)bg {
+- (void)setBG:(int)bg {
+    // The argument is a signed int, not a BOOL: the binary clamps it with signed gt and lt tests,
+    // and the lower clamp would be unreachable for a BOOL. Its types string encodes i.
     int index = bg;
     if (index > kTuneCellBackgroundMaxIndex) {
         index = kTuneCellBackgroundMaxIndex;

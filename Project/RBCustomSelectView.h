@@ -48,14 +48,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The first grid's top offset within the scroll view.
  * @ghidraAddress 0x168850
  */
-- (CGFloat)getCollectionViewStartY:(RBUserSettingDataTheme)thema;
+- (float)getCollectionViewStartY:(RBUserSettingDataTheme)thema;
 
 /**
  * @brief The vertical gap left between consecutive category grids, chosen by the iPad idiom.
  * @return The inter-grid margin.
  * @ghidraAddress 0x16889c
  */
-- (CGFloat)getCollectionViewMargin;
+- (float)getCollectionViewMargin;
 
 /**
  * @brief Reload every category grid's item content.

@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param bg @c YES for the dark background, @c NO for the light one.
  * @ghidraAddress 0xfd100
  */
-- (void)setBG:(BOOL)bg;
+- (void)setBG:(int)bg;
 
 /**
  * @brief Put the sample button into its idle (stopped) state.
