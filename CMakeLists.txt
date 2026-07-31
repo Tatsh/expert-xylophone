@@ -82,6 +82,12 @@ option(ENABLE_PATCHES "Compile in preservation patches (skip dead service flows)
 # no #ifdef: with RBPDBG off the helpers collapse to no-ops.
 option(RBPDBG "Compile in the RBPDBG runtime diagnostics (os_log)" OFF)
 
+# RBPDBGINFO emits DWARF and keeps the frame pointer, so a debugger can read locals and struct
+# members on the device rather than being reduced to raw offsets. It deliberately leaves the
+# optimisation level alone: changing that changes code generation, and a crash under investigation
+# has to reproduce identically to the build that showed it. Mirrors RBPDBGINFO in theos/Makefile.
+option(RBPDBGINFO "Emit debug info (DWARF) without altering optimisation" OFF)
+
 # ---------------------------------------------------------------------------
 # Toolchain discovery (informational)
 # ---------------------------------------------------------------------------
@@ -240,6 +246,12 @@ target_compile_definitions(rbplus PRIVATE $<$<BOOL:${ENABLE_PATCHES}>:ENABLE_PAT
 # expression is config-agnostic, so it applies in Debug, Release, and any other
 # configuration alike.
 target_compile_definitions(rbplus PRIVATE $<$<BOOL:${RBPDBG}>:RBPDBG=1>)
+
+# The same debug-info flags theos/Makefile applies under RBPDBGINFO.
+if(RBPDBGINFO)
+  target_compile_options(rbplus PRIVATE -g -fstandalone-debug -fno-omit-frame-pointer)
+  target_link_options(rbplus PRIVATE -g)
+endif()
 
 # Build git SHA, captured at configure time for the RBPDBG startup banner so a
 # captured log always identifies exactly which build produced it. Diagnostics only

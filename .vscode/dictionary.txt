@@ -171,6 +171,7 @@ fcvtas
 fcvtzs
 fcvtzu
 fdiv
+finalpackage
 finditer
 floatloopcounter
 fmla
@@ -182,6 +183,7 @@ fori
 foxundermoon
 fram
 frintm
+fstandalone
 fsub
 ftrivial
 ftype
@@ -364,6 +366,7 @@ rbff
 rbffnoterecord
 rbmacros
 rbpdbg
+rbpdbginfo
 rbplus
 rbscorehash
 rdparty
