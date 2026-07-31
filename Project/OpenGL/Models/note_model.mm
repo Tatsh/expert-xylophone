@@ -42,46 +42,46 @@
 // The near/far lane slopes, seeded by the play-field layout pass (ComputePlayfieldLayoutY) and read
 // here and by the effect layers. Each is the ratio of a note row's offset to the field-centre row
 // scale.
-float g_flPlayfieldNearLaneSlope = {};    // @ghidraAddress 0x3ce95c
-float g_flPlayfieldNearLaneSlopeNeg = {}; // @ghidraAddress 0x3ce960
-float g_flPlayfieldFarLaneSlope = {};     // @ghidraAddress 0x3ce96c
-float g_flPlayfieldFarLaneSlopeNeg = {};  // @ghidraAddress 0x3ce970
+float g_flPlayfieldNearLaneSlope = -0.7882096f;   // @ghidraAddress 0x3ce95c
+float g_flPlayfieldNearLaneSlopeNeg = 0.7882096f; // @ghidraAddress 0x3ce960
+float g_flPlayfieldFarLaneSlope = -0.35371178f;   // @ghidraAddress 0x3ce96c
+float g_flPlayfieldFarLaneSlopeNeg = 0.35371178f; // @ghidraAddress 0x3ce970
 
 // The play-field gauge layout positions, seeded by the play-field layout pass and read by the gauge
 // sprite emitter. The centre split is subtracted from the portrait gauge positions; the four base-Y
 // values are the top and bottom band bases in the default and alternate gauge modes.
-int g_nPlayfieldCentreSplit = {}; // @ghidraAddress 0x3ce934
-int g_nGaugeAltTopBaseY = {};     // @ghidraAddress 0x3ce99c
-int g_nGaugeAltBottomBaseY = {};  // @ghidraAddress 0x3ce9a0
-int g_nGaugeTopBaseY = {};        // @ghidraAddress 0x3ce9a4
-int g_nGaugeBottomBaseY = {};     // @ghidraAddress 0x3ce9a8
+int g_nPlayfieldCentreSplit = 512; // @ghidraAddress 0x3ce934
+int g_nGaugeAltTopBaseY = 288;     // @ghidraAddress 0x3ce99c
+int g_nGaugeAltBottomBaseY = 736;  // @ghidraAddress 0x3ce9a0
+int g_nGaugeTopBaseY = 462;        // @ghidraAddress 0x3ce9a4
+int g_nGaugeBottomBaseY = 562;     // @ghidraAddress 0x3ce9a8
 
 // The rest of the play-field vertical layout table (@ghidraAddress 0x3ce930..0x3ce998 and
 // 0x3d0008), all derived from the field height by the play-field layout pass and read by the note,
 // gauge, and background layers.
-int g_nPlayfieldFieldHeight = {};          // @ghidraAddress 0x3ce930
-int g_nPlayfieldHalfHeightY = {};          // @ghidraAddress 0x3ce938
-int g_nPlayfieldFullHeightY = {};          // @ghidraAddress 0x3d0008
-int g_nPlayfieldRow16 = {};                // @ghidraAddress 0x3ce93c
-int g_nPlayfieldRow2c = {};                // @ghidraAddress 0x3ce940
-int g_nPlayfieldRow36 = {};                // @ghidraAddress 0x3ce944
-int g_nPlayfieldRow6c = {};                // @ghidraAddress 0x3ce948
-float g_flPlayfieldRowScale = {};          // @ghidraAddress 0x3ce94c
-int g_nPlayfieldNearRowTop = {};           // @ghidraAddress 0x3ce950
-int g_nPlayfieldNearRowBottom = {};        // @ghidraAddress 0x3ce954
-int g_nPlayfieldRow12e = {};               // @ghidraAddress 0x3ce958
-int g_nPlayfieldFarRowTop = {};            // @ghidraAddress 0x3ce964
-int g_nPlayfieldFarRowBottom = {};         // @ghidraAddress 0x3ce968
-int g_nPlayfieldMidRowTop = {};            // @ghidraAddress 0x3ce974
-int g_nPlayfieldMidRowBottom = {};         // @ghidraAddress 0x3ce978
-float g_flPlayfieldMidLaneSlope = {};      // @ghidraAddress 0x3ce97c
-float g_flPlayfieldMidLaneSlopeNeg = {};   // @ghidraAddress 0x3ce980
-int g_nPlayfieldGaugeRowTop = {};          // @ghidraAddress 0x3ce984
-int g_nPlayfieldGaugeRowBottom = {};       // @ghidraAddress 0x3ce988
-float g_flPlayfieldExtraLaneSlope = {};    // @ghidraAddress 0x3ce98c
-float g_flPlayfieldExtraLaneSlopeNeg = {}; // @ghidraAddress 0x3ce990
-int g_nPlayfieldRowE4 = {};                // @ghidraAddress 0x3ce994
-int g_nPlayfieldRow192 = {};               // @ghidraAddress 0x3ce998
+int g_nPlayfieldFieldHeight = 1024;                 // @ghidraAddress 0x3ce930
+int g_nPlayfieldHalfHeightY = 512;                  // @ghidraAddress 0x3ce938
+int g_nPlayfieldFullHeightY = {};                   // @ghidraAddress 0x3d0008
+int g_nPlayfieldRow16 = 1002;                       // @ghidraAddress 0x3ce93c
+int g_nPlayfieldRow2c = 980;                        // @ghidraAddress 0x3ce940
+int g_nPlayfieldRow36 = 970;                        // @ghidraAddress 0x3ce944
+int g_nPlayfieldRow6c = 916;                        // @ghidraAddress 0x3ce948
+float g_flPlayfieldRowScale = 458.0f;               // @ghidraAddress 0x3ce94c
+int g_nPlayfieldNearRowTop = 151;                   // @ghidraAddress 0x3ce950
+int g_nPlayfieldNearRowBottom = 873;                // @ghidraAddress 0x3ce954
+int g_nPlayfieldRow12e = 722;                       // @ghidraAddress 0x3ce958
+int g_nPlayfieldFarRowTop = 350;                    // @ghidraAddress 0x3ce964
+int g_nPlayfieldFarRowBottom = 674;                 // @ghidraAddress 0x3ce968
+int g_nPlayfieldMidRowTop = 250;                    // @ghidraAddress 0x3ce974
+int g_nPlayfieldMidRowBottom = 774;                 // @ghidraAddress 0x3ce978
+float g_flPlayfieldMidLaneSlope = -0.5720524f;      // @ghidraAddress 0x3ce97c
+float g_flPlayfieldMidLaneSlopeNeg = 0.5720524f;    // @ghidraAddress 0x3ce980
+int g_nPlayfieldGaugeRowTop = 450;                  // @ghidraAddress 0x3ce984
+int g_nPlayfieldGaugeRowBottom = 574;               // @ghidraAddress 0x3ce988
+float g_flPlayfieldExtraLaneSlope = -0.13537118f;   // @ghidraAddress 0x3ce98c
+float g_flPlayfieldExtraLaneSlopeNeg = 0.13537118f; // @ghidraAddress 0x3ce990
+int g_nPlayfieldRowE4 = 796;                        // @ghidraAddress 0x3ce994
+int g_nPlayfieldRow192 = 622;                       // @ghidraAddress 0x3ce998
 
 // The note lane-position table (@ghidraAddress 0x3de000), seeded once by InitNoteLaneTable and read
 // by GetNoteLaneFraction. It holds the six across-field lane fractions (symmetric about the
