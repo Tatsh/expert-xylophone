@@ -63,32 +63,24 @@ jobs:
           echo "Built app: $APP"
           codesign --force --sign - --timestamp=none "$APP"
           codesign --verify --verbose=2 "$APP"
+          # dwarf-with-dsym leaves the linked binary holding only a debug map naming .o files from
+          # the build machine, so the app alone cannot be debugged: the DWARF is in the .dSYM, and
+          # it ships inside the bundle so a single download carries both. That invalidates the
+          # ad-hoc signature above, which does not matter here because the .ipa is re-signed with
+          # Impactor before it reaches a device.
+          DSYM="$(find build -type d -name 'REFLEC BEAT plus.app.dSYM' -print -quit)"
+          test -n "$DSYM" || { echo 'no .dSYM found; the build is not emitting debug info'; exit 1; }
           rm -rf Payload Rbplus-adhoc.ipa
           mkdir -p Payload
           cp -R "$APP" Payload/
+          cp -R "$DSYM" "Payload/$(basename "$APP")/"
           /usr/bin/zip -qry Rbplus-adhoc.ipa Payload
-          echo "Packaged: Rbplus-adhoc.ipa"
-      - name: 'Package the .dSYM'
-        run: |
-          # dwarf-with-dsym leaves the linked binary holding only a debug map that points at .o
-          # files from the build machine, so the .ipa alone cannot be debugged: the DWARF itself
-          # lives in the .dSYM. Ship it or the Debug build buys nothing on device.
-          DSYM="$(find build -type d -name 'REFLEC BEAT plus.app.dSYM' -print -quit)"
-          test -n "$DSYM" || { echo 'no .dSYM found; the build is not emitting debug info'; exit 1; }
-          rm -f Rbplus-adhoc.dSYM.zip
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent "$DSYM" Rbplus-adhoc.dSYM.zip
-          echo "Packaged: Rbplus-adhoc.dSYM.zip"
+          echo "Packaged: Rbplus-adhoc.ipa (the .dSYM is inside the bundle)"
       - name: 'Upload .ipa'
         uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
         with:
           name: 'Rbplus-adhoc-ipa'
           path: 'Rbplus-adhoc.ipa'
-          if-no-files-found: 'error'
-      - name: 'Upload .dSYM'
-        uses: 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
-        with:
-          name: 'Rbplus-adhoc-dsym'
-          path: 'Rbplus-adhoc.dSYM.zip'
           if-no-files-found: 'error'
 name: 'build'
 'on':
