@@ -3807,6 +3807,15 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x6AEE0: 'RBMusicManager -createPreInMusics: initWithCapacity:3 and cmp x25,#3 bound a loop '
+             'over a four-byte table at 0x2fcfe0, read through ldr w2,[x27,x25,LSL #2]. The three '
+             'entries decode as 100000107, 100000109 and 100000419, matching the reconstruction '
+             'exactly. The numberWithInt: call is annotated with 0x4, which is not the value being '
+             'boxed',
+    0x6CDF8: 'RBMusicManager -getClientCompareMusics: arrayWithCapacity:0 as the source says, then '
+             'a nested walk of the client list against the catalogue where cmp w20,w0 with b.eq '
+             'leaves the inner loop to add the match, so at most one entry is collected per client '
+             'identifier',
     0x6B020: 'RBMusicManager -loadPurchasedMusics: the "mulist" file under the documents '
              'directory, guarded by isFileExist: and again by a cbz on the read, is deciphered by '
              'a BFCodec keyed from the MD5 of the music-list key. The salt strip is '
