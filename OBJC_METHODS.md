@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4823 verified
-(76.0%).
+Total: 6343 — 6306 reconstructed, 4827 verified
+(76.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2137,7 +2137,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuView` | `-` | `showInfomation` |  | ✅ | ❌ | `0xaf8c0` |
 | `RBMenuView` | `-` | `createSearchDictionary` |  | ✅ | ❌ | `0xafa84` |
 | `RBMenuView` | `-` | `showSearchBar` |  | ✅ | ❌ | `0xb0274` |
-| `RBMenuView` | `-` | `setSearchBarNonActive` |  | ✅ | ❌ | `0xb0e18` |
+| `RBMenuView` | `-` | `setSearchBarNonActive` |  | ✅ | ✅ | `0xb0e18` |
 | `RBMenuView` | `-` | `hideSearchBar` |  | ✅ | ❌ | `0xb0eac` |
 | `RBMenuView` | `-` | `tapSearchMusicCancel` |  | ✅ | ❌ | `0xb16dc` |
 | `RBMenuView` | `-` | `searchStringChanged:` |  | ✅ | ❌ | `0xb17b8` |
@@ -2355,7 +2355,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendNoteList` | `-` | `addExtendNoteInfoFromProductID:` |  | ✅ | ❌ | `0xbf684` |
 | `RBStoreExtendNoteList` | `-` | `updateExtendNoteInfo:SKProductsResponse:` |  | ✅ | ❌ | `0xbf768` |
 | `RBStoreExtendNoteList` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0xbfe24` |
-| `RBStoreExtendNoteList` | `-` | `downloaderError:` |  | ✅ | ❌ | `0xc0768` |
+| `RBStoreExtendNoteList` | `-` | `downloaderError:` |  | ✅ | ✅ | `0xc0768` |
 | `RBStoreExtendNoteList` | `-` | `downloaderProceed:` |  | ✅ | ✅ | `0xc07f0` |
 | `RBStoreExtendNoteList` | `-` | `optionalProductsRequest` |  | ✅ | ❌ | `0xc07f4` |
 | `RBStoreExtendNoteList` | `-` | `productsRequest:didReceiveResponse:` |  | ✅ | ❌ | `0xc0b20` |
@@ -2676,7 +2676,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0xdc598` |
 | `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0xdc5b4` |
 | `RBRankingTableView` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5c0` |
-| `RBRankingTableView` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0xdcf90` |
+| `RBRankingTableView` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ✅ | `0xdcf90` |
 | `RBRankingTableView` | `-` | `playerScope` | prop | ✅ | ✅ | `0xdd020` |
 | `RBRankingTableView` | `-` | `setPlayerScope:` | prop | ✅ | ✅ | `0xdd030` |
 | `RBRankingTableView` | `-` | `footer` | prop | ✅ | ✅ | `0xdd040` |
@@ -2809,7 +2809,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSearchMapViewController` | `-` | `currentLocation` | prop | ✅ | ✅ | `0xe64b0` |
 | `RBSearchMapViewController` | `-` | `setCurrentLocation:` | prop | ✅ | ✅ | `0xe64c0` |
 | `RBSearchView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xe650c` |
-| `RBSearchView` | `-` | `showAnimation` |  | ✅ | ❌ | `0xe6598` |
+| `RBSearchView` | `-` | `showAnimation` |  | ✅ | ✅ | `0xe6598` |
 | `RBSearchView` | `-` | `setupView` |  | ✅ | ✅ | `0xe661c` |
 | `RBSearchView` | `-` | `selectCurrentPosition:` |  | ✅ | ✅ | `0xe6e74` |
 | `RBSearchView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0xe6ed0` |

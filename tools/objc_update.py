@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xb0e18: 'RBMenuView -setSearchBarNonActive: resigns the search bar only when one is held',
+    0xc0768: 'RBStoreExtendNoteList -downloaderError:: reports through the delegate with the '
+             'server-connect-failed string, then clears extendNotelistDownloader',
+    0xdcf90: 'RBRankingTableView -tableView:willDisplayCell:forRowAtIndexPath:: the receiver of '
+             'setBackgroundColor: is x3, the cell, not the table view; the colour is clearColor',
+    0xe6598: 'RBSearchView -showAnimation: chains to super, then sends initialView to the map',
     0x6a8f0: 'RBBGMManager -popMusic: returns the entry value of m_IsPushMusic, and when it was '
              'set clears it with strb wzr, sets m_IsMusic with a mov w9 of 1, and pops the BGM',
     0xab9e0: 'RBMenuView -hideSettingView: sends hideAnimation only when settingView is held',
