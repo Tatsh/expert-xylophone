@@ -268,6 +268,8 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     delete[] m_pSpriteScaleYArray;
     delete[] m_pSpriteColorArray;
     delete[] static_cast<unsigned char *>(m_pVertexScratch);
+    // Only the index buffer is deleted. The binary reads +0x130 here and never +0x134, so
+    // m_dwArrayVbo leaks by design rather than by omission; do not add a matching DeleteBuffer.
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
 
