@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4730 verified
+Total: 6343 — 6306 reconstructed, 4732 verified
 (74.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1778,7 +1778,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreaterScoreElement` | `-` | `name` | prop | ✅ | ✅ | `0x87728` |
 | `TwitterImageCreaterScoreElement` | `-` | `setName:` | prop | ✅ | ✅ | `0x87738` |
 | `TwitterImageCreater` | `-` | `init` |  | ✅ | ❌ | `0x87784` |
-| `TwitterImageCreater` | `-` | `reset` |  | ✅ | ❌ | `0x87848` |
+| `TwitterImageCreater` | `-` | `reset` |  | ✅ | ✅ | `0x87848` |
 | `TwitterImageCreater` | `-` | `dealloc` |  | ✅ | ❌ | `0x878ac` |
 | `TwitterImageCreater` | `-` | `setScore:Side:` |  | ✅ | ✅ | `0x87930` |
 | `TwitterImageCreater` | `-` | `setAR:Side:` |  | ✅ | ✅ | `0x87958` |
@@ -3614,7 +3614,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBErosionMarkUpdater` | `-` | `setBaseHardScore:` | prop | ✅ | ✅ | `0x148960` |
 | `RBErosionMarkUpdater` | `-` | `editHardScore` | prop | ✅ | ✅ | `0x148970` |
 | `RBErosionMarkUpdater` | `-` | `setEditHardScore:` | prop | ✅ | ✅ | `0x148980` |
-| `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ✅ | ❌ | `0x154ae0` |
+| `DAProgressOverlayView` | `-` | `initWithCoder:` |  | ✅ | ✅ | `0x154ae0` |
 | `DAProgressOverlayView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x154b38` |
 | `DAProgressOverlayView` | `-` | `setUp` |  | ✅ | ❌ | `0x154b90` |
 | `DAProgressOverlayView` | `-` | `displayOperationDidFinishAnimation` |  | ✅ | ❌ | `0x154cb4` |

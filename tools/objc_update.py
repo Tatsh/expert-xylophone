@@ -295,6 +295,10 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x87848: 'TwitterImageCreater -reset: three guarded release-and-nil blocks in order, m_Data '
+             'through operator delete[], m_Context through CGContextRelease, m_ColorSpace through '
+             'CGColorSpaceRelease, each nil-checked before the call and cleared after',
+    0x154ae0: 'DAProgressOverlayView -initWithCoder:: super initWithCoder:, nil check, then setUp',
     0x140544: 'RBMenuTutorialView -getClipRect:: indexes the runtime-seeded 0x3de058 table at a '
               '32-byte CGRect stride into d8-d11, then four fcsel on IsPad choose between the raw '
               'row and the same row times the 0.5 fmov immediate. The four fields stay in x, y, '
