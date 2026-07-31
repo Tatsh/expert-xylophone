@@ -3807,11 +3807,20 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x5C444: 'ScoreData +getScoreData:inManagedObjectContext:: the "ScoreData" entity with the '
+             '"tuneID == %d" predicate, then cbz on the result count takes the create path through '
+             'recordWithTuneID: and save:. Otherwise lastObject, a tbnz on checkScore: that resets '
+             'a tampered record, and checkOverScore before returning it',
+    0x5C854: 'ScoreData +getScoreDatas:inManagedObjectContext:: the same entity with the lowercase '
+             '"tuneID in %@" predicate at 0x36acc0, which is a different string from the uppercase '
+             'one +totalScore uses. A tbz on checkScore: splits reset from collect, '
+             'orr w24,w24,w21 accumulates the needs-save flag across both arms, and tbz w24,#0 '
+             'skips the save when nothing changed',
     0x5D778: 'ScoreData +totalScore: batches the music identifiers with sub then cmp x8,#0xf and '
              'csel, so the batch is the smaller of the remainder and fifteen. Identifiers below '
              'one are dropped by cmp w0,#1 with b.lt before addIndex:. The fetch uses the '
-             '"ScoreData" entity and the "tuneID IN %@" predicate, whose uppercase IN the source '
-             'had as lowercase and now matches. Each score contributes through '
+             '"ScoreData" entity and the uppercase "tuneID IN %@" predicate at 0x36ace0, which is a '
+             'different string from the lowercase one 0x5c854 uses. Each score contributes through '
              'sub w8,score,#1 then cmp against mov w10,#0x270f with csel on cc, an unsigned '
              'compare, so the accepted range really is one to 9999 and a non-positive score wraps '
              'out rather than counting. sxtw widens each score for the 64-bit total',

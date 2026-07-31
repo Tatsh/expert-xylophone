@@ -26,7 +26,12 @@ static NSString *const kScoreDataEntityName = @"ScoreData";
 
 // Fetch-predicate format strings.
 static NSString *const kPredicateTuneIDEquals = @"tuneID == %d";
-static NSString *const kPredicateTuneIDIn = @"tuneID IN %@";
+// The binary holds two separate strings for this predicate, differing only in the case of the
+// keyword, and uses one in each of the two fetches below. NSPredicate treats them identically, so
+// the split carries no behaviour; it is kept because collapsing them loses a literal the binary
+// really has.
+static NSString *const kPredicateTuneIDIn = @"tuneID in %@";
+static NSString *const kPredicateTuneIDInUppercase = @"tuneID IN %@";
 static NSString *const kPredicateRecentInRange =
     @"lastPlayDate > %@ AND 100000000 < tuneID AND tuneID < 900000000";
 
@@ -260,7 +265,7 @@ static const int kFrameBonusMaxTier = 2;
         NSEntityDescription *entity = [NSEntityDescription entityForName:kScoreDataEntityName
                                                   inManagedObjectContext:context];
         request.entity = entity;
-        request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDIn, batch];
+        request.predicate = [NSPredicate predicateWithFormat:kPredicateTuneIDInUppercase, batch];
         NSArray *results = [context executeFetchRequest:request error:nil];
         for (ScoreData *record in results) {
             NSUInteger tuneIndex = (NSUInteger)record.tuneID.intValue;

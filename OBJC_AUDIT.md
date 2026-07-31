@@ -1516,3 +1516,16 @@ reconstruction is unchecked. A wrong predicate keyword is harmless; a wrong dict
 key, or format specifier is not, and those are all ASCII. The sweep's clean run means the non-ASCII
 literals agree and says nothing whatever about the rest, which is the same shape of limit already
 recorded for the address audit and the property scan.
+
+**Correction, same session.** The paragraph above is right that the literal was unchecked and wrong
+about what the literal is. There are **two** strings in the binary, `tuneID in %@` at `0x36acc0` and
+`tuneID IN %@` at `0x36ace0`, and the two fetches use one each: `+getScoreDatas:` the lowercase,
+`+totalScore` the uppercase. The reconstruction had collapsed them into one constant, and the first
+fix here changed that shared constant to uppercase — correcting one call site and breaking the
+other, which is a worse state than before, since the tree then disagreed with the binary at a place
+that had previously agreed with it.
+
+It was caught one method later, by reading `+getScoreDatas:` and seeing the disassembler print the
+lowercase form. Both constants now exist and each fetch uses its own. The lesson is narrow and
+worth having: a literal shared between two call sites is an assumption about the original source,
+not an observation, and a single decoded string only ever proves what one call site holds.
