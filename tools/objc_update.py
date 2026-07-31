@@ -3807,6 +3807,24 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x181B48: 'RBExtendNoteManager +getPathFromBundle:: the filename, then mainBundle and '
+              'pathForResource: with an empty type, which is what the filename already carrying '
+              'its extension requires',
+    0x181C04: 'RBExtendNoteManager +getPathFromPurchased:: the C helper at 0x1a1224, which Ghidra '
+              'names GetPrivateDocumentsPath, joined with the filename. The binary evaluates the '
+              'path before the filename where the source computes the filename first, which is '
+              'the compiler choosing an evaluation order the language leaves open rather than a '
+              'difference in behaviour',
+    0x181CB4: 'RBExtendNoteManager +getPathFromPurchasedOldDirectory:: the same shape against '
+              '0x1a1218, GetCachesDirectoryPath, so the two path sources really are distinct '
+              'functions and not one helper called twice',
+    0x1825BC: 'RBExtendNoteManager -getPurchasedExtendNoteDictionary:: a walk of the purchased '
+              'dictionaries returning on the first cmp w28,w20 that compares equal',
+    0x183894: 'RBExtendNoteManager -getExtendNoteData:: walks [self getExtendNoteDataArray], the '
+              'accessor that builds the array on demand, not the raw property',
+    0x1839F4: 'RBExtendNoteManager -releaseCacheMusicData: walks the raw extendNoteDataArray '
+              'instead, so the asymmetry with 0x183894 is in the binary and not a slip. Releasing '
+              'a cache that was never built has nothing to do',
     0x6AC38: 'RBMusicManager -deleteMusic:: the current and legacy paths are each guarded by '
              'isFileExist: before removeItemAtPath:, and the cbz w24 at 0x6ad98 is the '
              'else-if: when the legacy file is absent and nothing was removed from the current '
