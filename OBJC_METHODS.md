@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4596 verified
-(72.5%).
+Total: 6343 — 6306 reconstructed, 4603 verified
+(72.6%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -1162,7 +1162,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreManageSortViewController` | `-` | `setSortRuleCount:` | prop | ✅ | ✅ | `0x563f0` |
 | `StoreCampaignTableViewCell` | `-` | `initWithDeviceType:reuseIdentifier:tag:` |  | ✅ | ❌ | `0x56440` |
 | `StoreCampaignTableViewCell` | `-` | `setInfo:tag:` |  | ✅ | ❌ | `0x56c64` |
-| `StoreCampaignTableViewCell` | `-` | `setDownloadFlag:` |  | ✅ | ❌ | `0x56e6c` |
+| `StoreCampaignTableViewCell` | `-` | `setDownloadFlag:` |  | ✅ | ✅ | `0x56e6c` |
 | `StoreCampaignTableViewCell` | `-` | `hasItem:itemID:` |  | ✅ | ❌ | `0x56e90` |
 | `StoreCampaignTableViewCell` | `+` | `cellHeight:` |  | ✅ | ✅ | `0x56fa4` |
 | `StoreCampaignTableViewCell` | `-` | `getArtworkMargin:` |  | ✅ | ✅ | `0x56fc0` |
@@ -1931,9 +1931,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPlaylistViewController` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ❌ | `0x93d00` |
 | `RBPlaylistViewController` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0x93d50` |
 | `RBPlaylistViewController` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0x93e54` |
-| `RBPlaylistViewController` | `-` | `tableView:canEditRowAtIndexPath:` |  | ✅ | ❌ | `0x94c3c` |
+| `RBPlaylistViewController` | `-` | `tableView:canEditRowAtIndexPath:` |  | ✅ | ✅ | `0x94c3c` |
 | `RBPlaylistViewController` | `-` | `tableView:commitEditingStyle:forRowAtIndexPath:` |  | ✅ | ❌ | `0x94c64` |
-| `RBPlaylistViewController` | `-` | `tableView:canMoveRowAtIndexPath:` |  | ✅ | ❌ | `0x94d70` |
+| `RBPlaylistViewController` | `-` | `tableView:canMoveRowAtIndexPath:` |  | ✅ | ✅ | `0x94d70` |
 | `RBPlaylistViewController` | `-` | `tableView:moveRowAtIndexPath:toIndexPath:` |  | ✅ | ✅ | `0x94d98` |
 | `RBPlaylistViewController` | `-` | `tableView:didSelectRowAtIndexPath:` |  | ✅ | ❌ | `0x94d9c` |
 | `RBPlaylistViewController` | `-` | `delegate` | prop | ✅ | ✅ | `0x955e4` |
@@ -2391,7 +2391,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicColorBar` | `-` | `SetupView` |  | ✅ | ❌ | `0xc21b8` |
 | `RBMusicColorBar` | `-` | `SetBar:` |  | ✅ | ❌ | `0xc27c8` |
 | `RBMusicColorBar` | `-` | `setAlphaValue:` | prop | ✅ | ✅ | `0xc2968` |
-| `RBMusicColorBar` | `-` | `alphaValue` | prop | ✅ | ❌ | `0xc2974` |
+| `RBMusicColorBar` | `-` | `alphaValue` | prop | ✅ | ✅ | `0xc2974` |
 | `RBMusicColorBar` | `-` | `tap:` |  | ✅ | ❌ | `0xc2994` |
 | `RBMusicColorBar` | `-` | `pan:` |  | ✅ | ❌ | `0xc2a88` |
 | `RBMusicColorBar` | `-` | `musicSelectedColor` | prop | ✅ | ✅ | `0xc2b94` |
@@ -2641,7 +2641,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `horizontalInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8f98` |
 | `RBPopoverBackgroundView` | `-` | `verticalInsetsForStretchedImage:insets:` |  | ✅ | ❌ | `0xd8fdc` |
 | `RBPopoverBackgroundView` | `-` | `mirroredImage:` |  | ✅ | ❌ | `0xd9020` |
-| `RBPopoverBackgroundView` | `-` | `mirroredInsets:` |  | ✅ | ❌ | `0xd9110` |
+| `RBPopoverBackgroundView` | `-` | `mirroredInsets:` |  | ✅ | ✅ | `0xd9110` |
 | `RBPopoverBackgroundView` | `-` | `imageFromImageContextWithSourceImage:size:` |  | ✅ | ❌ | `0xd9120` |
 | `RBPopoverBackgroundView` | `-` | `arrowOffset` | prop | ✅ | ✅ | `0xd91b0` |
 | `RBPopoverBackgroundView` | `-` | `arrowDirection` | prop | ✅ | ✅ | `0xd91c0` |
@@ -2673,7 +2673,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBRankingTableView` | `-` | `clear` |  | ✅ | ✅ | `0xdc508` |
 | `RBRankingTableView` | `-` | `pushLoadNext:` |  | ✅ | ❌ | `0xdc514` |
 | `RBRankingTableView` | `-` | `numberOfSectionsInTableView:` |  | ✅ | ✅ | `0xdc590` |
-| `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ❌ | `0xdc598` |
+| `RBRankingTableView` | `-` | `tableView:numberOfRowsInSection:` |  | ✅ | ✅ | `0xdc598` |
 | `RBRankingTableView` | `-` | `tableView:heightForRowAtIndexPath:` |  | ✅ | ✅ | `0xdc5b4` |
 | `RBRankingTableView` | `-` | `tableView:cellForRowAtIndexPath:` |  | ✅ | ❌ | `0xdc5c0` |
 | `RBRankingTableView` | `-` | `tableView:willDisplayCell:forRowAtIndexPath:` |  | ✅ | ❌ | `0xdcf90` |
@@ -2867,7 +2867,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingView` | `-` | `SelectInfoButton` |  | ✅ | ❌ | `0xebf1c` |
 | `RBSettingView` | `-` | `SelectTermButton` |  | ✅ | ❌ | `0xebf94` |
 | `RBSettingView` | `-` | `SelectApplilinkButton` |  | ✅ | ❌ | `0xec00c` |
-| `RBSettingView` | `-` | `SelectExitButton` |  | ✅ | ❌ | `0xec0c0` |
+| `RBSettingView` | `-` | `SelectExitButton` |  | ✅ | ✅ | `0xec0c0` |
 | `RBSettingView` | `-` | `selectMap:` |  | ✅ | ❌ | `0xec0e0` |
 | `RBSettingView` | `-` | `getCustomizeButtonView` |  | ✅ | ✅ | `0xec164` |
 | `RBSettingView` | `-` | `parentView` | prop | ✅ | ✅ | `0xec170` |

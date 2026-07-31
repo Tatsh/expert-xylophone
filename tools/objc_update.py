@@ -269,6 +269,20 @@ VERIFIED = {
              'from v0 into v1 rather than materialised twice',
     0x67c34: 'MusicDataFromDoc -artistNameImageBlack2xData: scale 2.0, luminance 0.0',
     0x67c48: 'MusicDataFromDoc -artistNameImageBlackData: scale 1.0, luminance 0.0',
+    0x56e6c: 'StoreCampaignTableViewCell -setDownloadFlag:: stores the flag, then sets buttonType '
+             'to 1 only when it is set, leaving it alone otherwise',
+    0x94c3c: 'RBPlaylistViewController -tableView:canEditRowAtIndexPath:: cset eq against section '
+             '1, the playlists section',
+    0x94d70: 'RBPlaylistViewController -tableView:canMoveRowAtIndexPath:: the same test, '
+             'instruction for instruction',
+    0xc2974: 'RBMusicColorBar -alphaValue: sends sliderValue and narrows the double with fcvt, '
+             'which is the float the declaration returns',
+    0xd9110: 'RBPopoverBackgroundView -mirroredInsets:: swaps v1 and v3 only, so left and right '
+             'exchange while top and bottom stay',
+    0xdc598: 'RBRankingTableView -tableView:numberOfRowsInSection:: tail-calls numEntries, '
+             'ignoring the section',
+    0xec0c0: 'RBSettingView -SelectExitButton: the cbz on m_Animating returns while a transition '
+             'runs, otherwise tail-calls hideAnimation',
     # Read by a subagent and then re-checked here against the bytes, point by point, because a
     # sibling batch from the same run had invented a weak-reference pattern the binary does not use.
     0x1c813c: 'RBTermAgreeView -sendAgree: the boxing is numberWithInteger:, not the numberWithInt: '
