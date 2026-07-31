@@ -17,7 +17,7 @@
     // access always goes through these named fields.
     BOOL m_IsPlaying;         // +0x364
     SoundData *m_SoundData;   // +0x368
-    long long m_CurrentFrame; // +0x36c
+    NSInteger m_CurrentFrame; // +0x36c
     BOOL m_IsLoop;            // +0x370
     BOOL m_IsStop;            // +0x374
 }
@@ -41,12 +41,12 @@
 
 #pragma mark - Play cursor
 
-- (long long)currentFrame {
+- (NSInteger)currentFrame {
     /** @ghidraAddress 0x3557c */
     return m_CurrentFrame;
 }
 
-- (void)setCurrentFrame:(long long)currentFrame {
+- (void)setCurrentFrame:(NSInteger)currentFrame {
     /** @ghidraAddress 0x3550c */
     if ([m_SoundData totalFrames] < currentFrame) {
         currentFrame = [m_SoundData totalFrames];
@@ -104,7 +104,7 @@
 - (void)loadData:(AudioBufferList *)buffer Frames:(unsigned int)frames {
     /** @ghidraAddress 0x35620 */
     if (m_SoundData != nil) {
-        long long nextFrame = 0;
+        NSInteger nextFrame = 0;
         BOOL exhausted = [m_SoundData getData:m_CurrentFrame
                                        Frames:frames
                                          Loop:m_IsLoop

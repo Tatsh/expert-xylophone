@@ -297,6 +297,13 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xc194: 'StoreButtonView -setButtonColor:: stores the retained colour into _buttonColor and '
+            'then sends setNeedsDisplay, so it is a custom setter rather than a synthesised one',
+    0xc264: 'StoreButtonView -setDisabledColor:: the same shape over _disabledColor',
+    0x3550c: 'SoundPlayer -setCurrentFrame:: clamps to [0, m_SoundData.totalFrames], calling '
+             'totalFrames twice on the over-range path. The ivar encodes q, so the property and '
+             'the parameter are retyped from long long to NSInteger',
+    0x35cfc: 'RBTutorialManager +getStatus:: forwards to RBUserSettingData getTutorialStatus:',
     0x69700: 'StorePackInfoDownloader -dealloc: delegate, packInfo, downloader, all through '
              'their setters and in that order',
     0x179c64: 'StoreExtendNoteInfoDownloader -dealloc: the sibling shape, with setExtendNoteInfo: '

@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @ghidraAddress 0x3557c (getter)
  * @ghidraAddress 0x3550c (setter)
  */
-@property(nonatomic, assign) long long currentFrame;
+@property(nonatomic, assign) NSInteger currentFrame;
 /**
  * @brief Whether the voice loops its asset. The setter is ignored while the voice is playing.
  * @ghidraAddress 0x355ac (getter)

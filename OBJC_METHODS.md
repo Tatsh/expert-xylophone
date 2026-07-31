@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4769 verified
+Total: 6343 — 6306 reconstructed, 4773 verified
 (75.2%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -151,9 +151,9 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0xbb78` |
 | `StoreButtonView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xbddc` |
 | `StoreButtonView` | `-` | `buttonColor` | prop | ✅ | ✅ | `0xc138` |
-| `StoreButtonView` | `-` | `setButtonColor:` | prop | ✅ | ❌ | `0xc194` |
+| `StoreButtonView` | `-` | `setButtonColor:` | prop | ✅ | ✅ | `0xc194` |
 | `StoreButtonView` | `-` | `disabledColor` | prop | ✅ | ✅ | `0xc208` |
-| `StoreButtonView` | `-` | `setDisabledColor:` | prop | ✅ | ❌ | `0xc264` |
+| `StoreButtonView` | `-` | `setDisabledColor:` | prop | ✅ | ✅ | `0xc264` |
 | `StoreButtonView` | `-` | `cornerRadius` | prop | ✅ | ✅ | `0xc2d8` |
 | `StoreButtonView` | `-` | `setCornerRadius:` | prop | ✅ | ✅ | `0xc2e8` |
 | `StoreButtonView` | `-` | `highlightColor:factor:` |  | ✅ | ✅ | `0xc300` |
@@ -600,7 +600,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `SoundManager` | `-` | `stopSystem` |  | ✅ | ❌ | `0x353d4` |
 | `SoundPlayer` | `-` | `setSoundData:` |  | ✅ | ✅ | `0x35498` |
 | `SoundPlayer` | `-` | `getSoundData` |  | ✅ | ✅ | `0x354fc` |
-| `SoundPlayer` | `-` | `setCurrentFrame:` |  | ✅ | ❌ | `0x3550c` |
+| `SoundPlayer` | `-` | `setCurrentFrame:` |  | ✅ | ✅ | `0x3550c` |
 | `SoundPlayer` | `-` | `currentFrame` |  | ✅ | ✅ | `0x3557c` |
 | `SoundPlayer` | `-` | `setLoop:` |  | ✅ | ✅ | `0x3558c` |
 | `SoundPlayer` | `-` | `isLoop` |  | ✅ | ✅ | `0x355ac` |
@@ -622,7 +622,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTutorialManager` | `+` | `isTutorialCustomize` |  | ✅ | ❌ | `0x35b3c` |
 | `RBTutorialManager` | `+` | `needStartTutorialStore` |  | ✅ | ❌ | `0x35c50` |
 | `RBTutorialManager` | `+` | `startTutorialStore` |  | ✅ | ✅ | `0x35ce4` |
-| `RBTutorialManager` | `+` | `getStatus:` |  | ✅ | ❌ | `0x35cfc` |
+| `RBTutorialManager` | `+` | `getStatus:` |  | ✅ | ✅ | `0x35cfc` |
 | `RBTutorialManager` | `+` | `getCurrentStatus` |  | ✅ | ✅ | `0x35d6c` |
 | `RBTutorialManager` | `+` | `updateStatus:` |  | ✅ | ❌ | `0x35dd4` |
 | `RBTutorialManager` | `+` | `setUnlockedItemInfo:itemId:` |  | ✅ | ❌ | `0x36098` |
