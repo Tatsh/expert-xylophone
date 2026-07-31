@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4868 verified
-(76.7%).
+Total: 6343 — 6306 reconstructed, 4870 verified
+(76.8%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -2642,7 +2642,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPopoverBackgroundView` | `-` | `verticalInsetsForStretchedImage:insets:` |  | ✅ | ✅ | `0xd8fdc` |
 | `RBPopoverBackgroundView` | `-` | `mirroredImage:` |  | ✅ | ❌ | `0xd9020` |
 | `RBPopoverBackgroundView` | `-` | `mirroredInsets:` |  | ✅ | ✅ | `0xd9110` |
-| `RBPopoverBackgroundView` | `-` | `imageFromImageContextWithSourceImage:size:` |  | ✅ | ❌ | `0xd9120` |
+| `RBPopoverBackgroundView` | `-` | `imageFromImageContextWithSourceImage:size:` |  | ✅ | ✅ | `0xd9120` |
 | `RBPopoverBackgroundView` | `-` | `arrowOffset` | prop | ✅ | ✅ | `0xd91b0` |
 | `RBPopoverBackgroundView` | `-` | `arrowDirection` | prop | ✅ | ✅ | `0xd91c0` |
 | `RBPopoverBackgroundView` | `-` | `popoverBackground` | prop | ✅ | ✅ | `0xd91d0` |
@@ -2849,7 +2849,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBSettingMenuButton` | `-` | `setEffectImageView:` | prop | ✅ | ✅ | `0xe9cd8` |
 | `RBSettingMenuButton` | `-` | `effectTextImageView` | prop | ✅ | ✅ | `0xe9d10` |
 | `RBSettingMenuButton` | `-` | `setEffectTextImageView:` | prop | ✅ | ✅ | `0xe9d20` |
-| `RBSettingView` | `-` | `initWithFrame:ButtonFrame:` |  | ✅ | ❌ | `0xe9dac` |
+| `RBSettingView` | `-` | `initWithFrame:ButtonFrame:` |  | ✅ | ✅ | `0xe9dac` |
 | `RBSettingView` | `-` | `dealloc` |  | ❌ | ✅ | `0xe9e50` |
 | `RBSettingView` | `-` | `setupView:` |  | ✅ | ❌ | `0xe9e84` |
 | `RBSettingView` | `-` | `OpenView` |  | ✅ | ❌ | `0xeb0e4` |

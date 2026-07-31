@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0xd9120: 'RBPopoverBackgroundView -imageFromImageContextWithSourceImage:size:: begins a context '
+             'with the mov w0 of 0 for opaque NO, draws into a rect at the origin, then gets the '
+             'image and ends the context, in that order',
+    0xe9dac: 'RBSettingView -initWithFrame:ButtonFrame:: super with the first rect, nil check, '
+             'then setupView: with the second',
     0xebf94: 'RBSettingView -SelectTermButton: themed effect 1, parentView showTermView, then its '
              'own hideAnimation, the same three-step shape as its SelectInfoButton sibling',
     0xec0e0: 'RBSettingView -selectMap:: the same shape again over showSearchView, ignoring sender',
