@@ -297,6 +297,12 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x41964: 'AVBus -stop: NO when no player is bound, else stops it, writes the mov w9 of 4 into '
+             'mStatus, which is AVBusStatusStopped, and returns YES',
+    0x41bc0: 'AVBus -setVolume:: NO when no player is bound, else forwards and returns YES',
+    0x72fa8: 'Downloader -cancel: nils its own delegate first, then cancels conn if one is held',
+    0x3becc: 'RBEffectSizeSlider -beginTrackingWithTouch:withEvent:: same shape as its end form, '
+             'taking the point in the touch\'s own view, and returns YES to keep tracking',
     0x71654: 'RBPlaylistManager -synchronize: writeToFile:atomically: with the mov w3 of 1, so '
              'the playlist array is written atomically',
     0x6a7b4: 'RBBGMManager -LoadMusicWithPush:Loop:: pops only when m_IsPushMusic is already set, '

@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4844 verified
+Total: 6343 — 6306 reconstructed, 4848 verified
 (76.4%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -726,7 +726,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBEffectSizeSlider` | `-` | `initWithDigit:` |  | ✅ | ❌ | `0x3ac30` |
 | `RBEffectSizeSlider` | `-` | `setValue:` | prop | ✅ | ❌ | `0x3b96c` |
 | `RBEffectSizeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x3bde0` |
-| `RBEffectSizeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3becc` |
+| `RBEffectSizeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3becc` |
 | `RBEffectSizeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x3bf70` |
 | `RBEffectSizeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x3c014` |
 | `RBEffectSizeSlider` | `-` | `value` | prop | ✅ | ✅ | `0x3c0b0` |
@@ -856,10 +856,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `removeSource` |  | ✅ | ✅ | `0x4171c` |
 | `AVBus` | `-` | `prepare` |  | ✅ | ❌ | `0x41798` |
 | `AVBus` | `-` | `play` |  | ✅ | ❌ | `0x41898` |
-| `AVBus` | `-` | `stop` |  | ✅ | ❌ | `0x41964` |
+| `AVBus` | `-` | `stop` |  | ✅ | ✅ | `0x41964` |
 | `AVBus` | `-` | `pause` |  | ✅ | ❌ | `0x41a08` |
 | `AVBus` | `-` | `offPause` |  | ✅ | ❌ | `0x41afc` |
-| `AVBus` | `-` | `setVolume:` |  | ✅ | ❌ | `0x41bc0` |
+| `AVBus` | `-` | `setVolume:` |  | ✅ | ✅ | `0x41bc0` |
 | `AVBus` | `-` | `volume` |  | ✅ | ✅ | `0x41c64` |
 | `AVBus` | `-` | `status` |  | ✅ | ✅ | `0x41d04` |
 | `AVBus` | `-` | `audioPlayerDidFinishPlaying:successfully:` |  | ✅ | ✅ | `0x41d14` |
@@ -1672,7 +1672,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `Downloader` | `-` | `initWithURL:post:contentType:timeout:` |  | ✅ | ❌ | `0x72cd4` |
 | `Downloader` | `-` | `startDownloadingWithDelegate:` |  | ✅ | ❌ | `0x72e24` |
 | `Downloader` | `-` | `startDownloadingWithProceed:success:failure:` |  | ✅ | ❌ | `0x72ed0` |
-| `Downloader` | `-` | `cancel` |  | ✅ | ❌ | `0x72fa8` |
+| `Downloader` | `-` | `cancel` |  | ✅ | ✅ | `0x72fa8` |
 | `Downloader` | `-` | `downloaderProceed:` |  | ✅ | ❌ | `0x73050` |
 | `Downloader` | `-` | `downloaderFinished:` |  | ✅ | ❌ | `0x731a8` |
 | `Downloader` | `-` | `downloaderError:` |  | ✅ | ❌ | `0x73300` |
