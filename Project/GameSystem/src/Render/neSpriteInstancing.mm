@@ -6,6 +6,9 @@
 
 #include "matrixmath.h"
 #include "neDebugLog.h"
+
+// The image base, used to report return addresses as ASLR-independent offsets.
+extern "C" const char __dso_handle[];
 #include "neGLES.h"
 #include "neRenderer.h"
 #include "neSpriteInstancing3D.h"
@@ -228,14 +231,17 @@ C_SPRITE_INSTANCING_2D::C_SPRITE_INSTANCING_2D(unsigned int nCapacity) {
         pVertexTemplate,
         static_cast<unsigned int>(nCapacity * kSpriteVertexCount * sizeof(InitialSpriteVertex)),
         0);
-    // A zero array VBO is what leaves the weight and matrix-index client arrays enabled with NULL
-    // pointers, which is the address-zero draw crash, so record what this batch actually got.
-    neDebugLog("batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d",
+    // Batches are created and destroyed in a repeating cycle here where the original creates them
+    // once, and that churn is what makes the stale element binding fire. The caller's return
+    // address, as an offset from the load address, names the layer responsible.
+    neDebugLog("batch ctor cap=%u indexVbo=%u arrayVbo=%u scratch=%p palette=%d callerOffset=%#lx",
                nCapacity,
                m_dwIndexVbo,
                m_dwArrayVbo,
                m_pVertexScratch,
-               pRenderer->HasMatrixPalette() ? 1 : 0);
+               pRenderer->HasMatrixPalette() ? 1 : 0,
+               static_cast<unsigned long>(static_cast<const char *>(__builtin_return_address(0)) -
+                                          __dso_handle));
     delete[] pVertexTemplate;
 
     const int *pTexParams = kScreenTexParams;
@@ -277,12 +283,15 @@ C_SPRITE_INSTANCING_2D::~C_SPRITE_INSTANCING_2D() {
     // element-binding cache is not cleared on delete, faithfully to the binary, so the fault can
     // only arise if this build tears a batch down where the original does not.
     if (NE_DBG_FIRST(24)) {
-        neDebugLog("batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p",
-                   m_dwIndexVbo,
-                   m_dwArrayVbo,
-                   m_dwCapacity,
-                   m_nSpriteCount,
-                   static_cast<const void *>(m_pTexture));
+        neDebugLog(
+            "batch dtor indexVbo=%u arrayVbo=%u cap=%u count=%d texture=%p callerOffset=%#lx",
+            m_dwIndexVbo,
+            m_dwArrayVbo,
+            m_dwCapacity,
+            m_nSpriteCount,
+            static_cast<const void *>(m_pTexture),
+            static_cast<unsigned long>(static_cast<const char *>(__builtin_return_address(0)) -
+                                       __dso_handle));
     }
     neGLESRenderer::GetShared()->DeleteBuffer(m_dwIndexVbo);
 }
