@@ -6,11 +6,13 @@
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton, image base
  * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ *
+ * The superclass is @c UIView on two independent witnesses in the runtime metadata: the class_ro_t
+ * at 0x38b1f8 records instanceStart 8, which is the compile-time size of a superclass that declares
+ * no ivars, and the superclass slot at 0x3cb158 resolves to the same address as @c RBMenuView's.
  */
 
 #import <UIKit/UIKit.h>
-
-#import "RBMenuNewsTickerView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +34,7 @@ typedef NS_ENUM(NSInteger, RBMenuButtonType) {
  * @brief An image-based music-menu footer button wrapping an inner @c UIButton with a flash-effect
  * overlay.
  */
-@interface RBMenuButton : RBMenuNewsTickerView
+@interface RBMenuButton : UIView
 
 /**
  * @brief Create the button for the given type and build its subviews.

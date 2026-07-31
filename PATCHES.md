@@ -133,4 +133,6 @@ The patch returns nil for an empty size rather than opening the context. An unpa
 the binary's unguarded call.
 
 Note this is a symptom guard, not a cause fix: the real question is why the music-name artwork
-does not resolve, which is the same unresolved asset question as the menu buttons' background.
+does not resolve. The menu buttons' background was once filed alongside it as the same asset
+question; it was not one. Their grey face came from a wrong superclass in the reconstruction, and
+is fixed rather than patched.

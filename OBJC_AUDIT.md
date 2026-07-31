@@ -180,15 +180,17 @@ than taught to accept a negated match, since that would also pass a real sign er
 
 ## Open
 
-| Item                           | State                                                                                                                                                                                                   |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-[RBMenuView layoutSubviews]` | `0xa22ec`–`0xa467b`, still unaudited as a body. Its width arithmetic and constants are verified (below) but it owns the three visible buttons' frames, so only a device log settles the size complaint. |
-| Category annotations           | 45 annotated selectors cannot be attributed, because a category on a framework class does not name that class in the binary. A known limitation, not a defect.                                          |
-| Unannotated constants          | 143 of 6140 constants carry a same-line address. The other 98% are unreachable by the annotation audit and need the disassembly-driven pass.                                                            |
+| Item                           | State                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-[RBMenuView layoutSubviews]` | `0xa22ec`–`0xa467b`, still unaudited as a body. Its width arithmetic and constants are verified (below) but it owns the three visible buttons' frames, so only a device log settles the size complaint.                                                                                                                                                           |
+| Category annotations           | 45 annotated selectors cannot be attributed, because a category on a framework class does not name that class in the binary. A known limitation, not a defect.                                                                                                                                                                                                    |
+| Unannotated constants          | 143 of 6140 constants carry a same-line address. The other 98% are unreachable by the annotation audit and need the disassembly-driven pass.                                                                                                                                                                                                                      |
+| Declared superclasses          | Five headers still disagree with the resolved superclass slot: `RBSettingMenuButton` and `StoreDetailHeaderView` and `StoreImageView` say `UIControl`/`UIImageView`/`UIImageView` where the binary says `UIView`, and `RBTimingSlider` and `RBVolumeSlider` say `UISlider` where the binary groups them with `RBPopupView` and `RBNumberLabel` under `UIControl`. |
 
 ### The side-menu buttons
 
-Reported too small, surrounded by grey, and unresponsive. Both routines that could place them are
+Reported too small, surrounded by grey, and unresponsive. The grey is settled and fixed; the size
+and the responsiveness are still open. Both routines that could place them are
 faithful (above), and the earlier diagnostic that appeared to show a negative origin was taken in
 `-[RBMenuButton setupView:]`, which runs during construction, **before**
 `-[RBMenuView layoutSubviews]` places anything — so it said nothing about the final frames, and
@@ -202,9 +204,24 @@ cannot mix the two. The creation-time value on a pad is `(-46, -36, 92, 72)`. Ei
 transcription slipped or the call is scrambling its arguments, which is plausible: it passes nine
 variadic arguments, eight of them doubles. Do not build anything on the −21.
 
-Two causes are now identified for the appearance, neither in the placement.
+Three causes were proposed for the appearance, none of them in the placement. The grey is the third
+of them, and neither of the first two accounts for it.
 
-The first is a real defect and is fixed: both `resizableImageWithCapInsets:` calls in
+**The grey rectangle behind each pill was the reconstruction's superclass, and is fixed.**
+`RBMenuButton` was declared a subclass of `RBMenuNewsTickerView`, so the `[super init]` at `0x9da30`
+in `-initWithType:` ran `-[RBMenuNewsTickerView initWithFrame:]` and through it `-SetUpView`, which
+paints the receiver `218/255` grey under themes 1 and 2 and black under theme 0.
+`-[RBMenuButton setupView:]` sets no background colour anywhere in `0x9dab4`–`0x9e1af`, so every
+opaque rectangle came from that inherited call. The binary's own metadata says the superclass is
+`UIView`, on two independent witnesses: the `class_ro_t` at `0x38b1f8` records `instanceStart` 8,
+which is the compile-time size of a superclass declaring no ivars, and a subclass of
+`RBMenuNewsTickerView` (`instanceSize` 104) would have recorded 104; and the superclass slot at
+`0x3cb158`, which reads 0 in the file because it is an external bind, resolves under Ghidra's
+relocations to the same address as `RBMenuView`'s, `RBMusicView`'s, and 37 other plain views'.
+Grouping all 225 classes by that resolved slot names each framework superclass by consensus, and
+it flags five further mismatches in the tree, recorded in the table above.
+
+The second is a real defect and was fixed earlier: both `resizableImageWithCapInsets:` calls in
 `-[RBMenuButton setupView:]` took their **right** cap from the image's height. The binary sends
 `-size` twice and takes `d0`, the width, from each — at `0x9dc94`/`0x9dca4` feeding `0x9dcb4` and
 `0x9dcbc`, and again at `0x9de70`/`0x9de7c` — so both horizontal caps are the same width-derived
@@ -213,14 +230,15 @@ taller than it is wide, which leaves an invalid resizable image that draws as a 
 than a stretched button face. (The `-1.0` margin decodes from an `fmov` whose immediate Ghidra
 prints as `-0x4010000000000000`; the real bit pattern is `0xBFF0000000000000`.)
 
-The second is that the artwork may not be present at all. Every name in `kMenuButtonImageNames`
-is an asset-pack path (`01_music_select/sel_b_set_1` and siblings), the bundle's `assets/` is
-empty, and no `sel_b_set*` file ships anywhere in it. With no background image a button draws as a
-bare control with only its icon, which also reads as grey and undersized — and that would be
-downstream of the resource download, and so of the loader defect above.
+The first was that the artwork may not be present at all: every name in `kMenuButtonImageNames` is
+an asset-pack path (`01_music_select/sel_b_set_1` and siblings) and the bundle's `assets/` ships no
+`sel_b_set*` file, so a nil background would leave a bare control carrying only its icon. A device
+screenshot after the resource download settles it — each pill draws its own stretched artwork,
+correctly capped — so the names do resolve at run time and the theory is closed for these
+buttons. It says nothing about the music-name artwork, which is a separate question.
 
 `217a09d7` logs the branch metrics and the final frames, which will separate a placement fault from
-either of these.
+the remaining size complaint.
 
 ## The campaign detail page
 

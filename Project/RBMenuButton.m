@@ -7,6 +7,9 @@
 //  per-type image-name table were recovered from the soft-float register moves and the [type * 5]
 //  table index that the decompiler folds into pseudo-variables.
 //
+//  -setupView: sets no background colour anywhere in its 0x9dab4-0x9e1af body, so the button's own
+//  surface is transparent and only the pill artwork is drawn.
+//
 
 #import "RBMenuButton.h"
 
@@ -14,7 +17,6 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "deviceenvironment.h"
-#import "neDebugLog.h"
 
 // The inner button's bounds, chosen by the active iPad idiom. The wide variant uses a larger
 // button to fit the wider glyphs.
@@ -140,32 +142,6 @@ enum {
 
     UIImage *icon = [UIImage imageWithName:imageNames[kMenuButtonImageIcon]];
     [self.button setImage:icon forState:UIControlStateNormal];
-
-    // RBPDBG: the side-menu buttons do not respond to taps. Record the container's frame and the
-    // inner button's, since setting bounds rather than frame leaves the origin at minus half the
-    // size and a container outside its parent is never hit-tested.
-    if (NE_DBG_FIRST(6)) {
-        // The buttons still draw as flat grey with no transparent border, which is what a nil
-        // background image looks like, so record whether the art actually resolved and at what
-        // size the caps were computed from.
-        neDebugLog("menuButton type=%ld bg=%s bgSize=%.0fx%.0f icon=%s name=%s",
-                   (long)type,
-                   background ? "ok" : "NIL",
-                   background.size.width,
-                   background.size.height,
-                   icon ? "ok" : "NIL",
-                   backgroundName.UTF8String);
-        neDebugLog("menuButton type=%ld self=(%.0f,%.0f %.0fx%.0f) button=(%.0f,%.0f %.0fx%.0f)",
-                   (long)type,
-                   self.frame.origin.x,
-                   self.frame.origin.y,
-                   self.frame.size.width,
-                   self.frame.size.height,
-                   self.button.frame.origin.x,
-                   self.button.frame.origin.y,
-                   self.button.frame.size.width,
-                   self.button.frame.size.height);
-    }
 
     UIImage *flashBackground = [UIImage imageWithName:imageNames[kMenuButtonImageFlashBackground]];
     // The same shape again at 0x9de70 and 0x9de7c: both caps from the width.
