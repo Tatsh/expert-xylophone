@@ -15,6 +15,8 @@
 //  the binary's "BAET" typo in the spending-limit message.
 //
 
+#import "AppDelegate.h"
+#import "RBViewController.h"
 #import "StoreCampaignItemInfo.h"
 #import "UIAlertView+RB.h"
 
@@ -146,6 +148,25 @@ static NSString *RBLocalizedUIString(NSString *key) {
                                      delegate:nil
                             cancelButtonTitle:RBLocalizedUIString(kLocalizedKeyClose)
                             otherButtonTitles:nil];
+}
+
++ (void)strageAlertView:(id<UIAlertViewDelegate>)delegate {
+    /** @ghidraAddress 0x169f2c */
+    // The UIAlertController-era replacement for +strageAlertView above: it builds and presents the
+    // same caution/low-free-space alert with a single dismissing action. The declared argument is
+    // never read (the implementation loads its title, message, and button text from the same three
+    // localized-string globals the older factory uses), so it is vestigial; its type is taken from
+    // the sibling factories in this category rather than confirmed from the method metadata.
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:RBLocalizedUIString(kLocalizedKeyCaution)
+                                            message:RBLocalizedUIString(kLocalizedKeyFreeSpaceLow)
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:RBLocalizedUIString(kLocalizedKeyClose)
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+    [AppDelegate.appDelegate.viewController presentViewController:alert
+                                                         animated:YES
+                                                       completion:nil];
 }
 
 #pragma mark - Restore

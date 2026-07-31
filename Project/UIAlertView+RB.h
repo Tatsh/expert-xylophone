@@ -41,6 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIAlertView *)strageAlertView;
 
 /**
+ * @brief Build and present the caution/low-free-space alert through @c UIAlertController.
+ *
+ * The @c UIAlertController-era replacement for @c +strageAlertView. It presents the alert itself
+ * from the root view controller with a single dismissing action, and returns nothing.
+ * @param delegate Accepted but never read by the shipped build.
+ * @ghidraAddress 0x169f2c
+ */
++ (void)strageAlertView:(nullable id<UIAlertViewDelegate>)delegate;
+
+/**
  * @brief Show a "restore purchased PACKs" prompt.
  * @param delegate The alert delegate.
  * @return The shown alert.

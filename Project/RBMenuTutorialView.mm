@@ -1080,11 +1080,11 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     CGPoint contentPosition = self.contentView.layer.position;
     CGPoint moveTo = CGPointMake(contentPosition.x - (contentOrigin.x - targetFrame.origin.x),
                                  contentPosition.y - (contentOrigin.y - targetFrame.origin.y));
-    [self createAnimWithKeyPath:kContentPositionKeyPath
-                      fromValue:contentPosition
-                        toValue:moveTo
-                          delay:0.0
-                       duration:0.3];
+    [RBMenuTutorialView createAnimWithKeyPath:kContentPositionKeyPath
+                                    fromValue:contentPosition
+                                      toValue:moveTo
+                                        delay:0.0
+                                     duration:0.3];
     pastelGroup.delegate = self;
     [self.pastelLayer addAnimation:pastelGroup forKey:nil];
     [self.messageWindowLayer addAnimation:windowGroup forKey:nil];
@@ -1236,7 +1236,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
 #pragma mark - Move animation builder
 
-- (CAAnimationGroup *)createAnimWithKeyPath:(NSString *)keyPath
++ (CAAnimationGroup *)createAnimWithKeyPath:(NSString *)keyPath
                                   fromValue:(CGPoint)fromValue
                                     toValue:(CGPoint)toValue
                                       delay:(double)delay

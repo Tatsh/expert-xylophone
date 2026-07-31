@@ -2244,7 +2244,9 @@ def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str,
     implementation = re.compile(r'^@implementation\s+(\w+)(?:\s*\(\s*(\w+)\s*\))?')
     interface = re.compile(r'^@interface\s+(\w+)(?:\s*\(\s*\w*\s*\))?')
     end = re.compile(r'^@end')
-    method = re.compile(r'^\s*([-+])\s*\([^)]*\)\s*(.+)$')
+    # The selector may start on the line after the return type, which clang-format does when the
+    # first keyword is long, so the text after the type is allowed to be empty and joined below.
+    method = re.compile(r'^\s*([-+])\s*\([^)]*\)\s*(.*)$')
     prop = re.compile(r'^\s*@property\s*(?:\(([^)]*)\))?\s*.*?([A-Za-z_]\w*)\s*;')
     files = []
     for pattern in ('Project/**/*.m', 'Project/**/*.mm', 'Project/**/*.h', '3rdparty/**/*.m',
@@ -2269,7 +2271,9 @@ def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str,
             if found:
                 chunk = found.group(2)
                 cursor = index
-                while '{' not in chunk and ';' not in chunk and cursor - index < 8:
+                # clang-format puts one keyword per line, so a twelve-parameter selector such as
+                # +[History hashScoreforTune:…Hash:] spans a dozen lines.
+                while '{' not in chunk and ';' not in chunk and cursor - index < 24:
                     cursor += 1
                     if cursor >= len(lines):
                         break
@@ -2309,11 +2313,47 @@ def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str,
 
 
 def _selector_of(signature: str) -> str:
-    """Build a selector from a method signature's text after the return type."""
+    """
+    Build a selector from a method signature's text after the return type.
+
+    A selector part may be unnamed, as in ``-(void)createContext:(int)w:(int)h``, whose selector is
+    ``createContext::``. The identifier before such a colon is the *previous* part's parameter
+    name, not a keyword, and is told apart by directly following the parameter's closing
+    parenthesis.
+    """
     text = signature.split('{')[0].split(';')[0].strip()
     if ':' not in text:
         return re.split(r'[\s(]', text)[0]
-    return ''.join(f'{part}:' for part in re.findall(r'(\w+)\s*:', text))
+    parts: list[str] = []
+    depth = 0
+    word = ''
+    after_type = False
+    for char in text:
+        if char == '(':
+            depth += 1
+            word = ''
+            continue
+        if char == ')':
+            depth -= 1
+            if depth == 0:
+                after_type = True
+                word = ''
+            continue
+        if depth:
+            continue
+        if char == ':':
+            # A word that came straight after a parameter type is that parameter's name, so this
+            # selector part carries no keyword.
+            parts.append('' if after_type else word)
+            word = ''
+            after_type = False
+            continue
+        if char.isalnum() or char == '_':
+            word += char
+        else:
+            word = ''
+            after_type = False
+    return ''.join(f'{part}:' for part in parts)
 
 
 def mechanically_verified() -> dict[int, str]:

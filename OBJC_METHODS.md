@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6291 reconstructed, 4535 verified
+Total: 6343 — 6306 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -209,7 +209,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertLatestApplication:` |  | ✅ | ✅ | `0xee34` |
 | `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ✅ | `0xef18` |
 | `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ✅ | `0xeffc` |
-| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ✅ | `0xf150` |
+| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ✅ | `0xf150` |
 | `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ✅ | `0xf2e0` |
 | `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ✅ | `0xf3e4` |
 | `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ✅ | `0xf588` |
@@ -391,7 +391,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBPastelManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x20a30` |
 | `RBPastelManager` | `-` | `init` |  | ✅ | ❌ | `0x20a88` |
 | `RBPastelManager` | `-` | `allReset` |  | ✅ | ❌ | `0x20afc` |
-| `RBPastelManager` | `+` | `tryShow:` |  | ❌ | ❌ | `0x20b0c` |
+| `RBPastelManager` | `+` | `tryShow:` |  | ✅ | ❌ | `0x20b0c` |
 | `RBPastelManager` | `-` | `type` | prop | ✅ | ✅ | `0x20ba0` |
 | `RBPastelManager` | `-` | `setType:` | prop | ✅ | ✅ | `0x20bb0` |
 | `(RB)` | `-` | `prefersStatusBarHidden` |  | ✅ | ✅ | `0x20f48` |
@@ -852,7 +852,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `init` |  | ✅ | ❌ | `0x41308` |
 | `AVBus` | `-` | `initWithContentsOfURL:isLoop:` |  | ✅ | ❌ | `0x4135c` |
 | `AVBus` | `-` | `initWithContentsOfData:isLoop:` |  | ✅ | ❌ | `0x414fc` |
-| `AVBus` | `-` | `setSource:` |  | ❌ | ❌ | `0x4169c` |
+| `AVBus` | `-` | `setSource:` |  | ✅ | ❌ | `0x4169c` |
 | `AVBus` | `-` | `removeSource` |  | ✅ | ❌ | `0x4171c` |
 | `AVBus` | `-` | `prepare` |  | ✅ | ❌ | `0x41798` |
 | `AVBus` | `-` | `play` |  | ✅ | ❌ | `0x41898` |
@@ -867,7 +867,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AVBus` | `-` | `audioPlayerEndInterruption:` |  | ✅ | ❌ | `0x41da8` |
 | `AVBus` | `-` | `audioPlayerEndInterruption:withOptions:` |  | ✅ | ❌ | `0x41e20` |
 | `AVBus` | `-` | `dealloc` |  | ✅ | ❌ | `0x41e98` |
-| `AVBus` | `-` | `isSameSource:` |  | ❌ | ❌ | `0x41f20` |
+| `AVBus` | `-` | `isSameSource:` |  | ✅ | ❌ | `0x41f20` |
 | `AVBus` | `-` | `currentID` |  | ✅ | ❌ | `0x41f38` |
 | `AVBus` | `-` | `player` | prop | ✅ | ✅ | `0x41f48` |
 | `AVBus` | `-` | `setPlayer:` | prop | ✅ | ✅ | `0x41f58` |
@@ -1204,7 +1204,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `History` | `+` | `count:` |  | ✅ | ❌ | `0x5b69c` |
 | `History` | `+` | `recordWithTuneID:Difficulty:inManagedObjectContext:` |  | ✅ | ❌ | `0x5b7ac` |
 | `History` | `+` | `reset:` |  | ✅ | ❌ | `0x5b900` |
-| `History` | `+` | `hashScoreforTune:Difficulty:Score:Just:Great:Good:Miss:JR:Combo:Date:Count:Hash:` |  | ❌ | ❌ | `0x5bb88` |
+| `History` | `+` | `hashScoreforTune:Difficulty:Score:Just:Great:Good:Miss:JR:Combo:Date:Count:Hash:` |  | ✅ | ❌ | `0x5bb88` |
 | `History` | `+` | `hashScore:` |  | ✅ | ❌ | `0x5bc38` |
 | `History` | `+` | `checkScore:` |  | ✅ | ❌ | `0x5c01c` |
 | `History` | `+` | `getAR:` |  | ✅ | ❌ | `0x5c0fc` |
@@ -1789,7 +1789,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `TwitterImageCreater` | `-` | `setJustReflecNum:Side:` |  | ✅ | ❌ | `0x87a20` |
 | `TwitterImageCreater` | `-` | `setMaxComboNum:Side:` |  | ✅ | ❌ | `0x87a48` |
 | `TwitterImageCreater` | `-` | `setName:Side:` |  | ✅ | ❌ | `0x87a70` |
-| `TwitterImageCreater` | `-` | `createContext::` |  | ❌ | ❌ | `0x87ae4` |
+| `TwitterImageCreater` | `-` | `createContext::` |  | ✅ | ❌ | `0x87ae4` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:Scale:` |  | ✅ | ❌ | `0x87ba0` |
 | `TwitterImageCreater` | `-` | `drawImage:X:Y:` |  | ✅ | ❌ | `0x87c78` |
 | `TwitterImageCreater` | `-` | `drawImageFileName:X:Y:` |  | ✅ | ❌ | `0x87d40` |
@@ -3454,7 +3454,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuTutorialView` | `-` | `getTextureType` |  | ✅ | ❌ | `0x14040c` |
 | `RBMenuTutorialView` | `-` | `getClipRect:` |  | ✅ | ❌ | `0x140544` |
 | `RBMenuTutorialView` | `-` | `animationDidStop:finished:` |  | ✅ | ❌ | `0x1405a8` |
-| `RBMenuTutorialView` | `+` | `createAnimWithKeyPath:fromValue:toValue:delay:duration:` |  | ❌ | ❌ | `0x1405c8` |
+| `RBMenuTutorialView` | `+` | `createAnimWithKeyPath:fromValue:toValue:delay:duration:` |  | ✅ | ❌ | `0x1405c8` |
 | `RBMenuTutorialView` | `-` | `dealloc` |  | ✅ | ✅ | `0x140cd0` |
 | `RBMenuTutorialView` | `-` | `musicMenuView` | prop | ✅ | ✅ | `0x140d04` |
 | `RBMenuTutorialView` | `-` | `setMusicMenuView:` | prop | ✅ | ✅ | `0x140d24` |
@@ -3815,7 +3815,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectView` | `-` | `timingCollectionView` | prop | ✅ | ✅ | `0x169b10` |
 | `RBCustomSelectView` | `-` | `setTimingCollectionView:` | prop | ✅ | ✅ | `0x169b20` |
 | `(RB)` | `+` | `deleteAlertViewWithDelegate:` |  | ✅ | ❌ | `0x169c24` |
-| `(RB)` | `+` | `strageAlertView:` |  | ❌ | ❌ | `0x169f2c` |
+| `(RB)` | `+` | `strageAlertView:` |  | ✅ | ❌ | `0x169f2c` |
 | `(RB)` | `+` | `showRestoreDownloadWithDelegate:` |  | ✅ | ❌ | `0x16a084` |
 | `(RB)` | `+` | `showRestoreMessageWithDelegate:` |  | ✅ | ❌ | `0x16a394` |
 | `(RB)` | `+` | `showGameCenterError` |  | ✅ | ❌ | `0x16a6a4` |
@@ -3833,7 +3833,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `(RB)` | `+` | `showAlertShortageOfPoint` |  | ✅ | ❌ | `0x16c2f0` |
 | `(RB)` | `+` | `showDownloadWithDelegate:` |  | ✅ | ❌ | `0x16c440` |
 | `(RB)` | `+` | `showAlertNeedResourceUpdate:` |  | ✅ | ❌ | `0x16c750` |
-| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ❌ | ❌ | `0x16c964` |
+| `(RB)` | `+` | `showAddLimepointByApplilink::` |  | ✅ | ❌ | `0x16c964` |
 | `(RB)` | `+` | `showAlertNeedDownloadMusicNameList:` |  | ✅ | ❌ | `0x16cbc0` |
 | `(RB)` | `+` | `showColetteThemaUnlockMessage` |  | ✅ | ❌ | `0x16cf04` |
 | `(RB)` | `+` | `showSerialcodeDialog:` |  | ✅ | ❌ | `0x16d114` |
@@ -3842,7 +3842,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMusicGridLayout` | `-` | `prepareLayout` |  | ✅ | ✅ | `0x16d7d8` |
 | `RBMusicGridLayout` | `-` | `collectionViewContentSize` |  | ✅ | ✅ | `0x16de78` |
 | `RBMusicGridLayout` | `-` | `layoutAttributesForItemAtIndexPath:` |  | ✅ | ✅ | `0x16de84` |
-| `RBMusicGridLayout` | `-` | `layoutAttributesForSupplementaryViewOfKind:atIndexPath:` |  | ❌ | ✅ | `0x16deb0` |
+| `RBMusicGridLayout` | `-` | `layoutAttributesForSupplementaryViewOfKind:atIndexPath:` |  | ✅ | ✅ | `0x16deb0` |
 | `RBMusicGridLayout` | `-` | `layoutAttributesForElementsInRect:` |  | ✅ | ✅ | `0x16df1c` |
 | `RBMusicGridLayout` | `-` | `shouldInvalidateLayoutForBoundsChange:` |  | ✅ | ✅ | `0x16e0a0` |
 | `RBMusicGridLayout` | `-` | `minimumLineSpacing` | prop | ✅ | ✅ | `0x16e0a8` |
@@ -4781,8 +4781,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBMenuPageSliderView` | `-` | `hideAnimation` |  | ✅ | ❌ | `0x1c09b0` |
 | `RBMenuPageSliderView` | `-` | `slider` | prop | ✅ | ✅ | `0x1c0a38` |
 | `RBMenuPageSliderView` | `-` | `setSlider:` | prop | ✅ | ✅ | `0x1c0a48` |
-| `RBMenuPageSliderView` | `-` | `animating` | prop | ❌ | ✅ | `0x1c0a58` |
-| `RBMenuPageSliderView` | `-` | `setAnimating:` | prop | ❌ | ✅ | `0x1c0a68` |
+| `RBMenuPageSliderView` | `-` | `animating` | prop | ✅ | ✅ | `0x1c0a58` |
+| `RBMenuPageSliderView` | `-` | `setAnimating:` | prop | ✅ | ✅ | `0x1c0a68` |
 | `StoreExtendNoteCellPhone` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0x1c0abc` |
 | `StoreExtendNoteCellPhone` | `-` | `isPurchased` | prop | ✅ | ❌ | `0x1c1b78` |
 | `StoreExtendNoteCellPhone` | `-` | `setIsPurchased:` | prop | ✅ | ❌ | `0x1c1bd8` |
@@ -5735,7 +5735,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AnalysisNetworkCore` | `+` | `postSetUserIDWithCallback:` |  | ✅ | ❌ | `0x20e1d0` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisDataWithActionType:resultId:uesrId:finishedBlock:failedBlock:callback:` |  | ✅ | ❌ | `0x20e510` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisListRegistWithAdType:adModel:adLocation:impressionId:appliIdList:creativeIdList:incentiveTypeList:installFlgList:callback:` |  | ✅ | ❌ | `0x20e8f8` |
-| `AnalysisNetworkCore` | `+` | `postAnalysisClickRegistWithAdType:adModel:adLocation:impressionId:appliIdTo:creativeId:displayNumber:incentiveType:installFlg:callback:` |  | ❌ | ❌ | `0x20ef1c` |
+| `AnalysisNetworkCore` | `+` | `postAnalysisClickRegistWithAdType:adModel:adLocation:impressionId:appliIdTo:creativeId:displayNumber:incentiveType:installFlg:callback:` |  | ✅ | ❌ | `0x20ef1c` |
 | `AnalysisNetworkCore` | `+` | `getInitalizeFlg` |  | ✅ | ❌ | `0x20f5c4` |
 | `AnalysisNetworkCore` | `+` | `getSendDauFlg` |  | ✅ | ❌ | `0x20f640` |
 | `AnalysisNetworkCore` | `+` | `postAnalysisDataWithCallback:` |  | ✅ | ❌ | `0x20f7d8` |
@@ -5988,10 +5988,10 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `ApplilinkWebAPI` | `-` | `requestWithURL:method:parameters:timeout:cachePolicy:` |  | ✅ | ❌ | `0x2211dc` |
 | `ApplilinkWebAPI` | `-` | `requestForGetWithURL:parameters:` |  | ✅ | ❌ | `0x2213a4` |
 | `ApplilinkWebAPI` | `-` | `requestForPostWithURL:parameters:` |  | ✅ | ❌ | `0x221474` |
-| `ApplilinkWebAPI` | `-` | `requestAsynchronousWithURL:method:parameters:userInfo:tag:cachePolicy:timeout:retry:finishedBlock:failedBlock:` |  | ❌ | ❌ | `0x2218fc` |
+| `ApplilinkWebAPI` | `-` | `requestAsynchronousWithURL:method:parameters:userInfo:tag:cachePolicy:timeout:retry:finishedBlock:failedBlock:` |  | ✅ | ❌ | `0x2218fc` |
 | `ApplilinkWebAPI` | `-` | `responseFromContentsServer:request:data:finishedBlock:failedBlock:` |  | ✅ | ❌ | `0x222928` |
 | `ApplilinkWebAPI` | `-` | `requestSynchronousWithURL:method:parameters:cachePolicy:error:` |  | ✅ | ❌ | `0x222f38` |
-| `ApplilinkWebAPI` | `+` | `requestAsynchronousWithURL:method:parameters:userInfo:tag:cachePolicy:timeout:retry:finishedBlock:failedBlock:` |  | ❌ | ❌ | `0x2232d8` |
+| `ApplilinkWebAPI` | `+` | `requestAsynchronousWithURL:method:parameters:userInfo:tag:cachePolicy:timeout:retry:finishedBlock:failedBlock:` |  | ✅ | ❌ | `0x2232d8` |
 | `ApplilinkWebAPI` | `+` | `requestSynchronousWithURL:method:parameters:cachePolicy:error:` |  | ✅ | ❌ | `0x223604` |
 | `ApplilinkWebAPI` | `+` | `responseFromContentsServer:request:data:finishedBlock:failedBlock:` |  | ✅ | ❌ | `0x223704` |
 | `ApplilinkWebAPI` | `+` | `retryCancel` |  | ✅ | ❌ | `0x223818` |

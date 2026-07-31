@@ -80,6 +80,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(strong, nonatomic, nullable) NSString *indexLabel;
 
+/**
+ * @brief Whether a show or hide transition is currently running.
+ *
+ * Backed by the @c _animating ivar, whose metadata types it @c B (a one-byte @c BOOL).
+ * @ghidraAddress 0x1c0a58 (getter)
+ * @ghidraAddress 0x1c0a68 (setter)
+ */
+@property(assign, nonatomic) BOOL animating;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -48,10 +48,12 @@ static const NSUInteger kPastelShowStageCount = 4;
     currentShowList[0] = NO;
 }
 
-- (BOOL)tryShow:(unsigned int)tryShow {
-    /** @ghidraAddress 0x20b0c */
-    // The binary reaches the show-list through the shared singleton rather than through self; for
-    // this instance method the two are the same object, so self's ivar is used directly.
+/** @ghidraAddress 0x20b0c */
++ (BOOL)tryShow:(unsigned int)tryShow {
+    // A class method: the binary reaches the show list through the shared singleton loaded from
+    // its global slot, added to the ivar offset, rather than through any receiver.
+    RBPastelManager *manager = [RBPastelManager getInstance];
+    BOOL *currentShowList = manager->currentShowList;
     unsigned int firstToClear;
     if (tryShow == 0) {
         currentShowList[0] = YES;

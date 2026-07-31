@@ -1,7 +1,7 @@
 /** @file
  * The "pastel" tutorial-popup manager singleton. It owns a single small piece of state: a four-slot
  * show-list of flags that records which stages of the pastel tutorial sequence have already been
- * displayed, together with the current pastel @c type. Callers ask @c -tryShow: whether a given
+ * displayed, together with the current pastel @c type. Callers ask @c +tryShow: whether a given
  * sequential stage may be shown; the manager gates each stage on all earlier stages having been
  * shown, marks the stage, and resets the later stages so the sequence always advances in order.
  *
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param tryShow The zero-based stage index to attempt to show.
  * @return @c YES when the stage may be shown, @c NO when an earlier stage is still outstanding.
  */
-- (BOOL)tryShow:(unsigned int)tryShow;
++ (BOOL)tryShow:(unsigned int)tryShow;
 
 #pragma mark Properties
 
