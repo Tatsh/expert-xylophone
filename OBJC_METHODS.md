@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4744 verified
-(74.8%).
+Total: 6343 — 6306 reconstructed, 4748 verified
+(74.9%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3650,7 +3650,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCustomSelectCollectionView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0x15901c` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x159128` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x1591b4` |
-| `RBCustomSelectCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ❌ | `0x159240` |
+| `RBCustomSelectCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0x159240` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ✅ | `0x1592a8` |
 | `RBCustomSelectCollectionView` | `-` | `collectionView:didSelectItemAtIndexPath:` |  | ✅ | ❌ | `0x159960` |
 | `RBCustomSelectCollectionView` | `-` | `scrollViewDidScroll:` |  | ✅ | ❌ | `0x159de8` |
@@ -3787,7 +3787,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStoreExtendPageViewController` | `-` | `setMoveToPackID:` | prop | ✅ | ✅ | `0x167f28` |
 | `RBStoreExtendPageViewController` | `-` | `userAgeSender` | prop | ✅ | ✅ | `0x167f38` |
 | `RBStoreExtendPageViewController` | `-` | `setUserAgeSender:` | prop | ✅ | ✅ | `0x167f48` |
-| `RBUrlSchemeManager` | `+` | `sharedManager` |  | ✅ | ❌ | `0x168174` |
+| `RBUrlSchemeManager` | `+` | `sharedManager` |  | ✅ | ✅ | `0x168174` |
 | `RBUrlSchemeManager` | `-` | `parseURL:` |  | ✅ | ❌ | `0x1681cc` |
 | `RBUrlSchemeManager` | `-` | `dictionaryFromQueryString:` |  | ✅ | ❌ | `0x168504` |
 | `RBCustomSelectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1687dc` |
@@ -4069,7 +4069,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBTimingSlider` | `-` | `setBarMax:` | prop | ✅ | ✅ | `0x17f928` |
 | `RBTimingSlider` | `-` | `step` | prop | ✅ | ✅ | `0x17f938` |
 | `RBTimingSlider` | `-` | `setStep:` | prop | ✅ | ✅ | `0x17f948` |
-| `RBExtendNoteManager` | `+` | `getInstance` |  | ✅ | ❌ | `0x181aac` |
+| `RBExtendNoteManager` | `+` | `getInstance` |  | ✅ | ✅ | `0x181aac` |
 | `RBExtendNoteManager` | `+` | `getExtendNoteDataFilename:` |  | ✅ | ✅ | `0x181b14` |
 | `RBExtendNoteManager` | `+` | `getPathFromBundle:` |  | ✅ | ❌ | `0x181b48` |
 | `RBExtendNoteManager` | `+` | `getPathFromPurchased:` |  | ✅ | ❌ | `0x181c04` |
@@ -4141,7 +4141,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUnlockCollectionView` | `-` | `reloadData` |  | ✅ | ❌ | `0x18ce6c` |
 | `RBUnlockCollectionView` | `-` | `didLayoutSubviews:` |  | ✅ | ❌ | `0x18d274` |
 | `RBUnlockCollectionView` | `-` | `configureCell:` |  | ✅ | ❌ | `0x18d380` |
-| `RBUnlockCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ❌ | `0x18dc24` |
+| `RBUnlockCollectionView` | `-` | `collectionView:numberOfItemsInSection:` |  | ✅ | ✅ | `0x18dc24` |
 | `RBUnlockCollectionView` | `-` | `collectionView:cellForItemAtIndexPath:` |  | ✅ | ❌ | `0x18dc8c` |
 | `RBUnlockCollectionView` | `-` | `collectionView:didHighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x18ddc4` |
 | `RBUnlockCollectionView` | `-` | `collectionView:didUnhighlightItemAtIndexPath:` |  | ✅ | ❌ | `0x18de50` |

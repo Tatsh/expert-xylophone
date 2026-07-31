@@ -295,6 +295,14 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x159240: 'RBCustomSelectCollectionView -collectionView:numberOfItemsInSection:: items.count, '
+              'with the section argument never read',
+    0x18dc24: 'RBUnlockCollectionView -collectionView:numberOfItemsInSection:: the same shape, '
+              'read on its own rather than inferred from the sibling',
+    0x168174: 'RBUrlSchemeManager +sharedManager: a plain nil check on the 0x3de800 slot, no once '
+              'token and no lock',
+    0x181aac: 'RBExtendNoteManager +getInstance: the same plain nil check, and it sends '
+              'loadPurchasedNotes inside the nil branch before returning',
     0x9070c: 'RBPlaylistCreateViewController -backButtonPush:: pops the navigation controller '
              'animated, the mov w2 of 1',
     0x93a7c: 'RBPlaylistViewController -returnButtonPush:: the same pop, read on its own',
