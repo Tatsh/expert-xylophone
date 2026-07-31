@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6279 reconstructed, 4535 verified
+Total: 6343 — 6284 reconstructed, 4535 verified
 (71.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -1107,8 +1107,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `AppDelegate` | `-` | `setIsSkipUpdate:` | prop | ✅ | ✅ | `0x54980` |
 | `AppDelegate` | `-` | `isUpdate` | prop | ✅ | ✅ | `0x54990` |
 | `AppDelegate` | `-` | `setIsUpdate:` | prop | ✅ | ✅ | `0x549a0` |
-| `AppDelegate` | `-` | `resourceDownloadViewController` | prop | ❌ | ✅ | `0x549b0` |
-| `AppDelegate` | `-` | `setResourceDownloadViewController:` | prop | ❌ | ✅ | `0x549c0` |
+| `AppDelegate` | `-` | `resourceDownloadViewController` | prop | ✅ | ✅ | `0x549b0` |
+| `AppDelegate` | `-` | `setResourceDownloadViewController:` | prop | ✅ | ✅ | `0x549c0` |
 | `AppDelegate` | `-` | `urlString` | prop | ✅ | ✅ | `0x549f8` |
 | `AppDelegate` | `-` | `setUrlString:` | prop | ✅ | ✅ | `0x54a08` |
 | `AppDelegate` | `-` | `version` | prop | ✅ | ✅ | `0x54a14` |
@@ -3228,8 +3228,8 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StorePromotionView` | `-` | `setPromotionDataArray:` | prop | ✅ | ✅ | `0x104144` |
 | `StorePromotionView` | `-` | `imageDownloader` | prop | ✅ | ✅ | `0x10417c` |
 | `StorePromotionView` | `-` | `setImageDownloader:` | prop | ✅ | ✅ | `0x10418c` |
-| `StorePromotionView` | `-` | `sampleDownloader` | prop | ❌ | ✅ | `0x1041c4` |
-| `StorePromotionView` | `-` | `setSampleDownloader:` | prop | ❌ | ✅ | `0x1041d4` |
+| `StorePromotionView` | `-` | `sampleDownloader` | prop | ✅ | ✅ | `0x1041c4` |
+| `StorePromotionView` | `-` | `setSampleDownloader:` | prop | ✅ | ✅ | `0x1041d4` |
 | `StoreTableCell` | `-` | `initWithStyle:reuseIdentifier:` |  | ✅ | ❌ | `0x1042c0` |
 | `StoreTableCell` | `-` | `dealloc` |  | ✅ | ❌ | `0x104628` |
 | `StoreTableCell` | `-` | `prepareForReuse` |  | ✅ | ❌ | `0x10471c` |
@@ -5299,7 +5299,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBStorePackList` | `-` | `optionalProductsRequest` |  | ✅ | ❌ | `0x1f2a88` |
 | `RBStorePackList` | `-` | `productsRequest:didReceiveResponse:` |  | ✅ | ❌ | `0x1f2db4` |
 | `RBStorePackList` | `-` | `request:didFailWithError:` |  | ✅ | ❌ | `0x1f31f8` |
-| `RBStorePackList` | `-` | `dealloc` |  | ❌ | ❌ | `0x1f32a8` |
+| `RBStorePackList` | `-` | `dealloc` |  | ✅ | ❌ | `0x1f32a8` |
 | `RBStorePackList` | `-` | `delegate` | prop | ✅ | ✅ | `0x1f33d4` |
 | `RBStorePackList` | `-` | `setDelegate:` | prop | ✅ | ✅ | `0x1f33f4` |
 | `RBStorePackList` | `-` | `packlistContinued` | prop | ✅ | ✅ | `0x1f3408` |

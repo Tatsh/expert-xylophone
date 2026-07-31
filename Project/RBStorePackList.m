@@ -92,6 +92,17 @@ static NSString *_lastProductCountryCode = nil;
     return self;
 }
 
+/** @ghidraAddress 0x1f32a8 */
+- (void)dealloc {
+    // Unlike its siblings, this -dealloc does real work before chaining to [super dealloc] (which
+    // ARC does automatically): it cancels the in-flight pack-list download, detaches itself from
+    // the products request, and cancels that too. The binary sends -cancel to the downloader
+    // before clearing the request's delegate, and reaches the request through its getter twice.
+    [self.packlistDownloader cancel];
+    self.productsRequest.delegate = nil;
+    [self.productsRequest cancel];
+}
+
 #pragma mark - Fetch control
 
 /** @ghidraAddress 0x1f094c */

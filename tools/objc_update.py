@@ -2280,6 +2280,17 @@ def reconstructed(root: Path) -> tuple[set[tuple[str, str, str]], set[tuple[str,
                     if is_category:
                         loose.add((found.group(1), selector))
                 continue
+            # A long @property clang-format wraps onto the following lines, so join continuations
+            # up to the terminating semicolon before matching.
+            if line.lstrip().startswith('@property') and ';' not in line:
+                joined = line
+                cursor = index
+                while ';' not in joined and cursor - index < 8:
+                    cursor += 1
+                    if cursor >= len(lines):
+                        break
+                    joined += ' ' + lines[cursor].strip()
+                line = joined
             declared = prop.match(line)
             if declared:
                 attributes = declared.group(1) or ''
