@@ -3807,6 +3807,21 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x71054: 'RBPlaylistManager +sharedInstance: adr x8,0x1000710c4 names the dispatch_once block, '
+             'which is the address the source annotates it with, and dispatch_once is the call at '
+             '0x710bc',
+    0x71754: 'RBPlaylistManager -playlistAtIndex:: b.ls on the count is the unsigned bound, then '
+             'four rejections in order, an NSDictionary isKindOfClass: and the presence of "PLID", '
+             '"NAME" and "LIST", each a cbz to the nil return',
+    0x719D4: 'RBPlaylistManager -indexOfPlaylistWithIdentifier:: cbz on the argument and b.cs on '
+             'the loop bound both reach the same orr x8,xzr,#0x7fffffffffffffff, which is '
+             'NSNotFound. Each candidate is read through objectForKeyedSubscript: "PLID" and '
+             'skipped on a cbz before isEqualToString:',
+    0x72288: 'RBPlaylistManager -numberOfMusicInPlaylistAtIndex:: the same unsigned bound, a cbz '
+             'on the fetched playlist, then the count of its "LIST"',
+    0x723C8: 'RBPlaylistManager -containsMusic:inPlaylistAtIndex:: cbz on the music identifier '
+             'rejects zero, which is what kInvalidMusicID holds, before the bound check, then the '
+             '"LIST" is asked containsObject: for numberWithUnsignedInteger: of the identifier',
     0x105304: 'ReplayData -reset: seventeen setters nilled in the same order the coder pair uses',
     0x1055B4: 'ReplayData +loadReplayData:difficulty:: the difficulty fold, then five separate nil '
               'or false exits, on isExistReplayData:, the unzip, the file read, decode: and the '

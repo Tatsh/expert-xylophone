@@ -28,15 +28,15 @@ owns most of that record's annotated implementations. The category name stays th
 authoritative and occasionally disagrees with the name we filed it under. Knowing the class means
 these rows are matched exactly, like every other row, rather than on the selector alone.
 
-Total: 6343 — 6343 reconstructed, 5261 verified
-(82.9%).
+Total: 6343 — 6343 reconstructed, 5266 verified
+(83.0%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
 constant-returning body agrees with its reconstruction.
 
-Of the 5261 verified, 3507 come from those passes and the remaining
-1754 were read by hand. The ARC `-dealloc` rows do not appear as a third
+Of the 5266 verified, 3507 come from those passes and the remaining
+1759 were read by hand. The ARC `-dealloc` rows do not appear as a third
 bucket because the trivial pass had already read all of them as empty bodies, so they sit
 inside the mechanical count rather than beside it. The split matters when reading the percentage: a
 mechanical pass proves one narrow property of a simple body, whereas a hand read is the only thing
@@ -1662,20 +1662,20 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `PurchaseTransactionCache` | `-` | `setTransactionDate:` | prop | ✅ | ✅ | `0x70f58` |
 | `PurchaseTransactionCache` | `-` | `digestString` | prop | ✅ | ✅ | `0x70f90` |
 | `PurchaseTransactionCache` | `-` | `setDigestString:` | prop | ✅ | ✅ | `0x70fa0` |
-| `RBPlaylistManager` | `+` | `sharedInstance` |  | ✅ | ❌ | `0x71054` |
+| `RBPlaylistManager` | `+` | `sharedInstance` |  | ✅ | ✅ | `0x71054` |
 | `RBPlaylistManager` | `-` | `initWithFile:` |  | ✅ | ❌ | `0x71190` |
 | `RBPlaylistManager` | `-` | `synchronize` |  | ✅ | ✅ | `0x71654` |
 | `RBPlaylistManager` | `-` | `numberOfPlaylists` |  | ✅ | ✅ | `0x716f4` |
-| `RBPlaylistManager` | `-` | `playlistAtIndex:` |  | ✅ | ❌ | `0x71754` |
+| `RBPlaylistManager` | `-` | `playlistAtIndex:` |  | ✅ | ✅ | `0x71754` |
 | `RBPlaylistManager` | `-` | `indexOfPlaylist:` |  | ✅ | ✅ | `0x7193c` |
-| `RBPlaylistManager` | `-` | `indexOfPlaylistWithIdentifier:` |  | ✅ | ❌ | `0x719d4` |
+| `RBPlaylistManager` | `-` | `indexOfPlaylistWithIdentifier:` |  | ✅ | ✅ | `0x719d4` |
 | `RBPlaylistManager` | `-` | `nameOfPlaylistAtIndex:` |  | ✅ | ✅ | `0x71b84` |
 | `RBPlaylistManager` | `-` | `identifierOfPlaylistAtIndex:` |  | ✅ | ✅ | `0x71c9c` |
 | `RBPlaylistManager` | `-` | `setNameOfPlaylist:atIndex:` |  | ✅ | ✅ | `0x71db4` |
 | `RBPlaylistManager` | `-` | `addPlaylistWithName:` |  | ✅ | ❌ | `0x71eac` |
 | `RBPlaylistManager` | `-` | `removePlaylistAtIndex:` |  | ✅ | ✅ | `0x721c0` |
-| `RBPlaylistManager` | `-` | `numberOfMusicInPlaylistAtIndex:` |  | ✅ | ❌ | `0x72288` |
-| `RBPlaylistManager` | `-` | `containsMusic:inPlaylistAtIndex:` |  | ✅ | ❌ | `0x723c8` |
+| `RBPlaylistManager` | `-` | `numberOfMusicInPlaylistAtIndex:` |  | ✅ | ✅ | `0x72288` |
+| `RBPlaylistManager` | `-` | `containsMusic:inPlaylistAtIndex:` |  | ✅ | ✅ | `0x723c8` |
 | `RBPlaylistManager` | `-` | `addMusic:toPlaylistAtIndex:` |  | ✅ | ❌ | `0x72560` |
 | `RBPlaylistManager` | `-` | `removeMusic:fromPlaylistAtIndex:` |  | ✅ | ❌ | `0x72748` |
 | `RBPlaylistManager` | `-` | `arrayPlaylist` | prop | ✅ | ✅ | `0x7291c` |
