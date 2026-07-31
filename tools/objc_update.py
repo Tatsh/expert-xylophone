@@ -295,6 +295,14 @@ VERIFIED = {
     0x9e4e8: 'RBMenuButton -setEnabled:: forwards the flag to the wrapped button, tail-call release',
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
+    0x218f0c: 'RecommendAdWebView -dealloc: nils _applilinkDelegate directly, then the delegate '
+              'through its setter',
+    0x2413e0: 'RecommendAdAreaView -dealloc: six ivars in the binary order, _applilinkDelegate, '
+              '_sdkDelegate, the delegate via its setter, then _adLocation, _impressionId, '
+              '_requestCode',
+    0x248164: 'RecommendFullScreenController -dealloc: stops and removes _indicator, then nils it '
+              'with _baseView, _shadeView, and the two applilink delegates',
+    0xf4220: 'StoreImageView -dealloc: cancelDownload on the downloader when one is held',
     0x41e98: 'AVBus -dealloc: nils player, then the ARC-emitted super chain',
     0x878ac: 'TwitterImageCreater -dealloc: sends its own reset and nothing else',
     0xfe958: 'StorePackView -dealloc: detaches the delegate only',

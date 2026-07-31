@@ -16,7 +16,7 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4761 verified
+Total: 6343 — 6306 reconstructed, 4765 verified
 (75.1%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
@@ -3013,7 +3013,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `StoreImageView` | `-` | `loadedImage` |  | ✅ | ❌ | `0xf3e90` |
 | `StoreImageView` | `-` | `imageDownloader:didLoad:` |  | ✅ | ❌ | `0xf3f00` |
 | `StoreImageView` | `-` | `imageDownloaderDidFail:didLoad:` |  | ✅ | ✅ | `0xf4200` |
-| `StoreImageView` | `-` | `dealloc` |  | ✅ | ❌ | `0xf4220` |
+| `StoreImageView` | `-` | `dealloc` |  | ✅ | ✅ | `0xf4220` |
 | `StoreImageView` | `-` | `imageURL` | prop | ✅ | ✅ | `0xf4300` |
 | `StoreImageView` | `-` | `setImageURL:` | prop | ✅ | ✅ | `0xf4310` |
 | `StoreImageView` | `-` | `imageDownloader` | prop | ✅ | ✅ | `0xf4348` |
@@ -5847,7 +5847,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdWebView` | `-` | `appListDidDisappear` |  | ✅ | ❌ | `0x218c4c` |
 | `RecommendAdWebView` | `-` | `appListFailLoadWithError:` |  | ✅ | ❌ | `0x218d24` |
 | `RecommendAdWebView` | `-` | `appListFailLinkWithError:` |  | ✅ | ❌ | `0x218e24` |
-| `RecommendAdWebView` | `-` | `dealloc` |  | ✅ | ❌ | `0x218f0c` |
+| `RecommendAdWebView` | `-` | `dealloc` |  | ✅ | ✅ | `0x218f0c` |
 | `RecommendAdWebView` | `-` | `applilinkDelegate` | prop | ✅ | ✅ | `0x218fc8` |
 | `RecommendAdWebView` | `-` | `setApplilinkDelegate:` | prop | ✅ | ✅ | `0x218fe8` |
 | `RecommendAdWebView` | `-` | `loadComplete` | prop | ✅ | ✅ | `0x218ffc` |
@@ -6242,7 +6242,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendAdAreaView` | `-` | `appStoreClosedNotice` |  | ✅ | ✅ | `0x2413d4` |
 | `RecommendAdAreaView` | `-` | `appStoreFailLoadNoticeWithError:` |  | ✅ | ✅ | `0x2413d8` |
 | `RecommendAdAreaView` | `-` | `appStoreTransitionNotice` |  | ✅ | ✅ | `0x2413dc` |
-| `RecommendAdAreaView` | `-` | `dealloc` |  | ✅ | ❌ | `0x2413e0` |
+| `RecommendAdAreaView` | `-` | `dealloc` |  | ✅ | ✅ | `0x2413e0` |
 | `RecommendAdAreaView` | `-` | `applilinkDelegate` | prop | ✅ | ✅ | `0x2414fc` |
 | `RecommendAdAreaView` | `-` | `setApplilinkDelegate:` | prop | ✅ | ✅ | `0x24151c` |
 | `RecommendAdAreaView` | `-` | `sdkDelegate` | prop | ✅ | ✅ | `0x241530` |
@@ -6342,7 +6342,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RecommendFullScreenController` | `-` | `failLinkNoticeWithError:` |  | ✅ | ❌ | `0x247f8c` |
 | `RecommendFullScreenController` | `-` | `closeShadeView` |  | ✅ | ❌ | `0x248010` |
 | `RecommendFullScreenController` | `-` | `releaseInterstitialView` |  | ✅ | ❌ | `0x2480a8` |
-| `RecommendFullScreenController` | `-` | `dealloc` |  | ✅ | ❌ | `0x248164` |
+| `RecommendFullScreenController` | `-` | `dealloc` |  | ✅ | ✅ | `0x248164` |
 | `RecommendFullScreenController` | `-` | `isVisible` | prop | ✅ | ✅ | `0x248250` |
 | `RecommendFullScreenController` | `-` | `setIsVisible:` | prop | ✅ | ✅ | `0x248260` |
 | `RecommendFullScreenController` | `-` | `baseView` | prop | ✅ | ✅ | `0x248270` |
