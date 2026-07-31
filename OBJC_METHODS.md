@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4897 verified
-(77.2%).
+Total: 6343 — 6306 reconstructed, 4900 verified
+(77.3%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -3790,12 +3790,12 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBUrlSchemeManager` | `+` | `sharedManager` |  | ✅ | ✅ | `0x168174` |
 | `RBUrlSchemeManager` | `-` | `parseURL:` |  | ✅ | ❌ | `0x1681cc` |
 | `RBUrlSchemeManager` | `-` | `dictionaryFromQueryString:` |  | ✅ | ❌ | `0x168504` |
-| `RBCustomSelectView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0x1687dc` |
+| `RBCustomSelectView` | `-` | `initWithFrame:` |  | ✅ | ✅ | `0x1687dc` |
 | `RBCustomSelectView` | `-` | `getCollectionViewStartY:` |  | ✅ | ✅ | `0x168850` |
 | `RBCustomSelectView` | `-` | `getCollectionViewMargin` |  | ✅ | ✅ | `0x16889c` |
 | `RBCustomSelectView` | `-` | `setupView` |  | ✅ | ❌ | `0x1688c0` |
 | `RBCustomSelectView` | `-` | `reloadData` |  | ✅ | ❌ | `0x1696d4` |
-| `RBCustomSelectView` | `-` | `prevButtonTap:` |  | ✅ | ❌ | `0x169828` |
+| `RBCustomSelectView` | `-` | `prevButtonTap:` |  | ✅ | ✅ | `0x169828` |
 | `RBCustomSelectView` | `-` | `scrollView` | prop | ✅ | ✅ | `0x1698d0` |
 | `RBCustomSelectView` | `-` | `setScrollView:` | prop | ✅ | ✅ | `0x1698e0` |
 | `RBCustomSelectView` | `-` | `bgmCollectionView` | prop | ✅ | ✅ | `0x169918` |
@@ -3886,7 +3886,7 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBVolumeSlider` | `-` | `init` |  | ✅ | ❌ | `0x16eb90` |
 | `RBVolumeSlider` | `-` | `setValue:` | prop | ✅ | ✅ | `0x16eef4` |
 | `RBVolumeSlider` | `-` | `sliderChangeWithTouchPoint:` |  | ✅ | ❌ | `0x16eff0` |
-| `RBVolumeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x16f0b0` |
+| `RBVolumeSlider` | `-` | `beginTrackingWithTouch:withEvent:` |  | ✅ | ✅ | `0x16f0b0` |
 | `RBVolumeSlider` | `-` | `continueTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x16f154` |
 | `RBVolumeSlider` | `-` | `endTrackingWithTouch:withEvent:` |  | ✅ | ❌ | `0x16f1f8` |
 | `RBVolumeSlider` | `-` | `value` | prop | ✅ | ✅ | `0x16f294` |

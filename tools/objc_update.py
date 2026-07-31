@@ -297,6 +297,11 @@ VERIFIED = {
     0x9c404: 'RBCampaignData +sharedInstance: the plain nil check again, no once token or lock',
     0x68924: 'StorePackInfo -initWithPackID:: super init, nil check, then the packID setter',
     0xcbd84: 'RBMusicView -dealloc: settingScroll.layer removeAllAnimations and nothing else',
+    0x1687dc: 'RBCustomSelectView -initWithFrame:: super, nil check, setupView, no type set',
+    0x169828: 'RBCustomSelectView -prevButtonTap:: startPreview on the app delegate\'s view '
+              'controller, then themed effect 1, in that order',
+    0x16f0b0: 'RBVolumeSlider -beginTrackingWithTouch:withEvent:: the same shape as '
+              'RBEffectSizeSlider\'s, taking the point in the touch\'s own view and returning YES',
     0x142a00: 'RBErosionMarkUpdaterAlertController -init: an IsPad branch on the orientation mask. '
               'The pad takes the orr w2 of 6, Portrait with PortraitUpsideDown, and every other '
               'idiom takes 0x1e, which is MaskAll',
