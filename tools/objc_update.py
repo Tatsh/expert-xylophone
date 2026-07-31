@@ -289,6 +289,12 @@ VERIFIED = {
     # The three getInstance accessors share one shape: a load of the slot, a cbnz that returns it,
     # and otherwise alloc/init, store, release the previous value. No dispatch_once, no
     # @synchronized, so the reconstruction's plain nil check is the faithful spelling.
+    0xc138: 'StoreButtonView -buttonColor: lazily installs blueColor into the _buttonColor ivar on '
+            'first read, releasing whatever was there, and returns the ivar rather than the call',
+    0xc208: 'StoreButtonView -disabledColor: the same shape with grayColor',
+    0xc300: 'StoreButtonView -highlightColor:factor:: fsub gives 1 - factor once, and each of the '
+            'four lanes is that times the component plus the factor, so all four including alpha '
+            'are blended the same way',
     0x3403c: 'StorePackListGenre -packCount: the count of arrayPackInfo, nothing else',
     0x3930c: 'RBHttpUtil -currentSize: the length of downloadedData',
     0x35198: 'SoundManager -stop:: stops the indexed player only when it reports playing, and '

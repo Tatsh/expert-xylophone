@@ -16,8 +16,8 @@ A category cannot be attributed to the class it extends: that class is reached t
 the linker binds at load time, so the file never names it, and a category's own name is the
 category's. Those rows carry the category name in parentheses and are matched on the selector alone.
 
-Total: 6343 — 6306 reconstructed, 4656 verified
-(73.4%).
+Total: 6343 — 6306 reconstructed, 4659 verified
+(73.5%).
 3260 are property accessors. Two mechanical passes account for most of the verified
 count and record their evidence per address: `tools/objc_verify_accessors.py` shows an accessor
 moves exactly the ivar its property declares, and `tools/objc_verify_trivial.py` shows an empty or
@@ -150,13 +150,13 @@ the unpacked copy under `rb458orig` is a different build and matches nothing.
 | `RBCampaignDetailViewController` | `-` | `indicatorSample` | prop | ✅ | ✅ | `0xbb68` |
 | `RBCampaignDetailViewController` | `-` | `setIndicatorSample:` | prop | ✅ | ✅ | `0xbb78` |
 | `StoreButtonView` | `-` | `initWithFrame:` |  | ✅ | ❌ | `0xbddc` |
-| `StoreButtonView` | `-` | `buttonColor` | prop | ✅ | ❌ | `0xc138` |
+| `StoreButtonView` | `-` | `buttonColor` | prop | ✅ | ✅ | `0xc138` |
 | `StoreButtonView` | `-` | `setButtonColor:` | prop | ✅ | ❌ | `0xc194` |
-| `StoreButtonView` | `-` | `disabledColor` | prop | ✅ | ❌ | `0xc208` |
+| `StoreButtonView` | `-` | `disabledColor` | prop | ✅ | ✅ | `0xc208` |
 | `StoreButtonView` | `-` | `setDisabledColor:` | prop | ✅ | ❌ | `0xc264` |
 | `StoreButtonView` | `-` | `cornerRadius` | prop | ✅ | ✅ | `0xc2d8` |
 | `StoreButtonView` | `-` | `setCornerRadius:` | prop | ✅ | ✅ | `0xc2e8` |
-| `StoreButtonView` | `-` | `highlightColor:factor:` |  | ✅ | ❌ | `0xc300` |
+| `StoreButtonView` | `-` | `highlightColor:factor:` |  | ✅ | ✅ | `0xc300` |
 | `StoreButtonView` | `-` | `setHighlighted:` |  | ✅ | ❌ | `0xc348` |
 | `StoreButtonView` | `-` | `setSelected:` |  | ✅ | ❌ | `0xc3d4` |
 | `StoreButtonView` | `-` | `drawRect:` |  | ✅ | ❌ | `0xc460` |
