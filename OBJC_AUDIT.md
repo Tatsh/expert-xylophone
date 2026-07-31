@@ -189,6 +189,13 @@ than taught to accept a negated match, since that would also pass a real sign er
 
 ## Open
 
+**`-[RBMusicView SetupView]` tail** (`0xcf1a0`–`0xd0110`): the decide/pastel/double/random/history
+construction is three whole theme paths (thema 0 → `0xcf7dc`, 1 → inline at `0xcf1c0`, 2 →
+`0xcf848`), which the reconstruction flattens into one sequence. Confirmed so far: the decide
+button is sized by `setBounds:` to its image and centred at `{160, thema==2 ? 297 : 287}`
+(`0xcf3c4`), where the reconstruction gives it a `{44, 546}` frame and hands `297`/`287` to the
+pastel buttons. The tail needs re-deriving path by path.
+
 | Item                           | State                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-[RBMenuView layoutSubviews]` | `0xa22ec`–`0xa467b`, still unaudited as a body. Its width arithmetic and constants are verified (below) but it owns the three visible buttons' frames, so only a device log settles the size complaint.                                                                                                                                                           |
@@ -359,6 +366,16 @@ In `-[RBCustomSelectCollectionView setupView]` (`0x155670`) the misreads were st
   `0x30bf00`) and `34/21` narrow, margins `20/12`, and all per-category stack heights.
 - `-[RBCustomSelectCollectionCell layoutSubviews]` (`0x16e810`): the `(int)` truncation of the
   centred X and the `selectedImageView.center = backgroundView.center` assignment.
+- `-[RBMusicView SetupView]` geometry tables: every sampled pool value in the four legs matches
+  (`53/56/180`, `266/40/84`, `268/170/220/33`, `430/188`, `412/169`, `388/108`, `31/488/322/183`,
+  `152/470/240`), and the leg dispatch is `_thema` (ivar-offset global `0x3c8b7c`; the ivar list at
+  `0x100391348` names it) with the Brown theme (2) taking its own leg — not the game type. The
+  name-artwork switch at `0xccf48` is also `_thema` (0 white, 1 black, 2 brown), the 0.7 name dim
+  applies to `_thema == 1` only (`0xcd368`), the CPU/other setting pages split by `IsPad`
+  (`0xceaa8`: pad pages 3/4, narrow pages 2/3 — the narrow CPU view shares the speed view's page),
+  and `setBpmOrigin:` is passed `143.0` (`0x4061e00000000000`), not `142.0`.
+- `-[RBMusicView ShowSelectDifficulty]` (`0xd2fd8`) branches on `m_GameType` (slot `0x3c8b80`):
+  0 shows the score readout, 1 hides it — as reconstructed.
 
 ## Scale
 

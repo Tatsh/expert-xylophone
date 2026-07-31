@@ -268,7 +268,7 @@ static const UIViewAutoresizing kSetupFirstInfoAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 // The BPM origin literal written by setBpmOrigin: (0x4061e00000000000, both lanes).
-static const CGFloat kBpmOrigin = 142.0;
+static const CGFloat kBpmOrigin = 143.0;
 
 // The two setting-scroll page counts written back to back (five then four).
 enum {
@@ -283,19 +283,20 @@ static const CGFloat kPageScale = 0.8;
 static const CGFloat kPageTintWhite = 0.6666666865;
 static const CGFloat kPageTintWhiteCurrent = 0.5;
 
-// The dimmed alpha applied to the name images on the single game type (0.7).
+// The dimmed alpha applied to the name images on the Black theme (0.7).
 static const CGFloat kNameAlphaDim = 0.699999988;
 static const CGFloat kNameAlphaFull = 1.0;
 
 // The setting sub-view page indices (page X = index * scroll width). The CPU and other sub-views
-// sit at pages 3 and 4 in the arena game type and both at page 3 otherwise.
+// sit at pages 3 and 4 on the wide (iPad) layout, and at pages 2 and 3 on the narrow one — the
+// narrow CPU view deliberately shares the speed view's page, exactly as the binary lays it out.
 static const CGFloat kColorPage = 0.0;
 static const CGFloat kDifficultyPage = 1.0;
 static const CGFloat kSpeedPage = 2.0;
-static const CGFloat kCpuPageArena = 3.0;
-static const CGFloat kOtherPageArena = 4.0;
-static const CGFloat kCpuPageNormal = 3.0;
-static const CGFloat kOtherPageNormal = 3.0;
+static const CGFloat kCpuPageWide = 3.0;
+static const CGFloat kOtherPageWide = 4.0;
+static const CGFloat kCpuPageNarrow = 2.0;
+static const CGFloat kOtherPageNarrow = 3.0;
 
 // The theme-2 overlay is centred at half the jacket size; the first-info overlay is centred at half
 // the view width.
@@ -346,7 +347,7 @@ static NSString *const kDetDecTable[] = {
 };
 enum { kDetDecFixedIndex = 3 };
 
-// The detail-view geometry per (iPad idiom, game type, theme) leg. Every value was decoded from
+// The detail-view geometry per (iPad idiom, theme) leg. Every value was decoded from
 // the .const pools referenced by the big geometry block (@0xcca64..@0xccf30) and traced to its
 // setFrame:/setCenter:/initWithFrame: consumer. The layout structure holds one leg's values.
 namespace {
@@ -386,8 +387,8 @@ static const CGFloat kHistoryOffsetX = 110.0;
 static const CGFloat kHistoryOffsetY = 160.0;
 static const CGFloat kFirstInfoCenterY = 40.0;
 
-// The iPad idiom arena leg (@0xccafc). Uses the setFrame: name path.
-static const DetailGeometry kGeometryVariantArena = {
+// The iPad idiom Brown-theme leg (@0xccafc). Uses the setFrame: name path.
+static const DetailGeometry kGeometryWideBrown = {
     53.0,  56.0,  180.0,        // jacket
     266.0, 40.0,  84.0,         // name-frame (variant path)
     0.0,   0.0,   0.0,          // name-centre (unused on the variant path)
@@ -401,22 +402,22 @@ static const DetailGeometry kGeometryVariantArena = {
     214.0, 235.0,               // ghost
 };
 
-// The iPad idiom non-arena leg (@0xccd44). jacketX, nameFrameY, and jacketSize are picked from a
+// The iPad idiom non-Brown leg (@0xccd44). jacketX, nameFrameY, and jacketSize are picked from a
 // two-entry theme table (non-white then white); the white values are recorded here and the
 // non-white overrides are applied in-line.
-static const DetailGeometry kGeometryVariantNormal = {
+static const DetailGeometry kGeometryWideOther = {
     53.0,  56.0,  298.0, // jacket (white values; non-white: x 52, size 302)
     263.0, 67.0,  69.0,  // name-frame (white nameFrameY; non-white: 66)
     0.0,   0.0,   0.0,   // name-centre (unused)
     111.0, 102.0, 220.0, 33.0, 252.0, 101.0, 244.0, 97.0,  244.0, 89.0,  263.0,
     55.0,  44.0,  456.0, 0.0,  183.0, 152.0, 246.0, 240.0, 263.0, 214.0, 104.0,
 };
-static const CGFloat kVariantNormalJacketXNonWhite = 52.0;
-static const CGFloat kVariantNormalJacketSizeNonWhite = 302.0;
-static const CGFloat kVariantNormalNameFrameYNonWhite = 66.0;
+static const CGFloat kWideOtherJacketXNonWhite = 52.0;
+static const CGFloat kWideOtherJacketSizeNonWhite = 302.0;
+static const CGFloat kWideOtherNameFrameYNonWhite = 66.0;
 
-// The default (non-variant) arena leg (@0xccc64). Uses the setCenter: name path.
-static const DetailGeometry kGeometryDefaultArena = {
+// The narrow Brown-theme leg (@0xccc64). Uses the setCenter: name path.
+static const DetailGeometry kGeometryNarrowBrown = {
     20.0,  55.0, 90.0, // jacket
     0.0,   0.0,  0.0,  // name-frame (unused on the default path)
     160.0, 22.0, 41.0, // name-centre
@@ -424,9 +425,9 @@ static const DetailGeometry kGeometryDefaultArena = {
     56.0,  10.0, 300.0, 176.0, 96.0,  60.0,  257.0, 200.0, 10.0,  214.0, 124.0,
 };
 
-// The default non-arena leg (@0xcce50). jacketSize is theme-picked (non-white then white); the
+// The narrow non-Brown leg (@0xcce50). jacketSize is theme-picked (non-white then white); the
 // scroll and page slots partly fall through to the CGPointZero global (both lanes 0.0).
-static const DetailGeometry kGeometryDefaultNormal = {
+static const DetailGeometry kGeometryNarrowOther = {
     20.0,
     56.0,
     147.0, // jacket (white size; non-white: 150)
@@ -460,7 +461,7 @@ static const DetailGeometry kGeometryDefaultNormal = {
     214.0,
     104.0,
 };
-static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
+static const CGFloat kNarrowOtherJacketSizeNonWhite = 150.0;
 
 @interface RBMusicView () {
     // Private ivars, named exactly as in the binary's ivar list (some carry a leading m_, some a
@@ -592,48 +593,51 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     bgImageView.exclusiveTouch = YES;
     [self.baseView addSubview:bgImageView];
 
-    // The big geometry block: pick the leg for the current iPad idiom, game type, and theme.
+    // The big geometry block: pick the leg for the current iPad idiom and theme. The dispatch ivar
+    // is _thema (the binary reads it at 0xcca80 through the ivar-offset global at 0x3c8b7c): the
+    // Brown theme takes its own leg, and the other legs pick white/non-white overrides.
     BOOL isPad = IsPad();
     BOOL themaIsWhite = thema == kThemeWhite;
     DetailGeometry geometry;
     if (isPad) {
-        if (m_GameType == kGameTypeDouble) {
-            geometry = kGeometryVariantArena;
+        if (self->_thema == kThemeBrown) {
+            geometry = kGeometryWideBrown;
         } else {
-            geometry = kGeometryVariantNormal;
+            geometry = kGeometryWideOther;
             if (!themaIsWhite) {
-                geometry.jacketX = kVariantNormalJacketXNonWhite;
-                geometry.jacketSize = kVariantNormalJacketSizeNonWhite;
-                geometry.nameFrameY = kVariantNormalNameFrameYNonWhite;
+                geometry.jacketX = kWideOtherJacketXNonWhite;
+                geometry.jacketSize = kWideOtherJacketSizeNonWhite;
+                geometry.nameFrameY = kWideOtherNameFrameYNonWhite;
             }
         }
     } else {
-        if (m_GameType == kGameTypeDouble) {
-            geometry = kGeometryDefaultArena;
+        if (self->_thema == kThemeBrown) {
+            geometry = kGeometryNarrowBrown;
         } else {
-            geometry = kGeometryDefaultNormal;
+            geometry = kGeometryNarrowOther;
             if (!themaIsWhite) {
-                geometry.jacketSize = kDefaultNormalJacketSizeNonWhite;
+                geometry.jacketSize = kNarrowOtherJacketSizeNonWhite;
             }
         }
     }
 
     self.bpmOrigin = CGPointMake(kBpmOrigin, kBpmOrigin);
 
+    // The name artwork variant follows the theme (the binary switches on _thema at 0xccf48).
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
-    switch (m_GameType) {
-    case kGameTypeSingle:
+    switch (self->_thema) {
+    case kThemeWhite:
         musicNameSrc = self.musicData.musicNameImageWhite;
         artistNameSrc = self.musicData.artistNameImageWhite;
         break;
-    case kGameTypeDouble:
-        musicNameSrc = self.musicData.musicNameImageBrown;
-        artistNameSrc = self.musicData.artistNameImageBrown;
-        break;
-    case kGameTypeReplay:
+    case kThemeBlack:
         musicNameSrc = self.musicData.musicNameImageBlack;
         artistNameSrc = self.musicData.artistNameImageBlack;
+        break;
+    case kThemeBrown:
+        musicNameSrc = self.musicData.musicNameImageBrown;
+        artistNameSrc = self.musicData.artistNameImageBrown;
         break;
     default:
         break;
@@ -653,7 +657,8 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [self.baseView addSubview:self.jacketImageView];
 
     self.musicNameImageView = [[UIImageView alloc] initWithImage:musicNameSrc];
-    self.musicNameImageView.alpha = m_GameType == kGameTypeSingle ? kNameAlphaDim : kNameAlphaFull;
+    // Only the Black theme dims the name artwork (the binary tests _thema == 1 at 0xcd368).
+    self.musicNameImageView.alpha = self->_thema == kThemeBlack ? kNameAlphaDim : kNameAlphaFull;
     if (isPad) {
         CGSize size = self.musicNameImageView.frame.size;
         self.musicNameImageView.frame =
@@ -665,7 +670,7 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
     [self.baseView addSubview:self.musicNameImageView];
 
     self.artistNameImageView = [[UIImageView alloc] initWithImage:artistNameSrc];
-    self.artistNameImageView.alpha = m_GameType == kGameTypeSingle ? kNameAlphaDim : kNameAlphaFull;
+    self.artistNameImageView.alpha = self->_thema == kThemeBlack ? kNameAlphaDim : kNameAlphaFull;
     if (isPad) {
         CGSize size = self.artistNameImageView.frame.size;
         self.artistNameImageView.frame =
@@ -780,8 +785,10 @@ static const CGFloat kDefaultNormalJacketSizeNonWhite = 150.0;
                                            MusicSelectedBase:self];
     [self.settingScroll addSubview:self.speedView];
 
-    CGFloat cpuPage = m_GameType == kGameTypeDouble ? kCpuPageArena : kCpuPageNormal;
-    CGFloat otherPage = m_GameType == kGameTypeDouble ? kOtherPageArena : kOtherPageNormal;
+    // The CPU and other sub-view pages split by iPad idiom (IsPad at 0xceaa8): 3 and 4 on the wide
+    // layout, 2 and 3 on the narrow one.
+    CGFloat cpuPage = isPad ? kCpuPageWide : kCpuPageNarrow;
+    CGFloat otherPage = isPad ? kOtherPageWide : kOtherPageNarrow;
     self.cpuView = [[RBMusicCPUView alloc] initWithFrame:CGRectMake(cpuPage * pageWidth,
                                                                     scrollBounds.origin.y,
                                                                     pageWidth,
