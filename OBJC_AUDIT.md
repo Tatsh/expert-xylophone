@@ -771,9 +771,13 @@ opens with `fmul s0,s0,s1`, so the argument arrives in a floating-point register
 "Fixing" it to `int` would have broken a correct method — and the same collision invalidates the
 other fifteen reports until each is re-derived.
 
-Two lessons. **Key method metadata by implementation address, not by selector**; the existing
-`scan_return_widths.py` shares this flaw and its clean result is therefore weaker than it looked,
-since a collision can mask a real mismatch as easily as invent one. And **a bulk scan that has not
+Two lessons. **Key method metadata by implementation address, not by selector.**
+`scan_return_widths.py` shared this flaw, and it is now fixed: it keys each `method_t` by its `imp`
+and attributes the declaration through `OBJC_METHODS.md`'s own class-and-address rows rather than
+by matching a selector. The difference is not small — 6397 implementations against the 3962
+selectors the old keying reported, so roughly 2400 methods were being collapsed away. The result is
+still no mismatch anywhere, but it is now a result about implementations rather than about
+whichever class happened to be last. And **a bulk scan that has not
 been checked against one independently-known case is not evidence**, however coherent its output —
 that is now twice in one session, 197 wrong answers from a byte scan and 16 from a keying error,
 both plausible-looking.

@@ -22,6 +22,7 @@ import sys
 from collections import defaultdict
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
+BASE = 0x100000000
 spec = importlib.util.spec_from_file_location('ou', REPO / 'tools' / 'objc_update.py')
 ou = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ou)
@@ -40,7 +41,14 @@ ALLOWED = {
 
 
 def types_of(meta, method_list):
-    """Selector -> types string for one method list, mirroring Metadata._method_list."""
+    """Implementation address -> (selector, types) for one method list.
+
+    Keyed by ``imp`` rather than by selector. Selectors are global in Objective-C and two classes
+    may implement one with different signatures: ``-[RBMusicARView UpdateScore:]`` encodes
+    ``v20@0:8f16`` while ``-[RBMusicScoreView UpdateScore:]`` encodes ``v20@0:8i16``. A
+    selector-keyed map keeps whichever came last, which both invents mismatches and hides real
+    ones.
+    """
     offset = meta.offset_of(method_list) if method_list else None
     if offset is None:
         return {}
@@ -48,22 +56,23 @@ def types_of(meta, method_list):
     out = {}
     for index in range(count):
         entry = offset + 8 + index * entry_size
+        entry_address = method_list + 8 + index * entry_size
         if entry_size == 12:
-            name_off, types_off, _ = struct.unpack_from('<iii', meta._data, entry)
-            entry_address = method_list + 8 + index * entry_size
+            name_off, types_off, imp_off = struct.unpack_from('<iii', meta._data, entry)
             sel = meta.string_at(meta._word(entry_address + name_off))
             types = meta.string_at(meta._word(entry_address + 4 + types_off))
+            imp = entry_address + 8 + imp_off
         else:
-            name, types_ptr, _ = struct.unpack_from('<QQQ', meta._data, entry)
+            name, types_ptr, imp = struct.unpack_from('<QQQ', meta._data, entry)
             sel = meta.string_at(name)
             types = meta.string_at(types_ptr)
         if sel and types:
-            out[sel] = types
+            out[imp - BASE] = (sel, types)
     return out
 
 
 def all_types(meta):
-    """Selector -> types string, taken only from real class and category method lists."""
+    """Implementation address -> (selector, types), from real class and category method lists."""
     found = {}
     classlist = meta.section('__objc_classlist')
     if classlist:
@@ -82,41 +91,65 @@ def all_types(meta):
     return found
 
 
-def declared():
-    out = defaultdict(set)
+def declared_by_address():
+    """Implementation address -> (declared return type, path).
+
+    The checklist already maps every method to its class and address, so it is used to attribute a
+    declaration to an implementation rather than matching on the selector alone.
+    """
+    rows = {}
+    for line in (REPO / 'OBJC_METHODS.md').read_text().splitlines():
+        cells = [c.strip(' `') for c in line.split('|')]
+        if len(cells) >= 8 and cells[7].startswith('0x'):
+            rows[int(cells[7], 16)] = (cells[1], cells[2], cells[3])
+
+    found = {}
     files = []
     for root in ('Project', '3rdparty'):
-        for ext in ('*.m', '*.mm', '*.h'):
+        for ext in ('*.m', '*.mm'):
             files.extend((REPO / root).rglob(ext))
-    decl = re.compile(r'^[-+]\s*\(([^)]+)\)\s*(.+?)(?:\{|;)', re.M | re.S)
+    decl = re.compile(r'^([-+])\s*\(([^)]+)\)\s*(.+?)\{', re.M | re.S)
+    by_key = {}
     for path in files:
         try:
             text = path.read_text()
         except Exception:
             continue
-        for m in decl.finditer(text):
-            ret = ' '.join(m.group(1).split())
-            parts = re.findall(r'(\w+)\s*:', re.sub(r'\([^()]*\)', ' ', m.group(2)))
-            sel = ''.join(p + ':' for p in parts) if parts else m.group(2).strip().split()[0]
-            out[sel].add((ret, str(path.relative_to(REPO))))
-    return out
+        for implementation in re.finditer(r'@implementation\s+(\w+)', text):
+            cls = implementation.group(1)
+            end = text.find('\n@end', implementation.end())
+            region = text[implementation.end():end if end > 0 else len(text)]
+            for match in decl.finditer(region):
+                kind, ret, sig = match.group(1), ' '.join(match.group(2).split()), match.group(3)
+                if ';' in sig or len(sig) > 600:
+                    continue
+                parts = re.findall(r'(\w+)\s*:', re.sub(r'\([^()]*\)', ' ', sig))
+                selector = ''.join(p + ':' for p in parts) if parts else sig.strip().split()[0]
+                by_key[(cls, kind, selector)] = (ret, str(path.relative_to(REPO)))
+
+    for address, key in rows.items():
+        if key in by_key:
+            found[address] = by_key[key]
+    return found
 
 
 meta = ou.Metadata(pathlib.Path(sys.argv[1]))
 types = all_types(meta)
-print(f'{len(types)} selectors with a types string from real method lists')
-dec = declared()
+print(f'{len(types)} implementations with a types string from real method lists')
+declared = declared_by_address()
+print(f'{len(declared)} of them matched to a declaration in the tree')
 problems = []
-for sel, encoding in types.items():
+for address, (selector, encoding) in types.items():
     code = encoding[0]
-    if code not in ALLOWED:
+    if code not in ALLOWED or address not in declared:
         continue
-    for ret, path in dec.get(sel, ()):
-        base = ret.replace('const', '').replace('*', '').strip()
-        if base in ALLOWED[code] or not any(base in v for v in ALLOWED.values()):
-            continue
-        problems.append(f'{path}: {sel} declared {base!r} but encodes {code!r} ({encoding})')
-for p in sorted(set(problems)):
-    print(p)
+    ret, path = declared[address]
+    base = ret.replace('const', '').replace('*', '').strip()
+    if base in ALLOWED[code] or not any(base in v for v in ALLOWED.values()):
+        continue
+    problems.append(f'{path}:{address:#x}: {selector} declared {base!r} but encodes '
+                    f'{code!r} ({encoding})')
+for problem in sorted(set(problems)):
+    print(problem)
 print(f'--- {len(set(problems))} mismatch(es)')
 sys.exit(1 if problems else 0)
