@@ -3807,6 +3807,16 @@ VERIFIED = {
               'return off for a missing scheme, rangeOfString: compared against NSNotFound with '
               'b.ne appends the separator when absent, and cbz w23 on canOpenURL: chooses between '
               'the on and off flags',
+    0x18296C: 'RBExtendNoteManager -addPurchasedExtendNote:: cmp x24,x23 with b.cs decides whether '
+              'the search fell off the end, as its music counterpart does, but the found branch '
+              'does more than nothing: dictionaryWithDictionary: copies the existing entry and '
+              'each field is compared before being written, so an unchanged note is not rewritten',
+    0x1834EC: 'RBExtendNoteManager -createExtendNoteDataArray: one loop, not two. It walks only '
+              'the purchased dictionaries, since an extend note has no bundled counterpart the way '
+              'a tune does, and skips an entry on the tbz over isFileExist: or the cbz over the '
+              'MusicDataExtend the path produced',
+    0x183B24: 'RBExtendNoteManager -getExtendNoteIDs: arrayWithCapacity:3, matching '
+              'kExtendNoteIDsCapacity, collecting every purchased identifier',
     0x182770: 'RBExtendNoteManager -getPurchasedExtendNoteDictionaryWithMusicID:: alloc and init '
               'rather than a capacity hint, then every entry whose "ID" matches is collected, with '
               'no break, so it returns all of them',
