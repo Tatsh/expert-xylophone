@@ -10,32 +10,25 @@
 #   (lldb) continue
 #
 # The top row of targets aligns and the bottom row does not, so two sprites that should coincide
-# have different Y. Reading layer after layer against the disassembly found seven mechanisms that
-# were all faithful, which is a sign the wrong question was being asked: the useful question is not
-# "is this layer correct" but "which layer emits the sprite that is in the wrong place".
+# have different y. Every sprite is placed through one of the two setters below, so breaking there
+# and printing the owning batch with the position names the responsible layer directly: `bt 3`
+# gives the caller and `this` distinguishes the batches.
 #
-# Every sprite goes through SetSpritePosition or SetSpritePositionXY, so breaking there and printing
-# the owning batch with the position names the culprit directly. `bt 3` gives the emitting layer,
-# and `this` distinguishes the batches, so the pair that should coincide is visible as two lines
-# with the same intent and different Y.
+# The commands are attached with -o rather than the interactive form. `breakpoint command add` with
+# no -o opens an editor that waits for a line reading DONE, which never arrives from a sourced file
+# and leaves the session hanging. --auto-continue lets the game keep running rather than stopping on
+# every sprite.
 #
-# Breakpoint commands run without stopping (auto-continue), so the game keeps running and the log
-# accumulates. Expect a lot of output: let it run a second or two, then interrupt and read back.
+# Expect a lot of output. Let it run a second or two, interrupt, and read back.
 
 breakpoint set --name "ne::C_SPRITE_INSTANCING_2D::SetSpritePositionXY"
-breakpoint command add --script-type none
-frame variable this nIndex x y
-bt 3
-continue
-DONE
+breakpoint command add -o "frame variable this nIndex x y" -o "bt 3" 1
+breakpoint modify --auto-continue true 1
 
 breakpoint set --name "ne::C_SPRITE_INSTANCING_2D::SetSpritePosition"
-breakpoint command add --script-type none
-frame variable this nIndex position
-bt 3
-continue
-DONE
+breakpoint command add -o "frame variable this nIndex position" -o "bt 3" 2
+breakpoint modify --auto-continue true 2
 
-# If the two breakpoints produce too much to read, disable one and re-run. If neither resolves,
-# check `image lookup -t neGLESRenderer` first: no output there means the build carries symbols but
-# no DWARF, and RBPDBGINFO was not set.
+# If the volume is unmanageable, disable one: `breakpoint disable 2`. If neither resolves, check
+# `image lookup -t neGLESRenderer` first -- no output there means the build has symbols but no
+# DWARF, and RBPDBGINFO was not set.
