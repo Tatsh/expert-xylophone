@@ -57,6 +57,8 @@
 #include "long_note_layer.h"
 #include "main_frame_layer.h"
 #include "music_sheet.h"
+#include "neDebugLog.h"
+#include "neRender.h"
 #include "neTexture.h"
 #include "note_born_layer.h"
 #include "note_charge_layer.h"
@@ -1975,6 +1977,11 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
 
 /** @ghidraAddress 0x14a298 */
 void GameScene::InitializePlayFieldLayersForTheme() {
+    // Restart the diagnostic frame count here so the one-frame sprite snapshot lands a fixed number
+    // of frames into the play screen rather than a fixed number after launch. Counting from launch
+    // put it on the title screen, which is where the first attempt captured its five sprites.
+    NE_DBG(g_nDebugFrameCounter = 0);
+
     // Re-read the active theme only when the user has changed it since the last play.
     if (m_nThema != static_cast<int>(RBUserSettingData.sharedInstance.thema)) {
         m_nThema = static_cast<int>(RBUserSettingData.sharedInstance.thema);
