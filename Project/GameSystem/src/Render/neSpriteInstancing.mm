@@ -642,16 +642,17 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     const bool bNoRotation = flRotation == 0.0f;
     const bool bUnitScale = flScaleX == 1.0f && flScaleY == 1.0f;
 
+    // Only the wholly untransformed case takes the short path. The binary requires all three of
+    // rotation zero, scale x one and scale y one before it subtracts the raw anchor: the three
+    // compares at 0x3160c, 0x3161c and 0x3162c each branch away to the general arm at 0x3167c. A
+    // scale without a rotation therefore goes through that arm, where the anchor is multiplied by
+    // the scale, and reconstructing it as its own case left every scaled-but-unrotated sprite
+    // offset by anchor * (scale - 1). On the play field's targets that is four points, which is
+    // why one row of them sat beside the other.
     if (bNoRotation && bUnitScale) {
         // No rotation or scale: the quad only needs to be translated so its anchor sits at
         // position.
         MakeTranslationMatrix(pOutMatrix, position.x - anchor.x, position.y - anchor.y, 0.0f);
-        return;
-    }
-    if (bNoRotation) {
-        // Scale only: translate to the anchor-relative position, then scale the 3x3 block in place.
-        MakeTranslationMatrix(pOutMatrix, position.x - anchor.x, position.y - anchor.y, 0.0f);
-        SetMatrixScale3x3(pOutMatrix, flScaleX, flScaleY, 1.0f);
         return;
     }
 
@@ -659,11 +660,8 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     // second matrix that scales and shifts the anchor back to the origin so the rotation pivots on
     // the anchor.
     //
-    // The anchor is multiplied by the scale here and deliberately is not in the scale-only path
-    // above, which subtracts it unscaled. That reads as an inconsistency and is the binary's own:
-    // the rotation-and-scale arm computes -(anchor * scale) with the fnmul pair at 0x316f4 and
-    // 0x316fc, while the rotation-free arm at 0x3164c subtracts the raw anchor with fsub. Do not
-    // "correct" either to match the other.
+    // This is the binary's general arm at 0x3167c, reached by anything that is rotated or scaled.
+    // The anchor is multiplied by the scale, by the fnmul pair at 0x316f4 and 0x316fc.
     MakeTranslationMatrix(pOutMatrix, position.x, position.y, 0.0f);
     SetMatrixRotationZ3x3(pOutMatrix, -flRotation);
     float anchorMatrix[16];

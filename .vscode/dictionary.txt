@@ -494,6 +494,7 @@ unnormalised
 unparseable
 unprojection
 unretained
+unrotated
 unscored
 unsuffixed
 untilted
