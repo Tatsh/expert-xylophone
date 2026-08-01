@@ -377,11 +377,13 @@ rbpdbg
 rbpdbginfo
 rbplus
 rbscorehash
+rctool
 rdparty
 readback
 receiptdata
 recentres
 recomputation
+recon
 rect
 rects
 reflec

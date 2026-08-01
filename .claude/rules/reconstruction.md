@@ -121,10 +121,14 @@ discards this call's result.`). Do not write an extensive explanation.
   routine may branch three ways rather than two. Reconstruct every arm. A constant that exists in
   only one arm of the binary but is applied unconditionally in the reconstruction is a defect even
   when its value is right, because it is right for one device only.
-- Run `tools/audit_ghidra_addresses.py` against the shipped binary after touching annotations. It
+- Run `rctool audit addresses <binary>` against the shipped binary after touching annotations. It
   checks every annotated method against the runtime metadata and every constant annotated on its
   declaration line against the bytes at that address. It cannot check a constant that carries no
   annotation, which is the large majority of them, so a clean run is necessary and not sufficient.
+  `rctool` lives in the `recon-tools` repository beside this one; the audit and scan tools that
+  used to sit in `tools/` are its subcommands now, grouped as `audit`, `objc`, `gen`, `dump`,
+  `atlas`, and `ipa`. Pass `-W` to point it at a directory other than the current one. The
+  `*_update.py` generators stay in `tools/`, because they are specific to this tree.
 - The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
   For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the
   decompile reads like normal C++ — the full signature, every local, the return, every global, and
