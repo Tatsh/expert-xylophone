@@ -1,45 +1,40 @@
 # Dump the original game's sprite state, to diff against the reconstruction's.
 #
-#   $ lldb -p <pid of the ORIGINAL REFLEC BEAT plus>
+# Two steps, because the breakpoint address cannot be written as an expression here. The original is
+# stripped, so _mh_execute_header has no symbol to resolve, and this attach cannot install the
+# expression checkers in any case -- which is why `br set -a <expr>` fails outright.
+#
+# Step one: source this file. It prints the image's load address and nothing else.
+#
 #   (lldb) command source /var/jb/var/mobile/rb458-orig-sprites.lldb
-#   (lldb) continue
 #
-# Every measurable term in the reconstruction now checks out -- the sprite geometry, the atlas cell
-# contents, and the texture's theme directory -- yet the targets still render wrong. The way past
-# that is to stop reasoning about what the original should do and read what it actually does.
+# Read the address of the "REFLEC BEAT plus" module from the output -- the [0x...] on its line -- and
+# add 0x31090, which is EmitMatrixSprites. If the module loads at 0x104b18000, that is 0x104b49090.
 #
-# The breakpoint is C_SPRITE_INSTANCING_2D::EmitMatrixSprites at image offset 0x31090, entered with
-# the batch in x0. The member offsets come from the binary's own destructor at 0x30c80, which frees
-# the nine sprite arrays at 0xd8 through 0x118 and the vertex scratch at 0x128, and from
-# SetSpritePosition at 0x5a0c4, which bounds the index against the capacity at 0x120 and reads the
-# position array from 0xd8.
+# Step two: paste these four lines, substituting that sum for ADDR:
+#
+#   breakpoint set -a ADDR
+#   breakpoint command add -o "memory read -f d -s 4 -c 2 `$x0 + 0x120`" -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xd8)`" -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xe8)`" -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xe0)`" -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xf0)`" -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xf8)`" 1
+#   breakpoint modify --auto-continue true 1
+#   continue
+#
+# Register arithmetic in backticks needs no symbols, so it should evaluate where the
+# _mh_execute_header form did not. If even `$x0 + 0x120` fails, say so: the fallback is to stop at
+# the breakpoint, `register read x0`, and read the offsets from that literal by hand.
+#
+# The reads are, in order: capacity and count; then for sprites 0 to 3, the position pairs, the
+# anchor pairs, the size pairs, the UV origin pairs and the UV size pairs. They line up field for
+# field with the reconstruction's own snapshot lines.
+#
+# The member offsets are the binary's own, from its destructor at 0x30c80, which frees the nine
+# sprite arrays between 0xd8 and 0x118, and from SetSpritePosition at 0x5a0c4, which bounds the
+# index against the capacity at 0x120 and reads the position array from 0xd8:
 #
 #     +0x0d8 position   +0x0e0 size      +0x0e8 anchor    +0x0f0 uv origin   +0x0f8 uv size
 #     +0x100 rotation   +0x108 scale x   +0x110 scale y   +0x118 colour
 #     +0x120 capacity   +0x124 count     +0x130 index vbo +0x134 array vbo   +0x138 texture
 #
-# Nothing here calls into the target: a jailbroken attach usually cannot install the expression
-# checkers, so every line is a memory read. There are no persistent ($) variables, so it can be
-# sourced more than once. The commands are attached with -o because the interactive form waits for a
-# line reading DONE that a sourced file never supplies.
-#
-# Expect a lot of output -- every batch that takes the matrix path hits this once per frame. Let it
-# run a second, interrupt, and read back. The gauge batch is the one with sixteen sprites.
+# Every batch taking the matrix path hits this once per frame, so expect volume. Let it run a
+# second, interrupt, and read back. The gauge batch is the one reporting a count of sixteen.
 
-breakpoint set -a `(uint64_t)&_mh_execute_header + 0x31090`
-
-# capacity and count, then the first four sprites' position, anchor, size and UV.
-breakpoint command add \
-  -o "memory read -f d -s 4 -c 2 `$x0 + 0x120`" \
-  -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xd8)`" \
-  -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xe8)`" \
-  -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xe0)`" \
-  -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xf0)`" \
-  -o "memory read -f f -s 4 -c 8 `*(uint64_t *)($x0 + 0xf8)`" \
-  -o "memory read -f f -s 4 -c 4 `*(uint64_t *)($x0 + 0x100)`" \
-  1
-breakpoint modify --auto-continue true 1
-
-# The reads are, in order: capacity and count; then for sprites 0 to 3, the position pairs, the
-# anchor pairs, the size pairs, the UV origin pairs and the UV size pairs; then four rotations.
-# Compare them against the reconstruction's own snapshot lines, which carry the same fields.
+image list -h -o -f "REFLEC BEAT plus"
