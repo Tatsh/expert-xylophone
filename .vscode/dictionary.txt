@@ -209,10 +209,14 @@ hira
 hnbt
 howtoplay
 ibgm
+idat
+iend
 ifdef
 ifndef
 ifrm
 igles
+ihdr
+iibb
 immediates
 immhi
 immlo
@@ -480,6 +484,7 @@ unarchiver
 undecryptable
 undraft
 undrafted
+unfilter
 unfoldable
 ungated
 unichar
