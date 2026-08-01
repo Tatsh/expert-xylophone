@@ -253,6 +253,8 @@ protected:
     // Force-disables every render capability the sprite pass does not want, then enables blending
     // and the arrays it does. Shared by the screen-space and world-space batches.
     static void ResetRenderState(neGLESRenderer *pRenderer);
+    // Diagnostic only: dumps every sprite of this batch on the armed frame.
+    void DebugSnapshot();
     // Binds the batch's texture (or disables texturing) and points the texture-unit's coordinate
     // array into the vertex scratch; shared by both draw paths.
     void BindPassTexture(neGLESRenderer *pRenderer);

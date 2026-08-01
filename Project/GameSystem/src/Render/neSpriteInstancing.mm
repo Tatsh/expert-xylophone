@@ -432,7 +432,11 @@ void C_SPRITE_INSTANCING_2D::BindPassTexture(neGLESRenderer *pRenderer) {
 }
 
 /** @ghidraAddress 0x2faa8 */
-void C_SPRITE_INSTANCING_2D::Render() {
+// Dump every sprite this batch is about to draw, once, on the armed frame. Defined on the base so
+// both this class and the world-space subclass can call it: the subclass overrides Render outright
+// and never reaches the base, which is why an earlier attempt captured only the one layer that
+// happens to use a screen-space batch.
+void C_SPRITE_INSTANCING_2D::DebugSnapshot() {
     // One whole frame of every sprite this batch will draw, complete: by the time Render runs, the
     // position, anchor, size, scale, rotation, UV and colour are all settled in the arrays, so a
     // single pass describes the frame exactly as it will appear. Dumping one frame rather than a
@@ -467,6 +471,10 @@ void C_SPRITE_INSTANCING_2D::Render() {
                        static_cast<const void *>(m_pTexture));
         }
     });
+}
+
+void C_SPRITE_INSTANCING_2D::Render() {
+    DebugSnapshot();
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());

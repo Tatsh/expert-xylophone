@@ -33,6 +33,7 @@ C_SPRITE_INSTANCING_3D::C_SPRITE_INSTANCING_3D(unsigned int nCapacity)
 
 /** @ghidraAddress 0x30dc0 */
 void C_SPRITE_INSTANCING_3D::Render() {
+    DebugSnapshot();
     neGLESRenderer *pRenderer = neGLESRenderer::GetShared();
     const int nMaxPerBatch = pRenderer->GetMaxPaletteMatrices();
     SetMatrixIdentity(GetLocalMatrix());
