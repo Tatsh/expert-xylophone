@@ -1,0 +1,41 @@
+# Measure which layer misplaces the bottom-row target effect.
+#
+# Build with debug info first, or none of this resolves:
+#
+#   make -C theos RBPDBG=1 RBPDBGINFO=1
+#
+# Then, with the play screen up:
+#
+#   (lldb) command source /var/jb/var/mobile/rb458-targets.lldb
+#   (lldb) continue
+#
+# The top row of targets aligns and the bottom row does not, so two sprites that should coincide
+# have different Y. Reading layer after layer against the disassembly found seven mechanisms that
+# were all faithful, which is a sign the wrong question was being asked: the useful question is not
+# "is this layer correct" but "which layer emits the sprite that is in the wrong place".
+#
+# Every sprite goes through SetSpritePosition or SetSpritePositionXY, so breaking there and printing
+# the owning batch with the position names the culprit directly. `bt 3` gives the emitting layer,
+# and `this` distinguishes the batches, so the pair that should coincide is visible as two lines
+# with the same intent and different Y.
+#
+# Breakpoint commands run without stopping (auto-continue), so the game keeps running and the log
+# accumulates. Expect a lot of output: let it run a second or two, then interrupt and read back.
+
+breakpoint set --name "ne::C_SPRITE_INSTANCING_2D::SetSpritePositionXY"
+breakpoint command add --script-type none
+frame variable this nIndex x y
+bt 3
+continue
+DONE
+
+breakpoint set --name "ne::C_SPRITE_INSTANCING_2D::SetSpritePosition"
+breakpoint command add --script-type none
+frame variable this nIndex position
+bt 3
+continue
+DONE
+
+# If the two breakpoints produce too much to read, disable one and re-run. If neither resolves,
+# check `image lookup -t neGLESRenderer` first: no output there means the build carries symbols but
+# no DWARF, and RBPDBGINFO was not set.
