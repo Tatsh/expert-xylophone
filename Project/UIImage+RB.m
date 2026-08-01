@@ -162,7 +162,9 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
                      imageDirectory:GetImageAssetDirectoryPath()
                      themaDirectory:kSharedImageDirectoryName];
     }
-    if (NE_DBG_FIRST(60)) {
+    // The budget has to outlast the menus: at sixty it was spent on the song list and the play
+    // field's own atlas never appeared, which is the one the target artwork comes from.
+    if (NE_DBG_FIRST(400)) {
         neDebugLog("texture %s thema=%s -> %s",
                    name.UTF8String,
                    themaName.UTF8String,
