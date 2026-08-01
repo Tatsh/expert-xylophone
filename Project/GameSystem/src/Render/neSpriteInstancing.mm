@@ -149,12 +149,6 @@ constexpr unsigned int kVertexScratchStride = 64;
 // @ghidraAddress 0x2eecf0
 constexpr int kScreenTexParams[] = {0, 0, 7, 7};
 
-#if RBPDBG
-// The frame to capture. Late enough that the play field has finished laying out, and
-// early enough to reach without a long wait: roughly two seconds in at sixty frames.
-constexpr int kDebugSnapshotFrame = 120;
-#endif
-
 // One corner of a sprite's initial quad, as uploaded to the GL array buffer: a constant 1.0 and the
 // index of the sprite the corner belongs to. The trailing bytes are padding the binary leaves
 // uninitialised.
@@ -447,7 +441,8 @@ void C_SPRITE_INSTANCING_2D::Render() {
     // The frame is chosen late enough that the play field has settled. Each line carries the batch
     // pointer, so sprites belonging to one layer group together, and the UV origin identifies which
     // atlas cell -- and therefore which artwork -- each sprite actually is.
-    NE_DBG(if (g_nDebugFrameCounter == kDebugSnapshotFrame && m_nSpriteCount > 0) {
+    NE_DBG(if (g_nDebugSnapshotFrame != 0 && g_nDebugFrameCounter == g_nDebugSnapshotFrame &&
+               m_nSpriteCount > 0) {
         for (int nSprite = 0; nSprite < m_nSpriteCount; ++nSprite) {
             neDebugLog("snapshot batch=%p n=%d/%d pos=(%.2f,%.2f) anchor=(%.2f,%.2f) "
                        "size=(%.2f,%.2f) scale=(%.4f,%.4f) rot=%.4f uv=(%.5f,%.5f)+(%.5f,%.5f) "

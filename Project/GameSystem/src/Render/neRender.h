@@ -176,6 +176,8 @@ extern C_RENDER g_globalSceneRoot;
 #if RBPDBG
 // Frames drawn so far; diagnostics use it to capture exactly one of them.
 extern int g_nDebugFrameCounter;
+// The frame the sprite snapshot dumps on; zero until a layer arms it.
+extern int g_nDebugSnapshotFrame;
 #endif
 
 // code: language=C++

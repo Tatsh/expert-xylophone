@@ -341,6 +341,12 @@ void PlayColorLayer::Update(float flDeltaTime) {
         for (int nLane = 0; nLane < nLaneCount; ++nLane) {
             const float flX = m_aGaugePosX[nLane];
             const float flY = m_aGaugePosY[nSide];
+            // Arm the whole-frame sprite dump for the next frame, the first time the targets have a
+            // real position. Waiting for that rather than counting frames from the scene's setup is
+            // what makes the capture land on a frame that actually contains the play field.
+            NE_DBG(if (g_nDebugSnapshotFrame == 0 && flY != 0.0f) {
+                g_nDebugSnapshotFrame = g_nDebugFrameCounter + 1;
+            });
             EmitGaugePartSprite(flX,
                                 flY,
                                 flPartScale,

@@ -163,6 +163,11 @@ void C_RENDER::TraverseChildren() {
 // rather than against memory. The counter advances once per frame and the instancer dumps itself
 // on the chosen one, by which time the play field has settled.
 int g_nDebugFrameCounter = 0;
+// The frame to dump, or zero for none. A fixed offset from the play field's setup was not enough:
+// the layers exist well before they place anything, so the count expired while only the persistent
+// full-screen overlays had sprites. The layer that owns the targets arms this instead, on the first
+// frame it emits a real position, and the dump happens on the frame after.
+int g_nDebugSnapshotFrame = 0;
 #endif
 
 /** @ghidraAddress 0x29d58 */
