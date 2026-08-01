@@ -49,7 +49,10 @@ constexpr float kGlowFadeDivisor = -500.0f;
 constexpr float kHalf = 0.5f;
 constexpr float kAlphaByteScale = 255.0f;
 
-// The glow bar's rotation for each colour: the play colour's bar is flipped a half-turn
+// The glow bar's rotation, indexed by whether the bar is the play colour's. The table is
+// {pi, 0} and the play colour indexes element one, so it is the *other* colour whose bar is
+// flipped a half-turn, not the play colour's. The binary indexes it the same way: it forms the
+// flag with `cset w25,eq` at 0x176c38 and then loads `[x24, w25, uxtw #2]` at 0x176c4c.
 // (@ghidraAddress 0x30c998 = {pi, 0}).
 constexpr float kGlowRotation[] = {3.1415927f, 0.0f};
 } // namespace
