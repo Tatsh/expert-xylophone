@@ -333,7 +333,7 @@ constexpr int kBatchSeedCount[] = {512, 256, 256, 256, 256, 256, 256, 512, 256, 
 constexpr int kBatchSeedEntryCount = 12;
 
 // The atlas the particle sprites draw from.
-constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
 // The particle batches draw additively; the middle batch seeds two texture parameters.
 constexpr int kAdditiveBlendMode = 1;

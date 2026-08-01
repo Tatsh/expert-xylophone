@@ -22,7 +22,7 @@
 
 namespace {
 // The atlas the connector sprites draw from.
-constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
 // The connector sprite batch draws additively; the non-tutorial build seeds two texture parameters.
 constexpr int kAdditiveBlendMode = 1;

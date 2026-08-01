@@ -27,7 +27,7 @@ namespace {
 constexpr float kInitialScale = 1.0f;
 
 // The atlas the glow sprites draw from.
-constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
 // The glow sprite batch holds two sprites and draws additively.
 constexpr int kSpriteCapacity = 2;

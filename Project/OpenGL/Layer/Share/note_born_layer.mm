@@ -23,7 +23,7 @@ extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 
 namespace {
 // The atlas the spawn-burst sprites draw from.
-constexpr const char *kAtlasTextureName = "00_texture_gm_parts1";
+constexpr const char *kAtlasTextureName = "00_texture/gm_parts1";
 
 // The default scale pair the constructor seeds.
 constexpr float kInitialScale = 1.0f;
