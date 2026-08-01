@@ -614,6 +614,12 @@ void C_SPRITE_INSTANCING_2D::BuildSpriteMatrix(int nSprite, float *pOutMatrix) {
     // Rotation (with or without scale): a translate-to-position * rotate matrix, composed with a
     // second matrix that scales and shifts the anchor back to the origin so the rotation pivots on
     // the anchor.
+    //
+    // The anchor is multiplied by the scale here and deliberately is not in the scale-only path
+    // above, which subtracts it unscaled. That reads as an inconsistency and is the binary's own:
+    // the rotation-and-scale arm computes -(anchor * scale) with the fnmul pair at 0x316f4 and
+    // 0x316fc, while the rotation-free arm at 0x3164c subtracts the raw anchor with fsub. Do not
+    // "correct" either to match the other.
     MakeTranslationMatrix(pOutMatrix, position.x, position.y, 0.0f);
     SetMatrixRotationZ3x3(pOutMatrix, -flRotation);
     float anchorMatrix[16];

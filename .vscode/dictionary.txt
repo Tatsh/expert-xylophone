@@ -180,6 +180,7 @@ fmla
 fmov
 fmov's
 fmul
+fnmul
 fobjc
 fori
 foxundermoon
