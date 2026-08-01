@@ -16,8 +16,24 @@ breakpoint costs an image-list, a hex addition and a paste; with it, the address
     tools/gen_symbol_map.py --load 0x100990000 --lldb > syms.lldb
                                                 # a sourceable file of `breakpoint set -a` aliases
 
-The load address is the first column of `image list -h -o -f "REFLEC BEAT plus"`. It changes every
-launch, so regenerate rather than keeping the absolute form around.
+Loading the --lldb form: copy it to the device and source it, then each symbol is a command that
+sets its own breakpoint.
+
+    (lldb) command source /var/jb/var/mobile/syms.lldb
+    (lldb) bp_PlayColorLayer_Update
+
+The plain form is a lookup rather than something to load: grep it for the routine wanted and paste
+the absolute address into `breakpoint set -a` by hand. That is worth preferring when only a handful
+of symbols are needed -- two thousand aliases is a lot to hand a debugger that has already turned
+out to have no script interpreter, no expression evaluation on a stripped target, and an
+interactive-only breakpoint-command editor. Filtering first is cheap:
+
+    tools/gen_symbol_map.py --load 0x100990000 --lldb | grep -E 'ReflecGauge|ResultWindow' > syms.lldb
+
+The load address is the FIRST column of `image list -h -o -f "REFLEC BEAT plus"`; the second is the
+slide, and the two differ by the binary's static base of 0x100000000. Adding an offset to the wrong
+one lands in unmapped memory, where a breakpoint simply never fires instead of reporting an error.
+It changes every launch, so regenerate after a relaunch rather than keeping a generated file around.
 
 Only definitions are collected: an annotation in a header describes a declaration, and the same
 address annotated in both places would otherwise appear twice.

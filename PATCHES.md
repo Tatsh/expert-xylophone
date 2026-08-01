@@ -120,23 +120,6 @@ makes, and crashes on a modern device at the end of the resource download.
 This deviation predates the patch convention and ran ungated for some time; it is gated and
 recorded here now rather than being left as an undocumented exception.
 
-### The image tint helper's empty source image
-
-**File:** `Project/MusicData.m` — `-setColor:withColor:` (0x657e4)
-
-The binary sends `-size` straight to the image argument with no nil check, then opens an image
-context of that size. When the source image does not resolve, the size is zero, and
-`UIGraphicsBeginImageContextWithOptions` raises on a modern iOS where the original only logged a
-warning. Tapping a song reaches this through `-musicNameImageBrownBasic` and aborts the process.
-
-The patch returns nil for an empty size rather than opening the context. An unpatched build makes
-the binary's unguarded call.
-
-Note this is a symptom guard, not a cause fix: the real question is why the music-name artwork
-does not resolve. The menu buttons' background was once filed alongside it as the same asset
-question; it was not one. Their grey face came from a wrong superclass in the reconstruction, and
-is fixed rather than patched.
-
 ### The sprite batch's matrix palette on a driver without the extension
 
 **File:** `Project/GameSystem/src/Render/neSpriteInstancing.mm` —
@@ -153,12 +136,12 @@ take effect while their arrays are still enabled, so the draw walks an enabled v
 pointer is `NULL` and faults at address zero inside `gleRunVertexSubmitImmediate`. The world-space
 batch has no axis-aligned fast path, so every play-field frame takes this route.
 
-The same fault reaches the draw by a second route that has nothing to do with the extension.
-`ClearWeightPointer` and `ClearMatrixIndexPointer` each guard on an array buffer actually being
-bound, while the client-state enables beside them do not, so a zero `m_dwArrayVbo` leaves both
-arrays enabled with pointers that were never set -- the same NULL walk, the same address zero. The
-condition below therefore requires the buffer as well as the extension, keeping the enable and the
-pointer on one condition.
+The guard also requires a bound array buffer, which was added when a zero `m_dwArrayVbo` was
+thought to reach the same NULL walk by a second route. That turned out not to happen: every draw
+logged on the device carried a live array buffer, and the address-zero crash this was written for
+was eventually traced to three sprite batches built with zero capacity, whose constructors never
+set the capacity the binary assigns. The buffer term is left in place as a cheap precondition, but
+it is not what fixed anything.
 
 The patch checks the capability the renderer already recorded. With the extension present nothing
 changes and the binary's path runs exactly as before. Without it, the palette and the two skinning
