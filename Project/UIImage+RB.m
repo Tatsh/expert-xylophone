@@ -16,7 +16,6 @@
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
 
-#import "GameSystem/src/neDebugLog.h"
 #import "deviceenvironment.h"
 
 // The shared image directory tried after the current theme directory.
@@ -152,23 +151,10 @@ static UIImage *RBLocalizedBundleImage(NSString *name, NSString *deviceTag) {
     UIImage *image = [self imageWithName:name
                           imageDirectory:GetImageAssetDirectoryPath()
                           themaDirectory:themaName];
-    // Which directory a texture actually resolves through has never been recorded, and the play
-    // field's artwork lives under a per-theme one. A sprite that is placed correctly but samples
-    // another theme's atlas looks exactly like a layout fault, so log the theme, the fallback, and
-    // whether anything loaded at all.
-    BOOL bThemed = image != nil;
     if (image == nil) {
         image = [self imageWithName:name
                      imageDirectory:GetImageAssetDirectoryPath()
                      themaDirectory:kSharedImageDirectoryName];
-    }
-    // The budget has to outlast the menus: at sixty it was spent on the song list and the play
-    // field's own atlas never appeared, which is the one the target artwork comes from.
-    if (NE_DBG_FIRST(400)) {
-        neDebugLog("texture %s thema=%s -> %s",
-                   name.UTF8String,
-                   themaName.UTF8String,
-                   bThemed ? "themed" : (image != nil ? "SHARED fallback" : "not found yet"));
     }
     if (image == nil) {
         NSString *primaryName =

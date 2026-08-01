@@ -180,35 +180,6 @@ void PlayColorLayer::EmitGaugePartSprite(float flPosX,
     }
 
     const GaugePart &part = kGaugeParts[nPartIndex];
-    // The border (parts 0 and 1) and the green (parts 6 and 7) carry the same anchor, size, scale
-    // and rotation and go into the same batch, so their quads should be identical and only their
-    // atlas cell should differ. Log the two together to see whether that holds: if every term
-    // matches, the green sits where it should and the discrepancy is inside the cell; if one
-    // differs, it names itself.
-    if (nPartIndex <= 1 || (nPartIndex >= 6 && nPartIndex <= 7)) {
-        if (NE_DBG_FIRST(24)) {
-            neDebugLog("gaugePart %s part=%u pos=(%.2f,%.2f) anchor=(%.1f,%.1f) size=(%.1f,%.1f) "
-                       "scale=(%.4f,%.4f) rot=%.4f uvOrigin=(%.5f,%.5f) uvSize=(%.5f,%.5f) "
-                       "batch=%u alpha=%u",
-                       nPartIndex <= 1 ? "border" : "green ",
-                       nPartIndex,
-                       static_cast<double>(flPosX),
-                       static_cast<double>(flPosY),
-                       static_cast<double>(part.flAnchorX),
-                       static_cast<double>(part.flAnchorY),
-                       static_cast<double>(part.flSizeW),
-                       static_cast<double>(part.flSizeH),
-                       static_cast<double>(flScaleX),
-                       static_cast<double>(flScaleY),
-                       static_cast<double>(flRotation),
-                       static_cast<double>(part.flUvOriginU),
-                       static_cast<double>(part.flUvOriginV),
-                       static_cast<double>(part.flUvSizeU),
-                       static_cast<double>(part.flUvSizeV),
-                       nBatchIndex,
-                       nAlpha);
-        }
-    }
     pBatch->SetSpritePosition(nIndex, S_VECTOR2{flPosX, flPosY});
     pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{part.flAnchorX, part.flAnchorY});
     pBatch->SetSpriteSize(nIndex, S_VECTOR2{part.flSizeW, part.flSizeH});
