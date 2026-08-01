@@ -1,7 +1,6 @@
-# Property accessors verified against their instructions by
-# tools/objc_verify_accessors.py. Each moves exactly the ivar its property list
-# declares as the backing store, reached through the _OBJC_IVAR_$_ offset variable,
-# and calls nothing but the ARC and property runtime helpers.
+# Property accessors verified against their instructions. Each moves exactly the ivar
+# its property list declares as the backing store, reached through the ivar offset
+# variable, and calls nothing but the ARC and property runtime helpers.
 0x5368 RBMusicHistoryView._musicID
 0x5378 RBMusicHistoryView._musicID
 0x5388 RBMusicHistoryView._difficulty
@@ -949,8 +948,6 @@
 0xa103c RBMenuNewsTickerView._target
 0xa1050 RBMenuNewsTickerView._baseDuration
 0xa1060 RBMenuNewsTickerView._baseDuration
-0xa1f24 RBMenuView._maxPage
-0xa200c RBMenuView._showView
 0xb9740 RBMenuView._viewController
 0xb9760 RBMenuView._viewController
 0xb9774 RBMenuView._collectionView
@@ -1128,7 +1125,6 @@
 0xc2c20 RBMusicColorBar._baseView
 0xc2c58 RBMusicColorBar._sliderValue
 0xc2c68 RBMusicColorBar._sliderValue
-0xc5f10 RBMusicColorView._rivalAlpha
 0xc6368 RBMusicColorView._musicSelectedBase
 0xc6388 RBMusicColorView._musicSelectedBase
 0xc639c RBMusicColorView._color
@@ -1273,12 +1269,10 @@
 0xd78c4 RBMusicView._blackPastelButton
 0xd78d4 RBMusicView._ghostImageView
 0xd78e4 RBMusicView._ghostImageView
-0xd7d20 RBPopoverBackgroundView._arrowOffset
 0xd91b0 RBPopoverBackgroundView._arrowOffset
 0xd91c0 RBPopoverBackgroundView._arrowDirection
 0xd91d0 RBPopoverBackgroundView._popoverBackground
 0xd91e0 RBPopoverBackgroundView._popoverBackground
-0xd9d0c RBRankingTableCell._strokeColor
 0xda450 RBRankingTableCell._labelRank
 0xda460 RBRankingTableCell._labelRank
 0xda498 RBRankingTableCell._labelName
@@ -1992,7 +1986,6 @@
 0x16eaf8 RBCustomSelectCollectionCell._isSelected
 0x16eb08 RBCustomSelectCollectionCell._selectedImageView
 0x16eb18 RBCustomSelectCollectionCell._selectedImageView
-0x16eef4 RBVolumeSlider._value
 0x16f294 RBVolumeSlider._value
 0x16f2a4 RBVolumeSlider._baseView
 0x16f2b4 RBVolumeSlider._baseView
@@ -2158,7 +2151,6 @@
 0x18f944 RBPushNotificationView._timer
 0x18f97c RBPushNotificationView._upMargin
 0x18f98c RBPushNotificationView._upMargin
-0x190448 RBUnlockCollectionCell._itemData
 0x191910 RBUnlockCollectionCell._indexPath
 0x191920 RBUnlockCollectionCell._indexPath
 0x191958 RBUnlockCollectionCell._imageView
@@ -2259,7 +2251,6 @@
 0x19bca8 RBPopupView._contentView
 0x19bce0 RBPopupView._animating
 0x19bcf0 RBPopupView._animating
-0x19cef0 RBCustomInfoPopupView._itemData
 0x19e1f8 RBCustomInfoPopupView._itemData
 0x19e208 RBCustomInfoPopupView._baseView
 0x19e218 RBCustomInfoPopupView._baseView

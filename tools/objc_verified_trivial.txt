@@ -1,6 +1,6 @@
-# Trivially-shaped methods verified against their instructions by
-# tools/objc_verify_trivial.py. Each either does nothing, and its reconstruction
-# does nothing either, or returns a constant its reconstruction also returns.
+# Trivially-shaped methods verified against their instructions. Each either does
+# nothing, and its reconstruction does nothing either, or returns or forwards
+# what its reconstruction does.
 0x4e3c RBMusicHistoryView drawRect:: empty
 0x78b4 RBCampaignDetailViewController downloaderProceed:: empty
 0x78b8 RBCampaignDetailViewController itemInfoDownload: empty

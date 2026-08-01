@@ -125,10 +125,12 @@ discards this call's result.`). Do not write an extensive explanation.
   checks every annotated method against the runtime metadata and every constant annotated on its
   declaration line against the bytes at that address. It cannot check a constant that carries no
   annotation, which is the large majority of them, so a clean run is necessary and not sufficient.
-  `rctool` lives in the `recon-tools` repository beside this one; the audit and scan tools that
-  used to sit in `tools/` are its subcommands now, grouped as `audit`, `objc`, `gen`, `dump`,
-  `atlas`, and `ipa`. Pass `-W` to point it at a directory other than the current one. The
-  `*_update.py` generators stay in `tools/`, because they are specific to this tree.
+  `rctool` lives in the `recon-tools` repository beside this one; every audit, scan, and verify
+  tool that used to sit in `tools/` is a subcommand now, grouped as `audit`, `objc`, `gen`,
+  `dump`, `atlas`, and `ipa`. Pass `-W` to point it at a directory other than the current one.
+  Only the `*_update.py` generators and `layout_table_gen.py` stay in `tools/`, because they are
+  specific to this tree. The three record files `objc_update.py` reads are written by
+  `rctool objc accessors|trivial|float-constants -o tools/<name>.txt`.
 - The C/C++ engine phase is done one routine at a time as routines are encountered, never in batches.
   For each routine, in order: (1) read the decompile; (2) fix all typing in Ghidra until the
   decompile reads like normal C++ — the full signature, every local, the return, every global, and

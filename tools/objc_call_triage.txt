@@ -1,8 +1,7 @@
-# Triage for the per-routine reading still to be done, from
-# tools/objc_verify_calls.py. These methods send a DIFFERENT set of selectors than
-# the binary does, so they are the ones to read first. Expect false positives: the
-# source side does not parse subscripting or chained dot access, both of which send
-# messages the text does not name. Nothing here is a verdict.
+# Triage for the per-routine reading still to be done. These methods send a DIFFERENT
+# set of selectors than the binary does, so they are the ones to read first. Expect
+# false positives: the source side does not parse subscripting or chained dot access,
+# both of which send messages the text does not name. Nothing here is a verdict.
 Project/Views/Music/RBMusicHistoryView.m:41 -[RBMusicHistoryView initWithFrame:] @0x480c binary 8 source 6
     only in binary: ['clearColor', 'init']
     only in source: []
@@ -87,7 +86,7 @@ Project/RBMenuBGEffectPartView.mm:73 -[RBMenuBGEffectPartView setupView] @0xcd98
 Project/RBMenuBGEffectPartView.mm:97 -[RBMenuBGEffectPartView startAnimation] @0xd2a8 binary 15 source 18
     only in binary: ['effect', 'm_screenSize']
     only in source: ['isAnimationEnableLoop', 'startAnimation', 'stopAnimation', 'x', 'y']
-Project/BFCodec.m:202 -[BFCodec dealloc] @0x159c8 binary 1 source 0
+Project/BFCodec.m:207 -[BFCodec dealloc] @0x159c8 binary 1 source 0
     only in binary: ['dealloc']
     only in source: []
 Project/GraphCircleView.m:59 -[GraphCircleView initWithFrame:] @0x15d40 binary 5 source 4
@@ -102,7 +101,7 @@ Project/GraphCircleView.m:217 -[GraphCircleView reset] @0x17084 binary 10 source
 Project/HistoryData.m:22 -[HistoryData initWithData:] @0x17fcc binary 29 source 28
     only in binary: ['copy']
     only in source: []
-Project/SystemHardware.m:59 +[SystemHardware getInstance] @0x18b14 binary 2 source 1
+Project/SystemHardware.m:56 +[SystemHardware getInstance] @0x18b14 binary 2 source 1
     only in binary: ['init']
     only in source: []
 Project/RBResourceDownloadViewController.m:165 -[RBResourceDownloadViewController viewDidLoad] @0x19e50 binary 7 source 6
@@ -165,28 +164,28 @@ Project/RBResourceDownloadViewController.m:539 -[RBResourceDownloadViewControlle
 Project/RBResourceDownloadViewController.m:228 -[RBResourceDownloadViewController dealloc] @0x2034c binary 1 source 0
     only in binary: ['dealloc']
     only in source: []
-Project/RBPastelManager.m:24 +[RBPastelManager getInstance] @0x20a30 binary 2 source 1
+Project/RBPastelManager.m:26 +[RBPastelManager getInstance] @0x20a30 binary 2 source 1
     only in binary: ['init']
     only in source: []
-Project/StoreExtendNoteDetailViewPad.m:329 -[StoreExtendNoteDetailViewPad removeNoteInfo] @0x24b78 binary 24 source 22
+Project/StoreExtendNoteDetailViewPad.m:326 -[StoreExtendNoteDetailViewPad removeNoteInfo] @0x24b78 binary 24 source 22
     only in binary: ['artworkView', 'grayColor']
     only in source: []
-Project/StoreExtendNoteDetailViewPad.m:364 -[StoreExtendNoteDetailViewPad stopSample] @0x24f6c binary 8 source 6
+Project/StoreExtendNoteDetailViewPad.m:361 -[StoreExtendNoteDetailViewPad stopSample] @0x24f6c binary 8 source 6
     only in binary: ['isPushMusic', 'popMusic']
     only in source: []
-Project/StoreExtendNoteDetailViewPad.m:377 -[StoreExtendNoteDetailViewPad pushSampleBtn] @0x250d4 binary 10 source 10
+Project/StoreExtendNoteDetailViewPad.m:374 -[StoreExtendNoteDetailViewPad pushSampleBtn] @0x250d4 binary 10 source 10
     only in binary: ['noteInfo']
     only in source: ['sampleViewDownloading']
-Project/StoreExtendNoteDetailViewPad.m:316 -[StoreExtendNoteDetailViewPad showNoteInfo] @0x2563c binary 12 source 11
+Project/StoreExtendNoteDetailViewPad.m:313 -[StoreExtendNoteDetailViewPad showNoteInfo] @0x2563c binary 12 source 11
     only in binary: ['noteInfo']
     only in source: []
-Project/StoreExtendNoteDetailViewPad.m:508 -[StoreExtendNoteDetailViewPad pushCellButton:] @0x25860 binary 5 source 4
+Project/StoreExtendNoteDetailViewPad.m:505 -[StoreExtendNoteDetailViewPad pushCellButton:] @0x25860 binary 5 source 4
     only in binary: ['noteInfo', 'numberWithInt:', 'performSelector:withObject:']
     only in source: ['performSelector:selectButton:withObject:', 'respondsToSelector:selectButton:']
-Project/StoreExtendNoteDetailViewPad.m:581 -[StoreExtendNoteDetailViewPad didPresentAlertView:] @0x25ecc binary 6 source 2
+Project/StoreExtendNoteDetailViewPad.m:578 -[StoreExtendNoteDetailViewPad didPresentAlertView:] @0x25ecc binary 6 source 2
     only in binary: ['keyWindow', 'presentedViewController', 'rootViewController', 'view']
     only in source: []
-Project/StoreExtendNoteDetailViewPad.m:471 -[StoreExtendNoteDetailViewPad setArtwork:] @0x2655c binary 7 source 9
+Project/StoreExtendNoteDetailViewPad.m:468 -[StoreExtendNoteDetailViewPad setArtwork:] @0x2655c binary 7 source 9
     only in binary: ['size']
     only in source: ['height', 'setAlpha:', 'width']
 Project/RBMenuMascot.mm:428 -[RBMenuMascot updateMessage] @0x2d54c binary 6 source 18
@@ -222,64 +221,64 @@ Project/SoundData.m:75 -[SoundData prepare:Stream:] @0x34454 binary 8 source 9
 Project/SoundManager.m:109 +[SoundManager getInstance] @0x34bb0 binary 2 source 1
     only in binary: ['init']
     only in source: []
-Project/RBTutorialManager.m:41 +[RBTutorialManager getInstance] @0x356b8 binary 3 source 2
+Project/RBTutorialManager.m:36 +[RBTutorialManager getInstance] @0x356b8 binary 3 source 2
     only in binary: ['init']
     only in source: []
-Project/RBTutorialManager.m:53 +[RBTutorialManager isTutorial] @0x35724 binary 2 source 1
+Project/RBTutorialManager.m:48 +[RBTutorialManager isTutorial] @0x35724 binary 2 source 1
     only in binary: ['isTutorial']
     only in source: []
-Project/RBTutorialManager.m:87 +[RBTutorialManager isTutorialMusicselect] @0x35838 binary 2 source 1
+Project/RBTutorialManager.m:82 +[RBTutorialManager isTutorialMusicselect] @0x35838 binary 2 source 1
     only in binary: ['currentStatus']
     only in source: []
-Project/RBTutorialManager.m:94 +[RBTutorialManager needStartTutorialPlay] @0x358ec binary 3 source 2
+Project/RBTutorialManager.m:91 +[RBTutorialManager needStartTutorialPlay] @0x358ec binary 3 source 2
     only in binary: ['currentStatus']
     only in source: []
-Project/RBTutorialManager.m:102 +[RBTutorialManager isTutorialPlay] @0x3597c binary 2 source 1
+Project/RBTutorialManager.m:99 +[RBTutorialManager isTutorialPlay] @0x3597c binary 2 source 1
     only in binary: ['currentStatus']
     only in source: []
-Project/RBTutorialManager.m:113 +[RBTutorialManager needStartTutorialCustomize] @0x35a40 binary 4 source 3
+Project/RBTutorialManager.m:112 +[RBTutorialManager needStartTutorialCustomize] @0x35a40 binary 4 source 3
     only in binary: ['noUnlocked']
     only in source: []
-Project/RBTutorialManager.m:130 +[RBTutorialManager isTutorialCustomize] @0x35b3c binary 4 source 2
+Project/RBTutorialManager.m:129 +[RBTutorialManager isTutorialCustomize] @0x35b3c binary 4 source 2
     only in binary: ['currentStatus', 'thema']
     only in source: []
-Project/RBTutorialManager.m:58 +[RBTutorialManager getCurrentStatus] @0x35d6c binary 2 source 1
+Project/RBTutorialManager.m:53 +[RBTutorialManager getCurrentStatus] @0x35d6c binary 2 source 1
     only in binary: ['currentStatus']
     only in source: []
-Project/RBTutorialManager.m:160 +[RBTutorialManager updateStatus:] @0x35dd4 binary 5 source 6
+Project/RBTutorialManager.m:161 +[RBTutorialManager updateStatus:] @0x35dd4 binary 5 source 6
     only in binary: []
     only in source: ['tutorialAPI']
-Project/RBTutorialManager.m:213 +[RBTutorialManager setUnlockedItemInfo:itemId:] @0x36098 binary 8 source 5
+Project/RBTutorialManager.m:214 +[RBTutorialManager setUnlockedItemInfo:itemId:] @0x36098 binary 8 source 5
     only in binary: ['numberWithInteger:', 'setUnlockItemInfo:', 'unlockItemInfo']
     only in source: []
-Project/RBTutorialManager.m:203 +[RBTutorialManager getUnlockedItemInfo] @0x36308 binary 3 source 2
+Project/RBTutorialManager.m:204 +[RBTutorialManager getUnlockedItemInfo] @0x36308 binary 3 source 2
     only in binary: ['unlockItemInfo']
     only in source: []
-Project/RBTutorialManager.m:208 +[RBTutorialManager resetUnlockedItemInfo] @0x363a8 binary 3 source 2
+Project/RBTutorialManager.m:209 +[RBTutorialManager resetUnlockedItemInfo] @0x363a8 binary 3 source 2
     only in binary: ['unlockItemInfo']
     only in source: []
-Project/RBHttpUtil.m:269 -[RBHttpUtil startDownloadTask] @0x37c20 binary 16 source 17
+Project/RBHttpUtil.m:271 -[RBHttpUtil startDownloadTask] @0x37c20 binary 16 source 17
     only in binary: ['performSelector:withObject:', 'statusCode', 'userInfo']
     only in source: ['performSelector:downloaderError:withObject:', 'performSelector:downloaderFinished:withObject:', 'respondsToSelector:downloaderError:', 'respondsToSelector:downloaderFinished:']
-Project/RBHttpUtil.m:340 -[RBHttpUtil URLSession:dataTask:didReceiveData:] @0x38744 binary 8 source 9
+Project/RBHttpUtil.m:342 -[RBHttpUtil URLSession:dataTask:didReceiveData:] @0x38744 binary 8 source 9
     only in binary: ['performSelector:withObject:']
     only in source: ['performSelector:downloaderProceed:withObject:', 'respondsToSelector:downloaderProceed:']
-Project/RBHttpUtil.m:354 -[RBHttpUtil URLSession:task:didCompleteWithError:] @0x38938 binary 19 source 20
+Project/RBHttpUtil.m:356 -[RBHttpUtil URLSession:task:didCompleteWithError:] @0x38938 binary 19 source 20
     only in binary: ['objectForKey:', 'performSelector:withObject:', 'userInfo']
     only in source: ['performSelector:downloaderError:withObject:', 'performSelector:downloaderFinished:withObject:', 'respondsToSelector:downloaderError:', 'respondsToSelector:downloaderFinished:']
-Project/RBHttpUtil.m:407 -[RBHttpUtil URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:] @0x38fc0 binary 3 source 3
+Project/RBHttpUtil.m:413 -[RBHttpUtil URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:] @0x38fc0 binary 3 source 3
     only in binary: ['performSelectorOnMainThread:withObject:waitUntilDone:']
     only in source: ['performSelectorOnMainThread:downloadProceed:withObject:waitUntilDone:']
-Project/RBHttpUtil.m:425 -[RBHttpUtil URLSession:downloadTask:didFinishDownloadingToURL:] @0x390c0 binary 9 source 9
+Project/RBHttpUtil.m:431 -[RBHttpUtil URLSession:downloadTask:didFinishDownloadingToURL:] @0x390c0 binary 9 source 9
     only in binary: ['performSelectorOnMainThread:withObject:waitUntilDone:', 'userInfo']
     only in source: ['performSelectorOnMainThread:downloaderError:withObject:waitUntilDone:', 'performSelectorOnMainThread:downloaderFinished:withObject:waitUntilDone:']
-Project/RBHttpUtil.m:446 -[RBHttpUtil currentSize] @0x3930c binary 2 source 1
+Project/RBHttpUtil.m:452 -[RBHttpUtil currentSize] @0x3930c binary 2 source 1
     only in binary: ['downloadedData']
     only in source: []
-Project/RBHttpUtil.m:450 -[RBHttpUtil currentProgress] @0x3936c binary 3 source 2
+Project/RBHttpUtil.m:456 -[RBHttpUtil currentProgress] @0x3936c binary 3 source 2
     only in binary: ['downloadedData']
     only in source: []
-Project/RBHttpUtil.m:510 -[RBHttpUtil dealloc] @0x3970c binary 2 source 1
+Project/RBHttpUtil.m:516 -[RBHttpUtil dealloc] @0x3970c binary 2 source 1
     only in binary: ['dealloc']
     only in source: []
 Project/neGLView.mm:48 -[neGLView initWithFrame:] @0x39e30 binary 14 source 11
@@ -300,9 +299,9 @@ Project/neGLView.mm:165 -[neGLView touchesMoved:withEvent:] @0x3a704 binary 3 so
 Project/neGLView.mm:178 -[neGLView touchesEnded:withEvent:] @0x3a8b0 binary 5 source 6
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: ['x', 'y']
-Project/Views/Customize/RBEffectSizeSlider.m:259 -[RBEffectSizeSlider sliderChangeWithTouchPoint:] @0x3bde0 binary 5 source 7
-    only in binary: []
-    only in source: ['width', 'x']
+Project/Views/Customize/RBEffectSizeSlider.m:260 -[RBEffectSizeSlider sliderChangeWithTouchPoint:] @0x3bde0 binary 5 source 7
+    only in binary: ['barRect']
+    only in source: ['barMin', 'width', 'x']
 Project/Views/Music/RBMusicExtendNoteView.m:75 -[RBMusicExtendNoteView initWithFrame:ExtendNoteID:MusicSelectedBase:] @0x3c318 binary 7 source 6
     only in binary: ['thema']
     only in source: []
@@ -378,25 +377,25 @@ Project/StoreTableCellBase.m:12 -[StoreTableCellBase initWithStyle:reuseIdentifi
 Project/StoreTableCellBase.m:26 -[StoreTableCellBase dealloc] @0x42154 binary 4 source 1
     only in binary: ['dealloc', 'leftView', 'rightView']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:498 -[StoreCampaignDetailViewPad removeItemInfo] @0x44f74 binary 24 source 14
+Project/StoreCampaignDetailViewPad.m:495 -[StoreCampaignDetailViewPad removeItemInfo] @0x44f74 binary 24 source 14
     only in binary: ['artworkView', 'copyrightView', 'detailView', 'downloadBtn', 'grayColor']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:593 -[StoreCampaignDetailViewPad sampleStop] @0x45368 binary 8 source 6
+Project/StoreCampaignDetailViewPad.m:590 -[StoreCampaignDetailViewPad sampleStop] @0x45368 binary 8 source 6
     only in binary: ['isPushMusic', 'popMusic']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:568 -[StoreCampaignDetailViewPad pushSampleBtn] @0x454d0 binary 10 source 10
+Project/StoreCampaignDetailViewPad.m:565 -[StoreCampaignDetailViewPad pushSampleBtn] @0x454d0 binary 10 source 10
     only in binary: ['itemInfo']
     only in source: ['sampleViewDownloading']
-Project/StoreCampaignDetailViewPad.m:488 -[StoreCampaignDetailViewPad showItemInfo] @0x45a38 binary 9 source 5
+Project/StoreCampaignDetailViewPad.m:485 -[StoreCampaignDetailViewPad showItemInfo] @0x45a38 binary 9 source 5
     only in binary: ['detailView', 'downloadBtn', 'itemView', 'linkBtn']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:559 -[StoreCampaignDetailViewPad pushLink:] @0x45bc8 binary 4 source 3
+Project/StoreCampaignDetailViewPad.m:556 -[StoreCampaignDetailViewPad pushLink:] @0x45bc8 binary 4 source 3
     only in binary: ['itemInfo']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:689 -[StoreCampaignDetailViewPad didPresentAlertView:] @0x46140 binary 6 source 2
+Project/StoreCampaignDetailViewPad.m:686 -[StoreCampaignDetailViewPad didPresentAlertView:] @0x46140 binary 6 source 2
     only in binary: ['keyWindow', 'presentedViewController', 'rootViewController', 'view']
     only in source: []
-Project/StoreCampaignDetailViewPad.m:707 -[StoreCampaignDetailViewPad setArtwork:] @0x47208 binary 7 source 8
+Project/StoreCampaignDetailViewPad.m:704 -[StoreCampaignDetailViewPad setArtwork:] @0x47208 binary 7 source 8
     only in binary: ['animateWithDuration:animations:completion:', 'artworkView', 'size']
     only in source: ['animateWithDuration:animations:', 'height', 'setAlpha:', 'width']
 Project/RBTermDetailPhoneViewController.m:78 -[RBTermDetailPhoneViewController initWithID:title:] @0x48508 binary 19 source 17
@@ -420,13 +419,13 @@ Project/RBTermDetailPhoneViewController.m:295 -[RBTermDetailPhoneViewController 
 Project/StoreExtendNoteView.m:157 -[StoreExtendNoteView dealloc] @0x4ca54 binary 2 source 1
     only in binary: ['dealloc']
     only in source: []
-Project/StoreExtendNoteView.m:164 -[StoreExtendNoteView setArtwork:] @0x4cadc binary 2 source 1
+Project/StoreExtendNoteView.m:171 -[StoreExtendNoteView setArtwork:] @0x4cadc binary 2 source 1
     only in binary: ['artworkImageView']
     only in source: []
-Project/StoreExtendNoteView.m:197 -[StoreExtendNoteView isPurchased] @0x4cb68 binary 2 source 1
+Project/StoreExtendNoteView.m:204 -[StoreExtendNoteView isPurchased] @0x4cb68 binary 2 source 1
     only in binary: ['isHidden', 'purchasedLabel']
     only in source: ['hidden']
-Project/StoreExtendNoteView.m:202 -[StoreExtendNoteView setIsPurchased:] @0x4cbc8 binary 2 source 1
+Project/StoreExtendNoteView.m:209 -[StoreExtendNoteView setIsPurchased:] @0x4cbc8 binary 2 source 1
     only in binary: ['purchasedLabel']
     only in source: []
 Project/AppDelegate.mm:1179 -[AppDelegate startApplication] @0x4d77c binary 8 source 4
@@ -549,16 +548,16 @@ Project/History.m:249 +[History getAR:] @0x5c0fc binary 5 source 4
 Project/History.m:261 +[History getFullCombo:] @0x5c290 binary 6 source 5
     only in binary: ['intValue']
     only in source: []
-Project/ScoreData.m:317 -[ScoreData getFrameBonusType] @0x5df3c binary 8 source 2
+Project/ScoreData.m:322 -[ScoreData getFrameBonusType] @0x5df3c binary 8 source 2
     only in binary: ['arBas', 'arHar', 'arMed', 'fcBas', 'fcHar']
     only in source: []
-Project/ScoreData.m:90 +[ScoreData getScoreData:inManagedObjectContext:] @0x5c444 binary 17 source 14
+Project/ScoreData.m:95 +[ScoreData getScoreData:inManagedObjectContext:] @0x5c444 binary 17 source 14
     only in binary: ['countByEnumeratingWithState:objects:count:', 'init', 'objectForKey:']
     only in source: []
-Project/ScoreData.m:211 +[ScoreData hashScore:] @0x5d3bc binary 11 source 4
+Project/ScoreData.m:216 +[ScoreData hashScore:] @0x5d3bc binary 11 source 4
     only in binary: ['arBas', 'arHar', 'arMed', 'scoBas', 'scoHar']
     only in source: []
-Project/ScoreData.m:300 +[ScoreData totalRecordCount] @0x5e820 binary 11 source 9
+Project/ScoreData.m:305 +[ScoreData totalRecordCount] @0x5e820 binary 11 source 9
     only in binary: ['init', 'managedObjectContext']
     only in source: []
 Project/MusicData.m:227 -[MusicData dealloc] @0x60044 binary 2 source 1
@@ -594,7 +593,7 @@ Project/MusicData.m:795 -[MusicData artistNameImageBrown2xDataHard] @0x6115c bin
 Project/MusicData.m:802 -[MusicData setColor:withColor:] @0x657e4 binary 4 source 6
     only in binary: []
     only in source: ['height', 'width']
-Project/MusicData.m:1238 -[MusicData createCache] @0x65964 binary 7 source 5
+Project/MusicData.m:1229 -[MusicData createCache] @0x65964 binary 7 source 5
     only in binary: ['imageWithData:', 'scale']
     only in source: []
 Project/MusicData.m:265 +[MusicData decodeBF:Key:KeyLength:] @0x5eb78 binary 4 source 3
@@ -828,10 +827,10 @@ Project/ImageDownloader.m:224 -[ImageDownloader failure] @0x850d0 binary 2 sourc
 Project/ImageDownloader.m:247 -[ImageDownloader dealloc] @0x85394 binary 13 source 12
     only in binary: ['dealloc']
     only in source: []
-Project/StoreUtil.m:269 +[StoreUtil packIDForProductID:] @0x85a4c binary 4 source 3
+Project/StoreUtil.m:274 +[StoreUtil packIDForProductID:] @0x85a4c binary 4 source 3
     only in binary: ['intValue']
     only in source: []
-Project/StoreUtil.m:293 +[StoreUtil priceString:useCatalogPrice:] @0x85b7c binary 8 source 7
+Project/StoreUtil.m:298 +[StoreUtil priceString:useCatalogPrice:] @0x85b7c binary 8 source 7
     only in binary: ['init']
     only in source: []
 Project/StoreUtil.m:115 +[StoreUtil createReceiptCheckJSONForV2:productIds:nonce:] @0x85fd4 binary 9 source 8
@@ -840,118 +839,118 @@ Project/StoreUtil.m:115 +[StoreUtil createReceiptCheckJSONForV2:productIds:nonce
 Project/StoreUtil.m:99 +[StoreUtil createNonce:] @0x8665c binary 4 source 1
     only in binary: ['alloc', 'appendFormat:', 'initWithCapacity:', 'initWithString:']
     only in source: ['createNonce:']
-Project/StoreUtil.m:320 +[StoreUtil createCampaignListJSON:limit:] @0x8678c binary 3 source 2
+Project/StoreUtil.m:325 +[StoreUtil createCampaignListJSON:limit:] @0x8678c binary 3 source 2
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/StoreUtil.m:331 +[StoreUtil createCampaignSerialCheckJSON:code:] @0x868e4 binary 3 source 2
+Project/StoreUtil.m:336 +[StoreUtil createCampaignSerialCheckJSON:code:] @0x868e4 binary 3 source 2
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/StoreUtil.m:342 +[StoreUtil createCampaignItemInfoJSON:] @0x86a54 binary 3 source 2
+Project/StoreUtil.m:347 +[StoreUtil createCampaignItemInfoJSON:] @0x86a54 binary 3 source 2
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/StoreUtil.m:181 +[StoreUtil productIDToPid:] @0x874f4 binary 4 source 3
+Project/StoreUtil.m:183 +[StoreUtil productIDToPid:] @0x874f4 binary 4 source 3
     only in binary: ['intValue']
     only in source: []
-Project/TwitterImageCreater.mm:197 -[TwitterImageCreater dealloc] @0x878ac binary 2 source 1
+Project/TwitterImageCreater.mm:272 -[TwitterImageCreater dealloc] @0x878ac binary 2 source 1
     only in binary: ['dealloc']
     only in source: []
-Project/TwitterImageCreater.mm:306 -[TwitterImageCreater drawImage:X:Y:Scale:] @0x87ba0 binary 2 source 4
+Project/TwitterImageCreater.mm:381 -[TwitterImageCreater drawImage:X:Y:Scale:] @0x87ba0 binary 2 source 4
     only in binary: []
     only in source: ['height', 'width']
-Project/TwitterImageCreater.mm:316 -[TwitterImageCreater drawImage:X:Y:] @0x87c78 binary 2 source 4
+Project/TwitterImageCreater.mm:391 -[TwitterImageCreater drawImage:X:Y:] @0x87c78 binary 2 source 4
     only in binary: []
     only in source: ['height', 'width']
-Project/TwitterImageCreater.mm:329 -[TwitterImageCreater drawImageFileName:Position:] @0x87dd4 binary 2 source 4
+Project/TwitterImageCreater.mm:404 -[TwitterImageCreater drawImageFileName:Position:] @0x87dd4 binary 2 source 4
     only in binary: []
     only in source: ['x', 'y']
-Project/TwitterImageCreater.mm:337 -[TwitterImageCreater drawText:Position:Font:Color:] @0x87e68 binary 2 source 4
+Project/TwitterImageCreater.mm:412 -[TwitterImageCreater drawText:Position:Font:Color:] @0x87e68 binary 2 source 4
     only in binary: []
     only in source: ['x', 'y']
-Project/TwitterImageCreater.mm:353 -[TwitterImageCreater drawNumber:Position:Keta:Dot:] @0x87fa4 binary 3 source 6
+Project/TwitterImageCreater.mm:428 -[TwitterImageCreater drawNumber:Position:Keta:Dot:] @0x87fa4 binary 3 source 6
     only in binary: ['size']
     only in source: ['stringWithFormat:', 'width', 'x', 'y']
-Project/TwitterImageCreater.mm:485 -[TwitterImageCreater createImage] @0x888b0 binary 15 source 20
+Project/TwitterImageCreater.mm:562 -[TwitterImageCreater createImage] @0x888b0 binary 15 source 19
     only in binary: ['createContext::', 'fullJustReflec', 'thema', 'userFullCombo']
     only in source: ['createContext:', 'gameType', 'grade', 'height', 'level']
-Project/RBViewController.mm:254 -[RBViewController loadView] @0x89050 binary 15 source 15
+Project/RBViewController.mm:255 -[RBViewController loadView] @0x89050 binary 15 source 15
     only in binary: ['scale']
     only in source: ['respondsToSelector:setContentScaleFactor:']
-Project/RBViewController.mm:858 -[RBViewController showPresentViewController:] @0x8945c binary 14 source 15
+Project/RBViewController.mm:864 -[RBViewController showPresentViewController:] @0x8945c binary 14 source 15
     only in binary: []
     only in source: ['playlistViewController']
-Project/RBViewController.mm:826 -[RBViewController playListAddMusicSet:] @0x89798 binary 11 source 10
+Project/RBViewController.mm:832 -[RBViewController playListAddMusicSet:] @0x89798 binary 11 source 10
     only in binary: ['init']
     only in source: []
-Project/RBViewController.mm:836 -[RBViewController playListButtonPush:] @0x8997c binary 2 source 13
+Project/RBViewController.mm:842 -[RBViewController playListButtonPush:] @0x8997c binary 2 source 13
     only in binary: []
     only in source: ['alloc', 'playlistInfoView', 'playlistViewController', 'setDelegate:', 'setInfoPlaylist:']
-Project/RBViewController.mm:547 -[RBViewController createView] @0x89c90 binary 22 source 22
+Project/RBViewController.mm:554 -[RBViewController createView] @0x89c90 binary 22 source 22
     only in binary: ['addTarget:action:forControlEvents:']
     only in source: ['addTarget:action:playListButtonPush:forControlEvents:']
-Project/RBViewController.mm:887 -[RBViewController didSelectPlaylistViewController:] @0x8a294 binary 8 source 7
+Project/RBViewController.mm:893 -[RBViewController didSelectPlaylistViewController:] @0x8a294 binary 8 source 7
     only in binary: ['playlistViewController']
     only in source: []
-Project/RBViewController.mm:937 -[RBViewController navigationController:willShowViewController:animated:] @0x8a444 binary 4 source 2
+Project/RBViewController.mm:943 -[RBViewController navigationController:willShowViewController:animated:] @0x8a444 binary 4 source 2
     only in binary: ['frame', 'topViewController', 'view']
     only in source: ['size']
-Project/RBViewController.mm:920 -[RBViewController viewWillTransitionToSize:withTransitionCoordinator:] @0x8a5d8 binary 2 source 5
+Project/RBViewController.mm:926 -[RBViewController viewWillTransitionToSize:withTransitionCoordinator:] @0x8a5d8 binary 2 source 5
     only in binary: []
     only in source: ['didRotate', 'musicMenuView', 'willRotate']
-Project/RBViewController.mm:320 -[RBViewController UpdateProjection] @0x8a800 binary 8 source 10
+Project/RBViewController.mm:321 -[RBViewController UpdateProjection] @0x8a800 binary 8 source 10
     only in binary: []
     only in source: ['x', 'y']
-Project/RBViewController.mm:302 -[RBViewController Draw] @0x8af88 binary 3 source 5
+Project/RBViewController.mm:303 -[RBViewController Draw] @0x8af88 binary 3 source 5
     only in binary: []
     only in source: ['GetElapsedMilliseconds', 'Start']
-Project/RBViewController.mm:520 -[RBViewController CreateDisplayLinkTimer] @0x8b110 binary 1 source 6
+Project/RBViewController.mm:527 -[RBViewController CreateDisplayLinkTimer] @0x8b110 binary 1 source 6
     only in binary: []
     only in source: ['addToRunLoop:forMode:', 'currentRunLoop', 'displayLinkWithTarget:selector:', 'setDisplayLink:', 'setFrameInterval:']
-Project/RBViewController.mm:503 -[RBViewController CreateTimer] @0x8b2a0 binary 1 source 2
+Project/RBViewController.mm:510 -[RBViewController CreateTimer] @0x8b2a0 binary 1 source 2
     only in binary: []
     only in source: ['Start']
-Project/RBViewController.mm:588 -[RBViewController showMusicListView] @0x8b3bc binary 11 source 8
+Project/RBViewController.mm:595 -[RBViewController showMusicListView] @0x8b3bc binary 11 source 8
     only in binary: ['save', 'takeover', 'takeoverPoint']
     only in source: []
-Project/RBViewController.mm:743 -[RBViewController playGameWithMusicData:RandSeed:] @0x8b5b8 binary 47 source 42
+Project/RBViewController.mm:749 -[RBViewController playGameWithMusicData:RandSeed:] @0x8b5b8 binary 47 source 42
     only in binary: ['appDelegate', 'floatValue', 'hideAnimation:', 'intValue', 'managedObjectContext']
     only in source: ['UpdateProjection', 'hideAnimation:GameSystem:GameSystem:']
-Project/RBViewController.mm:614 -[RBViewController startPreview] @0x8be40 binary 35 source 6
+Project/RBViewController.mm:621 -[RBViewController startPreview] @0x8be40 binary 35 source 6
     only in binary: ['PauseMusic:', 'StartLoop', 'appDelegate', 'backgroundBrighness', 'backgroundType']
     only in source: ['applyPreviewSettingsToGameSystem:music:']
-Project/RBViewController.mm:706 -[RBViewController showPreview] @0x8c8cc binary 3 source 1
+Project/RBViewController.mm:712 -[RBViewController showPreview] @0x8c8cc binary 3 source 1
     only in binary: ['musicMenuView', 'tweetCoverView']
     only in source: []
-Project/RBViewController.mm:712 -[RBViewController hidePreview] @0x8c970 binary 21 source 17
+Project/RBViewController.mm:718 -[RBViewController hidePreview] @0x8c970 binary 21 source 17
     only in binary: ['LoadMusicSelect', 'MusicID', 'RelaseMusic', 'appDelegate']
     only in source: []
-Project/RBViewController.mm:1031 -[RBViewController openItunesWithURL:] @0x8ce28 binary 14 source 12
+Project/RBViewController.mm:1037 -[RBViewController openItunesWithURL:] @0x8ce28 binary 14 source 12
     only in binary: ['init', 'keyWindow', 'systemSuspend']
     only in source: ['loadProductWithParameters:completionBlock:']
-Project/RBViewController.mm:1069 -[RBViewController productViewControllerDidFinish:] @0x8d40c binary 2 source 4
+Project/RBViewController.mm:1074 -[RBViewController productViewControllerDidFinish:] @0x8d40c binary 2 source 4
     only in binary: []
     only in source: ['setItunesViewCtrl:', 'sharedManager']
-Project/RBViewController.mm:1089 -[RBViewController PostTwitter:Images:URLs:] @0x8d5b4 binary 8 source 7
+Project/RBViewController.mm:1094 -[RBViewController PostTwitter:Images:URLs:] @0x8d5b4 binary 8 source 7
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBViewController.mm:1114 -[RBViewController PostTweet] @0x8d9c0 binary 6 source 5
+Project/RBViewController.mm:1119 -[RBViewController PostTweet] @0x8d9c0 binary 6 source 5
     only in binary: ['arrayWithObject:']
     only in source: []
-Project/RBViewController.mm:1121 -[RBViewController PostTwitter:Text:] @0x8dbbc binary 3 source 13
+Project/RBViewController.mm:1126 -[RBViewController PostTwitter:Text:] @0x8dbbc binary 3 source 13
     only in binary: []
     only in source: ['URLWithString:', 'alloc', 'initWithRequest:delegate:', 'initWithURL:cachePolicy:timeoutInterval:', 'setHidden:']
-Project/RBViewController.mm:1151 -[RBViewController cancelTwitterConnection] @0x8de58 binary 5 source 4
+Project/RBViewController.mm:1156 -[RBViewController cancelTwitterConnection] @0x8de58 binary 5 source 4
     only in binary: ['tweetCoverView']
     only in source: []
-Project/RBViewController.mm:1162 -[RBViewController connection:didReceiveResponse:] @0x8df10 binary 3 source 2
+Project/RBViewController.mm:1167 -[RBViewController connection:didReceiveResponse:] @0x8df10 binary 3 source 2
     only in binary: ['statusCode']
     only in source: []
-Project/RBViewController.mm:1176 -[RBViewController connectionDidFinishLoading:] @0x8dfe4 binary 6 source 5
+Project/RBViewController.mm:1181 -[RBViewController connectionDidFinishLoading:] @0x8dfe4 binary 6 source 5
     only in binary: ['init']
     only in source: []
-Project/RBViewController.mm:946 -[RBViewController setupCorporateButton] @0x8e2f4 binary 1 source 14
+Project/RBViewController.mm:952 -[RBViewController setupCorporateButton] @0x8e2f4 binary 1 source 14
     only in binary: []
     only in source: ['addSubview:', 'addTarget:action:tapCorporateButton:forControlEvents:', 'buttonWithType:', 'height', 'imageWithName:']
-Project/RBViewController.mm:974 -[RBViewController fadeCorporateButton:] @0x8e550 binary 2 source 7
+Project/RBViewController.mm:980 -[RBViewController fadeCorporateButton:] @0x8e550 binary 2 source 7
     only in binary: []
     only in source: ['alpha', 'corporateButton', 'removeFromSuperview', 'setAlpha:', 'setCorporateButton:']
 Project/RBPlaylistCreateViewController.m:111 -[RBPlaylistCreateViewController viewWillAppear:] @0x90164 binary 12 source 9
@@ -987,7 +986,7 @@ Project/RBPlaylistViewController.m:392 -[RBPlaylistViewController tableView:numb
 Project/RBPlaylistViewController.m:504 -[RBPlaylistViewController tableView:commitEditingStyle:forRowAtIndexPath:] @0x94c64 binary 5 source 4
     only in binary: ['synchronize']
     only in source: []
-Project/RBCreditsView.m:36 -[RBCreditsView setupView] @0x963b4 binary 13 source 15
+Project/RBCreditsView.m:34 -[RBCreditsView setupView] @0x963b4 binary 13 source 15
     only in binary: ['bounds', 'thema']
     only in source: ['height', 'width', 'x', 'y']
 Project/RBCustomView.mm:200 -[RBCustomView showAnimation] @0x987b0 binary 3 source 2
@@ -1002,16 +1001,16 @@ Project/RBCustomView.mm:323 -[RBCustomView hideRewardList] @0x997a0 binary 2 sou
 Project/RBCustomView.mm:205 -[RBCustomView hideAnimation] @0x99a6c binary 4 source 3
     only in binary: ['save']
     only in source: []
-Project/RBHowToView.m:98 -[RBHowToView setupView] @0x9a200 binary 27 source 27
+Project/RBHowToView.m:96 -[RBHowToView setupView] @0x9a200 binary 27 source 27
     only in binary: ['addTarget:action:forControlEvents:', 'bounds', 'thema']
     only in source: ['addTarget:action:pageDidChangeValue:forControlEvents:', 'height', 'width']
-Project/RBHowToView.m:183 -[RBHowToView layoutScrollView] @0x9aba8 binary 3 source 3
+Project/RBHowToView.m:181 -[RBHowToView layoutScrollView] @0x9aba8 binary 3 source 3
     only in binary: ['bounds', 'scrollView']
     only in source: ['height', 'width']
-Project/RBHowToView.m:188 -[RBHowToView pageDidChangeValue:] @0x9ac6c binary 8 source 8
+Project/RBHowToView.m:186 -[RBHowToView pageDidChangeValue:] @0x9ac6c binary 8 source 8
     only in binary: ['frame', 'pageControl']
     only in source: ['height', 'width']
-Project/RBHowToView.m:201 -[RBHowToView scrollViewDidScroll:] @0x9aedc binary 5 source 4
+Project/RBHowToView.m:199 -[RBHowToView scrollViewDidScroll:] @0x9aedc binary 5 source 4
     only in binary: ['bounds', 'contentOffset', 'pageControl']
     only in source: ['width', 'x']
 Project/RBCampaignData.m:67 -[RBCampaignData parseDictionary:] @0x9c45c binary 9 source 8
@@ -1071,115 +1070,115 @@ Project/RBMenuView.mm:1460 -[RBMenuView selectRandom:] @0xab3c8 binary 18 source
 Project/RBMenuView.mm:1624 -[RBMenuView RemoveStoreViewController] @0xab854 binary 8 source 6
     only in binary: ['isPushMusic', 'popMusic']
     only in source: []
-Project/RBMenuView.mm:1644 -[RBMenuView SelectSettingButton] @0xab9d4 binary 1 source 3
+Project/RBMenuView.mm:1645 -[RBMenuView SelectSettingButton] @0xab9d4 binary 1 source 3
     only in binary: []
     only in source: ['settingView', 'superview']
-Project/RBMenuView.mm:1661 -[RBMenuView toggleSettingView] @0xaba74 binary 4 source 22
+Project/RBMenuView.mm:1662 -[RBMenuView toggleSettingView] @0xaba74 binary 4 source 22
     only in binary: []
     only in source: ['CloseView', 'OpenView', 'addSubview:', 'alloc', 'bounds']
-Project/RBMenuView.mm:1741 -[RBMenuView showSearchView] @0xac348 binary 15 source 13
+Project/RBMenuView.mm:1742 -[RBMenuView showSearchView] @0xac348 binary 15 source 13
     only in binary: ['init', 'navigationController']
     only in source: []
-Project/RBMenuView.mm:1768 -[RBMenuView showNotificationPageView] @0xac638 binary 14 source 12
+Project/RBMenuView.mm:1769 -[RBMenuView showNotificationPageView] @0xac638 binary 14 source 12
     only in binary: ['init', 'navigationController']
     only in source: []
-Project/RBMenuView.mm:1794 -[RBMenuView showTermView] @0xac8dc binary 14 source 12
+Project/RBMenuView.mm:1795 -[RBMenuView showTermView] @0xac8dc binary 14 source 12
     only in binary: ['init', 'navigationController']
     only in source: []
-Project/RBMenuView.mm:1819 -[RBMenuView startBGEffect] @0xacaac binary 7 source 6
+Project/RBMenuView.mm:1820 -[RBMenuView startBGEffect] @0xacaac binary 7 source 6
     only in binary: ['thema']
     only in source: []
-Project/RBMenuView.mm:1831 -[RBMenuView stopBGEffect] @0xacc20 binary 5 source 4
+Project/RBMenuView.mm:1832 -[RBMenuView stopBGEffect] @0xacc20 binary 5 source 4
     only in binary: ['thema']
     only in source: []
-Project/RBMenuView.mm:1855 -[RBMenuView SelectStoreButton] @0xace3c binary 18 source 24
+Project/RBMenuView.mm:1856 -[RBMenuView SelectStoreButton] @0xace3c binary 18 source 24
     only in binary: ['dictionaryWithObjects:forKeys:count:']
     only in source: ['StoreOpen', 'compare:options:', 'getDataInJSON', 'integerValue', 'sharedInstance']
-Project/RBMenuView.mm:2056 -[RBMenuView downloaderError:] @0xaee80 binary 9 source 9
+Project/RBMenuView.mm:2057 -[RBMenuView downloaderError:] @0xaee80 binary 9 source 9
     only in binary: ['isHidden']
     only in source: ['hidden']
-Project/RBMenuView.mm:2079 -[RBMenuView startNews] @0xaf0a0 binary 6 source 11
+Project/RBMenuView.mm:2080 -[RBMenuView startNews] @0xaf0a0 binary 6 source 11
     only in binary: []
     only in source: ['alloc', 'initWithURL:save:', 'lineMessageURL', 'setNewsDownloader:', 'startDownloadingWithDelegate:']
-Project/RBMenuView.mm:2152 -[RBMenuView showInfomation] @0xaf8c0 binary 10 source 6
+Project/RBMenuView.mm:2153 -[RBMenuView showInfomation] @0xaf8c0 binary 10 source 6
     only in binary: ['howtoFirstInfo', 'newCustomItem', 'newThema', 'unreadRecommendCount']
     only in source: []
-Project/RBMenuView.mm:2226 -[RBMenuView showSearchBar] @0xb0274 binary 23 source 20
+Project/RBMenuView.mm:2227 -[RBMenuView showSearchBar] @0xb0274 binary 23 source 20
     only in binary: ['frame', 'isCampaignHinabita201703', 'objectAtIndexedSubscript:', 'thema']
     only in source: ['layoutSearchBarActive:']
-Project/RBMenuView.mm:2273 -[RBMenuView hideSearchBar] @0xb0eac binary 10 source 13
+Project/RBMenuView.mm:2274 -[RBMenuView hideSearchBar] @0xb0eac binary 10 source 13
     only in binary: ['frame']
     only in source: ['layoutSearchBarActive:', 'searchMascot', 'setImage:', 'y']
-Project/RBMenuView.mm:2321 -[RBMenuView getSearchArray:] @0xb1b5c binary 6 source 5
+Project/RBMenuView.mm:2322 -[RBMenuView getSearchArray:] @0xb1b5c binary 6 source 5
     only in binary: ['allObjects']
     only in source: []
-Project/RBMenuView.mm:2339 -[RBMenuView exeSearchPickUp] @0xb1d14 binary 7 source 5
+Project/RBMenuView.mm:2340 -[RBMenuView exeSearchPickUp] @0xb1d14 binary 7 source 5
     only in binary: ['searchArray', 'searchBar']
     only in source: []
-Project/RBMenuView.mm:2349 -[RBMenuView matchTitle:] @0xb1e4c binary 7 source 5
+Project/RBMenuView.mm:2350 -[RBMenuView matchTitle:] @0xb1e4c binary 7 source 5
     only in binary: ['countByEnumeratingWithState:objects:count:', 'numberWithUnsignedInt:', 'objectForKey:']
     only in source: ['location']
-Project/RBMenuView.mm:2382 -[RBMenuView configureCell:] @0xb2280 binary 17 source 20
+Project/RBMenuView.mm:2383 -[RBMenuView configureCell:] @0xb2280 binary 17 source 20
     only in binary: ['addButton', 'collectionView', 'managedObjectContext', 'numberWithInt:', 'removeButton']
     only in source: ['animateWithDuration:animations:completion:', 'artwork', 'image', 'isEqualToString:', 'musicName']
-Project/RBMenuView.mm:2493 -[RBMenuView collectionView:numberOfItemsInSection:] @0xb35fc binary 2 source 1
+Project/RBMenuView.mm:2494 -[RBMenuView collectionView:numberOfItemsInSection:] @0xb35fc binary 2 source 1
     only in binary: ['musicList']
     only in source: []
-Project/RBMenuView.mm:2498 -[RBMenuView collectionView:cellForItemAtIndexPath:] @0xb3664 binary 23 source 20
+Project/RBMenuView.mm:2499 -[RBMenuView collectionView:cellForItemAtIndexPath:] @0xb3664 binary 23 source 20
     only in binary: ['artistLabel', 'objectAtIndexedSubscript:', 'titleLabel']
     only in source: []
-Project/RBMenuView.mm:2533 -[RBMenuView collectionView:didSelectItemAtIndexPath:] @0xb3cdc binary 20 source 14
+Project/RBMenuView.mm:2534 -[RBMenuView collectionView:didSelectItemAtIndexPath:] @0xb3cdc binary 20 source 14
     only in binary: ['addButton', 'musicData', 'numberWithInt:', 'objectAtIndexedSubscript:', 'removeButton']
     only in source: []
-Project/RBMenuView.mm:2587 -[RBMenuView didLayoutSubviews:] @0xb43a4 binary 12 source 11
+Project/RBMenuView.mm:2588 -[RBMenuView didLayoutSubviews:] @0xb43a4 binary 12 source 11
     only in binary: ['collectionView', 'contentOffset', 'frame']
     only in source: ['width', 'x']
-Project/RBMenuView.mm:2628 -[RBMenuView touchesEndedFromRBCollectionView:withEvent:] @0xb4744 binary 2 source 3
+Project/RBMenuView.mm:2629 -[RBMenuView touchesEndedFromRBCollectionView:withEvent:] @0xb4744 binary 2 source 3
     only in binary: ['frame']
     only in source: ['resignFirstResponder', 'y']
-Project/RBMenuView.mm:2638 -[RBMenuView showPushNotificationView] @0xb4810 binary 6 source 7
+Project/RBMenuView.mm:2639 -[RBMenuView showPushNotificationView] @0xb4810 binary 6 source 7
     only in binary: []
     only in source: ['setAlpha:']
-Project/RBMenuView.mm:2654 -[RBMenuView actionFromPushNotificationView] @0xb4ae8 binary 17 source 11
+Project/RBMenuView.mm:2655 -[RBMenuView actionFromPushNotificationView] @0xb4ae8 binary 17 source 11
     only in binary: ['absoluteString', 'getBaseWebInfoURL', 'getCampaignIDForOpenStore', 'getExtendNotePIDForOpenStore', 'getPackIDForOpenStore']
     only in source: []
-Project/RBMenuView.mm:2678 -[RBMenuView finishPushNotification] @0xb4f2c binary 3 source 3
+Project/RBMenuView.mm:2679 -[RBMenuView finishPushNotification] @0xb4f2c binary 3 source 3
     only in binary: ['frame', 'searchBar']
     only in source: ['setAlpha:', 'y']
-Project/RBMenuView.mm:2699 -[RBMenuView preStartTutorial] @0xb52a0 binary 19 source 14
+Project/RBMenuView.mm:2700 -[RBMenuView preStartTutorial] @0xb52a0 binary 19 source 14
     only in binary: ['layer', 'playlistID', 'setPlaylistID:', 'thema', '��<']
     only in source: []
-Project/RBMenuView.mm:2792 -[RBMenuView setPastelForTutorialStart] @0xb5c0c binary 3 source 1
+Project/RBMenuView.mm:2793 -[RBMenuView setPastelForTutorialStart] @0xb5c0c binary 3 source 1
     only in binary: ['mascot', 'searchMascot']
     only in source: []
-Project/RBMenuView.mm:2797 -[RBMenuView setPastelForTutorialEnd] @0xb5cb0 binary 3 source 1
+Project/RBMenuView.mm:2798 -[RBMenuView setPastelForTutorialEnd] @0xb5cb0 binary 3 source 1
     only in binary: ['mascot', 'searchMascot']
     only in source: []
-Project/RBMenuView.mm:1811 -[RBMenuView closeCustomize] @0xb5dfc binary 2 source 2
+Project/RBMenuView.mm:1812 -[RBMenuView closeCustomize] @0xb5dfc binary 2 source 2
     only in binary: ['hideAnimation']
     only in source: ['performSelector:']
-Project/RBMenuView.mm:2812 -[RBMenuView playlistEditStart] @0xb5ec4 binary 28 source 23
+Project/RBMenuView.mm:2813 -[RBMenuView playlistEditStart] @0xb5ec4 binary 28 source 23
     only in binary: ['init', 'newsView', 'objectAtIndex:', 'playlistAddButton', 'playlistDelButton']
     only in source: ['shiftMenuButtonsForPlaylistEditEntering:']
-Project/RBMenuView.mm:2863 -[RBMenuView playlistEditFinish] @0xb740c binary 5 source 14
+Project/RBMenuView.mm:2864 -[RBMenuView playlistEditFinish] @0xb740c binary 5 source 14
     only in binary: []
     only in source: ['SetJumpEffectBaseX:BaseY:', 'count', 'gestureRecognizers', 'isHidden', 'setAlpha:']
-Project/RBMenuView.mm:2891 -[RBMenuView playlistAddDelButtonUpdate] @0xb8618 binary 6 source 3
+Project/RBMenuView.mm:2892 -[RBMenuView playlistAddDelButtonUpdate] @0xb8618 binary 6 source 3
     only in binary: ['playlistAddButton', 'playlistDelButton', 'playlistEditSet']
     only in source: []
-Project/RBMenuView.mm:2904 -[RBMenuView SelectPlaylistAddButton] @0xb8754 binary 4 source 3
+Project/RBMenuView.mm:2905 -[RBMenuView SelectPlaylistAddButton] @0xb8754 binary 4 source 3
     only in binary: ['viewController']
     only in source: []
-Project/RBMenuView.mm:2908 -[RBMenuView SelectPlaylistDelButton] @0xb882c binary 10 source 7
+Project/RBMenuView.mm:2909 -[RBMenuView SelectPlaylistDelButton] @0xb882c binary 10 source 7
     only in binary: ['countByEnumeratingWithState:objects:count:', 'playlistLevel', 'synchronize']
     only in source: []
-Project/RBMenuView.mm:2920 -[RBMenuView SelectPlaylistFinButton] @0xb8aa4 binary 3 source 2
+Project/RBMenuView.mm:2921 -[RBMenuView SelectPlaylistFinButton] @0xb8aa4 binary 3 source 2
     only in binary: ['synchronize']
     only in source: []
-Project/RBMenuView.mm:2943 -[RBMenuView showPageSlider:] @0xb8b90 binary 7 source 15
+Project/RBMenuView.mm:2944 -[RBMenuView showPageSlider:] @0xb8b90 binary 7 source 15
     only in binary: ['searchBar']
     only in source: ['addSubview:', 'alloc', 'currentPageIndex', 'frame', 'initWithFrame:delegate:']
-Project/RBMenuView.mm:3005 -[RBMenuView debugAlphaLog] @0xb95c8 binary 3 source 1
+Project/RBMenuView.mm:3006 -[RBMenuView debugAlphaLog] @0xb95c8 binary 3 source 1
     only in binary: ['collectionView', 'countByEnumeratingWithState:objects:count:']
     only in source: []
 Project/RBMusicCell.m:185 -[RBMusicCell prepareForReuse] @0xbaeec binary 9 source 4
@@ -1266,103 +1265,103 @@ Project/Views/Music/RBMusicFirstInfoView.m:211 -[RBMusicFirstInfoView hideAnimat
 Project/Views/Music/RBMusicScoreView.m:101 -[RBMusicScoreView initWithFrame:] @0xc9ee8 binary 12 source 9
     only in binary: ['clearColor', 'init', 'objectAtIndex:']
     only in source: []
-Project/Views/Music/RBMusicView.mm:493 -[RBMusicView initWithFrame:MusicData:] @0xcbbac binary 9 source 8
+Project/Views/Music/RBMusicView.mm:496 -[RBMusicView initWithFrame:MusicData:] @0xcbbac binary 9 source 8
     only in binary: ['thema']
     only in source: []
-Project/Views/Music/RBMusicView.mm:512 -[RBMusicView dealloc] @0xcbd84 binary 4 source 2
+Project/Views/Music/RBMusicView.mm:515 -[RBMusicView dealloc] @0xcbd84 binary 4 source 2
     only in binary: ['dealloc', 'settingScroll']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1129 -[RBMusicView SetRankView:] @0xd2ddc binary 6 source 10
+Project/Views/Music/RBMusicView.mm:1230 -[RBMusicView SetRankView:] @0xd2ddc binary 6 source 10
     only in binary: []
     only in source: ['height', 'width', 'x', 'y']
-Project/Views/Music/RBMusicView.mm:1237 -[RBMusicView ShowSettingView:] @0xd33a8 binary 1 source 3
+Project/Views/Music/RBMusicView.mm:1326 -[RBMusicView ShowSettingView:] @0xd33a8 binary 1 source 3
     only in binary: ['animateWithDuration:animations:']
     only in source: ['animateWithDuration:animations:kSettingButtonAlphaSelected:', 'setAlpha:', 'settingButtons']
-Project/Views/Music/RBMusicView.mm:1271 -[RBMusicView SetSettingButtonSelected:] @0xd37a8 binary 4 source 3
+Project/Views/Music/RBMusicView.mm:1360 -[RBMusicView SetSettingButtonSelected:] @0xd37a8 binary 4 source 3
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1217 -[RBMusicView SetGhostView:] @0xd397c binary 8 source 6
+Project/Views/Music/RBMusicView.mm:1306 -[RBMusicView SetGhostView:] @0xd397c binary 8 source 6
     only in binary: ['ExtMusicData', 'ghostStyle']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1283 -[RBMusicView updateDecideButton] @0xd3b50 binary 14 source 7
+Project/Views/Music/RBMusicView.mm:1372 -[RBMusicView updateDecideButton] @0xd3b50 binary 14 source 7
     only in binary: ['blackPastelButton', 'doubleButton', 'fullJustReflec', 'ghostStyle', 'speedType']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1412 -[RBMusicView SelectHistory] @0xd44d0 binary 8 source 7
+Project/Views/Music/RBMusicView.mm:1501 -[RBMusicView SelectHistory] @0xd44d0 binary 8 source 7
     only in binary: ['musicData']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1392 -[RBMusicView SelectWhitePastelButton] @0xd4620 binary 2 source 3
+Project/Views/Music/RBMusicView.mm:1481 -[RBMusicView SelectWhitePastelButton] @0xd4620 binary 2 source 3
     only in binary: []
     only in source: ['playGame']
-Project/Views/Music/RBMusicView.mm:1402 -[RBMusicView SelectBlackPastelButton] @0xd4694 binary 2 source 3
+Project/Views/Music/RBMusicView.mm:1491 -[RBMusicView SelectBlackPastelButton] @0xd4694 binary 2 source 3
     only in binary: []
     only in source: ['playGame']
-Project/Views/Music/RBMusicView.mm:1429 -[RBMusicView playGame] @0xd4708 binary 22 source 15
+Project/Views/Music/RBMusicView.mm:1518 -[RBMusicView playGame] @0xd4708 binary 22 source 15
     only in binary: ['setCpuLevel:', 'setDifficulty:', 'setGameType:', 'setPlayColor:', 'setPlayerColor:']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1484 -[RBMusicView playTutorialGame] @0xd4c5c binary 16 source 10
+Project/Views/Music/RBMusicView.mm:1586 -[RBMusicView playTutorialGame] @0xd4c5c binary 16 source 10
     only in binary: ['musicMenuView', 'setDifficulty:', 'setGameType:', 'setPlayerColor:', 'setRivalAlpha:']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1422 -[RBMusicView SelectItunes] @0xd4f54 binary 5 source 4
+Project/Views/Music/RBMusicView.mm:1511 -[RBMusicView SelectItunes] @0xd4f54 binary 5 source 4
     only in binary: ['musicMenuView']
     only in source: []
-Project/Views/Music/RBMusicView.mm:1507 -[RBMusicView showAnimation:] @0xd50a0 binary 7 source 12
+Project/Views/Music/RBMusicView.mm:1609 -[RBMusicView showAnimation:] @0xd50a0 binary 7 source 12
     only in binary: ['baseView']
     only in source: ['LoadMusicWithPush:Loop:', 'PlayMusic:', 'alpha', 'firstInfoAnimationCheck', 'musicPre']
-Project/Views/Music/RBMusicView.mm:1558 -[RBMusicView hideAnimation] @0xd5680 binary 20 source 18
+Project/Views/Music/RBMusicView.mm:1660 -[RBMusicView hideAnimation] @0xd5680 binary 20 source 18
     only in binary: ['setCpuLevel:', 'setDifficulty:', 'setGameType:', 'setPlayerColor:', 'setRivalAlpha:']
     only in source: ['musicMenuView', 'releaseSelectMusic', 'setBackgroundColor:']
-Project/Views/Music/RBMusicView.mm:1588 -[RBMusicView ReplayMusic] @0xd5ca4 binary 2 source 3
+Project/Views/Music/RBMusicView.mm:1690 -[RBMusicView ReplayMusic] @0xd5ca4 binary 2 source 3
     only in binary: []
     only in source: ['performSelector:withObject:afterDelay:']
-Project/Views/Music/RBMusicView.mm:1598 -[RBMusicView firstInfoAnimation] @0xd5d4c binary 1 source 4
+Project/Views/Music/RBMusicView.mm:1700 -[RBMusicView firstInfoAnimation] @0xd5d4c binary 1 source 4
     only in binary: []
     only in source: ['setContentOffset:', 'setFirstScrollAnimation', 'width']
-Project/Views/Music/RBMusicView.mm:1614 -[RBMusicView firstInfoAnimationCheck] @0xd5f38 binary 4 source 3
+Project/Views/Music/RBMusicView.mm:1716 -[RBMusicView firstInfoAnimationCheck] @0xd5f38 binary 4 source 3
     only in binary: ['musicSelectedFirstInfo', 'thema']
     only in source: ['firstInfoAnimation']
-Project/Views/Music/RBMusicView.mm:1334 -[RBMusicView selectPage:] @0xd60d4 binary 4 source 5
+Project/Views/Music/RBMusicView.mm:1423 -[RBMusicView selectPage:] @0xd60d4 binary 4 source 5
     only in binary: []
     only in source: ['width']
-Project/Views/Music/RBMusicView.mm:1721 -[RBMusicView tapGesture:] @0xd6bfc binary 4 source 3
+Project/Views/Music/RBMusicView.mm:1823 -[RBMusicView tapGesture:] @0xd6bfc binary 4 source 3
     only in binary: ['baseView']
     only in source: []
-Project/RBPopoverBackgroundView.m:156 -[RBPopoverBackgroundView initWithFrame:] @0xd7c68 binary 3 source 5
+Project/RBPopoverBackgroundView.m:157 -[RBPopoverBackgroundView initWithFrame:] @0xd7c68 binary 3 source 5
     only in binary: []
     only in source: ['height', 'width']
-Project/RBPopoverBackgroundView.m:235 -[RBPopoverBackgroundView addShadowPathAnimationIfNecessary:] @0xd7df8 binary 13 source 12
+Project/RBPopoverBackgroundView.m:236 -[RBPopoverBackgroundView addShadowPathAnimationIfNecessary:] @0xd7df8 binary 13 source 12
     only in binary: ['popoverBackground']
     only in source: []
-Project/RBPopoverBackgroundView.m:210 -[RBPopoverBackgroundView addDropShadowIfNecessary] @0xd8070 binary 0 source 5
+Project/RBPopoverBackgroundView.m:211 -[RBPopoverBackgroundView addDropShadowIfNecessary] @0xd8070 binary 0 source 5
     only in binary: []
     only in source: ['layer', 'setShadowColor:', 'setShadowOffset:', 'setShadowOpacity:', 'setShadowRadius:']
-Project/RBPopoverBackgroundView.m:190 -[RBPopoverBackgroundView layoutSubviews] @0xd8188 binary 12 source 11
+Project/RBPopoverBackgroundView.m:191 -[RBPopoverBackgroundView layoutSubviews] @0xd8188 binary 12 source 11
     only in binary: ['popoverBackground']
     only in source: []
-Project/RBPopoverBackgroundView.m:222 -[RBPopoverBackgroundView shadowPath] @0xd839c binary 6 source 9
+Project/RBPopoverBackgroundView.m:223 -[RBPopoverBackgroundView shadowPath] @0xd839c binary 6 source 9
     only in binary: ['CGPath']
     only in source: ['height', 'setX:', 'setY:', 'width']
-Project/RBPopoverBackgroundView.m:292 -[RBPopoverBackgroundView adjustCentersIfNecessary] @0xd8968 binary 5 source 5
+Project/RBPopoverBackgroundView.m:293 -[RBPopoverBackgroundView adjustCentersIfNecessary] @0xd8968 binary 5 source 5
     only in binary: ['popoverBackground']
     only in source: ['x']
-Project/RBPopoverBackgroundView.m:366 -[RBPopoverBackgroundView firstHalfStretchAmountForImage:] @0xd8d74 binary 2 source 4
+Project/RBPopoverBackgroundView.m:367 -[RBPopoverBackgroundView firstHalfStretchAmountForImage:] @0xd8d74 binary 2 source 4
     only in binary: []
     only in source: ['height', 'width']
-Project/RBPopoverBackgroundView.m:378 -[RBPopoverBackgroundView contextSizeForFirstHalfImage:] @0xd8e38 binary 3 source 5
+Project/RBPopoverBackgroundView.m:379 -[RBPopoverBackgroundView contextSizeForFirstHalfImage:] @0xd8e38 binary 3 source 5
     only in binary: []
     only in source: ['height', 'width']
-Project/RBPopoverBackgroundView.m:387 -[RBPopoverBackgroundView secondHalfInsetsForStretchedImage:insets:] @0xd8ed8 binary 2 source 3
+Project/RBPopoverBackgroundView.m:388 -[RBPopoverBackgroundView secondHalfInsetsForStretchedImage:insets:] @0xd8ed8 binary 2 source 3
     only in binary: []
     only in source: ['horizontalInsetsForStretchedImage:insets:']
-Project/RBPopoverBackgroundView.m:394 -[RBPopoverBackgroundView horizontalInsetsForStretchedImage:insets:] @0xd8f98 binary 1 source 4
+Project/RBPopoverBackgroundView.m:395 -[RBPopoverBackgroundView horizontalInsetsForStretchedImage:insets:] @0xd8f98 binary 1 source 4
     only in binary: []
     only in source: ['bottom', 'top', 'width']
-Project/RBPopoverBackgroundView.m:400 -[RBPopoverBackgroundView verticalInsetsForStretchedImage:insets:] @0xd8fdc binary 1 source 4
+Project/RBPopoverBackgroundView.m:401 -[RBPopoverBackgroundView verticalInsetsForStretchedImage:insets:] @0xd8fdc binary 1 source 4
     only in binary: []
     only in source: ['height', 'left', 'right']
-Project/RBPopoverBackgroundView.m:408 -[RBPopoverBackgroundView mirroredImage:] @0xd9020 binary 6 source 4
+Project/RBPopoverBackgroundView.m:409 -[RBPopoverBackgroundView mirroredImage:] @0xd9020 binary 6 source 4
     only in binary: ['mainScreen', 'scale']
     only in source: []
-Project/RBPopoverBackgroundView.m:419 -[RBPopoverBackgroundView imageFromImageContextWithSourceImage:size:] @0xd9120 binary 1 source 3
+Project/RBPopoverBackgroundView.m:420 -[RBPopoverBackgroundView imageFromImageContextWithSourceImage:size:] @0xd9120 binary 1 source 3
     only in binary: []
     only in source: ['height', 'width']
 Project/RBRankingTableCell.m:149 -[RBRankingTableCell dealloc] @0xd9cd8 binary 1 source 0
@@ -1452,10 +1451,10 @@ Project/RBSearchMapViewController.mm:108 -[RBSearchMapViewController viewDidDisa
 Project/RBSearchMapViewController.mm:143 -[RBSearchMapViewController didChangeUserTracking:] @0xe6454 binary 2 source 1
     only in binary: ['currentLocation']
     only in source: []
-Project/RBSearchView.m:42 -[RBSearchView setupView] @0xe661c binary 21 source 22
+Project/RBSearchView.m:44 -[RBSearchView setupView] @0xe661c binary 21 source 22
     only in binary: ['addTarget:action:forControlEvents:', 'bounds', 'frame', 'thema']
     only in source: ['addTarget:action:selectCurrentPosition:forControlEvents:', 'height', 'width', 'x', 'y']
-Project/RBSearchView.m:115 -[RBSearchView didChangeUserTracking:] @0xe6f94 binary 2 source 1
+Project/RBSearchView.m:117 -[RBSearchView didChangeUserTracking:] @0xe6f94 binary 2 source 1
     only in binary: ['currentPositionButton']
     only in source: []
 Project/RBMenuBGEffectView.mm:77 -[RBMenuBGEffectView initWithFrame:] @0xe7104 binary 9 source 8
@@ -1620,10 +1619,10 @@ Project/StorePackMusicView.m:211 -[StorePackMusicView setInfo:] @0xfc814 binary 
 Project/StorePackMusicView.m:238 -[StorePackMusicView setBG:] @0xfd100 binary 4 source 3
     only in binary: ['bg']
     only in source: []
-Project/StorePackMusicView.m:280 -[StorePackMusicView tapSp] @0xfd208 binary 2 source 1
+Project/StorePackMusicView.m:282 -[StorePackMusicView tapSp] @0xfd208 binary 2 source 1
     only in binary: ['show']
     only in source: []
-Project/StorePackMusicView.m:298 -[StorePackMusicView didPresentAlertView:] @0xfd360 binary 6 source 3
+Project/StorePackMusicView.m:300 -[StorePackMusicView didPresentAlertView:] @0xfd360 binary 6 source 3
     only in binary: ['keyWindow', 'presentedViewController', 'rootViewController']
     only in source: []
 Project/StorePackView.m:207 -[StorePackView dealloc] @0xfe958 binary 2 source 1
@@ -1755,13 +1754,13 @@ Project/RBMenuTutorialView.mm:390 -[RBMenuTutorialView showAnimationWithTutorial
 Project/RBMenuTutorialView.mm:415 -[RBMenuTutorialView hideAnimation] @0x139e04 binary 5 source 7
     only in binary: []
     only in source: ['setAlpha:', 'teardown']
-Project/RBMenuTutorialView.mm:1279 -[RBMenuTutorialView hitTest:withEvent:] @0x13c8a0 binary 9 source 13
+Project/RBMenuTutorialView.mm:1308 -[RBMenuTutorialView hitTest:withEvent:] @0x13c8a0 binary 9 source 13
     only in binary: []
     only in source: ['height', 'width', 'x', 'y']
-Project/RBMenuTutorialView.mm:1337 -[RBMenuTutorialView willRotate] @0x13cb4c binary 14 source 9
+Project/RBMenuTutorialView.mm:1366 -[RBMenuTutorialView willRotate] @0x13cb4c binary 14 source 9
     only in binary: ['baseView', 'contentView', 'countByEnumeratingWithState:objects:count:', 'fullCoverView', 'messageLayer']
     only in source: []
-Project/RBMenuTutorialView.mm:1355 -[RBMenuTutorialView didRotate] @0x13cdd4 binary 12 source 9
+Project/RBMenuTutorialView.mm:1384 -[RBMenuTutorialView didRotate] @0x13cdd4 binary 12 source 9
     only in binary: ['baseView', 'contentView', 'fullCoverView']
     only in source: []
 Project/RBMenuTutorialView.mm:777 -[RBMenuTutorialView contentViewSettingWithTouchAnim:cursorAnim:stay:useAnimation:] @0x13cfe8 binary 9 source 9
@@ -1944,10 +1943,10 @@ Project/RBStoreExtendPageViewController.mm:1888 -[RBStoreExtendPageViewControlle
 Project/RBStoreExtendPageViewController.mm:1896 -[RBStoreExtendPageViewController storeDetailViewOpenItunesWithURL:] @0x167340 binary 3 source 2
     only in binary: ['viewController']
     only in source: []
-Project/RBStoreExtendPageViewController.mm:1902 -[RBStoreExtendPageViewController openItunesWithURL:] @0x167404 binary 12 source 11
+Project/RBStoreExtendPageViewController.mm:1902 -[RBStoreExtendPageViewController openItunesWithURL:] @0x167404 binary 12 source 10
     only in binary: ['init', 'view', 'window']
-    only in source: ['absoluteString', 'loadProductWithParameters:completionBlock:']
-Project/RBStoreExtendPageViewController.mm:1934 -[RBStoreExtendPageViewController productViewControllerDidFinish:] @0x1677dc binary 2 source 3
+    only in source: ['loadProductWithParameters:completionBlock:']
+Project/RBStoreExtendPageViewController.mm:1932 -[RBStoreExtendPageViewController productViewControllerDidFinish:] @0x1677dc binary 2 source 3
     only in binary: []
     only in source: ['setItunesViewCtrl:']
 Project/RBUrlSchemeManager.m:56 -[RBUrlSchemeManager parseURL:] @0x1681cc binary 12 source 10
@@ -2106,6 +2105,9 @@ Project/RBExtendNoteManager.m:332 -[RBExtendNoteManager getExtendNoteIDs] @0x183
 Project/RBExtendNoteManager.m:352 -[RBExtendNoteManager getExtendNoteDataWithMusicID:] @0x183f14 binary 6 source 4
     only in binary: ['countByEnumeratingWithState:objects:count:', 'init']
     only in source: []
+Project/RBExtendNoteManager.m:370 -[RBExtendNoteManager setClientMusicPageNum:] @0x1840d0 binary 5 source 4
+    only in binary: ['releaseClientMusic']
+    only in source: []
 Project/RBExtendNoteManager.m:66 +[RBExtendNoteManager getInstance] @0x181aac binary 3 source 2
     only in binary: ['init']
     only in source: []
@@ -2160,52 +2162,52 @@ Project/RBUnlockCollectionCell.m:155 -[RBUnlockCollectionCell prepareForReuse] @
 Project/RBNotificationPagePhoneViewController.mm:73 -[RBNotificationPagePhoneViewController init] @0x191c3c binary 12 source 11
     only in binary: ['addTarget:action:forControlEvents:', 'navigationItem']
     only in source: ['addTarget:action:pushBarBtnBack:forControlEvents:']
-Project/RBNotificationPagePhoneViewController.mm:96 -[RBNotificationPagePhoneViewController viewDidLoad] @0x191ebc binary 20 source 19
-    only in binary: ['getInfoLastUpdateTimeString', 'getWebInfoURL', 'save', 'setInfoLastReadTimeString:', 'setWebInfoURL:']
-    only in source: ['height', 'infoLastUpdateTimeString', 'setUrlWebInfo:', 'urlWebInfo', 'width']
-Project/RBNotificationPagePhoneViewController.mm:126 -[RBNotificationPagePhoneViewController viewWillAppear:] @0x192308 binary 12 source 10
+Project/RBNotificationPagePhoneViewController.mm:96 -[RBNotificationPagePhoneViewController viewDidLoad] @0x191ebc binary 20 source 15
+    only in binary: ['bounds', 'getInfoLastUpdateTimeString', 'getWebInfoURL', 'save', 'setInfoLastReadTimeString:']
+    only in source: ['height', 'width']
+Project/RBNotificationPagePhoneViewController.mm:127 -[RBNotificationPagePhoneViewController viewWillAppear:] @0x192308 binary 12 source 10
     only in binary: ['blackColor', 'thema', 'whiteColor']
     only in source: ['respondsToSelector:setBackgroundImage:forBarMetrics:']
-Project/RBNotificationPagePhoneViewController.mm:147 -[RBNotificationPagePhoneViewController viewDidAppear:] @0x192648 binary 15 source 14
+Project/RBNotificationPagePhoneViewController.mm:148 -[RBNotificationPagePhoneViewController viewDidAppear:] @0x192648 binary 15 source 14
     only in binary: ['getPreWebInfoURL']
     only in source: []
-Project/RBNotificationPagePhoneViewController.mm:167 -[RBNotificationPagePhoneViewController viewDidDisappear:] @0x192928 binary 4 source 3
+Project/RBNotificationPagePhoneViewController.mm:168 -[RBNotificationPagePhoneViewController viewDidDisappear:] @0x192928 binary 4 source 3
     only in binary: ['removeFromSuperview']
     only in source: []
-Project/RBNotificationPagePhoneViewController.mm:223 -[RBNotificationPagePhoneViewController webViewDidStartLoad:] @0x193120 binary 2 source 1
+Project/RBNotificationPagePhoneViewController.mm:224 -[RBNotificationPagePhoneViewController webViewDidStartLoad:] @0x193120 binary 2 source 1
     only in binary: ['removeAllCachedResponses']
     only in source: []
-Project/RBNotificationPageView.m:66 -[RBNotificationPageView setupView] @0x19335c binary 24 source 22
+Project/RBNotificationPageView.m:66 -[RBNotificationPageView setupView] @0x19335c binary 24 source 18
     only in binary: ['clearColor', 'getInfoLastUpdateTimeString', 'getPreWebInfoURL', 'getWebInfoURL', 'save']
-    only in source: ['height', 'infoLastUpdateTimeString', 'setUrlWebInfo:', 'urlPreWebInfo', 'urlWebInfo']
-Project/RBNotificationPageView.m:117 -[RBNotificationPageView moveStore:] @0x193918 binary 6 source 5
+    only in source: ['height', 'width']
+Project/RBNotificationPageView.m:118 -[RBNotificationPageView moveStore:] @0x193918 binary 6 source 5
     only in binary: ['setPackIDForOpenStore:']
     only in source: []
-Project/RBNotificationPageView.m:164 -[RBNotificationPageView webViewDidStartLoad:] @0x194000 binary 2 source 1
+Project/RBNotificationPageView.m:165 -[RBNotificationPageView webViewDidStartLoad:] @0x194000 binary 2 source 1
     only in binary: ['removeAllCachedResponses']
     only in source: []
 Project/RBUnlockView.mm:184 -[RBUnlockView setupView] @0x194314 binary 36 source 31
     only in binary: ['addTarget:action:forControlEvents:', 'frame', 'grayColor', 'init', 'layer']
     only in source: ['addTarget:action:pushRewardButton:forControlEvents:']
-Project/RBUnlockView.mm:329 -[RBUnlockView request] @0x1955e0 binary 8 source 27
+Project/RBUnlockView.mm:338 -[RBUnlockView request] @0x1955e0 binary 8 source 27
     only in binary: []
     only in source: ['ApplilinkInitialize', 'count', 'getAdStatusWithBlock:', 'getDataInJSON', 'length']
-Project/RBUnlockView.mm:411 -[RBUnlockView requestRewardCheck] @0x196544 binary 17 source 27
+Project/RBUnlockView.mm:420 -[RBUnlockView requestRewardCheck] @0x196544 binary 17 source 27
     only in binary: ['dictionaryWithObjects:forKeys:count:', 'objectAtIndexedSubscript:']
     only in source: ['activityIndicatorView', 'addPoint:', 'addRewardAppliId:andAppliId:', 'count', 'getDataInJSON']
-Project/RBUnlockView.mm:484 -[RBUnlockView didSelectView:selectedCell:] @0x19744c binary 27 source 24
+Project/RBUnlockView.mm:493 -[RBUnlockView didSelectView:selectedCell:] @0x19744c binary 27 source 24
     only in binary: ['addTarget:action:forControlEvents:', 'badgeView', 'getPoint', 'pointLabel', 'viewController']
     only in source: ['addTarget:action:noButtonTap:forControlEvents:', 'addTarget:action:yesButtonTap:forControlEvents:']
-Project/RBUnlockView.mm:641 -[RBUnlockView downloadWithMusicInfo:] @0x198e54 binary 13 source 12
+Project/RBUnlockView.mm:650 -[RBUnlockView downloadWithMusicInfo:] @0x198e54 binary 13 source 12
     only in binary: ['arrayWithObjects:count:']
     only in source: []
-Project/RBUnlockView.mm:660 -[RBUnlockView downloaderFinished:] @0x1991d8 binary 13 source 12
+Project/RBUnlockView.mm:669 -[RBUnlockView downloaderFinished:] @0x1991d8 binary 13 source 12
     only in binary: ['objectForKey:', 'savePurchasedMusics']
     only in source: ['unlockRandomKey']
-Project/RBUnlockView.mm:657 -[RBUnlockView downloaderError:] @0x199550 binary 10 source 0
+Project/RBUnlockView.mm:666 -[RBUnlockView downloaderError:] @0x199550 binary 10 source 0
     only in binary: ['configureCell:', 'displayOperationDidFinishAnimation', 'progressOverlayView', 'reloadData', 'removeFromSuperview']
     only in source: []
-Project/RBUnlockView.mm:692 -[RBUnlockView downloadManagerCompleted:] @0x1996ec binary 13 source 12
+Project/RBUnlockView.mm:701 -[RBUnlockView downloadManagerCompleted:] @0x1996ec binary 13 source 12
     only in binary: ['viewController']
     only in source: []
 Project/RBUnlockPackageItemData.m:26 -[RBUnlockPackageItemData parseDictionary:] @0x19a168 binary 7 source 6
@@ -2313,67 +2315,67 @@ Project/RBTutorialPastelLayer.m:447 -[RBTutorialPastelLayer stopAnimation] @0x1b
 Project/RBExperienceData.mm:218 -[RBExperienceData save] @0x1b9e50 binary 4 source 3
     only in binary: ['synchronize']
     only in source: []
-Project/RBExperienceData.mm:441 -[RBExperienceData unlockWithBGMtype:] @0x1b9f74 binary 3 source 2
+Project/RBExperienceData.mm:443 -[RBExperienceData unlockWithBGMtype:] @0x1b9f74 binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:451 -[RBExperienceData unlockWithShotType:] @0x1ba0c8 binary 3 source 2
+Project/RBExperienceData.mm:453 -[RBExperienceData unlockWithShotType:] @0x1ba0c8 binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:461 -[RBExperienceData unlockWithExprosionType:] @0x1ba21c binary 3 source 2
+Project/RBExperienceData.mm:463 -[RBExperienceData unlockWithExprosionType:] @0x1ba21c binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:471 -[RBExperienceData unlockWithFrameType:] @0x1ba370 binary 3 source 2
+Project/RBExperienceData.mm:473 -[RBExperienceData unlockWithFrameType:] @0x1ba370 binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:481 -[RBExperienceData unlockWithBackgroundType:] @0x1ba4c4 binary 3 source 2
+Project/RBExperienceData.mm:483 -[RBExperienceData unlockWithBackgroundType:] @0x1ba4c4 binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:491 -[RBExperienceData unlockWithMusicID:] @0x1ba618 binary 3 source 2
+Project/RBExperienceData.mm:493 -[RBExperienceData unlockWithMusicID:] @0x1ba618 binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:501 -[RBExperienceData unlockWithThemaID:] @0x1ba76c binary 3 source 2
+Project/RBExperienceData.mm:503 -[RBExperienceData unlockWithThemaID:] @0x1ba76c binary 3 source 2
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBExperienceData.mm:511 -[RBExperienceData unlockWithType:ID:] @0x1ba8c0 binary 1 source 7
+Project/RBExperienceData.mm:513 -[RBExperienceData unlockWithType:ID:] @0x1ba8c0 binary 1 source 7
     only in binary: []
     only in source: ['unlockWithBGMtype:', 'unlockWithExprosionType:', 'unlockWithFrameType:', 'unlockWithMusicID:', 'unlockWithShotType:']
-Project/RBExperienceData.mm:570 -[RBExperienceData addItem:ID:] @0x1badfc binary 4 source 7
+Project/RBExperienceData.mm:572 -[RBExperienceData addItem:ID:] @0x1badfc binary 4 source 7
     only in binary: []
     only in source: ['addBackgroundType:', 'addMusicID:', 'addThemaID:']
-Project/RBExperienceData.mm:621 -[RBExperienceData getRewardAppliId:] @0x1bb0a0 binary 4 source 3
+Project/RBExperienceData.mm:623 -[RBExperienceData getRewardAppliId:] @0x1bb0a0 binary 4 source 3
     only in binary: ['init']
     only in source: []
-Project/RBExperienceData.mm:634 -[RBExperienceData addPoint:] @0x1bb21c binary 5 source 5
+Project/RBExperienceData.mm:636 -[RBExperienceData addPoint:] @0x1bb21c binary 5 source 5
     only in binary: ['thema']
     only in source: ['setPointB:']
-Project/RBExperienceData.mm:644 -[RBExperienceData getPoint] @0x1bb2fc binary 3 source 3
+Project/RBExperienceData.mm:646 -[RBExperienceData getPoint] @0x1bb2fc binary 3 source 3
     only in binary: ['thema']
     only in source: ['pointB']
 Project/RBExperienceData.mm:373 -[RBExperienceData encodePoint:] @0x1bc554 binary 11 source 9
-    only in binary: ['UTF8String', 'arrayWithObjects:', 'init']
-    only in source: ['arrayWithObject:']
-Project/RBExperienceData.mm:388 -[RBExperienceData decodePoint:] @0x1bc770 binary 14 source 11
+    only in binary: ['UTF8String', 'init']
+    only in source: []
+Project/RBExperienceData.mm:390 -[RBExperienceData decodePoint:] @0x1bc770 binary 14 source 11
     only in binary: ['UTF8String', 'floatValue', 'init']
     only in source: []
-Project/RBExperienceData.mm:407 -[RBExperienceData encodeAppliIds:] @0x1bc9f4 binary 10 source 8
+Project/RBExperienceData.mm:409 -[RBExperienceData encodeAppliIds:] @0x1bc9f4 binary 10 source 8
     only in binary: ['UTF8String', 'init']
     only in source: []
-Project/RBExperienceData.mm:420 -[RBExperienceData decodeAppliIds:] @0x1bcbd8 binary 12 source 10
+Project/RBExperienceData.mm:422 -[RBExperienceData decodeAppliIds:] @0x1bcbd8 binary 12 source 10
     only in binary: ['UTF8String', 'init']
     only in source: []
-Project/RBExperienceData.mm:782 -[RBExperienceData noUnlocked] @0x1bce1c binary 8 source 2
+Project/RBExperienceData.mm:784 -[RBExperienceData noUnlocked] @0x1bce1c binary 8 source 2
     only in binary: ['backgroundItems', 'bgmItems', 'explosionItems', 'frameItems', 'shotItems']
     only in source: []
 Project/RBExperienceData.mm:201 +[RBExperienceData sharedInstance] @0x1b9cfc binary 6 source 5
     only in binary: ['init']
     only in source: []
-Project/RBApplilinkView.m:52 -[RBApplilinkView setupView] @0x1bd6c8 binary 29 source 25
+Project/RBApplilinkView.m:50 -[RBApplilinkView setupView] @0x1bd6c8 binary 29 source 25
     only in binary: ['clearColor', 'frame', 'gradationImageView', 'numberWithFloat:', 'thema']
     only in source: ['height', 'width']
-Project/RBApplilinkView.m:116 -[RBApplilinkView appListDidAppear] @0x1bdf74 binary 5 source 6
+Project/RBApplilinkView.m:114 -[RBApplilinkView appListDidAppear] @0x1bdf74 binary 5 source 6
     only in binary: []
     only in source: ['setAlpha:']
-Project/RBApplilinkView.m:134 -[RBApplilinkView appListDidDisappear] @0x1be1a0 binary 1 source 5
+Project/RBApplilinkView.m:132 -[RBApplilinkView appListDidDisappear] @0x1be1a0 binary 1 source 5
     only in binary: []
     only in source: ['closeAdAreaWithParentView:', 'hideAnimation', 'setHideAnimating:', 'webTargetView']
 Project/RBMenuPageSlider.m:163 -[RBMenuPageSlider reset:currentPage:] @0x1bf698 binary 7 source 6
@@ -2412,7 +2414,7 @@ Project/RBTermAgreeView.mm:147 -[RBTermAgreeView initWithFrame:termType:] @0x1c3
 Project/RBTermAgreeView.mm:420 -[RBTermAgreeView layoutSubviews] @0x1c664c binary 10 source 8
     only in binary: ['contentView', 'pastelView', 'setContentOffset:animated:', 'termTextView']
     only in source: ['alpha', 'setContentOffset:']
-Project/RBTermAgreeView.mm:598 -[RBTermAgreeView _hideAnimation] @0x1c6a3c binary 5 source 8
+Project/RBTermAgreeView.mm:604 -[RBTermAgreeView _hideAnimation] @0x1c6a3c binary 5 source 8
     only in binary: []
     only in source: ['removeFromSuperview', 'setAlpha:', 'setTermAgreeView:']
 Project/RBTermAgreeView.mm:513 -[RBTermAgreeView selectAgree] @0x1c7698 binary 4 source 2
@@ -2421,19 +2423,19 @@ Project/RBTermAgreeView.mm:513 -[RBTermAgreeView selectAgree] @0x1c7698 binary 4
 Project/RBTermAgreeView.mm:519 -[RBTermAgreeView selectDisAgree] @0x1c7744 binary 4 source 2
     only in binary: ['agreeButton', 'disAgreeButton']
     only in source: []
-Project/RBTermAgreeView.mm:576 -[RBTermAgreeView startLoadAnimation] @0x1c77f0 binary 5 source 4
+Project/RBTermAgreeView.mm:582 -[RBTermAgreeView startLoadAnimation] @0x1c77f0 binary 5 source 4
     only in binary: ['grayView']
     only in source: []
-Project/RBTermAgreeView.mm:583 -[RBTermAgreeView endLoadAnimation] @0x1c78a4 binary 5 source 4
+Project/RBTermAgreeView.mm:589 -[RBTermAgreeView endLoadAnimation] @0x1c78a4 binary 5 source 4
     only in binary: ['grayView']
     only in source: []
 Project/RBTermAgreeView.mm:474 -[RBTermAgreeView loadDetail] @0x1c7958 binary 11 source 14
     only in binary: ['dictionaryWithObjects:forKeys:count:', 'numberWithInteger:']
     only in source: ['endLoadAnimation', 'getDataInJSON', 'setTerms:', 'showConnectRetryOrCancel:', 'showTermView']
-Project/RBTermAgreeView.mm:525 -[RBTermAgreeView sendAgree] @0x1c813c binary 13 source 21
-    only in binary: ['dictionaryWithObjects:forKeys:count:', 'numberWithInteger:', 'objectAtIndexedSubscript:', 'startDownloadingWithProceed:success:failure:']
+Project/RBTermAgreeView.mm:525 -[RBTermAgreeView sendAgree] @0x1c813c binary 13 source 22
+    only in binary: ['dictionaryWithObjects:forKeys:count:', 'objectAtIndexedSubscript:', 'startDownloadingWithProceed:success:failure:']
     only in source: ['_hideAnimation', 'appDelegate', 'delegate', 'didFinishedSendAgree', 'endLoadAnimation']
-Project/RBTermAgreeView.mm:667 -[RBTermAgreeView alertView:clickedButtonAtIndex:] @0x1c9320 binary 9 source 7
+Project/RBTermAgreeView.mm:673 -[RBTermAgreeView alertView:clickedButtonAtIndex:] @0x1c9320 binary 9 source 7
     only in binary: ['agreeButton', 'disAgreeButton']
     only in source: []
 Project/RBNavigationController.m:14 -[RBNavigationController viewDidLoad] @0x1c9804 binary 3 source 2
@@ -2481,28 +2483,28 @@ Project/RBStoreManageViewController.m:507 -[RBStoreManageViewController tableVie
 Project/RBStoreManageViewController.m:529 -[RBStoreManageViewController tableView:titleForHeaderInSection:] @0x1d15b4 binary 5 source 4
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/RBStoreManageViewController.m:556 -[RBStoreManageViewController tableView:cellForRowAtIndexPath:] @0x1d175c binary 45 source 42
+Project/RBStoreManageViewController.m:556 -[RBStoreManageViewController tableView:cellForRowAtIndexPath:] @0x1d175c binary 45 source 41
     only in binary: ['addTarget:action:forControlEvents:', 'blackColor', 'clearColor', 'detailTextLabel', 'frame']
     only in source: ['1:', 'addTarget:action:pushCellButton:forControlEvents:', 'boldSystemFontOfSize:kCellTitleFontSizePad:', 'height', 'width']
-Project/RBStoreManageViewController.m:637 -[RBStoreManageViewController tableView:numberOfRowsInSection:] @0x1d2220 binary 3 source 2
+Project/RBStoreManageViewController.m:638 -[RBStoreManageViewController tableView:numberOfRowsInSection:] @0x1d2220 binary 3 source 2
     only in binary: ['objectAtIndex:']
     only in source: []
-Project/RBStoreManageViewController.m:658 -[RBStoreManageViewController numberOfSectionsInTableView:] @0x1d2434 binary 3 source 2
+Project/RBStoreManageViewController.m:659 -[RBStoreManageViewController numberOfSectionsInTableView:] @0x1d2434 binary 3 source 2
     only in binary: ['sectionList']
     only in source: []
-Project/RBStoreManageViewController.m:858 -[RBStoreManageViewController popoverControllerDidDismissPopover:] @0x1d2fc4 binary 3 source 1
+Project/RBStoreManageViewController.m:859 -[RBStoreManageViewController popoverControllerDidDismissPopover:] @0x1d2fc4 binary 3 source 1
     only in binary: ['leftBarButtonItem', 'navigationItem']
     only in source: []
-Project/RBStoreManageViewController.m:910 -[RBStoreManageViewController didPresentAlertView:] @0x1d41ac binary 6 source 2
+Project/RBStoreManageViewController.m:911 -[RBStoreManageViewController didPresentAlertView:] @0x1d41ac binary 6 source 2
     only in binary: ['keyWindow', 'presentedViewController', 'rootViewController', 'view']
     only in source: []
-Project/RBStoreManageViewController.m:830 -[RBStoreManageViewController downloadManagerCompleted:] @0x1d42ec binary 10 source 8
+Project/RBStoreManageViewController.m:831 -[RBStoreManageViewController downloadManagerCompleted:] @0x1d42ec binary 10 source 8
     only in binary: ['createMusicDataArray', 'setMusicDataArrayDirty']
     only in source: []
-Project/RBStoreManageViewController.m:851 -[RBStoreManageViewController downloadManagerProceed:] @0x1d454c binary 6 source 2
+Project/RBStoreManageViewController.m:852 -[RBStoreManageViewController downloadManagerProceed:] @0x1d454c binary 6 source 2
     only in binary: ['dlManager', 'modalDialog', 'parent', 'progressView']
     only in source: []
-Project/RBStoreManageViewController.m:925 -[RBStoreManageViewController viewWillAppear:] @0x1d4664 binary 7 source 5
+Project/RBStoreManageViewController.m:926 -[RBStoreManageViewController viewWillAppear:] @0x1d4664 binary 7 source 5
     only in binary: ['count', 'getPurchasedMusicDictionaris']
     only in source: []
 Project/RBStoreManageViewController.m:289 -[RBStoreManageViewController dealloc] @0x1d48c0 binary 10 source 7
@@ -2595,130 +2597,130 @@ Project/RBStoreDetailViewController.m:388 -[RBStoreDetailViewController storeDet
 Project/RBStoreDetailViewController.m:395 -[RBStoreDetailViewController switchToSpecialStore:] @0x1dc9d8 binary 7 source 6
     only in binary: ['setExtendNotePIDForOpenStore:']
     only in source: []
-Project/RBStorePageViewController.m:292 -[RBStorePageViewController initWithParent:] @0x1dcf88 binary 13 source 10
+Project/RBStorePageViewController.m:294 -[RBStorePageViewController initWithParent:] @0x1dcf88 binary 13 source 10
     only in binary: ['navigationItem', 'packListCtrl', 'tabBarItem']
     only in source: []
-Project/RBStorePageViewController.m:311 -[RBStorePageViewController loadView] @0x1dd25c binary 11 source 10
+Project/RBStorePageViewController.m:313 -[RBStorePageViewController loadView] @0x1dd25c binary 11 source 10
     only in binary: ['view', 'ذ<']
     only in source: ['colorWithRed:green:blue:alpha:']
-Project/RBStorePageViewController.m:1725 -[RBStorePageViewController sendUserAge] @0x1e0c40 binary 13 source 16
+Project/RBStorePageViewController.m:1733 -[RBStorePageViewController sendUserAge] @0x1e0c40 binary 13 source 16
     only in binary: ['dictionaryWithObjects:forKeys:count:', 'objectAtIndex:', 'purchaseLimitType']
     only in source: ['getDataInJSON', 'intValue', 'performSelectorOnMainThread:detailViewStartPurchase:withObject:waitUntilDone:', 'purchasingPackInfo', 'setTag:']
-Project/RBStorePageViewController.m:799 -[RBStorePageViewController packListDownloadSuccess:] @0x1e156c binary 60 source 52
+Project/RBStorePageViewController.m:801 -[RBStorePageViewController packListDownloadSuccess:] @0x1e156c binary 60 source 52
     only in binary: ['arrayWithObjects:', 'bounds', 'contentSize', 'countByEnumeratingWithState:objects:count:', 'dictionaryWithObjects:forKeys:count:']
     only in source: ['height', 'initWithImage:style:target:action:pushBarBtnRestore:', 'initWithTitle:style:target:action:goToTop:', 'initWithTitle:style:target:action:presentGenreSelect:']
-Project/RBStorePageViewController.m:1320 -[RBStorePageViewController forceOpenPackDetailView] @0x1e26d0 binary 13 source 14
+Project/RBStorePageViewController.m:1328 -[RBStorePageViewController forceOpenPackDetailView] @0x1e26d0 binary 13 source 14
     only in binary: ['coverViewPad', 'getPackIDForOpenStore', 'intValue']
     only in source: ['navigationController', 'optionalProductsRequest', 'popViewControllerAnimated:', 'showDetailViewForPhone:']
-Project/RBStorePageViewController.m:970 -[RBStorePageViewController packViewSelected:] @0x1e3018 binary 9 source 6
+Project/RBStorePageViewController.m:978 -[RBStorePageViewController packViewSelected:] @0x1e3018 binary 9 source 6
     only in binary: ['currentGenre', 'intValue', 'objectAtIndex:']
     only in source: []
-Project/RBStorePageViewController.m:1347 -[RBStorePageViewController openPackDetailViewWithPackId:] @0x1e31ac binary 18 source 20
+Project/RBStorePageViewController.m:1355 -[RBStorePageViewController openPackDetailViewWithPackId:] @0x1e31ac binary 18 source 20
     only in binary: ['beginIgnoringInteractionEvents', 'coverViewPad', 'genrePopoverCtrl']
     only in source: ['appDelegate', 'getPackInfo:', 'loadInfo', 'packListCtrl', 'setPackInfo:']
-Project/RBStorePageViewController.m:1388 -[RBStorePageViewController openDetailAnimStop:finished:context:] @0x1e3848 binary 12 source 7
+Project/RBStorePageViewController.m:1396 -[RBStorePageViewController openDetailAnimStop:finished:context:] @0x1e3848 binary 12 source 7
     only in binary: ['currentGenre', 'endIgnoringInteractionEvents', 'index', 'intValue', 'objectAtIndex:']
     only in source: []
-Project/RBStorePageViewController.m:1436 -[RBStorePageViewController storePromotionViewTaped:PackID:] @0x1e3a48 binary 26 source 23
+Project/RBStorePageViewController.m:1444 -[RBStorePageViewController storePromotionViewTaped:PackID:] @0x1e3a48 binary 26 source 23
     only in binary: ['beginIgnoringInteractionEvents', 'coverViewPad', 'packDetailViewPad']
     only in source: []
-Project/RBStorePageViewController.m:1400 -[RBStorePageViewController openDetailAnimStopFromPromotion:finished:context:] @0x1e41a8 binary 9 source 8
+Project/RBStorePageViewController.m:1408 -[RBStorePageViewController openDetailAnimStopFromPromotion:finished:context:] @0x1e41a8 binary 9 source 8
     only in binary: ['endIgnoringInteractionEvents']
     only in source: []
-Project/RBStorePageViewController.m:1479 -[RBStorePageViewController handleTapCoverView:] @0x1e432c binary 6 source 15
+Project/RBStorePageViewController.m:1487 -[RBStorePageViewController handleTapCoverView:] @0x1e432c binary 6 source 15
     only in binary: ['beginIgnoringInteractionEvents']
     only in source: ['genreButton', 'promotionView', 'removePackInfo', 'restoreButton', 'setAlpha:']
-Project/RBStorePageViewController.m:1680 -[RBStorePageViewController checkAttainLimitPurchase:] @0x1e50ac binary 11 source 9
+Project/RBStorePageViewController.m:1688 -[RBStorePageViewController checkAttainLimitPurchase:] @0x1e50ac binary 11 source 9
     only in binary: ['price', 'purchaseLimitType', 'totalPurchase']
     only in source: ['setPurchaseLimitTypeSelectView:']
-Project/RBStorePageViewController.m:1708 -[RBStorePageViewController detailViewStartPurchase:] @0x1e52f8 binary 14 source 12
+Project/RBStorePageViewController.m:1716 -[RBStorePageViewController detailViewStartPurchase:] @0x1e52f8 binary 14 source 12
     only in binary: ['labelMessage', 'setDelegate:']
     only in source: []
-Project/RBStorePageViewController.m:2429 -[RBStorePageViewController storeDialogCancel:] @0x1e5658 binary 10 source 9
+Project/RBStorePageViewController.m:2435 -[RBStorePageViewController storeDialogCancel:] @0x1e5658 binary 10 source 9
     only in binary: ['navigationController']
     only in source: []
-Project/RBStorePageViewController.m:1869 -[RBStorePageViewController updateMusicInfo:Save:] @0x1e5890 binary 6 source 4
+Project/RBStorePageViewController.m:1877 -[RBStorePageViewController updateMusicInfo:Save:] @0x1e5890 binary 6 source 4
     only in binary: ['countByEnumeratingWithState:objects:count:', 'savePurchasedMusics']
     only in source: []
-Project/RBStorePageViewController.m:1777 -[RBStorePageViewController purchaseSucceeded:] @0x1e60c4 binary 22 source 16
+Project/RBStorePageViewController.m:1785 -[RBStorePageViewController purchaseSucceeded:] @0x1e60c4 binary 22 source 16
     only in binary: ['parent', 'price', 'save', 'setDelegate:', 'setTotalPurchase:']
     only in source: []
-Project/RBStorePageViewController.m:1800 -[RBStorePageViewController purchaseFailed:error:] @0x1e6564 binary 9 source 8
+Project/RBStorePageViewController.m:1808 -[RBStorePageViewController purchaseFailed:error:] @0x1e6564 binary 9 source 8
     only in binary: ['setDelegate:']
     only in source: []
-Project/RBStorePageViewController.m:2295 -[RBStorePageViewController alertView:clickedButtonAtIndex:] @0x1e8110 binary 30 source 26
+Project/RBStorePageViewController.m:2303 -[RBStorePageViewController alertView:clickedButtonAtIndex:] @0x1e8110 binary 30 source 26
     only in binary: ['beginRestore', 'labelMessage', 'setDelegate:', 'setPurchaseLimitType:']
     only in source: []
-Project/RBStorePageViewController.m:2357 -[RBStorePageViewController didPresentAlertView:] @0x1e8608 binary 6 source 3
+Project/RBStorePageViewController.m:2365 -[RBStorePageViewController didPresentAlertView:] @0x1e8608 binary 6 source 3
     only in binary: ['keyWindow', 'presentedViewController', 'rootViewController']
     only in source: []
-Project/RBStorePageViewController.m:2115 -[RBStorePageViewController restoreSucceeded] @0x1e8748 binary 19 source 17
+Project/RBStorePageViewController.m:2123 -[RBStorePageViewController restoreSucceeded] @0x1e8748 binary 19 source 17
     only in binary: ['parent', 'purchaseCheckedProducts']
     only in source: []
-Project/RBStorePageViewController.m:2212 -[RBStorePageViewController downloadManagerStartTask:] @0x1e8e64 binary 9 source 5
+Project/RBStorePageViewController.m:2220 -[RBStorePageViewController downloadManagerStartTask:] @0x1e8e64 binary 9 source 5
     only in binary: ['labelMessage', 'modalDialog', 'objectAtIndexedSubscript:', 'parent']
     only in source: []
-Project/RBStorePageViewController.m:2221 -[RBStorePageViewController downloadManagerCompleted:] @0x1e9058 binary 11 source 10
+Project/RBStorePageViewController.m:2229 -[RBStorePageViewController downloadManagerCompleted:] @0x1e9058 binary 11 source 10
     only in binary: ['navigationController']
     only in source: []
-Project/RBStorePageViewController.m:2245 -[RBStorePageViewController downloadManagerProceed:] @0x1e931c binary 6 source 2
+Project/RBStorePageViewController.m:2253 -[RBStorePageViewController downloadManagerProceed:] @0x1e931c binary 6 source 2
     only in binary: ['downloadManager', 'modalDialog', 'parent', 'progressView']
     only in source: []
-Project/RBStorePageViewController.m:2099 -[RBStorePageViewController restoreDownloadCancel] @0x1e942c binary 10 source 9
+Project/RBStorePageViewController.m:2107 -[RBStorePageViewController restoreDownloadCancel] @0x1e942c binary 10 source 9
     only in binary: ['navigationController']
     only in source: []
-Project/RBStorePageViewController.m:981 -[RBStorePageViewController numPackRows] @0x1e9628 binary 2 source 1
+Project/RBStorePageViewController.m:989 -[RBStorePageViewController numPackRows] @0x1e9628 binary 2 source 1
     only in binary: ['currentGenre']
     only in source: []
-Project/RBStorePageViewController.m:1170 -[RBStorePageViewController tableView:numberOfRowsInSection:] @0x1eb728 binary 3 source 2
+Project/RBStorePageViewController.m:1178 -[RBStorePageViewController tableView:numberOfRowsInSection:] @0x1eb728 binary 3 source 2
     only in binary: ['packListCtrl']
     only in source: []
-Project/RBStorePageViewController.m:1182 -[RBStorePageViewController tableView:heightForRowAtIndexPath:] @0x1eb838 binary 2 source 3
+Project/RBStorePageViewController.m:1190 -[RBStorePageViewController tableView:heightForRowAtIndexPath:] @0x1eb838 binary 2 source 3
     only in binary: []
     only in source: ['section']
-Project/RBStorePageViewController.m:1231 -[RBStorePageViewController tableView:didSelectRowAtIndexPath:] @0x1ebcfc binary 8 source 5
+Project/RBStorePageViewController.m:1239 -[RBStorePageViewController tableView:didSelectRowAtIndexPath:] @0x1ebcfc binary 8 source 5
     only in binary: ['currentGenre', 'intValue', 'objectAtIndex:']
     only in source: []
-Project/RBStorePageViewController.m:1410 -[RBStorePageViewController showDetailViewForPhone:] @0x1ebe6c binary 14 source 12
+Project/RBStorePageViewController.m:1418 -[RBStorePageViewController showDetailViewForPhone:] @0x1ebe6c binary 14 source 12
     only in binary: ['init', 'setPackIDForOpenStore:']
     only in source: []
-Project/RBStorePageViewController.m:2253 -[RBStorePageViewController imageDownloader:didLoad:] @0x1ec2e8 binary 13 source 10
+Project/RBStorePageViewController.m:2261 -[RBStorePageViewController imageDownloader:didLoad:] @0x1ec2e8 binary 13 source 10
     only in binary: ['artworkView', 'leftPackView', 'rightPackView']
     only in source: []
-Project/RBStorePageViewController.m:2282 -[RBStorePageViewController stopDownloadArtworks] @0x1ecb34 binary 7 source 6
+Project/RBStorePageViewController.m:2290 -[RBStorePageViewController stopDownloadArtworks] @0x1ecb34 binary 7 source 6
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RBStorePageViewController.m:679 -[RBStorePageViewController viewWillAppear:] @0x1ecd54 binary 22 source 20
+Project/RBStorePageViewController.m:681 -[RBStorePageViewController viewWillAppear:] @0x1ecd54 binary 22 source 20
     only in binary: ['arrayWithObject:', 'frame', 'navigationController', 'whiteColor']
     only in source: ['respondsToSelector:setBackgroundImage:forBarMetrics:', 'width']
-Project/RBStorePageViewController.m:2464 -[RBStorePageViewController willAnimateRotationToInterfaceOrientation:duration:] @0x1ed9f8 binary 5 source 4
+Project/RBStorePageViewController.m:2470 -[RBStorePageViewController willAnimateRotationToInterfaceOrientation:duration:] @0x1ed9f8 binary 5 source 4
     only in binary: ['bounds', 'view']
     only in source: ['width']
-Project/RBStorePageViewController.m:776 -[RBStorePageViewController dealloc] @0x1edb6c binary 11 source 9
+Project/RBStorePageViewController.m:778 -[RBStorePageViewController dealloc] @0x1edb6c binary 11 source 9
     only in binary: ['dealloc', 'packDetailViewPad']
     only in source: []
-Project/RBStorePageViewController.m:1609 -[RBStorePageViewController hideGenreSelect:] @0x1ee610 binary 9 source 5
+Project/RBStorePageViewController.m:1617 -[RBStorePageViewController hideGenreSelect:] @0x1ee610 binary 9 source 5
     only in binary: ['leftBarButtonItem', 'navigationItem', 'restoreButton', 'topButton']
     only in source: []
-Project/RBStorePageViewController.m:1628 -[RBStorePageViewController showLoadingView] @0x1ee7a4 binary 12 source 14
+Project/RBStorePageViewController.m:1636 -[RBStorePageViewController showLoadingView] @0x1ee7a4 binary 12 source 14
     only in binary: []
     only in source: ['height', 'width']
-Project/RBStorePageViewController.m:1540 -[RBStorePageViewController setPlaySampleName:] @0x1eeb58 binary 2 source 1
+Project/RBStorePageViewController.m:1548 -[RBStorePageViewController setPlaySampleName:] @0x1eeb58 binary 2 source 1
     only in binary: ['sampleMusicLabel']
     only in source: []
-Project/RBStorePageViewController.m:1621 -[RBStorePageViewController popoverControllerDidDismissPopover:] @0x1eeca8 binary 5 source 1
+Project/RBStorePageViewController.m:1629 -[RBStorePageViewController popoverControllerDidDismissPopover:] @0x1eeca8 binary 5 source 1
     only in binary: ['leftBarButtonItem', 'navigationItem', 'restoreButton', 'topButton']
     only in source: []
-Project/RBStorePageViewController.m:2367 -[RBStorePageViewController storeDetailViewOpenItunesWithURL:] @0x1eedb0 binary 3 source 2
+Project/RBStorePageViewController.m:2375 -[RBStorePageViewController storeDetailViewOpenItunesWithURL:] @0x1eedb0 binary 3 source 2
     only in binary: ['viewController']
     only in source: []
-Project/RBStorePageViewController.m:2375 -[RBStorePageViewController openItunesWithURL:] @0x1eee74 binary 12 source 11
+Project/RBStorePageViewController.m:2383 -[RBStorePageViewController openItunesWithURL:] @0x1eee74 binary 12 source 10
     only in binary: ['init', 'view', 'window']
-    only in source: ['absoluteString', 'loadProductWithParameters:completionBlock:']
-Project/RBStorePageViewController.m:2404 -[RBStorePageViewController productViewControllerDidFinish:] @0x1ef24c binary 2 source 3
+    only in source: ['loadProductWithParameters:completionBlock:']
+Project/RBStorePageViewController.m:2410 -[RBStorePageViewController productViewControllerDidFinish:] @0x1ef24c binary 2 source 3
     only in binary: []
     only in source: ['setItunesViewCtrl:']
-Project/RBStorePageViewController.m:1883 -[RBStorePageViewController updateExtendNoteInfo:Save:] @0x1ef7c0 binary 3 source 2
+Project/RBStorePageViewController.m:1891 -[RBStorePageViewController updateExtendNoteInfo:Save:] @0x1ef7c0 binary 3 source 2
     only in binary: ['savePurchasedNotes']
     only in source: []
 Project/RBStorePackList.m:137 -[RBStorePackList numGenres] @0x1f09dc binary 2 source 1
@@ -2916,7 +2918,7 @@ Project/RBGameKitManager.m:47 -[RBGameKitManager loginGameCenter] @0x202d64 bina
 Project/RBGameKitManager.m:27 +[RBGameKitManager sharedInstance] @0x202be4 binary 2 source 1
     only in binary: ['init']
     only in source: []
-Project/RecommendWebViewController.m:54 -[RecommendWebViewController dealloc] @0x203110 binary 1 source 0
+Project/RecommendWebViewController.m:53 -[RecommendWebViewController dealloc] @0x203110 binary 1 source 0
     only in binary: ['dealloc']
     only in source: []
 Project/RecommendAdId.m:160 -[RecommendAdId getWithCountryCode:categoryId:error:] @0x203224 binary 12 source 10
@@ -2961,19 +2963,19 @@ Project/ApplilinkConsts.m:383 +[ApplilinkConsts checkUseSDKWithAdModel:adLocatio
 Project/ApplilinkURLConnection.m:15 -[ApplilinkURLConnection loadRequestWithRequest:delegate:] @0x20718c binary 3 source 5
     only in binary: []
     only in source: ['setConnectionDelegate:', 'setReceivedData:']
-Project/ApplilinkURLConnection.m:26 -[ApplilinkURLConnection connection:didReceiveResponse:] @0x207250 binary 1 source 3
+Project/ApplilinkURLConnection.m:27 -[ApplilinkURLConnection connection:didReceiveResponse:] @0x207250 binary 1 source 3
     only in binary: []
     only in source: ['receivedData', 'setResponseData:']
-Project/ApplilinkURLConnection.m:31 -[ApplilinkURLConnection connection:didReceiveData:] @0x2072a8 binary 1 source 2
+Project/ApplilinkURLConnection.m:33 -[ApplilinkURLConnection connection:didReceiveData:] @0x2072a8 binary 1 source 2
     only in binary: []
     only in source: ['receivedData']
-Project/ApplilinkURLConnection.m:35 -[ApplilinkURLConnection connection:didFailWithError:] @0x2072c8 binary 1 source 4
+Project/ApplilinkURLConnection.m:37 -[ApplilinkURLConnection connection:didFailWithError:] @0x2072c8 binary 1 source 4
     only in binary: []
     only in source: ['connectionDelegate', 'respondsToSelector:failLoadWithError:', 'setReceivedData:']
-Project/ApplilinkURLConnection.m:43 -[ApplilinkURLConnection connectionDidFinishLoading:] @0x207394 binary 3 source 8
+Project/ApplilinkURLConnection.m:45 -[ApplilinkURLConnection connectionDidFinishLoading:] @0x207394 binary 3 source 8
     only in binary: []
     only in source: ['connectionDelegate', 'receivedData', 'respondsToSelector:finishLoadWithResponse:', 'setReceivedData:', 'setResponseData:']
-Project/ApplilinkURLConnection.m:54 -[ApplilinkURLConnection connection:willSendRequest:redirectResponse:] @0x20749c binary 2 source 5
+Project/ApplilinkURLConnection.m:56 -[ApplilinkURLConnection connection:willSendRequest:redirectResponse:] @0x20749c binary 2 source 5
     only in binary: []
     only in source: ['connectionDelegate', 'respondsToSelector:finishLoadWithResponse:', 'respondsToSelector:redirectStartLoad:']
 Project/RewardCore.m:169 -[RewardCore clearInitialize] @0x207acc binary 3 source 2
@@ -3243,55 +3245,55 @@ Project/RecommendDebug.m:180 +[RecommendDebug getFrequencyStatus] @0x21c580 bina
 Project/RecommendDebug.m:194 +[RecommendDebug getDisplaySpec] @0x21c704 binary 8 source 5
     only in binary: ['objectForKey:', 'setObject:forKey:', 'standardUserDefaults']
     only in source: []
-Project/RewardWebViewController.m:524 -[RewardWebViewController viewDealloc] @0x21d1bc binary 3 source 10
+Project/RewardWebViewController.m:525 -[RewardWebViewController viewDealloc] @0x21d1bc binary 3 source 10
     only in binary: []
     only in source: ['indicator', 'navigationBar', 'setIndicator:', 'setNavigationBar:', 'setParentView:']
-Project/RewardWebViewController.m:378 -[RewardWebViewController loadRequestWithURL:parameters:] @0x21d2e4 binary 13 source 14
+Project/RewardWebViewController.m:379 -[RewardWebViewController loadRequestWithURL:parameters:] @0x21d2e4 binary 13 source 14
     only in binary: ['statusBarOrientation']
     only in source: ['setWebViewStatus:', 'webView']
-Project/RewardWebViewController.m:511 -[RewardWebViewController appliListClosed] @0x21d580 binary 1 source 5
+Project/RewardWebViewController.m:512 -[RewardWebViewController appliListClosed] @0x21d580 binary 1 source 5
     only in binary: []
     only in source: ['isLoading', 'stopLoading', 'viewDealloc', 'webView']
-Project/RewardWebViewController.m:407 -[RewardWebViewController updateIndicator:] @0x21d620 binary 3 source 5
+Project/RewardWebViewController.m:408 -[RewardWebViewController updateIndicator:] @0x21d620 binary 3 source 5
     only in binary: []
     only in source: ['close', 'indicator']
-Project/RewardWebViewController.m:424 -[RewardWebViewController activeWebView] @0x21d6e4 binary 1 source 2
+Project/RewardWebViewController.m:425 -[RewardWebViewController activeWebView] @0x21d6e4 binary 1 source 2
     only in binary: []
     only in source: ['indicator']
-Project/RewardWebViewController.m:458 -[RewardWebViewController webViewDidStartLoad:] @0x21d71c binary 1 source 3
+Project/RewardWebViewController.m:459 -[RewardWebViewController webViewDidStartLoad:] @0x21d71c binary 1 source 3
     only in binary: []
     only in source: ['setWebViewStatus:', 'webViewStatus']
-Project/RewardWebViewController.m:466 -[RewardWebViewController webViewDidFinishLoad:] @0x21d748 binary 7 source 6
+Project/RewardWebViewController.m:467 -[RewardWebViewController webViewDidFinishLoad:] @0x21d748 binary 7 source 6
     only in binary: ['URL', 'request']
     only in source: ['setWebViewStatus:']
-Project/RewardWebViewController.m:478 -[RewardWebViewController webView:didFailLoadWithError:] @0x21d87c binary 8 source 9
+Project/RewardWebViewController.m:479 -[RewardWebViewController webView:didFailLoadWithError:] @0x21d87c binary 8 source 9
     only in binary: []
     only in source: ['webViewStatus']
-Project/RewardWebViewController.m:433 -[RewardWebViewController webView:shouldStartLoadWithRequest:navigationType:] @0x21da8c binary 7 source 6
+Project/RewardWebViewController.m:434 -[RewardWebViewController webView:shouldStartLoadWithRequest:navigationType:] @0x21da8c binary 7 source 6
     only in binary: ['URL']
     only in source: []
-Project/RewardWebViewController.m:562 -[RewardWebViewController appListDidStart] @0x21dcb4 binary 1 source 2
+Project/RewardWebViewController.m:563 -[RewardWebViewController appListDidStart] @0x21dcb4 binary 1 source 2
     only in binary: []
     only in source: ['sdkDelegate']
-Project/RewardWebViewController.m:569 -[RewardWebViewController appListDidAppear] @0x21dd58 binary 1 source 2
+Project/RewardWebViewController.m:570 -[RewardWebViewController appListDidAppear] @0x21dd58 binary 1 source 2
     only in binary: []
     only in source: ['sdkDelegate']
-Project/RewardWebViewController.m:576 -[RewardWebViewController appListDidDisappear] @0x21ddfc binary 1 source 3
+Project/RewardWebViewController.m:577 -[RewardWebViewController appListDidDisappear] @0x21ddfc binary 1 source 3
     only in binary: []
     only in source: ['sdkDelegate', 'setSdkDelegate:']
-Project/RewardWebViewController.m:586 -[RewardWebViewController appListFailLoadWithError:] @0x21deac binary 1 source 4
+Project/RewardWebViewController.m:587 -[RewardWebViewController appListFailLoadWithError:] @0x21deac binary 1 source 4
     only in binary: []
     only in source: ['respondsToSelector:failOpenNoticeWithError:', 'sdkDelegate', 'setSdkDelegate:']
-Project/RewardWebViewController.m:596 -[RewardWebViewController appListFailLinkWithError:] @0x21df70 binary 1 source 3
+Project/RewardWebViewController.m:597 -[RewardWebViewController appListFailLinkWithError:] @0x21df70 binary 1 source 3
     only in binary: []
     only in source: ['respondsToSelector:failLinkNoticeWithError:', 'sdkDelegate']
-Project/RewardWebViewController.m:233 -[RewardWebViewController willAnimateRotationToInterfaceOrientation:duration:] @0x21efec binary 3 source 2
+Project/RewardWebViewController.m:234 -[RewardWebViewController willAnimateRotationToInterfaceOrientation:duration:] @0x21efec binary 3 source 2
     only in binary: ['statusBarOrientation']
     only in source: []
-Project/RewardWebViewController.m:608 -[RewardWebViewController hasParentViewController:] @0x21f068 binary 1 source 3
+Project/RewardWebViewController.m:609 -[RewardWebViewController hasParentViewController:] @0x21f068 binary 1 source 3
     only in binary: []
     only in source: ['hasParentViewController:', 'nextResponder']
-Project/RewardWebViewController.m:539 -[RewardWebViewController clearDelegate] @0x21f19c binary 1 source 3
+Project/RewardWebViewController.m:540 -[RewardWebViewController clearDelegate] @0x21f19c binary 1 source 3
     only in binary: []
     only in source: ['setSdkDelegate:', 'webView']
 Project/RewardWebViewController.m:181 -[RewardWebViewController dealloc] @0x21f1f8 binary 2 source 1
@@ -3330,22 +3332,22 @@ Project/ApplilinkIndicator.m:62 -[ApplilinkIndicator touchEventActived] @0x2201e
 Project/ApplilinkIndicator.m:67 -[ApplilinkIndicator dealloc] @0x220254 binary 1 source 0
     only in binary: ['dealloc']
     only in source: []
-Project/ApplilinkStore.m:81 -[ApplilinkStore showSKStore:appParam:delegate:] @0x220650 binary 6 source 3
+Project/ApplilinkStore.m:85 -[ApplilinkStore showSKStore:appParam:delegate:] @0x220650 binary 6 source 3
     only in binary: ['floatValue', 'init', 'systemVersion']
     only in source: []
-Project/ApplilinkStore.m:107 -[ApplilinkStore appStoreOpenedNoticeWithAppParam:] @0x220808 binary 1 source 2
+Project/ApplilinkStore.m:111 -[ApplilinkStore appStoreOpenedNoticeWithAppParam:] @0x220808 binary 1 source 2
     only in binary: []
     only in source: ['respondsToSelector:appStoreOpenedNoticeWithAppParam:']
-Project/ApplilinkStore.m:114 -[ApplilinkStore appStoreCloseNoticeWithAppParam:] @0x2208c8 binary 1 source 2
+Project/ApplilinkStore.m:118 -[ApplilinkStore appStoreCloseNoticeWithAppParam:] @0x2208c8 binary 1 source 2
     only in binary: []
     only in source: ['respondsToSelector:appStoreCloseNoticeWithAppParam:']
-Project/ApplilinkStore.m:121 -[ApplilinkStore appStoreClosedNoticeWithAppParam:] @0x220988 binary 2 source 3
+Project/ApplilinkStore.m:125 -[ApplilinkStore appStoreClosedNoticeWithAppParam:] @0x220988 binary 2 source 3
     only in binary: []
     only in source: ['respondsToSelector:appStoreClosedNoticeWithAppParam:']
-Project/ApplilinkStore.m:134 -[ApplilinkStore appStoreFailLoadNoticeWithError:appParam:] @0x220a84 binary 2 source 3
+Project/ApplilinkStore.m:138 -[ApplilinkStore appStoreFailLoadNoticeWithError:appParam:] @0x220a84 binary 2 source 3
     only in binary: []
     only in source: ['respondsToSelector:appStoreFailLoadNoticeWithError:appParam:']
-Project/ApplilinkStore.m:71 +[ApplilinkStore sharedInstance] @0x2205c0 binary 2 source 1
+Project/ApplilinkStore.m:75 +[ApplilinkStore sharedInstance] @0x2205c0 binary 2 source 1
     only in binary: ['init']
     only in source: []
 Project/DestinationCore.m:26 -[DestinationCore destinationRegistWithCountryCode:url:delegate:] @0x220c20 binary 9 source 8
@@ -3357,22 +3359,22 @@ Project/ApplilinkDebug.m:54 +[ApplilinkDebug clearSession] @0x220f68 binary 2 so
 Project/ApplilinkDebug.m:59 +[ApplilinkDebug clearAdStatus] @0x220ff4 binary 2 source 1
     only in binary: ['clearAdStatus']
     only in source: []
-Project/ApplilinkWebAPI.m:122 -[ApplilinkWebAPI commonParameters] @0x221184 binary 1 source 0
+Project/ApplilinkWebAPI.m:129 -[ApplilinkWebAPI commonParameters] @0x221184 binary 1 source 0
     only in binary: ['dictionaryWithObjectsAndKeys:']
     only in source: []
-Project/ApplilinkWebAPI.m:126 -[ApplilinkWebAPI requestWithURL:method:parameters:timeout:cachePolicy:] @0x2211dc binary 7 source 9
+Project/ApplilinkWebAPI.m:136 -[ApplilinkWebAPI requestWithURL:method:parameters:timeout:cachePolicy:] @0x2211dc binary 7 source 9
     only in binary: ['genreID']
     only in source: ['requestForGetWithURL:parameters:', 'requestForPostWithURL:parameters:', 'setCachePolicy:']
-Project/ApplilinkWebAPI.m:518 -[ApplilinkWebAPI canUseNetworkRetry] @0x2238c4 binary 3 source 2
+Project/ApplilinkWebAPI.m:528 -[ApplilinkWebAPI canUseNetworkRetry] @0x2238c4 binary 3 source 2
     only in binary: ['systemVersion']
     only in source: []
-Project/ApplilinkWebAPI.m:115 -[ApplilinkWebAPI dealloc] @0x223954 binary 1 source 0
+Project/ApplilinkWebAPI.m:122 -[ApplilinkWebAPI dealloc] @0x223954 binary 1 source 0
     only in binary: ['dealloc']
     only in source: []
-Project/ApplilinkWebAPI.m:550 +[ApplilinkWebAPI requestSynchronousWithURL:method:parameters:cachePolicy:error:] @0x223604 binary 3 source 2
+Project/ApplilinkWebAPI.m:560 +[ApplilinkWebAPI requestSynchronousWithURL:method:parameters:cachePolicy:error:] @0x223604 binary 3 source 2
     only in binary: ['init']
     only in source: []
-Project/ApplilinkWebAPI.m:562 +[ApplilinkWebAPI responseFromContentsServer:request:data:finishedBlock:failedBlock:] @0x223704 binary 3 source 2
+Project/ApplilinkWebAPI.m:572 +[ApplilinkWebAPI responseFromContentsServer:request:data:finishedBlock:failedBlock:] @0x223704 binary 3 source 2
     only in binary: ['init']
     only in source: []
 Project/RewardWebAPI.m:125 +[RewardWebAPI postApplicationInstallWithPriority:callback:] @0x223990 binary 9 source 22
@@ -3438,25 +3440,25 @@ Project/RecommendAdData.m:250 +[RecommendAdData getLotteryBannerData] @0x2283c8 
 Project/RecommendAdData.m:277 +[RecommendAdData getLotteryInterstitialData] @0x228624 binary 6 source 5
     only in binary: ['objectForKey:']
     only in source: []
-Project/RecommendAdData.m:314 +[RecommendAdData getInterstitialSpecPriorityList] @0x228a18 binary 6 source 4
+Project/RecommendAdData.m:317 +[RecommendAdData getInterstitialSpecPriorityList] @0x228a18 binary 6 source 4
     only in binary: ['arrayWithObject:', 'objectForKey:']
     only in source: []
-Project/RecommendAdData.m:424 +[RecommendAdData getAdInterstitialUrlListTermForList:] @0x229ae8 binary 5 source 4
+Project/RecommendAdData.m:427 +[RecommendAdData getAdInterstitialUrlListTermForList:] @0x229ae8 binary 5 source 4
     only in binary: ['countByEnumeratingWithState:objects:count:', 'objectForKey:']
     only in source: ['addObject:']
-Project/RecommendAdData.m:440 +[RecommendAdData getAdDisplayCountDailyDictionary] @0x229ce4 binary 10 source 7
+Project/RecommendAdData.m:443 +[RecommendAdData getAdDisplayCountDailyDictionary] @0x229ce4 binary 10 source 7
     only in binary: ['init', 'objectForKey:', 'standardUserDefaults']
     only in source: []
-Project/RecommendAdData.m:457 +[RecommendAdData getAdDisplayCountTotalDictionary] @0x229ee0 binary 3 source 2
+Project/RecommendAdData.m:460 +[RecommendAdData getAdDisplayCountTotalDictionary] @0x229ee0 binary 3 source 2
     only in binary: ['standardUserDefaults']
     only in source: []
-Project/RecommendAdData.m:522 +[RecommendAdData shuffled:] @0x22a884 binary 4 source 3
+Project/RecommendAdData.m:525 +[RecommendAdData shuffled:] @0x22a884 binary 4 source 3
     only in binary: ['countByEnumeratingWithState:objects:count:']
     only in source: []
-Project/RecommendAdData.m:533 +[RecommendAdData lotteryInterstitialWithAdLocation:] @0x22aa30 binary 17 source 13
+Project/RecommendAdData.m:536 +[RecommendAdData lotteryInterstitialWithAdLocation:] @0x22aa30 binary 17 source 13
     only in binary: ['countByEnumeratingWithState:objects:count:', 'numberWithInt:', 'objectForKey:', 'standardUserDefaults', 'stopAnimation']
     only in source: ['isEqualToString:']
-Project/RecommendAdData.m:613 +[RecommendAdData getInstallFlgWithAdData:] @0x22b200 binary 8 source 6
+Project/RecommendAdData.m:616 +[RecommendAdData getInstallFlgWithAdData:] @0x22b200 binary 8 source 6
     only in binary: ['objectForKey:', 'sharedApplication']
     only in source: []
 Project/ShadeView.m:39 -[ShadeView touchesEnded:withEvent:] @0x22b55c binary 1 source 2
@@ -3537,49 +3539,49 @@ Project/ApplilinkUdid.m:867 +[ApplilinkUdid getAdUdid] @0x22ea4c binary 3 source
 Project/RecommendWebAPI.m:187 +[RecommendWebAPI checkLoginWithCallback:] @0x22ef60 binary 6 source 10
     only in binary: []
     only in source: ['boolValue', 'code', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:245 +[RecommendWebAPI startLoginWithCallback:] @0x22f3c8 binary 11 source 15
+Project/RecommendWebAPI.m:233 +[RecommendWebAPI startLoginWithCallback:] @0x22f3c8 binary 11 source 15
     only in binary: ['init']
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'loginErrorForResponse:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:300 +[RecommendWebAPI getAdDetailWithCallback:] @0x22f958 binary 16 source 25
+Project/RecommendWebAPI.m:278 +[RecommendWebAPI getAdDetailWithCallback:] @0x22f958 binary 16 source 25
     only in binary: []
     only in source: ['archivedDataWithRootObject:', 'boolValue', 'dateByAddingTimeInterval:', 'intValue', 'isKindOfClass:']
-Project/RecommendWebAPI.m:397 +[RecommendWebAPI installAppliListWithCallBack:] @0x2301d8 binary 3 source 11
+Project/RecommendWebAPI.m:363 +[RecommendWebAPI installAppliListWithCallBack:] @0x2301d8 binary 3 source 11
     only in binary: []
     only in source: ['appAuthSessionRegenerateWithBlock:', 'boolValue', 'intValue', 'isEqualToString:', 'isKindOfClass:']
-Project/RecommendWebAPI.m:484 +[RecommendWebAPI appliListWithParameters:callBack:] @0x230830 binary 5 source 10
+Project/RecommendWebAPI.m:436 +[RecommendWebAPI appliListWithParameters:callBack:] @0x230830 binary 5 source 10
     only in binary: []
     only in source: ['boolValue', 'errorForResponse:errorCode:kind:', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:535 +[RecommendWebAPI postApplicationInstallWithAdIdFrom:categoryId:adType:priority:callback:] @0x230dd4 binary 10 source 13
+Project/RecommendWebAPI.m:479 +[RecommendWebAPI postApplicationInstallWithAdIdFrom:categoryId:adType:priority:callback:] @0x230dd4 binary 10 source 13
     only in binary: []
     only in source: ['boolValue', 'errorForResponse:errorCode:kind:', 'intValue']
-Project/RecommendWebAPI.m:600 +[RecommendWebAPI getBannerDetailWithAdModel:callback:] @0x231474 binary 9 source 15
+Project/RecommendWebAPI.m:536 +[RecommendWebAPI getBannerDetailWithAdModel:callback:] @0x231474 binary 9 source 15
     only in binary: []
     only in source: ['boolValue', 'date', 'dateByAddingTimeInterval:', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:674 +[RecommendWebAPI readRegistWithAdType:adIdList:callback:] @0x231af8 binary 8 source 11
+Project/RecommendWebAPI.m:600 +[RecommendWebAPI readRegistWithAdType:adIdList:callback:] @0x231af8 binary 8 source 11
     only in binary: ['setObject:forKey:']
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:728 +[RecommendWebAPI getUnreadCountWithAdModel:adLocation:callback:] @0x231f34 binary 8 source 12
+Project/RecommendWebAPI.m:646 +[RecommendWebAPI getUnreadCountWithAdModel:adLocation:callback:] @0x231f34 binary 8 source 12
     only in binary: []
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:786 +[RecommendWebAPI getPreInfoWithAdModel:adLocation:callback:] @0x232418 binary 9 source 12
+Project/RecommendWebAPI.m:694 +[RecommendWebAPI getPreInfoWithAdModel:adLocation:callback:] @0x232418 binary 9 source 12
     only in binary: ['numberWithInt:']
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:910 +[RecommendWebAPI clickRegistWithAdIdFrom:adIdTo:adModel:callback:] @0x23327c binary 7 source 11
+Project/RecommendWebAPI.m:810 +[RecommendWebAPI clickRegistWithAdIdFrom:adIdTo:adModel:callback:] @0x23327c binary 7 source 11
     only in binary: []
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:956 +[RecommendWebAPI appStartWithAdIdFrom:adIdTo:adType:callback:] @0x233760 binary 6 source 10
+Project/RecommendWebAPI.m:850 +[RecommendWebAPI appStartWithAdIdFrom:adIdTo:adType:callback:] @0x233760 binary 6 source 10
     only in binary: []
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:1010 +[RecommendWebAPI allAdDataWithCallBack:] @0x233bac binary 3 source 8
+Project/RecommendWebAPI.m:896 +[RecommendWebAPI allAdDataWithCallBack:] @0x233bac binary 3 source 8
     only in binary: []
     only in source: ['boolValue', 'errorForResponse:errorCode:kind:', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:']
-Project/RecommendWebAPI.m:1059 +[RecommendWebAPI layoutIndexWithCallback:] @0x2340ac binary 3 source 8
+Project/RecommendWebAPI.m:937 +[RecommendWebAPI layoutIndexWithCallback:] @0x2340ac binary 3 source 8
     only in binary: []
     only in source: ['boolValue', 'intValue', 'isKindOfClass:', 'malformedErrorForResponse:', 'setTemplateList:']
-Project/RecommendWebAPI.m:1103 +[RecommendWebAPI clickRegistWithAdIdFrom:adIdTo:adModel:] @0x234430 binary 9 source 8
+Project/RecommendWebAPI.m:973 +[RecommendWebAPI clickRegistWithAdIdFrom:adIdTo:adModel:] @0x234430 binary 9 source 8
     only in binary: ['init']
     only in source: []
-Project/RecommendWebAPI.m:1123 +[RecommendWebAPI appStartWithAdIdFrom:adIdTo:adType:] @0x234670 binary 9 source 8
+Project/RecommendWebAPI.m:993 +[RecommendWebAPI appStartWithAdIdFrom:adIdTo:adType:] @0x234670 binary 9 source 8
     only in binary: ['init']
     only in source: []
 Project/Crypto.m:48 +[Crypto sha1:] @0x23496c binary 6 source 6
@@ -3759,19 +3761,19 @@ Project/RecommendAdAreaView.m:111 -[RecommendAdAreaView dealloc] @0x2413e0 binar
 Project/RecommendAdCache.m:115 +[RecommendAdCache getAllAdStatus] @0x2417dc binary 5 source 8
     only in binary: []
     only in source: ['clearCacheBannerImage', 'getAllAdDataWithCallBack:', 'getTemplateFiles']
-Project/RecommendAdCache.m:139 +[RecommendAdCache getAllAdDataWithCallBack:] @0x241c28 binary 2 source 3
+Project/RecommendAdCache.m:140 +[RecommendAdCache getAllAdDataWithCallBack:] @0x241c28 binary 2 source 3
     only in binary: []
     only in source: ['allAdDataWithCallBack:']
-Project/RecommendAdCache.m:394 +[RecommendAdCache createHtmlWithAdModel:adLocation:verticalAlign:] @0x243938 binary 18 source 16
+Project/RecommendAdCache.m:390 +[RecommendAdCache createHtmlWithAdModel:adLocation:verticalAlign:] @0x243938 binary 18 source 16
     only in binary: ['objectAtIndex:', 'objectForKey:']
     only in source: []
-Project/RecommendAdCache.m:556 +[RecommendAdCache setAdDisplayCountDailyWithAdId:] @0x2448c8 binary 21 source 17
+Project/RecommendAdCache.m:552 +[RecommendAdCache setAdDisplayCountDailyWithAdId:] @0x2448c8 binary 21 source 17
     only in binary: ['init', 'numberWithInt:', 'objectForKey:', 'secondsFromGMT']
     only in source: []
-Project/RecommendAdCache.m:592 +[RecommendAdCache setAdDisplayCountTotalWithAdId:] @0x244df8 binary 11 source 9
+Project/RecommendAdCache.m:588 +[RecommendAdCache setAdDisplayCountTotalWithAdId:] @0x244df8 binary 11 source 9
     only in binary: ['numberWithInt:', 'objectForKey:']
     only in source: []
-Project/RecommendAdCache.m:639 +[RecommendAdCache getHtmlAdDataWithAdModel:adLocation:] @0x24528c binary 5 source 4
+Project/RecommendAdCache.m:635 +[RecommendAdCache getHtmlAdDataWithAdModel:adLocation:] @0x24528c binary 5 source 4
     only in binary: ['objectForKey:']
     only in source: []
 Project/RecommendWebView.m:60 -[RecommendWebView setInitParam] @0x2454f4 binary 5 source 4
