@@ -244,6 +244,10 @@ void BoundsEffectLayer::SetBoundsEffectSprite(const S_VECTOR2 *pPosition,
 
     m_pSprite->SetSpritePosition(nIndex, *pPosition);
     m_pSprite->SetSpriteAnchor(nIndex, S_VECTOR2{kEffectAnchor, kEffectAnchor});
+    // The width really is the anchor value and not the size: the binary loads 84 once at 0x175934,
+    // passes it as both anchor components, and then reuses that same register as the width at
+    // 0x175954 while loading 168 only for the height. The sprite is therefore half as wide as it
+    // is tall and sits entirely left of its position. Faithful, however odd it reads.
     m_pSprite->SetSpriteSize(nIndex, S_VECTOR2{kEffectAnchor, kEffectSize});
     m_pSprite->SetSpriteUvOrigin(nIndex, *pUvOrigin);
     m_pSprite->SetSpriteUvSize(nIndex, S_VECTOR2{kEffectUvSizeU, kEffectUvSizeV});
