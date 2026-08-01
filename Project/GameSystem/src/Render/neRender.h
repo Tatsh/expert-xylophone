@@ -173,6 +173,11 @@ extern C_RENDER g_globalSceneRoot;
 
 } // namespace ne
 
+#if RBPDBG
+// Frames drawn so far; diagnostics use it to capture exactly one of them.
+extern int g_nDebugFrameCounter;
+#endif
+
 // code: language=C++
 // kate: hl C++;
 // vim: set ft=cpp :

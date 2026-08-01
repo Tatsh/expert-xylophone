@@ -2,6 +2,7 @@
 
 #import "engineruntime.h"
 #import "matrixmath.h"
+#include "neDebugLog.h"
 
 namespace ne {
 
@@ -156,8 +157,17 @@ void C_RENDER::TraverseChildren() {
 
 } // namespace ne
 
+#if RBPDBG
+// One complete frame of sprite placements is worth more than a bounded burst spread across many:
+// it shows every item drawn together, so a misplaced one can be compared against its neighbours
+// rather than against memory. The counter advances once per frame and the instancer dumps itself
+// on the chosen one, by which time the play field has settled.
+int g_nDebugFrameCounter = 0;
+#endif
+
 /** @ghidraAddress 0x29d58 */
 void RenderGlobalSceneTree() {
+    NE_DBG(++g_nDebugFrameCounter);
     // The binary guards this with a child-head check, but TraverseChildren already returns early
     // when the root has no children, so the guard is redundant.
     ne::g_globalSceneRoot.TraverseChildren();
