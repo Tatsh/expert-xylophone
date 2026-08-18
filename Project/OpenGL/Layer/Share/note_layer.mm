@@ -169,14 +169,16 @@ void NoteLayer::Update(float flDelta) {
         static_cast<float>(static_cast<double>(m_aScrollPhase[kPhaseA]) * kPhaseToRadians);
 
     // The global fade is a triangle wave over phase C: it rises to one before the midpoint and
-    // falls back after it, clamped to the unit interval, then scaled to an alpha.
+    // falls back after it, clamped to the unit interval, then scaled to an alpha. The binary folds
+    // the additive constant into the shared fadd whose operand differs per branch (1.0 rising, 0.5
+    // falling); there is no separate unconditional addition. @ghidraAddress 0x188ddc
     float flFade;
     if (m_aScrollPhase[kPhaseC] < kFadeMidpoint) {
         flFade = m_aScrollPhase[kPhaseC] / kFadeRiseDivisor * kFadeHalf + kFadeOne;
     } else {
-        flFade = (m_aScrollPhase[kPhaseC] + kFadeFallOffset) / kFadeFallDivisor * kFadeHalf;
+        flFade =
+            (m_aScrollPhase[kPhaseC] + kFadeFallOffset) / kFadeFallDivisor * kFadeHalf + kFadeHalf;
     }
-    flFade += kFadeHalf;
     flFade += flFade;
     if (flFade < 0.0f) {
         flFade = 0.0f;
