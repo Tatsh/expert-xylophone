@@ -1326,9 +1326,9 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
 
     if (!self.clipTargetForTouch) {
         // A spotlight that does not pass touches through: any tap advances the step, skipping the
-        // double-button step on the iPad (wide) layout.
+        // double-button step on the phone (narrow) layout, which has no DOUBLE-play button.
         self.tutorialStatus = self.tutorialStatus + 1;
-        if (IsPad() && self.tutorialStatus == kTutorialStepDoubleButton) {
+        if (!IsPad() && self.tutorialStatus == kTutorialStepDoubleButton) {
             self.tutorialStatus = self.tutorialStatus + 1;
         }
         [self startTutorialWithType:self.tutorialStatus withAnimation:YES];
