@@ -329,7 +329,7 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
     // by.
     const int nHalfHeight =
         (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
-    if (IsPad()) {
+    if (!IsPad()) {
         // Portrait: a fixed X with the two band Y positions taken from the layout table.
         const float aBandY[kSideCount] = {
             static_cast<float>(kPortraitBandBaseTop - g_nPlayfieldCentreSplit),
@@ -376,7 +376,7 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
 void ReflecGaugeLayer::EmitBaseSprite(unsigned int nBatch, int nAlpha) {
     // The base descriptor is selected by orientation and gauge mode.
     GaugeSpriteDescriptor descriptor;
-    if (IsPad()) {
+    if (!IsPad()) {
         descriptor = kBaseSpritePortrait;
     } else if (m_nGaugeStyle == 0) {
         descriptor = kBaseSpriteDefault;
@@ -560,9 +560,6 @@ void ReflecGaugeLayer::UpdateGaugeBar(float flDelta) {
         const float flFrac = side.flDisplayValue - static_cast<float>(nWholeCells);
         const int nExtra = static_cast<double>(flFrac) > kCellFillThreshold ? 1 : 0;
         const int nCellCount = std::min(nWholeCells + nExtra, kMaxCells);
-        if (m_nGaugeStyle == 0) {
-            continue;
-        }
         for (int nCell = 0; nCell < nCellCount; ++nCell) {
             // The last cell shows the fractional fill; the rest are full.
             const float flCellFill =
