@@ -966,11 +966,13 @@ void ColetteThemeLayer::Update(float flDelta) {
         m_bGradeVisible = false;
     }
 
-    // The base backdrop sprite: its scale-Y and alpha both come from the base curve at the clock.
+    // The base backdrop sprite: drawn at full scale, with only its alpha driven by the base curve
+    // at the clock. The binary loads 1.0 into both scale registers (fmov s0,#1.0 then mov s1,s0),
+    // so the curve is consumed by the alpha alone, not the vertical scale.
     const float flBaseCurve = CalculateCurveInterpolation(kFcBaseCurve, kFcBaseCurvePairs, flClock);
     const S_VECTOR2 origin{0.0f, 0.0f};
     EmitFcSprite(1.0f,
-                 flBaseCurve,
+                 1.0f,
                  0.0f,
                  kFcBaseSlot,
                  &origin,
