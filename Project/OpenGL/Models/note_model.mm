@@ -452,6 +452,11 @@ void NoteModel::HandleReflect(int nDirection) {
     const int nFlippedEdge = nDirection < 0 ? nEdgeNeg : nEdgePos;
     const int nEdge = IsSideFlipped() == 0 ? nForwardEdge : nFlippedEdge;
 
+    // Whether this reflect exhausted the waypoint chain and bounced off the edge. Only the bounce
+    // path clears m_bLongNoteActive; the waypoint-advance path leaves the note following its route
+    // (the binary's advance branch tail-calls the bounds effect and returns without touching
+    // +0x5c8, while only the bounce branch stores to it).
+    bool bBounced = false;
     if (m_nWaypointCount != m_nWaypointIndex) {
         // Advance to the next path waypoint and take its velocity.
         ++m_nWaypointIndex;
@@ -472,17 +477,22 @@ void NoteModel::HandleReflect(int nDirection) {
         // Mirror the note's X about the edge and reverse its X velocity.
         m_pos.x = static_cast<float>(nDirection) + (static_cast<float>(nDirection) - m_pos.x);
         m_velocity.x = -m_velocity.x;
+        bBounced = true;
     }
 
     // Spawn a bounds effect at the reflect edge, its Y taken from the note position mirrored by
     // side.
     const unsigned int nColor = m_pRecord != nullptr ?
                                     static_cast<unsigned int>(m_pRecord->GetSide()) :
-                                    (m_bOwnSide ? kBoundsColorOwnSide : kBoundsColorOtherSide);
+                                    (m_bOwnSide ? kBoundsColorOtherSide : kBoundsColorOwnSide);
     const float flSideSign = IsSideFlipped() == 0 ? 1.0f : -1.0f;
     BoundsEffectLayer::shared()->CreateBoundsEffect(
         nColor, static_cast<float>(nEdge), m_pos.y * flSideSign);
-    m_bLongNoteActive = false;
+    if (bBounced) {
+        // The waypoint-advance branch keeps m_bLongNoteActive set so the note keeps following its
+        // route; only a true edge bounce ends the routed motion.
+        m_bLongNoteActive = false;
+    }
 }
 
 /** @ghidraAddress 0x1334dc */
