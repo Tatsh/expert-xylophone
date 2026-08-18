@@ -892,6 +892,10 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
         if (pGameSystem->GetMenuTutorialActive() != 0) {
             [RBTutorialManager
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
+            // The binary materialises the guide singleton (allocating it if absent) immediately
+            // before destroying it, discarding the result; destroyShared alone would leave a
+            // never-built guide untouched. @ghidraAddress 0x14c53c
+            (void)TutorialGuideLayer::shared();
             TutorialGuideLayer::destroyShared();
             pGameSystem->SetMenuTutorialActive(0);
         }
