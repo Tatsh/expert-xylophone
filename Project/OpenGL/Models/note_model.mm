@@ -2135,15 +2135,17 @@ void NoteModel::CheckShotPlayer() {
 
 namespace {
 // The timing-window thresholds the note judge compares the signed time error against
-// (@ghidraAddress 0x308b64..0x308b78). The just window is [b6c, b64_narrow); a hit inside the
-// tighter [b74, b70) band grades early/late, otherwise far.
+// (@ghidraAddress 0x308b64..0x308b78). The just window is the symmetric band (b6c, 2fd00c); a hit
+// inside the tighter [b74, b70) band grades early/late, otherwise far.
 constexpr float kJudgeWindowJustHigh = 153.0f; // 0x308b64
 constexpr float kJudgeWindowJustLow = -34.0f;  // 0x308b6c
 constexpr float kJudgeWindowNearHigh = 102.0f; // 0x308b70
 constexpr float kJudgeWindowNearLow = -102.0f; // 0x308b74
 constexpr float kMissWindowLow = -153.0f;      // 0x308b78
-// The narrow just-window high bound compared before the early/late/far split (0x308b68).
-constexpr float kJudgeWindowJustHighNarrow = -83.333336f;
+// The just-window high bound: the judge grades a hit "just" when the signed error is inside the
+// symmetric band (kJudgeWindowJustLow, kJudgeWindowJustHighNarrow). JudgeNoteTiming loads this from
+// 0x2fd00c (not the -83.333 release constant at 0x308b68), so the window is (-34, 34).
+constexpr float kJudgeWindowJustHighNarrow = 34.0f; // 0x2fd00c
 // The note grades ResolveNoteHit records.
 enum NoteGrade {
     kGradeJust = 0,      // A just (perfect) hit.
