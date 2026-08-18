@@ -219,6 +219,9 @@ constexpr unsigned int kPartTitleLogo = 0x60;
 constexpr int kSoundEffectExit = 0x10;
 constexpr float kFadeComplete = 1.0f;
 
+// The fade-in duration, in seconds, the title BGM starts playing over. @ghidraAddress 0x2ee910
+constexpr float kTitleMusicFadeInDuration = 0.3f;
+
 // The sentinel that no touch is being tracked.
 constexpr int kNoTouch = -1;
 
@@ -1215,7 +1218,7 @@ void TitleColetteScene::RenderSprites() {
 /** @ghidraAddress 0x57a64 */
 void TitleColetteScene::StartMusic() {
     m_nState = kStateMainLoop;
-    [RBBGMManager.getInstance PlayMusic:0.0f];
+    [RBBGMManager.getInstance PlayMusic:kTitleMusicFadeInDuration];
     m_bSeTriggered = false;
 }
 
