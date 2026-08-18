@@ -16,10 +16,10 @@ target_sources(rbplus PRIVATE
     float_tween.mm
     frame_texture_table.cpp
     judge_effect_layer.mm
+    just_reflec_effect_layer.mm
     long_note_layer.mm
     main_frame_layer.mm
     note_born_layer.mm
-    note_charge_layer.mm
     note_glow_layer.mm
     note_layer.mm
     note_result_layer.mm
@@ -42,11 +42,11 @@ target_sources(rbplus PRIVATE
     float_tween.h
     frame_texture_table.h
     judge_effect_layer.h
+    just_reflec_effect_layer.h
     long_note_layer.h
     long_note_sprite_table.h
     main_frame_layer.h
     note_born_layer.h
-    note_charge_layer.h
     note_glow_layer.h
     note_layer.h
     note_result_layer.h

@@ -50,6 +50,7 @@
 #include "full_combo_limelight_layer.h"
 #include "gamesystem.h"
 #include "judge_effect_layer.h"
+#include "just_reflec_effect_layer.h"
 #include "leveltables.h"
 #include "limelight_effect_layer.h"
 #include "limelight_result_layer.h"
@@ -61,7 +62,6 @@
 #include "neRender.h"
 #include "neTexture.h"
 #include "note_born_layer.h"
-#include "note_charge_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
 #include "note_layer.h"
@@ -420,7 +420,7 @@ void GameScene::Init() {
     NoteTrailLayer::shared()->RefreshThema();
     SlideNoteLayer::shared()->RefreshThema();
     SlideNoteResultLayer::shared()->RefreshThema();
-    NoteChargeLayer::shared()->RefreshThema();
+    JustReflecEffectLayer::shared()->RefreshThema();
     DamageEffectLayer::shared()->SetBoundsDamageStyle();
     BoundsEffectLayer::shared()->SetStyle();
     NoteResultLayer::shared()->RefreshThema();
@@ -1935,7 +1935,7 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
     NoteTrailLayer::shared()->Update(flDelta);
     SlideNoteLayer::shared()->Update(flDelta);
     SlideNoteResultLayer::shared()->Update(flDelta);
-    NoteChargeLayer::shared()->Update(flDelta);
+    JustReflecEffectLayer::shared()->Update(flDelta);
     NoteLayer::shared()->Update(flDelta);
     // The frame delta is set up for this call too, but the chain layer takes no argument: it
     // overwrites the register from the game system before ever reading it.
@@ -2011,7 +2011,7 @@ void GameScene::InitializePlayFieldLayersForTheme() {
     NoteTrailLayer::shared()->LoadNoteTrailSprites();
     SlideNoteLayer::shared()->BuildSprites();
     SlideNoteResultLayer::shared()->BuildSpriteBatch();
-    NoteChargeLayer::shared()->LoadNoteChargeSprites();
+    JustReflecEffectLayer::shared()->LoadNoteChargeSprites();
     DamageEffectLayer::shared()->InitializeSprites();
     BoundsEffectLayer::shared()->InitializeSprites();
     NoteResultLayer::shared()->CreateSpriteInstancer();

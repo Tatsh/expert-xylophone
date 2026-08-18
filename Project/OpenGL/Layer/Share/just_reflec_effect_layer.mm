@@ -1,4 +1,4 @@
-#include "note_charge_layer.h"
+#include "just_reflec_effect_layer.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -12,8 +12,8 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The process-wide note-charge layer, created lazily by shared().
-static NoteChargeLayer *g_pNoteChargeLayer = nullptr; // @ghidraAddress 0x3deef8
+// The process-wide just-reflec effect layer, created lazily by shared().
+static JustReflecEffectLayer *g_pJustReflecEffectLayer = nullptr; // @ghidraAddress 0x3deef8
 
 namespace {
 
@@ -69,7 +69,7 @@ struct ChargeSpriteType {
 };
 
 // The charge sprite-type table (@ghidraAddress 0x30df00): read-only ROM data.
-constexpr ChargeSpriteType kChargeSpriteTypes[NoteChargeLayer::kSpriteTypeCount] = {
+constexpr ChargeSpriteType kChargeSpriteTypes[JustReflecEffectLayer::kSpriteTypeCount] = {
     {60.0f, 58.0f, 120.0f, 116.0f, 75}, // 0
     {60.0f, 58.0f, 120.0f, 116.0f, 76}, // 1
     {16.0f, 16.0f, 32.0f, 32.0f, 77},   // 2
@@ -86,7 +86,7 @@ constexpr ChargeSpriteType kChargeSpriteTypes[NoteChargeLayer::kSpriteTypeCount]
 extern const SpriteUvEntry g_aScoreGaugeUvTable[];
 
 /** @ghidraAddress 0x180b54 */
-NoteChargeLayer::NoteChargeLayer() {
+JustReflecEffectLayer::JustReflecEffectLayer() {
     // The instancer capacity is the sum of the per-group capacity table.
     for (int nGroup = 0;
          nGroup < static_cast<int>(sizeof(kGroupCapacities) / sizeof(*kGroupCapacities));
@@ -96,16 +96,16 @@ NoteChargeLayer::NoteChargeLayer() {
 }
 
 /** @ghidraAddress 0x180bf8 */
-NoteChargeLayer *NoteChargeLayer::shared() {
-    if (g_pNoteChargeLayer == nullptr) {
+JustReflecEffectLayer *JustReflecEffectLayer::shared() {
+    if (g_pJustReflecEffectLayer == nullptr) {
         // The binary allocates the raw 0x1b38-byte object and runs the constructor.
-        g_pNoteChargeLayer = new NoteChargeLayer();
+        g_pJustReflecEffectLayer = new JustReflecEffectLayer();
     }
-    return g_pNoteChargeLayer;
+    return g_pJustReflecEffectLayer;
 }
 
 /** @ghidraAddress 0x180c48 */
-void NoteChargeLayer::LoadNoteChargeSprites() {
+void JustReflecEffectLayer::LoadNoteChargeSprites() {
     if (m_bBuilt) {
         return;
     }
@@ -132,7 +132,7 @@ void NoteChargeLayer::LoadNoteChargeSprites() {
 }
 
 /** @ghidraAddress 0x180cf4 */
-void NoteChargeLayer::Create(int nColor, float flX, float flY, float flA, float flB) {
+void JustReflecEffectLayer::Create(int nColor, float flX, float flY, float flA, float flB) {
     assert(nColor >= 0);
     assert(nColor < kPlayerColorMax);
 
@@ -150,7 +150,7 @@ void NoteChargeLayer::Create(int nColor, float flX, float flY, float flA, float 
 }
 
 /** @ghidraAddress 0x180d8c */
-void NoteChargeLayer::CreateParticle(int nColor, const S_VECTOR2 *pPosition) {
+void JustReflecEffectLayer::CreateParticle(int nColor, const S_VECTOR2 *pPosition) {
     assert(nColor >= 0);
     assert(nColor < kPlayerColorMax);
 
@@ -177,7 +177,7 @@ void NoteChargeLayer::CreateParticle(int nColor, const S_VECTOR2 *pPosition) {
 }
 
 /** @ghidraAddress 0x180ed4 */
-void NoteChargeLayer::Update(float flDeltaSeconds) {
+void JustReflecEffectLayer::Update(float flDeltaSeconds) {
     m_nSpriteCount = 0;
 
     // Advance the first spin phase, wrapping it down into range.
@@ -258,7 +258,7 @@ void NoteChargeLayer::Update(float flDeltaSeconds) {
 }
 
 /** @ghidraAddress 0x181140 */
-void NoteChargeLayer::CreateSprite(
+void JustReflecEffectLayer::CreateSprite(
     int nType, const S_VECTOR2 *pPosition, unsigned int nAlpha, float flRotation, float flScale) {
     assert(nType >= 0);
     assert(nType < kSpriteTypeCount);

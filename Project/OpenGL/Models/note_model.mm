@@ -24,9 +24,9 @@
 #include "engineglobals.h"
 #include "explosion_effect_layer.h"
 #include "gamesystem.h"
+#include "just_reflec_effect_layer.h"
 #include "long_note_layer.h"
 #include "note_born_layer.h"
-#include "note_charge_layer.h"
 #include "note_effect_mgr.h"
 #include "note_glow_layer.h"
 #include "note_layer.h"
@@ -1390,11 +1390,11 @@ void NoteModel::RenderNote() {
             static_cast<float>(atan2(static_cast<double>(MirrorRenderY(m_velocity.y)),
                                      static_cast<double>(-MirrorRenderX(m_velocity.x)))) +
             kRenderChargeAngleOffset;
-        NoteChargeLayer::shared()->Create(GetRenderSide(),
-                                          MirrorRenderX(m_pos.x),
-                                          MirrorRenderY(m_pos.y),
-                                          flAngle,
-                                          m_flFadeTimer);
+        JustReflecEffectLayer::shared()->Create(GetRenderSide(),
+                                                MirrorRenderX(m_pos.x),
+                                                MirrorRenderY(m_pos.y),
+                                                flAngle,
+                                                m_flFadeTimer);
     }
 }
 

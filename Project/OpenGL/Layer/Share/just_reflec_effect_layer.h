@@ -1,6 +1,6 @@
 /**
  * @file
- * The note-charge layer, @c NoteChargeLayer.
+ * The just-reflec effect layer, @c JustReflecEffectLayer.
  */
 
 #pragma once
@@ -14,25 +14,26 @@ class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
 /**
- * @brief The note-charge layer (the charge-note build-up graphics).
+ * @brief The just-reflec effect layer (the just-timing charge-note build-up graphics).
  *
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. It owns one
  * atlas and one sprite instancer, drawn beneath the shared background layer, that presents the
  * charge-note graphics, plus a large table of per-charge records. Its instancer capacity is the sum
  * of a per-group capacity table computed by the constructor. The class carries no RTTI (it is
- * non-polymorphic), so the name is inferred from its singleton getter rather than confirmed from
- * the runtime metadata. Only the sprite-batch fields are modelled so far; the record table is kept
- * as a reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
+ * non-polymorphic), so the name is taken from the embedded @c __FILE__ basename
+ * (@c just_reflec_effect_layer.mm) that its own assertions carry rather than confirmed from the
+ * runtime metadata. Only the sprite-batch fields are modelled so far; the record table is kept as a
+ * reserved span. The trailing @c // +0xNN comments document the original 32-bit offsets for
  * reference only.
  */
-class NoteChargeLayer : public PlayFieldLayerBase {
+class JustReflecEffectLayer : public PlayFieldLayerBase {
 public:
     /**
-     * @brief The process-wide note-charge layer, created on first use.
+     * @brief The process-wide just-reflec effect layer, created on first use.
      * @return The shared layer.
      * @ghidraAddress 0x180bf8
      */
-    static NoteChargeLayer *shared();
+    static JustReflecEffectLayer *shared();
 
     /**
      * @brief Lazily builds the note-charge sprite: loads the gm_parts1 atlas and creates the sprite
@@ -109,7 +110,7 @@ private:
      * and accumulating the per-group capacity table into the instancer capacity.
      * @ghidraAddress 0x180b54
      */
-    NoteChargeLayer();
+    JustReflecEffectLayer();
 
     // One pooled charge record (24 bytes): its colour, position, and geometry.
     struct ChargeRecord {
