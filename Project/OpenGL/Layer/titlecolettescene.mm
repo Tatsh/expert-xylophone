@@ -115,10 +115,10 @@ enum TitleHitBoxSlot {
 
 // The title-logo swing pivot the particle rest positions are measured against, and the screen
 // origin their rotated positions are offset back to.
-constexpr double kSwingPivotX = -384.0;
-constexpr double kSwingPivotY = -466.0;
-constexpr double kSwingOriginX = 384.0;
-constexpr double kSwingOriginY = 466.0;
+constexpr double kSwingPivotX = -384.0; // @ghidraAddress 0x2f8590
+constexpr double kSwingPivotY = -467.0; // @ghidraAddress 0x2f8598
+constexpr double kSwingOriginX = 384.0; // @ghidraAddress 0x2f85a8
+constexpr double kSwingOriginY = 467.0; // @ghidraAddress 0x2f85b0
 // The swing phase, in degrees, is scaled to radians before rotating.
 constexpr double kSwingPhaseRadiansPerDegree = M_PI / 180.0;
 
