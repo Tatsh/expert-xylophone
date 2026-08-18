@@ -181,7 +181,7 @@ void BoundsEffectLayer::Process(float flDelta) {
 
     for (int nBank = 0; nBank < kBankCount; ++nBank) {
         // Bank 1 draws at the first lane's light alpha, bank 0 at the second lane's.
-        const unsigned char nLaneAlpha = nBank == 1 ? m_nLaneLightAlpha1 : m_nLaneLightAlpha0;
+        const unsigned char nLaneAlpha = nBank == 1 ? m_nLaneLightAlpha0 : m_nLaneLightAlpha1;
         for (EffectRecord &effect : m_aEffects[nBank]) {
             if (!effect.bActive) {
                 continue;

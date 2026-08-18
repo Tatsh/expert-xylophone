@@ -119,7 +119,7 @@ private:
     float m_flViewportHeight = {}; // +0x38
     bool m_bReady = {};            // +0x3c: whether the number display is ready to show.
     // unsigned char m_aPad3d[3]; // +0x3d (alignment padding, compiler-inserted)
-    int m_nFrameCounter = {}; // +0x40: the display frame counter, reset when made ready.
+    float m_flAnimTime = {}; // +0x40: the display animation timer, reset when made ready.
     // unsigned char m_aReserved44[4] = {}; // +0x44
 };
 

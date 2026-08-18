@@ -275,7 +275,7 @@ void NoteResultLayer::Update(float flDeltaTime) {
         const bool bMirror = nGameType == kGameTypeSinglePlayer && bLeftGroup;
 
         // Project the quad's world position to the screen and scale both axes out of device pixels.
-        float aProjected[] = {m_aQuadPos[nQuad].x, m_aQuadPos[nQuad].y, 1.0f, 0.0f};
+        float aProjected[] = {m_aQuadPos[nQuad].x, m_aQuadPos[nQuad].y, 0.0f, 1.0f};
         ProjectWorldToScreenCurrent(aProjected);
         const float flScreenScale = pGameSystem->GetScreenScale();
         const float flScreenX = aProjected[0] / flScreenScale;

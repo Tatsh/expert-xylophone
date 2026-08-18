@@ -458,21 +458,21 @@ void ThemaMarkerLayer::RefreshMarkerAlpha(float flDelta) {
             float flAlpha;
             switch (nGroup) {
             case 0:
-                flAlpha = flBase * m_flScaleX;
-                break;
-            case 1:
                 flAlpha = flBase * m_flScaleY;
                 break;
-            case 2:
-                flAlpha = flBase * m_flDangerBrightness * m_flScaleX * kBandDimFactor;
+            case 1:
+                flAlpha = flBase * m_flScaleX;
                 break;
-            case 3:
+            case 2:
                 flAlpha = flBase * m_flDangerBrightness * m_flScaleY * kBandDimFactor;
                 break;
+            case 3:
+                flAlpha = flBase * m_flDangerBrightness * m_flScaleX * kBandDimFactor;
+                break;
             default:
-                // Groups 4 and 5 use the fade value times the X scale, ignoring the per-group
+                // Groups 4 and 5 use the fade value times the Y scale, ignoring the per-group
                 // scale.
-                flAlpha = m_fadeChannel.GetCurrent() * kMarkerAlphaScale * m_flScaleX;
+                flAlpha = m_fadeChannel.GetCurrent() * kMarkerAlphaScale * m_flScaleY;
                 break;
             }
             pBatch->SetColorAlpha(nBaseIndex + nSprite,

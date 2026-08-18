@@ -348,7 +348,9 @@ constexpr S_VECTOR2 kNumberLabelBase = {384.0f, 663.0f};
 constexpr float kNumberAnimDuration = 2000.0f;
 constexpr float kNumberPhoneScale = 0.5f;
 constexpr float kNumberPadScale = 1.0f;
-constexpr float kNumberLabelScaleFactor = 0.9f;
+// The binary widens the label scale to double for this 0.9 multiply (fcvt d, fmul d, fcvt s), so
+// it is a double, not a float, to reproduce the rounding exactly. @ghidraAddress 0x2fede0
+constexpr double kNumberLabelScaleFactor = 0.9;
 
 // The alpha curve's output is scaled to a 0..255 byte (@ghidraAddress 0x2eed00).
 constexpr float kNumberAlphaScale = 255.0f;
@@ -404,7 +406,7 @@ void NumberLayer::InitializeNumberLayer() {
 /** @ghidraAddress 0x17df2c */
 void NumberLayer::SetReady() {
     m_bReady = true;
-    m_nFrameCounter = 0;
+    m_flAnimTime = 0.0f;
 }
 
 /** @ghidraAddress 0x17df3c */
@@ -419,9 +421,8 @@ void NumberLayer::Process(float flDelta) {
     }
 
     // Advance the intro timer; once it runs out the display turns itself off.
-    const float flTime = m_nFrameCounter + flDelta;
-    m_nFrameCounter = static_cast<int>(flTime);
-    if (flTime >= kNumberAnimDuration) {
+    m_flAnimTime += flDelta;
+    if (m_flAnimTime >= kNumberAnimDuration) {
         m_bReady = false;
         return;
     }
@@ -433,6 +434,8 @@ void NumberLayer::Process(float flDelta) {
     for (ne::C_SPRITE_INSTANCING_2D *pSprite : m_apSprites) {
         pSprite->SetSpriteCount(0);
     }
+    // The binary re-fetches the game system here and scales half its viewport into a stack local
+    // that nothing ever reads; that dead computation is elided.
 
     // The phone layout draws the markers at half scale.
     const float flScale = IsPad() ? kNumberPadScale : kNumberPhoneScale;
@@ -442,9 +445,9 @@ void NumberLayer::Process(float flDelta) {
     for (int nDigit = 0; nDigit < kNumberMarkerRun; ++nDigit) {
         S_VECTOR2 position = kNumberDigitBase[nDigit];
         const float flAlpha = CalculateCurveInterpolation(
-            kNumberAlphaCurve[nDigit], kNumberCurvePoints, static_cast<float>(m_nFrameCounter));
+            kNumberAlphaCurve[nDigit], kNumberCurvePoints, m_flAnimTime);
         const float flCurveScale = CalculateCurveInterpolation(
-            kNumberScaleCurve[nDigit], kNumberScalePoints, static_cast<float>(m_nFrameCounter));
+            kNumberScaleCurve[nDigit], kNumberScalePoints, m_flAnimTime);
         EmitMarkerSprite(static_cast<unsigned int>(nDigit + 1),
                          &position,
                          static_cast<int>(flAlpha * kNumberAlphaScale),
@@ -455,17 +458,18 @@ void NumberLayer::Process(float flDelta) {
     // The leading label marker (index 0) animates from its own per-axis scale curves (carrying the
     // 0.9 factor) and its own alpha curve.
     S_VECTOR2 labelPos = kNumberLabelBase;
-    const float flLabelScaleX = CalculateCurveInterpolation(
-        kNumberLabelScaleXCurve, kNumberLabelScalePoints, static_cast<float>(m_nFrameCounter));
-    const float flLabelScaleY = CalculateCurveInterpolation(
-        kNumberLabelScaleYCurve, kNumberLabelScalePoints, static_cast<float>(m_nFrameCounter));
-    const float flLabelAlpha = CalculateCurveInterpolation(
-        kNumberLabelAlphaCurve, kNumberLabelAlphaPoints, static_cast<float>(m_nFrameCounter));
-    EmitMarkerSprite(0,
-                     &labelPos,
-                     static_cast<int>(flLabelAlpha * kNumberAlphaScale),
-                     static_cast<float>(flScale * flLabelScaleX * kNumberLabelScaleFactor),
-                     static_cast<float>(flScale * flLabelScaleY * kNumberLabelScaleFactor));
+    const float flLabelScaleX =
+        CalculateCurveInterpolation(kNumberLabelScaleXCurve, kNumberLabelScalePoints, m_flAnimTime);
+    const float flLabelScaleY =
+        CalculateCurveInterpolation(kNumberLabelScaleYCurve, kNumberLabelScalePoints, m_flAnimTime);
+    const float flLabelAlpha =
+        CalculateCurveInterpolation(kNumberLabelAlphaCurve, kNumberLabelAlphaPoints, m_flAnimTime);
+    EmitMarkerSprite(
+        0,
+        &labelPos,
+        static_cast<int>(flLabelAlpha * kNumberAlphaScale),
+        static_cast<float>(static_cast<double>(flScale * flLabelScaleX) * kNumberLabelScaleFactor),
+        static_cast<float>(static_cast<double>(flScale * flLabelScaleY) * kNumberLabelScaleFactor));
 }
 
 /** @ghidraAddress 0x17e1b4 */
