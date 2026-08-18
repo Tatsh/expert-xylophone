@@ -239,6 +239,12 @@ void ExplosionEffectLayer::Process(float flDeltaTime) {
                 entry.bActive = false;
                 continue;
             }
+            // At exactly the lifetime the binary skips this frame's emission without deactivating:
+            // the fcmp is followed by both a b.le (only > deactivates) and a b.pl (>= skips emit),
+            // so only flTimer strictly below the lifetime draws. @ghidraAddress 0x177480
+            if (entry.flTimer >= kBurstLifetime) {
+                continue;
+            }
             // The bank's alpha gates emission; a zeroed alpha skips the burst this frame.
             if (nAlpha == 0) {
                 continue;
