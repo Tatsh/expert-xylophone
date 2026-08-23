@@ -45,17 +45,23 @@ struct RbffPathPoint {
  * @c // +0xNN comments document the byte offsets.
  */
 struct RbffNoteReadRecord {
-    int nTimeA = {};             /*!< The note's primary time. +0x00 */
-    int nTimeB = {};             /*!< The note's secondary (end) time. +0x04 */
-    short nNoteId = {};          /*!< The note identifier. +0x08 */
-    short nStartTime = {};       /*!< The note's start time. +0x0a */
-    short nPointCount = {};      /*!< The number of path points that follow. +0x0c */
-    short reserved0e = {};       /*!< Padding before the aligned path-point pointer. +0x0e */
-    short *pPathPoints = {};     /*!< The allocated path-point array. +0x10 */
-    signed char nKind = {};      /*!< The note kind. +0x18 */
-    signed char nSide = {};      /*!< The play side. +0x19 */
-    signed char nHoldKind = {};  /*!< The hold-note kind. +0x1a */
-    signed char reserved1b = {}; /*!< Reserved. +0x1b */
+    int nTimeA = {};            /*!< The note's primary time. +0x00 */
+    int nTimeB = {};            /*!< The note's secondary (end) time. +0x04 */
+    short nNoteId = {};         /*!< The note identifier. +0x08 */
+    short nStartTime = {};      /*!< The note's start time. +0x0a */
+    short nPointCount = {};     /*!< The number of path points that follow. +0x0c */
+    short reserved0e = {};      /*!< Padding before the aligned path-point pointer. +0x0e */
+    short *pPathPoints = {};    /*!< The allocated path-point array. +0x10 */
+    signed char nKind = {};     /*!< The note kind. +0x18 */
+    signed char nSide = {};     /*!< The play side. +0x19 */
+    signed char nHoldKind = {}; /*!< The hold-note kind. +0x1a */
+    /**
+     * @brief The note type; an on-disk 2 (a long-note head) is remapped to 3. +0x1b
+     *
+     * The parser unpacks this byte out of the same 32-bit word as the three fields above, which is
+     * why it sits here rather than beside the other trailing fields.
+     */
+    signed char nType = {};
     short aTargetCoords[4] = {}; /*!< The four target coordinates. +0x1c */
     unsigned int nFlags = {};    /*!< The note flag bits; bit 3 heads a long note. +0x24 */
     /** @brief Read from the stream but never unpacked into the note record. +0x28 */
@@ -64,7 +70,8 @@ struct RbffNoteReadRecord {
     signed char nField29 = {};
     /** @brief Read from the stream but never unpacked into the note record. +0x2a */
     short nField2a = {};
-    int nType = {};           /*!< The note type; an on-disk 2 is remapped to 0. +0x2c */
+    /** @brief Read from the stream but never unpacked into the note record. +0x2c */
+    int nField2c = {};
     short nChainLink = {};    /*!< Chain-link sentinel (0xffff when unset). +0x30 */
     short nChainPartner = {}; /*!< Chain-partner sentinel (0xffff when unset). +0x32 */
     int nField34 = {};        /*!< Filled with the chain payload's high word. +0x34 */

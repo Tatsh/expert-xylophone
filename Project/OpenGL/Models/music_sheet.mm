@@ -97,7 +97,7 @@ int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor)
     pOut->nKind = ReadStream<signed char>(pCursor);
     pOut->nSide = ReadStream<signed char>(pCursor);
     pOut->nHoldKind = ReadStream<signed char>(pCursor);
-    pOut->reserved1b = ReadStream<signed char>(pCursor);
+    pOut->nType = ReadStream<signed char>(pCursor);
     for (int i = 0; i < 4; ++i) {
         pOut->aTargetCoords[i] = ReadStream<short>(pCursor);
     }
@@ -105,7 +105,7 @@ int ReadRbffNoteRecord(RbffNoteReadRecord *pOut, const unsigned char **ppCursor)
     pOut->nField28 = ReadStream<signed char>(pCursor);
     pOut->nField29 = ReadStream<signed char>(pCursor);
     pOut->nField2a = ReadStream<short>(pCursor);
-    pOut->nType = ReadStream<int>(pCursor);
+    pOut->nField2c = ReadStream<int>(pCursor);
     // The chain payload is present only when flag bit 3 is set: the binary reads the eight bytes at
     // the cursor into the chain-link block (+0x30) and the four bytes at cursor+8 into the extra
     // field (+0x38), then advances the cursor twelve bytes past all of it.
@@ -182,8 +182,12 @@ constexpr unsigned int kNoteFlagDifferentLane =
 constexpr unsigned int kNoteFlagFree = 0x10;    // A free (anywhere) note; start time is -1.
 constexpr unsigned int kNoteFlagHasPath = 0x20; // Carries a path-point sub-array.
 
-// The on-disk note kind marking a long-note head.
+// The on-disk note kind marking a long-note head, and the render type the v10 parser remaps it to.
+// The two parsers genuinely disagree here and must not be harmonised: the legacy parser maps a
+// long-note head to type 0 (the plain-note renderer, at 0x12fc28), while the v10 parser maps it to
+// type 3 (the held/slide renderer, the w27 = 3 seeded at 0x12ff1c and selected at 0x12fff4).
 constexpr int kChartKindLongHead = 2;
+constexpr int kChartTypeLongHeadRender = 3;
 
 // The target-coordinate scaling: a coordinate is divided by the field width and scaled to the hash
 // range (@ghidraAddress 0x2f8578 = 60.0 field width, 0x2f8540 = 1000.0 hash scale).
@@ -709,11 +713,15 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         record.SetKind(staging.nKind);
         record.SetSide(staging.nSide);
         record.SetHoldKind(staging.nHoldKind);
-        // The on-disk type of 2 is remapped to 0; any other value passes through.
-        record.SetType(staging.nType == kChartKindLongHead ? 0 : staging.nType);
+        // The on-disk type of 2 is remapped to 3; any other value passes through. The type is the
+        // fourth byte of the same word as the kind, side, and hold kind above.
+        record.SetType(staging.nType == kChartKindLongHead ? kChartTypeLongHeadRender :
+                                                             staging.nType);
+        // Four target coordinates are copied, not three: the fourth lands in the target pad.
         for (int j = 0; j < 3; ++j) {
             record.GetTargetCoords()[j] = staging.aTargetCoords[j];
         }
+        record.SetTargetPad(staging.aTargetCoords[3]);
         record.SetFlags(staging.nFlags);
         if ((staging.nFlags & kNoteFlagLongHead) != 0) {
             record.GetChainLink().SetLongNoteHead(staging.nChainLink, staging.nChainPartner);
