@@ -106,7 +106,8 @@ void EventEffectLayer::StartEffect() {
 }
 
 /** @ghidraAddress 0x1be5cc */
-void EventEffectLayer::FinishEffect() {
+void EventEffectLayer::FinishEffect(float flDuration) {
+    (void)flDuration; // The binary takes a duration in s0 and never reads it.
     m_flTimer = kEffectFinishedTimer;
 }
 

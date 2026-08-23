@@ -267,7 +267,8 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
 }
 
 /** @ghidraAddress 0x10b734 */
-void TutorialGuideLayer::Stop() {
+void TutorialGuideLayer::Stop(float flDuration) {
+    (void)flDuration; // The binary takes a duration in s0 and never reads it.
     // RBPDBG: the tutorial cannot be completed, so record every engine-side phase transition
     // alongside the Objective-C step log. The phase is what gates the menu's input.
     if (NE_DBG_FIRST(40)) {

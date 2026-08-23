@@ -410,7 +410,8 @@ void NumberLayer::SetReady() {
 }
 
 /** @ghidraAddress 0x17df3c */
-void NumberLayer::ClearReady() {
+void NumberLayer::ClearReady(float flDuration) {
+    (void)flDuration; // The binary takes a duration in s0 and never reads it.
     m_bReady = false;
 }
 

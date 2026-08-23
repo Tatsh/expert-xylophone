@@ -54,9 +54,10 @@ public:
 
     /**
      * @brief Finishes the event effect by setting its timer to its full duration.
+     * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x1be5cc
      */
-    void FinishEffect();
+    void FinishEffect(float flDuration);
 
     /**
      * @brief Sets the full-screen background quad's colour and size in the root instancer.

@@ -55,9 +55,10 @@ public:
 
     /**
      * @brief Deactivates the manager's animation.
+     * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x10a948
      */
-    void SetInactive();
+    void SetInactive(float flDuration);
 
     /** @brief Whether the manager's intro animation is still active. */
     bool IsActive() const {

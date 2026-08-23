@@ -376,7 +376,8 @@ void LimelightEffectLayer::SetActiveAndResetCounter() {
 }
 
 /** @ghidraAddress 0x120128 */
-void LimelightEffectLayer::SetInactive() {
+void LimelightEffectLayer::SetInactive(float flDuration) {
+    (void)flDuration; // The binary takes a duration in s0 and never reads it.
     m_bActive = false;
 }
 

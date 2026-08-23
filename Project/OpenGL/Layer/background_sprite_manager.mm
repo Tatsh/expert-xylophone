@@ -132,7 +132,8 @@ void BackgroundSpriteManager::SetActiveAndResetCounter() {
 }
 
 /** @ghidraAddress 0x10a948 */
-void BackgroundSpriteManager::SetInactive() {
+void BackgroundSpriteManager::SetInactive(float flDuration) {
+    (void)flDuration; // The binary takes a duration in s0 and never reads it.
     m_bActive = false;
 }
 

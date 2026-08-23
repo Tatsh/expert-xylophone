@@ -52,9 +52,10 @@ public:
 
     /**
      * @brief Clears the number display's ready flag.
+     * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x17df3c
      */
-    void ClearReady();
+    void ClearReady(float flDuration);
 
     /** @brief Whether the number display is ready to show (its intro is complete). */
     bool IsReady() const {

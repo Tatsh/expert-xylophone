@@ -54,9 +54,10 @@ public:
 
     /**
      * @brief Deactivates the effect.
+     * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x120128
      */
-    void SetInactive();
+    void SetInactive(float flDuration);
 
     /** @brief Whether the effect's intro animation is still active. */
     bool IsActive() const {

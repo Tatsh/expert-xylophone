@@ -1324,20 +1324,20 @@ void GameScene::ResetAllPlayFieldLayers() {
     // Reset the active theme's full-combo, effect, and result layers.
     if (m_nThema == kThemaColette) {
         FullComboColetteLayer::shared()->ClearEffectFlags();
-        NumberLayer::shared()->ClearReady();
+        NumberLayer::shared()->ClearReady(0.0f);
         ColetteThemeLayer::shared()->StartFadeOut(0.0f);
         ResultWindowColetteLayer::shared()->StartHideTween(0.0f);
-        EventEffectLayer::shared()->FinishEffect();
-        TutorialGuideLayer::shared()->Stop();
+        EventEffectLayer::shared()->FinishEffect(0.0f);
+        TutorialGuideLayer::shared()->Stop(0.0f);
     } else if (m_nThema == kThemaLimelight) {
         FullComboLimelightLayer::shared()->ClearEffectFlags();
-        LimelightEffectLayer::shared()->SetInactive();
+        LimelightEffectLayer::shared()->SetInactive(0.0f);
         LimelightThemeLayer::shared()->StartGradeAnimation(0.0f);
         LimelightResultLayer::shared()->ResetResultBonusAnimations(0.0f);
-        EventEffectLayer::shared()->FinishEffect();
+        EventEffectLayer::shared()->FinishEffect(0.0f);
     } else if (m_nThema == kThemaClassic) {
         FullComboClassicLayer::shared()->ClearEffectFlags();
-        BackgroundSpriteManager::shared()->SetInactive();
+        BackgroundSpriteManager::shared()->SetInactive(0.0f);
         ClassicThemeLayer::shared()->StartGaugeValueFade(0.0f);
         ResultWindowClassicLayer::shared()->ResetResultScoreAnimations(0.0f);
     }

@@ -73,9 +73,10 @@ public:
 
     /**
      * @brief Hides the guide, clearing its active flag.
+     * @param flDuration A duration slot the routine never reads; every caller passes zero.
      * @ghidraAddress 0x10b734
      */
-    void Stop();
+    void Stop(float flDuration);
 
     /**
      * @brief Puts the guide into its fade-in state.
