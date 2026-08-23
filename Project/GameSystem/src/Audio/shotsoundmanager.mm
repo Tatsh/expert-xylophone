@@ -30,7 +30,7 @@ static NSString *const kVariantNames[] = {@"JUST", @"GREAT", @"GOOD", @"RIVAL"};
 // The idle sentinel for the pending retrigger priority: no shot is pending at this value.
 constexpr int kIdlePriority = 5;
 // The retrigger cooldown period, in milliseconds (one frame at 30 fps).
-constexpr float kRetriggerPeriod = 33.333336f;
+constexpr float kRetriggerPeriod = 33.333332f; // 0x42055555 at 0x1cd564/0x1cd5a4
 // The playback channel the timer retriggers the pending shot on.
 constexpr int kRetriggerChannel = 1;
 // The playback group index shot sounds load and play on.
@@ -81,9 +81,10 @@ void ShotSoundManager::LoadSlotVariants(int slot) {
     }
     AudioManager *audio = AudioManager.sharedManager;
     for (int variant = 0; variant < kVariantCount; ++variant) {
-        // Variant zero is the shared JUST sound; it is skipped here until the bank-wide load has
-        // run, matching the binary's shared-flag guard.
-        if (variant == 0 && !m_bSharedLoaded) {
+        // Variant zero is the shared JUST sound; once the bank-wide load has run it is already
+        // registered, so it is skipped here, matching the binary's shared-flag guard at
+        // 0x1cd050-0x1cd058.
+        if (variant == 0 && m_bSharedLoaded) {
             continue;
         }
         NSString *path = ShotPath(kSlotNames[slot], kVariantNames[variant]);

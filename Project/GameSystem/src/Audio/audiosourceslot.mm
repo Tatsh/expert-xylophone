@@ -124,12 +124,15 @@ int AudioSourceSlot::RemoveSourceByKey(NSString *callName) {
 }
 
 /** @ghidraAddress 0x4a954 */
-unsigned int AudioSourceSlot::AcquireBusForSourceIndex(int index) {
+unsigned int AudioSourceSlot::AcquireBusForSourceIndex(int index, int volume) {
     if (index >= m_nSourceCount || m_pSourceArray[index] == nullptr) {
         return 0xffffffff;
     }
-    // The mixer keys a voice by the record itself; tag the returned handle valid.
-    return m_pMixer->AcquireBusForSource(m_pSourceArray[index], 0) | kPlayHandleValidBit;
+    // The volume reaches the mixer without this routine ever touching it: 0x4a954 never writes w2,
+    // so the caller's third argument falls straight through into the AcquireBusForSource call at
+    // 0x4a978. The mixer keys a voice by the record itself; tag the returned handle valid.
+    return m_pMixer->AcquireBusForSource(m_pSourceArray[index], static_cast<unsigned int>(volume)) |
+           kPlayHandleValidBit;
 }
 
 /** @ghidraAddress 0x4a990 */
@@ -138,7 +141,7 @@ unsigned int AudioSourceSlot::AcquireBusForSourceKey(NSString *callName, int vol
     if (pIndex == nil) {
         return 0xffffffff;
     }
-    return AcquireBusForSourceIndex(pIndex.intValue);
+    return AcquireBusForSourceIndex(pIndex.intValue, volume);
 }
 
 /** @ghidraAddress 0x4aa34 */

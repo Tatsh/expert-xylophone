@@ -77,9 +77,11 @@ public:
     int RemoveSourceByKey(NSString *callName);
     /**
      * @brief Acquires a playback bus for the source at the given index, returning its handle.
+     * @param index The slot index of the source to play.
+     * @param volume The mixer gain, forwarded untouched to the mixer.
      * @ghidraAddress 0x4a954
      */
-    unsigned int AcquireBusForSourceIndex(int index);
+    unsigned int AcquireBusForSourceIndex(int index, int volume);
     /**
      * @brief Acquires a playback bus for the source under a call name, returning its handle.
      * @ghidraAddress 0x4a990

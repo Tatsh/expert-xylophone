@@ -650,9 +650,8 @@ constexpr double kResumeFadeInTime = 0.3f;
                 static_cast<int>(static_cast<unsigned int>(resourceId) & kResourceIndexMask),
                 volume);
         }
-        // The call site at 0x3e97c also loads the volume into w2, but 0x4a954 never reads it.
-        return seAVPlayer->AcquireBusForSourceIndex(static_cast<unsigned int>(resourceId) &
-                                                    kResourceIndexMask);
+        return seAVPlayer->AcquireBusForSourceIndex(
+            static_cast<unsigned int>(resourceId) & kResourceIndexMask, volume);
     }
     if (group == kSeGroupCaPlayer) {
         return sePlayer->PlaySoundForKey(callName, volume);
