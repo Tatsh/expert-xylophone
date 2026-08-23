@@ -854,7 +854,8 @@ void FullComboColetteLayer::Update(float flDelta) {
         // The remaining three fans share one shape: each mote rises along its own vertical offset
         // curve from a fixed screen position, and the rival's side is point-reflected and turned a
         // half turn.
-        const auto EmitMoteFan = [&](const MoteLayout *pLayout,
+        const auto EmitMoteFan = [&](float flCurveClock,
+                                     const MoteLayout *pLayout,
                                      int nCount,
                                      int nKindBase,
                                      const float (*pScaleX)[kThreePointCurve * 2],
@@ -863,13 +864,13 @@ void FullComboColetteLayer::Update(float flDelta) {
                                      const float (*pOffsetY)[kThreePointCurve * 2]) {
             for (int nMote = 0; nMote < nCount; ++nMote) {
                 const float flScaleX =
-                    CalculateCurveInterpolation(pScaleX[nMote], kThreePointCurve, flClock);
+                    CalculateCurveInterpolation(pScaleX[nMote], kThreePointCurve, flCurveClock);
                 const float flScaleY =
-                    CalculateCurveInterpolation(pScaleY[nMote], kThreePointCurve, flClock);
+                    CalculateCurveInterpolation(pScaleY[nMote], kThreePointCurve, flCurveClock);
                 const float flAlpha =
-                    CalculateCurveInterpolation(pAlpha[nMote], kThreePointCurve, flClock);
+                    CalculateCurveInterpolation(pAlpha[nMote], kThreePointCurve, flCurveClock);
                 const float flOffsetY =
-                    CalculateCurveInterpolation(pOffsetY[nMote], kThreePointCurve, flClock);
+                    CalculateCurveInterpolation(pOffsetY[nMote], kThreePointCurve, flCurveClock);
 
                 const float flBaseX = pLayout[nMote].flScreenX;
                 const float flBaseY = MoteRowY(pLayout[nMote].nRowInset);
@@ -885,7 +886,10 @@ void FullComboColetteLayer::Update(float flDelta) {
             }
         };
 
-        EmitMoteFan(kFanBLayout,
+        // The second fan alone runs on the same half-second-delayed clock as the letters and the
+        // banner; the other three sample the raw effect clock.
+        EmitMoteFan(flClock + kLetterClockBias,
+                    kFanBLayout,
                     kFanBCount,
                     kFanBKindBase[nSide],
                     kFanBScaleXPairs,
@@ -898,7 +902,8 @@ void FullComboColetteLayer::Update(float flDelta) {
         // descriptor table shows the intent was to continue: it holds runs of exactly 2, 9, 21, and
         // 12 identical entries at kinds 59, 61, 70, and 91, which tile perfectly only if this fan
         // starts at 70. It starts at 59. Faithful to the binary, not a reconstruction slip.
-        EmitMoteFan(kFanCLayout,
+        EmitMoteFan(flClock,
+                    kFanCLayout,
                     kFanCCount,
                     kFanAKindBase[nSide],
                     kFanCScaleXPairs,
@@ -908,7 +913,8 @@ void FullComboColetteLayer::Update(float flDelta) {
 
         // The fourth fan strobes: it draws for the first three frames of every six.
         if (g_nColetteFullComboFrameCount % kFanDStrobePeriod < kFanDStrobeOnFrames) {
-            EmitMoteFan(kFanDLayout,
+            EmitMoteFan(flClock,
+                        kFanDLayout,
                         kFanDCount,
                         kFanDKindBase[nSide],
                         kFanDScaleXPairs,
