@@ -807,6 +807,7 @@ void GameScene::EnterResultThemeState() {
     }
 
     m_nState = kStateResultTheme;
+    m_nPlayTime = 0;
 }
 
 namespace {
@@ -903,6 +904,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
 
     FadeOverlayLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
     m_nState = kMusicReleaseState;
+    m_nPlayTime = 0;
 }
 
 namespace {
@@ -984,6 +986,7 @@ void GameScene::LoadResultScreenAndMusic() {
     [RBBGMManager.getInstance LoadMusicResultWithLoop:YES];
     [RBBGMManager.getInstance PlayMusic:0.0f];
     m_nState = kStateResultSubmit;
+    m_nPlayTime = 0;
 
     // A tutorial play advances the walkthrough to the result step and resets the guide.
     if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
@@ -1015,6 +1018,7 @@ void GameScene::StartGameplayPresentation() {
     JudgeEffectLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePresenting;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14b734 */
@@ -1050,6 +1054,7 @@ void GameScene::AdvanceToPlayReadyState() {
     ClearGaugeLayer::shared()->StartFadeIn(kPresentationFadeInDuration);
 
     m_nState = kStatePlayReady;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14b914 */
@@ -1080,6 +1085,7 @@ void GameScene::BeginMusicPlaybackAndTimer() {
     }
 
     m_nState = kStateNotePlay;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14d4d8 */
@@ -1223,6 +1229,7 @@ void GameScene::SetupPreviewPlayback() {
     // Show the preview through the app's root view controller and advance to the playing state.
     [AppDelegate.appDelegate.viewController showPreview];
     m_nState = kStatePlaying;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14ce34 */
@@ -1245,6 +1252,7 @@ void GameScene::ClosePreviewAndReturnToList() {
     ne::C_TEXTURE::ReleaseAllHandles();
 
     m_nState = kStateResetPlayback;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14c5bc */
@@ -1264,6 +1272,7 @@ void GameScene::ExitToMusicList() {
     ne::C_TEXTURE::ReleaseAllHandles();
 
     m_nState = kStateResetPlayback;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14c690 */
@@ -1289,6 +1298,7 @@ void GameScene::ReloadMusicForRestart() {
 
     LoadMusicAndSheet();
     m_nState = kStateBindChart;
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14d23c */
@@ -1336,17 +1346,20 @@ void GameScene::WaitForIntroThenStartNotes() {
     if (m_flReadyDelay >= static_cast<float>(m_nPlayTime)) {
         return;
     }
+    // Both arms converge on one merged store, so either transition also clears the play time.
     if (GameSystem::GetGameSystem()->GetPastelBonusType() == 0) {
         m_nState = kStateWaitNotes;
     } else {
         EventEffectLayer::shared()->StartEffect();
         m_nState = kStatePastEffect;
     }
+    m_nPlayTime = 0;
 }
 
 /** @ghidraAddress 0x14cd90 */
 void GameScene::ResumePreviewPlayback() {
     m_nState = kStatePlaying;
+    m_nPlayTime = 0;
     if (GameSystem::GetGameSystem()->GetBgmPlaying()) {
         [RBBGMManager.getInstance PlayMusic:0.0f];
     }
