@@ -55,29 +55,33 @@ PlayTimer *PlayTimer::Update() {
     // position.
     if (m_bRunning) {
         const double dBgmTime = [AudioManager.sharedManager bgmCurrentTime];
-        if (dBgmTime <= m_dAccumulated) {
-            return nullptr;
-        }
-        m_dAccumulated = dBgmTime;
+        // Only the drift correction is gated on the BGM having advanced. Both the not-running test
+        // at 0x1318dc and this comparison at 0x131920 branch to 0x1319a8, which is the frame-step
+        // block below — neither returns. The BGM clock ticks far more coarsely than the frame rate,
+        // so skipping the frame step here froze the play clock on most frames.
+        if (dBgmTime > m_dAccumulated) {
+            m_dAccumulated = dBgmTime;
 
-        float flLatencyOffset = m_flDelayFrameOffset;
-        switch (m_nOsVersionTier) {
-        case kOsVersionTier80To81:
-            flLatencyOffset += kLatencyOffset80To81;
-            break;
-        case kOsVersionTier81OrLater:
-            flLatencyOffset += kLatencyOffset81OrLater;
-            break;
-        default:
-            flLatencyOffset += kLatencyOffsetPre80;
-            break;
-        }
+            float flLatencyOffset = m_flDelayFrameOffset;
+            switch (m_nOsVersionTier) {
+            case kOsVersionTier80To81:
+                flLatencyOffset += kLatencyOffset80To81;
+                break;
+            case kOsVersionTier81OrLater:
+                flLatencyOffset += kLatencyOffset81OrLater;
+                break;
+            default:
+                flLatencyOffset += kLatencyOffsetPre80;
+                break;
+            }
 
-        const double dDrift = static_cast<float>(
-            ((dBgmTime + static_cast<double>(flLatencyOffset / kLatencyOffsetScale)) - dInterval) *
-            kDriftCorrectionFactor);
-        m_dBaseTime -= dDrift;
-        dInterval += dDrift;
+            const double dDrift = static_cast<float>(
+                ((dBgmTime + static_cast<double>(flLatencyOffset / kLatencyOffsetScale)) -
+                 dInterval) *
+                kDriftCorrectionFactor);
+            m_dBaseTime -= dDrift;
+            dInterval += dDrift;
+        }
     }
 
     // The per-frame step is the drift-corrected interval since the last recorded play time, scaled

@@ -120,7 +120,8 @@ public:
      * timing origin for any drift between the wall clock and the BGM's reported position, biased by
      * an OS-version-tier latency offset. The per-frame step is the drift-corrected interval scaled
      * to milliseconds, clamped to non-negative.
-     * @return This timer, or null when the timer is running but the BGM has not yet advanced.
+     * @return This timer. The binary leaves the return register unspecified on the running path
+     *         and neither caller reads it.
      * @ghidraAddress 0x1318a4
      */
     PlayTimer *Update();

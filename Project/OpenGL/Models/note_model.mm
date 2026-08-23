@@ -93,9 +93,10 @@ namespace {
 
 // The band fractions of the play-field edge, indexed by band, and the count of bands. Band 4 is the
 // centre line and produces no offset; bands 0 through 3 sit above it and 5 through 8 below.
-// The per-band multiplier applied to the near-lane slope, from the binary's band switch. Bands 2,
-// 4, and 6 contribute nothing; the outer bands ramp 0.10, 0.30, 0.38 out from the centre.
-constexpr float kBandFractions[] = {0.38f, 0.30f, 0.0f, 0.10f, 0.0f, 0.10f, 0.0f, 0.30f, 0.38f};
+// The per-band multiplier applied to the near-lane slope, from the binary's band switch at
+// 0x1360b8. Only band 4 contributes nothing; the fractions ramp 0.10, 0.20, 0.30, 0.38 out from
+// the centre (pool 0x2fd000, 0x2ec6b4, 0x2ee910, 0x308b80).
+constexpr float kBandFractions[] = {0.38f, 0.30f, 0.20f, 0.10f, 0.0f, 0.10f, 0.20f, 0.30f, 0.38f};
 constexpr int kBandCount = 9;
 constexpr int kCenterBand = 4;
 
@@ -357,7 +358,7 @@ int NoteModel::GetSlidePointJudge(int nIndex) const {
     // The miss sentinel for a slide point past the note's slide-point count.
     static constexpr int kSlidePointJudgeMiss = 5;
     if (nIndex < m_pRecord->GetSlidePointCount()) {
-        return m_aSubEntries[nIndex].nSlidePointJudge;
+        return m_aSubEntries[nIndex].nResolvedGrade;
     }
     return kSlidePointJudgeMiss;
 }
@@ -1007,13 +1008,18 @@ void NoteModel::UpdateStepSlideExisted() {
     // first whose window contains the clock) and interpolate its live position along its X then Y
     // span.
     const int nPointCount = m_pRecord->GetSlidePointCount();
+    // The "first match" guard is a per-call local seeded to -1 at 0x132c50, not the persistent
+    // active index. Testing the field instead latched the active point on the first frame that set
+    // it and never let it advance for the rest of the slide.
+    int nActiveCandidate = -1;
     for (int nPoint = 0; nPoint < nPointCount; ++nPoint) {
         SubEntry &point = m_aSubEntries[nPoint];
         if (flNow > point.flTime2) {
             continue;
         }
-        if (m_nActiveIndex == -1 && point.flTime0 <= flNow && flNow < point.flTime2) {
+        if (nActiveCandidate == -1 && point.flTime0 <= flNow && flNow < point.flTime2) {
             m_nActiveIndex = nPoint;
+            nActiveCandidate = nPoint;
         }
         if (point.flTime0 <= flNow && flNow < point.flTime1) {
             // First span: slide the live X toward the end by the X slope; the Y is unchanged.
@@ -1163,8 +1169,14 @@ void NoteModel::UpdateStepSlideExisted() {
     // miss).
     if (GetHitTime() <= flNow) {
         if (!bScoredThisFrame) {
+            // This arm carries no sign guard in the binary (0x13323c, unlike 0x1331fc and
+            // 0x133220). With the index at -1 its m_aSubEntries[-1].nMissCount write resolves to
+            // this+0x6c, which is m_nActiveIndex itself, so the original promotes the index from
+            // -1 to 0. Spelled out rather than left to out-of-bounds indexing.
             if (m_nActiveIndex >= 0) {
                 ++m_aSubEntries[m_nActiveIndex].nMissCount;
+            } else {
+                ++m_nActiveIndex;
             }
         } else {
             if (!m_bPlayStateFlag510 && m_nActiveIndex >= 0) {
@@ -2468,7 +2480,7 @@ float NoteModel::GetLaneX() const {
     } else {
         // A synthetic note (no record) derives its kind and lane from the own-side flag.
         nKind = m_bOwnSide ? 0 : kNoSideSentinel;
-        nLane = m_bOwnSide ? -1 : kNoSideSentinel;
+        nLane = m_bOwnSide ? kNoSideSentinel : -1;
     }
     return GetNoteLaneFraction(nKind, nLane) * GameSystem::GetGameSystem()->GetSheetInsetHalfX();
 }
@@ -2497,7 +2509,9 @@ float GetNoteLaneFraction(int nKind, int nLane) {
         if (nLane == kWideLaneRight) {
             return g_noteLaneTable.flWideLaneRight;
         }
-        return 0.0f;
+        // The fall-through is the left wide lane, not the centre: 0x136a98 loads
+        // g_noteLaneTable+0x44, which InitNoteLaneTable seeds to -0.888889f at 0x136b20.
+        return g_noteLaneTable.flWideLaneLeft;
     }
 
     // The ordinary kind maps each lane to its across-field fraction; the centre and any
