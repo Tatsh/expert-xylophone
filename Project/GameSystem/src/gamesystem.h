@@ -172,12 +172,12 @@ public:
      * The music-menu hub clears this at the start of its hide animation and sets it again while a
      * tutorial hide step is playing.
      */
-    int GetMenuTutorialActive() const {
-        return m_nMenuTutorialActive;
+    bool GetMenuTutorialActive() const {
+        return m_fMenuTutorialActive;
     }
     /** @brief Records whether the music-menu tutorial is suppressing the menu's gameplay input. */
-    void SetMenuTutorialActive(int value) {
-        m_nMenuTutorialActive = value;
+    void SetMenuTutorialActive(bool value) {
+        m_fMenuTutorialActive = value;
     }
     /** @brief Returns the in-play tutorial-guide phase. */
     int GetTutorialPhase() const {
@@ -612,7 +612,8 @@ private:
     int m_nNewRecordFlag = {};           // +0x114: set when the finished play beat the stored best
                                          //         score or rate (read at result-screen init to arm
                                          //         the celebration cue).
-    int m_nMenuTutorialActive = {};      // +0x12c
+    bool m_fMenuTutorialActive = {};     // +0x12c: a byte; the binary loads and stores it with
+                                         //         ldrb/strb.
     int m_nTutorialPhase = {};           // +0x130: the in-play tutorial-guide phase.
     float m_flPlayfieldScale = {};       // +0x134
     bool m_fCpuFullCombo = {};           // +0x138

@@ -1611,7 +1611,7 @@ void ResultWindowColetteLayer::Update(float flDeltaTime) {
 
     // The input pass: the tutorial-gated touch pass while the menu tutorial is active, otherwise
     // the standard swipe pass.
-    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
         UpdateResultTouchInput();
     } else {
         ProcessResultScreenInput();
@@ -3424,7 +3424,7 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
     // before the rate test rather than short-circuited behind it, as the binary does.
     const float flClearRate = pTracker->GetPlayRecordRate(kSideLocal);
     GameSystem *pClearGameSystem = GameSystem::GetGameSystem();
-    if (flClearRate >= kClearRateThreshold || pClearGameSystem->GetMenuTutorialActive() != 0) {
+    if (flClearRate >= kClearRateThreshold || pClearGameSystem->GetMenuTutorialActive()) {
         for (int nPiece = 0; nPiece < kClearedCaptionCount; ++nPiece) {
             RenderPartSpriteWithAlpha(kPartsSlot,
                                       kPartClearedCaptionBase + nPiece,
@@ -4135,6 +4135,9 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kNoRotation,
                               kScaleNormal,
                               kScaleNormal);
+    // Slot 213 is (806, 816), so this 16-wide centred glyph spans x 798 to 814 and falls entirely
+    // outside the 768-wide panel. The pool holds it as the right half of the pair at 0x2fdb40 and
+    // the binary draws it anyway; it is invisible, not misplaced.
     RenderPartSpriteWithAlpha(kPartsSlot,
                               kPartPlusSign,
                               g_aResultLayoutPosition[kPosBonusTotalPlus],
@@ -4696,7 +4699,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     // The caption walks a contiguous run of anchor positions, each part id being its position index
     // plus a fixed offset. The cleared caption is the shorter of the two.
     const bool bCleared = pTracker->GetPlayRecordRate(kSideLocal) >= kClearRateThreshold ||
-                          GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0;
+                          GameSystem::GetGameSystem()->GetMenuTutorialActive();
     const int nCaptionBase = bCleared ? kPhonePosClearedCaptionBase : kPhonePosFailedCaptionBase;
     const int nCaptionEnd = bCleared ? kPhonePosFailedCaptionBase : kPhonePosCaptionEnd;
     for (int nPosition = nCaptionBase; nPosition < nCaptionEnd; ++nPosition) {

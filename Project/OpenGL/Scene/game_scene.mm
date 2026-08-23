@@ -227,8 +227,8 @@ struct SharedResultBonuses {
 
 // Accumulates the clear, miss, rank, and first-play (plus pastel-field) bonuses common to the
 // Limelight and Colette result screens.
-SharedResultBonuses ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker) {
-    RBBonusData *pBonus = RBBonusData.sharedInstance;
+SharedResultBonuses
+ComputeSharedResultBonuses(GameSystem *pGameSystem, ScoreTracker *pTracker, RBBonusData *pBonus) {
     SharedResultBonuses out;
 
     // Clear bonus: earned once the clear rank reaches A.
@@ -741,7 +741,9 @@ void GameScene::ComputeResultBonusesAndExperience() {
     if (m_nThema == kThemaLimelight) {
         GameSystem *pGameSystem = GameSystem::GetGameSystem();
         ScoreTracker *pTracker = ScoreTracker::shared();
-        const SharedResultBonuses bonuses = ComputeSharedResultBonuses(pGameSystem, pTracker);
+        RBBonusData *pBonus = RBBonusData.sharedInstance;
+        const SharedResultBonuses bonuses =
+            ComputeSharedResultBonuses(pGameSystem, pTracker, pBonus);
 
         RBExperienceData *pExperience = RBExperienceData.sharedInstance;
         const float flExperience = [pExperience getPoint];
@@ -758,7 +760,8 @@ void GameScene::ComputeResultBonusesAndExperience() {
         GameSystem *pGameSystem = GameSystem::GetGameSystem();
         ScoreTracker *pTracker = ScoreTracker::shared();
         RBBonusData *pBonus = RBBonusData.sharedInstance;
-        const SharedResultBonuses bonuses = ComputeSharedResultBonuses(pGameSystem, pTracker);
+        const SharedResultBonuses bonuses =
+            ComputeSharedResultBonuses(pGameSystem, pTracker, pBonus);
 
         float flEarlyPlay = 0.0f;
         if ([AppDelegate.appDelegate isEnableEarlyBonus]) {
@@ -851,7 +854,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
 
     // An early tutorial play holds the result screen open until the walkthrough passes its result
     // step; nothing is submitted until then.
-    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0 &&
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() &&
         RBTutorialManager.getCurrentStatus <= kTutorialInPlayStatusMax) {
         return;
     }
@@ -890,7 +893,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
             [RBUserSettingData.sharedInstance updateTutorialStatus:kTutorialResultSeenStatus
                                                              value:1];
         }
-        if (pGameSystem->GetMenuTutorialActive() != 0) {
+        if (pGameSystem->GetMenuTutorialActive()) {
             [RBTutorialManager
                 updateStatus:static_cast<RBTutorialStatus>(kTutorialResultSeenStatus)];
             // The binary materialises the guide singleton (allocating it if absent) immediately
@@ -898,7 +901,7 @@ void GameScene::FinalizeResultAndSubmitScore(int nDeltaFrames) {
             // never-built guide untouched. @ghidraAddress 0x14c53c
             (void)TutorialGuideLayer::shared();
             TutorialGuideLayer::destroyShared();
-            pGameSystem->SetMenuTutorialActive(0);
+            pGameSystem->SetMenuTutorialActive(false);
         }
     }
 
@@ -989,7 +992,7 @@ void GameScene::LoadResultScreenAndMusic() {
     m_nPlayTime = 0;
 
     // A tutorial play advances the walkthrough to the result step and resets the guide.
-    if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+    if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
         [RBTutorialManager updateStatus:static_cast<RBTutorialStatus>(kTutorialResultStartStatus)];
         TutorialGuideLayer::shared()->Reset();
     }
@@ -1079,7 +1082,7 @@ void GameScene::BeginMusicPlaybackAndTimer() {
     m_flFirstPathSpeed = m_pMusicSheet->GetFirstPathSpeed();
 
     // In a tutorial play, start the guide and fade it in.
-    if (pGameSystem->GetMenuTutorialActive() != 0) {
+    if (pGameSystem->GetMenuTutorialActive()) {
         TutorialGuideLayer::shared()->Start();
         TutorialGuideLayer::shared()->StartFadeIn();
     }
@@ -1968,7 +1971,7 @@ void GameScene::RenderAllPlayFieldLayers(int nDeltaFrames) {
         ColetteThemeLayer::shared()->Update(flDelta);
         ResultWindowColetteLayer::shared()->Update(flDelta);
         EventEffectLayer::shared()->Update(flDelta);
-        if (GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+        if (GameSystem::GetGameSystem()->GetMenuTutorialActive()) {
             TutorialGuideLayer::shared()->Update(flDelta);
         }
         break;

@@ -1390,12 +1390,12 @@ static BOOL g_bRandamIntSeeded = NO;
     self.coverView.hidden = NO;
     [self stopNews];
     [self stopBGEffect];
-    GameSystem::GetGameSystem()->SetMenuTutorialActive(0);
+    GameSystem::GetGameSystem()->SetMenuTutorialActive(false);
 
     if (self.tutorialView != nil && [RBTutorialManager isTutorialMusicselect]) {
         [self.tutorialView startTutorialWithType:kTutorialTypeMenuHide withAnimation:YES];
         [self.tutorialView hideAnimation];
-        GameSystem::GetGameSystem()->SetMenuTutorialActive(1);
+        GameSystem::GetGameSystem()->SetMenuTutorialActive(true);
     }
 
     [self.coverView SetAlphaAnimationDuration:kCoverFadeDuration End:1];
