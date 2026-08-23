@@ -4389,6 +4389,11 @@ enum PhoneResultPart {
     kPhonePartRateFrameLeft = 0x3e,
     kPhonePartRateFrameRight = 0x3f,
     kPhonePartRateLabel = 0x40,
+    // Two further labels the binary draws in the same run at the same alpha (0x785c8-0x78634).
+    // Neither is identified: part 0x41 is a 20x6 centred bar and part 0x42 a 45x45 centred square,
+    // so the names record only their place in the run.
+    kPhonePartRateLabelExtraA = 0x41,
+    kPhonePartRateLabelExtraB = 0x42,
     kPhonePartRankGlyphBase = 0x43, // Plus the earned rank.
     kPhonePartNewRecordBadge = 0x49,
     kPhonePartFullComboBadge = 0x4a,
@@ -4469,6 +4474,8 @@ enum PhoneResultPosition {
     kPhonePosRateFrameRight = 0x34,
     kPhonePosRateDigits = 0x3a,
     kPhonePosRateLabel = 0x3b,
+    kPhonePosRateLabelExtraA = 0x3c,
+    kPhonePosRateLabelExtraB = 0x3d,
     kPhonePosRankGlyph = 0x3e,
     kPhonePosNewRecordBadge = 0x3f,
     kPhonePosFullComboBadge = 0x40,
@@ -4760,6 +4767,8 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
                             kColorRate.flGreen,
                             kColorRate.flBlue);
     emitAt(kPhonePartRateLabel, kPhonePosRateLabel, nAlphaMusicInfo);
+    emitAt(kPhonePartRateLabelExtraA, kPhonePosRateLabelExtraA, nAlphaMusicInfo);
+    emitAt(kPhonePartRateLabelExtraB, kPhonePosRateLabelExtraB, nAlphaMusicInfo);
     emitAt(kPhonePartRankGlyphBase + nLocalRank, kPhonePosRankGlyph, nAlphaArtwork);
     if (nRivalScore < nLocalScore) {
         emitAt(kPhonePartNewRecordBadge, kPhonePosNewRecordBadge, nAlphaArtwork);
@@ -5080,7 +5089,9 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
     }
 
     // The pair of per-side colour markers. Unlike the pad path these are not gated on the game type
-    // and are not dimmed, and they take the mid and light grey palette entries.
+    // and are not dimmed, and they take the mid and light grey palette entries. They ride the
+    // un-split stat channel, not the artwork channel: the binary loads their shared alpha from the
+    // slot holding the stat sweep.
     const int nLocalMarkerColor =
         bSecondPageActive ? kResultBonusColorLightGray : kResultBonusColorMidGray;
     const int nRivalMarkerColor =
@@ -5092,7 +5103,7 @@ void ResultWindowColetteLayer::RenderColetteResultPanel() {
         RenderGlyphPartFromTable(kPartsSlot,
                                  kPhonePartSideColorMarker,
                                  position,
-                                 nAlphaArtwork,
+                                 static_cast<unsigned int>(flStatsSweep),
                                  kNoRotation,
                                  kScaleNormal,
                                  kScaleNormal,
