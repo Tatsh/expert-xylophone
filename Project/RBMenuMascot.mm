@@ -71,8 +71,9 @@ constexpr CGFloat kMascotMessageMaxWidthPhone = 200.0;
 // The height the campaign message text is constrained to when measured in -generateCGSize:.
 constexpr CGFloat kMascotMessageLabelConstraintHeight = 40.0;
 
-// The per-frame move animation duration on the Colette theme.
-constexpr NSTimeInterval kMascotMoveAnimDuration = 0.1;
+// The per-frame move animation duration on the Colette theme. The pool slot holds the float
+// literal widened to double, not an exact double 0.1. @ghidraAddress 0x2ec6a8
+constexpr NSTimeInterval kMascotMoveAnimDuration = 0.1f;
 
 // The message-ticker fade/slide animation duration.
 constexpr NSTimeInterval kMessageAnimDuration = 0.2;
@@ -142,7 +143,8 @@ static NSString *const kMessageTextKey = @"text";
         self.mascotView = nil;
         self.type = 0;
         self.isAnimation = NO;
-        self.speedX = (IsPad()) ? kMascotSpawnSpeedPad : kMascotSpawnSpeedPhone;
+        self.speedX = 0.0f;
+        (void)IsPad(); // Yes, the binary discards this call's result.
         self.scale = 1.0f;
     }
     return self;
@@ -213,11 +215,11 @@ static NSString *const kMessageTextKey = @"text";
                    self.messageLabel.frame.size.height + kMessageBubblePaddingTop +
                        kMessageBubblePaddingBottom);
 
-    self.messageView = [[UIView alloc]
-        initWithFrame:CGRectMake(self.messageBgView.frame.size.width * kMessageViewNudgeFraction,
-                                 -self.messageBgView.frame.size.height,
-                                 self.messageBgView.frame.size.width,
-                                 self.messageBgView.frame.size.height)];
+    self.messageView =
+        [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width * kMessageViewNudgeFraction,
+                                                 -self.messageBgView.frame.size.height,
+                                                 self.messageBgView.frame.size.width,
+                                                 self.messageBgView.frame.size.height)];
     [self.messageBgView addSubview:self.messageLabel];
     [self.messageView addSubview:self.messageBgView];
     [self addSubview:self.messageView];
@@ -288,7 +290,7 @@ static NSString *const kMessageTextKey = @"text";
     self.accellY = 0.0f;
 
     CGFloat spawnX =
-        playRare ? kMascotRareSpawnX : (firstFrame.size.width + kMascotNormalSpawnXOffset);
+        playRare ? kMascotRareSpawnX : (self.m_screenSize.x + kMascotNormalSpawnXOffset);
     self.frame = CGRectMake(spawnX, self.baseY, firstFrame.size.width, firstFrame.size.height);
 
     self.mascotView.transform = CGAffineTransformMakeScale(-self.scale, self.scale);
@@ -383,7 +385,10 @@ static NSString *const kMessageTextKey = @"text";
     // animation re-schedules itself each frame while the wander animation is running.
     [UIView animateWithDuration:kMascotMoveAnimDuration
         delay:0
-        options:(UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveLinear)
+        // AllowUserInteraction, not BeginFromCurrentState: w2 is 0x00030002 at 0x2e7a8/0x2e7ac.
+        // Without it the mascot takes no touches for the whole of its perpetual move animation,
+        // which is why tapping him never made him bounce.
+        options:(UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveLinear)
         animations:^{
           /** @ghidraAddress 0x2e80c */
           CGPoint movePoint = [self getMovePoint];
@@ -469,11 +474,10 @@ static NSString *const kMessageTextKey = @"text";
                              kMessageBubblePaddingBottom);
 
           CGFloat nudge = (!IsPad()) ? -kMessageViewNudgeFraction : kMessageViewNudgeFraction;
-          strongSelf.messageView.frame =
-              CGRectMake(strongSelf.messageBgView.frame.size.width * nudge,
-                         -strongSelf.messageBgView.frame.size.height,
-                         strongSelf.messageBgView.frame.size.width,
-                         strongSelf.messageBgView.frame.size.height);
+          strongSelf.messageView.frame = CGRectMake(strongSelf.frame.size.width * nudge,
+                                                    -strongSelf.messageBgView.frame.size.height,
+                                                    strongSelf.messageBgView.frame.size.width,
+                                                    strongSelf.messageBgView.frame.size.height);
           [strongSelf.messageView sizeToFit];
 
           strongSelf.currentMessageIndex = strongSelf.nextMessageIndex;

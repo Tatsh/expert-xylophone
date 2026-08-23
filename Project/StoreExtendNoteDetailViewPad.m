@@ -33,7 +33,11 @@ static const int kNoCampaign = -1;
 // comments). These describe the pad card geometry.
 static const double kCardWidth = 650.0;           // @ghidraAddress 0x2eec30
 static const double kCardHeight = 284.0;          // @ghidraAddress 0x2eec38
-static const double kDetailScrollTop = 285.0;     // The detail scroll view sits below the card.
+static const double kTitleBarHeight = 44.0;       // @ghidraAddress 0x2eec40
+static const double kTextColumnWidth = 420.0;     // @ghidraAddress 0x2eec60
+static const double kButtonRowY = 234.0;          // @ghidraAddress 0x2eec98
+static const double kButtonWidth = 160.0;         // @ghidraAddress 0x2eea38
+static const double kCopyrightHeight = 40.0;      // @ghidraAddress 0x2ee950
 static const double kDetailScrollHeight = 366.0;  // @ghidraAddress 0x2eecb0
 static const double kDescriptionWidth = 630.0;    // @ghidraAddress 0x2ee978
 static const double kDescriptionHeight = 316.0;   // @ghidraAddress 0x2ee928
@@ -104,14 +108,20 @@ typedef enum {
     [noteBg setImage:[packBg stretchableImageWithLeftCapWidth:4 topCapHeight:4]];
     [self.noteView addSubview:noteBg];
 
-    UIView *card = [[UIView alloc] initWithFrame:self.bounds];
+    // A 44 pt title strip across the top of the card, not the whole panel: 0x2248c takes the
+    // height from the same 44.0 the title label uses, and only the width comes from the bounds.
+    UIView *card = [[UIView alloc]
+        initWithFrame:CGRectMake(0.0, 0.0, self.bounds.size.width, kTitleBarHeight)];
     [card setBackgroundColor:UIColor.whiteColor];
     card.layer.shadowOffset = CGSizeMake(0.0, 1.0);
     card.layer.shadowOpacity = 0.5;
     card.layer.shadowRadius = 1.0;
 
     self.labelTitle =
-        [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, kCardWidth - 20.0, 44.0)];
+        [[UILabel alloc] initWithFrame:CGRectMake(10.0,
+                                                  0.0,
+                                                  self.bounds.size.width - 20.0,
+                                                  kTitleBarHeight)];
     [self.labelTitle setBackgroundColor:UIColor.clearColor];
     [self.labelTitle setFont:[UIFont boldSystemFontOfSize:18.0]];
     [self.labelTitle setTextColor:UIColor.blackColor];
@@ -120,7 +130,9 @@ typedef enum {
     [card addSubview:self.labelTitle];
     [self.noteView addSubview:card];
 
-    self.artworkView = [[StoreImageView alloc] initWithFrame:CGRectMake(18.0, 79.0, 79.0, 79.0)];
+    // The size is its own pool slot, not the Y repeated.
+    self.artworkView =
+        [[StoreImageView alloc] initWithFrame:CGRectMake(18.0, 79.0, kButtonWidth, kButtonWidth)];
     self.artworkView.layer.borderWidth = 1.0;
     self.artworkView.layer.borderColor = UIColor.whiteColor.CGColor;
     [self.artworkView setBackgroundColor:UIColor.whiteColor];
@@ -131,21 +143,21 @@ typedef enum {
     self.artworkView.layer.shouldRasterize = YES;
     [self.noteView addSubview:self.artworkView];
 
-    self.labelMusicName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 76.0, 421.0, 28.0)];
+    self.labelMusicName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 76.0, kTextColumnWidth, 28.0)];
     [self.labelMusicName setBackgroundColor:UIColor.clearColor];
     [self.labelMusicName setFont:[UIFont boldSystemFontOfSize:22.0]];
     [self.labelMusicName setAdjustsFontSizeToFitWidth:YES];
     [self.labelMusicName setMinimumScaleFactor:18.0]; // Yes, the binary passes 18.0 here.
     [self.noteView addSubview:self.labelMusicName];
 
-    self.labelArtistName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 108.0, 421.0, 28.0)];
+    self.labelArtistName = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 108.0, kTextColumnWidth, 28.0)];
     [self.labelArtistName setBackgroundColor:UIColor.clearColor];
     [self.labelArtistName setFont:[UIFont systemFontOfSize:18.0]];
     [self.labelArtistName setAdjustsFontSizeToFitWidth:YES];
     [self.labelArtistName setMinimumScaleFactor:18.0];
     [self.noteView addSubview:self.labelArtistName];
 
-    self.labelLevel = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 172.0, 421.0, 28.0)];
+    self.labelLevel = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 172.0, kTextColumnWidth, 28.0)];
     [self.labelLevel setBackgroundColor:UIColor.clearColor];
     [self.labelLevel setFont:[UIFont boldSystemFontOfSize:20.0]];
     [self.labelLevel setAdjustsFontSizeToFitWidth:YES];
@@ -160,7 +172,8 @@ typedef enum {
 
     const double buttonFontSize = isWide ? 18.0 : 10.0;
 
-    self.downloadBtn = [[StoreButtonView alloc] initWithFrame:CGRectMake(469.0, 234.5, 44.0, 30.0)];
+    self.downloadBtn = [[StoreButtonView alloc]
+        initWithFrame:CGRectMake(470.0, kButtonRowY, kButtonWidth, 30.0)];
     [self.downloadBtn setDisabledColor:[UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                          alpha:1.0]];
     [self.downloadBtn setCornerRadius:4.0];
@@ -173,7 +186,7 @@ typedef enum {
     [self.noteView addSubview:self.downloadBtn];
 
     self.linkBtn = [[StoreButtonView alloc]
-        initWithFrame:CGRectMake(g_dMascotMessageMaxWidthPad, 234.5, 44.0, 30.0)];
+        initWithFrame:CGRectMake(g_dMascotMessageMaxWidthPad, kButtonRowY, kButtonWidth, 30.0)];
     [self.linkBtn setDisabledColor:[UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0]];
     [self.linkBtn setButtonColor:[UIColor colorWithRed:g_dTranslucentAlpha
                                                  green:g_dAudioManagerResumeFadeInTime
@@ -190,7 +203,7 @@ typedef enum {
 
     self.sampleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sampleBtn setFrame:CGRectMake(595.0, 172.0, g_dLayoutMetricThirtyTwo, 35.0)];
-    [self.sampleBtn setContentMode:UIViewContentModeScaleAspectFill];
+    [self.sampleBtn setContentMode:UIViewContentModeCenter];
     [self.sampleBtn setImage:[UIImage imageWithName:kStoreSampleStoppedImageName]
                     forState:UIControlStateNormal];
     [self.sampleBtn addTarget:self
@@ -201,14 +214,14 @@ typedef enum {
         [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, 20.0)];
     [self.indicatorSample setCenter:CGPointMake(CGRectGetWidth(self.sampleBtn.frame) * 0.5,
                                                 CGRectGetHeight(self.sampleBtn.frame) * 0.5)];
-    [self.indicatorSample setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [self.indicatorSample setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
     [self.indicatorSample setHidesWhenStopped:YES];
     [self.sampleBtn addSubview:self.indicatorSample];
     [self.noteView addSubview:self.sampleBtn];
     [self addSubview:self.noteView];
 
     self.detailView = [[UIScrollView alloc]
-        initWithFrame:CGRectMake(0.0, kDetailScrollTop, kCardWidth, kDetailScrollHeight)];
+        initWithFrame:CGRectMake(0.0, kCardHeight, kCardWidth, kDetailScrollHeight)];
     [self.detailView setOpaque:YES];
     [self.detailView setScrollEnabled:YES];
     [self.detailView setDecelerationRate:UIScrollViewDecelerationRateFast];
@@ -224,7 +237,7 @@ typedef enum {
 
     self.descriptionTextView =
         [[UITextView alloc] initWithFrame:CGRectMake(10.0,
-                                                     CGRectGetMaxY(self.bannerView.frame) + 10.0,
+                                                     self.bannerView.frame.size.height + 10.0,
                                                      kDescriptionWidth,
                                                      kDescriptionHeight)];
     [self.descriptionTextView setBackgroundColor:UIColor.clearColor];
@@ -235,7 +248,10 @@ typedef enum {
     [self.detailView addSubview:self.descriptionTextView];
 
     self.copyrightView =
-        [[UITextView alloc] initWithFrame:CGRectMake(10.0, kCopyrightOriginY, 0.0, 0.0)];
+        [[UITextView alloc] initWithFrame:CGRectMake(10.0,
+                                                     kCopyrightOriginY,
+                                                     kDescriptionWidth,
+                                                     kCopyrightHeight)];
     [self.copyrightView setBackgroundColor:UIColor.clearColor];
     [self.copyrightView setEditable:NO];
     [self.copyrightView setFont:[UIFont systemFontOfSize:16.0]];
@@ -245,8 +261,8 @@ typedef enum {
     [self removeNoteInfo];
 
     self.indicator = [[UIActivityIndicatorView alloc]
-        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [self.indicator setFrame:CGRectMake(595.0, 172.0, g_dLayoutMetricThirtyTwo, 35.0)];
+        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [self.indicator setFrame:CGRectMake(0.0, 0.0, 24.0, 24.0)];
     [self.indicator setCenter:CGPointMake(CGRectGetWidth(self.frame) * 0.5,
                                           CGRectGetHeight(self.frame) * 0.5 - 15.0)];
 
