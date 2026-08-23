@@ -177,7 +177,7 @@ static const float kSettingPageSnapThreshold = 0.5f;
 // 1 / RAND_MAX, used to fold rand() into the unit interval, and the multiplier that expands a unit
 // float into the full 32-bit random-seed range.
 static const float kInverseRandMax = 1.0f / static_cast<float>(RAND_MAX);
-static const float kRandSeedScale = 4.2949673e+09f;
+static const float kRandSeedScale = 4294967300.0f;
 
 // The BPM digit image names, indexed by digit value.
 static NSString *const kBpmDigitImageNames[] = {
