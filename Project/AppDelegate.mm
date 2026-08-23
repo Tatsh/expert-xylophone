@@ -394,6 +394,30 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     // Build the window, root view controller, and its (bar-hidden) navigation controller.
     self.window = [[neWindow alloc] initWithFrame:screenBounds];
     self.window.backgroundColor = UIColor.blackColor;
+#ifdef ENABLE_PATCHES
+    // The app predates dark mode by years and has no dark assets, and iOS 15 additionally makes an
+    // unconfigured bar transparent at its scroll edge, which shows this black window straight
+    // through the store's navigation and tab bars — the bars then appear to flip between black and
+    // light as the content behind them scrolls. Pin the window light and give both bar kinds an
+    // opaque background so they stay light whatever is under them. The Info.plist's
+    // UIUserInterfaceStyle covers the first half of this; the appearance proxies are what stop the
+    // bars going transparent, and they must be set before any store view controller is built.
+    if (@available(iOS 13.0, *)) {
+        self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+
+        UINavigationBarAppearance *navigationAppearance = [[UINavigationBarAppearance alloc] init];
+        [navigationAppearance configureWithOpaqueBackground];
+        UINavigationBar.appearance.standardAppearance = navigationAppearance;
+        UINavigationBar.appearance.scrollEdgeAppearance = navigationAppearance;
+
+        UITabBarAppearance *tabAppearance = [[UITabBarAppearance alloc] init];
+        [tabAppearance configureWithOpaqueBackground];
+        UITabBar.appearance.standardAppearance = tabAppearance;
+        if (@available(iOS 15.0, *)) {
+            UITabBar.appearance.scrollEdgeAppearance = tabAppearance;
+        }
+    }
+#endif
     self.viewController = [[RBViewController alloc] init];
     self.navigationController =
         [[RBNavigationController alloc] initWithRootViewController:self.viewController];

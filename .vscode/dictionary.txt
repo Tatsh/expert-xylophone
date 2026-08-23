@@ -485,6 +485,7 @@ udiv
 udvare
 uesr
 unarchiver
+unconfigured
 undecryptable
 undraft
 undrafted

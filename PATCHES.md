@@ -151,3 +151,25 @@ have produced, at the cost of the per-sprite matrix upload.
 
 The unpatched build keeps the unconditional palette path, and crashes on such a driver, which is
 what the original binary would do.
+
+### The bars that flicker between black and light
+
+**File:** `Project/AppDelegate.mm` — `-application:didFinishLaunchingWithOptions:` (0x1c50)
+
+The app was built seven years before dark mode and ships no dark assets, and its window is set to
+`blackColor` — which the original relied on, because in its day every bar drew its own opaque
+background over it.
+
+Two later iOS changes break that. iOS 13 gives the app a dark appearance it has no artwork for, and
+iOS 15 makes an unconfigured `UINavigationBar` or `UITabBar` fully transparent at its scroll edge,
+so the black window shows straight through. The bars then appear to flip between black and light as
+the content behind them scrolls, which is what the store's song list and its detail overlay do.
+
+`UIUserInterfaceStyle` in the Info.plist already pins the appearance, but it does nothing about the
+transparency: a light bar with no background over a black window is still black. The patch sets
+`overrideUserInterfaceStyle` on the window as well and installs an opaque `UINavigationBarAppearance`
+and `UITabBarAppearance` through the appearance proxies, before any store view controller is built.
+`UITabBar`'s `scrollEdgeAppearance` is set only on iOS 15 and later, where it exists.
+
+An unpatched build keeps the bare window and the original's bar configuration, and on a modern iOS
+shows the black bars.
