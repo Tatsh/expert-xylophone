@@ -30,6 +30,15 @@ T ReadStream(const unsigned char *&pCursor) {
     return value;
 }
 
+// A path node's speed slot holds the raw bit pattern of a float. The binary moves the word across
+// without converting it (`ldr s0` at 0x1316c8, and the `ldr w8` / `str w8` pairs at 0x130a40 and
+// 0x130a78), so reading it as an integer and converting would inflate every speed enormously.
+float NodeSpeed(int nRawSpeed) {
+    float flSpeed;
+    std::memcpy(&flSpeed, &nRawSpeed, sizeof(flSpeed));
+    return flSpeed;
+}
+
 } // namespace
 
 /** @ghidraAddress 0x12e944 */
@@ -144,10 +153,11 @@ int DeserializeChartHeaderRecord(RbffChartHeaderRecord *pRecord, const unsigned 
     pRecord->nField0 = ReadStream<unsigned short>(pCursor);
     pRecord->nField2 = ReadStream<unsigned short>(pCursor);
     pRecord->nField4 = ReadStream<unsigned short>(pCursor);
+    // Two reserved bytes sit between the third short and the first int: the cursor advance at
+    // 0x12ed7c is 4, not 2, so the ints are four-byte aligned and the record is 16 bytes.
+    pCursor += 2;
     pRecord->nValueA = ReadStream<int>(pCursor);
     pRecord->nValueB = ReadStream<int>(pCursor);
-    // The record is followed by four reserved bytes.
-    pCursor += 4;
     *ppCursor = pCursor;
     return 1;
 }
@@ -304,6 +314,10 @@ constexpr float kDefaultStepTime = 500.0f;
 constexpr int kDefaultNoteDuration = 3000;
 constexpr float kDefaultEndRoundAdd = 3000.0f;
 constexpr float kDefaultEndGrid = 2000.0f;
+// The chart's single start path node carries a scroll speed of 120.0f, held as raw float bits in
+// the node's x slot (`movz w8,#0x42f0,lsl #16` at 0x130b30, then the 64-bit `str x8,[sp, #0x8]` at
+// 0x130b34 that leaves the time slot zero).
+constexpr int kDefaultChartPathSpeedBits = 0x42f00000;
 } // namespace
 
 /** @ghidraAddress 0x130af8 */
@@ -312,8 +326,8 @@ unsigned long CMusicSheet2::BuildDefaultNoteChart(GameSystem *pGameSystem) {
         return 0;
     }
 
-    // The chart opens with a single start path node.
-    m_pathNodes.Append(NotePathPoint{});
+    // The chart opens with a single start path node carrying the default scroll speed.
+    m_pathNodes.Append(NotePathPoint{kDefaultChartPathSpeedBits, 0});
     m_pRecords = new RbffNoteRecord[kDefaultNoteCount];
 
     float flTime = kDefaultBaseTime;
@@ -389,7 +403,7 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
             (static_cast<float>(record.GetTargetCoords()[0]) * kFieldWidth) / kTargetScale));
         const unsigned short nSel = static_cast<unsigned short>(record.GetTargetCoords()[1]);
         record.SetColorTone(static_cast<short>(nSel));
-        record.SetLinkA(static_cast<short>(record.GetTargetPad()));
+        record.SetLinkA(record.GetTargetCoords()[2]);
 
         // Derive the shot/route selector into nTimingSel.
         int nRoute = static_cast<short>(nSel);
@@ -457,7 +471,7 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
     int nOwnPlayable = 0;
     for (int i = 0; i < m_nNoteCount; ++i) {
         RbffNoteRecord &record = m_pRecords[i];
-        if ((record.GetLane() & 4) == 0 && record.GetSideIndex() == 0) {
+        if ((record.GetFlags() & kNoteFlagDifferentLane) == 0 && record.GetLane() == 0) {
             m_nIndexCount = nOwnPlayable + 1;
             nOwnPlayable = nOwnPlayable + 1;
             if (record.GetType() == 1) {
@@ -483,7 +497,7 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
 
         // Mark the difficulty's basic notes: every own-side note on BASIC, otherwise the first
         // non-decreasing run of hit times.
-        if (record.GetLane() == nOwnSide) {
+        if (record.GetSide() == nOwnSide) {
             if (nDifficulty == kDifficultyBasic) {
                 record.SetBasicNote(true);
             } else if (bBasicOpen && record.GetHitTime() + record.GetHitWindow() <= nBasicMinTime) {
@@ -527,7 +541,8 @@ unsigned long CMusicSheet2::InstallParsedNotes(GameSystem *pGameSystem) {
 
         // Populate the playable-index array for own-side, lane-0 notes and flag simultaneous
         // cross-side notes.
-        const bool bPlayable = (record.GetFlags() & kNoteFlagFree) == 0 && record.GetLane() == 0;
+        const bool bPlayable =
+            (record.GetFlags() & kNoteFlagDifferentLane) == 0 && record.GetLane() == 0;
         if (bPlayable) {
             m_pIndexArrayB[nPlayableIndex] = record.GetHitWindow() + record.GetHitTime();
             ++nPlayableIndex;
@@ -607,10 +622,11 @@ int CMusicSheet2::ParseNoteChartData(const unsigned int *pStream) {
         }
         record.SetKind(chartNote.nKind);
         record.SetSide(chartNote.nSide);
-        // The three target coordinates follow the eight path-point shorts on disk.
-        for (int j = 0; j < 3; ++j) {
-            record.GetTargetCoords()[j] = chartNote.pathPoints[4 + j];
-        }
+        // The three target coordinates are the record's trailing shorts, which a long note
+        // reuses as its chain ids (0x12fb0c sources them from chartNote+0x22).
+        record.GetTargetCoords()[0] = chartNote.nChainLink;
+        record.GetTargetCoords()[1] = chartNote.nChainPartner;
+        record.GetTargetCoords()[2] = chartNote.reserved2;
         record.SetTargetPad(0);
         record.SetHoldKind(chartNote.nHoldFlag != 0 ? 1 : 0);
         record.SetType(chartNote.nType);
@@ -746,9 +762,12 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         short nEventKind;
         std::memcpy(&nEventKind, event.aData, sizeof(nEventKind));
         if (nEventKind == 3) {
-            int aNode[2];
-            std::memcpy(aNode, event.aData + sizeof(int), sizeof(aNode));
-            m_pathNodes.Append(NotePathPoint{aNode[0], aNode[1]});
+            // The node's speed is at event +0x10 and its time at +0x04 (0x130094, 0x13009c).
+            int nSpeedBits;
+            int nNodeTime;
+            std::memcpy(&nSpeedBits, event.aData + 0x10, sizeof(nSpeedBits));
+            std::memcpy(&nNodeTime, event.aData + 0x04, sizeof(nNodeTime));
+            m_pathNodes.Append(NotePathPoint{nSpeedBits, nNodeTime});
         }
     }
 
@@ -848,8 +867,9 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
         }
     }
 
-    // Otherwise scan the slide records, keyed to their owning note's lane. A slide matches when it
-    // is within one tick of the query time, or still lies ahead of it.
+    // Otherwise scan the slide records, keyed to their owning note's lane. A slide matches only
+    // when it is within one tick of the query time; one that still lies ahead of it ends the scan
+    // with the not-found sentinel instead.
     for (int i = 0; i < m_nSlideRecordCount; ++i) {
         const RbffSlideRecord &slide = m_pSlideRecords[i];
         if (m_pRecords[slide.nNoteIndex].GetLane() != nTarget) {
@@ -857,10 +877,13 @@ bool CMusicSheet2::CheckNoteNearTime(int nTime, int nTarget) {
         }
         const int nSlideTime = slide.nValueBScaled + slide.nValueAScaled;
         const int nDelta = nSlideTime - nTime;
-        const bool bAhead = nDelta != 0 && nSlideTime >= nTime;
-        const bool bNear = std::abs(nDelta) <= 1 ? true : bAhead;
-        if (bNear) {
+        if (std::abs(nDelta) < kNearTimeTolerance) {
             return true;
+        }
+        // 0x130e28 selects the sentinel 5 when the slide is still ahead, and 0x130e54 turns 5 into
+        // false, so an ahead slide stops the scan without matching.
+        if (nDelta > 0) {
+            return false;
         }
     }
 
@@ -882,10 +905,10 @@ void CMusicSheet2::ResolveNoteScrollSpeeds() {
         for (int nNode = 1; nNode < m_pathNodes.GetCount(); ++nNode) {
             // A node's time is its y coordinate and its speed its x coordinate.
             if (GetSheetPathNode(nNode)->y <= nStartTime) {
-                record.SetScrollStartSpeed(static_cast<float>(GetSheetPathNode(nNode)->x));
+                record.SetScrollStartSpeed(NodeSpeed(GetSheetPathNode(nNode)->x));
             }
             if (GetSheetPathNode(nNode)->y <= nEndTime) {
-                record.SetScrollEndSpeed(static_cast<float>(GetSheetPathNode(nNode)->x));
+                record.SetScrollEndSpeed(NodeSpeed(GetSheetPathNode(nNode)->x));
             }
             if (GetSheetPathNode(nNode)->y > nEndTime) {
                 break;
@@ -964,8 +987,9 @@ float CMusicSheet2::GetFirstPathSpeed() {
         return kDefaultPathSpeed;
     }
     assert(m_pathNodes.GetCount() > 0);
-    // The node's speed occupies the path point's x slot.
-    return static_cast<float>(m_pathNodes[0].x);
+    // The node's speed occupies the path point's x slot as a raw float bit pattern; 0x1316c8
+    // loads it with `ldr s0`, it does not convert an integer.
+    return NodeSpeed(m_pathNodes[0].x);
 }
 
 /** @ghidraAddress 0x131704 */
@@ -1037,7 +1061,6 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
                                     false);
             nLane = record.GetColorTone();
         } else {
-            bool bSpread = false;
             if ((record.GetFlags() & kNoteFlagSideObject) != 0) {
                 // A side note first marks the colour-tone slots of overlapping same-lane hold
                 // notes, then spreads onto them.
@@ -1072,12 +1095,13 @@ void CMusicSheet2::AssignChartLanes(GameSystem *pGameSystem) {
                                                 true);
                     }
                 }
-                bSpread = true;
             }
+            // The fourth argument is the record's hold kind, not a spread flag: the binary loads
+            // it from record+0x28 at 0x130ef4 and reloads the same field at 0x1310ac.
             nLane = tracker.AssignNoteLane(record.GetHitTime() + record.GetHitWindow(),
                                            record.GetRoute(),
                                            record.GetLane(),
-                                           bSpread ? 1 : 0,
+                                           record.GetHoldKind(),
                                            record.GetGreenTargets());
         }
         record.SetDisplayLane(nLane);
@@ -1160,7 +1184,7 @@ void CMusicSheet2::AssignGreenTargets() {
         for (int nSlot = 0; nSlot < 7; ++nSlot) {
             record.GetGreenTargets()[nSlot] = 1;
         }
-        for (int nSlot = 7; nSlot < 11; ++nSlot) {
+        for (int nSlot = 7; nSlot < 10; ++nSlot) {
             record.GetGreenTargets()[nSlot] = 0;
         }
 

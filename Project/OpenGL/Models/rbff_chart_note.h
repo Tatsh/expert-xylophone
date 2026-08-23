@@ -87,8 +87,8 @@ struct RbffTempoEvent {
 };
 
 /**
- * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts and
- * two ints, with four trailing reserved bytes.
+ * @brief One RBFF chart sub-record (a slide/header entry) read from the stream: three shorts, two
+ * reserved bytes, then two ints — sixteen bytes in all.
  */
 struct RbffChartHeaderRecord {
     unsigned short nField0 = {}; /*!< The first of the record's three leading shorts. +0x00 */
@@ -165,7 +165,7 @@ void ClearNotePair(RbffChartHeaderRecord *pRecord);
 int ReadRbffTempoEvent(RbffTempoEvent *pOut, const unsigned char **ppCursor);
 
 /**
- * @brief Deserialises one RBFF chart sub-record (three shorts, two ints, four reserved bytes),
+ * @brief Deserialises one RBFF chart sub-record (three shorts, two reserved bytes, two ints),
  * advancing the cursor.
  * @param pRecord The destination sub-record.
  * @param ppCursor The stream cursor, advanced past the record on return.
