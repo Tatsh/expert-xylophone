@@ -375,7 +375,7 @@ private:
                                    bool bWideLeading,
                                    bool bDrawPrefix,
                                    bool bLeftPad,
-                                   unsigned int nAlpha,
+                                   unsigned char nAlpha,
                                    float flRotation,
                                    float flRed,
                                    float flGreen,

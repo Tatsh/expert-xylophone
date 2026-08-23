@@ -766,7 +766,7 @@ constexpr unsigned int kIntensityDimmed = 0x80;
 
 // The bonus voice-cue delay threshold, in milliseconds (@ghidraAddress 0x2fcffc), and the themed
 // voice id the cue plays.
-constexpr float kBonusCueThreshold = 3956.0f;
+constexpr float kBonusCueThreshold = 3700.0f;
 constexpr int kBonusCueVoiceId = 7;
 
 // The fixed glyph-table base indices and parts scale the builder stamps into the layer.
@@ -1188,11 +1188,14 @@ void ResultWindowColetteLayer::ComputeElementBounds(int nAnchorId,
         // element size from the pad parts table.
         switch (nAnchorId) {
         case kElementAnchorCentre: {
-            // The centre panel resolves its anchor box but reports empty bounds.
-            PhoneLayoutRect box;
+            // The centre panel's bounds are its anchor box: the origin, and the origin plus the
+            // extent.
+            PhoneLayoutRect box{};
             getPosition(0, &box);
-            *pMin = S_VECTOR2{0.0f, 0.0f};
-            *pMax = S_VECTOR2{0.0f, 0.0f};
+            pMin->x = box.flX;
+            pMin->y = box.flY;
+            pMax->x = box.flX + box.flWidth;
+            pMax->y = box.flY + box.flHeight;
             break;
         }
         case kElementAnchorMusicInfo: {
@@ -1847,7 +1850,7 @@ void ResultWindowColetteLayer::RenderAnchoredGlyphWithAlpha(int nSlot,
                                                             float flRotation,
                                                             float flScaleX,
                                                             float flScaleY) {
-    if (nCharCode >= kColettePhonePartsRecordCount) {
+    if (nCharCode < 0 || nCharCode >= kColettePhonePartsRecordCount) {
         return;
     }
     // Resolve the base position by index and add the offset.
@@ -1875,9 +1878,10 @@ namespace {
 // The parts slot the number digits draw into.
 constexpr int kNumberDigitSlot = 1;
 
-// The number base the digits are extracted in, and the largest digit-slot buffer the renderer uses.
+// The number base the digits are extracted in, and the digit-slot buffer every decomposer
+// declares (seven ints; the binary zeroes 28 bytes in each of the four routines).
 constexpr int kDecimalBase = 10;
-constexpr int kMaxDigitSlots = 6;
+constexpr int kMaxDigitSlots = 7;
 
 // The digit part-family bases and, for each, the wider leading-digit variant, the standalone prefix
 // glyph (drawn before the whole number), and the under-digit prefix glyph (drawn beneath the
@@ -1952,8 +1956,9 @@ int StandalonePrefixFor(int nDigitPartBase) {
 }
 
 // Resolves the under-digit prefix glyph (drawn beneath the leading digit) for a digit part-family
-// base, or the base unchanged for an unlisted family.
-int UnderDigitPrefixFor(int nDigitPartBase) {
+// base. Unlike the standalone prefix, an unlisted family falls back to @p nFallback, which the
+// callers pass as the part id of the digit just drawn, so the leading digit redraws beneath itself.
+int UnderDigitPrefixFor(int nDigitPartBase, int nFallback) {
     switch (nDigitPartBase) {
     case kFamilyScoreBase:
         return kFamilyScoreUnderPrefix;
@@ -1966,7 +1971,36 @@ int UnderDigitPrefixFor(int nDigitPartBase) {
     case kFamilyExpBase:
         return kFamilyExpUnderPrefix;
     default:
+        return nFallback;
+    }
+}
+
+// The proportional renderer at 0x77118 knows only the score, rank, and rate families: the big and
+// exp arms the fixed-position renderer at 0x76ce8 carries do not exist in it, so a call in one of
+// those two families draws the plain glyph there.
+int LeadingDigitBaseForProportional(int nDigitPartBase) {
+    switch (nDigitPartBase) {
+    case kFamilyScoreBase:
+        return kFamilyScoreLeading;
+    case kFamilyRankBase:
+        return kFamilyRankLeading;
+    case kFamilyRateBase:
+        return kFamilyRateLeading;
+    default:
         return nDigitPartBase;
+    }
+}
+
+int UnderDigitPrefixForProportional(int nDigitPartBase, int nFallback) {
+    switch (nDigitPartBase) {
+    case kFamilyScoreBase:
+        return kFamilyScoreUnderPrefix;
+    case kFamilyRankBase:
+        return kFamilyRankUnderPrefix;
+    case kFamilyRateBase:
+        return kFamilyRateUnderPrefix;
+    default:
+        return nFallback;
     }
 }
 
@@ -1980,7 +2014,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
                                                          bool bWideLeading,
                                                          bool bDrawPrefix,
                                                          bool bLeftPad,
-                                                         unsigned int nAlpha,
+                                                         unsigned char nAlpha,
                                                          float flRotation,
                                                          float flRed,
                                                          float flGreen,
@@ -2045,7 +2079,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsAsParts(int nValue,
                                 flBlue);
 
         if (bLeadingSlot) {
-            const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+            const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase, nPartId);
             (void)getPartsData(nUnderPrefix);
             RenderPartSpriteByIndex(kNumberDigitSlot,
                                     nUnderPrefix,
@@ -2215,7 +2249,7 @@ void ResultWindowColetteLayer::RenderPhoneNumberProportional(int nValue,
     };
 
     // Extract the base-ten digits, least significant first, tracking the highest non-zero slot.
-    int aDigits[6] = {};
+    int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
         aDigits[nSlot] = nValue % 10;
@@ -2345,7 +2379,7 @@ void ResultWindowColetteLayer::RenderPhoneNumberGlyphs(int nValue,
 
     // Extract the base-ten digits, least significant first, tracking the most significant non-zero
     // digit's slot (the highest slot actually drawn).
-    int aDigits[6] = {};
+    int aDigits[kMaxDigitSlots] = {};
     int nTopDigit = 0;
     for (int nSlot = 0; nSlot < nDigitCount; ++nSlot) {
         aDigits[nSlot] = nValue % 10;
@@ -2680,7 +2714,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
     // widths, draw the standalone prefix glyph, then step the cursor left by its full width.
     if (bWideLeading) {
         const int nStandalonePrefix = StandalonePrefixFor(nDigitPartBase);
-        const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+        const int nUnderPrefix = UnderDigitPrefixForProportional(nDigitPartBase, nDigitPartBase);
         if (nDigitPartBase == kFamilyScoreBase || nDigitPartBase == kFamilyRankBase ||
             nDigitPartBase == kFamilyRateBase) {
             cursor.x += getPartsData(nStandalonePrefix)->flWidth * kProportionalHalf;
@@ -2696,11 +2730,13 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                 flRed,
                                 flGreen,
                                 flBlue);
-        cursor.x -= getPartsData(nStandalonePrefix)->flWidth;
+        // The four variable-index width reads below index the pad table directly: unlike the three
+        // constant-index prefix widths above, they carry no IsPad call in the binary.
+        cursor.x -= g_aColettePartsPad[nStandalonePrefix].flWidth;
     }
 
     // Draw each significant digit right to left, advancing the cursor left by each glyph's width.
-    const int nLeadingBase = LeadingDigitBaseFor(nDigitPartBase);
+    const int nLeadingBase = LeadingDigitBaseForProportional(nDigitPartBase);
     for (int nSlot = 0; nSlot <= nTopDigit; ++nSlot) {
         const bool bLeadingSlot = nSlot == 0 && bWideLeading;
         const int nBaseThisDigit = bLeadingSlot ? nLeadingBase : nDigitPartBase;
@@ -2715,7 +2751,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                 flRed,
                                 flGreen,
                                 flBlue);
-        cursor.x -= getPartsData(nPartId)->flWidth;
+        cursor.x -= g_aColettePartsPad[nPartId].flWidth;
         // A wide rank leading digit on the first slot nudges the cursor right to tighten its
         // spacing.
         if (nSlot == 0 && static_cast<unsigned int>(nPartId - kWideRankLeadingLow) <
@@ -2724,7 +2760,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
         }
 
         if (bLeadingSlot) {
-            const int nUnderPrefix = UnderDigitPrefixFor(nDigitPartBase);
+            const int nUnderPrefix = UnderDigitPrefixForProportional(nDigitPartBase, nPartId);
             RenderPartSpriteByIndex(kNumberDigitSlot,
                                     nUnderPrefix,
                                     cursor,
@@ -2735,7 +2771,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                     flRed,
                                     flGreen,
                                     flBlue);
-            cursor.x -= getPartsData(nUnderPrefix)->flWidth;
+            cursor.x -= g_aColettePartsPad[nUnderPrefix].flWidth;
             if (nUnderPrefix == kUnderPrefixKernPart) {
                 cursor.x += kUnderPrefixKern;
             }
@@ -2758,7 +2794,7 @@ void ResultWindowColetteLayer::RenderNumberDigitsProportional(int nValue,
                                     flRed,
                                     flGreen,
                                     flBlue);
-            cursor.x -= getPartsData(nDigitPartBase)->flWidth;
+            cursor.x -= g_aColettePartsPad[nDigitPartBase].flWidth;
         }
     }
 }
@@ -2774,7 +2810,7 @@ void ResultWindowColetteLayer::RenderPartSpriteByIndex(int nSlot,
                                                        float flRed,
                                                        float flGreen,
                                                        float flBlue) {
-    if (nPartId >= kColettePartsRecordCount) {
+    if (nPartId < 0 || nPartId >= kColettePartsRecordCount) {
         return;
     }
     // The part metrics come from the device-selected parts table; the texture rectangle from the
@@ -2804,7 +2840,7 @@ void ResultWindowColetteLayer::RenderPartSpriteWithAlpha(int nSlot,
                                                          float flRotation,
                                                          float flScaleX,
                                                          float flScaleY) {
-    if (nPartId >= kColettePartsRecordCount) {
+    if (nPartId < 0 || nPartId >= kColettePartsRecordCount) {
         return;
     }
     // The part metrics come from the device-selected parts table; the texture rectangle from the
@@ -2833,7 +2869,7 @@ void ResultWindowColetteLayer::RenderDimmableGlyphFromTable(int nSlot,
                                                             float flRotation,
                                                             float flScaleX,
                                                             float flScaleY) {
-    if (nPartId >= kColettePhonePartsRecordCount) {
+    if (nPartId < 0 || nPartId >= kColettePhonePartsRecordCount) {
         return;
     }
     // The glyph metrics come from the phone parts table indexed by the part id; the texture
@@ -2864,7 +2900,7 @@ void ResultWindowColetteLayer::RenderGlyphPartFromTable(int nSlot,
                                                         float flRed,
                                                         float flGreen,
                                                         float flBlue) {
-    if (nPartId >= kColettePhonePartsRecordCount) {
+    if (nPartId < 0 || nPartId >= kColettePhonePartsRecordCount) {
         return;
     }
     // The glyph metrics come from the phone parts table indexed by the part id; the texture
@@ -3035,8 +3071,11 @@ enum ResultPanelPosition {
     kPosPanelFrame = 1,
     kPosTwitterButton = 2,
     kPosDecorationBase = 3,
-    kPosMusicInfoUpper = 15,
-    kPosMusicInfoLower = 16,
+    // The binary crosses these two: part 0x0f draws at slot 16 and part 0x10 at slot 15 (the
+    // adds at 0x75158 and 0x75184 against the part ids at 0x75164 and 0x7518c). The neighbouring
+    // frame part 0x11 is not crossed, so do not "correct" this back.
+    kPosMusicInfoLower = 15,
+    kPosMusicInfoUpper = 16,
     kPosMusicInfoFrame = 17,
     kPosDifficultyLabel = 18,
     kPosArtwork = 19,
@@ -3380,9 +3419,12 @@ void ResultWindowColetteLayer::RenderResultScoreBonusPanel() {
                               kScaleNormal);
 
     // The cleared caption replaces the longer failed caption once the rate reaches the clear
-    // threshold, or whenever the menu tutorial is suppressing input.
-    if (pTracker->GetPlayRecordRate(kSideLocal) >= kClearRateThreshold ||
-        GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0) {
+    // threshold, or whenever the menu tutorial is suppressing input. Both getters are re-fetched
+    // rather than reusing the values from the top of the frame, and the game system is fetched
+    // before the rate test rather than short-circuited behind it, as the binary does.
+    const float flClearRate = pTracker->GetPlayRecordRate(kSideLocal);
+    GameSystem *pClearGameSystem = GameSystem::GetGameSystem();
+    if (flClearRate >= kClearRateThreshold || pClearGameSystem->GetMenuTutorialActive() != 0) {
         for (int nPiece = 0; nPiece < kClearedCaptionCount; ++nPiece) {
             RenderPartSpriteWithAlpha(kPartsSlot,
                                       kPartClearedCaptionBase + nPiece,
@@ -5071,11 +5113,14 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColettePartsPad[0].flHeight = static_cast<float>(g_nPlayfieldFieldHeight);
         g_aColettePartsPad[0].nEnabled = 1;
         g_aColettePartsPad[0].flX = 0.0f;
+        g_aColettePartsPad[0].flY = 0.0f;
         g_aColettePartsPad[0].flWidth = 768.0f;
         g_aColettePartsPad[0].nUvPaletteIndex = 0;
         g_aColettePartsPad[1].nEnabled = 1;
         g_aColettePartsPad[1].flX = 0.0f;
         g_aColettePartsPad[1].flY = 0.0f;
+        g_aColettePartsPad[1].flWidth = 186.0f; // @ghidraAddress 0x2fd078
+        g_aColettePartsPad[1].flHeight = 58.0f; // @ghidraAddress 0x2fd07c
         g_aColettePartsPad[1].nUvPaletteIndex = 1;
         g_aColettePartsPad[2].nEnabled = 1;
         g_aColettePartsPad[2].flX = 0.0f;
@@ -6602,244 +6647,243 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aResultLayoutPosition[108].x = 227.0f;
         g_aResultLayoutPosition[108].y = 668.0f;
         g_aResultLayoutPosition[109].x = 557.0f;
-        g_aResultLayoutPosition[109].y = 689.0f;
+        g_aResultLayoutPosition[109].y = 668.0f;
         g_aResultLayoutPosition[110].x = 227.0f;
-        g_aResultLayoutPosition[110].y = 689.0f;
-        g_aResultLayoutPosition[111].x = 549.0f;
-        g_aResultLayoutPosition[111].y = 710.0f;
-        g_aResultLayoutPosition[112].x = 219.0f;
-        g_aResultLayoutPosition[112].y = 710.0f;
+        g_aResultLayoutPosition[110].y = 668.0f;
+        g_aResultLayoutPosition[111].x = 557.0f;
+        g_aResultLayoutPosition[111].y = 689.0f;
+        g_aResultLayoutPosition[112].x = 227.0f;
+        g_aResultLayoutPosition[112].y = 689.0f;
         g_aResultLayoutPosition[113].x = 549.0f;
-        g_aResultLayoutPosition[113].y = 731.0f;
+        g_aResultLayoutPosition[113].y = 710.0f;
         g_aResultLayoutPosition[114].x = 219.0f;
-        g_aResultLayoutPosition[114].y = 731.0f;
-        g_aResultLayoutPosition[115].x = 209.0f;
-        g_aResultLayoutPosition[115].y = 782.0f;
-        g_aResultLayoutPosition[116].x = 228.0f;
-        g_aResultLayoutPosition[116].y = 782.0f;
-        g_aResultLayoutPosition[117].x = 343.0f;
+        g_aResultLayoutPosition[114].y = 710.0f;
+        g_aResultLayoutPosition[115].x = 549.0f;
+        g_aResultLayoutPosition[115].y = 731.0f;
+        g_aResultLayoutPosition[116].x = 219.0f;
+        g_aResultLayoutPosition[116].y = 731.0f;
+        g_aResultLayoutPosition[117].x = 209.0f;
         g_aResultLayoutPosition[117].y = 782.0f;
-        g_aResultLayoutPosition[118].x = 148.0f;
-        g_aResultLayoutPosition[118].y = 826.0f;
-        g_aResultLayoutPosition[119].x = 190.0f;
-        g_aResultLayoutPosition[119].y = 819.0f;
-        g_aResultLayoutPosition[120].x = 213.0f;
-        g_aResultLayoutPosition[120].y = 819.0f;
-        g_aResultLayoutPosition[121].x = 236.0f;
+        g_aResultLayoutPosition[118].x = 228.0f;
+        g_aResultLayoutPosition[118].y = 782.0f;
+        g_aResultLayoutPosition[119].x = 343.0f;
+        g_aResultLayoutPosition[119].y = 782.0f;
+        g_aResultLayoutPosition[120].x = 148.0f;
+        g_aResultLayoutPosition[120].y = 826.0f;
+        g_aResultLayoutPosition[121].x = 190.0f;
         g_aResultLayoutPosition[121].y = 819.0f;
-        g_aResultLayoutPosition[122].x = 259.0f;
+        g_aResultLayoutPosition[122].x = 213.0f;
         g_aResultLayoutPosition[122].y = 819.0f;
-        g_aResultLayoutPosition[123].x = 335.0f;
-        g_aResultLayoutPosition[123].y = 826.0f;
-        g_aResultLayoutPosition[124].x = 397.0f;
-        g_aResultLayoutPosition[124].y = 822.0f;
-        g_aResultLayoutPosition[125].x = 414.0f;
-        g_aResultLayoutPosition[125].y = 822.0f;
-        g_aResultLayoutPosition[126].x = 431.0f;
+        g_aResultLayoutPosition[123].x = 236.0f;
+        g_aResultLayoutPosition[123].y = 819.0f;
+        g_aResultLayoutPosition[124].x = 259.0f;
+        g_aResultLayoutPosition[124].y = 819.0f;
+        g_aResultLayoutPosition[125].x = 335.0f;
+        g_aResultLayoutPosition[125].y = 826.0f;
+        g_aResultLayoutPosition[126].x = 397.0f;
         g_aResultLayoutPosition[126].y = 822.0f;
-        g_aResultLayoutPosition[127].x = 448.0f;
+        g_aResultLayoutPosition[127].x = 414.0f;
         g_aResultLayoutPosition[127].y = 822.0f;
-        g_aResultLayoutPosition[128].x = 466.0f;
+        g_aResultLayoutPosition[128].x = 431.0f;
         g_aResultLayoutPosition[128].y = 822.0f;
-        g_aResultLayoutPosition[129].x = 480.0f;
+        g_aResultLayoutPosition[129].x = 448.0f;
         g_aResultLayoutPosition[129].y = 822.0f;
-        g_aResultLayoutPosition[130].x = 497.0f;
+        g_aResultLayoutPosition[130].x = 466.0f;
         g_aResultLayoutPosition[130].y = 822.0f;
-        g_aResultLayoutPosition[131].x = 514.0f;
+        g_aResultLayoutPosition[131].x = 480.0f;
         g_aResultLayoutPosition[131].y = 822.0f;
-        g_aResultLayoutPosition[132].x = 531.0f;
+        g_aResultLayoutPosition[132].x = 497.0f;
         g_aResultLayoutPosition[132].y = 822.0f;
-        g_aResultLayoutPosition[133].x = 548.0f;
+        g_aResultLayoutPosition[133].x = 514.0f;
         g_aResultLayoutPosition[133].y = 822.0f;
-        g_aResultLayoutPosition[134].x = 565.0f;
+        g_aResultLayoutPosition[134].x = 531.0f;
         g_aResultLayoutPosition[134].y = 822.0f;
-        g_aResultLayoutPosition[135].x = 349.0f;
-        g_aResultLayoutPosition[135].y = 837.0f;
-        g_aResultLayoutPosition[136].x = 132.0f;
-        g_aResultLayoutPosition[136].y = 880.0f;
-        g_aResultLayoutPosition[137].x = 150.0f;
-        g_aResultLayoutPosition[137].y = 873.0f;
-        g_aResultLayoutPosition[138].x = 173.0f;
-        g_aResultLayoutPosition[138].y = 873.0f;
-        g_aResultLayoutPosition[139].x = 196.0f;
+        g_aResultLayoutPosition[135].x = 548.0f;
+        g_aResultLayoutPosition[135].y = 822.0f;
+        g_aResultLayoutPosition[136].x = 565.0f;
+        g_aResultLayoutPosition[136].y = 822.0f;
+        g_aResultLayoutPosition[137].x = 349.0f;
+        g_aResultLayoutPosition[137].y = 837.0f;
+        g_aResultLayoutPosition[138].x = 132.0f;
+        g_aResultLayoutPosition[138].y = 880.0f;
+        g_aResultLayoutPosition[139].x = 150.0f;
         g_aResultLayoutPosition[139].y = 873.0f;
-        g_aResultLayoutPosition[140].x = 210.0f;
+        g_aResultLayoutPosition[140].x = 173.0f;
         g_aResultLayoutPosition[140].y = 873.0f;
-        g_aResultLayoutPosition[141].x = 221.0f;
+        g_aResultLayoutPosition[141].x = 196.0f;
         g_aResultLayoutPosition[141].y = 873.0f;
-        g_aResultLayoutPosition[142].x = 238.0f;
+        g_aResultLayoutPosition[142].x = 210.0f;
         g_aResultLayoutPosition[142].y = 873.0f;
-        g_aResultLayoutPosition[143].x = 276.0f;
-        g_aResultLayoutPosition[143].y = 880.0f;
-        g_aResultLayoutPosition[144].x = 306.0f;
-        g_aResultLayoutPosition[144].y = 877.0f;
-        g_aResultLayoutPosition[145].x = 321.0f;
-        g_aResultLayoutPosition[145].y = 877.0f;
-        g_aResultLayoutPosition[146].x = 336.0f;
+        g_aResultLayoutPosition[143].x = 221.0f;
+        g_aResultLayoutPosition[143].y = 873.0f;
+        g_aResultLayoutPosition[144].x = 238.0f;
+        g_aResultLayoutPosition[144].y = 873.0f;
+        g_aResultLayoutPosition[145].x = 276.0f;
+        g_aResultLayoutPosition[145].y = 880.0f;
+        g_aResultLayoutPosition[146].x = 306.0f;
         g_aResultLayoutPosition[146].y = 877.0f;
-        g_aResultLayoutPosition[147].x = 348.0f;
+        g_aResultLayoutPosition[147].x = 321.0f;
         g_aResultLayoutPosition[147].y = 877.0f;
-        g_aResultLayoutPosition[148].x = 356.0f;
+        g_aResultLayoutPosition[148].x = 336.0f;
         g_aResultLayoutPosition[148].y = 877.0f;
-        g_aResultLayoutPosition[149].x = 370.0f;
+        g_aResultLayoutPosition[149].x = 348.0f;
         g_aResultLayoutPosition[149].y = 877.0f;
-        g_aResultLayoutPosition[150].x = 386.0f;
+        g_aResultLayoutPosition[150].x = 356.0f;
         g_aResultLayoutPosition[150].y = 877.0f;
-        g_aResultLayoutPosition[151].x = 400.0f;
+        g_aResultLayoutPosition[151].x = 370.0f;
         g_aResultLayoutPosition[151].y = 877.0f;
-        g_aResultLayoutPosition[152].x = 417.0f;
+        g_aResultLayoutPosition[152].x = 386.0f;
         g_aResultLayoutPosition[152].y = 877.0f;
-        g_aResultLayoutPosition[153].x = 432.0f;
+        g_aResultLayoutPosition[153].x = 400.0f;
         g_aResultLayoutPosition[153].y = 877.0f;
-        g_aResultLayoutPosition[154].x = 447.0f;
+        g_aResultLayoutPosition[154].x = 417.0f;
         g_aResultLayoutPosition[154].y = 877.0f;
-        g_aResultLayoutPosition[155].x = 459.0f;
+        g_aResultLayoutPosition[155].x = 432.0f;
         g_aResultLayoutPosition[155].y = 877.0f;
-        g_aResultLayoutPosition[156].x = 467.0f;
+        g_aResultLayoutPosition[156].x = 447.0f;
         g_aResultLayoutPosition[156].y = 877.0f;
-        g_aResultLayoutPosition[157].x = 481.0f;
+        g_aResultLayoutPosition[157].x = 459.0f;
         g_aResultLayoutPosition[157].y = 877.0f;
-        g_aResultLayoutPosition[158].x = 494.0f;
+        g_aResultLayoutPosition[158].x = 467.0f;
         g_aResultLayoutPosition[158].y = 877.0f;
-        g_aResultLayoutPosition[159].x = 520.0f;
-        g_aResultLayoutPosition[159].y = 880.0f;
-        g_aResultLayoutPosition[160].x = 556.0f;
-        g_aResultLayoutPosition[160].y = 866.0f;
-        g_aResultLayoutPosition[161].x = 592.0f;
+        g_aResultLayoutPosition[159].x = 481.0f;
+        g_aResultLayoutPosition[159].y = 877.0f;
+        g_aResultLayoutPosition[160].x = 494.0f;
+        g_aResultLayoutPosition[160].y = 877.0f;
+        g_aResultLayoutPosition[161].x = 520.0f;
         g_aResultLayoutPosition[161].y = 880.0f;
-        g_aResultLayoutPosition[162].x = 627.0f;
+        g_aResultLayoutPosition[162].x = 556.0f;
         g_aResultLayoutPosition[162].y = 866.0f;
-        g_aResultLayoutPosition[163].x = 385.0f;
-        g_aResultLayoutPosition[163].y = 891.0f;
-        g_aResultLayoutPosition[164].x = 378.0f;
-        g_aResultLayoutPosition[164].y = 896.0f;
-        g_aResultLayoutPosition[165].x = 390.0f;
-        g_aResultLayoutPosition[165].y = 896.0f;
-        g_aResultLayoutPosition[166].x = 228.0f;
-        g_aResultLayoutPosition[166].y = 511.0f;
-        g_aResultLayoutPosition[167].x = 498.0f;
-        g_aResultLayoutPosition[167].y = 511.0f;
-        g_aResultLayoutPosition[168].x = 343.0f;
+        g_aResultLayoutPosition[163].x = 592.0f;
+        g_aResultLayoutPosition[163].y = 880.0f;
+        g_aResultLayoutPosition[164].x = 627.0f;
+        g_aResultLayoutPosition[164].y = 866.0f;
+        g_aResultLayoutPosition[165].x = 385.0f;
+        g_aResultLayoutPosition[165].y = 891.0f;
+        g_aResultLayoutPosition[166].x = 378.0f;
+        g_aResultLayoutPosition[166].y = 896.0f;
+        g_aResultLayoutPosition[167].x = 390.0f;
+        g_aResultLayoutPosition[167].y = 896.0f;
+        g_aResultLayoutPosition[168].x = 228.0f;
         g_aResultLayoutPosition[168].y = 511.0f;
-        g_aResultLayoutPosition[169].x = 209.0f;
+        g_aResultLayoutPosition[169].x = 498.0f;
         g_aResultLayoutPosition[169].y = 511.0f;
-        g_aResultLayoutPosition[170].x = 472.0f;
+        g_aResultLayoutPosition[170].x = 343.0f;
         g_aResultLayoutPosition[170].y = 511.0f;
-        g_aResultLayoutPosition[171].x = 254.0f;
-        g_aResultLayoutPosition[171].y = 667.0f;
-        g_aResultLayoutPosition[172].x = 514.0f;
-        g_aResultLayoutPosition[172].y = 667.0f;
+        g_aResultLayoutPosition[171].x = 209.0f;
+        g_aResultLayoutPosition[171].y = 511.0f;
+        g_aResultLayoutPosition[172].x = 472.0f;
+        g_aResultLayoutPosition[172].y = 511.0f;
         g_aResultLayoutPosition[173].x = 254.0f;
-        g_aResultLayoutPosition[173].y = 550.0f;
+        g_aResultLayoutPosition[173].y = 667.0f;
         g_aResultLayoutPosition[174].x = 514.0f;
-        g_aResultLayoutPosition[174].y = 550.0f;
+        g_aResultLayoutPosition[174].y = 667.0f;
         g_aResultLayoutPosition[175].x = 254.0f;
-        g_aResultLayoutPosition[175].y = 784.0f;
+        g_aResultLayoutPosition[175].y = 550.0f;
         g_aResultLayoutPosition[176].x = 514.0f;
-        g_aResultLayoutPosition[176].y = 784.0f;
-        g_aResultLayoutPosition[177].x = 192.0f;
-        g_aResultLayoutPosition[177].y = 570.0f;
-        g_aResultLayoutPosition[178].x = 434.0f;
-        g_aResultLayoutPosition[178].y = 570.0f;
-        g_aResultLayoutPosition[179].x = 576.0f;
+        g_aResultLayoutPosition[176].y = 550.0f;
+        g_aResultLayoutPosition[177].x = 254.0f;
+        g_aResultLayoutPosition[177].y = 784.0f;
+        g_aResultLayoutPosition[178].x = 514.0f;
+        g_aResultLayoutPosition[178].y = 784.0f;
+        g_aResultLayoutPosition[179].x = 192.0f;
         g_aResultLayoutPosition[179].y = 570.0f;
-        g_aResultLayoutPosition[180].x = 295.0f;
+        g_aResultLayoutPosition[180].x = 434.0f;
         g_aResultLayoutPosition[180].y = 570.0f;
-        g_aResultLayoutPosition[181].x = 472.0f;
+        g_aResultLayoutPosition[181].x = 576.0f;
         g_aResultLayoutPosition[181].y = 570.0f;
-        g_aResultLayoutPosition[182].x = 536.0f;
-        g_aResultLayoutPosition[182].y = 569.0f;
-        g_aResultLayoutPosition[183].x = 551.0f;
-        g_aResultLayoutPosition[183].y = 569.0f;
-        g_aResultLayoutPosition[184].x = 562.0f;
-        g_aResultLayoutPosition[184].y = 570.0f;
-        g_aResultLayoutPosition[185].x = 570.0f;
-        g_aResultLayoutPosition[185].y = 570.0f;
-        g_aResultLayoutPosition[186].x = 536.0f;
-        g_aResultLayoutPosition[186].y = 609.0f;
-        g_aResultLayoutPosition[187].x = 551.0f;
-        g_aResultLayoutPosition[187].y = 609.0f;
-        g_aResultLayoutPosition[188].x = 562.0f;
-        g_aResultLayoutPosition[188].y = 610.0f;
-        g_aResultLayoutPosition[189].x = 570.0f;
-        g_aResultLayoutPosition[189].y = 610.0f;
-        g_aResultLayoutPosition[190].x = 536.0f;
-        g_aResultLayoutPosition[190].y = 649.0f;
-        g_aResultLayoutPosition[191].x = 551.0f;
-        g_aResultLayoutPosition[191].y = 649.0f;
-        g_aResultLayoutPosition[192].x = 562.0f;
-        g_aResultLayoutPosition[192].y = 650.0f;
-        g_aResultLayoutPosition[193].x = 570.0f;
-        g_aResultLayoutPosition[193].y = 650.0f;
-        g_aResultLayoutPosition[194].x = 536.0f;
-        g_aResultLayoutPosition[194].y = 689.0f;
-        g_aResultLayoutPosition[195].x = 551.0f;
-        g_aResultLayoutPosition[195].y = 689.0f;
-        g_aResultLayoutPosition[196].x = 562.0f;
-        g_aResultLayoutPosition[196].y = 690.0f;
-        g_aResultLayoutPosition[197].x = 570.0f;
-        g_aResultLayoutPosition[197].y = 690.0f;
-        g_aResultLayoutPosition[198].x = 536.0f;
-        g_aResultLayoutPosition[198].y = 729.0f;
-        g_aResultLayoutPosition[199].x = 551.0f;
-        g_aResultLayoutPosition[199].y = 729.0f;
-        g_aResultLayoutPosition[200].x = 562.0f;
-        g_aResultLayoutPosition[200].y = 730.0f;
-        g_aResultLayoutPosition[201].x = 570.0f;
-        g_aResultLayoutPosition[201].y = 730.0f;
-        g_aResultLayoutPosition[202].x = 536.0f;
-        g_aResultLayoutPosition[202].y = 769.0f;
-        g_aResultLayoutPosition[203].x = 551.0f;
-        g_aResultLayoutPosition[203].y = 769.0f;
-        g_aResultLayoutPosition[204].x = 562.0f;
-        g_aResultLayoutPosition[204].y = 770.0f;
-        g_aResultLayoutPosition[205].x = 570.0f;
-        g_aResultLayoutPosition[205].y = 770.0f;
-        g_aResultLayoutPosition[206].x = 526.0f;
-        g_aResultLayoutPosition[206].y = 816.0f;
-        g_aResultLayoutPosition[207].x = 541.0f;
-        g_aResultLayoutPosition[207].y = 816.0f;
-        g_aResultLayoutPosition[208].x = 552.0f;
-        g_aResultLayoutPosition[208].y = 817.0f;
-        g_aResultLayoutPosition[209].x = 560.0f;
-        g_aResultLayoutPosition[209].y = 817.0f;
-        g_aResultLayoutPosition[210].x = 356.0f;
-        g_aResultLayoutPosition[210].y = 816.0f;
-        g_aResultLayoutPosition[211].x = 806.0f;
-        g_aResultLayoutPosition[211].y = 816.0f;
-        g_aResultLayoutPosition[212].x = 438.0f;
-        g_aResultLayoutPosition[212].y = 834.0f;
-        g_aResultLayoutPosition[213].x = 224.0f;
-        g_aResultLayoutPosition[213].y = 856.0f;
-        g_aResultLayoutPosition[214].x = 582.0f;
-        g_aResultLayoutPosition[214].y = 870.0f;
-        g_aResultLayoutPosition[215].x = 536.0f;
-        g_aResultLayoutPosition[215].y = 818.0f;
-        g_aResultLayoutPosition[216].x = 554.0f;
-        g_aResultLayoutPosition[216].y = 818.0f;
-        g_aResultLayoutPosition[217].x = 572.0f;
+        g_aResultLayoutPosition[182].x = 295.0f;
+        g_aResultLayoutPosition[182].y = 570.0f;
+        g_aResultLayoutPosition[183].x = 472.0f;
+        g_aResultLayoutPosition[183].y = 570.0f;
+        g_aResultLayoutPosition[184].x = 536.0f;
+        g_aResultLayoutPosition[184].y = 569.0f;
+        g_aResultLayoutPosition[185].x = 551.0f;
+        g_aResultLayoutPosition[185].y = 569.0f;
+        g_aResultLayoutPosition[186].x = 562.0f;
+        g_aResultLayoutPosition[186].y = 570.0f;
+        g_aResultLayoutPosition[187].x = 570.0f;
+        g_aResultLayoutPosition[187].y = 570.0f;
+        g_aResultLayoutPosition[188].x = 536.0f;
+        g_aResultLayoutPosition[188].y = 609.0f;
+        g_aResultLayoutPosition[189].x = 551.0f;
+        g_aResultLayoutPosition[189].y = 609.0f;
+        g_aResultLayoutPosition[190].x = 562.0f;
+        g_aResultLayoutPosition[190].y = 610.0f;
+        g_aResultLayoutPosition[191].x = 570.0f;
+        g_aResultLayoutPosition[191].y = 610.0f;
+        g_aResultLayoutPosition[192].x = 536.0f;
+        g_aResultLayoutPosition[192].y = 649.0f;
+        g_aResultLayoutPosition[193].x = 551.0f;
+        g_aResultLayoutPosition[193].y = 649.0f;
+        g_aResultLayoutPosition[194].x = 562.0f;
+        g_aResultLayoutPosition[194].y = 650.0f;
+        g_aResultLayoutPosition[195].x = 570.0f;
+        g_aResultLayoutPosition[195].y = 650.0f;
+        g_aResultLayoutPosition[196].x = 536.0f;
+        g_aResultLayoutPosition[196].y = 689.0f;
+        g_aResultLayoutPosition[197].x = 551.0f;
+        g_aResultLayoutPosition[197].y = 689.0f;
+        g_aResultLayoutPosition[198].x = 562.0f;
+        g_aResultLayoutPosition[198].y = 690.0f;
+        g_aResultLayoutPosition[199].x = 570.0f;
+        g_aResultLayoutPosition[199].y = 690.0f;
+        g_aResultLayoutPosition[200].x = 536.0f;
+        g_aResultLayoutPosition[200].y = 729.0f;
+        g_aResultLayoutPosition[201].x = 551.0f;
+        g_aResultLayoutPosition[201].y = 729.0f;
+        g_aResultLayoutPosition[202].x = 562.0f;
+        g_aResultLayoutPosition[202].y = 730.0f;
+        g_aResultLayoutPosition[203].x = 570.0f;
+        g_aResultLayoutPosition[203].y = 730.0f;
+        g_aResultLayoutPosition[204].x = 536.0f;
+        g_aResultLayoutPosition[204].y = 769.0f;
+        g_aResultLayoutPosition[205].x = 551.0f;
+        g_aResultLayoutPosition[205].y = 769.0f;
+        g_aResultLayoutPosition[206].x = 562.0f;
+        g_aResultLayoutPosition[206].y = 770.0f;
+        g_aResultLayoutPosition[207].x = 570.0f;
+        g_aResultLayoutPosition[207].y = 770.0f;
+        g_aResultLayoutPosition[208].x = 526.0f;
+        g_aResultLayoutPosition[208].y = 816.0f;
+        g_aResultLayoutPosition[209].x = 541.0f;
+        g_aResultLayoutPosition[209].y = 816.0f;
+        g_aResultLayoutPosition[210].x = 552.0f;
+        g_aResultLayoutPosition[210].y = 817.0f;
+        g_aResultLayoutPosition[211].x = 560.0f;
+        g_aResultLayoutPosition[211].y = 817.0f;
+        g_aResultLayoutPosition[212].x = 356.0f;
+        g_aResultLayoutPosition[212].y = 816.0f;
+        g_aResultLayoutPosition[213].x = 806.0f;
+        g_aResultLayoutPosition[213].y = 816.0f;
+        g_aResultLayoutPosition[214].x = 438.0f;
+        g_aResultLayoutPosition[214].y = 834.0f;
+        g_aResultLayoutPosition[215].x = 224.0f;
+        g_aResultLayoutPosition[215].y = 856.0f;
+        g_aResultLayoutPosition[216].x = 582.0f;
+        g_aResultLayoutPosition[216].y = 870.0f;
+        g_aResultLayoutPosition[217].x = 536.0f;
         g_aResultLayoutPosition[217].y = 818.0f;
-        g_aResultLayoutPosition[218].x = 300.0f;
-        g_aResultLayoutPosition[218].y = 864.0f;
-        g_aResultLayoutPosition[219].x = 340.0f;
-        g_aResultLayoutPosition[219].y = 864.0f;
-        g_aResultLayoutPosition[220].x = 380.0f;
+        g_aResultLayoutPosition[218].x = 554.0f;
+        g_aResultLayoutPosition[218].y = 818.0f;
+        g_aResultLayoutPosition[219].x = 572.0f;
+        g_aResultLayoutPosition[219].y = 818.0f;
+        g_aResultLayoutPosition[220].x = 300.0f;
         g_aResultLayoutPosition[220].y = 864.0f;
-        g_aResultLayoutPosition[221].x = 420.0f;
+        g_aResultLayoutPosition[221].x = 340.0f;
         g_aResultLayoutPosition[221].y = 864.0f;
-        g_aResultLayoutPosition[222].x = 460.0f;
+        g_aResultLayoutPosition[222].x = 380.0f;
         g_aResultLayoutPosition[222].y = 864.0f;
-        g_aResultLayoutPosition[223].x = 500.0f;
+        g_aResultLayoutPosition[223].x = 420.0f;
         g_aResultLayoutPosition[223].y = 864.0f;
-        g_aResultLayoutPosition[224].x = 521.0f;
+        g_aResultLayoutPosition[224].x = 460.0f;
         g_aResultLayoutPosition[224].y = 864.0f;
-        g_aResultLayoutPosition[225].x = 540.0f;
+        g_aResultLayoutPosition[225].x = 500.0f;
         g_aResultLayoutPosition[225].y = 864.0f;
-        g_aResultLayoutPosition[226].x = 64.0f;
-        g_aResultLayoutPosition[226].y = 19.0f;
-        g_aResultLayoutPosition[227].x = 128.0f;
-        g_aResultLayoutPosition[227].y = 38.0f;
-        const S_VECTOR2 savedAnchor = g_aResultLayoutPosition[1];
+        g_aResultLayoutPosition[226].x = 521.0f;
+        g_aResultLayoutPosition[226].y = 864.0f;
+        g_aResultLayoutPosition[227].x = 540.0f;
+        g_aResultLayoutPosition[227].y = 864.0f;
         g_aColettePartsPhone[0].flWidth = 768.0f;
         g_aColettePartsPhone[2].flX = 41.25f;
         g_aColettePartsPhone[2].flY = 13.75f;
@@ -9783,8 +9827,6 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColetteSeparatorPhonePortrait[51].nAnchorMode = 4;
         g_aAnchorBoxPad[0].flX = g_aResultLayoutPosition[1].x;
         g_aAnchorBoxPad[0].flY = g_aResultLayoutPosition[1].y;
-        g_aColettePartsPad[1].flWidth = 186.0f;
-        g_aColettePartsPad[1].flHeight = 58.0f;
         g_aAnchorBoxPad[0].flWidth = g_aColettePartsPad[1].flWidth;
         g_aAnchorBoxPad[0].flHeight = g_aColettePartsPad[1].flHeight;
         g_aAnchorBoxPad[2].nAnchorMode = 0;
@@ -9808,16 +9850,22 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aAnchorBoxPortrait[3].flX = 65.0f;
         g_aAnchorBoxPortrait[3].flY = 164.0f;
         g_aAnchorBoxPortrait[3].flWidth = 8e+01f;
-        g_aAnchorBoxPortrait[0].flX = 8e+01f;
+        // Row 0 is one 16-byte pool copy (@ghidraAddress 0x2fe540), so its extent comes across too.
+        g_aAnchorBoxPortrait[0].flX = 80.0f;
         g_aAnchorBoxPortrait[0].flY = 191.0f;
+        g_aAnchorBoxPortrait[0].flWidth = 160.0f;
+        g_aAnchorBoxPortrait[0].flHeight = 50.0f;
         g_aAnchorBoxPortrait[1].nAnchorMode = 0;
         g_aAnchorBoxPortrait[3].flHeight = 44.0f;
         g_aAnchorBoxPortrait[3].nAnchorMode = 4;
         g_aAnchorBoxDefault[3].flX = 147.0f;
         g_aAnchorBoxDefault[3].flY = 109.0f;
         g_aAnchorBoxDefault[3].flWidth = 8e+01f;
-        g_aAnchorBoxDefault[0].flX = -8e+01f;
+        // Row 0 is one 16-byte pool copy (@ghidraAddress 0x2fe550), so its extent comes across too.
+        g_aAnchorBoxDefault[0].flX = -80.0f;
         g_aAnchorBoxDefault[0].flY = 116.0f;
+        g_aAnchorBoxDefault[0].flWidth = 160.0f;
+        g_aAnchorBoxDefault[0].flHeight = 50.0f;
         g_aAnchorBoxDefault[0].nAnchorMode = 4;
         g_aAnchorBoxDefault[1].nAnchorMode = 0;
         g_aAnchorBoxDefault[2].nAnchorMode = 0;
@@ -9903,14 +9951,20 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColetteColorMarkerRects[37].flY = 908.0f;
         g_aColetteColorMarkerRects[38].flX = 647.0f;
         g_aColetteColorMarkerRects[38].flY = 909.0f;
+        // Each of the three centre-position records is one 16-byte pool copy, so all four floats
+        // come across (@ghidraAddress 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0).
         g_ColetteCenterPositionPhoneState.flX = 119.0f;
         g_ColetteCenterPositionPhoneState.flY = 439.0f;
+        g_ColetteCenterPositionPhoneState.flWidth = 530.0f;
+        g_ColetteCenterPositionPhoneState.flHeight = 460.0f;
         g_ColetteCenterPositionPhonePortrait.flX = -141.0f;
         g_ColetteCenterPositionPhonePortrait.flY = -32.0f;
+        g_ColetteCenterPositionPhonePortrait.flWidth = 281.0f;
+        g_ColetteCenterPositionPhonePortrait.flHeight = 181.0f;
         g_ColetteCenterPositionPhoneDefault.flX = -214.0f;
         g_ColetteCenterPositionPhoneDefault.flY = -31.0f;
-        g_aColettePartsPad[1].flWidth = 186.0f;
-        g_aColettePartsPad[1].flHeight = 58.0f;
+        g_ColetteCenterPositionPhoneDefault.flWidth = 428.0f;
+        g_ColetteCenterPositionPhoneDefault.flHeight = 119.0f;
         g_aColettePartsPad[4].flX = g_aColettePartsPad[3].flX;
         g_aColettePartsPad[4].flY = g_aColettePartsPad[3].flY;
         g_aColettePartsPad[4].flWidth = g_aColettePartsPad[3].flWidth;
@@ -11159,14 +11213,23 @@ __attribute__((constructor)) void InitializeResultLayoutTables() {
         g_aColettePartsPhone[396].flWidth = g_aColettePartsPhone[390].flWidth;
         g_aColettePartsPhone[398].flX = g_aColettePartsPhone[390].flX;
         g_aColettePartsPhone[398].flWidth = g_aColettePartsPhone[390].flWidth;
-        g_aResultLayoutPosition[1] = savedAnchor;
+        // Rows 1 and 2 are copied from the pad table a whole 16-byte rect at a time, so the
+        // portrait and default rows end up identical to the pad's, extent included.
         g_aAnchorBoxPortrait[1].flX = g_aAnchorBoxPad[1].flX;
+        g_aAnchorBoxPortrait[1].flY = g_aAnchorBoxPad[1].flY;
         g_aAnchorBoxPortrait[1].flWidth = g_aAnchorBoxPad[1].flWidth;
+        g_aAnchorBoxPortrait[1].flHeight = g_aAnchorBoxPad[1].flHeight;
         g_aAnchorBoxPortrait[2].flX = g_aAnchorBoxPad[2].flX;
+        g_aAnchorBoxPortrait[2].flY = g_aAnchorBoxPad[2].flY;
         g_aAnchorBoxPortrait[2].flWidth = g_aAnchorBoxPad[2].flWidth;
+        g_aAnchorBoxPortrait[2].flHeight = g_aAnchorBoxPad[2].flHeight;
         g_aAnchorBoxDefault[1].flX = g_aAnchorBoxPad[1].flX;
+        g_aAnchorBoxDefault[1].flY = g_aAnchorBoxPad[1].flY;
         g_aAnchorBoxDefault[1].flWidth = g_aAnchorBoxPad[1].flWidth;
+        g_aAnchorBoxDefault[1].flHeight = g_aAnchorBoxPad[1].flHeight;
         g_aAnchorBoxDefault[2].flX = g_aAnchorBoxPad[2].flX;
+        g_aAnchorBoxDefault[2].flY = g_aAnchorBoxPad[2].flY;
         g_aAnchorBoxDefault[2].flWidth = g_aAnchorBoxPad[2].flWidth;
+        g_aAnchorBoxDefault[2].flHeight = g_aAnchorBoxPad[2].flHeight;
     }
 }
