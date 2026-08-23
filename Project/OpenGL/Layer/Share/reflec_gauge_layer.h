@@ -179,12 +179,13 @@ public:
     /**
      * @brief Emits the gauge base/frame sprite (kind 0) into a batch.
      *
-     * Selects the sprite descriptor and atlas frame by orientation and gauge mode.
-     * @param nBatch The target sprite batch.
+     * Selects the sprite descriptor and atlas frame by orientation and gauge mode. The batch is
+     * always the first one; the caller's argument is the player side.
+     * @param nSide The player side, selecting the position and rotation.
      * @param nAlpha The sprite tint alpha.
      * @ghidraAddress 0x18b034
      */
-    void EmitBaseSprite(unsigned int nBatch, int nAlpha);
+    void EmitBaseSprite(unsigned int nSide, int nAlpha);
 
     /**
      * @brief Emits a gauge label sprite (kind 2) into the label batch.

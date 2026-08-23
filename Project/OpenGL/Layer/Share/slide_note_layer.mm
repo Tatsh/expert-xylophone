@@ -34,8 +34,8 @@ extern const SpriteUvEntry g_aScoreGaugeUvTable[]; // @ghidraAddress 0x2ef668
 // data giving each type's batch, anchor, size, and UV-table index.
 const SlideNoteSpriteType g_aSlideNoteSpriteTypes[kSlideNoteSpriteTypeCount] = {
     // {batchIndex, anchorX, anchorY, sizeW, sizeH, uvIndex}
-    {0, 0.0f, 29.0f, 0.0f, 58.0f, 59},    // 0: head cap.
-    {0, 0.0f, 29.0f, 27.0f, 58.0f, 60},   // 1: head body.
+    {0, 29.0f, 0.0f, 58.0f, 27.0f, 59},   // 0: head cap.
+    {0, 29.0f, 27.0f, 58.0f, 27.0f, 60},  // 1: head body.
     {1, 31.0f, 31.0f, 62.0f, 62.0f, 65},  // 2.
     {1, 31.0f, 31.0f, 62.0f, 62.0f, 66},  // 3.
     {1, 31.0f, 31.0f, 62.0f, 62.0f, 67},  // 4.

@@ -455,9 +455,9 @@ void NoteLayer::Create(int nColor,
     } else {
         // A head selects one of four fixed kinds from the two shape flags, per colour.
         if (nColor == 1) {
-            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
-        } else {
             nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 0xb : 0xa) : (nShapeFlagB != 0 ? 3 : 1);
+        } else {
+            nKind = nShapeFlagA != 0 ? (nShapeFlagB != 0 ? 9 : 8) : (nShapeFlagB != 0 ? 2 : 0);
         }
         // It is mirrored a half turn when its colour differs from the current play colour.
         flRotation =

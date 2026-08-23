@@ -104,6 +104,12 @@ ThemaMarkerLayer::ThemaMarkerLayer() {
     m_flScaleY = 1.0f;
     m_flDangerBrightness = 1.0f;
 
+    // The binary seeds the whole per-group scale block to 1.0 with _memset_pattern16 at 0x17fc74,
+    // from the 16-byte pattern at 0x30de10 over the 24 bytes at this + 0x70.
+    for (float &flTransform : m_aTransform) {
+        flTransform = 1.0f;
+    }
+
     // Assign each marker group a non-overlapping index range within its batch, accumulating each
     // batch's total sprite capacity as it goes.
     for (int nMarker = 0; nMarker < kMarkerLayoutCount; ++nMarker) {

@@ -47,6 +47,9 @@ constexpr float kBrightnessBias = 0.3f;
 constexpr unsigned int kColorMax = 255;
 
 // The batch the gauge value/digit sprites are emitted into.
+// The batch the gauge base/frame sprite is emitted into (the immediate zero at 0x18b0bc).
+constexpr unsigned int kBaseBatch = 0;
+
 constexpr unsigned int kValueBatch = 1;
 
 // The batch the gauge label sprites are emitted into.
@@ -153,6 +156,9 @@ constexpr float kGaugeValueDigitX[] = {164.0f, 97.0f, 30.0f, -37.0f, -104.0f};
 ReflecGaugeLayer::ReflecGaugeLayer() {
     m_aScales[0] = 1.0f;
     m_aScales[1] = 1.0f;
+    // The paired `stp w9,wzr,[x0, #0x94]` at 0x18a804 seeds the gauge style to 1 and the mirror
+    // side to zero.
+    m_nGaugeStyle = 1;
 
     // Accumulate each part group's sprite count into its batch's capacity, recording each group's
     // base index within that batch.
@@ -210,13 +216,15 @@ float ReflecGaugeLayer::GetValueBySide(unsigned int nSide) const {
 /** @ghidraAddress 0x18aa68 */
 void ReflecGaugeLayer::SetValueBySide(float flValue, unsigned int nSide) {
     assert(static_cast<int>(nSide) >= 0 && nSide < kSideCount);
-    // Quantise to hundredths, floor at zero, then cap at the maximum unless every reflec was a
-    // full-just.
+    // Quantise to hundredths, floor at zero, then cap at the maximum when the value exceeds it or
+    // every reflec was a full-just: the flag pins the gauge to the maximum, it does not exempt it.
     float flQuantized = std::round(flValue * kGaugeQuantizeScale) / kGaugeQuantizeScale;
     if (flQuantized <= 0.0f) {
         flQuantized = 0.0f;
     }
-    if (flQuantized > kGaugeMax && !GameSystem::GetGameSystem()->GetFullJustReflec()) {
+    // Fetched unconditionally ahead of the comparison, as the binary does at 0x18aaa8.
+    const bool bFullJustReflec = GameSystem::GetGameSystem()->GetFullJustReflec();
+    if (flQuantized > kGaugeMax || bFullJustReflec) {
         flQuantized = kGaugeMax;
     }
     m_aSides[nSide].flValue = flQuantized;
@@ -373,7 +381,7 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
 }
 
 /** @ghidraAddress 0x18b034 */
-void ReflecGaugeLayer::EmitBaseSprite(unsigned int nBatch, int nAlpha) {
+void ReflecGaugeLayer::EmitBaseSprite(unsigned int nSide, int nAlpha) {
     // The base descriptor is selected by orientation and gauge mode.
     GaugeSpriteDescriptor descriptor;
     if (!IsPad()) {
@@ -385,8 +393,8 @@ void ReflecGaugeLayer::EmitBaseSprite(unsigned int nBatch, int nAlpha) {
     }
     const SpriteUvEntry &uv = g_aSpriteUvTable[descriptor.nAtlasFrame];
     EmitGaugeSprite(descriptor,
-                    nBatch,
-                    0,
+                    kBaseBatch,
+                    nSide,
                     nAlpha,
                     S_VECTOR2{uv.flOriginU, uv.flOriginV},
                     S_VECTOR2{uv.flSizeU, uv.flSizeV});

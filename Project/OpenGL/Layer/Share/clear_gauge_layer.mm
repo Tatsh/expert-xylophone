@@ -23,8 +23,9 @@ constexpr unsigned int kColorMax = 255;
 // The gm_parts2 atlas the gauge sprites draw from.
 constexpr const char *kAtlasTextureName = "00_texture/gm_parts2";
 
-// The batch whose build additionally enables the two-side gauge.
-constexpr int kTwoSideEnableBatch = 1;
+// The gauge fill marker's batch draws additively.
+constexpr int kAdditiveBlendBatch = 1;
+constexpr int kBlendModeAdditive = 1;
 
 // The number of gauge bands (upper and lower) seeded with a base icon.
 constexpr int kBandCount = 2;
@@ -173,9 +174,9 @@ void ClearGaugeLayer::CreateSprites() {
         pBatch->SetVisible(true);
         pBatch->SetRefCountedMember(m_pTexture);
         pBatch->SetSpriteCount(0);
-        // Building the second batch also enables the two-side gauge.
-        if (nBatch == kTwoSideEnableBatch) {
-            m_nTwoSideEnabled = 1;
+        // The gauge fill marker's batch draws additively.
+        if (nBatch == kAdditiveBlendBatch) {
+            pBatch->SetBlendMode(kBlendModeAdditive);
         }
     }
 
