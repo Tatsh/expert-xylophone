@@ -161,6 +161,12 @@ void ChainConnectorLayer::Update() {
 
     for (int nIndex = 0; nIndex < kChainRecordCount; ++nIndex) {
         ChainRecord &record = m_aChains[nIndex];
+        // Every slot at or past the shared draw count is retired without being drawn
+        // (0x185a7c-0x185a84, 0x185ad0).
+        if (nIndex >= g_nChainConnectorDrawCount) {
+            record.bActive = false;
+            continue;
+        }
         if (!record.bActive) {
             continue;
         }

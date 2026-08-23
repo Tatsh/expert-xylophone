@@ -152,7 +152,7 @@ void PlayColorLayer::BuildGaugePartsSpriteBatches() {
                                 1.0f,
                                 0.0f,
                                 static_cast<unsigned int>(kGroupBatch[nGroup]),
-                                static_cast<unsigned int>(nGroup),
+                                static_cast<unsigned int>(nPart),
                                 0);
         }
     }
@@ -180,7 +180,7 @@ void PlayColorLayer::EmitGaugePartSprite(float flPosX,
     }
 
     const GaugePart &part = kGaugeParts[nPartIndex];
-    pBatch->SetSpritePosition(nIndex, S_VECTOR2{flPosX, flPosY});
+    pBatch->SetSpritePositionXY(nIndex, flPosX, flPosY);
     pBatch->SetSpriteAnchor(nIndex, S_VECTOR2{part.flAnchorX, part.flAnchorY});
     pBatch->SetSpriteSize(nIndex, S_VECTOR2{part.flSizeW, part.flSizeH});
     pBatch->SetSpriteUvOrigin(nIndex, S_VECTOR2{part.flUvOriginU, part.flUvOriginV});

@@ -212,8 +212,13 @@ void SlideNoteLayer::Update(float flDeltaTime) {
     const float flSideFactor1 = bColorIsOne ? 1.0f : flCrossAlpha;
     const float flBaseScale = pGameSystem->GetSheetRadiusScaled();
 
-    for (int nTrail = 0; nTrail < g_nActiveSlideTrailCount; ++nTrail) {
+    for (int nTrail = 0; nTrail < kTrailCount; ++nTrail) {
         SlideNoteTrail &trail = m_aTrails[nTrail];
+        // The slots at or past the active count are retired, not rendered (0x95eac).
+        if (nTrail >= g_nActiveSlideTrailCount) {
+            trail.bActive = false;
+            continue;
+        }
         if (!trail.bActive) {
             continue;
         }

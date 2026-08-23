@@ -199,10 +199,13 @@ void NoteLayer::Update(float flDelta) {
     // Walk the live particles up to the shared active index; each is consumed and emits its
     // sprites.
     for (int nSlot = 0; nSlot < kParticleCount; ++nSlot) {
-        if (nSlot >= g_nParticleActiveIndex) {
-            break;
-        }
         Particle &particle = m_aParticles[nSlot];
+        // A slot at or past the shared active index is retired rather than left set; the inactive
+        // arm below continues without storing, matching the branch at 0x188e44.
+        if (nSlot >= g_nParticleActiveIndex) {
+            particle.bActive = false;
+            continue;
+        }
         if (!particle.bActive) {
             continue;
         }

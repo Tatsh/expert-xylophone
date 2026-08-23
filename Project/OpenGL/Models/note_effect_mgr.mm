@@ -110,12 +110,12 @@ const S_VECTOR2 *NoteEffectMgr::GetOrCacheNotePosition(int nTouchId) {
         }
     }
 
-    // Otherwise claim the first empty slot; a full cache drops the request.
+    // Otherwise claim the last empty slot; a full cache drops the request. The binary's scan is
+    // branchless and keeps overwriting the candidate, so the highest free slot wins.
     int nSlot = -1;
     for (int i = 0; i < kRenderEntryCount; ++i) {
         if (m_aRenderTable[i].nCachedKey == -1) {
             nSlot = i;
-            break;
         }
     }
     if (nSlot < 0 || nSlot >= kRenderEntryCount) {

@@ -269,8 +269,9 @@ int NoteModel::IsSideFlipped() const {
         nSide = 0;
     } else {
         nSide = m_pRecord->GetSide();
-        // A record side outside the two play sides falls back to the own-side flag.
-        if (nSide > 1) {
+        // A record side outside the two play sides falls back to the own-side flag. The binary
+        // compares unsigned, so a negative side takes this arm too.
+        if (static_cast<unsigned int>(nSide) >= 2) {
             return m_bOwnSide ? 0 : kNoSideSentinel;
         }
     }
@@ -290,8 +291,8 @@ int NoteModel::IsOnPlaySide() const {
     } else {
         nSide = m_pRecord->GetSide();
         // A record side outside the two play sides is on the play side only when the own-side flag
-        // is set (returning the no-side sentinel otherwise).
-        if (nSide > 1) {
+        // is set (returning the no-side sentinel otherwise). The comparison is unsigned.
+        if (static_cast<unsigned int>(nSide) >= 2) {
             return m_bOwnSide ? 1 : kNoSideSentinel;
         }
     }

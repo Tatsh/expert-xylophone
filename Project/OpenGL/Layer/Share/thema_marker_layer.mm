@@ -321,6 +321,8 @@ constexpr int kDangerTopGroupCount = 2;
 // 0x30de20 = -0.075) and scale (@ghidraAddress 0x2f85a0 = 2*PI folds in as the doubled phase), plus
 // the two X-offset amplitudes (22 and 27 pixels) and the half vertical scale.
 constexpr float kWobbleTimerCap = 6000.0f;
+// The wrap the timer adds back once it passes the cap (@ghidraAddress 0x30ddf4).
+constexpr float kWobbleTimerWrap = -6000.0f;
 constexpr double kWobblePhaseOffset = -0.075;
 const double kWobblePi = M_PI;
 constexpr float kWobbleAmplitudeA = 22.0f;
@@ -380,7 +382,11 @@ void ThemaMarkerLayer::AnimateEffects(float flDelta) {
     }
 
     // The wobble advances its own timer, then sweeps groups 4 and 5's four slots on cosine curves.
-    m_flWobbleTimer = std::min(m_flWobbleTimer + flDelta, kWobbleTimerCap);
+    // The binary wraps the timer rather than clamping it: once it passes the cap it adds the
+    // negated cap back, so the sweep loops instead of sticking at phase 1.0.
+    const float flWobbleAdvanced = m_flWobbleTimer + flDelta;
+    m_flWobbleTimer =
+        flWobbleAdvanced > kWobbleTimerCap ? flWobbleAdvanced + kWobbleTimerWrap : flWobbleAdvanced;
     const float flPhase = std::max(0.0f, std::min(m_flWobbleTimer / kWobbleTimerCap, 1.0f));
     // The paired-slot phase (doubled) with and without the -0.075 offset.
     const float flCosOffset = static_cast<float>(
@@ -413,7 +419,7 @@ void ThemaMarkerLayer::AnimateEffects(float flDelta) {
                 break;
             case 3:
                 pBatch->SetSpritePositionX(nIndex, kWobbleBaseX[3] + flOffsetB);
-                pBatch->SetSpriteScale(nIndex, -1.0f, -flCosOffset);
+                pBatch->SetSpriteScale(nIndex, -1.0f, -flCosPlain);
                 break;
             default:
                 break;

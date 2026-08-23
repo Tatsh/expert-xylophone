@@ -335,8 +335,9 @@ void ReflecGaugeLayer::EmitGaugeSprite(const GaugeSpriteDescriptor &descriptor,
     float flRotation = 0.0f;
     // The play-field half-height, rounding toward zero, is the vertical span each band is offset
     // by.
-    const int nHalfHeight =
-        (g_nPlayfieldFullHeightY < 0 ? g_nPlayfieldFullHeightY + 1 : g_nPlayfieldFullHeightY) / 2;
+    // C's signed division truncates toward zero, which is exactly what the binary's
+    // `cinc w9,w9,lt` + `asr #1` pair implements; applying the bias as well rounded twice.
+    const int nHalfHeight = g_nPlayfieldFullHeightY / 2;
     if (!IsPad()) {
         // Portrait: a fixed X with the two band Y positions taken from the layout table.
         const float aBandY[kSideCount] = {

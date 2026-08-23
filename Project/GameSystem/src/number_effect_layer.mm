@@ -239,8 +239,8 @@ IsInsideSliderRect(float flX, float flY, float flLeft, float flTop, float flWidt
 void NumberEffectLayer::ProcessBrightnessSliderTouch() {
     TouchManager *pTouchManager = TouchManager::FetchSharedSingleton();
 
-    // The knob target is processed first, then the track.
-    for (int nTarget = kSliderTargetKnob; nTarget >= kSliderTargetTrack; --nTarget) {
+    // The track target is processed first, then the knob.
+    for (int nTarget = kSliderTargetTrack; nTarget <= kSliderTargetKnob; ++nTarget) {
         // Resolve the target's hit rectangle from its element anchor and the device-dependent
         // insets and width.
         S_VECTOR2 anchor{0.0f, 0.0f};
@@ -349,6 +349,8 @@ void NumberEffectLayer::Update(float flDeltaTime) {
     constexpr unsigned int kTrackElement = 2;
     constexpr unsigned int kTrackWideElement = 3;
     constexpr unsigned int kKnobElement = 1;
+    // The knob's glyph row, which is not its anchor element (the immediate 2 at 0x18a5bc).
+    constexpr unsigned int kKnobDescriptor = 2;
     constexpr unsigned int kFillElement = 0;
     constexpr unsigned int kOpaque = 0xff;
     constexpr unsigned int kHeldAlpha = 0x80;
@@ -386,7 +388,9 @@ void NumberEffectLayer::Update(float flDeltaTime) {
 
     // The knob (element 1) draws at half alpha while the slider is held.
     ComputeAnchorPos(kKnobElement, &pos);
-    EmitNumberSprite(pos.x, pos.y, kKnobBatch, kKnobElement, m_bSliderHeld ? kHeldAlpha : kOpaque);
+    // The knob's anchor is element 1 but its glyph is descriptor 2 (the immediate at 0x18a5bc).
+    EmitNumberSprite(
+        pos.x, pos.y, kKnobBatch, kKnobDescriptor, m_bSliderHeld ? kHeldAlpha : kOpaque);
 
     // The brightness fill (element 0) plus a marker sprite offset along the track vector by the
     // current brightness.
