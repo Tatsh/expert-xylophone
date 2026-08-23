@@ -856,9 +856,12 @@ void ResultWindowColetteLayer::InitializeResultWindowSprites() {
 
     // Build one sprite instancer per slot, register it in the global scene tree, make it visible,
     // and reset its sprite count. The parts slot binds the parts atlas and the overlay slot binds
-    // the overlay texture (which the builder leaves unset, so it binds null here).
+    // the overlay texture (which the builder leaves unset, so it binds null here). The batches are
+    // the screen-space kind (the bl at 0x73fb4 targets CreateSpriteInstancer at 0x30804, not
+    // CreateWorldSpriteBatch at 0x31834), so the layout bank's coordinates are read straight
+    // against the orthographic projection's top-left origin.
     for (int nSlot = 0; nSlot < kSlotCount; ++nSlot) {
-        m_apSlots[nSlot] = ne::CreateWorldSpriteBatch(kSlotCapacities[nSlot]);
+        m_apSlots[nSlot] = ne::CreateSpriteInstancer(kSlotCapacities[nSlot]);
         m_apSlots[nSlot]->RegisterGlobal();
         m_apSlots[nSlot]->SetVisible(true);
         if (nSlot == kOverlaySlot) {

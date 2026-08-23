@@ -213,7 +213,9 @@ void NoteResultLayer::CreateSpriteInstancer() {
 
     m_pTexture = ne::C_TEXTURE::FindOrLoadCached(kAtlasTextureName);
 
-    m_pSprites = ne::CreateWorldSpriteBatch(kSpriteCapacity);
+    // A screen-space batch: the bl at 0x1893ac targets CreateSpriteInstancer at 0x30804, not
+    // CreateWorldSpriteBatch at 0x31834.
+    m_pSprites = ne::CreateSpriteInstancer(kSpriteCapacity);
     ne::C_RENDER *pParent = BgLayer::GetBackgroundLayer()->GetBackgroundRenderObject();
     pParent->AttachChild(m_pSprites);
     m_pSprites->SetVisible(true);
