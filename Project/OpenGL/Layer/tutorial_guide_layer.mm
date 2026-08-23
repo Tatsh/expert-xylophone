@@ -10,6 +10,7 @@
 #include "neTexture.h"
 #include "result_window_colette_layer.h"
 #import "s_vector2.h"
+#include "vectormath.h"
 
 // The process-wide tutorial-guide layer, created lazily by shared().
 static TutorialGuideLayer *g_pTutorialGuideLayer = nullptr; // @ghidraAddress 0x3dcae0
@@ -419,7 +420,9 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
     m_flGaugeY = pGameSystem->GetViewportHeight();
     m_pSprite->SetSpriteCount(0);
 
-    if ((m_nFadeState & 0xff) == 0) {
+    // The gate is the active flag, not the fade state: the binary loads eight bytes from the active
+    // flag's offset and tests the low byte, then reuses the same load's high half for the clock.
+    if (!m_bActive) {
         return;
     }
     m_flClock += flDeltaTime;
@@ -781,11 +784,15 @@ void TutorialGuideLayer::RenderResultOverlay(float flDeltaTime) {
     m_flGaugeY = pGameSystem->GetViewportHeight();
     m_pSprite->SetSpriteCount(0);
 
-    // Nothing to draw while the overlay is disabled.
-    if ((m_nFadeState & 0xff) == 0) {
+    // Nothing to draw while the overlay is disabled. As above, the gate is the active flag.
+    if (!m_bActive) {
         return;
     }
     m_flClock += flDeltaTime;
+
+    // The binary re-reads the viewport here and halves it into a temporary it never reads back.
+    S_VECTOR2 viewportHalf{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()};
+    ScaleVector2(&viewportHalf, kHalf); // Yes, the binary computes this and discards it.
 
     // The overlay only runs while a tutorial phase is active.
     if (pGameSystem->GetTutorialPhase() == 0) {

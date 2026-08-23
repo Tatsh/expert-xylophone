@@ -27,8 +27,9 @@ constexpr const char *kEffectTextureName = "00_texture/ti_parts_eff";
 constexpr unsigned int kSlotCapacities[] = {1, 100, 100, 2};
 
 // The per-slot texture-field selector (@ghidraAddress 0x30e85c): the index into the layer's three
-// texture fields for each textured slot. Slot 0 binds no texture, so its entry is unused.
-constexpr int kSlotTextureField[] = {-1, 0, 1, 2};
+// texture fields for each textured slot. Slot 0 binds no texture, so its entry is never read; the
+// 4 is the binary's own dead value in that position.
+constexpr int kSlotTextureField[] = {4, 0, 1, 2};
 
 // The slot that receives additive blend mode, and that mode's identifier.
 constexpr int kAdditiveBlendSlot = 3;
@@ -104,7 +105,7 @@ constexpr int kMissRotCurvePairs = 2;
 constexpr int kMissRotCurveFloats = kMissRotCurvePairs * 2;
 constexpr int kBannerCurvePairs4 = 4;
 constexpr int kBannerCurvePairs2 = 2;
-constexpr unsigned int kMissSpriteSlotBase = 8; // the six sprites emit at slots 8..13.
+constexpr unsigned int kMissSpriteSlotBase = 2; // the six sprites emit at slots 2..7.
 constexpr unsigned int kMissBannerSlot = 1;     // the banner emits at slot 1.
 
 // The single-player layout constants: the reference line the base Y sits below (@ghidraAddress
@@ -164,7 +165,7 @@ constexpr int kResultScaleCurvePairs = 9;
 constexpr int kResultScaleCurveFloats = kResultScaleCurvePairs * 2;
 constexpr int kResultPosCurvePairs = 7;
 constexpr int kResultPosCurveFloats = kResultPosCurvePairs * 2;
-constexpr unsigned int kResultSpriteSlotBase = 0x11; // the result sprites emit at slots 0x11..0x19.
+constexpr unsigned int kResultSpriteSlotBase = 8; // the result sprites emit at slots 8..0x10.
 constexpr float kResultReferenceY = 860.0f;
 
 // The nine result sprites' alpha curves (two {time, value} pairs each). @ghidraAddress 0x30f17c
@@ -986,7 +987,7 @@ void ColetteThemeLayer::Update(float flDelta) {
 
         const int nBestRank = m_aGradeValues[nSide];
         const bool bLowRank = ScoreTracker::shared()->GetPlayRecordRank(nSide) > kFcClearRankMax;
-        const bool bChallenge = GameSystem::GetGameSystem()->GetMenuTutorialActive() != 0;
+        const bool bChallenge = GameSystem::GetGameSystem()->GetMenuTutorialActive();
 
         // A side without a recorded best rank shows its rank medals, at the player's colour.
         if (nBestRank == 0) {
@@ -1053,15 +1054,18 @@ void ColetteThemeLayer::EmitFcSprite(float flScaleX,
 
 /** @ghidraAddress 0x187ea4 */
 void ColetteThemeLayer::EmitFcMissSprites(int nSide) {
+    // Every curve here is queried at the reveal clock; the grade channel's current value is only a
+    // multiplier on the per-sprite alpha.
+    const float flClock = m_flGradeRevealClock;
     const float flCurveScale = m_gradeChannel.GetCurrent();
     const float flBaseY = kMissReferenceY - m_flHeight;
 
     // The six curve-animated sprites, laid out along the fixed X columns at the shared base Y.
     for (int nSprite = 0; nSprite < kMissSpriteCount; ++nSprite) {
-        const float flScale = CalculateCurveInterpolation(
-            kMissScaleCurve[nSprite], kMissScaleCurvePairs, flCurveScale);
+        const float flScale =
+            CalculateCurveInterpolation(kMissScaleCurve[nSprite], kMissScaleCurvePairs, flClock);
         const float flAlphaCurve =
-            CalculateCurveInterpolation(kMissRotCurve[nSprite], kMissRotCurvePairs, flCurveScale);
+            CalculateCurveInterpolation(kMissRotCurve[nSprite], kMissRotCurvePairs, flClock);
 
         S_VECTOR2 position{kMissSpriteX[nSprite], flBaseY};
         float flRotation = 0.0f;
@@ -1087,11 +1091,11 @@ void ColetteThemeLayer::EmitFcMissSprites(int nSide) {
 
     // The banner sprite: its own scale-X, scale-Y, and alpha curves at the same base Y.
     const float flBannerScaleX =
-        CalculateCurveInterpolation(kBannerScaleXCurve, kBannerCurvePairs4, flCurveScale);
+        CalculateCurveInterpolation(kBannerScaleXCurve, kBannerCurvePairs4, flClock);
     const float flBannerScaleY =
-        CalculateCurveInterpolation(kBannerScaleYCurve, kBannerCurvePairs4, flCurveScale);
+        CalculateCurveInterpolation(kBannerScaleYCurve, kBannerCurvePairs4, flClock);
     const float flBannerAlpha =
-        CalculateCurveInterpolation(kBannerAlphaCurve, kBannerCurvePairs2, flCurveScale);
+        CalculateCurveInterpolation(kBannerAlphaCurve, kBannerCurvePairs2, flClock);
 
     S_VECTOR2 bannerPos{0.0f, flBaseY};
     if (m_nSideCount == kSingleSide) {
@@ -1154,9 +1158,9 @@ void ColetteThemeLayer::EmitFcRankSprites(int nSide, int nColorVariant) {
         // Two of the seven medals draw only for one colour variant; the rest always draw.
         bool bEmit = true;
         if (nMedal == kRankMedalVariantSkip1) {
-            bEmit = nColorVariant != 0;
+            bEmit = nColorVariant == 0;
         } else if (nMedal == kRankMedalVariantSkip2) {
-            bEmit = nColorVariant != 1;
+            bEmit = nColorVariant == 1;
         }
         if (bEmit) {
             EmitFcSprite(flScaleX,
