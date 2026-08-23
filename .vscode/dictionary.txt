@@ -441,6 +441,7 @@ strcmp
 strh
 strm
 strobing
+stur
 subarray
 subdata
 subentities

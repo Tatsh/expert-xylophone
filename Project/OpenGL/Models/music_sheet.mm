@@ -723,8 +723,15 @@ int CMusicSheet2::ParseNotesV10(const unsigned long *pStream) {
         }
         record.SetTargetPad(staging.aTargetCoords[3]);
         record.SetFlags(staging.nFlags);
+        // A v10 chart carries its chain block already resolved, and the binary copies all twelve
+        // payload bytes into the record's chain link verbatim: the eight-byte `stur x9,[x8, #0x3c]`
+        // at 0x130038 and the four-byte `str w9,[x8, #0x44]` at 0x130030. So the head's next index
+        // comes from the file. Do not route this through SetLongNoteHead, which leaves the next
+        // index at the -1 marker for the legacy parser's resolve pass to fill: with it unset every
+        // long-note head is also its own tail, and InstallParsedNotes asserts on the first one.
         if ((staging.nFlags & kNoteFlagLongHead) != 0) {
-            record.GetChainLink().SetLongNoteHead(staging.nChainLink, staging.nChainPartner);
+            record.GetChainLink().SetFromChartPayload(
+                staging.nChainLink, staging.nChainPartner, staging.nField34, staging.nChainExtra);
         }
         FreeNotePathArray(&staging);
     }

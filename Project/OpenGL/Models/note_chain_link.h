@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstring>
+
 /**
  * @brief The 12-byte chain-link block embedded in each chart note record (at record +0x3c).
  *
@@ -51,12 +53,34 @@ public:
     }
 
     /** @brief Marks this note a long-note head bound to @p nPartner, with both end markers unset.
+     *
+     * Used only by the legacy parser, which leaves the next index unset and fills it later in its
+     * own resolve pass. The v10 parser takes an already-resolved block from the chart instead; see
+     * @c SetFromChartPayload.
      */
     void SetLongNoteHead(short nChainId, short nPartner) {
         m_nPrev = nChainId;
         m_nNext = kNone;
         m_nPartner = nPartner;
         m_nMarker = kNone;
+    }
+
+    /**
+     * @brief Seeds the block from a v10 chart's already-resolved twelve-byte chain payload.
+     *
+     * The v10 parser has no resolve pass: the chart carries the whole block and the binary copies
+     * it verbatim, so the next index arrives from the file rather than being left at the -1 marker.
+     * @param nPrev The previous-segment index (the payload's first short).
+     * @param nNext The next-segment index (the payload's second short).
+     * @param nPartnerAndMarker The partner index and end marker, packed low half then high half.
+     * @param nExtra The trailing four payload bytes.
+     */
+    void SetFromChartPayload(short nPrev, short nNext, int nPartnerAndMarker, int nExtra) {
+        m_nPrev = nPrev;
+        m_nNext = nNext;
+        m_nPartner = static_cast<short>(nPartnerAndMarker & 0xffff);
+        m_nMarker = static_cast<short>((nPartnerAndMarker >> 16) & 0xffff);
+        std::memcpy(m_aReserved08, &nExtra, sizeof(nExtra));
     }
 
     /** @brief Records the resolved long-note tail: its partner note id and time delta. */
