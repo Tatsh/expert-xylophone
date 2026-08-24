@@ -18,8 +18,7 @@
 
 <!-- WISWA-GENERATED-README:STOP -->
 
-Reconstructed source of **REFLEC BEAT plus** 4.5.8 (`jp.konami.rbplus`). The original ships armv7
-and armv7s only; this builds arm64 and targets iOS 12+.
+Reconstructed source of **REFLEC BEAT plus** 4.5.8 (`jp.konami.rbplus`).
 
 No copyrighted material is in this repository. You must provide your own IPA with the game assets.
 Building this source alone will not result in a playable game.
@@ -83,8 +82,8 @@ the packaged `.ipa` with your own certificate before it will run on a device.
 
 ### CMake and Xcode
 
-This path also needs **CMake 3.14 or newer** (`brew install cmake`, or the official installer —
-Xcode does not bring its own). It drives the Xcode generator, and needs the
+This path also needs **CMake 3.14 or newer** (`sudo port install cmake`, `brew install cmake`, or
+the official installer — Xcode does not bring its own). It drives the Xcode generator, and needs the
 [leetal/ios-cmake](https://github.com/leetal/ios-cmake) toolchain file:
 
 ```shell
@@ -103,23 +102,23 @@ Every knob is a cache entry, so all of them are overridable with `-D<name>=...`:
 
 | Option                  | Default            | Effect                                                                                                                              |
 | ----------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `ENABLE_PATCHES`        | `OFF`              | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                    |
-| `RESOURCES_DIR`         | empty              | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts. |
-| `RBPDBG`                | `OFF`              | Compile in the `os_log` runtime diagnostics.                                                                                        |
-| `RBPDBGINFO`            | `OFF`              | Emit DWARF without altering the optimisation level.                                                                                 |
-| `IOS_ARCHS`             | `arm64`            | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                    |
-| `IOS_DEPLOYMENT_TARGET` | `12.0`             | Minimum iOS version.                                                                                                                |
 | `APP_BUNDLE_ID`         | `jp.konami.rbplus` | `CFBundleIdentifier`.                                                                                                               |
 | `BUILD_DOCS`            | `OFF`              | Build the Doxygen documentation alongside the app.                                                                                  |
+| `ENABLE_PATCHES`        | `OFF`              | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                    |
+| `IOS_ARCHS`             | `arm64`            | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                    |
+| `IOS_DEPLOYMENT_TARGET` | `12.0`             | Minimum iOS version.                                                                                                                |
+| `RBPDBGINFO`            | `OFF`              | Emit DWARF without altering the optimisation level.                                                                                 |
+| `RBPDBG`                | `OFF`              | Compile in the `os_log` runtime diagnostics.                                                                                        |
+| `RESOURCES_DIR`         | empty              | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts. |
 
 `RESOURCES_DIR` is the one that matters most: the repository contains no game assets, so a build
 without it produces an app that launches into nothing.
 
 ### Theos
 
-Theos is supported, but not through CMake — it has its own hand-maintained application `Makefile`
-under `theos/`, which builds arm64 and arm64e against `iphone:clang:latest:12.0`. Set `$THEOS` to
-your Theos installation first; on macOS it uses Xcode's SDK.
+Theos is supported. See `theos/`. The `Makefile` builds arm64 and arm64e against
+`iphone:clang:latest:12.0`. Set `$THEOS` to your Theos installation first;
+on macOS it uses Xcode's SDK.
 
 ```shell
 make -C theos ENABLE_PATCHES=1
