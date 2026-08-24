@@ -237,10 +237,12 @@ time, the per-state API reproduces that per-segment colouring — the selected s
 current sort's colour and the normal state the other one, with the selected title emboldened at
 UIKit's own segment title size.
 
-The background is left alone. The binary never sets one, and the toolbar behind the control is
-themed — black on Classic, the default light bar on Limelight and Colette — so any fixed colour
-would be right for one theme and wrong for the others. `selectedSegmentTintColor` is cleared so the
-modern selected-segment fill does not appear, and whatever the toolbar draws shows through.
+Setting a segment's `tintColor` did two different things depending on its state, and the patch has
+to reproduce both: the selected segment becomes a solid block of its colour, and the unselected one
+letters in that colour on the control's white background. `selectedSegmentTintColor` supplies the
+fill and the control's `backgroundColor` the white. The selected title's colour is deliberately left
+unset so UIKit contrasts it against whatever fill it sits on — white over Limelight's magenta, dark
+over Colette's gold. Both were checked against captures of the original.
 
 The popover's sort row lives in the navigation controller's toolbar. The appearance proxies
 installed for `UINavigationBar` and `UITabBar` had no `UIToolbar` counterpart, so the toolbar kept
