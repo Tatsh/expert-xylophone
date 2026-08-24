@@ -179,6 +179,9 @@ static const float kSettingPageSnapThreshold = 0.5f;
 // float into the full 32-bit random-seed range.
 static const float kInverseRandMax = 1.0f / static_cast<float>(RAND_MAX);
 static const float kRandSeedScale = 4294967300.0f;
+// The scale SetupView applies to the unit float when it seeds the score readout, giving a
+// random value in [0, 9998].
+static const float kSeedScoreScale = 9999.0f; // @ghidraAddress 0x3014d4
 
 // The BPM digit image names, indexed by digit value.
 static NSString *const kBpmDigitImageNames[] = {
@@ -803,7 +806,11 @@ enum { kDetMbgPlainIndex = 3 };
     self.scoreView = [[RBMusicScoreView alloc]
         initWithFrame:CGRectMake(
                           geometry.scoreX, geometry.scoreY, geometry.scoreW, geometry.scoreH)];
-    [self.scoreView UpdateScore:m_Score[kDifficultyBasic]];
+    // The binary seeds the readout with a random four-digit value here; ShowSelectDifficulty
+    // overwrites it from m_Score before the view is ever displayed.
+    int seedScore =
+        static_cast<int>(static_cast<float>(rand()) * kInverseRandMax * kSeedScoreScale);
+    [self.scoreView UpdateScore:seedScore];
     [self.baseView addSubview:self.scoreView];
 
     self.rankView =
@@ -820,7 +827,9 @@ enum { kDetMbgPlainIndex = 3 };
 
     self.arView =
         [[RBMusicARView alloc] initWithFrame:CGRectMake(geometry.arX, geometry.arY, 0.0, 0.0)];
-    [self.arView UpdateScore:m_AR[kDifficultyBasic]];
+    // The binary seeds the rate readout blank, not from m_AR; ShowSelectDifficulty pushes the
+    // real rate immediately afterwards.
+    [self.arView UpdateScore:0.0f];
     [self.baseView addSubview:self.arView];
 
     self.settingTitleImages = [NSMutableArray array];

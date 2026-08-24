@@ -507,8 +507,11 @@ void C_DRAW_POLYGON_2D::Render() {
                 m_pIndexArray, m_nIndexCount * sizeof(unsigned short), m_bIndexBufferExternal);
         }
     }
-    pRenderer->DrawIndexedPrimitives(
-        static_cast<int>(m_nDrawMode), static_cast<int>(m_nDrawIndexCount), m_pIndexArray);
+    // The VBO arm draws from the bound element buffer at offset zero; only an externally owned
+    // index buffer passes the client pointer.
+    pRenderer->DrawIndexedPrimitives(static_cast<int>(m_nDrawMode),
+                                     static_cast<int>(m_nDrawIndexCount),
+                                     m_bIndexBufferExternal ? m_pIndexArray : nullptr);
 }
 
 } // namespace ne
