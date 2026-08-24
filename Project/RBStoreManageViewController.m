@@ -489,7 +489,7 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     NSInteger section = [(RBStoreManageHeaderCell *)[sender view] section];
     sectionOpenList[section] ^= 1;
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
-                  withRowAnimation:UITableViewRowAnimationNone];
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - UITableViewDataSource and UITableViewDelegate

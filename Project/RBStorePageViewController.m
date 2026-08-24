@@ -197,14 +197,14 @@ static const CGFloat kPadTableBorderWidth = 1.5;
 static const CGFloat kPadTableWidth = 726.0;
 static const CGFloat kPadTableScrollInset = 4.0;
 static const CGFloat kPadTitleLabelWidth = 720.0;
-static const CGFloat kPadTitleVerticalOffset = 20.0;
-static const CGFloat kPadContentTop = 330.0;
+static const CGFloat kPadContentTop = 331.0; // @ghidraAddress 0x3107e8
 // The pad promotion banner's height. 160.0 is a heavily pooled value and this slot is
 // also annotated for g_dPopupBaseOriginYWide, which is an origin rather than a height.
 static const CGFloat kPadPromotionHeight = 160.0; // @ghidraAddress 0x2eea38
 // How far above the view's bottom edge the "show more" button sits.
 static const CGFloat kShowMoreBottomInset = 15.0;
 static const CGFloat kPadDetailWidth = 650.0;
+static const CGFloat kPadDetailHeight = 680.0; // @ghidraAddress 0x3013f8
 static const CGFloat kPadDetailCenterYOffset = -44.0;
 static const CGFloat kPadTableHeightOffset = -236.0;
 static const CGFloat kPadTableCenterOffset = 236.0;
@@ -219,8 +219,8 @@ static const CGFloat kSampleButtonInsetBottom = 13.0;
 // Colour white components used for the various translucent fills. Each is a byte over 255 rounded
 // through a float, so the pool value is not the tidy decimal it looks like.
 static const CGFloat kTableBackgroundWhite = 47.0f / 255.0f; // @ghidraAddress 0x2eef38
-static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f;   // @ghidraAddress 0x2ec730
-static const CGFloat kLabelTextWhite = 158.0f / 255.0f;        // @ghidraAddress 0x2eecb8
+static const CGFloat kPadTableBorderWhite = 143.0f / 255.0f; // @ghidraAddress 0x2ec730
+static const CGFloat kLabelTextWhite = 158.0f / 255.0f;      // @ghidraAddress 0x2eecb8
 static const CGFloat kCoverPadAlpha = 0.5;
 // The loading label's text shadow alpha. It shares a slot with the audio-manager resume
 // fade, but a colour alpha and a duration are not the same constant.
@@ -228,7 +228,7 @@ static const CGFloat kLoadingShadowAlpha = 0.3f; // @ghidraAddress 0x2ec718
 
 // The default store-page background colour (shared with loadView). The pool holds 226, 227, and
 // 228 over 255, each rounded through a float on the way in.
-static const CGFloat kDefaultBackgroundRed = 226.0f / 255.0f;    // @ghidraAddress 0x30be90
+static const CGFloat kDefaultBackgroundRed = 226.0f / 255.0f;   // @ghidraAddress 0x30be90
 static const CGFloat kDefaultBackgroundGreen = 227.0f / 255.0f; // @ghidraAddress 0x30be98
 static const CGFloat kDefaultBackgroundBlue = 228.0f / 255.0f;  // @ghidraAddress 0x30bea0
 
@@ -245,9 +245,14 @@ static const NSTimeInterval kDetailAnimDuration = 0.3; // @ghidraAddress 0x3010a
 // The stretchable pack-cell background caps.
 static const int kPackBgStretchCap = 4;
 
-// The Retina spinner size and the pack-table title label bounds constant.
+// The Retina spinner size.
 static const CGFloat kSpinnerSize = 24.0;
-static const CGFloat kPadTitleTagBias = 20.0;
+// The "Packs" title sits 200 pt down, below the promotion strip. @ghidraAddress 0x2ee938
+static const CGFloat kPadPackTitleCenterBias = 200.0;
+// The promotion strip's own bias is an fmov immediate, so it carries no pool address.
+static const CGFloat kPadPromotionCenterYBias = 20.0;
+// The padding reserved above and below the "show more" button when sizing the pack table.
+static const CGFloat kShowMoreTablePadding = 16.0;
 
 // The currency code that counts towards the running purchase total.
 static NSString *const kCurrencyCodeJPY = @"JPY";
@@ -398,7 +403,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     CGFloat headerHeight = self.tabBarController.rotatingHeaderView.frame.size.height;
     CGFloat contentTop = kPadContentTop - headerHeight;
 
-    self.packTableLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, contentTop, 27.0, 0.0)];
+    self.packTableLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, contentTop, 0.0, 0.0)];
     self.packTableLabel.textColor = UIColor.blackColor;
     self.packTableLabel.shadowColor = UIColor.lightGrayColor;
     self.packTableLabel.shadowOffset = CGSizeMake(1.0, 1.0);
@@ -407,25 +412,24 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.packTableLabel sizeToFit];
     self.packTableLabel.bounds =
         CGRectMake(0.0, 0.0, kPadTitleLabelWidth, self.packTableLabel.bounds.size.height);
-    self.packTableLabel.center =
-        CGPointMake(bounds.size.width * kCenterScale,
-                    self.packTableLabel.bounds.size.height * kCenterScale + kPadTitleTagBias);
+    self.packTableLabel.center = CGPointMake(bounds.size.width * kCenterScale,
+                                             self.packTableLabel.bounds.size.height * kCenterScale +
+                                                 kPadPackTitleCenterBias);
     self.packTableLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
                                            UIViewAutoresizingFlexibleRightMargin |
                                            UIViewAutoresizingFlexibleBottomMargin;
     [self.view addSubview:self.packTableLabel];
 
     if (self.promotionView == nil) {
-        // The width is the view frame's width, left in the register by the -frame send just above;
-        // the centre's x is the bounds origin, which is zero, and its y is re-read from the
-        // promotion view's own bounds rather than from the height constant.
+        // The width is the view frame's width, left in the register by the -frame send just above,
+        // and the centre's y is re-read from the promotion view's own bounds rather than from the
+        // height constant.
         StorePromotionView *promotion = [[StorePromotionView alloc]
-            initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width,
-                                     kPadPromotionHeight)];
+            initWithFrame:CGRectMake(0.0, 10.0, self.view.frame.size.width, kPadPromotionHeight)];
         self.promotionView = promotion;
-        self.promotionView.center =
-            CGPointMake(bounds.origin.x,
-                        self.promotionView.bounds.size.height * kCenterScale + kPadTitleTagBias);
+        self.promotionView.center = CGPointMake(
+            bounds.size.width * kCenterScale,
+            self.promotionView.bounds.size.height * kCenterScale + kPadPromotionCenterYBias);
         self.promotionView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
                                               UIViewAutoresizingFlexibleRightMargin |
                                               UIViewAutoresizingFlexibleBottomMargin;
@@ -481,11 +485,10 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [showMore setTitle:g_pLocalizedShowMore forState:UIControlStateNormal];
     [showMore setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     [showMore sizeToFit];
-    // The height subtracted is the button's own, re-read by the -bounds send the binary makes
-    // here; the centre's x is the bounds origin, which is zero.
-    showMore.center = CGPointMake(bounds.origin.x, bounds.size.height -
-                                                       showMore.bounds.size.height * kCenterScale -
-                                                       kShowMoreBottomInset);
+    // The height subtracted is the button's own, re-read by the -bounds send the binary makes here.
+    showMore.center = CGPointMake(bounds.size.width * kCenterScale,
+                                  bounds.size.height - showMore.bounds.size.height * kCenterScale -
+                                      kShowMoreBottomInset);
     showMore.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
                                 UIViewAutoresizingFlexibleRightMargin |
                                 UIViewAutoresizingFlexibleTopMargin;
@@ -500,9 +503,9 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     indicator.bounds = CGRectMake(0.0, 0.0, kSpinnerSize, kSpinnerSize);
-    indicator.center =
-        CGPointMake(self.showMoreButton.bounds.size.width + kSpinnerSize * kCenterScale,
-                    kSpinnerSize * kCenterScale);
+    indicator.center = CGPointMake(self.showMoreButton.bounds.size.width * kCenterScale +
+                                       indicator.bounds.size.width,
+                                   self.showMoreButton.bounds.size.height * kCenterScale);
     indicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
                                  UIViewAutoresizingFlexibleTopMargin |
                                  UIViewAutoresizingFlexibleBottomMargin;
@@ -512,8 +515,12 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     self.showMoreIndicator = indicator;
 
     if ([self.view viewWithTag:kTagPackTable] == nil) {
+        // The reservation is the show-more button's own fitted height plus 16 pt of padding above
+        // and below, narrowed through float exactly as the binary does.
+        CGFloat spinnerAndPadding =
+            self.showMoreButton.bounds.size.height + kShowMoreTablePadding + kShowMoreTablePadding;
         CGFloat tableHeight =
-            (bounds.size.height + kPadTableHeightOffset) - (kSpinnerSize + 16.0 + 16.0);
+            (bounds.size.height + kPadTableHeightOffset) - (CGFloat)(float)spinnerAndPadding;
         UITableView *table =
             [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, kPadTableWidth, tableHeight)
                                          style:UITableViewStylePlain];
@@ -553,7 +560,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.view addSubview:self.coverViewPad];
 
     self.packDetailViewPad = [[StorePackDetailViewPad alloc]
-        initWithFrame:CGRectMake(0.0, 0.0, kPadDetailWidth, kPromotionSectionHeight)];
+        initWithFrame:CGRectMake(0.0, 0.0, kPadDetailWidth, kPadDetailHeight)];
     self.packDetailViewPad.center =
         CGPointMake((CGFloat)(int)self.coverViewPad.center.x,
                     (CGFloat)(int)(self.coverViewPad.center.y + kPadDetailCenterYOffset));
@@ -1291,8 +1298,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
                           scrollView.contentSize.height :
                           scrollView.bounds.size.height;
     CGFloat funY = funDrop + funBase;
-    if (scrollView.contentOffset.y + scrollView.bounds.size.height >
-        funFrame.size.height + funY) {
+    if (scrollView.contentOffset.y + scrollView.bounds.size.height > funFrame.size.height + funY) {
         funY = scrollView.contentOffset.y + scrollView.bounds.size.height - funFrame.size.height;
     }
     funFrame.origin.y = funY;
@@ -1307,16 +1313,14 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     UIView *campaignBanner = [campaignTable viewWithTag:kTagCampaignBanner];
     CGFloat campaignDrop = m_IsPad ? kBannerHeightPad : kBannerHeightPhone;
     CGRect campaignFrame = campaignBanner.frame;
-    CGFloat campaignBase =
-        (campaignTable.contentSize.height > campaignTable.bounds.size.height) ?
-            scrollView.contentSize.height :
-            scrollView.bounds.size.height;
+    CGFloat campaignBase = (campaignTable.contentSize.height > campaignTable.bounds.size.height) ?
+                               scrollView.contentSize.height :
+                               scrollView.bounds.size.height;
     CGFloat campaignY = campaignDrop + campaignBase;
     CGFloat campaignHalfHeight = campaignFrame.size.height * kCenterScale;
     if (scrollView.contentOffset.y + scrollView.bounds.size.height >
         campaignHalfHeight + campaignY) {
-        campaignY =
-            scrollView.contentOffset.y + scrollView.bounds.size.height - campaignHalfHeight;
+        campaignY = scrollView.contentOffset.y + scrollView.bounds.size.height - campaignHalfHeight;
     }
     campaignFrame.origin.y = campaignY;
     campaignBanner.frame = campaignFrame;
@@ -1579,9 +1583,10 @@ static NSString *const kStoreDownloadDialogMessage = @"";
             // Both dimensions come from -frame; the binary sends it twice and keeps the width from
             // the first call and the height from the second.
             CGRect tableFrame = tableView.frame;
-            [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width,
-                                                      tableFrame.size.height)
-                                  animated:NO];
+            [tableView
+                scrollRectToVisible:CGRectMake(
+                                        0.0, 0.0, tableFrame.size.width, tableFrame.size.height)
+                           animated:NO];
         }
         if (genreIndex == 0) {
             self.genreButton.title = [[NSBundle mainBundle] localizedStringForKey:kStoreCategoryKey
@@ -1589,8 +1594,8 @@ static NSString *const kStoreDownloadDialogMessage = @"";
                                                                             table:nil];
         } else {
             NSString *prefix = IsPad() ? kGenreTitlePrefixPad : kGenreTitlePrefixPhone;
-            self.genreButton.title = [[NSString alloc] initWithFormat:kGenreTitleFormat, prefix,
-                                                                      genre.genreName];
+            self.genreButton.title =
+                [[NSString alloc] initWithFormat:kGenreTitleFormat, prefix, genre.genreName];
         }
     }
 }
@@ -1643,9 +1648,9 @@ static NSString *const kStoreDownloadDialogMessage = @"";
         // As in -switchToGenre:, both dimensions come from -frame: the binary sends it twice and
         // keeps the width from the first call and the height from the second.
         CGRect tableFrame = tableView.frame;
-        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width,
-                                                  tableFrame.size.height)
-                              animated:NO];
+        [tableView
+            scrollRectToVisible:CGRectMake(0.0, 0.0, tableFrame.size.width, tableFrame.size.height)
+                       animated:NO];
     }
     if (loadingLabel != nil) {
         loadingLabel.hidden = NO;
@@ -1812,8 +1817,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.parent hideModalDialog];
     NSString *message =
         // The format carries no specifier, so the binary discards the argument it passes.
-        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
-                                         error.localizedDescription];
+        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled, error.localizedDescription];
     [UIAlertView showWithErrorMessage:message delegate:nil];
 }
 
@@ -2147,8 +2151,7 @@ static NSString *const kStoreDownloadDialogMessage = @"";
     [self.parent hideModalDialog];
     NSString *message =
         // The format carries no specifier, so the binary discards the argument it passes.
-        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled,
-                                         error.localizedDescription];
+        [[NSString alloc] initWithFormat:g_pLocalizedPurchaseCancelled, error.localizedDescription];
     [UIAlertView showWithErrorMessage:message delegate:nil];
     [self.promotionView startAnimation];
 }

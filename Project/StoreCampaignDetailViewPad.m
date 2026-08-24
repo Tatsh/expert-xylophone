@@ -65,11 +65,16 @@ static const CGFloat kItemViewHeight = 284.0;
 static const CGFloat kItemBackgroundStretchCap = 4.0;
 static const CGFloat kTitleFontSize = 18.0;
 static const CGFloat kTitleInset = 20.0;
+// The white strip that caps the item panel. @ghidraAddress 0x2eec40
+static const CGFloat kTitleBarHeight = 44.0;
 static const CGFloat kItemNameFontSize = 22.0;
 static const CGFloat kArtistFontSize = 18.0;
 static const CGFloat kLevelsFontSize = 20.0;
 static const CGFloat kLabelMinimumScaleFactor = 18.0;
 static const CGFloat kArtworkOriginX = 18.0;
+// The jacket's y sits one pool slot below the 160.0 that gives its width and height.
+// @ghidraAddress 0x2eec48
+static const CGFloat kArtworkOriginY = 79.0;
 static const CGFloat kLabelNameOriginX = 195.0;
 static const CGFloat kLabelNameOriginY = 76.0;
 static const CGFloat kLabelNameWidth = 420.0;
@@ -91,6 +96,9 @@ static const CGFloat kSampleBtnGlyphSize = 20.0;
 static const CGFloat kArtworkBorderWidth = 1.0;
 static const CGFloat kArtworkShadowOffset = 2.0;
 static const CGFloat kArtworkShadowRadius = 2.0;
+// CALayer's shadowOpacity is a float, and the binary loads this with ldr s0.
+// @ghidraAddress 0x2ec6b8
+static const float kArtworkShadowOpacity = 0.6f;
 
 // Panel and detail-pane geometry.
 static const CGFloat kPanelShadowRadius = 8.0;
@@ -108,12 +116,19 @@ static const CGFloat kDescriptionHeight = 316.0;
 static const CGFloat kDescriptionFontSize = 18.0;
 static const CGFloat kCopyrightFontSize = 16.0;
 static const CGFloat kBottomCopyrightThreshold = 356.0;
+// The detail pane's border grey, stored as a float widened to double. @ghidraAddress 0x2ec730
+static const CGFloat kDetailBorderWhite = 143.0f / 255.0f;
 
 // Loading label and indicator geometry.
 static const CGFloat kLoadingLabelHeight = 24.0;
 static const CGFloat kLoadingLabelFontSize = 18.0;
 static const CGFloat kLoadingShadowWhite = 0.0;
 static const CGFloat kLoadingLabelOffsetY = 15.0;
+// Both stored as floats widened to double.
+static const CGFloat kLoadingShadowAlpha = 0.4f;               // @ghidraAddress 0x2ec720
+static const CGFloat kLoadingLabelTextWhite = 158.0f / 255.0f; // @ghidraAddress 0x2eecb8
+// The spinner is square; the binary builds it with fmov d2,#24.0 at 0x44618.
+static const CGFloat kIndicatorSize = 24.0;
 
 // setArtwork: sizing.
 static const CGFloat kArtworkMarginX = 12.0;
@@ -183,16 +198,18 @@ static const CGFloat kFullAlpha = 1.0;
                                                            topCapHeight:kItemBackgroundStretchCap];
         [self.itemView addSubview:background];
 
-        UIView *panel = [[UIView alloc] initWithFrame:self.bounds];
+        UIView *panel = [[UIView alloc]
+            initWithFrame:CGRectMake(0, 0, self.bounds.size.width, kTitleBarHeight)];
         panel.backgroundColor = UIColor.whiteColor;
         panel.layer.shadowOffset = CGSizeMake(0, kInnerPanelShadowOffset);
         panel.layer.shadowOpacity = kPanelShadowOpacity;
         panel.layer.shadowRadius = kInnerPanelShadowRadius;
 
-        UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(kDetailContentInset,
-                                                                   0,
-                                                                   kItemViewWidth - kTitleInset,
-                                                                   kItemViewHeight)];
+        UILabel *title =
+            [[UILabel alloc] initWithFrame:CGRectMake(kDetailContentInset,
+                                                      0,
+                                                      self.bounds.size.width - kTitleInset,
+                                                      kTitleBarHeight)];
         self.labelTitle = title;
         self.labelTitle.backgroundColor = UIColor.clearColor;
         self.labelTitle.font = [UIFont boldSystemFontOfSize:kTitleFontSize];
@@ -204,7 +221,7 @@ static const CGFloat kFullAlpha = 1.0;
 
         StoreImageView *artwork =
             [[StoreImageView alloc] initWithFrame:CGRectMake(kArtworkOriginX,
-                                                             g_dPopupBaseOriginYWide,
+                                                             kArtworkOriginY,
                                                              g_dPopupBaseOriginYWide,
                                                              g_dPopupBaseOriginYWide)];
         self.artworkView = artwork;
@@ -214,7 +231,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.artworkView.layer.shadowOffset =
             CGSizeMake(kArtworkShadowOffset, kArtworkShadowOffset);
         self.artworkView.layer.shadowColor = UIColor.blackColor.CGColor;
-        self.artworkView.layer.shadowOpacity = g_dRBWebViewGrayViewWhite;
+        self.artworkView.layer.shadowOpacity = kArtworkShadowOpacity;
         self.artworkView.layer.shadowRadius = kArtworkShadowRadius;
         self.artworkView.layer.shouldRasterize = YES;
         [self.itemView addSubview:self.artworkView];
@@ -258,11 +275,11 @@ static const CGFloat kFullAlpha = 1.0;
         }
         [self.itemView addSubview:self.labelLevels];
 
-        StoreButtonView *download = [[StoreButtonView alloc]
-            initWithFrame:CGRectMake(kDownloadBtnOriginX,
-                                     kDownloadBtnOriginY,
-                                     g_dPopupBaseOriginYWide + kLabelLineHeight,
-                                     kActionBtnHeight)];
+        StoreButtonView *download =
+            [[StoreButtonView alloc] initWithFrame:CGRectMake(kDownloadBtnOriginX,
+                                                              kDownloadBtnOriginY,
+                                                              g_dPopupBaseOriginYWide,
+                                                              kActionBtnHeight)];
         self.downloadBtn = download;
         self.downloadBtn.disabledColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                            alpha:kFullAlpha];
@@ -280,11 +297,11 @@ static const CGFloat kFullAlpha = 1.0;
                    forControlEvents:UIControlEventTouchUpInside];
         [self.itemView addSubview:self.downloadBtn];
 
-        StoreButtonView *link = [[StoreButtonView alloc]
-            initWithFrame:CGRectMake(g_dMascotMessageMaxWidthPad,
-                                     kDownloadBtnOriginY,
-                                     g_dPopupBaseOriginYWide + kLabelLineHeight,
-                                     kActionBtnHeight)];
+        StoreButtonView *link =
+            [[StoreButtonView alloc] initWithFrame:CGRectMake(g_dMascotMessageMaxWidthPad,
+                                                              kDownloadBtnOriginY,
+                                                              g_dPopupBaseOriginYWide,
+                                                              kActionBtnHeight)];
         self.linkBtn = link;
         self.linkBtn.disabledColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
                                                        alpha:kFullAlpha];
@@ -305,7 +322,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.sampleBtn = sample;
         self.sampleBtn.frame = CGRectMake(
             kSampleBtnOriginX, kLabelLevelsOriginY, g_dLayoutMetricThirtyTwo, kSampleBtnSize);
-        self.sampleBtn.contentMode = UIViewContentModeScaleAspectFit;
+        self.sampleBtn.contentMode = UIViewContentModeCenter;
         [self.sampleBtn setImage:[UIImage imageWithName:kSampleStopGlyphName]
                         forState:UIControlStateNormal];
         [self.sampleBtn addTarget:self
@@ -315,11 +332,10 @@ static const CGFloat kFullAlpha = 1.0;
         UIActivityIndicatorView *sampleIndicator = [[UIActivityIndicatorView alloc]
             initWithFrame:CGRectMake(0, 0, kSampleBtnGlyphSize, kSampleBtnGlyphSize)];
         self.indicatorSample = sampleIndicator;
-        // Yes, the binary reads sampleBtn's frame twice here and discards both results.
-        (void)self.sampleBtn.frame;
-        (void)self.sampleBtn.frame;
-        self.indicatorSample.center =
-            CGPointMake(kSampleBtnGlyphSize * 0.5, kSampleBtnGlyphSize * 0.5);
+        // The binary reads sampleBtn's frame twice, taking the width from the first read and the
+        // height from the second, so keep both sends rather than hoisting one local.
+        self.indicatorSample.center = CGPointMake(self.sampleBtn.frame.size.width * 0.5,
+                                                  self.sampleBtn.frame.size.height * 0.5);
         self.indicatorSample.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
         self.indicatorSample.hidesWhenStopped = YES;
         [self.sampleBtn addSubview:self.indicatorSample];
@@ -334,7 +350,7 @@ static const CGFloat kFullAlpha = 1.0;
         self.detailView.decelerationRate = UIScrollViewDecelerationRateFast;
         self.detailView.bouncesZoom = NO;
         self.detailView.layer.borderColor =
-            [UIColor colorWithWhite:g_dAudioManagerResumeFadeInTime alpha:kFullAlpha].CGColor;
+            [UIColor colorWithWhite:kDetailBorderWhite alpha:kFullAlpha].CGColor;
 
         StoreImageView *banner = [[StoreImageView alloc] initWithFrame:CGRectZero];
         self.bannerView = banner;
@@ -343,10 +359,11 @@ static const CGFloat kFullAlpha = 1.0;
         self.bannerView.clipsToBounds = YES;
         [self.detailView addSubview:self.bannerView];
 
-        UITextView *description = [[UITextView alloc] initWithFrame:CGRectMake(kDescriptionOriginX,
-                                                                               kDescriptionOriginY,
-                                                                               kDescriptionWidth,
-                                                                               kDescriptionHeight)];
+        UITextView *description = [[UITextView alloc]
+            initWithFrame:CGRectMake(kDescriptionOriginX,
+                                     self.bannerView.frame.size.height + kDescriptionOriginY,
+                                     kDescriptionWidth,
+                                     kDescriptionHeight)];
         self.descriptionTextView = description;
         self.descriptionTextView.backgroundColor = UIColor.clearColor;
         self.descriptionTextView.editable = NO;
@@ -368,30 +385,33 @@ static const CGFloat kFullAlpha = 1.0;
         [self addSubview:self.detailView];
 
         [self removeItemInfo];
-        (void)self.frame; // Yes, the binary reads and discards its own frame here.
+        // The binary reads its own frame once here and centres both the spinner and the loading
+        // caption on it, the two differing only in the sign of the 15 pt offset.
+        const CGRect selfFrame = self.frame;
 
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
-            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         self.indicator = indicator;
-        self.indicator.frame = CGRectMake(
-            kSampleBtnOriginX, kLabelLevelsOriginY, g_dLayoutMetricThirtyTwo, kSampleBtnSize);
-        self.indicator.center = CGPointMake(kDescriptionWidth * 0.5,
-                                            g_dSliderRowHeightWide * 0.5 - kLoadingLabelOffsetY);
+        self.indicator.frame = CGRectMake(0.0, 0.0, kIndicatorSize, kIndicatorSize);
+        self.indicator.center =
+            CGPointMake(CGRectGetWidth(selfFrame) * 0.5,
+                        CGRectGetHeight(selfFrame) * 0.5 - kLoadingLabelOffsetY);
 
         UILabel *loading = [[UILabel alloc]
             initWithFrame:CGRectMake(0, 0, g_dMascotMessageMaxWidthPhone, kLoadingLabelHeight)];
         self.labelLoading = loading;
         self.labelLoading.backgroundColor = UIColor.clearColor;
         self.labelLoading.font = [UIFont boldSystemFontOfSize:kLoadingLabelFontSize];
-        self.labelLoading.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite
+        self.labelLoading.textColor = [UIColor colorWithWhite:kLoadingLabelTextWhite
                                                         alpha:kFullAlpha];
         self.labelLoading.shadowColor = [UIColor colorWithWhite:kLoadingShadowWhite
-                                                          alpha:g_dAudioManagerResumeFadeInTime];
+                                                          alpha:kLoadingShadowAlpha];
         self.labelLoading.shadowOffset = CGSizeMake(0, -kInnerPanelShadowOffset);
         self.labelLoading.textAlignment = NSTextAlignmentCenter;
         self.labelLoading.text = g_pLocalizedLoadingMixed;
-        self.labelLoading.center = CGPointMake(kDescriptionWidth * 0.5,
-                                               g_dSliderRowHeightWide * 0.5 + kLoadingLabelOffsetY);
+        self.labelLoading.center =
+            CGPointMake(CGRectGetWidth(selfFrame) * 0.5,
+                        CGRectGetHeight(selfFrame) * 0.5 + kLoadingLabelOffsetY);
 
         sampleStatus = StoreCampaignSampleStatusIdle;
     }
@@ -722,6 +742,10 @@ static const CGFloat kFullAlpha = 1.0;
                      animations:^{
                        /** @ghidraAddress 0x47460 */
                        weakSelf.artworkView.alpha = kFullAlpha;
+                     }
+                     completion:^(BOOL finished){
+                         /** @ghidraAddress 0x474cc (the binary passes an empty completion block,
+                            not nil) */
                      }];
 }
 
