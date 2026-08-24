@@ -81,17 +81,13 @@ static void RBLogLong(const char *label, NSString *text) {
     }
 }
 
-// Report one outgoing request in full: method and URI, every query parameter and header on its own
-// line, and the body. Every request the app makes is started here, whichever initialiser built it,
-// so this covers all of them rather than one endpoint at a time.
+// Report one outgoing request in full: method and URI, every header on its own line, and the body.
+// Every request the app makes is started here, whichever initialiser built it, so this covers all
+// of them rather than one endpoint at a time. The query is not broken out parameter by parameter,
+// because the URI above already carries it.
 static void RBLogRequest(NSURLRequest *request) {
     RBLogLong("request",
               [NSString stringWithFormat:@"%@ %@", request.HTTPMethod, request.URL.absoluteString]);
-    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL
-                                             resolvingAgainstBaseURL:NO];
-    for (NSURLQueryItem *item in components.queryItems) {
-        neDebugLog("  param %s = %s", item.name.UTF8String, item.value.UTF8String);
-    }
     // Worth naming rather than assuming: several endpoints are posted with no content type at all,
     // so the header simply will not appear for them.
     for (NSString *field in request.allHTTPHeaderFields) {

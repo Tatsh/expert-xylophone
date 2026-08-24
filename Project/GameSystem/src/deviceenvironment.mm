@@ -34,6 +34,11 @@ static NSString *const kImagesFolderName = @"Images";
 static NSString *const kDeviceDescriptionFormatWithName = @"%@/%@ (%@; iOS %@; %@) [%@]";
 static NSString *const kDeviceDescriptionFormatPlain = @"%@/%@ (%@; iOS %@; %@)";
 
+// The product name the description leads with, and so the User-Agent every request carries. It had
+// been an empty string, which sent a User-Agent starting at the slash. The binary passes the
+// constant at 0x36c9a0, fourteen bytes long, as the first argument at 0x1a1498.
+static NSString *const kProductName = @"REFLECBEATplus";
+
 // The tall-screen match dimensions (the 4-inch iPhone's 640x1136 preferred mode).
 constexpr double kTallScreenWidth = 640.0;
 constexpr double kTallScreenHeight = 1136.0;
@@ -179,7 +184,7 @@ static NSString *BuildDeviceDescription(NSString *deviceModel, id serverDataElem
     if (!isSimulator) {
         NSString *hardwareName = [SystemHardware getInstance].getHardwareName;
         return [[NSString alloc] initWithFormat:kDeviceDescriptionFormatWithName,
-                                                @"",
+                                                kProductName,
                                                 bundleVersion,
                                                 hardwareName,
                                                 strippedVersion,
@@ -188,7 +193,7 @@ static NSString *BuildDeviceDescription(NSString *deviceModel, id serverDataElem
     }
     if (serverDataElement == nil) {
         return [[NSString alloc] initWithFormat:kDeviceDescriptionFormatPlain,
-                                                @"",
+                                                kProductName,
                                                 bundleVersion,
                                                 strippedVersion,
                                                 localeIdentifier,
@@ -196,7 +201,7 @@ static NSString *BuildDeviceDescription(NSString *deviceModel, id serverDataElem
     }
     NSString *hardwareName = [SystemHardware getInstance].getHardwareName;
     return [[NSString alloc] initWithFormat:kDeviceDescriptionFormatWithName,
-                                            @"",
+                                            kProductName,
                                             bundleVersion,
                                             hardwareName,
                                             strippedVersion,

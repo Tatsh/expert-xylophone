@@ -12,7 +12,6 @@
 
 #import "RBMusicCell.h"
 #import "deviceenvironment.h"
-#import "neDebugLog.h"
 
 // All items live in a single section.
 static const NSInteger kGridSection = 0;
@@ -115,32 +114,6 @@ static const UIEdgeInsets kPageInsetWide = {0.0, 30.0, 0.0, 30.0};
     self.layouts = layouts;
 
     self.contentSize = CGSizeMake(self.pageSize.width * self.pageCount, self.pageSize.height);
-
-    // RBPDBG: the songs are not appearing, so record what the grid actually computed and the frame
-    // of the first cell. An itemCount of zero means the data source is empty rather than the layout
-    // being at fault, and a first frame outside the page means the arithmetic is.
-    if (NE_DBG_FIRST(4)) {
-        neDebugLog("musicGrid items=%ld page=%.0fx%.0f cols=%ld rows=%ld pages=%ld "
-                   "content=%.0fx%.0f",
-                   (long)self.itemCount,
-                   self.pageSize.width,
-                   self.pageSize.height,
-                   (long)self.colCount,
-                   (long)self.rowCount,
-                   (long)self.pageCount,
-                   self.contentSize.width,
-                   self.contentSize.height);
-        if (self.layouts.count) {
-            const CGRect first = self.layouts[0].frame;
-            neDebugLog("  cell0 frame=(%.0f,%.0f %.0fx%.0f) itemSize=%.0fx%.0f",
-                       first.origin.x,
-                       first.origin.y,
-                       first.size.width,
-                       first.size.height,
-                       self.itemSize.width,
-                       self.itemSize.height);
-        }
-    }
 }
 
 - (CGSize)collectionViewContentSize {

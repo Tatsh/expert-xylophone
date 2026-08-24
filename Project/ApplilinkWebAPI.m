@@ -7,7 +7,6 @@
 #import "ApplilinkConsts.h"
 #import "ApplilinkNetworkError.h"
 #import "ApplilinkUtilities.h"
-#import "neDebugLog.h"
 
 // HTTP method that selects the form-encoded POST body path; any other value uses the GET query.
 static NSString *const kApplilinkWebAPIPostMethod = @"POST";
@@ -468,13 +467,6 @@ static BOOL g_bApplilinkWebAPISessionStatus;
                      failedBlock:(ApplilinkWebAPIFailedBlock)failedBlock {
     NSString *appliURL =
         [[NSUserDefaults standardUserDefaults] objectForKey:kApplilinkWebAPIRewardAppliURLKey];
-    // RBPDBG: the first argument is the request's URL, despite the parameter being named response.
-    // The class name was logged here while diagnosing an NSURLRequest being passed where a string
-    // was expected, which aborted the process; that is settled, so only the value is logged now.
-    neDebugLog("contentsServer url=%s appliURL=%s bytes=%lu",
-               response.length ? response.UTF8String : "(nil)",
-               appliURL.length ? appliURL.UTF8String : "(nil)",
-               (unsigned long)data.length);
     if (![response isEqualToString:appliURL]) {
         return response;
     }

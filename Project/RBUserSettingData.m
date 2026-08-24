@@ -11,7 +11,6 @@
 #import "RBUserSettingData.h"
 
 #import "deviceenvironment.h"
-#import "neDebugLog.h"
 
 // Archive keys for the scalar and object settings. They match the shipped literals verbatim.
 static NSString *const kVersionCoderKey = @"kVersion";
@@ -241,15 +240,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
         if (instance == nil) {
             instance = [[RBUserSettingData alloc] init];
         }
-        // RBPDBG: says whether the defaults entry existed at all, and whether the decode brought
-        // the tutorial dictionary back with it.
-        if (NE_DBG_FIRST(6)) {
-            neDebugLog("tutorialPersist load key=%s present=%d tutorials=%lu",
-                       NSStringFromClass([self class]).UTF8String,
-                       [[NSUserDefaults standardUserDefaults]
-                           dataForKey:NSStringFromClass([self class])] != nil,
-                       (unsigned long)instance.tutorialStatuses.count);
-        }
     }
     return instance;
 }
@@ -260,15 +250,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     [[NSUserDefaults standardUserDefaults] setObject:archived
                                               forKey:NSStringFromClass([self class])];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    // RBPDBG: a zero or absent byte count means the archive itself failed, which is silent.
-    if (NE_DBG_FIRST(40)) {
-        neDebugLog("tutorialPersist save bytes=%lu tutorials=%lu readback=%lu",
-                   (unsigned long)archived.length,
-                   (unsigned long)self.tutorialStatuses.count,
-                   (unsigned long)[[NSUserDefaults standardUserDefaults]
-                       dataForKey:NSStringFromClass([self class])]
-                       .length);
-    }
 }
 
 #pragma mark - NSCoding
@@ -578,16 +559,6 @@ static void RBWriteCustomizeValue(RBUserSettingData *settings, NSNumber *value, 
     // The binary boxes both halves with -numberWithInt:, so the signed cast is deliberate.
     self.tutorialStatuses[@((int)status)] = @((int)value);
     [self save];
-    // RBPDBG: the tutorial does not stay completed across launches. Record what was written and
-    // what the dictionary holds afterwards, so a write that never happens can be told apart from
-    // one that happens and is not persisted.
-    if (NE_DBG_FIRST(40)) {
-        neDebugLog("tutorialPersist write status=%u value=%u count=%lu class=%s",
-                   status,
-                   value,
-                   (unsigned long)self.tutorialStatuses.count,
-                   self.tutorialStatuses.class.description.UTF8String);
-    }
 }
 
 - (unsigned int)getTutorialStatus:(unsigned int)status {

@@ -17,7 +17,6 @@
 #include "curve.h"
 #include "game_scene.h"
 #include "gamesystem.h"
-#include "neDebugLog.h"
 #include "neSpriteInstancing.h"
 #include "neTexture.h"
 #include "s_vector2.h"
@@ -1532,34 +1531,6 @@ void TitleLimelightScene::RenderPartsElement(unsigned int nKind,
         pInstancer->SetSpriteAnchor(nSlot, S_VECTOR2{flAnchorX, flAnchorY});
         pInstancer->SetSpriteSize(nSlot, S_VECTOR2{flSizeX, flSizeY});
         pInstancer->SetSpriteScale(nSlot, flSize, flSize);
-
-        // RBPDBG: the logo and the start prompt are the two parts reported as misplaced, so record
-        // what the mapping was handed and what it produced for them. The iPad branch above uses the
-        // record's X unchanged while centring Y, which is the asymmetry to check against these
-        // numbers.
-        if (nKind == kPartKindHit4 || layout.nTextureIndex == kPartTextureIndexLogo) {
-            neDebugLog("titlePart kind=0x%x isPad=%d tex=%d viewport=%.0fx%.0f",
-                       nKind,
-                       bIsPad ? 1 : 0,
-                       layout.nTextureIndex,
-                       m_flViewportWidth,
-                       m_flViewportHeight);
-            neDebugLog("  record pos=(%.1f,%.1f) size=(%.1fx%.1f) transform=(%.1f,%.1f)",
-                       layout.flPosX,
-                       layout.flPosY,
-                       layout.flWidth,
-                       layout.flHeight,
-                       flTransformX,
-                       flTransformY);
-            neDebugLog("  placed pos=(%.1f,%.1f) scale=%.3f rect=(%.1f,%.1f %.1fx%.1f)",
-                       flPosX,
-                       flPosY,
-                       flSize,
-                       flPosX - flAnchorX,
-                       flPosY - flAnchorY,
-                       flSizeX,
-                       flSizeY);
-        }
 
         // Record the interactive parts' touch rectangles (top-left corner, then size) for the title
         // touch tests. Kind 0x50 (the start prompt) is padded outwards on the default device.

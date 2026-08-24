@@ -21,7 +21,6 @@
 #import "UIAlertView+RB.h"
 #import "UIImage+RB.h"
 #import "deviceenvironment.h"
-#import "neDebugLog.h"
 
 // Server response keys.
 static NSString *const kResponseKeyError = @"Error";
@@ -363,12 +362,6 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     NSString *targetPath = [GetImageAssetDirectoryPath() stringByDeletingLastPathComponent];
     NSString *downloadFilePath = [documentPath stringByAppendingPathComponent:fileName];
 
-    // RBPDBG: the archive URL and the three paths involved, so a captured log shows whether the
-    // download even started and where it was aimed.
-    neDebugLog("download start url=%s", urlString.UTF8String);
-    neDebugLog("  archive=%s", downloadFilePath.UTF8String);
-    neDebugLog("  extractTo=%s", targetPath.UTF8String);
-
     self.fileInfoDic = @{
         kFileInfoKeyDownloadPath : self.downloadPath,
         kFileInfoKeyFileName : fileName,
@@ -406,9 +399,6 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 #pragma mark - Archive extraction
 
 - (void)unzip:(NSDictionary *)info {
-    neDebugLog("unzip start archive=%s dest=%s",
-               [info[kFileInfoKeyTargetPath] UTF8String],
-               [info[kFileInfoKeyDocumentPath] UTF8String]);
     [[NSFileManager defaultManager] removeItemAtPath:GetImageAssetDirectoryPath() error:nil];
     BOOL unzipped = [SSZipArchive unzipFileAtPath:info[kFileInfoKeyTargetPath]
                                     toDestination:info[kFileInfoKeyDocumentPath]
@@ -416,7 +406,6 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
                                          password:info[kFileInfoKeyPassword]
                                             error:nil
                                          delegate:self];
-    neDebugLog("unzip done ok=%d", unzipped ? 1 : 0);
     if (!unzipped) {
         // This runs on the detached unzip thread, so the view update joins the alert on the main
         // thread rather than being set here as the binary does.
@@ -435,9 +424,6 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     [[RBUserSettingData sharedInstance] save];
 
     BOOL verified = [RBResourceDownloadViewController checkFile];
-    neDebugLog("success checkFile=%d imageAssets=%s",
-               verified ? 1 : 0,
-               GetImageAssetDirectoryPath().UTF8String);
     if (verified) {
         self.nextAnimation = NO;
         [self dismissViewControllerAnimated:NO completion:nil];
@@ -521,15 +507,6 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
     NSError *error = nil;
     NSURL *targetURL = [NSURL fileURLWithPath:self.fileInfoDic[kFileInfoKeyTargetPath]];
     [[NSFileManager defaultManager] moveItemAtURL:location toURL:targetURL error:&error];
-    // RBPDBG: whether the downloaded archive landed, and how big it is.
-    if (NE_DBG_FIRST(4)) {
-        NSNumber *size = nil;
-        [targetURL getResourceValue:&size forKey:NSURLFileSizeKey error:nil];
-        neDebugLog("download finished moved=%d bytes=%lld err=%s",
-                   error == nil ? 1 : 0,
-                   size.longLongValue,
-                   error ? error.localizedDescription.UTF8String : "none");
-    }
     if (error == nil) {
         self.progressMode = kProgressModeUnzip;
         [NSThread detachNewThreadSelector:@selector(unzip:)
@@ -941,43 +918,6 @@ static const CGFloat kCurrentPageIndicatorTintWhite = 0.5;
                                            (float)((helpY + helpSize.height) - pastelSize.height),
                                            pastelSize.width,
                                            pastelSize.height);
-    }
-
-    // RBPDBG: this method's arithmetic was reconstructed from a soft-float-mangled decompile rather
-    // than recovered exactly, so log what it actually produces against the bounds it was given.
-    if (NE_DBG_FIRST(4)) {
-        neDebugLog("updateLayout bounds=%.0fx%.0f sideBySide=%d isPad=%d",
-                   bounds.size.width,
-                   bounds.size.height,
-                   sideBySide ? 1 : 0,
-                   IsPad() ? 1 : 0);
-        // Is the container itself the wrong size? A full-screen controller should measure the whole
-        // screen, so print the chain from this view up to the window.
-        UIView *superview = self.view.superview;
-        UIWindow *window = self.view.window;
-        neDebugLog("  view.frame=(%.0f,%.0f %.0fx%.0f) super=%.0fx%.0f window=%.0fx%.0f",
-                   self.view.frame.origin.x,
-                   self.view.frame.origin.y,
-                   self.view.frame.size.width,
-                   self.view.frame.size.height,
-                   superview.bounds.size.width,
-                   superview.bounds.size.height,
-                   window.bounds.size.width,
-                   window.bounds.size.height);
-        neDebugLog("  help  size=%.0fx%.0f frame=(%.0f,%.0f %.0fx%.0f)",
-                   helpSize.width,
-                   helpSize.height,
-                   self.helpView.frame.origin.x,
-                   self.helpView.frame.origin.y,
-                   self.helpView.frame.size.width,
-                   self.helpView.frame.size.height);
-        neDebugLog("  pastel size=%.0fx%.0f frame=(%.0f,%.0f %.0fx%.0f)",
-                   pastelSize.width,
-                   pastelSize.height,
-                   self.pastelView.frame.origin.x,
-                   self.pastelView.frame.origin.y,
-                   self.pastelView.frame.size.width,
-                   self.pastelView.frame.size.height);
     }
 }
 

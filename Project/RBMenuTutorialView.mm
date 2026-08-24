@@ -29,7 +29,6 @@
 #import "UIImage+RB.h"
 #import "UIView+RB.h"
 #import "deviceenvironment.h"
-#import "neDebugLog.h"
 #import "soundeffectmanager.h"
 
 // The view sets itself as the delegate of the spotlight animation groups it builds, and implements
@@ -640,28 +639,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
         break;
     }
 
-    // RBPDBG: the tutorial cannot be completed and lays some steps out wrongly. Each step's line
-    // gives the step number, the class the per-step getter was sent to, whether it returned a
-    // target, the spotlight that target produced, and whether the step laid out at all. A step
-    // whose target is nil, or whose clip is empty or off-screen, is a step with nothing to tap;
-    // a step reached by no case at all shows laidOut=0 with the default arm having run.
-    if (NE_DBG_FIRST(60)) {
-        neDebugLog("tutorialStep step=%ld root=%s target=%s clip=(%.0f,%.0f %.0fx%.0f) "
-                   "forTouch=%d laidOut=%d touchAnim=%d cursorAnim=%d anim=%d",
-                   (long)tutorialType,
-                   clipRoot ? [clipRoot class].description.UTF8String : "(nil)",
-                   self.clipTargetView ? self.clipTargetView.class.description.UTF8String : "(nil)",
-                   self.clipRect.origin.x,
-                   self.clipRect.origin.y,
-                   self.clipRect.size.width,
-                   self.clipRect.size.height,
-                   self.clipTargetForTouch ? 1 : 0,
-                   laidOut ? 1 : 0,
-                   touchAnim ? 1 : 0,
-                   cursorAnim ? 1 : 0,
-                   animation ? 1 : 0);
-    }
-
     if (laidOut) {
         [self contentViewSettingWithTouchAnim:touchAnim
                                    cursorAnim:cursorAnim
@@ -927,41 +904,12 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
                                                 messageClip.size.height / atlasSize.height);
     [CATransaction commit];
 
-    // The box and the mascot are missing on some steps. Which reveal arm runs is chosen here, and
-    // only two of the three animate the window layer, so record the step, the arm, and the three
-    // layers' geometry and opacity together.
-    const CGRect windowRect = self.messageWindowLayer.frame;
-    const CGRect pastelRect = self.pastelLayer.frame;
-    neDebugLog("tutorial step=%d isPad=%d targetZero=%d window=(%.1f,%.1f,%.1f,%.1f) op=%.2f "
-               "pastel=(%.1f,%.1f,%.1f,%.1f) op=%.2f msg=(%.1f,%.1f,%.1f,%.1f) clip=%u",
-               static_cast<int>(self.tutorialStatus),
-               IsPad() ? 1 : 0,
-               CGRectEqualToRect(targetFrame, CGRectZero) ? 1 : 0,
-               windowRect.origin.x,
-               windowRect.origin.y,
-               windowRect.size.width,
-               windowRect.size.height,
-               static_cast<double>(self.messageWindowLayer.opacity),
-               pastelRect.origin.x,
-               pastelRect.origin.y,
-               pastelRect.size.width,
-               pastelRect.size.height,
-               static_cast<double>(self.pastelLayer.opacity),
-               self.messageLayer.frame.origin.x,
-               self.messageLayer.frame.origin.y,
-               self.messageLayer.frame.size.width,
-               self.messageLayer.frame.size.height,
-               [self getTextureType]);
-
     if (self.tutorialStatus == kTutorialStepMusicSelectA ||
         self.tutorialStatus == kTutorialStepNoTarget) {
-        neDebugLog("tutorial arm=bubbleOnly");
         RevealBubbleOnly(self);
     } else if (CGRectEqualToRect(targetFrame, CGRectZero)) {
-        neDebugLog("tutorial arm=bubbleAndMessage (window not animated)");
         RevealBubbleAndMessage(self);
     } else {
-        neDebugLog("tutorial arm=bubbleMessageAndMove");
         RevealBubbleMessageAndMove(self, targetFrame);
     }
 }
@@ -1360,21 +1308,6 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
     CGRect spot = self.clipRect;
     BOOL inside = spot.origin.x <= point.x && point.x <= spot.origin.x + spot.size.width &&
                   spot.origin.y <= point.y && point.y <= spot.origin.y + spot.size.height;
-    // RBPDBG: the tutorial still swallows the SETTING tap on device after the menu-button
-    // autoresizing fix, so record which arm decides it and what the spotlight actually is.
-    if (NE_DBG_FIRST(60)) {
-        neDebugLog("tutorialHit status=%ld point=(%.1f,%.1f) clip=(%.1f,%.1f %.1fx%.1f) "
-                   "targetForTouch=%d -> %s",
-                   (long)[RBTutorialManager getCurrentStatus],
-                   point.x,
-                   point.y,
-                   spot.origin.x,
-                   spot.origin.y,
-                   spot.size.width,
-                   spot.size.height,
-                   self.clipTargetForTouch ? 1 : 0,
-                   inside ? "pass-through" : "swallowed");
-    }
     if (inside) {
         return nil;
     }

@@ -49,7 +49,6 @@
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 #import "gamesystem.h"
-#import "neDebugLog.h"
 #import "soundeffectmanager.h"
 
 // Playlist selection identifiers stored in RBUserSettingData.playlistID.
@@ -637,66 +636,6 @@ static BOOL g_bRandamIntSeeded = NO;
                                               static_cast<double>(playlistRowY),
                                               static_cast<double>(menuButtonWidth),
                                               self.playlistFinButton.height);
-    // RBPDBG: the setting, ranking and store buttons are reported as too small, surrounded by grey,
-    // and unresponsive. This is where they are actually placed, and buildMenuBarWithThema: only
-    // writes back the frame it read, so the metrics below decide everything. The earlier logging in
-    // RBMenuButton ran during construction, before this, so it said nothing about the final frames.
-    if (NE_DBG_FIRST(3)) {
-        neDebugLog("menuBar bounds=%.0fx%.0f isPad=%d thema=%ld editMode=%d width=%d",
-                   bounds.width,
-                   bounds.height,
-                   isPad ? 1 : 0,
-                   (long)thema,
-                   editMode,
-                   menuButtonWidth);
-        neDebugLog(
-            "  cols setting=%.0f col1=%d col2=%d rowY=%d", settingColX, col1, col2, settingRowY);
-        neDebugLog("  setting=(%.0f,%.0f %.0fx%.0f) rank=(%.0f,%.0f %.0fx%.0f)",
-                   self.settingButton.frame.origin.x,
-                   self.settingButton.frame.origin.y,
-                   self.settingButton.frame.size.width,
-                   self.settingButton.frame.size.height,
-                   self.rankButton.frame.origin.x,
-                   self.rankButton.frame.origin.y,
-                   self.rankButton.frame.size.width,
-                   self.rankButton.frame.size.height);
-        // The tutorial passes the tap through and SelectSettingButton never fires, so the touch
-        // dies inside the container. setupView sizes the inner button to a 92-wide bounds and
-        // relies on the 0x12 mask to stretch it when this frame widens it to 215; if it did not
-        // stretch, everything right of x + 92 is container, which is both the dead zone and the
-        // grey. This is the inner button's width after the resize.
-        neDebugLog("  settingInner=(%.0f,%.0f %.0fx%.0f)",
-                   self.settingButton.button.frame.origin.x,
-                   self.settingButton.button.frame.origin.y,
-                   self.settingButton.button.frame.size.width,
-                   self.settingButton.button.frame.size.height);
-        // The inner button does stretch and does cover the tap, the tutorial passes the touch
-        // through, and SelectSettingButton still never fires. So ask UIKit directly which view
-        // owns the button's centre rather than guessing at a fifth cause: hitTest from the menu
-        // view names the receiver, and the interaction flags say whether anything opted out.
-        CGPoint probe = self.settingButton.center;
-        UIView *hit = [self hitTest:probe withEvent:nil];
-        neDebugLog("  probe=(%.0f,%.0f) hit=%s containerUI=%d innerUI=%d selfUI=%d "
-                   "alpha=%.2f hidden=%d",
-                   probe.x,
-                   probe.y,
-                   hit ? hit.class.description.UTF8String : "(nil)",
-                   self.settingButton.userInteractionEnabled ? 1 : 0,
-                   self.settingButton.button.userInteractionEnabled ? 1 : 0,
-                   self.userInteractionEnabled ? 1 : 0,
-                   self.settingButton.alpha,
-                   self.settingButton.hidden ? 1 : 0);
-        // A container whose frame leaves its parent is not hit-tested there, so these frames decide
-        // whether a tap can land at all. RBMenuButton's enabled is write-only, as in the binary,
-        // so it cannot be printed here.
-        neDebugLog("  store=(%.0f,%.0f %.0fx%.0f) subviews=%lu",
-                   self.storeButton.frame.origin.x,
-                   self.storeButton.frame.origin.y,
-                   self.storeButton.frame.size.width,
-                   self.storeButton.frame.size.height,
-                   (unsigned long)self.subviews.count);
-    }
-
     self.playListButton.frame = CGRectMake(static_cast<double>(playlistX),
                                            sideButtonRowY,
                                            static_cast<double>(sideButtonSize),
@@ -1317,25 +1256,6 @@ static BOOL g_bRandamIntSeeded = NO;
 
 #pragma mark - Presentation
 
-// RBPDBG: not in the binary. showAnimation disables interaction at 0xaa308 and the dispatch_after
-// block re-enables it at 0xaa5cc, both faithfully reconstructed, yet a probe during layout found
-// the flag still clear. This reports the flag at the moment of a tap, which the layout probe
-// cannot do, and otherwise defers to super so behaviour is unchanged.
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-    UIView *result = [super hitTest:point withEvent:event];
-    if (NE_DBG_FIRST(40)) {
-        neDebugLog("menuHit point=(%.0f,%.0f) selfUI=%d hidden=%d alpha=%.2f showed=%d -> %s",
-                   point.x,
-                   point.y,
-                   self.userInteractionEnabled ? 1 : 0,
-                   self.hidden ? 1 : 0,
-                   self.alpha,
-                   self.showed ? 1 : 0,
-                   result ? result.class.description.UTF8String : "(nil)");
-    }
-    return result;
-}
-
 - (void)showAnimation {
     self.showed = YES;
     [self preStartTutorial];
@@ -1659,13 +1579,6 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Setting view
 
 - (void)SelectSettingButton {
-    // RBPDBG: the tutorial's "Tap SETTING" step still does nothing on device. This distinguishes a
-    // touch that never reaches the inner button from one that arrives and opens nothing.
-    if (NE_DBG_FIRST(6)) {
-        neDebugLog("SelectSettingButton fired settingView=%s attached=%s",
-                   self.settingView ? "ok" : "nil",
-                   self.settingView.superview ? "yes" : "no");
-    }
     [self toggleSettingView];
 }
 
