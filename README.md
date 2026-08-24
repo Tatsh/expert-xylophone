@@ -27,6 +27,11 @@ The reconstruction is complete in the sense that every routine the application d
 here. It stays faithful to the shipped binary by default; the deliberate deviations are gated
 behind the `ENABLE_PATCHES` flag and documented in [PATCHES.md](PATCHES.md).
 
+The server API the app speaks is described in [openapi.yaml](openapi.yaml). It was recovered from
+the client rather than from any server or published document, so it records what the app sends and
+what it reads back; a response schema there is a lower bound, since the client ignores any field it
+does not need.
+
 ## Bundled third-party libraries
 
 | Import as                         | Library                                     | How identified                                                               |

@@ -1,0 +1,1210 @@
+openapi: '3.1.0'
+info:
+  title: 'REFLEC BEAT plus server API'
+  version: '4.5.8'
+  summary: 'The HTTP API that REFLEC BEAT plus 4.5.8 (jp.konami.rbplus) speaks.'
+  description: |
+    Recovered from the reconstructed client, not from any server or published document. Every
+    endpoint here is one the app builds a URL for in `Project/NetworkUtil.m`; every request field is
+    one the app sends; every response field is one the app reads.
+
+    That last point is the important limit of this document. The client parses only the keys it
+    needs, so a response schema below is a *lower bound* — a server may send more, and the app would
+    ignore it without any trace in the source. Where a field's meaning is not determined by the
+    client's use of it, the description says so rather than guessing.
+
+    Two selectors exist in the binary's interface with no implementation behind them, so they return
+    `nil` and the requests are never made: `+[NetworkUtil playedURL]` (the version 1 play log,
+    superseded by `log/play/`) and `+[NetworkUtil rewardCheckURL]`. Their bodies are still assembled
+    by callers, so they are documented at the end for completeness, without paths.
+
+    Encoding notes that apply throughout: a `GET` carries its parameters in the query string, which
+    the client assembles by hand as `?a=1&b=2` and hands to `-[NSURL initWithScheme:host:path:]`. A
+    `POST` carries either a JSON object or a form-urlencoded body, and the client sets no
+    `Content-Type` at all on several of them (noted per operation) — those arrive with whatever
+    `NSMutableURLRequest` defaults to. Responses are JSON in every case the client parses.
+  license:
+    name: 'MIT'
+    url: 'https://github.com/Tatsh/expert-xylophone/blob/master/LICENSE.txt'
+servers:
+  - url: '{scheme}://{host}{basePath}'
+    description: |
+      The shipped endpoint. All three parts are build-time options in this reconstruction
+      (`API_SCHEME`, `API_HOST`, `API_BASE_PATH`), so a private or replacement server can be
+      substituted without touching the source.
+    variables:
+      scheme:
+        default: 'https'
+        enum:
+          - 'https'
+          - 'http'
+        description: 'The `API_SCHEME` build option. Plaintext is only useful for a test server.'
+      host:
+        default: 'akx.s.konaminet.jp'
+        description: 'The `API_HOST` build option.'
+      basePath:
+        default: '/akx/main/cgi/'
+        description: 'The `API_BASE_PATH` build option. Every path below is relative to it.'
+
+tags:
+  - name: 'session'
+    description: 'Start-up, resources, and device registration.'
+  - name: 'store'
+    description: 'The in-app catalogue: packs, extend notes, tunes, and purchases.'
+  - name: 'terms'
+    description: 'Terms of service listing, fetching, and acceptance.'
+  - name: 'campaign'
+    description: 'Serial-code campaigns and their giveaway items.'
+  - name: 'telemetry'
+    description: 'Play logs and unlock reporting.'
+  - name: 'social'
+    description: 'Arcade location search and message-of-the-day.'
+
+paths:
+  /startup/:
+    get:
+      tags: ['session']
+      summary: 'Fetch the start-up payload.'
+      description: |
+        The first call the app makes. Built by `+[NetworkUtil startupURL]` (`@ghidraAddress
+        0x32ba0`), and the only endpoint whose query is the region code alone.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          description: 'The start-up payload.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                description: |
+                  The client stores the parsed result as its server data, an array whose first two
+                  elements it later sends back as `user_id` and `passwd`. The exact shape is not
+                  recoverable from the client, which indexes it positionally.
+
+  /v3/ssl_resource/:
+    post:
+      tags: ['session']
+      summary: 'Fetch the downloadable resource manifest.'
+      description: |
+        Drives the first-run asset download, which is required — the game will not run without it.
+        Built by `+[NetworkUtil resourceURL]` (`@ghidraAddress 0x32c70`). Sent with no explicit
+        content type. On a fresh install, before any credentials exist, `user_id` and `passwd` are
+        sent as empty strings rather than omitted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'version', 'user_id', 'passwd', 'uuid']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                version:
+                  $ref: '#/components/schemas/AppVersion'
+                user_id:
+                  type: 'string'
+                  description: 'The stored user identifier, or an empty string on a fresh install.'
+                passwd:
+                  type: 'string'
+                  description: 'The stored password, or an empty string on a fresh install.'
+                uuid:
+                  $ref: '#/components/schemas/MusicListKey'
+      responses:
+        '200':
+          description: 'The resource manifest.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /push/token/:
+    post:
+      tags: ['session']
+      summary: 'Register the APNs device token.'
+      description: |
+        Built by `+[NetworkUtil tokenSetURL]`. The three fields are named positionally in the
+        client, which is all the binary reveals about them.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['p1', 'p2', 'p3']
+              properties:
+                p1:
+                  type: 'string'
+                  description: 'The stored user identifier.'
+                p2:
+                  type: 'string'
+                  description: 'The stored token or password.'
+                p3:
+                  type: 'string'
+                  description: 'The APNs device token.'
+      responses:
+        '200':
+          description: 'Registration accepted.'
+
+  /tutorial/:
+    post:
+      tags: ['session']
+      summary: 'Report which first-run walkthroughs have been completed.'
+      description: 'Built by `+[NetworkUtil tutorialStatusURL]` (`@ghidraAddress 0x32dcc`).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['user', 'types', 'uuid']
+              properties:
+                user:
+                  type: 'string'
+                  description: 'The stored user identifier.'
+                types:
+                  type: 'array'
+                  description: 'The completed tutorial identifiers.'
+                  items:
+                    type: 'integer'
+                uuid:
+                  $ref: '#/components/schemas/MusicListKey'
+      responses:
+        '200':
+          description: 'Status recorded.'
+
+  /v3/terms/list/:
+    post:
+      tags: ['terms']
+      summary: 'List the terms documents in force.'
+      description: |
+        Built by `+[NetworkUtil termList]` (`@ghidraAddress 0x338cc`). The title scene's touch
+        handler calls this before letting the first tap through, so an unreachable endpoint here
+        blocks the title screen entirely; this reconstruction can skip the call under
+        `ENABLE_PATCHES`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+      responses:
+        '200':
+          description: |
+            The terms listing. A response without a `list` key is treated as a network error.
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  list:
+                    type: 'array'
+                    items:
+                      $ref: '#/components/schemas/TermEntry'
+
+  /v3/terms/fetch/:
+    post:
+      tags: ['terms']
+      summary: 'Fetch one terms document.'
+      description: 'Built by `+[NetworkUtil termFetch]` (`@ghidraAddress 0x338ec`).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'type']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                type:
+                  $ref: '#/components/schemas/TermType'
+      responses:
+        '200':
+          description: 'The document.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermEntry'
+
+  /v3/terms/log/:
+    post:
+      tags: ['terms']
+      summary: 'Record acceptance of a terms document.'
+      description: |
+        Built by `+[NetworkUtil termAgree]` (`@ghidraAddress 0x3390c`). Acceptance is only recorded
+        locally once this call returns OK, so with the endpoint unavailable the terms screen cannot
+        be cleared.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['user_id', 'target', 'type', 'version']
+              properties:
+                user_id:
+                  type: 'string'
+                  description: 'The stored user identifier.'
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                type:
+                  $ref: '#/components/schemas/TermType'
+                version:
+                  type: 'string'
+                  description: 'The terms version the client is agreeing to.'
+      responses:
+        '200':
+          description: 'Acceptance recorded.'
+
+  /v3/packlist/:
+    get:
+      tags: ['store']
+      summary: 'List purchasable music packs, one page at a time.'
+      description: |
+        Built by `+[NetworkUtil packListURL:limit:genre:]` (`@ghidraAddress 0x33188`) and paged by
+        `-[RBStorePackList startFetchForGenreIndex:]` (`@ghidraAddress 0x1f10bc`), which requests
+        `head` as the count already fetched plus one, with `limit` fixed at 10.
+
+        No pack entry carries a price. In the shipped app a pack is priced entirely through its
+        StoreKit product, which is why a build with no App Store record behind it shows a pack with
+        no amount.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'head'
+          in: 'query'
+          required: true
+          description: 'The one-based index of the first pack to return.'
+          schema:
+            type: 'integer'
+            minimum: 1
+        - name: 'limit'
+          in: 'query'
+          required: true
+          description: 'The maximum number of packs to return. The client always sends 10.'
+          schema:
+            type: 'integer'
+            default: 10
+        - name: 'genre'
+          in: 'query'
+          required: true
+          description: "The genre to list, or the client's default genre identifier."
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'One page of the pack catalogue.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackListResponse'
+
+  /v3/packinfo/:
+    get:
+      tags: ['store']
+      summary: 'Fetch one pack, including its tune list.'
+      description: |
+        Built by `+[NetworkUtil packInfoURL:UserOpen:]` (`@ghidraAddress 0x332a8`). The client-info
+        fields are appended only when the request originates from a user action; a background
+        refresh sends `target` and `pack` alone.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'pack'
+          in: 'query'
+          required: true
+          description: 'The pack identifier.'
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuidOptional'
+        - $ref: '#/components/parameters/UserInfoVersionOptional'
+        - $ref: '#/components/parameters/UserInfoDeviceOptional'
+        - $ref: '#/components/parameters/UserInfoOsOptional'
+        - $ref: '#/components/parameters/UserInfoLocaleOptional'
+      responses:
+        '200':
+          description: 'The pack.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackEntry'
+
+  /v3/musicinfo/:
+    get:
+      tags: ['store']
+      summary: "Fetch one tune's catalogue entry."
+      description: |
+        Built by `+[NetworkUtil musicInfoURL:]`. Used by the manage tab to re-resolve a tune''s
+        download URL, and by the campaign screen for a giveaway item.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'music'
+          in: 'query'
+          required: true
+          description: 'The tune identifier.'
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'The tune entry.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MusicEntry'
+
+  /v3/extmusiclist/:
+    get:
+      tags: ['store']
+      summary: 'List purchasable extend notes (the Sequences tab), one page at a time.'
+      description: |
+        Built by `+[NetworkUtil extendNoteListURL:limit:]`. An extend note is an extra SPECIAL chart
+        for a tune that already exists. Unlike a pack, an extend note does carry a catalogue
+        `Price`.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'head'
+          in: 'query'
+          required: true
+          description: 'The index of the first note to return.'
+          schema:
+            type: 'integer'
+        - name: 'limit'
+          in: 'query'
+          required: true
+          description: 'The maximum number of notes to return.'
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'One page of the extend-note catalogue.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendNoteListResponse'
+
+  /v3/extmusicinfo/:
+    get:
+      tags: ['store']
+      summary: 'Fetch one extend note.'
+      description: |
+        Built by `+[NetworkUtil extendNoteInfoURL:UserOpen:]`. As with `packinfo`, the client-info
+        fields are appended only for a user-initiated request.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'extitem'
+          in: 'query'
+          required: true
+          description: 'The extend-note product identifier (the `PID` of a list entry).'
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuidOptional'
+        - $ref: '#/components/parameters/UserInfoVersionOptional'
+        - $ref: '#/components/parameters/UserInfoDeviceOptional'
+        - $ref: '#/components/parameters/UserInfoOsOptional'
+        - $ref: '#/components/parameters/UserInfoLocaleOptional'
+      responses:
+        '200':
+          description: 'The extend note.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendNoteEntry'
+
+  /manage_sort/:
+    get:
+      tags: ['store']
+      summary: 'Fetch the sort order for the manage tab.'
+      description: 'Built by `+[NetworkUtil manageSortListURL]`. The region code is the only input.'
+      parameters:
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          description: 'The sort data.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /v3/verify_receipt/:
+    post:
+      tags: ['store']
+      summary: 'Verify an App Store receipt and credit the purchase.'
+      description: |
+        Built by `+[NetworkUtil receiptV3URL]`, with the body assembled as a string by
+        `+[StoreUtil createReceiptCheckJSONForV2:productIds:nonce:]` rather than serialised from a
+        dictionary. The nonce is 62-character alphanumeric, generated per request by
+        `+[NetworkUtil createNonce:]` (`@ghidraAddress 0x32610`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'receiptdata'
+                - 'target'
+                - 'nonce'
+                - 'products'
+                - 'uuid'
+                - 'device'
+                - 'os'
+                - 'locale'
+                - 'version'
+                - 'userid'
+                - 'passwd'
+              properties:
+                receiptdata:
+                  type: 'string'
+                  description: 'The base64-encoded App Store receipt.'
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                nonce:
+                  type: 'string'
+                  description: 'A per-request alphanumeric nonce.'
+                products:
+                  type: 'array'
+                  description: 'The StoreKit product identifiers being verified.'
+                  items:
+                    type: 'string'
+                uuid:
+                  $ref: '#/components/schemas/IdentifierParams'
+                device:
+                  $ref: '#/components/schemas/DeviceName'
+                os:
+                  $ref: '#/components/schemas/SystemVersion'
+                locale:
+                  $ref: '#/components/schemas/Locale'
+                version:
+                  $ref: '#/components/schemas/AppVersion'
+                userid:
+                  type: 'string'
+                passwd:
+                  type: 'string'
+      responses:
+        '200':
+          description: 'The verification result.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /v3/age/:
+    post:
+      tags: ['store']
+      summary: "Report the user's declared purchase-limit bracket."
+      description: |
+        Built by `+[NetworkUtil userAgeURL]`. Sent with no explicit content type. `type` is the
+        client''s purchase-limit enumeration, sent as a decimal string rather than a number.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'app_ver', 'user_id', 'type']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                app_ver:
+                  $ref: '#/components/schemas/AppVersion'
+                user_id:
+                  type: 'string'
+                type:
+                  type: 'string'
+                  description: 'The purchase-limit type, decimal.'
+      responses:
+        '200':
+          description: 'Recorded.'
+
+  /campaign/list/:
+    post:
+      tags: ['campaign']
+      summary: 'List campaigns, one page at a time.'
+      description: |
+        Built by `+[NetworkUtil campaignListURL]`, with the body assembled as a string by
+        `+[StoreUtil createCampaignListJSON:limit:]`. Note that `head` is sent as a quoted string
+        while `limit` is sent as a bare number — an inconsistency in the client''s hand-built JSON,
+        reproduced here because it is what the server receives.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'head', 'limit', 'userId', 'passwd']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                head:
+                  type: 'string'
+                  description: 'The index of the first campaign to return, as a decimal string.'
+                limit:
+                  type: 'integer'
+                  description: 'The maximum number of campaigns to return.'
+                userId:
+                  type: 'string'
+                passwd:
+                  type: 'string'
+      responses:
+        '200':
+          description: 'One page of campaigns.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /campaign/fetch/:
+    post:
+      tags: ['campaign']
+      summary: 'Fetch one campaign item, including its download URL.'
+      description: |
+        Built by `+[NetworkUtil campaignItemInfoURL]`, body from
+        `+[StoreUtil createCampaignItemInfoJSON:]`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'userId', 'passwd', 'campId']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                userId:
+                  type: 'string'
+                passwd:
+                  type: 'string'
+                campId:
+                  type: 'string'
+                  description: 'The campaign identifier, as a decimal string.'
+      responses:
+        '200':
+          description: 'The campaign item.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /campaign/verify/:
+    post:
+      tags: ['campaign']
+      summary: 'Redeem a campaign serial code.'
+      description: |
+        Built by `+[NetworkUtil campaignSerialCheckURL]`, body from
+        `+[StoreUtil createCampaignSerialCheckJSON:code:]`. The code is typed by the user into an
+        alert-view text field.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required: ['target', 'userId', 'passwd', 'code', 'campId']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                userId:
+                  type: 'string'
+                passwd:
+                  type: 'string'
+                code:
+                  type: 'string'
+                  description: 'The serial code as typed.'
+                campId:
+                  type: 'string'
+                  description: 'The campaign identifier, as a decimal string.'
+      responses:
+        '200':
+          description: 'The redemption result.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /unlock/:
+    get:
+      tags: ['telemetry']
+      summary: 'List the unlockable items for a theme.'
+      description: |
+        Built by `+[NetworkUtil unlockListURL]` (`@ghidraAddress 0x32f08`). The only endpoint that
+        takes the selected theme, and one of the few that sends no client-info fields.
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'thema'
+          in: 'query'
+          required: true
+          description: |
+            The selected theme, spelled as the client spells it. One of the three play-field
+            themes: Classic, Colette, or Limelight.
+          schema:
+            type: 'integer'
+      responses:
+        '200':
+          description: 'The unlock listing.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /unlockmusic/:
+    get:
+      tags: ['telemetry']
+      summary: 'Claim a tune unlock.'
+      description: 'Built by `+[NetworkUtil unlockMusicURL:randKey:]` (`@ghidraAddress 0x33058`).'
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - name: 'music'
+          in: 'query'
+          required: true
+          description: 'The tune identifier being unlocked.'
+          schema:
+            type: 'integer'
+        - name: 'key'
+          in: 'query'
+          required: true
+          description: 'A per-request random key generated by the client.'
+          schema:
+            type: 'integer'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'The unlock result.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /unlocked/:
+    post:
+      tags: ['telemetry']
+      summary: 'Report that an item has been unlocked.'
+      description: |
+        Built by `+[NetworkUtil unlockedURL]` (`@ghidraAddress 0x33168`). The one endpoint whose
+        body is form-urlencoded rather than JSON: the client builds it with
+        `+[Downloader dictionaryToQueryData:]` and sends no explicit content type.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: 'object'
+              required: ['target', 'type', 'id', 'tp', 'uuid']
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                type:
+                  type: 'integer'
+                  description: "The unlocked item's category."
+                id:
+                  type: 'integer'
+                  description: "The unlocked item's identifier within its category."
+                tp:
+                  type: 'number'
+                  format: 'float'
+                  description: 'The point total associated with the unlock.'
+                uuid:
+                  $ref: '#/components/schemas/MusicListKey'
+      responses:
+        '200':
+          description: 'Recorded.'
+
+  /log/play/:
+    post:
+      tags: ['telemetry']
+      summary: 'Log a completed play.'
+      description: |
+        Built by `+[NetworkUtil playedV2URL]` (`@ghidraAddress 0x32dac`). The client drops the call
+        entirely for tune identifiers below its minimum, which excludes the tutorial and preview
+        tunes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              required:
+                - 'target'
+                - 'user_id'
+                - 'uuid'
+                - 'music_id'
+                - 'difficulty'
+                - 'note'
+                - 'jr'
+                - 'score'
+                - 'device'
+                - 'os'
+                - 'locale'
+                - 'version'
+              properties:
+                target:
+                  $ref: '#/components/schemas/RegionCode'
+                user_id:
+                  type: 'string'
+                uuid:
+                  $ref: '#/components/schemas/IdentifierParams'
+                music_id:
+                  type: 'integer'
+                difficulty:
+                  type: 'integer'
+                  description: 'The chart played: BASIC, MEDIUM, HARD, or SPECIAL.'
+                note:
+                  type: 'integer'
+                  description: 'The extend-note identifier when a SPECIAL chart was played.'
+                jr:
+                  type: 'integer'
+                  description: |
+                    Judgement-related counter. The client passes it through from the result screen
+                    without interpreting it further, so its exact meaning is not recoverable here.
+                score:
+                  type: 'integer'
+                device:
+                  $ref: '#/components/schemas/DeviceName'
+                os:
+                  $ref: '#/components/schemas/SystemVersion'
+                locale:
+                  $ref: '#/components/schemas/Locale'
+                version:
+                  $ref: '#/components/schemas/AppVersion'
+      responses:
+        '200':
+          description: 'Logged.'
+
+  /search_master/:
+    get:
+      tags: ['social']
+      summary: 'Fetch the arcade-location master data.'
+      description: 'Built by `+[NetworkUtil searchMasterURL]`.'
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'The master data.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /gamecenter/:
+    post:
+      tags: ['social']
+      summary: 'List arcade locations within a map region.'
+      description: |
+        Built by `+[NetworkUtil searchURL]`. The body is a form-urlencoded string the client formats
+        by hand with six decimal places per field, and it sends no explicit content type. The range
+        is a fixed 0.27 degrees rather than derived from the visible map span.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: 'object'
+              required: ['lat', 'long', 'range']
+              properties:
+                lat:
+                  type: 'number'
+                  format: 'double'
+                  description: 'The centre latitude of the visible map region.'
+                long:
+                  type: 'number'
+                  format: 'double'
+                  description: 'The centre longitude of the visible map region.'
+                range:
+                  type: 'number'
+                  format: 'double'
+                  default: 0.27
+                  description: 'The search radius in degrees. The client always sends 0.27.'
+      responses:
+        '200':
+          description: 'The matching locations.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+  /new2/:
+    get:
+      tags: ['social']
+      summary: 'Fetch the in-app message of the day.'
+      description: 'Built by `+[NetworkUtil lineMessageURL]`.'
+      parameters:
+        - $ref: '#/components/parameters/Target'
+        - $ref: '#/components/parameters/UserInfoUuid'
+        - $ref: '#/components/parameters/UserInfoVersion'
+        - $ref: '#/components/parameters/UserInfoDevice'
+        - $ref: '#/components/parameters/UserInfoOs'
+        - $ref: '#/components/parameters/UserInfoLocale'
+      responses:
+        '200':
+          description: 'The message.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+
+components:
+  parameters:
+    Target:
+      name: 'target'
+      in: 'query'
+      required: true
+      description: 'The region code. Every endpoint takes it.'
+      schema:
+        $ref: '#/components/schemas/RegionCode'
+    UserInfoUuid:
+      name: 'uuid'
+      in: 'query'
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdentifierParams'
+    UserInfoVersion:
+      name: 'version'
+      in: 'query'
+      required: true
+      schema:
+        $ref: '#/components/schemas/AppVersion'
+    UserInfoDevice:
+      name: 'device'
+      in: 'query'
+      required: true
+      schema:
+        $ref: '#/components/schemas/DeviceName'
+    UserInfoOs:
+      name: 'os'
+      in: 'query'
+      required: true
+      schema:
+        $ref: '#/components/schemas/SystemVersion'
+    UserInfoLocale:
+      name: 'locale'
+      in: 'query'
+      required: true
+      schema:
+        $ref: '#/components/schemas/Locale'
+    UserInfoUuidOptional:
+      name: 'uuid'
+      in: 'query'
+      required: false
+      description: 'Sent only for a user-initiated request.'
+      schema:
+        $ref: '#/components/schemas/IdentifierParams'
+    UserInfoVersionOptional:
+      name: 'version'
+      in: 'query'
+      required: false
+      description: 'Sent only for a user-initiated request.'
+      schema:
+        $ref: '#/components/schemas/AppVersion'
+    UserInfoDeviceOptional:
+      name: 'device'
+      in: 'query'
+      required: false
+      description: 'Sent only for a user-initiated request.'
+      schema:
+        $ref: '#/components/schemas/DeviceName'
+    UserInfoOsOptional:
+      name: 'os'
+      in: 'query'
+      required: false
+      description: 'Sent only for a user-initiated request.'
+      schema:
+        $ref: '#/components/schemas/SystemVersion'
+    UserInfoLocaleOptional:
+      name: 'locale'
+      in: 'query'
+      required: false
+      description: 'Sent only for a user-initiated request.'
+      schema:
+        $ref: '#/components/schemas/Locale'
+
+  schemas:
+    RegionCode:
+      type: 'string'
+      description: |
+        The build''s region code. It is the one endpoint-shaping constant this reconstruction leaves
+        hard-coded rather than exposing as a build option.
+    AppVersion:
+      type: 'string'
+      description: 'The bundle version, `4.5.8` in the shipped build.'
+      examples: ['4.5.8']
+    DeviceName:
+      type: 'string'
+      description: 'The hardware model identifier.'
+      examples: ['iPad8,11']
+    SystemVersion:
+      type: 'string'
+      description: 'The iOS version string.'
+      examples: ['17.7.11']
+    Locale:
+      type: 'string'
+      description: 'The formatted locale string.'
+    IdentifierParams:
+      type: 'string'
+      description: |
+        A per-install fingerprint: the hex MD5 of the device UUID with the literal `STORE` appended,
+        computed once per process by `+[NetworkUtil identifierParams]` (`@ghidraAddress 0x327b0`).
+        It is the closest thing the API has to an account identifier for an anonymous install.
+      pattern: '^[0-9a-f]{32}$'
+    MusicListKey:
+      type: 'string'
+      description: |
+        The install''s UUID, used both to key the local purchased-content lists and as the server
+        identity. In this reconstruction the list key can be pinned to a fixed value under
+        `ENABLE_PATCHES`, in which case the server identity stays per-install and separate.
+
+    TermType:
+      type: 'integer'
+      description: |
+        Which terms document. The title scene looks for type 1 specifically, and runs neither branch
+        of its check when no entry of that type is present.
+    TermEntry:
+      type: 'object'
+      description: 'One terms document.'
+      properties:
+        type:
+          $ref: '#/components/schemas/TermType'
+        title:
+          type: 'string'
+        url:
+          type: 'string'
+          format: 'uri'
+          description: 'Where the document is shown from, when it is not inlined.'
+        contents:
+          type: 'string'
+          description: 'The document body, when inlined.'
+
+    PackListResponse:
+      type: 'object'
+      description: |
+        One page of the pack catalogue. The client treats an empty `PackList` with no `Error` as a
+        server fault and shows its generic failure message.
+      properties:
+        Version:
+          type: 'string'
+          description: |
+            The minimum app version the server will serve. The client compares its own bundle
+            version numerically and refuses to go further if it is older.
+        Date:
+          type: 'integer'
+          description: |
+            The current month. The client resets its accumulated purchase total when this advances.
+        PackList:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/PackEntry'
+        Genre:
+          type: 'array'
+          description: |
+            Exactly two parallel arrays: the genre identifiers, then the genre names. A payload of
+            any other length is ignored, and names are consumed only up to the shorter of the two.
+          items:
+            type: 'array'
+        HasNext:
+          type: 'boolean'
+          description: 'Whether a further page exists.'
+        Promotion:
+          type: 'object'
+          description: 'Promotional payload.'
+        Error:
+          type: 'string'
+          description: 'A server-supplied message, shown to the user in place of the listing.'
+
+    PackEntry:
+      type: 'object'
+      description: |
+        One music pack. No price: see the note on `/v3/packlist/`.
+      properties:
+        ID:
+          type: 'integer'
+        Name:
+          type: 'string'
+        Comment:
+          type: 'string'
+        ShortComment:
+          type: 'string'
+        IsNew:
+          type: 'boolean'
+        Copyright:
+          type: 'string'
+        ArtworkURL:
+          type: 'string'
+          format: 'uri'
+        ArtistURL:
+          type: 'string'
+          format: 'uri'
+        ArtistBunnerURL:
+          type: 'string'
+          format: 'uri'
+          description: 'The artist banner, spelled as the server spells it.'
+        ExtNum:
+          type: 'integer'
+          description: |
+            How many extend notes the pack advertises. A non-zero value is what draws the Sequences
+            badge on the pack row.
+        MusicList:
+          type: 'array'
+          description: 'The client keeps at most the first four entries.'
+          items:
+            $ref: '#/components/schemas/MusicEntry'
+
+    MusicEntry:
+      type: 'object'
+      description: 'One tune within a pack, or a tune fetched on its own.'
+      properties:
+        ID:
+          type: 'integer'
+        Name:
+          type: 'string'
+        Artist:
+          type: 'string'
+        ItemURL:
+          type: 'string'
+          format: 'uri'
+          description: 'Where the tune archive is downloaded from.'
+        SampleURL:
+          type: 'string'
+          format: 'uri'
+          description: 'The preview clip.'
+        ArtworkURL:
+          type: 'string'
+          format: 'uri'
+        iTunesURL:
+          type: 'string'
+          format: 'uri'
+        Level:
+          type: 'array'
+          description: |
+            The difficulty ratings. At least three entries are required before any are read; each is
+            clamped, with the fourth (SPECIAL) allowed one step higher than the first three.
+          items:
+            type: 'integer'
+        PID:
+          type: 'array'
+          description: |
+            The extend-note product identifiers available for this tune. A present, non-empty list
+            is what marks a tune as having a SPECIAL chart to buy.
+          items:
+            type: 'integer'
+
+    ExtendNoteListResponse:
+      type: 'object'
+      description: 'One page of the extend-note catalogue.'
+      properties:
+        Version:
+          type: 'string'
+        Date:
+          type: 'integer'
+        NoteList:
+          type: 'array'
+          items:
+            $ref: '#/components/schemas/ExtendNoteEntry'
+        HasNext:
+          type: 'boolean'
+        Error:
+          type: 'string'
+
+    ExtendNoteEntry:
+      type: 'object'
+      description: |
+        One extend note. An entry without a `Music` sub-object is skipped by the client, so that
+        field is effectively required.
+      properties:
+        PID:
+          type: 'integer'
+          description: 'The product identifier, and the key the client indexes notes by.'
+        ExtID:
+          type: 'integer'
+          description: |
+            The extend-note archive identifier. These occupy their own block: every one observed is
+            `100050xxx`, and the tune it belongs to is the same number 50000 lower.
+        PackID:
+          type: 'integer'
+        PackName:
+          type: 'string'
+        Comment:
+          type: 'string'
+        Price:
+          type: 'integer'
+          description: |
+            The catalogue price, as a bare integer in whatever unit the server prices in — not a
+            localised currency amount. Zero means free.
+        ExtLevel:
+          type: 'integer'
+          description: "The SPECIAL chart's difficulty rating."
+        ExtURL:
+          type: 'string'
+          format: 'uri'
+          description: 'Where the extend-note archive is downloaded from.'
+        ExtURL2:
+          type: 'string'
+          format: 'uri'
+          description: 'A second archive URL, used alongside `ExtURL`.'
+        IsNew:
+          type: 'boolean'
+        Music:
+          $ref: '#/components/schemas/MusicEntry'
+
+    UnimplementedPlayLogRequest:
+      type: 'object'
+      description: |
+        The body `+[RBServerAPIManager playedAPIWithMusicID:dif:]` assembles for the version 1 play
+        log. `+[NetworkUtil playedURL]` returns `nil`, so the request is never sent; the version 2
+        endpoint at `/log/play/` supersedes it. Documented only because the body-building code
+        survives in the binary.
+      properties:
+        target:
+          $ref: '#/components/schemas/RegionCode'
+        music:
+          type: 'integer'
+        dif:
+          type: 'integer'
+        uuid:
+          $ref: '#/components/schemas/MusicListKey'
+
+    UnimplementedRewardCheckRequest:
+      type: 'object'
+      description: |
+        The body the reward screen assembles. `+[NetworkUtil rewardCheckURL]` returns `nil`, so the
+        request is never sent. Documented only because the body-building code survives in the
+        binary.
+      properties:
+        userId:
+          type: 'string'
+        passwd:
+          type: 'string'
+        nonce:
+          type: 'string'
+        rewardId:
+          type: 'string'
+        appliId:
+          type: 'array'
+          description: 'The Applilink application identifiers already seen.'
+          items:
+            type: 'string'
