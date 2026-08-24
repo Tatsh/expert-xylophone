@@ -1201,19 +1201,19 @@ static BOOL g_bRandamIntSeeded = NO;
     self.coverView.hidden = YES;
     [self addSubview:self.coverView];
 
-    // Swipe up shows the search bar, swipe down hides it.
+    // Swipe down shows the search bar, swipe up hides it.
     UISwipeGestureRecognizer *showSearch =
         [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(showSearchBar)];
     showSearch.numberOfTouchesRequired = 1;
     showSearch.delegate = self;
-    showSearch.direction = UISwipeGestureRecognizerDirectionUp;
+    showSearch.direction = UISwipeGestureRecognizerDirectionDown;
     [self addGestureRecognizer:showSearch];
 
     UISwipeGestureRecognizer *hideSearch =
         [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(hideSearchBar)];
     hideSearch.numberOfTouchesRequired = 1;
     hideSearch.delegate = self;
-    hideSearch.direction = UISwipeGestureRecognizerDirectionDown;
+    hideSearch.direction = UISwipeGestureRecognizerDirectionUp;
     [self addGestureRecognizer:hideSearch];
 
     CGFloat cancelWidth = (IsPad()) ? kSearchCancelWidthTall : kSearchCancelWidthWide;

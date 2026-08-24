@@ -20,6 +20,7 @@
 #import "RBTutorialManager.h"
 #import "RBUserSettingData.h"
 #import "deviceenvironment.h"
+#import "engineglobals.h"
 #import "soundeffectmanager.h"
 
 // Themed sound-effect slots. The panel plays a theme-specific slot when it opens: the Classic theme
@@ -118,7 +119,10 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     RBUserSettingDataTheme thema = [RBUserSettingData sharedInstance].thema;
     _thema = thema;
 
-    self.backgroundColor = nil;
+    // The settings panel dims what it covers: the binary loads the shared half-alpha black at
+    // 0x3cff88 here. Ghidra renders the send as setBackgroundColor:0x0 only because the global is
+    // seeded at run time, which is what makes it look like nil.
+    self.backgroundColor = g_pPaletteDimmingCoverColor;
     self.autoresizingMask = kAutoresizingFull;
 
     self.baseView = [[UIView alloc] initWithFrame:buttonFrame];
