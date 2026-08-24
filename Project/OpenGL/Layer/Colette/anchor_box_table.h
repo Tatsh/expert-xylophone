@@ -48,13 +48,15 @@ extern PhoneLayoutRecord g_aColetteSeparatorPhoneDefault[kColetteSeparatorRecord
 // @ghidraAddress 0x3d6120
 extern PhoneLayoutRecord g_aColetteSeparatorPhonePortrait[kColetteSeparatorRecordCount];
 
-// The Colette colour-marker rectangles and their origin, zero-initialised in the binary's
-// @c __common segment and filled at runtime. The same shape as the Classic and Limelight pairs; the
-// record count and four-float shape are proven by the initialiser's writes, but the individual
-// coordinates' roles are not yet recovered, so they carry the shared rectangle field names.
-constexpr int kColetteColorMarkerRectCount = 39;
+// The Colette colour-marker outline and its origin, zero-initialised in the binary's @c __common
+// segment and filled at runtime. The same shape as the Limelight pair.
+// Four rounded-corner outline paths of nineteen points each on a twenty-point stride, so indices
+// 19, 39, and 59 are never written. Each path takes eighteen points from a run of 16-byte pool
+// copies and its nineteenth from a register pair; the fourth path's nineteenth lands at 0x3dc590,
+// which is @c g_ColetteColorMarkerOrigin, so the array covers indices 0 through 77.
+constexpr int kColetteColorMarkerPointCount = 78;
 // @ghidraAddress 0x3dc320
-extern PhoneLayoutRect g_aColetteColorMarkerRects[kColetteColorMarkerRectCount];
+extern S_VECTOR2 g_aColetteColorMarkerPoints[kColetteColorMarkerPointCount];
 extern S_VECTOR2 g_ColetteColorMarkerOrigin; // @ghidraAddress 0x3dc590
 
 // code: language=C++

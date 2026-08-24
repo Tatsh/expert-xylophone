@@ -29,13 +29,16 @@ constexpr int kLimelightPartsAnchorRecordCount = 133;
 // @ghidraAddress 0x3da8e8
 extern S_VECTOR2 g_aLimelightPartsAnchorPhone[kLimelightPartsAnchorRecordCount];
 
-// The Limelight colour-marker rectangles and their origin, zero-initialised in the binary's
-// @c __common segment and filled at runtime. Same shape as the Classic pair: the record count and
-// four-float shape are proven by the initialiser's writes, but the individual coordinates' roles
-// are not yet recovered, so they carry the shared rectangle field names.
-constexpr int kLimelightColorMarkerRectCount = 39;
+// The Limelight colour-marker outline: four rounded-corner paths of nineteen points each, laid out
+// on a twenty-point stride so indices 19, 39, and 59 are never written. Each path takes eighteen
+// points from a run of 16-byte pool copies (two points per copy, from 0x2fe560, 0x2fe5f0, 0x2fe680,
+// and 0x2fe710) and its nineteenth from a register pair, which is why a naive nineteen-point read
+// of the pool overruns into the next path. The fourth path's nineteenth point lands at 0x3de000,
+// which is @c g_LimelightColorMarkerOrigin, so the array itself covers indices 0 through 77.
+// Zero-initialised in the binary's @c __common segment and filled at runtime.
+constexpr int kLimelightColorMarkerPointCount = 78;
 // @ghidraAddress 0x3ddd90
-extern PhoneLayoutRect g_aLimelightColorMarkerRects[kLimelightColorMarkerRectCount];
+extern S_VECTOR2 g_aLimelightColorMarkerPoints[kLimelightColorMarkerPointCount];
 extern S_VECTOR2 g_LimelightColorMarkerOrigin; // @ghidraAddress 0x3de000
 
 /**
