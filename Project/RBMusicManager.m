@@ -94,6 +94,12 @@ static const int kArchiveLevelMinimum = 1;
 // in RBMusicView.mm, spelled 0x3b9ac9fe there). Both are loaded straight from the bundle by
 // identifier wherever they are needed, so registering either would list it as an ordinary song.
 static const int kReservedArchiveIDs[] = {999999998, 999999999};
+
+// The item URL given to a drop-in song: the configured API endpoint with the archive's own name on
+// the end. It has to be something rather than nothing, because -[StoreDownloadTask initWithURL:]
+// builds its field with -[NSString initWithString:], which raises on nil — so an entry with no item
+// URL turns the store's manage-tab download button into a crash.
+static NSString *const kDropInItemURLFormat = @"%@://%@%@%@";
 #endif
 
 // The number of client-music entries reserved per outstanding page.
@@ -339,13 +345,19 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         // No song shares its audio, so it stands on its own. The name and artist are copied out of
         // the archive rather than left blank: the store's manage tab draws its rows, its download
         // prompt, and its delete prompt from these two fields rather than from the archive. The
-        // item URL stays unset, as it does for any purchase the store gave no URL for — a drop-in
-        // archive is already on disk and has nothing to be re-downloaded from.
+        // item URL is built from the configured endpoint and the archive's own name, so a
+        // replacement server that serves the file under that name can re-download it.
         NSMutableDictionary *entry =
             [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
         entry[kPurchasedMusicKeyID] = foundID;
         entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
         entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
+        entry[kPurchasedMusicKeyItemURL] =
+            [NSString stringWithFormat:kDropInItemURLFormat,
+                                       @RB_API_SCHEME,
+                                       @RB_API_HOST,
+                                       @RB_API_BASE_PATH,
+                                       [RBMusicManager getMusicDataFilename:foundID.intValue]];
         [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
         [listedMusicIDs addObject:foundID];
         // Only fingerprint it when the audio entry was actually read. Recording a failed read as

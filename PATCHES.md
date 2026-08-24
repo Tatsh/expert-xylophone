@@ -126,9 +126,13 @@ registered in `nolist` as that song's extend note, with the parent taken from th
 Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
 song appearing twice. A registered song carries its name and artist, read out of the archive: the
 song list itself does not need them, but the store's manage tab draws its rows and its download and
-delete prompts from those two fields rather than from the archive. The item URL is left unset, as it
-is for any purchase the store gave no URL for, since a drop-in archive has nothing to re-download
-from. An unpatched build lists only what was bought.
+delete prompts from those two fields rather than from the archive. It also carries an item URL built
+from the configured endpoint and the archive's own name — `API_SCHEME://API_HOST` plus
+`API_BASE_PATH` plus `%09d.rb` — so a replacement server serving it under that name can fetch it
+again. That field
+cannot simply be left out: `-[StoreDownloadTask initWithURL:]` builds its own copy with
+`-[NSString initWithString:]`, which raises on nil, so an entry without one turns the manage tab's
+download button into a crash. An unpatched build lists only what was bought.
 
 ### Everything unlocked, and nothing to pay for it with
 
