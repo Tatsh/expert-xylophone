@@ -6,7 +6,7 @@
  * position, updating the current-position button's selected state.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBSearchView, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  */
 
 #import <UIKit/UIKit.h>

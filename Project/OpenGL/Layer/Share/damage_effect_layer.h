@@ -21,7 +21,8 @@ class C_SPRITE_INSTANCING_2D;
  * A process-wide singleton, built on first access, deriving from @c PlayFieldLayerBase. The class
  * carries no RTTI, so the name is inferred from its @c GetDamageEffectLayer / @c SetDamageEffect*
  * accessors. The trailing @c // +0xNN comments document the original offsets for reference only.
- * @ghidraAddress DamageEffectLayer (engine effect layer, 0x2b8 bytes)
+ *
+ * Reconstructed type @c DamageEffectLayer: engine effect layer, 0x2b8 bytes.
  */
 class DamageEffectLayer : public PlayFieldLayerBase {
 public:

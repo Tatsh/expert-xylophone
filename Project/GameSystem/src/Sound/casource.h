@@ -12,7 +12,7 @@
  * 16-bit signed PCM data block. Populated from an @c ExtAudioFileRef by @c ReadAudioFormat (which
  * fills the format fields and computes the buffer size) and @c ReadAudioPcmData (which allocates
  * and decodes the PCM).
- * @ghidraAddress caSource (engine sound-buffer struct)
+ * Reconstructed type @c caSource: engine sound-buffer struct.
  */
 class caSource {
 public:

@@ -5,7 +5,7 @@
  * coordinator on first access and caches them.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBCoreDataManager, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  */
 
 #import <CoreData/CoreData.h>

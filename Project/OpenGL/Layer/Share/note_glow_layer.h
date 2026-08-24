@@ -21,7 +21,8 @@ class C_SPRITE_INSTANCING_2D;
  * carries no RTTI, so the name is inferred from its @c GetNoteGlowLayer accessor and render-time
  * use. Only the fields the reconstructed methods touch are modelled; the trailing @c // +0xNN
  * comments document the original offsets for reference only.
- * @ghidraAddress NoteGlowLayer (engine effect layer, 0x40 bytes)
+ *
+ * Reconstructed type @c NoteGlowLayer: engine effect layer, 0x40 bytes.
  */
 class NoteGlowLayer : public PlayFieldLayerBase {
 public:

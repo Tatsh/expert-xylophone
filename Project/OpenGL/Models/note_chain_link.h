@@ -13,7 +13,7 @@
  * A chain threads its notes through the previous- and next-segment indices; both hold the -1 marker
  * when the note is at an end. The trailing eight bytes are cleared spare space. The chart parser
  * seeds it and the chain walkers query its ends.
- * @ghidraAddress NoteChainLink (engine chart chain-link block, 12 bytes)
+ * Reconstructed type @c NoteChainLink: engine chart chain-link block, 12 bytes.
  */
 class NoteChainLink {
 public:

@@ -5,7 +5,7 @@
  * items, and reports taps back to its delegate.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBUnlockCollectionView, image
- * base 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * base 0x100000000). Ghidra addresses are offsets relative to the image base.
  */
 
 #import <UIKit/UIKit.h>

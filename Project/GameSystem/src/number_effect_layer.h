@@ -13,7 +13,7 @@
 //  number_effect_layer.h
 //  REFLEC BEAT plus
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
 //  the program image base.
 //
 
@@ -29,7 +29,7 @@ class C_TEXTURE;
 /**
  * @brief The number-effect layer: a @c PlayFieldLayerBase-derived layer that draws the play-field
  * number glyphs through four gm_parts2 sprite instancers, with a fade channel and a brightness.
- * @ghidraAddress NumberEffectLayer (engine layer, 0x78 bytes)
+ * Reconstructed type @c NumberEffectLayer: engine layer, 0x78 bytes.
  */
 class NumberEffectLayer : public PlayFieldLayerBase {
 public:

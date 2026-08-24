@@ -25,7 +25,7 @@ class C_SPRITE_INSTANCING_2D;
  * drawing the title from many part sprites. The trailing @c // +0xNN comments document the original
  * member offsets for reference only; the spans whose roles are still being worked out are reserved
  * to preserve the object layout.
- * @ghidraAddress TitleLimelightScene (engine layer, 0x628 bytes)
+ * Reconstructed type @c TitleLimelightScene: engine layer, 0x628 bytes.
  */
 namespace rb {
 

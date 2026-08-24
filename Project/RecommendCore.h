@@ -7,7 +7,7 @@
  * registers first-party advert impressions and clicks. Every public entry point first regenerates
  * the recommend session (through @c ApplilinkCore and @c RecommendWebAPI) and then either forwards
  * to the network layer or reports a localised @c ApplilinkNetworkError. Reconstructed from Ghidra
- * project rb458, program rb458 (image base 0x100000000); @c \@ghidraAddress values are offsets
+ * project rb458, program rb458 (image base 0x100000000); Ghidra addresses are offsets
  * relative to that image base.
  */
 

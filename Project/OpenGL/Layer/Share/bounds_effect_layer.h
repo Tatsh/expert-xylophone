@@ -22,7 +22,8 @@ class C_SPRITE_INSTANCING_2D;
  * accessors. Only the fields the reconstructed methods touch are modelled; the rest of the
  * 0x310-byte object is reserved. The trailing @c // +0xNN comments document the original offsets
  * for reference.
- * @ghidraAddress BoundsEffectLayer (engine effect layer, 0x310 bytes)
+ *
+ * Reconstructed type @c BoundsEffectLayer: engine effect layer, 0x310 bytes.
  */
 class BoundsEffectLayer : public PlayFieldLayerBase {
 public:

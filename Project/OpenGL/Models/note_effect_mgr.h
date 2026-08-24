@@ -23,7 +23,7 @@ class CMusicSheet2;
  * preserve the 360-byte layout. The trailing @c // +0xNN comments document the original offsets for
  * reference only. The class is non-polymorphic, so the name is inferred from its methods rather
  * than confirmed from RTTI.
- * @ghidraAddress NoteEffectMgr (engine note manager, 360 bytes)
+ * Reconstructed type @c NoteEffectMgr: engine note manager, 360 bytes.
  */
 class NoteEffectMgr {
 public:

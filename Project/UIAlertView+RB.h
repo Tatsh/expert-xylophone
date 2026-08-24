@@ -5,7 +5,7 @@
  * so the shared delegate can tell them apart.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c UIAlertView(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  *
  * The category is registered in the binary as a class-method category on @c UIAlertView (the
  * receiver of every selector is the @c UIAlertView class object), so all methods are class methods.

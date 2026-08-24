@@ -15,7 +15,7 @@ class Random;
  * Holds a lane slot for each of the two players' seven lanes and an attached @c Random used to pick
  * lanes. Built by the chart parser's lane pass and destroyed at its end. The class name is inferred
  * from its lane-assignment use.
- * @ghidraAddress NoteLaneTracker (chart lane-assignment tracker)
+ * Reconstructed type @c NoteLaneTracker: chart lane-assignment tracker.
  */
 class NoteLaneTracker {
 public:

@@ -7,7 +7,7 @@
  * content during network activity.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBTermView, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base. The class adopts
+ * 0x100000000). Ghidra addresses are offsets relative to the image base. The class adopts
  * @c UIAlertViewDelegate (its @c class_ro_t protocol list); it does @b not own or adopt
  * @c RBTermAgreeViewDelegate — that protocol belongs to the separate @c RBTermAgreeView class.
  */

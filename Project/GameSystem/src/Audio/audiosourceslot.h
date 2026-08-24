@@ -16,7 +16,7 @@ class AVSeMixer;
  * engine functions that took the manager as their first argument are its instance methods. Only the
  * members those methods touch are modelled; the trailing @c // +0xNN offset comments are
  * documentation only.
- * @ghidraAddress AudioSourceSlot (AVFoundation SE manager)
+ * Reconstructed type @c AudioSourceSlot: AVFoundation SE manager.
  */
 class AudioSourceSlot {
 public:

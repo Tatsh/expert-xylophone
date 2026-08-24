@@ -4,7 +4,7 @@
  * running iOS version.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c NSArray(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base. This is a partial
+ * 0x100000000). Ghidra addresses are offsets relative to the image base. This is a partial
  * category holding only the single method the binary's category method list carries.
  *
  * The method is dispatched to the @c NSArray class object by its sole caller

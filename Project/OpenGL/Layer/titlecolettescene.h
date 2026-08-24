@@ -49,7 +49,7 @@ struct TitleHitRect {
  * @c TitleScreenLayer for this class is a misnomer; its RTTI type_info is @c rb::TitleColetteScene.
  * The trailing @c // +0xNN comments document the original member offsets for reference only; the
  * spans whose roles are still being worked out are reserved to preserve the object layout.
- * @ghidraAddress TitleColetteScene (engine scene, 0x898 bytes)
+ * Reconstructed type @c TitleColetteScene: engine scene, 0x898 bytes.
  */
 class TitleColetteScene : public BaseScene {
 public:

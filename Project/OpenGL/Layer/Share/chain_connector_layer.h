@@ -30,7 +30,8 @@ extern int g_nChainConnectorDrawCount;
  * carries no RTTI, so the name is inferred from its @c GetChainConnectorLayer accessor. Only the
  * fields the reconstructed methods touch are modelled; the trailing @c // +0xNN comments document
  * the original offsets for reference only.
- * @ghidraAddress ChainConnectorLayer (engine effect layer, 0xc28 bytes)
+ *
+ * Reconstructed type @c ChainConnectorLayer: engine effect layer, 0xc28 bytes.
  */
 class ChainConnectorLayer : public PlayFieldLayerBase {
 public:

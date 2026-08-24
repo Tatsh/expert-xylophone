@@ -8,12 +8,12 @@
  * HUD, and so on).
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c UIColor(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  *
  * The binary exposes no named accessor for these colours: every screen reads the raw global slot
  * (originally @c DAT_1003cff88 through @c DAT_1003d0000, eight bytes apart). The palette is
  * modelled here as an ordered, once-built table behind @c rbPaletteColorAtIndex:, mirroring the
- * binary's own one-shot @c InitializeUIColorPalette (@ghidraAddress 0x5517c), which fills every
+ * binary's own one-shot @c InitializeUIColorPalette (0x5517c), which fills every
  * slot inside a single autorelease pool.
  */
 
@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Named index of each entry in the shared @c UIColor palette.
  *
- * The order matches the global slots filled by @c InitializeUIColorPalette (@ghidraAddress
- * 0x5517c), from @c DAT_1003cff88 upward in eight-byte steps. Several colours recur across slots
+ * The order matches the global slots filled by @c InitializeUIColorPalette (0x5517c),
+ * from @c DAT_1003cff88 upward in eight-byte steps. Several colours recur across slots
  * because the binary stores the same colour in several places; the duplicate slots keep a
  * @c "…2" / @c "…3" suffix so the index count and ordering stay faithful to the binary.
  */
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSUInteger, RBPaletteIndex) {
  * @brief Return an entry of the shared UIColor palette.
  *
  * The palette is built once, on first access, exactly as @c InitializeUIColorPalette
- * (@ghidraAddress 0x5517c) fills the global slots, then reused for the lifetime of the process.
+ * (0x5517c) fills the global slots, then reused for the lifetime of the process.
  * @param index The palette entry to return; see @c RBPaletteIndex.
  * @return The cached palette colour, or @c nil when @p index is out of range.
  * @ghidraAddress 0x5517c

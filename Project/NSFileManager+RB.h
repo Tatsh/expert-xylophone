@@ -4,7 +4,7 @@
  * directories.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c NSFileManager(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  *
  * Although the category's methods are recorded in the binary's instance-method list, every caller
  * dispatches them to the @c NSFileManager class object, so they are reconstructed as class methods.

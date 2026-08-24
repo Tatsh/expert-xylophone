@@ -18,7 +18,7 @@
  * matching the id. The former free engine functions that took the mixer as their first argument are
  * its instance methods. Only the members those methods touch are modelled; the trailing @c // +0xNN
  * offset comments are documentation only.
- * @ghidraAddress AVSeMixer (engine sound mixer)
+ * Reconstructed type @c AVSeMixer: engine sound mixer.
  */
 class AVSeMixer {
 public:

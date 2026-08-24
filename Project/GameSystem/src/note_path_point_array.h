@@ -16,13 +16,13 @@
 //  A small growable array of note-chart path points used by the CMusicSheet2 chart parsers. Each
 //  entry is an 8-byte pair of ints (a path point). The array grows by a fixed step when full.
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
 //  the program image base.
 //
 
 /**
  * @brief One note-chart path point: a pair of ints stored in the growable array.
- * @ghidraAddress NotePathPoint (engine chart-parse struct)
+ * Reconstructed type @c NotePathPoint: engine chart-parse struct.
  */
 struct NotePathPoint {
     /**
@@ -41,8 +41,9 @@ struct NotePathPoint {
  *
  * The layout matches the binary's inline array header: the entry buffer pointer, the live count,
  * and the allocated capacity.
- * @ghidraAddress NotePathPointArray (engine chart-parse struct: data +0x0, count +0x8, capacity
- * +0xc)
+ *
+ * Reconstructed type @c NotePathPointArray: engine chart-parse struct with data +0x0, count +0x8,
+ * and capacity +0xc.
  */
 class NotePathPointArray {
 public:

@@ -14,7 +14,7 @@
 //  node's callback and destroying the ones flagged dead. Scene layers register themselves onto the
 //  list at a priority; the list is walked in ascending priority order.
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
 //  the program image base.
 //
 
@@ -27,7 +27,8 @@
  * slot 2). The prev/next links thread the circular list and the priority is its sort key. Concrete
  * listeners (the sentinel, the UI layers) derive from this and override @c OnFrame. The trailing
  * @c // +0xNN comments document the original member offsets for reference only.
- * @ghidraAddress C_TASK (engine listener-list node)
+ *
+ * Reconstructed type @c C_TASK: engine listener-list node.
  */
 namespace ne {
 

@@ -11,7 +11,7 @@
  * @c det_ran percent and decimal glyphs with @c det_bpm digits left-to-right.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBMusicARView, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base. The soft-float glyph
+ * 0x100000000). Ghidra addresses are offsets relative to the image base. The soft-float glyph
  * measurement, centring, and per-glyph frame positioning in @c UpdateScore: were recovered from the
  * arm64 disassembly, where the decompiler folds the floating-point register moves into
  * pseudo-variables.

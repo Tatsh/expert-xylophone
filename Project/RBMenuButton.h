@@ -5,7 +5,7 @@
  * that play a repeating flash effect to advertise unseen content.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuButton, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  *
  * The superclass is @c UIView on two independent witnesses in the runtime metadata: the class_ro_t
  * at 0x38b1f8 records instanceStart 8, which is the compile-time size of a superclass that declares

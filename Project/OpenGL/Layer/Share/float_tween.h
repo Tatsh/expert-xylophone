@@ -11,7 +11,8 @@
  * After a lead-in delay elapses, the current value ramps linearly from a start to an end value over
  * the ramp duration; @c Advance steps the ramp by one frame and caches the result. The trailing
  * @c // +0xNN comments document the original member offsets for reference only.
- * @ghidraAddress FloatTween (engine tween descriptor, six floats)
+ *
+ * Reconstructed type @c FloatTween: engine tween descriptor, six floats.
  */
 class FloatTween {
 public:

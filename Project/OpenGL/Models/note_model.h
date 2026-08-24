@@ -46,7 +46,7 @@ constexpr int kWaypointBlockNodeCount = 4;
  * frame by the note state machine until it is hit or missed. The trailing @c // +0xNN comments
  * document the original member offsets for reference only; the spans between the modelled members
  * are the note's animation and waypoint state, reserved to preserve the 1528-byte layout.
- * @ghidraAddress NoteModel (engine note struct, 1528 bytes)
+ * Reconstructed type @c NoteModel: engine note struct, 1528 bytes.
  */
 class NoteModel {
 public:

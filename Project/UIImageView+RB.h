@@ -6,7 +6,7 @@
  * starts it with the standard period.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c UIImageView(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  *
  * The category's methods are recorded in the binary's instance-method list and every caller
  * dispatches them to a @c UIImageView instance, so they are reconstructed as instance methods. The

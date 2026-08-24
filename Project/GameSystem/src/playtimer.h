@@ -9,7 +9,7 @@
  * The engine play-timing singleton. It is created lazily by @c PlayTimer::shared and read directly
  * through the @c g_pPlayTimer global; only the delay-frame offset the customize picker writes is
  * modelled here.
- * @ghidraAddress g_pPlayTimer (engine singleton, 0x40 bytes)
+ * Reconstructed global @c g_pPlayTimer: engine singleton, 0x40 bytes.
  */
 class PlayTimer {
 public:

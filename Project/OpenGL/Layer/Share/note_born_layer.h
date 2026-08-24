@@ -25,7 +25,8 @@ class C_SPRITE_INSTANCING_2D;
  * assertions (@c OpenGL/Layer/Share/note_born_layer.mm), which is the naming authority. The
  * trailing
  * @c // +0xNN comments document the original offsets for reference only.
- * @ghidraAddress NoteBornLayer (engine effect layer, 0xa30 bytes)
+ *
+ * Reconstructed type @c NoteBornLayer: engine effect layer, 0xa30 bytes.
  */
 class NoteBornLayer : public PlayFieldLayerBase {
 public:

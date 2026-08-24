@@ -14,7 +14,7 @@
 //  an out-of-line trampoline over a GL / GL_OES_framebuffer_object call that also maintains the
 //  renderer's cached GL state so a redundant call is skipped.
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
 //  the program image base.
 //
 
@@ -23,7 +23,8 @@
  *
  * Passed to @c AttachRenderbufferToFramebuffer; @c neGLESRenderer::RenderKindToGl maps the kind
  * to its GL attachment enum (colour, depth, or stencil).
- * @ghidraAddress neGLES::RenderKind (engine enumeration)
+ *
+ * Reconstructed type @c neGLES::RenderKind: engine enumeration.
  */
 enum RenderKind {
     RENDER_KIND_COLOR = 0,   /*!< The colour attachment (@c GL_COLOR_ATTACHMENT0_OES). */
@@ -37,7 +38,8 @@ enum RenderKind {
  *
  * @c neGLES::TexParamTypeToGl maps the type to its GL parameter-name enum (the magnification and
  * minification filters and the S and T wrap modes).
- * @ghidraAddress neIGLES::TEX_PARAM_TYPE (engine enumeration)
+ *
+ * Reconstructed type @c neIGLES::TEX_PARAM_TYPE: engine enumeration.
  */
 enum TexParamType {
     TEX_PARAM_TYPE_MAG_FILTER = 0, /*!< The magnification filter (@c GL_TEXTURE_MAG_FILTER). */

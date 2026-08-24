@@ -7,7 +7,7 @@
  * @c layoutSubviews.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBPopoverBackgroundView, image
- * base 0x100000000). @ghidraAddress values are offsets relative to the image base. The class has no
+ * base 0x100000000). Ghidra addresses are offsets relative to the image base. The class has no
  * embedded @c __FILE__ path, so it is placed at the @c Project/ root. The design follows the
  * @c GIKPopoverBackgroundView pattern (the private @c _popoverExtents ivar keeps the binary's
  * @c GIKPopoverExtents struct type verbatim).

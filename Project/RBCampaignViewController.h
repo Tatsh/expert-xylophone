@@ -6,8 +6,8 @@
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c RBCampaignViewController, image
  * base 0x100000000). The class has no embedded @c __FILE__ path, so it lives at the @c Project/
- * root alongside the other store view controllers. @ghidraAddress values are offsets relative to
- * the image base.
+ * root alongside the other store view controllers. Ghidra addresses are offsets relative to the
+ * image base.
  */
 
 #import <UIKit/UIKit.h>

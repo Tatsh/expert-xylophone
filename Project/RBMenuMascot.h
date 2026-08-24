@@ -7,7 +7,7 @@
  * through to the store, a web page, or a campaign via @c RBUrlSchemeManager.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class RBMenuMascot, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  */
 
 #import <UIKit/UIKit.h>

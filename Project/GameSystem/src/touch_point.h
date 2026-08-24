@@ -10,7 +10,7 @@
  * TouchManager fills it in and callers that resolve a slot (through @c TouchManager::FindTouchById)
  * read its position and phase fields directly. The 32-bit offset comments are documentation only;
  * the 64-bit build goes through the named fields.
- * @ghidraAddress TouchPoint (engine touch-slot struct)
+ * Reconstructed type @c TouchPoint: engine touch-slot struct.
  */
 struct TouchPoint {
     int nId = {};     /*!< The rolling touch id, -1 in a fresh slot. +0x00 */

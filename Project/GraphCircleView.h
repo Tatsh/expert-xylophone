@@ -7,7 +7,7 @@
  * unit).
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class @c GraphCircleView, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base. The class has no
+ * 0x100000000). Ghidra addresses are offsets relative to the image base. The class has no
  * embedded @c __FILE__ path, so it is placed at the @c Project/ root.
  */
 

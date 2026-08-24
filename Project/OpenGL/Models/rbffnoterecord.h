@@ -31,7 +31,7 @@ struct RbffSlideRecord {
  * pointer. The trailing @c // +0xNN comments document the original member offsets for reference
  * only; the gaps are the record's less-used fields, reserved to preserve the 184-byte layout. The
  * array and chain-link accessors return a reference or pointer so element writes stay direct.
- * @ghidraAddress RbffNoteRecord (engine chart-note struct, 184 bytes)
+ * Reconstructed type @c RbffNoteRecord: engine chart-note struct, 184 bytes.
  */
 class RbffNoteRecord {
 public:

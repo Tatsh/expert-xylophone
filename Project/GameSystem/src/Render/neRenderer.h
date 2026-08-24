@@ -19,7 +19,8 @@ namespace ne {
  * Built by @c CreateOrthoViewport or @c CreatePerspectiveViewport and shared by reference count;
  * @c Release drops a reference and destroys the viewport at zero. The trailing
  * @c // +0xNN comments document the original 32-bit member offsets for reference only.
- * @ghidraAddress ne::Viewport (engine class, refcount at +0x0)
+ *
+ * Reconstructed type @c ne::Viewport: engine class, refcount at +0x0.
  */
 class Viewport {
 public:
@@ -158,7 +159,8 @@ private:
  * node through @c SetCurrentModelNode. Storing both the view and its inverse lets the projection
  * helpers transform points in either direction without recomputing. The trailing @c // +0xNN
  * comments document the original 32-bit member offsets for reference only.
- * @ghidraAddress ne::CameraNode (engine class, refcount at +0x0)
+ *
+ * Reconstructed type @c ne::CameraNode: engine class, refcount at +0x0.
  */
 class CameraNode {
 public:

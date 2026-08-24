@@ -6,7 +6,7 @@
  * @c drawInRect:withAttributes:, and @c drawAtPoint:withAttributes:).
  *
  * Reconstructed from Ghidra project rb458, program rb458 (category @c NSString(RB), image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base. All eight instance
+ * 0x100000000). Ghidra addresses are offsets relative to the image base. All eight instance
  * methods are recorded in the binary's category instance-method list and dispatch to an @c NSString
  * instance.
  */

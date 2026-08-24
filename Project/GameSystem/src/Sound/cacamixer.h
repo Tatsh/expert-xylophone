@@ -16,7 +16,7 @@ class caSource;
  * former free engine functions that took the mixer as their first argument are its instance
  * methods. Only the members those methods touch are modelled; the 32-bit offset comments are
  * documentation only.
- * @ghidraAddress caCAMixer (engine class)
+ * Reconstructed type @c caCAMixer: engine class.
  */
 class caCAMixer {
 public:

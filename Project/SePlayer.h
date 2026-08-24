@@ -7,7 +7,7 @@
  * playback and @c -terminate tears the whole OpenAL graph down and frees the decoded samples.
  *
  * Reconstructed from Ghidra project rb458, program rb458 (class SePlayer, image base
- * 0x100000000). @ghidraAddress values are offsets relative to the image base.
+ * 0x100000000). Ghidra addresses are offsets relative to the image base.
  */
 
 #import <Foundation/Foundation.h>

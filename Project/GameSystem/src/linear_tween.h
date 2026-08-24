@@ -17,7 +17,7 @@
 //  (a start value, an end value, a duration, the elapsed time, and the current interpolated value).
 //  Many layers advance one such channel per frame; each owning layer has its own header.
 //
-//  Reconstructed from Ghidra project rb458, program rb458. @ghidraAddress values are relative to
+//  Reconstructed from Ghidra project rb458, program rb458. Ghidra addresses are relative to
 //  the program image base.
 //
 
@@ -26,7 +26,8 @@
  * t = elapsed / duration clamped to 1.
  *
  * A value type embedded directly in the UI layers that animate one channel per frame.
- * @ghidraAddress LinearTween (engine tween sub-object)
+ *
+ * Reconstructed type @c LinearTween: engine tween sub-object.
  */
 class LinearTween {
 public:
