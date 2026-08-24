@@ -143,11 +143,11 @@ enum {
 
     // The origin comes from self, but the size comes from the track sprite just laid out above.
     CGRect selfFrame = self.frame;
-    CGRect trackFrame = self.baseView.frame;
+    CGRect trackBounds = self.baseView.frame;
     self.frame = CGRectMake(selfFrame.origin.x,
                             selfFrame.origin.y + kEffectSizeSliderVerticalOffset,
-                            trackFrame.size.width,
-                            trackFrame.size.height);
+                            trackBounds.size.width,
+                            trackBounds.size.height);
 
     self.stepValue = kEffectSizeSliderStepValue;
     self.value = [RBUserSettingData sharedInstance].boundsEffectSize;
