@@ -236,6 +236,10 @@ extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[]; // @ghidraAdd
 
 /**
  * @brief Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.
+ *
+ * Run by dyld at image load through the binary's @c __mod_init_func table; nothing calls it by
+ * name.
+ *
  * @ghidraAddress 0x15145c
  */
 void SeedPauseGaugeLayoutTable(void);

@@ -158,8 +158,12 @@ constexpr PauseGaugeRectSize kPauseGaugeRectVariant = {336, 66};
 constexpr PauseGaugeRectSize kPauseGaugeRectDefault = {220, 50};
 } // namespace
 
+// The binary reaches this through its __mod_init_func table (the pointer at 0x358cd0), so dyld runs
+// it at image load and nothing calls it by name. Without the constructor attribute both rectangle
+// tables stay zero-initialised, and a zero-sized rectangle reduces CheckPointInRect to an exact
+// equality test, so no pause-menu item can ever be tapped.
 /** @ghidraAddress 0x15145c */
-void SeedPauseGaugeLayoutTable(void) {
+__attribute__((constructor)) void SeedPauseGaugeLayoutTable(void) {
     @autoreleasepool {
         for (int nLane = 0; nLane < PauseGaugeLayer::kLaneCount; ++nLane) {
             g_aPauseGaugeRectVariant[nLane] = kPauseGaugeRectVariant;
