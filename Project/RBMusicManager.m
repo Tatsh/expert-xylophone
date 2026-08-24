@@ -312,6 +312,13 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             continue;
         }
 
+        // Read the archive once. Both branches need it, and it doubles as a validity check: the
+        // factory rejects a file whose own identifier disagrees with its name.
+        MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
+        if (data == nil) {
+            continue;
+        }
+
         uint32_t crc = 0;
         const BOOL haveCRC = RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc);
         NSNumber *parentMusicID = haveCRC ? audioCRCToMusicID[@(crc)] : nil;
@@ -320,10 +327,6 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             // Same audio as a song already known, so this is that song's SPECIAL chart. Its level
             // is the archive's own Basic field, because -sheetSpecial serves the SPECIAL chart out
             // of the BASIC slot.
-            MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
-            if (data == nil) {
-                continue;
-            }
             if ([noteManager addDiscoveredExtendNote:foundID.intValue
                                              musicID:parentMusicID.intValue
                                                level:data.difficultyBasic + kArchiveLevelMinimum]) {
@@ -333,13 +336,16 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
             continue;
         }
 
-        // No song shares its audio, so it stands on its own. Only the identifier is stored: the
-        // name, artist, and levels are read back out of the archive by -createMusicDataArray.
+        // No song shares its audio, so it stands on its own. The name and artist are copied out of
+        // the archive rather than left blank: the store's manage tab draws its rows, its download
+        // prompt, and its delete prompt from these two fields rather than from the archive. The
+        // item URL stays unset, as it does for any purchase the store gave no URL for — a drop-in
+        // archive is already on disk and has nothing to be re-downloaded from.
         NSMutableDictionary *entry =
             [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
         entry[kPurchasedMusicKeyID] = foundID;
-        entry[kPurchasedMusicKeyName] = kEmptyString;
-        entry[kPurchasedMusicKeyArtist] = kEmptyString;
+        entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
+        entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
         [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
         [listedMusicIDs addObject:foundID];
         // Only fingerprint it when the audio entry was actually read. Recording a failed read as

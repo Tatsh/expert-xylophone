@@ -124,7 +124,11 @@ decompression, no hashing — and an unlisted archive whose audio CRC matches a 
 registered in `nolist` as that song's extend note, with the parent taken from the match and
 `ExtLevel` from the archive's own basic level. Everything else is a new song and goes to `mulist`.
 Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
-song appearing twice. An unpatched build lists only what was bought.
+song appearing twice. A registered song carries its name and artist, read out of the archive: the
+song list itself does not need them, but the store's manage tab draws its rows and its download and
+delete prompts from those two fields rather than from the archive. The item URL is left unset, as it
+is for any purchase the store gave no URL for, since a drop-in archive has nothing to re-download
+from. An unpatched build lists only what was bought.
 
 ### Everything unlocked, and nothing to pay for it with
 
