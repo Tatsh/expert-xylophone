@@ -3086,6 +3086,14 @@ static BOOL g_bRandamIntSeeded = NO;
                                                    cancelFrame.size.width,
                                                    cancelFrame.size.height);
         if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+            // The mascot parks off the right edge and half its height above its docked row, so it
+            // slides out as it fades rather than fading in place.
+            CGSize mascotSize = [self.searchMascotImages[0] size];
+            self.searchMascot.frame =
+                CGRectMake(self.width + mascotSize.width,
+                           self.searchPastelPosBaseY - mascotSize.height * kPageSnapMidpoint,
+                           mascotSize.width,
+                           mascotSize.height);
             self.searchMascot.alpha = kAlphaHidden;
         }
         self.mascot.alpha = kAlphaOpaque;
