@@ -214,6 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (UIAlertView *)showAlertNeedResourceUpdate:(nullable id<UIAlertViewDelegate>)delegate;
 
+// The binary's selector really is showAddLimepointByApplilink:: with an unnamed second piece.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-selector-name"
 /**
  * @brief Show the "App Installed Reward" / "%d Lime Point" has been Added. alert (OK).
  * @param limePoint The number of lime points substituted into the message.
@@ -221,9 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The shown alert.
  * @ghidraAddress 0xf150
  */
-// The binary's selector really is showAddLimepointByApplilink:: with an unnamed second piece.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-selector-name"
 + (UIAlertView *)showAddLimepointByApplilink:(int)
                                    limePoint:(nullable id<UIAlertViewDelegate>)delegate;
 #pragma clang diagnostic pop

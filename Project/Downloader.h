@@ -24,8 +24,20 @@ typedef void (^DownloaderBlock)(Downloader *downloader);
  */
 @protocol DownloaderDelegate <NSObject>
 @optional
+/**
+ * @brief Sent as the transfer makes incremental progress, when @c proceedBlock is unset.
+ * @param downloader The downloader reporting the progress.
+ */
 - (void)downloaderProceed:(Downloader *)downloader;
+/**
+ * @brief Sent once the request completes successfully, when @c successBlock is unset.
+ * @param downloader The finished downloader, whose response accessors are now populated.
+ */
 - (void)downloaderFinished:(Downloader *)downloader;
+/**
+ * @brief Sent when the request fails, when @c failureBlock is unset.
+ * @param downloader The failed downloader, whose error-message accessors describe the failure.
+ */
 - (void)downloaderError:(Downloader *)downloader;
 @end
 

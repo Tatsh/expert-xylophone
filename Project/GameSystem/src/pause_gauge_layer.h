@@ -60,12 +60,14 @@ struct PauseGaugeLaneGeometry {
  */
 class PauseGaugeLayer : public rb::BaseScene {
 public:
+    /** @brief The per-lane gauge geometry record the layer stores one of per lane. */
     using LaneGeometry = PauseGaugeLaneGeometry;
 
-    // The number of sprite slots (a gauge slot and a parts slot), the number of lane-slot ids, and
-    // the number of lanes the gauge draws a rectangle for.
+    /** @brief The number of sprite slots: a gauge slot and a parts slot. */
     static constexpr int kSlotCount = 2;
+    /** @brief The number of lane-slot ids. */
     static constexpr int kLaneSlotCount = 13;
+    /** @brief The number of lanes the gauge draws a rectangle for. */
     static constexpr int kLaneCount = 3;
 
     /**
@@ -222,17 +224,36 @@ private:
     int m_nThema = {};                             // +0xe0: the cached UI theme.
 };
 
-// The per-lane gauge rectangle sizes, seeded at startup from the read-only source constants. The
-// iPad uses the variant table; every other device uses the default table.
-extern PauseGaugeRectSize
-    g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbe90
-extern PauseGaugeRectSize
-    g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount]; // @ghidraAddress 0x3dbeb0
+/**
+ * @brief The per-lane gauge rectangle sizes the iPad uses.
+ *
+ * Seeded at startup from the read-only source constants. Every other device uses
+ * @c g_aPauseGaugeRectDefault instead.
+ * @ghidraAddress 0x3dbe90
+ */
+extern PauseGaugeRectSize g_aPauseGaugeRectVariant[PauseGaugeLayer::kLaneCount];
+/**
+ * @brief The per-lane gauge rectangle sizes every device other than the iPad uses.
+ *
+ * Seeded at startup from the read-only source constants, alongside @c g_aPauseGaugeRectVariant.
+ * @ghidraAddress 0x3dbeb0
+ */
+extern PauseGaugeRectSize g_aPauseGaugeRectDefault[PauseGaugeLayer::kLaneCount];
 
-// The pause-gauge sprite layout tables (up to 13 records each): the default table and the
-// alt-frame-device table. Read-only render configuration embedded in the binary.
-extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[];  // @ghidraAddress 0x308fe0
-extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[]; // @ghidraAddress 0x308e74
+/**
+ * @brief The default device's pause-gauge sprite layout table (up to 13 records).
+ *
+ * Read-only render configuration embedded in the binary.
+ * @ghidraAddress 0x308fe0
+ */
+extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutDefault[];
+/**
+ * @brief The alt-frame device's pause-gauge sprite layout table (up to 13 records).
+ *
+ * Read-only render configuration embedded in the binary.
+ * @ghidraAddress 0x308e74
+ */
+extern const PauseGaugeSpriteLayout g_aPauseGaugeLayoutAltFrame[];
 
 /**
  * @brief Seeds the per-lane pause-gauge rectangle size tables (both device layouts) at startup.

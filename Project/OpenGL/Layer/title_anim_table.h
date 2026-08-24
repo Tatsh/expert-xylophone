@@ -2,11 +2,18 @@
  * @file
  * The theme-2 Colette title screen's per-window sprite-animation keyframe tables, consumed by
  * @c rb::TitleColetteScene::RenderSprites.
+ *
+ * Each curve table is a flat run of (time, value) knot pairs. A window's loop slices its table per
+ * sprite by a fixed stride and hands the slice to @c CalculateCurveInterpolation together with the
+ * knot count. The position tables instead hold {x, y} pairs the loop reads directly.
  */
 
 #pragma once
 
-// Window 1 (attract intro) alpha and scale, 2 sprites x 6 knots. @ghidraAddress 0x2f9958
+/**
+ * @brief The window 1 (attract intro) alpha curves: 2 sprites x 6 knots.
+ * @ghidraAddress 0x2f9958
+ */
 constexpr float g_aTitleAnim01Alpha[] = {
     0.0f,
     0.0f,
@@ -34,7 +41,10 @@ constexpr float g_aTitleAnim01Alpha[] = {
     0.0f,
 };
 
-// @ghidraAddress 0x2f99b8
+/**
+ * @brief The window 1 (attract intro) scale curves: 2 sprites x 6 knots.
+ * @ghidraAddress 0x2f99b8
+ */
 constexpr float g_aTitleAnim01Scale[] = {
     0.0f,
     1.0f,
@@ -62,7 +72,10 @@ constexpr float g_aTitleAnim01Scale[] = {
     2.5f,
 };
 
-// Window 2 (0x353..0xdbc) alpha 12x2 / scale 12x3. @ghidraAddress 0x2f9a18
+/**
+ * @brief The window 2 (0x353..0xdbc) alpha curves (12x2).
+ * @ghidraAddress 0x2f9a18
+ */
 constexpr float g_aTitleAnim02Alpha[] = {
     1033.3333740234375f,
     0.699999988079071f,
@@ -114,7 +127,10 @@ constexpr float g_aTitleAnim02Alpha[] = {
     0.0f,
 };
 
-// @ghidraAddress 0x2f9ad8
+/**
+ * @brief The window 2 (0x353..0xdbc) scale curves (12x3).
+ * @ghidraAddress 0x2f9ad8
+ */
 constexpr float g_aTitleAnim02Scale[] = {
     866.6666870117188f,
     0.0f,
@@ -190,7 +206,10 @@ constexpr float g_aTitleAnim02Scale[] = {
     2.5f,
 };
 
-// Window 3 (0x1a0b..0x236a). @ghidraAddress 0x2f9bf8
+/**
+ * @brief The window 3 (0x1a0b..0x236a) alpha curves.
+ * @ghidraAddress 0x2f9bf8
+ */
 constexpr float g_aTitleAnim03Alpha[] = {
     6850.0f,           0.699999988079071f, 8416.6669921875f, 0.0f,
     6916.66650390625f, 0.699999988079071f, 8483.3330078125f, 0.0f,
@@ -206,7 +225,10 @@ constexpr float g_aTitleAnim03Alpha[] = {
     7483.33349609375f, 0.699999988079071f, 9050.0f,          0.0f,
 };
 
-// @ghidraAddress 0x2f9cb8
+/**
+ * @brief The window 3 (0x1a0b..0x236a) scale curves.
+ * @ghidraAddress 0x2f9cb8
+ */
 constexpr float g_aTitleAnim03Scale[] = {
     6683.33349609375f, 0.0f, 6850.0f,           1.0f, 8416.6669921875f, 1.2000000476837158f,
     6750.0f,           0.0f, 6916.66650390625f, 1.0f, 8483.3330078125f, 2.5f,
@@ -222,7 +244,10 @@ constexpr float g_aTitleAnim03Scale[] = {
     7316.66650390625f, 0.0f, 7483.33349609375f, 1.0f, 9050.0f,          2.5f,
 };
 
-// Window 4 (0x2f45..0x362a). @ghidraAddress 0x2f9dd8
+/**
+ * @brief The window 4 (0x2f45..0x362a) alpha curves.
+ * @ghidraAddress 0x2f9dd8
+ */
 constexpr float g_aTitleAnim04Alpha[] = {
     12283.3330078125f, 0.699999988079071f, 13850.0f, 0.0f,
     12283.3330078125f, 0.699999988079071f, 13850.0f, 0.0f,
@@ -238,7 +263,10 @@ constexpr float g_aTitleAnim04Alpha[] = {
     12283.3330078125f, 0.699999988079071f, 13850.0f, 0.0f,
 };
 
-// @ghidraAddress 0x2f9e98
+/**
+ * @brief The window 4 (0x2f45..0x362a) scale curves.
+ * @ghidraAddress 0x2f9e98
+ */
 constexpr float g_aTitleAnim04Scale[] = {
     12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f, 13850.0f, 1.2000000476837158f,
     12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f, 13850.0f, 2.5f,
@@ -254,9 +282,13 @@ constexpr float g_aTitleAnim04Scale[] = {
     12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f, 13850.0f, 2.5f,
 };
 
-// The ten title letters' positions (window 5). The loop reads these directly, with no swing or
-// anchor selection, so the letters do not follow the logo swing. Ten pairs, ending exactly where
-// g_aTitleAnim05Alpha begins. @ghidraAddress 0x2f9fb8
+/**
+ * @brief The ten title letters' positions (window 5).
+ *
+ * The loop reads these directly, with no swing or anchor selection, so the letters do not follow
+ * the logo swing. Ten pairs, ending exactly where @c g_aTitleAnim05Alpha begins.
+ * @ghidraAddress 0x2f9fb8
+ */
 constexpr float g_aTitleLetterPos[][2] = {
     {97.0f, 468.0f},  // 0x2f9fb8
     {157.0f, 468.0f}, // 0x2f9fc0
@@ -270,7 +302,10 @@ constexpr float g_aTitleLetterPos[][2] = {
     {674.0f, 467.0f}, // 0x2fa000
 };
 
-// Window 5 (>0xa6 main) alpha 10x2 / scale 10x0x1d. @ghidraAddress 0x2fa008
+/**
+ * @brief The window 5 (>0xa6 main) alpha curves (10x2).
+ * @ghidraAddress 0x2fa008
+ */
 constexpr float g_aTitleAnim05Alpha[] = {
     516.6666870117188f, 0.0f, 1200.0f, 1.0f, 466.6666564941406f, 0.0f, 1150.0f, 1.0f,
     416.6666564941406f, 0.0f, 1100.0f, 1.0f, 366.6666564941406f, 0.0f, 1050.0f, 1.0f,
@@ -279,7 +314,10 @@ constexpr float g_aTitleAnim05Alpha[] = {
     466.6666564941406f, 0.0f, 1150.0f, 1.0f, 516.6666870117188f, 0.0f, 1200.0f, 1.0f,
 };
 
-// @ghidraAddress 0x2fa0a8
+/**
+ * @brief The window 5 (>0xa6 main) scale curves (10x0x1d).
+ * @ghidraAddress 0x2fa0a8
+ */
 constexpr float g_aTitleAnim05Scale[] = {
     516.6666870117188f,
     1.0f,
@@ -863,7 +901,10 @@ constexpr float g_aTitleAnim05Scale[] = {
     1.0f,
 };
 
-// Window 6 (0xa7..0x1ab1) single 7-knot curve, 6 sprites. @ghidraAddress 0x2fa9b8
+/**
+ * @brief The window 6 (0xa7..0x1ab1) curve: a single 7-knot curve, 6 sprites.
+ * @ghidraAddress 0x2fa9b8
+ */
 constexpr float g_aTitleAnim06Curve[] = {
     1383.3333740234375f,
     0.0f,
@@ -965,7 +1006,10 @@ constexpr float g_aTitleAnim06Curve[] = {
     1.0f,
 };
 
-// Window 7 (>=0xa7 secondary) alpha 6x2 / scale 6x0x15. @ghidraAddress 0x2fab78
+/**
+ * @brief The window 7 (>=0xa7 secondary) alpha curves (6x2).
+ * @ghidraAddress 0x2fab78
+ */
 constexpr float g_aTitleAnim07Alpha[] = {
     500.0f, 1.0f, 516.6666870117188f, 1.0f, 500.0f, 1.0f, 516.6666870117188f, 1.0f,
     500.0f, 1.0f, 516.6666870117188f, 1.0f, 500.0f, 1.0f, 516.6666870117188f, 1.0f,
@@ -973,7 +1017,10 @@ constexpr float g_aTitleAnim07Alpha[] = {
     500.0f, 1.0f, 516.6666870117188f, 1.0f,
 };
 
-// @ghidraAddress 0x2fabe8
+/**
+ * @brief The window 7 (>=0xa7 secondary) scale curves (6x0x15).
+ * @ghidraAddress 0x2fabe8
+ */
 constexpr float g_aTitleAnim07Scale[] = {
     6183.33349609375f, 0.0f,
     6300.0f,           1.100000023841858f,
@@ -1124,7 +1171,10 @@ constexpr float g_aTitleAnim07Scale[] = {
     13750.0f,          1.0f,
 };
 
-// Window 8 (idle extra) four 3-knot curves + a 2-knot. @ghidraAddress 0x2fb080
+/**
+ * @brief The window 8 (idle extra) curve set A: four 3-knot curves.
+ * @ghidraAddress 0x2fb080
+ */
 constexpr float g_aTitleAnim08A[] = {
     13666.6669921875f, 390.0f, 13833.3330078125f, 390.0f, 13833.3330078125f, 390.0f,
     12733.3330078125f, 395.0f, 13283.3330078125f, 390.0f, 13833.3330078125f, 387.0f,
@@ -1132,7 +1182,10 @@ constexpr float g_aTitleAnim08A[] = {
     12733.3330078125f, 394.0f, 13283.3330078125f, 395.0f, 13833.3330078125f, 391.0f,
 };
 
-// @ghidraAddress 0x2fb0e0
+/**
+ * @brief The window 8 (idle extra) curve set B: four 3-knot curves.
+ * @ghidraAddress 0x2fb0e0
+ */
 constexpr float g_aTitleAnim08B[] = {
     13666.6669921875f, 467.0f, 13833.3330078125f, 467.0f, 13833.3330078125f, 467.0f,
     12733.3330078125f, 456.0f, 13283.3330078125f, 465.0f, 13833.3330078125f, 472.0f,
@@ -1140,7 +1193,10 @@ constexpr float g_aTitleAnim08B[] = {
     12733.3330078125f, 477.0f, 13283.3330078125f, 466.0f, 13833.3330078125f, 459.0f,
 };
 
-// @ghidraAddress 0x2fb140
+/**
+ * @brief The window 8 (idle extra) curve set C: four 3-knot curves.
+ * @ghidraAddress 0x2fb140
+ */
 constexpr float g_aTitleAnim08C[] = {
     13666.6669921875f, 0.0f, 13833.3330078125f, 1.0f, 13833.3330078125f, 1.0f,
     12733.3330078125f, 0.0f, 13666.6669921875f, 0.5f, 13833.3330078125f, 0.0f,
@@ -1148,7 +1204,10 @@ constexpr float g_aTitleAnim08C[] = {
     12733.3330078125f, 0.0f, 13666.6669921875f, 0.5f, 13833.3330078125f, 0.0f,
 };
 
-// @ghidraAddress 0x2fb1a0 (a 2-knot per-sprite table, 4 sprites)
+/**
+ * @brief The window 8 (idle extra) curve set D: a 2-knot per-sprite table, 4 sprites.
+ * @ghidraAddress 0x2fb1a0
+ */
 constexpr float g_aTitleAnim08D[] = {
     13666.6669921875f,
     1.0f,
@@ -1168,7 +1227,10 @@ constexpr float g_aTitleAnim08D[] = {
     1.0f,
 };
 
-// Window 9 (0x353..0x15cf) alpha 12x5 / scale 12x6. @ghidraAddress 0x2fb1e0
+/**
+ * @brief The window 9 (0x353..0x15cf) alpha curves (12 sprites x 6 knots, stride 12 floats).
+ * @ghidraAddress 0x2fb1e0
+ */
 constexpr float g_aTitleAnim09Alpha[] = {
     850.0f,
     0.0f,
@@ -1316,7 +1378,10 @@ constexpr float g_aTitleAnim09Alpha[] = {
     0.0f,
 };
 
-// @ghidraAddress 0x2fb420
+/**
+ * @brief The window 9 (0x353..0x15cf) scale curves (12 sprites x 5 knots, stride 10 floats).
+ * @ghidraAddress 0x2fb420
+ */
 constexpr float g_aTitleAnim09Scale[] = {
     866.6666870117188f,
     1.0f,
@@ -1440,7 +1505,10 @@ constexpr float g_aTitleAnim09Scale[] = {
     1.0f,
 };
 
-// Window 10 (0x1817..0x3169) alpha 12x8 / scale 12x8. @ghidraAddress 0x2fb600
+/**
+ * @brief The window 10 (0x1817..0x3169) alpha curves (12x8).
+ * @ghidraAddress 0x2fb600
+ */
 constexpr float g_aTitleAnim10Alpha[] = {
     6183.33349609375f, 1.0f, 7050.0f,           0.0f, 9366.6669921875f,  0.0f,
     9866.6669921875f,  1.0f, 10033.3330078125f, 0.0f, 11616.6669921875f, 0.0f,
@@ -1476,7 +1544,10 @@ constexpr float g_aTitleAnim10Alpha[] = {
     11616.6669921875f, 0.0f, 12116.6669921875f, 1.0f, 12283.3330078125f, 0.0f,
 };
 
-// @ghidraAddress 0x2fb900
+/**
+ * @brief The window 10 (0x1817..0x3169) scale curves (12x8).
+ * @ghidraAddress 0x2fb900
+ */
 constexpr float g_aTitleAnim10Scale[] = {
     6183.33349609375f, 1.0f,
     7050.0f,           2.0f,
@@ -1576,7 +1647,10 @@ constexpr float g_aTitleAnim10Scale[] = {
     12283.3330078125f, 1.0f,
 };
 
-// Window 11 (0x353.. halved) alpha 12x2. @ghidraAddress 0x2fbc00
+/**
+ * @brief The window 11 (0x353.. halved) alpha curves (12x2).
+ * @ghidraAddress 0x2fbc00
+ */
 constexpr float g_aTitleAnim11Alpha[] = {
     1733.3333740234375f,
     0.0f,
@@ -1628,7 +1702,10 @@ constexpr float g_aTitleAnim11Alpha[] = {
     1.0f,
 };
 
-// @ghidraAddress 0x2fbcc0
+/**
+ * @brief The window 11 (0x353.. halved) scale curves.
+ * @ghidraAddress 0x2fbcc0
+ */
 constexpr float g_aTitleAnim11Scale[] = {
     866.6666870117188f,
     0.0f,
@@ -2016,7 +2093,10 @@ constexpr float g_aTitleAnim11Scale[] = {
     1.0f,
 };
 
-// Window 12 (>0x1816) alpha 12x4. @ghidraAddress 0x2fc320
+/**
+ * @brief The window 12 (>0x1816) alpha curves (12x4).
+ * @ghidraAddress 0x2fc320
+ */
 constexpr float g_aTitleAnim12Alpha[] = {
     8183.33349609375f, 1.0f, 11616.6669921875f, 1.0f, 12116.6669921875f, 0.0f,
     12283.3330078125f, 1.0f, 8250.0f,           1.0f, 11616.6669921875f, 1.0f,
@@ -2036,7 +2116,10 @@ constexpr float g_aTitleAnim12Alpha[] = {
     11616.6669921875f, 1.0f, 12116.6669921875f, 0.0f, 12283.3330078125f, 1.0f,
 };
 
-// @ghidraAddress 0x2fc4a0
+/**
+ * @brief The window 12 (>0x1816) scale curves.
+ * @ghidraAddress 0x2fc4a0
+ */
 constexpr float g_aTitleAnim12Scale[] = {
     6183.33349609375f, 0.0f,
     6300.0f,           1.100000023841858f,
@@ -2292,7 +2375,10 @@ constexpr float g_aTitleAnim12Scale[] = {
     12500.0f,          1.0f,
 };
 
-// Window 13 (>0xa6 tail) rotation curve, 2 sprites x 0xa knots. @ghidraAddress 0x2fcc80
+/**
+ * @brief The window 13 (>0xa6 tail) rotation curve: 2 sprites x 0xa knots.
+ * @ghidraAddress 0x2fcc80
+ */
 constexpr float g_aTitleAnim13Rotation[] = {
     316.6666564941406f,
     0.7853981852531433f,
@@ -2316,16 +2402,28 @@ constexpr float g_aTitleAnim13Rotation[] = {
     0.0f,
 };
 
-// Window 13 alpha (inline 2-knot). @ghidraAddress 0x2f8520
+/**
+ * @brief The window 13 alpha curve (inline 2-knot).
+ * @ghidraAddress 0x2f8520
+ */
 constexpr float g_aTitleAnim13Alpha[] = {166.6666717529297f, 0.0f, 883.3333129882812f, 1.0f};
 
-// Window 14 (final) scale (inline 2-knot). @ghidraAddress 0x2f8530
+/**
+ * @brief The window 14 (final) scale curve (inline 2-knot).
+ * @ghidraAddress 0x2f8530
+ */
 constexpr float g_aTitleAnim14[] = {1766.6666259765625f, 0.0f, 2283.333251953125f, 1.0f};
 
-// Window 1 sprite positions (2 entries). @ghidraAddress 0x2f8500
+/**
+ * @brief The window 1 sprite positions (2 entries).
+ * @ghidraAddress 0x2f8500
+ */
 constexpr float g_aTitleAnim01Pos[][2] = {{390.0f, 467.0f}, {390.0f, 467.0f}};
 
-// Window 6 sprite positions; the loop uses entries 1 through 6. @ghidraAddress 0x2fab40
+/**
+ * @brief The window 6 sprite positions; the loop uses entries 1 through 6.
+ * @ghidraAddress 0x2fab40
+ */
 constexpr float g_aTitleAnim06Pos[][2] = {
     {711.0f, 489.0f},
     {281.0f, 548.0f},
@@ -2336,12 +2434,21 @@ constexpr float g_aTitleAnim06Pos[][2] = {
     {488.0f, 548.0f},
 };
 
-// Window 13 sprite positions (2 entries). @ghidraAddress 0x2f8510
+/**
+ * @brief The window 13 sprite positions (2 entries).
+ * @ghidraAddress 0x2f8510
+ */
 constexpr float g_aTitleAnim13Pos[][2] = {{392.0f, 465.0f}, {379.0f, 466.0f}};
 
-// The standalone attract hint sprite position. @ghidraAddress 0x2f8548
+/**
+ * @brief The standalone attract hint sprite position.
+ * @ghidraAddress 0x2f8548
+ */
 constexpr float g_aTitleHintPos[] = {390.0f, 467.0f};
-// The standalone logo sprite position. @ghidraAddress 0x2f8550
+/**
+ * @brief The standalone logo sprite position.
+ * @ghidraAddress 0x2f8550
+ */
 constexpr float g_aTitleLogoPos[] = {384.0f, 619.0f};
 // code: language=C++
 // kate: hl C++;

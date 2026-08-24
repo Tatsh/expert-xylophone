@@ -14,13 +14,21 @@ struct ResultBonusColor {
     float flBlue = {};  /*!< The blue channel. +0x08 */
 };
 
-// The number of colours in the result-bonus palette. The table ends where the per-slot instancer
-// capacity table begins at 0x2fe854, which fixes the count at eleven: seven named tints followed by
-// black, a mid grey, a light grey, and white.
+/**
+ * @brief The number of colours in the result-bonus palette.
+ *
+ * The table ends where the per-slot instancer capacity table begins at 0x2fe854, which fixes the
+ * count at eleven: seven named tints followed by black, a mid grey, a light grey, and white.
+ */
 constexpr int kResultBonusColorCount = 11;
 
-// The result-bonus colour palette, indexed by a bonus/colour index. Read-only ROM data in the
-// binary. @ghidraAddress 0x2fe7d0
+/**
+ * @brief The result-bonus colour palette, indexed by a bonus/colour index.
+ *
+ * Read-only ROM data in the binary.
+ *
+ * @ghidraAddress 0x2fe7d0
+ */
 extern const ResultBonusColor g_aResultBonusColor[kResultBonusColorCount];
 
 /** @brief The palette entries the result renderers select by index. */

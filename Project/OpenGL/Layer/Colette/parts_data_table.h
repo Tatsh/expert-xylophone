@@ -10,7 +10,7 @@
  * entry it draws from.
  *
  * The parts tables are zero-initialised in the binary's @c __common segment and filled at runtime.
- * The trailing @c // +0xNN comments document the original member offsets for reference only.
+ * The @c +0xNN notes on each member document the original 32-bit offsets for reference only.
  */
 struct PartsDataRecord {
     int nEnabled = {};   /*!< Non-zero when the part is drawn. +0x00 */
@@ -22,16 +22,39 @@ struct PartsDataRecord {
     int nUvPaletteIndex = {};
 };
 
-// The number of pad records, and the (larger) number of phone records. The device-selecting
-// accessor bounds both at the pad count, while the phone-only accessor bounds at the phone count.
+/**
+ * @brief The number of pad records in the Colette result-window parts tables.
+ *
+ * The device-selecting accessor bounds both tables at this pad count.
+ */
 constexpr int kColettePartsRecordCount = 348;
+
+/**
+ * @brief The number of phone records in the Colette result-window parts tables.
+ *
+ * This is the larger of the two counts; the phone-only accessor bounds at it.
+ */
 constexpr int kColettePhonePartsRecordCount = 400;
 
-// The Colette result-window parts tables, zero-initialised in the binary's @c __common segment and
-// filled at runtime; the pad-versus-phone device kind selects between them.
-extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount]; // @ghidraAddress 0x3d0010
-extern PartsDataRecord
-    g_aColettePartsPhone[kColettePhonePartsRecordCount]; // @ghidraAddress 0x3d20b0
+/**
+ * @brief The Colette result-window parts table used on the pad.
+ *
+ * Zero-initialised in the binary's @c __common segment and filled at runtime; the pad-versus-phone
+ * device kind selects between this table and @c g_aColettePartsPhone.
+ *
+ * @ghidraAddress 0x3d0010
+ */
+extern PartsDataRecord g_aColettePartsPad[kColettePartsRecordCount];
+
+/**
+ * @brief The Colette result-window parts table used on the phone.
+ *
+ * Zero-initialised in the binary's @c __common segment and filled at runtime; the pad-versus-phone
+ * device kind selects between this table and @c g_aColettePartsPad.
+ *
+ * @ghidraAddress 0x3d20b0
+ */
+extern PartsDataRecord g_aColettePartsPhone[kColettePhonePartsRecordCount];
 
 // code: language=C++
 // kate: hl C++;

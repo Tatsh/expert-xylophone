@@ -6,11 +6,18 @@
 
 #pragma once
 
-// The five sub-character base X positions the phone layout interpolates from (each is eased
-// toward the screen centre by the fit scale). @ghidraAddress 0x2fccd8
+/**
+ * @brief The five sub-character base X positions the phone layout interpolates from.
+ *
+ * Each is eased toward the screen centre by the fit scale.
+ * @ghidraAddress 0x2fccd8
+ */
 constexpr float g_aCampaignPortraitPhoneBaseX[] = {190.0f, 280.0f, 384.0f, 488.0f, 581.0f};
 
-// The six character anchor positions the iPad layout uses directly. @ghidraAddress 0x2fccd0
+/**
+ * @brief The six character anchor positions the iPad layout uses directly.
+ * @ghidraAddress 0x2fccd0
+ */
 constexpr float g_aCampaignPortraitPadAnchor[][2] = {
     {389.0f, 1020.0f},
     {190.0f, 1020.0f},
@@ -20,8 +27,12 @@ constexpr float g_aCampaignPortraitPadAnchor[][2] = {
     {581.0f, 1020.0f},
 };
 
-// The entrance alpha (fade-in) curves, one per character (the main portrait then five
-// sub-characters); four knots each. @ghidraAddress 0x2fcd00
+/**
+ * @brief The entrance alpha (fade-in) curves, one per character.
+ *
+ * Ordered as the main portrait then five sub-characters; four knots each.
+ * @ghidraAddress 0x2fcd00
+ */
 constexpr float g_aCampaignPortraitEntranceAlpha[][8] = {
     {0.0f, 0.0f, 4150.0f, 0.0f, 4166.66650390625f, 1.0f, 4183.33349609375f, 1.0f},
     {1666.6666259765625f, 0.0f, 2000.0f, 1.0f, 4150.0f, 1.0f, 4166.66650390625f, 0.0f},
@@ -30,8 +41,12 @@ constexpr float g_aCampaignPortraitEntranceAlpha[][8] = {
     {2666.666748046875f, 0.0f, 3000.0f, 1.0f, 4150.0f, 1.0f, 4166.66650390625f, 0.0f},
     {2000.0f, 0.0f, 2333.333251953125f, 1.0f, 4150.0f, 1.0f, 4166.66650390625f, 0.0f},
 };
-// The matching entrance scale curves (a pop that overshoots to 1.2 then settles); six knots
-// each. @ghidraAddress 0x2fcdc0
+/**
+ * @brief The matching entrance scale curves: a pop that overshoots to 1.2 then settles.
+ *
+ * Six knots each.
+ * @ghidraAddress 0x2fcdc0
+ */
 constexpr float g_aCampaignPortraitEntranceScale[][12] = {
     {0.0f,
      0.0f,
@@ -107,8 +122,12 @@ constexpr float g_aCampaignPortraitEntranceScale[][12] = {
      0.0f},
 };
 
-// The SE-reaction scale curve (six knots); its last knot's time is when the reaction ends.
-// @ghidraAddress 0x2fcee0
+/**
+ * @brief The SE-reaction scale curve (six knots).
+ *
+ * Its last knot's time is when the reaction ends.
+ * @ghidraAddress 0x2fcee0
+ */
 constexpr float g_aCampaignPortraitReaction[] = {0.0f,
                                                  1.0f,
                                                  16.66666603088379f,
@@ -121,6 +140,9 @@ constexpr float g_aCampaignPortraitReaction[] = {0.0f,
                                                  1.0f,
                                                  183.3333282470703f,
                                                  1.0f};
+/**
+ * @brief The time at which the SE-reaction scale curve ends, matching that curve's last knot time.
+ */
 constexpr float kCampaignPortraitReactionEnd = 183.3333282470703f;
 
 // code: language=C++

@@ -30,8 +30,20 @@ typedef void (^RBHttpUtilBlock)(RBHttpUtil *connection);
  */
 @protocol RBHttpUtilDelegate <NSObject>
 @optional
+/**
+ * @brief Sent as the response body accumulates, when @c proceedBlock is unset.
+ * @param connection The connection reporting the progress.
+ */
 - (void)downloaderProceed:(RBHttpUtil *)connection;
+/**
+ * @brief Sent once the request completes successfully, when @c successBlock is unset.
+ * @param connection The finished connection, whose response accessors are now populated.
+ */
 - (void)downloaderFinished:(RBHttpUtil *)connection;
+/**
+ * @brief Sent when the request fails, when @c failureBlock is unset.
+ * @param connection The failed connection, whose error-message properties describe the failure.
+ */
 - (void)downloaderError:(RBHttpUtil *)connection;
 @end
 

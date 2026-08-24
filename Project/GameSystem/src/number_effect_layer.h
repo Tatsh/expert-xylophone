@@ -1,3 +1,12 @@
+/**
+ * @file
+ * The number-effect play-field layer, @c NumberEffectLayer.
+ *
+ * A @c PlayFieldLayerBase-derived singleton layer that draws the play-field number glyphs through
+ * four gm_parts2 sprite instancers, fading them through a @c LinearTween channel and driving the
+ * brightness slider's track and knob.
+ */
+
 #pragma once
 
 //
@@ -24,11 +33,11 @@ class C_TEXTURE;
  */
 class NumberEffectLayer : public PlayFieldLayerBase {
 public:
-    // The number of sprite instancers the layer builds.
+    /** @brief The number of sprite instancers the layer builds. */
     static constexpr int kBatchCount = 4;
-    // The number of words in the side-dependent transform block.
+    /** @brief The number of words in the side-dependent transform block. */
     static constexpr int kTransformWordCount = 4;
-    // The number of brightness-slider touch targets (the track and the knob).
+    /** @brief The number of brightness-slider touch targets (the track and the knob). */
     static constexpr int kSliderTargetCount = 2;
 
     /**

@@ -22,12 +22,21 @@ struct SlideNoteSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x14 */
 };
 
-// The number of slide-note sprite types, and the type index at or above which the caller-supplied
-// height and unit y-scale are used instead of the table's height.
+/** @brief The number of slide-note sprite types. */
 constexpr int kSlideNoteSpriteTypeCount = 16;
+
+/**
+ * @brief The type index at or above which the caller-supplied height and unit y-scale are used
+ * instead of the table's height.
+ */
 constexpr int kSlideNoteGlowTypeBase = 0xf;
 
-// The slide-note sprite-type layout table (@ghidraAddress 0x2fee38): read-only ROM data.
+/**
+ * @brief The slide-note sprite-type layout table.
+ *
+ * Read-only ROM data.
+ * @ghidraAddress 0x2fee38
+ */
 extern const SlideNoteSpriteType g_aSlideNoteSpriteTypes[kSlideNoteSpriteTypeCount];
 
 // code: language=C++

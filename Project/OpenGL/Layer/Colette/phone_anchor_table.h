@@ -19,14 +19,30 @@ struct PhoneAnchorRecord {
     int nAnchorMode = {}; /*!< The viewport-relative anchor mode (0 through 8). +0x08 */
 };
 
-// The number of records in each phone-layout anchor-position table.
+/** @brief The number of records in each phone-layout anchor-position table. */
 constexpr int kPhoneAnchorRecordCount = 168;
 
-// The phone-layout anchor-position tables, zero-initialised in the binary's @c __common segment and
-// filled at runtime by the result-layout-table initialisers; the portrait flag selects between
-// them.
-extern PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount]; // @ghidraAddress 0x3d4d50
-extern PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount];  // @ghidraAddress 0x3d5530
+/**
+ * @brief The phone-layout anchor-position table used in portrait orientation.
+ *
+ * Zero-initialised in the binary's @c __common segment and filled at runtime by the
+ * result-layout-table initialisers; the portrait flag selects between it and
+ * @c g_aPhoneAnchorDefault.
+ *
+ * @ghidraAddress 0x3d4d50
+ */
+extern PhoneAnchorRecord g_aPhoneAnchorPortrait[kPhoneAnchorRecordCount];
+
+/**
+ * @brief The default phone-layout anchor-position table, used outside portrait orientation.
+ *
+ * Zero-initialised in the binary's @c __common segment and filled at runtime by the
+ * result-layout-table initialisers; the portrait flag selects between it and
+ * @c g_aPhoneAnchorPortrait.
+ *
+ * @ghidraAddress 0x3d5530
+ */
+extern PhoneAnchorRecord g_aPhoneAnchorDefault[kPhoneAnchorRecordCount];
 
 // code: language=C++
 // kate: hl C++;

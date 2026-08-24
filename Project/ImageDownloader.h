@@ -28,7 +28,21 @@ typedef void (^ImageDownloaderBlock)(ImageDownloader *downloader);
  */
 @protocol ImageDownloaderDelegate <NSObject>
 @optional
+/**
+ * @brief Sent once the image has downloaded and decoded, when @c successBlock is unset.
+ * @param downloader The finished downloader, whose @c downloadedImage now holds the image.
+ * @param indexPath The downloader's @c indexPathInTableView, so a table delegate can route the
+ * image back to its cell; @c nil when none was set.
+ */
 - (void)imageDownloader:(ImageDownloader *)downloader didLoad:(nullable NSIndexPath *)indexPath;
+/**
+ * @brief Sent when the download fails, when @c failureBlock is unset.
+ *
+ * The binary also dispatches this selector from the progress path when @c proceedBlock is unset,
+ * so a delegate sees it for incremental progress as well as for failure.
+ * @param downloader The downloader reporting the failure.
+ * @param indexPath The downloader's @c indexPathInTableView, or @c nil when none was set.
+ */
 - (void)imageDownloaderDidFail:(ImageDownloader *)downloader
                        didLoad:(nullable NSIndexPath *)indexPath;
 @end

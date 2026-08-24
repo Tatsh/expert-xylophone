@@ -14,6 +14,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * @brief First-responder suppression for every text view in the application.
+ *
+ * The category adds no state and overrides a single @c UIResponder query, so it takes effect on
+ * every @c UITextView the application creates and the keyboard never appears.
+ */
 @interface UITextView (RB)
 
 /**

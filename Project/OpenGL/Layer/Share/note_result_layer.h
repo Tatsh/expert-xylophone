@@ -27,10 +27,23 @@ struct StarSpriteDescriptor {
     int nAtlasFrame = {};  /*!< The atlas-frame number indexing the shared sprite UV table. +0x10 */
 };
 
-// The star-glyph layout tables: one record per star frame (0 through 6) then one per digit glyph
-// (0 through 9), selected by device. Read-only data embedded in the binary.
-extern const StarSpriteDescriptor g_aStarGlyphTablePad[];   // @ghidraAddress 0x30f858
-extern const StarSpriteDescriptor g_aStarGlyphTablePhone[]; // @ghidraAddress 0x30f9ac
+/**
+ * @brief The pad star-glyph layout table.
+ *
+ * One record per star frame (0 through 6) then one per digit glyph (0 through 9); the device
+ * selects between this table and @c g_aStarGlyphTablePhone. Read-only data embedded in the binary.
+ * @ghidraAddress 0x30f858
+ */
+extern const StarSpriteDescriptor g_aStarGlyphTablePad[];
+
+/**
+ * @brief The phone star-glyph layout table.
+ *
+ * One record per star frame (0 through 6) then one per digit glyph (0 through 9); the device
+ * selects between this table and @c g_aStarGlyphTablePad. Read-only data embedded in the binary.
+ * @ghidraAddress 0x30f9ac
+ */
+extern const StarSpriteDescriptor g_aStarGlyphTablePhone[];
 
 /**
  * @brief The note-result effect layer.
@@ -43,9 +56,9 @@ extern const StarSpriteDescriptor g_aStarGlyphTablePhone[]; // @ghidraAddress 0x
  */
 class NoteResultLayer : public PlayFieldLayerBase {
 public:
-    // The number of result-quad positions.
+    /** @brief The number of result-quad positions. */
     static constexpr int kPositionCount = 12;
-    // The number of judgement types a result quad can show.
+    /** @brief The number of judgement types a result quad can show. */
     static constexpr int kJudgeTypeCount = 4;
 
     /**
@@ -105,8 +118,11 @@ public:
     void Update(float flDeltaTime);
 
 private:
-    // Constructs the layer: clears the quad positions and records and seeds the default scale.
-    // @ghidraAddress 0x189294
+    /**
+     * @brief Constructs the layer: clears the quad positions and records and seeds the default
+     * scale.
+     * @ghidraAddress 0x189294
+     */
     NoteResultLayer();
 
     /**

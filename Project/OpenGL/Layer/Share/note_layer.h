@@ -14,9 +14,15 @@ class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
-// The shared particle active index, reset when the layer is constructed and advanced as particles
-// spawn.
-extern int g_nParticleActiveIndex; // @ghidraAddress 0x3df228
+/**
+ * @brief The shared particle active index.
+ *
+ * It is reset when the layer is constructed and advanced as particles spawn; the spawners scan the
+ * pool from it for a free slot, and @c NoteLayer::Update resets it once the frame's particles have
+ * been emitted.
+ * @ghidraAddress 0x3df228
+ */
+extern int g_nParticleActiveIndex;
 
 /**
  * @brief The note particle layer.
@@ -31,10 +37,11 @@ extern int g_nParticleActiveIndex; // @ghidraAddress 0x3df228
  */
 class NoteLayer : public PlayFieldLayerBase {
 public:
-    // The number of pooled particles, the number of sprite batches, and the number of scroll
-    // phases.
+    /** @brief The number of pooled particles. */
     static constexpr int kParticleCount = 256;
+    /** @brief The number of sprite batches the particles are drawn through. */
     static constexpr int kBatchCount = 3;
+    /** @brief The number of scrolling animation phases the layer advances each frame. */
     static constexpr int kScrollPhaseCount = 3;
 
     /**

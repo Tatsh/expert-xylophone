@@ -19,8 +19,11 @@ struct SpriteUvEntry {
     float flSizeV = {};   /*!< The V span added to the origin for the far corner. +0x0c */
 };
 
-// The shared sprite UV atlas the layout records index by atlas-frame number.
-extern const SpriteUvEntry g_aSpriteUvTable[]; // @ghidraAddress 0x2efcc8
+/**
+ * @brief The shared sprite UV atlas the layout records index by atlas-frame number.
+ * @ghidraAddress 0x2efcc8
+ */
+extern const SpriteUvEntry g_aSpriteUvTable[];
 
 // code: language=C++
 // kate: hl C++;

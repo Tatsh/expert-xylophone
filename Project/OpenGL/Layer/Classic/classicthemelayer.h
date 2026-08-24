@@ -24,9 +24,11 @@ struct ClassicThemeSpriteTransform {
     int nUvIndex = {};     /*!< The atlas-frame index into the shared sprite UV table. +0x10 */
 };
 
-// The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.
-extern const ClassicThemeSpriteTransform
-    g_aClassicThemeSpriteTransforms[]; // @ghidraAddress 0x301c60
+/**
+ * @brief The per-sprite-kind transform table, indexed by sprite kind. Read-only binary data.
+ * @ghidraAddress 0x301c60
+ */
+extern const ClassicThemeSpriteTransform g_aClassicThemeSpriteTransforms[];
 
 /**
  * @brief The Classic-theme play-field background layer.

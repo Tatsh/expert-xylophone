@@ -58,13 +58,16 @@ enum TexParamType {
  */
 int TexParamTypeToGl(TexParamType nType);
 
-// The shared ne::neGLES_11 GL ES 1.1 render-state backend. Only the members the application and
-// render layers call are declared; the state-cache fields the render-state setters touch are
-// modelled, and the rest of the 0x258-byte object is reserved until the full engine class is
-// reconstructed. GL object names are @c GLuint and the size-out arguments are @c GLint, spelled as
-// their C-safe equivalents so this header need not import the OpenGL ES headers. The application
-// layer only ever holds a @c neGLESRenderer* obtained from @c neGLESRenderer::GetShared() /
-// @c neGLESRenderer::EnsureShared().
+/**
+ * @brief The shared @c ne::neGLES_11 GL ES 1.1 render-state backend.
+ *
+ * Only the members the application and render layers call are declared; the state-cache fields the
+ * render-state setters touch are modelled, and the rest of the 0x258-byte object is reserved until
+ * the full engine class is reconstructed. GL object names are @c GLuint and the size-out arguments
+ * are @c GLint, spelled as their C-safe equivalents so this header need not import the OpenGL ES
+ * headers. The application layer only ever holds a @c neGLESRenderer* obtained from
+ * @c neGLESRenderer::GetShared() / @c neGLESRenderer::EnsureShared().
+ */
 class neGLESRenderer {
 public:
     /**

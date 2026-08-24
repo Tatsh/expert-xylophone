@@ -21,13 +21,17 @@ struct ClassicFullComboSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x10 */
 };
 
-// The number of Classic full-combo sprite types, and the number of object types (each selecting a
-// distinct sprite batch).
+/** @brief The number of Classic full-combo sprite types. */
 constexpr int kClassicFullComboSpriteTypeCount = 16;
+/**
+ * @brief The number of Classic full-combo object types, each selecting a distinct sprite batch.
+ */
 constexpr int kClassicFullComboObjectTypeCount = 3;
 
-// The Classic full-combo sprite-type descriptor table (@ghidraAddress 0x302bf8): read-only ROM
-// data.
+/**
+ * @brief The Classic full-combo sprite-type descriptor table: read-only ROM data.
+ * @ghidraAddress 0x302bf8
+ */
 extern const ClassicFullComboSpriteType
     g_aClassicFullComboSpriteTypes[kClassicFullComboSpriteTypeCount];
 

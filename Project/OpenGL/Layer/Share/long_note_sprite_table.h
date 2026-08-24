@@ -22,16 +22,33 @@ struct LongNoteSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x14 */
 };
 
-// The number of long-note sprite types.
+/** @brief The number of long-note sprite types. */
 constexpr int kLongNoteSpriteTypeCount = 36;
 
-// The type ranges that take their height from the layout table (and scale both axes) rather than
-// from the caller's length argument: types below the first bound, and types in the second range.
+/**
+ * @brief The exclusive upper bound of the first type range that takes its height from the layout
+ * table (and scales both axes) rather than from the caller's length argument.
+ */
 constexpr int kLongNoteBodyBoundLow = 0x14;
+
+/**
+ * @brief The inclusive start of the second type range that takes its height from the layout table
+ * (and scales both axes) rather than from the caller's length argument.
+ */
 constexpr int kLongNoteBodyRangeStart = 0x18;
+
+/**
+ * @brief The exclusive end of the second type range that takes its height from the layout table
+ * (and scales both axes) rather than from the caller's length argument.
+ */
 constexpr int kLongNoteBodyRangeEnd = 0x22;
 
-// The long-note sprite-type layout table (@ghidraAddress 0x30dfa0): read-only ROM data.
+/**
+ * @brief The long-note sprite-type layout table.
+ *
+ * Read-only ROM data.
+ * @ghidraAddress 0x30dfa0
+ */
 extern const LongNoteSpriteType g_aLongNoteSpriteTypes[kLongNoteSpriteTypeCount];
 
 // code: language=C++

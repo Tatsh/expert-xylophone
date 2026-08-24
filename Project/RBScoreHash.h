@@ -1,10 +1,15 @@
+/** @file
+ * Shared layout of the eight-word MD5 tamper-hash scramble buffer used by the score and history
+ * record integrity checks. Both ScoreData and History fold a tune identifier and a set of
+ * per-record figures into this same eight-word buffer and hash it, so the buffer geometry is
+ * declared once here.
+ *
+ * The header declares only the buffer geometry — the word count, the digest length, and the
+ * positional slot names — and no functions: each builder does its own folding.
+ */
+
 #ifndef RBSCOREHASH_H
 #define RBSCOREHASH_H
-
-// Shared layout of the eight-word MD5 tamper-hash scramble buffer used by the score and history
-// record integrity checks. Both ScoreData and History fold a tune identifier and a set of
-// per-record figures into this same eight-word buffer and hash it, so the buffer geometry is
-// declared once here.
 
 /**
  * @brief The number of 32-bit words folded into a tamper-hash scramble buffer.

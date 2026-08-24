@@ -21,11 +21,16 @@ struct ColetteFullComboSpriteType {
     unsigned int nUvIndex = {}; /*!< The index into the shared sprite-UV table. +0x14 */
 };
 
-// The number of Colette full-combo sprite types.
+/** @brief The number of Colette full-combo sprite types. */
 constexpr int kColetteFullComboSpriteTypeCount = 103;
 
-// The Colette full-combo sprite-type descriptor table (@ghidraAddress 0x3005f0): read-only ROM
-// data.
+/**
+ * @brief The Colette full-combo sprite-type descriptor table, indexed by the sprite type.
+ *
+ * Read-only ROM data in the binary.
+ *
+ * @ghidraAddress 0x3005f0
+ */
 extern const ColetteFullComboSpriteType
     g_aColetteFullComboSpriteTypes[kColetteFullComboSpriteTypeCount];
 

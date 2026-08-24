@@ -14,8 +14,14 @@ class C_TEXTURE;
 class C_SPRITE_INSTANCING_2D;
 } // namespace ne
 
-// The shared chain-connector draw count, reset when the layer is constructed.
-extern int g_nChainConnectorDrawCount; // @ghidraAddress 0x3def48
+/**
+ * @brief The shared chain-connector draw count.
+ *
+ * It is reset when the layer is constructed, advanced as connectors are enqueued, and reset again
+ * at the end of each frame's @c ChainConnectorLayer::Update.
+ * @ghidraAddress 0x3def48
+ */
+extern int g_nChainConnectorDrawCount;
 
 /**
  * @brief The note chain-connector layer: the connector sprites drawn between chained notes.
@@ -28,7 +34,7 @@ extern int g_nChainConnectorDrawCount; // @ghidraAddress 0x3def48
  */
 class ChainConnectorLayer : public PlayFieldLayerBase {
 public:
-    // The number of pooled chain-connector records.
+    /** @brief The number of pooled chain-connector records. */
     static constexpr int kChainRecordCount = 128;
 
     /**

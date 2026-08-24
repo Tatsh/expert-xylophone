@@ -19,23 +19,46 @@ struct GaugeGlyphDesc {
     int nAtlasFrame = {}; /*!< The sprite atlas frame. +0x10 */
 };
 
-// The two fixed gauge labels (a separator drawn into batch five and the percent sign drawn
-// into batch seven), each with a normal and a high-value (at or above 70%) variant.
-// @ghidraAddress 0x30c294
+/**
+ * @brief The iPad separator label, one of the two fixed gauge labels, drawn into batch five.
+ *
+ * The first record is the normal variant and the second the high-value (at or above 70%) one.
+ * @ghidraAddress 0x30c294
+ */
 constexpr GaugeGlyphDesc g_aGaugeLabelSeparatorPad[] = {{-6.0f, 2.0f, 2.0f, 10.0f, 197},
                                                         {-6.0f, 2.0f, 2.0f, 10.0f, 198}};
-// @ghidraAddress 0x30c2bc
+/**
+ * @brief The phone separator label, one of the two fixed gauge labels, drawn into batch five.
+ *
+ * The first record is the normal variant and the second the high-value (at or above 70%) one.
+ * @ghidraAddress 0x30c2bc
+ */
 constexpr GaugeGlyphDesc g_aGaugeLabelSeparatorPhone[] = {{-6.0f, 9.0f, 2.0f, 10.0f, 326},
                                                           {-6.0f, 9.0f, 2.0f, 10.0f, 327}};
-// @ghidraAddress 0x30c2e4
+/**
+ * @brief The iPad percent sign, one of the two fixed gauge labels, drawn into batch seven.
+ *
+ * The first record is the normal variant and the second the high-value (at or above 70%) one.
+ * @ghidraAddress 0x30c2e4
+ */
 constexpr GaugeGlyphDesc g_aGaugeLabelPercentPad[] = {{-22.0f, 2.0f, 12.0f, 10.0f, 199},
                                                       {-22.0f, 2.0f, 12.0f, 10.0f, 200}};
-// @ghidraAddress 0x30c30c
+/**
+ * @brief The phone percent sign, one of the two fixed gauge labels, drawn into batch seven.
+ *
+ * The first record is the normal variant and the second the high-value (at or above 70%) one.
+ * @ghidraAddress 0x30c30c
+ */
 constexpr GaugeGlyphDesc g_aGaugeLabelPercentPhone[] = {{-22.0f, 9.0f, 12.0f, 10.0f, 328},
                                                         {-22.0f, 9.0f, 12.0f, 10.0f, 329}};
 
-// The iPad digit glyphs: indices 0-9 and 10-19 are the large digits (normal and high-value),
-// 20-29 and 30-39 the small fractional digits. @ghidraAddress 0x30c344
+/**
+ * @brief The iPad digit glyphs.
+ *
+ * Indices 0-9 and 10-19 are the large digits (normal and high-value), 20-29 and 30-39 the small
+ * fractional digits.
+ * @ghidraAddress 0x30c344
+ */
 constexpr GaugeGlyphDesc g_aGaugeDigitGlyphPad[] = {
     {0.0f, 5.0f, 12.0f, 14.0f, 157}, {0.0f, 5.0f, 12.0f, 14.0f, 158},
     {0.0f, 5.0f, 12.0f, 14.0f, 159}, {0.0f, 5.0f, 12.0f, 14.0f, 160},
@@ -58,7 +81,10 @@ constexpr GaugeGlyphDesc g_aGaugeDigitGlyphPad[] = {
     {0.0f, 2.0f, 10.0f, 10.0f, 193}, {0.0f, 2.0f, 10.0f, 10.0f, 194},
     {0.0f, 2.0f, 10.0f, 10.0f, 195}, {0.0f, 2.0f, 10.0f, 10.0f, 196},
 };
-// The phone digit glyphs, laid out like the iPad set. @ghidraAddress 0x30c664
+/**
+ * @brief The phone digit glyphs, laid out like the iPad set.
+ * @ghidraAddress 0x30c664
+ */
 constexpr GaugeGlyphDesc g_aGaugeDigitGlyphPhone[] = {
     {0.0f, 12.0f, 12.0f, 12.0f, 286}, {0.0f, 12.0f, 12.0f, 12.0f, 287},
     {0.0f, 12.0f, 12.0f, 12.0f, 288}, {0.0f, 12.0f, 12.0f, 12.0f, 289},
@@ -82,9 +108,15 @@ constexpr GaugeGlyphDesc g_aGaugeDigitGlyphPhone[] = {
     {0.0f, 9.0f, 10.0f, 10.0f, 324},  {0.0f, 9.0f, 10.0f, 10.0f, 325},
 };
 
-// The sprite batch each digit position draws into. @ghidraAddress 0x30c334
+/**
+ * @brief The sprite batch each digit position draws into.
+ * @ghidraAddress 0x30c334
+ */
 constexpr int g_aGaugeDigitBatch[] = {2, 3, 4, 6};
-// Each digit position's anchor X offset. @ghidraAddress 0x30c984
+/**
+ * @brief Each digit position's anchor X offset.
+ * @ghidraAddress 0x30c984
+ */
 constexpr float g_aGaugeDigitAnchorX[] = {31.0f, 19.0f, 7.0f, -9.0f};
 
 // code: language=C++

@@ -9,37 +9,79 @@
 #include "parts_data_table.h"
 #include "s_vector2.h"
 
-// The maximum number of records the Limelight parts accessor will index (the accessor asserts the
-// index is below this bound).
+/**
+ * @brief The maximum number of records the Limelight parts accessor will index.
+ *
+ * The accessor asserts the index is below this bound.
+ */
 constexpr int kLimelightPartsRecordBound = 255;
 
-// The Limelight result-window parts tables; the pad-versus-phone device kind selects between them.
-// The pad table is zero storage in the binary's @c __common segment, seeded at runtime. The phone
-// table is not: it is baked read-only data in @c __TEXT,__const and is never written. Only its
-// first 142 records exist in the binary, ending at 0x308a40; the accessor's 255 bound is the pad
-// table's length, so a phone index at or above 142 over-reads adjacent constant data.
-extern PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound]; // @ghidraAddress 0x3d9100
-extern PartsDataRecord
-    g_aLimelightPartsPhone[kLimelightPartsRecordBound]; // @ghidraAddress 0x307cf0
+/**
+ * @brief The Limelight result-window parts table used on the pad.
+ *
+ * The pad-versus-phone device kind selects between this table and @c g_aLimelightPartsPhone. The
+ * pad table is zero storage in the binary's @c __common segment, seeded at runtime.
+ * @ghidraAddress 0x3d9100
+ */
+extern PartsDataRecord g_aLimelightPartsPad[kLimelightPartsRecordBound];
 
-// The Limelight phone parts anchor table: one {x, y} anchor per parts slot, zero-initialised in the
-// binary's @c __common segment and filled at runtime alongside the phone parts table. Its 8-byte
-// stride and count run exactly up to the first phone-layout anchor table.
+/**
+ * @brief The Limelight result-window parts table used on the phone.
+ *
+ * The pad-versus-phone device kind selects between this table and @c g_aLimelightPartsPad. Unlike
+ * the pad table this one is not @c __common storage: it is baked read-only data in
+ * @c __TEXT,__const and is never written. Only its first 142 records exist in the binary, ending
+ * at 0x308a40; the accessor's 255 bound is the pad table's length, so a phone index at or above
+ * 142 over-reads adjacent constant data.
+ * @ghidraAddress 0x307cf0
+ */
+extern PartsDataRecord g_aLimelightPartsPhone[kLimelightPartsRecordBound];
+
+/**
+ * @brief The number of records in the Limelight phone parts anchor table.
+ *
+ * Its 8-byte stride and count run exactly up to the first phone-layout anchor table.
+ */
 constexpr int kLimelightPartsAnchorRecordCount = 133;
-// @ghidraAddress 0x3da8e8
+
+/**
+ * @brief The Limelight phone parts anchor table: one {x, y} anchor per parts slot.
+ *
+ * Zero-initialised in the binary's @c __common segment and filled at runtime alongside the phone
+ * parts table.
+ * @ghidraAddress 0x3da8e8
+ */
 extern S_VECTOR2 g_aLimelightPartsAnchorPhone[kLimelightPartsAnchorRecordCount];
 
-// The Limelight colour-marker outline: four rounded-corner paths of nineteen points each, laid out
-// on a twenty-point stride so indices 19, 39, and 59 are never written. Each path takes eighteen
-// points from a run of 16-byte pool copies (two points per copy, from 0x2fe560, 0x2fe5f0, 0x2fe680,
-// and 0x2fe710) and its nineteenth from a register pair, which is why a naive nineteen-point read
-// of the pool overruns into the next path. The fourth path's nineteenth point lands at 0x3de000,
-// which is @c g_LimelightColorMarkerOrigin, so the array itself covers indices 0 through 77.
-// Zero-initialised in the binary's @c __common segment and filled at runtime.
+/**
+ * @brief The number of points in the Limelight colour-marker outline.
+ *
+ * The outline is four rounded-corner paths of nineteen points each, laid out on a twenty-point
+ * stride so indices 19, 39, and 59 are never written. The fourth path's nineteenth point lands at
+ * 0x3de000, which is @c g_LimelightColorMarkerOrigin, so the array itself covers indices 0 through
+ * 77.
+ */
 constexpr int kLimelightColorMarkerPointCount = 78;
-// @ghidraAddress 0x3ddd90
+
+/**
+ * @brief The Limelight colour-marker outline points.
+ *
+ * Each path takes eighteen points from a run of 16-byte pool copies (two points per copy, from
+ * 0x2fe560, 0x2fe5f0, 0x2fe680, and 0x2fe710) and its nineteenth from a register pair, which is
+ * why a naive nineteen-point read of the pool overruns into the next path. Zero-initialised in the
+ * binary's @c __common segment and filled at runtime.
+ * @ghidraAddress 0x3ddd90
+ */
 extern S_VECTOR2 g_aLimelightColorMarkerPoints[kLimelightColorMarkerPointCount];
-extern S_VECTOR2 g_LimelightColorMarkerOrigin; // @ghidraAddress 0x3de000
+
+/**
+ * @brief The origin the Limelight colour-marker outline is laid out about.
+ *
+ * It occupies the slot the fourth path's nineteenth point writes, immediately past the end of
+ * @c g_aLimelightColorMarkerPoints.
+ * @ghidraAddress 0x3de000
+ */
+extern S_VECTOR2 g_LimelightColorMarkerOrigin;
 
 /**
  * @brief One entry of the shared UV-palette table: the texture-coordinate rectangle a part draws
@@ -55,17 +97,29 @@ struct UvPaletteEntry {
     float flUvHeight = {}; /*!< The V extent of the rectangle. +0x0c */
 };
 
-// The shared UV-palette table indexed by a parts record's UV-palette index. Its length is not
-// referenced by the code, so it is declared without a bound.
-extern const UvPaletteEntry g_aUvPalette[]; // @ghidraAddress 0x2f2a28
+/**
+ * @brief The shared UV-palette table indexed by a parts record's UV-palette index.
+ *
+ * Its length is not referenced by the code, so it is declared without a bound.
+ * @ghidraAddress 0x2f2a28
+ */
+extern const UvPaletteEntry g_aUvPalette[];
 
-// The Limelight glyph UV-palette table the pad-glyph emitter indexes by a parts record's UV-palette
-// index; distinct from the shared part palette above. Read-only ROM data in the binary; its length
-// is not referenced by the code.
-extern const UvPaletteEntry g_aLimelightGlyphUvPalette[]; // @ghidraAddress 0x2f55a8
+/**
+ * @brief The Limelight glyph UV-palette table the pad-glyph emitter indexes by a parts record's
+ * UV-palette index.
+ *
+ * This is distinct from the shared part palette above. Read-only ROM data in the binary; its
+ * length is not referenced by the code.
+ * @ghidraAddress 0x2f55a8
+ */
+extern const UvPaletteEntry g_aLimelightGlyphUvPalette[];
 
-// The number of glyph records the pad-glyph emitter will index (the emitter ignores part ids at or
-// above this bound).
+/**
+ * @brief The number of glyph records the pad-glyph emitter will index.
+ *
+ * The emitter ignores part ids at or above this bound.
+ */
 constexpr int kLimelightPadGlyphRecordBound = 142;
 
 // code: language=C++

@@ -5,7 +5,9 @@
 
 #pragma once
 
-// The number of frame types the table names, one per unlockable frame skin.
+/**
+ * @brief The number of frame types the table names, one per unlockable frame skin.
+ */
 constexpr int kFrameTextureNameCount = 31;
 
 /**
@@ -15,8 +17,9 @@ constexpr int kFrameTextureNameCount = 31;
  * zero to six, the limelight frames seven to thirteen, and the colette frames fourteen to thirty.
  * The table is the leading half of a larger pointer array whose trailing half is the background
  * texture-name table at @c 0x3ce830 (see @c bg_layer.mm).
+ * @ghidraAddress 0x3ce738
  */
-extern const char *const g_aFrameTextureNames[kFrameTextureNameCount]; // @ghidraAddress 0x3ce738
+extern const char *const g_aFrameTextureNames[kFrameTextureNameCount];
 
 // code: language=C++
 // kate: hl C++;

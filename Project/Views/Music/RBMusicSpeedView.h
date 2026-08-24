@@ -1,3 +1,22 @@
+/** @file
+ * The high-SPEED (scroll-speed) setting sub-view of the music-detail setting scroll hosted by
+ * @c RBMusicView. It draws a horizontal bar image (@c sliderView) and layers a transparent
+ * @c barBase container over it carrying the selected-step marker (@c selectedImage). A tap on the
+ * bar - the only gesture the view installs - maps to one of eleven SPEED steps, writes the result
+ * back into the shared @c RBUserSettingData.speedType, plays the themed change sound effect, and
+ * asks the host to refresh its decide button.
+ *
+ * The layout is split by theme and by device idiom, and the geometry constants therefore come in
+ * matched sets: @c -SetupView picks the bar and container frames from a Colette arm and a default
+ * arm, each with its own pad and phone geometry, while @c -tap: picks the end-of-bar tap dead zone
+ * from three arms (Limelight, Colette, and the default), again per idiom. A constant taken from
+ * the wrong arm is right for one theme or one device only. One behaviour is surprising but
+ * faithful: @c -SelectSpeed: clamps a step above ten to eleven rather than to ten.
+ *
+ * The implementation is Objective-C++ because @c -SelectSpeed: reaches the C++
+ * @c SoundEffectManager engine singleton.
+ */
+
 #import <UIKit/UIKit.h>
 
 @class RBMusicView;
@@ -7,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief The high-SPEED (scroll-speed) setting sub-view hosted by @c RBMusicView.
  *
- * The view draws a horizontal speed bar (@c sliderView) with a draggable selected-image marker
- * (@c selectedImage) over a transparent @c barBase. A tap or the animation-driven glide maps the
- * touch position along the bar to one of eleven speed steps (0 through 10), stores it back into
+ * The view draws a horizontal speed bar (@c sliderView) and layers a transparent @c barBase over
+ * it, carrying the selected-image marker (@c selectedImage). A tap or the animation-driven glide
+ * maps the touch position along the bar to one of eleven speed steps (0 through 10), stores it into
  * @c RBUserSettingData.speedType, plays the change sound effect, and asks the host to refresh its
  * decide button.
  *
@@ -57,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, assign) int sliderType;
 /**
- * @brief The draggable marker drawn over the bar at the current speed. @c strong.
+ * @brief The marker drawn over the bar at the current speed. @c strong.
  * @ghidraAddress 0x10f124 (getter)
  * @ghidraAddress 0x10f134 (setter)
  */

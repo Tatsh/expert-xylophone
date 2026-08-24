@@ -25,17 +25,39 @@ struct AltFrameMarkerLayout {
     float flScaleY = {};   /*!< The marker's Y scale. +0x14 */
 };
 
-// The number of records in each difficulty's marker layout table.
+/** @brief The number of records in the low-tier marker layout table. */
 constexpr int kAltFrameMarkerCount4 = 10;
+/** @brief The number of records in the mid-tier marker layout table. */
 constexpr int kAltFrameMarkerCount6 = 14;
+/** @brief The number of records in the high-tier marker layout table. */
 constexpr int kAltFrameMarkerCount9 = 12;
 
-// The three alt-frame marker layout tables, selected by the frame's lane count (the low, mid, and
-// high difficulty tiers). Seeded once at load by the layout-table constructor. The trailing @c //
-// ... addresses document the binary globals.
-extern AltFrameMarkerLayout g_aAltFrameMarker4[kAltFrameMarkerCount4]; // @ghidraAddress 0x3dbec8
-extern AltFrameMarkerLayout g_aAltFrameMarker6[kAltFrameMarkerCount6]; // @ghidraAddress 0x3dbfb8
-extern AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9]; // @ghidraAddress 0x3dc108
+/**
+ * @brief The low-tier alt-frame marker layout table.
+ *
+ * One of the three tables selected by the frame's lane count (the low, mid, and high difficulty
+ * tiers). Seeded once at load by the layout-table constructor.
+ * @ghidraAddress 0x3dbec8
+ */
+extern AltFrameMarkerLayout g_aAltFrameMarker4[kAltFrameMarkerCount4];
+
+/**
+ * @brief The mid-tier alt-frame marker layout table.
+ *
+ * One of the three tables selected by the frame's lane count (the low, mid, and high difficulty
+ * tiers). Seeded once at load by the layout-table constructor.
+ * @ghidraAddress 0x3dbfb8
+ */
+extern AltFrameMarkerLayout g_aAltFrameMarker6[kAltFrameMarkerCount6];
+
+/**
+ * @brief The high-tier alt-frame marker layout table.
+ *
+ * One of the three tables selected by the frame's lane count (the low, mid, and high difficulty
+ * tiers). Seeded once at load by the layout-table constructor.
+ * @ghidraAddress 0x3dc108
+ */
+extern AltFrameMarkerLayout g_aAltFrameMarker9[kAltFrameMarkerCount9];
 
 /**
  * @brief One alt-frame sprite descriptor: which sprite batch it belongs to, its anchor and pixel
@@ -54,31 +76,63 @@ struct AltFrameSpriteDescriptor {
     int nUvFrameIndex = {}; /*!< The UV atlas-frame index. +0x14 */
 };
 
-// The number of descriptor records in each difficulty's sprite-descriptor table.
+/** @brief The number of descriptor records in the low-tier sprite-descriptor table. */
 constexpr int kAltFrameDescriptorCount4 = 10;
+/** @brief The number of descriptor records in the mid-tier sprite-descriptor table. */
 constexpr int kAltFrameDescriptorCount6 = 12;
+/** @brief The number of descriptor records in the high-tier sprite-descriptor table. */
 constexpr int kAltFrameDescriptorCount9 = 15;
 
-// The three alt-frame sprite-descriptor tables, selected by the frame's lane count. Read-only ROM
-// data in the binary.
-extern const AltFrameSpriteDescriptor
-    g_aAltFrameDescriptor4[kAltFrameDescriptorCount4]; // @ghidraAddress 0x30ca98
-extern const AltFrameSpriteDescriptor
-    g_aAltFrameDescriptor6[kAltFrameDescriptorCount6]; // @ghidraAddress 0x30cb88
-extern const AltFrameSpriteDescriptor
-    g_aAltFrameDescriptor9[kAltFrameDescriptorCount9]; // @ghidraAddress 0x30cca8
+/**
+ * @brief The low-tier alt-frame sprite-descriptor table.
+ *
+ * One of the three tables selected by the frame's lane count. Read-only ROM data in the binary.
+ * @ghidraAddress 0x30ca98
+ */
+extern const AltFrameSpriteDescriptor g_aAltFrameDescriptor4[kAltFrameDescriptorCount4];
 
-// The number of records in each alt-frame mesh UV atlas (the mid- and high-lane-count variants).
+/**
+ * @brief The mid-tier alt-frame sprite-descriptor table.
+ *
+ * One of the three tables selected by the frame's lane count. Read-only ROM data in the binary.
+ * @ghidraAddress 0x30cb88
+ */
+extern const AltFrameSpriteDescriptor g_aAltFrameDescriptor6[kAltFrameDescriptorCount6];
+
+/**
+ * @brief The high-tier alt-frame sprite-descriptor table.
+ *
+ * One of the three tables selected by the frame's lane count. Read-only ROM data in the binary.
+ * @ghidraAddress 0x30cca8
+ */
+extern const AltFrameSpriteDescriptor g_aAltFrameDescriptor9[kAltFrameDescriptorCount9];
+
+/** @brief The number of records in the mid-lane-count alt-frame mesh UV atlas. */
 constexpr int kAltFrameMeshUvCountMid = 7;
+/** @brief The number of records in the high-lane-count alt-frame mesh UV atlas. */
 constexpr int kAltFrameMeshUvCountHigh = 10;
 
-// The alt-frame mesh (batch-0) UV atlases: the texture rectangles for the frame-mesh sprite quad,
-// indexed by the active marker's descriptor UV-frame index. Two variants are selected by frame type
-// (the mid-lane-count set for frame types up to twelve, the high-lane-count set above). The batch-1
-// and batch-2 overlay sprites instead index the shared @c g_aSpriteUvTable. Read-only ROM data.
-extern const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid]; // @ghidraAddress 0x2f19d8
-extern const SpriteUvEntry
-    g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh]; // @ghidraAddress 0x2f1a48
+/**
+ * @brief The mid-lane-count alt-frame mesh (batch-0) UV atlas.
+ *
+ * Holds the texture rectangles for the frame-mesh sprite quad, indexed by the active marker's
+ * descriptor UV-frame index. This variant is selected for frame types up to twelve, and
+ * @c g_aAltFrameMeshUvHigh above that. The batch-1 and batch-2 overlay sprites instead index the
+ * shared @c g_aSpriteUvTable. Read-only ROM data.
+ * @ghidraAddress 0x2f19d8
+ */
+extern const SpriteUvEntry g_aAltFrameMeshUvMid[kAltFrameMeshUvCountMid];
+
+/**
+ * @brief The high-lane-count alt-frame mesh (batch-0) UV atlas.
+ *
+ * Holds the texture rectangles for the frame-mesh sprite quad, indexed by the active marker's
+ * descriptor UV-frame index. This variant is selected for frame types above twelve, and
+ * @c g_aAltFrameMeshUvMid at or below that. The batch-1 and batch-2 overlay sprites instead index
+ * the shared @c g_aSpriteUvTable. Read-only ROM data.
+ * @ghidraAddress 0x2f1a48
+ */
+extern const SpriteUvEntry g_aAltFrameMeshUvHigh[kAltFrameMeshUvCountHigh];
 
 // code: language=C++
 // kate: hl C++;

@@ -1,3 +1,12 @@
+/**
+ * @file
+ * The growable note-chart path-point array, @c NotePathPointArray, and its entry type.
+ *
+ * Used by the @c CMusicSheet2 chart parsers. Each entry is an 8-byte pair of ints holding a node's
+ * scroll speed (as raw float bits) and its time in milliseconds; the array grows by a fixed step
+ * when full.
+ */
+
 #pragma once
 
 //

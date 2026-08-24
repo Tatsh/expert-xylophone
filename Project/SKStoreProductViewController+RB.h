@@ -15,6 +15,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * @brief Status-bar preference override for the App Store product sheet.
+ *
+ * The category adds no state and overrides a single @c UIViewController preference, so it takes
+ * effect on every @c SKStoreProductViewController the application presents.
+ */
 @interface SKStoreProductViewController (RB)
 
 /**
