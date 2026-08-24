@@ -27,7 +27,6 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 #import "engineglobals.h"
-#import "neDebugLog.h"
 
 // Archive member names. The White image accessors read the @c _b (black-background) members and
 // the Black image accessors read the @c _w (white-background) members; the binary names its
@@ -223,28 +222,6 @@ static NSComparisonResult OrderByLength(NSUInteger left, NSUInteger right) {
 + (NSString *)GetYomiString:(int)index;
 @end
 
-#if RBPDBG
-// Name any tune whose sort key came out empty, with the reading it was derived from. Such a tune
-// compares equal to every other one of its kind, so the music list orders them arbitrarily and
-// gives the same order whether it is sorting by music or by artist. Printing the reading alongside
-// the key distinguishes the two ways that happens: a reading the archive left empty, or one that
-// carries no katakana for -convertYomigana: to keep.
-static void RBLogEmptySortKey(MusicData *data) {
-    if (data.musicSortName.length != 0 && data.artistSortName.length != 0) {
-        return;
-    }
-    neDebugLog("sort key empty id=%d name=[%s] hira=[%s] key=[%s] artist=[%s] artistHira=[%s] "
-               "artistKey=[%s]",
-               data.MusicID,
-               data.musicName.UTF8String,
-               data.musicNameHira.UTF8String,
-               data.musicSortName.UTF8String,
-               data.artistName.UTF8String,
-               data.artistNameHira.UTF8String,
-               data.artistSortName.UTF8String);
-}
-#endif
-
 @implementation MusicData
 
 - (void)dealloc {
@@ -415,8 +392,6 @@ static void RBLogEmptySortKey(MusicData *data) {
     }
     // The binary compares the artist reading against its sort name here but discards the result.
     (void)[data.artistNameHira isEqualToString:data.artistSortName];
-
-    NE_DBG(RBLogEmptySortKey(data));
 
     if (data.musicSortName.length == 0) {
         data.musicNameInitial = [[NSString alloc] initWithString:kNoYomiInitial];
