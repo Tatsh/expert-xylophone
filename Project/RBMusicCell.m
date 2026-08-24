@@ -70,7 +70,10 @@ enum {
 // The add and remove buttons share a fixed 29x29 frame; the narrow-iPad idiom nudges it up and to
 // the left.
 static const CGFloat kPlaylistButtonSize = 29.0;
-static const CGFloat kPlaylistButtonOriginXNarrow = -3.0;
+// Both the add and the remove button take this origin, each from its own idiom test: the phone arms
+// at 0xbabf0 and 0xbadbc are identical, so one shared frame reproduces them. The x had been -3.0,
+// where both arms pass an fmov of -1.5.
+static const CGFloat kPlaylistButtonOriginXNarrow = -1.5;
 static const CGFloat kPlaylistButtonOriginYNarrow = -2.0;
 
 // The artwork square, its top-left origin, and both are chosen by device idiom.
