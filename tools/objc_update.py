@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate OBJC_METHODS.md: every Objective-C method in the binary, with its status.
 
-The counterpart to :mod:`cxx_update` for the Objective-C side. Where that checklist is driven by
-Ghidra's function list, this one is driven by the shipped binary's own runtime metadata, which names
+This is driven by the shipped binary's own runtime metadata, which names
 every class, category, method and property the application defines. Nothing Apple ships appears
 there: a framework's classes live in the framework, so the only Apple-derived entries are the
 categories this application adds to Apple classes, which are the application's own code.

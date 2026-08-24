@@ -23,17 +23,8 @@ Expert xylophone.
 
 ## Reconstruction progress
 
-The C and C++ engine reconstruction is tracked in [CXX_FUNCTIONS.md](CXX_FUNCTIONS.md), a
-per-function checklist of every routine's status and reconstructed signature.
-
-[OBJC_METHODS.md](OBJC_METHODS.md) is the same checklist for the Objective-C side, generated
-from the binary's own runtime metadata: every method the application defines, whether a
-reconstruction exists for it, and whether that reconstruction has been read against the
-disassembly. Those two are tracked separately, because nearly everything is reconstructed and very
-little is yet verified.
-
-[OBJC_AUDIT.md](OBJC_AUDIT.md) is the findings record behind it: what each verified routine turned
-out to be, what was confirmed correct so it is not audited twice, and what is still open.
+Every routine the application defines has a reconstruction, so the checklists that tracked that
+sweep have been retired. Work is now driven by comparing a running build against the original.
 
 A build stays faithful to the shipped binary by default. The deliberate deviations are gated behind
 the `ENABLE_PATCHES` flag and documented in [PATCHES.md](PATCHES.md).
