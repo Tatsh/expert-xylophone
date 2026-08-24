@@ -192,7 +192,11 @@ static const NSInteger kCommentLabelLineCount = 3;
         // The not-yet-installed states show the formatted product price. The error state (-1) is
         // excluded: the binary tests the state as unsigned, so a negative value fails both
         // branches.
+#ifdef ENABLE_PATCHES
+        self.purchasedLabel.text = RBStoreExtendNotePriceString(info);
+#else
         self.purchasedLabel.text = [StoreUtil priceString:info.product];
+#endif
     }
 
     self.index = index;

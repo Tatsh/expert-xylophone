@@ -28,6 +28,18 @@ BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID) {
     return [g_freeExtendNoteIDs containsObject:@(extendNoteID)];
 }
 
+NSString *RBStoreExtendNotePriceString(StoreExtendNoteInfo *info) {
+    // With no StoreKit product there is no localised amount to format and the label would be left
+    // blank, so the catalogue's own price is drawn instead. Unlike a pack, an extend note really
+    // does carry one: -initWithDictionary: reads it out of the entry in an unpatched build too. It
+    // is a bare integer in whatever unit the server prices in, which is how
+    // -[StoreExtendNoteInfo getButtonName] already shows it.
+    if (info.product != nil) {
+        return [StoreUtil priceString:info.product];
+    }
+    return @(info.price).stringValue;
+}
+
 // Record what the catalogue said about this note's price, if it said anything at all.
 static void RBNoteExtendNoteCatalogPrice(int extendNoteID, NSDictionary *dictionary) {
     NSNumber *price = dictionary[kStoreExtendKeyPrice];
@@ -294,8 +306,13 @@ static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
         return kStoreExtendButtonMoreInfo;
     }
     if (!self.purchasedNote) {
+#ifdef ENABLE_PATCHES
+        return
+            [NSString stringWithFormat:g_pLocalizedBuyFormat, RBStoreExtendNotePriceString(self)];
+#else
         return
             [NSString stringWithFormat:g_pLocalizedBuyFormat, [StoreUtil priceString:self.product]];
+#endif
     }
     if (self.purchasedNote && !(self.alreadyDownloadBin && self.alreadyDownloadNote)) {
         return g_pLocalizedDownload;

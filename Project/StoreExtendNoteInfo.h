@@ -250,6 +250,19 @@ extern "C" {
  * @return @c YES when the catalogue reported a price of zero for this note.
  */
 BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID);
+
+/**
+ * @brief The price to draw for an extend note, falling back to the catalogue when StoreKit has no
+ * product for it.
+ *
+ * Present only in a patched build, where no note has a StoreKit product and the localised price
+ * string would therefore be empty. The fallback is the catalogue's own @c Price, a bare integer in
+ * whatever unit the server prices in rather than a localised currency amount.
+ *
+ * @param info The note whose price to format.
+ * @return The formatted price.
+ */
+NSString *RBStoreExtendNotePriceString(StoreExtendNoteInfo *info);
 #ifdef __cplusplus
 }
 #endif

@@ -204,7 +204,11 @@ static const UIViewAutoresizing kPurchasedLabelAutoresizing = UIViewAutoresizing
     if (state - (unsigned int)kFirstDownloadedButtonState < kDownloadedButtonStateCount) {
         self.purchasedLabel.text = kStoreEmptyTitle;
     } else if (state < (unsigned int)kFirstDownloadedButtonState) {
+#ifdef ENABLE_PATCHES
+        self.purchasedLabel.text = RBStoreExtendNotePriceString(loadExtendNoteInfo);
+#else
         self.purchasedLabel.text = [StoreUtil priceString:loadExtendNoteInfo.product];
+#endif
     }
 }
 
