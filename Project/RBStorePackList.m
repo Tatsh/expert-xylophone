@@ -317,6 +317,16 @@ static NSString *_lastProductCountryCode = nil;
                 }
             }
 
+#ifdef ENABLE_PATCHES
+            // Every pack is free in a patched build, so there is no App Store product behind any of
+            // them and nothing to ask StoreKit for. Asking anyway is what leaves the store on
+            // "Loading..." indefinitely: an SKProductsRequest from a build the App Store has no
+            // record of neither answers nor fails, and only one of those two callbacks clears the
+            // spinner. Dropping the identifiers takes the branch below that merges the catalogue
+            // with no response at all, which the unpatched binary already uses whenever a page
+            // happens to carry no purchasable pack.
+            [productIDs removeAllObjects];
+#endif
             if (productIDs.count == 0) {
                 if (sawPack) {
                     [self updatePackInfo:json SKProductsResponse:nil];
@@ -351,6 +361,11 @@ static NSString *_lastProductCountryCode = nil;
 
 /** @ghidraAddress 0x1f2a88 */
 - (void)optionalProductsRequest {
+#ifdef ENABLE_PATCHES
+    // The deep-link pack is free too, so this second StoreKit request would hang the same way the
+    // pack-list one does. The pack it would have priced is already in the catalogue merge.
+    return;
+#else
     if ([AppDelegate appDelegate].getPackIDForOpenStore == nil) {
         return;
     }
@@ -372,6 +387,7 @@ static NSString *_lastProductCountryCode = nil;
     self.productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:productIDs];
     self.productsRequest.delegate = self;
     [self.productsRequest start];
+#endif
 }
 
 /** @ghidraAddress 0x1f2db4 */
@@ -432,6 +448,20 @@ static NSString *_lastProductCountryCode = nil;
     for (NSDictionary *entry in packList[kStoreJSONKeyPackList]) {
         int packID = [entry[kStoreJSONKeyID] intValue];
         StorePackInfo *packInfo = [self getPackInfo:packID];
+#ifdef ENABLE_PATCHES
+        // A pack only ever enters the list above by being built from an SKProduct, so with no
+        // StoreKit response there is nothing to match and the whole page reports itself empty.
+        // Build it from the catalogue entry instead, which carries everything the list draws. The
+        // pack keeps a nil product, which is what a free pack should have: -priceString formats
+        // nil as no price, and -[RBStorePageViewController] already treats a pack without a
+        // product as not purchasable, so no payment button is offered for it.
+        if (packInfo == nil) {
+            packInfo = [[StorePackInfo alloc] initWithDictionary:entry];
+            if (packInfo != nil) {
+                [self.arrayPackInfo addObject:packInfo];
+            }
+        }
+#endif
         if (packInfo != nil) {
             [packInfo setDictionary:entry];
             [loadedPackIDs addObject:@(packID)];

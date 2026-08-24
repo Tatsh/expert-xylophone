@@ -87,6 +87,30 @@ fails to open: the store opens only from inside the loop over the terms list, so
 type 1 record runs neither branch and the button does nothing at all. An unpatched build keeps the
 request, the terms comparison, and the alert.
 
+### The catalogue without StoreKit
+
+**Files:** `Project/RBStorePackList.m` — `-downloaderFinished:`, `-optionalProductsRequest`
+(0x1f2a88), `-updatePackInfo:SKProductsResponse:` (0x1f15f8); `Project/RBStoreExtendNoteList.m` —
+the same three
+
+Both catalogue tabs price themselves through StoreKit: the pack list and the Sequences list each
+collect the product identifiers they have not resolved yet, fire an `SKProductsRequest`, and merge
+the catalogue only once it answers. A build the App Store has no record of never gets that answer.
+The request does not fail either — `-request:didFailWithError:` would at least raise the connection
+error — it simply never calls back, so both tabs sit on their loading spinner indefinitely.
+
+Everything is free in a patched build, so there is no product to ask about. The patch drops the
+identifiers before the count is tested, which takes the branch the binary already uses whenever a
+page happens to carry no purchasable item: merge the catalogue with no response at all. That branch
+alone is not enough, because a record only ever enters the list by being built from an `SKProduct`,
+so with no response nothing matches and the page reports itself empty; the patch therefore builds
+any missing record from the catalogue entry with `-initWithDictionary:`, which the binary already
+provides and which carries every field the list draws. Each record keeps a nil product, which is
+what a free item should have: `-priceString` formats nil as no price, and the page controller
+already treats an item with no product as not purchasable, so no payment button is offered. The two
+deep-link `-optionalProductsRequest` methods return immediately for the same reason. An unpatched
+build keeps every request.
+
 ### The web view's in-app link allow-list
 
 **File:** `Project/RBWebView.m` — `-webView:shouldStartLoadWithRequest:navigationType:`

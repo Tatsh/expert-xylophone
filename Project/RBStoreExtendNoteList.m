@@ -153,6 +153,11 @@ static NSString *g_pStoreCountry = nil;
 
 /** @ghidraAddress 0xc07f4 */
 - (void)optionalProductsRequest {
+#ifdef ENABLE_PATCHES
+    // The deep-linked extend note is free too, so this request would hang the same way. The note it
+    // would have priced is already in the catalogue merge.
+    return;
+#else
     if ([[AppDelegate appDelegate] getPackIDForOpenStore] == nil) {
         return;
     }
@@ -176,6 +181,7 @@ static NSString *g_pStoreCountry = nil;
     self.productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
     [self.productsRequest setDelegate:self];
     [self.productsRequest start];
+#endif
 }
 
 /** @ghidraAddress 0xbf338 */
@@ -214,6 +220,17 @@ static NSString *g_pStoreCountry = nil;
     for (NSDictionary *entry in dictionary[kKeyNoteList]) {
         int productID = [entry[kKeyPID] intValue];
         StoreExtendNoteInfo *info = [self getExtendNoteInfoWithProductID:productID];
+#ifdef ENABLE_PATCHES
+        // A record only ever enters the list above by being built from an SKProduct, so with no
+        // StoreKit response nothing matches and the page reports itself empty. The catalogue entry
+        // carries the same fields, so build the record from it directly.
+        if (info == nil && entry[kKeyMusic] != nil) {
+            info = [[StoreExtendNoteInfo alloc] initWithDictionary:entry];
+            if (info != nil) {
+                [self.arrayExtendNoteInfo addObject:info];
+            }
+        }
+#endif
         if (info != nil && entry[kKeyMusic] != nil) {
             [info setDictionary:entry];
             [resolvedProductIDs addObject:@(productID)];
@@ -311,6 +328,12 @@ static NSString *g_pStoreCountry = nil;
         }
     }
 
+#ifdef ENABLE_PATCHES
+    // Every extend note is free in a patched build, so there is no App Store product to resolve and
+    // an SKProductsRequest would leave the Sequences tab loading forever, exactly as it does on the
+    // pack list. Dropping the identifiers takes the direct-merge branch below instead.
+    [identifiers removeAllObjects];
+#endif
     if (identifiers.count == 0) {
         if (sawAnyPID) {
             // Every listed product is already resolved; merge the catalogue directly.
