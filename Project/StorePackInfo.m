@@ -42,13 +42,18 @@ static const NSUInteger kMaxPackMusicInfos = 4;
 static const int kDefaultExtCount = 0;
 
 #ifdef ENABLE_PATCHES
-// The identifiers the catalogue priced at zero. Held here rather than on the object so the class
-// gains no ivar and no accessor the shipped one does not have. A pack absent from this set is not
-// free, so a catalogue that sends no price behaves exactly as before.
-static NSMutableSet<NSNumber *> *g_freePackIDs = nil;
+// What the catalogue said each pack costs, keyed by identifier. Held here rather than on the object
+// so the class gains no ivar and no accessor the shipped one does not have. A pack absent from this
+// map was sent without a price, and behaves exactly as before.
+static NSMutableDictionary<NSNumber *, NSNumber *> *g_catalogPackPrices = nil;
+
+NSNumber *RBStorePackCatalogPrice(int packID) {
+    return g_catalogPackPrices[@(packID)];
+}
 
 BOOL RBStorePackIsFreeFromCatalog(int packID) {
-    return [g_freePackIDs containsObject:@(packID)];
+    NSNumber *price = RBStorePackCatalogPrice(packID);
+    return price != nil && price.intValue == 0;
 }
 
 // Record what the catalogue said about this pack's price, if it said anything at all.
@@ -57,14 +62,10 @@ static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
     if (price == nil) {
         return;
     }
-    if (g_freePackIDs == nil) {
-        g_freePackIDs = [NSMutableSet set];
+    if (g_catalogPackPrices == nil) {
+        g_catalogPackPrices = [NSMutableDictionary dictionary];
     }
-    if (price.intValue == 0) {
-        [g_freePackIDs addObject:@(packID)];
-    } else {
-        [g_freePackIDs removeObject:@(packID)];
-    }
+    g_catalogPackPrices[@(packID)] = price;
 }
 #endif
 
@@ -179,6 +180,16 @@ static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
 #pragma mark - Derived state
 
 - (NSString *)priceString {
+#ifdef ENABLE_PATCHES
+    // With no StoreKit product there is no localised price to format, and the label would be left
+    // blank. Fall back to what the catalogue reported, drawn as the bare number the binary itself
+    // shows for an extend note's price in -[RBStoreExtendNoteDetailViewController] rather than
+    // dressed in a currency the catalogue never named.
+    if (self.product == nil) {
+        NSNumber *price = RBStorePackCatalogPrice(self.packID);
+        return price != nil ? price.stringValue : nil;
+    }
+#endif
     return [StoreUtil priceString:self.product];
 }
 

@@ -183,12 +183,23 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 /**
- * @brief Whether the catalogue priced this pack at nothing.
+ * @brief What the catalogue said this pack costs.
  *
  * Present only in a patched build. A free function rather than a method, because the shipped class
  * carries no such selector and no price of its own: a pack is priced entirely through its StoreKit
- * product, and only a replacement server sends a @c Price for one. A pack counts as free only when
- * the catalogue says so explicitly; an absent price is not read as zero.
+ * product, and only a replacement server sends a @c Price for one. The value is the catalogue's own
+ * integer, in whatever unit that server prices in; it is not a localised currency amount.
+ *
+ * @param packID The pack identifier.
+ * @return The catalogue price, or @c nil when the catalogue sent none for this pack.
+ */
+NSNumber *_Nullable RBStorePackCatalogPrice(int packID);
+
+/**
+ * @brief Whether the catalogue priced this pack at nothing.
+ *
+ * Present only in a patched build. A pack counts as free only when the catalogue says so
+ * explicitly; an absent price is not read as zero.
  *
  * @param packID The pack identifier.
  * @return @c YES when the catalogue reported a price of zero for this pack.

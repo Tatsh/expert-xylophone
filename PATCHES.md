@@ -108,11 +108,15 @@ any missing record from the catalogue entry with `-initWithDictionary:`, which t
 provides and which carries every field the list draws. Each record keeps a nil product, which is
 what a free item should have: `-priceString` formats nil as no price, and the page controller
 already treats an item with no product as not purchasable, so no payment button is offered. The two
-deep-link `-optionalProductsRequest` methods return immediately for the same reason. The pack
-detail's buy button follows from the same absence: with no product there is no price to substitute,
-so its title would read `BUY ((null))`. The patch cuts the price away from the format and disables
-the button, except for a pack the catalogue prices at nothing, which is still offered because
-`-detailViewStartPurchase:` grants one without StoreKit. An unpatched build keeps every request.
+deep-link `-optionalProductsRequest` methods return immediately for the same reason. Two displays
+follow from the same absence. `-[StorePackInfo priceString]` has no localised amount to format, so
+it falls back to the price the catalogue reported, drawn as the bare integer the binary itself shows
+for an extend note's price rather than dressed in a currency the catalogue never named; the record
+of those prices, which the free-pack patch already kept, is a map rather than a set of the free ones
+so the amount survives. The pack detail's buy button would read `BUY ((null))` for the same reason,
+so the patch cuts the price away from its format and disables it, except for a pack the catalogue
+prices at nothing, which is still offered because `-detailViewStartPurchase:` grants one without
+StoreKit. An unpatched build keeps every request.
 
 ### The web view's in-app link allow-list
 
