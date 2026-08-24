@@ -340,15 +340,28 @@ static NSString *const kSettingTitleTable[] = {
 
 // The theme decide-button image table (@0x35b010), indexed by frame-bonus type; the brown theme
 // picks its fixed index-3 entry (det_dec_s).
-static NSString *const kDetDecTable[] = {
+// The binary keeps two separate button-image tables, each indexed by the frame-bonus type and each
+// followed by the fixed image the Colette theme uses instead. Classic and Limelight index their
+// table; Colette takes the fixed entry. The two sets are theme-exclusive on disk: 01_Classic ships
+// det_dec_ds/gs/ps and dd/gd/pd but no det_dec_s or det_dec_d, and Colette ships only the latter
+// pair, so indexing the wrong table yields a nil image and a zero-sized button.
+// @ghidraAddress 0x35b010
+static NSString *const kDetDecSingleTable[] = {
     @"02_music_detail/det_dec_ds",
     @"02_music_detail/det_dec_gs",
     @"02_music_detail/det_dec_ps",
-    @"02_music_detail/det_dec_s",
+};
+static NSString *const kDetDecSingleColette =
+    @"02_music_detail/det_dec_s"; // @ghidraAddress 0x35b028
+
+// @ghidraAddress 0x35b030
+static NSString *const kDetDecDoubleTable[] = {
     @"02_music_detail/det_dec_dd",
     @"02_music_detail/det_dec_gd",
+    @"02_music_detail/det_dec_pd",
 };
-enum { kDetDecFixedIndex = 3 };
+static NSString *const kDetDecDoubleColette =
+    @"02_music_detail/det_dec_d"; // @ghidraAddress 0x35b048
 
 // The detail-view geometry per (iPad idiom, theme) leg. The block at @0xcca64..@0xccf30 branches
 // on IsPad and then on _thema, giving six legs, and spills the chosen one into callee-saved d
@@ -916,14 +929,10 @@ enum { kDetMbgPlainIndex = 3 };
 
     UIButton *decideButton = [UIButton buttonWithType:UIButtonTypeCustom];
     int decideThema = [RBUserSettingData sharedInstance].thema;
-    UIImage *decideImage;
-    if (decideThema == kThemeWhite) {
-        decideImage = [UIImage imageWithName:@"02_music_detail/det_dec_s"];
-    } else if (decideThema == kThemeBlack) {
-        decideImage = [UIImage imageWithName:kDetDecTable[frameBonusType]];
-    } else {
-        decideImage = [UIImage imageWithName:kDetDecTable[kDetDecFixedIndex]];
-    }
+    // Classic and Limelight share one arm in the binary; only Colette takes the fixed image.
+    UIImage *decideImage = decideThema == kThemeBrown ?
+                               [UIImage imageWithName:kDetDecSingleColette] :
+                               [UIImage imageWithName:kDetDecSingleTable[frameBonusType]];
     CGSize decideSize = decideImage.size;
     decideButton.frame = CGRectMake(kDecideX, kDecideY, decideSize.width, decideSize.height);
     decideButton.exclusiveTouch = YES;
@@ -960,8 +969,8 @@ enum { kDetMbgPlainIndex = 3 };
     self.doubleButton = doubleButton;
     int doubleThema = [RBUserSettingData sharedInstance].thema;
     UIImage *doubleImage = doubleThema == kThemeBrown ?
-                               [UIImage imageWithName:@"02_music_detail/det_dec_d"] :
-                               [UIImage imageWithName:kDetDecTable[frameBonusType]];
+                               [UIImage imageWithName:kDetDecDoubleColette] :
+                               [UIImage imageWithName:kDetDecDoubleTable[frameBonusType]];
     CGSize doubleSize = doubleImage.size;
     self.doubleButton.frame =
         CGRectMake(kDecideRightX, kDecideRightY, doubleSize.width, doubleSize.height);
