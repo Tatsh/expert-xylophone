@@ -385,8 +385,6 @@ static const CGFloat kDecideRightX = 282.0;
 static const CGFloat kDecideRightY = 546.0;
 static const CGFloat kBlackPastel2X = 282.0;
 static const CGFloat kBlackPastel2Y = 546.0;
-static const CGFloat kRandomX = 318.0;
-static const CGFloat kRandomY = 556.0;
 static const CGFloat kHistoryOffsetX = 110.0;
 static const CGFloat kHistoryOffsetY = 160.0;
 static const CGFloat kFirstInfoCenterY = 40.0;
@@ -1010,14 +1008,16 @@ enum { kDetMbgPlainIndex = 3 };
     [self.randomButton setImage:[UIImage imageWithName:@"01_music_select/sel_random"]
                        forState:UIControlStateNormal];
     [self.randomButton setImage:[UIImage imageWithName:@"01_music_select/sel_random_sel"]
-                       forState:UIControlStateSelected];
+                       forState:UIControlStateHighlighted];
     self.randomButton.hidden = YES;
     self.randomButton.tag = 0;
     [self.randomButton addTarget:self.musicMenuView
                           action:@selector(selectRandom:)
                 forControlEvents:UIControlEventTouchUpInside];
-    self.randomButton.frame = CGRectMake(kRandomX, kRandomY, 0.0, 0.0);
-    [self.baseView addSubview:self.randomButton];
+    // Added to the view itself rather than to baseView: self is the half-alpha dimming backdrop, so
+    // the button layers above it and shows through the dimmed song grid. Its frame arrives from
+    // -[RBMenuView selectRandom:], which copies the menu's own random-button frame and unhides it.
+    [self addSubview:self.randomButton];
 
     self.historyView =
         [[RBMusicHistoryView alloc] initWithFrame:CGRectMake(geometry.scrollX + kHistoryOffsetX,

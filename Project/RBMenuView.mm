@@ -1096,7 +1096,7 @@ static BOOL g_bRandamIntSeeded = NO;
     [self.randomButton setImage:[UIImage imageWithName:kRandomImageName]
                        forState:UIControlStateNormal];
     [self.randomButton setImage:[UIImage imageWithName:kRandomSelImageName]
-                       forState:UIControlStateSelected];
+                       forState:UIControlStateHighlighted];
     self.randomButton.tag = kRandomButtonTag;
     [self.randomButton addTarget:self
                           action:@selector(selectRandom:)

@@ -312,7 +312,14 @@ NS_ASSUME_NONNULL_BEGIN
 /** @brief The music menu that presents this detail view, held weakly. */
 @property(weak, nonatomic, nullable) RBMenuView *musicMenuView;
 
-/** @brief Whether this detail view was reached from the random-select button. */
+/**
+ * @brief Whether this detail view was reached from the random-select button.
+ *
+ * Write-only bookkeeping: the shipped binary sets this from @c -[RBMenuView selectRandom:] and
+ * from the normal selection path, but never reads it. What actually keeps the random button
+ * available is @c selectRandom: unhiding @c randomButton on the pad, which @c -SetupView hides
+ * again on every rebuild. Do not invent a consumer for this flag.
+ */
 @property(assign, nonatomic) BOOL isRandom;
 /** @brief Whether the white-pastel mode is selected. */
 @property(assign, nonatomic) BOOL m_IsWhitePastelMode;
