@@ -983,6 +983,15 @@ static inline CGFloat StoreExtendPagePinnedBannerY(UIScrollView *scrollView,
 }
 
 - (void)startPurchase:(StoreExtendNoteInfo *)info {
+#ifdef ENABLE_PATCHES
+    // A note the catalogue prices at nothing is granted without StoreKit, ahead of the guard below
+    // because a free note need not have a StoreKit product at all.
+    if (RBStoreExtendNoteIsFreeFromCatalog(info.extMusicID)) {
+        self.purchasingExtendNoteInfo = info;
+        [self purchaseSucceeded:[StoreUtil pidToProductID:info.pid]];
+        return;
+    }
+#endif
     if (![RBPurchaseManager isPurchasable] || info.product == nil) {
         [UIAlertView showWithErrorMessage:g_pLocalizedInAppPurchasesDisabled delegate:nil];
         return;

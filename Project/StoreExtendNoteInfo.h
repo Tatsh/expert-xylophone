@@ -234,6 +234,21 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 
 @end
 
+#ifdef ENABLE_PATCHES
+/**
+ * @brief Whether the catalogue priced this extend note at nothing.
+ *
+ * Present only in a patched build. A free function rather than a method, because the shipped class
+ * carries no such selector. The @c price property cannot answer this on its own: it is read with a
+ * bare @c -intValue, so a catalogue that sends no price leaves it at zero, which must not count as
+ * free.
+ *
+ * @param extendNoteID The extend note's own identifier (@c extMusicID).
+ * @return @c YES when the catalogue reported a price of zero for this note.
+ */
+BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID);
+#endif
+
 NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C

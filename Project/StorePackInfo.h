@@ -178,6 +178,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#ifdef ENABLE_PATCHES
+/**
+ * @brief Whether the catalogue priced this pack at nothing.
+ *
+ * Present only in a patched build. A free function rather than a method, because the shipped class
+ * carries no such selector and no price of its own: a pack is priced entirely through its StoreKit
+ * product, and only a replacement server sends a @c Price for one. A pack counts as free only when
+ * the catalogue says so explicitly; an absent price is not read as zero.
+ *
+ * @param packID The pack identifier.
+ * @return @c YES when the catalogue reported a price of zero for this pack.
+ */
+BOOL RBStorePackIsFreeFromCatalog(int packID);
+#endif
+
 NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C

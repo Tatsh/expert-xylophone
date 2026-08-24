@@ -1719,6 +1719,17 @@ static NSString *const kStoreDownloadDialogMessage = @"";
 
 /** @ghidraAddress 0x1e52f8 */
 - (void)detailViewStartPurchase:(StorePackInfo *)packInfo {
+#ifdef ENABLE_PATCHES
+    // A pack the catalogue prices at nothing is granted without StoreKit, ahead of the guard below
+    // because a free pack need not have a StoreKit product at all. Nothing else here branches on
+    // price: the displayed price comes from the product rather than the catalogue, and
+    // -beginPurchase: gates on the product and on -canMakePayments, never on cost.
+    if (RBStorePackIsFreeFromCatalog(packInfo.packID)) {
+        self.purchasingPackInfo = packInfo;
+        [self purchaseSucceeded:[StoreUtil productIDForPackID:packInfo.packID]];
+        return;
+    }
+#endif
     if (![RBPurchaseManager isPurchasable] || packInfo.product == nil) {
         [UIAlertView showWithErrorMessage:g_pLocalizedInAppPurchasesDisabled delegate:nil];
         return;

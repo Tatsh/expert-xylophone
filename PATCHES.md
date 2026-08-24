@@ -146,6 +146,30 @@ reports granted before it has even run, `-checkExistPackList:packID:` treats any
 real value throughout: an unlocked tune still has to be fetched, unlike a BGM or a frame. An
 unpatched build keeps every original check.
 
+### Free packs and extend notes from the catalogue
+
+**Files:** `Project/StorePackInfo.{h,m}` and `Project/StoreExtendNoteInfo.{h,m}` —
+`RBStorePackIsFreeFromCatalog` and `RBStoreExtendNoteIsFreeFromCatalog`;
+`Project/RBStorePageViewController.m` — `-detailViewStartPurchase:` (0x1e52f8);
+`Project/RBStoreExtendPageViewController.mm` — `-startPurchase:`
+
+A price of zero does not skip the payment flow on its own, for three separate reasons: nothing
+branches on the catalogue's price anywhere, the price shown to the player is formatted from the
+StoreKit product rather than from the catalogue, and `-beginPurchase:` gates on having a product and
+on `+canMakePayments` and never on cost. The patch adds the missing branch, so a catalogue that
+prices an item at zero grants it directly through the same `-purchaseSucceeded:` path a completed
+transaction would have taken — recording the purchase, refreshing the cell, and starting the
+download.
+
+The check sits above each entry point's `product == nil` guard, because a genuinely free item need
+not have a StoreKit product at all and that guard would otherwise reject it first. Free identifiers
+are tracked in a file-static set filled while the catalogue is parsed, rather than on the objects,
+so neither class gains an ivar or accessor the shipped one lacks; the two predicates are free
+functions for the same reason. An item counts as free only when the catalogue says so explicitly —
+`StoreExtendNoteInfo.price` is read with a bare `-intValue`, so an absent price leaves it at zero,
+which must not be mistaken for free. A catalogue that sends no price behaves exactly as before, and
+an unpatched build always goes through StoreKit.
+
 ### Skipping the first-run tutorials
 
 **File:** `Project/RBTutorialManager.m` — `+needStartTutorialMusicselect` (0x3578c),

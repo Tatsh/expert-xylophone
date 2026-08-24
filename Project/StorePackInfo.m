@@ -28,11 +28,45 @@ static NSString *const kPackInfoKeyArtistURL = @"ArtistURL";
 static NSString *const kPackInfoKeyArtistBunnerURL = @"ArtistBunnerURL";
 static NSString *const kPackInfoKeyExtNum = @"ExtNum";
 
+#ifdef ENABLE_PATCHES
+// The catalogue price. The shipped server never sends this for a pack — a pack is priced entirely
+// by its StoreKit product — so it is read only when present, and its absence leaves the sentinel
+// below in place and the pack behaving exactly as before.
+static NSString *const kPackInfoKeyPrice = @"Price";
+#endif
+
 // The most tunes kept when a pack's music list is read from the catalogue.
 static const NSUInteger kMaxPackMusicInfos = 4;
 
 // The advertised extend-note count when the entry omits it.
 static const int kDefaultExtCount = 0;
+
+#ifdef ENABLE_PATCHES
+// The identifiers the catalogue priced at zero. Held here rather than on the object so the class
+// gains no ivar and no accessor the shipped one does not have. A pack absent from this set is not
+// free, so a catalogue that sends no price behaves exactly as before.
+static NSMutableSet<NSNumber *> *g_freePackIDs = nil;
+
+BOOL RBStorePackIsFreeFromCatalog(int packID) {
+    return [g_freePackIDs containsObject:@(packID)];
+}
+
+// Record what the catalogue said about this pack's price, if it said anything at all.
+static void RBNotePackCatalogPrice(int packID, NSDictionary *dictionary) {
+    NSNumber *price = dictionary[kPackInfoKeyPrice];
+    if (price == nil) {
+        return;
+    }
+    if (g_freePackIDs == nil) {
+        g_freePackIDs = [NSMutableSet set];
+    }
+    if (price.intValue == 0) {
+        [g_freePackIDs addObject:@(packID)];
+    } else {
+        [g_freePackIDs removeObject:@(packID)];
+    }
+}
+#endif
 
 @implementation StorePackInfo
 
@@ -89,6 +123,9 @@ static const int kDefaultExtCount = 0;
     if (isNew != nil) {
         self.isNew = isNew.boolValue;
     }
+#ifdef ENABLE_PATCHES
+    RBNotePackCatalogPrice(self.packID, dictionary);
+#endif
     NSString *copyright = dictionary[kPackInfoKeyCopyright];
     if (copyright != nil) {
         self.copyright = copyright;

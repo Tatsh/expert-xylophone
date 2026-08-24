@@ -16,6 +16,34 @@ static NSString *const kStoreExtendKeyExtID = @"ExtID";
 static NSString *const kStoreExtendKeyPackName = @"PackName";
 static NSString *const kStoreExtendKeyComment = @"Comment";
 static NSString *const kStoreExtendKeyPrice = @"Price";
+
+#ifdef ENABLE_PATCHES
+// The extend-note identifiers the catalogue priced at zero. Held here rather than on the object so
+// the class gains nothing the shipped one does not have. The price property alone cannot answer
+// this: it is read with a bare -intValue, so a catalogue that sends no price leaves it at zero,
+// which must not count as free.
+static NSMutableSet<NSNumber *> *g_freeExtendNoteIDs = nil;
+
+BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID) {
+    return [g_freeExtendNoteIDs containsObject:@(extendNoteID)];
+}
+
+// Record what the catalogue said about this note's price, if it said anything at all.
+static void RBNoteExtendNoteCatalogPrice(int extendNoteID, NSDictionary *dictionary) {
+    NSNumber *price = dictionary[kStoreExtendKeyPrice];
+    if (price == nil) {
+        return;
+    }
+    if (g_freeExtendNoteIDs == nil) {
+        g_freeExtendNoteIDs = [NSMutableSet set];
+    }
+    if (price.intValue == 0) {
+        [g_freeExtendNoteIDs addObject:@(extendNoteID)];
+    } else {
+        [g_freeExtendNoteIDs removeObject:@(extendNoteID)];
+    }
+}
+#endif
 static NSString *const kStoreExtendKeyExtLevel = @"ExtLevel";
 static NSString *const kStoreExtendKeyExtURL = @"ExtURL";
 static NSString *const kStoreExtendKeyExtURL2 = @"ExtURL2";
@@ -67,6 +95,9 @@ static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
         self.extendNoteURL = dictionary[kStoreExtendKeyExtURL];
         self.extendURL = dictionary[kStoreExtendKeyExtURL2];
         self.isNew = [dictionary[kStoreExtendKeyIsNew] boolValue];
+#ifdef ENABLE_PATCHES
+        RBNoteExtendNoteCatalogPrice(self.extMusicID, dictionary);
+#endif
     }
     return self;
 }
@@ -84,6 +115,9 @@ static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
         self.extendNoteURL = dictionary[kStoreExtendKeyExtURL];
         self.extendURL = dictionary[kStoreExtendKeyExtURL2];
         self.isNew = [dictionary[kStoreExtendKeyIsNew] boolValue];
+#ifdef ENABLE_PATCHES
+        RBNoteExtendNoteCatalogPrice(self.extMusicID, dictionary);
+#endif
     }
     return self;
 }
@@ -126,6 +160,9 @@ static const CGFloat kStoreExtendButtonTintComponent = 128.0 / 255.0;
     if (dictionary[kStoreExtendKeyPrice]) {
         self.price = [dictionary[kStoreExtendKeyPrice] intValue];
     }
+#ifdef ENABLE_PATCHES
+    RBNoteExtendNoteCatalogPrice(self.extMusicID, dictionary);
+#endif
     if (dictionary[kStoreExtendKeyExtLevel]) {
         self.difficulty = [dictionary[kStoreExtendKeyExtLevel] intValue];
     }
