@@ -46,9 +46,11 @@ constexpr CGFloat kWideContentTopReference = 188.0;
 constexpr CGFloat kNarrowTitleTopReference = 186.0;
 constexpr CGFloat kTitleTopOffsetWide = 174.0;
 
-// Common inset and corner metrics for the content view and its chrome.
+// Common inset and corner metrics for the content view and its chrome. The content view is inset
+// by kContentInset on all four sides, so each dimension loses twice that. Ghidra prints the four
+// `fmov d0,#-4.0` immediates as -0x3ff0000000000000, the two's complement of the bit pattern.
 constexpr CGFloat kContentInset = 2.0;
-constexpr CGFloat kContentEdgeShrink = 1.0;
+constexpr CGFloat kContentEdgeShrink = 2.0 * kContentInset;
 constexpr CGFloat kCornerRadiusSmall = 5.0;
 constexpr CGFloat kCornerRadiusLarge = 10.0;
 constexpr CGFloat kNarrowTitleTopThemed = 5.0;
