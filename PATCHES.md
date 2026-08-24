@@ -134,12 +134,16 @@ fingerprinting either would make an unlisted copy of it pair as its extend note.
 
 Telling the two kinds apart is the whole problem, because they are indistinguishable by name or by
 format: both are `%09d.rb` in the same directory, and an extend note is read by the ordinary
-`MusicData` parser with its SPECIAL chart in the BASIC slot. What separates them is that an extend
-note is a chart _for a song that already exists_, so it ships that song's audio byte for byte. The
-patch reads the CRC-32 that the zip's own central directory records for the `bgm` entry — no
-decompression, no hashing — and an unlisted archive whose audio CRC matches a known song is
-registered in `nolist` as that song's extend note, with the parent taken from the match and
-`ExtLevel` from the archive's own basic level. Everything else is a new song and goes to `mulist`.
+`MusicData` parser with its SPECIAL chart in the BASIC slot. The charts settle it. An extend note
+carries only its SPECIAL chart, shipping `note_med` and `note_har` as blank placeholders a few dozen
+bytes long where a real chart runs to tens of kilobytes. Pairing one with its song is a second
+question, answered first by the CRC-32 the zip's own central directory records for the `bgm` entry —
+no decompression, no hashing — since an extend note usually ships its song's audio byte for byte.
+Some packages re-encode that audio, leaving nothing for a CRC to match, so those fall back to the
+name and artist the two archives share, read from each one's small `info` entry. A note that matches
+neither way is left out rather than listed as a song of its own, and a `mulist` entry that turns out
+to be an extend note is dropped on load so it can be placed properly. Everything else is a new song,
+with `ExtLevel` taken from the archive's own basic level.
 Identifiers already in either list, and the three bundled songs, are skipped, which is what stops a
 song appearing twice. A registered song carries its name and artist, read out of the archive: the
 song list itself does not need them, but the store's manage tab draws its rows and its download and

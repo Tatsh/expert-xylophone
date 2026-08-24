@@ -81,15 +81,30 @@ static const NSUInteger kListSaltLength = 4;
 static NSString *const kMusicDataFileExtension = @"rb";
 static const NSUInteger kMusicDataIDDigits = 9;
 
-// The audio entry every archive carries. An extend note is a SPECIAL chart for a song that already
-// exists, so it ships that song's audio byte for byte; the zip's own CRC-32 for this entry is what
-// pairs the two without opening either file.
+// The audio entry every archive carries. An extend note usually ships its tune's audio byte for
+// byte, so the zip's own CRC-32 for this entry pairs the two without opening either file. It is a
+// shortcut rather than a rule: some packages re-encode the audio, and those have to be paired by
+// name and artist instead.
 static NSString *const kArchiveAudioEntry = @"bgm";
 
-// The basic chart entry. In an extend-note archive this holds the SPECIAL chart, which is what
-// separates a genuine note from another copy of the same tune: the note shares the tune's audio but
-// cannot share this.
+// The three chart entries. An extend-note archive carries only its SPECIAL chart, served out of the
+// basic slot, and ships the other two as blank placeholders.
 static NSString *const kArchiveChartEntry = @"note_bas";
+static NSString *const kArchiveMediumChartEntry = @"note_med";
+static NSString *const kArchiveHardChartEntry = @"note_har";
+
+// The three chart entries in the order the blank test reads them.
+enum {
+    kChartSlotBasic,
+    kChartSlotMedium,
+    kChartSlotHard,
+    kChartSlotCount,
+};
+
+// The largest a chart entry can be and still be a placeholder rather than a real chart. The blanks
+// an extend note ships run to a few dozen bytes, where the sparsest real chart is measured in tens
+// of kilobytes, so anything in between separates the two.
+static const uint32_t kBlankChartMaximumSize = 1024;
 
 // The lowest level an archive's difficulty field can hold, mirroring MusicData's own kLevelMinimum.
 static const int kArchiveLevelMinimum = 1;
@@ -196,10 +211,14 @@ static const int kClientMusicEntriesPerPage = 20;
 
 #pragma mark - Drop-in archive discovery (ENABLE_PATCHES)
 
-// Read the CRC-32 the zip central directory records for one entry. The entry is never decompressed:
-// the value is what the archive itself stores, so two archives sharing an identical file agree here
-// no matter how either was compressed.
-static BOOL RBArchiveEntryCRC(NSString *archivePath, NSString *entryName, uint32_t *outCRC) {
+// Read the CRC-32 and the uncompressed size the zip central directory records for one entry. The
+// entry is never decompressed: the values are what the archive itself stores, so two archives
+// sharing an identical file agree here no matter how either was compressed. Either output may be
+// NULL.
+static BOOL RBArchiveEntryInfo(NSString *archivePath,
+                               NSString *entryName,
+                               uint32_t *outCRC,
+                               uint32_t *outSize) {
     unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
     if (archive == NULL) {
         return NO;
@@ -208,12 +227,95 @@ static BOOL RBArchiveEntryCRC(NSString *archivePath, NSString *entryName, uint32
     if (unzLocateFile(archive, entryName.UTF8String, NULL) == UNZ_OK) {
         unz_file_info info = {};
         if (unzGetCurrentFileInfo(archive, &info, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
-            *outCRC = info.crc;
+            if (outCRC != NULL) {
+                *outCRC = info.crc;
+            }
+            if (outSize != NULL) {
+                *outSize = (uint32_t)info.uncompressed_size;
+            }
             found = YES;
         }
     }
     unzClose(archive);
     return found;
+}
+
+// Whether an archive holds an extend note rather than a tune. The audio cannot answer this on its
+// own, because a package that re-encodes the tune's audio leaves nothing for a CRC to match, so the
+// charts decide it: an extend note has no MEDIUM or HARD chart to carry and ships both entries
+// blank, which no tune does.
+// The archive is opened once for all three entries rather than per entry, because this runs over
+// every installed song on each launch.
+static BOOL RBArchiveIsExtendNote(NSString *archivePath) {
+    unzFile archive = unzOpen(archivePath.fileSystemRepresentation);
+    if (archive == NULL) {
+        return NO;
+    }
+    NSString *const entries[] = {
+        [kChartSlotBasic] = kArchiveChartEntry,
+        [kChartSlotMedium] = kArchiveMediumChartEntry,
+        [kChartSlotHard] = kArchiveHardChartEntry,
+    };
+    uint32_t sizes[kChartSlotCount] = {};
+    BOOL readAll = YES;
+    for (NSUInteger slot = 0; slot < kChartSlotCount; ++slot) {
+        unz_file_info info = {};
+        if (unzLocateFile(archive, entries[slot].UTF8String, NULL) != UNZ_OK ||
+            unzGetCurrentFileInfo(archive, &info, NULL, 0, NULL, 0, NULL, 0) != UNZ_OK) {
+            readAll = NO;
+            break;
+        }
+        sizes[slot] = (uint32_t)info.uncompressed_size;
+    }
+    unzClose(archive);
+    if (!readAll) {
+        return NO;
+    }
+    return sizes[kChartSlotBasic] > kBlankChartMaximumSize &&
+           sizes[kChartSlotMedium] <= kBlankChartMaximumSize &&
+           sizes[kChartSlotHard] <= kBlankChartMaximumSize;
+}
+
+// The name and artist a tune shares with its extend note, joined into one lookup key. A newline
+// separates the two because neither field can hold one.
+static NSString *RBTuneKey(NSString *musicName, NSString *artistName) {
+    return [NSString stringWithFormat:@"%@\n%@",
+                                      musicName ? musicName : kEmptyString,
+                                      artistName ? artistName : kEmptyString];
+}
+
+// Every installed tune keyed by name and artist, for pairing an extend note whose audio does not
+// match its tune's byte for byte. Only each archive's small info entry is read.
+static NSMutableDictionary<NSString *, NSNumber *> *RBTuneKeyMap(NSSet<NSNumber *> *musicIDs,
+                                                                 NSSet<NSNumber *> *reservedIDs) {
+    NSMutableDictionary<NSString *, NSNumber *> *map = [NSMutableDictionary dictionary];
+    for (NSNumber *musicID in musicIDs) {
+        if ([reservedIDs containsObject:musicID]) {
+            continue;
+        }
+        NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
+        if (path == nil) {
+            continue;
+        }
+        MusicData *data = [MusicData dataWithPath:path ID:musicID.intValue];
+        if (data == nil) {
+            continue;
+        }
+        // Both keys are recorded: the name alone is the fallback for a note whose package spells
+        // the artist differently from its tune's. The lowest identifier wins, so a tune installed
+        // twice still pairs its notes the same way on every launch.
+        NSArray<NSString *> *keys = @[
+            RBTuneKey(data.musicName, data.artistName),
+            RBTuneKey(data.musicName, nil),
+        ];
+        for (NSString *key in keys) {
+            NSNumber *existing = map[key];
+            if (existing == nil || musicID.intValue < existing.intValue) {
+                map[key] = musicID;
+            }
+        }
+    }
+    return map;
 }
 
 // Every canonical %09d.rb identifier in one directory. A name that is not exactly nine digits is
@@ -268,6 +370,19 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
 - (BOOL)reconcilePurchasedMusics {
     RBExtendNoteManager *noteManager = [RBExtendNoteManager getInstance];
 
+    // Drop any song entry that is really an extend note. An earlier pairing rule went by the audio
+    // alone, so a note whose package re-encoded its tune's audio matched nothing and was filed as a
+    // song of its own; clearing those here lets the pass below place them properly instead of
+    // skipping them as already listed.
+    NSIndexSet *misfiled = [self.purchasedMusicDictionaries
+        indexesOfObjectsPassingTest:^BOOL(NSDictionary *entry, NSUInteger index, BOOL *stop) {
+          NSString *path =
+              [RBMusicManager resolveArchivePath:[entry[kPurchasedMusicKeyID] intValue]];
+          return path != nil && RBArchiveIsExtendNote(path);
+        }];
+    const BOOL misfiledRemoved = misfiled.count != 0;
+    [self.purchasedMusicDictionaries removeObjectsAtIndexes:misfiled];
+
     // What each list already claims. An identifier in either list is left alone: it is already
     // provided, and re-registering it is exactly how a duplicate song appears.
     NSMutableSet<NSNumber *> *listedMusicIDs = [NSMutableSet set];
@@ -301,7 +416,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         }
         NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
         uint32_t crc = 0;
-        if (path != nil && RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc)) {
+        if (path != nil && RBArchiveEntryInfo(path, kArchiveAudioEntry, &crc, NULL)) {
             audioCRCToMusicID[@(crc)] = musicID;
         }
     }
@@ -316,107 +431,111 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     NSArray<NSNumber *> *presentIDs =
         [presentSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
 
-    // Group the unlisted archives by the audio they carry. An extend note ships its tune's audio
-    // byte for byte, so it lands in the same group as the tune it belongs to — including when both
-    // are dropped in together and neither is listed yet, which the previous one-pass form could not
-    // handle: whichever the set happened to enumerate first decided the outcome.
-    NSMutableDictionary<NSNumber *, NSMutableArray<NSNumber *> *> *byAudioCRC =
-        [NSMutableDictionary dictionary];
+    // Sort the unlisted archives into tunes and extend notes before registering any of them. The
+    // two passes matter: a note is placed against the tune it belongs to, and that tune may be
+    // sitting in the same batch, still unregistered.
+    NSMutableArray<NSNumber *> *newTuneIDs = [NSMutableArray array];
+    NSMutableArray<NSNumber *> *newNoteIDs = [NSMutableArray array];
     for (NSNumber *foundID in presentIDs) {
         if ([listedMusicIDs containsObject:foundID] || [listedNoteIDs containsObject:foundID] ||
             [knownMusicIDs containsObject:foundID] || [reservedIDs containsObject:foundID]) {
             continue;
         }
         NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
-        uint32_t crc = 0;
-        if (path == nil || !RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc)) {
+        if (path == nil) {
             continue;
         }
-        NSMutableArray<NSNumber *> *group = byAudioCRC[@(crc)];
-        if (group == nil) {
-            group = [NSMutableArray array];
-            byAudioCRC[@(crc)] = group;
+        if (RBArchiveIsExtendNote(path)) {
+            [newNoteIDs addObject:foundID];
+        } else {
+            [newTuneIDs addObject:foundID];
         }
-        [group addObject:foundID];
     }
 
-    BOOL musicListChanged = NO;
+    BOOL musicListChanged = misfiledRemoved;
     BOOL noteListChanged = NO;
-    for (NSNumber *audioCRC in [byAudioCRC.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
-        NSArray<NSNumber *> *group = byAudioCRC[audioCRC];
-
-        // The tune this group belongs to: one already known if the audio matches it, otherwise the
-        // lowest identifier in the group, which makes the choice deterministic rather than a
-        // consequence of enumeration order.
-        NSNumber *parentMusicID = audioCRCToMusicID[audioCRC];
-        NSNumber *newParentID = nil;
-        if (parentMusicID == nil) {
-            newParentID = group.firstObject;
-            parentMusicID = newParentID;
+    for (NSNumber *foundID in newTuneIDs) {
+        NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
+        // Another copy of a tune that is already installed is left unregistered, so a duplicate
+        // file does not draw the same song twice.
+        uint32_t audioCRC = 0;
+        const BOOL haveAudioCRC = RBArchiveEntryInfo(path, kArchiveAudioEntry, &audioCRC, NULL);
+        if (haveAudioCRC && audioCRCToMusicID[@(audioCRC)] != nil) {
+            continue;
+        }
+        // Reading the archive doubles as a validity check: the factory rejects a file whose own
+        // identifier disagrees with its name.
+        MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
+        if (data == nil) {
+            continue;
         }
 
-        uint32_t parentChartCRC = 0;
-        NSString *parentPath = [RBMusicManager resolveArchivePath:parentMusicID.intValue];
-        const BOOL haveParentChart =
-            parentPath != nil && RBArchiveEntryCRC(parentPath, kArchiveChartEntry, &parentChartCRC);
+        // The name and artist are copied out of the archive rather than left blank: the store's
+        // manage tab draws its rows, its download prompt, and its delete prompt from these two
+        // fields rather than from the archive. The item URL is built from the configured endpoint
+        // and the archive's own name, so a replacement server serving the file under that name can
+        // fetch it again.
+        NSMutableDictionary *entry =
+            [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
+        entry[kPurchasedMusicKeyID] = foundID;
+        entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
+        entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
+        entry[kPurchasedMusicKeyItemURL] =
+            [NSString stringWithFormat:kDropInItemURLFormat,
+                                       @RB_API_SCHEME,
+                                       @RB_API_HOST,
+                                       @RB_API_BASE_PATH,
+                                       [RBMusicManager getMusicDataFilename:foundID.intValue]];
+        [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
+        [listedMusicIDs addObject:foundID];
+        [knownMusicIDs addObject:foundID];
+        if (haveAudioCRC) {
+            audioCRCToMusicID[@(audioCRC)] = foundID;
+        }
+        musicListChanged = YES;
+    }
 
-        for (NSNumber *foundID in group) {
-            NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
-            if (path == nil) {
-                continue;
-            }
-            // Reading the archive doubles as a validity check: the factory rejects a file whose own
-            // identifier disagrees with its name.
-            MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
-            if (data == nil) {
-                continue;
-            }
+    // Built only when there is a note to place, and only once, because it opens every installed
+    // archive.
+    NSMutableDictionary<NSString *, NSNumber *> *tuneKeyToMusicID = nil;
+    for (NSNumber *foundID in newNoteIDs) {
+        NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
+        MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
+        if (data == nil) {
+            continue;
+        }
 
-            if ([foundID isEqualToNumber:newParentID]) {
-                // The group's own tune. The name and artist are copied out of the archive rather
-                // than left blank: the store's manage tab draws its rows, its download prompt, and
-                // its delete prompt from these two fields rather than from the archive. The item
-                // URL is built from the configured endpoint and the archive's own name, so a
-                // replacement server serving the file under that name can fetch it again.
-                NSMutableDictionary *entry =
-                    [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
-                entry[kPurchasedMusicKeyID] = foundID;
-                entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
-                entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
-                entry[kPurchasedMusicKeyItemURL] = [NSString
-                    stringWithFormat:kDropInItemURLFormat,
-                                     @RB_API_SCHEME,
-                                     @RB_API_HOST,
-                                     @RB_API_BASE_PATH,
-                                     [RBMusicManager getMusicDataFilename:foundID.intValue]];
-                [self.purchasedMusicDictionaries
-                    addObject:[NSDictionary dictionaryWithDictionary:entry]];
-                [listedMusicIDs addObject:foundID];
-                audioCRCToMusicID[audioCRC] = foundID;
-                musicListChanged = YES;
-                continue;
+        // The tune's own audio settles the pairing outright when the note ships it unchanged, which
+        // is the common case and costs one central-directory read. Otherwise the note is placed by
+        // the name and artist it shares with its tune.
+        NSNumber *parentMusicID = nil;
+        uint32_t audioCRC = 0;
+        if (RBArchiveEntryInfo(path, kArchiveAudioEntry, &audioCRC, NULL)) {
+            parentMusicID = audioCRCToMusicID[@(audioCRC)];
+        }
+        if (parentMusicID == nil) {
+            if (tuneKeyToMusicID == nil) {
+                tuneKeyToMusicID = RBTuneKeyMap(knownMusicIDs, reservedIDs);
             }
+            parentMusicID = tuneKeyToMusicID[RBTuneKey(data.musicName, data.artistName)];
+            if (parentMusicID == nil) {
+                parentMusicID = tuneKeyToMusicID[RBTuneKey(data.musicName, nil)];
+            }
+        }
+        // With no tune to attach it to, the note is left out rather than registered as a song of
+        // its own: it carries no MEDIUM or HARD chart, so listing it would draw a second copy of
+        // the tune whose other difficulties are empty.
+        if (parentMusicID == nil) {
+            continue;
+        }
 
-            // Shares the tune's audio, so it is either that tune's SPECIAL chart or another copy of
-            // the tune itself. The chart entry settles it: in an extend-note archive that entry
-            // holds the SPECIAL chart, so it cannot match the tune's own. An archive agreeing on
-            // both the audio and the chart is a duplicate and is left unregistered entirely.
-            uint32_t chartCRC = 0;
-            if (!RBArchiveEntryCRC(path, kArchiveChartEntry, &chartCRC)) {
-                continue;
-            }
-            if (haveParentChart && chartCRC == parentChartCRC) {
-                continue;
-            }
-
-            // Its level is the archive's own basic level, because the SPECIAL chart is served out
-            // of the basic slot.
-            if ([noteManager addDiscoveredExtendNote:foundID.intValue
-                                             musicID:parentMusicID.intValue
-                                               level:data.difficultyBasic + kArchiveLevelMinimum]) {
-                [listedNoteIDs addObject:foundID];
-                noteListChanged = YES;
-            }
+        // Its level is the archive's own basic level, because the SPECIAL chart is served out of
+        // the basic slot.
+        if ([noteManager addDiscoveredExtendNote:foundID.intValue
+                                         musicID:parentMusicID.intValue
+                                           level:data.difficultyBasic + kArchiveLevelMinimum]) {
+            [listedNoteIDs addObject:foundID];
+            noteListChanged = YES;
         }
     }
 
