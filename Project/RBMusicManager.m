@@ -86,6 +86,11 @@ static const NSUInteger kMusicDataIDDigits = 9;
 // pairs the two without opening either file.
 static NSString *const kArchiveAudioEntry = @"bgm";
 
+// The basic chart entry. In an extend-note archive this holds the SPECIAL chart, which is what
+// separates a genuine note from another copy of the same tune: the note shares the tune's audio but
+// cannot share this.
+static NSString *const kArchiveChartEntry = @"note_bas";
+
 // The lowest level an archive's difficulty field can hold, mirroring MusicData's own kLevelMinimum.
 static const int kArchiveLevelMinimum = 1;
 
@@ -301,71 +306,118 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
         }
     }
 
-    NSMutableSet<NSNumber *> *presentIDs = [NSMutableSet set];
+    NSMutableSet<NSNumber *> *presentSet = [NSMutableSet set];
     for (NSString *directory in [RBMusicManager archiveSearchDirectories]) {
-        RBCollectArchiveIDs(directory, presentIDs);
+        RBCollectArchiveIDs(directory, presentSet);
     }
 
-    BOOL musicListChanged = NO;
-    BOOL noteListChanged = NO;
+    // Sorted, because the classification below depends on the order archives are considered and a
+    // set enumerates in whatever order its hashes fall in.
+    NSArray<NSNumber *> *presentIDs =
+        [presentSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+
+    // Group the unlisted archives by the audio they carry. An extend note ships its tune's audio
+    // byte for byte, so it lands in the same group as the tune it belongs to — including when both
+    // are dropped in together and neither is listed yet, which the previous one-pass form could not
+    // handle: whichever the set happened to enumerate first decided the outcome.
+    NSMutableDictionary<NSNumber *, NSMutableArray<NSNumber *> *> *byAudioCRC =
+        [NSMutableDictionary dictionary];
     for (NSNumber *foundID in presentIDs) {
         if ([listedMusicIDs containsObject:foundID] || [listedNoteIDs containsObject:foundID] ||
             [knownMusicIDs containsObject:foundID] || [reservedIDs containsObject:foundID]) {
             continue;
         }
         NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
-        if (path == nil) {
-            continue;
-        }
-
-        // Read the archive once. Both branches need it, and it doubles as a validity check: the
-        // factory rejects a file whose own identifier disagrees with its name.
-        MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
-        if (data == nil) {
-            continue;
-        }
-
         uint32_t crc = 0;
-        const BOOL haveCRC = RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc);
-        NSNumber *parentMusicID = haveCRC ? audioCRCToMusicID[@(crc)] : nil;
+        if (path == nil || !RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc)) {
+            continue;
+        }
+        NSMutableArray<NSNumber *> *group = byAudioCRC[@(crc)];
+        if (group == nil) {
+            group = [NSMutableArray array];
+            byAudioCRC[@(crc)] = group;
+        }
+        [group addObject:foundID];
+    }
 
-        if (parentMusicID != nil) {
-            // Same audio as a song already known, so this is that song's SPECIAL chart. Its level
-            // is the archive's own Basic field, because -sheetSpecial serves the SPECIAL chart out
-            // of the BASIC slot.
+    BOOL musicListChanged = NO;
+    BOOL noteListChanged = NO;
+    for (NSNumber *audioCRC in [byAudioCRC.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+        NSArray<NSNumber *> *group = byAudioCRC[audioCRC];
+
+        // The tune this group belongs to: one already known if the audio matches it, otherwise the
+        // lowest identifier in the group, which makes the choice deterministic rather than a
+        // consequence of enumeration order.
+        NSNumber *parentMusicID = audioCRCToMusicID[audioCRC];
+        NSNumber *newParentID = nil;
+        if (parentMusicID == nil) {
+            newParentID = group.firstObject;
+            parentMusicID = newParentID;
+        }
+
+        uint32_t parentChartCRC = 0;
+        NSString *parentPath = [RBMusicManager resolveArchivePath:parentMusicID.intValue];
+        const BOOL haveParentChart =
+            parentPath != nil && RBArchiveEntryCRC(parentPath, kArchiveChartEntry, &parentChartCRC);
+
+        for (NSNumber *foundID in group) {
+            NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
+            if (path == nil) {
+                continue;
+            }
+            // Reading the archive doubles as a validity check: the factory rejects a file whose own
+            // identifier disagrees with its name.
+            MusicData *data = [MusicData dataWithPath:path ID:foundID.intValue];
+            if (data == nil) {
+                continue;
+            }
+
+            if ([foundID isEqualToNumber:newParentID]) {
+                // The group's own tune. The name and artist are copied out of the archive rather
+                // than left blank: the store's manage tab draws its rows, its download prompt, and
+                // its delete prompt from these two fields rather than from the archive. The item
+                // URL is built from the configured endpoint and the archive's own name, so a
+                // replacement server serving the file under that name can fetch it again.
+                NSMutableDictionary *entry =
+                    [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
+                entry[kPurchasedMusicKeyID] = foundID;
+                entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
+                entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
+                entry[kPurchasedMusicKeyItemURL] = [NSString
+                    stringWithFormat:kDropInItemURLFormat,
+                                     @RB_API_SCHEME,
+                                     @RB_API_HOST,
+                                     @RB_API_BASE_PATH,
+                                     [RBMusicManager getMusicDataFilename:foundID.intValue]];
+                [self.purchasedMusicDictionaries
+                    addObject:[NSDictionary dictionaryWithDictionary:entry]];
+                [listedMusicIDs addObject:foundID];
+                audioCRCToMusicID[audioCRC] = foundID;
+                musicListChanged = YES;
+                continue;
+            }
+
+            // Shares the tune's audio, so it is either that tune's SPECIAL chart or another copy of
+            // the tune itself. The chart entry settles it: in an extend-note archive that entry
+            // holds the SPECIAL chart, so it cannot match the tune's own. An archive agreeing on
+            // both the audio and the chart is a duplicate and is left unregistered entirely.
+            uint32_t chartCRC = 0;
+            if (!RBArchiveEntryCRC(path, kArchiveChartEntry, &chartCRC)) {
+                continue;
+            }
+            if (haveParentChart && chartCRC == parentChartCRC) {
+                continue;
+            }
+
+            // Its level is the archive's own basic level, because the SPECIAL chart is served out
+            // of the basic slot.
             if ([noteManager addDiscoveredExtendNote:foundID.intValue
                                              musicID:parentMusicID.intValue
                                                level:data.difficultyBasic + kArchiveLevelMinimum]) {
                 [listedNoteIDs addObject:foundID];
                 noteListChanged = YES;
             }
-            continue;
         }
-
-        // No song shares its audio, so it stands on its own. The name and artist are copied out of
-        // the archive rather than left blank: the store's manage tab draws its rows, its download
-        // prompt, and its delete prompt from these two fields rather than from the archive. The
-        // item URL is built from the configured endpoint and the archive's own name, so a
-        // replacement server that serves the file under that name can re-download it.
-        NSMutableDictionary *entry =
-            [NSMutableDictionary dictionaryWithCapacity:kPurchaseDictionaryCapacity];
-        entry[kPurchasedMusicKeyID] = foundID;
-        entry[kPurchasedMusicKeyName] = data.musicName ? data.musicName : kEmptyString;
-        entry[kPurchasedMusicKeyArtist] = data.artistName ? data.artistName : kEmptyString;
-        entry[kPurchasedMusicKeyItemURL] =
-            [NSString stringWithFormat:kDropInItemURLFormat,
-                                       @RB_API_SCHEME,
-                                       @RB_API_HOST,
-                                       @RB_API_BASE_PATH,
-                                       [RBMusicManager getMusicDataFilename:foundID.intValue]];
-        [self.purchasedMusicDictionaries addObject:[NSDictionary dictionaryWithDictionary:entry]];
-        [listedMusicIDs addObject:foundID];
-        // Only fingerprint it when the audio entry was actually read. Recording a failed read as
-        // CRC zero would make the next unreadable archive look like this song's extend note.
-        if (haveCRC) {
-            audioCRCToMusicID[@(crc)] = foundID;
-        }
-        musicListChanged = YES;
     }
 
     // Forget entries whose archive has gone, so a deleted file does not linger in the list.
