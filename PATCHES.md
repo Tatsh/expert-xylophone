@@ -192,3 +192,26 @@ to have both a stray gap and a mismatched background above it.
 The patch sets the property to zero behind an `@available(iOS 15.0, *)` guard, which the deployment
 target requires. Nothing else about the table changes, and an unpatched build keeps the modern
 default.
+
+### The segmented control's private subviews
+
+**File:** `Project/RBPlaylistViewController.m` — `-viewWillAppear:` (0x92398)
+
+`-viewWillAppear:` tints the playlist screen's music/artist sort segments by walking
+`self.segmentedControl.subviews` and sending each child the private `-isSelected` and
+`-setTintColor:`. The binary does this unguarded: the `-isSelected` send sits at `0x924f8` and its
+result is branched on by the `cbz w0` at `0x924fc`, with no `-respondsToSelector:` check anywhere in
+the routine. On the SDK it shipped against, a `UISegmentedControl`'s immediate children really were
+segment objects that implemented both selectors.
+
+`UISegmentedControl` was rebuilt on a visual-provider architecture in a later iOS, and its children
+are no longer segments. They do not implement `-isSelected`, so the send reaches
+`-[UIResponder doesNotRecognizeSelector:]`, raises `NSInvalidArgumentException`, and aborts the app
+with SIGABRT the moment the playlist screen appears — which is what happens when a new playlist is
+created.
+
+The patch skips any subview that does not respond to `-isSelected`. Views that are genuine segments
+are tinted exactly as before, and the ones that are not are left alone, which is the intended
+outcome for them anyway. `-setTintColor:` needs no guard, as every `UIView` implements it. An
+unpatched build keeps the unguarded walk, and crashes on a modern iOS, which is what the original
+binary would do.

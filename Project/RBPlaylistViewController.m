@@ -231,6 +231,14 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     // matching the binary.
     NSInteger selected = self.segmentedControl.selectedSegmentIndex;
     for (id segment in self.segmentedControl.subviews) {
+#ifdef ENABLE_PATCHES
+        // UISegmentedControl's private subview hierarchy changed after this binary shipped. Its
+        // children are no longer segment objects and do not implement -isSelected, so sending it
+        // raises an unrecognised-selector exception and aborts the app as this view appears.
+        if (![segment respondsToSelector:@selector(isSelected)]) {
+            continue;
+        }
+#endif
         BOOL isSelected = [segment isSelected];
         if (!isSelected) {
             [segment

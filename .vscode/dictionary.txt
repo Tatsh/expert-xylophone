@@ -10,6 +10,7 @@ akhuta
 allseasons
 analyzer
 analyzer's
+Ångström
 anim
 apiurl
 appl
@@ -420,6 +421,7 @@ sheetlayer
 shellcheck
 shellformat
 shotsoundmanager
+sigabrt
 signedness
 smulh
 snapcraft
@@ -551,4 +553,3 @@ youwin
 yukky
 ziparchive
 zizmor
-Ångström
