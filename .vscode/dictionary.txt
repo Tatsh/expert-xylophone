@@ -473,6 +473,7 @@ unrotated
 unscored
 unsuffixed
 untilted
+untinted
 uxtw
 valf
 varargs

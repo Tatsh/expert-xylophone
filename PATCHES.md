@@ -215,3 +215,34 @@ are tinted exactly as before, and the ones that are not are left alone, which is
 outcome for them anyway. `-setTintColor:` needs no guard, as every `UIView` implements it. An
 unpatched build keeps the unguarded walk, and crashes on a modern iOS, which is what the original
 binary would do.
+
+### The segmented control, the toolbar, and the search field
+
+**Files:** `Project/RBPlaylistViewController.m` — `-viewWillAppear:` (0x92398);
+`Project/AppDelegate.mm` — `-application:didFinishLaunchingWithOptions:` (0x1c50);
+`Project/RBMenuView.mm` — `-CreateView` (0xa47f8)
+
+Three places where a modern UIKit no longer reproduces what the shipped build drew.
+
+`-viewWillAppear:` tints the playlist popover's sort segments by walking
+`segmentedControl.subviews` and sending each child the private `-isSelected` and
+`-setTintColor:`, unguarded (the `-isSelected` send is at `0x924f8`, branched on by the `cbz w0` at
+`0x924fc`). `UISegmentedControl` was rebuilt on a visual-provider architecture, so its children are
+background and label views that do not implement `-isSelected`. Sending it aborted the app, and the
+guard that stopped the crash also skipped every subview, leaving the segments untinted. The patch
+uses iOS 13's `selectedSegmentTintColor` and per-state title attributes instead, which reproduce the
+binary's four-arm result: the selected segment filled in the current sort's colour, the other
+lettered in the opposite one.
+
+The popover's sort row lives in the navigation controller's toolbar. The appearance proxies
+installed for `UINavigationBar` and `UITabBar` had no `UIToolbar` counterpart, so the toolbar kept
+the modern transparent scroll-edge appearance and lost the shadow line that separates it from the
+table. The patch installs an opaque `UIToolbarAppearance` alongside the other two.
+
+`-CreateView` sends `-setBackgroundColor:` white to the search bar (`0xa6ea0`). iOS 13 moved the
+editable field into a `UISearchTextField` that draws its own translucent grey fill, which that
+send no longer reaches, so the field renders grey where the shipped build renders white. The patch
+sets `searchTextField.backgroundColor` as well.
+
+An unpatched build keeps all three original code paths, and on a modern iOS crashes on the first,
+draws no toolbar shadow for the second, and shows a grey search field for the third.

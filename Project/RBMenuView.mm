@@ -1245,7 +1245,19 @@ static BOOL g_bRandamIntSeeded = NO;
         self.searchBar.text = [AppDelegate appDelegate].searchString;
     }
     self.searchBar.delegate = self;
+    self.searchBar.backgroundColor = UIColor.whiteColor;
+    self.searchBar.barStyle = UIBarStyleDefault;
+    self.searchBar.keyboardType = UIKeyboardTypeDefault;
     [self.searchBar setBackgroundImage:[UIImage imageWithName:kSearchBackgroundName]];
+    self.searchBar.placeholder = g_pLocalizedSearchMusic;
+#ifdef ENABLE_PATCHES
+    // iOS 13 moved the search bar's editable field into a UISearchTextField that draws its own
+    // translucent grey fill, so the binary's -setBackgroundColor: no longer reaches it and the
+    // field renders grey where the shipped build renders white.
+    if (@available(iOS 13.0, *)) {
+        self.searchBar.searchTextField.backgroundColor = UIColor.whiteColor;
+    }
+#endif
     self.backUpString = @"";
     [self addSubview:self.searchBar];
     [self addSubview:self.searchCancelButton];

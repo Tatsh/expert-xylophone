@@ -230,15 +230,27 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     // segment subviews are messaged through their private -isSelected / -setTintColor: selectors,
     // matching the binary.
     NSInteger selected = self.segmentedControl.selectedSegmentIndex;
-    for (id segment in self.segmentedControl.subviews) {
 #ifdef ENABLE_PATCHES
-        // UISegmentedControl's private subview hierarchy changed after this binary shipped. Its
-        // children are no longer segment objects and do not implement -isSelected, so sending it
-        // raises an unrecognised-selector exception and aborts the app as this view appears.
-        if (![segment respondsToSelector:@selector(isSelected)]) {
-            continue;
-        }
-#endif
+    // UISegmentedControl's private subview hierarchy changed after this binary shipped: its
+    // children are no longer segment objects and do not implement -isSelected, so sending it
+    // raises an unrecognised-selector exception and aborts the app as this view appears. iOS 13's
+    // selectedSegmentTintColor and the per-state title attributes give the same appearance: the
+    // selected segment filled in the current sort's colour, the other lettered in the opposite one.
+    UIColor *selectedColor = (selected == kMenuItemSortMusic) ? self.musicColor : self.artistColor;
+    UIColor *normalColor = (selected == kMenuItemSortMusic) ? self.artistColor : self.musicColor;
+    if (@available(iOS 13.0, *)) {
+        self.segmentedControl.selectedSegmentTintColor = selectedColor;
+        self.segmentedControl.backgroundColor = UIColor.whiteColor;
+    } else {
+        self.segmentedControl.tintColor = selectedColor;
+    }
+    [self.segmentedControl setTitleTextAttributes:@{NSForegroundColorAttributeName : normalColor}
+                                         forState:UIControlStateNormal];
+    [self.segmentedControl
+        setTitleTextAttributes:@{NSForegroundColorAttributeName : UIColor.whiteColor}
+                      forState:UIControlStateSelected];
+#else
+    for (id segment in self.segmentedControl.subviews) {
         BOOL isSelected = [segment isSelected];
         if (!isSelected) {
             [segment
@@ -248,6 +260,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
                 setTintColor:(selected == kMenuItemSortMusic ? self.musicColor : self.artistColor)];
         }
     }
+#endif
 
     if (IsPad() && self.view.bounds.size.height > kPadFullHeightThreshold) {
         self.view.frame = CGRectMake(self.view.frame.origin.x,

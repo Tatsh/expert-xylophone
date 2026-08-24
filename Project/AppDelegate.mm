@@ -416,6 +416,15 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
         if (@available(iOS 15.0, *)) {
             UITabBar.appearance.scrollEdgeAppearance = tabAppearance;
         }
+
+        // The playlist popover's sort row sits in a toolbar, which keeps the modern transparent
+        // scroll-edge appearance and so loses the separating shadow line the original draws.
+        UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
+        [toolbarAppearance configureWithOpaqueBackground];
+        UIToolbar.appearance.standardAppearance = toolbarAppearance;
+        if (@available(iOS 15.0, *)) {
+            UIToolbar.appearance.scrollEdgeAppearance = toolbarAppearance;
+        }
     }
 #endif
     self.viewController = [[RBViewController alloc] init];
