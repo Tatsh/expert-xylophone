@@ -316,7 +316,7 @@ static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
         initWithFrame:CGRectMake(0.0, 0.0, touchClip.size.width, touchClip.size.height)];
     self.touchView.animationImages = @[ touchClip, touchFrameClip ];
     self.touchView.animationDuration = 1.0;
-    self.touchView.animationRepeatCount = 0;
+    self.touchView.animationRepeatCount = 0; // The binary never sets x2; 0 is substituted.
     self.touchView.hidden = YES;
     [self addSubview:self.touchView];
 

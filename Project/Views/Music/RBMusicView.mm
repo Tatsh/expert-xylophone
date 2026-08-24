@@ -70,14 +70,6 @@ enum {
 // The extended chart stores its replay under difficulty slot 0.
 enum { kExtendedReplayDifficulty = 0 };
 
-// The user theme (the _thema ivar, seeded from RBUserSettingData.thema). It selects the themed
-// music-name and jacket artwork variants.
-enum {
-    kThemeWhite = 0,
-    kThemeBlack = 1,
-    kThemeBrown = 2,
-};
-
 // The user's ghost style; style 1 shows the ghost fully opaque, any other style dims it.
 enum { kGhostStyleReplay = 1 };
 
@@ -286,7 +278,7 @@ static const CGFloat kPageScale = 0.8;
 static const CGFloat kPageTintWhite = 0.6666666865;
 static const CGFloat kPageTintWhiteCurrent = 0.5;
 
-// The dimmed alpha applied to the name images on the Black theme (0.7).
+// The dimmed alpha applied to the name images on the Limelight theme (0.7).
 static const CGFloat kNameAlphaDim = 0.699999988;
 static const CGFloat kNameAlphaFull = 1.0;
 
@@ -405,6 +397,12 @@ static const CGFloat kHistoryOffsetX = 110.0;
 static const CGFloat kHistoryOffsetY = 160.0;
 static const CGFloat kFirstInfoCenterY = 40.0;
 
+// The geometry and table identifiers below keep the older theme labels they were first
+// reconstructed under: "Brown" and "Theme2" are the Colette theme
+// (RBUserSettingDataThemeColette), and "White" is Limelight (RBUserSettingDataThemeLimelight).
+// The code and comments use the RBUserSettingDataTheme names; only these identifiers still carry
+// the old spelling.
+
 // The iPad idiom Brown-theme leg (@0xccafc). Uses the setFrame: name path.
 static const DetailGeometry kGeometryWideBrown = {
     53.0,  56.0,  180.0,        // jacket @0xcd2b8
@@ -519,7 +517,7 @@ static const CGFloat kNarrowOtherTitleYNonWhite = 150.0;
         [self SetupView];
         [self ShowSelectDifficulty];
         [self ShowSettingView:kSettingPageDifficulty];
-        if (self->_thema == kThemeWhite && IsPad()) {
+        if (self->_thema == RBUserSettingDataThemeClassic && IsPad()) {
             [self SetUpLineView];
         }
         [self setExclusiveTouch:YES];
@@ -583,18 +581,20 @@ enum { kDetMbgPlainIndex = 3 };
     int frameBonusType = [score getFrameBonusType];
 
     // Only the two lowest themes vary the background by frame bonus; the rest take the plain one.
-    NSString *backgroundName = self->_thema <= kThemeBlack ? kDetMbgTable[frameBonusType] :
-                                                             kDetMbgTable[kDetMbgPlainIndex];
+    NSString *backgroundName = self->_thema <= RBUserSettingDataThemeLimelight ?
+                                   kDetMbgTable[frameBonusType] :
+                                   kDetMbgTable[kDetMbgPlainIndex];
     self.bgImageView.image = [UIImage imageWithName:backgroundName];
 
     // Theme 0 takes the white strips and themes 1 and 2 the black ones; any other theme leaves
     // both images untouched, which is what the binary's fall-through does.
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
-    if (self->_thema == kThemeWhite) {
+    if (self->_thema == RBUserSettingDataThemeClassic) {
         musicNameSrc = self.musicData.musicNameImageWhite;
         artistNameSrc = self.musicData.artistNameImageWhite;
-    } else if (self->_thema == kThemeBlack || self->_thema == kThemeBrown) {
+    } else if (self->_thema == RBUserSettingDataThemeLimelight ||
+               self->_thema == RBUserSettingDataThemeColette) {
         musicNameSrc = self.musicData.musicNameImageBlack;
         artistNameSrc = self.musicData.artistNameImageBlack;
     }
@@ -692,7 +692,7 @@ enum { kDetMbgPlainIndex = 3 };
     [self addGestureRecognizer:tap];
 
     int thema = [RBUserSettingData sharedInstance].thema;
-    UIImage *basePanelImage = thema > kThemeBlack ?
+    UIImage *basePanelImage = thema > RBUserSettingDataThemeLimelight ?
                                   [UIImage imageWithName:@"02_music_detail/det_mbg"] :
                                   [UIImage imageWithName:kDetMbgTable[frameBonusType]];
 
@@ -712,27 +712,27 @@ enum { kDetMbgPlainIndex = 3 };
 
     // The big geometry block: pick the leg for the current iPad idiom and theme. The dispatch ivar
     // is _thema (the binary reads it at 0xcca80 through the ivar-offset global at 0x3c8b7c): the
-    // Brown theme takes its own leg, and the other legs pick white/non-white overrides.
+    // Colette theme takes its own leg, and the other legs pick Classic/non-Classic overrides.
     BOOL isPad = IsPad();
-    BOOL themaIsWhite = thema == kThemeWhite;
+    BOOL themaIsClassic = thema == RBUserSettingDataThemeClassic;
     DetailGeometry geometry;
     if (isPad) {
-        if (self->_thema == kThemeBrown) {
+        if (self->_thema == RBUserSettingDataThemeColette) {
             geometry = kGeometryWideBrown;
         } else {
             geometry = kGeometryWideOther;
-            if (!themaIsWhite) {
+            if (!themaIsClassic) {
                 geometry.jacketX = kWideOtherJacketXNonWhite;
                 geometry.jacketY = kWideOtherJacketYNonWhite;
                 geometry.titleY = kWideOtherTitleYNonWhite;
             }
         }
     } else {
-        if (self->_thema == kThemeBrown) {
+        if (self->_thema == RBUserSettingDataThemeColette) {
             geometry = kGeometryNarrowBrown;
         } else {
             geometry = kGeometryNarrowOther;
-            if (!themaIsWhite) {
+            if (!themaIsClassic) {
                 geometry.titleY = kNarrowOtherTitleYNonWhite;
             }
         }
@@ -744,15 +744,15 @@ enum { kDetMbgPlainIndex = 3 };
     UIImage *musicNameSrc = nil;
     UIImage *artistNameSrc = nil;
     switch (self->_thema) {
-    case kThemeWhite:
+    case RBUserSettingDataThemeClassic:
         musicNameSrc = self.musicData.musicNameImageWhite;
         artistNameSrc = self.musicData.artistNameImageWhite;
         break;
-    case kThemeBlack:
+    case RBUserSettingDataThemeLimelight:
         musicNameSrc = self.musicData.musicNameImageBlack;
         artistNameSrc = self.musicData.artistNameImageBlack;
         break;
-    case kThemeBrown:
+    case RBUserSettingDataThemeColette:
         musicNameSrc = self.musicData.musicNameImageBrown;
         artistNameSrc = self.musicData.artistNameImageBrown;
         break;
@@ -760,7 +760,7 @@ enum { kDetMbgPlainIndex = 3 };
         break;
     }
 
-    if (thema == kThemeBrown) {
+    if (thema == RBUserSettingDataThemeColette) {
         UIImage *overlay = [UIImage imageWithName:kDetMbgTheme2Table[frameBonusType]];
         UIImageView *overlayView = [[UIImageView alloc] initWithImage:overlay];
         overlayView.center = CGPointMake(geometry.jacketX + kOverlayHalf * geometry.jacketSize,
@@ -774,8 +774,9 @@ enum { kDetMbgPlainIndex = 3 };
     [self.baseView addSubview:self.jacketImageView];
 
     self.musicNameImageView = [[UIImageView alloc] initWithImage:musicNameSrc];
-    // Only the Black theme dims the name artwork (the binary tests _thema == 1 at 0xcd368).
-    self.musicNameImageView.alpha = self->_thema == kThemeBlack ? kNameAlphaDim : kNameAlphaFull;
+    // Only the Limelight theme dims the name artwork (the binary tests _thema == 1 at 0xcd368).
+    self.musicNameImageView.alpha =
+        self->_thema == RBUserSettingDataThemeLimelight ? kNameAlphaDim : kNameAlphaFull;
     if (isPad) {
         CGSize size = self.musicNameImageView.frame.size;
         self.musicNameImageView.frame =
@@ -787,7 +788,8 @@ enum { kDetMbgPlainIndex = 3 };
     [self.baseView addSubview:self.musicNameImageView];
 
     self.artistNameImageView = [[UIImageView alloc] initWithImage:artistNameSrc];
-    self.artistNameImageView.alpha = self->_thema == kThemeBlack ? kNameAlphaDim : kNameAlphaFull;
+    self.artistNameImageView.alpha =
+        self->_thema == RBUserSettingDataThemeLimelight ? kNameAlphaDim : kNameAlphaFull;
     if (isPad) {
         CGSize size = self.artistNameImageView.frame.size;
         self.artistNameImageView.frame =
@@ -930,7 +932,7 @@ enum { kDetMbgPlainIndex = 3 };
     UIButton *decideButton = [UIButton buttonWithType:UIButtonTypeCustom];
     int decideThema = [RBUserSettingData sharedInstance].thema;
     // Classic and Limelight share one arm in the binary; only Colette takes the fixed image.
-    UIImage *decideImage = decideThema == kThemeBrown ?
+    UIImage *decideImage = decideThema == RBUserSettingDataThemeColette ?
                                [UIImage imageWithName:kDetDecSingleColette] :
                                [UIImage imageWithName:kDetDecSingleTable[frameBonusType]];
     CGSize decideSize = decideImage.size;
@@ -968,7 +970,7 @@ enum { kDetMbgPlainIndex = 3 };
     UIButton *doubleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.doubleButton = doubleButton;
     int doubleThema = [RBUserSettingData sharedInstance].thema;
-    UIImage *doubleImage = doubleThema == kThemeBrown ?
+    UIImage *doubleImage = doubleThema == RBUserSettingDataThemeColette ?
                                [UIImage imageWithName:kDetDecDoubleColette] :
                                [UIImage imageWithName:kDetDecDoubleTable[frameBonusType]];
     CGSize doubleSize = doubleImage.size;
@@ -1312,11 +1314,11 @@ enum { kDetMbgPlainIndex = 3 };
 - (UIImage *)musicNameImageOfMusic:(MusicData *)music forDifficulty:(int)difficulty {
     (void)difficulty; // Yes, the binary ignores it here; every arm picks by theme only.
     switch (self->_thema) {
-    case kThemeBlack:
+    case RBUserSettingDataThemeLimelight:
         return music.musicNameImageBlack;
-    case kThemeBrown:
+    case RBUserSettingDataThemeColette:
         return music.musicNameImageBrown;
-    default: // kThemeWhite
+    default: // RBUserSettingDataThemeClassic
         return music.musicNameImageWhite;
     }
 }
@@ -1571,7 +1573,7 @@ enum { kDetMbgPlainIndex = 3 };
                g_nPlayfieldCentreSplit,
                g_nPlayfieldFullHeightY);
 
-    if (self->_thema < kThemeBlack || self->m_GameType != kGameTypeSingle) {
+    if (self->_thema < RBUserSettingDataThemeLimelight || self->m_GameType != kGameTypeSingle) {
         GameSystem::GetGameSystem()->SetPastelBonusType(kPastelBonusNone);
     } else {
         srand(static_cast<unsigned int>(time(nullptr)));
@@ -1752,7 +1754,7 @@ enum { kDetMbgPlainIndex = 3 };
         self->m_FirstInfo = NO;
         return;
     }
-    if ([RBUserSettingData sharedInstance].thema == kThemeBrown &&
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
         [RBTutorialManager isTutorialMusicselect]) {
         self->m_FirstInfo = NO;
         return;

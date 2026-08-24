@@ -134,27 +134,54 @@ constexpr TutorialGuideLayer::Keyframe kKeyframes[] = {
     {106833.3359375f, 110000.0f, 8},
 };
 
-// The nine per-step glyph sprite kinds, indexed by the current keyframe step (@ghidraAddress
-// 0x301f00 onwards): the two intro steps then the seven swept-tap frames.
+// The nine per-step glyph sprite kinds, indexed by the current keyframe step: the two intro steps
+// then the seven swept-tap frames. Entries 2 through 5 are copied as one 16-byte vector from the
+// four 32-bit integers at @ghidraAddress 0x301f00; the rest are immediates.
 constexpr int kStepGlyphKinds[] = {14, 15, 16, 17, 18, 19, 20, 21, 22};
 
-// The four screen-coordinate pairs seeded at +0xb4 (@ghidraAddress 0x301f00 floats onwards).
+// The four screen-coordinate pairs seeded at +0xd0, copied as two 16-byte vectors from
+// @ghidraAddress 0x301f10 and 0x301f20.
 constexpr float kCoords[] = {384.0f, 680.0f, 216.0f, 594.0f, 200.0f, 800.0f, 394.0f, 586.0f};
 
-// The per-column offset table added to each keyframe's end X for grid A (@ghidraAddress 0x302058);
-// grid B uses the table at 0x301f98. Each entry is an X offset and a tag (a sprite frame or enable
-// flag). Every keyframe row reuses the same four-row block, so only the block is stored here.
-constexpr TutorialGuideLayer::CoordEntry kOffsetsA[TutorialGuideLayer::kGridColumns] = {
-    {0.0f, 0}, {233.333f, 1}, {250.0f, 1}, {-250.0f, 1}, {-233.333f, 1}, {0.0f, 0}};
+// The per-row, per-column offset table added to each keyframe's base X for grid A, at
+// @ghidraAddress 0x301f98 (four rows of six entries, stride 0x30). Each entry is an X offset and an
+// enable weight; the last row narrows the inner taps and clears their weights.
+constexpr TutorialGuideLayer::CoordEntry kGridAOffsets[TutorialGuideLayer::kGridRows]
+                                                      [TutorialGuideLayer::kGridColumns] = {
+                                                          {{0.0f, 0.0f},
+                                                           {166.66667f, 1.0f},
+                                                           {250.0f, 1.0f},
+                                                           {-250.0f, 1.0f},
+                                                           {-166.66667f, 1.0f},
+                                                           {0.0f, 0.0f}},
+                                                          {{0.0f, 0.0f},
+                                                           {166.66667f, 1.0f},
+                                                           {250.0f, 1.0f},
+                                                           {-250.0f, 1.0f},
+                                                           {-166.66667f, 1.0f},
+                                                           {0.0f, 0.0f}},
+                                                          {{0.0f, 0.0f},
+                                                           {166.66667f, 1.0f},
+                                                           {250.0f, 1.0f},
+                                                           {-250.0f, 1.0f},
+                                                           {-166.66667f, 1.0f},
+                                                           {0.0f, 0.0f}},
+                                                          {{0.0f, 0.0f},
+                                                           {83.333336f, 0.0f},
+                                                           {250.0f, 1.0f},
+                                                           {-250.0f, 1.0f},
+                                                           {-83.333336f, 0.0f},
+                                                           {0.0f, 0.0f}}};
 
-// The per-column offset table for grid B; its last row narrows the inner taps and clears their
-// tags.
-constexpr TutorialGuideLayer::CoordEntry
-    kOffsetsB[TutorialGuideLayer::kGridRows][TutorialGuideLayer::kGridColumns] = {
-        {{0.0f, 0}, {166.667f, 1}, {250.0f, 1}, {-250.0f, 1}, {-166.667f, 1}, {0.0f, 0}},
-        {{0.0f, 0}, {166.667f, 1}, {250.0f, 1}, {-250.0f, 1}, {-166.667f, 1}, {0.0f, 0}},
-        {{0.0f, 0}, {166.667f, 1}, {250.0f, 1}, {-250.0f, 1}, {-166.667f, 1}, {0.0f, 0}},
-        {{0.0f, 0}, {83.333f, 0}, {250.0f, 1}, {-250.0f, 1}, {-83.333f, 0}, {0.0f, 0}}};
+// The matching offset table for grid B, at @ghidraAddress 0x302058. The binary indexes it by row as
+// well, but all four of its rows are identical, so only the shared row is stored here.
+constexpr TutorialGuideLayer::CoordEntry kGridBOffsets[TutorialGuideLayer::kGridColumns] = {
+    {0.0f, 0.0f},
+    {233.33333f, 1.0f},
+    {250.0f, 1.0f},
+    {-250.0f, 1.0f},
+    {-233.33333f, 1.0f},
+    {0.0f, 0.0f}};
 
 // The column index at and beyond which a grid row switches from the keyframe's start X to its end
 // X.
@@ -249,18 +276,18 @@ void TutorialGuideLayer::BuildTutorialGuideSpriteTable() {
     }
 
     // Fill the two per-step coordinate grids: for each keyframe, each row, and each column, offset
-    // the keyframe's base X (its start X for the first columns, its end X for the rest) by the
-    // per-column offset table, carrying the offset's tag alongside.
+    // the keyframe's base X (its start X for the first columns, its end X for the rest) by each
+    // grid's offset table, carrying the offset's enable weight alongside.
     for (int nKeyframe = 0; nKeyframe < kKeyframeCount; ++nKeyframe) {
         const Keyframe &keyframe = m_aKeyframes[nKeyframe];
         for (int nRow = 0; nRow < kGridRows; ++nRow) {
             for (int nColumn = 0; nColumn < kGridColumns; ++nColumn) {
                 const float flBaseX =
                     nColumn < kEndColumnThreshold ? keyframe.flStartX : keyframe.flEndX;
-                m_aGridA[nKeyframe][nRow][nColumn].flX = flBaseX + kOffsetsA[nColumn].flX;
-                m_aGridA[nKeyframe][nRow][nColumn].nTag = kOffsetsA[nColumn].nTag;
-                m_aGridB[nKeyframe][nRow][nColumn].flX = flBaseX + kOffsetsB[nRow][nColumn].flX;
-                m_aGridB[nKeyframe][nRow][nColumn].nTag = kOffsetsB[nRow][nColumn].nTag;
+                m_aGridA[nKeyframe][nRow][nColumn].flX = flBaseX + kGridAOffsets[nRow][nColumn].flX;
+                m_aGridA[nKeyframe][nRow][nColumn].flWeight = kGridAOffsets[nRow][nColumn].flWeight;
+                m_aGridB[nKeyframe][nRow][nColumn].flX = flBaseX + kGridBOffsets[nColumn].flX;
+                m_aGridB[nKeyframe][nRow][nColumn].flWeight = kGridBOffsets[nColumn].flWeight;
             }
         }
     }
@@ -333,7 +360,7 @@ constexpr float kSweepHalfSpanNeg = -166.66667f; // 0x301f74
 constexpr float kPulseSpan1 = 200.0f;            // 0x301f78
 constexpr float kPulseSpan2 = 233.33333f;        // 0x301f7c
 constexpr float kPulseSpan3 = 266.66667f;        // 0x301f80
-constexpr float kTriRise = -150.0f;              // 0x301f84 (used with the ripple table)
+constexpr float kConnectorOffset = -150.0f;      // 0x301f84 (the pulse-curve connector's lead-in)
 constexpr float kFullSpan = 250.0f;              // 0x301f88
 constexpr float kFullSpanNeg = -250.0f;          // 0x301f8c
 constexpr float kPulseSpan0 = 150.0f;            // 0x2eedc8
@@ -356,6 +383,10 @@ constexpr int kConnCurveLen = 0x24;
 
 // The per-step glyph "no step" sentinel returned by the keyframe-step lookup.
 constexpr int kStepNoGlyph = 10;
+
+// The half factor used by the layer's midpoint maths and by the viewport-half temporaries both
+// animators compute and discard.
+constexpr float kHalf = 0.5f;
 
 // The finger animator's sprite kinds.
 constexpr unsigned int kFingerSpriteKind = 0;
@@ -392,7 +423,7 @@ inline int AppendScalePulse(CurvePoint *pCurve, int nAt, float flBaseX) {
 
 // Appends a two-point connector holding unit scale across a keyframe's off span.
 inline int AppendConnector(CurvePoint *pCurve, int nAt, float flEndX) {
-    pCurve[nAt] = CurvePoint{flEndX + kSweepHalfSpanNeg, kScaleOne};
+    pCurve[nAt] = CurvePoint{flEndX + kConnectorOffset, kScaleOne};
     pCurve[nAt + 1] = CurvePoint{flEndX, kScaleOne};
     return nAt + 2;
 }
@@ -427,6 +458,10 @@ void TutorialGuideLayer::AnimateFingerSprites(float flDeltaTime) {
         return;
     }
     m_flClock += flDeltaTime;
+
+    // The binary re-reads the viewport here and halves it into a temporary it never reads back.
+    S_VECTOR2 viewportHalf{pGameSystem->GetViewportWidth(), pGameSystem->GetViewportHeight()};
+    ScaleVector2(&viewportHalf, kHalf); // Yes, the binary computes this and discards it.
 
     // The current swept step drives the per-step glyph at the end.
     const int nStep = static_cast<int>(
@@ -658,9 +693,6 @@ namespace {
 constexpr int kAnchorMusicInfo = 0x46;
 constexpr int kAnchorCentre = 1;
 constexpr int kAnchorScore = 5;
-
-// The half factor used throughout the overlay's midpoint maths.
-constexpr float kHalf = 0.5f;
 
 // The per-orientation phase-1 element nudges, in pixels.
 constexpr float kPhase1NudgePortraitBottom = -4.0f;

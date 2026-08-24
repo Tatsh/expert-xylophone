@@ -294,7 +294,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
         }
         completion:^(BOOL finished) {
           /** @ghidraAddress 0xeb4c4 */
-          // The Colette theme launches the customise tutorial the first time the panel closes.
+          // The Colette theme launches the customise tutorial the first time the panel finishes
+          // opening.
           if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               [RBTutorialManager isTutorialCustomize]) {
               // The root view is this setting view, not the parent. The binary reloads the

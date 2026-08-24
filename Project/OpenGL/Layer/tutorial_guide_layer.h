@@ -40,10 +40,11 @@ public:
         int nStep = {};      // +0x08
     };
 
-    // One coordinate-grid entry: an X position and a tag (a sprite frame or enable flag).
+    // One coordinate-grid entry: an X position and an enable weight. The binary copies the second
+    // field as raw 32 bits, and every value in the shipped offset tables is the float 0.0 or 1.0.
     struct CoordEntry {
-        float flX = {};         // +0x00
-        unsigned int nTag = {}; // +0x04
+        float flX = {};      // +0x00
+        float flWeight = {}; // +0x04
     };
 
     /**
@@ -204,8 +205,9 @@ private:
     // through 22). The finger animator reads this as one flat nine-entry array.
     int m_aStepGlyphKinds[kKeyframeCount] = {}; // +0xac
     float m_aCoords[8] = {};                    // +0xd0: four screen-coordinate pairs.
-    // +0xf0: the two per-step coordinate grids, filled from the keyframes and the per-column offset
-    // tables. The first drives one sprite set, the second (kGridBias entries later) the other.
+    // The two per-step coordinate grids, filled from the keyframes and the per-row, per-column
+    // offset tables. The grid at +0xf0 is offset by the table at 0x301f98 and the grid at +0x7b0 by
+    // the table at 0x302058.
     CoordEntry m_aGridA[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0xf0
     CoordEntry m_aGridB[kKeyframeCount][kGridRows][kGridColumns] = {}; // +0x7b0
 };

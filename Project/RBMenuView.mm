@@ -52,13 +52,6 @@
 #import "neDebugLog.h"
 #import "soundeffectmanager.h"
 
-// Theme identifiers returned by RBUserSettingData.thema.
-enum {
-    kThemaClassic = 0, // Classic (REFLEC) theme.
-    kThemaWhite = 1,   // White theme.
-    kThemaPastel = 2,  // Pastel (Colette) theme; adds the animated background and mascot.
-};
-
 // Playlist selection identifiers stored in RBUserSettingData.playlistID.
 enum {
     kPlaylistIDNone = 0,     // No playlist selected.
@@ -221,6 +214,11 @@ static NSString *const kSearchCancelImageNameTall = @"01_music_select/search_can
 // layoutSubviews per-theme geometry metrics, decoded from the binary. The "wide" set applies when
 // the iPad idiom flag is clear (the native-resolution wide layout); the "tall" set when it is
 // set. These are the design constants the button rows and columns are laid out from.
+//
+// Their names keep the older theme labels these were first reconstructed under: "Pastel" is the
+// Colette theme (RBUserSettingDataThemeColette) and "White" is Limelight
+// (RBUserSettingDataThemeLimelight). The code and comments below use the RBUserSettingDataTheme
+// names; only these identifiers still carry the old spelling.
 static const CGFloat kLayoutWideThemaCampaignWidthDelta = -81.0;   // @0x100300fd0
 static const CGFloat kLayoutWideThemaCampaignHeightDelta = -867.0; // @0x100300fd8
 static const CGFloat kLayoutWideThemaCampaignFooterNormal = 867.0; // @0x100300fe0
@@ -231,7 +229,7 @@ static const CGFloat kLayoutWideThemaClassicFooterNormal = 865.0;  // @0x1003010
 static const CGFloat kLayoutWideThemaClassicFooterEdit = 908.0;    // @0x100301018
 static const CGFloat kLayoutWidePastelWhiteSettingX = 49.0; // @0x100300ff0 (settingButton X).
 static const CGFloat kLayoutWideCollectionOriginY = 60.0;   // @0x1002ee948 (all wide themes).
-// The grid's height on the wide pastel arm. CreateView builds the collection view at the full
+// The grid's height on the wide Colette arm. CreateView builds the collection view at the full
 // bounds, so layoutSubviews has to shrink it; at 60 + 797 its bottom edge is 857, which clears the
 // menu button row at 912. Recovered for that arm only. @ghidraAddress 0x300ff8
 static const CGFloat kLayoutWideCollectionHeight = 797.0;
@@ -306,7 +304,7 @@ static BOOL g_bRandamIntSeeded = NO;
      backgroundUsesEffectView:(BOOL)bgUsesEffectView;
 /** @brief Re-lay the wrapping paging background scroll view and its image pages. */
 - (void)layoutPagingBackground;
-/** @brief Lay out the search bar, cancel button, and pastel mascot for the search state. */
+/** @brief Lay out the search bar, cancel button, and Colette mascot for the search state. */
 - (void)layoutSearchBarActive:(BOOL)active;
 /** @brief Slide the menu buttons to reveal or hide the playlist-edit controls. */
 - (void)shiftMenuButtonsForPlaylistEditEntering:(BOOL)entering;
@@ -428,7 +426,7 @@ static BOOL g_bRandamIntSeeded = NO;
         // Fixed design-coordinate layouts (the binary's "wide" constants). In every wide theme the
         // page-label origin Y is the fixed column-0 coordinate, whereas the side-button row Y takes
         // that fixed coordinate only while editing and is computed from the height otherwise.
-        if (thema == kThemaClassic) {
+        if (thema == RBUserSettingDataThemeClassic) {
             footerY = static_cast<int>((bounds.height - self.footerView.frame.size.height));
             menuButtonWidth =
                 static_cast<int>((bounds.width + kLayoutWideThemaClassicWidthDelta)) / 3;
@@ -457,7 +455,7 @@ static BOOL g_bRandamIntSeeded = NO;
             collectionHeight = kLayoutWideCollectionHeight;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeWide;
-        } else if (thema == kThemaPastel) {
+        } else if (thema == RBUserSettingDataThemeColette) {
             menuButtonWidth =
                 (static_cast<int>((bounds.width + kLayoutWideThemaCampaignWidthDelta)) -
                  kLayoutWideCampaignHorizontalMargin) /
@@ -487,7 +485,7 @@ static BOOL g_bRandamIntSeeded = NO;
             collectionHeight = kLayoutWideCollectionHeight;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeWide;
-        } else if (thema == kThemaWhite) {
+        } else if (thema == RBUserSettingDataThemeLimelight) {
             menuButtonWidth =
                 (static_cast<int>((bounds.width + kLayoutWideThemaCampaignWidthDelta)) -
                  kLayoutWideCampaignHorizontalMargin) /
@@ -519,13 +517,13 @@ static BOOL g_bRandamIntSeeded = NO;
             sideButtonSize = kLayoutSideButtonSizeWide;
         }
     } else {
-        // Computed (base/3) layouts (the binary's "tall" arithmetic). The classic and pastel themes
-        // share the same column tail; the white theme uses wider insets and its own settingButton
-        // X.
-        if (thema == kThemaClassic || thema == kThemaPastel) {
+        // Computed (base/3) layouts (the binary's "tall" arithmetic). The Classic and Colette
+        // themes share the same column tail; the Limelight theme uses wider insets and its own
+        // settingButton X.
+        if (thema == RBUserSettingDataThemeClassic || thema == RBUserSettingDataThemeColette) {
             int base;
             int rowBase;
-            if (thema == kThemaClassic) {
+            if (thema == RBUserSettingDataThemeClassic) {
                 footerY = static_cast<int>(((bounds.height - self.footerView.frame.size.height) +
                                             kLayoutTallThemaClassicFooterYExtra));
                 base = static_cast<int>((bounds.width + kLayoutTallBoundsInset8));
@@ -533,7 +531,7 @@ static BOOL g_bRandamIntSeeded = NO;
                 settingColX = kLayoutTallSettingXClassicPastel; // 4.0 slot reused as button X.
                 collectionOriginX = 0.0;
             } else {
-                footerY = 0; // The tall pastel theme has no footer.
+                footerY = 0; // The tall Colette theme has no footer.
                 base = static_cast<int>((bounds.width + kLayoutTallBoundsInset8)) +
                        kLayoutTallBaseInsetPastel;
                 rowBase = static_cast<int>((bounds.height + kLayoutTallHeightExtra64 +
@@ -571,8 +569,9 @@ static BOOL g_bRandamIntSeeded = NO;
             collectionOriginY = 0.0;
             storeInfoInsetWidth = bounds.width;
             sideButtonSize = kLayoutSideButtonSizeTall;
-        } else if (thema == kThemaWhite) {
-            footerY = 0; // The tall white theme fills the footer slot from CreateView, not here.
+        } else if (thema == RBUserSettingDataThemeLimelight) {
+            // The tall Limelight theme fills the footer slot from CreateView, not here.
+            footerY = 0;
             int base = static_cast<int>((bounds.width + kLayoutTallBoundsInset16)) +
                        kLayoutTallBaseInsetPastel;
             int rowBase = static_cast<int>(
@@ -757,8 +756,8 @@ static BOOL g_bRandamIntSeeded = NO;
                    self.searchCancelButton.frame.size.width,
                    self.searchCancelButton.frame.size.height);
 
-    // The pastel theme parks its search mascot beside the search bar.
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel &&
+    // The Colette theme parks its search mascot beside the search bar.
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
         self.searchMascotImages.count != 0) {
         CGFloat searchBarX = self.searchBar.frame.origin.x;
         CGSize mascotSize = [self.searchMascotImages[0] size];
@@ -873,7 +872,7 @@ static BOOL g_bRandamIntSeeded = NO;
     // gates the mascot and the campaign page-label colour.
     BOOL bgUsesEffectView = NO;
 
-    if (thema == kThemaPastel) {
+    if (thema == RBUserSettingDataThemeColette) {
         self.backgroundColor = UIColor.whiteColor;
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
             bgUsesEffectView = [self buildCampaignBackground:isPad];
@@ -892,9 +891,9 @@ static BOOL g_bRandamIntSeeded = NO;
             bgUsesEffectView = YES;
         }
     } else {
-        if (thema == kThemaClassic) {
+        if (thema == RBUserSettingDataThemeClassic) {
             self.backgroundColor = UIColor.blackColor;
-        } else if (thema == kThemaWhite) {
+        } else if (thema == RBUserSettingDataThemeLimelight) {
             self.backgroundColor = UIColor.whiteColor;
         }
         UIImage *bgImage = [UIImage imageWithName:kTextureBackgroundName];
@@ -907,7 +906,7 @@ static BOOL g_bRandamIntSeeded = NO;
 
     if (isPad) {
         [self buildHeaderAndFooter:thema];
-    } else if (thema == kThemaClassic) {
+    } else if (thema == RBUserSettingDataThemeClassic) {
         // Wide classic theme: a horizontally resizable footer pinned to the bottom.
         UIImage *footer = [UIImage imageWithName:kFooterImageName];
         CGFloat capX = footer.size.width * kFooterCapFraction;
@@ -920,8 +919,8 @@ static BOOL g_bRandamIntSeeded = NO;
         self.footerView.autoresizingMask =
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         [self addSubview:self.footerView];
-    } else if (thema == kThemaWhite) {
-        // Wide white theme: a short fixed footer strip at the origin.
+    } else if (thema == RBUserSettingDataThemeLimelight) {
+        // Wide Limelight theme: a short fixed footer strip at the origin.
         self.footerView =
             [[UIImageView alloc] initWithImage:[UIImage imageWithName:kFooterImageName]];
         self.footerView.frame = CGRectMake(0, 0, 0, kFooterLightWideHeight);
@@ -940,18 +939,18 @@ static BOOL g_bRandamIntSeeded = NO;
         CGRectMake(0, 0, self.frame.size.width, self.headerView.frame.size.height);
     [self addSubview:self.headerView];
 
-    if (thema > kThemaWhite) {
-        return; // The campaign theme has no footer in the tall layout.
+    if (thema > RBUserSettingDataThemeLimelight) {
+        return; // The Colette theme has no footer in the tall layout.
     }
 
     self.footerView = [[UIImageView alloc] initWithImage:[UIImage imageWithName:kFooterImageName]];
-    if (thema == kThemaClassic) {
+    if (thema == RBUserSettingDataThemeClassic) {
         self.footerView.frame =
             CGRectMake(0,
                        self.bounds.size.height - self.footerView.bounds.size.height,
                        self.frame.size.width,
                        self.footerView.frame.size.height);
-    } else if (thema == kThemaWhite) {
+    } else if (thema == RBUserSettingDataThemeLimelight) {
         self.footerView.frame = CGRectMake(0, 0, self.frame.size.width, kFooterLightTallHeight);
     }
     [self addSubview:self.footerView];
@@ -1126,9 +1125,9 @@ static BOOL g_bRandamIntSeeded = NO;
     self.pageLabel.backgroundColor = UIColor.clearColor;
     self.pageLabel.font =
         [UIFont systemFontOfSize:(isPad ? kPageLabelFontTall : kPageLabelFontWide)];
-    if (thema == kThemaClassic) {
+    if (thema == RBUserSettingDataThemeClassic) {
         self.pageLabel.textColor = UIColor.whiteColor;
-    } else if (thema == kThemaWhite) {
+    } else if (thema == RBUserSettingDataThemeLimelight) {
         self.pageLabel.textColor = UIColor.blackColor;
     } else if (bgUsesEffectView) {
         self.pageLabel.textColor = UIColor.blackColor;
@@ -1182,7 +1181,7 @@ static BOOL g_bRandamIntSeeded = NO;
     self.storeInfoView.hidden = YES;
     [self addSubview:self.storeInfoView];
 
-    if (thema == kThemaClassic) {
+    if (thema == RBUserSettingDataThemeClassic) {
         [self bringSubviewToFront:self.footerView];
     }
 
@@ -1266,8 +1265,8 @@ static BOOL g_bRandamIntSeeded = NO;
         self.searchArray = [[NSMutableArray alloc] init];
     }
 
-    // The pastel theme parks a mascot off the right edge (alpha 0).
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+    // The Colette theme parks a mascot off the right edge (alpha 0).
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         NSString *mascotPrefix = kSearchMascotDefaultPrefix;
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
             mascotPrefix = [NSString stringWithFormat:@"%@/%@",
@@ -1376,7 +1375,7 @@ static BOOL g_bRandamIntSeeded = NO;
           // On the Colette theme with a pending walkthrough, start the tutorial; otherwise open the
           // store for a pending pack, campaign, or extend-note id, or show the pending push
           // notification or web-info page, else fall back to the store button.
-          if ([RBUserSettingData sharedInstance].thema == kThemaPastel &&
+          if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette &&
               ([RBTutorialManager needStartTutorialMusicselect] ||
                [RBTutorialManager needStartTutorialCustomize])) {
               [weakSelf startTutorial];
@@ -1681,7 +1680,7 @@ static BOOL g_bRandamIntSeeded = NO;
     if (self.settingView.superview == nil) {
         CGRect buttonFrame;
         switch ([RBUserSettingData sharedInstance].thema) {
-        case kThemaWhite:
+        case RBUserSettingDataThemeLimelight:
             if (IsPad()) {
                 // Centre a fixed-size anchor rectangle on the button's centre.
                 CGPoint center = self.settingButton.center;
@@ -1693,10 +1692,13 @@ static BOOL g_bRandamIntSeeded = NO;
             }
             buttonFrame = self.settingButton.frame;
             break;
-        case kThemaClassic:
-        case kThemaPastel:
-        default:
+        case RBUserSettingDataThemeClassic:
+        case RBUserSettingDataThemeColette:
             buttonFrame = self.settingButton.frame;
+            break;
+        default:
+            // The binary's fourth arm: an unrecognised theme anchors on CGRectZero.
+            buttonFrame = CGRectZero;
             break;
         }
         RBSettingView *view = [[RBSettingView alloc] initWithFrame:self.bounds
@@ -1835,8 +1837,8 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Background effect
 
 - (void)startBGEffect {
-    // The animated background and mascot only exist in the pastel theme.
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+    // The animated background and mascot only exist in the Colette theme.
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         if (self.bgEffectView != nil) {
             [self.bgEffectView startAnimation];
         }
@@ -1847,7 +1849,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)stopBGEffect {
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         if (self.bgEffectView != nil) {
             [self.bgEffectView stopAnimation];
         }
@@ -2257,14 +2259,14 @@ static BOOL g_bRandamIntSeeded = NO;
         self.settingView != nil || self.pageSlider != nil) {
         return;
     }
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         SoundEffectManager::GetInstance()->PlayThemedSoundEffect(
             static_cast<int>(kSoundEffectSearchBarShow));
     }
     [self.searchBar becomeFirstResponder];
     self.searchBar.text = self.backUpString;
     [self searchBar:self.searchBar textDidChange:self.backUpString];
-    if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+    if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
         if (![[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
             NSUInteger index = (rand() % 100 < kSearchMascotDefaultBias) ? 0 : 1;
             [self.searchMascot setImage:self.searchMascotImages[index]];
@@ -2715,7 +2717,7 @@ static BOOL g_bRandamIntSeeded = NO;
 #pragma mark - Tutorial
 
 - (void)preStartTutorial {
-    if ([RBUserSettingData sharedInstance].thema != kThemaPastel) {
+    if ([RBUserSettingData sharedInstance].thema != RBUserSettingDataThemeColette) {
         return;
     }
     if (![RBTutorialManager needStartTutorialMusicselect] &&
@@ -2752,7 +2754,7 @@ static BOOL g_bRandamIntSeeded = NO;
 }
 
 - (void)startTutorial {
-    if ([RBUserSettingData sharedInstance].thema != kThemaPastel) {
+    if ([RBUserSettingData sharedInstance].thema != RBUserSettingDataThemeColette) {
         return;
     }
     if (![RBTutorialManager needStartTutorialMusicselect] &&
@@ -3064,7 +3066,7 @@ static BOOL g_bRandamIntSeeded = NO;
         CGRect cancelFrame = self.searchCancelButton.frame;
         self.searchCancelButton.frame = CGRectMake(
             self.searchBar.frame.size.width, 0, cancelFrame.size.width, cancelFrame.size.height);
-        if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+        if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
             CGSize mascotSize = [self.searchMascotImages[0] size];
             self.searchMascot.frame =
                 CGRectMake(self.width - mascotSize.width,
@@ -3085,7 +3087,7 @@ static BOOL g_bRandamIntSeeded = NO;
                                                    -cancelFrame.size.height,
                                                    cancelFrame.size.width,
                                                    cancelFrame.size.height);
-        if ([RBUserSettingData sharedInstance].thema == kThemaPastel) {
+        if ([RBUserSettingData sharedInstance].thema == RBUserSettingDataThemeColette) {
             // The mascot parks off the right edge and half its height above its docked row, so it
             // slides out as it fades rather than fading in place.
             CGSize mascotSize = [self.searchMascotImages[0] size];

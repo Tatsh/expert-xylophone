@@ -33,7 +33,7 @@ static const CGFloat kPastelHeadAnchorY = 76.0;
 // (non-iPad) idiom every field is halved. The runtime seeds a table shared with the sibling
 // RBTutorialPastelLayer class at load time (Ghidra backing store 0x1003df3e0).
 static const CGRect kPastelClipRects[] = {
-    {{360.0, 274.0}, {136.0, 96.0}}, // head
+    {{361.0, 274.0}, {136.0, 96.0}}, // head
     {{499.0, 274.0}, {48.0, 56.0}},  // body
     {{498.0, 332.0}, {24.0, 22.0}},  // left tail
     {{525.0, 332.0}, {24.0, 22.0}},  // right tail
@@ -51,35 +51,38 @@ static const CGPoint kPastelPositions[] = {
 // Half factor for centre-anchored child frames.
 static const CGFloat kPastelHalf = 0.5;
 
-// Wave-animation timing and value constants.
+// Wave-animation timing and value constants. The key times reach the code as doubles read out of
+// one dense pool run, and several of the animations share the same slot.
 static const NSTimeInterval kWaveDuration = 2.5;
 static const CGFloat kWavePositionXDrift = -12.5;
 static const CGFloat kWavePositionYDrift = -8.5;
-static const CGFloat kWavePositionYHold = -8.5;
-static const double kWavePositionXKeyTime1 = 0.0658;
-static const double kWavePositionXKeyTime2 = 0.1330;
+static const double kWavePositionXKeyTime1 = 0.066;
+static const double kWavePositionXKeyTime2 = 0.133;
 static const double kWavePositionYKeyTime0 = 0.1;
-static const double kWavePositionYKeyTime1 = 0.1330;
-static const double kWavePositionYKeyTime2 = 0.1660;
-static const CGFloat kWaveRotationTilt = -0.17453;  // -10 degrees, in radians.
-static const CGFloat kWaveRotationSwing = -0.78539; // -45 degrees, in radians (-pi/4).
-static const CGFloat kWaveRotationReturn = 0.78539; // +45 degrees, in radians (+pi/4).
-static const double kWaveRotationKeyTime1 = 0.4;
-static const double kWaveRotationKeyTime2 = 0.6;
-static const double kWaveHeadKeyTime1 = 0.2;
-static const double kWaveHeadKeyTime2 = 0.266;
-static const double kWaveHeadKeyTime3 = 0.332;
-static const double kWaveHeadKeyTime4 = 0.466;
-static const double kWaveHeadKeyTime5 = 0.532;
-static const double kWaveHeadKeyTime6 = 0.6;
-static const double kWaveHeadKeyTime7 = 0.664;
-static const double kWaveHeadKeyTime8 = 0.733;
-static const CGFloat kWaveHeadTilt = -0.087266; // -5 degrees, in radians.
+static const double kWavePositionYKeyTime1 = 0.133;
+static const double kWavePositionYKeyTime2 = 0.166;
+static const CGFloat kWaveRotationTilt = -0.17453292519943295; // -10 degrees, in radians.
+static const CGFloat kWaveRotationSwing = -0.7853981633974483; // -45 degrees, in radians (-pi/4).
+static const CGFloat kWaveHeadTilt = -0.08726646259971647;     // -5 degrees, in radians.
+static const double kWaveBaseKeyTime1 = 0.066;
+static const double kWaveBaseKeyTime2 = 0.133;
+static const double kWaveRightKeyTime1 = 0.133;
+static const double kWaveRightKeyTime2 = 0.2;
+static const double kWaveRightKeyTime3 = 0.266;
+static const double kWaveRightKeyTime4 = 0.333;
+static const double kWaveRightKeyTime5 = 0.4;
+static const double kWaveRightKeyTime6 = 0.466;
+static const double kWaveRightKeyTime7 = 0.533;
+static const double kWaveRightKeyTime8 = 0.6;
+static const double kWaveRightKeyTime9 = 0.666;
+static const double kWaveRightKeyTime10 = 0.733;
+static const double kWaveHeadKeyTime1 = 0.133;
+static const double kWaveHeadKeyTime2 = 0.166;
 
 // Jump-animation timing and value constants.
 static const CGFloat kJumpDelayThreshold = 0.001;
-static const CGFloat kJumpRotationRise = -0.26362;
-static const CGFloat kJumpRotationSwing = 0.78539; // +pi/4.
+static const CGFloat kJumpRotationSwing = 0.7853981633974483; // +45 degrees, in radians (+pi/4).
+static const CGFloat kJumpRotationRest = 0.2617993877991494;  // +15 degrees, in radians.
 static const CGFloat kJumpPositionYDrift = 3.0;
 static const CGFloat kJumpPositionYDip = -6.0;
 static const double kJumpKeyTime1 = 0.125;
@@ -215,8 +218,8 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     positionY.values = @[
         @(origin.y),
         @(origin.y + self.displayRate * kWavePositionYDrift),
-        @(kWavePositionYHold),
-        @(kWavePositionYHold)
+        @(origin.y),
+        @(origin.y)
     ];
     positionY.keyTimes =
         @[ @(kWavePositionYKeyTime0), @(kWavePositionYKeyTime1), @(kWavePositionYKeyTime2), @1.0 ];
@@ -229,58 +232,76 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     positionY.removedOnCompletion = NO;
     positionY.fillMode = kCAFillModeForwards;
 
-    CAKeyframeAnimation *rightRotation =
-        [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
-    rightRotation.repeatCount = 1.0;
-    rightRotation.values = @[ @0, @0, @(kWaveRotationTilt), @(kWaveRotationSwing) ];
-    rightRotation.keyTimes = @[ @0.0f, @(kWaveRotationKeyTime1), @(kWaveRotationKeyTime2), @1.0f ];
-    rightRotation.timingFunctions = @[
-        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
-        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
-        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
-        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]
-    ];
-
-    CAKeyframeAnimation *headRotation = [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
-    headRotation.duration = kWaveDuration;
-    headRotation.repeatCount = 1.0;
-    headRotation.values = @[ @0, @0, @(kWaveRotationSwing), @0 ];
-    headRotation.keyTimes = @[
-        @(kWaveHeadKeyTime1),
-        @(kWaveHeadKeyTime2),
-        @(kWaveHeadKeyTime3),
-        @(kWaveHeadKeyTime4),
-        @(kWaveHeadKeyTime5),
-        @(kWaveHeadKeyTime6),
-        @(kWaveHeadKeyTime7),
-        @(kWaveHeadKeyTime8)
-    ];
-    headRotation.removedOnCompletion = NO;
-    headRotation.fillMode = kCAFillModeForwards;
-
+    // The third member of the group, so it rotates the view's own layer rather than a tail. It is
+    // the only animation here the binary leaves without a fill mode.
     CAKeyframeAnimation *baseRotation = [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
-    baseRotation.duration = kWaveDuration;
     baseRotation.repeatCount = 1.0;
-    baseRotation.values = @[ @0, @(kWaveHeadTilt), @(kWaveRotationReturn), @1.0f ];
-    baseRotation.keyTimes = @[ @0.0f, @(kWaveRotationKeyTime1), @(kWaveRotationKeyTime2), @1.0f ];
+    baseRotation.values = @[ @0, @0, @(kWaveRotationTilt), @(kWaveRotationTilt) ];
+    baseRotation.keyTimes = @[ @0.0f, @(kWaveBaseKeyTime1), @(kWaveBaseKeyTime2), @1.0f ];
     baseRotation.timingFunctions = @[
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]
     ];
-    baseRotation.removedOnCompletion = NO;
-    baseRotation.fillMode = kCAFillModeForwards;
+
+    CAKeyframeAnimation *rightRotation =
+        [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
+    rightRotation.duration = kWaveDuration;
+    rightRotation.repeatCount = 1.0;
+    rightRotation.values = @[
+        @0,
+        @0,
+        @(kWaveRotationSwing),
+        @0,
+        @(kWaveRotationSwing),
+        @0,
+        @(kWaveRotationSwing),
+        @0,
+        @(kWaveRotationSwing),
+        @0,
+        @(kWaveRotationSwing)
+    ];
+    // The binary's last key time is 0.733 rather than 1.0, and it sets no timing functions here.
+    rightRotation.keyTimes = @[
+        @0.0,
+        @(kWaveRightKeyTime1),
+        @(kWaveRightKeyTime2),
+        @(kWaveRightKeyTime3),
+        @(kWaveRightKeyTime4),
+        @(kWaveRightKeyTime5),
+        @(kWaveRightKeyTime6),
+        @(kWaveRightKeyTime7),
+        @(kWaveRightKeyTime8),
+        @(kWaveRightKeyTime9),
+        @(kWaveRightKeyTime10)
+    ];
+    rightRotation.removedOnCompletion = NO;
+    rightRotation.fillMode = kCAFillModeForwards;
+
+    CAKeyframeAnimation *headRotation = [CAKeyframeAnimation animationWithKeyPath:kKeyPathRotation];
+    headRotation.duration = kWaveDuration;
+    headRotation.repeatCount = 1.0;
+    headRotation.values = @[ @0, @0, @(kWaveHeadTilt), @(kWaveHeadTilt) ];
+    headRotation.keyTimes = @[ @0.0f, @(kWaveHeadKeyTime1), @(kWaveHeadKeyTime2), @1.0f ];
+    headRotation.timingFunctions = @[
+        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
+        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
+        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear],
+        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]
+    ];
+    headRotation.removedOnCompletion = NO;
+    headRotation.fillMode = kCAFillModeForwards;
 
     CAAnimationGroup *group = [CAAnimationGroup animation];
     group.duration = kWaveDuration;
     group.repeatCount = 1.0;
-    group.animations = @[ positionX, positionY, rightRotation ];
+    group.animations = @[ positionX, positionY, baseRotation ];
     group.removedOnCompletion = NO;
     group.fillMode = kCAFillModeForwards;
 
     [self.layer addAnimation:group forKey:kPastelAnimationKeyBase];
-    [self.rightView.layer addAnimation:baseRotation forKey:kPastelAnimationKeyRight];
+    [self.rightView.layer addAnimation:rightRotation forKey:kPastelAnimationKeyRight];
     [self.headView.layer addAnimation:headRotation forKey:kPastelAnimationKeyHead];
 }
 
@@ -292,14 +313,17 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     rightRotation.values = @[
         @0,
         @0,
-        @(kJumpRotationSwing),
-        @(kJumpRotationRise),
-        @(kJumpRotationRise),
-        @(kJumpRotationSwing),
+        @(kJumpRotationRest),
+        @(-kJumpRotationSwing),
+        @(-kJumpRotationSwing),
+        @(-kJumpRotationSwing),
+        @(kJumpRotationRest),
         @0,
         @0
     ];
+    // The binary boxes 0.0f twice at the head of this list, so it has nine key times.
     rightRotation.keyTimes = @[
+        @0.0f,
         @0.0f,
         @(kJumpKeyTime1),
         @(kJumpKeyTime2),
@@ -317,11 +341,11 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
     leftRotation.repeatCount = 1.0;
     leftRotation.values = @[
         @0,
+        @(-kJumpRotationRest),
         @(kJumpRotationSwing),
-        @(kJumpRotationRise),
-        @(kJumpRotationRise),
         @(kJumpRotationSwing),
-        @0,
+        @(kJumpRotationSwing),
+        @(-kJumpRotationRest),
         @0,
         @0
     ];
@@ -348,8 +372,8 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
         @(headOrigin.y + self.displayRate * kJumpPositionYDrift),
         @(headOrigin.y),
         @(headOrigin.y),
-        @(headOrigin.y + self.displayRate * kJumpPositionYDrift),
         @(headOrigin.y),
+        @(headOrigin.y + self.displayRate * kJumpPositionYDrift),
         @(headOrigin.y),
         @(headOrigin.y)
     ];
@@ -412,20 +436,24 @@ static NSString *const kKeyPathRotation = @"transform.rotation";
         [self.headView.layer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
         [self.layer addAnimation:basePosition forKey:kPastelAnimationKeyBase];
     } else {
+        // The binary passes an empty global block for animations: and does all of the work in the
+        // completion handler, so the delay behaves as a plain wait rather than as a tween.
+        // The completion block captures self weakly here (objc_copyWeak at 0x1b1710, alongside only
+        // four objc_retain calls for the animations). The layer twin captures it strongly instead.
+        __weak RBTutorialPastel *weakSelf = self;
         [UIView animateWithDuration:delay
-                              delay:0.0
-                            options:0
-                         animations:^{
-                           /** @ghidraAddress 0x1b24d4 */
-                           [self.rightView.layer addAnimation:rightRotation
-                                                       forKey:kPastelAnimationKeyRight];
-                           [self.leftView.layer addAnimation:leftRotation
-                                                      forKey:kPastelAnimationKeyLeft];
-                           [self.headView.layer addAnimation:headPosition
-                                                      forKey:kPastelAnimationKeyHead];
-                           [self.layer addAnimation:basePosition forKey:kPastelAnimationKeyBase];
-                         }
-                         completion:nil];
+            delay:0.0
+            options:0
+            animations:^{
+              /** @ghidraAddress 0x1b24d0 (animations block, empty in the binary) */
+            }
+            completion:^(BOOL finished) {
+              /** @ghidraAddress 0x1b24d4 (completion block) */
+              [weakSelf.rightView.layer addAnimation:rightRotation forKey:kPastelAnimationKeyRight];
+              [weakSelf.leftView.layer addAnimation:leftRotation forKey:kPastelAnimationKeyLeft];
+              [weakSelf.headView.layer addAnimation:headPosition forKey:kPastelAnimationKeyHead];
+              [weakSelf.layer addAnimation:basePosition forKey:kPastelAnimationKeyBase];
+            }];
     }
 }
 
