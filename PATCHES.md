@@ -238,11 +238,16 @@ current sort's colour and the normal state the other one, with the selected titl
 UIKit's own segment title size.
 
 Setting a segment's `tintColor` did two different things depending on its state, and the patch has
-to reproduce both: the selected segment becomes a solid block of its colour, and the unselected one
-letters in that colour on the control's white background. `selectedSegmentTintColor` supplies the
-fill and the control's `backgroundColor` the white. The selected title's colour is deliberately left
-unset so UIKit contrasts it against whatever fill it sits on — white over Limelight's magenta, dark
-over Colette's gold. Both were checked against captures of the original.
+to reproduce both. The selected segment becomes a solid block of its own colour with its title
+knocked out white; the unselected one is transparent, outlined and lettered in its colour. The whole
+control is a capsule, rounded at both ends. `selectedSegmentTintColor` supplies the fill, and the
+layer's corner radius, border width, and border colour supply the rest.
+
+The colours are not hardcoded: they come from `self.musicColor` and `self.artistColor`, which
+`-viewDidLoad` assigns per theme from the palette `InitializeUIColorPalette` seeds — steel blue and
+gold on Colette, green and magenta on Limelight and Classic. Values sampled from a screenshot
+differ slightly from these (gold reads as having no blue channel where the palette holds 49/255),
+which is scaling and compression rather than a different colour.
 
 The popover's sort row lives in the navigation controller's toolbar. The appearance proxies
 installed for `UINavigationBar` and `UITabBar` had no `UIToolbar` counterpart, so the toolbar kept

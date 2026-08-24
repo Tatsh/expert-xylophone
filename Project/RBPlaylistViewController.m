@@ -93,6 +93,10 @@ static const CGFloat kSortSegmentHeight = 30.0;
 static const CGFloat kSortLabelFontSize = 14.0;
 // UIKit's own segmented-control title size, restated so the patched path can vary only the weight.
 static const CGFloat kSortSegmentFontSize = 13.0;
+// The control is a capsule: its corner radius is half its height, outlined a point wide in the
+// unselected segment's colour.
+static const CGFloat kSortSegmentCornerFactor = 0.5;
+static const CGFloat kSortSegmentBorderWidth = 1.0;
 
 // The system version at which the navigation bar switched from tintColor to barTintColor.
 static const CGFloat kBarTintColorMinSystemVersion = 7.0;
@@ -244,16 +248,22 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     // emboldened.
     //
     // Setting a segment's tintColor is what fills it when it is the selected one and what letters
-    // it when it is not, so the two states differ: the selected segment is a solid block of the
-    // current sort's colour, and the other is that colour as text on the control's white
-    // background. The selected title's colour is deliberately not set, so UIKit contrasts it
-    // against whichever fill it is sitting on — white over Limelight's magenta, dark over
-    // Colette's gold.
+    // it when it is not, so the two states differ. The selected segment is a solid block of its
+    // own colour with the title knocked out white; the unselected one is transparent, outlined and
+    // lettered in its colour. The whole control is a capsule, rounded at both ends.
+    //
+    // The colours come from self.musicColor and self.artistColor, which -viewDidLoad sets per
+    // theme from the palette the binary seeds: steel blue and gold on Colette, green and magenta
+    // on Limelight and Classic.
     UIColor *selectedColor = (selected == kMenuItemSortMusic) ? self.musicColor : self.artistColor;
     UIColor *normalColor = (selected == kMenuItemSortMusic) ? self.artistColor : self.musicColor;
+    self.segmentedControl.backgroundColor = UIColor.clearColor;
+    self.segmentedControl.layer.cornerRadius = kSortSegmentHeight * kSortSegmentCornerFactor;
+    self.segmentedControl.layer.borderWidth = kSortSegmentBorderWidth;
+    self.segmentedControl.layer.borderColor = normalColor.CGColor;
+    self.segmentedControl.layer.masksToBounds = YES;
     if (@available(iOS 13.0, *)) {
         self.segmentedControl.selectedSegmentTintColor = selectedColor;
-        self.segmentedControl.backgroundColor = UIColor.whiteColor;
     }
     [self.segmentedControl setTitleTextAttributes:@{
         NSForegroundColorAttributeName : normalColor,
@@ -261,6 +271,7 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     }
                                          forState:UIControlStateNormal];
     [self.segmentedControl setTitleTextAttributes:@{
+        NSForegroundColorAttributeName : UIColor.whiteColor,
         NSFontAttributeName : [UIFont boldSystemFontOfSize:kSortSegmentFontSize]
     }
                                          forState:UIControlStateSelected];
