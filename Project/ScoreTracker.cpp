@@ -325,6 +325,6 @@ void ScoreTracker::SetJudgeScore3(unsigned int nSide) {
 bool ScoreTracker::IsSideAllNotesJudged(unsigned int nSide) const {
     const PlayRecord &record = m_aRecords[nSide];
     const int nJudged =
-        record.nCells[kCellGreat] + record.nCells[kCellGood] + record.nCells[kCellMiss];
+        record.nCells[kCellJust] + record.nCells[kCellGreat] + record.nCells[kCellGood];
     return nJudged == m_nTotalNotes;
 }

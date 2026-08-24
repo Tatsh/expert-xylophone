@@ -104,23 +104,24 @@ constexpr unsigned char kPopDirectionFlip[] = {0, 0, 1, 0, 0, 0, 0, 0};
 // The label pop-out rotation: a half turn (pi) when the direction is flipped, else none.
 constexpr float kLabelRotationFlipped = 3.1415927f; // pi.
 
-// The two animation curves the popup eases through: the horizontal pop-out offset (two control
-// points) and the alpha envelope (four control points). @ghidraAddress 0x30e340 and 0x30e350.
-constexpr float kPopOffsetCurve[] = {0.0f, 100.0f};
-constexpr float kAlphaCurve[] = {0.0f, 0.0f, 300.0f, 1.0f};
+// The two animation curves the popup eases through, each a run of {x, y} keyframes: the horizontal
+// pop-out offset slides 100 back to 0 over 300 ms, and the alpha envelope fades in over 300 ms,
+// holds opaque to 3300 ms, and fades out by the 3600 ms lifetime. @ghidraAddress 0x30e340 and
+// 0x30e350.
+constexpr float kPopOffsetCurve[] = {0.0f, 100.0f, 300.0f, 0.0f};
+constexpr float kAlphaCurve[] = {0.0f, 0.0f, 300.0f, 1.0f, 3300.0f, 1.0f, 3600.0f, 0.0f};
 
 // The base-position layout constants (all in the shared atlas's pixel space). The iPad lane
 // positions are built per game type from these; the phone lanes use a fixed pair.
-constexpr float kLayoutInsetLeft = -384.0f;  // 0x2f8568
-constexpr float kLayoutSpanTop = 1024.0f;    // 0x309164
-constexpr float kLayoutRowOffset = 54.0f;    // 0x30e334
-constexpr float kLayoutInsetTop = -512.0f;   // 0x2f8570
-constexpr float kLayoutMirrorSpan = 768.0f;  // 0x2fd04c
-constexpr float kLayoutBaseX = 490.0f;       // 0x3def30 (lazily seeded)
-constexpr float kLayoutBaseY = 590.0f;       // 0x3def34 (lazily seeded)
-constexpr float kLayoutMirrorInset = 512.0f; // 0x3ce934 (as float)
-constexpr float kPhoneLaneX = 106.0f;        // 0x42d40000
-constexpr int kPhoneLaneHalfSpan = 71;       // 0x47
+constexpr float kLayoutInsetLeft = -384.0f; // 0x2f8568
+constexpr float kLayoutSpanTop = 1024.0f;   // 0x309164
+constexpr float kLayoutRowOffset = 54.0f;   // 0x30e334
+constexpr float kLayoutInsetTop = -512.0f;  // 0x2f8570
+constexpr float kLayoutMirrorSpan = 768.0f; // 0x2fd04c
+constexpr float kLayoutBaseX = 490.0f;      // 0x3def30 (lazily seeded)
+constexpr float kLayoutBaseY = 590.0f;      // 0x3def34 (lazily seeded)
+constexpr float kPhoneLaneX = 106.0f;       // 0x42d40000
+constexpr int kPhoneLaneHalfSpan = 71;      // 0x47
 
 // The glyph-index bases: the fixed points/combo label per colour, the score-digit base per colour.
 constexpr unsigned int kPointsLabelGlyphColorA = 0xe;  // colour 0.
@@ -263,10 +264,12 @@ void JudgeEffectLayer::RenderJudgeScoreEffect(float flDelta) {
             {kLayoutBaseX + kLayoutInsetLeft,
              (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},
             {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY + kLayoutInsetTop) + flHalfHeight},
-            // Game type 1.
+            // Game type 1. These two hang off the playfield centre split, not off the half-height
+            // the other game types add.
             {(kLayoutMirrorSpan - kLayoutBaseX) + kLayoutInsetLeft,
-             ((kLayoutSpanTop - kLayoutBaseY) - kLayoutMirrorInset) + flHalfHeight},
-            {kLayoutBaseX + kLayoutInsetLeft, (kLayoutBaseY - kLayoutMirrorInset) + flHalfHeight},
+             (kLayoutSpanTop - kLayoutBaseY) - static_cast<float>(g_nPlayfieldCentreSplit)},
+            {kLayoutBaseX + kLayoutInsetLeft,
+             kLayoutBaseY - static_cast<float>(g_nPlayfieldCentreSplit)},
             // Game type 2.
             {kLayoutBaseX + kLayoutInsetLeft,
              (kLayoutRowOffset - kLayoutBaseY) + kLayoutSpanTop + kLayoutInsetTop + flHalfHeight},

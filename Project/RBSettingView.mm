@@ -87,6 +87,7 @@ typedef struct SettingMenuEntry {
 
 // The panel background is fully opaque and the borders are drawn at full alpha.
 constexpr CGFloat kOpaqueAlpha = 1.0;
+constexpr CGFloat kTransparentAlpha = 0.0;
 
 // The customise tutorial identifier passed to -startTutorialWithType:withRootView:.
 constexpr NSInteger kTutorialTypeCustomize = 27;
@@ -276,7 +277,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     }
     CGRect panelFrame = self.baseView.frame;
     m_Animating = YES;
-    self.alpha = 1.0;
+    // The panel starts fully transparent and fades in as it grows.
+    self.alpha = kTransparentAlpha;
 
     __weak RBSettingView *weakSelf = self;
     [UIView animateWithDuration:kSettingAnimationDuration
@@ -324,7 +326,8 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     [UIView setAnimationDuration:kSettingAnimationDuration];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(hideAnimationEnd)];
-    self.alpha = 1.0;
+    // The panel fades out as it collapses; the binary passes zero here, not full opacity.
+    self.alpha = kTransparentAlpha;
     self.baseView.frame = CGRectMake(CGRectGetMinX(panelFrame),
                                      (CGRectGetMinY(panelFrame) + CGRectGetHeight(panelFrame)) -
                                          (CGFloat)m_DefaultHeight,
