@@ -50,10 +50,10 @@ constexpr NSTimeInterval kSettingAnimationDuration = 0.25;
 // by the Classic and Colette themes. Read from the binary's constant pool at 0x1003016a0
 // (background RGB), 0x1003016c0 (border RGB), and 0x1003016b8 (border width).
 constexpr CGFloat kColetteBackgroundRed = 0.945;
-constexpr CGFloat kColetteBackgroundGreen = 0.9420;
+constexpr CGFloat kColetteBackgroundGreen = 0.882353;
 constexpr CGFloat kColetteBackgroundBlue = 0.7647;
 constexpr CGFloat kColetteBorderRed = 0.7962;
-constexpr CGFloat kColetteBorderGreen = 0.7803;
+constexpr CGFloat kColetteBorderGreen = 0.749020;
 constexpr CGFloat kColetteBorderBlue = 0.6470;
 constexpr CGFloat kThemedBorderWidth = 1.3;
 
@@ -158,15 +158,17 @@ constexpr NSInteger kTutorialTypeCustomize = 27;
     // the layout tables at 0x1003dc8d0/0x1003dc900 (origin) and 0x1003dc930/0x1003dc960 (step). The
     // region tables apply when IsPad() == 0, the default tables otherwise; both are
     // indexed by theme.
+    // Rows 0 and 1 are identical in both tables: each of the two `stp q0,q0` stores writes one pool
+    // value into two rows at once. Row 2 is written separately.
     static const SettingButtonLayout defaultLayout[] = {
         {13.0, 30.0, 26.0},
-        {13.0, 10.0, 26.0},
-        {5.0, 14.0, 13.0},
+        {13.0, 30.0, 26.0},
+        {13.0, 10.0, 2.0},
     };
     static const SettingButtonLayout regionLayout[] = {
         {5.0, 14.0, 13.0},
         {5.0, 14.0, 13.0},
-        {5.0, 14.0, 13.0},
+        {5.0, 5.0, 4.0},
     };
     SettingButtonLayout layout = (isPad == 0) ? regionLayout[thema] : defaultLayout[thema];
 

@@ -885,7 +885,7 @@ constexpr int kDefaultPlayColor = 0;
         CGRect anchor = [anchorView convertRect:anchorView.bounds toView:self.view];
         [self.playlistPopoverController presentPopoverFromRect:anchor
                                                         inView:self.view
-                                      permittedArrowDirections:UIPopoverArrowDirectionUp
+                                      permittedArrowDirections:UIPopoverArrowDirectionDown
                                                       animated:NO];
     }
 }

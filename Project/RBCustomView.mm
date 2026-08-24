@@ -46,13 +46,14 @@ static NSString *const kSetModeButtonImageName = @"04_customize/cus_mode_bt_0";
 static NSString *const kUnlockModeButtonImageName = @"04_customize/cus_mode_bt_1";
 static NSString *const kModeButtonEffectImageName = @"04_customize/cus_mode_bt_eff";
 
-// The mode toggles straddle the horizontal centre of the gradient frame. The set button sits to
-// the left by its own width less a hairline; the unlock button sits to the right by a fixed inset.
-// Both rest a hairline above the bottom of the content view.
+// The mode toggles straddle the horizontal centre of the content view. The set button sits to the
+// left of centre by its own width plus the gap; the unlock button sits to the right by the same
+// gap. Both rest a fixed distance above the bottom of the content view. Ghidra renders the two
+// negative immediates as their two's complement, so they read as 0.21875 and 0.5 rather than 20 and
+// 8.
 constexpr CGFloat kModeButtonCenterFactor = 0.5;
-constexpr CGFloat kSetButtonRightHairline = 0.21875;
-constexpr CGFloat kUnlockButtonLeftInset = 20.0;
-constexpr CGFloat kModeButtonBottomHairline = 0.5;
+constexpr CGFloat kModeButtonCenterGap = 20.0;
+constexpr CGFloat kModeButtonBottomGap = 8.0;
 
 // The effect overlay is nudged off the toggle it decorates by a idiom- and theme-dependent
 // amount, recovered from the disassembly's soft-float immediate operands. The horizontal nudge is
@@ -130,9 +131,9 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     UIImage *setImage = [UIImage imageWithName:kSetModeButtonImageName];
     [self.experienceSetButton setImage:setImage forState:UIControlStateNormal];
     self.experienceSetButton.frame =
-        CGRectMake(gradientImage.size.width * kModeButtonCenterFactor - setImage.size.width -
-                       kSetButtonRightHairline,
-                   contentFrame.size.height - setImage.size.height - kModeButtonBottomHairline,
+        CGRectMake(contentFrame.size.width * kModeButtonCenterFactor - setImage.size.width -
+                       kModeButtonCenterGap,
+                   contentFrame.size.height - setImage.size.height - kModeButtonBottomGap,
                    setImage.size.width,
                    setImage.size.height);
     [self.experienceSetButton addTarget:self
@@ -142,14 +143,14 @@ constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
     self.experienceSetButton.enabled = NO;
     [self.contentView addSubview:self.experienceSetButton];
 
-    // The unlock-mode toggle switches to the experience picker. It sits just right of the frame's
-    // horizontal centre.
+    // The unlock-mode toggle switches to the experience picker. It sits just right of the content
+    // view's horizontal centre.
     self.experienceUnlockButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *unlockImage = [UIImage imageWithName:kUnlockModeButtonImageName];
     [self.experienceUnlockButton setImage:unlockImage forState:UIControlStateNormal];
     self.experienceUnlockButton.frame =
-        CGRectMake(gradientImage.size.width * kModeButtonCenterFactor + kUnlockButtonLeftInset,
-                   contentFrame.size.height - unlockImage.size.height - kModeButtonBottomHairline,
+        CGRectMake(contentFrame.size.width * kModeButtonCenterFactor + kModeButtonCenterGap,
+                   contentFrame.size.height - unlockImage.size.height - kModeButtonBottomGap,
                    unlockImage.size.width,
                    unlockImage.size.height);
     [self.experienceUnlockButton addTarget:self

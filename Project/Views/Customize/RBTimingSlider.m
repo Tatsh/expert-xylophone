@@ -148,11 +148,13 @@ enum {
                                   trackHeight);
     }
 
+    // The origin comes from self, but the size comes from the track sprite just laid out above.
     CGRect selfFrame = self.frame;
+    CGRect baseFrame = self.baseView.frame;
     self.frame = CGRectMake(selfFrame.origin.x,
                             selfFrame.origin.y + kTimingSliderVerticalOffset,
-                            selfFrame.size.width,
-                            selfFrame.size.height);
+                            baseFrame.size.width,
+                            baseFrame.size.height);
 
     self.value = (float)[RBUserSettingData sharedInstance].delayFrame;
     self.barMin = kTimingSliderBarMin;

@@ -969,13 +969,12 @@ enum { kDetMbgPlainIndex = 3 };
         initWithImage:[UIImage imageWithName:@"02_music_detail/det_dec_spd_lock"]];
     self.doubleButtonCoverView.center = self.doubleButton.center;
     [self.baseView addSubview:self.doubleButtonCoverView];
-    if ([RBUserSettingData sharedInstance].speedType) {
-        self.doubleButton.enabled = NO;
-        self.doubleButtonCoverView.hidden = NO;
-    } else {
-        self.doubleButtonCoverView.hidden = YES;
-        self.doubleButton.enabled = YES;
-    }
+    self.doubleButton.enabled = [RBUserSettingData sharedInstance].speedType == 0;
+    self.doubleButtonCoverView.hidden = [RBUserSettingData sharedInstance].speedType == 0;
+    // Yes, the binary immediately overrides both of the above, so the speed-lock cross is always
+    // hidden and the button always enabled here.
+    self.doubleButtonCoverView.hidden = YES;
+    self.doubleButton.enabled = YES;
 
     // The binary builds a second pastel pair at a lower position, overwriting the first pair.
     UIImage *whitePastel2Image = [UIImage imageWithName:@"02_music_detail/det_pastelkun"];

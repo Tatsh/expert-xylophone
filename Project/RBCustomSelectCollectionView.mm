@@ -196,7 +196,7 @@ constexpr long kPageControlMinPageCount = 2;
         CGRectMake((self.frame.size.width - frameImage.size.width) * kCenterFactor,
                    0.0,
                    frameImage.size.width,
-                   frameImage.size.height);
+                   self.frame.size.height);
     [self addSubview:self.backgroundView];
 
     // The controls sit below the framed background's top cap inset.

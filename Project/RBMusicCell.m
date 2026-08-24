@@ -90,7 +90,8 @@ static const CGFloat kRankColumnXWide = 143.0;
 
 // The indicator rows, top to bottom, for each of the four difficulties, chosen by device idiom.
 static const CGFloat kIndicatorRowsNarrow[] = {75.0, 64.0, 53.0, 42.0};
-static const CGFloat kIndicatorRowsWide[] = {152.0, 134.0, 114.0, 95.0};
+/** @ghidraAddress 0x2eeed8, 0x3010d0, 0x3010d8, 0x3010e0 */
+static const CGFloat kIndicatorRowsWide[] = {152.0, 133.0, 114.0, 95.0};
 
 // The title label metrics for the wide-iPad idiom.
 static const CGFloat kTitleOriginXWide = 18.0;

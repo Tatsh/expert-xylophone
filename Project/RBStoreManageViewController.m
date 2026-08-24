@@ -265,6 +265,17 @@ static inline void ExpandAllSections(unsigned char *sectionOpen) {
     if ([self.tableView respondsToSelector:@selector(setCellLayoutMarginsFollowReadableWidth:)]) {
         self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
     }
+#ifdef ENABLE_PATCHES
+    // The shipped binary predates UITableView.sectionHeaderTopPadding, so its older linked SDK gave
+    // it zero padding for free. Built against a current SDK the property defaults to
+    // UITableViewAutomaticDimension, which a plain table resolves to 22 pt above every section
+    // header including section 0 — even one whose header is nil and zero height, as this screen's
+    // is in the default download-order sort. That inserts a full-width strip of the table's own
+    // backdrop between the navigation bar and the first row.
+    if (@available(iOS 15.0, *)) {
+        self.tableView.sectionHeaderTopPadding = 0.0;
+    }
+#endif
     [self.view addSubview:self.tableView];
 
     self.sortViewCtrl = [[RBStoreManageSortViewController alloc] init];

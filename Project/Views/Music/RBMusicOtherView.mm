@@ -170,7 +170,7 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
     } else {
         labelImage.frame =
             CGRectMake(static_cast<int>(containerWidth * kHalf - labelImage.width * kHalf),
-                       static_cast<int>(containerHeight * kHalf - labelImage.height * kHalf),
+                       static_cast<int>(containerHeight * kBaseImageTopFactor),
                        labelImage.width,
                        labelImage.height);
         barTrack.frame =
@@ -193,7 +193,10 @@ constexpr UIViewAutoresizing kContainerAutoresizing =
     BOOL fontDefault = !IsPad();
     double barRestLeft = fontDefault ? kBarRestLeftDefault : kBarRestLeftVariant;
     double barWidthAdjust = fontDefault ? kBarWidthAdjustDefault : kBarWidthAdjustVariant;
-    CGRect barRect = CGRectMake(barRestLeft, 0.0, knob.width + barWidthAdjust, knob.height);
+    // The travel rectangle spans the bar track, not the knob: updateSwitchWithType: parks the knob
+    // at barRect.origin.x + barRect.size.width - knobWidth/2 when on, so this width is the distance
+    // the knob moves.
+    CGRect barRect = CGRectMake(barRestLeft, 0.0, barTrack.width + barWidthAdjust, barTrack.height);
 
     knob.frame =
         CGRectMake(static_cast<int>(barRestLeft) - static_cast<int>(knob.width) / 2,

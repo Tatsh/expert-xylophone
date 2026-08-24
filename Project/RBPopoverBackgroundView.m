@@ -62,9 +62,10 @@ static const CGFloat kSideTwoPartBottom = 47.0;
 static const CGFloat kSideTwoPartRight = 27.0;
 
 // The half-image split builds a second inset by shrinking the source dimension by this amount and
-// pinning the trailing inset to this value. The shrink is the fmov immediate -0.4375 the two
-// stretched-image helpers add, not a whole-point value.
-static const CGFloat kSecondHalfShrink = 0.4375;
+// pinning the trailing inset to this value, leaving exactly one stretchable point in the middle of
+// the half image. Ghidra renders the two fmov immediates as -0x3fdc000000000000, which is the
+// two's complement of the bit pattern for -10.0, not a literal -0.4375.
+static const CGFloat kSecondHalfShrink = 10.0;
 static const CGFloat kSecondHalfTrailingInset = 9.0;
 
 // The first-half stretch centre is nudged by a one-point rounding correction (both cases) and, for

@@ -143,11 +143,15 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
     CGRect sliderFrame;
     if (colette) {
         if (isPad) {
-            // The Colette wide bar spans the whole view width, pinned to a fixed top inset. The
-            // binary reads the slider view's frame three times here and discards each result.
-            CGRect bounds = self.bounds;
-            sliderFrame =
-                CGRectMake(0.0, kSliderBarColetteTopInset, bounds.size.width, bounds.size.height);
+            // The Colette wide bar keeps the image's natural size, centred horizontally at a fixed
+            // top inset. The binary reads its own frame for the view width and the slider view's
+            // frame three times for the slider's width, width, and height.
+            CGFloat selfWidth = self.frame.size.width;
+            CGSize sliderSize = self.sliderView.frame.size;
+            sliderFrame = CGRectMake((selfWidth - sliderSize.width) * kHalf,
+                                     kSliderBarColetteTopInset,
+                                     sliderSize.width,
+                                     sliderSize.height);
         } else {
             sliderFrame = CGRectMake(kSliderBarColetteDefaultX,
                                      kSliderBarColetteDefaultY,
@@ -156,9 +160,12 @@ constexpr CGFloat kInteriorStepDivisor = 8.0;
         }
     } else {
         if (isPad) {
-            CGRect bounds = self.bounds;
-            sliderFrame =
-                CGRectMake(0.0, kSliderBarWideTopInset, bounds.size.width, bounds.size.height);
+            CGFloat selfWidth = self.frame.size.width;
+            CGSize sliderSize = self.sliderView.frame.size;
+            sliderFrame = CGRectMake((selfWidth - sliderSize.width) * kHalf,
+                                     kSliderBarWideTopInset,
+                                     sliderSize.width,
+                                     sliderSize.height);
         } else {
             sliderFrame = CGRectMake(kSliderBarDefaultX,
                                      kSliderBarDefaultY,

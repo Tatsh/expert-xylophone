@@ -173,3 +173,22 @@ and `UITabBarAppearance` through the appearance proxies, before any store view c
 
 An unpatched build keeps the bare window and the original's bar configuration, and on a modern iOS
 shows the black bars.
+
+### The iOS 15 section-header top padding
+
+**File:** `Project/RBStoreManageViewController.m` — `-loadView` (0x1ce97c)
+
+`-loadView` builds a plain-style `UITableView` whose backdrop is white 47/255, and the screen's
+default sort is download order, in which the table reports one section and returns nothing for both
+`-tableView:heightForHeaderInSection:` and `-tableView:viewForHeaderInSection:`. On the SDK the
+binary was linked against, that section therefore began at the very top of the table.
+
+`UITableView.sectionHeaderTopPadding` arrived in iOS 15 and defaults to
+`UITableViewAutomaticDimension`, which a plain table resolves to 22 pt above every section header —
+including a nil, zero-height one. A build linked against a current SDK consequently pushes 22 pt of
+the table's own dark backdrop in between the navigation bar and the first row, so the list appears
+to have both a stray gap and a mismatched background above it.
+
+The patch sets the property to zero behind an `@available(iOS 15.0, *)` guard, which the deployment
+target requires. Nothing else about the table changes, and an unpatched build keeps the modern
+default.

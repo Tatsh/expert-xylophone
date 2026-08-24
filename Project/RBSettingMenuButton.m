@@ -83,7 +83,7 @@ static const CGFloat kButtonWidthColetteWide = 192.0;
 static const CGFloat kButtonWidthNarrow = 40.0;
 
 // The resizable-image cap insets keep a one-pixel border and stretch the rest, so the left and
-// right insets are derived from half the source image's dimensions less one point.
+// right insets are both derived from half the source image's width less one point.
 static const CGFloat kCapInsetHalf = 0.5;
 static const CGFloat kCapInsetBorder = 1.0;
 
@@ -186,13 +186,15 @@ static const UIViewAutoresizing kEffectTextAutoresizing =
 
 @end
 
-// Build the resizable-image cap insets for a themed asset: a one-pixel border on the left and right
-// edges, derived from half the image's width and height less a point. The top and bottom insets are
-// zero so the artwork stretches only horizontally through its centre.
+// Build the resizable-image cap insets for a themed asset: both the left and the right cap are half
+// the image's width less a point, leaving a two-point stretchable column at the centre. The top and
+// bottom insets are zero so the artwork stretches only horizontally. The binary sends -size twice
+// and takes the width from each call; the height arrives in d1 and is overwritten before it is
+// read.
 static UIEdgeInsets CapInsetsForImage(UIImage *image) {
     CGSize size = image.size;
     return UIEdgeInsetsMake(0.0,
                             size.width * kCapInsetHalf - kCapInsetBorder,
                             0.0,
-                            size.height * kCapInsetHalf - kCapInsetBorder);
+                            size.width * kCapInsetHalf - kCapInsetBorder);
 }
