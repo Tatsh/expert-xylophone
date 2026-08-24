@@ -179,6 +179,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 #ifdef ENABLE_PATCHES
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * @brief Whether the catalogue priced this pack at nothing.
  *
@@ -191,6 +194,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @return @c YES when the catalogue reported a price of zero for this pack.
  */
 BOOL RBStorePackIsFreeFromCatalog(int packID);
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 NS_ASSUME_NONNULL_END

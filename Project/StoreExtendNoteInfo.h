@@ -235,6 +235,9 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
 @end
 
 #ifdef ENABLE_PATCHES
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * @brief Whether the catalogue priced this extend note at nothing.
  *
@@ -247,6 +250,9 @@ typedef NS_ENUM(NSInteger, StoreExtendNoteButtonState) {
  * @return @c YES when the catalogue reported a price of zero for this note.
  */
 BOOL RBStoreExtendNoteIsFreeFromCatalog(int extendNoteID);
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 NS_ASSUME_NONNULL_END

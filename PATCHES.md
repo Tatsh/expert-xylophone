@@ -110,6 +110,11 @@ for songs, `-createExtendNoteDataArray` for notes, and the extend lookup inside 
 An unpatched build keeps each original lookup exactly — bundle only for the preinstalled songs,
 purchased-then-legacy for `mulist`, and purchased only for `nolist`.
 
+Two of the bundle's five archives are skipped outright: the timing-adjust preview the customise
+screen plays (999999999) and the tutorial tune (999999998). Both are ordinary archives loaded
+straight from the bundle by identifier, so registering either would list it as a song, and
+fingerprinting either would make an unlisted copy of it pair as its extend note.
+
 Telling the two kinds apart is the whole problem, because they are indistinguishable by name or by
 format: both are `%09d.rb` in the same directory, and an extend note is read by the ordinary
 `MusicData` parser with its SPECIAL chart in the BASIC slot. What separates them is that an extend

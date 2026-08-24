@@ -88,6 +88,12 @@ static NSString *const kArchiveAudioEntry = @"bgm";
 
 // The lowest level an archive's difficulty field can hold, mirroring MusicData's own kLevelMinimum.
 static const int kArchiveLevelMinimum = 1;
+
+// The bundle ships two archives that are not catalogue tunes: the timing-adjust preview used by the
+// customise screen (kPreviewMusicID in RBViewController.mm) and the tutorial tune (kTutorialMusicID
+// in RBMusicView.mm, spelled 0x3b9ac9fe there). Both are loaded straight from the bundle by
+// identifier wherever they are needed, so registering either would list it as an ordinary song.
+static const int kReservedArchiveIDs[] = {999999998, 999999999};
 #endif
 
 // The number of client-music entries reserved per outstanding page.
@@ -265,11 +271,23 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     NSMutableSet<NSNumber *> *knownMusicIDs = [NSMutableSet setWithSet:listedMusicIDs];
     [knownMusicIDs addObjectsFromArray:self.preinstallMusicIDs];
 
+    // The bundle's two non-catalogue archives are skipped outright. They must not be registered as
+    // songs, and they must not fingerprint either: the tutorial and preview tunes are ordinary
+    // archives, so an unlisted copy of one would otherwise pair with it and be filed as its extend
+    // note.
+    NSMutableSet<NSNumber *> *reservedIDs = [NSMutableSet set];
+    for (NSUInteger index = 0; index < ARRAY_SIZE(kReservedArchiveIDs); ++index) {
+        [reservedIDs addObject:@(kReservedArchiveIDs[index])];
+    }
+
     // The audio fingerprint of every song already known, so an unlisted archive carrying one of
     // them can be recognised as that song's extend note rather than as a new song.
     NSMutableDictionary<NSNumber *, NSNumber *> *audioCRCToMusicID =
         [NSMutableDictionary dictionary];
     for (NSNumber *musicID in knownMusicIDs) {
+        if ([reservedIDs containsObject:musicID]) {
+            continue;
+        }
         NSString *path = [RBMusicManager resolveArchivePath:musicID.intValue];
         uint32_t crc = 0;
         if (path != nil && RBArchiveEntryCRC(path, kArchiveAudioEntry, &crc)) {
@@ -286,7 +304,7 @@ static void RBCollectArchiveIDs(NSString *directory, NSMutableSet<NSNumber *> *o
     BOOL noteListChanged = NO;
     for (NSNumber *foundID in presentIDs) {
         if ([listedMusicIDs containsObject:foundID] || [listedNoteIDs containsObject:foundID] ||
-            [knownMusicIDs containsObject:foundID]) {
+            [knownMusicIDs containsObject:foundID] || [reservedIDs containsObject:foundID]) {
             continue;
         }
         NSString *path = [RBMusicManager resolveArchivePath:foundID.intValue];
