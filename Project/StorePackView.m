@@ -55,6 +55,14 @@ static const CGFloat kPriceLabelFontSize = 15.0;
 static const int kButtonStretchCap = 6;
 static const CGFloat kButtonFontSize = 15.0;
 static const CGFloat kButtonTitleWhite = 0.62;
+
+// The white component of the song-list and price labels, 50/255. Both had been drawn with
+// g_dRBWebViewGrayViewWhite, which is 0.6 and belongs to the purchased button's title-shadow alpha
+// further down, leaving the two labels a washed-out grey where the original draws them nearly
+// black.
+// @ghidraAddress 0xfe2f8 (song list)
+// @ghidraAddress 0xfe424 (price)
+static const CGFloat kBodyLabelWhite = 0.196078;
 static const CGFloat kButtonWidthPadding = 10.0;
 static const CGFloat kButtonHeightPadding = 4.0;
 static const CGFloat kButtonRightInset = 15.0;
@@ -96,7 +104,8 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                                       kNameLabelHeight)];
         self.nameLabel.backgroundColor = UIColor.clearColor;
         self.nameLabel.font = [UIFont boldSystemFontOfSize:kNameLabelFontSize];
-        self.nameLabel.textColor = [UIColor colorWithWhite:kJacketBackgroundWhite alpha:1.0];
+        // The original builds this with colorWithWhite:0.0 alpha:1.0.
+        self.nameLabel.textColor = UIColor.blackColor;
         self.nameLabel.adjustsFontSizeToFitWidth = YES;
         // The binary passes 11.0 here, an out-of-range minimum scale factor; reproduced verbatim.
         self.nameLabel.minimumScaleFactor = kNameLabelMinimumScaleFactor;
@@ -113,7 +122,7 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                      buttonTop - kCommentLabelBottomLift)];
         self.commentLabel.backgroundColor = UIColor.clearColor;
         self.commentLabel.font = [UIFont systemFontOfSize:kCommentLabelFontSize];
-        self.commentLabel.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
+        self.commentLabel.textColor = [UIColor colorWithWhite:kBodyLabelWhite alpha:1.0];
         self.commentLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         self.commentLabel.baselineAdjustment = UIBaselineAdjustmentAlignBaselines;
         self.commentLabel.numberOfLines = kCommentLabelNumberOfLines;
@@ -124,7 +133,7 @@ static const CGFloat kCommentLabelBottomLift = 30.0;
                                                                     buttonHeight)];
         self.priceLabel.backgroundColor = UIColor.clearColor;
         self.priceLabel.font = [UIFont boldSystemFontOfSize:kPriceLabelFontSize];
-        self.priceLabel.textColor = [UIColor colorWithWhite:g_dRBWebViewGrayViewWhite alpha:1.0];
+        self.priceLabel.textColor = [UIColor colorWithWhite:kBodyLabelWhite alpha:1.0];
 
         UIImage *newBadge = [UIImage imageWithName:kStoreNewBadgeImageName];
         self.iconNew = [[UIImageView alloc] initWithImage:newBadge];
