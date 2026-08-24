@@ -5120,6 +5120,8 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPartsAnchorPhone[27].y = 180.0f;
         g_aLimelightPartsAnchorPhone[29].x = 612.0f;
         g_aLimelightPartsAnchorPhone[29].y = 204.0f;
+        g_aLimelightPartsAnchorPhone[30].x = 614.0f;
+        g_aLimelightPartsAnchorPhone[30].y = 204.0f;
         g_aLimelightPartsAnchorPhone[32].x = 500.0f;
         g_aLimelightPartsAnchorPhone[32].y = 222.0f;
         g_aLimelightPartsAnchorPhone[31].x = 493.0f;
@@ -5158,18 +5160,32 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPartsAnchorPhone[47].y = 491.0f;
         g_aLimelightPartsAnchorPhone[49].x = 222.0f;
         g_aLimelightPartsAnchorPhone[49].y = 523.0f;
+        g_aLimelightPartsAnchorPhone[50].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[50].y = 537.0f;
         g_aLimelightPartsAnchorPhone[51].x = 222.0f;
         g_aLimelightPartsAnchorPhone[51].y = 549.0f;
+        g_aLimelightPartsAnchorPhone[52].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[52].y = 563.0f;
         g_aLimelightPartsAnchorPhone[53].x = 222.0f;
         g_aLimelightPartsAnchorPhone[53].y = 575.0f;
+        g_aLimelightPartsAnchorPhone[54].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[54].y = 589.0f;
         g_aLimelightPartsAnchorPhone[55].x = 222.0f;
         g_aLimelightPartsAnchorPhone[55].y = 601.0f;
+        g_aLimelightPartsAnchorPhone[56].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[56].y = 615.0f;
         g_aLimelightPartsAnchorPhone[57].x = 222.0f;
         g_aLimelightPartsAnchorPhone[57].y = 627.0f;
+        g_aLimelightPartsAnchorPhone[58].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[58].y = 641.0f;
         g_aLimelightPartsAnchorPhone[59].x = 222.0f;
         g_aLimelightPartsAnchorPhone[59].y = 653.0f;
+        g_aLimelightPartsAnchorPhone[60].x = 152.0f;
+        g_aLimelightPartsAnchorPhone[60].y = 667.0f;
         g_aLimelightPartsAnchorPhone[61].x = 222.0f;
         g_aLimelightPartsAnchorPhone[61].y = 685.0f;
+        g_aLimelightPartsAnchorPhone[62].x = 236.0f;
+        g_aLimelightPartsAnchorPhone[62].y = 705.0f;
         g_aLimelightPartsAnchorPhone[64].x = 477.0f;
         g_aLimelightPartsAnchorPhone[64].y = 491.0f;
         g_aLimelightPartsAnchorPhone[63].x = 152.0f;
@@ -5737,6 +5753,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPhoneAnchorPortrait[87].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[0].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[0].flY = -164.0f;
+        g_aLimelightSeparatorPhoneDefault[0].flWidth = 261.0f;
         g_aLimelightSeparatorPhoneDefault[1].flX = -42.0f;
         g_aLimelightSeparatorPhoneDefault[1].flY = -56.0f;
         g_aLimelightSeparatorPhoneDefault[1].flWidth = 83.0f;
@@ -5749,6 +5766,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[3].flY = -139.0f;
         g_aLimelightSeparatorPhoneDefault[4].flX = -133.0f;
         g_aLimelightSeparatorPhoneDefault[4].flY = -57.0f;
+        g_aLimelightSeparatorPhoneDefault[4].flWidth = 1.0f;
         g_aLimelightSeparatorPhoneDefault[6].flY = -139.0f;
         g_aLimelightSeparatorPhoneDefault[6].flX = -50.0f;
         g_aLimelightSeparatorPhoneDefault[9].flX = -50.0f;
@@ -5766,6 +5784,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[7].flHeight = -1.5707964f;
         g_aLimelightSeparatorPhoneDefault[8].flX = -132.0f;
         g_aLimelightSeparatorPhoneDefault[8].flY = -57.0f;
+        g_aLimelightSeparatorPhoneDefault[8].flWidth = 82.0f;
         g_aLimelightSeparatorPhoneDefault[9].flY = -57.0f;
         g_aLimelightSeparatorPhoneDefault[10].flX = -33.0f;
         g_aLimelightSeparatorPhoneDefault[10].flY = -132.0f;
@@ -5777,6 +5796,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[11].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[12].flX = -48.0f;
         g_aLimelightSeparatorPhoneDefault[12].flY = 21.0f;
+        g_aLimelightSeparatorPhoneDefault[12].flWidth = 96.0f;
         g_aLimelightSeparatorPhoneDefault[12].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[13].flX = -48.0f;
         g_aLimelightSeparatorPhoneDefault[13].flY = 35.0f;
@@ -5793,6 +5813,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[15].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[16].flX = -48.0f;
         g_aLimelightSeparatorPhoneDefault[16].flY = 77.0f;
+        g_aLimelightSeparatorPhoneDefault[16].flWidth = 96.0f;
         g_aLimelightSeparatorPhoneDefault[16].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[17].flX = -48.0f;
         g_aLimelightSeparatorPhoneDefault[17].flY = 91.0f;
@@ -5807,6 +5828,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[19].flWidth = 96.0f;
         g_aLimelightSeparatorPhoneDefault[20].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[20].flY = -3.0f;
+        g_aLimelightSeparatorPhoneDefault[20].flWidth = 23.0f;
         g_aLimelightSeparatorPhoneDefault[20].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[21].flX = -78.0f;
         g_aLimelightSeparatorPhoneDefault[21].flY = -3.0f;
@@ -5820,6 +5842,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[23].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[24].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[24].flY = 49.0f;
+        g_aLimelightSeparatorPhoneDefault[24].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[26].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[26].flY = 77.0f;
         g_aLimelightSeparatorPhoneDefault[26].flWidth = 76.0f;
@@ -5831,6 +5854,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[27].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[28].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[28].flY = 105.0f;
+        g_aLimelightSeparatorPhoneDefault[28].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[28].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[29].flX = -131.0f;
         g_aLimelightSeparatorPhoneDefault[29].flY = 119.0f;
@@ -5861,6 +5885,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[25].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[32].flX = 55.0f;
         g_aLimelightSeparatorPhoneDefault[32].flY = 21.0f;
+        g_aLimelightSeparatorPhoneDefault[32].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[35].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[38].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[38].nAnchorMode = 4;
@@ -5888,8 +5913,10 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[34].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[36].flX = 55.0f;
         g_aLimelightSeparatorPhoneDefault[36].flY = 77.0f;
+        g_aLimelightSeparatorPhoneDefault[36].flWidth = 76.0f;
         g_aLimelightSeparatorPhoneDefault[40].flX = 88.0f;
         g_aLimelightSeparatorPhoneDefault[40].flY = -7.0f;
+        g_aLimelightSeparatorPhoneDefault[40].flHeight = 1.5707964f;
         g_aLimelightSeparatorPhoneDefault[41].flWidth = 94.0f;
         g_aLimelightSeparatorPhoneDefault[42].flX = 37.0f;
         g_aLimelightSeparatorPhoneDefault[42].flY = -12.0f;
@@ -5902,6 +5929,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[43].flHeight = 0.0f;
         g_aLimelightSeparatorPhoneDefault[44].flX = 42.0f;
         g_aLimelightSeparatorPhoneDefault[44].flY = 65.0f;
+        g_aLimelightSeparatorPhoneDefault[44].flWidth = 89.0f;
         g_aLimelightSeparatorPhoneDefault[44].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[45].flX = -98.0f;
         g_aLimelightSeparatorPhoneDefault[45].flY = 105.0f;
@@ -5958,6 +5986,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhoneDefault[47].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[48].flX = -117.0f;
         g_aLimelightSeparatorPhoneDefault[48].flY = 28.0f;
+        g_aLimelightSeparatorPhoneDefault[48].flWidth = 233.0f;
         g_aLimelightSeparatorPhoneDefault[49].nAnchorMode = 4;
         g_aLimelightSeparatorPhoneDefault[50].flX = -117.0f;
         g_aLimelightSeparatorPhoneDefault[50].flY = 58.0f;
@@ -6170,6 +6199,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPartsAnchorPhone[131].y = 707.0f;
         g_aLimelightSeparatorPhonePortrait[0].flX = -102.0f;
         g_aLimelightSeparatorPhonePortrait[0].flY = -103.0f;
+        g_aLimelightSeparatorPhonePortrait[0].flWidth = 231.0f;
         g_aLimelightSeparatorPhonePortrait[1].flX = -112.0f;
         g_aLimelightSeparatorPhonePortrait[1].flY = -41.0f;
         g_aLimelightSeparatorPhonePortrait[1].flWidth = 83.0f;
@@ -6180,6 +6210,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[2].flHeight = -1.5707964f;
         g_aLimelightSeparatorPhonePortrait[4].flX = -205.0f;
         g_aLimelightSeparatorPhonePortrait[4].flY = -37.0f;
+        g_aLimelightSeparatorPhonePortrait[4].flWidth = 1.0f;
         g_aLimelightSeparatorPhonePortrait[5].flX = -122.0f;
         g_aLimelightSeparatorPhonePortrait[5].flY = -36.0f;
         g_aLimelightSeparatorPhonePortrait[5].flWidth = 1.0f;
@@ -6190,6 +6221,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[7].flHeight = -1.5707964f;
         g_aLimelightSeparatorPhonePortrait[8].flX = -204.0f;
         g_aLimelightSeparatorPhonePortrait[8].flY = -37.0f;
+        g_aLimelightSeparatorPhonePortrait[8].flWidth = 82.0f;
         g_aLimelightSeparatorPhonePortrait[10].flX = -101.0f;
         g_aLimelightSeparatorPhonePortrait[10].flY = -72.0f;
         g_aLimelightSeparatorPhonePortrait[10].flWidth = 305.0f;
@@ -6200,6 +6232,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[11].flHeight = 0.0f;
         g_aLimelightSeparatorPhonePortrait[12].flX = -53.0f;
         g_aLimelightSeparatorPhonePortrait[12].flY = 13.0f;
+        g_aLimelightSeparatorPhonePortrait[12].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[0].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[1].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[2].nAnchorMode = 4;
@@ -6220,6 +6253,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[15].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[16].flX = -53.0f;
         g_aLimelightSeparatorPhonePortrait[16].flY = 57.0f;
+        g_aLimelightSeparatorPhonePortrait[16].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[17].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[18].flX = -53.0f;
         g_aLimelightSeparatorPhonePortrait[18].flY = 79.0f;
@@ -6230,12 +6264,15 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[19].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[20].flX = -196.0f;
         g_aLimelightSeparatorPhonePortrait[20].flY = 90.0f;
+        g_aLimelightSeparatorPhonePortrait[20].flWidth = 23.0f;
+        g_aLimelightSeparatorPhonePortrait[20].flHeight = 1.5707964f;
         g_aLimelightSeparatorPhonePortrait[21].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[22].flY = 13.0f;
         g_aLimelightSeparatorPhonePortrait[22].flHeight = 0.0f;
         g_aLimelightSeparatorPhonePortrait[23].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[24].flX = -178.0f;
         g_aLimelightSeparatorPhonePortrait[24].flY = 35.0f;
+        g_aLimelightSeparatorPhonePortrait[24].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[24].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[41].flWidth = 63.0f;
         g_aLimelightSeparatorPhonePortrait[42].nAnchorMode = 4;
@@ -6268,6 +6305,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[27].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[28].flX = -178.0f;
         g_aLimelightSeparatorPhonePortrait[28].flY = 79.0f;
+        g_aLimelightSeparatorPhonePortrait[28].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[29].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[30].flX = 195.0f;
         g_aLimelightSeparatorPhonePortrait[30].flY = 90.0f;
@@ -6276,6 +6314,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[31].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[32].flX = 73.0f;
         g_aLimelightSeparatorPhonePortrait[32].flY = 13.0f;
+        g_aLimelightSeparatorPhonePortrait[32].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[33].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[34].flX = 73.0f;
         g_aLimelightSeparatorPhonePortrait[34].flY = 35.0f;
@@ -6287,11 +6326,14 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[35].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[36].flX = 73.0f;
         g_aLimelightSeparatorPhonePortrait[36].flY = 57.0f;
+        g_aLimelightSeparatorPhonePortrait[36].flWidth = 105.0f;
         g_aLimelightSeparatorPhonePortrait[37].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[38].flHeight = 0.0f;
         g_aLimelightSeparatorPhonePortrait[39].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[40].flX = 8.0f;
         g_aLimelightSeparatorPhonePortrait[40].flY = 85.0f;
+        g_aLimelightSeparatorPhonePortrait[40].flWidth = 70.0f;
+        g_aLimelightSeparatorPhonePortrait[40].flHeight = 1.5707964f;
         g_aLimelightSeparatorPhonePortrait[40].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[41].flHeight = 0.0f;
         g_aLimelightSeparatorPhonePortrait[41].nAnchorMode = 4;
@@ -6302,6 +6344,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[43].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[44].flX = 153.0f;
         g_aLimelightSeparatorPhonePortrait[44].flY = 15.0f;
+        g_aLimelightSeparatorPhonePortrait[44].flWidth = 49.0f;
         g_aLimelightSeparatorPhonePortrait[45].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[46].flX = -197.0f;
         g_aLimelightSeparatorPhonePortrait[46].flY = 9.0f;
@@ -6310,6 +6353,7 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightSeparatorPhonePortrait[47].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[48].flX = 13.0f;
         g_aLimelightSeparatorPhonePortrait[48].flY = 21.0f;
+        g_aLimelightSeparatorPhonePortrait[48].flWidth = 183.0f;
         g_aLimelightSeparatorPhonePortrait[49].nAnchorMode = 4;
         g_aLimelightSeparatorPhonePortrait[50].flX = 13.0f;
         g_aLimelightSeparatorPhonePortrait[50].flY = 34.0f;
@@ -6378,6 +6422,8 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPositionPhoneStatePortrait[3].flWidth = 46.0f;
         g_aLimelightPositionPhoneStatePortrait[0].flX = -83.0f;
         g_aLimelightPositionPhoneStatePortrait[0].flY = -67.0f;
+        g_aLimelightPositionPhoneStatePortrait[0].flWidth = 166.0f;
+        g_aLimelightPositionPhoneStatePortrait[0].flHeight = 56.0f;
         g_aLimelightPositionPhoneStatePortrait[0].nAnchorMode = 5;
         g_aLimelightPositionPhoneStatePortrait[1].nAnchorMode = 0;
         g_aLimelightPositionPhoneStatePortrait[3].flHeight = 44.0f;
@@ -6388,6 +6434,8 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightPositionPhoneStateDefault[3].flWidth = 46.0f;
         g_aLimelightPositionPhoneStateDefault[0].flX = -70.5f;
         g_aLimelightPositionPhoneStateDefault[0].flY = -37.0f;
+        g_aLimelightPositionPhoneStateDefault[0].flWidth = 141.0f;
+        g_aLimelightPositionPhoneStateDefault[0].flHeight = 38.0f;
         g_aLimelightPositionPhoneStateDefault[1].nAnchorMode = 0;
         g_aLimelightPositionPhoneStateDefault[2].nAnchorMode = 0;
         g_aLimelightPositionPhoneStateDefault[3].flHeight = 44.0f;
@@ -6472,12 +6520,20 @@ __attribute__((constructor)) void InitializePadResultLayoutTable() {
         g_aLimelightColorMarkerRects[37].flY = 908.0f;
         g_aLimelightColorMarkerRects[38].flX = 647.0f;
         g_aLimelightColorMarkerRects[38].flY = 909.0f;
+        // Each centre-position record arrives as one 16-byte pool blob, so all four fields are
+        // set: 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0.
         g_LimelightCenterPositionPhoneState.flX = 119.0f;
         g_LimelightCenterPositionPhoneState.flY = 439.0f;
+        g_LimelightCenterPositionPhoneState.flWidth = 530.0f;
+        g_LimelightCenterPositionPhoneState.flHeight = 460.0f;
         g_LimelightCenterPositionPhonePortrait.flX = -141.0f;
         g_LimelightCenterPositionPhonePortrait.flY = -32.0f;
+        g_LimelightCenterPositionPhonePortrait.flWidth = 281.0f;
+        g_LimelightCenterPositionPhonePortrait.flHeight = 181.0f;
         g_LimelightCenterPositionPhoneDefault.flX = -214.0f;
         g_LimelightCenterPositionPhoneDefault.flY = -31.0f;
+        g_LimelightCenterPositionPhoneDefault.flWidth = 428.0f;
+        g_LimelightCenterPositionPhoneDefault.flHeight = 119.0f;
         g_aLimelightPartsPad[1].flWidth = 242.0f;
         g_aLimelightPartsPad[1].flHeight = 60.0f;
         g_aLimelightPartsPad[4].flX = g_aLimelightPartsPad[3].flX;

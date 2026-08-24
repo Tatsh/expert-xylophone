@@ -12,6 +12,8 @@
 
 #import "RBMusicSpeedView.h"
 
+#include <cmath>
+
 #import "RBMusicView.h"
 #import "RBUserSettingData.h"
 #import "UIImage+RB.h"
@@ -243,7 +245,11 @@ constexpr CGFloat kTapDeadZoneDefault = 20.0;
         speed = kSpeedMax;
     } else {
         CGFloat stepWidth = (barWidth - (deadZone + deadZone)) / kSpeedSlotCount;
-        speed = static_cast<int>((location.x - deadZone) / stepWidth);
+        // The binary narrows the quotient to float and rounds it to nearest with ties away from
+        // zero (fcvt s0,d0 then fcvtas w2,s0), so a tap snaps to the closest tick rather than to
+        // the slot it landed in.
+        speed =
+            static_cast<int>(std::lroundf(static_cast<float>((location.x - deadZone) / stepWidth)));
     }
     [self SelectSpeed:speed];
 }

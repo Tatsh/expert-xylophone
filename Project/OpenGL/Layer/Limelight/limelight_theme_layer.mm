@@ -239,8 +239,8 @@ constexpr float kRankPositionCurve[kRankGlyphCount][kRankPositionKnots * 2] = {
      427.0f,
      3100.0f,
      267.0f},
-    {100.0f, 1211.0f, 500.0f, 857.0f, 633.33331f, 660.0f, 750.0f, 506.0f, 3100.0f, 346.0f},
-    {166.66667f, 1444.0f, 233.33333f, 1025.0f, 700.0f, 784.0f, 816.66669f, 593.0f, 3100.0f, 433.0f},
+    {300.0f, 1211.0f, 500.0f, 857.0f, 633.33331f, 660.0f, 750.0f, 506.0f, 3100.0f, 346.0f},
+    {366.66666f, 1444.0f, 566.66669f, 1025.0f, 700.0f, 784.0f, 816.66669f, 593.0f, 3100.0f, 433.0f},
     {433.33334f,
      1571.0f,
      633.33331f,
@@ -453,7 +453,7 @@ constexpr int kArDigitKnots = 3;
 constexpr float kArDigitAbsoluteX[kArDigitGlyphCount] = {
     74.0f,  74.0f,  194.0f, 194.0f, 454.0f, 454.0f, 229.0f, 229.0f, 545.0f, 545.0f, 725.0f, 725.0f,
     564.0f, 564.0f, 234.0f, 234.0f, 657.0f, 657.0f, 464.0f, 464.0f, 593.0f, 593.0f, 593.0f, 593.0f,
-    334.0f, 334.0f, 134.0f, 134.0f, 644.0f, 644.0f, 71.0f,  71.0f,  424.0f, 424.0f, 192.0f};
+    334.0f, 334.0f, 134.0f, 134.0f, 644.0f, 644.0f, 71.0f,  71.0f,  424.0f, 424.0f, 384.0f};
 
 // Each AR-digit glyph's per-frame scale curve ({time, scale} knots at @ghidraAddress 0x305a1c).
 constexpr float kArDigitScaleCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
@@ -572,7 +572,7 @@ constexpr float kArDigitPositionCurve[kArDigitGlyphCount][kArDigitKnots * 2] = {
     {0.0f, 709.0f, 166.66667f, 695.0f, 666.66669f, 659.0f},
     {83.33334f, 594.0f, 250.0f, 564.0f, 750.0f, 544.0f},
     {83.33334f, 594.0f, 250.0f, 564.0f, 750.0f, 544.0f},
-    {166.66667f, 594.0f, 333.33334f, 594.0f, 833.33331f, 594.0f},
+    {166.66667f, 574.0f, 333.33334f, 524.0f, 833.33331f, 494.0f},
 };
 
 } // namespace
@@ -667,14 +667,15 @@ void LimelightThemeLayer::UpdateGradeDisplay(float flDeltaTime) {
 
     AdvanceGradeChannel(flDeltaTime);
 
-    if (m_bGradeVisible) {
-        // Run the reveal clock while the display is showing, and stop it once it passes the reveal
-        // duration.
-        if (m_bGradeClockActive) {
+    if (m_bGradeClockActive) {
+        // Advance the reveal clock while it is running, and stop it once it passes the reveal
+        // duration. The whole display is gated on the clock flag; the visible flag only decides
+        // whether the clock advances.
+        if (m_bGradeVisible) {
             m_flGradeRevealClock += flDeltaTime;
         }
         if (m_flGradeRevealClock >= m_flGradeRevealDuration) {
-            m_bGradeClockActive = false;
+            m_bGradeVisible = false;
         }
         // The base grade sprite fades in over the reveal, scaled by the reveal channel's value.
         const float flReveal = CalculateCurveInterpolation(

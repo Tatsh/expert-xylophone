@@ -1437,15 +1437,15 @@ float ResultWindowClassicLayer::AdvanceCustomizeOverlayProgress(int nDeltaFrames
         flResult = 0.0f;
     } else if (flExpRatio >= 1.0f) {
         // The reveal reached its target: latch it, show the next character texture, advance the
-        // asset index, and either record the pending track index or begin the main-asset load.
+        // player level, and either record the pending track index or begin the main-asset load.
         m_bExpAnimSettled = true;
-        ToggleCustomizeCharacterTexture(static_cast<unsigned int>(m_nMainAssetId));
-        ++m_nMainAssetId;
+        ToggleCustomizeCharacterTexture(static_cast<unsigned int>(m_nPlayerLevel));
+        ++m_nPlayerLevel;
         if (m_bCustomizePending) {
             m_bCustomizePending = false;
-            m_nTrackIndexC = m_nMainAssetId;
+            m_nTrackIndexC = m_nPlayerLevel;
         } else {
-            BeginCustomizeMainAsset(static_cast<unsigned int>(m_nMainAssetId));
+            BeginCustomizeMainAsset(static_cast<unsigned int>(m_nPlayerLevel));
         }
         flResult = 1.0f;
     } else {
@@ -5243,6 +5243,8 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPartsAnchorPad[32].y = 180.0f;
         g_aClassicPartsAnchorPad[34].x = 619.0f;
         g_aClassicPartsAnchorPad[34].y = 204.0f;
+        g_aClassicPartsAnchorPad[35].x = 621.0f;
+        g_aClassicPartsAnchorPad[35].y = 204.0f;
         g_aClassicPartsAnchorPad[37].x = 500.0f;
         g_aClassicPartsAnchorPad[37].y = 222.0f;
         g_aClassicPartsAnchorPad[36].x = 493.0f;
@@ -5281,16 +5283,28 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPartsAnchorPad[52].y = 491.0f;
         g_aClassicPartsAnchorPad[54].x = 222.0f;
         g_aClassicPartsAnchorPad[54].y = 523.0f;
+        g_aClassicPartsAnchorPad[55].x = 152.0f;
+        g_aClassicPartsAnchorPad[55].y = 537.0f;
         g_aClassicPartsAnchorPad[56].x = 222.0f;
         g_aClassicPartsAnchorPad[56].y = 549.0f;
+        g_aClassicPartsAnchorPad[57].x = 152.0f;
+        g_aClassicPartsAnchorPad[57].y = 563.0f;
         g_aClassicPartsAnchorPad[58].x = 222.0f;
         g_aClassicPartsAnchorPad[58].y = 575.0f;
+        g_aClassicPartsAnchorPad[59].x = 152.0f;
+        g_aClassicPartsAnchorPad[59].y = 589.0f;
         g_aClassicPartsAnchorPad[60].x = 222.0f;
         g_aClassicPartsAnchorPad[60].y = 601.0f;
+        g_aClassicPartsAnchorPad[61].x = 152.0f;
+        g_aClassicPartsAnchorPad[61].y = 615.0f;
         g_aClassicPartsAnchorPad[62].x = 222.0f;
         g_aClassicPartsAnchorPad[62].y = 627.0f;
+        g_aClassicPartsAnchorPad[63].x = 152.0f;
+        g_aClassicPartsAnchorPad[63].y = 641.0f;
         g_aClassicPartsAnchorPad[64].x = 222.0f;
         g_aClassicPartsAnchorPad[64].y = 653.0f;
+        g_aClassicPartsAnchorPad[65].x = 152.0f;
+        g_aClassicPartsAnchorPad[65].y = 667.0f;
         g_aClassicPartsAnchorPad[130].x = 252.0f;
         g_aClassicPartsAnchorPad[130].y = 391.0f;
         g_aClassicPositionPhonePortrait[0].flX = 0.0f;
@@ -5655,6 +5669,8 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPositionPhoneLandscape[68].flX = -348.0f;
         g_aClassicPartsAnchorPad[66].x = 222.0f;
         g_aClassicPartsAnchorPad[66].y = 685.0f;
+        g_aClassicPartsAnchorPad[67].x = 236.0f;
+        g_aClassicPartsAnchorPad[67].y = 705.0f;
         g_aClassicPartsAnchorPad[69].x = 477.0f;
         g_aClassicPartsAnchorPad[69].y = 491.0f;
         g_aClassicPartsAnchorPad[68].x = 152.0f;
@@ -5802,6 +5818,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPositionPhoneLandscape[81].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[0].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[0].flY = -164.0f;
+        g_aClassicSeparatorPhonePortrait[0].flWidth = 261.0f;
         g_aClassicSeparatorPhonePortrait[1].flX = -42.0f;
         g_aClassicSeparatorPhonePortrait[1].flY = -56.0f;
         g_aClassicSeparatorPhonePortrait[1].flWidth = 83.0f;
@@ -5814,6 +5831,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[3].flY = -139.0f;
         g_aClassicSeparatorPhonePortrait[4].flX = -133.0f;
         g_aClassicSeparatorPhonePortrait[4].flY = -57.0f;
+        g_aClassicSeparatorPhonePortrait[4].flWidth = 1.0f;
         g_aClassicSeparatorPhonePortrait[6].flY = -139.0f;
         g_aClassicSeparatorPhonePortrait[6].flX = -50.0f;
         g_aClassicSeparatorPhonePortrait[9].flX = -50.0f;
@@ -5828,6 +5846,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[7].flHeight = -1.5707964f;
         g_aClassicSeparatorPhonePortrait[8].flX = -132.0f;
         g_aClassicSeparatorPhonePortrait[8].flY = -57.0f;
+        g_aClassicSeparatorPhonePortrait[8].flWidth = 82.0f;
         g_aClassicSeparatorPhonePortrait[9].flY = -57.0f;
         g_aClassicSeparatorPhonePortrait[10].flX = -33.0f;
         g_aClassicSeparatorPhonePortrait[10].flY = -132.0f;
@@ -5839,6 +5858,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[11].flHeight = 0.0f;
         g_aClassicSeparatorPhonePortrait[12].flX = -48.0f;
         g_aClassicSeparatorPhonePortrait[12].flY = 21.0f;
+        g_aClassicSeparatorPhonePortrait[12].flWidth = 96.0f;
         g_aClassicSeparatorPhonePortrait[12].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[13].flX = -48.0f;
         g_aClassicSeparatorPhonePortrait[13].flY = 35.0f;
@@ -5855,6 +5875,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[15].flHeight = 0.0f;
         g_aClassicSeparatorPhonePortrait[16].flX = -48.0f;
         g_aClassicSeparatorPhonePortrait[16].flY = 77.0f;
+        g_aClassicSeparatorPhonePortrait[16].flWidth = 96.0f;
         g_aClassicSeparatorPhonePortrait[16].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[17].flX = -48.0f;
         g_aClassicSeparatorPhonePortrait[17].flY = 91.0f;
@@ -5869,6 +5890,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[19].flWidth = 96.0f;
         g_aClassicSeparatorPhonePortrait[20].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[20].flY = -3.0f;
+        g_aClassicSeparatorPhonePortrait[20].flWidth = 23.0f;
         g_aClassicSeparatorPhonePortrait[20].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[21].flX = -78.0f;
         g_aClassicSeparatorPhonePortrait[21].flY = -3.0f;
@@ -5882,6 +5904,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[23].flHeight = 0.0f;
         g_aClassicSeparatorPhonePortrait[24].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[24].flY = 49.0f;
+        g_aClassicSeparatorPhonePortrait[24].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[26].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[26].flY = 77.0f;
         g_aClassicSeparatorPhonePortrait[26].flWidth = 76.0f;
@@ -5893,6 +5916,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[27].flHeight = 0.0f;
         g_aClassicSeparatorPhonePortrait[28].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[28].flY = 105.0f;
+        g_aClassicSeparatorPhonePortrait[28].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[28].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[29].flX = -131.0f;
         g_aClassicSeparatorPhonePortrait[29].flY = 119.0f;
@@ -5928,6 +5952,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[25].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[32].flX = 55.0f;
         g_aClassicSeparatorPhonePortrait[32].flY = 21.0f;
+        g_aClassicSeparatorPhonePortrait[32].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[35].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[38].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[38].nAnchorMode = 4;
@@ -5980,12 +6005,14 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[35].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[36].flX = 55.0f;
         g_aClassicSeparatorPhonePortrait[36].flY = 77.0f;
+        g_aClassicSeparatorPhonePortrait[36].flWidth = 76.0f;
         g_aClassicSeparatorPhonePortrait[37].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[38].flY = 105.0f;
         g_aClassicSeparatorPhonePortrait[38].flHeight = 0.0f;
         g_aClassicSeparatorPhonePortrait[39].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[40].flX = 88.0f;
         g_aClassicSeparatorPhonePortrait[40].flY = -7.0f;
+        g_aClassicSeparatorPhonePortrait[40].flHeight = 1.5707964f;
         g_aClassicSeparatorPhonePortrait[40].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[41].flWidth = 94.0f;
         g_aClassicSeparatorPhonePortrait[41].flHeight = 0.0f;
@@ -6002,6 +6029,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhonePortrait[43].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[44].flX = 42.0f;
         g_aClassicSeparatorPhonePortrait[44].flY = 65.0f;
+        g_aClassicSeparatorPhonePortrait[44].flWidth = 89.0f;
         g_aClassicSeparatorPhonePortrait[44].nAnchorMode = 4;
         g_aClassicSeparatorPhonePortrait[45].flX = -98.0f;
         g_aClassicSeparatorPhonePortrait[45].flY = 105.0f;
@@ -6207,6 +6235,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPartsAnchorPad[128].y = 378.0f;
         g_aClassicSeparatorPhoneLandscape[0].flX = -102.0f;
         g_aClassicSeparatorPhoneLandscape[0].flY = -103.0f;
+        g_aClassicSeparatorPhoneLandscape[0].flWidth = 231.0f;
         g_aClassicSeparatorPhoneLandscape[1].flX = -112.0f;
         g_aClassicSeparatorPhoneLandscape[1].flY = -41.0f;
         g_aClassicSeparatorPhoneLandscape[1].flWidth = 83.0f;
@@ -6217,6 +6246,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[2].flHeight = -1.5707964f;
         g_aClassicSeparatorPhoneLandscape[4].flX = -205.0f;
         g_aClassicSeparatorPhoneLandscape[4].flY = -37.0f;
+        g_aClassicSeparatorPhoneLandscape[4].flWidth = 1.0f;
         g_aClassicSeparatorPhoneLandscape[5].flX = -122.0f;
         g_aClassicSeparatorPhoneLandscape[5].flY = -36.0f;
         g_aClassicSeparatorPhoneLandscape[5].flWidth = 1.0f;
@@ -6227,6 +6257,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[7].flHeight = -1.5707964f;
         g_aClassicSeparatorPhoneLandscape[8].flX = -204.0f;
         g_aClassicSeparatorPhoneLandscape[8].flY = -37.0f;
+        g_aClassicSeparatorPhoneLandscape[8].flWidth = 82.0f;
         g_aClassicSeparatorPhoneLandscape[10].flX = -101.0f;
         g_aClassicSeparatorPhoneLandscape[10].flY = -72.0f;
         g_aClassicSeparatorPhoneLandscape[10].flWidth = 305.0f;
@@ -6237,12 +6268,14 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[11].flHeight = 0.0f;
         g_aClassicSeparatorPhoneLandscape[12].flX = -53.0f;
         g_aClassicSeparatorPhoneLandscape[12].flY = 13.0f;
+        g_aClassicSeparatorPhoneLandscape[12].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[14].flX = -53.0f;
         g_aClassicSeparatorPhoneLandscape[14].flY = 35.0f;
         g_aClassicSeparatorPhoneLandscape[14].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[14].flHeight = 0.0f;
         g_aClassicSeparatorPhoneLandscape[16].flX = -53.0f;
         g_aClassicSeparatorPhoneLandscape[16].flY = 57.0f;
+        g_aClassicSeparatorPhoneLandscape[16].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[18].flX = -53.0f;
         g_aClassicSeparatorPhoneLandscape[18].flY = 79.0f;
         g_aClassicSeparatorPhoneLandscape[18].flWidth = 105.0f;
@@ -6269,11 +6302,14 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[19].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[20].flX = -196.0f;
         g_aClassicSeparatorPhoneLandscape[20].flY = 90.0f;
+        g_aClassicSeparatorPhoneLandscape[20].flWidth = 23.0f;
+        g_aClassicSeparatorPhoneLandscape[20].flHeight = 1.5707964f;
         g_aClassicSeparatorPhoneLandscape[21].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[22].flHeight = 0.0f;
         g_aClassicSeparatorPhoneLandscape[23].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[24].flX = -178.0f;
         g_aClassicSeparatorPhoneLandscape[24].flY = 35.0f;
+        g_aClassicSeparatorPhoneLandscape[24].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[24].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[41].flY = 15.0f;
         g_aClassicSeparatorPhoneLandscape[25].flY = 46.0f;
@@ -6286,6 +6322,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[27].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[28].flX = -178.0f;
         g_aClassicSeparatorPhoneLandscape[28].flY = 79.0f;
+        g_aClassicSeparatorPhoneLandscape[28].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[29].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[30].flX = 195.0f;
         g_aClassicSeparatorPhoneLandscape[30].flY = 90.0f;
@@ -6294,6 +6331,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[31].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[32].flX = 73.0f;
         g_aClassicSeparatorPhoneLandscape[32].flY = 13.0f;
+        g_aClassicSeparatorPhoneLandscape[32].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[33].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[34].flX = 73.0f;
         g_aClassicSeparatorPhoneLandscape[34].flY = 35.0f;
@@ -6305,11 +6343,14 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[35].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[36].flX = 73.0f;
         g_aClassicSeparatorPhoneLandscape[36].flY = 57.0f;
+        g_aClassicSeparatorPhoneLandscape[36].flWidth = 105.0f;
         g_aClassicSeparatorPhoneLandscape[37].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[38].flHeight = 0.0f;
         g_aClassicSeparatorPhoneLandscape[39].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[40].flX = 8.0f;
         g_aClassicSeparatorPhoneLandscape[40].flY = 85.0f;
+        g_aClassicSeparatorPhoneLandscape[40].flWidth = 70.0f;
+        g_aClassicSeparatorPhoneLandscape[40].flHeight = 1.5707964f;
         g_aClassicSeparatorPhoneLandscape[40].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[41].flWidth = 63.0f;
         g_aClassicSeparatorPhoneLandscape[41].flHeight = 0.0f;
@@ -6326,6 +6367,7 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicSeparatorPhoneLandscape[43].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[44].flX = 153.0f;
         g_aClassicSeparatorPhoneLandscape[44].flY = 15.0f;
+        g_aClassicSeparatorPhoneLandscape[44].flWidth = 49.0f;
         g_aClassicSeparatorPhoneLandscape[44].nAnchorMode = 4;
         g_aClassicSeparatorPhoneLandscape[45].flX = 20.0f;
         g_aClassicSeparatorPhoneLandscape[45].flY = 61.0f;
@@ -6387,6 +6429,8 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPositionPhoneStatePortrait[3].flWidth = 46.0f;
         g_aClassicPositionPhoneStatePortrait[0].flX = -88.0f;
         g_aClassicPositionPhoneStatePortrait[0].flY = -48.0f;
+        g_aClassicPositionPhoneStatePortrait[0].flWidth = 176.0f;
+        g_aClassicPositionPhoneStatePortrait[0].flHeight = 32.0f;
         g_aClassicPositionPhoneStatePortrait[0].nAnchorMode = 5;
         g_aClassicPositionPhoneStatePortrait[1].nAnchorMode = 0;
         g_aClassicPositionPhoneStatePortrait[3].flHeight = 44.0f;
@@ -6397,6 +6441,8 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicPositionPhoneStateLandscape[3].flWidth = 57.0f;
         g_aClassicPositionPhoneStateLandscape[0].flX = -85.0f;
         g_aClassicPositionPhoneStateLandscape[0].flY = -42.0f;
+        g_aClassicPositionPhoneStateLandscape[0].flWidth = 170.0f;
+        g_aClassicPositionPhoneStateLandscape[0].flHeight = 28.0f;
         g_aClassicPositionPhoneStateLandscape[1].nAnchorMode = 0;
         g_aClassicPositionPhoneStateLandscape[2].nAnchorMode = 0;
         g_aClassicPositionPhoneStateLandscape[3].flHeight = 44.0f;
@@ -6553,12 +6599,20 @@ __attribute__((constructor)) void InitializeResultLayoutTable() {
         g_aClassicTrailVertices[76].y = 909.0f;
         g_aClassicTrailVertices[77].x = 646.0f;
         g_aClassicTrailVertices[77].y = 910.0f;
+        // Three 16-byte pool copies from 0x2fe7a0, 0x2fe7b0, and 0x2fe7c0; each writes all four
+        // floats, so the width and height come across too.
         g_ClassicCenterPositionPhoneState.flX = 119.0f;
         g_ClassicCenterPositionPhoneState.flY = 439.0f;
+        g_ClassicCenterPositionPhoneState.flWidth = 530.0f;
+        g_ClassicCenterPositionPhoneState.flHeight = 460.0f;
         g_ClassicCenterPositionPhonePortrait.flX = -141.0f;
         g_ClassicCenterPositionPhonePortrait.flY = -32.0f;
+        g_ClassicCenterPositionPhonePortrait.flWidth = 281.0f;
+        g_ClassicCenterPositionPhonePortrait.flHeight = 181.0f;
         g_ClassicCenterPositionPhoneLandscape.flX = -214.0f;
         g_ClassicCenterPositionPhoneLandscape.flY = -31.0f;
+        g_ClassicCenterPositionPhoneLandscape.flWidth = 428.0f;
+        g_ClassicCenterPositionPhoneLandscape.flHeight = 119.0f;
         g_aClassicPartsPad[1].flWidth = 242.0f;
         g_aClassicPartsPad[1].flHeight = 60.0f;
         g_aClassicPartsPad[4].flX = g_aClassicPartsPad[3].flX;

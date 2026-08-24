@@ -9,8 +9,8 @@
 #include "s_vector2.h"
 #include "sprite_uv_table.h"
 
-// The title-part UV atlas (a distinct atlas from the shared sprite UV table); the lower effect
-// glyph kinds take their UV from it.
+// The title-part UV atlas (a distinct atlas from the shared sprite UV table); the higher effect
+// glyph kinds (12 and up) take their UV from it.
 extern const SpriteUvEntry g_aTitlePartUvDefault[]; // @ghidraAddress 0x2f7908
 
 // The process-wide Limelight effect layer, created lazily by shared().
@@ -73,8 +73,8 @@ constexpr EffectSpriteLayout kEffectSpriteLayout[] = {
 };
 
 // The highest effect glyph kind whose UV comes from the shared atlas table rather than the
-// title-part table (@c kind @c > @c 11 selects the shared atlas).
-constexpr unsigned int kMaxTitlePartKind = 11;
+// title-part table (@c kind @c > @c 11 selects the title-part atlas).
+constexpr unsigned int kMaxSharedAtlasKind = 11;
 
 // The layout offsets the phone and iPad use to place a glyph relative to the cached viewport size
 // (@ghidraAddress 0x2f8568 = -384 half-width bias, 0x301f94 = -680 height bias). The phone halves
@@ -462,10 +462,10 @@ void LimelightEffectLayer::EmitSpriteSlot(unsigned int nSpriteKind,
                                           float flScaleX,
                                           float flScaleY) {
     const EffectSpriteLayout &layout = kEffectSpriteLayout[nSpriteKind];
-    // The higher kinds index the shared atlas; the lower kinds index the title-part atlas.
-    const SpriteUvEntry &uv = nSpriteKind > kMaxTitlePartKind ?
-                                  g_aSpriteUvTable[layout.nAtlasFrame] :
-                                  g_aTitlePartUvDefault[layout.nAtlasFrame];
+    // The higher kinds index the title-part atlas; the lower kinds index the shared atlas.
+    const SpriteUvEntry &uv = nSpriteKind > kMaxSharedAtlasKind ?
+                                  g_aTitlePartUvDefault[layout.nAtlasFrame] :
+                                  g_aSpriteUvTable[layout.nAtlasFrame];
 
     ne::C_SPRITE_INSTANCING_2D *pBatch = m_apSprites[layout.nGroup];
     const int nIndex = pBatch->GetSpriteCount();
