@@ -55,17 +55,18 @@ constexpr CGFloat kModeButtonCenterFactor = 0.5;
 constexpr CGFloat kModeButtonCenterGap = 20.0;
 constexpr CGFloat kModeButtonBottomGap = 8.0;
 
-// The effect overlay is nudged off the toggle it decorates by a idiom- and theme-dependent
+// The effect overlay is nudged off the toggle it decorates by an idiom- and theme-dependent
 // amount, recovered from the disassembly's soft-float immediate operands. The horizontal nudge is
 // shared by the initial layout and the mode-toggle repositioning; the vertical nudge differs
-// between them.
-constexpr CGFloat kEffectHorizontalNudgeWide = 0.625;
-constexpr CGFloat kEffectHorizontalNudgeNarrow = 1.0;
-constexpr CGFloat kEffectSetupVerticalNudgeWideLimelight = 1.5;
+// between them. Each value is decoded from the instruction word rather than the operand Ghidra
+// prints, which is the two's complement of the bit pattern for a negative immediate.
+constexpr CGFloat kEffectHorizontalNudgeWide = 7.0;
+constexpr CGFloat kEffectHorizontalNudgeNarrow = 4.0;
+constexpr CGFloat kEffectSetupVerticalNudgeWideLimelight = 3.0;
 constexpr CGFloat kEffectSetupVerticalNudgeWideColette = 2.0;
-constexpr CGFloat kEffectSetupVerticalNudgeNarrow = 4.0;
+constexpr CGFloat kEffectSetupVerticalNudgeNarrow = 1.0;
 constexpr CGFloat kEffectToggleVerticalNudgeWide = 2.0;
-constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 4.0;
+constexpr CGFloat kEffectToggleVerticalNudgeNarrow = 1.0;
 
 @implementation RBCustomView
 

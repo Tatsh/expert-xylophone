@@ -30,6 +30,7 @@
 #import "UIImage+RB.h"
 #import "UIImageView+RB.h"
 #import "UIView+RB.h"
+#import "customize_variant_tables.h"
 #import "deviceenvironment.h"
 #import "engineglobals.h"
 #import "engineruntime.h"
@@ -232,7 +233,8 @@ constexpr long kPageControlMinPageCount = 2;
     int selectedNoteType = [RBUserSettingData sharedInstance].noteType;
     for (NSUInteger i = 0; i < self.items.count; ++i) {
         int itemID = self.items[i].intValue;
-        NSString *imageName = [NSString stringWithFormat:kNoteItemImageNameFormat, @(itemID)];
+        NSString *imageName = [NSString
+            stringWithFormat:kNoteItemImageNameFormat, g_aCustomizeObjectVariants[itemID]];
         UIImage *buttonImage = [UIImage imageWithName:imageName];
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];

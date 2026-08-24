@@ -70,7 +70,9 @@ static NSString *const kColorYouImageNames[] = {
 static NSString *const kColorRivalImageNames[] = {
     @"02_music_detail/det_col_rival_1",
     @"02_music_detail/det_col_rival_2",
-    @"02_music_detail/det_col_you_1",
+    // Slot 2 points at the same CFString as the "you" table's slot 2: the binary deduplicates the
+    // literal rather than shipping a rival-specific random image.
+    @"02_music_detail/det_col_random",
 };
 
 // The selected-state image table used on every non-brown theme, indexed by colour slot
@@ -421,43 +423,45 @@ struct ColorGeometry {
         [self.buttonImages[kAlphaLayerSecond] setAlpha:kOverlayAlphaOpaque];
         [self.selectedImages[kAlphaLayerFirst] setHidden:YES];
         [self.selectedImages[kAlphaLayerSecond] setHidden:NO];
-        [self.selectedImages[kAlphaLayerThird] setHidden:NO];
-        [self.youImages[kAlphaLayerFirst] setHidden:NO];
-        [self.youImages[kAlphaLayerSecond] setHidden:YES];
-        [self.youImages[kAlphaLayerThird] setHidden:NO];
-        [self.rivalImages[kAlphaLayerFirst] setHidden:YES];
-        [self.rivalImages[kAlphaLayerSecond] setHidden:NO];
-        [self.rivalImages[kAlphaLayerThird] setHidden:NO];
-        [self.buttonImageBases[kAlphaLayerFirst] setHidden:YES];
-        [self.buttonImageBases[kAlphaLayerSecond] setHidden:NO];
-        [self.buttonImageBases[kAlphaLayerThird] setHidden:NO];
+        [self.selectedImages[kAlphaLayerThird] setHidden:YES];
+        [self.youImages[kAlphaLayerFirst] setHidden:YES];
+        [self.youImages[kAlphaLayerSecond] setHidden:NO];
+        [self.youImages[kAlphaLayerThird] setHidden:YES];
+        [self.rivalImages[kAlphaLayerFirst] setHidden:NO];
+        [self.rivalImages[kAlphaLayerSecond] setHidden:YES];
+        [self.rivalImages[kAlphaLayerThird] setHidden:YES];
+        [self.buttonImageBases[kAlphaLayerFirst] setHidden:NO];
+        [self.buttonImageBases[kAlphaLayerSecond] setHidden:YES];
+        [self.buttonImageBases[kAlphaLayerThird] setHidden:YES];
+        // The colour-1 arm keeps only the second selected ring, the second YOU caption, and the
+        // first RIVAL caption visible.
     } else if (self.color == kColorSlot0) {
         [self.buttonImages[kAlphaLayerFirst] setAlpha:kOverlayAlphaOpaque];
         [self.buttonImages[kAlphaLayerSecond] setAlpha:self.rivalAlpha];
         [self.selectedImages[kAlphaLayerFirst] setHidden:NO];
         [self.selectedImages[kAlphaLayerSecond] setHidden:YES];
         [self.selectedImages[kAlphaLayerThird] setHidden:YES];
-        [self.youImages[kAlphaLayerFirst] setHidden:YES];
-        [self.youImages[kAlphaLayerSecond] setHidden:NO];
-        [self.youImages[kAlphaLayerThird] setHidden:NO];
-        [self.rivalImages[kAlphaLayerFirst] setHidden:NO];
-        [self.rivalImages[kAlphaLayerSecond] setHidden:YES];
-        [self.rivalImages[kAlphaLayerThird] setHidden:NO];
-        [self.buttonImageBases[kAlphaLayerFirst] setHidden:NO];
-        [self.buttonImageBases[kAlphaLayerSecond] setHidden:YES];
-        [self.buttonImageBases[kAlphaLayerThird] setHidden:NO];
+        [self.youImages[kAlphaLayerFirst] setHidden:NO];
+        [self.youImages[kAlphaLayerSecond] setHidden:YES];
+        [self.youImages[kAlphaLayerThird] setHidden:YES];
+        [self.rivalImages[kAlphaLayerFirst] setHidden:YES];
+        [self.rivalImages[kAlphaLayerSecond] setHidden:NO];
+        [self.rivalImages[kAlphaLayerThird] setHidden:YES];
+        [self.buttonImageBases[kAlphaLayerFirst] setHidden:YES];
+        [self.buttonImageBases[kAlphaLayerSecond] setHidden:NO];
+        [self.buttonImageBases[kAlphaLayerThird] setHidden:YES];
     } else {
         [self.buttonImages[kAlphaLayerFirst] setAlpha:self.rivalAlpha];
         [self.buttonImages[kAlphaLayerSecond] setAlpha:self.rivalAlpha];
         [self.selectedImages[kAlphaLayerFirst] setHidden:YES];
         [self.selectedImages[kAlphaLayerSecond] setHidden:YES];
         [self.selectedImages[kAlphaLayerThird] setHidden:NO];
-        [self.youImages[kAlphaLayerFirst] setHidden:NO];
-        [self.youImages[kAlphaLayerSecond] setHidden:NO];
-        [self.youImages[kAlphaLayerThird] setHidden:NO];
-        [self.rivalImages[kAlphaLayerFirst] setHidden:NO];
-        [self.rivalImages[kAlphaLayerSecond] setHidden:NO];
-        [self.rivalImages[kAlphaLayerThird] setHidden:YES];
+        [self.youImages[kAlphaLayerFirst] setHidden:YES];
+        [self.youImages[kAlphaLayerSecond] setHidden:YES];
+        [self.youImages[kAlphaLayerThird] setHidden:YES];
+        [self.rivalImages[kAlphaLayerFirst] setHidden:YES];
+        [self.rivalImages[kAlphaLayerSecond] setHidden:YES];
+        [self.rivalImages[kAlphaLayerThird] setHidden:NO];
         [self.buttonImageBases[kAlphaLayerFirst] setHidden:NO];
         [self.buttonImageBases[kAlphaLayerSecond] setHidden:NO];
         [self.buttonImageBases[kAlphaLayerThird] setHidden:YES];

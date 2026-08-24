@@ -43,10 +43,10 @@ enum {
     kThemeColette = 2,
 };
 
-// The frame image stretches with a fixed vertical cap inset that leaves its horizontal caps at the
-// full image width, chosen by device idiom.
+// The frame image stretches with a fixed top cap inset and a bottom cap that leaves the image's
+// full height, chosen by device idiom.
 static const CGFloat kFrameCapInsetNarrow = 20.0;
-static const CGFloat kFrameCapInsetWide = 36.5;
+static const CGFloat kFrameCapInsetWide = 36.0;
 
 // The framed backdrop is centred horizontally at the top of the view.
 static const CGFloat kBackgroundCenterFactor = 0.5;
@@ -134,18 +134,19 @@ enum {
     BOOL isPad = IsPad();
 
     // The framed backdrop: a stretchable frame image with a fixed top cap inset and a bottom cap
-    // inset that leaves the image's full width, centred horizontally at the top of the view.
+    // inset that leaves the image's full height, centred horizontally at the top of the view. Its
+    // height comes from the view's own frame, so the border grows to enclose the item row.
     UIImage *frameImage = [UIImage imageWithName:kUnlockFrameImageName];
     CGFloat capInset = (!isPad) ? kFrameCapInsetNarrow : kFrameCapInsetWide;
     frameImage = [frameImage
         resizableImageWithCapInsets:UIEdgeInsetsMake(
-                                        capInset, 0.0, frameImage.size.width - capInset, 0.0)];
+                                        capInset, 0.0, frameImage.size.height - capInset, 0.0)];
     self.backgroundView = [[UIImageView alloc] initWithImage:frameImage];
     self.backgroundView.frame =
         CGRectMake((self.frame.size.width - frameImage.size.width) * kBackgroundCenterFactor,
                    0.0,
                    frameImage.size.width,
-                   frameImage.size.height);
+                   self.frame.size.height);
     [self addSubview:self.backgroundView];
 
     // The package title label, black and clear-backed, laid over the backdrop.

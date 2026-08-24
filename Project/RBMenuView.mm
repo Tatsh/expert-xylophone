@@ -170,6 +170,11 @@ static NSString *const kTutorialPlaceholderMusicName = @"威風堂々";
 // Autoresizing masks used verbatim from the binary's raw flag values.
 static const UIViewAutoresizing kBackgroundAutoresizingMask =
     UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight; // 0x12.
+// 0x3f: all four margins plus flexible width and height. @ghidraAddress 0x310450
+static const UIViewAutoresizing kCampaignScrollAllFlexibleMask =
+    UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleWidth |
+    UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
+    UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
 // CreateView geometry, decoded from the binary.
 static const CGFloat kFooterLightTallHeight = 22.0;
@@ -960,7 +965,7 @@ static BOOL g_bRandamIntSeeded = NO;
     for (int i = 1; i <= kCampaignBackgroundMaxImages; ++i) {
         NSString *name = [NSString stringWithFormat:@"%@/%@%d",
                                                     [RBCampaignData sharedInstance].campaignName,
-                                                    [RBCampaignData sharedInstance].campaignName,
+                                                    kTextureBackgroundName,
                                                     i];
         UIImage *image = [UIImage imageWithName:name];
         if (image == nil) {
@@ -991,7 +996,7 @@ static BOOL g_bRandamIntSeeded = NO;
     self.backgroundScrollView.showsHorizontalScrollIndicator = NO;
     self.backgroundScrollView.showsVerticalScrollIndicator = NO;
     self.backgroundScrollView.autoresizingMask =
-        isPad ? UIViewAutoresizingFlexibleWidth : kBackgroundAutoresizingMask;
+        isPad ? kCampaignScrollAllFlexibleMask : UIViewAutoresizingFlexibleWidth;
     self.backgroundScrollView.contentOffset = CGPointMake(self.bounds.size.width, 0);
     self.backgroundScrollView.userInteractionEnabled = NO;
     [self addSubview:self.backgroundScrollView];
@@ -1004,8 +1009,8 @@ static BOOL g_bRandamIntSeeded = NO;
         UIImage *image = shuffled[page % shuffled.count];
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
         if (isPad) {
-            imageView.frame =
-                CGRectMake(static_cast<int>(page) * pageWidth, 0, image.size.width, 0);
+            imageView.frame = CGRectMake(
+                static_cast<int>(page) * pageWidth, 0, image.size.width, image.size.height);
             imageView.contentMode = UIViewContentModeRedraw;
         } else {
             CGFloat scrollWidth = self.backgroundScrollView.width;
@@ -1019,7 +1024,7 @@ static BOOL g_bRandamIntSeeded = NO;
         }
         [self.backgroundScrollView addSubview:imageView];
     }
-    return NO;
+    return YES;
 }
 
 - (void)buildMenuBarWithThema:(NSInteger)thema
@@ -1255,7 +1260,7 @@ static BOOL g_bRandamIntSeeded = NO;
         if ([[RBCampaignData sharedInstance] isCampaignHinabita201703]) {
             mascotPrefix = [NSString stringWithFormat:@"%@/%@",
                                                       [RBCampaignData sharedInstance].campaignName,
-                                                      [RBCampaignData sharedInstance].campaignName];
+                                                      kSearchMascotDefaultPrefix];
         }
         if (self.searchMascotImages != nil) {
             [self.searchMascotImages removeAllObjects];
