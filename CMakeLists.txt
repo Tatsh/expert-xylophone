@@ -68,10 +68,22 @@ set(RESOURCES_DIR    "" CACHE PATH "Directory of the ORIGINAL extracted .app who
                                    "(images, sounds, data files, fonts, ...) are copied "
                                    "verbatim into the built bundle. Leave empty to build code only.")
 
-# The hostname every secure API request is built against. Defaults to the host the shipped binary
-# uses; override it to point a build at a private or replacement server. This only redirects the
-# API host: the in-app link allow-list in Project/RBWebView.m is a separate set of hostnames.
-set(API_HOST "akx.s.konaminet.jp" CACHE STRING "Hostname of the game's secure API")
+# The endpoint pieces, each defaulting to what the shipped binary uses, so an unconfigured build is
+# unchanged. Override them to point a build at private or replacement servers. Every one reaches the
+# sources as an RB_-prefixed macro; see Project/RBMacros.h. API_HOST is also added to the in-app
+# link allow-list in Project/RBWebView.m.
+set(API_SCHEME    "https"              CACHE STRING "URL scheme of the game's secure API")
+set(API_HOST      "akx.s.konaminet.jp" CACHE STRING "Hostname of the game's secure API")
+set(API_BASE_PATH "/akx/main/cgi/"     CACHE STRING "CGI base path every endpoint is built under")
+
+# Konami's Applilink SDK: the application identifier, the environment selector ("0" production,
+# "1" staging, "2" and "3" sandbox, "4" development), and the base URL each environment selects.
+set(APPLILINK_APP_ID "10" CACHE STRING "Applilink application identifier")
+set(APPLILINK_ENV    "0"  CACHE STRING "Applilink server environment selector")
+set(APPLILINK_URL_PRODUCTION  "https://www.applilink.jp"     CACHE STRING "Applilink production URL")
+set(APPLILINK_URL_STAGING     "https://st.es.i-revoinf.jp"   CACHE STRING "Applilink staging URL")
+set(APPLILINK_URL_DEVELOPMENT "https://dev.es.i-revoinf.jp"  CACHE STRING "Applilink development URL")
+set(APPLILINK_URL_SANDBOX     "https://sandbox.applilink.jp" CACHE STRING "Applilink sandbox URL")
 
 # ENABLE_PATCHES compiles in preservation patches guarded by #ifdef ENABLE_PATCHES
 # (patched code under the #ifdef, the original under #else). It is NOT part of the
@@ -242,8 +254,18 @@ target_compile_options(rbplus PRIVATE
 # rewrite the renderer.
 target_compile_definitions(rbplus PRIVATE GLES_SILENCE_DEPRECATION)
 
-# The secure API hostname, consumed as a bare string literal by RB_API_HOST in Project/RBMacros.h.
-target_compile_definitions(rbplus PRIVATE RB_API_HOST="${API_HOST}")
+# The configurable endpoints, each consumed as a bare string literal by the matching RB_ macro in
+# Project/RBMacros.h.
+target_compile_definitions(rbplus PRIVATE
+    RB_API_SCHEME="${API_SCHEME}"
+    RB_API_HOST="${API_HOST}"
+    RB_API_BASE_PATH="${API_BASE_PATH}"
+    RB_APPLILINK_APP_ID="${APPLILINK_APP_ID}"
+    RB_APPLILINK_ENV="${APPLILINK_ENV}"
+    RB_APPLILINK_URL_PRODUCTION="${APPLILINK_URL_PRODUCTION}"
+    RB_APPLILINK_URL_STAGING="${APPLILINK_URL_STAGING}"
+    RB_APPLILINK_URL_DEVELOPMENT="${APPLILINK_URL_DEVELOPMENT}"
+    RB_APPLILINK_URL_SANDBOX="${APPLILINK_URL_SANDBOX}")
 
 # When ENABLE_PATCHES is enabled, define it for every translation unit; the
 # generator expression is config-agnostic, so it applies in Debug, Release, and

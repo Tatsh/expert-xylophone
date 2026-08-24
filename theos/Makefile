@@ -6,12 +6,33 @@ PROJECT_ROOT       := $(patsubst %/,%,$(dir $(THEOS_MAKEFILE_DIR)))
 export ARCHS  = arm64 arm64e
 export TARGET = iphone:clang:latest:12.0
 
-# API_HOST mirrors the CMake cache entry of the same name: the hostname every secure API request is
-# built against, consumed as RB_API_HOST in Project/RBMacros.h. Defaults to the host the shipped
-# binary uses; override with `make -C theos API_HOST=my.server.example`. This only redirects the API
-# host; the in-app link allow-list in Project/RBWebView.m is a separate set of hostnames.
-API_HOST ?= akx.s.konaminet.jp
-API_DEFINES := -DRB_API_HOST='"$(API_HOST)"'
+# These mirror the CMake cache entries of the same names: the pieces of every secure API endpoint,
+# and Konami's Applilink SDK identifiers and per-environment base URLs. Each defaults to what the
+# shipped binary uses and reaches the sources as an RB_-prefixed macro (see Project/RBMacros.h), so
+# an unconfigured build is unchanged. Override on the command line, for example
+# `make -C theos API_HOST=my.server.example API_BASE_PATH=/cgi/`.
+API_SCHEME    ?= https
+API_HOST      ?= akx.s.konaminet.jp
+API_BASE_PATH ?= /akx/main/cgi/
+
+# The Applilink environment selector is "0" production, "1" staging, "2" and "3" sandbox, and
+# "4" development; each selects one of the base URLs below.
+APPLILINK_APP_ID          ?= 10
+APPLILINK_ENV             ?= 0
+APPLILINK_URL_PRODUCTION  ?= https://www.applilink.jp
+APPLILINK_URL_STAGING     ?= https://st.es.i-revoinf.jp
+APPLILINK_URL_DEVELOPMENT ?= https://dev.es.i-revoinf.jp
+APPLILINK_URL_SANDBOX     ?= https://sandbox.applilink.jp
+
+API_DEFINES := -DRB_API_SCHEME='"$(API_SCHEME)"' \
+               -DRB_API_HOST='"$(API_HOST)"' \
+               -DRB_API_BASE_PATH='"$(API_BASE_PATH)"' \
+               -DRB_APPLILINK_APP_ID='"$(APPLILINK_APP_ID)"' \
+               -DRB_APPLILINK_ENV='"$(APPLILINK_ENV)"' \
+               -DRB_APPLILINK_URL_PRODUCTION='"$(APPLILINK_URL_PRODUCTION)"' \
+               -DRB_APPLILINK_URL_STAGING='"$(APPLILINK_URL_STAGING)"' \
+               -DRB_APPLILINK_URL_DEVELOPMENT='"$(APPLILINK_URL_DEVELOPMENT)"' \
+               -DRB_APPLILINK_URL_SANDBOX='"$(APPLILINK_URL_SANDBOX)"'
 
 # ENABLE_PATCHES mirrors the CMake option of the same name: it compiles in the preservation
 # patches guarded by #ifdef ENABLE_PATCHES. Off by default so a plain build matches the binary;

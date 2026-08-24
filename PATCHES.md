@@ -70,6 +70,22 @@ screen's touch pass and pre-empt the first tap with `-showTerms` — Colette in
 cannot get past the title screen. The patch reports no outstanding terms so that tap proceeds
 normally, and the screen and its whole agree flow are left intact for an unpatched build.
 
+### The web view's in-app link allow-list
+
+**File:** `Project/RBWebView.m` — `-webView:shouldStartLoadWithRequest:navigationType:`
+
+A `reflecbeat://` link carries its real destination in the query. The handler compares that
+destination's host against three konaminet hostnames and loads it inside the web view when it
+matches, otherwise handing it to Safari. The binary spells those three comparisons out one after
+another, against a fixed table.
+
+That is fine until the build is pointed at a replacement server with `API_HOST`, at which point its
+own links fail the test and get thrown out to Safari. The patch appends the configured host to the
+table and walks the whole table instead of testing the first three slots, so a redirected build
+keeps its links in-app. With the default configuration the appended entry simply repeats the third,
+which a membership test does not mind. An unpatched build keeps the three literal comparisons and
+the three-entry table.
+
 ### The per-install purchased-content list key
 
 **File:** `Project/AppDelegate.mm` — `+musicListKey` (0x50cb8)

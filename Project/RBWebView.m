@@ -11,6 +11,7 @@
 
 #import "RBWebView.h"
 
+#import "RBMacros.h"
 #import "deviceenvironment.h"
 
 // The white component and alpha of the translucent loading cover shown over the content.
@@ -39,6 +40,11 @@ static NSString *const kInAppLoadHosts[] = {
     @"stg.akx21.s.konaminet.jp",
     @"akx-new.s.konaminet.jp",
     @"akx.s.konaminet.jp",
+#ifdef ENABLE_PATCHES
+    // The configured API host, so a redirected build keeps its own links in-app. With the default
+    // configuration this repeats the third entry, which a membership test does not mind.
+    @RB_API_HOST,
+#endif
 };
 
 // The separator between the parts of a reflecbeat://openurl query, and the leading part that
@@ -121,9 +127,22 @@ static NSString *const kDisableTouchCalloutScript =
     if ([url.host isEqualToString:self.urlList[kUrlListHostLink]]) {
         NSURL *target = [NSURL URLWithString:url.query];
         if (target) {
-            if ([target.host isEqualToString:kInAppLoadHosts[0]] ||
-                [target.host isEqualToString:kInAppLoadHosts[1]] ||
-                [target.host isEqualToString:kInAppLoadHosts[2]]) {
+#ifdef ENABLE_PATCHES
+            // Walk the whole table so the configured API host in the last slot is tested too. The
+            // binary spells the three shipped hosts out as separate comparisons instead.
+            BOOL loadInApp = NO;
+            for (size_t index = 0; index < ARRAY_SIZE(kInAppLoadHosts); ++index) {
+                if ([target.host isEqualToString:kInAppLoadHosts[index]]) {
+                    loadInApp = YES;
+                    break;
+                }
+            }
+#else
+            const BOOL loadInApp = [target.host isEqualToString:kInAppLoadHosts[0]] ||
+                                   [target.host isEqualToString:kInAppLoadHosts[1]] ||
+                                   [target.host isEqualToString:kInAppLoadHosts[2]];
+#endif
+            if (loadInApp) {
                 [self loadRequest:[NSURLRequest requestWithURL:target]];
             } else {
                 [[UIApplication sharedApplication] openURL:target];

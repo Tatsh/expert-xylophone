@@ -100,17 +100,25 @@ cmake --build build --config Debug
 
 Every knob is a cache entry, so all of them are overridable with `-D<name>=...`:
 
-| Option                  | Default              | Effect                                                                                                                                                        |
-| ----------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `API_HOST`              | `akx.s.konaminet.jp` | Hostname every secure API request is built against. Point it at a private or replacement server. Does not affect the in-app link allow-list in `RBWebView.m`. |
-| `APP_BUNDLE_ID`         | `jp.konami.rbplus`   | `CFBundleIdentifier`.                                                                                                                                         |
-| `BUILD_DOCS`            | `OFF`                | Build the Doxygen documentation alongside the app.                                                                                                            |
-| `ENABLE_PATCHES`        | `OFF`                | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                                              |
-| `IOS_ARCHS`             | `arm64`              | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                                              |
-| `IOS_DEPLOYMENT_TARGET` | `12.0`               | Minimum iOS version.                                                                                                                                          |
-| `RBPDBGINFO`            | `OFF`                | Emit DWARF without altering the optimisation level.                                                                                                           |
-| `RBPDBG`                | `OFF`                | Compile in the `os_log` runtime diagnostics.                                                                                                                  |
-| `RESOURCES_DIR`         | empty                | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts.                           |
+| Option                      | Default                        | Effect                                                                                                                                                           |
+| --------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_BASE_PATH`             | `/akx/main/cgi/`               | CGI base path every endpoint is built under. The companion to `API_HOST`: an endpoint is scheme + host + this + the per-endpoint leaf.                           |
+| `API_HOST`                  | `akx.s.konaminet.jp`           | Hostname every secure API request is built against. Point it at a private or replacement server. With `ENABLE_PATCHES` it also joins the in-app link allow-list. |
+| `API_SCHEME`                | `https`                        | URL scheme of the secure API. Only worth changing for a plaintext test server.                                                                                   |
+| `APPLILINK_APP_ID`          | `10`                           | Application identifier passed to Konami's Applilink SDK.                                                                                                         |
+| `APPLILINK_ENV`             | `0`                            | Applilink environment: `0` production, `1` staging, `2`/`3` sandbox, `4` development. Selects one of the four `APPLILINK_URL_*` entries.                         |
+| `APPLILINK_URL_DEVELOPMENT` | `https://dev.es.i-revoinf.jp`  | Applilink base URL for environment `4`.                                                                                                                          |
+| `APPLILINK_URL_PRODUCTION`  | `https://www.applilink.jp`     | Applilink base URL for environment `0`.                                                                                                                          |
+| `APPLILINK_URL_SANDBOX`     | `https://sandbox.applilink.jp` | Applilink base URL for environments `2` and `3`.                                                                                                                 |
+| `APPLILINK_URL_STAGING`     | `https://st.es.i-revoinf.jp`   | Applilink base URL for environment `1`.                                                                                                                          |
+| `APP_BUNDLE_ID`             | `jp.konami.rbplus`             | `CFBundleIdentifier`.                                                                                                                                            |
+| `BUILD_DOCS`                | `OFF`                          | Build the Doxygen documentation alongside the app.                                                                                                               |
+| `ENABLE_PATCHES`            | `OFF`                          | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                                                 |
+| `IOS_ARCHS`                 | `arm64`                        | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                                                 |
+| `IOS_DEPLOYMENT_TARGET`     | `12.0`                         | Minimum iOS version.                                                                                                                                             |
+| `RBPDBGINFO`                | `OFF`                          | Emit DWARF without altering the optimisation level.                                                                                                              |
+| `RBPDBG`                    | `OFF`                          | Compile in the `os_log` runtime diagnostics.                                                                                                                     |
+| `RESOURCES_DIR`             | empty                          | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts.                              |
 
 `RESOURCES_DIR` is the one that matters most: the repository contains no game assets, so a build
 without it produces an app that launches into nothing.
@@ -127,8 +135,9 @@ make -C theos ENABLE_PATCHES=1 package
 ```
 
 `ENABLE_PATCHES`, `RBPDBG`, and `RBPDBGINFO` mirror the CMake options of the same name and are all
-off by default, and `API_HOST` mirrors the cache entry of the same name
-(`make -C theos API_HOST=my.server.example`). Theos has no `RESOURCES_DIR` equivalent: copy the
+off by default. The endpoint and Applilink cache entries are mirrored as `Makefile` variables under
+the same names, so `make -C theos API_HOST=my.server.example API_BASE_PATH=/cgi/` works the way the
+`-D` equivalents do. Theos has no `RESOURCES_DIR` equivalent: copy the
 original `.app`'s resources into
 `theos/Resources/` yourself, or add them to the staged bundle after packaging.
 

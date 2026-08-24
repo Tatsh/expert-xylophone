@@ -16,12 +16,11 @@
 #import "deviceenvironment.h"
 #import "enginecrypto.h"
 
-// The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under.
-// The host comes from RB_API_HOST so a build can be pointed at a replacement server; see
-// RBMacros.h.
-static NSString *const kSecureAPIScheme = @"https";
+// The secure API endpoint scheme, host, and the common CGI base path every endpoint is built under,
+// all build-configurable so a build can be pointed at a replacement server; see RBMacros.h.
+static NSString *const kSecureAPIScheme = @RB_API_SCHEME;
 static NSString *const kSecureAPIHost = @RB_API_HOST;
-static NSString *const kSecureAPIBasePath = @"/akx/main/cgi/";
+static NSString *const kSecureAPIBasePath = @RB_API_BASE_PATH;
 
 // The APNs device-token registration endpoint, relative to the CGI base path.
 static NSString *const kTokenSetAPIPath = @"push/token/";

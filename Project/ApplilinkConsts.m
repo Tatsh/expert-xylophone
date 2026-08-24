@@ -21,6 +21,7 @@
 #import "ApplilinkParameters.h"
 #import "ApplilinkUdid.h"
 #import "Crypto.h"
+#import "RBMacros.h"
 #import "RecommendCore.h"
 
 // The server environment name is compared against these string keys, each selecting a base URL.
@@ -30,11 +31,11 @@ static NSString *const kApplilinkEnvSandboxAlt = @"2";
 static NSString *const kApplilinkEnvSandbox = @"3";
 static NSString *const kApplilinkEnvDevelopmentAlt = @"4";
 
-// The base URLs keyed by the server environment name above.
-static NSString *const kApplilinkUrlProduction = @"https://www.applilink.jp";
-static NSString *const kApplilinkUrlStaging = @"https://st.es.i-revoinf.jp";
-static NSString *const kApplilinkUrlDevelopment = @"https://dev.es.i-revoinf.jp";
-static NSString *const kApplilinkUrlSandbox = @"https://sandbox.applilink.jp";
+// The base URLs keyed by the server environment name above, build-configurable; see RBMacros.h.
+static NSString *const kApplilinkUrlProduction = @RB_APPLILINK_URL_PRODUCTION;
+static NSString *const kApplilinkUrlStaging = @RB_APPLILINK_URL_STAGING;
+static NSString *const kApplilinkUrlDevelopment = @RB_APPLILINK_URL_DEVELOPMENT;
+static NSString *const kApplilinkUrlSandbox = @RB_APPLILINK_URL_SANDBOX;
 
 // The SDK version string.
 static NSString *const kApplilinkSdkVersion = @"2.2.2";

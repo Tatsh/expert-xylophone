@@ -23,6 +23,7 @@
 #import "NetworkUtil.h"
 #import "RBCampaignData.h"
 #import "RBGameKitManager.h"
+#import "RBMacros.h"
 #import "RBMenuView.h"
 #import "RBMusicManager.h"
 #import "RBNavigationController.h"
@@ -128,8 +129,8 @@ static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 static constexpr uint8_t kDoNotBackUpXattrValue = 1;
 
 // The Applilink application identifier and server environment ("0" is production) passed at init.
-static NSString *const kApplilinkAppId = @"10";
-static NSString *const kApplilinkEnv = @"0";
+static NSString *const kApplilinkAppId = @RB_APPLILINK_APP_ID;
+static NSString *const kApplilinkEnv = @RB_APPLILINK_ENV;
 
 // The ad-location the recommend-unread-count fetch queries.
 static NSString *const kRecommendUnreadAdLocation = @"ADL_MYPAGE";
