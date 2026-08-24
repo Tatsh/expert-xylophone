@@ -169,6 +169,16 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin |
     UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
 
+// The reveal arms of -startAnimation: (0x13de2c) and the snap arms of -resetAnimation: (0x13f7f0).
+// The binary emits each of these inline inside its parent, and the class carries no selector for
+// them, so they are file-static functions rather than methods: adding a method here would invent
+// runtime metadata the shipped class does not have.
+static inline void RevealBubbleOnly(RBMenuTutorialView *view);
+static inline void RevealBubbleAndMessage(RBMenuTutorialView *view);
+static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect targetFrame);
+static inline void SnapContentViewOpaqueMovingTo(RBMenuTutorialView *view, CGRect targetFrame);
+static inline void SnapContentViewOpaque(RBMenuTutorialView *view);
+
 @implementation RBMenuTutorialView
 
 #pragma mark - Lifecycle
@@ -946,23 +956,19 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     if (self.tutorialStatus == kTutorialStepMusicSelectA ||
         self.tutorialStatus == kTutorialStepNoTarget) {
         neDebugLog("tutorial arm=bubbleOnly");
-        [self revealBubbleOnly];
+        RevealBubbleOnly(self);
     } else if (CGRectEqualToRect(targetFrame, CGRectZero)) {
         neDebugLog("tutorial arm=bubbleAndMessage (window not animated)");
-        [self revealBubbleAndMessage];
+        RevealBubbleAndMessage(self);
     } else {
         neDebugLog("tutorial arm=bubbleMessageAndMove");
-        [self revealBubbleMessageAndMove:targetFrame];
+        RevealBubbleMessageAndMove(self, targetFrame);
     }
 }
 
 // The message-select intro and the no-target step just pop the pastel bubble, window, and message
 // in with a bound-scale group; no content-view move.
-- (void)revealBubbleOnly {
-    /** @ghidraAddress 0x13de2c */
-    // De-inlined from -startAnimation:; the binary emits all three reveal arms inside that one
-    // routine, so this helper and its siblings share its address rather than having one of their
-    // own.
+static inline void RevealBubbleOnly(RBMenuTutorialView *view) {
     // The bound-bob group is the pastel bubble's, not the window's: the binary builds it first and
     // hands it to -pastelLayer, and it is the group that carries the delegate.
     CAAnimationGroup *pastelGroup = [CAAnimationGroup animation];
@@ -1013,17 +1019,15 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     messageGroup.removedOnCompletion = NO;
     messageGroup.fillMode = kCAFillModeForwards;
 
-    pastelGroup.delegate = self;
-    [self.messageWindowLayer addAnimation:windowGroup forKey:nil];
-    [self.pastelLayer addAnimation:pastelGroup forKey:nil];
-    [self.messageLayer addAnimation:messageGroup forKey:nil];
+    pastelGroup.delegate = view;
+    [view.messageWindowLayer addAnimation:windowGroup forKey:nil];
+    [view.pastelLayer addAnimation:pastelGroup forKey:nil];
+    [view.messageLayer addAnimation:messageGroup forKey:nil];
 }
 
 // A step whose content-view move is zero: fade the message layer in with a bound bob on the pastel
 // bubble.
-- (void)revealBubbleAndMessage {
-    /** @ghidraAddress 0x13de2c */
-    // De-inlined from -startAnimation:, as with the other reveal arms.
+static inline void RevealBubbleAndMessage(RBMenuTutorialView *view) {
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFadeOut = [RBAnimationFactory createFadeAnimWithFromValue:0.0
                                                                                   toValue:0.0
@@ -1049,19 +1053,17 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     pastelGroup.removedOnCompletion = NO;
     pastelGroup.fillMode = kCAFillModeForwards;
 
-    [RBAnimationFactory animationDelete:self.pastelLayer];
-    pastelGroup.delegate = self;
-    [self.messageLayer addAnimation:messageGroup forKey:nil];
-    [self.pastelLayer addAnimation:pastelGroup forKey:nil];
+    [RBAnimationFactory animationDelete:view.pastelLayer];
+    pastelGroup.delegate = view;
+    [view.messageLayer addAnimation:messageGroup forKey:nil];
+    [view.pastelLayer addAnimation:pastelGroup forKey:nil];
 }
 
 // A step that also slides the content view to its new place: run the fade/scale groups and move the
 // content-view layer from its current position to the target frame.
-- (void)revealBubbleMessageAndMove:(CGRect)targetFrame {
-    /** @ghidraAddress 0x13de2c */
-    // De-inlined from -startAnimation:, as with the other reveal arms. This is the arm every
-    // music-select step that nudges the content view takes.
-    CGPoint contentOrigin = CGPointMake(self.contentView.x, self.contentView.y);
+// This is the arm every music-select step that nudges the content view takes.
+static inline void RevealBubbleMessageAndMove(RBMenuTutorialView *view, CGRect targetFrame) {
+    CGPoint contentOrigin = CGPointMake(view.contentView.x, view.contentView.y);
 
     CAAnimationGroup *messageGroup = [CAAnimationGroup animation];
     CAKeyframeAnimation *messageFadeOut = [RBAnimationFactory createFadeAnimWithFromValue:0.0
@@ -1122,7 +1124,7 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     windowGroup.removedOnCompletion = NO;
     windowGroup.fillMode = kCAFillModeForwards;
 
-    CGPoint contentPosition = self.contentView.layer.position;
+    CGPoint contentPosition = view.contentView.layer.position;
     CGPoint moveTo = CGPointMake(contentPosition.x - (contentOrigin.x - targetFrame.origin.x),
                                  contentPosition.y - (contentOrigin.y - targetFrame.origin.y));
     [RBMenuTutorialView createAnimWithKeyPath:kContentPositionKeyPath
@@ -1130,14 +1132,14 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
                                       toValue:moveTo
                                         delay:0.0
                                      duration:0.3];
-    pastelGroup.delegate = self;
-    [self.pastelLayer addAnimation:pastelGroup forKey:nil];
-    [self.messageWindowLayer addAnimation:windowGroup forKey:nil];
-    [self.messageLayer addAnimation:messageGroup forKey:nil];
+    pastelGroup.delegate = view;
+    [view.pastelLayer addAnimation:pastelGroup forKey:nil];
+    [view.messageWindowLayer addAnimation:windowGroup forKey:nil];
+    [view.messageLayer addAnimation:messageGroup forKey:nil];
 
     // Snap the content view to the target frame once the bubble has finished shrinking. The move is
     // effectively instant (0.01s) rather than a visible slide.
-    __weak UIView *weakContentView = self.contentView;
+    __weak UIView *weakContentView = view.contentView;
     [UIView animateWithDuration:0.01
         delay:0.3
         options:UIViewAnimationOptionCurveLinear
@@ -1186,42 +1188,40 @@ constexpr UIViewAutoresizing kAutoresizingMaskFlexibleAll =
     if (self.tutorialStatus != kTutorialStepMusicSelectA &&
         self.tutorialStatus != kTutorialStepNoTarget &&
         !CGRectEqualToRect(targetFrame, CGRectZero)) {
-        [self snapContentViewOpaqueMovingTo:targetFrame];
+        SnapContentViewOpaqueMovingTo(self, targetFrame);
     } else {
-        [self snapContentViewOpaque];
+        SnapContentViewOpaque(self);
     }
 }
 
 // Snap the window and pastel layers fully opaque and unscaled, moving the content-view layer to the
 // target frame's origin without animation.
-- (void)snapContentViewOpaqueMovingTo:(CGRect)targetFrame {
-    /** @ghidraAddress 0x13f7f0 */
-    CGPoint contentOrigin = CGPointMake(self.contentView.x, self.contentView.y);
+static inline void SnapContentViewOpaqueMovingTo(RBMenuTutorialView *view, CGRect targetFrame) {
+    CGPoint contentOrigin = CGPointMake(view.contentView.x, view.contentView.y);
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    self.messageWindowLayer.opacity = 1.0;
-    self.messageWindowLayer.contentsScale = 1.0;
-    self.pastelLayer.opacity = 1.0;
-    self.pastelLayer.contentsScale = 1.0;
-    CGPoint contentPosition = self.contentView.layer.position;
-    self.contentView.layer.position =
+    view.messageWindowLayer.opacity = 1.0;
+    view.messageWindowLayer.contentsScale = 1.0;
+    view.pastelLayer.opacity = 1.0;
+    view.pastelLayer.contentsScale = 1.0;
+    CGPoint contentPosition = view.contentView.layer.position;
+    view.contentView.layer.position =
         CGPointMake(contentPosition.x - (contentOrigin.x - targetFrame.origin.x),
                     contentPosition.y - (contentOrigin.y - targetFrame.origin.y));
     [CATransaction commit];
-    self.contentView.layer.opacity = 1.0;
+    view.contentView.layer.opacity = 1.0;
 }
 
 // Snap the window and pastel layers fully opaque and unscaled without moving the content view.
-- (void)snapContentViewOpaque {
-    /** @ghidraAddress 0x13f7f0 */
+static inline void SnapContentViewOpaque(RBMenuTutorialView *view) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    self.messageWindowLayer.opacity = 1.0;
-    self.messageWindowLayer.contentsScale = 1.0;
-    self.pastelLayer.opacity = 1.0;
-    self.pastelLayer.contentsScale = 1.0;
+    view.messageWindowLayer.opacity = 1.0;
+    view.messageWindowLayer.contentsScale = 1.0;
+    view.pastelLayer.opacity = 1.0;
+    view.pastelLayer.contentsScale = 1.0;
     [CATransaction commit];
-    self.contentView.layer.opacity = 1.0;
+    view.contentView.layer.opacity = 1.0;
 }
 
 #pragma mark - Clip-rect table
