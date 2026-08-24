@@ -965,7 +965,11 @@ components:
       examples: ['17.7.11']
     Locale:
       type: 'string'
-      description: 'The formatted locale string.'
+      description: |
+        The device's language crossed with the build's region, joined by an underscore — not the
+        device's own locale identifier. The region half is the build constant, so it does not vary
+        with the device.
+      examples: ['en_JP', 'ja_JP']
     IdentifierParams:
       type: 'string'
       description: |

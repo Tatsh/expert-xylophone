@@ -240,8 +240,13 @@ void InitializeDeviceEnvironment(void) {
     g_pBundleVersion = NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"];
     g_pRegionCode = kRegionCode;
     g_pLocaleLanguageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
+    // The device's language crossed with the build's region, so a JP build on an English device
+    // reports en_JP. The second argument had been g_pFormattedVersion, which is what this line
+    // assigns and so is still nil when it is read, sending locale=en_(null) on every API request.
+    // The stack setup at 0x1a07e4 pairs the language code at 0x3df3a8 with the region code at
+    // 0x3df3a0, the constant stored one instruction earlier, and stores the result to 0x3df398.
     g_pFormattedVersion =
-        [NSString stringWithFormat:@"%@_%@", g_pLocaleLanguageCode, g_pFormattedVersion];
+        [NSString stringWithFormat:@"%@_%@", g_pLocaleLanguageCode, g_pRegionCode];
 
     // The asset-suffix tag from idiom crossed with Retina.
     if (g_bIsPad) {
