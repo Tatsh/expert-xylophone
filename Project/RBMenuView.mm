@@ -1891,6 +1891,14 @@ static BOOL g_bRandamIntSeeded = NO;
     if (!IsPad() && self.webViewController != nil) {
         [self.webViewController forceClose];
     }
+#ifdef ENABLE_PATCHES
+    // Open the store without asking the server anything first. The request below exists only to
+    // compare the accepted terms version against the server's, and a patched build answers
+    // -needUpdateTerms with NO regardless, so it decides nothing. Leaving it in place makes the
+    // whole store unreachable offline, including the manage tab, which is entirely local.
+    [self StoreOpen];
+    return;
+#else
     // POST the current region to the terms endpoint and check the accepted terms version.
     NSDictionary *body = @{kTermsRequestKeyTarget : GetRegionCode()};
     NSData *postData = [Downloader dictionaryToJsonData:body];
@@ -1935,6 +1943,7 @@ static BOOL g_bRandamIntSeeded = NO;
             [UIAlertView showNetworkErrorWithDelegate:weakSelf];
           });
         }];
+#endif
 }
 
 - (void)StoreOpen {

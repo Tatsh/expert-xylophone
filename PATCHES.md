@@ -70,6 +70,23 @@ screen's touch pass and pre-empt the first tap with `-showTerms` — Colette in
 cannot get past the title screen. The patch reports no outstanding terms so that tap proceeds
 normally, and the screen and its whole agree flow are left intact for an unpatched build.
 
+### The store's network gate
+
+**File:** `Project/RBMenuView.mm` — `-SelectStoreButton`
+
+Tapping the store button does not open the store. It POSTs the region to the terms endpoint, walks
+the reply for the type 1 record, and only then either prompts to re-accept updated terms or calls
+`-StoreOpen`. The reply is used for nothing else. So with no network the request fails, the
+network-error alert appears, and the store never opens — taking the manage tab with it, which reads
+nothing but local files: the installed tunes, their sizes, and the delete and re-download buttons.
+
+The patch calls `-StoreOpen` directly and skips the request. Nothing is lost by it in a patched
+build, because `-needUpdateTerms` already answers `NO` there, so the version the request fetches
+decides about a screen that is patched out anyway. It also sidesteps a second way the original
+fails to open: the store opens only from inside the loop over the terms list, so a reply carrying no
+type 1 record runs neither branch and the button does nothing at all. An unpatched build keeps the
+request, the terms comparison, and the alert.
+
 ### The web view's in-app link allow-list
 
 **File:** `Project/RBWebView.m` — `-webView:shouldStartLoadWithRequest:navigationType:`
