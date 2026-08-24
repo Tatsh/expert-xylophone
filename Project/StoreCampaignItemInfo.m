@@ -97,6 +97,10 @@ static const int kCampaignHideTypeVisible = 0;
 @implementation StoreCampaignItemInfo
 
 #ifdef ENABLE_PATCHES
+// Overriding the getter of a readonly property suppresses its automatic synthesis, so the backing
+// ivar has to be named explicitly: -termCheck and -registSuccess both still assign it.
+@synthesize bUnlock = _bUnlock;
+
 // Report every gift as granted even before -termCheck has run.
 - (BOOL)bUnlock {
     return YES;
