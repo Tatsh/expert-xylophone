@@ -240,13 +240,17 @@ static const CGFloat kBarTintColorMinSystemVersion = 7.0;
     // The four arms above reduce to one rule: the MUSIC segment always letters in musicColor and
     // ARTIST always in artistColor, whichever is selected. Since exactly one segment is selected,
     // giving the selected state the current sort's colour and the normal state the other one
-    // reproduces that per-segment colouring through the per-state API. Both segments keep a white
-    // background; only the selected one is emboldened.
+    // reproduces that per-segment colouring through the per-state API. Only the selected one is
+    // emboldened.
+    //
+    // The background is deliberately left alone. The binary never sets one, and the toolbar behind
+    // the control is themed: black on Classic, the default light bar on Limelight and Colette. A
+    // fixed colour here would be right for one theme and wrong for the others, so the modern
+    // selected-segment fill is simply cleared and whatever the toolbar draws shows through.
     UIColor *selectedColor = (selected == kMenuItemSortMusic) ? self.musicColor : self.artistColor;
     UIColor *normalColor = (selected == kMenuItemSortMusic) ? self.artistColor : self.musicColor;
     if (@available(iOS 13.0, *)) {
-        self.segmentedControl.selectedSegmentTintColor = UIColor.whiteColor;
-        self.segmentedControl.backgroundColor = UIColor.whiteColor;
+        self.segmentedControl.selectedSegmentTintColor = UIColor.clearColor;
     }
     [self.segmentedControl setTitleTextAttributes:@{
         NSForegroundColorAttributeName : normalColor,

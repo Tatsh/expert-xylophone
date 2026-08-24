@@ -234,9 +234,13 @@ guard that stopped the crash also skipped every subview, leaving the segments un
 The binary's four arms reduce to one rule: the MUSIC segment always letters in `musicColor` and
 ARTIST always in `artistColor`, whichever is selected. Because exactly one segment is selected at a
 time, the per-state API reproduces that per-segment colouring — the selected state carries the
-current sort's colour and the normal state the other one. Both segments keep a white background,
-with `selectedSegmentTintColor` set to white so the modern fill does not appear, and the selected
-title is emboldened at UIKit's own segment title size.
+current sort's colour and the normal state the other one, with the selected title emboldened at
+UIKit's own segment title size.
+
+The background is left alone. The binary never sets one, and the toolbar behind the control is
+themed — black on Classic, the default light bar on Limelight and Colette — so any fixed colour
+would be right for one theme and wrong for the others. `selectedSegmentTintColor` is cleared so the
+modern selected-segment fill does not appear, and whatever the toolbar draws shows through.
 
 The popover's sort row lives in the navigation controller's toolbar. The appearance proxies
 installed for `UINavigationBar` and `UITabBar` had no `UIToolbar` counterpart, so the toolbar kept
