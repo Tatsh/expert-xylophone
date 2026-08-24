@@ -227,6 +227,12 @@ as a generic password, and reuses it thereafter. The lists are therefore readabl
 that wrote them, and a keychain that is cleared, not restored, or not carried across a reinstall
 strands them silently: the files are still there and still decrypt to nothing useful.
 
+This one value does two unrelated jobs, and only the first is patched. It is the Blowfish key for
+the lists, and it is also the `uuid` parameter every secure API request carries
+(`NetworkUtil.m` builds the fingerprint from it, and the resource-download request sends it
+directly). Pinning both would introduce every install to the server as the same device, so the
+identity keeps reading the keychain through `RBDeviceIdentityUUID` and only the list key is fixed.
+
 The patch returns a fixed UUID instead, which makes the lists portable between devices and builds
 and possible to decrypt offline. It does not consult the keychain at all, so the value is identical
 everywhere rather than merely stable per install — the trade being that a list written under a

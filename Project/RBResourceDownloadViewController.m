@@ -233,6 +233,12 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
 
 - (void)request {
     NSArray *serverData = [AppDelegate getServerData];
+#ifdef ENABLE_PATCHES
+    // The identity, not the list key. See RBDeviceIdentityUUID.
+    NSString *deviceUUID = RBDeviceIdentityUUID();
+#else
+    NSString *deviceUUID = [AppDelegate musicListKey];
+#endif
     NSDictionary *params;
     if (serverData == nil) {
         params = @{
@@ -240,7 +246,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
             kRequestKeyVersion : GetBundleVersionString(),
             kRequestKeyUserID : kEmptyCredential,
             kRequestKeyPasswd : kEmptyCredential,
-            kRequestKeyUUID : [AppDelegate musicListKey]
+            kRequestKeyUUID : deviceUUID
         };
     } else {
         params = @{
@@ -248,7 +254,7 @@ static const int64_t kAnimationRetryDelayNanos = 2000000000;
             kRequestKeyVersion : GetBundleVersionString(),
             kRequestKeyUserID : serverData[0],
             kRequestKeyPasswd : serverData[1],
-            kRequestKeyUUID : [AppDelegate musicListKey]
+            kRequestKeyUUID : deviceUUID
         };
     }
     NSData *body = [Downloader dictionaryToJsonData:params];

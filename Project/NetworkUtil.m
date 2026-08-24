@@ -137,7 +137,13 @@ static NSString *const kNonceCharFormat = @"%c";
     // the lifetime of the process.
     static NSString *sIdentifierParams = nil;
     if (sIdentifierParams == nil) {
+#ifdef ENABLE_PATCHES
+        // The identity, not the list key: those are the same value in the original, and the patched
+        // list key is a fixed one every install would share.
+        NSString *seed = [RBDeviceIdentityUUID() stringByAppendingString:kIdentifierKeySuffix];
+#else
         NSString *seed = [[AppDelegate musicListKey] stringByAppendingString:kIdentifierKeySuffix];
+#endif
         sIdentifierParams = Md5StringToHex(seed.UTF8String);
     }
     return sIdentifierParams;

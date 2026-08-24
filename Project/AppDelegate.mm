@@ -789,12 +789,27 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 }
 
 /** @ghidraAddress 0x50cb8 */
+static NSString *RBKeychainDeviceUUID(void);
+
+#ifdef ENABLE_PATCHES
+NSString *RBDeviceIdentityUUID(void) {
+    return RBKeychainDeviceUUID();
+}
+#endif
+
 + (NSString *)musicListKey {
 #ifdef ENABLE_PATCHES
     // A fixed key, so the purchased-content lists are portable rather than tied to one install's
-    // keychain. See PATCHES.md.
+    // keychain. See PATCHES.md. Only the lists use this; the identity the server is told is
+    // RBDeviceIdentityUUID, which stays per-install.
     return kFixedMusicListKey;
 #else
+    return RBKeychainDeviceUUID();
+#endif
+}
+
+// The per-install identifier kept in the keychain, generated on first use.
+static NSString *RBKeychainDeviceUUID(void) {
     // Try to read the stored generic-password key for this app. The five pairs were read from the
     // stack setup at 0x50d90-0x50da8, not from a decompile, which shows only the first of them.
     // The bundle identifier is fetched again for the second dictionary further down, as here.
@@ -860,7 +875,6 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     [item setObject:[key dataUsingEncoding:NSUTF8StringEncoding] forKey:(__bridge id)kSecValueData];
     SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
     return key;
-#endif
 }
 
 #pragma mark - Applilink

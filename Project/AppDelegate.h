@@ -546,6 +546,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#ifdef ENABLE_PATCHES
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief The per-install identifier this device is known to the server by.
+ *
+ * Present only in a patched build, and a free function rather than a method because the shipped
+ * class carries no such selector. In the original this is @c +musicListKey, which serves two
+ * unrelated purposes: the Blowfish key for the purchased-content lists, and the @c uuid parameter
+ * every secure API request carries. The patch that fixes the list key must not fix the identity as
+ * well, or every device would introduce itself to the server as the same one, so the identity keeps
+ * reading the keychain and only the list key is pinned.
+ *
+ * @return The keychain UUID, generated and stored on first use.
+ */
+NSString *RBDeviceIdentityUUID(void);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 NS_ASSUME_NONNULL_END
 
 // code: language=Objective-C
