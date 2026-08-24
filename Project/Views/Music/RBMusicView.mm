@@ -1677,12 +1677,20 @@ enum { kDetMbgPlainIndex = 3 };
     __weak RBMusicView *weakSelf1 = self;
     [UIView animateWithDuration:kMusicViewCoverFadeDuration
         animations:^{
-          /** @ghidraAddress 0xd5680 (ResetMusicViewBackgroundBlockInvoke) */
+          /** @ghidraAddress 0xd5a50 (ResetMusicViewBackgroundBlockInvoke) */
           weakSelf0.backgroundColor = UIColor.clearColor;
         }
         completion:^(BOOL finished) {
-          /** @ghidraAddress 0xd5680 (PlaySelectedMusicBlockInvoke) */
+          /** @ghidraAddress 0xd5b88 (PlaySelectedMusicBlockInvoke) */
+          // Resume the select BGM that showAnimation: paused, retrying shortly if the pop has not
+          // finished restoring it yet.
+          if (![[RBBGMManager getInstance] PlayMusic:kBgmReplayFadeDuration]) {
+              [weakSelf1 performSelector:@selector(ReplayMusic)
+                              withObject:nil
+                              afterDelay:g_dMascotMessageAnimDuration];
+          }
           [weakSelf1.musicMenuView releaseSelectMusic];
+          weakSelf1.musicMenuView.selectedView = nil;
         }];
     SoundEffectManager::GetInstance()->PlayThemedSoundEffect(kSoundEffectCancel);
 }
