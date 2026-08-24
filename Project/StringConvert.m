@@ -64,8 +64,13 @@ static const NSInteger kNoPreviousIndex = -1;
         }
         ++index;
     }
+    // Nothing in the reading was katakana, so fall back to the string as it came in rather than to
+    // the empty accumulator. The binary retains its argument into x25 at 0x2a1e0 and formats that
+    // register here, not the result it just failed to fill. Returning the empty string instead is
+    // what made the music list unsortable: every name that yields no katakana compares equal to
+    // every other, so the order is arbitrary and the artist and title orderings are identical.
     if (result.length == 0) {
-        return [NSString stringWithFormat:kIdentityFormat, result];
+        return [NSString stringWithFormat:kIdentityFormat, string];
     }
     return result;
 }

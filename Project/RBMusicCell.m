@@ -284,7 +284,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.backgroundColor = UIColor.clearColor;
     [self applyThemeTextColor:thema toLabel:self.titleLabel];
-    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.titleLabel.font =
         [UIFont systemFontOfSize:(wide ? kTitleFontSizeWide : kTitleFontSizeNarrow)];
     [self.contentView addSubview:self.titleLabel];
@@ -314,7 +314,7 @@ static const NSTimeInterval kCrossFadeDuration = 0.15;
     self.artistLabel.text = @"";
     self.artistLabel.textAlignment = NSTextAlignmentCenter;
     self.artistLabel.minimumScaleFactor = kArtistMinimumScaleFactor;
-    self.artistLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    self.artistLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.artistLabel.font = [UIFont systemFontOfSize:kArtistFontSize];
     self.artistLabel.backgroundColor = UIColor.clearColor;
     [self applyThemeTextColor:thema toLabel:self.artistLabel];
