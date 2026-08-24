@@ -40,6 +40,11 @@ static NSString *const kTermLabelText = @"規約等および各種注意事項";
 // @ghidraAddress 0x3cfb78; reached through the engine bridge global.
 // (See g_pLocalizedBuyFormat in neEngineBridge.h.)
 
+#ifdef ENABLE_PATCHES
+// The bracket the buy format wraps its price in, used to cut the price away from the title.
+static NSString *const kBuyFormatPriceBracket = @"(";
+#endif
+
 // Container geometry (in points).
 static const CGFloat kPackViewWidth = 650.0;
 static const CGFloat kPackViewHeight = 226.0;
@@ -59,13 +64,21 @@ static const CGFloat kCommentOriginY = 76.0;
 static const CGFloat kSideLabelWidth = 420.0;
 static const CGFloat kCommentHeight = 90.0;
 
-// Copyright text-view frame.
-static const CGFloat kCopyrightOriginX = 157.0;
-static const CGFloat kCopyrightOriginY = 167.0;
+// Copyright text-view frame. It shares the pack name's left edge, clearing the artwork, which ends
+// at kArtworkOriginX + kArtworkSide. The origin had been read a slot early out of the constant
+// pool: 157 is this view's y, sitting at 0x301838, and the y below is the neighbouring 0x301840.
+// @ghidraAddress 0x301838 (origin y)
+// @ghidraAddress 0x3011b8 (width)
+// @ghidraAddress 0x2ec6e0 (height)
+static const CGFloat kCopyrightOriginX = 195.0;
+static const CGFloat kCopyrightOriginY = 157.0;
 static const CGFloat kCopyrightWidth = 220.0;
 static const CGFloat kCopyrightHeight = 50.0;
 
 // Purchase button frame.
+// @ghidraAddress 0x2fedd0 (origin x)
+// @ghidraAddress 0x301840 (origin y)
+// @ghidraAddress 0x2ec6c0 (width)
 static const CGFloat kButtonOriginX = 480.0;
 static const CGFloat kButtonOriginY = 167.0;
 static const CGFloat kButtonWidth = 140.0;
@@ -459,10 +472,29 @@ static const CGFloat kCenterScale = 0.5;
 
 /** @ghidraAddress 0xf8714 */
 - (void)setButtonTextBuy {
+#ifdef ENABLE_PATCHES
+    // No StoreKit product backs a pack in a patched build, so there is no price to substitute and
+    // the format would draw "BUY ((null))". The title becomes the format's leading word on its own,
+    // taken up to the bracket the price sits in so a localised format loses its price the same way.
+    // A pack the catalogue prices at nothing is still offered, because -detailViewStartPurchase:
+    // grants one without StoreKit; any other pack costs money that a patched build cannot take, so
+    // its button is disabled rather than left to raise the purchases-disabled alert.
+    NSString *title = g_pLocalizedBuyFormat;
+    const NSRange bracket = [title rangeOfString:kBuyFormatPriceBracket];
+    if (bracket.location != NSNotFound) {
+        title = [[title substringToIndex:bracket.location]
+            stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    }
+    const BOOL isFree = RBStorePackIsFreeFromCatalog(self.packInfo.packID);
+    [self.buttonPurchase setTitle:title forState:UIControlStateNormal];
+    [self.buttonPurchase setTitle:title forState:UIControlStateDisabled];
+    [self.buttonPurchase setEnabled:isFree];
+#else
     [self.buttonPurchase
         setTitle:[NSString stringWithFormat:g_pLocalizedBuyFormat, self.packInfo.priceString]
         forState:UIControlStateNormal];
     [self.buttonPurchase setEnabled:YES];
+#endif
 }
 
 /** @ghidraAddress 0xf8884 */
