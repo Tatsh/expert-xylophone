@@ -12,7 +12,6 @@
 *.jsonnet
 *.kate-swp
 *.libsonnet
-*.lldb
 *.lock
 *.log
 *.m

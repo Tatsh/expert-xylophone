@@ -160,7 +160,7 @@
           },
         ],
         repo: 'https://github.com/pre-commit/mirrors-clang-format',
-        rev: 'v22.1.5',
+        rev: 'v22.1.8',
       },
     ],
   },
