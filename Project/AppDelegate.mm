@@ -117,6 +117,11 @@ static NSString *const kMinSystemVersionForKeychainAccessible = @"4.0";
 // files as that item's label and description.
 static NSString *const kApplicationUniqueIDAccount = @"ApplicationUniqueID";
 static NSString *const kEmptyKeychainAttribute = @"";
+
+#ifdef ENABLE_PATCHES
+// Spelled the way CFUUIDCreateString spells one, so nothing downstream special-cases it.
+static NSString *const kFixedMusicListKey = @"00000000-0000-0000-0000-000000000000";
+#endif
 static constexpr char kDoNotBackUpXattrName[] = "com.apple.MobileBackup";
 
 // The value written into the do-not-back-up extended attribute to mark a file as excluded.
@@ -784,6 +789,11 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
 
 /** @ghidraAddress 0x50cb8 */
 + (NSString *)musicListKey {
+#ifdef ENABLE_PATCHES
+    // A fixed key, so the purchased-content lists are portable rather than tied to one install's
+    // keychain. See PATCHES.md.
+    return kFixedMusicListKey;
+#else
     // Try to read the stored generic-password key for this app. The five pairs were read from the
     // stack setup at 0x50d90-0x50da8, not from a decompile, which shows only the first of them.
     // The bundle identifier is fetched again for the second dictionary further down, as here.
@@ -849,6 +859,7 @@ static NSString *const kWebInfoEpochFallback = @"200001010000";
     [item setObject:[key dataUsingEncoding:NSUTF8StringEncoding] forKey:(__bridge id)kSecValueData];
     SecItemAdd((__bridge CFDictionaryRef)item, nullptr);
     return key;
+#endif
 }
 
 #pragma mark - Applilink

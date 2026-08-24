@@ -3,11 +3,13 @@
 #import <UIKit/UIKit.h>
 
 #import "AppDelegate.h"
+#import "RBMacros.h"
 #import "SystemHardware.h"
 #import "deviceenvironment_globals.h"
 
-// The API host the server requests target.
-static NSString *const kApiHostName = @"akx.s.konaminet.jp";
+// The API host the server requests target, from RB_API_HOST so a build can be pointed at a
+// replacement server; see RBMacros.h.
+static NSString *const kApiHostName = @RB_API_HOST;
 
 // The region this build is locked to.
 static NSString *const kRegionCode = @"JP";

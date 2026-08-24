@@ -100,16 +100,17 @@ cmake --build build --config Debug
 
 Every knob is a cache entry, so all of them are overridable with `-D<name>=...`:
 
-| Option                  | Default            | Effect                                                                                                                              |
-| ----------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `APP_BUNDLE_ID`         | `jp.konami.rbplus` | `CFBundleIdentifier`.                                                                                                               |
-| `BUILD_DOCS`            | `OFF`              | Build the Doxygen documentation alongside the app.                                                                                  |
-| `ENABLE_PATCHES`        | `OFF`              | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                    |
-| `IOS_ARCHS`             | `arm64`            | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                    |
-| `IOS_DEPLOYMENT_TARGET` | `12.0`             | Minimum iOS version.                                                                                                                |
-| `RBPDBGINFO`            | `OFF`              | Emit DWARF without altering the optimisation level.                                                                                 |
-| `RBPDBG`                | `OFF`              | Compile in the `os_log` runtime diagnostics.                                                                                        |
-| `RESOURCES_DIR`         | empty              | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts. |
+| Option                  | Default              | Effect                                                                                                                                                        |
+| ----------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_HOST`              | `akx.s.konaminet.jp` | Hostname every secure API request is built against. Point it at a private or replacement server. Does not affect the in-app link allow-list in `RBWebView.m`. |
+| `APP_BUNDLE_ID`         | `jp.konami.rbplus`   | `CFBundleIdentifier`.                                                                                                                                         |
+| `BUILD_DOCS`            | `OFF`                | Build the Doxygen documentation alongside the app.                                                                                                            |
+| `ENABLE_PATCHES`        | `OFF`                | Compile in the deviations described in [PATCHES.md](PATCHES.md).                                                                                              |
+| `IOS_ARCHS`             | `arm64`              | Space-separated slices; add `arm64e` if your toolchain emits it.                                                                                              |
+| `IOS_DEPLOYMENT_TARGET` | `12.0`               | Minimum iOS version.                                                                                                                                          |
+| `RBPDBGINFO`            | `OFF`                | Emit DWARF without altering the optimisation level.                                                                                                           |
+| `RBPDBG`                | `OFF`                | Compile in the `os_log` runtime diagnostics.                                                                                                                  |
+| `RESOURCES_DIR`         | empty                | Directory of the original extracted `.app` whose assets to bundle. Without it the build links but has no artwork, audio, or charts.                           |
 
 `RESOURCES_DIR` is the one that matters most: the repository contains no game assets, so a build
 without it produces an app that launches into nothing.
@@ -126,7 +127,9 @@ make -C theos ENABLE_PATCHES=1 package
 ```
 
 `ENABLE_PATCHES`, `RBPDBG`, and `RBPDBGINFO` mirror the CMake options of the same name and are all
-off by default. Theos has no `RESOURCES_DIR` equivalent: copy the original `.app`'s resources into
+off by default, and `API_HOST` mirrors the cache entry of the same name
+(`make -C theos API_HOST=my.server.example`). Theos has no `RESOURCES_DIR` equivalent: copy the
+original `.app`'s resources into
 `theos/Resources/` yourself, or add them to the staged bundle after packaging.
 
 ## Status

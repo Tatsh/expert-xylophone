@@ -6,6 +6,13 @@ PROJECT_ROOT       := $(patsubst %/,%,$(dir $(THEOS_MAKEFILE_DIR)))
 export ARCHS  = arm64 arm64e
 export TARGET = iphone:clang:latest:12.0
 
+# API_HOST mirrors the CMake cache entry of the same name: the hostname every secure API request is
+# built against, consumed as RB_API_HOST in Project/RBMacros.h. Defaults to the host the shipped
+# binary uses; override with `make -C theos API_HOST=my.server.example`. This only redirects the API
+# host; the in-app link allow-list in Project/RBWebView.m is a separate set of hostnames.
+API_HOST ?= akx.s.konaminet.jp
+API_DEFINES := -DRB_API_HOST='"$(API_HOST)"'
+
 # ENABLE_PATCHES mirrors the CMake option of the same name: it compiles in the preservation
 # patches guarded by #ifdef ENABLE_PATCHES. Off by default so a plain build matches the binary;
 # enable with `make -C theos ENABLE_PATCHES=1`.
@@ -61,7 +68,7 @@ ReflecBeatPlus_WARNINGS = -Wall -Wextra -Wshadow -Wcomma -Wnewline-eof -Wpointer
                           -Wimplicit-retain-self
 ReflecBeatPlus_CFLAGS  = -std=gnu2x -ftrivial-auto-var-init=zero -fobjc-arc -fobjc-exceptions \
                          -DGLES_SILENCE_DEPRECATION \
-                         $(PATCH_DEFINES) $(DEBUG_DEFINES) $(DEBUG_INFO_FLAGS) \
+                         $(API_DEFINES) $(PATCH_DEFINES) $(DEBUG_DEFINES) $(DEBUG_INFO_FLAGS) \
                          $(ReflecBeatPlus_WARNINGS) \
                          -I$(PROJECT_ROOT)/Project \
                          $(addprefix -I,$(shell find $(PROJECT_ROOT)/Project -type d)) \

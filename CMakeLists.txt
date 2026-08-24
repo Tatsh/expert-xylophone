@@ -68,6 +68,11 @@ set(RESOURCES_DIR    "" CACHE PATH "Directory of the ORIGINAL extracted .app who
                                    "(images, sounds, data files, fonts, ...) are copied "
                                    "verbatim into the built bundle. Leave empty to build code only.")
 
+# The hostname every secure API request is built against. Defaults to the host the shipped binary
+# uses; override it to point a build at a private or replacement server. This only redirects the
+# API host: the in-app link allow-list in Project/RBWebView.m is a separate set of hostnames.
+set(API_HOST "akx.s.konaminet.jp" CACHE STRING "Hostname of the game's secure API")
+
 # ENABLE_PATCHES compiles in preservation patches guarded by #ifdef ENABLE_PATCHES
 # (patched code under the #ifdef, the original under #else). It is NOT part of the
 # original binary, so it defaults OFF and the shipped build matches the binary. It
@@ -236,6 +241,9 @@ target_compile_options(rbplus PRIVATE
 # separate stack). Silence the blanket ES deprecation warnings rather than
 # rewrite the renderer.
 target_compile_definitions(rbplus PRIVATE GLES_SILENCE_DEPRECATION)
+
+# The secure API hostname, consumed as a bare string literal by RB_API_HOST in Project/RBMacros.h.
+target_compile_definitions(rbplus PRIVATE RB_API_HOST="${API_HOST}")
 
 # When ENABLE_PATCHES is enabled, define it for every translation unit; the
 # generator expression is config-agnostic, so it applies in Debug, Release, and

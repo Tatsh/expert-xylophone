@@ -70,6 +70,22 @@ screen's touch pass and pre-empt the first tap with `-showTerms` — Colette in
 cannot get past the title screen. The patch reports no outstanding terms so that tap proceeds
 normally, and the screen and its whole agree flow are left intact for an unpatched build.
 
+### The per-install purchased-content list key
+
+**File:** `Project/AppDelegate.mm` — `+musicListKey` (0x50cb8)
+
+The MD5 of this key is the BFCodec key for the purchased-content lists — `mulist`, `prodlist` and
+`nolist`. The binary generates a UUID once per install with `CFUUIDCreate`, stores it in the keychain
+as a generic password, and reuses it thereafter. The lists are therefore readable only on the device
+that wrote them, and a keychain that is cleared, not restored, or not carried across a reinstall
+strands them silently: the files are still there and still decrypt to nothing useful.
+
+The patch returns a fixed UUID instead, which makes the lists portable between devices and builds
+and possible to decrypt offline. It does not consult the keychain at all, so the value is identical
+everywhere rather than merely stable per install — the trade being that a list written under a
+per-install key will not decrypt under a patched build, and vice versa. An unpatched build keeps the
+generate-and-store behaviour exactly.
+
 ### The music grid's per-item layout attributes
 
 **File:** `Project/RBMusicGridLayout.m` — `-layoutAttributesForItemAtIndexPath:` (0x16de84)
